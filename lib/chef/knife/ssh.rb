@@ -25,6 +25,7 @@ class Chef
       deps do
         require 'net/ssh'
         require 'net/ssh/multi'
+        require 'chef/monkey_patches/net-ssh-multi'
         require 'readline'
         require 'chef/exceptions'
         require 'chef/search/query'
@@ -146,7 +147,7 @@ class Chef
                  @action_nodes = q.search(:node, @name_args[0])[0]
                  @action_nodes.each do |item|
                    # we should skip the loop to next iteration if the item returned by the search is nil
-                   next if item.nil? 
+                   next if item.nil?
                    # if a command line attribute was not passed, and we have a cloud public_hostname, use that.
                    # see #configure_attribute for the source of config[:attribute] and config[:override_attribute]
                    if !config[:override_attribute] && item[:cloud] and item[:cloud][:public_hostname]
@@ -210,13 +211,26 @@ class Chef
       end
 
       def print_data(host, data)
-        if data =~ /\n/
-          data.split(/\n/).each { |d| print_data(host, d) }
+        @buffers ||= {}
+        if leftover = @buffers[host]
+          @buffers[host] = nil
+          print_data(host, leftover + data)
         else
-          padding = @longest - host.length
-          str = ui.color(host, :cyan) + (" " * (padding + 1)) + data
-          ui.msg(str)
+          if newline_index = data.index("\n")
+            line = data.slice!(0...newline_index)
+            data.slice!(0)
+            print_line(host, line)
+            print_data(host, data)
+          else
+            @buffers[host] = data
+          end
         end
+      end
+
+      def print_line(host, data)
+        padding = @longest - host.length
+        str = ui.color(host, :cyan) + (" " * (padding + 1)) + data
+        ui.msg(str)
       end
 
       def ssh_command(command, subsession=nil)
@@ -231,6 +245,7 @@ class Chef
             ch.on_data do |ichannel, data|
               print_data(ichannel[:host], data)
               if data =~ /^knife sudo password: /
+                print_data(ichannel[:host], "\n")
                 ichannel.send_data("#{get_password}\n")
               end
             end
@@ -382,7 +397,7 @@ class Chef
         # Thus we can differentiate between a config file value and a command line override at this point by checking config[:attribute]
         # We can tell here if fqdn was passed from the command line, rather than being the default, by checking config[:attribute]
         # However, after here, we cannot tell these things, so we must preserve config[:attribute]
-        config[:override_attribute] = config[:attribute] || Chef::Config[:knife][:ssh_attribute] 
+        config[:override_attribute] = config[:attribute] || Chef::Config[:knife][:ssh_attribute]
         config[:attribute] = (Chef::Config[:knife][:ssh_attribute] ||
                               config[:attribute] ||
                               "fqdn").strip

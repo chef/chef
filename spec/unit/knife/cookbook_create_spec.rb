@@ -245,25 +245,14 @@ describe Chef::Knife::CookbookCreate do
       @knife.run
     end
 
-    it "should create a CHANGELOG file" do
-      @dir = Dir.tmpdir
-      @knife.should_receive(:create_changelog).with(@dir, @knife.name_args.first)
-      @knife.run
-    end
-
-    context "when the cookbooks path is not specified in the config file nor supplied via parameter" do
+    context "when the cookbooks path is set to nil" do
       before do
-        @old_cookbook_path = Chef::Config[:cookbook_path]
         Chef::Config[:cookbook_path] = nil
       end
 
       it "should throw an argument error" do
         @dir = Dir.tmpdir
         lambda{@knife.run}.should raise_error(ArgumentError)
-      end
-
-      after do
-        Chef::Config[:cookbook_path] = @old_cookbook_path
       end
     end
 

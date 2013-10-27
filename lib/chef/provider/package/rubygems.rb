@@ -72,7 +72,7 @@ class Chef
             raise NotImplementedError
           end
 
-          ## 
+          ##
           # A rubygems specification object containing the list of gemspecs for all
           # available gems in the gem installation.
           # Implemented by subclasses
@@ -121,7 +121,7 @@ class Chef
           # Compatibility note: Rubygems 1.x uses Gem::Format, 2.0 moved this
           # code into Gem::Package.
           def spec_from_file(file)
-            if defined?(Gem::Format)
+            if defined?(Gem::Format) and Gem::Package.respond_to?(:open)
               Gem::Format.from_file_by_path(file).spec
             else
               Gem::Package.new(file).spec
@@ -425,6 +425,9 @@ class Chef
           # URI.parse gets confused by MS Windows paths with forward slashes.
           scheme = nil if scheme =~ /^[a-z]$/
           %w{http https}.include?(scheme)
+        rescue URI::InvalidURIError
+          Chef::Log.debug("#{@new_resource} failed to parse source '#{@new_resource.source}' as a URI, assuming a local path")
+          false
         end
 
         def current_version
@@ -534,7 +537,7 @@ class Chef
           if version
             shell_out!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", :env=>nil)
           else
-            shell_out!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri #{src}#{opts}", :env=>nil)
+            shell_out!("#{gem_binary_path} install \"#{name}\" -q --no-rdoc --no-ri #{src}#{opts}", :env=>nil)
           end
         end
 

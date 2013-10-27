@@ -290,6 +290,14 @@ class Chef
       normal[:tags]
     end
 
+    def tag(*tags)
+      tags.each do |tag|
+        self.normal[:tags].push(tag.to_s) unless self[:tags].include? tag.to_s
+      end
+
+      self[:tags]
+    end
+
     # Extracts the run list from +attrs+ and applies it. Returns the remaining attributes
     def consume_run_list(attrs)
       attrs = attrs ? attrs.dup : {}

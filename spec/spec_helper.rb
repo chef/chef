@@ -40,9 +40,25 @@ $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 $:.unshift(File.expand_path("../lib", __FILE__))
 $:.unshift(File.dirname(__FILE__))
 
+if ENV["COVERAGE"]
+  require 'simplecov'
+  SimpleCov.start do
+    add_filter "/spec/"
+    add_group "Remote File", "remote_file"
+    add_group "Resources", "/resource/"
+    add_group "Providers", "/provider/"
+    add_group "Knife", "knife"
+  end
+end
+
 require 'chef'
 require 'chef/knife'
-Chef::Knife.load_commands
+
+Dir['lib/chef/knife/**/*.rb'].
+  map {|f| f.gsub('lib/', '') }.
+  map {|f| f.gsub(%r[\.rb$], '') }.
+  each {|f| require f }
+
 require 'chef/mixins'
 require 'chef/dsl'
 require 'chef/application'
@@ -50,6 +66,8 @@ require 'chef/applications'
 
 require 'chef/shell'
 require 'chef/util/file_edit'
+
+require 'chef/config'
 
 # If you want to load anything into the testing environment
 # without versioning it, add it to spec/support/local_gems.rb
@@ -64,7 +82,15 @@ require 'spec/support/platform_helpers'
 Dir["spec/support/**/*.rb"].
   reject { |f| f =~ %r{^spec/support/platforms} }.
   map { |f| f.gsub(%r{.rb$}, '') }.
+  map { |f| f.gsub(%r[spec/], '')}.
   each { |f| require f }
+
+
+OHAI_SYSTEM = Ohai::System.new
+OHAI_SYSTEM.require_plugin("os")
+OHAI_SYSTEM.require_plugin("platform")
+TEST_PLATFORM = OHAI_SYSTEM["platform"].dup.freeze
+TEST_PLATFORM_VERSION = OHAI_SYSTEM["platform_version"].dup.freeze
 
 RSpec.configure do |config|
   config.include(Matchers)
@@ -77,16 +103,77 @@ RSpec.configure do |config|
   # Add jruby filters here
   config.filter_run_excluding :windows_only => true unless windows?
   config.filter_run_excluding :not_supported_on_win2k3 => true if windows_win2k3?
+  config.filter_run_excluding :not_supported_on_solaris => true if solaris?
+  config.filter_run_excluding :win2k3_only => true unless windows_win2k3?
   config.filter_run_excluding :windows64_only => true unless windows64?
   config.filter_run_excluding :windows32_only => true unless windows32?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?
+  # Remove this filter once these issues are fixed: OC-9764, OC-9765, OC-9766, OC-9767
+  config.filter_run_excluding :unsupported_group_provider_platform => true if (os_x? or solaris? or freebsd? or suse?)
+  config.filter_run_excluding :supports_cloexec => true unless supports_cloexec?
+  config.filter_run_excluding :selinux_only => true unless selinux_enabled?
   config.filter_run_excluding :ruby_18_only => true unless ruby_18?
   config.filter_run_excluding :ruby_19_only => true unless ruby_19?
-  config.filter_run_excluding :requires_root => true unless ENV['USER'] == 'root'
+  config.filter_run_excluding :ruby_gte_19_only => true unless ruby_gte_19?
+  config.filter_run_excluding :ruby_20_only => true unless ruby_20?
+  config.filter_run_excluding :ruby_gte_20_only => true unless ruby_gte_20?
+  config.filter_run_excluding :requires_root => true unless ENV['USER'] == 'root' || ENV['LOGIN'] == 'root'
+  config.filter_run_excluding :requires_root_or_running_windows => true unless (ENV['USER'] == 'root' or windows?)
   config.filter_run_excluding :requires_unprivileged_user => true if ENV['USER'] == 'root'
   config.filter_run_excluding :uses_diff => true unless has_diff?
 
+  running_platform_arch = `uname -m`.strip
+
+  config.filter_run_excluding :arch => lambda {|target_arch|
+    running_platform_arch != target_arch
+  }
+
+  # Functional Resource tests that are provider-specific:
+  # context "on platforms that use useradd", :provider => {:user => Chef::Provider::User::Useradd}} do #...
+  config.filter_run_excluding :provider => lambda {|criteria|
+    type, target_provider = criteria.first
+
+    platform = TEST_PLATFORM.dup
+    platform_version = TEST_PLATFORM_VERSION.dup
+
+    begin
+      provider_for_running_platform = Chef::Platform.find_provider(platform, platform_version, type)
+      provider_for_running_platform != target_provider
+    rescue ArgumentError # no provider for platform
+      true
+    end
+  }
+
   config.run_all_when_everything_filtered = true
   config.treat_symbols_as_metadata_keys_with_true_values = true
+
+  config.before(:each) do
+    Chef::Config.reset
+  end
+end
+
+require 'webrick/utils'
+
+#    Webrick uses a centralized/synchronized timeout manager. It works by
+#    starting a thread to check for timeouts on an interval. The timeout
+#    checker thread cannot be stopped or canceled in any easy way, and it
+#    makes calls to Time.new, which fail when rspec is in the process of
+#    creating a method stub for that method. Since our tests don't rely on
+#    any timeout behavior enforced by webrick, disable the timeout manager
+#    via a monkey patch.
+#
+#    Hopefully this fails loudly if the webrick code should change. As of this
+#    writing, the relevant code is in webrick/utils, which can be located on
+#    your system with:
+#
+#    $ gem which webrick/utils
+module WEBrick
+  module Utils
+    class TimeoutHandler
+      def initialize
+        @timeout_info = Hash.new
+      end
+    end
+  end
 end

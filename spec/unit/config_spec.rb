@@ -22,7 +22,6 @@ require 'chef/exceptions'
 
 describe Chef::Config do
   before(:all) do
-    @original_config = Chef::Config.hash_dup
     @original_env = { 'HOME' => ENV['HOME'], 'SYSTEMDRIVE' => ENV['SYSTEMDRIVE'], 'HOMEPATH' => ENV['HOMEPATH'], 'USERPROFILE' => ENV['USERPROFILE'] }
   end
 
@@ -82,22 +81,18 @@ describe Chef::Config do
       #   log_level = info or defualt
       # end
       #
-    before do
-      @config_class = Class.new(Chef::Config)
-    end
-
     it "has an empty list of formatters by default" do
-      @config_class.formatters.should == []
+      Chef::Config.formatters.should == []
     end
 
     it "configures a formatter with a short name" do
-      @config_class.add_formatter(:doc)
-      @config_class.formatters.should == [[:doc, nil]]
+      Chef::Config.add_formatter(:doc)
+      Chef::Config.formatters.should == [[:doc, nil]]
     end
 
     it "configures a formatter with a file output" do
-      @config_class.add_formatter(:doc, "/var/log/formatter.log")
-      @config_class.formatters.should == [[:doc, "/var/log/formatter.log"]]
+      Chef::Config.add_formatter(:doc, "/var/log/formatter.log")
+      Chef::Config.formatters.should == [[:doc, "/var/log/formatter.log"]]
     end
 
   end
@@ -142,10 +137,6 @@ describe Chef::Config do
           and_return(@mockfile)
       end
 
-      after do
-        Chef::Config.log_location = STDOUT
-      end
-
       it "should configure itself to use a File object based upon the String" do
         Chef::Config.log_location = "/var/log/chef/client.log"
         Chef::Config.log_location.path.should == "/var/log/chef/client.log"
@@ -174,15 +165,6 @@ describe Chef::Config do
   end
 
   describe "default values" do
-    before(:each) do
-      # reload Chef::Config to ensure defaults are truely active
-      load File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "lib", "chef", "config.rb"))
-    end
-
-    after(:each) do
-      # reload spec helper to re-set any spec specific Chef::Config values
-      load File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper.rb"))
-    end
 
     it "Chef::Config[:file_backup_path] defaults to /var/chef/backup" do
       backup_path = if windows?
@@ -219,6 +201,100 @@ describe Chef::Config do
       end
 
       Chef::Config[:environment_path].should == environment_path
+    end
+
+    describe "joining platform specific paths" do
+
+      context "on UNIX" do
+        before do
+          Chef::Config.stub(:on_windows?).and_return(false)
+        end
+
+        it "joins components when some end with separators" do
+          Chef::Config.path_join("/foo/", "bar", "baz").should == "/foo/bar/baz"
+        end
+
+        it "joins components that don't end in separators" do
+          Chef::Config.path_join("/foo", "bar", "baz").should == "/foo/bar/baz"
+        end
+
+      end
+
+      context "on Windows" do
+        before do
+          Chef::Config.stub(:on_windows?).and_return(true)
+        end
+
+        it "joins components with the windows separator" do
+          Chef::Config.path_join('c:\\foo\\', 'bar', "baz").should == 'c:\\foo\\bar\\baz'
+        end
+      end
+    end
+
+    describe "setting the config dir" do
+
+      before do
+        Chef::Config.stub(:on_windows?).and_return(false)
+        Chef::Config.config_file = "/etc/chef/client.rb"
+      end
+
+      context "by default" do
+        it "is the parent dir of the config file" do
+          Chef::Config.config_dir.should == "/etc/chef"
+        end
+      end
+
+      context "when chef is running in local mode" do
+        before do
+          Chef::Config.local_mode = true
+          Chef::Config.user_home = "/home/charlie"
+        end
+
+        it "is in the user's home dir" do
+          Chef::Config.config_dir.should == "/home/charlie/.chef/"
+        end
+      end
+
+      context "when explicitly set" do
+        before do
+          Chef::Config.config_dir = "/other/config/dir/"
+        end
+
+        it "uses the explicit value" do
+          Chef::Config.config_dir.should == "/other/config/dir/"
+        end
+      end
+
+    end
+
+    describe "finding the windows embedded dir" do
+      let(:default_config_location) { "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
+      let(:alternate_install_location) { "c:/my/alternate/install/place/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
+      let(:non_omnibus_location) { "c:/my/dev/stuff/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
+
+      let(:default_ca_file) { "c:/opscode/chef/embedded/ssl/certs/cacert.pem" }
+
+      it "finds the embedded dir in the default location" do
+        Chef::Config.stub(:_this_file).and_return(default_config_location)
+        Chef::Config.embedded_dir.should == "c:/opscode/chef/embedded"
+      end
+
+      it "finds the embedded dir in a custom install location" do
+        Chef::Config.stub(:_this_file).and_return(alternate_install_location)
+        Chef::Config.embedded_dir.should == "c:/my/alternate/install/place/chef/embedded"
+      end
+
+      it "doesn't error when not in an omnibus install" do
+        Chef::Config.stub(:_this_file).and_return(non_omnibus_location)
+        Chef::Config.embedded_dir.should be_nil
+      end
+
+      it "sets the ssl_ca_cert path if the cert file is available" do
+        Chef::Config.stub(:_this_file).and_return(default_config_location)
+        Chef::Config.stub(:on_windows?).and_return(true)
+        File.stub(:exist?).with(default_ca_file).and_return(true)
+        Chef::Config.ssl_ca_file.should == default_ca_file
+      end
     end
   end
 
@@ -277,9 +353,5 @@ describe Chef::Config do
       missing_path = "/tmp/non-existing-dir/file"
       expect{Chef::Config.log_location = missing_path}.to raise_error Chef::Exceptions::ConfigurationError
     end
-  end
-
-  after(:each) do
-    Chef::Config.configuration = @original_config
   end
 end

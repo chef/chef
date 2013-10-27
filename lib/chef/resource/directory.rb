@@ -25,11 +25,11 @@ require 'chef/mixin/securable'
 class Chef
   class Resource
     class Directory < Chef::Resource
-      
+
       identity_attr :path
 
       state_attrs :group, :mode, :owner
-      
+
       include Chef::Mixin::Securable
 
       provides :directory, :on_platforms => :all

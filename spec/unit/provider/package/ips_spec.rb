@@ -170,7 +170,7 @@ PKG_STATUS
         before do
           @new_resource.stub!(:accept_license).and_return(true)
         end
-  
+
         it "should run pkg install with the --accept flag" do
           @provider.should_receive(:run_command_with_systems_locale).with({
             :command => "pkg install -q --accept crypto/gnupg@2.0.17"

@@ -38,20 +38,20 @@ describe Chef::Provider::Ifconfig do
     status = mock("Status", :exitstatus => 0)
     @provider.instance_variable_set("@status", status)
     @provider.current_resource = @current_resource
-    
+
  end
-  describe Chef::Provider::Ifconfig, "load_current_resource" do 
-    before do 
+  describe Chef::Provider::Ifconfig, "load_current_resource" do
+    before do
       status = mock("Status", :exitstatus => 1)
-      @provider.should_receive(:popen4).and_return status 
+      @provider.should_receive(:popen4).and_return status
       @provider.load_current_resource
     end
     it "should track state of ifconfig failure." do
       @provider.instance_variable_get("@status").exitstatus.should_not == 0
     end
-    it "should thrown an exception when ifconfig fails" do 
+    it "should thrown an exception when ifconfig fails" do
       @provider.define_resource_requirements
-      lambda { @provider.process_resource_requirements }.should raise_error Chef::Exceptions::Ifconfig 
+      lambda { @provider.process_resource_requirements }.should raise_error Chef::Exceptions::Ifconfig
     end
   end
   describe Chef::Provider::Ifconfig, "action_add" do
@@ -72,7 +72,7 @@ describe Chef::Provider::Ifconfig do
       @provider.stub!(:load_current_resource)
       @provider.should_not_receive(:run_command)
       @current_resource.inet_addr "10.0.0.1"
-      @provider.should_receive(:generate_config)
+      @provider.should_not_receive(:generate_config)
 
       @provider.run_action(:add)
       @new_resource.should_not be_updated
@@ -84,7 +84,7 @@ describe Chef::Provider::Ifconfig do
   end
 
   describe Chef::Provider::Ifconfig, "action_enable" do
-    
+
     it "should enable interface if does not exist" do
       @provider.stub!(:load_current_resource)
       @current_resource.inet_addr nil
@@ -129,7 +129,7 @@ describe Chef::Provider::Ifconfig do
       @new_resource.should_not be_updated
     end
   end
-  
+
   describe Chef::Provider::Ifconfig, "action_disable" do
 
     it "should disable interface if it exists" do
@@ -175,39 +175,6 @@ describe Chef::Provider::Ifconfig do
 
       @provider.run_action(:delete)
       @new_resource.should_not be_updated
-    end
-  end
-  
-  describe Chef::Provider::Ifconfig, "generate_config for action_add" do
-   #%w[ centos redhat fedora ].each do |platform|
-     
-     it "should write network-script for centos" do
-      @provider.stub!(:load_current_resource)
-      @node.automatic_attrs[:platform] = "centos"
-      @provider.stub!(:run_command)
-      config_filename = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
-      config_file = StringIO.new
-      File.should_receive(:new).with(config_filename, "w").and_return(config_file)
-
-      @provider.run_action(:add)
-      config_file.string.should match(/^\s*DEVICE=eth0\s*$/)
-      config_file.string.should match(/^\s*IPADDR=10.0.0.1\s*$/)
-      config_file.string.should match(/^\s*NETMASK=255.255.254.0\s*$/)
-     end
-  end
-
-  describe Chef::Provider::Ifconfig, "delete_config for action_delete" do
-
-    it "should delete network-script if it exists for centos" do
-      @node.automatic_attrs[:platform] = "centos"
-      @current_resource.device "eth0"
-      @provider.stub!(:load_current_resource)
-      @provider.stub!(:run_command)
-      config_filename =  "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
-      File.should_receive(:exist?).with(config_filename).and_return(true)
-      FileUtils.should_receive(:rm_f).with(config_filename, :verbose => false)
-
-      @provider.run_action(:delete)
     end
   end
 end

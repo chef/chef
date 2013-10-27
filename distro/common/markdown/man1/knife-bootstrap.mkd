@@ -32,7 +32,7 @@ __knife__ __bootstrap__ _(options)_
   * `--[no-]host-key-verify`:
     Enable host key verification, which is the default behavior.
   * `--hint HINT_NAME[=HINT_FILE]`:
-    Provide the name of a hint (with option JSON file) to set for use by 
+    Provide the name of a hint (with option JSON file) to set for use by
     Ohai plugins.
 
 ## DESCRIPTION

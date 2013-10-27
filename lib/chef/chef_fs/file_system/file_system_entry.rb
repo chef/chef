@@ -19,6 +19,7 @@
 require 'chef/chef_fs/file_system/base_fs_dir'
 require 'chef/chef_fs/file_system/rest_list_dir'
 require 'chef/chef_fs/file_system/not_found_error'
+require 'chef/chef_fs/file_system/must_delete_recursively_error'
 require 'chef/chef_fs/path_utils'
 require 'fileutils'
 
@@ -34,25 +35,29 @@ class Chef
         attr_reader :file_path
 
         def path_for_printing
-          Chef::ChefFS::PathUtils::relative_to(file_path, File.expand_path(Dir.pwd))
+          file_path
         end
 
         def children
           begin
-            @children ||= Dir.entries(file_path).select { |entry| entry != '.' && entry != '..' }.map { |entry| FileSystemEntry.new(entry, self) }
+            Dir.entries(file_path).sort.select { |entry| entry != '.' && entry != '..' }.map { |entry| make_child(entry) }
           rescue Errno::ENOENT
-            raise Chef::ChefFS::FileSystem::NotFoundError.new($!), "#{file_path} not found"
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
         end
 
         def create_child(child_name, file_contents=nil)
-          result = FileSystemEntry.new(child_name, self)
+          child = make_child(child_name)
           if file_contents
-            result.write(file_contents)
+            child.write(file_contents)
           else
-            Dir.mkdir(result.file_path)
+            begin
+              Dir.mkdir(child.file_path)
+            rescue Errno::EEXIST
+            end
           end
-          result
+          @children = nil
+          child
         end
 
         def dir?
@@ -61,11 +66,10 @@ class Chef
 
         def delete(recurse)
           if dir?
-            if recurse
-              FileUtils.rm_rf(file_path)
-            else
-              File.rmdir(file_path)
+            if !recurse
+              raise MustDeleteRecursivelyError.new(self, $!)
             end
+            FileUtils.rm_rf(file_path)
           else
             File.delete(file_path)
           end
@@ -75,7 +79,7 @@ class Chef
           begin
             File.open(file_path, "rb") {|f| f.read}
           rescue Errno::ENOENT
-            raise Chef::ChefFS::FileSystem::NotFoundError.new($!), "#{file_path} not found"
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
         end
 
@@ -83,6 +87,12 @@ class Chef
           File.open(file_path, 'wb') do |file|
             file.write(content)
           end
+        end
+
+        protected
+
+        def make_child(child_name)
+          FileSystemEntry.new(child_name, self)
         end
       end
     end

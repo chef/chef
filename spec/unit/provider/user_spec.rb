@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,7 +58,7 @@ describe Chef::Provider::User do
   describe "executing load_current_resource" do
     before(:each) do
       @node = Chef::Node.new
-      #@new_resource = mock("Chef::Resource::User", 
+      #@new_resource = mock("Chef::Resource::User",
       #  :null_object => true,
       #  :username => "adam",
       #  :comment => "Adam Jacob",
@@ -152,17 +152,17 @@ describe Chef::Provider::User do
         @new_resource.password "some new password"
         Etc.stub!(:getpwnam).and_return(user)
       end
-      
+
       unless shadow_lib_unavail?
         context "and we have the ruby-shadow gem" do
-          pending "and we are not root (rerun this again as root)", :requires_unprivileged_user => true 
-  
+          pending "and we are not root (rerun this again as root)", :requires_unprivileged_user => true
+
           context "and we are root", :requires_root => true do
             it "should pass assertions when ruby-shadow can be loaded" do
               @provider.action = 'create'
               original_method = @provider.method(:require)
               @provider.should_receive(:require) { |*args| original_method.call(*args) }
-              passwd_info = Struct::PasswdEntry.new(:sp_namp => "adm ", :sp_pwdp => "$1$T0N0Q.lc$nyG6pFI3Dpqa5cxUz/57j0", :sp_lstchg => 14861, :sp_min => 0, :sp_max => 99999, 
+              passwd_info = Struct::PasswdEntry.new(:sp_namp => "adm ", :sp_pwdp => "$1$T0N0Q.lc$nyG6pFI3Dpqa5cxUz/57j0", :sp_lstchg => 14861, :sp_min => 0, :sp_max => 99999,
                                                     :sp_warn => 7, :sp_inact => -1, :sp_expire => -1, :sp_flag => -1)
               Shadow::Passwd.should_receive(:getspnam).with("adam").and_return(passwd_info)
               @provider.load_current_resource
@@ -177,58 +177,50 @@ describe Chef::Provider::User do
         @provider.should_receive(:require).with("shadow") { raise LoadError }
         @provider.load_current_resource
         @provider.define_resource_requirements
-        lambda {@provider.process_resource_requirements}.should raise_error Chef::Exceptions::MissingLibrary 
+        lambda {@provider.process_resource_requirements}.should raise_error Chef::Exceptions::MissingLibrary
       end
 
     end
   end
 
   describe "compare_user" do
-    before(:each) do
-      # @node = Chef::Node.new
-      # @new_resource = mock("Chef::Resource::User", 
-      #   :null_object => true,
-      #   :username => "adam",
-      #   :comment => "Adam Jacob",
-      #   :uid => 1000,
-      #   :gid => 1000,
-      #   :home => "/home/adam",
-      #   :shell => "/usr/bin/zsh",
-      #   :password => nil,
-      #   :updated => nil
-      # )
-      # @current_resource = mock("Chef::Resource::User", 
-      #   :null_object => true,
-      #   :username => "adam",
-      #   :comment => "Adam Jacob",
-      #   :uid => 1000,
-      #   :gid => 1000,
-      #   :home => "/home/adam",
-      #   :shell => "/usr/bin/zsh",
-      #   :password => nil,
-      #   :updated => nil
-      # )
-      # @provider = Chef::Provider::User.new(@node, @new_resource)
-      # @provider.current_resource = @current_resource
-    end
+    let(:mapping) {
+      {
+        'username' => ["adam", "Adam"],
+        'comment' => ["Adam Jacob", "adam jacob"],
+        'uid' => [1000, 1001],
+        'gid' => [1000, 1001],
+        'home' => ["/home/adam", "/Users/adam"],
+        'shell'=> ["/usr/bin/zsh", "/bin/bash"],
+        'password'=> ["abcd","12345"]
+      }
+    }
 
     %w{uid gid comment home shell password}.each do |attribute|
       it "should return true if #{attribute} doesn't match" do
-        @new_resource.should_receive(attribute).exactly(2).times.and_return(true)
-        @current_resource.should_receive(attribute).once.and_return(false)
+        @new_resource.send(attribute, mapping[attribute][0])
+        @current_resource.send(attribute, mapping[attribute][1])
         @provider.compare_user.should eql(true)
+      end
+    end
+
+    %w{uid gid}.each do |attribute|
+      it "should return false if string #{attribute} matches fixnum" do
+        @new_resource.send(attribute, "100")
+        @current_resource.send(attribute, 100)
+        @provider.compare_user.should eql(false)
       end
     end
 
     it "should return false if the objects are identical" do
       @provider.compare_user.should eql(false)
-    end  
+    end
   end
 
   describe "action_create" do
     before(:each) do
       @provider.stub!(:load_current_resource)
-      # @current_resource = mock("Chef::Resource::User", 
+      # @current_resource = mock("Chef::Resource::User",
       #   :null_object => true,
       #   :username => "adam",
       #   :comment => "Adam Jacob",
@@ -261,7 +253,7 @@ describe Chef::Provider::User do
       @provider.action_create
     end
 
-    it "should set the the new_resources updated flag when it creates the user if we call manage_user" do
+    it "should set the new_resources updated flag when it creates the user if we call manage_user" do
       @provider.user_exists = true
       @provider.stub!(:compare_user).and_return(true)
       @provider.stub!(:manage_user).and_return(true)
@@ -278,7 +270,7 @@ describe Chef::Provider::User do
 
     it "should not call remove_user if the user does not exist" do
       @provider.user_exists = false
-      @provider.should_not_receive(:remove_user) 
+      @provider.should_not_receive(:remove_user)
       @provider.action_remove
     end
 
@@ -301,10 +293,10 @@ describe Chef::Provider::User do
     before(:each) do
       @provider.stub!(:load_current_resource)
       # @node = Chef::Node.new
-      # @new_resource = mock("Chef::Resource::User", 
+      # @new_resource = mock("Chef::Resource::User",
       #   :null_object => true
       # )
-      # @current_resource = mock("Chef::Resource::User", 
+      # @current_resource = mock("Chef::Resource::User",
       #   :null_object => true
       # )
       # @provider = Chef::Provider::User.new(@node, @new_resource)
@@ -344,10 +336,10 @@ describe Chef::Provider::User do
     before(:each) do
       @provider.stub!(:load_current_resource)
       # @node = Chef::Node.new
-      # @new_resource = mock("Chef::Resource::User", 
+      # @new_resource = mock("Chef::Resource::User",
       #   :null_object => true
       # )
-      # @current_resource = mock("Chef::Resource::User", 
+      # @current_resource = mock("Chef::Resource::User",
       #   :null_object => true
       # )
       # @provider = Chef::Provider::User.new(@node, @new_resource)
@@ -413,10 +405,10 @@ describe Chef::Provider::User do
     before(:each) do
       @provider.stub!(:load_current_resource)
       # @node = Chef::Node.new
-      # @new_resource = mock("Chef::Resource::User", 
+      # @new_resource = mock("Chef::Resource::User",
       #   :null_object => true
       # )
-      # @current_resource = mock("Chef::Resource::User", 
+      # @current_resource = mock("Chef::Resource::User",
       #   :null_object => true
       # )
       # @provider = Chef::Provider::User.new(@node, @new_resource)

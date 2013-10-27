@@ -153,6 +153,15 @@ class Chef
     class InvalidEnvironmentPath < ArgumentError; end
     class EnvironmentNotFound < RuntimeError; end
 
+    # File-like resource found a non-file (socket, pipe, directory, etc) at its destination
+    class FileTypeMismatch < RuntimeError; end
+
+    # File (or descendent) resource configured to manage symlink source, but
+    # the symlink that is there either loops or points to a nonexistent file
+    class InvalidSymlink < RuntimeError; end
+
+    class ChildConvergeError < RuntimeError; end
+
     class MissingRole < RuntimeError
       NULL = Object.new
 

@@ -26,13 +26,12 @@ require './tasks/rspec.rb'
 
 GEM_NAME = "chef"
 
-spec = eval(File.read("chef.gemspec"))
-
 # This has to be here or else the docs get generated *after* the gem is created
 task :gem => 'docs:all'
 
-Gem::PackageTask.new(spec) do |pkg|
-  pkg.gem_spec = spec
+Dir[File.expand_path("../*gemspec", __FILE__)].reverse.each do |gemspec_path|
+  gemspec = eval(IO.read(gemspec_path))
+  Gem::PackageTask.new(gemspec).define
 end
 
 begin
@@ -48,27 +47,35 @@ begin
   end
 rescue LoadError
   puts "sdoc is not available. (sudo) gem install sdoc to generate rdoc documentation."
+rescue TypeError
+  puts "sdoc is not working on ruby-2.0.0 and throwing an odd TypeError, rdoc generation will be disabled on ruby 2.0 until that gets fixed."
 end
 
 task :install => :package do
-  sh %{gem install pkg/#{GEM_NAME}-#{Chef::VERSION} --no-rdoc --no-ri}
+  sh %{gem install pkg/#{GEM_NAME}-#{Chef::VERSION}.gem --no-rdoc --no-ri}
 end
 
 task :uninstall do
   sh %{gem uninstall #{GEM_NAME} -x -v #{Chef::VERSION} }
 end
 
+desc "Build it, tag it and ship it"
+task :ship => :gem do
+  sh("git tag #{Chef::VERSION}")
+  sh("git push opscode --tags")
+  Dir[File.expand_path("../pkg/*.gem", __FILE__)].reverse.each do |built_gem|
+    sh("gem push #{built_gem}")
+  end
+end
+
 RONN_OPTS = "--manual='Chef Manual' --organization='Chef #{Chef::VERSION}' --date='#{Time.new.strftime('%Y-%m-%d')}'"
 
 namespace :docs do
-  desc "Regenerate manpages from markdown"
-  task :man
-
   desc "Regenerate HTML manual from markdown"
   task :html
 
   desc "Regenerate help topics from man pages"
-  task :list => :man do
+  task :list do
     topics = Array.new
 
     Dir['distro/common/man/man1/*.1'].each do |man|
@@ -83,38 +90,53 @@ namespace :docs do
     end
   end
 
-  if system('which ronn > /dev/null')
+  # we can have ronn in the path, but not in the bundle, require both
+  ronn_in_bundle = true
+  begin
+    require 'ronn'
+  rescue LoadError
+    ronn_in_bundle = false
+  end
+
+  if ronn_in_bundle && system('which ronn > /dev/null')
     ['distro/common/markdown/man1/*.mkd', 'distro/common/markdown/man8/*.mkd'].each do |dir|
       Dir[dir].each do |mkd|
         basename = File.basename(mkd, '.mkd')
         if dir =~ /man1/
-          manfile = "distro/common/man/man1/#{basename}.1"
           htmlfile = "distro/common/html/#{basename}.1.html"
         elsif dir =~ /man8/
-          manfile = "distro/common/man/man8/#{basename}.8"
           htmlfile = "distro/common/html/#{basename}.8.html"
         end
-
-        file(manfile => [mkd, 'lib/chef/version.rb']) do
-           sh "ronn -r #{RONN_OPTS} #{mkd} --pipe > #{manfile}"
-         end
-         task :man => manfile
 
          file(htmlfile => [mkd, 'lib/chef/version.rb']) do
            sh "ronn -5 #{RONN_OPTS} --style=toc #{mkd} --pipe > #{htmlfile}"
          end
          task :html => htmlfile
-
       end
     end
   else
     puts "get with the program and install ronn"
   end
 
-  task :all => [:man, :html]
+  task :all => [:list, :html]
 end
 
 task :docs => "docs:all"
 
+begin
+  require 'yard'
+  DOC_FILES = [ "README.rdoc", "LICENSE", "spec/tiny_server.rb", "lib/**/*.rb" ]
+  namespace :yard do
+    desc "Create YARD documentation"
+
+    YARD::Rake::YardocTask.new(:html) do |t|
+      t.files = DOC_FILES
+      t.options = ['--format', 'html']
+    end
+  end
+
+rescue LoadError
+  puts "yard is not available. (sudo) gem install yard to generate yard documentation."
+end
 
 

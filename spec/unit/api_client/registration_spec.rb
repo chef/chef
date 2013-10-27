@@ -57,7 +57,7 @@ describe Chef::ApiClient::Registration do
     end
 
     it "creates a new ApiClient on the server using the validator identity" do
-      response = {"uri" => "https://chef.local/clients/silent-bob", 
+      response = {"uri" => "https://chef.local/clients/silent-bob",
                   "private_key" => "--begin rsa key etc--"}
       http_mock.should_receive(:post).
         with("clients", :name => 'silent-bob', :admin => false).

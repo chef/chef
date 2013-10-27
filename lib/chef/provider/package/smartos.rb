@@ -64,14 +64,14 @@ class Chef
           pkg = shell_out!("/opt/local/bin/pkgin se #{new_resource.package_name}", :env => nil, :returns => [0,1])
           pkg.stdout.each_line do |line|
             case line
-            when /^#{name}/
+            when /^#{new_resource.package_name}/
               name, version = line.split[0].split(/-([^-]+)$/)
             end
           end
           @candidate_version = version
           version
         end
-     
+
         def install_package(name, version)
           Chef::Log.debug("#{@new_resource} installing package #{name} version #{version}")
           package = "#{name}-#{version}"
@@ -84,7 +84,7 @@ class Chef
         end
 
         def remove_package(name, version)
-          Chef::Log.debug("#{@new_resource} removing package #{name} version #{version}") 
+          Chef::Log.debug("#{@new_resource} removing package #{name} version #{version}")
           package = "#{name}"
           out = shell_out!("/opt/local/bin/pkgin -y remove #{package}", :env => nil)
         end

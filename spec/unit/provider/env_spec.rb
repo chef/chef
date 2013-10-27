@@ -81,7 +81,7 @@ describe Chef::Provider::Env do
       @provider.action_create
     end
 
-    it "should set the the new_resources updated flag when it creates the key" do
+    it "should set the new_resources updated flag when it creates the key" do
       @provider.action_create
       @new_resource.should be_updated
     end
@@ -99,7 +99,7 @@ describe Chef::Provider::Env do
       @provider.action_create
     end
 
-    it "should set the the new_resources updated flag when it updates an existing value" do
+    it "should set the new_resources updated flag when it updates an existing value" do
       @provider.key_exists = true
       @provider.stub!(:compare_value).and_return(true)
       @provider.stub!(:modify_env).and_return(true)

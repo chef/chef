@@ -22,6 +22,7 @@ require 'spec_helper'
 describe Chef::Resource::Link do
 
   before(:each) do
+    Chef::Resource::Link.any_instance.should_receive(:verify_links_supported!).and_return(true)
     @resource = Chef::Resource::Link.new("fakey_fakerton")
   end
 
@@ -96,7 +97,7 @@ describe Chef::Resource::Link do
   end
 
   describe "when it has to, link_type, owner, and group" do
-    before do 
+    before do
       @resource.target_file("/var/target.tar")
       @resource.to("/to/dir/file.tar")
       @resource.link_type(:symbolic)

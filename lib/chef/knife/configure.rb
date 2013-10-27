@@ -57,7 +57,7 @@ class Chef
 
       option :validation_key,
         :long => "--validation-key PATH",
-        :description => "The location of the location of the validation key (usually a file named validation.pem)"
+        :description => "The location of the validation key (usually a file named validation.pem)"
 
       def configure_chef
         # We are just faking out the system so that you can do this without a key specified

@@ -19,28 +19,36 @@
 require 'chef/chef_fs/file_system/base_fs_dir'
 require 'chef/chef_fs/file_system/rest_list_entry'
 require 'chef/chef_fs/file_system/not_found_error'
+require 'chef/chef_fs/data_handler/node_data_handler'
 
 class Chef
   module ChefFS
     module FileSystem
       class NodesDir < RestListDir
         def initialize(parent)
-          super("nodes", parent)
+          super("nodes", parent, nil, Chef::ChefFS::DataHandler::NodeDataHandler.new)
         end
 
-        # Override children to respond to environment
+        # Identical to RestListDir.children, except supports environments
         def children
-          @children ||= begin
-            env_api_path = environment ? "environments/#{environment}/#{api_path}" : api_path
-            rest.get_rest(env_api_path).keys.map { |key| RestListEntry.new("#{key}.json", self, true) }
-          rescue Net::HTTPServerException
+          begin
+            @children ||= root.get_json(env_api_path).keys.sort.map do |key|
+              _make_child_entry("#{key}.json", true)
+            end
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e), "Timeout retrieving children: #{e}"
+          rescue Net::HTTPServerException => e
             if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new($!), "#{path_for_printing} not found"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
             else
-              raise
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e), "HTTP error retrieving children: #{e}"
             end
           end
-      end
+        end
+
+        def env_api_path
+          environment ? "environments/#{environment}/#{api_path}" : api_path
+        end
       end
     end
   end

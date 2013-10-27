@@ -20,12 +20,11 @@
 #
 
 require 'uri'
+require 'chef/monkey_patches/securerandom'
 require 'chef/event_dispatch/base'
 
 class Chef
   class ResourceReporter < EventDispatch::Base
-
-
 
     class ResourceReport < Struct.new(:new_resource,
                                       :current_resource,
@@ -53,8 +52,8 @@ class Chef
         as_hash["type"]   = new_resource.class.dsl_name
         as_hash["name"]   = new_resource.name
         as_hash["id"]     = new_resource.identity
-        as_hash["after"]  = new_resource.state
-        as_hash["before"] = current_resource ? current_resource.state : {}
+        as_hash["after"]  = state(new_resource)
+        as_hash["before"] = current_resource ? state(current_resource) : {}
         as_hash["duration"] = (elapsed_time * 1000).to_i.to_s
         as_hash["delta"]  = new_resource.diff if new_resource.respond_to?("diff")
         as_hash["delta"]  = "" if as_hash["delta"].nil?
@@ -65,10 +64,12 @@ class Chef
         else
           #as_hash["result"] = "failed"
         end
-        as_hash["cookbook_name"] = new_resource.cookbook_name
-        as_hash["cookbook_version"] = new_resource.cookbook_version.version
-        as_hash
+        if new_resource.cookbook_name
+          as_hash["cookbook_name"] = new_resource.cookbook_name
+          as_hash["cookbook_version"] = new_resource.cookbook_version.version
+        end
 
+        as_hash
       end
 
       def finish
@@ -78,14 +79,22 @@ class Chef
       def success?
         !self.exception
       end
-    end
+
+      def state(r)
+        r.class.state_attrs.inject({}) do |state_attrs, attr_name|
+          state_attrs[attr_name] = r.send(attr_name)
+          state_attrs
+        end
+      end
+    end # End class ResouceReport
 
     attr_reader :updated_resources
     attr_reader :status
     attr_reader :exception
     attr_reader :run_id
     attr_reader :error_descriptions
-    attr_reader :summary_only
+
+    PROTOCOL_VERSION = '0.1.0'
 
     def initialize(rest_client)
       if Chef::Config[:enable_reporting] && !Chef::Config[:why_run]
@@ -98,37 +107,55 @@ class Chef
       @pending_update  = nil
       @status = "success"
       @exception = nil
-      @run_id = nil
+      @run_id = SecureRandom.uuid
       @rest_client = rest_client
-      @node = nil
       @error_descriptions = {}
-      @summary_only = true
     end
 
-    def node_load_completed(node, expanded_run_list_with_versions, config)
-      @node = node
+    def run_started(run_status)
+      @run_status = run_status
+
       if reporting_enabled?
         begin
-          resource_history_url = "reports/nodes/#{node.name}/runs"
-          server_response = @rest_client.post_rest(resource_history_url, {:action => :begin})
-          run_uri = URI.parse(server_response["uri"])
-          @run_id = ::File.basename(run_uri.path)
-          Chef::Log.info("Chef server generated run history id: #{@run_id}")
-          @summary_only = server_response["summary_only"]
+          resource_history_url = "reports/nodes/#{node_name}/runs"
+          server_response = @rest_client.post_rest(resource_history_url, {:action => :start, :run_id => @run_id,
+                                                                          :start_time => start_time.to_s}, headers)
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
-          if !e.response || e.response.code.to_s != "404"
-            if Chef::Config[:enable_reporting_url_fatals]
-              Chef::Log.error("Received exception #{"(" + e.response.code + ") " if e.response.code}attempting to generate run history id (URL Path: #{resource_history_url}), and enable_reporting_url_fatals is set, aborting run.")
-              raise
-            else
-              Chef::Log.info("Received exception #{"(" + e.response.code + ") " if e.response.code}attempting to generate run history id (URL Path: #{resource_history_url}), disabling reporting for this run.")
-            end
-          else
-            Chef::Log.debug("Received 404 attempting to generate run history id (URL Path: #{resource_history_url}), assuming feature is not supported on server.")
-          end
-          @reporting_enabled = false
+          handle_error_starting_run(e, resource_history_url)
         end
       end
+    end
+
+    def handle_error_starting_run(e, url)
+      message = "Reporting error starting run. URL: #{url} "
+      code = if e.response.code
+               e.response.code.to_s
+             else
+               "Exception Code Empty"
+             end
+
+      if !e.response || (code != "404" && code != "406")
+        exception = "Exception: #{code} "
+        if Chef::Config[:enable_reporting_url_fatals]
+          reporting_status = "Reporting fatals enabled. Aborting run. "
+          Chef::Log.error(message + exception + reporting_status)
+          raise
+        else
+          reporting_status = "Disabling reporting for run."
+          Chef::Log.info(message + exception + reporting_status)
+        end
+      else
+        reason = "Received #{code}. "
+        if code == "406"
+          reporting_status = "Client version not supported. Please update the client. Disabling reporting for run."
+          Chef::Log.info(message + reason + reporting_status)
+        else
+          reporting_status = "Disabling reporting for run."
+          Chef::Log.debug(message + reason + reporting_status)
+        end
+      end
+
+      @reporting_enabled = false
     end
 
     def resource_current_state_loaded(new_resource, action, current_resource)
@@ -177,29 +204,25 @@ class Chef
     def run_failed(exception)
       @exception = exception
       @status = "failure"
-      post_reporting_data
+      # If we failed before we received the run_started callback, there's not much we can do
+      # in terms of reporting
+      if @run_status
+          post_reporting_data
+      end
     end
 
     def post_reporting_data
       if reporting_enabled?
         run_data = prepare_run_data
-        resource_history_url = "reports/nodes/#{@node.name}/runs/#{@run_id}"
+        resource_history_url = "reports/nodes/#{node_name}/runs/#{@run_id}"
         Chef::Log.info("Sending resource update report (run-id: #{@run_id})")
         Chef::Log.debug run_data.inspect
         compressed_data = encode_gzip(run_data.to_json)
         begin
-          #if summary only is enabled send the uncompressed run_data excluding the run_data["resources"] and some additional metrics.
-          if @summary_only
-            run_data = report_summary(run_data, compressed_data)
-            Chef::Log.info("run_data_summary: #{run_data}")
-            @rest_client.post_rest(resource_history_url, run_data)
-          else
-            Chef::Log.debug("Sending compressed run data...")
-            # Since we're posting compressed data we can not directly call
-            # post_rest which expects JSON
-            reporting_url = @rest_client.create_url(resource_history_url)
-            @rest_client.raw_http_request(:POST, reporting_url, {'Content-Encoding' => 'gzip'}, compressed_data)
-          end
+          Chef::Log.debug("Sending compressed run data...")
+          # Since we're posting compressed data we can not directly call post_rest which expects JSON
+          reporting_url = @rest_client.create_url(resource_history_url)
+          @rest_client.raw_http_request(:POST, reporting_url, headers({'Content-Encoding' => 'gzip'}), compressed_data)
         rescue Net::HTTPServerException => e
           if e.response.code.to_s == "400"
             Chef::FileCache.store("failed-reporting-data.json", Chef::JSONCompat.to_json_pretty(run_data), 0640)
@@ -212,7 +235,24 @@ class Chef
         Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
       end
     end
-    
+
+    def headers(additional_headers = {})
+      options = {'X-Ops-Reporting-Protocol-Version' => PROTOCOL_VERSION}
+      options.merge(additional_headers)
+    end
+
+    def node_name
+      @run_status.node.name
+    end
+
+    def start_time
+      @run_status.start_time
+    end
+
+    def end_time
+      @run_status.end_time
+    end
+
     def prepare_run_data
       run_data = {}
       run_data["action"] = "end"
@@ -220,9 +260,11 @@ class Chef
         resource_record.for_json
       end
       run_data["status"] = @status
-      run_data["run_list"] = @node.run_list.to_json
+      run_data["run_list"] = @run_status.node.run_list.to_json
       run_data["total_res_count"] = @total_res_count.to_s
       run_data["data"] = {}
+      run_data["start_time"] = start_time.to_s
+      run_data["end_time"] = end_time.to_s
 
       if exception
         exception_data = {}
@@ -232,13 +274,6 @@ class Chef
         exception_data["description"] =  @error_descriptions
         run_data["data"]["exception"] = exception_data
       end
-      run_data
-    end
-
-    def report_summary(run_data, compressed_data)
-      run_data["updated_res_count"] = updated_resources.count.to_s
-      run_data["post_size"] = compressed_data.bytesize.to_s
-      run_data["resources"] = []
       run_data
     end
 

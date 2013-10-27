@@ -459,8 +459,7 @@ BOOL WINAPI DeviceIoControl(
         # to be passed to the *W vesion of WinAPI File
         # functions
         def encode_path(path)
-          path.gsub!(::File::SEPARATOR, ::File::ALT_SEPARATOR)
-          (path_prepender << path).to_wstring
+          (path_prepender << path.gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)).to_wstring
         end
 
         def path_prepender
@@ -472,6 +471,13 @@ BOOL WINAPI DeviceIoControl(
         # ensures the handle is closed on exit of the block
         def file_search_handle(path, &block)
           begin
+            # Workaround for CHEF-4419:
+            # Make sure paths starting with "/" has a drive letter
+            # assigned from the current working diretory.
+            # Note: With CHEF-4427 this issue will be fixed with a
+            # broader fix to map all the paths starting with "/" to
+            # SYSTEM_DRIVE on windows.
+            path = ::File.expand_path(path) if path.start_with? "/"
             path = encode_path(path)
             find_data = WIN32_FIND_DATA.new
             handle = FindFirstFileW(path, find_data)

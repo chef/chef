@@ -360,7 +360,7 @@ E
   end
 
   it "should check a resource's only_if and not_if if notified by another resource" do
-    @first_resource.action = :nothing
+    @first_resource.action = :buy
 
     only_if_called_times = 0
     @first_resource.only_if {only_if_called_times += 1; true}

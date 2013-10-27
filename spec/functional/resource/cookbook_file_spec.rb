@@ -32,7 +32,7 @@ describe Chef::Resource::CookbookFile do
     content
   end
 
-  let(:default_mode) { "600" }
+  let(:default_mode) { ((0100666 - File.umask) & 07777).to_s(8) }
 
   it_behaves_like "a securable resource with reporting"
 
@@ -55,7 +55,7 @@ describe Chef::Resource::CookbookFile do
     resource
   end
 
-  let!(:resource) do
+  let(:resource) do
     create_resource
   end
 
@@ -77,6 +77,5 @@ describe Chef::Resource::CookbookFile do
       FileUtils.rm_r(windows_non_temp_dir) if Chef::Platform.windows? && File.exists?(windows_non_temp_dir)
     end
 
-    it_behaves_like "a file that inherits permissions from a parent directory"
   end
 end

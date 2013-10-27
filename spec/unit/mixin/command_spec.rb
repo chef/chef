@@ -18,7 +18,7 @@
 
 require 'spec_helper'
 
-describe Chef::Mixin::Command do
+describe Chef::Mixin::Command, :volatile do
 
   if windows?
 

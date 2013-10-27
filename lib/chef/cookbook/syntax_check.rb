@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'pathname'
 require 'chef/mixin/shell_out'
 require 'chef/mixin/checksum'
 
@@ -38,19 +39,9 @@ class Chef
         attr_reader :cache_path
 
         # Create a new PersistentSet. Values in the set are persisted by
-        # creating a file in the +cache_path+ directory. If not given, the
-        # value of Chef::Config[:syntax_check_cache_path] is used; if that
-        # value is not configured, the value of
-        # Chef::Config[:cache_options][:path] is used.
-        #--
-        # history: prior to Chef 11, the cache implementation was based on
-        # moneta and configured via cache_options[:path]. Knife configs
-        # generated with Chef 11 will have `syntax_check_cache_path`, but older
-        # configs will have `cache_options[:path]`. `cache_options` is marked
-        # deprecated in chef/config.rb but doesn't currently trigger a warning.
-        # See also: CHEF-3715
-        def initialize(cache_path=nil)
-          @cache_path = cache_path || Chef::Config[:syntax_check_cache_path] || Chef::Config[:cache_options][:path]
+        # creating a file in the +cache_path+ directory.
+        def initialize(cache_path=Chef::Config[:syntax_check_cache_path])
+          @cache_path = cache_path
           @cache_path_created = false
         end
 
@@ -84,14 +75,14 @@ class Chef
       # validated.
       attr_reader :validated_files
 
-      # Creates a new SyntaxCheck given the +cookbook_pathname+ and a +cookbook_path+.
+      # Creates a new SyntaxCheck given the +cookbook_name+ and a +cookbook_path+.
       # If no +cookbook_path+ is given, +Chef::Config.cookbook_path+ is used.
-      def self.for_cookbook(cookbook_pathname, cookbook_path=nil)
+      def self.for_cookbook(cookbook_name, cookbook_path=nil)
         cookbook_path ||= Chef::Config.cookbook_path
         unless cookbook_path
-          raise ArgumentError, "Cannot find cookbook #{cookbook_pathname} unless Chef::Config.cookbook_path is set or an explicit cookbook path is given"
+          raise ArgumentError, "Cannot find cookbook #{cookbook_name} unless Chef::Config.cookbook_path is set or an explicit cookbook path is given"
         end
-        new(File.join(cookbook_path, cookbook_pathname.to_s))
+        new(File.join(cookbook_path, cookbook_name.to_s))
       end
 
       # Create a new SyntaxCheck object
@@ -102,8 +93,22 @@ class Chef
         @validated_files = PersistentSet.new
       end
 
+      def chefignore
+        @chefignore ||= Chefignore.new(File.dirname(cookbook_path))
+      end
+
+      def remove_ignored_files(file_list)
+        return file_list unless chefignore.ignores.length > 0
+        file_list.reject do |full_path|
+          cookbook_pn = Pathname.new cookbook_path
+          full_pn = Pathname.new full_path
+          relative_pn = full_pn.relative_path_from cookbook_pn
+          chefignore.ignored? relative_pn.to_s
+        end
+      end
+
       def ruby_files
-        Dir[File.join(cookbook_path, '**', '*.rb')]
+        remove_ignored_files Dir[File.join(cookbook_path, '**', '*.rb')]
       end
 
       def untested_ruby_files
@@ -118,11 +123,11 @@ class Chef
       end
 
       def template_files
-        Dir[File.join(cookbook_path, '**', '*.erb')]
+        remove_ignored_files Dir[File.join(cookbook_path, '**', '*.erb')]
       end
 
       def untested_template_files
-        template_files.reject do |file| 
+        template_files.reject do |file|
           if validated?(file)
             Chef::Log.debug("Template #{file} is unchanged, skipping syntax check")
             true

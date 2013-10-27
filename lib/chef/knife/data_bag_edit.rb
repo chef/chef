@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,13 +32,15 @@ class Chef
       category "data bag"
 
       option :secret,
-      :short => "-s SECRET",
-      :long  => "--secret ",
-      :description => "The secret key to use to encrypt data bag item values"
+        :short => "-s SECRET",
+        :long  => "--secret ",
+        :description => "The secret key to use to encrypt data bag item values",
+        :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
 
       option :secret_file,
-      :long => "--secret-file SECRET_FILE",
-      :description => "A file containing the secret key to use to encrypt data bag item values"
+        :long => "--secret-file SECRET_FILE",
+        :description => "A file containing the secret key to use to encrypt data bag item values",
+        :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
 
       def read_secret
         if config[:secret]

@@ -18,30 +18,59 @@
 
 require 'spec_helper'
 
-class TinyTemplateClass; include Chef::Mixin::Template; end
 require 'cgi'
 describe Chef::Mixin::Template, "render_template" do
 
+  let(:sep) { Chef::Platform.windows? ? "\r\n" : "\n" }
+
   before :each do
-    @template = TinyTemplateClass.new
+    @context = Chef::Mixin::Template::TemplateContext.new({})
   end
 
   it "should render the template evaluated in the given context" do
-    @template.render_template("<%= @foo %>", { :foo => "bar" }) do |tmp|
-      tmp.open.read.should == "bar"
+    @context[:foo] = "bar"
+    output = @context.render_template_from_string("<%= @foo %>")
+    output.should == "bar"
+  end
+
+  template_contents = [ "Fancy\r\nTemplate\r\n\r\n",
+                        "Fancy\nTemplate\n\n",
+                        "Fancy\r\nTemplate\n\r\n"]
+
+  describe "when running on windows" do
+    before do
+      Chef::Platform.stub!(:windows?).and_return(true)
+    end
+
+    it "should render the templates with windows line endings" do
+      template_contents.each do |template_content|
+        output = @context.render_template_from_string(template_content)
+        output.each_line do |line|
+          line.should end_with("\r\n")
+        end
+      end
+    end
+  end
+
+  describe "when running on unix" do
+    before do
+      Chef::Platform.stub!(:windows?).and_return(false)
+    end
+
+    it "should render the templates with unix line endings" do
+      template_contents.each do |template_content|
+        output = @context.render_template_from_string(template_content)
+        output.each_line do |line|
+          line.should end_with("\n")
+        end
+      end
     end
   end
 
   it "should provide a node method to access @node" do
-    @template.render_template("<%= node %>",{:node => "tehShizzle"}) do |tmp|
-      tmp.open.read.should == "tehShizzle"
-    end
-  end
-
-  it "should yield the tempfile it renders the template to" do
-    @template.render_template("abcdef", {}) do |tempfile|
-      tempfile.should be_kind_of(Tempfile)
-    end
+    @context[:node] = "tehShizzle"
+    output = @context.render_template_from_string("<%= @node %>")
+    output.should == "tehShizzle"
   end
 
   describe "with a template resource" do
@@ -60,33 +89,28 @@ describe Chef::Mixin::Template, "render_template" do
 
       @resource = Chef::Resource::Template.new(@rendered_file_location)
       @resource.cookbook_name = 'openldap'
-
-      @provider = Chef::Provider::Template.new(@resource, @run_context)
       @current_resource = @resource.dup
-      @provider.current_resource = @current_resource
-      @access_controls = mock("access controls")
-      @provider.stub!(:access_controls).and_return(@access_controls)
 
-      @template_context = {}
+      @content_provider = Chef::Provider::Template::Content.new(@resource, @current_resource, @run_context)
+
+      @template_context = Chef::Mixin::Template::TemplateContext.new({})
       @template_context[:node] = @node
       @template_context[:template_finder] = Chef::Provider::TemplateFinder.new(@run_context, @resource.cookbook_name, @node)
     end
 
     it "should provide a render method" do
-      @provider.render_template("before {<%= render 'test.erb' %>} after", @template_context) do |tmp|
-        tmp.open.read.should == "before {We could be diving for pearls!\n} after"
-      end
+      output = @template_context.render_template_from_string("before {<%= render('test.erb').strip -%>} after")
+      output.should == "before {We could be diving for pearls!} after"
     end
 
     it "should render local files" do
       begin
         tf = Tempfile.new("partial")
-        tf.puts "test"
+        tf.write "test"
         tf.rewind
 
-        @provider.render_template("before {<%= render '#{tf.path}', :local => true %>} after", @template_context) do |tmp|
-          tmp.open.read.should == "before {test\n} after"
-        end
+        output = @template_context.render_template_from_string("before {<%= render '#{tf.path}', :local => true %>} after")
+        output.should == "before {test} after"
       ensure
         tf.close
       end
@@ -95,20 +119,18 @@ describe Chef::Mixin::Template, "render_template" do
     it "should render partials from a different cookbook" do
       @template_context[:template_finder] = Chef::Provider::TemplateFinder.new(@run_context, 'apache2', @node)
 
-      @provider.render_template("before {<%= render 'test.erb', :cookbook => 'openldap' %>} after", @template_context) do |tmp|
-        tmp.open.read.should == "before {We could be diving for pearls!\n} after"
-      end
+      output = @template_context.render_template_from_string("before {<%= render('test.erb', :cookbook => 'openldap').strip %>} after")
+      output.should == "before {We could be diving for pearls!} after"
     end
 
     it "should render using the source argument if provided" do
       begin
         tf = Tempfile.new("partial")
-        tf.puts "test"
+        tf.write "test"
         tf.rewind
 
-        @provider.render_template("before {<%= render 'something', :local => true, :source => '#{tf.path}' %>} after", @template_context) do |tmp|
-          tmp.open.read.should == "before {test\n} after"
-        end
+        output = @template_context.render_template_from_string("before {<%= render 'something', :local => true, :source => '#{tf.path}' %>} after")
+        output.should == "before {test} after"
       ensure
         tf.close
       end
@@ -117,56 +139,80 @@ describe Chef::Mixin::Template, "render_template" do
     it "should pass the node to partials" do
       @node.normal[:slappiness] = "happiness"
 
-      @provider.render_template("before {<%= render 'openldap_stuff.conf.erb' %>} after", @template_context) do |tmp|
-        tmp.open.read.should == "before {slappiness is happiness} after"
-      end
+      output = @template_context.render_template_from_string("before {<%= render 'openldap_stuff.conf.erb' %>} after")
+      output.should == "before {slappiness is happiness} after"
     end
 
     it "should pass the original variables to partials" do
       @template_context[:secret] = 'candy'
 
-      @provider.render_template("before {<%= render 'openldap_variable_stuff.conf.erb' %>} after", @template_context) do |tmp|
-        tmp.open.read.should == "before {super secret is candy} after"
-      end
+      output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb' %>} after")
+      output == "before {super secret is candy} after"
     end
 
     it "should pass variables to partials" do
-      @provider.render_template("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {:secret => 'whatever' } %>} after", @template_context) do |tmp|
-        tmp.open.read.should == "before {super secret is whatever} after"
-      end
+      output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {:secret => 'whatever' } %>} after")
+      output.should == "before {super secret is whatever} after"
     end
 
     it "should pass variables to partials even if they are named the same" do
       @template_context[:secret] = 'one'
 
-      @provider.render_template("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {:secret => 'two' } %>} after <%= @secret %>", @template_context) do |tmp|
-        tmp.open.read.should == "before {super secret is two} after one"
-      end
+      output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {:secret => 'two' } %>} after <%= @secret %>")
+      output.should == "before {super secret is two} after one"
     end
 
     it "should pass nil for missing variables in partials" do
-      @provider.render_template("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {} %>} after", @template_context) do |tmp|
-        tmp.open.read.should == "before {super secret is } after"
-      end
+      output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {} %>} after")
+      output.should == "before {super secret is } after"
 
-      @provider.render_template("before {<%= render 'openldap_variable_stuff.conf.erb' %>} after", @template_context) do |tmp|
-        tmp.open.read.should == "before {super secret is } after"
-      end
+      output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb' %>} after")
+    output.should == "before {super secret is } after"
     end
 
     it "should render nested partials" do
       path = File.expand_path(File.join(CHEF_SPEC_DATA, "partial_one.erb"))
 
-      @provider.render_template("before {<%= render '#{path}', :local => true %>} after", @template_context) do |tmp|
-        tmp.open.read.should == "before {partial one We could be diving for pearls!\n calling home\n} after"
+      output = @template_context.render_template_from_string("before {<%= render('#{path}', :local => true).strip %>} after")
+      output.should == "before {partial one We could be diving for pearls! calling home} after"
+    end
+
+    describe "when customizing the template context" do
+
+      it "extends the context to include modules" do
+        mod = Module.new do
+          def hello
+            "ohai"
+          end
+        end
+        @template_context._extend_modules([mod])
+        output = @template_context.render_template_from_string("<%=hello%>")
+        output.should == "ohai"
+      end
+
+      it "emits a warning when overriding 'core' methods" do
+        mod = Module.new do
+          def render
+          end
+          def node
+          end
+          def render_template
+          end
+          def render_template_from_string
+          end
+        end
+        ['node', 'render', 'render_template', 'render_template_from_string'].each do |method_name|
+          Chef::Log.should_receive(:warn).with(/^Core template method `#{method_name}' overridden by extension module/)
+        end
+        @template_context._extend_modules([mod])
       end
     end
+
   end
 
   describe "when an exception is raised in the template" do
     def do_raise
-      @context = {:chef => "cool"}
-      @template.render_template("foo\nbar\nbaz\n<%= this_is_not_defined %>\nquin\nqunx\ndunno", @context) {|r| r}
+      @context.render_template_from_string("foo\nbar\nbaz\n<%= this_is_not_defined %>\nquin\nqunx\ndunno")
     end
 
     it "should catch and re-raise the exception as a TemplateError" do
@@ -174,7 +220,7 @@ describe Chef::Mixin::Template, "render_template" do
     end
 
     it "should raise an error if an attempt is made to access node but it is nil" do
-      lambda {@template.render_template("<%= node %>",{}) {|r| r}}.should raise_error(Chef::Mixin::Template::TemplateError)
+      lambda {@context.render_template_from_string("<%= node %>") {|r| r}}.should raise_error(Chef::Mixin::Template::TemplateError)
     end
 
     describe "the raised TemplateError" do

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,7 +37,7 @@ class Chef
 
       def action_mount
         unless @current_resource.mounted
-          converge_by("mount #{@current_resource.device} to #{@current_resource.mount_point}") do 
+          converge_by("mount #{@current_resource.device} to #{@current_resource.mount_point}") do
             status = mount_fs()
             if status
               Chef::Log.info("#{@new_resource} mounted")
@@ -50,7 +50,7 @@ class Chef
 
       def action_umount
         if @current_resource.mounted
-          converge_by("unmount #{@current_resource.device}") do 
+          converge_by("unmount #{@current_resource.device}") do
             status = umount_fs()
             if status
               Chef::Log.info("#{@new_resource} unmounted")
@@ -66,7 +66,7 @@ class Chef
           raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :remount"
         else
           if @current_resource.mounted
-            converge_by("remount #{@current_resource.device}") do 
+            converge_by("remount #{@current_resource.device}") do
               status = remount_fs()
               if status
                 Chef::Log.info("#{@new_resource} remounted")
@@ -80,7 +80,7 @@ class Chef
 
       def action_enable
         unless @current_resource.enabled && mount_options_unchanged?
-          converge_by("remount #{@current_resource.device}") do 
+          converge_by("remount #{@current_resource.device}") do
             status = enable_fs
             if status
               Chef::Log.info("#{@new_resource} enabled")
@@ -93,7 +93,7 @@ class Chef
 
       def action_disable
         if @current_resource.enabled
-          converge_by("remount #{@current_resource.device}") do 
+          converge_by("remount #{@current_resource.device}") do
             status = disable_fs
             if status
               Chef::Log.info("#{@new_resource} disabled")
@@ -115,14 +115,14 @@ class Chef
       def remount_fs
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :remount"
       end
-      
+
       def enable_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :enable"        
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :enable"
       end
-      
+
       def disable_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :disable"        
-      end      
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :disable"
+      end
     end
   end
 end

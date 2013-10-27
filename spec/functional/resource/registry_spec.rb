@@ -104,22 +104,24 @@ describe Chef::Resource::RegistryKey, :windows_only do
     @new_resource = Chef::Resource::RegistryKey.new(resource_name, @run_context)
     @registry = Chef::Win32::Registry.new(@run_context)
 
-    @current_whyrun = Chef::Config[:why_run]
-
     reset_registry
   end
 
   #Reporting setup
   before do
     @node.name("windowsbox")
+
     @rest_client = mock("Chef::REST (mock)")
-    @rest_client.stub!(:create_url).and_return("reports/nodes/windowsbox/runs/ABC123");
+    @rest_client.stub!(:create_url).and_return("reports/nodes/windowsbox/runs/#{@run_id}");
     @rest_client.stub!(:raw_http_request).and_return({"result"=>"ok"});
-    @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/windowsbox/runs/ABC123"});
+    @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/windowsbox/runs/#{@run_id}"});
 
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
     @events.register(@resource_reporter)
-    @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
+    @run_id = @resource_reporter.run_id
+    @run_status = Chef::RunStatus.new(@node, @events)
+
+    @resource_reporter.run_started(@run_status)
 
     @new_resource.cookbook_name = "monkey"
     @cookbook_version = mock("Cookbook::Version", :version => "1.2.3")
@@ -255,11 +257,8 @@ describe Chef::Resource::RegistryKey, :windows_only do
     end
 
     context "while running in whyrun mode" do
-      before (:all) do
+      before (:each) do
         Chef::Config[:why_run] = true
-      end
-      after (:all) do
-        Chef::Config[:why_run] = @current_whyrun
       end
 
       it "does not throw an exception if the keys do not exist but recursive is set to false" do
@@ -369,11 +368,8 @@ describe Chef::Resource::RegistryKey, :windows_only do
     end
 
     context "while running in whyrun mode" do
-      before (:all) do
+      before (:each) do
         Chef::Config[:why_run] = true
-      end
-      after (:all) do
-        Chef::Config[:why_run] = @current_whyrun
       end
 
       it "does not throw an exception if the keys do not exist but recursive is set to false" do
@@ -465,11 +461,8 @@ describe Chef::Resource::RegistryKey, :windows_only do
     end
 
     context "while running in whyrun mode" do
-      before (:all) do
+      before (:each) do
         Chef::Config[:why_run] = true
-      end
-      after (:all) do
-        Chef::Config[:why_run] = @current_whyrun
       end
       it "does nothing if the action is delete" do
         @new_resource.key(reg_parent + '\OpscodeWhyRun')
@@ -506,7 +499,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @registry.key_exists?(reg_parent + '\OpscodeTest').should == false
     end
 
-    it "raises an exception if the the key has subkeys and recursive == false" do
+    it "raises an exception if the key has subkeys and recursive == false" do
       @new_resource.key(reg_parent)
       @new_resource.recursive(false)
       lambda{@new_resource.run_action(:delete_key)}.should raise_error(Chef::Exceptions::Win32RegNoRecursive)
@@ -537,7 +530,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @report["resources"][0]["type"].should == "registry_key"
       @report["resources"][0]["name"].should == resource_name
       @report["resources"][0]["id"].should == reg_parent + '\ReportKey'
-      #Not testing for before or after values to match since 
+      #Not testing for before or after values to match since
       #after -> new_resource.values and
       #before -> current_resource.values
       @report["resources"][0]["result"].should == "delete_key"
@@ -545,11 +538,8 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @report["total_res_count"].should == "1"
     end
     context "while running in whyrun mode" do
-      before (:all) do
+      before (:each) do
         Chef::Config[:why_run] = true
-      end
-      after (:all) do
-        Chef::Config[:why_run] = @current_whyrun
       end
 
       it "does not throw an exception if the key has subkeys but recursive is set to false" do

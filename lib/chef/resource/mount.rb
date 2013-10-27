@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,10 +22,10 @@ require 'chef/resource'
 class Chef
   class Resource
     class Mount < Chef::Resource
-      
+
       identity_attr :device
 
-      state_attrs :mount_point, :device_type, :fstype
+      state_attrs :mount_point, :device_type, :fstype, :username, :password, :domain
 
       def initialize(name, run_context=nil)
         super
@@ -42,8 +42,11 @@ class Chef
         @action = :mount
         @supports = { :remount => false }
         @allowed_actions.push(:mount, :umount, :remount, :enable, :disable)
+        @username = nil
+        @password = nil
+        @domain = nil
       end
-      
+
       def mount_point(arg=nil)
         set_or_return(
           :mount_point,
@@ -51,7 +54,7 @@ class Chef
           :kind_of => [ String ]
         )
       end
-      
+
       def device(arg=nil)
         set_or_return(
           :device,
@@ -59,7 +62,7 @@ class Chef
           :kind_of => [ String ]
         )
       end
-      
+
       def device_type(arg=nil)
         real_arg = arg.kind_of?(String) ? arg.to_sym : arg
         set_or_return(
@@ -76,7 +79,7 @@ class Chef
           :kind_of => [ String ]
         )
       end
-      
+
       def options(arg=nil)
         if arg.is_a?(String)
           converted_arg = arg.gsub(/,/, ' ').split(/ /)
@@ -89,7 +92,7 @@ class Chef
           :kind_of => [ Array ]
         )
       end
-      
+
       def dump(arg=nil)
         set_or_return(
           :dump,
@@ -97,7 +100,7 @@ class Chef
           :kind_of => [ Integer, FalseClass ]
         )
       end
-      
+
       def pass(arg=nil)
         set_or_return(
           :pass,
@@ -105,7 +108,7 @@ class Chef
           :kind_of => [ Integer, FalseClass ]
         )
       end
-      
+
       def mounted(arg=nil)
         set_or_return(
           :mounted,
@@ -121,7 +124,7 @@ class Chef
           :kind_of => [ TrueClass, FalseClass ]
         )
       end
-        
+
       def supports(args={})
         if args.is_a? Array
           args.each { |arg| @supports[arg] = true }
@@ -131,9 +134,32 @@ class Chef
           @supports
         end
       end
-      
+
+      def username(arg=nil)
+        set_or_return(
+          :username,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def password(arg=nil)
+        set_or_return(
+          :password,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def domain(arg=nil)
+        set_or_return(
+          :domain,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
     end
   end
 end
 
-        

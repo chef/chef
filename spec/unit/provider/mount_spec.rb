@@ -23,13 +23,13 @@ describe Chef::Provider::Mount do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    
+
     @new_resource = Chef::Resource::Mount.new('/tmp/foo')
     @new_resource.device      "/dev/sdz1"
     @new_resource.name        "/tmp/foo"
     @new_resource.mount_point "/tmp/foo"
     @new_resource.fstype      "ext3"
-    
+
     @current_resource = Chef::Resource::Mount.new('/tmp/foo')
     @current_resource.device      "/dev/sdz1"
     @current_resource.name        "/tmp/foo"
@@ -39,7 +39,7 @@ describe Chef::Provider::Mount do
     @provider = Chef::Provider::Mount.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
   end
-  
+
   describe "when the target state is a mounted filesystem" do
 
     it "should mount the filesystem if it isn't mounted" do
@@ -78,7 +78,7 @@ describe Chef::Provider::Mount do
     before do
       @new_resource.supports[:remount] = true
     end
-    
+
     it "should remount the filesystem if it is mounted" do
       @current_resource.stub!(:mounted).and_return(true)
       @provider.should_receive(:remount_fs).and_return(true)
@@ -93,8 +93,8 @@ describe Chef::Provider::Mount do
       @new_resource.should_not be_updated_by_last_action
     end
   end
-  describe "when the filesystem should be remounted and the resource does not support remounting" do 
-    before do 
+  describe "when the filesystem should be remounted and the resource does not support remounting" do
+    before do
       @new_resource.supports[:remount] = false
     end
 
