@@ -81,6 +81,8 @@ class Chef
         @allowed_actions.push(:force_deploy, :deploy, :rollback)
         @additional_remotes = Hash[]
         @keep_releases = 5
+        @enable_checkout = true
+        @checkout_branch = "deploy"
       end
 
       # where the checked out/cloned code goes
@@ -395,6 +397,22 @@ class Chef
           :additional_remotes,
           arg,
           :kind_of => Hash
+        )
+      end
+
+      def enable_checkout(arg=nil)
+        set_or_return(
+          :enable_checkout,
+          arg,
+          :kind_of => [TrueClass, FalseClass]
+        )
+      end
+
+      def checkout_branch(arg=nil)
+        set_or_return(
+          :checkout_branch,
+          arg,
+          :kind_of => String
         )
       end
 
