@@ -105,6 +105,10 @@ class Chef
           end
         end
 
+        # Daemon class needs to have all the signal callbacks return
+        # before service_main returns.
+        Chef::Log.debug("Giving signal callbacks some time to exit...")
+        sleep 1
         Chef::Log.debug("Exiting service...")
       end
 
@@ -113,15 +117,27 @@ class Chef
       ################################################################################
 
       def service_stop
+        run_warning_displayed = false
         Chef::Log.info("STOP request from operating system.")
-        if @service_action_mutex.try_lock
-          @service_signal.signal
-          @service_action_mutex.unlock
-          Chef::Log.info("Service is stopping....")
-        else
-          Chef::Log.info("Currently a chef-client run is happening.")
-          Chef::Log.info("Service will stop once it's completed.")
+        loop do
+          # See if a run is in flight
+          if @service_action_mutex.try_lock
+            # Run is not in flight. Wake up service_main to exit.
+            @service_signal.signal
+            @service_action_mutex.unlock
+            break
+          else
+            unless run_warning_displayed
+              Chef::Log.info("Currently a chef run is happening on this system.")
+              Chef::Log.info("Service  will stop when run is completed.")
+              run_warning_displayed = true
+            end
+
+            Chef::Log.debug("Waiting for chef-client run...")
+            sleep 1
+          end
         end
+        Chef::Log.info("Service is stopping....")
       end
 
       def service_pause
