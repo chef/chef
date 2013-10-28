@@ -114,17 +114,17 @@ The path to the chef\-repo. This setting will override the default path to the c
 .B \fB\-\-concurrency\fP
 The number of allowed concurrent connections. Default: \fB10\fP.
 .TP
-.B \fB\-\-[no\-]force\fP
-Use \fB\-\-force\fP to upload roles, cookbooks, etc. even if the file in the directory is identical (by default, no \fBPOST\fP or \fBPUT\fP is performed unless an actual change would be made). Default: \fB\-\-no\-force\fP.
-.TP
-.B \fB\-n\fP, \fB\-\-dry\-run\fP
-Indicates that no action is taken and that results are only printed out. Default: \fBfalse\fP.
-.TP
 .B \fB\-\-[no\-]diff\fP
 Indicates that only new and modified files will be uploaded. Set to \fBfalse\fP to upload all files. Default: \fBtrue\fP.
 .TP
+.B \fB\-\-[no\-]force\fP
+Use \fB\-\-force\fP to upload roles, cookbooks, etc. even if the file in the directory is identical (by default, no \fBPOST\fP or \fBPUT\fP is performed unless an actual change would be made). Default: \fB\-\-no\-force\fP.
+.TP
 .B \fB\-\-[no\-]freeze\fP
 Indicates that a cookbook cannot be modified; any changes to this cookbook must be included as a new version. Only the \fB\-\-force\fP option can override this setting. Default: \fBfalse\fP.
+.TP
+.B \fB\-n\fP, \fB\-\-dry\-run\fP
+Indicates that no action is taken and that results are only printed out. Default: \fBfalse\fP.
 .TP
 .B \fB\-\-[no\-]purge\fP
 Use \fB\-\-purge\fP to delete roles, cookbooks, etc. from the server if their corresponding files do not exist in the chef\-repo. By default, such objects are left alone and NOT purged. Default: \fB\-\-no\-purge\fP.
