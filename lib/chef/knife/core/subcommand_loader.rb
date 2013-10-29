@@ -121,9 +121,9 @@ class Chef
 
       def latest_gem_specs
         @latest_gem_specs ||= if Gem::Specification.respond_to? :latest_specs
-          Gem::Specification.latest_specs
+          Gem::Specification.latest_specs(true)  # find prerelease gems
         else
-          Gem.source_index.latest_specs
+          Gem.source_index.latest_specs(true)
         end
       end
 
