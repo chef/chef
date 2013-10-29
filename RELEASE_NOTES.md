@@ -8,6 +8,60 @@ Details about the thing that changed that needs to get included in the Release N
 -->
 # Chef Client Release Notes:
 
+#### `knife ssl check` and `knife ssl fetch` Commands
+
+As part of our process to transition to verifying SSL certificates by
+default, we've added knife commands to help you test (and fix, if
+needed) your SSL configuration.
+
+`knife ssl check` makes an SSL connection to your Chef server or any
+other HTTPS server and tells you if the server presents a valid
+certificate. If the certificate is not valid, knife will give further
+information about the cause and some instructions on how to remedy the
+issue. For example, if your Chef server uses an untrusted self-signed
+certificate:
+
+```
+ERROR: The SSL certificate of chefserver.test could not be
+verified
+Certificate issuer data:
+/C=US/ST=WA/L=Seattle/O=YouCorp/OU=Operations/CN=chefserver.test/emailAddress=you@example.com
+
+Configuration Info:
+
+OpenSSL Configuration:
+* Version: OpenSSL 1.0.1e 11 Feb 2013
+* Certificate file: /usr/local/etc/openssl/cert.pem
+* Certificate directory: /usr/local/etc/openssl/certs
+Chef SSL Configuration:
+* ssl_ca_path: nil
+* ssl_ca_file: nil
+* trusted_certs_dir: "/Users/ddeleo/.chef/trusted_certs"
+
+TO FIX THIS ERROR:
+
+If the server you are connecting to uses a self-signed certificate, you
+must
+configure chef to trust that server's certificate.
+
+By default, the certificate is stored in the following location on the
+host
+where your chef-server runs:
+
+  /var/opt/chef-server/nginx/ca/SERVER_HOSTNAME.crt
+
+Copy that file to you trusted_certs_dir (currently: /home/user/.chef/trusted_certs)
+using SSH/SCP or some other secure method, then re-run this command to confirm
+that the server's certificate is now trusted.
+```
+
+`knife ssl fetch` allows you to automatically fetch a server's
+certificates to your trusted certs directory. This provides an easy way
+to configure chef to trust your self-signed certificates. Note that
+knife cannot verify that the certificates haven't been tampered with, so
+you should verify their content after downloading.
+
+
 #### Chef Solo Missing Dependency Warning ([CHEF-4367](https://tickets.opscode.com/browse/CHEF-4367))
 
 Chef 11.0 introduced ordered evaluation of non-recipe files in

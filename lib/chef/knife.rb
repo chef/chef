@@ -421,6 +421,7 @@ class Chef
 
       # Don't try to load a knife.rb if it wasn't specified.
       if config[:config_file]
+        Chef::Config.config_file = config[:config_file]
         fetcher = Chef::ConfigFetcher.new(config[:config_file], Chef::Config.config_file_jail)
         if fetcher.config_missing?
           ui.error("Specified config file #{config[:config_file]} does not exist#{Chef::Config.config_file_jail ? " or is not under config file jail #{Chef::Config.config_file_jail}" : ""}!")
