@@ -557,17 +557,14 @@ class Chef
         # Chef::Config[:cookbook_path] can be a string or an array
         # if it's an array, go through it and check each one, raise error at the last one if no files are found
         Chef::Log.debug "Loading from cookbook_path: #{Array(Chef::Config[:cookbook_path]).map { |path| File.expand_path(path) }.join(', ')}"
-        Array(Chef::Config[:cookbook_path]).each_with_index do |cookbook_path, index|
-          if directory_not_empty?(cookbook_path)
-            break
-          else
-            msg = "No cookbook found in #{cookbook_path}, make sure cookbook_path is set correctly."
-            Chef::Log.fatal(msg)
-            if is_last_element?(index, Chef::Config[:cookbook_path])
-              msg = "No cookbook found in #{Chef::Config[:cookbook_path].inspect}, make sure cookbook_path is set correctly."
-              raise Chef::Exceptions::CookbookNotFound, msg
-            end
-          end
+        empty_cookbook_paths = []
+        Array(Chef::Config[:cookbook_path]).each do |cookbook_path|
+          empty_cookbook_paths << cookbook_path unless directory_not_empty?(cookbook_path)
+        end
+        unless empty_cookbook_paths.empty?
+          msg = "No cookbook found in #{empty_cookbook_paths.inspect}, make sure cookbook_path is set correctly."
+          Chef::Log.fatal(msg)
+          raise Chef::Exceptions::CookbookNotFound, msg
         end
       else
         Chef::Log.warn("Node #{node_name} has an empty run list.") if run_context.node.run_list.empty?
