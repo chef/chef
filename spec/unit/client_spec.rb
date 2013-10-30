@@ -169,7 +169,6 @@ shared_examples_for Chef::Client do
 
     it "should identify the node and run ohai, then register the client" do
       mock_chef_rest_for_node = mock("Chef::REST (node)")
-      mock_chef_rest_for_client = mock("Chef::REST (client)")
       mock_chef_rest_for_node_save = mock("Chef::REST (node save)")
       mock_chef_runner = mock("Chef::Runner")
 
