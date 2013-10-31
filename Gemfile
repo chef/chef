@@ -8,8 +8,3 @@ group(:test) do
 
 end
 
-group(:kitchen) do
-
-  gem 'test-kitchen', '>= 0.7.0.beta.1'
-
-end
