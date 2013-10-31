@@ -20,24 +20,17 @@
 require 'spec_helper'
 require 'tmpdir'
 
-describe Chef::Util::Diff, :uses_diff => true do
+shared_context "using file paths with spaces" do
+  let!(:old_tempfile) { Tempfile.new("chef-util diff-spec") }
+  let!(:new_tempfile) { Tempfile.new("chef-util diff-spec") }
+end
+
+shared_context "using file paths without spaces" do
   let!(:old_tempfile) { Tempfile.new("chef-util-diff-spec") }
   let!(:new_tempfile) { Tempfile.new("chef-util-diff-spec") }
-  let!(:old_file) { old_tempfile.path }
-  let!(:new_file) { new_tempfile.path }
+end
 
-  let(:plain_ascii) { "This is a text file.\nWith more than one line.\nAnd a \tTab.\nAnd lets make sure that other printable chars work too: ~!@\#$%^&*()`:\"<>?{}|_+,./;'[]\\-=\n" }
-  # these are all byte sequences that are illegal in the other encodings... (but they may legally transcode)
-  let(:utf_8) { "testing utf-8 unicode...\n\n\non a new line: \xE2\x80\x93\n" }  # unicode em-dash
-  let(:latin_1) { "It is more metal.\nif you have an \xFDmlaut.\n" } # NB: changed to y-with-diaresis, but i'm American so I don't know the difference
-  let(:shift_jis) { "I have no idea what this character is:\n \x83\x80.\n" } # seriously, no clue, but \x80 is nice and illegal in other encodings
-
-  let(:differ) do  # subject
-    differ = Chef::Util::Diff.new
-    differ.diff(old_file, new_file)
-    differ
-  end
-
+shared_examples_for "a diff util" do
   it "should return a Chef::Util::Diff" do
     expect(differ).to be_a_kind_of(Chef::Util::Diff)
   end
@@ -554,4 +547,33 @@ describe Chef::Util::Diff, :uses_diff => true do
 
 end
 
+describe Chef::Util::Diff, :uses_diff => true do
+  let!(:old_file) { old_tempfile.path }
+  let!(:new_file) { new_tempfile.path }
+
+  let(:plain_ascii) { "This is a text file.\nWith more than one line.\nAnd a \tTab.\nAnd lets make sure that other printable chars work too: ~!@\#$%^&*()`:\"<>?{}|_+,./;'[]\\-=\n" }
+  # these are all byte sequences that are illegal in the other encodings... (but they may legally transcode)
+  let(:utf_8) { "testing utf-8 unicode...\n\n\non a new line: \xE2\x80\x93\n" }  # unicode em-dash
+  let(:latin_1) { "It is more metal.\nif you have an \xFDmlaut.\n" } # NB: changed to y-with-diaresis, but i'm American so I don't know the difference
+  let(:shift_jis) { "I have no idea what this character is:\n \x83\x80.\n" } # seriously, no clue, but \x80 is nice and illegal in other encodings
+
+  let(:differ) do  # subject
+    differ = Chef::Util::Diff.new
+    differ.diff(old_file, new_file)
+    differ
+  end
+
+  describe "when file path has spaces" do
+    include_context "using file paths with spaces"
+
+    it_behaves_like "a diff util"
+  end
+
+
+  describe "when file path doesn't have spaces" do
+    include_context "using file paths without spaces"
+
+    it_behaves_like "a diff util"
+  end
+end
 
