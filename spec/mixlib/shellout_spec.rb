@@ -508,7 +508,6 @@ describe Mixlib::ShellOut do
             end
 
             context 'when not using a batch file' do
-              let(:watch) { lambda { |a| ap a } }
               let(:cmd) { "#{executable_file_name} #{script_name}" }
 
               let(:executable_file_name) { "\"#{dir}/Ruby Parser.exe\"".tap(&make_executable!) }
