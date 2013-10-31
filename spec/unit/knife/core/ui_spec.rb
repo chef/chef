@@ -28,6 +28,124 @@ describe Chef::Knife::UI do
     @ui = Chef::Knife::UI.new(@out, @err, @in, @config)
   end
 
+  describe "edit" do
+    ruby_for_json = { 'foo' => 'bar' }
+    json_from_ruby = "{\n  \"foo\": \"bar\"\n}"
+    json_from_editor = "{\n  \"bar\": \"foo\"\n}"
+    ruby_from_editor = { 'bar' => 'foo' }
+    my_editor = "veeeye"
+    temp_path = "/tmp/bar/baz"
+
+    let(:subject) { @ui.edit_data(ruby_for_json, parse_output) }
+    let(:parse_output) { false }
+
+    context "when editing is disabled" do
+      before do
+        @ui.config[:disable_editing] = true
+        stub_const("Tempfile", double)  # Tempfiles should never be invoked
+      end
+      context "when parse_output is false" do
+        it "returns pretty json string" do
+          expect(subject).to eql(json_from_ruby)
+        end
+      end
+      context "when parse_output is true" do
+        let(:parse_output) { true }
+        it "returns a ruby object" do
+          expect(subject).to eql(ruby_for_json)
+        end
+      end
+
+    end
+
+    context "when editing is enabled" do
+      before do
+        @ui.config[:disable_editing] = false
+        @ui.config[:editor] = my_editor
+        @mock = mock('Tempfile')
+        @mock.should_receive(:sync=).with(true)
+        @mock.should_receive(:puts).with(json_from_ruby)
+        @mock.should_receive(:close)
+        @mock.should_receive(:path).at_least(:once).and_return(temp_path)
+        Tempfile.should_receive(:open).with([ 'knife-edit-', '.json' ]).and_yield(@mock)
+      end
+      context "and the editor works" do
+        before do
+          @ui.should_receive(:system).with("#{my_editor} #{temp_path}").and_return(true)
+          IO.should_receive(:read).with(temp_path).and_return(json_from_editor)
+        end
+
+        context "when parse_output is false" do
+          it "returns an edited pretty json string" do
+            expect(subject).to eql(json_from_editor)
+          end
+        end
+        context "when parse_output is true" do
+          let(:parse_output) { true }
+          it "returns an edited ruby object" do
+            expect(subject).to eql(ruby_from_editor)
+          end
+        end
+      end
+      context "when running the editor fails with nil" do
+        before do
+          @ui.should_receive(:system).with("#{my_editor} #{temp_path}").and_return(nil)
+          IO.should_not_receive(:read)
+        end
+        it "throws an exception" do
+          expect{ subject }.to raise_error(RuntimeError)
+        end
+      end
+      context "when running the editor fails with false" do
+        before do
+          @ui.should_receive(:system).with("#{my_editor} #{temp_path}").and_return(false)
+          IO.should_not_receive(:read)
+        end
+        it "throws an exception" do
+          expect{ subject }.to raise_error(RuntimeError)
+        end
+      end
+    end
+    context "when editing and not stubbing Tempfile (semi-functional test)" do
+      before do
+        @ui.config[:disable_editing] = false
+        @ui.config[:editor] = my_editor
+        @tempfile = Tempfile.new([ 'knife-edit-', '.json' ])
+        Tempfile.should_receive(:open).with([ 'knife-edit-', '.json' ]).and_yield(@tempfile)
+      end
+
+      context "and the editor works" do
+        before do
+          @ui.should_receive(:system).with("#{my_editor} #{@tempfile.path}").and_return(true)
+          IO.should_receive(:read).with(@tempfile.path).and_return(json_from_editor)
+        end
+
+        context "when parse_output is false" do
+          it "returns an edited pretty json string" do
+            expect(subject).to eql(json_from_editor)
+          end
+          it "the tempfile should have mode 0600", :unix_only do
+            # XXX: this looks odd because we're really testing Tempfile.new here
+            expect(File.stat(@tempfile.path).mode & 0777).to eql(0600)
+            expect(subject).to eql(json_from_editor)
+          end
+        end
+
+        context "when parse_output is true" do
+          let(:parse_output) { true }
+          it "returns an edited ruby object" do
+            expect(subject).to eql(ruby_from_editor)
+          end
+          it "the tempfile should have mode 0600", :unix_only do
+            # XXX: this looks odd because we're really testing Tempfile.new here
+            expect(File.stat(@tempfile.path).mode & 0777).to eql(0600)
+            expect(subject).to eql(ruby_from_editor)
+          end
+        end
+      end
+    end
+  end
+
   describe "format_list_for_display" do
     it "should print the full hash if --with-uri is true" do
       @ui.config[:with_uri] = true

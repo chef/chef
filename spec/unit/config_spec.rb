@@ -183,8 +183,14 @@ describe Chef::Config do
       Chef::Config[:ssl_ca_path].should be_nil
     end
 
-    it "Chef::Config[:ssl_ca_file] defaults to nil" do
-      Chef::Config[:ssl_ca_file].should be_nil
+    describe "when on UNIX" do
+      before do
+        Chef::Config.stub(:on_windows?).and_return(false)
+      end
+
+      it "Chef::Config[:ssl_ca_file] defaults to nil" do
+        Chef::Config[:ssl_ca_file].should be_nil
+      end
     end
 
     it "Chef::Config[:data_bag_path] defaults to /var/chef/data_bags" do

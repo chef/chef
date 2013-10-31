@@ -108,6 +108,9 @@ $ knife xargs [PATTERN...] (options)
 This subcommand has the following options:
 .INDENT 0.0
 .TP
+.B \fB\-0\fP
+Indicates that a \fBNULL\fP character (\fB\e0\fP) will be used as a separator, instead of white space. Default: \fBfalse\fP.
+.TP
 .B \fB\-\-chef\-repo\-path PATH\fP
 The path to the chef\-repo. This setting will override the default path to the chef\-repo. Default: same as specified by \fBchef_repo_path\fP in config.rb.
 .TP
@@ -131,9 +134,6 @@ The maximum number of arguments per command line. Default: \fBnil\fP.
 .TP
 .B \fB\-s LENGTH\fP, \fB\-\-max\-chars LENGTH\fP
 The maximum size (in characters) for a command line. Default: \fBnil\fP.
-.TP
-.B \fB\-0\fP
-Indicates that a \fBNULL\fP character (\fB\e0\fP) will be used as a separator, instead of white space. Default: \fBfalse\fP.
 .TP
 .B \fB\-p [PATTERN...]\fP, \fB\-\-pattern [PATTERN...]\fP
 One (or more) patterns for a command line. If this option is not specified, a list of patterns may be expected on standard input. Default: \fBnil\fP.

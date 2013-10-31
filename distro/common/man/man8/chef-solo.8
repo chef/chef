@@ -67,11 +67,11 @@ The configuration file to use.
 .B \fB\-d\fP, \fB\-\-daemonize\fP
 Indicates that the executable will be run as a daemon. This option is only available on machines that run in UNIX or Linux environments. For machines that are running Microsoft Windows that require similar functionality, use the \fBchef\-client::service\fP recipe in the \fBchef\-client\fP cookbook: \fI\%http://community.opscode.com/cookbooks/chef-client\fP. This will install a chef\-client service under Microsoft Windows using the Windows Service Wrapper.
 .TP
-.B \fB\-f\fP, \fB\-\-fork\fP
-Indicates that a chef\-client run will be contained in a secondary process with dedicated RAM. When the chef\-client run is complete the RAM will be returned to the master process. This option helps ensure that a chef\-client will use a steady amount of RAM over time because the master process will not run recipes. This option will also help prevent memory leaks (such as those that can be introduced by the code contained within a poorly designed cookbook).
+.B \fB\-f\fP, \fB\-\-[no\-]fork\fP
+Indicates that a chef\-client run will be contained in a secondary process with dedicated RAM. When the chef\-client run is complete the RAM will be returned to the master process. This option helps ensure that a chef\-client will use a steady amount of RAM over time because the master process will not run recipes. This option will also help prevent memory leaks (such as those that can be introduced by the code contained within a poorly designed cookbook). Use \fB\-\-no\-fork\fP to disable running the chef\-client in fork node. Default value: \fB\-\-fork\fP.
 .TP
-.B \fB\-F FORMATTER\fP, \fB\-\-format FORMATTER\fP
-The output format.
+.B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
+The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
 .TP
 .B \fB\-\-force\-formatter\fP
 Indicates that formatter output will be used instead of logger output.
@@ -98,7 +98,7 @@ The level of logging that will be stored in a log file: \fBdebug\fP, \fBinfo\fP,
 The location in which log file output files will be saved. If this location is set to something other than \fBSTDOUT\fP, standard output logging will still be performed (otherwise there would be no output other than to a file). This is recommended when starting any executable as a daemon.
 .TP
 .B \fB\-\-[no\-]color\fP
-Use \fB\-\-no\-color\fP to disable colored output. Default setting: \fB\-\-color\fP.
+Indicates that color will not be used in the output. Default setting: \fB\-\-color\fP.
 .TP
 .B \fB\-N NODE_NAME\fP, \fB\-\-node\-name NODE_NAME\fP
 The name of the node.
@@ -119,7 +119,7 @@ The user that owns a process. This is required when starting any executable as a
 The version of the chef\-client.
 .TP
 .B \fB\-W\fP, \fB\-\-why\-run\fP
-Indicates that the executable will be run in whyrun mode, which is a chef\-client run that does everything except modify the system. Use whyrun mode to understand why the chef\-client makes the decisions that it makes and to learn more about the current and proposed state of the system.
+Indicates that the executable will be run in why\-run mode, which is a type of chef\-client run that does everything except modify the system. Use why\-run mode to understand why the chef\-client makes the decisions that it makes and to learn more about the current and proposed state of the system.
 .UNINDENT
 .SH EXAMPLES
 .sp
