@@ -825,11 +825,39 @@ describe Mixlib::ShellOut do
       end
 
       context 'with subprocess that takes longer than timeout' do
-        let(:cmd) { ruby_eval.call('sleep 2') }
-        let(:options) { { :timeout => 0.1 } }
+        let(:cmd) do
+          ruby_eval.call(<<-CODE)
+            STDOUT.sync = true
+            trap(:TERM) { puts "got term"; exit!(123) }
+            sleep 10
+          CODE
+        end
+        let(:options) { { :timeout => 1 } }
 
         it "should raise CommandTimeout" do
           lambda { executed_cmd }.should raise_error(Mixlib::ShellOut::CommandTimeout)
+        end
+
+        it "should ask the process nicely to exit" do
+          lambda { executed_cmd }.should raise_error(Mixlib::ShellOut::CommandTimeout)
+          executed_cmd.stdout.should include("got term")
+          executed_cmd.exitstatus.should == 123
+        end
+
+        context "and the child is unresponsive" do
+          let(:cmd) do
+            ruby_eval.call(<<-CODE)
+              STDOUT.sync = true
+              trap(:TERM) { puts "nanana cant hear you" }
+              sleep 10
+            CODE
+          end
+
+          it "should KILL the wayward child" do
+            lambda { executed_cmd }.should raise_error(Mixlib::ShellOut::CommandTimeout)
+            executed_cmd.stdout.should include("nanana cant hear you")
+            executed_cmd.status.termsig.should == 9
+          end
         end
       end
 
