@@ -276,7 +276,6 @@ CRONTAB
       @current_resource.user "root"
       @current_resource.minute "30"
       @current_resource.command "/bin/true"
-      @current_resource.mailto "foo@bar.com"
       @provider.current_resource = @current_resource
     end
 
@@ -293,6 +292,7 @@ CRONTAB
     end
 
     it "should return true if mailto doesn't match" do
+      @current_resource.mailto "foo@bar.com"
       @new_resource.mailto(nil)
       @provider.cron_different?.should eql(true)
     end
