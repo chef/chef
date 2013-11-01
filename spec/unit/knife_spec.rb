@@ -46,7 +46,12 @@ describe Chef::Knife do
         Chef::Knife.reset_config_path!
         # pwd according to your shell is /home/someuser/prod/chef-repo, but
         # chef-repo is a symlink to /home/someuser/codes/chef-repo
-        ENV.stub!(:[]).with("PWD").and_return("/home/someuser/prod/chef-repo")
+        if Chef::Platform.windows?
+          ENV.should_receive(:[]).with("CD").and_return("/home/someuser/prod/chef-repo")
+        else
+          ENV.should_receive(:[]).with("PWD").and_return("/home/someuser/prod/chef-repo")
+        end
+
         Dir.stub!(:pwd).and_return("/home/someuser/codes/chef-repo")
       end
 
