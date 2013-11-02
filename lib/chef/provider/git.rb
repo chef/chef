@@ -272,12 +272,26 @@ class Chef
       private
 
       def run_options(run_opts={})
-        run_opts[:user] = @new_resource.user if @new_resource.user
+        env = {}
+        if @new_resource.user
+          run_opts[:user] = @new_resource.user
+          # Certain versions of `git` misbehave if git configuration is
+          # inaccessible in $HOME. We need to ensure $HOME matches the
+          # user who is executing `git` not the user running Chef.
+          env['HOME'] = begin
+            require 'etc'
+            Etc.getpwnam(@new_resource.user).dir
+          rescue ArgumentError # user not found
+            "/home/#{@new_resource.user}"
+          end
+        end
         run_opts[:group] = @new_resource.group if @new_resource.group
-        run_opts[:environment] = {"GIT_SSH" => @new_resource.ssh_wrapper} if @new_resource.ssh_wrapper
+        env['GIT_SSH'] = @new_resource.ssh_wrapper if @new_resource.ssh_wrapper
         run_opts[:log_tag] = @new_resource.to_s
         run_opts[:timeout] = @new_resource.timeout if @new_resource.timeout
+        run_opts[:environment] = env unless env.empty?
         run_opts
+
       end
 
       def cwd
