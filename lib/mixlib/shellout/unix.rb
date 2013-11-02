@@ -38,6 +38,7 @@ module Mixlib
       #   within +timeout+ seconds (default: 600s)
       def run_command
         @child_pid = fork_subprocess
+        @reaped = false
 
         configure_parent_process_file_descriptors
 
@@ -70,13 +71,7 @@ module Mixlib
             end
           end
 
-          unless @status
-            # make one more pass to get the last of the output after the
-            # child process dies
-            if attempt_reap
-              redo
-            end
-          end
+          attempt_reap
         end
 
         self
@@ -85,12 +80,11 @@ module Mixlib
         # is going to exit quickly, so we use the blocking variant of waitpid2
         reap
         raise
-      rescue CommandTimeout
-        raise
-      rescue Exception
-        reap_errant_child
-        raise
       ensure
+        reap_errant_child if should_reap?
+        # make one more pass to get the last of the output after the
+        # child process dies
+        attempt_buffer_read
         # no matter what happens, turn the GC back on, and hope whatever busted
         # version of ruby we're on doesn't allocate some objects during the next
         # GC run.
@@ -320,14 +314,20 @@ module Mixlib
         nil
       end
 
+      def should_reap?
+        # if we fail to fork, no child pid so nothing to reap
+        @child_pid && !@reaped
+      end
+
       def reap
         results = Process.waitpid2(@child_pid)
+        @reaped = true
         @status = results.last
       end
 
-
       def attempt_reap
         if results = Process.waitpid2(@child_pid, Process::WNOHANG)
+          @reaped = true
           @status = results.last
         else
           nil

@@ -839,9 +839,11 @@ describe Mixlib::ShellOut do
         end
 
         it "should ask the process nicely to exit" do
-          lambda { executed_cmd }.should raise_error(Mixlib::ShellOut::CommandTimeout)
-          executed_cmd.stdout.should include("got term")
-          executed_cmd.exitstatus.should == 123
+          # note: let blocks don't correctly memoize if an exception is raised,
+          # so can't use executed_cmd
+          lambda { shell_cmd.run_command }.should raise_error(Mixlib::ShellOut::CommandTimeout)
+          shell_cmd.stdout.should include("got term")
+          shell_cmd.exitstatus.should == 123
         end
 
         context "and the child is unresponsive" do
@@ -854,9 +856,11 @@ describe Mixlib::ShellOut do
           end
 
           it "should KILL the wayward child" do
-            lambda { executed_cmd }.should raise_error(Mixlib::ShellOut::CommandTimeout)
-            executed_cmd.stdout.should include("nanana cant hear you")
-            executed_cmd.status.termsig.should == 9
+            # note: let blocks don't correctly memoize if an exception is raised,
+            # so can't use executed_cmd
+            lambda { shell_cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
+            shell_cmd.stdout.should include("nanana cant hear you")
+            shell_cmd.status.termsig.should == 9
           end
         end
       end
