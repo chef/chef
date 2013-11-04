@@ -360,4 +360,18 @@ describe Chef::Config do
       expect{Chef::Config.log_location = missing_path}.to raise_error Chef::Exceptions::ConfigurationError
     end
   end
+  describe "Chef::Config[:event_handlers]" do
+    it "sets a event_handlers to an empty array by default" do
+      Chef::Config[:event_handlers].should eq([])
+    end
+    it "should be able to add custom handlers" do
+      o = Object.new
+      Chef::Config[:event_handlers] << o
+      Chef::Config[:event_handlers].should be_include(o)
+    end
+  end
+
+  after(:each) do
+    Chef::Config.configuration = @original_config
+  end
 end
