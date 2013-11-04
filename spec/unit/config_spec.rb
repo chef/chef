@@ -370,8 +370,4 @@ describe Chef::Config do
       Chef::Config[:event_handlers].should be_include(o)
     end
   end
-
-  after(:each) do
-    Chef::Config.configuration = @original_config
-  end
 end
