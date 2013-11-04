@@ -38,10 +38,10 @@ class Chef
         # Get the commandline environments or all if none are provided.
         environments = environment_list     
 
-        # Get a list of all cookbooks that have constraninst and their environment.
+        # Get a list of all cookbooks that have constraints and their environment.
         constraints = constraint_list(environments) 
 
-        # Get the total list of cookbooks that have contraints
+        # Get the total list of cookbooks that have constraints
         cookbooks = cookbook_list(constraints)
 
         # If we cannot find any cookbooks, we can stop here.
@@ -77,10 +77,10 @@ class Chef
         constraints = {}
         environments.each do |env,url|
           # Because you cannot modify the default environment I filter it out here.
-          unless "#{env}" == "_default"
+          unless env == "_default"
             envdata = Chef::Environment.load(env)
             ver = envdata.cookbook_versions
-            constraints["#{env}"] = ver
+            constraints[env] = ver
           end
         end
         constraints
