@@ -76,7 +76,7 @@ Indicates that the executable will be run as a daemon. This option is only avail
 .B \fB\-E ENVIRONMENT_NAME\fP, \fB\-\-environment ENVIRONMENT_NAME\fP
 The name of the environment.
 .TP
-.B \fB\-\-[no\-]fork\fP
+.B \fB\-f\fP, \fB\-\-fork\fP
 Indicates that a chef\-client run will be contained in a secondary process with dedicated RAM. When the chef\-client run is complete the RAM will be returned to the master process. This option helps ensure that a chef\-client will use a steady amount of RAM over time because the master process will not run recipes. This option will also help prevent memory leaks (such as those that can be introduced by the code contained within a poorly designed cookbook). Use \fB\-\-no\-fork\fP to disable running the chef\-client in fork node. Default value: \fB\-\-fork\fP.
 .TP
 .B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
@@ -144,6 +144,9 @@ The version of the chef\-client.
 .TP
 .B \fB\-W\fP, \fB\-\-why\-run\fP
 Indicates that the executable will be run in why\-run mode, which is a type of chef\-client run that does everything except modify the system. Use why\-run mode to understand why the chef\-client makes the decisions that it makes and to learn more about the current and proposed state of the system.
+.TP
+.B \fB\-z\fP, \fB\-\-local\-mode\fP
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
 .UNINDENT
 .SH RUN WITH ELEVATED PRIVILEGES
 .sp
