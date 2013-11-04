@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'logger'
 
 describe Mixlib::ShellOut do
   let(:shell_cmd) { options ? shell_cmd_with_options : shell_cmd_without_options }
@@ -861,6 +862,24 @@ describe Mixlib::ShellOut do
             lambda { shell_cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
             shell_cmd.stdout.should include("nanana cant hear you")
             shell_cmd.status.termsig.should == 9
+          end
+
+          context "and a logger is configured" do
+            let(:log_output) { StringIO.new }
+            let(:logger) { Logger.new(log_output) }
+            let(:options) { {:timeout => 1, :logger => logger} }
+
+            it "should log messages about killing the child process", :focus do
+              # note: let blocks don't correctly memoize if an exception is raised,
+              # so can't use executed_cmd
+              lambda { shell_cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
+              shell_cmd.stdout.should include("nanana cant hear you")
+              shell_cmd.status.termsig.should == 9
+
+              log_output.string.should include("Command execeded allowed execution time, sending TERM")
+              log_output.string.should include("Command did not exit from TERM, sending KILL")
+            end
+
           end
         end
       end

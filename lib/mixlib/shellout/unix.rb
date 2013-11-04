@@ -302,9 +302,11 @@ module Mixlib
 
       def reap_errant_child
         return if attempt_reap
+        logger.error("Command execeded allowed execution time, sending TERM") if logger
         Process.kill(:TERM, @child_pid)
         sleep 3
         return if attempt_reap
+        logger.error("Command did not exit from TERM, sending KILL") if logger
         Process.kill(:KILL, @child_pid)
         reap
 
