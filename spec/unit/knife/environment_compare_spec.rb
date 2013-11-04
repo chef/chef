@@ -49,8 +49,6 @@ describe Chef::Knife::EnvironmentCompare do
 
     @knife.stub(:cookbook_list).and_return(@cookbooks)
 
-    #  cookbooks = rest.get_rest("/cookbooks?num_versions=1")
-
     @rest_double = double('rest')
     @knife.stub(:rest).and_return(@rest_double)
     @cookbook_names = ['apache2', 'mysql', 'foo', 'bar', 'dummy', 'chef_handler']
@@ -61,9 +59,6 @@ describe Chef::Knife::EnvironmentCompare do
                               'versions' => [{'version' => '1.0.1',
                                               'url' => "#{@base_url}/#{item}/1.0.1"}]}
     end 
-
-    # @rest_mock.should_receive(:get_rest).with('/cookbooks?num_versions=1').
-    #                                       and_return(@cookbook_data)
 
     @rest_double.stub(:get_rest).with("/cookbooks?num_versions=1").and_return(@cookbook_data)
 
@@ -89,7 +84,7 @@ describe Chef::Knife::EnvironmentCompare do
   end
 
   describe 'with -m or --mismatch' do
-    it 'should display mismatch environments / cookbooks and the version constrants of the cookbooks' do
+    it 'should display mismatch environments / cookbooks and the version constraints of the cookbooks' do
       @knife.config[:format] = 'summary'
       @knife.config[:mismatch] = true
       @knife.run
