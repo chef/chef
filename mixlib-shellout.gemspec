@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://wiki.opscode.com/"
 
 
-  %w(rspec).each { |gem| s.add_development_dependency gem }
+  s.add_development_dependency "rspec", "~> 2.0"
 
   s.bindir       = "bin"
   s.executables  = []

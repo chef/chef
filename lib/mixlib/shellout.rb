@@ -154,6 +154,7 @@ module Mixlib
       @environment = DEFAULT_ENVIRONMENT
       @cwd = nil
       @valid_exit_codes = [0]
+      @terminate_reason = nil
 
       if command_args.last.is_a?(Hash)
         parse_options(command_args.pop)
@@ -191,6 +192,7 @@ module Mixlib
     # results when the command exited with an unexpected status.
     def format_for_exception
       msg = ""
+      msg << "#{@terminate_reason}\n" if @terminate_reason
       msg << "---- Begin output of #{command} ----\n"
       msg << "STDOUT: #{stdout.strip}\n"
       msg << "STDERR: #{stderr.strip}\n"

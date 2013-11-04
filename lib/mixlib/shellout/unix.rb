@@ -38,6 +38,7 @@ module Mixlib
       #   within +timeout+ seconds (default: 600s)
       def run_command
         @child_pid = fork_subprocess
+        @reaped = false
 
         configure_parent_process_file_descriptors
 
@@ -57,44 +58,33 @@ module Mixlib
         write_to_child_stdin
 
         until @status
-          ready = IO.select(open_pipes, nil, nil, READ_WAIT_TIME)
-          unless ready
+          ready_buffers = attempt_buffer_read
+          unless ready_buffers
             @execution_time += READ_WAIT_TIME
             if @execution_time >= timeout && !@result
-              raise CommandTimeout, "command timed out:\n#{format_for_exception}"
+              # kill the bad proccess
+              reap_errant_child
+              # read anything it wrote when we killed it
+              attempt_buffer_read
+              # raise
+              raise CommandTimeout, "Command timed out after #{@execution_time.to_i}s:\n#{format_for_exception}"
             end
           end
 
-          if ready && ready.first.include?(child_stdout)
-            read_stdout_to_buffer
-          end
-          if ready && ready.first.include?(child_stderr)
-            read_stderr_to_buffer
-          end
-
-          unless @status
-            # make one more pass to get the last of the output after the
-            # child process dies
-            if results = Process.waitpid2(@child_pid, Process::WNOHANG)
-              @status = results.last
-              redo
-            end
-          end
+          attempt_reap
         end
+
         self
       rescue Errno::ENOENT
         # When ENOENT happens, we can be reasonably sure that the child process
         # is going to exit quickly, so we use the blocking variant of waitpid2
-        Process.waitpid2(@child_pid) rescue nil
-        raise
-      rescue Exception
-        # For exceptions other than ENOENT, such as timeout, we can't be sure
-        # how long the child process will live, so we use the non-blocking
-        # variant of waitpid2. This can result in zombie processes when the
-        # child later dies. See MIXLIB-16 for proposed enhancement.
-        Process.waitpid2(@child_pid, Process::WNOHANG) rescue nil
+        reap
         raise
       ensure
+        reap_errant_child if should_reap?
+        # make one more pass to get the last of the output after the
+        # child process dies
+        attempt_buffer_read
         # no matter what happens, turn the GC back on, and hope whatever busted
         # version of ruby we're on doesn't allocate some objects during the next
         # GC run.
@@ -239,6 +229,17 @@ module Mixlib
         child_stdin.close # Kick things off
       end
 
+      def attempt_buffer_read
+        ready = IO.select(open_pipes, nil, nil, READ_WAIT_TIME)
+        if ready && ready.first.include?(child_stdout)
+          read_stdout_to_buffer
+        end
+        if ready && ready.first.include?(child_stderr)
+          read_stderr_to_buffer
+        end
+        ready
+      end
+
       def read_stdout_to_buffer
         while chunk = child_stdout.read_nonblock(READ_SIZE)
           @stdout << chunk
@@ -296,6 +297,44 @@ module Mixlib
           true
         ensure
           child_process_status.close
+        end
+      end
+
+      def reap_errant_child
+        return if attempt_reap
+        @terminate_reason = "Command execeded allowed execution time, killed by TERM signal."
+        logger.error("Command execeded allowed execution time, sending TERM") if logger
+        Process.kill(:TERM, @child_pid)
+        sleep 3
+        return if attempt_reap
+        @terminate_reason = "Command execeded allowed execution time, did not respond to TERM. Killed by KILL signal."
+        logger.error("Command did not exit from TERM, sending KILL") if logger
+        Process.kill(:KILL, @child_pid)
+        reap
+
+        # Should not hit this but it's possible if something is calling waitall
+        # in a separate thread.
+      rescue Errno::ESRCH
+        nil
+      end
+
+      def should_reap?
+        # if we fail to fork, no child pid so nothing to reap
+        @child_pid && !@reaped
+      end
+
+      def reap
+        results = Process.waitpid2(@child_pid)
+        @reaped = true
+        @status = results.last
+      end
+
+      def attempt_reap
+        if results = Process.waitpid2(@child_pid, Process::WNOHANG)
+          @reaped = true
+          @status = results.last
+        else
+          nil
         end
       end
 

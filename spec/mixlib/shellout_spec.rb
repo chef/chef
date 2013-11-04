@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'logger'
 
 describe Mixlib::ShellOut do
   let(:shell_cmd) { options ? shell_cmd_with_options : shell_cmd_without_options }
@@ -825,11 +826,61 @@ describe Mixlib::ShellOut do
       end
 
       context 'with subprocess that takes longer than timeout' do
-        let(:cmd) { ruby_eval.call('sleep 2') }
-        let(:options) { { :timeout => 0.1 } }
+        let(:cmd) do
+          ruby_eval.call(<<-CODE)
+            STDOUT.sync = true
+            trap(:TERM) { puts "got term"; exit!(123) }
+            sleep 10
+          CODE
+        end
+        let(:options) { { :timeout => 1 } }
 
         it "should raise CommandTimeout" do
           lambda { executed_cmd }.should raise_error(Mixlib::ShellOut::CommandTimeout)
+        end
+
+        it "should ask the process nicely to exit" do
+          # note: let blocks don't correctly memoize if an exception is raised,
+          # so can't use executed_cmd
+          lambda { shell_cmd.run_command }.should raise_error(Mixlib::ShellOut::CommandTimeout)
+          shell_cmd.stdout.should include("got term")
+          shell_cmd.exitstatus.should == 123
+        end
+
+        context "and the child is unresponsive" do
+          let(:cmd) do
+            ruby_eval.call(<<-CODE)
+              STDOUT.sync = true
+              trap(:TERM) { puts "nanana cant hear you" }
+              sleep 10
+            CODE
+          end
+
+          it "should KILL the wayward child" do
+            # note: let blocks don't correctly memoize if an exception is raised,
+            # so can't use executed_cmd
+            lambda { shell_cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
+            shell_cmd.stdout.should include("nanana cant hear you")
+            shell_cmd.status.termsig.should == 9
+          end
+
+          context "and a logger is configured" do
+            let(:log_output) { StringIO.new }
+            let(:logger) { Logger.new(log_output) }
+            let(:options) { {:timeout => 1, :logger => logger} }
+
+            it "should log messages about killing the child process" do
+              # note: let blocks don't correctly memoize if an exception is raised,
+              # so can't use executed_cmd
+              lambda { shell_cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
+              shell_cmd.stdout.should include("nanana cant hear you")
+              shell_cmd.status.termsig.should == 9
+
+              log_output.string.should include("Command execeded allowed execution time, sending TERM")
+              log_output.string.should include("Command did not exit from TERM, sending KILL")
+            end
+
+          end
         end
       end
 
@@ -1064,8 +1115,8 @@ describe Mixlib::ShellOut do
       # test for for_fd returning a valid File object, but close
       # throwing EBADF.
       it "should not throw an exception if fd.close throws EBADF" do
-        fd = mock('File')
-        fd.stub!(:close).at_least(:once).and_raise(Errno::EBADF)
+        fd = double('File')
+        fd.stub(:close).at_least(:once).and_raise(Errno::EBADF)
         File.should_receive(:for_fd).at_least(:once).and_return(fd)
         shellout = Mixlib::ShellOut.new()
         shellout.instance_variable_set(:@process_status_pipe, [ 98, 99 ])
