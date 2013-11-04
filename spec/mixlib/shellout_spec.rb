@@ -869,7 +869,7 @@ describe Mixlib::ShellOut do
             let(:logger) { Logger.new(log_output) }
             let(:options) { {:timeout => 1, :logger => logger} }
 
-            it "should log messages about killing the child process", :focus do
+            it "should log messages about killing the child process" do
               # note: let blocks don't correctly memoize if an exception is raised,
               # so can't use executed_cmd
               lambda { shell_cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)

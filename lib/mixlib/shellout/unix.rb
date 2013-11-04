@@ -67,7 +67,7 @@ module Mixlib
               # read anything it wrote when we killed it
               attempt_buffer_read
               # raise
-              raise CommandTimeout, "command timed out:\n#{format_for_exception}"
+              raise CommandTimeout, "Command timed out after #{@execution_time.to_i}s:\n#{format_for_exception}"
             end
           end
 
@@ -302,10 +302,12 @@ module Mixlib
 
       def reap_errant_child
         return if attempt_reap
+        @terminate_reason = "Command execeded allowed execution time, killed by TERM signal."
         logger.error("Command execeded allowed execution time, sending TERM") if logger
         Process.kill(:TERM, @child_pid)
         sleep 3
         return if attempt_reap
+        @terminate_reason = "Command execeded allowed execution time, did not respond to TERM. Killed by KILL signal."
         logger.error("Command did not exit from TERM, sending KILL") if logger
         Process.kill(:KILL, @child_pid)
         reap
