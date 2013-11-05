@@ -24,28 +24,19 @@ describe Chef::Knife::EnvironmentCompare do
     
     @environments = {
       "cita" => "http://localhost:4000/environments/cita",
-      "citd" => "http://localhost:4000/environments/citd",
-      "citm" => "http://localhost:4000/environments/citm",
-      "citp" => "http://localhost:4000/environments/citp",
-      "citt" => "http://localhost:4000/environments/citt"
+      "citm" => "http://localhost:4000/environments/citm"
     }
 
     @knife.stub(:environment_list).and_return(@environments)
 
     @constraints = {
-      "cita" => { "foo" => "= 0.2.0" },
-      "citd" => { },
-      "citm" => { "foo" => "= 0.2.0" },
-      "citp" => { "bar" => "= 0.0.4" },
-      "citt" => { "bar" => "= 0.0.1" }
+      "cita" => { "foo" => "= 1.0.1", "bar" => "= 0.0.4" },
+      "citm" => { "foo" => "= 1.0.1", "bar" => "= 0.0.2" }
     }
  
     @knife.stub(:constraint_list).and_return(@constraints)
 
-    @cookbooks = {
-      "foo"=>"= 0.2.0", 
-      "bar"=>"= 0.0.1"
-    } 
+    @cookbooks = { "foo"=>"= 1.0.1", "bar"=>"= 0.0.1" } 
 
     @knife.stub(:cookbook_list).and_return(@cookbooks)
 
@@ -67,24 +58,23 @@ describe Chef::Knife::EnvironmentCompare do
   end
 
   describe 'run' do
-    it 'should display all environments / cookbooks and the version constraints of the cookbooks' do
+    it 'should display only cookbooks with version constraints' do
       @knife.config[:format] = 'summary'
       @knife.run
       @environments.each do |item, url|
-        @stdout.string.should match /#{item}/ and @stdout.string.lines.count.should be 8
+        @stdout.string.should match /#{item}/ and @stdout.string.lines.count.should be 4
       end
     end
  
-    it 'should display 8 number of lines' do
+    it 'should display 4 number of lines' do
       @knife.config[:format] = 'summary'
       @knife.run
-      @stdout.string.lines.count.should be 8
+      @stdout.string.lines.count.should be 4
     end
-
   end
 
   describe 'with -m or --mismatch' do
-    it 'should display mismatch environments / cookbooks and the version constraints of the cookbooks' do
+    it 'should display only cookbooks that have mismatching version constraints' do
       @knife.config[:format] = 'summary'
       @knife.config[:mismatch] = true
       @knife.run
@@ -93,13 +83,30 @@ describe Chef::Knife::EnvironmentCompare do
       end
     end
 
-    it 'should display 4 number of lines' do
+    it 'should display 3 number of lines' do
       @knife.config[:format] = 'summary'
       @knife.config[:mismatch] = true
       @knife.run
-      @stdout.string.lines.count.should be 4
+      @stdout.string.lines.count.should be 3
+    end
+  end
+ 
+  describe 'with -a or --all' do
+    it 'should display all cookbooks' do
+      @knife.config[:format] = 'summary'
+      @knife.config[:all] = true
+      @knife.run
+      @constraints.each do |item, ver|
+        @stdout.string.should match /#{ver[1]}/
+      end
     end
 
+    it 'should display 8 number of lines' do
+      @knife.config[:format] = 'summary'
+      @knife.config[:all] = true
+      @knife.run
+      @stdout.string.lines.count.should be 8
+    end
   end
 
 end
