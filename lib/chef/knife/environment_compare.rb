@@ -27,7 +27,13 @@ class Chef
       end
  
       banner "knife environment compare [ENVIRONMENT..] (options)"
- 
+
+      option :all,
+        :short => "-a",
+        :long => "--all",
+        :description => "Show all cookbooks",
+        :boolean => true 
+
       option :mismatch,
         :short => "-m",
         :long => "--mismatch",
@@ -51,7 +57,7 @@ class Chef
         end
      
         # Get all cookbooks so we can compare them all
-        cookbooks = rest.get_rest("/cookbooks?num_versions=1")
+        cookbooks = rest.get_rest("/cookbooks?num_versions=1") if config[:all]
 
         # display matrix view of in the requested format.
         if config[:format] == 'summary'
