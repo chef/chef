@@ -426,22 +426,43 @@ describe Chef::REST do
         @rest.api_request(:GET, @url, {}).should == {"ohai2u"=>"json_api"}
       end
 
-      %w[ HTTPFound HTTPMovedPermanently HTTPSeeOther HTTPUseProxy HTTPTemporaryRedirect HTTPMultipleChoice ].each do |resp_name|
-        it "should call api_request again on a #{resp_name} response" do
-          resp_cls  = Net.const_get(resp_name)
+      describe "when the server returns a redirect response" do
+        def redirect_with(response_name)
+          resp_cls  = Net.const_get(response_name)
           resp_code = Net::HTTPResponse::CODE_TO_OBJ.keys.detect { |k| Net::HTTPResponse::CODE_TO_OBJ[k] == resp_cls }
-          http_response = Net::HTTPFound.new("1.1", resp_code, "bob is somewhere else again")
-          http_response.add_field("location", @url.path)
-          http_response.stub!(:read_body)
+          redirect = Net::HTTPFound.new("1.1", resp_code, "bob is somewhere else again")
+          redirect.add_field("location", @url.path)
+          redirect.stub!(:read_body).and_return('')
+          redirect
+        end
 
-          @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+        %w[ HTTPFound HTTPMovedPermanently HTTPSeeOther HTTPUseProxy HTTPTemporaryRedirect HTTPMultipleChoice ].each do |response_name|
 
-          lambda { @rest.api_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
+          it "should call api_request again on a #{response_name} response" do
+            redirect = redirect_with(response_name)
 
-          [:PUT, :POST, :DELETE].each do |method|
-            lambda { @rest.api_request(method, @url) }.should raise_error(Chef::Exceptions::InvalidRedirect)
+            success = Net::HTTPSuccess.new("1.1",200, "it-works")
+            success.stub!(:read_body).and_return('{"foo": "bar"}')
+            success['content-type'] = "application/json"
+
+            @http_client.should_receive(:request).and_yield(redirect).and_return(redirect)
+            @http_client.should_receive(:request).and_yield(success).and_return(success)
+
+            @rest.api_request(:GET, @url, "X-Auth-Header" => "foo").should == {"foo" => "bar"}
+          end
+
+          context "when making a request for a method other than GET" do
+
+            [:PUT, :POST, :DELETE].each do |method|
+              it "raises an error" do
+                redirect = redirect_with(response_name)
+                @http_client.should_receive(:request).and_yield(redirect).and_return(redirect)
+                lambda { @rest.api_request(method, @url) }.should raise_error(Chef::Exceptions::InvalidRedirect)
+              end
+            end
           end
         end
+
       end
 
       it "should show the JSON error message on an unsuccessful request" do
