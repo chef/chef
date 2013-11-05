@@ -84,17 +84,17 @@ class Chef
         when nil
           dest
         when Hash
-          source.each do |src_key, src_value|
-            if dest.kind_of?(Hash)
+          if dest.kind_of?(Hash)
+            source.each do |src_key, src_value|
               if dest[src_key]
                 dest[src_key] = deep_merge!(src_value, dest[src_key])
               else # dest[src_key] doesn't exist so we take whatever source has
                 raise_if_knockout_used!(src_value)
                 dest[src_key] = src_value
               end
-            else # dest isn't a hash, so we overwrite it completely
-              dest = source
             end
+          else # dest isn't a hash, so we overwrite it completely
+            dest = source
           end
         when Array
           if dest.kind_of?(Array)
