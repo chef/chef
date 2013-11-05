@@ -276,7 +276,7 @@ class Chef
             end
           elsif redirect_location = redirected_to(response)
             if [:GET, :HEAD].include?(method)
-              follow_redirect {api_request(method, create_url(redirect_location))}
+              follow_redirect {api_request(method, create_url(redirect_location), headers)}
             else
               raise Exceptions::InvalidRedirect, "#{method} request was redirected from #{url} to #{redirect_location}. Only GET and HEAD support redirects."
             end
