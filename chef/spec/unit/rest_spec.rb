@@ -452,6 +452,10 @@ describe Chef::REST do
             @http_client.should_receive(:request).and_yield(redirect).and_return(redirect)
             @http_client.should_receive(:request).and_yield(success).and_return(success)
 
+            # CHEF-1848: verify that headers get passed to redirects
+            @rest.should_receive(:retriable_rest_request).with(:GET, @url, nil, expected_headers).and_call_original
+            @rest.should_receive(:retriable_rest_request).with(:GET, redirected_uri, nil, expected_headers).and_call_original
+
             @rest.api_request(:GET, @url, headers).should == {"foo" => "bar"}
           end
 
