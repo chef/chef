@@ -278,19 +278,16 @@ describe Chef::REST do
 
       describe "streaming downloads to a tempfile" do
         before do
-          @tempfile = Tempfile.open("chef-rspec-rest_spec-line-#{__LINE__}--")
-          Tempfile.stub!(:new).with("chef-rest").and_return(@tempfile)
-          Tempfile.stub!(:open).and_return(@tempfile)
+          @tempfile = StringIO.new
+          @tempfile.stub(:close!)
+          @tempfile.stub(:path).and_return("/tmp/this-is-a-stringio-not-a-real-file")
+          Tempfile.stub(:new).with("chef-rest").and_return(@tempfile)
+          Tempfile.stub(:open).and_return(@tempfile)
 
           @request_mock = {}
           Net::HTTP::Get.stub!(:new).and_return(@request_mock)
 
           @http_response_mock = mock("Net::HTTP Response mock")
-        end
-
-        after do
-          @tempfile.rspec_reset
-          @tempfile.close!
         end
 
         it "should build a new HTTP GET request without the application/json accept header" do
@@ -309,9 +306,9 @@ describe Chef::REST do
         end
 
         it "should populate the tempfile with the value of the raw request" do
-          @http_response_mock.stub!(:read_body).and_yield("ninja")
-          @tempfile.should_receive(:write).with("ninja").once.and_return(true)
+          @http_response.should_receive(:read_body).and_yield("ninja")
           @rest.run_request(:GET, @url, {}, false, nil, true)
+          @tempfile.string.should include("ninja")
         end
 
         it "should close the tempfile if we're doing a raw request" do
@@ -427,11 +424,14 @@ describe Chef::REST do
       end
 
       describe "when the server returns a redirect response" do
+        let(:redirected_url) { "https://chef.example.com:8443/foo" }
+        let(:redirected_uri) { URI.parse(redirected_url) }
+
         def redirect_with(response_name)
           resp_cls  = Net.const_get(response_name)
           resp_code = Net::HTTPResponse::CODE_TO_OBJ.keys.detect { |k| Net::HTTPResponse::CODE_TO_OBJ[k] == resp_cls }
           redirect = Net::HTTPFound.new("1.1", resp_code, "bob is somewhere else again")
-          redirect.add_field("location", @url.path)
+          redirect.add_field("location", redirected_url)
           redirect.stub!(:read_body).and_return('')
           redirect
         end
@@ -441,6 +441,10 @@ describe Chef::REST do
           it "should call api_request again on a #{response_name} response" do
             redirect = redirect_with(response_name)
 
+            headers = { "X-Auth-Header" => "foo" }
+            auto_headers = {"Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3"}
+            expected_headers = auto_headers.merge(headers)
+
             success = Net::HTTPSuccess.new("1.1",200, "it-works")
             success.stub!(:read_body).and_return('{"foo": "bar"}')
             success['content-type'] = "application/json"
@@ -448,7 +452,7 @@ describe Chef::REST do
             @http_client.should_receive(:request).and_yield(redirect).and_return(redirect)
             @http_client.should_receive(:request).and_yield(success).and_return(success)
 
-            @rest.api_request(:GET, @url, "X-Auth-Header" => "foo").should == {"foo" => "bar"}
+            @rest.api_request(:GET, @url, headers).should == {"foo" => "bar"}
           end
 
           context "when making a request for a method other than GET" do
@@ -515,7 +519,6 @@ describe Chef::REST do
       end
 
       after do
-        @tempfile.rspec_reset
         @tempfile.close!
       end
 
@@ -582,7 +585,6 @@ describe Chef::REST do
       end
 
       it "closes and unlinks the tempfile when the response is a redirect" do
-        Tempfile.rspec_reset
         tempfile = mock("die", :path => "/tmp/ragefist", :close => true, :binmode => nil)
         tempfile.should_receive(:close!).at_least(2).times
         Tempfile.stub!(:new).with("chef-rest").and_return(tempfile)
@@ -596,7 +598,6 @@ describe Chef::REST do
       end
 
       it "passes the original block to the redirected request" do
-        Tempfile.rspec_reset
 
         http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
         http_response.add_field("location","/that-thing-is-here-now")

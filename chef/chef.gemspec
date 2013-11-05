@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
 
   # development_dependency thin: eventmachine 0.12.10 doesn't support Ruby 1.9 on Windows
   %w(rdoc sdoc rake rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
-  %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 2.8.0" }
+  %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 2.12.0" }
 
   s.bindir       = "bin"
   s.executables  = %w( chef-client chef-solo knife shef )
