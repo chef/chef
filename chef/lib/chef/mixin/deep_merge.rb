@@ -8,9 +8,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,17 +35,24 @@ class Chef
         DeepMerge.deep_merge(second, first, {:preserve_unmergeables => false})
       end
 
+      def horizontal_merge(first, second)
+        first  = Mash.new(first)  unless first.kind_of?(Mash)
+        second = Mash.new(second) unless second.kind_of?(Mash)
+
+        DeepMerge.deep_merge(second, first, {:preserve_unmergeables => false, :horizontal_precedence => true})
+      end
+
       # Inherited roles use the knockout_prefix array subtraction functionality
       # This is likely to go away in Chef >= 0.11
       def role_merge(first, second)
         first  = Mash.new(first)  unless first.kind_of?(Mash)
         second = Mash.new(second) unless second.kind_of?(Mash)
 
-        DeepMerge.deep_merge(second, first, {:knockout_prefix => "!merge", :preserve_unmergeables => false})
+        DeepMerge.deep_merge(second, first, {:preserve_unmergeables => false, :knockout_prefix => "!merge", :horizontal_precedence => true})
       end
-    
+
       class InvalidParameter < StandardError; end
-      
+
       # Deep Merge core documentation.
       # deep_merge! method permits merging of arbitrary child elements. The two top level
       # elements must be hashes. These hashes can contain unlimited (to stack limit) levels
@@ -60,7 +67,7 @@ class Chef
       #   Results: {:x => [1,2,3,4,5,'6'], :y => 2}
       # By default, "deep_merge!" will overwrite any unmergeables and merge everything else.
       # To avoid this, use "deep_merge" (no bang/exclamation mark)
-      # 
+      #
       # Options:
       #   Options are specified in the last parameter passed, which should be in hash format:
       #   hash.deep_merge!({:x => [1,2]}, {:knockout_prefix => '!merge'})
@@ -78,7 +85,7 @@ class Chef
       #      Set to true to get console output of merge process for debugging
       #
       # Selected Options Details:
-      # :knockout_prefix => The purpose of this is to provide a way to remove elements 
+      # :knockout_prefix => The purpose of this is to provide a way to remove elements
       #   from existing Hash by specifying them in a special way in incoming hash
       #    source = {:x => ['!merge:1', '2']}
       #    dest   = {:x => ['1', '3']}
@@ -96,9 +103,9 @@ class Chef
       #   dest   = {:x => ['5','6','7,8']}
       #   dest.deep_merge!(source, {:unpack_arrays => ','})
       #   Results: {:x => ['1','2','3','4','5','6','7','8'}
-      #   Why: If receiving data from an HTML form, this makes it easy for a checkbox 
+      #   Why: If receiving data from an HTML form, this makes it easy for a checkbox
       #    to pass multiple values from within a single HTML element
-      # 
+      #
       # There are many tests for this library - and you can learn more about the features
       # and usages of deep_merge! by just browsing the test examples
       def deep_merge!(source, dest, options = {})
@@ -132,12 +139,17 @@ class Chef
               else # dest[src_key] doesn't exist so we want to create and overwrite it (but we do this via deep_merge!)
                 puts "#{di} ==>merging over: #{src_key.inspect} => #{src_value.inspect}" if merge_debug
                 # note: we rescue here b/c some classes respond to "dup" but don't implement it (Numeric, TrueClass, FalseClass, NilClass among maybe others)
-                begin
-                  src_dup = src_value.dup # we dup src_value if possible because we're going to merge into it (since dest is empty)
-                rescue TypeError
-                  src_dup = src_value
-                end
-                dest[src_key] = deep_merge!(src_value, src_dup, options.merge(:debug_indent => di + '  '))
+                # begin
+                #   src_dup = src_value.dup # we dup src_value if possible because we're going to merge into it (since dest is empty)
+                # rescue TypeError
+                #   src_dup = src_value
+                # end
+                # dest[src_key] = deep_merge!(src_value, src_dup, options.merge(:debug_indent => di + '  '))
+                # XXX: I don't have an idea why we are doing this via
+                # deep merge. With the new array merge logic we get
+                # duplicates if we merge an empty Mash with a full
+                # Mash if they contains arrays.
+                dest[src_key] = src_value
               end
             else # dest isn't a hash, so we overwrite it completely (if permitted)
               if overwrite_unmergeable
@@ -181,7 +193,17 @@ class Chef
               puts if merge_debug
             end
             puts "#{di} merging arrays: #{source.inspect} :: #{dest.inspect}" if merge_debug
-            dest = dest | source
+            # When merging to arrays check the :horizontal_precedence.
+            # If it is set, this means we are merging two arrays
+            # at the same precendence level.
+            # In this case we will concatanate the arrays. If we are
+            # merging across precedence levels we will choose the
+            # array from the higher precedence.
+            if options[:horizontal_precedence]
+              dest += source
+            else
+              dest = source
+            end
             dest.sort! if sort_merged_arrays
           elsif overwrite_unmergeable
             puts "#{di} overwriting dest: #{source.inspect} -over-> #{dest.inspect}" if merge_debug
@@ -194,7 +216,7 @@ class Chef
         puts "#{di}Returning #{dest.inspect}" if merge_debug
         dest
       end # deep_merge!
-     
+
       # allows deep_merge! to uniformly handle overwriting of unmergeable entities
       def overwrite_unmergeables(source, dest, options)
         merge_debug = options[:merge_debug] || false
@@ -229,7 +251,7 @@ class Chef
       def deep_merge(source, dest, options = {})
         deep_merge!(source.dup, dest.dup, options)
       end
-     
+
       def clear_or_nil(obj)
         if obj.respond_to?(:clear)
           obj.clear
@@ -238,9 +260,9 @@ class Chef
         end
         obj
       end
-     
+
     end
-     
+
   end
 end
 
