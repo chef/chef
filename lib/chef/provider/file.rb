@@ -1,4 +1,4 @@
-#
+
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Lamont Granquist (<lamont@opscode.com>)
 # Copyright:: Copyright (c) 2008-2013 Opscode, Inc.
@@ -75,7 +75,8 @@ class Chef
         @current_resource ||= Chef::Resource::File.new(@new_resource.name)
         @current_resource.path(@new_resource.path)
         if ::File.exists?(@current_resource.path) && ::File.file?(::File.realpath(@current_resource.path))
-          if @action != :create_if_missing && @current_resource.respond_to?(:checksum)
+          if should_do_checksum?
+            Chef::Log.debug("#{@new_resource} checksumming file at #{@new_resource.path}.")
             @current_resource.checksum(checksum(@current_resource.path))
           end
           load_resource_attributes_from_file(@current_resource)
@@ -159,6 +160,25 @@ class Chef
 
       private
 
+      def should_do_checksum?
+        if @current_resource.respond_to?(:checksum)
+          case
+          when @new_resource.checksum
+            return true
+          when @action == :create_if_missing
+            return false
+          when @new_resource.respond_to?(:source)
+            return true
+          when @new_resource.content.nil?
+            return false
+          else
+            return true
+          end
+        end
+        # We may be a File::Provider::Directory
+        false
+      end
+
       # Handles resource requirements for action :create when some fs entry
       # already exists at the destination path. For actions other than create,
       # we don't care what kind of thing is at the destination path because:
@@ -240,8 +260,8 @@ class Chef
 
       def content
         @content ||= begin
-           load_current_resource if @current_resource.nil?
-           @content_class.new(@new_resource, @current_resource, @run_context)
+          load_current_resource if @current_resource.nil?
+          @content_class.new(@new_resource, @current_resource, @run_context)
         end
       end
 
@@ -330,7 +350,9 @@ class Chef
         do_backup unless file_created?
         deployment_strategy.deploy(tempfile.path, ::File.realpath(@new_resource.path))
         Chef::Log.info("#{@new_resource} updated file contents #{@new_resource.path}")
-        @new_resource.checksum(checksum(@new_resource.path)) # for reporting
+        if should_do_checksum?
+          @new_resource.checksum(checksum(@new_resource.path)) # for reporting
+        end
       end
 
       def do_contents_changes
@@ -379,6 +401,7 @@ class Chef
       end
 
       def contents_changed?
+        Chef::Log.debug "calculating checksum of #{tempfile.path} to compare with #{@current_resource.checksum}"
         checksum(tempfile.path) != @current_resource.checksum
       end
 

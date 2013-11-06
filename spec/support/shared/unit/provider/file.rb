@@ -93,6 +93,26 @@ shared_examples_for Chef::Provider::File do
 
   context "when loading the current resource" do
 
+    context "when running load_current_resource" do
+      #
+      # the content objects need the current_resource to be loaded (esp remote_file), so calling
+      # for content inside of load_current_resource is totally crossing the streams...
+      #
+      it "should not try to load the content when the file is present" do
+        setup_normal_file
+        provider.should_not_receive(:tempfile)
+        provider.should_not_receive(:content)
+        provider.load_current_resource
+      end
+
+      it "should not try to load the content when the file is missing" do
+        setup_missing_file
+        provider.should_not_receive(:tempfile)
+        provider.should_not_receive(:content)
+        provider.load_current_resource
+      end
+    end
+
     context "when running load_current_resource and the file exists" do
       before do
         setup_normal_file
@@ -114,6 +134,7 @@ shared_examples_for Chef::Provider::File do
       it "the loaded current_resource content should be nil" do
         provider.current_resource.content.should eql(nil)
       end
+
     end
 
     context "when running load_current_resource and the file does not exist" do
@@ -383,6 +404,7 @@ shared_examples_for Chef::Provider::File do
                                   :for_reporting => diff_for_reporting )
             diff.stub!(:diff).with(resource_path, tempfile_path).and_return(true)
             provider.should_receive(:diff).at_least(:once).and_return(diff)
+            provider.should_receive(:should_do_checksum?).at_least(:once).and_return(true)
             provider.should_receive(:checksum).with(tempfile_path).and_return(tempfile_sha256)
             provider.should_receive(:checksum).with(resource_path).and_return(tempfile_sha256)
             provider.deployment_strategy.should_receive(:deploy).with(tempfile_path, normalized_path)
