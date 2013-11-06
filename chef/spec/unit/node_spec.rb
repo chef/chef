@@ -741,4 +741,35 @@ describe Chef::Node do
 
   end
 
+  describe "regression test for CHEF-4631" do
+    before(:each) do
+      @node.stub!(:chef_environment).and_return("_default")
+    end
+
+    it "array values in the role default attributes should be concatanated to the nodes default attributes" do
+      @node.default_attrs = {"foo" => {"bar" => ["1", "2"]}}
+      expansion = mock("Expansion", :default_attrs => { "foo" => {"bar" => ["3", "2"]}}, :override_attrs => { })
+      @node.apply_expansion_attributes(expansion)
+      @node["foo"]["bar"].should == ["1", "2", "3", "2"]
+      @node["foo"].to_hash["bar"].should == ["1", "2", "3", "2"]
+    end
+
+    it "array values in the role override attributes should override the nodes default attributes" do
+      @node.default_attrs = {"foo" => {"bar" => ["1", "2"]}}
+      expansion = mock("Expansion", :default_attrs => { "foo" => {"bar" => ["3", "2"]}}, :override_attrs => { "foo" => {"bar" => ["5"] } })
+      @node.apply_expansion_attributes(expansion)
+      @node["foo"]["bar"].should == ["5"]
+      @node["foo"].to_hash["bar"].should == ["5"]
+    end
+
+    it "array values in the role override attributes should merge with the nodes override attributes" do
+      @node.default_attrs = {"foo" => {"bar" => ["1", "2"]}}
+      @node.override_attrs = {"foo" => {"bar" => ["5", "0"]}}
+      expansion = mock("Expansion", :default_attrs => { "foo" => {"bar" => ["3", "2"]}}, :override_attrs => { "foo" => {"bar" => ["5"] } })
+      @node.apply_expansion_attributes(expansion)
+      @node["foo"]["bar"].should == ["5", "0", "5"]
+      @node["foo"].to_hash["bar"].should == ["5", "0", "5"]
+    end
+  end
+
 end

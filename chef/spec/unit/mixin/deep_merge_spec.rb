@@ -75,81 +75,290 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     hash_dst.should == hash_src
   end
 
-  it "tests hashes holding array" do
-    hash_src = {"property" => ["1","3"]}
-    hash_dst = {"property" => ["2","4"]}
-    @dm.deep_merge!(hash_src, hash_dst)
-    hash_dst.should == {"property" => ["2","4","1","3"]}
-  end
+  context "while merging arrays" do
+    it ":deep_merge_array_concat should be set by default" do
+      Chef::Config[:deep_merge_array_concat].should == true
+    end
 
-  it "tests hashes holding array (sorted)" do
-    hash_src = {"property" => ["1","3"]}
-    hash_dst = {"property" => ["2","4"]}
-    @dm.deep_merge!(hash_src, hash_dst, {:sort_merged_arrays => true})
-    hash_dst.should == {"property" => ["1","2","3","4"]}
-  end
+    context "when :deep_merge_array_concat is set" do
+      before do
+        Chef::Config.stub!(:[]).with(:deep_merge_array_concat).and_return(true)
+      end
 
-  it "tests hashes holding hashes holding arrays (array with duplicate elements is merged with dest then src" do
-    hash_src = {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["1", "4+"]}}
-    hash_dst = {"property" => {"bedroom_count" => ["3", "2"], "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst)
-    hash_dst.should == {"property" => {"bedroom_count" => ["3","2","1"], "bathroom_count" => ["2", "1", "4+"]}}
-  end
+      it "tests hashes holding array" do
+        hash_src = {"property" => ["1","3"]}
+        hash_dst = {"property" => ["2","4"]}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {"property" => ["1","3"]}
+      end
 
-  it "tests hash holding hash holding array v string (string is overwritten by array)" do
-    hash_src = {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["1", "4+"]}}
-    hash_dst = {"property" => {"bedroom_count" => "3", "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst)
-    hash_dst.should == {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["2","1","4+"]}}
-  end
+      it "tests hashes holding array (sorted)" do
+        hash_src = {"property" => ["3","1"]}
+        hash_dst = {"property" => ["2","4"]}
+        @dm.deep_merge!(hash_src, hash_dst, {:sort_merged_arrays => true})
+        hash_dst.should == {"property" => ["1","3"]}
+      end
 
-  it "tests hash holding hash holding array v string (string is NOT overwritten by array)" do
-    hash_src = {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["1", "4+"]}}
-    hash_dst = {"property" => {"bedroom_count" => "3", "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true})
-    hash_dst.should == {"property" => {"bedroom_count" => "3", "bathroom_count" => ["2","1","4+"]}}
-  end
+      it "tests hashes holding hashes holding arrays (array with duplicate elements are preserved)" do
+        hash_src = {"property" => {"bedroom_count" => ["1", "2", "2"], "bathroom_count" => ["1", "4+"]}}
+        hash_dst = {"property" => {"bedroom_count" => ["3", "2"], "bathroom_count" => ["2"]}}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {"property" => {"bedroom_count" => ["1","2","2"], "bathroom_count" => ["1", "4+"]}}
+      end
 
-  it "tests hash holding hash holding string v array (array is overwritten by string)" do
-    hash_src = {"property" => {"bedroom_count" => "3", "bathroom_count" => ["1", "4+"]}}
-    hash_dst = {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst)
-    hash_dst.should == {"property" => {"bedroom_count" => "3", "bathroom_count" => ["2","1","4+"]}}
-  end
+      it "tests 3 hash layers holding arrays of int (src arrays are picked)" do
+        hash_src = {"property" => {"bedroom_count" => {"king_bed" => [3], "queen_bed" => [1]}, "bathroom_count" => ["1", "4+"]}}
+        hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => [3], "queen_bed" => [1]}, "bathroom_count" => ["1","4+"]}}
+      end
 
-  it "tests hash holding hash holding string v array (array does NOT overwrite string)" do
-    hash_src = {"property" => {"bedroom_count" => "3", "bathroom_count" => ["1", "4+"]}}
-    hash_dst = {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true})
-    hash_dst.should == {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["2","1","4+"]}}
-  end
+      it "tests 3 hash layers holding arrays of int (src arrays are picked) but second hash's array is overwritten" do
+        hash_src = {"property" => {"bedroom_count" => {"king_bed" => [3], "queen_bed" => [1]}, "bathroom_count" => "1"}}
+        hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => [3], "queen_bed" => [1]}, "bathroom_count" => "1"}}
+      end
 
-  it "tests hash holding hash holding hash v array (array is overwritten by hash)" do
-    hash_src = {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => 1}, "bathroom_count" => ["1", "4+"]}}
-    hash_dst = {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst)
-    hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => 1}, "bathroom_count" => ["2","1","4+"]}}
-  end
+      it "tests 3 hash layers holding arrays of int (src arrays are picked) but second hash's array is NOT overwritten" do
+        hash_src = {"property" => {"bedroom_count" => {"king_bed" => [3], "queen_bed" => [1]}, "bathroom_count" => "1"}}
+        hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
+        @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true})
+        hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => [3], "queen_bed" => [1]}, "bathroom_count" => ["2"]}}
+      end
 
-  it "tests hash holding hash holding hash v array (array is NOT overwritten by hash)" do
-    hash_src = {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => 1}, "bathroom_count" => ["1", "4+"]}}
-    hash_dst = {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true})
-    hash_dst.should == {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["2","1","4+"]}}
-  end
+      it "tests 3 hash layers holding arrays of int, but one holds int. This one overwrites, but src are picked for the rest" do
+        hash_src = {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => [1]}, "bathroom_count" => ["1"]}}
+        hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => [1]}, "bathroom_count" => ["1"]}}
+      end
 
-  it "tests 3 hash layers holding integers (integers are overwritten by source)" do
-    hash_src = {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => 1}, "bathroom_count" => ["1", "4+"]}}
-    hash_dst = {"property" => {"bedroom_count" => {"king_bed" => 2, "queen_bed" => 4}, "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst)
-    hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => 1}, "bathroom_count" => ["2","1","4+"]}}
-  end
+      it "tests 3 hash layers holding arrays of int, but source is incomplete." do
+        hash_src = {"property" => {"bedroom_count" => {"king_bed" => [3]}, "bathroom_count" => ["1"]}}
+        hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => [3], "queen_bed" => [4]}, "bathroom_count" => ["1"]}}
+      end
 
-  it "tests 3 hash layers holding arrays of int (arrays are merged)" do
-    hash_src = {"property" => {"bedroom_count" => {"king_bed" => [3], "queen_bed" => [1]}, "bathroom_count" => ["1", "4+"]}}
-    hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst)
-    hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => [2,3], "queen_bed" => [4,1]}, "bathroom_count" => ["2","1","4+"]}}
+      it "tests 3 hash layers holding arrays of int, but source is shorter and has new 2nd level ints." do
+        hash_src = {"property" => {"bedroom_count" => {2=>3, "king_bed" => [3]}, "bathroom_count" => ["1"]}}
+        hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {"property" => {"bedroom_count" => {2=>3, "king_bed" => [3], "queen_bed" => [4]}, "bathroom_count" => ["1"]}}
+      end
+
+      # KNOCKOUT_PREFIX testing
+      # the next few tests are looking for correct behavior from specific real-world params/session merges
+      # using the custom modifiers built for param/session merges
+
+      [nil, ","].each do |ko_split|
+        it "tests typical params/session style hash with knockout_merge elements" do
+          hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "2", "3"]}}
+          hash_dst = {"property"=>{"bedroom_count"=>["1", "2", "3"]}}
+          @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
+          hash_dst.should == {"property"=>{"bedroom_count"=>["2", "3"]}}
+        end
+
+        it "tests typical params/session style hash with knockout_merge elements" do
+          hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "2", "3"]}}
+          hash_dst = {"property"=>{"bedroom_count"=>["3"]}}
+          @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
+          hash_dst.should == {"property"=>{"bedroom_count"=>["2","3"]}}
+        end
+
+        it "tests typical params/session style hash with knockout_merge elements" do
+          hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "2", "3"]}}
+          hash_dst = {"property"=>{"bedroom_count"=>["4"]}}
+          @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
+          hash_dst.should == {"property"=>{"bedroom_count"=>["2","3"]}}
+        end
+
+        it "tests typical params/session style hash with knockout_merge elements" do
+          hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "2", "3"]}}
+          hash_dst = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "4"]}}
+          @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
+          hash_dst.should == {"property"=>{"bedroom_count"=>["2","3"]}}
+        end
+
+        it "tests typical params/session style hash with knockout_merge elements" do
+          hash_src = {"amenity"=>{"id"=>[@field_ko_prefix+":1", @field_ko_prefix+":2", "3", "4"]}}
+          hash_dst = {"amenity"=>{"id"=>["1", "2"]}}
+          @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
+          hash_dst.should == {"amenity"=>{"id"=>["3","4"]}}
+        end
+      end
+
+      it "tests same as previous but without ko_split value, this merge should fail" do
+        hash_src = {"amenity"=>{"id"=>[@field_ko_prefix+":1,"+@field_ko_prefix+":2", "3,4"]}}
+        hash_dst = {"amenity"=>{"id"=>["1", "2"]}}
+        @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix})
+        hash_dst.should == {"amenity"=>{"id"=>["3,4"]}}
+      end
+
+      it "tests edge test: make sure that when we turn off knockout_prefix that all values are processed correctly" do
+        hash_src = {"region" => {'ids' => ["7", @field_ko_prefix, "2", "6,8"]}}
+        hash_dst = {"region"=>{"ids"=>["1", "2", "3", "4"], 'id'=>'11'}}
+        @dm.deep_merge!(hash_src, hash_dst, {:unpack_arrays => ","})
+        hash_dst.should == {'region' => {'ids' => ["7", @field_ko_prefix, "2", "6", "8"], 'id'=>'11'}}
+      end
+
+      it "tests edge test 2: make sure that when we turn off source array split that all values are processed correctly" do
+        hash_src = {"region" => {'ids' => ["7", "3", @field_ko_prefix, "6,8"]}}
+        hash_dst = {"region"=>{"ids"=>["1", "2", "3", "4"], 'id'=>'11'}}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {'region' => {'ids' => ["7", "3", @field_ko_prefix, "6,8"], 'id'=>'11'}}
+      end
+
+      it "tests hash of array of hashes" do
+        hash_src = {"item" => [{"1" => "3"}, {"2" => "4"}]}
+        hash_dst = {"item" => [{"3" => "5"}]}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {"item" => [{"1" => "3"}, {"2" => "4"}]}
+      end
+
+    end
+
+    # These tests ensure that deep_merge behavior didn't change when
+    # the config option disables the array merging during deep merge
+    # while fixing CHEF-4631.
+    context "when :deep_merge_array_concat is not set" do
+      before do
+        Chef::Config.stub!(:[]).with(:deep_merge_array_concat).and_return(false)
+      end
+
+      it "tests hashes holding array" do
+        hash_src = {"property" => ["1","3"]}
+        hash_dst = {"property" => ["2","4"]}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {"property" => ["2","4","1","3"]}
+      end
+
+      it "tests hashes holding array (sorted)" do
+        hash_src = {"property" => ["1","3"]}
+        hash_dst = {"property" => ["2","4"]}
+        @dm.deep_merge!(hash_src, hash_dst, {:sort_merged_arrays => true})
+        hash_dst.should == {"property" => ["1","2","3","4"]}
+      end
+
+      it "tests hashes holding hashes holding arrays (array with duplicate elements is merged with dest then src" do
+        hash_src = {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["1", "4+"]}}
+        hash_dst = {"property" => {"bedroom_count" => ["3", "2"], "bathroom_count" => ["2"]}}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {"property" => {"bedroom_count" => ["3","2","1"], "bathroom_count" => ["2", "1", "4+"]}}
+      end
+
+      it "tests 3 hash layers holding arrays of int (arrays are merged)" do
+        hash_src = {"property" => {"bedroom_count" => {"king_bed" => [3], "queen_bed" => [1]}, "bathroom_count" => ["1", "4+"]}}
+        hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => [2,3], "queen_bed" => [4,1]}, "bathroom_count" => ["2","1","4+"]}}
+      end
+
+      it "tests 3 hash layers holding arrays of int (arrays are merged) but second hash's array is overwritten" do
+        hash_src = {"property" => {"bedroom_count" => {"king_bed" => [3], "queen_bed" => [1]}, "bathroom_count" => "1"}}
+        hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => [2,3], "queen_bed" => [4,1]}, "bathroom_count" => "1"}}
+      end
+
+      it "tests 3 hash layers holding arrays of int (arrays are merged) but second hash's array is NOT overwritten" do
+        hash_src = {"property" => {"bedroom_count" => {"king_bed" => [3], "queen_bed" => [1]}, "bathroom_count" => "1"}}
+        hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
+        @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true})
+        hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => [2,3], "queen_bed" => [4,1]}, "bathroom_count" => ["2"]}}
+      end
+
+      it "tests 3 hash layers holding arrays of int, but one holds int. This one overwrites, but the rest merge" do
+        hash_src = {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => [1]}, "bathroom_count" => ["1"]}}
+        hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => [4,1]}, "bathroom_count" => ["2","1"]}}
+      end
+
+      it "tests 3 hash layers holding arrays of int, but source is incomplete." do
+        hash_src = {"property" => {"bedroom_count" => {"king_bed" => [3]}, "bathroom_count" => ["1"]}}
+        hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => [2,3], "queen_bed" => [4]}, "bathroom_count" => ["2","1"]}}
+      end
+
+      it "tests 3 hash layers holding arrays of int, but source is shorter and has new 2nd level ints." do
+        hash_src = {"property" => {"bedroom_count" => {2=>3, "king_bed" => [3]}, "bathroom_count" => ["1"]}}
+        hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {"property" => {"bedroom_count" => {2=>3, "king_bed" => [2,3], "queen_bed" => [4]}, "bathroom_count" => ["2","1"]}}
+      end
+
+      # KNOCKOUT_PREFIX testing
+      # the next few tests are looking for correct behavior from specific real-world params/session merges
+      # using the custom modifiers built for param/session merges
+
+      [nil, ","].each do |ko_split|
+        it "tests typical params/session style hash with knockout_merge elements" do
+          hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "2", "3"]}}
+          hash_dst = {"property"=>{"bedroom_count"=>["1", "2", "3"]}}
+          @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
+          hash_dst.should == {"property"=>{"bedroom_count"=>["2", "3"]}}
+        end
+
+        it "tests typical params/session style hash with knockout_merge elements" do
+          hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "2", "3"]}}
+          hash_dst = {"property"=>{"bedroom_count"=>["3"]}}
+          @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
+          hash_dst.should == {"property"=>{"bedroom_count"=>["3","2"]}}
+        end
+
+        it "tests typical params/session style hash with knockout_merge elements" do
+          hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "2", "3"]}}
+          hash_dst = {"property"=>{"bedroom_count"=>["4"]}}
+          @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
+          hash_dst.should == {"property"=>{"bedroom_count"=>["4","2","3"]}}
+        end
+
+        it "tests typical params/session style hash with knockout_merge elements" do
+          hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "2", "3"]}}
+          hash_dst = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "4"]}}
+          @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
+          hash_dst.should == {"property"=>{"bedroom_count"=>["4","2","3"]}}
+        end
+
+        it "tests typical params/session style hash with knockout_merge elements" do
+          hash_src = {"amenity"=>{"id"=>[@field_ko_prefix+":1", @field_ko_prefix+":2", "3", "4"]}}
+          hash_dst = {"amenity"=>{"id"=>["1", "2"]}}
+          @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
+          hash_dst.should == {"amenity"=>{"id"=>["3","4"]}}
+        end
+      end
+
+      it "tests same as previous but without ko_split value, this merge should fail" do
+        hash_src = {"amenity"=>{"id"=>[@field_ko_prefix+":1,"+@field_ko_prefix+":2", "3,4"]}}
+        hash_dst = {"amenity"=>{"id"=>["1", "2"]}}
+        @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix})
+        hash_dst.should == {"amenity"=>{"id"=>["1","2","3,4"]}}
+      end
+
+      it "tests edge test: make sure that when we turn off knockout_prefix that all values are processed correctly" do
+        hash_src = {"region" => {'ids' => ["7", @field_ko_prefix, "2", "6,8"]}}
+        hash_dst = {"region"=>{"ids"=>["1", "2", "3", "4"], 'id'=>'11'}}
+        @dm.deep_merge!(hash_src, hash_dst, {:unpack_arrays => ","})
+        hash_dst.should == {'region' => {'ids' => ["1", "2", "3", "4", "7", @field_ko_prefix, "6", "8"], 'id'=>'11'}}
+      end
+
+      it "tests edge test 2: make sure that when we turn off source array split that all values are processed correctly" do
+        hash_src = {"region" => {'ids' => ["7", "3", @field_ko_prefix, "6,8"]}}
+        hash_dst = {"region"=>{"ids"=>["1", "2", "3", "4"], 'id'=>'11'}}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {'region' => {'ids' => ["1", "2", "3", "4", "7", @field_ko_prefix, "6,8"], 'id'=>'11'}}
+      end
+
+      it "tests hash of array of hashes" do
+        hash_src = {"item" => [{"1" => "3"}, {"2" => "4"}]}
+        hash_dst = {"item" => [{"3" => "5"}]}
+        @dm.deep_merge!(hash_src, hash_dst)
+        hash_dst.should == {"item" => [{"3" => "5"}, {"1" => "3"}, {"2" => "4"}]}
+      end
+    end
   end
 
   it "tests 1 hash overwriting 3 hash layers holding arrays of int" do
@@ -166,41 +375,6 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
   end
 
-  it "tests 3 hash layers holding arrays of int (arrays are merged) but second hash's array is overwritten" do
-    hash_src = {"property" => {"bedroom_count" => {"king_bed" => [3], "queen_bed" => [1]}, "bathroom_count" => "1"}}
-    hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst)
-    hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => [2,3], "queen_bed" => [4,1]}, "bathroom_count" => "1"}}
-  end
-
-  it "tests 3 hash layers holding arrays of int (arrays are merged) but second hash's array is NOT overwritten" do
-    hash_src = {"property" => {"bedroom_count" => {"king_bed" => [3], "queen_bed" => [1]}, "bathroom_count" => "1"}}
-    hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true})
-    hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => [2,3], "queen_bed" => [4,1]}, "bathroom_count" => ["2"]}}
-  end
-
-  it "tests 3 hash layers holding arrays of int, but one holds int. This one overwrites, but the rest merge" do
-    hash_src = {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => [1]}, "bathroom_count" => ["1"]}}
-    hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst)
-    hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => [4,1]}, "bathroom_count" => ["2","1"]}}
-  end
-
-  it "tests 3 hash layers holding arrays of int, but source is incomplete." do
-    hash_src = {"property" => {"bedroom_count" => {"king_bed" => [3]}, "bathroom_count" => ["1"]}}
-    hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst)
-    hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => [2,3], "queen_bed" => [4]}, "bathroom_count" => ["2","1"]}}
-  end
-
-  it "tests 3 hash layers holding arrays of int, but source is shorter and has new 2nd level ints." do
-    hash_src = {"property" => {"bedroom_count" => {2=>3, "king_bed" => [3]}, "bathroom_count" => ["1"]}}
-    hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst)
-    hash_dst.should == {"property" => {"bedroom_count" => {2=>3, "king_bed" => [2,3], "queen_bed" => [4]}, "bathroom_count" => ["2","1"]}}
-  end
-
   it "tests 3 hash layers holding arrays of int, but source is empty" do
     hash_src = {}
     hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
@@ -213,6 +387,55 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     hash_dst = {}
     @dm.deep_merge!(hash_src, hash_dst)
     hash_dst.should == {"property" => {"bedroom_count" => {2=>3, "king_bed" => [3]}, "bathroom_count" => ["1"]}}
+  end
+
+  it "tests hash holding hash holding array v string (string is overwritten by array)" do
+    hash_src = {"property" => {"bedroom_count" => ["1", "2"]}}
+    hash_dst = {"property" => {"bedroom_count" => "3"}}
+    @dm.deep_merge!(hash_src, hash_dst)
+    hash_dst.should == {"property" => {"bedroom_count" => ["1", "2"]}}
+  end
+
+  it "tests hash holding hash holding array v string (string is NOT overwritten by array)" do
+    hash_src = {"property" => {"bedroom_count" => ["1", "2"]}}
+    hash_dst = {"property" => {"bedroom_count" => "3"}}
+    @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true})
+    hash_dst.should == {"property" => {"bedroom_count" => "3"}}
+  end
+
+  it "tests hash holding hash holding string v array (array is overwritten by string)" do
+    hash_src = {"property" => {"bedroom_count" => "3"}}
+    hash_dst = {"property" => {"bedroom_count" => ["1", "2"]}}
+    @dm.deep_merge!(hash_src, hash_dst)
+    hash_dst.should == {"property" => {"bedroom_count" => "3"}}
+  end
+
+  it "tests hash holding hash holding string v array (array does NOT overwrite string)" do
+    hash_src = {"property" => {"bedroom_count" => "3"}}
+    hash_dst = {"property" => {"bedroom_count" => ["1", "2"]}}
+    @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true})
+    hash_dst.should == {"property" => {"bedroom_count" => ["1", "2"]}}
+  end
+
+  it "tests hash holding hash holding hash v array (array is overwritten by hash)" do
+    hash_src = {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => 1}}}
+    hash_dst = {"property" => {"bedroom_count" => ["1", "2"]}}
+    @dm.deep_merge!(hash_src, hash_dst)
+    hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => 1}}}
+  end
+
+  it "tests hash holding hash holding hash v array (array is NOT overwritten by hash)" do
+    hash_src = {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => 1}}}
+    hash_dst = {"property" => {"bedroom_count" => ["1", "2"]}}
+    @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true})
+    hash_dst.should == {"property" => {"bedroom_count" => ["1", "2"]}}
+  end
+
+  it "tests 3 hash layers holding integers (integers are overwritten by source)" do
+    hash_src = {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => 1}}}
+    hash_dst = {"property" => {"bedroom_count" => {"king_bed" => 2, "queen_bed" => 4}}}
+    @dm.deep_merge!(hash_src, hash_dst)
+    hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => 1}}}
   end
 
   it "tests parameter management for knockout_prefix and overwrite unmergable" do
@@ -268,59 +491,11 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     hash_dst.should == hash_src
   end
 
-  # KNOCKOUT_PREFIX testing
-  # the next few tests are looking for correct behavior from specific real-world params/session merges
-  # using the custom modifiers built for param/session merges
-
-  [nil, ","].each do |ko_split|
-    it "tests typical params/session style hash with knockout_merge elements" do
-      hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "2", "3"]}}
-      hash_dst = {"property"=>{"bedroom_count"=>["1", "2", "3"]}}
-      @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
-      hash_dst.should == {"property"=>{"bedroom_count"=>["2", "3"]}}
-    end
-
-    it "tests typical params/session style hash with knockout_merge elements" do
-      hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "2", "3"]}}
-      hash_dst = {"property"=>{"bedroom_count"=>["3"]}}
-      @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
-      hash_dst.should == {"property"=>{"bedroom_count"=>["3","2"]}}
-    end
-
-    it "tests typical params/session style hash with knockout_merge elements" do
-      hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "2", "3"]}}
-      hash_dst = {"property"=>{"bedroom_count"=>["4"]}}
-      @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
-      hash_dst.should == {"property"=>{"bedroom_count"=>["4","2","3"]}}
-    end
-
-    it "tests typical params/session style hash with knockout_merge elements" do
-      hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "2", "3"]}}
-      hash_dst = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "4"]}}
-      @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
-      hash_dst.should == {"property"=>{"bedroom_count"=>["4","2","3"]}}
-    end
-
-    it "tests typical params/session style hash with knockout_merge elements" do
-      hash_src = {"amenity"=>{"id"=>[@field_ko_prefix+":1", @field_ko_prefix+":2", "3", "4"]}}
-      hash_dst = {"amenity"=>{"id"=>["1", "2"]}}
-      @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
-      hash_dst.should == {"amenity"=>{"id"=>["3","4"]}}
-    end
-  end
-
   it "tests special params/session style hash with knockout_merge elements in form src: [\"1\",\"2\"] dest:[\"@ko:1,@ko:2\", \"3,4\"]" do
     hash_src = {"amenity"=>{"id"=>[@field_ko_prefix+":1,"+@field_ko_prefix+":2", "3,4"]}}
     hash_dst = {"amenity"=>{"id"=>["1", "2"]}}
     @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"amenity"=>{"id"=>["3","4"]}}
-  end
-
-  it "tests same as previous but without ko_split value, this merge should fail" do
-    hash_src = {"amenity"=>{"id"=>[@field_ko_prefix+":1,"+@field_ko_prefix+":2", "3,4"]}}
-    hash_dst = {"amenity"=>{"id"=>["1", "2"]}}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix})
-    hash_dst.should == {"amenity"=>{"id"=>["1","2","3,4"]}}
   end
 
   it "tests special params/session style hash with knockout_merge elements in form src: [\"1\",\"2\"] dest:[\"@ko:1,@ko:2\", \"3,4\"]" do
@@ -501,20 +676,6 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     hash_dst.should == {'region' => {'ids' => ["7", "6"], 'id'=>'11'}}
   end
 
-  it "tests edge test: make sure that when we turn off knockout_prefix that all values are processed correctly" do
-    hash_src = {"region" => {'ids' => ["7", @field_ko_prefix, "2", "6,8"]}}
-    hash_dst = {"region"=>{"ids"=>["1", "2", "3", "4"], 'id'=>'11'}}
-    @dm.deep_merge!(hash_src, hash_dst, {:unpack_arrays => ","})
-    hash_dst.should == {'region' => {'ids' => ["1", "2", "3", "4", "7", @field_ko_prefix, "6", "8"], 'id'=>'11'}}
-  end
-
-  it "tests edge test 2: make sure that when we turn off source array split that all values are processed correctly" do
-    hash_src = {"region" => {'ids' => ["7", "3", @field_ko_prefix, "6,8"]}}
-    hash_dst = {"region"=>{"ids"=>["1", "2", "3", "4"], 'id'=>'11'}}
-    @dm.deep_merge!(hash_src, hash_dst)
-    hash_dst.should == {'region' => {'ids' => ["1", "2", "3", "4", "7", @field_ko_prefix, "6,8"], 'id'=>'11'}}
-  end
-
   it "tests Example: src = {'key' => \"@ko:1\"}, dst = {'key' => \"1\"} -> merges to {'key' => \"\"}" do
     hash_src = {"amenity"=>@field_ko_prefix+":1"}
     hash_dst = {"amenity"=>"1"}
@@ -662,13 +823,6 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     hash_dst.should == {"query_uuid"=>"a0dc3c84-ec7f-6756-bdb0-fff9157438ab", "url_regions"=>[], "region"=>{"muni_city_id"=>"", "id"=>""}, "property"=>{"property_type_id"=>"", "search_rate_min"=>"", "search_rate_max"=>""}, "task"=>"search", "run_query"=>"Search"}
   end
 
-  it "tests hash of array of hashes" do
-    hash_src = {"item" => [{"1" => "3"}, {"2" => "4"}]}
-    hash_dst = {"item" => [{"3" => "5"}]}
-    @dm.deep_merge!(hash_src, hash_dst)
-    hash_dst.should == {"item" => [{"3" => "5"}, {"1" => "3"}, {"2" => "4"}]}
-  end
-
   # Additions since import
   it "should overwrite true with false when merging boolean values" do
     hash_src = {"valid" => false}
@@ -724,10 +878,66 @@ describe Chef::Mixin::DeepMerge do
       @dm.merge(hash_dst, hash_src).should == {"name" => "value"}
     end
 
-    it "should merge arrays within hashes" do
-      hash_dst = {"property" => ["2","4"]}
-      hash_src = {"property" => ["1","3"]}
-      @dm.merge(hash_dst, hash_src).should == {"property" => ["2","4","1","3"]}
+    context "when :deep_merge_array_concat is set" do
+      before do
+        Chef::Config.stub!(:[]).with(:deep_merge_array_concat).and_return(true)
+      end
+
+      it "should pick src arrays within hashes" do
+        hash_dst = {"property" => ["2","4"]}
+        hash_src = {"property" => ["1","3"]}
+        @dm.merge(hash_dst, hash_src).should == {"property" => ["1","3"]}
+      end
+
+      it "should not modify the source or destination during the merge" do
+        hash_dst = {"property" => ["1","2","3"]}
+        hash_src = {"property" => ["4","5","6"]}
+        ret = @dm.merge(hash_dst, hash_src)
+        hash_dst.should == {"property" => ["1","2","3"]}
+        hash_src.should == {"property" => ["4","5","6"]}
+        ret.should == {"property" => ["4","5","6"]}
+      end
+
+      it "should not knockout matching array value when merging arrays within hashes" do
+        hash_dst = {"property" => ["2","4"]}
+        hash_src = {"property" => ["1","!merge:4"]}
+        hash_src_no_colon = {"property" => ["1","!merge"]}
+        @dm.merge(hash_dst, hash_src).should == {"property" => ["1", "!merge:4"]}
+        @dm.merge(hash_dst, hash_src_no_colon).should == {"property" => ["1", "!merge"]}
+      end
+    end
+
+    # These tests ensure that deep_merge behavior didn't change when
+    # the config option disables the array merging during deep merge
+    # while fixing CHEF-4631.
+    context "when :deep_merge_array_concat is not set" do
+      before do
+        Chef::Config.stub!(:[]).with(:deep_merge_array_concat).and_return(false)
+      end
+
+      it "should merge arrays within hashes" do
+        hash_dst = {"property" => ["2","4"]}
+        hash_src = {"property" => ["1","3"]}
+        @dm.merge(hash_dst, hash_src).should == {"property" => ["2","4","1","3"]}
+      end
+
+      it "should not modify the source or destination during the merge" do
+        hash_dst = {"property" => ["1","2","3"]}
+        hash_src = {"property" => ["4","5","6"]}
+        ret = @dm.merge(hash_dst, hash_src)
+        hash_dst.should == {"property" => ["1","2","3"]}
+        hash_src.should == {"property" => ["4","5","6"]}
+        ret.should == {"property" => ["1","2","3","4","5","6"]}
+      end
+
+      it "should not knockout matching array value when merging arrays within hashes" do
+        hash_dst = {"property" => ["2","4"]}
+        hash_src = {"property" => ["1","!merge:4"]}
+        hash_src_no_colon = {"property" => ["1","!merge"]}
+        @dm.merge(hash_dst, hash_src).should == {"property" => ["2", "4", "1", "!merge:4"]}
+        @dm.merge(hash_dst, hash_src_no_colon).should == {"property" => ["2", "4", "1", "!merge"]}
+      end
+
     end
 
     it "should merge deeply nested hashes" do
@@ -736,22 +946,6 @@ describe Chef::Mixin::DeepMerge do
       @dm.merge(hash_dst, hash_src).should == {"property" => {"values" => {"are" => "stable", "can" => "change", "may" => "rise"}}}
     end
 
-    it "should not modify the source or destination during the merge" do
-      hash_dst = {"property" => ["1","2","3"]}
-      hash_src = {"property" => ["4","5","6"]}
-      ret = @dm.merge(hash_dst, hash_src)
-      hash_dst.should == {"property" => ["1","2","3"]}
-      hash_src.should == {"property" => ["4","5","6"]}
-      ret.should == {"property" => ["1","2","3","4","5","6"]}
-    end
-
-    it "should not knockout matching array value when merging arrays within hashes" do
-      hash_dst = {"property" => ["2","4"]}
-      hash_src = {"property" => ["1","!merge:4"]}
-      hash_src_no_colon = {"property" => ["1","!merge"]}
-      @dm.merge(hash_dst, hash_src).should == {"property" => ["2", "4", "1", "!merge:4"]}
-      @dm.merge(hash_dst, hash_src_no_colon).should == {"property" => ["2", "4", "1", "!merge"]}
-    end
   end
 
   describe "role_merge" do
@@ -781,6 +975,38 @@ describe Chef::Mixin::DeepMerge do
       hash_dst = {"property" => ["2","4"]}
       hash_src = {"property" => ["1","!merge:4"]}
       @dm.role_merge(hash_dst, hash_src).should == {"property" => ["2","1"]}
+    end
+
+    it "should concat arrays" do
+      hash_dst = {"property" => ["2","4"]}
+      hash_src = {"property" => ["1","4"]}
+      @dm.role_merge(hash_dst, hash_src).should == {"property" => ["2","4", "1","4"]}
+    end
+  end
+
+  describe "horizontal_merge" do
+    it "should concat arrays" do
+      hash_dst = {"property" => ["2","4"]}
+      hash_src = {"property" => ["1","3"]}
+      @dm.horizontal_merge(hash_dst, hash_src).should == {"property" => ["2","4", "1","3"]}
+    end
+
+    it "should concat arrays without removing same elements" do
+      hash_dst = {"property" => ["2","4"]}
+      hash_src = {"property" => ["1","2"]}
+      @dm.horizontal_merge(hash_dst, hash_src).should == {"property" => ["2","4", "1","2"]}
+    end
+
+    it "should be able to merge array values with an empty hash as source" do
+      hash_dst = {"property" => ["2","4"]}
+      hash_src = {}
+      @dm.horizontal_merge(hash_dst, hash_src).should == {"property" => ["2","4"]}
+    end
+
+    it "should be able to merge array values with an empty hash as dest" do
+      hash_dst = {}
+      hash_src = {"property" => ["2","4"]}
+      @dm.horizontal_merge(hash_dst, hash_src).should == {"property" => ["2","4"]}
     end
   end
 end

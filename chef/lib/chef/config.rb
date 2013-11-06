@@ -204,7 +204,7 @@ class Chef
     client_fork false
     enable_reporting true
     enable_reporting_url_fatals false
-    
+
     # Set these to enable SSL authentication / mutual-authentication
     # with the server
     ssl_client_cert nil
@@ -326,5 +326,9 @@ class Chef
     # returns a platform specific path to the user home dir
     windows_home_path = ENV['SYSTEMDRIVE'] + ENV['HOMEPATH'] if ENV['SYSTEMDRIVE'] && ENV['HOMEPATH']
     user_home (ENV['HOME'] || windows_home_path || ENV['USERPROFILE'])
+
+    # CHEF-4631
+    # Enables the concatanation behavior instead of merging
+    deep_merge_array_concat true
   end
 end
