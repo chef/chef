@@ -181,7 +181,10 @@ class Chef
               puts if merge_debug
             end
             puts "#{di} merging arrays: #{source.inspect} :: #{dest.inspect}" if merge_debug
-            dest = dest | source
+            # When merging to arrays instead of merging and
+            # deduplicating the elements pick the array that is higher
+            # in the inheritance order.
+            dest = source
             dest.sort! if sort_merged_arrays
           elsif overwrite_unmergeable
             puts "#{di} overwriting dest: #{source.inspect} -over-> #{dest.inspect}" if merge_debug
