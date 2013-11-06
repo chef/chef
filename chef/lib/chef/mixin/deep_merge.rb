@@ -138,18 +138,16 @@ class Chef
                 dest[src_key] = deep_merge!(src_value, dest[src_key], options.merge(:debug_indent => di + '  '))
               else # dest[src_key] doesn't exist so we want to create and overwrite it (but we do this via deep_merge!)
                 puts "#{di} ==>merging over: #{src_key.inspect} => #{src_value.inspect}" if merge_debug
-                # note: we rescue here b/c some classes respond to "dup" but don't implement it (Numeric, TrueClass, FalseClass, NilClass among maybe others)
-                # begin
-                #   src_dup = src_value.dup # we dup src_value if possible because we're going to merge into it (since dest is empty)
-                # rescue TypeError
-                #   src_dup = src_value
-                # end
-                # dest[src_key] = deep_merge!(src_value, src_dup, options.merge(:debug_indent => di + '  '))
-                # XXX: I don't have an idea why we are doing this via
-                # deep merge. With the new array merge logic we get
-                # duplicates if we merge an empty Mash with a full
-                # Mash if they contains arrays.
-                dest[src_key] = src_value
+                # XXX
+                # We are doing this via deep_merge! because the
+                # src_value can still contain merge directives such as
+                # knockout_prefix.
+                # Historically we have been dup'ing the src_value here
+                # and merging src_value with src_value.dup. This logic
+                # is not applicable anymore because it results in
+                # duplicates when merging two array values with
+                # :horizontal_precedence = true.
+                dest[src_key] = deep_merge!(src_value, { }, options.merge(:debug_indent => di + '  '))
               end
             else # dest isn't a hash, so we overwrite it completely (if permitted)
               if overwrite_unmergeable
@@ -193,16 +191,29 @@ class Chef
               puts if merge_debug
             end
             puts "#{di} merging arrays: #{source.inspect} :: #{dest.inspect}" if merge_debug
-            # When merging to arrays check the :horizontal_precedence.
-            # If it is set, this means we are merging two arrays
-            # at the same precendence level.
-            # In this case we will concatanate the arrays. If we are
-            # merging across precedence levels we will choose the
-            # array from the higher precedence.
-            if options[:horizontal_precedence]
-              dest += source
+            # Behavior of merging arrays has changed with CHEF-4631.
+            # Old behavior was to deduplicate and merge the
+            # arrays. New behavior is to concatanate the arrays if the
+            # merge is happening on the same attribute precedence
+            # level and pick the value from the higher precedence
+            # level if merge is being done across the precedence
+            # levels.
+            # Old behavior can still be used by setting
+            # :deep_merge_array_concat to false in config.
+            if Chef::Config[:deep_merge_array_concat]
+              # If :horizontal_precedence is set, this means we are
+              # merging two arrays at the same precendence level so
+              # concatanate them. Otherwise this is a merge across
+              # precedence levels which means we will pick the one
+              # from higher precedence level.
+              if options[:horizontal_precedence]
+                dest += source
+              else
+                dest = source
+              end
             else
-              dest = source
+              # Pre CHEF-4631 behavior for array merging
+              dest = dest | source
             end
             dest.sort! if sort_merged_arrays
           elsif overwrite_unmergeable
