@@ -17,6 +17,7 @@ class Chef
 
         @updated_resources = 0
         @start_time = Time.now
+        @end_time = @start_time
       end
 
       def elapsed_time
