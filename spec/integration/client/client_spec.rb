@@ -22,19 +22,19 @@ EOM
     context 'and no config file' do
       it 'should complete with success when cwd is just above cookbooks and paths are not specified' do
         chef_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "bin"))
-        result = shell_out("#{chef_dir}/chef-client -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to(''))
+        result = shell_out("ruby #{chef_dir}/chef-client -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to(''))
         result.error!
       end
 
       it 'should complete with success when cwd is below cookbooks and paths are not specified' do
         chef_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "bin"))
-        result = shell_out("#{chef_dir}/chef-client -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to('cookbooks/x'))
+        result = shell_out("ruby #{chef_dir}/chef-client -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to('cookbooks/x'))
         result.error!
       end
 
       it 'should fail when cwd is below high above and paths are not specified' do
         chef_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "bin"))
-        result = shell_out("#{chef_dir}/chef-client -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => File.expand_path('..', path_to('')))
+        result = shell_out("ruby #{chef_dir}/chef-client -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => File.expand_path('..', path_to('')))
         result.exitstatus.should == 1
       end
     end
@@ -44,13 +44,14 @@ EOM
 
       it 'should load .chef/knife.rb when -z is specified' do
         chef_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "bin"))
-        result = shell_out("#{chef_dir}/chef-client -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to(''))
-        result.exitstatus.should == 2
+        result = shell_out("ruby #{chef_dir}/chef-client -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to(''))
+        # FATAL: Configuration error NoMethodError: undefined method `xxx' for nil:NilClass
+        result.stdout.should include("xxx")
       end
 
       it 'fails to load .chef/knife.rb when -z is specified and --config-file-jail does not include the .chef/knife.rb' do
         chef_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "bin"))
-        result = shell_out("#{chef_dir}/chef-client -z -o 'x::default' --config-file-jail \"#{path_to('roles')}\"", :cwd => path_to(''))
+        result = shell_out("ruby #{chef_dir}/chef-client -z -o 'x::default' --config-file-jail \"#{path_to('roles')}\"", :cwd => path_to(''))
         result.error!
       end
     end
