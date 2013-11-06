@@ -22,6 +22,7 @@ class Chef
     class RubyBlock < Chef::Resource
       
       identity_attr :block_name
+      state_attrs :whyrun_safe
 
       def initialize(name, run_context=nil)
         super
@@ -29,6 +30,7 @@ class Chef
         @action = "create"
         @allowed_actions.push(:create)
         @block_name = name
+        @whyrun_safe = false
       end
 
       def block(&block)
@@ -44,6 +46,14 @@ class Chef
           :block_name,
           arg,
           :kind_of => String
+        )
+      end
+
+      def whyrun_safe(arg=nil)
+        set_or_return(
+          :whyrun_safe,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
     end
