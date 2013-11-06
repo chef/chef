@@ -138,8 +138,7 @@ class Chef
                 dest[src_key] = deep_merge!(src_value, dest[src_key], options.merge(:debug_indent => di + '  '))
               else # dest[src_key] doesn't exist so we want to create and overwrite it (but we do this via deep_merge!)
                 puts "#{di} ==>merging over: #{src_key.inspect} => #{src_value.inspect}" if merge_debug
-                # XXX
-                # We are doing this via deep_merge! because the
+                # NOTE: We are doing this via deep_merge! because the
                 # src_value can still contain merge directives such as
                 # knockout_prefix.
                 # Historically we have been dup'ing the src_value here
