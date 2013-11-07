@@ -95,3 +95,7 @@ end
 def suse?
   File.exists?("/etc/SuSE-release")
 end
+
+def root?
+  ENV['USER'] == 'root' || ENV['LOGIN'] == 'root'
+end
