@@ -57,6 +57,12 @@ class Chef
         :boolean => true,
         :description => "Update cookbook versions even if they have been frozen"
 
+      option :concurrency,
+        :long => '--concurrency NUMBER_OF_THREADS',
+        :description => "How many concurrent threads will be used",
+        :default => 10,
+        :proc => lambda { |o| o.to_i }
+
       option :environment,
         :short => '-E',
         :long  => '--environment ENVIRONMENT',
@@ -228,7 +234,7 @@ WARNING
           check_for_broken_links!(cb)
           check_for_dependencies!(cb)
         end
-        Chef::CookbookUploader.new(cookbooks, config[:cookbook_path], :force => config[:force]).upload_cookbooks
+        Chef::CookbookUploader.new(cookbooks, config[:cookbook_path], :force => config[:force], :concurrency => config[:concurrency]).upload_cookbooks
       rescue Chef::Exceptions::CookbookFrozen => e
         ui.error e
         raise
