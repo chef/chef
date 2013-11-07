@@ -65,7 +65,7 @@ class Chef
         end
 
         def enable_service()
-          shell_out! "/sbin/chkconfig #{@new_resource.service_name} on"
+          shell_out! "/sbin/chkconfig --add #{@new_resource.service_name}"
         end
 
         def disable_service()
