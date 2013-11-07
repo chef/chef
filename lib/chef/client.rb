@@ -543,8 +543,8 @@ class Chef
       end
     end
 
-    def directory_not_empty?(path)
-      File.exists?(path) && (Dir.entries(path).size > 2)
+    def empty_directory?(path)
+      !File.exists?(path) || (Dir.entries(path).size <= 2)
     end
 
     def is_last_element?(index, object)
@@ -556,13 +556,10 @@ class Chef
         # Check for cookbooks in the path given
         # Chef::Config[:cookbook_path] can be a string or an array
         # if it's an array, go through it and check each one, raise error at the last one if no files are found
-        Chef::Log.debug "Loading from cookbook_path: #{Array(Chef::Config[:cookbook_path]).map { |path| File.expand_path(path) }.join(', ')}"
-        empty_cookbook_paths = []
-        Array(Chef::Config[:cookbook_path]).each do |cookbook_path|
-          empty_cookbook_paths << cookbook_path unless directory_not_empty?(cookbook_path)
-        end
-        unless empty_cookbook_paths.empty?
-          msg = "No cookbook found in #{empty_cookbook_paths.inspect}, make sure cookbook_path is set correctly."
+        cookbook_paths = Array(Chef::Config[:cookbook_path])
+        Chef::Log.debug "Loading from cookbook_path: #{cookbook_paths.map { |path| File.expand_path(path) }.join(', ')}"
+        if cookbook_paths.all? {|path| empty_directory?(path) }
+          msg = "None of the cookbook paths, #{cookbook_paths.inspect}, contain any cookbooks"
           Chef::Log.fatal(msg)
           raise Chef::Exceptions::CookbookNotFound, msg
         end
