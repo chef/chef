@@ -456,7 +456,7 @@ shared_examples_for Chef::Client do
       it "raises CookbookNotFound error" do
         expect do
           @client.send(:assert_cookbook_path_not_empty, nil)
-        end.to raise_error(Chef::Exceptions::CookbookNotFound, 'No cookbook found in ["/path/to/invalid/cookbook_path"], make sure cookbook_path is set correctly.')
+        end.to raise_error(Chef::Exceptions::CookbookNotFound, 'None of the cookbook paths, ["/path/to/invalid/cookbook_path"], contain any cookbooks')
       end
     end
   end
