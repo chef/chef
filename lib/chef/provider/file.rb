@@ -1,4 +1,4 @@
-
+#
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Lamont Granquist (<lamont@opscode.com>)
 # Copyright:: Copyright (c) 2008-2013 Opscode, Inc.
@@ -75,7 +75,7 @@ class Chef
         @current_resource ||= Chef::Resource::File.new(@new_resource.name)
         @current_resource.path(@new_resource.path)
         if ::File.exists?(@current_resource.path) && ::File.file?(::File.realpath(@current_resource.path))
-          if should_do_checksum?
+          if managing_content?
             Chef::Log.debug("#{@new_resource} checksumming file at #{@new_resource.path}.")
             @current_resource.checksum(checksum(@current_resource.path))
           end
@@ -160,22 +160,12 @@ class Chef
 
       private
 
-      def should_do_checksum?
-        if @current_resource.respond_to?(:checksum)
-          case
-          when @new_resource.checksum
-            return true
-          when @action == :create_if_missing
-            return false
-          when @new_resource.respond_to?(:source)
-            return true
-          when @new_resource.content.nil?
-            return false
-          else
-            return true
-          end
-        end
-        # We may be a File::Provider::Directory
+      # What to check in this resource to see if we're going to be actively managing
+      # content (for things like doing checksums in load_current_resource).  Expected to
+      # be overridden in subclasses.
+      def managing_content?
+        return true if @new_resource.checksum
+        return true if !@new_resource.content.nil? && @action != :create_if_missing
         false
       end
 
@@ -350,7 +340,7 @@ class Chef
         do_backup unless file_created?
         deployment_strategy.deploy(tempfile.path, ::File.realpath(@new_resource.path))
         Chef::Log.info("#{@new_resource} updated file contents #{@new_resource.path}")
-        if should_do_checksum?
+        if managing_content?
           @new_resource.checksum(checksum(@new_resource.path)) # for reporting
         end
       end

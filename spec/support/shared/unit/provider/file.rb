@@ -404,7 +404,7 @@ shared_examples_for Chef::Provider::File do
                                   :for_reporting => diff_for_reporting )
             diff.stub!(:diff).with(resource_path, tempfile_path).and_return(true)
             provider.should_receive(:diff).at_least(:once).and_return(diff)
-            provider.should_receive(:should_do_checksum?).at_least(:once).and_return(true)
+            provider.should_receive(:managing_content?).at_least(:once).and_return(true)
             provider.should_receive(:checksum).with(tempfile_path).and_return(tempfile_sha256)
             provider.should_receive(:checksum).with(resource_path).and_return(tempfile_sha256)
             provider.deployment_strategy.should_receive(:deploy).with(tempfile_path, normalized_path)
