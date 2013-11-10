@@ -64,6 +64,9 @@ class Chef
               :service => Chef::Provider::Service::Freebsd,
               :user    => Chef::Provider::User::Pw,
               :cron    => Chef::Provider::Cron
+            },
+            ">= 10.0" => {
+              :package => Chef::Provider::Package::FreebsdNextGen
             }
           },
           :ubuntu   => {
