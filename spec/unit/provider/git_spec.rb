@@ -402,6 +402,21 @@ SHAS
     # @resource.should be_updated
   end
 
+  it "does not call checkout if enable_checkout is false" do
+    # will be invoked in load_current_resource
+    ::File.stub!(:exist?).with("/my/deploy/dir/.git").and_return(false)
+
+    ::File.stub!(:exist?).with("/my/deploy/dir").and_return(true)
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
+    ::Dir.stub!(:entries).with("/my/deploy/dir").and_return(['.','..'])
+
+    @resource.enable_checkout false
+    @provider.should_receive(:clone)
+    @provider.should_not_receive(:checkout)
+    @provider.should_receive(:enable_submodules)
+    @provider.run_action(:checkout)
+  end
+
   # REGRESSION TEST: on some OSes, the entries from an empty directory will be listed as
   # ['..', '.'] but this shouldn't change the behavior
   it "does a checkout by cloning the repo and then enabling submodules when the directory entries are listed as %w{.. .}" do
