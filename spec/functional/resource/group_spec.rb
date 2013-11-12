@@ -211,12 +211,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     end
 
     describe "when group name is length 256", :windows_only do
-      before(:each) do
-        let!(:group_name) { "theoldmanwalkingdownthestreetalwayshadagood\
+      let!(:group_name) { "theoldmanwalkingdownthestreetalwayshadagood\
 smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface\
 theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
 downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree" }
-      end
 
       it "should create a group" do
         group_resource.run_action(:create)
@@ -225,12 +223,10 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree" }
     end
 
     describe "when group name length is more than 256", :windows_only do
-      before(:each) do
-        let!(:group_name) { "theoldmanwalkingdownthestreetalwayshadagood\
+      let!(:group_name) { "theoldmanwalkingdownthestreetalwayshadagood\
 smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface\
 theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
 downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
-      end
 
       it "should not create a group" do
         lambda { group_resource.run_action(:create) }.should raise_error
