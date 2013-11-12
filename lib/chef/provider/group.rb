@@ -70,7 +70,7 @@ class Chef
           if !@new_resource.members.nil? && !@new_resource.excluded_members.nil?
             common_members = @new_resource.members & @new_resource.excluded_members
             a.assertion { common_members.empty? }
-            a.failure_message(Chef::Exceptions::ConflictingMembersInGroup, "Group resource has conflicting users: '#{common_members.join(', ')}'")
+            a.failure_message(Chef::Exceptions::ConflictingMembersInGroup, "Attempting to both add and remove users from a group: '#{common_members.join(', ')}'")
             # No why-run alternative
           end
         end
