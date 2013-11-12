@@ -104,8 +104,14 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       let(:included_members) { ["group-spec-Eric"] }
 
       before do
+        create_user("group-spec-Eric")
         create_user("group-spec-Gordon")
         add_members_to_group(["group-spec-Gordon"])
+      end
+
+      after do
+        remove_user("group-spec-Eric")
+        remove_user("group-spec-Gordon")
       end
 
       it "should remove the existing users and add the new users to the group" do
