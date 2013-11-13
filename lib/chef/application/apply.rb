@@ -74,6 +74,12 @@ class Chef::Application::Apply < Chef::Application
     :description  => 'Enable whyrun mode',
     :boolean      => true
 
+  option :color,
+    :long         => '--[no-]color',
+    :boolean      => true,
+    :default      => !Chef::Platform.windows?,
+    :description  => "Use colored output, defaults to enabled"
+
   def initialize
     super
   end
