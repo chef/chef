@@ -121,6 +121,65 @@ describe Chef::Config do
 
   end
 
+  describe "config attribute writer: trace_attributes=" do
+    describe "when given 'none'" do
+      it "sets the value to 'none'" do
+        Chef::Config.trace_attributes = 'none'
+        Chef::Config.trace_attributes.should == 'none'
+      end
+    end
+
+    describe "when given 'all'" do
+      it "sets the value to 'all'" do
+        Chef::Config.trace_attributes = 'all'
+        Chef::Config.trace_attributes.should == 'all'
+      end
+    end
+
+    describe "when given '/foo/bar'" do
+      it "sets the value to '/foo/bar'" do
+        Chef::Config.trace_attributes = '/foo/bar'
+        Chef::Config.trace_attributes.should == '/foo/bar'
+      end
+    end
+
+    describe "when given 'foo'" do
+      it "raises an exception" do
+        expect { Chef::Config.trace_attributes = 'foo' }.to raise_exception(Chef::Exceptions::ConfigurationError)
+      end
+    end
+
+    describe "when given 'foo/bar'" do
+      it "raises an exception" do
+        expect { Chef::Config.trace_attributes = 'foo/bar' }.to raise_exception(Chef::Exceptions::ConfigurationError)
+      end
+    end
+
+  end
+
+  describe "config attribute writer: log_method=" do
+    describe "when given an object that responds to sync= e.g. IO" do
+      it "should configure itself to use the IO as log_location" do
+        Chef::Config.log_location = STDOUT
+        Chef::Config.log_location.should == STDOUT
+      end
+    end
+
+    describe "when given an object that is stringable (to_str)" do
+      before do
+        @mockfile = mock("File", :path => "/var/log/chef/client.log", :sync= => true)
+        File.should_receive(:new).
+          with("/var/log/chef/client.log", "a").
+          and_return(@mockfile)
+      end
+
+      it "should configure itself to use a File object based upon the String" do
+        Chef::Config.log_location = "/var/log/chef/client.log"
+        Chef::Config.log_location.path.should == "/var/log/chef/client.log"
+      end
+    end
+  end
+
   describe "class method: plaform_specific_path" do
     it "should return given path on non-windows systems" do
       platform_mock :unix do
@@ -142,6 +201,10 @@ describe Chef::Config do
   end
 
   describe "default values" do
+
+    it "Chef::Config[:trace_attributes] defaults to 'none'" do
+      Chef::Config[:trace_attributes].should == 'none'
+    end
 
     it "Chef::Config[:file_backup_path] defaults to /var/chef/backup" do
       backup_path = if windows?

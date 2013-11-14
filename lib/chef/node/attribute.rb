@@ -19,6 +19,7 @@
 
 require 'chef/node/immutable_collections'
 require 'chef/node/attribute_collections'
+require 'chef/node/attribute_tracing'
 require 'chef/mixin/deep_merge'
 require 'chef/log'
 
@@ -256,58 +257,68 @@ class Chef
        # Set the cookbook level default attribute component to +new_data+.
        def default=(new_data)
          reset
+         trace_attribute_change(:default, new_data)
          @default = VividMash.new(self, new_data)
        end
 
        # Set the role level default attribute component to +new_data+
        def role_default=(new_data)
          reset
+         trace_attribute_change(:role_default, new_data)
          @role_default = VividMash.new(self, new_data)
        end
 
        # Set the environment level default attribute component to +new_data+
        def env_default=(new_data)
          reset
+         trace_attribute_change(:env_default, new_data)
          @env_default = VividMash.new(self, new_data)
        end
 
        # Set the force_default (+default!+) level attributes to +new_data+
        def force_default=(new_data)
          reset
+         trace_attribute_change(:force_default, new_data)
          @force_default = VividMash.new(self, new_data)
        end
 
        # Set the normal level attribute component to +new_data+
        def normal=(new_data)
          reset
+         trace_attribute_change(:normal, new_data)
          @normal = VividMash.new(self, new_data)
        end
 
        # Set the cookbook level override attribute component to +new_data+
        def override=(new_data)
          reset
+         trace_attribute_change(:override, new_data)
          @override = VividMash.new(self, new_data)
        end
 
        # Set the role level override attribute component to +new_data+
        def role_override=(new_data)
          reset
+         trace_attribute_change(:role_override, new_data)
          @role_override = VividMash.new(self, new_data)
        end
 
        # Set the environment level override attribute component to +new_data+
        def env_override=(new_data)
          reset
+         trace_attribute_change(:env_override, new_data)
          @env_override = VividMash.new(self, new_data)
        end
 
        def force_override=(new_data)
          reset
+         trace_attribute_change(:force_override, new_data)
          @force_override = VividMash.new(self, new_data)
        end
 
        def automatic=(new_data)
          reset
+         trace_attribute_change(:automatic, new_data)
          @automatic = VividMash.new(self, new_data)
        end
 
