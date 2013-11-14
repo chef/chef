@@ -64,6 +64,16 @@ class Chef
 
       alias_method :users, :members
 
+      def excluded_members(arg=nil)
+        converted_members = arg.is_a?(String) ? [].push(arg) : arg
+        set_or_return(
+          :excluded_members,
+          converted_members,
+          :kind_of => [ Array ]
+        )
+      end
+
+
       def append(arg=nil)
         set_or_return(
           :append,

@@ -95,3 +95,8 @@ end
 def suse?
   File.exists?("/etc/SuSE-release")
 end
+
+def root?
+  return false if windows?
+  Process.euid == 0
+end
