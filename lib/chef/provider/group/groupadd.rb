@@ -65,7 +65,7 @@ class Chef
         end
 
         def modify_group_members
-          if(@new_resource.append)
+          if @new_resource.append
             if @new_resource.members && !@new_resource.members.empty?
               members_to_be_added = [ ]
               @new_resource.members.each do |member|
@@ -89,7 +89,8 @@ class Chef
               end
             end
           else
-            Chef::Log.debug("#{@new_resource} setting group members to: #{@new_resource.members.join(", ")}")
+            members_description = @new_resource.members.empty? ? "none" : @new_resource.members.join(", ")
+            Chef::Log.debug("#{@new_resource} setting group members to: #{members_description}")
             set_members(@new_resource.members)
           end
         end

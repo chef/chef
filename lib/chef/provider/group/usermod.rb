@@ -17,11 +17,14 @@
 #
 
 require 'chef/provider/group/groupadd'
+require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
     class Group
       class Usermod < Chef::Provider::Group::Groupadd
+
+        include Chef::Mixin::ShellOut
 
         def load_current_resource
           super
@@ -44,7 +47,7 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             a.assertion { @new_resource.excluded_members.empty? }
-            a.failure_message Chef::Exceptions::Group "excluded_members is not supported by #{self.to_s}"
+            a.failure_message Chef::Exceptions::Group, "excluded_members is not supported by #{self.to_s}"
             # No whyrun alternative - this action is simply not supported.
           end
         end

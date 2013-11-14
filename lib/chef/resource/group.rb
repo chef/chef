@@ -24,6 +24,7 @@ class Chef
       identity_attr :group_name
 
       state_attrs :members
+      state_attrs :excluded_members
 
       def initialize(name, run_context=nil)
         super
@@ -31,6 +32,7 @@ class Chef
         @group_name = name
         @gid = nil
         @members = []
+        @excluded_members = []
         @action = :create
         @append = false
         @non_unique = false
