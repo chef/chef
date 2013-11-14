@@ -185,7 +185,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     end
   end
 
-  let(:group_name) { "test-group-#{SecureRandom.random_number(9999)}" }
+  let(:group_name) { "chef-rspec-test-#{SecureRandom.random_number(9999)}" }
   let(:included_members) { nil }
   let(:excluded_members) { nil }
   let(:group_resource) {

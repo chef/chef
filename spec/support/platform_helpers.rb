@@ -97,5 +97,6 @@ def suse?
 end
 
 def root?
-  ENV['USER'] == 'root' || ENV['LOGIN'] == 'root'
+  return false if windows?
+  Process.euid == 0
 end
