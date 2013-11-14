@@ -39,39 +39,20 @@ class Chef
           end
         end
 
-        def modify_group_members
-          if(@new_resource.append)
-            if @new_resource.members && !@new_resource.members.empty?
-              members_to_be_added = [ ]
-              @new_resource.members.each do |member|
-                members_to_be_added << member if !@current_resource.members.include?(member)
-              end
-              members_to_be_added.each do |member|
-                Chef::Log.debug("#{@new_resource} appending member #{member} to group #{@new_resource.group_name}")
-                shell_out!("gpasswd -a #{member} #{@new_resource.group_name}")
-              end
-            end
-
-            if @new_resource.excluded_members && !@new_resource.excluded_members.empty?
-              members_to_be_removed = [ ]
-              @new_resource.excluded_members.each do |member|
-                members_to_be_removed << member if @current_resource.members.include?(member)
-              end
-
-              members_to_be_removed.each do |member|
-                Chef::Log.debug("#{@new_resource} removing member #{member} from group #{@new_resource.group_name}")
-                shell_out!("gpasswd -d #{member} #{@new_resource.group_name}")
-              end
-            end
+        def set_members(members)
+          unless members.empty?
+            shell_out!("gpasswd -M #{members.join(',')} #{@new_resource.group_name}")
           else
-            unless @new_resource.members.empty?
-              Chef::Log.debug("#{@new_resource} setting group members to #{@new_resource.members.join(', ')}")
-              shell_out!("gpasswd -M #{@new_resource.members.join(',')} #{@new_resource.group_name}")
-            else
-              Chef::Log.debug("#{@new_resource} setting group members to: none")
-              shell_out!("gpasswd -M \"\" #{@new_resource.group_name}")
-            end
+            shell_out!("gpasswd -M \"\" #{@new_resource.group_name}")
           end
+        end
+
+        def add_member(member)
+          shell_out!("gpasswd -a #{member} #{@new_resource.group_name}")
+        end
+
+        def remove_member(member)
+          shell_out!("gpasswd -d #{member} #{@new_resource.group_name}")
         end
       end
     end
