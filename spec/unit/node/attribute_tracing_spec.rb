@@ -9,7 +9,9 @@ describe "Chef::Node::Attribute Tracing" do
       it "should not contain trace messages"
     end
     describe "the node attribute trace object" do
-      it "should be empty"
+      it "should be empty" do
+        expect(node.attribute_trace_log).to be_empty
+      end
     end
   end
 
@@ -18,7 +20,10 @@ describe "Chef::Node::Attribute Tracing" do
       it "should contain trace messages for #{path} at #{level} from #{origin_type}"
     end
     describe "the node attribute trace object" do
-      it "should contain trace messages for #{path} at #{level} from #{origin_type}"
+      it "should contain trace messages for #{path} at #{level} from #{origin_type}" do
+        expect(node.attribute_trace_log[path]).not_to be_nil
+        expect(node.attribute_trace_log[path].find {|t| t.type == origin_type && t.precedence == level}).not_to be_nil
+      end
     end
   end
 
@@ -46,6 +51,15 @@ describe "Chef::Node::Attribute Tracing" do
     end
     describe "the node attribute trace object" do
       it "should contain a trace message for #{path} at level #{level} in #{origin_type} #{origin_name}"
+    end
+  end
+
+  describe "the trace data structure accessor" do
+    context "when the node is newly created" do
+      it "should be an empty hash" do
+        expect(Chef::Node.new.attribute_trace_log).to be_a_kind_of(Hash)
+        expect(Chef::Node.new.attribute_trace_log).to be_empty        
+      end
     end
   end
 
@@ -166,5 +180,7 @@ describe "Chef::Node::Attribute Tracing" do
     include_examples "contains role/env trace", "/oryx/crake", "default", "environment", "postapocalyptic"
     include_examples "contains role/env trace", "/oryx/crake", "override", "environment", "postapocalyptic"
   end
+
+  # TODO: add actions? eg set, clear (eg override to [] or {}), append, arrayclobber, hashclobber?
 
 end

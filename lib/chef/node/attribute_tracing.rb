@@ -15,13 +15,29 @@ class Chef
   end
 
   class Node
+
+    class AttributeTraceEntry
+      attr_reader :precedence
+      attr_reader :type
+      attr_accessor :location
+      attr_reader :action
+
+      def initialize(a_precedence, a_type, a_location = nil, an_action = :set)
+        @precedence  = a_precedence
+        @type        = a_type
+        @location    = a_location
+        @action      = an_action 
+      end
+
+    end
+
     class Attribute < Mash
 
       private
 
       def trace_attribute_change(level, new_data)
-        # Determine trace mode
-        # if none, return
+        if Chef::Config.trace_attributes == 'none' then return end
+          
         # Determine attr path
         # Run trace to determine assignment location
         # If trace mode is log

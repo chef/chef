@@ -44,6 +44,8 @@ class Chef
 
     attr_accessor :recipe_list, :run_state, :override_runlist
 
+    attr_reader :attribute_trace_log
+
     # RunContext will set itself as run_context via this setter when
     # initialized. This is needed so DSL::IncludeAttribute (in particular,
     # #include_recipe) can access the run_context to determine if an attributes
@@ -67,6 +69,7 @@ class Chef
       @override_runlist = Chef::RunList.new
 
       @attributes = Chef::Node::Attribute.new({}, {}, {}, {})
+      @attribute_trace_log = {}
 
       @run_state = {}
     end
