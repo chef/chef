@@ -345,7 +345,13 @@ class Chef
           diff.diff(@current_resource.path, tempfile.path)
           @new_resource.diff( diff.for_reporting ) unless file_created?
           description = [ "update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(checksum(tempfile.path))}" ]
-          description << diff.for_output
+          
+          if @new_resource.sensitive
+            Chef::Log.info("redacted sensitive resource: #{@new_resource}")
+          else
+            description << diff.for_output            
+          end
+
           converge_by(description) do
             update_file_contents
           end

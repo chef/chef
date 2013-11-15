@@ -116,4 +116,17 @@ describe Chef::Resource::File do
     end
   end
 
+  describe '.sensitive' do
+    context 'sensitive' do
+      before { current_resource.sensitive(true) }
+
+      it { expect(current_resource.sensitive).to(be_true) }
+    end
+
+    context 'insensitive' do
+      before { current_resource.sensitive(false) }
+
+      it { expect(current_resource.sensitive).to(be_false) }
+    end
+  end
 end
