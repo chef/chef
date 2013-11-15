@@ -95,8 +95,9 @@ if [ "x$os" != "xAIX" ]; then
   # Omnibus build server prep tasks, including build ruby
   sudo -i env PATH=$PATH chef-solo -c `pwd`/jenkins/solo.rb -j $dna -l debug
   # Fix root-owned perms left over from running chef-solo (cache turds, etc)
-  sudo chown -R jenkins-node `pwd` || true
-  sudo chown -R jenkins `pwd` || true
+  set +x
+  sudo chown -R jenkins-node `pwd` || sudo chown -R jenkins `pwd` 
+  set -x
 fi
 
 if [ "x$os" = "xAIX" ]; then
