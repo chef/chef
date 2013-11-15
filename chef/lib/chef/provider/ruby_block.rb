@@ -29,15 +29,13 @@ class Chef
       end
 
       def action_create
-        if @new_resource.whyrun_safe
+        description = "execute the ruby block #{@new_resource.name}"
+        if Chef::Config[:why_run] && @new_resource.whyrun_safe
           @new_resource.block.call
-          if Chef::Config[:why_run]
-            Chef::Log.info("#{@new_resource} called - labelled as whyrun-safe")
-          else
-            Chef::Log.info("#{@new_resource} called")
-          end
+          new_resource.updated_by_last_action(true)
+          Chef::Log.info("#{@new_resource} called - labelled as whyrun-safe")
         else
-          converge_by("execute the ruby block #{@new_resource.name}") do 
+          converge_by(description) do
             @new_resource.block.call
             Chef::Log.info("#{@new_resource} called")
           end
