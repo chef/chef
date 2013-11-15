@@ -49,7 +49,7 @@ describe Chef::Provider::Group::Pw do
   describe "when creating a group" do
     it "should run pw groupadd with the return of set_options and set_members_option" do
       @new_resource.gid(23)
-      @provider.should_receive(:run_command).with({ :command => "pw groupadd wheel -g '23' -M root,aj" }).and_return(true)
+      @provider.should_receive(:run_command).with({ :command => "pw groupadd wheel -g '23'" }).and_return(true)
       @provider.create_group
     end
   end
@@ -58,7 +58,8 @@ describe Chef::Provider::Group::Pw do
 
     it "should run pw groupmod with the return of set_options" do
       @new_resource.gid(42)
-      @provider.should_receive(:run_command).with({ :command => "pw groupmod wheel -g '42' -M root,aj" }).and_return(true)
+      @new_resource.members(["someone"])
+      @provider.should_receive(:run_command).with({ :command => "pw groupmod wheel -g '42' -M someone -d root,aj" }).and_return(true)
       @provider.manage_group
     end
 
@@ -79,11 +80,6 @@ describe Chef::Provider::Group::Pw do
         @current_resource.stub!(:members).and_return([])
       end
 
-      it "should log an appropriate message" do
-        Chef::Log.should_receive(:debug).with("group[wheel] not changing group members, the group has no members")
-        @provider.set_members_option
-      end
-
       it "should set no options" do
         @provider.set_members_option.should eql("")
       end
@@ -96,7 +92,7 @@ describe Chef::Provider::Group::Pw do
       end
 
       it "should log an appropriate message" do
-        Chef::Log.should_receive(:debug).with("group[wheel] removing group members all, your, base")
+        Chef::Log.should_receive(:debug).with("group[wheel] removing group members: all,your,base")
         @provider.set_members_option
       end
 
@@ -112,7 +108,7 @@ describe Chef::Provider::Group::Pw do
       end
 
       it "should log an appropriate debug message" do
-        Chef::Log.should_receive(:debug).with("group[wheel] setting group members to all, your, base")
+        Chef::Log.should_receive(:debug).with("group[wheel] adding group members: all,your,base")
         @provider.set_members_option
       end
 
