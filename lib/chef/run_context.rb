@@ -146,7 +146,7 @@ class Chef
         false
       else
         loaded_recipe(cookbook_name, recipe_short_name)
-
+        node.loaded_recipe(recipe_name)
         cookbook = cookbook_collection[cookbook_name]
         cookbook.load_recipe(recipe_short_name, self)
       end

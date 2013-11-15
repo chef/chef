@@ -247,6 +247,12 @@ class Chef
       run_list.include?(recipe_name) || Array(self[:recipes]).include?(recipe_name)
     end
 
+    # used by include_recipe to add recipes to the expanded run_list to be
+    # saved back to the node and be searchable
+    def loaded_recipe(recipe_name)
+      automatic_attrs[:recipes] << recipe_name unless Array(self[:recipes]).include?(recipe_name)
+    end
+
     # Returns true if this Node expects a given role, false if not.
     def role?(role_name)
       run_list.include?("role[#{role_name}]")

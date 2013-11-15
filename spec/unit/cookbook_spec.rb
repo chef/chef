@@ -70,6 +70,7 @@ describe Chef::CookbookVersion do
 
   it "should allow you to include a fully-qualified recipe using the DSL" do
     # DSL method include_recipe allows multiple arguments, so extract the first
+    @node.should_receive(:loaded_recipe).with("openldap::gigantor")
     recipe = @run_context.include_recipe("openldap::gigantor").first
 
     recipe.recipe_name.should == "gigantor"
