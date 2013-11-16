@@ -151,10 +151,12 @@ class Chef
 
       def []=(key, value)
         if set_unless? && key?(key)
-          self[key]
+          root.trace_attribute_ignored_unless(self, key, value)
+          self[key]          
         else
-          root.reset_cache
-          super
+          root.reset_cache          
+          root.trace_attribute_change(self, key, value)
+          super          
         end
       end
 
@@ -205,6 +207,27 @@ class Chef
 
       def dup
         Mash.new(self)
+      end
+
+      def find_path_to_entry(collection)
+        # Collection is a VividMash or AttrArray, that (we beleive) 
+        # is a descendant of this collection.  Find it, and report the path to it.
+
+        # I suppose it could be me.
+        return '' if self === collection
+
+        self.each do |key, child|
+          # Depth first?
+          if child === collection
+            return '/' + key
+          elsif child.respond_to?(:find_path_to_entry)
+            deeper = child.find_path_to_entry(collection)
+            if deeper
+              return '/' + key + deeper
+            end
+          end          
+        end
+        return nil
       end
 
     end

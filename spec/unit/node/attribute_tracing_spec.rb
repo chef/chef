@@ -4,11 +4,15 @@ require 'chef/node/attribute'
 
 
 # Debug
-#require 'pry'
-#require 'pry-debugger'
+require 'pry'
+require 'pry-debugger'
 
 
 describe "Chef::Node::Attribute Tracing" do
+
+  #================================================#
+  #              Attribute Fixtures
+  #================================================#
 
   OHAI_MIN_ATTRS = {
     'platform' => 'wfw',
@@ -28,6 +32,9 @@ describe "Chef::Node::Attribute Tracing" do
     'oryx' => 'crake',
   }
 
+  #================================================#
+  #              Reusable Examples
+  #================================================#
 
   shared_examples "silent" do
     describe "the log output" do
@@ -79,6 +86,9 @@ describe "Chef::Node::Attribute Tracing" do
     end
   end
 
+  #================================================#
+  #          Tests: Trace Accessor
+  #================================================#
   describe "the trace data structure accessor" do
     context "when the node is newly created" do
       it "should be an empty hash" do
@@ -96,6 +106,9 @@ describe "Chef::Node::Attribute Tracing" do
     end
   end
 
+  #================================================#
+  #        Tests: Tracing Mode
+  #================================================#
   describe "the tracing mode" do
     context "when tracing mode is none" do
       before do
@@ -204,6 +217,10 @@ describe "Chef::Node::Attribute Tracing" do
       # TODO: test being set at converge-time in a recipe
 
   end
+
+  #================================================#
+  #       Tests: Source File Tracing
+  #================================================#
 
   describe "the file tracing feature" do
     context "when loading from cookbook attributes" do

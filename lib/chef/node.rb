@@ -183,7 +183,6 @@ class Chef
       attributes.override
     end
 
-
     def override_attrs
      attributes.override
     end
