@@ -55,6 +55,9 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
 
   def user(username)
     usr = Chef::Resource::User.new("#{username}", run_context)
+    if ohai[:platform_family] == "windows"
+      usr.password("ComplexPass11!")
+    end
     usr
   end
 
