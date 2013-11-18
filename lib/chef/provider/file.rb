@@ -340,22 +340,26 @@ class Chef
         if tempfile.path.nil? || !::File.exists?(tempfile.path)
           raise "chef-client is confused, trying to deploy a file that has no path or does not exist..."
         end
+
         # the file? on the next line suppresses the case in why-run when we have a not-file here that would have otherwise been removed
         if ::File.file?(@new_resource.path) && contents_changed?
-          diff.diff(@current_resource.path, tempfile.path)
-          @new_resource.diff( diff.for_reporting ) unless file_created?
-          description = [ "update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(checksum(tempfile.path))}" ]
-          
           if @new_resource.sensitive
-            Chef::Log.info("redacted sensitive resource: #{@new_resource}")
+            @new_resource.diff('suppressed sensitive resource')
           else
-            description << diff.for_output            
+            diff.diff(@current_resource.path, tempfile.path)
+
+            @new_resource.diff( diff.for_reporting ) unless file_created?
+
+            description = [ "update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(checksum(tempfile.path))}" ]
+
+            description << diff.for_output
           end
 
           converge_by(description) do
             update_file_contents
           end
         end
+
         # unlink necessary to clean up in why-run mode
         tempfile.unlink
       end
