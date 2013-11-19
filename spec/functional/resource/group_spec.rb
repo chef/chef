@@ -108,24 +108,24 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     end
 
     describe "when append is not set" do
-      let(:included_members) { ["group-spec-Eric"] }
+      let(:included_members) { ["spec-Eric"] }
 
       before do
-        create_user("group-spec-Eric")
-        create_user("group-spec-Gordon")
-        add_members_to_group(["group-spec-Gordon"])
+        create_user("spec-Eric")
+        create_user("spec-Gordon")
+        add_members_to_group(["spec-Gordon"])
       end
 
       after do
-        remove_user("group-spec-Eric")
-        remove_user("group-spec-Gordon")
+        remove_user("spec-Eric")
+        remove_user("spec-Gordon")
       end
 
       it "should remove the existing users and add the new users to the group" do
         group_resource.run_action(tested_action)
 
-        user_exist_in_group?("group-spec-Eric").should == true
-        user_exist_in_group?("group-spec-Gordon").should == false
+        user_exist_in_group?("spec-Eric").should == true
+        user_exist_in_group?("spec-Gordon").should == false
       end
     end
 
@@ -160,7 +160,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
 
         describe "when group contains some users" do
           before(:each) do
-            add_members_to_group([ "group-spec-Gordon", "group-spec-Anthony" ])
+            add_members_to_group([ "spec-Gordon", "spec-Anthony" ])
           end
 
           it "should add the included users and remove excluded users" do
@@ -192,7 +192,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     end
   end
 
-  let(:group_name) { "chef-rspec-test-#{SecureRandom.random_number(9999)}" }
+  let(:group_name) { "cheftest-#{SecureRandom.random_number(9999)}" }
   let(:included_members) { nil }
   let(:excluded_members) { nil }
   let(:group_resource) {
@@ -273,8 +273,8 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group modify action" do
-    let(:included_members) { ["group-spec-Gordon", "group-spec-Eric"] }
-    let(:excluded_members) { ["group-spec-Anthony"] }
+    let(:included_members) { ["spec-Gordon", "spec-Eric"] }
+    let(:excluded_members) { ["spec-Anthony"] }
     let(:tested_action) { :modify }
 
     describe "when there is no group" do
@@ -289,8 +289,8 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group manage action" do
-    let(:included_members) { ["group-spec-Gordon", "group-spec-Eric"] }
-    let(:excluded_members) { ["group-spec-Anthony"] }
+    let(:included_members) { ["spec-Gordon", "spec-Eric"] }
+    let(:excluded_members) { ["spec-Anthony"] }
     let(:tested_action) { :manage }
 
     describe "when there is no group" do
