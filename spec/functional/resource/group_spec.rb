@@ -241,7 +241,8 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
       end
     end
 
-    describe "should raise an error when same member is included in the members and excluded_members" do
+    # not_supported_on_solaris because of the use of excluded_members
+    describe "should raise an error when same member is included in the members and excluded_members", :not_supported_on_solaris do
       it "should raise an error" do
         invalid_resource = group_resource.dup
         invalid_resource.members(["Jack"])
@@ -272,7 +273,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     end
   end
 
-  describe "group modify action" do
+  describe "group modify action", :not_supported_on_solaris do
     let(:included_members) { ["spec-Gordon", "spec-Eric"] }
     let(:excluded_members) { ["spec-Anthony"] }
     let(:tested_action) { :modify }
@@ -288,7 +289,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     end
   end
 
-  describe "group manage action" do
+  describe "group manage action", :not_supported_on_solaris do
     let(:included_members) { ["spec-Gordon", "spec-Eric"] }
     let(:excluded_members) { ["spec-Anthony"] }
     let(:tested_action) { :manage }
@@ -302,6 +303,40 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
 
     describe "when there is a group" do
       it_behaves_like "correct group management"
+    end
+  end
+
+  describe "group resource with Usermod provider", :solaris_only do
+    describe "when excluded_members is set" do
+      let(:excluded_members) { ["spec-Anthony"] }
+
+      it ":manage should raise an error" do
+        lambda {group_resource.run_action(:manage) }.should raise_error
+      end
+
+      it ":modify should raise an error" do
+        lambda {group_resource.run_action(:modify) }.should raise_error
+      end
+
+      it ":create should raise an error" do
+        lambda {group_resource.run_action(:create) }.should raise_error
+      end
+    end
+
+    describe "when append is not set" do
+      let(:included_members) { ["spec-Gordon", "spec-Eric"] }
+
+      before(:each) do
+        group_resource.append(false)
+      end
+
+      it ":manage should raise an error" do
+        lambda {group_resource.run_action(:manage) }.should raise_error
+      end
+
+      it ":modify should raise an error" do
+        lambda {group_resource.run_action(:modify) }.should raise_error
+      end
     end
   end
 end

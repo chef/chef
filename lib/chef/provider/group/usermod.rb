@@ -39,7 +39,7 @@ class Chef
             # No whyrun alternative: this component should be available in the base install of any given system that uses it
           end
 
-          requirements.assert(:modify, :create) do |a|
+          requirements.assert(:modify, :manage) do |a|
             a.assertion { @new_resource.members.empty? || @new_resource.append }
             a.failure_message Chef::Exceptions::Group, "setting group members directly is not supported by #{self.to_s}, must set append true in group"
             # No whyrun alternative - this action is simply not supported.
@@ -53,9 +53,17 @@ class Chef
         end
 
         def set_members(members)
+          return if members.empty?
           # This provider only supports adding members with
-          # append. This function should never be called.
-          raise UnsupportedAction, "Setting members directly is not supported by #{self.to_s}"
+          # append. Only if the action is create we will go
+          # ahead and add members.
+          if @new_resource.action == :create
+            members.each do |member|
+              add_member(member)
+            end
+          else
+            raise Chef::Exceptions::UnsupportedAction, "Setting members directly is not supported by #{self.to_s}"
+          end
         end
 
         def add_member(member)
@@ -65,7 +73,7 @@ class Chef
         def remove_member(member)
           # This provider only supports adding members with
           # append. This function should never be called.
-          raise UnsupportedAction, "Removing members members is not supported by #{self.to_s}"
+          raise Chef::Exceptions::UnsupportedAction, "Removing members members is not supported by #{self.to_s}"
         end
 
         def append_flags

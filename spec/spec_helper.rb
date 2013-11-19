@@ -108,6 +108,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :win2k3_only => true unless windows_win2k3?
   config.filter_run_excluding :windows64_only => true unless windows64?
   config.filter_run_excluding :windows32_only => true unless windows32?
+  config.filter_run_excluding :solaris_only => true unless solaris?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?
   config.filter_run_excluding :supports_cloexec => true unless supports_cloexec?
