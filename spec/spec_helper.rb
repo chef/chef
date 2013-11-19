@@ -102,6 +102,7 @@ RSpec.configure do |config|
 
   # Add jruby filters here
   config.filter_run_excluding :windows_only => true unless windows?
+  config.filter_run_excluding :not_supported_on_mac_osx_106 => true if mac_osx_106?
   config.filter_run_excluding :not_supported_on_win2k3 => true if windows_win2k3?
   config.filter_run_excluding :not_supported_on_solaris => true if solaris?
   config.filter_run_excluding :win2k3_only => true unless windows_win2k3?
