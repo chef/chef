@@ -22,7 +22,6 @@ class Chef
     class RubyBlock < Chef::Resource
       
       identity_attr :block_name
-      state_attrs :whyrun_safe
 
       def initialize(name, run_context=nil)
         super

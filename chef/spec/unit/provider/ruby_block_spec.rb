@@ -41,6 +41,7 @@ describe Chef::Provider::RubyBlock, "initialize" do
     @provider.run_action(:create)
     $evil_global_evil_laugh.should == :mwahahaha
     @new_resource.should be_updated
+    Chef::Config[:why_run] = false
   end
 
   it "should not call non-why-run safe blocks in whyrun mode" do
@@ -48,6 +49,7 @@ describe Chef::Provider::RubyBlock, "initialize" do
     @provider.run_action(:create)
     $evil_global_evil_laugh.should == :wahwah
     @new_resource.should be_updated
+    Chef::Config[:why_run] = false
   end
 
 end
