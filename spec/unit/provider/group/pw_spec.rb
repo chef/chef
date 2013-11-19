@@ -59,7 +59,8 @@ describe Chef::Provider::Group::Pw do
     it "should run pw groupmod with the return of set_options" do
       @new_resource.gid(42)
       @new_resource.members(["someone"])
-      @provider.should_receive(:run_command).with({ :command => "pw groupmod wheel -g '42' -M someone -d root,aj" }).and_return(true)
+      @provider.should_receive(:run_command).with({ :command => "pw groupmod wheel -g '42' -m someone" }).and_return(true)
+      @provider.should_receive(:run_command).with({ :command => "pw groupmod wheel -g '42' -d root,aj" }).and_return(true)
       @provider.manage_group
     end
 
@@ -81,7 +82,7 @@ describe Chef::Provider::Group::Pw do
       end
 
       it "should set no options" do
-        @provider.set_members_option.should eql("")
+        @provider.set_members_options.should eql([ ])
       end
     end
 
@@ -93,11 +94,11 @@ describe Chef::Provider::Group::Pw do
 
       it "should log an appropriate message" do
         Chef::Log.should_receive(:debug).with("group[wheel] removing group members: all,your,base")
-        @provider.set_members_option
+        @provider.set_members_options
       end
 
       it "should set the -d option with the members joined by ','" do
-        @provider.set_members_option.should eql(" -d all,your,base")
+        @provider.set_members_options.should eql([ " -d all,your,base" ])
       end
     end
 
@@ -109,11 +110,11 @@ describe Chef::Provider::Group::Pw do
 
       it "should log an appropriate debug message" do
         Chef::Log.should_receive(:debug).with("group[wheel] adding group members: all,your,base")
-        @provider.set_members_option
+        @provider.set_members_options
       end
 
       it "should set the -M option with the members joined by ','" do
-        @provider.set_members_option.should eql(" -M all,your,base")
+        @provider.set_members_options.should eql([ " -m all,your,base" ])
       end
     end
   end
