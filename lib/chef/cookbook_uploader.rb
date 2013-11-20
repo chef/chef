@@ -137,7 +137,7 @@ class Chef
         timestamp = Time.now.utc.iso8601
         file_contents = File.open(file, "rb") {|f| f.read}
         # TODO - 5/28/2010, cw: make signing and sending the request streaming
-        headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, :accept => 'application/json' }
+        headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, "accept" => 'application/json' }
         if rest.signing_key
           sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
                                                                              :http_method => :put,
@@ -150,10 +150,12 @@ class Chef
         end
 
         begin
-          RestClient::Resource.new(url, :headers=>headers, :timeout=>1800, :open_timeout=>1800).put(file_contents)
+          Chef::HTTP::Simple.new(url, :headers=>headers).put(url, file_contents)
           checksums_to_upload.delete(checksum)
-        rescue RestClient::Exception => e
-          Chef::Knife.ui.error("Failed to upload #@cookbook : #{e.message}\n#{e.response.body}")
+        rescue Net::HTTPServerException, Net::HTTPFatalError, Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError => e
+          error_message = "Failed to upload #{file} (#{checksum}) to #{url} : #{e.message}"
+          error_message << "\n#{e.response.body}" if e.respond_to?(:response)
+          Chef::Knife.ui.error(error_message)
           raise
         end
       end

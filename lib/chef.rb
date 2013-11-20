@@ -37,3 +37,5 @@ require 'chef/monkey_patches/string'
 require 'chef/monkey_patches/numeric'
 require 'chef/monkey_patches/object'
 require 'chef/monkey_patches/file'
+require 'chef/monkey_patches/uri'
+
