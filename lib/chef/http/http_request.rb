@@ -76,7 +76,7 @@ class Chef
       end
 
       def host
-        @url.host
+        @url.hostname
       end
 
       def port
