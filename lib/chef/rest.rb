@@ -124,6 +124,9 @@ class Chef
 
     alias :api_request :request
 
+    # Do a HTTP request where no middleware is loaded (e.g. JSON input/output
+    # conversion) but the standard Chef Authentication headers are added to the
+    # request.
     def raw_http_request(method, path, headers, data)
       url = create_url(path)
       method, url, headers, data = @authenticator.handle_request(method, url, headers, data)
