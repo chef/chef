@@ -124,9 +124,24 @@ class Chef
 
     alias :api_request :request
 
-    alias :raw_http_request :send_http_request
+    # Do a HTTP request where no middleware is loaded (e.g. JSON input/output
+    # conversion) but the standard Chef Authentication headers are added to the
+    # request.
+    def raw_http_request(method, path, headers, data)
+      url = create_url(path)
+      method, url, headers, data = @authenticator.handle_request(method, url, headers, data)
 
-    public :raw_http_request
+      response, rest_request, return_value = send_http_request(method, url, headers, data)
+      response.error! unless success_response?(response)
+      return_value
+    rescue Exception => exception
+      log_failed_request(response, return_value) unless response.nil?
+
+      if exception.respond_to?(:chef_rest_request=)
+        exception.chef_rest_request = rest_request
+      end
+      raise
+    end
 
     # Deprecated:
     # Responsibilities of this method have been split up. The #http_client is
