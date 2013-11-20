@@ -39,16 +39,28 @@ class Chef
         def create_group
           command = "pw groupadd"
           command << set_options
-          command << set_members_option
-          run_command(:command => command)
+          member_options = set_members_options
+          if member_options.empty?
+            run_command(:command => command)
+          else
+            member_options.each do |option|
+              run_command(:command => command + option)
+            end
+          end
         end
 
         # Manage the group when it already exists
         def manage_group
           command = "pw groupmod"
           command << set_options
-          command << set_members_option
-          run_command(:command => command)
+          member_options = set_members_options
+          if member_options.empty?
+            run_command(:command => command)
+          else
+            member_options.each do |option|
+              run_command(:command => command + option)
+            end
+          end
         end
 
         # Remove the group
@@ -70,21 +82,52 @@ class Chef
         end
 
         # Set the membership option depending on the current resource states
-        def set_members_option
-          opt = ""
-          unless @new_resource.members.empty?
-            opt << " -M #{@new_resource.members.join(',')}"
-            Chef::Log.debug("#{@new_resource} setting group members to #{@new_resource.members.join(', ')}")
+        def set_members_options
+          opts = [ ]
+          members_to_be_added = [ ]
+          members_to_be_removed = [ ]
+
+          if @new_resource.append
+            # Append is set so we will only add members given in the
+            # members list and remove members given in the
+            # excluded_members list.
+            if @new_resource.members && !@new_resource.members.empty?
+              @new_resource.members.each do |member|
+                members_to_be_added << member if !@current_resource.members.include?(member)
+              end
+            end
+
+            if @new_resource.excluded_members && !@new_resource.excluded_members.empty?
+              @new_resource.excluded_members.each do |member|
+                members_to_be_removed << member if @current_resource.members.include?(member)
+              end
+            end
           else
-            # New member list is empty so we should delete any old group members
-            unless @current_resource.members.empty?
-              opt << " -d #{@current_resource.members.join(',')}"
-              Chef::Log.debug("#{@new_resource} removing group members #{@current_resource.members.join(', ')}")
-            else
-              Chef::Log.debug("#{@new_resource} not changing group members, the group has no members")
+            # Append is not set so we're resetting the membership of
+            # the group to the given members.
+            members_to_be_added = @new_resource.members
+            @current_resource.members.each do |member|
+              # No need to re-add a member if it's present in the new
+              # list of members
+              if members_to_be_added.include? member
+                members_to_be_added.delete member
+              else
+                members_to_be_removed << member
+              end
             end
           end
-          opt
+
+          unless members_to_be_added.empty?
+            Chef::Log.debug("#{@new_resource} adding group members: #{members_to_be_added.join(',')}")
+            opts << " -m #{members_to_be_added.join(',')}"
+          end
+
+          unless members_to_be_removed.empty?
+            Chef::Log.debug("#{@new_resource} removing group members: #{members_to_be_removed.join(',')}")
+            opts << " -d #{members_to_be_removed.join(',')}"
+          end
+
+          opts
         end
 
       end

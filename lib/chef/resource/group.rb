@@ -31,6 +31,7 @@ class Chef
         @group_name = name
         @gid = nil
         @members = []
+        @excluded_members = []
         @action = :create
         @append = false
         @non_unique = false
