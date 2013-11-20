@@ -39,21 +39,24 @@ class Chef
           end
         end
 
-        def modify_group_members
-          unless @new_resource.members.empty?
-            if(@new_resource.append)
-              @new_resource.members.each do |member|
-                Chef::Log.debug("#{@new_resource} appending member #{member} to group #{@new_resource.group_name}")
-                shell_out!("groupmod -A #{member} #{@new_resource.group_name}")
-              end
-            else
-              Chef::Log.debug("#{@new_resource} setting group members to #{@new_resource.members.join(', ')}")
-              shell_out!("groupmod -A #{@new_resource.members.join(',')} #{@new_resource.group_name}")
-            end
-          else
-            Chef::Log.debug("#{@new_resource} not changing group members, the group has no members")
+        def set_members(members)
+          unless @current_resource.members.empty?
+            shell_out!("groupmod -R #{@current_resource.members.join(',')} #{@new_resource.group_name}")
+          end
+
+          unless members.empty?
+            shell_out!("groupmod -A #{members.join(',')} #{@new_resource.group_name}")
           end
         end
+
+        def add_member(member)
+          shell_out!("groupmod -A #{member} #{@new_resource.group_name}")
+        end
+
+        def remove_member(member)
+          shell_out!("groupmod -R #{member} #{@new_resource.group_name}")
+        end
+
       end
     end
   end

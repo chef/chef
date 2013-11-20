@@ -31,6 +31,7 @@ class Chef
         @group_name = name
         @gid = nil
         @members = []
+        @excluded_members = []
         @action = :create
         @append = false
         @allowed_actions.push(:create, :remove, :modify, :manage)
@@ -62,7 +63,16 @@ class Chef
       end
 
       alias_method :users, :members
- 
+
+      def excluded_members(arg=nil)
+        converted_members = arg.is_a?(String) ? [].push(arg) : arg
+        set_or_return(
+          :excluded_members,
+          converted_members,
+          :kind_of => [ Array ]
+        )
+      end
+
       def append(arg=nil)
         set_or_return(
           :append,

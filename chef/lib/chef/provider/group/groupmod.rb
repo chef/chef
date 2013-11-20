@@ -44,45 +44,40 @@ class Chef
         # Manage the group when it already exists
         def manage_group
           if @new_resource.append
-            to_add = @new_resource.members.dup
-            to_add.reject! { |user| @current_resource.members.include?(user) }
+            members_to_be_added = [ ]
+            if @new_resource.excluded_members && !@new_resource.excluded_members.empty?
+              # First find out if any member needs to be removed
+              members_to_be_removed = [ ]
+              @new_resource.excluded_members.each do |member|
+                members_to_be_removed << member if @current_resource.members.include?(member)
+              end
 
-            to_delete = Array.new
+              unless members_to_be_removed.empty?
+                # We are using a magic trick to remove the groups.
+                reset_group_membership
 
-            Chef::Log.debug("#{@new_resource} not changing group members, the group has no members to add") if to_add.empty?
+                # Capture the members we need to add in
+                # members_to_be_added to be added later on.
+                @current_resource.members.each do |member|
+                  members_to_be_added << member unless members_to_be_removed.include?(member)
+                end
+              end
+            end
+
+            if @new_resource.members && !@new_resource.members.empty?
+              @new_resource.members.each do |member|
+                members_to_be_added << member if !@current_resource.members.include?(member)
+              end
+            end
+
+            Chef::Log.debug("#{@new_resource} not changing group members, the group has no members to add") if members_to_be_added.empty?
+
+            add_group_members(members_to_be_added)
           else
-            to_add = @new_resource.members.dup
-            to_add.reject! { |user| @current_resource.members.include?(user) }
-
-            to_delete = @current_resource.members.dup
-            to_delete.reject! { |user| @new_resource.members.include?(user) }
-
+            # We are resetting the members of a group so use the same trick
+            reset_group_membership
             Chef::Log.debug("#{@new_resource} setting group members to: none") if @new_resource.members.empty?
-          end
-
-          if to_delete.empty?
-            # If we are only adding new members to this group, then
-            # call add_group_members with only those users
-            add_group_members(to_add)
-          else
-            Chef::Log.debug("#{@new_resource} removing members #{to_delete.join(', ')}")
-
-            # This is tricky, but works: rename the existing group to
-            # "<name>_bak", create a new group with the same GID and
-            # "<name>", then set correct members on that group
-            rename = "group mod -n #{@new_resource.group_name}_bak #{@new_resource.group_name}"
-            shell_out!(rename)
-
-            create = "group add"
-            create << set_options(:overwrite_gid => true)
-            shell_out!(create)
-
-            # Ignore to_add here, since we're replacing the group we
-            # have to add all members who should be in the group.
             add_group_members(@new_resource.members)
-
-            remove = "group del #{@new_resource.group_name}_bak"
-            shell_out!(remove)
           end
         end
 
@@ -97,6 +92,21 @@ class Chef
           members.each do |user|
             shell_out!("user mod -G #{@new_resource.group_name} #{user}")
           end
+        end
+
+        # This is tricky, but works: rename the existing group to
+        # "<name>_bak", create a new group with the same GID and
+        # "<name>", then set correct members on that group
+        def reset_group_membership
+          rename = "group mod -n #{@new_resource.group_name}_bak #{@new_resource.group_name}"
+          shell_out!(rename)
+
+          create = "group add"
+          create << set_options(:overwrite_gid => true)
+          shell_out!(create)
+
+          remove = "group del #{@new_resource.group_name}_bak"
+          shell_out!(remove)
         end
 
         # Little bit of magic as per Adam's useradd provider to pull and assign the command line flags

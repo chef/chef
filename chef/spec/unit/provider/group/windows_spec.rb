@@ -70,14 +70,6 @@ describe Chef::Provider::Group::Windows do
       @provider.manage_group
     end
 
-    it "should call @net_group.local_set_members if append fails" do
-      @new_resource.stub!(:append).and_return(true)
-      @net_group.stub!(:local_add_members).and_raise(ArgumentError)
-      @net_group.should_receive(:local_add_members).with(@new_resource.members)
-      @net_group.should_receive(:local_set_members).with(@new_resource.members + @current_resource.members)
-      @provider.manage_group
-    end
-
   end
 
   describe "remove_group" do

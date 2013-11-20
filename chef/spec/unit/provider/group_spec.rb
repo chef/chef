@@ -108,6 +108,19 @@ describe Chef::Provider::User do
       @provider.compare_group.should be_true
     end
 
+    it "should return false if append is true and excluded_members include a non existing member" do
+      @new_resource.excluded_members << "extra_user"
+      @new_resource.stub!(:append).and_return(true)
+      @provider.compare_group.should be_false
+    end
+
+    it "should return true if the append is true and excluded_members include an existing user" do
+      @new_resource.members.each {|m| @new_resource.excluded_members << m }
+      @new_resource.members.clear
+      @new_resource.stub!(:append).and_return(true)
+      @provider.compare_group.should be_true
+    end
+
   end
 
   describe "when creating a group" do
@@ -127,6 +140,7 @@ describe Chef::Provider::User do
     it "should check to see if the group has mismatched attributes if the group exists" do
       @provider.group_exists = true
       @provider.stub!(:compare_group).and_return(false)
+      @provider.stub!(:change_desc).and_return([ ])
       @provider.run_action(:create)
       @provider.new_resource.should_not be_updated
     end
@@ -134,6 +148,7 @@ describe Chef::Provider::User do
     it "should call manage_group if the group exists and has mismatched attributes" do
       @provider.group_exists = true
       @provider.stub!(:compare_group).and_return(true)
+      @provider.stub!(:change_desc).and_return([ ])
       @provider.should_receive(:manage_group).and_return(true)
       @provider.run_action(:create)
     end
@@ -141,6 +156,7 @@ describe Chef::Provider::User do
     it "should set the new_resources updated flag when it creates the group if we call manage_group" do
       @provider.group_exists = true
       @provider.stub!(:compare_group).and_return(true)
+      @provider.stub!(:change_desc).and_return(["Some changes are going to be done."])
       @provider.stub!(:manage_group).and_return(true)
       @provider.run_action(:create)
       @new_resource.should be_updated
@@ -172,12 +188,14 @@ describe Chef::Provider::User do
  
     it "should run manage_group if the group exists and has mismatched attributes" do
       @provider.should_receive(:compare_group).and_return(true)
+      @provider.stub!(:change_desc).and_return(["Some changes are going to be done."])
       @provider.should_receive(:manage_group).and_return(true)
       @provider.run_action(:manage)
     end
   
     it "should set the new resources updated flag to true if manage_group is called" do
       @provider.stub!(:compare_group).and_return(true)
+      @provider.stub!(:change_desc).and_return(["Some changes are going to be done."])
       @provider.stub!(:manage_group).and_return(true)
       @provider.run_action(:manage)
       @new_resource.should be_updated
@@ -191,6 +209,7 @@ describe Chef::Provider::User do
     
     it "should not run manage_group if the group exists but has no differing attributes" do
       @provider.should_receive(:compare_group).and_return(false)
+      @provider.stub!(:change_desc).and_return(["Some changes are going to be done."])
       @provider.should_not_receive(:manage_group)
       @provider.run_action(:manage)
     end
@@ -204,12 +223,14 @@ describe Chef::Provider::User do
  
     it "should run manage_group if the group exists and has mismatched attributes" do
       @provider.should_receive(:compare_group).and_return(true)
+      @provider.stub!(:change_desc).and_return(["Some changes are going to be done."])
       @provider.should_receive(:manage_group).and_return(true)
       @provider.run_action(:modify)
     end
   
     it "should set the new resources updated flag to true if manage_group is called" do
       @provider.stub!(:compare_group).and_return(true)
+      @provider.stub!(:change_desc).and_return(["Some changes are going to be done."])
       @provider.stub!(:manage_group).and_return(true)
       @provider.run_action(:modify)
       @new_resource.should be_updated
@@ -217,6 +238,7 @@ describe Chef::Provider::User do
   
     it "should not run manage_group if the group exists but has no differing attributes" do
       @provider.should_receive(:compare_group).and_return(false)
+      @provider.stub!(:change_desc).and_return(["Some changes are going to be done."])
       @provider.should_not_receive(:manage_group)
       @provider.run_action(:modify)
     end
@@ -233,26 +255,26 @@ describe Chef::Provider::User do
        @new_resource.members << "user2" 
        @new_resource.stub!(:append).and_return true
        @provider.compare_group.should be_true
-       @provider.change_desc.should == "add missing member(s): user1, user2"
+       @provider.change_desc.should == [ "add missing member(s): user1, user2" ]
     end
 
     it "should report that the group members will be overwritten if not appending" do
        @new_resource.members << "user1"
        @new_resource.stub!(:append).and_return false 
        @provider.compare_group.should be_true
-       @provider.change_desc.should == "replace group members with new list of members"
+       @provider.change_desc.should == [ "replace group members with new list of members" ]
     end
 
     it "should report the gid will be changed when it does not match" do
       @current_resource.stub!(:gid).and_return("BADF00D")
       @provider.compare_group.should be_true
-      @provider.change_desc.should == "change gid #{@current_resource.gid} to #{@new_resource.gid}"
+      @provider.change_desc.should == [ "change gid #{@current_resource.gid} to #{@new_resource.gid}" ]
 
     end
 
     it "should report no change reason when no change is required" do
       @provider.compare_group.should be_false
-      @provider.change_desc.should == nil
+      @provider.change_desc.should == [ ]
     end
   end
 
