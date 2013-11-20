@@ -73,14 +73,36 @@ class Chef
         end
 
         def set_members
+          # First reset the memberships if the append is not set
           unless @new_resource.append
             Chef::Log.debug("#{@new_resource} removing group members #{@current_resource.members.join(' ')}") unless @current_resource.members.empty?
             safe_dscl("create /Groups/#{@new_resource.group_name} GroupMembers ''") # clear guid list
             safe_dscl("create /Groups/#{@new_resource.group_name} GroupMembership ''") # clear user list
+            @current_resource.members([ ])
           end
-          unless @new_resource.members.empty?
-            Chef::Log.debug("#{@new_resource} setting group members #{@new_resource.members.join(', ')}")
-            safe_dscl("append /Groups/#{@new_resource.group_name} GroupMembership #{@new_resource.members.join(' ')}")
+
+          # Add any members that need to be added
+          if @new_resource.members && !@new_resource.members.empty?
+            members_to_be_added = [ ]
+            @new_resource.members.each do |member|
+              members_to_be_added << member if !@current_resource.members.include?(member)
+            end
+            unless members_to_be_added.empty?
+              Chef::Log.debug("#{@new_resource} setting group members #{members_to_be_added.join(', ')}")
+              safe_dscl("append /Groups/#{@new_resource.group_name} GroupMembership #{members_to_be_added.join(' ')}")
+            end
+          end
+
+          # Remove any members that need to be removed
+          if @new_resource.excluded_members && !@new_resource.excluded_members.empty?
+            members_to_be_removed = [ ]
+            @new_resource.excluded_members.each do |member|
+              members_to_be_removed << member if @current_resource.members.include?(member)
+            end
+            unless members_to_be_removed.empty?
+              Chef::Log.debug("#{@new_resource} removing group members #{members_to_be_removed.join(', ')}")
+              safe_dscl("delete /Groups/#{@new_resource.group_name} GroupMembership #{members_to_be_removed.join(' ')}")
+            end
           end
         end
 
@@ -110,7 +132,7 @@ class Chef
           if @new_resource.gid && (@current_resource.gid != @new_resource.gid)
             set_gid
           end
-          if @new_resource.members && (@current_resource.members != @new_resource.members)
+          if @new_resource.members || @new_resource.excluded_members
             set_members
           end
         end

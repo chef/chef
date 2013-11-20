@@ -102,15 +102,15 @@ RSpec.configure do |config|
 
   # Add jruby filters here
   config.filter_run_excluding :windows_only => true unless windows?
+  config.filter_run_excluding :not_supported_on_mac_osx_106 => true if mac_osx_106?
   config.filter_run_excluding :not_supported_on_win2k3 => true if windows_win2k3?
   config.filter_run_excluding :not_supported_on_solaris => true if solaris?
   config.filter_run_excluding :win2k3_only => true unless windows_win2k3?
   config.filter_run_excluding :windows64_only => true unless windows64?
   config.filter_run_excluding :windows32_only => true unless windows32?
+  config.filter_run_excluding :solaris_only => true unless solaris?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?
-  # Remove this filter once these issues are fixed: OC-9764, OC-9765, OC-9766, OC-9767
-  config.filter_run_excluding :unsupported_group_provider_platform => true if (os_x? or solaris? or freebsd? or suse?)
   config.filter_run_excluding :supports_cloexec => true unless supports_cloexec?
   config.filter_run_excluding :selinux_only => true unless selinux_enabled?
   config.filter_run_excluding :ruby_18_only => true unless ruby_18?
@@ -118,9 +118,9 @@ RSpec.configure do |config|
   config.filter_run_excluding :ruby_gte_19_only => true unless ruby_gte_19?
   config.filter_run_excluding :ruby_20_only => true unless ruby_20?
   config.filter_run_excluding :ruby_gte_20_only => true unless ruby_gte_20?
-  config.filter_run_excluding :requires_root => true unless ENV['USER'] == 'root' || ENV['LOGIN'] == 'root'
-  config.filter_run_excluding :requires_root_or_running_windows => true unless (ENV['USER'] == 'root' or windows?)
-  config.filter_run_excluding :requires_unprivileged_user => true if ENV['USER'] == 'root'
+  config.filter_run_excluding :requires_root => true unless root?
+  config.filter_run_excluding :requires_root_or_running_windows => true unless (root? || windows?)
+  config.filter_run_excluding :requires_unprivileged_user => true if root?
   config.filter_run_excluding :uses_diff => true unless has_diff?
 
   running_platform_arch = `uname -m`.strip
