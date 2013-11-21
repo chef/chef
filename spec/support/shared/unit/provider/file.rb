@@ -35,62 +35,75 @@ def normalized_path
   File.expand_path(resource_path)
 end
 
+# forwards-vs-reverse slashes on windows sucks
+def windows_path
+  windows? ? normalized_path.gsub(/\\/, '/') : normalized_path
+end
+
+# this is all getting a bit stupid, CHEF-4802 cut to remove all this
 def setup_normal_file
-  File.stub(:file?).with(resource_path).and_return(true)
-  File.stub(:realpath?).with(resource_path).and_return(resource_path)
-  File.stub(:exists?).with(resource_path).and_return(true)
-  File.stub(:exist?).with(resource_path).and_return(true)
-  File.stub(:directory?).with(resource_path).and_return(false)
+  [ resource_path, normalized_path, windows_path].each do |path|
+    File.stub(:file?).with(path).and_return(true)
+    File.stub(:exists?).with(path).and_return(true)
+    File.stub(:exist?).with(path).and_return(true)
+    File.stub(:directory?).with(path).and_return(false)
+    File.stub(:writable?).with(path).and_return(true)
+    file_symlink_class.stub(:symlink?).with(path).and_return(false)
+    File.stub(:realpath?).with(path).and_return(normalized_path)
+  end
   File.stub(:directory?).with(enclosing_directory).and_return(true)
-  File.stub(:writable?).with(resource_path).and_return(true)
-  file_symlink_class.stub(:symlink?).with(resource_path).and_return(false)
-  file_symlink_class.stub(:symlink?).with(normalized_path).and_return(false)
 end
 
 def setup_missing_file
-  File.stub(:file?).with(resource_path).and_return(false)
-  File.stub(:realpath?).with(resource_path).and_return(resource_path)
-  File.stub(:exists?).with(resource_path).and_return(false)
-  File.stub(:exist?).with(resource_path).and_return(false)
-  File.stub(:directory?).with(resource_path).and_return(false)
+  [ resource_path, normalized_path, windows_path].each do |path|
+    File.stub(:file?).with(path).and_return(false)
+    File.stub(:realpath?).with(path).and_return(resource_path)
+    File.stub(:exists?).with(path).and_return(false)
+    File.stub(:exist?).with(path).and_return(false)
+    File.stub(:directory?).with(path).and_return(false)
+    File.stub(:writable?).with(path).and_return(false)
+    file_symlink_class.stub(:symlink?).with(path).and_return(false)
+  end
   File.stub(:directory?).with(enclosing_directory).and_return(true)
-  File.stub(:writable?).with(resource_path).and_return(false)
-  file_symlink_class.stub(:symlink?).with(resource_path).and_return(false)
 end
 
 def setup_symlink
-  File.stub(:file?).with(normalized_path).and_return(true)
-  File.stub(:file?).with(resource_path).and_return(true)
-  File.stub(:realpath?).with(resource_path).and_return(normalized_path)
-  File.stub(:exists?).with(resource_path).and_return(true)
-  File.stub(:exist?).with(resource_path).and_return(true)
-  File.stub(:directory?).with(normalized_path).and_return(false)
+  [ resource_path, normalized_path, windows_path].each do |path|
+    File.stub(:file?).with(path).and_return(true)
+    File.stub(:realpath?).with(path).and_return(normalized_path)
+    File.stub(:exists?).with(path).and_return(true)
+    File.stub(:exist?).with(path).and_return(true)
+    File.stub(:directory?).with(path).and_return(false)
+    File.stub(:writable?).with(path).and_return(true)
+    file_symlink_class.stub(:symlink?).with(path).and_return(true)
+  end
   File.stub(:directory?).with(enclosing_directory).and_return(true)
-  File.stub(:writable?).with(resource_path).and_return(true)
-  file_symlink_class.stub(:symlink?).with(resource_path).and_return(true)
-  file_symlink_class.stub(:symlink?).with(normalized_path).and_return(true)
 end
 
 def setup_unwritable_file
-  File.stub(:file?).with(resource_path).and_return(false)
-  File.stub(:realpath?).with(resource_path).and_raise(Errno::ENOENT)
-  File.stub(:exists?).with(resource_path).and_return(true)
-  File.stub(:exist?).with(resource_path).and_return(true)
-  File.stub(:directory?).with(resource_path).and_return(false)
+  [ resource_path, normalized_path, windows_path].each do |path|
+    File.stub(:file?).with(path).and_return(false)
+    File.stub(:realpath?).with(path).and_raise(Errno::ENOENT)
+    File.stub(:exists?).with(path).and_return(true)
+    File.stub(:exist?).with(path).and_return(true)
+    File.stub(:directory?).with(path).and_return(false)
+    File.stub(:writable?).with(path).and_return(false)
+    file_symlink_class.stub(:symlink?).with(path).and_return(false)
+  end
   File.stub(:directory?).with(enclosing_directory).and_return(true)
-  File.stub(:writable?).with(resource_path).and_return(false)
-  file_symlink_class.stub(:symlink?).with(resource_path).and_return(false)
 end
 
 def setup_missing_enclosing_directory
-  File.stub(:file?).with(resource_path).and_return(false)
-  File.stub(:realpath?).with(resource_path).and_raise(Errno::ENOENT)
-  File.stub(:exists?).with(resource_path).and_return(false)
-  File.stub(:exist?).with(resource_path).and_return(false)
-  File.stub(:directory?).with(resource_path).and_return(false)
+  [ resource_path, normalized_path, windows_path].each do |path|
+    File.stub(:file?).with(path).and_return(false)
+    File.stub(:realpath?).with(path).and_raise(Errno::ENOENT)
+    File.stub(:exists?).with(path).and_return(false)
+    File.stub(:exist?).with(path).and_return(false)
+    File.stub(:directory?).with(path).and_return(false)
+    File.stub(:writable?).with(path).and_return(false)
+    file_symlink_class.stub(:symlink?).with(path).and_return(false)
+  end
   File.stub(:directory?).with(enclosing_directory).and_return(false)
-  File.stub(:writable?).with(resource_path).and_return(false)
-  file_symlink_class.stub(:symlink?).with(resource_path).and_return(false)
 end
 
 shared_examples_for Chef::Provider::File do
