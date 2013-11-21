@@ -369,6 +369,7 @@ class Chef
             :route => Chef::Provider::Route,
             :ifconfig => Chef::Provider::Ifconfig,
             :ruby_block => Chef::Provider::RubyBlock,
+            :whyrun_safe_ruby_block => Chef::Provider::WhyrunSafeRubyBlock,
             :erl_call => Chef::Provider::ErlCall,
             :log => Chef::Provider::Log::ChefLog
           }
