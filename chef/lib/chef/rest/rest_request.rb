@@ -82,6 +82,10 @@ class Chef
         @url.host
       end
 
+      def hostname
+        @url.hostname
+      end
+
       def port
         @url.port
       end
@@ -155,12 +159,12 @@ class Chef
       def configure_http_client
         http_proxy = proxy_uri
         if http_proxy.nil?
-          @http_client = Net::HTTP.new(host, port)
+          @http_client = Net::HTTP.new(hostname, port)
         else
           Chef::Log.debug("Using #{http_proxy.host}:#{http_proxy.port} for proxy")
           user = Chef::Config["#{url.scheme}_proxy_user"]
           pass = Chef::Config["#{url.scheme}_proxy_pass"]
-          @http_client = Net::HTTP.Proxy(http_proxy.host, http_proxy.port, user, pass).new(host, port)
+          @http_client = Net::HTTP.Proxy(http_proxy.host, http_proxy.port, user, pass).new(hostname, port)
         end
         if url.scheme == HTTPS
           @http_client.use_ssl = true
