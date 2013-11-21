@@ -33,7 +33,7 @@ class Chef
       end
 
       def action_create
-        if file_cache_location && content_stale? 
+        if file_cache_location && content_stale?
           description = []
           description << "create a new cookbook_file #{@new_resource.path}"
           description << diff_current(file_cache_location)
@@ -83,22 +83,30 @@ class Chef
         # On the Windows platform, files in the temp directory
         # default to not inherit unless the new resource specifies rights of
         # some sort. Here we ensure that even when no rights are
-        # specified, the dacl's inheritance flag is set. 
+        # specified, the dacl's inheritance flag is set.
         if Chef::Platform.windows? &&
             @new_resource.rights.nil? &&
             @new_resource.group.nil? &&
             @new_resource.owner.nil? &&
             @new_resource.deny_rights.nil?
-          
+
           securable_tempfile = Chef::ReservedNames::Win32::Security::SecurableObject.new(tempfile_path)
 
           # No rights were specified, so the dacl will have no explicit aces
           default_dacl = Chef::ReservedNames::Win32::Security::ACL.create([])
 
-          # In setting this default dacl, set inheritance to true 
+          # In setting this default dacl, set inheritance to true
           securable_tempfile.set_dacl(default_dacl, true)
-        end        
-      end      
+        end
+      end
+
+      private
+
+      def managing_content?
+        return true if @new_resource.checksum
+        return true if !@new_resource.source.nil? && @action != :create_if_missing
+        false
+      end
 
     end
   end

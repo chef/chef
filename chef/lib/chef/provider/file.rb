@@ -48,9 +48,9 @@ class Chef
 
       def diff_current_from_content(new_content)
         result = nil
-        Tempfile.open("chef-diff") do |file| 
+        Tempfile.open("chef-diff") do |file|
           file.write new_content
-          file.close 
+          file.close
           result = diff_current file.path
         end
         result
@@ -96,12 +96,12 @@ class Chef
           # -u: Unified diff format
           result = shell_out("diff -u #{target_path} #{temp_path}" )
         rescue Exception => e
-          # Should *not* receive this, but in some circumstances it seems that 
+          # Should *not* receive this, but in some circumstances it seems that
           # an exception can be thrown even using shell_out instead of shell_out!
           return [ "Could not determine diff. Error: #{e.message}" ]
         end
 
-        # diff will set a non-zero return code even when there's 
+        # diff will set a non-zero return code even when there's
         # valid stdout results, if it encounters something unexpected
         # So as long as we have output, we'll show it.
         if not result.stdout.empty?
@@ -118,7 +118,7 @@ class Chef
         else
           [ "(no diff)" ]
         end
-      end 
+      end
 
       def whyrun_supported?
         true
@@ -132,14 +132,14 @@ class Chef
         @current_resource.path(@new_resource.path)
         if !::File.directory?(@new_resource.path)
           if ::File.exist?(@new_resource.path)
-            if @action != :create_if_missing  
+            if managing_content?
               @current_resource.checksum(checksum(@new_resource.path))
             end
           end
         end
         load_current_resource_attrs
         setup_acl
-        
+
         @current_resource
       end
 
@@ -159,7 +159,7 @@ class Chef
 
           if @new_resource.group.nil?
             @new_resource.group(@current_resource.group)
-          end 
+          end
           if @new_resource.owner.nil?
             @new_resource.owner(@current_resource.owner)
           end
@@ -168,7 +168,7 @@ class Chef
           end
         end
       end
-      
+
       def setup_acl
         @acl_scanner = ScanAccessControl.new(@new_resource, @current_resource)
         @acl_scanner.set_all!
@@ -191,7 +191,7 @@ class Chef
         # Make sure the file is deletable if it exists. Otherwise, fail.
         requirements.assert(:delete) do |a|
           a.assertion do
-            if ::File.exists?(@new_resource.path) 
+            if ::File.exists?(@new_resource.path)
               ::File.writable?(@new_resource.path)
             else
               true
@@ -211,7 +211,7 @@ class Chef
         unless compare_content
           description = []
           description << "update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(new_resource_content_checksum)}"
-          description << diff_current_from_content(@new_resource.content) 
+          description << diff_current_from_content(@new_resource.content)
           converge_by(description) do
             backup @new_resource.path if ::File.exists?(@new_resource.path)
             ::File.open(@new_resource.path, "w") {|f| f.write @new_resource.content }
@@ -221,10 +221,10 @@ class Chef
       end
 
       # if you are using a tempfile before creating, you must
-      # override the default with the tempfile, since the 
+      # override the default with the tempfile, since the
       # file at @new_resource.path will not be updated on converge
       def update_new_file_state(path=@new_resource.path)
-        if !::File.directory?(path) 
+        if !::File.directory?(path)
           @new_resource.checksum(checksum(path))
         end
 
@@ -247,8 +247,8 @@ class Chef
           desc = "create new file #{@new_resource.path}"
           desc << " with content checksum #{short_cksum(new_resource_content_checksum)}" if new_resource.content
           description << desc
-          description << diff_current_from_content(@new_resource.content) 
-          
+          description << diff_current_from_content(@new_resource.content)
+
           converge_by(description) do
             Chef::Log.info("entered create")
             ::File.open(@new_resource.path, "w+") {|f| f.write @new_resource.content }
@@ -264,7 +264,7 @@ class Chef
 
       def set_all_access_controls
         if access_controls.requires_changes?
-          converge_by(access_controls.describe_changes) do 
+          converge_by(access_controls.describe_changes) do
             access_controls.set_all
             #Update file state with new access values
             update_new_file_state
@@ -282,7 +282,7 @@ class Chef
 
       def action_delete
         if ::File.exists?(@new_resource.path)
-          converge_by("delete file #{@new_resource.path}") do 
+          converge_by("delete file #{@new_resource.path}") do
             backup unless ::File.symlink?(@new_resource.path)
             ::File.delete(@new_resource.path)
             Chef::Log.info("#{@new_resource} deleted file at #{@new_resource.path}")
@@ -341,6 +341,12 @@ class Chef
       end
 
       private
+
+      def managing_content?
+        return true if @new_resource.checksum
+        return true if !@new_resource.content.nil? && @action != :create_if_missing
+        false
+      end
 
       def short_cksum(checksum)
         return "none" if checksum.nil?
