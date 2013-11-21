@@ -72,6 +72,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :not_supported_on_mac_osx_106 => true if mac_osx_106?
   config.filter_run_excluding :solaris_only => true unless solaris?
   config.filter_run_excluding :not_supported_on_win2k3 => true if windows_win2k3?
+  config.filter_run_excluding :not_supported_on_solaris => true if solaris?
   config.filter_run_excluding :unix_only => true unless unix?
   config.filter_run_excluding :ruby_18_only => true unless ruby_18?
   config.filter_run_excluding :ruby_19_only => true unless ruby_19?
