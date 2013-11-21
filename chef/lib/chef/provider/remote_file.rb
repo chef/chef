@@ -42,7 +42,7 @@ class Chef
           if matches_current_checksum?(raw_file)
             Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
           else
-            description = [] 
+            description = []
             description << "copy file downloaded from #{@new_resource.source} into #{@new_resource.path}"
             description << diff_current(raw_file.path)
             converge_by(description) do
@@ -52,7 +52,7 @@ class Chef
               raw_file.close!
             end
             # whyrun mode cleanup - the temp file will never be used,
-            # so close/unlink it here. 
+            # so close/unlink it here.
             if whyrun_mode?
               raw_file.close!
             end
@@ -118,6 +118,12 @@ class Chef
       def absolute_uri?(source)
         URI.parse(source).absolute?
       rescue URI::InvalidURIError
+        false
+      end
+
+      def managing_content?
+        return true if @new_resource.checksum
+        return true if !@new_resource.source.nil? && @action != :create_if_missing
         false
       end
 

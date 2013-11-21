@@ -34,12 +34,12 @@ class Chef
         @current_resource = Chef::Resource::Template.new(@new_resource.name)
         super
       end
-      
+
       def define_resource_requirements
         super
 
-        requirements.assert(:create, :create_if_missing) do |a| 
-          a.assertion { ::File::exist?(template_location) } 
+        requirements.assert(:create, :create_if_missing) do |a|
+          a.assertion { ::File::exist?(template_location) }
           a.failure_message "Template source #{template_location} could not be found."
           a.whyrun "Template source #{template_location} does not exist. Assuming it would have been created."
           a.block_action!
@@ -54,7 +54,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} content has not changed.")
             set_all_access_controls
           else
-            description = [] 
+            description = []
             action_message = update ? "update #{@current_resource} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(@new_resource.checksum)}" :
               "create #{@new_resource}"
             description << action_message
@@ -74,7 +74,7 @@ class Chef
               @new_resource.group(stat.gid)
             end
           end
-        end  
+        end
       end
 
 
@@ -110,6 +110,12 @@ class Chef
         context.merge!(@new_resource.variables)
         context[:node] = node
         render_template(IO.read(template_location), context, &block)
+      end
+
+      def managing_content?
+        return true if @new_resource.checksum
+        return true if !@new_resource.source.nil? && @action != :create_if_missing
+        false
       end
 
     end
