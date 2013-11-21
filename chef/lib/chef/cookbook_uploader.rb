@@ -134,24 +134,17 @@ class Chef
         # but we need the base64 encoding for the content-md5
         # header
         checksum64 = Base64.encode64([checksum].pack("H*")).strip
-        timestamp = Time.now.utc.iso8601
         file_contents = File.open(file, "rb") {|f| f.read}
-        # TODO - 5/28/2010, cw: make signing and sending the request streaming
-        sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
-                                                                           :http_method => :put,
-                                                                           :path        => URI.parse(url).path,
-                                                                           :body        => file_contents,
-                                                                           :timestamp   => timestamp,
-                                                                           :user_id     => rest.client_name
-                                                                           )
-        headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, :accept => 'application/json' }
-        headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(rest.signing_key)))
+        headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, 'accept' => 'application/json' }
 
         begin
-          RestClient::Resource.new(url, :headers=>headers, :timeout=>1800, :open_timeout=>1800).put(file_contents)
+          url = rest.create_url(url)
+          rest.raw_http_request(:PUT, url, headers, file_contents)
           checksums_to_upload.delete(checksum)
-        rescue RestClient::Exception => e
-          Chef::Knife.ui.error("Failed to upload #@cookbook : #{e.message}\n#{e.response.body}")
+        rescue Net::HTTPServerException, Net::HTTPFatalError, Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError => e
+          error_message = "Failed to upload #{file} (#{checksum}) to #{url} : #{e.message}"
+          error_message << "\n#{e.response.body}" if e.respond_to?(:response)
+          Chef::Knife.ui.error(error_message)
           raise
         end
       end
