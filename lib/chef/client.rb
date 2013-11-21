@@ -559,7 +559,7 @@ class Chef
         cookbook_paths = Array(Chef::Config[:cookbook_path])
         Chef::Log.debug "Loading from cookbook_path: #{cookbook_paths.map { |path| File.expand_path(path) }.join(', ')}"
         if cookbook_paths.all? {|path| empty_directory?(path) }
-          msg = "None of the cookbook paths, #{cookbook_paths.inspect}, contain any cookbooks"
+          msg = "None of the cookbook paths set in Chef::Config[:cookbook_path], #{cookbook_paths.inspect}, contain any cookbooks"
           Chef::Log.fatal(msg)
           raise Chef::Exceptions::CookbookNotFound, msg
         end
