@@ -62,7 +62,6 @@ describe Chef::Provider::Group::Groupmod do
   
         it "logs a message and sets group's members to 'none', then removes existing group members" do
           Chef::Log.should_receive(:debug).with("group[wheel] setting group members to: none")
-          Chef::Log.should_receive(:debug).with("group[wheel] removing members lobster, rage, fist")
           @provider.should_receive(:shell_out!).with("group mod -n wheel_bak wheel")
           @provider.should_receive(:shell_out!).with("group add -g '123' -o wheel")
           @provider.should_receive(:shell_out!).with("group del wheel_bak")

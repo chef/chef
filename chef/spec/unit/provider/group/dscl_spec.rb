@@ -265,6 +265,7 @@ describe Chef::Provider::Group::Dscl do
     it "should manage the group_name if it changed and the new resources group_name is not null" do
       @current_resource.group_name("oldval")
       @new_resource.group_name("newname")
+      @provider.should_receive(:set_members).and_return(true)
       @provider.should_receive(:safe_dscl).with("create /Groups/newname")
       @provider.should_receive(:safe_dscl).with("create /Groups/newname Password '*'")
       @provider.manage_group

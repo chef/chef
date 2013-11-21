@@ -129,10 +129,9 @@ describe Chef::Provider::Group::Groupadd do
     end
   end
 
-  describe "modify_group_members" do
-
-    it "should raise an error when calling modify_group_members" do
-      lambda { @provider.modify_group_members }.should raise_error(Chef::Exceptions::Group, "you must override modify_group_members in #{@provider.to_s}")
+  [:add_member, :remove_member, :set_members].each do |m|
+    it "should raise an error when calling #{m}" do
+      lambda { @provider.send(m, [ ]) }.should raise_error(Chef::Exceptions::Group, "you must override #{m} in #{@provider.to_s}")
     end
   end
 

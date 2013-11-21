@@ -1,3 +1,7 @@
+require 'chef/mixin/shell_out'
+
+include Chef::Mixin::ShellOut
+
 def ruby_19?
   !!(RUBY_VERSION =~ /^1.9/)
 end
@@ -16,6 +20,19 @@ def windows_win2k3?
 
   host = WMI::Win32_OperatingSystem.find(:first)
   (host.version && host.version.start_with?("5.2"))
+end
+
+def mac_osx_106?
+  if File.exists? "/usr/bin/sw_vers"
+    result = shell_out("/usr/bin/sw_vers")
+    result.stdout.each_line do |line|
+      if line =~ /^ProductVersion:\s10.6.*$/
+        return true
+      end
+    end
+  end
+  
+  false
 end
 
 # def jruby?
