@@ -35,46 +35,75 @@ def normalized_path
   File.expand_path(resource_path)
 end
 
+# forwards-vs-reverse slashes on windows sucks
+def windows_path
+  windows? ? normalized_path.gsub(/\\/, '/') : normalized_path
+end
+
+# this is all getting a bit stupid, CHEF-4802 cut to remove all this
 def setup_normal_file
-  File.stub!(:exists?).with(resource_path).and_return(true)
-  File.stub!(:directory?).with(resource_path).and_return(false)
-  File.stub!(:directory?).with(enclosing_directory).and_return(true)
-  File.stub!(:writable?).with(resource_path).and_return(true)
-  file_symlink_class.stub!(:symlink?).with(resource_path).and_return(false)
-  file_symlink_class.stub!(:symlink?).with(normalized_path).and_return(false)
+  [ resource_path, normalized_path, windows_path].each do |path|
+    File.stub(:file?).with(path).and_return(true)
+    File.stub(:exists?).with(path).and_return(true)
+    File.stub(:exist?).with(path).and_return(true)
+    File.stub(:directory?).with(path).and_return(false)
+    File.stub(:writable?).with(path).and_return(true)
+    file_symlink_class.stub(:symlink?).with(path).and_return(false)
+    File.stub(:realpath?).with(path).and_return(normalized_path)
+  end
+  File.stub(:directory?).with(enclosing_directory).and_return(true)
 end
 
 def setup_missing_file
-  File.stub!(:exists?).with(resource_path).and_return(false)
-  File.stub!(:directory?).with(resource_path).and_return(false)
-  File.stub!(:directory?).with(enclosing_directory).and_return(true)
-  File.stub!(:writable?).with(resource_path).and_return(false)
-  file_symlink_class.stub!(:symlink?).with(resource_path).and_return(false)
+  [ resource_path, normalized_path, windows_path].each do |path|
+    File.stub(:file?).with(path).and_return(false)
+    File.stub(:realpath?).with(path).and_return(resource_path)
+    File.stub(:exists?).with(path).and_return(false)
+    File.stub(:exist?).with(path).and_return(false)
+    File.stub(:directory?).with(path).and_return(false)
+    File.stub(:writable?).with(path).and_return(false)
+    file_symlink_class.stub(:symlink?).with(path).and_return(false)
+  end
+  File.stub(:directory?).with(enclosing_directory).and_return(true)
 end
 
 def setup_symlink
-  File.stub!(:exists?).with(resource_path).and_return(true)
-  File.stub!(:directory?).with(normalized_path).and_return(false)
-  File.stub!(:directory?).with(enclosing_directory).and_return(true)
-  File.stub!(:writable?).with(resource_path).and_return(true)
-  file_symlink_class.stub!(:symlink?).with(resource_path).and_return(true)
-  file_symlink_class.stub!(:symlink?).with(normalized_path).and_return(true)
+  [ resource_path, normalized_path, windows_path].each do |path|
+    File.stub(:file?).with(path).and_return(true)
+    File.stub(:realpath?).with(path).and_return(normalized_path)
+    File.stub(:exists?).with(path).and_return(true)
+    File.stub(:exist?).with(path).and_return(true)
+    File.stub(:directory?).with(path).and_return(false)
+    File.stub(:writable?).with(path).and_return(true)
+    file_symlink_class.stub(:symlink?).with(path).and_return(true)
+  end
+  File.stub(:directory?).with(enclosing_directory).and_return(true)
 end
 
 def setup_unwritable_file
-  File.stub!(:exists?).with(resource_path).and_return(true)
-  File.stub!(:directory?).with(resource_path).and_return(false)
-  File.stub!(:directory?).with(enclosing_directory).and_return(true)
-  File.stub!(:writable?).with(resource_path).and_return(false)
-  file_symlink_class.stub!(:symlink?).with(resource_path).and_return(false)
+  [ resource_path, normalized_path, windows_path].each do |path|
+    File.stub(:file?).with(path).and_return(false)
+    File.stub(:realpath?).with(path).and_raise(Errno::ENOENT)
+    File.stub(:exists?).with(path).and_return(true)
+    File.stub(:exist?).with(path).and_return(true)
+    File.stub(:directory?).with(path).and_return(false)
+    File.stub(:writable?).with(path).and_return(false)
+    file_symlink_class.stub(:symlink?).with(path).and_return(false)
+  end
+  File.stub(:directory?).with(enclosing_directory).and_return(true)
 end
 
 def setup_missing_enclosing_directory
-  File.stub!(:exists?).with(resource_path).and_return(false)
-  File.stub!(:directory?).with(resource_path).and_return(false)
-  File.stub!(:directory?).with(enclosing_directory).and_return(false)
-  File.stub!(:writable?).with(resource_path).and_return(false)
-  file_symlink_class.stub!(:symlink?).with(resource_path).and_return(false)
+  [ resource_path, normalized_path, windows_path].each do |path|
+    File.stub(:file?).with(path).and_return(false)
+    File.stub(:realpath?).with(path).and_raise(Errno::ENOENT)
+    File.stub(:exists?).with(path).and_return(false)
+    File.stub(:exist?).with(path).and_return(false)
+    File.stub(:directory?).with(path).and_return(false)
+    File.stub(:writable?).with(path).and_return(false)
+    file_symlink_class.stub(:symlink?).with(path).and_return(false)
+  end
+  File.stub(:directory?).with(enclosing_directory).and_return(false)
 end
 
 shared_examples_for Chef::Provider::File do
@@ -93,63 +122,109 @@ shared_examples_for Chef::Provider::File do
 
   context "when loading the current resource" do
 
-    context "when running load_current_resource and the file exists" do
-      before do
+    context "when running load_current_resource" do
+      #
+      # the content objects need the current_resource to be loaded (esp remote_file), so calling
+      # for content inside of load_current_resource is totally crossing the streams...
+      #
+      it "should not try to load the content when the file is present" do
         setup_normal_file
+        provider.should_not_receive(:tempfile)
+        provider.should_not_receive(:content)
         provider.load_current_resource
       end
 
+      it "should not try to load the content when the file is missing" do
+        setup_missing_file
+        provider.should_not_receive(:tempfile)
+        provider.should_not_receive(:content)
+        provider.load_current_resource
+      end
+    end
+
+    context "when running load_current_resource and the file exists" do
+      before do
+        setup_normal_file
+      end
+
+      let(:tempfile_sha256) { "42971f0ddce0cb20cf7660a123ffa1a1543beb2f1e7cd9d65858764a27f3201d" }
+
       it "should load a current resource based on the one specified at construction" do
+        provider.load_current_resource
         provider.current_resource.should be_a_kind_of(Chef::Resource::File)
       end
 
       it "the loaded current_resource name should be the same as the resource name" do
+        provider.load_current_resource
         provider.current_resource.name.should eql(resource.name)
       end
 
       it "the loaded current_resource path should be the same as the resoure path" do
+        provider.load_current_resource
         provider.current_resource.path.should eql(resource.path)
       end
 
       it "the loaded current_resource content should be nil" do
+        provider.load_current_resource
         provider.current_resource.content.should eql(nil)
+      end
+
+      it "it should call checksum if we are managing content" do
+        provider.should_receive(:managing_content?).at_least(:once).and_return(true)
+        provider.should_receive(:checksum).with(resource.path).and_return(tempfile_sha256)
+        provider.load_current_resource
+      end
+
+      it "it should not call checksum if we are not managing content" do
+        provider.should_receive(:managing_content?).at_least(:once).and_return(false)
+        provider.should_not_receive(:checksum)
+        provider.load_current_resource
       end
     end
 
     context "when running load_current_resource and the file does not exist" do
       before do
         setup_missing_file
-        provider.load_current_resource
       end
 
       it "the current_resource should be a Chef::Resource::File" do
+        provider.load_current_resource
         provider.current_resource.should be_a_kind_of(Chef::Resource::File)
       end
 
       it "the current_resource name should be the same as the resource name" do
+        provider.load_current_resource
         provider.current_resource.name.should eql(resource.name)
       end
 
       it "the current_resource path should be the same as the resource path" do
+        provider.load_current_resource
         provider.current_resource.path.should eql(resource.path)
       end
 
       it "the loaded current_resource content should be nil" do
+        provider.load_current_resource
         provider.current_resource.content.should eql(nil)
+      end
+
+      it "it should not call checksum if we are not managing content" do
+        provider.should_not_receive(:managing_content?)
+        provider.should_not_receive(:checksum)
+        provider.load_current_resource
       end
     end
 
     context "examining file security metadata on Unix with a file that exists" do
       before do
         # fake that we're on unix even if we're on windows
-        Chef::Platform.stub!(:windows?).and_return(false)
+        Chef::Platform.stub(:windows?).and_return(false)
         # mock up the filesystem to behave like unix
         setup_normal_file
         stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
         resource_real_path = File.realpath(resource.path)
         File.should_receive(:stat).with(resource_real_path).at_least(:once).and_return(stat_struct)
-        Etc.stub!(:getgrgid).with(0).and_return(mock("Group Ent", :name => "wheel"))
-        Etc.stub!(:getpwuid).with(0).and_return(mock("User Ent", :name => "root"))
+        Etc.stub(:getgrgid).with(0).and_return(mock("Group Ent", :name => "wheel"))
+        Etc.stub(:getpwuid).with(0).and_return(mock("User Ent", :name => "root"))
       end
 
       context "when the new_resource does not specify any state" do
@@ -218,7 +293,7 @@ shared_examples_for Chef::Provider::File do
     context "examining file security metadata on Unix with a file that does not exist" do
       before do
         # fake that we're on unix even if we're on windows
-        Chef::Platform.stub!(:windows?).and_return(false)
+        Chef::Platform.stub(:windows?).and_return(false)
         setup_missing_file
       end
 
@@ -267,14 +342,14 @@ shared_examples_for Chef::Provider::File do
 
     before do
       # fake that we're on unix even if we're on windows
-      Chef::Platform.stub!(:windows?).and_return(false)
+      Chef::Platform.stub(:windows?).and_return(false)
       # mock up the filesystem to behave like unix
       setup_normal_file
       stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
       resource_real_path = File.realpath(resource.path)
-      File.stub!(:stat).with(resource_real_path).and_return(stat_struct)
-      Etc.stub!(:getgrgid).with(0).and_return(mock("Group Ent", :name => "wheel"))
-      Etc.stub!(:getpwuid).with(0).and_return(mock("User Ent", :name => "root"))
+      File.stub(:stat).with(resource_real_path).and_return(stat_struct)
+      Etc.stub(:getgrgid).with(0).and_return(mock("Group Ent", :name => "wheel"))
+      Etc.stub(:getpwuid).with(0).and_return(mock("User Ent", :name => "root"))
       provider.send(:load_resource_attributes_from_file, resource)
     end
 
@@ -368,7 +443,7 @@ shared_examples_for Chef::Provider::File do
           setup_normal_file
           provider.load_current_resource
           tempfile = double('Tempfile', :path => "/tmp/foo-bar-baz")
-          content.stub!(:tempfile).and_return(tempfile)
+          content.stub(:tempfile).and_return(tempfile)
           File.should_receive(:exists?).with("/tmp/foo-bar-baz").and_return(true)
           tempfile.should_receive(:unlink).once
         end
@@ -378,11 +453,12 @@ shared_examples_for Chef::Provider::File do
           let(:tempfile_sha256) { "42971f0ddce0cb20cf7660a123ffa1a1543beb2f1e7cd9d65858764a27f3201d" }
           let(:diff_for_reporting) { "+++\n---\n+foo\n-bar\n" }
           before do
-            provider.stub!(:contents_changed?).and_return(true)
+            provider.stub(:contents_changed?).and_return(true)
             diff = double('Diff', :for_output => ['+++','---','+foo','-bar'],
                                   :for_reporting => diff_for_reporting )
-            diff.stub!(:diff).with(resource_path, tempfile_path).and_return(true)
+            diff.stub(:diff).with(resource_path, tempfile_path).and_return(true)
             provider.should_receive(:diff).at_least(:once).and_return(diff)
+            provider.should_receive(:managing_content?).at_least(:once).and_return(true)
             provider.should_receive(:checksum).with(tempfile_path).and_return(tempfile_sha256)
             provider.should_receive(:checksum).with(resource_path).and_return(tempfile_sha256)
             provider.deployment_strategy.should_receive(:deploy).with(tempfile_path, normalized_path)
@@ -406,7 +482,7 @@ shared_examples_for Chef::Provider::File do
         end
 
         it "does nothing when the contents have not changed"  do
-          provider.stub!(:contents_changed?).and_return(false)
+          provider.stub(:contents_changed?).and_return(false)
           provider.should_not_receive(:diff)
           provider.send(:do_contents_changes)
         end
@@ -443,7 +519,7 @@ shared_examples_for Chef::Provider::File do
         before do
           setup_normal_file
           provider.load_current_resource
-          provider.stub!(:resource_updated?).and_return(true)
+          provider.stub(:resource_updated?).and_return(true)
         end
 
         it "should check for selinux_enabled? by default" do
@@ -508,7 +584,7 @@ shared_examples_for Chef::Provider::File do
 
       context "when resource is not updated" do
         before do
-          provider.stub!(:resource_updated?).and_return(false)
+          provider.stub(:resource_updated?).and_return(false)
         end
 
         it "should not check for selinux_enabled?" do
@@ -605,5 +681,67 @@ shared_examples_for Chef::Provider::File do
 
   end
 
+end
+
+shared_examples_for "a file provider with content field" do
+  context "when testing managing_content?" do
+    it "should be false when creating a file without content" do
+      provider.action = :create
+      resource.stub(:content).and_return(nil)
+      resource.stub(:checksum).and_return(nil)
+      expect(provider.send(:managing_content?)).to be_false
+    end
+    it "should be true when creating a file with content" do
+      provider.action = :create
+      resource.stub(:content).and_return("flurbleblobbleblooble")
+      resource.stub(:checksum).and_return(nil)
+      expect(provider.send(:managing_content?)).to be_true
+    end
+    it "should be true when checksum is set on the content (no matter how crazy)" do
+      provider.action = :create_if_missing
+      resource.stub(:checksum).and_return("1234123234234234")
+      resource.stub(:content).and_return(nil)
+      expect(provider.send(:managing_content?)).to be_true
+    end
+    it "should be false when action is create_if_missing" do
+      provider.action = :create_if_missing
+      resource.stub(:content).and_return("flurbleblobbleblooble")
+      resource.stub(:checksum).and_return(nil)
+      expect(provider.send(:managing_content?)).to be_false
+    end
+  end
+end
+
+shared_examples_for "a file provider with source field" do
+  context "when testing managing_content?" do
+    it "should be false when creating a file without content" do
+      provider.action = :create
+      resource.stub(:content).and_return(nil)
+      resource.stub(:source).and_return(nil)
+      resource.stub(:checksum).and_return(nil)
+      expect(provider.send(:managing_content?)).to be_false
+    end
+    it "should be true when creating a file with content" do
+      provider.action = :create
+      resource.stub(:content).and_return(nil)
+      resource.stub(:source).and_return("http://somewhere.com/something.php")
+      resource.stub(:checksum).and_return(nil)
+      expect(provider.send(:managing_content?)).to be_true
+    end
+    it "should be true when checksum is set on the content (no matter how crazy)" do
+      provider.action = :create_if_missing
+      resource.stub(:content).and_return(nil)
+      resource.stub(:source).and_return(nil)
+      resource.stub(:checksum).and_return("1234123234234234")
+      expect(provider.send(:managing_content?)).to be_true
+    end
+    it "should be false when action is create_if_missing" do
+      provider.action = :create_if_missing
+      resource.stub(:content).and_return(nil)
+      resource.stub(:source).and_return("http://somewhere.com/something.php")
+      resource.stub(:checksum).and_return(nil)
+      expect(provider.send(:managing_content?)).to be_false
+    end
+  end
 end
 

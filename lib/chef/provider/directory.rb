@@ -123,6 +123,13 @@ class Chef
           end
         end
       end
+
+      private
+
+      def managing_content?
+        false
+      end
+
     end
   end
 end
