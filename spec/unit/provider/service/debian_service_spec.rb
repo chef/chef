@@ -233,6 +233,10 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
       end
     end
 
+    before do
+      @current_resource.priority(80)
+    end
+
     context "when the service is disabled" do
       before do
         @current_resource.enabled(false)
@@ -252,7 +256,6 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
 
       context "and the service requests the same priority as is set" do
         before do
-          @current_resource.priority(80)
           @new_resource.priority(80)
         end
         it_behaves_like "the service is up to date"
@@ -260,8 +263,7 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
 
       context "and the service requests a different priority than is set" do
         before do
-          @current_resource.priority(20)
-          @new_resource.priority(80)
+          @new_resource.priority(20)
         end
         it_behaves_like "the service is not up to date"
       end
