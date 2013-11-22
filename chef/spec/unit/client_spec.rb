@@ -128,7 +128,7 @@ shared_examples_for Chef::Client do
       @client.should_receive(:run_started)
       @client.should_receive(:run_completed_successfully)
 
-      if(Chef::Config[:client_fork])
+      if(Chef::Config[:client_fork] && !windows?)
         require 'stringio'
         if(Chef::Config[:pipe_node])
           pipe_sim = StringIO.new

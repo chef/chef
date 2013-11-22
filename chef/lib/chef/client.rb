@@ -160,7 +160,7 @@ class Chef
     # === Returns
     # boolean:: Return value from #do_run. Should always returns true.
     def run
-      if(Chef::Config[:client_fork] && Process.respond_to?(:fork))
+      if(Chef::Config[:client_fork] && Process.respond_to?(:fork) && !Chef::Platform.windows?)
         Chef::Log.info "Forking chef instance to converge..."
         pid = fork do
           Chef::Log.info "Forked instance now converging"
