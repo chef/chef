@@ -256,5 +256,13 @@ class Chef
       @loaded_recipes["#{cookbook}::#{recipe}"] = true
     end
 
+    def resource_name_key(resource)
+      if resource.instance_of?(Chef::Resource)
+        resource.name
+      else
+        resource.to_s
+      end
+    end
+
   end
 end
