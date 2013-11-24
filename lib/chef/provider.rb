@@ -150,7 +150,7 @@ class Chef
       # if whyrun is not supported run the before notifications here,
       # otherside they will be run inside Chef::Mixin::WhyRun::ConvergeActions
 
-      if !whyrun_supported? 
+      if !whyrun_supported?
 
         # :depends notifications seems not affected by this problem,
         # but :before notifications cannot run when there is no whyrun support and no conditions defined.
