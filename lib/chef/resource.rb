@@ -707,7 +707,7 @@ F
       new_exception.set_backtrace(e.backtrace)
       new_exception
     end
-    # Evaluates not_if and only_if conditionals. Returns a false value if any
+    # Evaluates not_if and only_if conditionals. Returns a falsey value if any
     # of the conditionals indicate that this resource should be skipped, i.e.,
     # if an only_if evaluates to false or a not_if evaluates to true.
     #

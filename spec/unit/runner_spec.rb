@@ -423,105 +423,105 @@ E
   shared_examples "having before notifications:" do |before_timing, provider|
     it "should execute :#{before_timing} when only_if and not_if conditions are met" do
       provider.clear_action_record
-  
+
       Chef::Platform.set(
         :resource => :cat,
         :provider => provider
       )
-  
+
       @first_resource.action = :second_action
-  
+
       @first_resource.only_if { true }
       @first_resource.not_if { false }
-  
+
       before_resource = Chef::Resource::Cat.new("peanut", @run_context)
       before_resource.action = :first_action
-  
+
       @first_resource.notifies(:first_action, before_resource, before_timing)
-  
+
       @runner.converge
       provider.all_actions_called.should == [:first, :second]
     end
-  
+
     it "should execute :#{before_timing} and :immediate notifications in the correct order" do
       provider.clear_action_record
-  
+
       Chef::Platform.set(
         :resource => :cat,
         :provider => provider
       )
-  
+
       @first_resource.action = :nothing
-  
+
       before_resource = Chef::Resource::Cat.new("peanut", @run_context)
       before_resource.action = :second_action
       before_resource.only_if { true }
       @run_context.resource_collection << before_resource
-  
+
       second_resource = Chef::Resource::Cat.new("snickers", @run_context)
       second_resource.action = :second_action
       @run_context.resource_collection << second_resource
-  
+
       second_resource.notifies(:third_action, @first_resource, :immediate)
-  
+
       before_resource.notifies(:first_action, @first_resource, before_timing)
-  
+
       @runner.converge
       provider.all_actions_called.should == [:first, :second, :second, :third]
     end
-  
+
     it "should not execute :#{before_timing.to_s} when only_if is not met" do
       provider.clear_action_record
-  
+
       Chef::Platform.set(
         :resource => :cat,
         :provider => provider
       )
-  
+
       @first_resource.action = :second_action
       @first_resource.only_if { false }
-  
+
       before_resource = Chef::Resource::Cat.new("peanut", @run_context)
       before_resource.action = :first_action
-  
+
       @first_resource.notifies(:first_action, before_resource, before_timing)
-  
+
       @runner.converge
       provider.all_actions_called.should == []
     end
-  
+
     it "should not execute :#{before_timing.to_s} when not_if is met" do
       provider.clear_action_record
-  
+
       Chef::Platform.set(
         :resource => :cat,
         :provider => provider
       )
-  
+
       @first_resource.action = :second_action
       @first_resource.not_if { true }
-  
+
       before_resource = Chef::Resource::Cat.new("peanut", @run_context)
       before_resource.action = :first_action
-  
+
       @first_resource.notifies(:first_action, before_resource, before_timing)
-  
+
       @runner.converge
       provider.all_actions_called.should == []
     end
-  
+
     it "should execute :#{before_timing.to_s} actions on changed resources" do
       notifying_resource = Chef::Resource::Cat.new("peanut", @run_context)
       notifying_resource.action = :purr # only action that will set updated on the resource
       notifying_resource.only_if { true }
-  
+
       @run_context.resource_collection << notifying_resource
       @first_resource.action = :nothing # won't be updated unless notified by other resource
-  
+
       notifying_resource.notifies(:purr, @first_resource, before_timing)
-  
+
       @runner.converge
-  
+
       @first_resource.should be_updated
     end
   end # shared_examples "having before notifications:"
