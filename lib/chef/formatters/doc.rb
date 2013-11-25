@@ -230,6 +230,21 @@ class Chef
         @output.color("\n    * Whyrun not supported for #{resource}, bypassing load.", :yellow)
       end
 
+      # Called before handlers run
+      def handlers_start(handler_count)
+        puts "\nRunning handlers:"
+      end
+
+      # Called after an individual handler has run
+      def handler_executed(handler)
+        puts "  - #{handler.class.name}"
+      end
+
+      # Called after all handlers have executed
+      def handlers_completed
+        puts "Running handlers complete\n"
+      end
+
       # Called when a provider makes an assumption after a failed assertion
       # in whyrun mode, in order to allow execution to continue
       def whyrun_assumption(action, resource, message)
