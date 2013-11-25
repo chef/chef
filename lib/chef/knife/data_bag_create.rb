@@ -67,6 +67,13 @@ class Chef
           exit 1
         end
 
+        begin
+          Chef::DataBag::validate_name!(@data_bag_name)
+        rescue Chef::Exceptions::InvalidDataBagName => e
+          ui.fatal(e.message)
+          exit(1)
+        end
+
         # create the data bag
         begin
           rest.post_rest("data", { "name" => @data_bag_name })
