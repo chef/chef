@@ -16,12 +16,12 @@
 #
 
 name "ruby-windows"
-version "1.9.3-p448"
+version "1.9.3-p484"
 
 relative_path "ruby-#{version}-i386-mingw32"
 
 source :url => "http://dl.bintray.com/oneclick/rubyinstaller/ruby-#{version}-i386-mingw32.7z?direct",
-       :md5 => "e317c1225ccf9fdeba951186f2a546aa"
+       :md5 => "a0665113aaeea83f1c4bea02fcf16694"
 
 build do
   # Robocopy's return code is 1 if it succesfully copies over the
