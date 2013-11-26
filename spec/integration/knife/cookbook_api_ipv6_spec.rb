@@ -65,7 +65,9 @@ END_VALIDATION_PEM
 
     let(:knife_config_flag) { "-c '#{path_to("config/knife.rb")}'" }
 
-    context "and the chef_server_url contains an IPv6 literal" do
+    # Some Solaris test platforms are too old for IPv6. These tests should not
+    # otherwise be platform dependent, so exclude solaris
+    context "and the chef_server_url contains an IPv6 literal", :not_supported_on_solaris do
 
       # This provides helper functions we need such as #path_to()
       when_the_repository "has the cookbook to be uploaded" do
