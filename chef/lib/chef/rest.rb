@@ -447,7 +447,7 @@ class Chef
       headers                 = @default_headers.merge(headers)
       #headers['Accept']       = "application/json" unless raw
       headers['Accept']       = "application/json" unless raw
-      headers["Content-Type"] = 'application/json' if json_body
+      headers["Content-Type"] = 'application/json' if json_body && !headers.keys.map(&:downcase).include?("content-type")
       headers['Content-Length'] = json_body.bytesize.to_s if json_body
       headers[RESTRequest::ACCEPT_ENCODING] = RESTRequest::ENCODING_GZIP_DEFLATE unless gzip_disabled?
       headers.merge!(authentication_headers(method, url, json_body)) if sign_requests?
