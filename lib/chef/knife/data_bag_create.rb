@@ -68,7 +68,7 @@ class Chef
         end
 
         begin
-          Chef::DataBag::validate_name!(@data_bag_name)
+          Chef::DataBag.validate_name!(@data_bag_name)
         rescue Chef::Exceptions::InvalidDataBagName => e
           ui.fatal(e.message)
           exit(1)
