@@ -423,6 +423,36 @@ describe Chef::REST do
         @rest.api_request(:GET, @url, {}).should == {"ohai2u"=>"json_api"}
       end
 
+      context "when sending a request with a body and the content-type isn't JSON" do
+
+        let(:expected_headers) do
+          @base_headers.merge("content-type" => 'application/x-binary', 'Content-Length' => '13')
+        end
+
+        let(:request_headers) do
+          {"content-type" => 'application/x-binary'}
+        end
+
+        let(:request_body) do
+          Chef::JSONCompat.to_json({:one=>:two})
+        end
+
+        it "should build a new HTTP POST request" do
+          request = Net::HTTP::Post.new(@url.path)
+          Net::HTTP::Post.should_receive(:new).with("/?foo=bar", expected_headers).and_return(request)
+          @rest.raw_http_request(:POST, @url, request_headers, request_body)
+          request.body.should == '{"one":"two"}'
+        end
+
+        it "should build a new HTTP PUT request" do
+          request = Net::HTTP::Put.new(@url.path)
+          Net::HTTP::Put.should_receive(:new).with("/?foo=bar",expected_headers).and_return(request)
+          @rest.raw_http_request(:PUT, @url, request_headers, request_body)
+          request.body.should == '{"one":"two"}'
+        end
+
+      end
+
       describe "when the server returns a redirect response" do
         let(:redirected_url) { "https://chef.example.com:8443/foo" }
         let(:redirected_uri) { URI.parse(redirected_url) }
