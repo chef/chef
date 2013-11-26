@@ -144,19 +144,18 @@ class Chef
       end
 
       def handle_command_failures(status, command_output, opts={})
-        unless opts[:ignore_failure]
-          opts[:returns] ||= 0
-          unless Array(opts[:returns]).include?(status.exitstatus)
-            # if the log level is not debug, through output of command when we fail
-            output = ""
-            if Chef::Log.level == :debug || opts[:output_on_failure]
-              output << "\n---- Begin output of #{opts[:command]} ----\n"
-              output << command_output.to_s
-              output << "\n---- End output of #{opts[:command]} ----\n"
-            end
-            raise Chef::Exceptions::Exec, "#{opts[:command]} returned #{status.exitstatus}, expected #{opts[:returns]}#{output}"
-          end
+        return if opts[:ignore_failure]
+        opts[:returns] ||= 0
+        return if Array(opts[:returns]).include?(status.exitstatus)
+
+        # if the log level is not debug, through output of command when we fail
+        output = ""
+        if Chef::Log.level == :debug || opts[:output_on_failure]
+          output << "\n---- Begin output of #{opts[:command]} ----\n"
+          output << command_output.to_s
+          output << "\n---- End output of #{opts[:command]} ----\n"
         end
+        raise Chef::Exceptions::Exec, "#{opts[:command]} returned #{status.exitstatus}, expected #{opts[:returns]}#{output}"
       end
 
       # Call #run_command but set LC_ALL to the system's current environment so it doesn't get changed to C.
