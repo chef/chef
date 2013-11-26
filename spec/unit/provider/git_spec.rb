@@ -172,13 +172,14 @@ SHAS
     let(:default_options) do
       {
         :user => deploy_user,
-        :environment => { "GIT_SSH" => wrapper },
+        :environment => { "GIT_SSH" => wrapper, "HOME" => "/home/deployNinja" },
         :log_tag => "git[web2.0 app]"
       }
     end
     before do
       @resource.user deploy_user
       @resource.ssh_wrapper wrapper
+      Etc.stub!(:getpwnam).and_return(double("Struct::Passwd", :name => @resource.user, :dir => "/home/deployNinja"))
     end
     context "without a timeout set" do
       it "clones a repo with default git options" do
@@ -198,11 +199,13 @@ SHAS
 
   it "runs a clone command with escaped destination" do
     @resource.user "deployNinja"
+    Etc.stub!(:getpwnam).and_return(double("Struct::Passwd", :name => @resource.user, :dir => "/home/deployNinja"))
     @resource.destination "/Application Support/with/space"
     @resource.ssh_wrapper "do_it_this_way.sh"
     expected_cmd = "git clone  \"git://github.com/opscode/chef.git\" \"/Application Support/with/space\""
     @provider.should_receive(:shell_out!).with(expected_cmd, :user => "deployNinja",
-                                                :environment =>{"GIT_SSH"=>"do_it_this_way.sh"},
+                                                :environment =>{"GIT_SSH"=>"do_it_this_way.sh",
+                                                                "HOME" => "/home/deployNinja"},
                                                 :log_tag => "git[web2.0 app]")
     @provider.clone
   end
@@ -252,11 +255,14 @@ SHAS
 
   it "runs a sync command with the user and group specified in the resource" do
     @resource.user("whois")
+    Etc.stub!(:getpwnam).and_return(double("Struct::Passwd", :name => @resource.user, :dir => "/home/whois"))
     @resource.group("thisis")
     @provider.should_receive(:setup_remote_tracking_branches).with(@resource.remote, @resource.repository)
     expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir",
-                                                :user => "whois", :group => "thisis", :log_tag => "git[web2.0 app]")
+                                                :user => "whois", :group => "thisis",
+                                                :log_tag => "git[web2.0 app]",
+                                                :environment=>{"HOME"=>"/home/whois"})
     @provider.fetch_updates
   end
 
@@ -296,6 +302,7 @@ SHAS
     it "runs the config with the user and group specified in the resource" do
       @resource.user("whois")
       @resource.group("thisis")
+      Etc.stub!(:getpwnam).and_return(double("Struct::Passwd", :name => @resource.user, :dir => "/home/whois"))
       command_response = double('shell_out')
       command_response.stub(:exitstatus) { 1 }
       expected_command = "git config --get remote.#{@resource.remote}.url"
@@ -304,13 +311,15 @@ SHAS
                                                  :log_tag => "git[web2.0 app]",
                                                  :user => "whois",
                                                  :group => "thisis",
+                                                 :environment=>{"HOME"=>"/home/whois"},
                                                  :returns => [0,1,2]).and_return(command_response)
       add_remote_command = "git remote add #{@resource.remote} #{@resource.repository}"
       @provider.should_receive(:shell_out!).with(add_remote_command,
                                                  :cwd => "/my/deploy/dir",
                                                  :log_tag => "git[web2.0 app]",
                                                  :user => "whois",
-                                                 :group => "thisis")
+                                                 :group => "thisis",
+                                                 :environment=>{"HOME"=>"/home/whois"})
       @provider.setup_remote_tracking_branches(@resource.remote, @resource.repository)
     end
 
