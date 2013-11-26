@@ -45,10 +45,10 @@ describe Chef::Knife::SubcommandLoader do
     ]
     $LOAD_PATH.should_receive(:map).and_return([])
     if Gem::Specification.respond_to? :latest_specs
-      Gem::Specification.should_receive(:latest_specs).and_return(gems)
+      Gem::Specification.should_receive(:latest_specs).with(true).and_return(gems)
       gems[0].should_receive(:matches_for_glob).with(/chef\/knife\/\*\.rb{(.*),\.rb,(.*)}/).and_return(gem_files)
     else
-      Gem.source_index.should_receive(:latest_specs).and_return(gems)
+      Gem.source_index.should_receive(:latest_specs).with(true).and_return(gems)
       gems[0].should_receive(:require_paths).twice.and_return(['lib'])
       gems[0].should_receive(:full_gem_path).and_return('/usr/lib/ruby/gems/knife-ec2-0.5.12')
       Dir.should_receive(:[]).with('/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/*.rb').and_return(gem_files)
