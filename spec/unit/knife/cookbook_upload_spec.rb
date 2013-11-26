@@ -40,6 +40,20 @@ describe Chef::Knife::CookbookUpload do
     @knife.ui.stub!(:stderr).and_return(@output)
   end
 
+  describe 'with --concurrency' do
+    it 'should upload cookbooks with predefined concurrency' do
+      @cookbook_uploader = stub(:upload_cookbooks => nil)
+      Chef::CookbookVersion.stub(:list_all_versions).and_return({})
+      @knife.config[:concurrency] = 3
+      @test_cookbook = Chef::CookbookVersion.new('test_cookbook')
+      @cookbook_loader.stub!(:each).and_yield("test_cookbook", @test_cookbook)
+      @cookbook_loader.stub!(:cookbook_names).and_return(["test_cookbook"])
+      Chef::CookbookUploader.should_receive(:new).with( kind_of(Array),  kind_of(Array),
+        {:force=>nil, :concurrency => 3}).and_return(double("Chef::CookbookUploader", :upload_cookbooks=> true))
+      @knife.run
+    end
+  end
+
   describe 'run' do
     before(:each) do
       @cookbook_uploader = stub(:upload_cookbooks => nil)

@@ -291,6 +291,12 @@ CRONTAB
       @provider.cron_different?.should eql(true)
     end
 
+    it "should return true if mailto doesn't match" do
+      @current_resource.mailto "foo@bar.com"
+      @new_resource.mailto(nil)
+      @provider.cron_different?.should eql(true)
+    end
+
     it "should return false if the objects are identical" do
       @provider.cron_different?.should == false
     end

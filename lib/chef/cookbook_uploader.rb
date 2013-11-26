@@ -17,10 +17,10 @@ class Chef
       @work_queue ||= Queue.new
     end
 
-    def self.setup_worker_threads
+    def self.setup_worker_threads(concurrency=10)
       @worker_threads ||= begin
         work_queue
-        (1...10).map do
+        (1...concurrency).map do
           Thread.new do
             loop do
               work_queue.pop.call
@@ -34,6 +34,7 @@ class Chef
     attr_reader :path
     attr_reader :opts
     attr_reader :rest
+    attr_reader :concurrency
 
     # Creates a new CookbookUploader.
     # ===Arguments:
@@ -50,10 +51,13 @@ class Chef
     # * :rest   A Chef::REST object that you have configured the way you like it.
     #           If you don't provide this, one will be created using the values
     #           in Chef::Config.
+    # * :concurrency   An integer that decided how many threads will be used to
+    #           perform concurrent uploads
     def initialize(cookbooks, path, opts={})
       @path, @opts = path, opts
       @cookbooks = Array(cookbooks)
       @rest = opts[:rest] || Chef::REST.new(Chef::Config[:chef_server_url])
+      @concurrency = opts[:concurrency] || 10
     end
 
     def upload_cookbooks
@@ -73,7 +77,7 @@ class Chef
 
       Chef::Log.info("Uploading files")
 
-      self.class.setup_worker_threads
+      self.class.setup_worker_threads(concurrency)
 
       checksums_to_upload = Set.new
 

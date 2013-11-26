@@ -447,6 +447,20 @@ shared_examples_for Chef::Client do
     end
   end
 
+  describe "assert_cookbook_path_not_empty" do
+    before do
+      Chef::Config[:solo] = true
+      Chef::Config[:cookbook_path] = ["/path/to/invalid/cookbook_path"]
+    end
+    context "when any directory of cookbook_path contains no cookbook" do
+      it "raises CookbookNotFound error" do
+        expect do
+          @client.send(:assert_cookbook_path_not_empty, nil)
+        end.to raise_error(Chef::Exceptions::CookbookNotFound, 'None of the cookbook paths set in Chef::Config[:cookbook_path], ["/path/to/invalid/cookbook_path"], contain any cookbooks')
+      end
+    end
+  end
+
 end
 
 describe Chef::Client do
