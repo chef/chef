@@ -212,6 +212,8 @@ describe Chef::REST do
       Chef::Config[:ssl_client_key]  = nil
       @url = URI.parse("https://one:80/?foo=bar")
 
+      @host_header = "one:80"
+
       @http_response = Net::HTTPSuccess.new("1.1", "200", "successful rest req")
       @http_response.stub(:read_body)
       @http_response.stub(:body).and_return("ninja")
@@ -240,7 +242,10 @@ describe Chef::REST do
       end
 
       it "should build a new HTTP GET request without the application/json accept header" do
-        expected_headers = {'Accept' => "*/*", 'X-Chef-Version' => Chef::VERSION, 'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE}
+        expected_headers = {'Accept' => "*/*",
+                            'X-Chef-Version' => Chef::VERSION,
+                            'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
+                            'Host' => @host_header}
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(@request_mock)
         @rest.streaming_request(@url, {})
       end
@@ -286,7 +291,8 @@ describe Chef::REST do
 
         @base_headers = {"Accept" => "application/json",
           "X-Chef-Version" => Chef::VERSION,
-          "Accept-Encoding" => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE
+          "Accept-Encoding" => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
+          "Host" => @host_header
         }
       end
 
@@ -485,7 +491,10 @@ describe Chef::REST do
       end
 
       it " build a new HTTP GET request without the application/json accept header" do
-        expected_headers = {'Accept' => "*/*", 'X-Chef-Version' => Chef::VERSION, 'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE}
+        expected_headers = {'Accept' => "*/*",
+                            'X-Chef-Version' => Chef::VERSION,
+                            'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
+                            'Host' => @host_header}
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(@request_mock)
         @rest.streaming_request(@url, {})
       end
