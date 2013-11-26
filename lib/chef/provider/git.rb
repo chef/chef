@@ -17,6 +17,7 @@
 #
 
 
+require 'chef/exceptions'
 require 'chef/log'
 require 'chef/provider'
 require 'chef/mixin/shell_out'
@@ -282,7 +283,7 @@ class Chef
             require 'etc'
             Etc.getpwnam(@new_resource.user).dir
           rescue ArgumentError # user not found
-            "/home/#{@new_resource.user}"
+            raise Chef::Exceptions::User, "Could not determine HOME for specified user '#{@new_resource.user}' for resource '#{@new_resource.name}'"
           end
         end
         run_opts[:group] = @new_resource.group if @new_resource.group

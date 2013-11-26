@@ -179,6 +179,7 @@ SHAS
     before do
       @resource.user deploy_user
       @resource.ssh_wrapper wrapper
+      Etc.stub!(:getpwnam).and_return(double("Struct::Passwd", :name => @resource.user, :dir => "/home/deployNinja"))
     end
     context "without a timeout set" do
       it "clones a repo with default git options" do
@@ -198,6 +199,7 @@ SHAS
 
   it "runs a clone command with escaped destination" do
     @resource.user "deployNinja"
+    Etc.stub!(:getpwnam).and_return(double("Struct::Passwd", :name => @resource.user, :dir => "/home/deployNinja"))
     @resource.destination "/Application Support/with/space"
     @resource.ssh_wrapper "do_it_this_way.sh"
     expected_cmd = "git clone  \"git://github.com/opscode/chef.git\" \"/Application Support/with/space\""
@@ -253,6 +255,7 @@ SHAS
 
   it "runs a sync command with the user and group specified in the resource" do
     @resource.user("whois")
+    Etc.stub!(:getpwnam).and_return(double("Struct::Passwd", :name => @resource.user, :dir => "/home/whois"))
     @resource.group("thisis")
     @provider.should_receive(:setup_remote_tracking_branches).with(@resource.remote, @resource.repository)
     expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
@@ -299,6 +302,7 @@ SHAS
     it "runs the config with the user and group specified in the resource" do
       @resource.user("whois")
       @resource.group("thisis")
+      Etc.stub!(:getpwnam).and_return(double("Struct::Passwd", :name => @resource.user, :dir => "/home/whois"))
       command_response = double('shell_out')
       command_response.stub(:exitstatus) { 1 }
       expected_command = "git config --get remote.#{@resource.remote}.url"
