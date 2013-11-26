@@ -55,7 +55,7 @@ class Chef::Application::Solo < Chef::Application
   option :color,
     :long         => '--[no-]color',
     :boolean      => true,
-    :default      => true,
+    :default      => !Chef::Platform.windows?,
     :description  => "Use colored output, defaults to enabled"
 
   option :log_level,
