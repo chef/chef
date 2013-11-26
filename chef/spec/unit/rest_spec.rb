@@ -137,6 +137,7 @@ describe Chef::REST do
       Chef::Config[:ssl_client_cert] = nil
       Chef::Config[:ssl_client_key]  = nil
       @url = URI.parse("https://one:80/?foo=bar")
+      @expected_host_header = "one:80"
 
       @http_response = Net::HTTPSuccess.new("1.1", "200", "successful rest req")
       @http_response.stub!(:read_body)
@@ -149,7 +150,8 @@ describe Chef::REST do
 
       @base_headers = { 'Accept' => 'application/json',
                         'X-Chef-Version' => Chef::VERSION,
-                        'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE}
+                        'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
+                        'Host' => @expected_host_header }
       @req_with_body_headers = @base_headers.merge("Content-Type" => "application/json", "Content-Length" => '13')
     end
 
@@ -291,7 +293,9 @@ describe Chef::REST do
         end
 
         it "should build a new HTTP GET request without the application/json accept header" do
-          expected_headers = {'X-Chef-Version' => Chef::VERSION, 'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE}
+          expected_headers = { 'X-Chef-Version' => Chef::VERSION,
+                               'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
+                               'Host' => @expected_host_header }
           Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(@request_mock)
           @rest.run_request(:GET, @url, {}, false, nil, true)
         end
@@ -339,7 +343,8 @@ describe Chef::REST do
 
         @base_headers = {"Accept" => "application/json",
           "X-Chef-Version" => Chef::VERSION,
-          "Accept-Encoding" => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE
+          "Accept-Encoding" => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
+          "Host" => @expected_host_header
         }
       end
 
@@ -472,8 +477,12 @@ describe Chef::REST do
             redirect = redirect_with(response_name)
 
             headers = { "X-Auth-Header" => "foo" }
-            auto_headers = {"Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3"}
+            auto_headers = { "Accept"=>"application/json",
+                             "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
+                             "Host" => @expected_host_header}
             expected_headers = auto_headers.merge(headers)
+            expected_headers_on_redirect = expected_headers.dup
+            expected_headers_on_redirect["Host"] = "chef.example.com:8443"
 
             success = Net::HTTPSuccess.new("1.1",200, "it-works")
             success.stub!(:read_body).and_return('{"foo": "bar"}')
@@ -484,7 +493,7 @@ describe Chef::REST do
 
             # CHEF-1848: verify that headers get passed to redirects
             @rest.should_receive(:retriable_rest_request).with(:GET, @url, nil, expected_headers).and_call_original
-            @rest.should_receive(:retriable_rest_request).with(:GET, redirected_uri, nil, expected_headers).and_call_original
+            @rest.should_receive(:retriable_rest_request).with(:GET, redirected_uri, nil, expected_headers_on_redirect).and_call_original
 
             @rest.api_request(:GET, @url, headers).should == {"foo" => "bar"}
           end
@@ -557,7 +566,9 @@ describe Chef::REST do
       end
 
       it " build a new HTTP GET request without the application/json accept header" do
-        expected_headers = {'X-Chef-Version' => Chef::VERSION, 'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE}
+        expected_headers = { 'X-Chef-Version' => Chef::VERSION,
+                             'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
+                             'Host' => @expected_host_header }
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(@request_mock)
         @rest.streaming_request(@url, {})
       end
