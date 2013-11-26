@@ -445,6 +445,7 @@ class Chef
 
     def build_headers(method, url, headers={}, json_body=false, raw=false)
       headers                 = @default_headers.merge(headers)
+      headers['Host']         = "#{url.host}:#{url.port}"
       #headers['Accept']       = "application/json" unless raw
       headers['Accept']       = "application/json" unless raw
       headers["Content-Type"] = 'application/json' if json_body && !headers.keys.map(&:downcase).include?("content-type")
