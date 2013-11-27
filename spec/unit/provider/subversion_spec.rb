@@ -33,10 +33,11 @@ describe Chef::Provider::Subversion do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @provider = Chef::Provider::Subversion.new(@resource, @run_context)
     ENV = {}
-    ENV['LC_ALL'] = "en_GB.UTF-8"
+    ENV['LC_ALL'] = "C"
+    ENV['LANG'] = "en_GB.UTF-8"
   end
 
-  context "LC_ALL is set to en_GB.UTF-8" do
+  context "LC_ALL is set to C and LANG is set to en_GB.UTF-8" do
     it "converts resource attributes to options and set LC_ALL value for run_command and popen4" do
       @provider.run_options.should == {:environment => {"LC_ALL" => "en_GB.UTF-8"}}
       @resource.user 'deployninja'
@@ -45,10 +46,20 @@ describe Chef::Provider::Subversion do
     end
   end
 
-  context "LC_ALL is not set" do
+  context "LC_ALL is set to C and LANG is not set" do
     it "converts resource attributes to options and not set LC_ALL value for run_command and popen4" do
-      ENV['LC_ALL'] = ""
-      @provider.run_options.should == {:environment => {}}
+      ENV.delete("LANG")
+      @provider.run_options.should == {:environment => {"LC_ALL" => "C"}}
+      @resource.user 'deployninja'
+      @resource.locale 'ja_JP.UTF-8'
+      @provider.run_options.should == {:environment => {"LC_ALL" => "ja_JP.UTF-8"}, :user => "deployninja"}
+    end
+  end
+
+  context "LC_ALL is not set LANG is set to en_GB.UTF-8" do
+    it "converts resource attributes to options and not set LC_ALL value for run_command and popen4" do
+      ENV.delete("LC_ALL")
+      @provider.run_options.should == {:environment => {"LC_ALL" => "en_GB.UTF-8"}}
       @resource.user 'deployninja'
       @resource.locale 'ja_JP.UTF-8'
       @provider.run_options.should == {:environment => {"LC_ALL" => "ja_JP.UTF-8"}, :user => "deployninja"}
