@@ -43,7 +43,6 @@ class Chef
         @init_command = nil
         @priority = nil
         @action = "nothing"
-        @startup_type = :automatic
         @supports = { :restart => false, :reload => false, :status => false }
         @allowed_actions.push(:enable, :disable, :start, :stop, :restart, :reload)
       end
