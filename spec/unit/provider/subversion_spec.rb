@@ -32,9 +32,14 @@ describe Chef::Provider::Subversion do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @provider = Chef::Provider::Subversion.new(@resource, @run_context)
+    @original_env = ENV.clone
     ENV = {}
     ENV['LC_ALL'] = "C"
     ENV['LANG'] = "en_GB.UTF-8"
+  end
+
+  after do
+    ENV = @original_env
   end
 
   context "LC_ALL is set to C and LANG is set to en_GB.UTF-8" do
