@@ -260,11 +260,8 @@ describe Chef::Provider::Subversion do
     @resource.user "whois"
     @resource.group "thisis"
     expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
-    @provider.should_receive(:run_command)
-      .with(:command => expected_cmd,
-            :user => "whois",
-            :group => "thisis",
-            :environment => {"LC_ALL" => "en_GB.UTF-8"})
+    @provider.should_receive(:run_command).with(
+            :command => expected_cmd, :user => "whois", :group => "thisis", :environment => {"LC_ALL" => "en_GB.UTF-8"})
     @provider.run_action(:checkout)
     @resource.should be_updated
   end
