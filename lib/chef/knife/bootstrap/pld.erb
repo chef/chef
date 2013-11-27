@@ -1,3 +1,6 @@
+<% if !first_boot['vserver_name'].nil? -%>
+vserver <%= first_boot['vserver_name'] %> exec \
+<% end -%>
 sh -c '
 <%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
 
