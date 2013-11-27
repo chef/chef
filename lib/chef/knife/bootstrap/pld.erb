@@ -5,13 +5,13 @@ if [ ! -f /usr/bin/chef-client ]; then
   poldek --up --noask -u chef
 fi
 
-awk NF > /etc/chef/validation.pem <<'EOP'
+awk NF > /etc/chef/validation.pem <<EOP
 <%= validation_key %>
 EOP
 chmod 0600 /etc/chef/validation.pem
 
 <% if @chef_config[:encrypted_data_bag_secret] -%>
-awk NF > /etc/chef/encrypted_data_bag_secret <<'EOP'
+awk NF > /etc/chef/encrypted_data_bag_secret <<EOP
 <%= encrypted_data_bag_secret %>
 EOP
 chmod 0600 /etc/chef/encrypted_data_bag_secret
@@ -22,7 +22,7 @@ chmod 0600 /etc/chef/encrypted_data_bag_secret
 mkdir -p /etc/chef/ohai/hints
 
 <% @chef_config[:knife][:hints].each do |name, hash| -%>
-cat > /etc/chef/ohai/hints/<%= name %>.json <<'EOP'
+cat > /etc/chef/ohai/hints/<%= name %>.json <<EOP
 <%= hash.to_json %>
 EOP
 <% end -%>
@@ -30,7 +30,7 @@ EOP
 
 # create client if none present
 if [ ! -e /etc/chef/client.rb ]; then
-cat > /etc/chef/client.rb <<'EOP'
+cat > /etc/chef/client.rb <<EOP
 <%= config_content %>
 EOP
 fi
@@ -45,11 +45,11 @@ fi
 <% end -%>
 
 <% if knife_config[:bootstrap_proxy] %>
-echo 'http_proxy  "knife_config[:bootstrap_proxy]"' >> /etc/chef/client.rb
-echo 'https_proxy "knife_config[:bootstrap_proxy]"' >> /etc/chef/client.rb
+echo http_proxy  "knife_config[:bootstrap_proxy]" >> /etc/chef/client.rb
+echo https_proxy "knife_config[:bootstrap_proxy]" >> /etc/chef/client.rb
 <% end -%>
 
-cat > /etc/chef/first-boot.json <<'EOP'
+cat > /etc/chef/first-boot.json <<EOP
 <%= first_boot.to_json %>
 EOP
 
