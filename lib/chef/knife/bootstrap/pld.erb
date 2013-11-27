@@ -1,8 +1,35 @@
 sh -c '
 <%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
 
+dist=$(rpm -E "%{pld_release}")
+arch=$(rpm --qf "%{ARCH}" -q rpm)
+
+# be sure gpg keys are present
+case "$dist" in
+ac)
+	rpm -q gpg-pubkey-1bbd5459-461e5d1e || rpm --import /etc/pki/rpm-gpg/PLD-2.0-Ac-GPG-key.asc
+	;;
+th)
+	rpm -q gpg-pubkey-e64e7bf7-47b35206 || rpm --import /etc/pki/rpm-gpg/PLD-3.0-Th-GPG-key.asc
+	;;
+esac
+
+# some cookbook requires which
+rpm -q which || poldek -u which
+
+# motd cookbook needs bash
+rpm -q bash || poldek -u bash
+
+# chef 11.6 needs diff to show diffs (newer does it in ruby)
+rpm -q diffutils || poldek -u diffutils
+
+# networking is not inited properly
+# /sbin/ip is missing. Cant continue.
+# ERROR: Networking is down. OpenSSH cant be run.
+test -x /sbin/ip || poldek -u iproute2 --noask
+
 if [ ! -f /usr/bin/chef-client ]; then
-  poldek --up --noask -u chef
+	poldek --up --noask -u chef
 fi
 
 awk NF > /etc/chef/validation.pem <<EOP
