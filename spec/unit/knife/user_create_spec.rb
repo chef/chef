@@ -46,7 +46,7 @@ describe Chef::Knife::UserCreate do
     Chef::User.should_receive(:new).and_return(@user)
     @user.should_receive(:create)
     @knife.run
-    @stdout.string.should match /created user.+a_user/i
+    @stderr.string.should match /created user.+a_user/i
   end
 
   it "sets the password" do

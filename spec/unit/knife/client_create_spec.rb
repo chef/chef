@@ -35,15 +35,15 @@ describe Chef::Knife::ClientCreate do
     @knife.stub(:edit_data).and_return(@client)
     @knife.stub(:puts)
     Chef::ApiClient.stub(:new).and_return(@client)
-    @stdout = StringIO.new
-    @knife.ui.stub(:stdout).and_return(@stdout)
+    @stderr = StringIO.new
+    @knife.ui.stub(:stderr).and_return(@stderr)
   end
 
   describe "run" do
     it "should create a new Client" do
       Chef::ApiClient.should_receive(:new).and_return(@client)
       @knife.run
-      @stdout.string.should match /created client.+adam/i
+      @stderr.string.should match /created client.+adam/i
     end
 
     it "should set the Client name" do

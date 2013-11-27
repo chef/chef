@@ -21,8 +21,8 @@ require 'spec_helper'
 describe Chef::Knife::CookbookDownload do
   before(:each) do
     @knife = Chef::Knife::CookbookDownload.new
-    @stdout = StringIO.new
-    @knife.ui.stub(:stdout).and_return(@stdout)
+    @stderr = StringIO.new
+    @knife.ui.stub(:stderr).and_return(@stderr)
   end
 
   describe 'run' do
@@ -121,10 +121,10 @@ describe Chef::Knife::CookbookDownload do
             File.should_receive(:exists?).with('/var/tmp/chef/foobar-1.0.0').and_return(false)
             @knife.run
             ['attributes', 'recipes', 'templates'].each do |segment|
-              @stdout.string.should match /downloading #{segment}/im
+              @stderr.string.should match /downloading #{segment}/im
             end
-            @stdout.string.should match /downloading foobar cookbook version 1\.0\.0/im
-            @stdout.string.should match /cookbook downloaded to \/var\/tmp\/chef\/foobar-1\.0\.0/im
+            @stderr.string.should match /downloading foobar cookbook version 1\.0\.0/im
+            @stderr.string.should match /cookbook downloaded to \/var\/tmp\/chef\/foobar-1\.0\.0/im
           end
 
           describe 'with -f or --force' do
