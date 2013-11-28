@@ -28,9 +28,11 @@ class Chef
       attr_reader :type
       attr_accessor :location
       attr_reader :action
+      attr_reader :value
 
-      def initialize(a_precedence, a_type, a_location = nil, an_action = :set)
+      def initialize(a_precedence, a_value, a_type, a_location = nil, an_action = :set)
         @precedence  = a_precedence
+        @value       = a_value
         @type        = a_type
         @location    = a_location
         @action      = an_action 
@@ -48,7 +50,7 @@ class Chef
         # This is really stupid.
         components = component ? [ ('@' + component).to_sym ] : COMPONENTS
         components.each do |comp|
-          binding.pry
+          # binding.pry
           starter_mash = instance_variable_get(comp)
           path = starter_mash.find_path_to_entry(container)
           if path 
@@ -69,7 +71,7 @@ class Chef
         path = path + '/' + key
         return unless trace_this_path?(path)
         
-        binding.pry
+        # binding.pry
         # Run a source trace to determine current location
 
         # Find out which paths we are interested in
@@ -77,21 +79,60 @@ class Chef
       end
 
       def trace_attribute_change(collection, key, new_value)
+        # A setting was made with =
+
         if Chef::Config.trace_attributes == 'none' then return end
           
-        # A setting was made with =
-       
         # Determine the attrpath location of the change
         path, component = find_path_to_entry(collection)
-        path = path + '/' + key
+        binding.pry
+        path = path + '/' + key.to_s
         return unless trace_this_path?(path)
 
-        binding.pry
+        #binding.pry
         # Run a source trace to determine current location
+        loc = nil # TODO
+        type = nil
         # precedence, origin = source_trace_heuristics(component)
 
         # Log a set event for each
+        @trace_log[path] ||= []
+        @trace_log[path].push AttributeTraceEntry.new(component, new_value, type, loc, :set)
+
+        # TODO: list extant children of this key and log a clear action if any
+        @trace_log.keys.find_all { |p| p.start_with?(path) && p != path }.each do |child_path|
+          @trace_log[child_path].push AttributeTraceEntry.new(component, nil, type, loc, :parent_clobber)
+        end
+
       end
+
+      def trace_attribute_clear(component)
+        # the entire component-level Mash is about to be nuked
+
+        if Chef::Config.trace_attributes == 'none' then return end
+        
+        # binding.pry
+        path = '/'
+        new_value = nil
+
+        # Run a source trace to determine current location
+        loc = nil # TODO
+        type = nil
+
+        # Iterate over the paths in it
+        # Find out which paths we are interested in
+        # Log a clear event for each
+
+        # TODO: list extant children of this key and log a clear action if any
+        @trace_log[path] ||= []
+        @trace_log[path].push AttributeTraceEntry.new(component, new_value, type, loc, :clear)
+        @trace_log.keys.find_all { |p| p.start_with?(path) && p != path }.each do |child_path|
+          @trace_log[child_path].push AttributeTraceEntry.new(component, nil, type, loc, :clear)
+        end
+
+        
+      end
+
 
       private
 
@@ -100,18 +141,6 @@ class Chef
         return Chef::Config.trace_attributes == attrpath
       end
 
-      def trace_attribute_clear(component)
-        if Chef::Config.trace_attributes == 'none' then return end
-        
-        # the entire component-level Mash is about to be nuked
-
-        binding.pry
-
-        # Run a source trace to determine current location
-        # Iterate over the paths in it
-        # Find out which paths we are interested in
-        # Log a clear event for each
-      end
 
 
     end

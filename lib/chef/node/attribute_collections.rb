@@ -214,11 +214,11 @@ class Chef
         # is a descendant of this collection.  Find it, and report the path to it.
 
         # I suppose it could be me.
-        return '' if self === collection
+        return '/' if self.equal? collection
 
         self.each do |key, child|
           # Depth first?
-          if child === collection
+          if child.equal? collection
             return '/' + key
           elsif child.respond_to?(:find_path_to_entry)
             deeper = child.find_path_to_entry(collection)
