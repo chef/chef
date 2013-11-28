@@ -188,6 +188,9 @@ class Chef
        # return the automatic level attribute component
        attr_reader :automatic
 
+       # Hash (by slashpath) of arrays of attribute changes, CHEF-2913
+       attr_reader :trace_log
+
        def initialize(normal, default, override, automatic)
          @set_unless_present = false
 
@@ -208,6 +211,8 @@ class Chef
          @merged_attributes = nil
          @combined_override = nil
          @combined_default = nil
+
+         @trace_log = {}
        end
 
        # Debug what's going on with an attribute. +args+ is a path spec to the
