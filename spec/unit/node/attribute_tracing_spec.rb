@@ -37,32 +37,32 @@ describe "Chef::Node::Attribute Tracing" do
   #================================================#
 
   shared_examples "silent" do
-    describe "the log output" do
-      it "should not contain trace messages"
-    end
+    # describe "the log output" do
+    #   it "should not contain trace messages"
+    # end
     describe "the node attribute trace object" do
       it "should be empty" do
-        expect(@node.attribute_trace_log).to be_empty
+        expect(@node.attributes.trace_log).to be_empty
       end
     end
   end
 
   shared_examples "contains trace" do |path, level, origin_type|
-    describe "the log output" do
-      it "should contain trace messages for #{path} at #{level} from #{origin_type}"
-    end
+    #describe "the log output" do
+    #  it "should contain trace messages for #{path} at #{level} from #{origin_type}"
+    #end
     describe "the node attribute trace object" do
       it "should contain trace messages for #{path} at #{level} from #{origin_type}" do
-        expect(@node.attribute_trace_log[path]).not_to be_nil
-        expect(@node.attribute_trace_log[path].find {|t| t.type == origin_type && t.precedence == level}).not_to be_nil
+        expect(@node.attributes.trace_log[path]).not_to be_nil
+        expect(@node.attributes.trace_log[path].find {|t| t.type == origin_type && t.precedence == level}).not_to be_nil
       end
     end
   end
 
   shared_examples "does not contain trace" do |path, level, origin_type|
-    describe "the log output" do
-      it "should not contain trace messages for #{path} at #{level} from #{origin_type}"
-    end
+    #describe "the log output" do
+    #  it "should not contain trace messages for #{path} at #{level} from #{origin_type}"
+    #end
     describe "the node attribute trace object" do
       it "should not contain trace messages for #{path} at #{level} from #{origin_type}"
     end
@@ -87,23 +87,87 @@ describe "Chef::Node::Attribute Tracing" do
   end
 
   #================================================#
-  #          Tests: Trace Accessor
+  #          Tests: Trace Log Accessor
   #================================================#
   describe "the trace data structure accessor" do
     context "when the node is newly created" do
       it "should be an empty hash" do
-        expect(Chef::Node.new.attribute_trace_log).to be_a_kind_of(Hash)
-        expect(Chef::Node.new.attribute_trace_log).to be_empty        
+        expect(Chef::Node.new.attributes.trace_log).to be_a_kind_of(Hash)
+        expect(Chef::Node.new.attributes.trace_log).to be_empty        
       end
     end
   end
 
-  describe "the trace_path accessor" do
-    before(:each) { @node = Chef::Node.new() }
-    it "should be correct for node[:foo]" do
-      @node.default[:foo] = 'bar'
-      expect(@node[:foo].trace_path).to eql '/foo'
+  #================================================#
+  #        Tests: Pathfinder
+  #================================================#
+  describe "the path finding mechanism" do
+    before(:all) { @cna = Chef::Node::Attribute.new({},{},{},{}) }
+
+    context "when setting a string value using default[:foo][:bar]" do
+      it "should not error" do
+        expect { @cna.default[:foo][:bar] = 'baz' }.not_to raise_error
+      end
+      it "should find the right path to default " do
+        path, comp = @cna.find_path_to_entry(@cna.default)
+        expect(path).to eql '/'
+      end
+
+      it "should find the right path to default[:foo] " do
+        path, comp = @cna.find_path_to_entry(@cna.default[:foo])
+        expect(path).to eql '/foo'
+      end
+      it "should find the right path to default[:foo][:bar] " do
+        path, comp = @cna.find_path_to_entry(@cna.default[:foo][:bar])
+        expect(path).to eql '/foo/bar'
+      end
+      it "should find the right component with no hint" do
+        path, comp = @cna.find_path_to_entry(@cna.default[:foo])
+        expect(comp).to eql "default"
+      end
+      it "should find no component with the wrong hint" do
+        path, comp = @cna.find_path_to_entry(@cna.default[:foo], 'normal')
+        expect(comp).to be_nil
+      end
     end
+
+    context "when setting a string value using override[:foo][:bar]" do
+      it "should not error" do
+        expect { @cna.override[:foo][:bar] = 'baz' }.not_to raise_error
+      end
+      it "should find the right path to override " do
+        path, comp = @cna.find_path_to_entry(@cna.override)
+        expect(path).to eql '/'
+      end
+
+      it "should find the right path to override[:foo] " do
+        path, comp = @cna.find_path_to_entry(@cna.override[:foo])
+        expect(path).to eql '/foo'
+      end
+      it "should find the right path to override[:foo][:bar] " do
+        path, comp = @cna.find_path_to_entry(@cna.override[:foo][:bar])
+        expect(path).to eql '/foo/bar'
+      end
+      it "should find the right component" do
+        path, comp = @cna.find_path_to_entry(@cna.override[:foo])
+        expect(comp).to eql "override"
+      end
+      it "should find no component with the wrong hint" do
+        path, comp = @cna.find_path_to_entry(@cna.override[:foo], 'default')
+        expect(comp).to be_nil
+      end
+      it "should find the default component with the default hint" do
+        path, comp = @cna.find_path_to_entry(@cna.default[:foo], 'default')
+        expect(comp).to eql "default"
+      end
+    end
+
+    context "when clearing the entire component" do      
+      it "should not error" do
+        expect { @cna.automatic = { :platoform => 'wfw'} }.not_to raise_error
+      end
+    end
+
   end
 
   #================================================#
@@ -119,14 +183,14 @@ describe "Chef::Node::Attribute Tracing" do
           @node = Chef::Node.new()
           @node.consume_external_attrs(OHAI_TEST_ATTRS,{}) 
         end
-        #include_examples "silent", @node
+        include_examples "silent", @node
       end
       context "when loading from command-line json" do
         before(:all) do 
           @node = Chef::Node.new()
           @node.consume_external_attrs(OHAI_TEST_ATTRS,{}) 
         end
-        #include_examples "silent", @node
+        include_examples "silent", @node
       end
       context "when loading from chef-server normal node attributes" do
         #include_examples "silent"
@@ -135,9 +199,11 @@ describe "Chef::Node::Attribute Tracing" do
         #include_examples "silent"
       end
       context "when loading from a role" do
+        # TODO: test load from a role
         #include_examples "silent"
       end
       context "when loading from an environment" do
+        # TODO: test load from an environment
         #include_examples "silent"
       end
       # TODO: test being set at compile-time in a recipe
@@ -153,8 +219,8 @@ describe "Chef::Node::Attribute Tracing" do
           @node = Chef::Node.new()
           @node.consume_external_attrs(OHAI_TEST_ATTRS,{})
         end
-        #include_examples "contains trace", "/foo/bar", "automatic/ohai"
-        #include_examples "contains trace", "/oryx/crake", "automatic/ohai"
+        include_examples "contains trace", "/foo/bar", "automatic/ohai"
+        # include_examples "contains trace", "/oryx/crake", "automatic/ohai"
       end
       context "when loading from command-line json" do
         before(:all) { node = Chef::Node.new().consume_external_attrs(OHAI_MIN_ATTRS, CLI_TEST_ATTRS) }
