@@ -54,7 +54,6 @@ describe "Chef::Node::Attribute Tracing" do
     #end
     describe "the node attribute trace object" do
       it "should contain trace messages for #{path} at #{level} from #{origin_type}" do
-        # binding.pry
         expect(@node.attributes.trace_log[path]).not_to be_nil
         # expect(@node.attributes.trace_log[path].find {|t| t.type == origin_type && t.precedence == level}).not_to be_nil
         expect(@node.attributes.trace_log[path].find {|t| t.component == level}).not_to be_nil
@@ -218,9 +217,13 @@ describe "Chef::Node::Attribute Tracing" do
         include_examples "contains trace", "/deep/deeper", :automatic, 'ohai'
       end
       context "when loading from command-line json" do
-        before(:all) { node = Chef::Node.new().consume_external_attrs(OHAI_MIN_ATTRS, CLI_TEST_ATTRS) }
-        #include_examples "contains trace", "/foo/bar", :normal, 'command-line-json'
-        #include_examples "contains trace", "/oryx/crake", :normal, 'command-line-json'
+        before(:all) do 
+          Chef::Config.trace_attributes = 'all'
+          @node = Chef::Node.new()
+          @node.consume_external_attrs(OHAI_MIN_ATTRS,CLI_TEST_ATTRS)
+        end
+        include_examples "contains trace", "/foo", :normal, 'command-line-json'
+        include_examples "contains trace", "/oryx", :normal, 'command-line-json'
       end
       context "when loading from chef-server normal node attributes" do
         #include_examples "contains trace", "/foo/bar", "normal/chef-server"
