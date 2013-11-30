@@ -23,6 +23,7 @@ describe "Chef::Node::Attribute Tracing" do
     'platform' => 'wfw',
     'platform_version' => '3.11',
     'foo' => 'bar',
+    'deep' => { 'deeper' => 'still' },
     'bicycle' => 'ohai',
     'oryx' => 'crake',
   }
@@ -53,8 +54,10 @@ describe "Chef::Node::Attribute Tracing" do
     #end
     describe "the node attribute trace object" do
       it "should contain trace messages for #{path} at #{level} from #{origin_type}" do
+        # binding.pry
         expect(@node.attributes.trace_log[path]).not_to be_nil
-        expect(@node.attributes.trace_log[path].find {|t| t.type == origin_type && t.precedence == level}).not_to be_nil
+        # expect(@node.attributes.trace_log[path].find {|t| t.type == origin_type && t.precedence == level}).not_to be_nil
+        expect(@node.attributes.trace_log[path].find {|t| t.component == level}).not_to be_nil
       end
     end
   end
@@ -118,16 +121,9 @@ describe "Chef::Node::Attribute Tracing" do
         expect(path).to eql '/foo'
       end
       it "should find the right path to default[:foo][:bar] " do
+        # binding.pry
         path, comp = @cna.find_path_to_entry(@cna.default[:foo][:bar])
         expect(path).to eql '/foo/bar'
-      end
-      it "should find the right component with no hint" do
-        path, comp = @cna.find_path_to_entry(@cna.default[:foo])
-        expect(comp).to eql "default"
-      end
-      it "should find no component with the wrong hint" do
-        path, comp = @cna.find_path_to_entry(@cna.default[:foo], 'normal')
-        expect(comp).to be_nil
       end
     end
 
@@ -150,21 +146,19 @@ describe "Chef::Node::Attribute Tracing" do
       end
       it "should find the right component" do
         path, comp = @cna.find_path_to_entry(@cna.override[:foo])
-        expect(comp).to eql "override"
-      end
-      it "should find no component with the wrong hint" do
-        path, comp = @cna.find_path_to_entry(@cna.override[:foo], 'default')
-        expect(comp).to be_nil
-      end
-      it "should find the default component with the default hint" do
-        path, comp = @cna.find_path_to_entry(@cna.default[:foo], 'default')
-        expect(comp).to eql "default"
+        expect(comp).to eql :override
       end
     end
 
     context "when clearing the entire component" do      
       it "should not error" do
-        expect { @cna.automatic = { :platoform => 'wfw'} }.not_to raise_error
+        expect { @cna.automatic = { :platform => 'wfw'} }.not_to raise_error
+      end
+
+      it "should correctly detect new attributes set in clobber mode" do
+        @cna.automatic = { :clobber => 'girl' }
+        path, comp = @cna.find_path_to_entry(@cna.automatic[:clobber])
+        expect(path).to eql '/clobber'
       end
     end
 
@@ -216,11 +210,12 @@ describe "Chef::Node::Attribute Tracing" do
       end
       context "when loading from ohai" do
         before(:all) do 
+          Chef::Config.trace_attributes = 'all'
           @node = Chef::Node.new()
           @node.consume_external_attrs(OHAI_TEST_ATTRS,{})
         end
-        include_examples "contains trace", "/foo/bar", "automatic/ohai"
-        # include_examples "contains trace", "/oryx/crake", "automatic/ohai"
+        include_examples "contains trace", "/foo", 'automatic', 'ohai'
+        include_examples "contains trace", "/deep/deeper", "automatic/ohai"
       end
       context "when loading from command-line json" do
         before(:all) { node = Chef::Node.new().consume_external_attrs(OHAI_MIN_ATTRS, CLI_TEST_ATTRS) }

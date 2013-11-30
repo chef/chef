@@ -194,24 +194,25 @@ class Chef
        def initialize(normal, default, override, automatic)
          @set_unless_present = false
 
-         @default = VividMash.new(self, default)
-         @env_default = VividMash.new(self, {})
-         @role_default = VividMash.new(self, {})
-         @force_default = VividMash.new(self, {})
+         @default = VividMash.new(self, default, self, :default)
+         @env_default = VividMash.new(self, {}, self, :env_default)
+         @role_default = VividMash.new(self, {}, self, :role_default)
+         @force_default = VividMash.new(self, {}, self, :force_default)
 
-         @normal = VividMash.new(self, normal)
+         @normal = VividMash.new(self, normal, self, :normal)
 
-         @override = VividMash.new(self, override)
-         @role_override = VividMash.new(self, {})
-         @env_override = VividMash.new(self, {})
-         @force_override = VividMash.new(self, {})
+         @override = VividMash.new(self, override, self, :override)
+         @role_override = VividMash.new(self, {}, self, :role_override)
+         @env_override = VividMash.new(self, {}, self, :env_override)
+         @force_override = VividMash.new(self, {}, self, :force_override)
 
-         @automatic = VividMash.new(self, automatic)
+         @automatic = VividMash.new(self, automatic, self, :automatic)
 
          @merged_attributes = nil
          @combined_override = nil
          @combined_default = nil
 
+         @trace_queue = []
          @trace_log = {}
        end
 
@@ -263,35 +264,35 @@ class Chef
        def default=(new_data)
          reset
          trace_attribute_clear(:default)
-         @default = VividMash.new(self, new_data)
+         @default = VividMash.new(self, new_data, self, :default)
        end
 
        # Set the role level default attribute component to +new_data+
        def role_default=(new_data)
          reset
          trace_attribute_clear(:role_default)
-         @role_default = VividMash.new(self, new_data)
+         @role_default = VividMash.new(self, new_data, self, :role_default)
        end
 
        # Set the environment level default attribute component to +new_data+
        def env_default=(new_data)
          reset
          trace_attribute_clear(:env_default)
-         @env_default = VividMash.new(self, new_data)
+         @env_default = VividMash.new(self, new_data, self, :env_default)
        end
 
        # Set the force_default (+default!+) level attributes to +new_data+
        def force_default=(new_data)
          reset
          trace_attribute_clear(:force_default)
-         @force_default = VividMash.new(self, new_data)
+         @force_default = VividMash.new(self, new_data, self, :force_default)
        end
 
        # Set the normal level attribute component to +new_data+
        def normal=(new_data)
          reset
          trace_attribute_clear(:normal)
-         @normal = VividMash.new(self, new_data)
+         @normal = VividMash.new(self, new_data, self, :normal)
          # binding.pry
          @normal
        end
@@ -300,33 +301,36 @@ class Chef
        def override=(new_data)
          reset
          trace_attribute_clear(:override)
-         @override = VividMash.new(self, new_data)
+         @override = VividMash.new(self, new_data, self, :override)
        end
 
        # Set the role level override attribute component to +new_data+
        def role_override=(new_data)
          reset
          trace_attribute_clear(:role_override)
-         @role_override = VividMash.new(self, new_data)
+         @role_override = VividMash.new(self, new_data, self, :role_override)
        end
 
        # Set the environment level override attribute component to +new_data+
        def env_override=(new_data)
          reset
          trace_attribute_clear(:env_override)
-         @env_override = VividMash.new(self, new_data)
+         @env_override = VividMash.new(self, new_data, self, :env_override)
        end
 
        def force_override=(new_data)
          reset
          trace_attribute_clear(:force_override)
-         @force_override = VividMash.new(self, new_data)
+         @force_override = VividMash.new(self, new_data, self, :force_override)
        end
 
        def automatic=(new_data)
          reset
          trace_attribute_clear(:automatic)
-         @automatic = VividMash.new(self, new_data)
+         # TODO - use two-stage create trhoughout if needed
+         @automatic = VividMash.new(self, {}, self, :automatic)
+         @automatic.update(new_data)
+         @automatic
        end
 
        def merged_attributes

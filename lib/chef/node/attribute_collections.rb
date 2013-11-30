@@ -105,6 +105,8 @@ class Chef
     # * attr_accessor style element set and get are supported via method_missing
     class VividMash < Mash
       attr_reader :root
+      attr_reader :parent
+      attr_reader :component
 
       # Methods that mutate a VividMash. Each of them is overridden so that it
       # also invalidates the cached merged_attributes on the root Attribute
@@ -134,15 +136,17 @@ class Chef
         METHOD_DEFN
       end
 
-      def initialize(root, data={})
+      def initialize(root, data={}, parent=nil, component=nil)
         @root = root
+        @parent = parent
+        @component = component
         super(data)
       end
 
       def [](key)
         value = super
         if !key?(key)
-          value = self.class.new(root)
+          value = self.class.new(root, {}, self, self.component)
           self[key] = value
         else
           value
@@ -155,8 +159,9 @@ class Chef
           self[key]          
         else
           root.reset_cache          
+          super
           root.trace_attribute_change(self, key, value)
-          super          
+          value
         end
       end
 
@@ -197,7 +202,7 @@ class Chef
         when VividMash
           value
         when Hash
-          VividMash.new(root, value)
+          VividMash.new(root, value, self, component)
         when Array
           AttrArray.new(root, value)
         else
@@ -209,7 +214,7 @@ class Chef
         Mash.new(self)
       end
 
-      def find_path_to_entry(collection)
+      def find_path_to_entry_descent(collection)
         # Collection is a VividMash or AttrArray, that (we beleive) 
         # is a descendant of this collection.  Find it, and report the path to it.
 
@@ -220,8 +225,8 @@ class Chef
           # Depth first?
           if child.equal? collection
             return '/' + key
-          elsif child.respond_to?(:find_path_to_entry)
-            deeper = child.find_path_to_entry(collection)
+          elsif child.respond_to?(:find_path_to_entry_descent)
+            deeper = child.find_path_to_entry_descent(collection)
             if deeper
               return '/' + key + deeper
             end
@@ -230,7 +235,20 @@ class Chef
         return nil
       end
 
-    end
+      def find_path_to_entry_ascent
+        # If my parent is a CNA, I'm the root.
+        if parent.kind_of?(Chef::Node::Attribute) then return '/' end
+        
+        # Otherwise, I should be a child of my parent.
+        parent_path = parent.find_path_to_entry_ascent
+        my_key = parent.keys.find {|k| parent[k].equal?(self) }
+        if parent_path && my_key
+          parent_path + (parent_path == '/' ? '' : '/') + my_key
+        else
+          nil
+        end
+      end
 
+    end
   end
 end
