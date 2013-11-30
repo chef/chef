@@ -166,6 +166,7 @@ class Chef
 
       def flush_queue
         # OK, try to flush the queue 
+
         @trace_queue.reject! do |ent|
           # We know we can't find it by ascent :(
           path, component = find_path_to_entry_descent(ent.value)

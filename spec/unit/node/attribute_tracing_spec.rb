@@ -214,13 +214,13 @@ describe "Chef::Node::Attribute Tracing" do
           @node = Chef::Node.new()
           @node.consume_external_attrs(OHAI_TEST_ATTRS,{})
         end
-        include_examples "contains trace", "/foo", 'automatic', 'ohai'
-        include_examples "contains trace", "/deep/deeper", "automatic/ohai"
+        include_examples "contains trace", "/foo", :automatic, 'ohai'
+        include_examples "contains trace", "/deep/deeper", :automatic, 'ohai'
       end
       context "when loading from command-line json" do
         before(:all) { node = Chef::Node.new().consume_external_attrs(OHAI_MIN_ATTRS, CLI_TEST_ATTRS) }
-        #include_examples "contains trace", "/foo/bar", "normal/command-line-json"
-        #include_examples "contains trace", "/oryx/crake", "normal/command-line-json"
+        #include_examples "contains trace", "/foo/bar", :normal, 'command-line-json'
+        #include_examples "contains trace", "/oryx/crake", :normal, 'command-line-json'
       end
       context "when loading from chef-server normal node attributes" do
         #include_examples "contains trace", "/foo/bar", "normal/chef-server"
