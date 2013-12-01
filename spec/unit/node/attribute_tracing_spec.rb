@@ -48,15 +48,19 @@ describe "Chef::Node::Attribute Tracing" do
     end
   end
 
-  shared_examples "contains trace" do |path, level, origin_type|
+  shared_examples "contains trace" do |path, component, location_checks|
     #describe "the log output" do
-    #  it "should contain trace messages for #{path} at #{level} from #{origin_type}"
+    #  it "should contain trace messages for #{path} at #{component}"
     #end
     describe "the node attribute trace object" do
-      it "should contain trace messages for #{path} at #{level} from #{origin_type}" do
+      it "should contain trace messages for #{path} at #{component}" do
         expect(@node.attributes.trace_log[path]).not_to be_nil
-        # expect(@node.attributes.trace_log[path].find {|t| t.type == origin_type && t.precedence == level}).not_to be_nil
-        expect(@node.attributes.trace_log[path].find {|t| t.component == level}).not_to be_nil
+        entry = @node.attributes.trace_log[path].find {|t| t.component == component}
+        expect(entry).not_to be_nil
+        # expect(entry.source_location).not_to be_nil  # TODO
+        location_checks.each do |key, value|
+          expect(entry.source_location[key]).to eql value
+        end
       end
     end
   end
@@ -67,24 +71,6 @@ describe "Chef::Node::Attribute Tracing" do
     #end
     describe "the node attribute trace object" do
       it "should not contain trace messages for #{path} at #{level} from #{origin_type}"
-    end
-  end
-
-  shared_examples "contains cookbook trace" do |path, level, cookbook_name, filename, line_num|
-    describe "the log output" do
-      it "should contain a trace message for cookbook #{cookbook_name}, attribute file #{filename}:#{line_num}"
-    end
-    describe "the node attribute trace object" do
-      it "should contain a trace for cookbook #{cookbook_name}, attribute file #{filename}:#{line_num}"
-    end
-  end
-
-  shared_examples "contains role/env trace" do |path, level, origin_type, origin_name|
-    describe "the log output" do
-      it "should contain a trace message for #{path} at level #{level} in #{origin_type} #{origin_name}"
-    end
-    describe "the node attribute trace object" do
-      it "should contain a trace message for #{path} at level #{level} in #{origin_type} #{origin_name}"
     end
   end
 
@@ -207,32 +193,45 @@ describe "Chef::Node::Attribute Tracing" do
       before do
         Chef::Config.trace_attributes = 'all'
       end
+
       context "when loading from ohai" do
         before(:all) do 
           Chef::Config.trace_attributes = 'all'
           @node = Chef::Node.new()
           @node.consume_external_attrs(OHAI_TEST_ATTRS,{})
         end
-        include_examples "contains trace", "/foo", :automatic, 'ohai'
-        include_examples "contains trace", "/deep/deeper", :automatic, 'ohai'
+        include_examples "contains trace", "/foo", :automatic, { :internal => 'ohai' }
+        include_examples "contains trace", "/deep/deeper", :automatic, { :internal => 'ohai' }
       end
+
       context "when loading from command-line json" do
         before(:all) do 
           Chef::Config.trace_attributes = 'all'
           @node = Chef::Node.new()
           @node.consume_external_attrs(OHAI_MIN_ATTRS,CLI_TEST_ATTRS)
         end
-        include_examples "contains trace", "/foo", :normal, 'command-line-json'
-        include_examples "contains trace", "/oryx", :normal, 'command-line-json'
+        include_examples "contains trace", "/foo", :normal, { :internal => 'command-line json' }
+        include_examples "contains trace", "/oryx", :normal, { :internal => 'command-line json' }
       end
+
       context "when loading from chef-server normal node attributes" do
-        #include_examples "contains trace", "/foo/bar", "normal/chef-server"
-        #include_examples "contains trace", "/oryx/crake", "normal/chef-server"      
+        #include_examples "contains trace", "/foo", :normal, { :internal => 'chef server node attributes' }
+        #include_examples "contains trace", "/oryx", :normal, { :internal => 'chef server node attributes' }
       end
+
       context "when loading from cookbook attributes" do
-        #include_examples "contains trace", "/foo/bar", "default/cookbook"
-        #include_examples "contains trace", "/oryx/crake", "default/cookbook"
+        before(:all) do
+          Chef::Config.trace_attributes = 'all'
+          @cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", '..', "data", "cookbooks"))
+          cl = Chef::CookbookLoader.new(@cookbook_repo)
+          cl.load_cookbooks
+          @node = Chef::Node.new
+          @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new(cl), Chef::EventDispatch::Dispatcher.new)
+          @node.from_file(@run_context.resolve_attribute('openldap', 'default'))
+        end
+        include_examples "contains trace", "/ldap_server", :default, { :cookbook => 'openldap', :line => 13, :file => 'openldap/attributes/default.rb' }
       end
+
       context "when loading from a role" do
         #include_examples "contains trace", "/foo/bar", "default/role"
         #include_examples "contains trace", "/oryx/crake", "default/role"

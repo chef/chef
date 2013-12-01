@@ -32,13 +32,85 @@ class Chef
 
       def initialize(a_component, an_action = :set, a_source_location = nil)
         @component  = a_component
-        @action      = an_action 
-        if a_source_location 
-          @source_location = a_source_location
-        else
-          # TODO: run callstack trace to determine source_location
+        @action     = an_action 
+        @source_location = a_source_location || source_location_heuristic
+      end
+
+      def source_location_heuristic
+
+        stack = pretty_callstack
+        location = {}
+
+        # binding.pry
+
+        # If we have a frame with from_file as the method....
+        if frame = slh_looks_like_cookbook(stack)          
+          location[:cookbook] = frame[:cookbook]
+          location[:file] = frame[:cookbook] + '/' + frame[:path_within_cookbook]
+          location[:line] = frame[:line].to_i
+          # TODO: determine cookbook version from run context
+        elsif slh_looks_like_cli_load(stack)
+          location[:internal] = 'command-line json'
+          # TODO: be uber-clever - inspect ARGV and report value of -j option
+        elsif slh_looks_like_node_load_from_server(stack)
+          location[:internal] = 'chef server node attrbutes'
+          # TODO: add chef server name
+          # TODO: add node name?
+        elsif slh_looks_like_ohai_injection(stack)
+          location[:internal] = 'ohai'
+        end
+
+
+        return location
+      end
+
+      private
+      def slh_looks_like_cookbook(stack)
+        stack.find { |f| f[:method] == 'from_file' }
+      end
+
+      def slh_looks_like_cli_load(stack)
+        # Heuristic: a call to consume attributes from consume_external_attrs
+        consume_attributes_index = stack.find_index { |f| f[:method] == 'consume_attributes' }
+        consume_attributes_index && stack[consume_attributes_index + 1][:method] == 'consume_external_attrs'
+      end
+
+      def slh_looks_like_ohai_injection(stack)
+        # Heuristic: a call to automatic_attrs= from consume_external_attrs
+        aa_index = stack.find_index { |f| f[:method] == 'automatic_attrs=' }
+        aa_index && stack[aa_index + 1][:method] == 'consume_external_attrs'
+      end
+
+      def slh_looks_like_node_load_from_server(stack)
+        # TODO
+        false
+      end
+
+      public
+      def pretty_callstack
+        Kernel.caller.map do |frame|
+          info = {}
+          if m = frame.match(/^(?<file>[^:]+):(?<line>\d+)$/) 
+            info[:file] = m[:file]
+            info[:line] = m[:line]
+          elsif m = frame.match(/^(?<file>[^:]+):(?<line>\d+):in `(?<method>[^']+)'$/)
+            info[:file] = m[:file]
+            info[:line] = m[:line]
+            info[:method] = m[:method]
+          end
+
+
+          if info[:file]
+            if m = info[:file].match(%r{/cookbooks/(?<cbname>[^/]+)/(?<cbpart>[^/]+)/(?<path>.+)})
+              info[:cookbook] = m[:cbname]
+              info[:cookbook_part] = m[:cbpart]
+              info[:path_within_cookbook] = m[:cbpart] + '/' + m[:path]
+            end
+          end          
+          info
         end
       end
+
 
     end
 
