@@ -265,10 +265,6 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
       end
     end
 
-    before do
-      @current_resource.priority(80)
-    end
-
     context "when the service is disabled" do
       before do
         @current_resource.enabled(false)
@@ -280,6 +276,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
     context "when the service is enabled" do
       before do
         @current_resource.enabled(true)
+	@current_resource.priority(80)
       end
 
       context "and the service sets no priority" do
