@@ -139,26 +139,34 @@ describe Chef::DataBag do
         Chef::Config[:solo] = false
       end
 
+      def file_dir_stub(path, returns = true)
+        File.should_receive(:directory?).with(path).and_return(returns)
+      end
+
+      def dir_glob_stub(path, returns = [])
+        Dir.should_receive(:glob).with(File.join(path, 'foo/*.json')).and_return(returns)
+      end
+
       it "should get the data bag from the data_bag_path" do
         @paths.each do |path|
-          File.should_receive(:directory?).with(path).and_return(true)
-          Dir.should_receive(:glob).with(File.join(path, 'foo/*.json')).and_return([])
+          file_dir_stub(path)
+          dir_glob_stub(path)
         end
         Chef::DataBag.load('foo')
       end
 
       it "should get the data bag from the data_bag_path by symbolic name" do
         @paths.each do |path|
-          File.should_receive(:directory?).with(path).and_return(true)
-          Dir.should_receive(:glob).with(File.join(path, 'foo/*.json')).and_return([])
+          file_dir_stub(path)
+          dir_glob_stub(path)
         end
         Chef::DataBag.load(:foo)
       end
 
       it "should return the data bag" do
         @paths.each do |path|
-          File.should_receive(:directory?).with(path).and_return(true)
-          Dir.should_receive(:glob).with(File.join(path, 'foo/*.json')).and_return([File.join(path, 'foo/bar.json'), File.join(path, 'foo/baz.json')])
+          file_dir_stub(path)
+          dir_glob_stub(path, [File.join(path, 'foo/bar.json'), File.join(path, 'foo/baz.json')])
           IO.should_receive(:read).with(File.join(path, 'foo/bar.json')).and_return('{"id": "bar", "name": "Bob Bar" }')
           IO.should_receive(:read).with(File.join(path, 'foo/baz.json')).and_return('{"id": "baz", "name": "John Baz" }')
         end
@@ -168,7 +176,7 @@ describe Chef::DataBag do
 
       it "should return the data bag list" do
         @paths.each do |path|
-          File.should_receive(:directory?).with(path).and_return(true)
+          file_dir_stub(path)
           Dir.should_receive(:glob).and_return([File.join(path, 'foo'), File.join(path, 'bar')])
         end
         data_bag_list = Chef::DataBag.list
@@ -176,7 +184,7 @@ describe Chef::DataBag do
       end
 
       it 'should raise an error if the configured data_bag_path is invalid' do
-        File.should_receive(:directory?).with('/var/chef/data_bags').and_return(false)
+        file_dir_stub(@paths.first, false)
 
         lambda {
           Chef::DataBag.load('foo')
