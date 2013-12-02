@@ -146,7 +146,12 @@ class Chef
                 # is not applicable anymore because it results in
                 # duplicates when merging two array values with
                 # :horizontal_precedence = true.
-                dest[src_key] = deep_merge!(src_value, { }, options.merge(:debug_indent => di + '  '))
+                if src_value.nil?
+                  # Nothing to compute with an extra deep_merge!
+                  dest[src_key] = src_value
+                else
+                  dest[src_key] = deep_merge!(src_value, { }, options.merge(:debug_indent => di + '  '))
+                end
               end
             else # dest isn't a hash, so we overwrite it completely (if permitted)
               if overwrite_unmergeable
