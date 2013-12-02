@@ -128,6 +128,14 @@ describe Chef::DataBag do
       end
     end
 
+    def file_dir_stub(path, returns = true)
+      File.should_receive(:directory?).with(path).and_return(returns)
+    end
+
+    def dir_glob_stub(path, returns = [])
+      Dir.should_receive(:glob).with(File.join(path, 'foo/*.json')).and_return(returns)
+    end
+
     shared_examples_for "data bag in solo mode" do |data_bag_path|
       before do
         Chef::Config[:solo] = true
@@ -137,14 +145,6 @@ describe Chef::DataBag do
 
       after do
         Chef::Config[:solo] = false
-      end
-
-      def file_dir_stub(path, returns = true)
-        File.should_receive(:directory?).with(path).and_return(returns)
-      end
-
-      def dir_glob_stub(path, returns = [])
-        Dir.should_receive(:glob).with(File.join(path, 'foo/*.json')).and_return(returns)
       end
 
       it "should get the data bag from the data_bag_path" do
