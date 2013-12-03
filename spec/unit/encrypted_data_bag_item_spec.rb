@@ -283,35 +283,49 @@ describe Chef::EncryptedDataBagItem do
   end
 
   describe ".load_secret" do
-    subject(:loaded_secret) { Chef::EncryptedDataBagItem.load_secret(path) }
-    let(:path) { "/var/mysecret" }
     let(:secret) { "opensesame" }
-    let(:stubbed_path) { path }
-    before do
-      ::File.stub(:exist?).with(stubbed_path).and_return(true)
-      IO.stub(:read).with(stubbed_path).and_return(secret)
-      Kernel.stub(:open).with(path).and_return(StringIO.new(secret))
+
+    context "when /var/mysecret exists" do
+      before do
+        ::File.stub(:exist?).with("/var/mysecret").and_return(true)
+        IO.stub(:read).with("/var/mysecret").and_return(secret)
+      end
+
+      it "load_secret('/var/mysecret') reads the secret" do
+        Chef::EncryptedDataBagItem.load_secret("/var/mysecret").should eq secret
+      end
     end
 
-    it "reads from a specified path" do
-      loaded_secret.should eq secret
+    context "when /etc/chef/encrypted_data_bag_secret exists" do
+      before do
+        path = Chef::Config.platform_specific_path("/etc/chef/encrypted_data_bag_secret")
+        ::File.stub(:exist?).with(path).and_return(true)
+        IO.stub(:read).with(path).and_return(secret)
+      end
+
+      it "load_secret(nil) reads the secret" do
+        Chef::EncryptedDataBagItem.load_secret(nil).should eq secret
+      end
     end
 
-    context "path argument is nil" do
-      let(:path) { nil }
-      let(:stubbed_path) { "/etc/chef/encrypted_data_bag_secret" }
+    context "when /etc/chef/encrypted_data_bag_secret does not exist" do
+      before do
+        path = Chef::Config.platform_specific_path("/etc/chef/encrypted_data_bag_secret")
+        ::File.stub(:exist?).with(path).and_return(false)
+      end
 
-      it "reads from Chef::Config[:encrypted_data_bag_secret]" do
-        Chef::Config[:encrypted_data_bag_secret] = stubbed_path
-        loaded_secret.should eq secret
+      it "load_secret(nil) emits a reasonable error message" do
+        lambda { Chef::EncryptedDataBagItem.load_secret(nil) }.should raise_error(ArgumentError, "No secret specified to load_secret and no secret found at #{Chef::Config.platform_specific_path('/etc/chef/encrypted_data_bag_secret')}")
       end
     end
 
     context "path argument is a URL" do
-      let(:path) { "http://www.opscode.com/" }
+      before do
+        Kernel.stub(:open).with("http://www.opscode.com/").and_return(StringIO.new(secret))
+      end
 
-      it "reads the URL" do
-        loaded_secret.should eq secret
+      it "reads from the URL" do
+        Chef::EncryptedDataBagItem.load_secret("http://www.opscode.com/").should eq secret
       end
     end
   end
