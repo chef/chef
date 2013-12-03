@@ -63,10 +63,14 @@ class Chef
         if user_info
           @current_resource.uid(user_info.uid)
           @current_resource.gid(user_info.gid)
-          @current_resource.comment(user_info.gecos)
           @current_resource.home(user_info.dir)
           @current_resource.shell(user_info.shell)
           @current_resource.password(user_info.passwd)
+
+          if @new_resource.comment && user_info.gecos.respond_to?(:force_encoding)
+            user_info.gecos.force_encoding(@new_resource.comment.encoding)
+          end
+          @current_resource.comment(user_info.gecos)
 
           if @new_resource.password && @current_resource.password == 'x'
             begin
