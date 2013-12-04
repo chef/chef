@@ -344,7 +344,7 @@ describe Mixlib::ShellOut do
       let(:options) { { :cwd => cwd } }
 
       context 'when running under Unix', :unix_only do
-        let(:cwd) { '/tmp' }
+        let(:cwd) { File.symlink?('/bin') ? '/tmp' : '/bin' }
         let(:cmd) { 'pwd' }
 
         it "should chdir to the working directory" do
