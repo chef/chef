@@ -422,6 +422,21 @@ describe Chef::REST do
         @rest.api_request(:GET, @url).should == "ninja"
       end
 
+      it "returns nil when the response is a 204 and the content-type is JSON" do
+
+        @http_response = Net::HTTPNoContent.new("1.1", "204", "successful rest req")
+        @http_response.stub!(:read_body)
+        @http_response.stub!(:body).and_return(nil)
+        @http_response.add_field("Content-Length", "0")
+        @http_response.add_field("Content-Type", "application/json")
+
+        @http_client = Net::HTTP.new(@url.host, @url.port)
+        Net::HTTP.stub!(:new).and_return(@http_client)
+        @http_client.stub!(:request).and_yield(@http_response).and_return(@http_response)
+
+        @rest.api_request(:GET, @url).should be_nil
+      end
+
       it "should inflate the body as to an object if JSON is returned" do
         @http_response.add_field('content-type', "application/json")
         @http_response.stub!(:body).and_return('{"ohai2u":"json_api"}')
