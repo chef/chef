@@ -127,7 +127,7 @@ class Chef
         set_or_return(
           :weekday,
           converted_arg,
-          :kind_of => String
+          :kind_of => [String, Symbol]
         )
       end
 
