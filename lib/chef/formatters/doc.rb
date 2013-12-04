@@ -16,6 +16,7 @@ class Chef
         super
 
         @updated_resources = 0
+        @up_to_date_resources = 0
         @start_time = Time.now
         @end_time = @start_time
       end
@@ -28,12 +29,16 @@ class Chef
         puts "Starting Chef Client, version #{version}"
       end
 
+      def total_resources
+        @up_to_date_resources + @updated_resources
+      end
+
       def run_completed(node)
         @end_time = Time.now
         if Chef::Config[:why_run]
-          puts "Chef Client finished, #{@updated_resources} resources would have been updated"
+          puts "Chef Client finished, #{@updated_resources}/#{total_resources} resources would have been updated"
         else
-          puts "Chef Client finished, #{@updated_resources} resources updated in #{elapsed_time} seconds"
+          puts "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated in #{elapsed_time} seconds"
         end
       end
 
@@ -181,6 +186,7 @@ class Chef
 
       # Called when a resource has no converge actions, e.g., it was already correct.
       def resource_up_to_date(resource, action)
+        @up_to_date_resources+= 1
         puts " (up to date)"
       end
 
