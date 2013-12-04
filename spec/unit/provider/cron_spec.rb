@@ -833,4 +833,23 @@ MAILTO=foo@example.com
     end
 
   end
+
+  describe "weekday_in_crontab" do
+    context "when weekday is symbol" do
+      before do
+        @new_resource.weekday :wednesday
+      end
+      it "should return weekday in crontab format" do
+        @provider.send(:weekday_in_crontab).should eq("3")
+      end
+    end
+    context "when weekday is string" do
+      before do
+        @new_resource.weekday "3"
+      end
+      it "should return the string" do
+        @provider.send(:weekday_in_crontab).should eq("3")
+      end
+    end
+  end
 end

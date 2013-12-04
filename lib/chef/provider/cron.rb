@@ -29,6 +29,7 @@ class Chef
       ENV_PATTERN = /\A(\S+)=(\S*)/
 
       CRON_ATTRIBUTES = [:minute, :hour, :day, :month, :weekday, :command, :mailto, :path, :shell, :home, :environment]
+      WEEKDAY_SYMBOLS = [:sunday, :monday, :tuesday, :wednesday, :thursday, :friday, :saturday]
 
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
@@ -220,8 +221,17 @@ class Chef
         @new_resource.environment.each do |name, value|
           newcron << "#{name}=#{value}\n"
         end
-        newcron << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
+        newcron << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{weekday_in_crontab} #{@new_resource.command}\n"
         newcron
+      end
+
+      def weekday_in_crontab
+        weekday_in_crontab = WEEKDAY_SYMBOLS.index(@new_resource.weekday)
+        if weekday_in_crontab.nil?
+          @new_resource.weekday
+        else
+          weekday_in_crontab.to_s
+        end
       end
     end
   end
