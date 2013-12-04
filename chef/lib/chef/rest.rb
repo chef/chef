@@ -267,7 +267,11 @@ class Chef
 
           response_body = decompress_body(response)
 
-          if response.kind_of?(Net::HTTPSuccess)
+          # 204 is successful, Net::HTTP returns nil response body.
+          # Don't attempt to parse it.
+          if response.kind_of?(Net::HTTPNoContent)
+            response_body
+          elsif response.kind_of?(Net::HTTPSuccess)
             if response['content-type'] =~ /json/
               Chef::JSONCompat.from_json(response_body.chomp)
             else
