@@ -273,6 +273,23 @@ describe Chef::Resource::Package, metadata do
             package_resource.should be_updated_by_last_action
           end
 
+          context "with variables" do
+            let(:package_resource) do
+              r = base_resource
+              r.cookbook_name = "preseed"
+              r.response_file("preseed-template.seed")
+              r.response_file_variables({ :template_variable => 'SUPPORTS VARIABLES' })
+              r
+            end
+
+            it "preseeds the package, then installs it" do
+              package_resource.run_action(:install)
+              cmd = shell_out!("debconf-show chef-integration-test")
+              cmd.stdout.should include('chef-integration-test/sample-var: "SUPPORTS VARIABLES"')
+              package_resource.should be_updated_by_last_action
+            end
+          end
+
         end
       end # installing w/ preseed
     end # when package not installed
