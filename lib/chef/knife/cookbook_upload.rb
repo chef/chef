@@ -257,14 +257,18 @@ WARNING
       end
 
       def check_for_dependencies!(cookbook)
-        # for each dependency, check if the version is on the server, or
+        # for all dependencies, check if the version is on the server, or
         # the version is in the cookbooks being uploaded. If not, exit and warn the user.
-        cookbook.metadata.dependencies.each do |cookbook_name, version|
-          unless check_server_side_cookbooks(cookbook_name, version) || check_uploading_cookbooks(cookbook_name, version)
-            ui.error "Cookbook #{cookbook.name} depends on cookbook '#{cookbook_name}' version '#{version}',"
-            ui.error "which is not currently being uploaded and cannot be found on the server."
-            exit 1
-          end
+        missing_dependencies = cookbook.metadata.dependencies.select do |cookbook_name, version|
+          !(check_server_side_cookbooks(cookbook_name, version) || check_uploading_cookbooks(cookbook_name, version))
+        end
+
+        unless missing_dependencies.empty?
+          missing_cookbook_names = missing_dependencies.map { |cookbook_name, version|  "'#{cookbook_name}' version '#{version}'"}
+          ui.error "Cookbook #{cookbook.name} depends on cookbooks which are not currently"
+          ui.error "being uploaded and cannot be found on the server."
+          ui.error "The missing cookbook(s) are: #{missing_cookbook_names.join(', ')}"
+          exit 1
         end
       end
 
