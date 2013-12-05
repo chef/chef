@@ -41,6 +41,8 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   START_PENDING = 'start pending'
   STOP_PENDING  = 'stop pending'
 
+  TIMEOUT  = 60
+
   def whyrun_supported?
     false
   end
@@ -70,13 +72,13 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
           Chef::Log.debug "#{@new_resource} starting service using the given start_command"
           shell_out!(@new_resource.start_command)
         else
-          spawn_command_thread do
+          command_timeout do
             Win32::Service.start(@new_resource.service_name)
             wait_for_state(RUNNING)
           end
         end
         @new_resource.updated_by_last_action(true)
-      else 
+      else
         raise Chef::Exceptions::Service, "Service #{@new_resource} can't be started from state [#{state}]"
       end
     else
@@ -92,7 +94,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
           Chef::Log.debug "#{@new_resource} stopping service using the given stop_command"
           shell_out!(@new_resource.stop_command)
         else
-          spawn_command_thread do
+          command_timeout do
             Win32::Service.stop(@new_resource.service_name)
             wait_for_state(STOPPED)
           end
@@ -175,13 +177,13 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     sleep 1 until current_state == desired_state
   end
 
-  # There ain't no party like a thread party...
-  def spawn_command_thread
-    worker = Thread.new do
-      yield
-    end
-    Timeout.timeout(60) do
-      worker.join
+  def command_timeout
+	timeout   = @new_resource.timeout if @new_resource.timeout
+	timeout ||= TIMEOUT
+	Chef::Log.debug  "service command timeout [#{timeout}]"
+
+    Timeout.timeout(timeout) do
+	  yield
     end
   end
 end
