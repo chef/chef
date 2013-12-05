@@ -92,6 +92,16 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       @provider.start_service
       @new_resource.updated_by_last_action?.should be_false
     end
+	
+    it "should raise an error if the service is paused" do
+      Win32::Service.stub!(:status).with(@new_resource.service_name).and_return(
+        mock("StatusStruct", :current_state => "paused"))
+      @provider.load_current_resource
+      Win32::Service.should_not_receive(:start).with(@new_resource.service_name)
+      expect { @provider.start_service }.to raise_error( Chef::Exceptions::Service )
+      @new_resource.updated_by_last_action?.should be_false
+    end
+	
   end
 
   describe Chef::Provider::Service::Windows, "stop_service" do
@@ -130,6 +140,16 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       @provider.stop_service
       @new_resource.updated_by_last_action?.should be_false
     end
+	
+    it "should raise an error if the service is paused" do
+      Win32::Service.stub!(:status).with(@new_resource.service_name).and_return(
+        mock("StatusStruct", :current_state => "paused"))
+      @provider.load_current_resource
+      Win32::Service.should_not_receive(:start).with(@new_resource.service_name)
+      expect { @provider.start_service }.to raise_error( Chef::Exceptions::Service )
+      @new_resource.updated_by_last_action?.should be_false
+    end
+	
   end
 
   describe Chef::Provider::Service::Windows, "restart_service" do
