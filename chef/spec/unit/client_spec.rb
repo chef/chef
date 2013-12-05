@@ -230,6 +230,12 @@ shared_examples_for Chef::Client do
       @node[:recipes].length.should == 1
       @node[:recipes].should include("cookbook1")
     end
+
+    it "should set the environment from the specified configuration value" do
+      Chef::Config[:environment] = "A"
+      @client.build_node
+      @node.chef_environment.should == "A"
+    end
   end
 
   describe "when a run list override is provided" do
