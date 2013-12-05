@@ -87,7 +87,7 @@ case "$filetype" in
   "deb") sudo dpkg -i pkg/chef*.deb ;;
   "rpm") sudo rpm -Uvh pkg/chef*.rpm ;;
   "solaris") sudo pkgadd -n -d pkg/chef*.solaris -a /tmp/nocheck chef ;;
-  "bff") sudo installp -a -d pkg/chef*.bff ;;
+  "bff") sudo installp -a -d pkg/chef*.bff chef;;
   "sh") sudo ./pkg/chef*.sh ;;
 esac
 
