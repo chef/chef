@@ -1,4 +1,5 @@
-source :rubygems
+source 'https://rubygems.org'
+
 gemspec :name => "mixlib-shellout"
 
 group(:test) do
