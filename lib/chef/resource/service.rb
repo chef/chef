@@ -42,6 +42,7 @@ class Chef
         @reload_command = nil
         @init_command = nil
         @priority = nil
+		@timeout = nil
         @action = "nothing"
         @startup_type = :automatic
         @supports = { :restart => false, :reload => false, :status => false }
@@ -156,6 +157,13 @@ class Chef
                       :kind_of => [ Integer, String, Hash ])
       end
 
+	  # timeout only applies to the windows service manager
+	  def timeout(arg=nil)
+        set_or_return(:timeout,
+                      arg,
+                      :kind_of => Integer )
+      end
+	  
       def parameters(arg=nil)
         set_or_return(
           :parameters,
