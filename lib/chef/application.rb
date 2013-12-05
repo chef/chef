@@ -196,12 +196,17 @@ class Chef::Application
   end
 
   # Initializes Chef::Client instance and runs it
-  def run_chef_client
+  def run_chef_client(specific_recipes = [])
     Chef::Application.setup_server_connectivity
 
+    override_runlist = config[:override_runlist]
+    if specific_recipes.size > 0
+      override_runlist ||= []
+    end
     @chef_client = Chef::Client.new(
       @chef_client_json,
-      :override_runlist => config[:override_runlist]
+      :override_runlist => config[:override_runlist],
+      :specific_recipes => specific_recipes
     )
     @chef_client_json = nil
 

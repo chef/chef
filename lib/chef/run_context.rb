@@ -152,6 +152,17 @@ class Chef
       end
     end
 
+    def load_recipe_file(recipe_file)
+      if !File.exist?(recipe_file)
+        raise Chef::Exceptions::RecipeNotFound, "could not find recipe file #{recipe_file}"
+      end
+
+      Chef::Log.debug("Loading Recipe File #{recipe_file}")
+      recipe = Chef::Recipe.new('@recipe_files', recipe_file, self)
+      recipe.from_file(recipe_file)
+      recipe
+    end
+
     # Looks up an attribute file given the +cookbook_name+ and
     # +attr_file_name+. Used by DSL::IncludeAttribute
     def resolve_attribute(cookbook_name, attr_file_name)

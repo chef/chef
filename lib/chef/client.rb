@@ -146,6 +146,7 @@ class Chef
 
       @events = EventDispatch::Dispatcher.new(*event_handlers)
       @override_runlist = args.delete(:override_runlist)
+      @specific_recipes = args.delete(:specific_recipes)
       runlist_override_sanity_check!
     end
 
@@ -248,6 +249,11 @@ class Chef
       run_status.run_context = run_context
 
       run_context.load(@run_list_expansion)
+      if @specific_recipes
+        @specific_recipes.each do |recipe_file|
+          run_context.load_recipe_file(recipe_file)
+        end
+      end
       assert_cookbook_path_not_empty(run_context)
       run_context
     end
