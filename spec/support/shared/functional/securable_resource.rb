@@ -19,6 +19,7 @@
 #
 
 require 'etc'
+require 'functional/resource/base'
 
 shared_context "setup correct permissions" do
   if windows?
@@ -36,7 +37,11 @@ shared_context "setup correct permissions" do
 
   # Root only context.
   before :each, :unix_only, :requires_root do
-    File.chown(Etc.getpwnam('nobody').uid, 1337, path)
+    if ohai[:platform] == "aix"
+      File.chown(Etc.getpwnam('guest').uid, 1337, path)
+    else
+      File.chown(Etc.getpwnam('nobody').uid, 1337, path)
+    end
   end
 
   before :each, :windows_only do
@@ -149,7 +154,11 @@ shared_examples_for "a securable resource with existing target" do
   include_context "diff disabled"
 
   context "on Unix", :unix_only do
-    let(:expected_user_name) { 'nobody' }
+    if ohai[:platform] == "aix"
+      let(:expected_user_name) { 'guest' }
+    else
+      let(:expected_user_name) { 'nobody' }
+    end
     let(:expected_uid) { Etc.getpwnam(expected_user_name).uid }
     let(:desired_gid) { 1337 }
     let(:expected_gid) { 1337 }

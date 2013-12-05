@@ -1,4 +1,6 @@
 
+require 'functional/resource/base'
+
 ALL_EXPANDED_PERMISSIONS = ["generic read",
                             "generic write",
                             "generic execute",
@@ -72,7 +74,12 @@ shared_examples_for "a securable resource with reporting" do
       context "and owner is specified with a String (username) in new_resource", :requires_root => true do
 
         # TODO/bug: duplicated from the "securable resource" tests
-        let(:expected_user_name) { 'nobody' }
+
+        if ohai[:platform] == "aix"
+          let(:expected_user_name) { 'guest' }
+        else
+          let(:expected_user_name) { 'nobody' }
+        end
 
         before do
           resource.owner(expected_user_name)
@@ -88,7 +95,11 @@ shared_examples_for "a securable resource with reporting" do
       context "and owner is specified with an Integer (uid) in new_resource", :requires_root => true do
 
         # TODO: duplicated from "securable resource"
-        let(:expected_user_name) { 'nobody' }
+        if ohai[:platform] == "aix"
+          let(:expected_user_name) { 'guest' }
+        else
+          let(:expected_user_name) { 'nobody' }
+        end
         let(:expected_uid) { Etc.getpwnam(expected_user_name).uid }
         let(:desired_gid) { 1337 }
         let(:expected_gid) { 1337 }
