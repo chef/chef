@@ -101,14 +101,87 @@ EOM
       it "should complete with success even with a client key" do
         file 'config/client.rb', <<EOM
 local_mode true
-client_key "#{path_to('mykey.pem')}"
-cookbook_path "#{path_to('cookbooks')}"
+client_key #{path_to('mykey.pem').inspect}
+cookbook_path #{path_to('cookbooks').inspect}
 EOM
 
         chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
         result = shell_out("chef-client -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
         result.error!
       end
+
+      it "should run recipes specified directly on the command line" do
+        file 'config/client.rb', <<EOM
+local_mode true
+client_key #{path_to('mykey.pem').inspect}
+cookbook_path #{path_to('cookbooks').inspect}
+EOM
+
+        file 'arbitrary.rb', <<EOM
+file #{path_to('tempfile.txt').inspect} do
+  content '1'
+end
+EOM
+
+        file 'arbitrary2.rb', <<EOM
+file #{path_to('tempfile2.txt').inspect} do
+  content '2'
+end
+EOM
+
+        chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
+        result = shell_out("chef-client -c \"#{path_to('config/client.rb')}\" #{path_to('arbitrary.rb')} #{path_to('arbitrary2.rb')}", :cwd => chef_dir)
+        result.error!
+
+        IO.read(path_to('tempfile.txt')).should == '1'
+        IO.read(path_to('tempfile2.txt')).should == '2'
+      end
+
+      it "should run recipes specified as relative paths directly on the command line" do
+        file 'config/client.rb', <<EOM
+local_mode true
+client_key #{path_to('mykey.pem').inspect}
+cookbook_path #{path_to('cookbooks').inspect}
+EOM
+
+        file 'arbitrary.rb', <<EOM
+file #{path_to('tempfile.txt').inspect} do
+  content '1'
+end
+EOM
+
+        chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
+        result = shell_out("#{chef_dir}/chef-client -c \"#{path_to('config/client.rb')}\" arbitrary.rb", :cwd => path_to(''))
+        result.error!
+
+        IO.read(path_to('tempfile.txt')).should == '1'
+      end
+
+      it "should run recipes specified directly on the command line AFTER recipes in the run list" do
+        file 'config/client.rb', <<EOM
+local_mode true
+client_key #{path_to('mykey.pem').inspect}
+cookbook_path #{path_to('cookbooks').inspect}
+EOM
+
+        file 'cookbooks/x/recipes/constant_definition.rb', <<EOM
+class ::Blah
+  THECONSTANT = '1'
+end
+EOM
+        file 'arbitrary.rb', <<EOM
+file #{path_to('tempfile.txt').inspect} do
+  content ::Blah::THECONSTANT
+end
+EOM
+
+        chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
+        result = shell_out("#{chef_dir}/chef-client -c \"#{path_to('config/client.rb')}\" -o x::constant_definition arbitrary.rb", :cwd => path_to(''))
+        result.error!
+
+        IO.read(path_to('tempfile.txt')).should == '1'
+      end
+
     end
 
     it "should complete with success when passed the -z flag" do

@@ -230,6 +230,8 @@ class Chef::Application::Client < Chef::Application
   def reconfigure
     super
 
+    Chef::Config[:specific_recipes] = cli_arguments.map { |file| File.expand_path(file) }
+
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
 
     Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
@@ -309,7 +311,7 @@ class Chef::Application::Client < Chef::Application
           Chef::Log.debug("Splay sleep #{splay} seconds")
           sleep splay
         end
-        run_chef_client
+        run_chef_client(Chef::Config[:specific_recipes])
         if Chef::Config[:interval]
           Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
           unless SELF_PIPE.empty?
