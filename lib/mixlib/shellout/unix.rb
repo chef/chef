@@ -29,13 +29,20 @@ module Mixlib
       # to +stdout+ and +stderr+, and saving its exit status object to +status+
       # === Returns
       # returns   +self+; +stdout+, +stderr+, +status+, and +exitstatus+ will be
-      # populated with results of the command
+      # populated with results of the command.
       # === Raises
       # * Errno::EACCES  when you are not privileged to execute the command
       # * Errno::ENOENT  when the command is not available on the system (or not
       #   in the current $PATH)
       # * Chef::Exceptions::CommandTimeout  when the command does not complete
-      #   within +timeout+ seconds (default: 600s)
+      #   within +timeout+ seconds (default: 600s). When this happens, ShellOut
+      #   will send a TERM and then KILL to the entire process group to ensure
+      #   that any grandchild processes are terminated. If the invocation of
+      #   the child process spawned multiple child processes (which commonly
+      #   happens if the command is passed as a single string to be interpreted
+      #   by bin/sh, and bin/sh is not bash), the exit status object may not
+      #   contain the correct exit code of the process (of course there is no
+      #   exit code if the command is killed by SIGKILL, also).
       def run_command
         @child_pid = fork_subprocess
         @reaped = false
@@ -51,6 +58,7 @@ module Mixlib
         # CHEF-3390: Marshall.load on Ruby < 1.8.7p369 also has a GC bug related
         # to Marshall.load, so try disabling GC first.
         propagate_pre_exec_failure
+        @child_pgid = -Process.getpgid(@child_pid)
 
         @result = nil
         @execution_time = 0
@@ -120,6 +128,12 @@ module Mixlib
 
       def set_cwd
         Dir.chdir(cwd) if cwd
+      end
+
+      # Process group id of the child. Returned as a negative value so you can
+      # put it directly in arguments to kill, wait, etc.
+      def child_pgid
+        @child_pgid
       end
 
       def initialize_ipc
@@ -263,6 +277,14 @@ module Mixlib
         initialize_ipc
 
         fork do
+          # Child processes may themselves fork off children. A common case
+          # is when the command is given as a single string (instead of
+          # command name plus Array of arguments) and /bin/sh does not
+          # support the "ONESHOT" optimization (where sh -c does exec without
+          # forking). To support cleaning up all the children, we need to
+          # ensure they're in a unique process group.
+          Process.setsid
+
           configure_subprocess_file_descriptors
 
           clean_parent_file_descriptors
@@ -304,13 +326,13 @@ module Mixlib
         return if attempt_reap
         @terminate_reason = "Command execeded allowed execution time, killed by TERM signal."
         logger.error("Command execeded allowed execution time, sending TERM") if logger
-        Process.kill(:TERM, @child_pid)
+        Process.kill(:TERM, child_pgid)
         sleep 3
-        return if attempt_reap
+        return if attempt_reap_all
         @terminate_reason = "Command execeded allowed execution time, did not respond to TERM. Killed by KILL signal."
         logger.error("Command did not exit from TERM, sending KILL") if logger
-        Process.kill(:KILL, @child_pid)
-        reap
+        Process.kill(:KILL, child_pgid)
+        reap_all
 
         # Should not hit this but it's possible if something is calling waitall
         # in a separate thread.
@@ -323,12 +345,29 @@ module Mixlib
         @child_pid && !@reaped
       end
 
+      # Unconditionally reap the child process. This is used in scenarios where
+      # we can be confident the child will exit quickly, and has not spawned
+      # and grandchild processes.
       def reap
         results = Process.waitpid2(@child_pid)
         @reaped = true
         @status = results.last
       end
 
+      # Reap app processes with the same process group id as the forked child.
+      # This is used after a timeout when forcibly killing the child process
+      # and any grandchild processes it may have spawned.
+      def reap_all
+        results = []
+        loop do
+          results = Process.waitpid2(child_pgid)
+        end
+      rescue Errno::ECHILD, Errno::ESRCH
+        @reaped = true
+        @status = results.last
+      end
+
+      # Try to reap the child process but don't block if it isn't dead yet.
       def attempt_reap
         if results = Process.waitpid2(@child_pid, Process::WNOHANG)
           @reaped = true
@@ -336,6 +375,20 @@ module Mixlib
         else
           nil
         end
+      end
+
+      # Try to reap all the processes in the child process' process group.
+      # Return a false-y value if any processes in the group cannot be reaped
+      # without blocking (e.g., not dead yet).
+      def attempt_reap_all
+        results = []
+        while results = Process.waitpid2(@child_pid, Process::WNOHANG)
+          @reaped = true
+          @status = results.last
+        end
+        nil
+      rescue Errno::ECHILD, Errno::ESRCH
+        @status
       end
 
     end
