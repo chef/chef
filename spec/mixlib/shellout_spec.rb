@@ -825,9 +825,16 @@ describe Mixlib::ShellOut do
         end
       end
 
-      context 'with subprocess that takes longer than timeout' do
+      context 'with subprocess that takes longer than timeout', :focus do
+        def ruby_wo_shell(code)
+          parts = %w[ruby]
+          parts << "--disable-gems" if ruby_19?
+          parts << "-e"
+          parts << code
+        end
+
         let(:cmd) do
-          ruby_eval.call(<<-CODE)
+          ruby_wo_shell(<<-CODE)
             STDOUT.sync = true
             trap(:TERM) { puts "got term"; exit!(123) }
             sleep 10
@@ -849,7 +856,7 @@ describe Mixlib::ShellOut do
 
         context "and the child is unresponsive" do
           let(:cmd) do
-            ruby_eval.call(<<-CODE)
+            ruby_wo_shell(<<-CODE)
               STDOUT.sync = true
               trap(:TERM) { puts "nanana cant hear you" }
               sleep 10
