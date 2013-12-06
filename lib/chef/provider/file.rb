@@ -345,6 +345,10 @@ class Chef
         if ::File.file?(@new_resource.path) && contents_changed?
           if @new_resource.sensitive
             @new_resource.diff('suppressed sensitive resource')
+
+            converge_by(['suppressed sensitive resource']) do
+              update_file_contents
+            end
           else
             diff.diff(@current_resource.path, tempfile.path)
 
@@ -353,10 +357,10 @@ class Chef
             description = [ "update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(checksum(tempfile.path))}" ]
 
             description << diff.for_output
-          end
 
-          converge_by(description) do
-            update_file_contents
+            converge_by(description) do
+              update_file_contents
+            end
           end
         end
 
