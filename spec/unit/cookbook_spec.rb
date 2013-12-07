@@ -33,7 +33,7 @@ describe Chef::CookbookVersion do
   end
 
   it "should have a name" do
-    @cookbook.name.should == :openldap
+    @cookbook.name.should == "openldap"
   end
 
   it "should allow you to set the list of attribute files and create the mapping from short names to paths" do
@@ -73,7 +73,7 @@ describe Chef::CookbookVersion do
     recipe = @run_context.include_recipe("openldap::gigantor").first
 
     recipe.recipe_name.should == "gigantor"
-    recipe.cookbook_name.should == :openldap
+    recipe.cookbook_name.should == "openldap"
     @run_context.resource_collection[0].name.should == "blanket"
   end
 

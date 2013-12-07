@@ -40,11 +40,11 @@ describe Chef::CookbookLoader do
       end
 
       it "should allow you to look up available cookbooks with [] and a symbol" do
-        @cookbook_loader[:openldap].name.should eql(:openldap)
+        @cookbook_loader[:openldap].name.should eql("openldap")
       end
 
       it "should allow you to look up available cookbooks with [] and a string" do
-        @cookbook_loader["openldap"].name.should eql(:openldap)
+        @cookbook_loader["openldap"].name.should eql("openldap")
       end
     end
 
@@ -173,7 +173,7 @@ describe Chef::CookbookLoader do
       end
 
       it "should emit deprecation warning if name is not in metadata" do
-        Chef::Log.should_receive(:warn).exactly(6).with(/Inferring cookbook name from directory name \([^)]+\) is deprecated, please set a name in the metadata./)
+        Chef::Log.should_receive(:warn).exactly(7).with(/Inferring cookbook name from directory name \([^)]+\) is deprecated, please set a name in the metadata./)
         @cookbook_loader.load_cookbooks
       end
     end # load_cookbooks
