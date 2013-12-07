@@ -121,7 +121,9 @@ class Chef
           converted_arg = arg
         end
         begin
-          if integerize(arg) > 7 then raise RangeError end
+          if !arg.is_a?(Symbol) && integerize(arg) > 7
+            raise RangeError
+          end
         rescue ArgumentError
         end
         set_or_return(
