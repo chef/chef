@@ -884,7 +884,7 @@ describe Mixlib::ShellOut do
               shell_cmd.status.termsig.should == 9
 
               log_output.string.should include("Command execeded allowed execution time, sending TERM")
-              log_output.string.should include("Command did not exit from TERM, sending KILL")
+              log_output.string.should include("Command execeded allowed execution time, sending KILL")
             end
 
           end
@@ -916,7 +916,8 @@ describe Mixlib::ShellOut do
           let(:cmd) do
             ruby_wo_shell(<<-CODE)
               STDOUT.sync = true
-              trap(:TERM) { print "got term in child\n" }
+
+              trap(:TERM) { print "got term in child\n"; exit!(123) }
               fork do
                 trap(:TERM) { print "got term in grandchild\n" }
                 sleep 10
@@ -929,6 +930,7 @@ describe Mixlib::ShellOut do
             # note: let blocks don't correctly memoize if an exception is raised,
             # so can't use executed_cmd
             lambda { shell_cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
+
             shell_cmd.stdout.should include("got term in child")
             shell_cmd.stdout.should include("got term in grandchild")
 

@@ -324,15 +324,14 @@ module Mixlib
 
       def reap_errant_child
         return if attempt_reap
-        @terminate_reason = "Command execeded allowed execution time, killed by TERM signal."
+        @terminate_reason = "Command execeded allowed execution time, process terminated"
         logger.error("Command execeded allowed execution time, sending TERM") if logger
         Process.kill(:TERM, child_pgid)
         sleep 3
-        return if attempt_reap_all
-        @terminate_reason = "Command execeded allowed execution time, did not respond to TERM. Killed by KILL signal."
-        logger.error("Command did not exit from TERM, sending KILL") if logger
+        attempt_reap
+        logger.error("Command execeded allowed execution time, sending KILL") if logger
         Process.kill(:KILL, child_pgid)
-        reap_all
+        reap
 
         # Should not hit this but it's possible if something is calling waitall
         # in a separate thread.
@@ -352,19 +351,12 @@ module Mixlib
         results = Process.waitpid2(@child_pid)
         @reaped = true
         @status = results.last
-      end
-
-      # Reap app processes with the same process group id as the forked child.
-      # This is used after a timeout when forcibly killing the child process
-      # and any grandchild processes it may have spawned.
-      def reap_all
-        results = []
-        loop do
-          results = Process.waitpid2(child_pgid)
-        end
-      rescue Errno::ECHILD, Errno::ESRCH
-        @reaped = true
-        @status = results.last
+      rescue Errno::ECHILD
+        # When cleaning up timed-out processes, we might send SIGKILL to the
+        # whole process group after we've cleaned up the direct child. In that
+        # case the grandchildren will have been adopted by init so we can't
+        # reap them even if we wanted to (we don't).
+        nil
       end
 
       # Try to reap the child process but don't block if it isn't dead yet.
@@ -375,20 +367,6 @@ module Mixlib
         else
           nil
         end
-      end
-
-      # Try to reap all the processes in the child process' process group.
-      # Return a false-y value if any processes in the group cannot be reaped
-      # without blocking (e.g., not dead yet).
-      def attempt_reap_all
-        results = []
-        while results = Process.waitpid2(@child_pid, Process::WNOHANG)
-          @reaped = true
-          @status = results.last
-        end
-        nil
-      rescue Errno::ECHILD, Errno::ESRCH
-        @status
       end
 
     end
