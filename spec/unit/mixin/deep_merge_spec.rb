@@ -347,5 +347,17 @@ describe Chef::Mixin::DeepMerge do
       merged_result["top_level_a"]["1_deep_b"].should == %w[B B B]
     end
 
+    it "merges a hash onto each element of an array" do
+      merge_ee_hash = {"top_level_a" => {"1_deep_c" => "1-deep-c-merge-ee", "1_deep_d" => "1-deep-d-merge-ee"}}
+      merge_with_hash = {"top_level_a" => [{"1_deep_b" => "1-deep-b-merge-with", "1_deep_c" => "1-deep-c-merge-with"}]}
+
+      merged_result = @dm.hash_only_merge(merge_ee_hash, merge_with_hash)
+
+      merged_result["top_level_a"].should be_a(Array)
+      merged_result["top_level_a"].first['1_deep_b'].should == "1-deep-b-merge-with"
+      merged_result["top_level_a"].first['1_deep_c'].should == "1-deep-c-merge-with"
+      merged_result["top_level_a"].first['1_deep_d'].should == "1-deep-d-merge-ee"
+    end
+
   end
 end
