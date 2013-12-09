@@ -826,8 +826,15 @@ describe Mixlib::ShellOut do
       end
 
       context 'with subprocess that takes longer than timeout' do
+        def ruby_wo_shell(code)
+          parts = %w[ruby]
+          parts << "--disable-gems" if ruby_19?
+          parts << "-e"
+          parts << code
+        end
+
         let(:cmd) do
-          ruby_eval.call(<<-CODE)
+          ruby_wo_shell(<<-CODE)
             STDOUT.sync = true
             trap(:TERM) { puts "got term"; exit!(123) }
             sleep 10
@@ -849,7 +856,7 @@ describe Mixlib::ShellOut do
 
         context "and the child is unresponsive" do
           let(:cmd) do
-            ruby_eval.call(<<-CODE)
+            ruby_wo_shell(<<-CODE)
               STDOUT.sync = true
               trap(:TERM) { puts "nanana cant hear you" }
               sleep 10
@@ -877,10 +884,63 @@ describe Mixlib::ShellOut do
               shell_cmd.status.termsig.should == 9
 
               log_output.string.should include("Command execeded allowed execution time, sending TERM")
-              log_output.string.should include("Command did not exit from TERM, sending KILL")
+              log_output.string.should include("Command execeded allowed execution time, sending KILL")
             end
 
           end
+        end
+
+        context "and the child process forks grandchildren" do
+          let(:cmd) do
+            ruby_wo_shell(<<-CODE)
+              STDOUT.sync = true
+              trap(:TERM) { print "got term in child\n"; exit!(123) }
+              fork do
+                trap(:TERM) { print "got term in grandchild\n"; exit!(142) }
+                sleep 10
+              end
+              sleep 10
+            CODE
+          end
+
+          it "should TERM the wayward child and grandchild" do
+            # note: let blocks don't correctly memoize if an exception is raised,
+            # so can't use executed_cmd
+            lambda { shell_cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
+            shell_cmd.stdout.should include("got term in child")
+            shell_cmd.stdout.should include("got term in grandchild")
+          end
+
+        end
+        context "and the child process forks grandchildren that don't respond to TERM" do
+          let(:cmd) do
+            ruby_wo_shell(<<-CODE)
+              STDOUT.sync = true
+
+              trap(:TERM) { print "got term in child\n"; exit!(123) }
+              fork do
+                trap(:TERM) { print "got term in grandchild\n" }
+                sleep 10
+              end
+              sleep 10
+            CODE
+          end
+
+          it "should TERM the wayward child and grandchild, then KILL whoever is left" do
+            # note: let blocks don't correctly memoize if an exception is raised,
+            # so can't use executed_cmd
+            lambda { shell_cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
+
+            shell_cmd.stdout.should include("got term in child")
+            shell_cmd.stdout.should include("got term in grandchild")
+
+            # A little janky. We get the process group id out of the command
+            # object, then try to kill a process in it to make sure none
+            # exists. Trusting the system under test like this isn't great but
+            # it's difficult to test otherwise.
+            lambda { Process.kill(:INT, shell_cmd.send(:child_pgid)) }.should raise_error(Errno::ESRCH)
+          end
+
         end
       end
 
