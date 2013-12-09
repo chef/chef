@@ -88,6 +88,17 @@ Vagrant-based build lab documented below.
 
 ## Vagrant-based Virtualized Build Labs
 
+Every Omnibus project ships will a project-specific Berksfile and Vagrantfile that will allow you to build your projects on the following platforms:
+
+* CentOS 5 64-bit
+* CentOS 6 64-bit
+* FreeBSD 8.3 64-bit
+* FreeBSD 9.1 64-bit
+* SmartOS Base 1310
+* Ubuntu 10.04 64-bit
+* Ubuntu 11.04 64-bit
+* Ubuntu 12.04 64-bit
+
 Please note this build-lab is only meant to get you up and running quickly;
 there's nothing inherent in Omnibus that restricts you to just building
 packages for the platforms below. See an individual Vagrantfile to add new
@@ -109,100 +120,25 @@ $ vagrant plugin install vagrant-berkshelf
 $ vagrant plugin install vagrant-omnibus
 ```
 
-This project ships will a project-specific [Berksfile](http://berkshelf.com/)
-and [Vagrantfile](http://www.vagrantup.com/) that will allow you to build your
-projects on the following platforms:
 
-### Linux
-
-The following distributions are currently supported by the Linux build lab:
-
-* CentOS 5 64-bit
-* CentOS 6 64-bit
-* Ubuntu 10.04 64-bit
-* Ubuntu 11.04 64-bit
-* Ubuntu 12.04 64-bit
-* Ubuntu 13.04 64-bit
+Once the pre-requisites are installed you can build your package across all platforms with the following command:
 
 ```shell
-$ cd vagrant/linux
 $ vagrant up
 ```
 
 If you would like to build a package for a single platform the command looks like this:
 
 ```shell
-$ cd vagrant/linux
 $ vagrant up PLATFORM
 ```
 
-The complete list of valid platform names can be viewed with the
-`vagrant status` command.
-
-### FreeBSD
-
-The following versions are supported by the FreeBSD build lab:
-
-* FreeBSD 8.3 32-bit
-* FreeBSD 8.3 64-bit
-* FreeBSD 9.1 32-bit
-* FreeBSD 9.1 64-bit
+The complete list of valid platform names can be viewed with the `vagrant status` command.
 
 The FreeBSD guest for Vagrant only supports folder mounting via NFS. This means
 the FreeBSD Build Lab can only be started up on a platform that has `nfsd`
 installed, the NFS server daemon. This comes pre-installed on Mac OS X, and is
 typically a simple package install on Linux.
-
-SO..if you are on a *nix platform you should be able to just run:
-
-```shell
-$ cd vagrant/freebsd
-$ vagrant up
-```
-
-### Joyent SmartOS
-
-This requires the [vagrant-joyent](https://github.com/someara/vagrant-joyent)
-provider which has not pushed to Rubygems.org yet. It can be installed very
-easily though:
-
-```shell
-$ git clone https://github.com/someara/vagrant-joyent/
-$ cd vagrant-joyent
-$ gem build vagrant-joyent.gemspec
-$ vagrant plugin install vagrant-joyent-*.gem
-$ vagrant box add dummy dummy.box
-```
-
-You will also need to export the following environment variables in your shell:
-
-* `SDC_CLI_ACCOUNT` - Login name (account).
-* `SDC_CLI_KEY_ID` - Name of the Joyant Cloud key to use for singing requests.
-* `SDC_CLI_IDENTITY` - Path to the location of your private SSH key.
-* `SDC_CLI_URL` - URL of the CloudAPI endpoint. This is
-  `https://api.joyentcloud.com` if you are using the Joyent Cloud.
-
-The same environment variables are leveraged by the Joyent CloudAPI CLI and
-are [fully documented on the Joyent Cloud wiki]
-(https://api.joyentcloud.com/docs#working-with-the-cli).
-
-Currently the [vagrant-berkshelf](https://github.com/RiotGames/vagrant-berkshelf)
-plugin does not properly rsync the cookbooks directory on the initial
-`vagrant up` when using the `vagrant-joyent` provider. This can be easily
-remedied by running a `berks install` before the initial `vagrant up`:
-
-```shell
-$ cd vagrant/smartos
-$ berks install --berksfile=../Berksfile --path=cookbooks
-```
-
-On subsequent `vagrant provision` commands the `berks install` is no longer
-requried as the vagrant-berkshelf will fire correctly.
-
-```shell
-$ cd vagrant/smartos
-$ vagrant up --provider=joyent
-```
 
 ## License
 

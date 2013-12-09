@@ -1,18 +1,4 @@
 GIT
-  remote: git://github.com/opscode/omnibus-ruby.git
-  revision: b80fed9cbbaeba3c8c51fde9b735efd62775e94b
-  branch: master
-  specs:
-    omnibus (1.2.0)
-      fpm (~> 0.4.33)
-      mixlib-config (~> 1.1.2)
-      mixlib-shellout (~> 1.0)
-      ohai (>= 0.6.12)
-      rake (>= 0.9)
-      thor (>= 0.16.0)
-      uber-s3
-
-GIT
   remote: git://github.com/opscode/omnibus-software.git
   revision: 1fa82ad5e674b1700b0a28a93fa2801ff6db9290
   branch: master
@@ -29,37 +15,46 @@ GEM
     cabin (0.6.1)
     childprocess (0.3.9)
       ffi (~> 1.0, >= 1.0.11)
-    clamp (0.6.1)
-    ffi (1.9.0)
-    fpm (0.4.42)
+    clamp (0.6.3)
+    ffi (1.9.3)
+    fpm (1.0.0)
       arr-pm (~> 0.0.8)
       backports (>= 2.6.2)
       cabin (>= 0.6.0)
       childprocess
       clamp (~> 0.6)
+      ffi
       ftw (~> 0.0.30)
       json (>= 1.7.7)
-    ftw (0.0.36)
+    ftw (0.0.37)
       addressable
       backports (>= 2.6.2)
       cabin (> 0)
       http_parser.rb (= 0.5.3)
     http_parser.rb (0.5.3)
     ipaddress (0.8.0)
-    json (1.8.0)
-    mime-types (1.25)
-    mixlib-cli (1.3.0)
-    mixlib-config (1.1.2)
+    json (1.8.1)
+    mime-types (1.25.1)
+    mixlib-cli (1.4.0)
+    mixlib-config (2.1.0)
     mixlib-log (1.6.0)
-    mixlib-shellout (1.2.0)
-    ohai (6.18.0)
+    mixlib-shellout (1.3.0)
+    ohai (6.20.0)
       ipaddress
       mixlib-cli
       mixlib-config
       mixlib-log
       mixlib-shellout
-      systemu
+      systemu (~> 2.5.2)
       yajl-ruby
+    omnibus (1.3.0)
+      fpm (~> 1.0.0)
+      mixlib-config (~> 2.1.0)
+      mixlib-shellout (~> 1.3.0)
+      ohai (>= 0.6.12)
+      rake (>= 0.9)
+      thor (>= 0.16.0)
+      uber-s3
     rake (10.1.0)
     systemu (2.5.2)
     thor (0.18.1)
@@ -71,5 +66,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  omnibus!
+  omnibus (~> 1.3.0)
   omnibus-software!
