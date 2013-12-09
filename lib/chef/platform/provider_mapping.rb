@@ -365,7 +365,8 @@ class Chef
                 :mount => Chef::Provider::Mount::Aix,
                 :ifconfig => Chef::Provider::Ifconfig::Aix,
                 :cron => Chef::Provider::Cron::Aix,
-                :package => Chef::Provider::Package::Aix
+                :package => Chef::Provider::Package::Aix,
+                :user => Chef::Provider::User::Aix
               }
             },
             :exherbo => {
