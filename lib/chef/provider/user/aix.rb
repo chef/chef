@@ -31,6 +31,13 @@ class Chef
           super
         end
 
+        # Aix does not support -r like other unix, sytem account is created by adding to 'system' group
+        def useradd_options
+          opts = []
+          opts << "-g" << "system" if new_resource.system
+          opts
+        end
+
       private
         def add_password
           if @current_resource.password != @new_resource.password && @new_resource.password

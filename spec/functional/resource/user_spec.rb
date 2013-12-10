@@ -258,14 +258,21 @@ describe Chef::Resource::User, metadata do
       context "when a system user is specified" do
         let(:system) { true }
         let(:uid_min) do
-          # from `man useradd`, login user means uid will be between
-          # UID_SYS_MIN and UID_SYS_MAX defined in /etc/login.defs. On my
-          # Ubuntu 13.04 system, these are commented out, so we'll look at
-          # UID_MIN to find the lower limit of the non-system-user range, and
-          # use that value in our assertions.
-          login_defs = File.open("/etc/login.defs", "rb") {|f| f.read }
-          uid_min_scan = /^UID_MIN\s+(\d+)/
-          login_defs.match(uid_min_scan)[1]
+          case ohai[:platform]
+          when "aix"
+            # UIDs and GIDs below 100 are typically reserved for system accounts and services
+            # http://www.ibm.com/developerworks/aix/library/au-satuidgid/
+            100
+          else
+            # from `man useradd`, login user means uid will be between
+            # UID_SYS_MIN and UID_SYS_MAX defined in /etc/login.defs. On my
+            # Ubuntu 13.04 system, these are commented out, so we'll look at
+            # UID_MIN to find the lower limit of the non-system-user range, and
+            # use that value in our assertions.
+            login_defs = File.open("/etc/login.defs", "rb") {|f| f.read }
+            uid_min_scan = /^UID_MIN\s+(\d+)/
+            login_defs.match(uid_min_scan)[1]
+          end
         end
 
         it "ensures the user has the properties of a system user" do
