@@ -36,8 +36,10 @@ describe Chef::Resource::PlatformMap do
       :pop_tron => {
       },
       :default => {
-        :soundwave => "lazerbeak",
-        :directory => Chef::Resource::Directory,
+        :default => {
+          :soundwave => "lazerbeak",
+          :directory => Chef::Resource::Directory,
+        }
       }
     })
   end
@@ -130,7 +132,7 @@ describe Chef::Resource::PlatformMap do
        :short_name => :file,
        :resource => "masterful"
       )
-      @platform_map.map[:default][:file].should eql("masterful")
+      @platform_map.map[:default][:default][:file].should eql("masterful")
 
       @platform_map.set(
        :platform => :hero,
@@ -144,13 +146,13 @@ describe Chef::Resource::PlatformMap do
         :short_name => :file,
         :resource => "masterful"
       )
-      @platform_map.map[:default][:file].should eql("masterful")
+      @platform_map.map[:default][:default][:file].should eql("masterful")
 
       @platform_map.set(
        :short_name => :file,
        :resource => "masterful"
       )
-      @platform_map.map[:default][:file].should eql("masterful")
+      @platform_map.map[:default][:default][:file].should eql("masterful")
 
       @platform_map.set(
         :platform => :neurosis,
