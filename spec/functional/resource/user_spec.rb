@@ -18,11 +18,21 @@
 #
 
 require 'spec_helper'
+require 'functional/resource/base'
 require 'chef/mixin/shell_out'
+
+def user_provider_for_platform
+  case ohai[:platform]
+  when "aix"
+    Chef::Provider::User::Aix
+  else
+    Chef::Provider::User::Useradd
+  end
+end
 
 metadata = { :unix_only => true,
   :requires_root => true,
-  :provider => {:user => Chef::Provider::User::Useradd}
+  :provider => {:user => user_provider_for_platform}
 }
 
 describe Chef::Resource::User, metadata do
@@ -54,7 +64,6 @@ describe Chef::Resource::User, metadata do
   end
 
   before do
-    pending "porting implementation for user provider in aix" if OHAI_SYSTEM[:platform] == 'aix'
     # Silence shell_out live stream
     Chef::Log.level = :warn
   end
@@ -83,7 +92,7 @@ describe Chef::Resource::User, metadata do
   end
 
   let(:username) do
-    "chef-functional-test"
+    "cf-test"
   end
 
   let(:uid) { nil }
