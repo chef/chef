@@ -44,44 +44,6 @@ describe Chef::Resource::PlatformMap do
     })
   end
 
-  describe 'filtering the map' do
-    it "returns resources for platform and version" do
-      pmap = @platform_map.filter("Windows", "6.1")
-      pmap.should be_a_kind_of(Hash)
-      pmap[:file].should eql("softiefile")
-    end
-
-    it "returns platform default resources if version does not exist" do
-      pmap = @platform_map.filter("windows", "1")
-      pmap.should be_a_kind_of(Hash)
-      pmap[:file].should eql(Chef::Resource::File)
-    end
-
-    it "returns global default resources if none exist for plaform" do
-      pmap = @platform_map.filter("pop_tron", "1")
-      pmap.should be_a_kind_of(Hash)
-      pmap[:directory].should eql(Chef::Resource::Directory)
-    end
-
-    it "returns global default resources if platform does not exist" do
-      pmap = @platform_map.filter("BeOS", "1")
-      pmap.should be_a_kind_of(Hash)
-      pmap[:soundwave].should eql("lazerbeak")
-    end
-
-    it "returns a merged map of platform version and plaform default resources" do
-      pmap = @platform_map.filter("Windows", "6.1")
-      pmap[:file].should eql("softiefile")
-      pmap[:ping].should eql("pong")
-    end
-
-    it "returns a merged map of platform specific version and global defaults" do
-      pmap = @platform_map.filter("Windows", "6.1")
-      pmap[:file].should eql("softiefile")
-      pmap[:soundwave].should eql("lazerbeak")
-    end
-  end
-
   describe 'finding a resource' do
     it "returns a resource for a platform directly by short name" do
       @platform_map.get(:file, "windows", "6.1").should eql("softiefile")

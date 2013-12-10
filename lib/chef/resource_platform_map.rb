@@ -32,27 +32,6 @@ class Chef
         @map = map
       end
 
-      def filter(platform, version)
-        resource_map = {}
-        platform_sym = platform
-        if platform.kind_of?(String)
-          platform.downcase!
-          platform.gsub!(/\s/, "_")
-          platform_sym = platform.to_sym
-        end
-
-        [ :default, platform_sym ].each do |platform_key|
-          if map.has_key?(platform_key)
-            [ :default, version ].each do |version_key|
-              if map[platform_key].has_key?(version_key)
-                resource_map.merge!(map[platform_key][version_key])
-              end
-            end
-          end
-        end
-        resource_map
-      end
-
       def set(args)
         validate(
           args,
@@ -94,10 +73,28 @@ class Chef
       private
 
       def platform_resource(short_name, platform, version)
-        pmap = filter(platform, version)
+        platform_sym = platform
+        if platform.kind_of?(String)
+          platform.downcase!
+          platform.gsub!(/\s/, "_")
+          platform_sym = platform.to_sym
+        end
+
         rtkey = short_name.kind_of?(Chef::Resource) ? short_name.resource_name.to_sym : short_name
 
-        pmap.has_key?(rtkey) ? pmap[rtkey] : nil
+        [ platform_sym, :default ].each do |platform_key|
+          if map.has_key?(platform_key)
+            [ version, :default ].each do |version_key|
+              if map[platform_key].has_key?(version_key)
+                if map[platform_key][version_key].has_key?(rtkey)
+                  return map[platform_key][version_key][rtkey]
+                end
+              end
+            end
+          end
+        end
+
+        nil
       end
 
       def resource_matching_short_name(short_name)
