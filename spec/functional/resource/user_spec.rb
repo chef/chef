@@ -56,11 +56,24 @@ describe Chef::Resource::User, metadata do
   end
 
   def etc_shadow
-    File.open("/etc/shadow") {|f| f.read }
+    case ohai[:platform]
+    when "aix"
+      File.open("/etc/security/passwd") {|f| f.read }
+    else
+      File.open("/etc/shadow") {|f| f.read }
+    end
   end
 
   def supports_quote_in_username?
     OHAI_SYSTEM["platform_family"] == "debian"
+  end
+
+  def password_should_be_set
+    if ohai[:platform] == "aix"
+      pw_entry.passwd.should == "!"
+    else
+      pw_entry.passwd.should == "x"
+    end
   end
 
   before do
@@ -112,6 +125,14 @@ describe Chef::Resource::User, metadata do
     r.password(password)
     r.system(system)
     r
+  end
+
+  let(:expected_shadow) do
+    if ohai[:platform] == "aix"
+      expected_shadow = "cf-test"  # For aix just check user entry in shadow file
+    else
+      expected_shadow = "cf-test:$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+    end
   end
 
   let(:skip) { false }
@@ -229,8 +250,7 @@ describe Chef::Resource::User, metadata do
         # openssl passwd -1 "secretpassword"
         let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
         it "sets the user's shadow password" do
-          pw_entry.passwd.should == "x"
-          expected_shadow = "chef-functional-test:$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          password_should_be_set
           etc_shadow.should include(expected_shadow)
         end
       end
@@ -382,8 +402,7 @@ describe Chef::Resource::User, metadata do
         let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
 
         it "ensures the password is set" do
-          pw_entry.passwd.should == "x"
-          expected_shadow = "chef-functional-test:$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          password_should_be_set
           etc_shadow.should include(expected_shadow)
         end
 
@@ -396,8 +415,7 @@ describe Chef::Resource::User, metadata do
         let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
 
         it "ensures the password is set to the desired value" do
-          pw_entry.passwd.should == "x"
-          expected_shadow = "chef-functional-test:$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          password_should_be_set
           etc_shadow.should include(expected_shadow)
         end
       end
