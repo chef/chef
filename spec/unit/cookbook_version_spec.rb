@@ -134,6 +134,7 @@ describe Chef::CookbookVersion do
       # Used to test file-specificity related file lookups
       @node = Chef::Node.new
       @node.set[:platform] = "ubuntu"
+      @node.set[:platform_family] = "debian"
       @node.set[:platform_version] = "13.04"
       @node.name("testing")
     end
@@ -176,7 +177,7 @@ describe Chef::CookbookVersion do
       attribute_file["checksum"].should match(MD5)
       attribute_file["specificity"].should == "default"
 
-      manifest["files"].should have(1).cookbook_file
+      manifest["files"].should have(2).cookbook_file
 
       cookbook_file = manifest["files"].first
       cookbook_file["name"].should == "giant_blob.tgz"
@@ -184,7 +185,7 @@ describe Chef::CookbookVersion do
       cookbook_file["checksum"].should match(MD5)
       cookbook_file["specificity"].should == "default"
 
-      manifest["templates"].should have(1).template
+      manifest["templates"].should have(2).template
 
       template = manifest["templates"].first
       template["name"].should == "configuration.erb"
@@ -222,9 +223,17 @@ describe Chef::CookbookVersion do
       @cookbook_version.should_not have_template_for_node(@node, "missing.erb")
     end
 
+    it "determines whether a template is available for a given node (platform_family)" do
+      @cookbook_version.should have_template_for_node(@node, "debian-configuration.erb")
+    end
+
     it "determines whether a cookbook_file is available for a given node" do
       @cookbook_version.should have_cookbook_file_for_node(@node, "giant_blob.tgz")
       @cookbook_version.should_not have_cookbook_file_for_node(@node, "missing.txt")
+    end
+
+    it "determines whether a cookbook_file is available for a given node (platform_family)" do
+      @cookbook_version.should have_cookbook_file_for_node(@node, "debian.tgz")
     end
 
     describe "raises an error when attempting to load a missing cookbook_file and" do
