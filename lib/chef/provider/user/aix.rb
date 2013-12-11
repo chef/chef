@@ -42,7 +42,7 @@ class Chef
         def add_password
           if @current_resource.password != @new_resource.password && @new_resource.password
             Chef::Log.debug("#{@new_resource.username} setting password to #{@new_resource.password}")
-            command = "echo #{@new_resource.username}:#{@new_resource.password} | chpasswd"
+            command = "echo '#{@new_resource.username}:#{@new_resource.password}' | chpasswd -e"
             shell_out!(command)
           end
         end

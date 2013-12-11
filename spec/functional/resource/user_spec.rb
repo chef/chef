@@ -248,7 +248,15 @@ describe Chef::Resource::User, metadata do
 
       context "when a password is specified" do
         # openssl passwd -1 "secretpassword"
-        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        let(:password) do
+          case ohai[:platform]
+          when "aix"
+            "eL5qfEVznSNss"
+          else
+            "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          end
+        end
+
         it "sets the user's shadow password" do
           password_should_be_set
           etc_shadow.should include(expected_shadow)
@@ -320,7 +328,15 @@ describe Chef::Resource::User, metadata do
         let(:home) { "/home/bobo" }
         let(:manage_home) { true }
         # openssl passwd -1 "secretpassword"
-        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        let(:password) do
+          case ohai[:platform]
+          when "aix"
+            "eL5qfEVznSNss"
+          else
+            "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          end
+        end
+
         let(:system) { false }
         let(:comment) { "hello this is dog" }
 
@@ -406,7 +422,15 @@ describe Chef::Resource::User, metadata do
 
       context "and a password is added" do
         # openssl passwd -1 "secretpassword"
-        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        let(:password) do
+          case ohai[:platform]
+          when "aix"
+            "eL5qfEVznSNss"
+          else
+            "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          end
+        end
+
 
         it "ensures the password is set" do
           password_should_be_set
@@ -417,9 +441,25 @@ describe Chef::Resource::User, metadata do
 
       context "and the password is updated" do
         # openssl passwd -1 "OLDpassword"
-        let(:existing_password) { "$1$1dVmwm4z$CftsFn8eBDjDRUytYKkXB." }
+        let(:existing_password) do
+          case ohai[:platform]
+          when "aix"
+            "jkzG6MvUxjk2g"
+          else
+            "$1$1dVmwm4z$CftsFn8eBDjDRUytYKkXB."
+          end
+        end
+
         # openssl passwd -1 "secretpassword"
-        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        let(:password) do
+          case ohai[:platform]
+          when "aix"
+            "eL5qfEVznSNss"
+          else
+            "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          end
+        end
+
 
         it "ensures the password is set to the desired value" do
           password_should_be_set
@@ -491,7 +531,15 @@ describe Chef::Resource::User, metadata do
 
       context "and the user is not locked" do
         # user will be locked if it has no password
-        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        let(:password) do
+          case ohai[:platform]
+          when "aix"
+            "eL5qfEVznSNss"
+          else
+            "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          end
+        end
+
 
         it "locks the user's password" do
           shadow_password.should include("!")
@@ -500,7 +548,15 @@ describe Chef::Resource::User, metadata do
 
       context "and the user is locked" do
         # user will be locked if it has no password
-        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        let(:password) do
+          case ohai[:platform]
+          when "aix"
+            "eL5qfEVznSNss"
+          else
+            "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          end
+        end
+
         let(:user_locked_context?) { true }
         it "does not update the user" do
           user_resource.should_not be_updated_by_last_action
@@ -559,7 +615,15 @@ describe Chef::Resource::User, metadata do
       end
 
       context "and has a password" do
-        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        let(:password) do
+          case ohai[:platform]
+          when "aix"
+            "eL5qfEVznSNss"
+          else
+            "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          end
+        end
+
         context "and the user is not locked" do
           it "does not update the user" do
             user_resource.should_not be_updated_by_last_action
