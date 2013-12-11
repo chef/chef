@@ -259,8 +259,8 @@ WARNING
       def check_for_dependencies!(cookbook)
         # for all dependencies, check if the version is on the server, or
         # the version is in the cookbooks being uploaded. If not, exit and warn the user.
-        missing_dependencies = cookbook.metadata.dependencies.select do |cookbook_name, version|
-          !(check_server_side_cookbooks(cookbook_name, version) || check_uploading_cookbooks(cookbook_name, version))
+        missing_dependencies = cookbook.metadata.dependencies.reject do |cookbook_name, version|
+          check_server_side_cookbooks(cookbook_name, version) || check_uploading_cookbooks(cookbook_name, version)
         end
 
         unless missing_dependencies.empty?
