@@ -399,6 +399,11 @@ describe Chef::Resource::User, metadata do
               File.should_not exist("/home/foo")
               File.should exist("/home/bar")
             end
+          elsif ohai[:platform] == "aix"
+            it "creates the home dir in the desired location" do
+              File.should_not exist("/home/foo")
+              File.should exist("/home/bar")
+            end
           else
             it "does not create the home dir in the desired location (XXX)" do
               # This behavior seems contrary to expectation and non-convergent.
