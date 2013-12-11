@@ -39,6 +39,32 @@ class Chef
           opts
         end
 
+        def check_lock
+          lock_info = shell_out!("lsuser -a account_locked #{new_resource.username}")
+          if whyrun_mode? && passwd_s.stdout.empty? && lock_info.stderr.match(/does not exist/)
+            # if we're in whyrun mode and the user is not yet created we assume it would be
+            return false
+          end
+          raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!" if lock_info.stdout.empty?
+
+          status  = /\S+\s+account_locked=(\S+)/.match(lock_info.stdout)
+          if status && status[1] == "true"
+            @locked = true
+          else
+            @locked = false
+          end
+
+          @locked
+        end
+
+        def lock_user
+          shell_out!("chuser account_locked=true #{new_resource.username}")
+        end
+
+        def unlock_user
+          shell_out!("chuser account_locked=false #{new_resource.username}")
+        end
+
       private
         def add_password
           if @current_resource.password != @new_resource.password && @new_resource.password

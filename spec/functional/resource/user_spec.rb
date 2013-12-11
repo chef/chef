@@ -506,15 +506,47 @@ describe Chef::Resource::User, metadata do
       shadow_entry.split(':')[1]
     end
 
+    def aix_user_lock_status
+      lock_info = shell_out!("lsuser -a account_locked #{username}")
+      status = /\S+\s+account_locked=(\S+)/.match(lock_info.stdout)[1]
+    end
+
+    def user_account_should_be_locked
+      case ohai[:platform]
+      when "aix"
+        aix_user_lock_status.should == "true"
+      else
+        shadow_password.should include("!")
+      end
+    end
+
+    def user_account_should_be_unlocked
+      case ohai[:platform]
+      when "aix"
+        aix_user_lock_status.should == "false"
+      else
+        shadow_password.should_not include("!")
+      end
+    end
+
+    def lock_user_account
+      case ohai[:platform]
+      when "aix"
+        shell_out!("chuser account_locked=true #{username}")
+      else
+        shell_out!("usermod -L #{username}")
+      end
+    end
+
     before do
       # create user and setup locked/unlocked state
       user_resource.dup.run_action(:create)
 
       if user_locked_context?
-        shell_out!("usermod -L #{username}")
-        shadow_password.should include("!")
+        lock_user_account
+        user_account_should_be_locked
       elsif password
-        shadow_password.should_not include("!")
+        user_account_should_be_unlocked
       end
     end
   end
@@ -547,7 +579,7 @@ describe Chef::Resource::User, metadata do
 
 
         it "locks the user's password" do
-          shadow_password.should include("!")
+          user_account_should_be_locked
         end
       end
 
@@ -613,8 +645,12 @@ describe Chef::Resource::User, metadata do
             # DEBUG: ---- End output of usermod -U chef-functional-test ----
             # DEBUG: Ran usermod -U chef-functional-test returned 0
             @error.should be_nil
-            pw_entry.passwd.should == 'x'
-            shadow_password.should == "!"
+            if ohai[:platform] == "aix"
+              pw_entry.passwd.should == '*'
+            else
+              pw_entry.passwd.should == 'x'
+            end
+            user_account_should_be_unlocked
           end
         end
       end
@@ -639,9 +675,7 @@ describe Chef::Resource::User, metadata do
           let(:user_locked_context?) { true }
 
           it "unlocks the user's password" do
-            shadow_entry = etc_shadow.lines.select {|l| l.include?(username) }.first
-            shadow_password = shadow_entry.split(':')[1]
-            shadow_password.should_not include("!")
+            user_account_should_be_unlocked
           end
         end
       end
