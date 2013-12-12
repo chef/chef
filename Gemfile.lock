@@ -13,8 +13,8 @@ GIT
       uber-s3
 
 GIT
-  remote: git://github.com/opscode/omnibus-software.git
-  revision: 1fa82ad5e674b1700b0a28a93fa2801ff6db9290
+  remote: git://github.com/ClogenyTechnologies/omnibus-software.git
+  revision: de7508123488c5e523148cade66df2cfda06aa55
   branch: master
   specs:
     omnibus-software (0.0.1)
