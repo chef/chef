@@ -16,16 +16,18 @@
 # limitations under the License.
 #
 
-require 'chef/provider/group/usermod'
+require 'chef/provider/group/groupadd'
+require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
     class Group
-      class Aix < Chef::Provider::Group::Usermod
+      class Aix < Chef::Provider::Group::Groupadd
 
         def required_binaries
           [ "/usr/bin/mkgroup",
             "/usr/bin/chgroup",
+            "/usr/bin/chgrpmem",
             "/usr/sbin/rmgroup" ]
         end
 
@@ -49,6 +51,19 @@ class Chef
 
         def remove_group
           run_command(:command => "rmgroup #{@new_resource.group_name}")
+        end
+
+        def add_member(member)
+          shell_out!("chgrpmem -m + #{member} #{@new_resource.group_name}")
+        end
+
+        def set_members(members)
+          return if members.empty?
+          shell_out!("chgrpmem -m = #{members.join(',')} #{@new_resource.group_name}")
+        end
+
+        def remove_member(member)
+          shell_out!("chgrpmem -m - #{member} #{@new_resource.group_name}")
         end
 
         def set_options
