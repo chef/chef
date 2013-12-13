@@ -245,7 +245,6 @@ class Chef
             ENV['PWD']
           end || Dir.pwd
 
-      puts "Working directory: #{a}"
       a
     end
 
