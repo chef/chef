@@ -38,7 +38,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
   def user_exist_in_group?(user)
     case ohai[:platform_family]
     when "windows"
-      Chef::Util::Windows::NetGroup.new(group_name).local_get_members.include?(user)
+      user_sid = sid_string_from_user(user)
+      user_sid.nil? ? false : Chef::Util::Windows::NetGroup.new(group_name).local_get_members.include?(user_sid)
     else
       Etc::getgrnam(group_name).mem.include?(user)
     end
@@ -55,6 +56,16 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
 
   def compare_gid(resource, gid)
     return resource.gid == Etc::getgrnam(resource.name).gid if unix?
+  end
+
+  def sid_string_from_user(user)
+    begin
+      sid = Chef::ReservedNames::Win32::Security.lookup_account_name(user)
+    rescue Chef::Exceptions::Win32APIError
+      sid = nil
+    end
+
+    sid.nil? ? nil : sid[1].to_s
   end
 
   def user(username)

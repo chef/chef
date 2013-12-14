@@ -59,7 +59,9 @@ class Chef
           if @new_resource.append
             members_to_be_added = [ ]
             @new_resource.members.each do |member|
-              members_to_be_added << member if !@current_resource.members.include?(member)
+              member = "#{ENV['COMPUTERNAME']}\\#{member}" if ! member.include?("\\")
+              member_sid = Chef::ReservedNames::Win32::Security.lookup_account_name(member)[1]
+              members_to_be_added << member if !@current_resource.members.include?(member_sid.to_s)
             end
 
             # local_add_members will raise ERROR_MEMBER_IN_ALIAS if a
