@@ -77,7 +77,7 @@ class Chef
 
       # General Windows checks
       WIN_VERSIONS.each do |k,v|
-        method_name = "#{k.gsub(/\s/, '_').downcase}?"
+        method_name = "#{k.gsub(/\s/, '_').gsub(/\./, '_').downcase}?"
         define_method(method_name) do
           (@major_version == v[:major]) &&
           (@minor_version == v[:minor]) &&
