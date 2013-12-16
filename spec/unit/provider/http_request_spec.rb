@@ -110,13 +110,25 @@ describe Chef::Provider::HttpRequest do
 
       it "should inflate a message block at runtime" do
         @new_resource.message { "return" }
-        @http.should_receive(:head).with("http://www.opscode.com/?message=return", {}).and_return("")
+        @http.should_receive(:head).with("http://www.opscode.com/?message=return", {}).and_return(nil)
         @provider.run_action(:head)
         @new_resource.should be_updated
       end
 
       it "should run a HEAD request" do
+        @http.should_receive(:head).with("http://www.opscode.com/?message=is cool", {}).and_return(nil)
+        @provider.run_action(:head)
+        @new_resource.should be_updated
+      end
+
+      it "should update a HEAD request with empty string response body (CHEF-4762)" do
         @http.should_receive(:head).with("http://www.opscode.com/?message=is cool", {}).and_return("")
+        @provider.run_action(:head)
+        @new_resource.should be_updated
+      end
+
+      it "should update a HEAD request with nil response body (CHEF-4762)" do
+        @http.should_receive(:head).with("http://www.opscode.com/?message=is cool", {}).and_return(nil)
         @provider.run_action(:head)
         @new_resource.should be_updated
       end
