@@ -1,0 +1,92 @@
+sh -c '
+<%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
+
+if [ -d /usr/ports ]; then
+    portsnap fetch update
+else
+    portsnap fetch extract
+fi
+
+RUBYVSN=`grep "DEFAULT_VERSIONS=ruby" /etc/make.conf`
+
+if [ ! $RUBYVSN ]; then
+    echo "DEFAULT_VERSIONS=ruby=1.9" >> /etc/make.conf
+fi
+
+PKGNG=`grep "WITH_PKGNG=yes" /etc/make.conf`
+
+if [ ! $PKGNG ]; then
+    echo "WITH_PKGNG=yes" >> /etc/make.conf
+fi
+
+if [ ! -f /usr/local/sbin/portmaster ]; then
+    cd /usr/ports/ports-mgmt/portmaster && make -DBATCH install clean
+fi
+
+if [ ! -f /usr/local/etc/pkg/repos/FreeBSD.conf ]; then
+    cd /usr/ports/ports-mgmt/pkg && make -DFORCE_PKG_REGISTER -DBATCH install clean
+    /usr/local/sbin/pkg2ng
+    ABI=$(pkg -vv | grep ABI | cut -f3 -w)
+    mkdir -p /usr/local/etc/pkg/repos
+    cat > /usr/local/etc/pkg/repos/FreeBSD.conf <<EOF
+FreeBSD: {
+      url: "pkg+http://pkg.FreeBSD.org/$ABI/latest",
+      mirror_type: "srv",
+      enabled: yes
+}
+EOF
+fi
+
+BASE_PACKAGES="net/rsync ftp/curl devel/ruby-gems converters/ruby-iconv devel/rubygem-rake"
+
+for pkg in $BASE_PACKAGES
+do
+    pkg install -y $pkg
+done
+
+gem update --no-rdoc --no-ri
+
+IS_OHAI_INSTALLED=$(gem list ohai | grep "ohai (")
+IS_CHEF_INSTALLED=$(gem list chef | grep "chef (")
+
+if [ "$IS_OHAI_INSTALLED" = "" ]; then
+    gem install ohai --no-rdoc --no-ri --verbose
+fi
+if [ "$IS_CHEF_INSTALLED" = "" ]; then
+    gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string %>
+fi
+
+mkdir -p /etc/chef
+
+cat > /etc/chef/validation.pem <<'EOP'
+<%= validation_key %>
+EOP
+chmod 0600 /etc/chef/validation.pem
+
+<% if encrypted_data_bag_secret -%>
+cat > /etc/chef/encrypted_data_bag_secret <<'EOP'
+<%= encrypted_data_bag_secret %>
+EOP
+chmod 0600 /etc/chef/encrypted_data_bag_secret
+<% end -%>
+
+<%# Generate Ohai Hints -%>
+<% unless @chef_config[:knife][:hints].nil? || @chef_config[:knife][:hints].empty? -%>
+mkdir -p /etc/chef/ohai/hints
+
+<% @chef_config[:knife][:hints].each do |name, hash| -%>
+cat > /etc/chef/ohai/hints/<%= name %>.json <<'EOP'
+<%= hash.to_json %>
+EOP
+<% end -%>
+<% end -%>
+
+cat > /etc/chef/client.rb <<'EOP'
+<%= config_content %>
+EOP
+
+cat > /etc/chef/first-boot.json <<'EOP'
+<%= first_boot.to_json %>
+EOP
+
+<%= start_chef %>'
