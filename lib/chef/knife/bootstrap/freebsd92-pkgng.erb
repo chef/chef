@@ -1,4 +1,4 @@
-sh -c '
+/bin/sh -c '
 <%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
 
 if [ -d /usr/ports ]; then
@@ -37,23 +37,17 @@ FreeBSD: {
 EOF
 fi
 
-BASE_PACKAGES="net/rsync ftp/curl devel/ruby-gems converters/ruby-iconv devel/rubygem-rake"
+BASE_PACKAGES="net/rsync ftp/curl devel/ruby-gems converters/ruby-iconv devel/rubygem-rake sysutils/rubygem-chef"
 
 for pkg in $BASE_PACKAGES
 do
     pkg install -y $pkg
 done
 
-gem update --no-rdoc --no-ri
+CHEF_ENABLED=`grep "chef_client_enable=" /etc/rc.conf`
 
-IS_OHAI_INSTALLED=$(gem list ohai | grep "ohai (")
-IS_CHEF_INSTALLED=$(gem list chef | grep "chef (")
-
-if [ "$IS_OHAI_INSTALLED" = "" ]; then
-    gem install ohai --no-rdoc --no-ri --verbose
-fi
-if [ "$IS_CHEF_INSTALLED" = "" ]; then
-    gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string %>
+if [ ! $CHEF_ENABLED ]; then
+    echo "chef_client_enable=\"YES\"" >> /etc/rc.conf
 fi
 
 mkdir -p /etc/chef
