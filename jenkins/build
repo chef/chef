@@ -89,7 +89,11 @@ if [ "x$os" != "xAIX" ]; then
   # END of temporary change.
   # Fix root-owned perms left over from running chef-solo (cache turds, etc)
   set +e
-  sudo chown -R jenkins-node `pwd` || sudo chown -R jenkins `pwd`
+  if [ "x$os" = "xAIX" ]; then
+    sudo chown -R root `pwd` 
+  else
+    sudo chown -R jenkins-node `pwd` || sudo chown -R jenkins `pwd` 
+  fi
   set -e
 fi
 
@@ -97,7 +101,7 @@ if [ "x$os" = "xAIX" ]; then
   # AIX is hateful and requires a bunch of root stuff to build BFF packages
   sudo rm -rf /.info || true
   sudo mkdir /.info || true
-  sudo chown jenkins /.info || true
+  sudo chown root /.info || true
   sudo rm -rf /tmp/bff || true
   # deinstall the bff if it got installed, can't build if it is installed
   sudo installp -u $OMNIBUS_PROJECT_NAME || true
@@ -118,8 +122,13 @@ if [ "$CLEAN" = "true" ]; then
 fi
 
 # always fix up permissions
-sudo chown -R jenkins-node "/opt/${OMNIBUS_PROJECT_NAME}" || sudo chown -R jenkins "/opt/${OMNIBUS_PROJECT_NAME}"
-sudo chown -R jenkins-node "/var/cache/omnibus" || sudo chown -R jenkins "/var/cache/omnibus"
+if [ "x$os" = "xAIX" ]; then
+   sudo chown -R root "/opt/${OMNIBUS_PROJECT_NAME}" 
+   sudo chown -R root "/var/cache/omnibus" 
+else
+  sudo chown -R jenkins-node "/opt/${OMNIBUS_PROJECT_NAME}" || sudo chown -R jenkins "/opt/${OMNIBUS_PROJECT_NAME}"
+  sudo chown -R jenkins-node "/var/cache/omnibus" || sudo chown -R jenkins "/var/cache/omnibus"
+fi
 
 # Aaand.. new ruby
 PATH=/usr/local/bin:$PATH
