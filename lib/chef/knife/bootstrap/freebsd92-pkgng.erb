@@ -50,36 +50,40 @@ if [ ! $CHEF_ENABLED ]; then
     echo "chef_client_enable=\"YES\"" >> /etc/rc.conf
 fi
 
-mkdir -p /etc/chef
+mkdir -p /usr/local/etc/chef
 
-cat > /etc/chef/validation.pem <<'EOP'
+cat > /usr/local/etc/chef/validation.pem <<'EOP'
 <%= validation_key %>
 EOP
-chmod 0600 /etc/chef/validation.pem
+chmod 0600 /usr/local/etc/chef/validation.pem
 
 <% if encrypted_data_bag_secret -%>
-cat > /etc/chef/encrypted_data_bag_secret <<'EOP'
+cat > /usr/local/etc/chef/encrypted_data_bag_secret <<'EOP'
 <%= encrypted_data_bag_secret %>
 EOP
-chmod 0600 /etc/chef/encrypted_data_bag_secret
+chmod 0600 /usr/local/etc/chef/encrypted_data_bag_secret
 <% end -%>
 
 <%# Generate Ohai Hints -%>
 <% unless @chef_config[:knife][:hints].nil? || @chef_config[:knife][:hints].empty? -%>
-mkdir -p /etc/chef/ohai/hints
+mkdir -p /usr/local/etc/chef/ohai/hints
 
 <% @chef_config[:knife][:hints].each do |name, hash| -%>
-cat > /etc/chef/ohai/hints/<%= name %>.json <<'EOP'
+cat > /usr/local/etc/chef/ohai/hints/<%= name %>.json <<'EOP'
 <%= hash.to_json %>
 EOP
 <% end -%>
 <% end -%>
 
-cat > /etc/chef/client.rb <<'EOP'
+cat > /usr/local/etc/chef/client.rb <<'EOP'
 <%= config_content %>
 EOP
 
-cat > /etc/chef/first-boot.json <<'EOP'
+echo "pid_file \"/var/run/chef_client.pid\"" >> /usr/local/etc/chef/client.rb
+echo "client_key \"/usr/local/etc/chef/client.pem\"" >> /usr/local/etc/chef/client.rb
+echo "validation_key \"/usr/local/etc/chef/validation.pem\"" >> /usr/local/etc/chef/client.rb
+
+cat > /usr/local/etc/chef/first-boot.json <<'EOP'
 <%= first_boot.to_json %>
 EOP
 
