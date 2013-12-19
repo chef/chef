@@ -65,6 +65,28 @@ describe Chef::Knife::NodeRunListAdd do
       end
     end
 
+    describe "with -b or --before specified" do
+      it "should add to the run list before the specified entry" do
+        @node.run_list << "role[acorns]"
+        @node.run_list << "role[barn]"
+        @knife.config[:before] = "role[acorns]"
+        @knife.run
+        @node.run_list[0].should == "role[monkey]"
+        @node.run_list[1].should == "role[acorns]"
+        @node.run_list[2].should == "role[barn]"
+      end
+    end
+
+    describe "with both --after and --before specified" do
+      it "should raise ArgumentError" do
+        @node.run_list << "role[acorns]"
+        @node.run_list << "role[barn]"
+        @knife.config[:before] = "role[acorns]"
+        @knife.config[:after]  = "role[acorns]"
+        lambda { @knife.run }.should raise_error ArgumentError
+      end
+    end
+
     describe "with more than one role or recipe" do
       it "should add to the run list all the entries" do
         @knife.name_args = [ "adam", "role[monkey],role[duck]" ]
