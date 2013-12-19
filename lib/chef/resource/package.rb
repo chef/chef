@@ -36,6 +36,7 @@ class Chef
         @package_name = name
         @resource_name = :package
         @response_file = nil
+        @response_file_variables = Hash.new
         @source = nil
         @version = nil
       end
@@ -61,6 +62,14 @@ class Chef
           :response_file,
           arg,
           :kind_of => [ String ]
+        )
+      end
+
+      def response_file_variables(arg=nil)
+        set_or_return(
+          :response_file_variables,
+          arg,
+          :kind_of => [ Hash ]
         )
       end
 
