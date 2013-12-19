@@ -38,6 +38,12 @@ describe Chef::Mixin::PathSanity do
       Chef::Platform.stub!(:windows?).and_return(false)
     end
 
+    it "adds all useful PATHs even if environment is an empty hash" do
+      env={}
+      @sanity.enforce_path_sanity(env)
+      env["PATH"].should == "#{@ruby_bindir}:#{@gem_bindir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    end
+
     it "adds all useful PATHs that are not yet in PATH to PATH" do
       env = {"PATH" => ""}
       @sanity.enforce_path_sanity(env)
