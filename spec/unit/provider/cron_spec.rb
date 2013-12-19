@@ -836,19 +836,46 @@ MAILTO=foo@example.com
 
   describe "weekday_in_crontab" do
     context "when weekday is symbol" do
-      before do
-        @new_resource.weekday :wednesday
-      end
       it "should return weekday in crontab format" do
+        @new_resource.weekday :wed
         @provider.send(:weekday_in_crontab).should eq("3")
+      end
+
+      it "should raise an error with an unknown weekday" do
+        expect { @new_resource.weekday :caturday }.to raise_error(RangeError)
       end
     end
-    context "when weekday is string" do
-      before do
-        @new_resource.weekday "3"
-      end
+
+    context "when weekday is a number in a string" do
       it "should return the string" do
+        @new_resource.weekday "3"
         @provider.send(:weekday_in_crontab).should eq("3")
+      end
+
+      it "should raise an error with an out of range number" do
+        expect { @new_resource.weekday "-1" }.to raise_error(RangeError)
+      end
+    end
+
+    context "when weekday is string with the name of the week" do
+      it "should return the string" do
+        @new_resource.weekday "mon"
+        @provider.send(:weekday_in_crontab).should eq("mon")
+      end
+
+      it "should raise an error with an unknown weekday" do
+        expect { @new_resource.weekday "caturday" }.to raise_error(RangeError)
+      end
+    end
+
+    context "when weekday is an integer" do
+      it "should return the integer" do
+        @new_resource.weekday 1
+        @provider.send(:weekday_in_crontab).should eq("1")
+      end
+
+      it "should raise an error with an out of range integer" do
+        expect { @new_resource.weekday 45 }.to raise_error(RangeError)
       end
     end
   end

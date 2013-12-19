@@ -29,7 +29,7 @@ class Chef
       ENV_PATTERN = /\A(\S+)=(\S*)/
 
       CRON_ATTRIBUTES = [:minute, :hour, :day, :month, :weekday, :command, :mailto, :path, :shell, :home, :environment]
-      WEEKDAY_SYMBOLS = [:sunday, :monday, :tuesday, :wednesday, :thursday, :friday, :saturday]
+      WEEKDAY_SYMBOLS = [:sun, :mon, :tue, :wed, :thu, :fri, :sat]
 
       def initialize(new_resource, run_context)
         super(new_resource, run_context)

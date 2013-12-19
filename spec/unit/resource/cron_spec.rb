@@ -145,12 +145,10 @@ describe Chef::Resource::Cron do
 
   describe "weekday" do
     it "should reject any weekday over 7" do
-      error_message = "You provided '8' as a weekday, acceptable values are :sunday, :monday, :tuesday, :wednesday, :thursday, :friday, :saturday and a string in crontab format"
-      lambda { @resource.weekday "8" }.should raise_error(RangeError, error_message)
+      lambda { @resource.weekday "8" }.should raise_error(RangeError)
     end
     it "should reject any symbols which don't represent day of week" do
-      error_message = "You provided 'foo' as a weekday, acceptable values are :sunday, :monday, :tuesday, :wednesday, :thursday, :friday, :saturday and a string in crontab format"
-      lambda { @resource.weekday :foo }.should raise_error(RangeError, error_message)
+      lambda { @resource.weekday :foo }.should raise_error(RangeError)
     end
   end
 
