@@ -16,8 +16,6 @@
 # limitations under the License.
 #
 
-require 'pry'
-
 shared_context "deploying with move" do
   before do
     Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
@@ -153,8 +151,7 @@ shared_examples_for "a file with the wrong content" do
 
           it { expect(resource.diff).to(include('suppressed sensitive resource')) }
 
-          it { expect(provider.instance_variable_get("@converge_actions")
-                              .actions[0][0]).to(eq(['suppressed sensitive resource'])) }
+          it { expect(provider.instance_variable_get("@converge_actions").actions[0][0]).to(eq(['suppressed sensitive resource'])) }
         end
       end
     end
