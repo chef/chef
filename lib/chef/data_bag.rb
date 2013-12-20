@@ -31,7 +31,7 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
-    VALID_NAME = /^[\-[:alnum:]_]+$/
+    VALID_NAME = /^[\.\-[:alnum:]_]+$/
 
     def self.validate_name!(name)
       unless name =~ VALID_NAME
