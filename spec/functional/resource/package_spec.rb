@@ -277,7 +277,7 @@ describe Chef::Resource::Package, metadata do
             let(:package_resource) do
               r = base_resource
               r.cookbook_name = "preseed"
-              r.response_file("preseed-template.seed")
+              r.response_file("preseed-template-variables.seed")
               r.response_file_variables({ :template_variable => 'SUPPORTS VARIABLES' })
               r
             end
