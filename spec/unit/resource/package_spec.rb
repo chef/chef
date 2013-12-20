@@ -49,6 +49,11 @@ describe Chef::Resource::Package do
     @resource.response_file.should eql("something")
   end
 
+  it "should accept a hash for response file template variables" do
+    @resource.response_file_variables({:variables => true})
+    @resource.response_file_variables.should eql({:variables => true})
+  end
+
   it "should accept a string for the source" do
     @resource.source "something"
     @resource.source.should eql("something")

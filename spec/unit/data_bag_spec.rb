@@ -47,6 +47,12 @@ describe Chef::DataBag do
     it "should throw an ArgumentError if you feed it anything but a string" do
       lambda { @data_bag.name Hash.new }.should raise_error(ArgumentError)
     end
+
+    [ ".", "-", "_", "1"].each do |char|
+      it "should allow a '#{char}' character in the data bag name" do
+        @data_bag.name("clown#{char}clown").should == "clown#{char}clown"
+      end
+    end
   end
 
   describe "deserialize" do

@@ -126,11 +126,19 @@ describe Chef::Provider::Service::Debian do
      /etc/rc5.d/S20chef
      /etc/rc6.d/K20chef
           STDOUT
-          "stderr" => ""
+          "stderr" => "",
+          "priorities" => {
+            "0"=>[:stop, "20"],
+            "1"=>[:stop, "20"],
+            "2"=>[:start, "20"],
+            "3"=>[:start, "20"],
+            "4"=>[:start, "20"],
+            "5"=>[:start, "20"],
+            "6"=>[:stop, "20"]
+          }
         },
         "not linked" => {
-          "stdout" =>
-            " Removing any system startup links for /etc/init.d/chef ...",
+          "stdout" => " Removing any system startup links for /etc/init.d/chef ...",
           "stderr" => ""
         },
       },
@@ -147,20 +155,51 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
   insserv: remove service /etc/init.d/../rc6.d/K20chef-client
   insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
           STDERR
+          "priorities" => {
+            "0"=>[:stop, "20"],
+            "1"=>[:stop, "20"],
+            "2"=>[:start, "20"],
+            "3"=>[:start, "20"],
+            "4"=>[:start, "20"],
+            "5"=>[:start, "20"],
+            "6"=>[:stop, "20"]
+          }
         },
         "not linked" => {
           "stdout" => "update-rc.d: using dependency based boot sequencing",
           "stderr" => ""
         }
+      },
+      "Debian/Wheezy and earlier, a service only starting at run level S" => {
+        "linked" => {
+          "stdout" => "",
+          "stderr" => <<-STDERR,
+insserv: remove service /etc/init.d/../rc0.d/K06rpcbind
+insserv: remove service /etc/init.d/../rc1.d/K06rpcbind
+insserv: remove service /etc/init.d/../rc6.d/K06rpcbind
+insserv: remove service /etc/init.d/../rcS.d/S13rpcbind
+insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
+          STDERR
+          "priorities" => {
+            "0"=>[:stop, "06"],
+            "1"=>[:stop, "06"],
+            "6"=>[:stop, "06"],
+            "S"=>[:start, "13"]
+          }
+        },
+        "not linked" => {
+          "stdout" => "",
+          "stderr" => "insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop"
+        }
       }
-    }.each do |model, streams|
+    }.each do |model, expected_results|
       context "on #{model}" do
         context "when update-rc.d shows init linked to rc*.d/" do
           before do
             @provider.stub!(:assert_update_rcd_available)
 
-            @stdout = StringIO.new(streams["linked"]["stdout"])
-            @stderr = StringIO.new(streams["linked"]["stderr"])
+            @stdout = StringIO.new(expected_results["linked"]["stdout"])
+            @stderr = StringIO.new(expected_results["linked"]["stderr"])
             @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
             @provider.stub!(:shell_out!).and_return(@status)
             @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
@@ -178,22 +217,15 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
 
           it "stores the start/stop priorities of the service" do
             @provider.load_current_resource
-            expected_priorities = {"6"=>[:stop, "20"],
-              "0"=>[:stop, "20"],
-              "1"=>[:stop, "20"],
-              "2"=>[:start, "20"],
-              "3"=>[:start, "20"],
-              "4"=>[:start, "20"],
-              "5"=>[:start, "20"]}
-            @provider.current_resource.priority.should == expected_priorities
+            @provider.current_resource.priority.should == expected_results["linked"]["priorities"]
           end
         end
 
         context "when update-rc.d shows init isn't linked to rc*.d/" do
           before do
             @provider.stub!(:assert_update_rcd_available)
-            @stdout = StringIO.new(streams["not linked"]["stdout"])
-            @stderr = StringIO.new(streams["not linked"]["stderr"])
+            @stdout = StringIO.new(expected_results["not linked"]["stdout"])
+            @stderr = StringIO.new(expected_results["not linked"]["stderr"])
             @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
             @provider.stub!(:shell_out!).and_return(@status)
             @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
@@ -244,6 +276,7 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
     context "when the service is enabled" do
       before do
         @current_resource.enabled(true)
+	@current_resource.priority(80)
       end
 
       context "and the service sets no priority" do
@@ -252,7 +285,6 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
 
       context "and the service requests the same priority as is set" do
         before do
-          @current_resource.priority(80)
           @new_resource.priority(80)
         end
         it_behaves_like "the service is up to date"
@@ -260,8 +292,7 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
 
       context "and the service requests a different priority than is set" do
         before do
-          @current_resource.priority(20)
-          @new_resource.priority(80)
+          @new_resource.priority(20)
         end
         it_behaves_like "the service is not up to date"
       end
