@@ -153,6 +153,8 @@ describe Chef::Knife::CookbookUpload do
         end
         @knife.stub!(:cookbook_names).and_return(["cookbook_dependency", "test_cookbook"])
         Chef::CookbookLoader.stub!(:new).and_return(@cookbook_loader)
+        @stdout, @stderr, @stdin = StringIO.new, StringIO.new, StringIO.new
+        @knife.ui = Chef::Knife::UI.new(@stdout, @stderr, @stdin, {})
       end
 
       it 'should exit and not upload the cookbook' do
@@ -163,10 +165,10 @@ describe Chef::Knife::CookbookUpload do
       end
 
       it 'should output a message for a single missing dependency' do
-        @knife.ui.should_receive(:error).with(/Cookbook test_cookbook depends on cookbooks which are not currently/)
-        @knife.ui.should_receive(:error).with(/being uploaded and cannot be found on the server\./)
-        @knife.ui.should_receive(:error).with(/The missing cookbook\(s\) are: 'dependency' version '>= 0\.0\.0'/)
         expect {@knife.run}.to raise_error(SystemExit)
+        @stderr.string.should include('Cookbook test_cookbook depends on cookbooks which are not currently')
+        @stderr.string.should include('being uploaded and cannot be found on the server.')
+        @stderr.string.should include("The missing cookbook(s) are: 'dependency' version '>= 0.0.0'")
       end
 
       it 'should output a message for a multiple missing dependencies which are concatenated' do
@@ -178,10 +180,10 @@ describe Chef::Knife::CookbookUpload do
             "dependency2" => @cookbook_dependency2}[ckbk]
         end
         @knife.stub!(:cookbook_names).and_return(["dependency", "dependency2", "test_cookbook"])
-        @knife.ui.should_receive(:error).with(/Cookbook test_cookbook depends on cookbooks which are not currently/)
-        @knife.ui.should_receive(:error).with(/being uploaded and cannot be found on the server\./)
-        @knife.ui.should_receive(:error).with(/The missing cookbook\(s\) are: 'dependency' version '>= 0\.0\.0', 'dependency2' version '>= 0\.0\.0'/)
         expect {@knife.run}.to raise_error(SystemExit)
+        @stderr.string.should include('Cookbook test_cookbook depends on cookbooks which are not currently')
+        @stderr.string.should include('being uploaded and cannot be found on the server.')
+        @stderr.string.should include("The missing cookbook(s) are: 'dependency' version '>= 0.0.0', 'dependency2' version '>= 0.0.0'")
       end
     end
 
