@@ -103,7 +103,7 @@ class Chef
         private
         def update_indexes()
             Chef::Log.debug("#{@new_resource} call update indexes #{expand_options(@new_resource.options)}")
-			checksum = Digest::MD5.hexdigest(@new_resource.options || '').to_s
+            checksum = Digest::MD5.hexdigest(@new_resource.options || '').to_s
 
             if @@updated[checksum]
                 return
