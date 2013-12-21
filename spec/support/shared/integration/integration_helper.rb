@@ -23,6 +23,7 @@ require 'chef/config'
 require 'chef_zero/rspec'
 require 'json'
 require 'support/shared/integration/knife_support'
+require 'support/shared/integration/app_server_support'
 require 'spec_helper'
 
 module IntegrationSupport
