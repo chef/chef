@@ -396,6 +396,11 @@ class Chef
       end
 
       def configure_attribute
+
+        if !config[:attribute]
+          ui.warn "No node attribute (-a or --attribute) was specified for use when connecting to the node(s). The default of \"fqdn\" will be used."
+        end
+
         # Setting 'knife[:ssh_attribute] = "foo"' in knife.rb => Chef::Config[:knife][:ssh_attribute] == 'foo'
         # Running 'knife ssh -a foo' => both Chef::Config[:knife][:ssh_attribute] && config[:attribute] == foo
         # Thus we can differentiate between a config file value and a command line override at this point by checking config[:attribute]
