@@ -23,9 +23,9 @@ class Chef
     class PowershellScript < Chef::Provider::WindowsScript
 
       protected
-      EXIT_STATUS_EXCEPTION_HANDLER = "trap [Exception] {write-error -exception ($_.Exception.Message);exit 1}"
+      EXIT_STATUS_EXCEPTION_HANDLER = "\ntrap [Exception] {write-error -exception ($_.Exception.Message);exit 1}"
       EXIT_STATUS_NORMALIZATION_SCRIPT = "\nif ($? -eq $true) {exit 0} elseif ( $LASTEXITCODE -ne 0) {exit $LASTEXITCODE} else { exit 1 }"
-      EXIT_STATUS_RESET_SCRIPT = "$LASTEXITCODE=0\n"
+      EXIT_STATUS_RESET_SCRIPT = "\n$LASTEXITCODE=0"
 
       # Process exit codes are strange with PowerShell. Unless you
       # explicitly call exit in Powershell, the powershell.exe
@@ -39,6 +39,7 @@ class Chef
       def normalize_script_exit_status( code )
         @code = (! code.nil?) ? ( EXIT_STATUS_EXCEPTION_HANDLER +
                                   EXIT_STATUS_RESET_SCRIPT +
+                                  "\n" +
                                   code +
                                   EXIT_STATUS_NORMALIZATION_SCRIPT ) : nil
       end
