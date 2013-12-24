@@ -23,7 +23,7 @@ class Chef
     class PowershellScript < Chef::Provider::WindowsScript
 
       protected
-
+      EXIT_STATUS_EXCEPTION_HANDLER = "trap [Exception] {write-error -exception ($_.Exception.Message);exit 1}"
       EXIT_STATUS_NORMALIZATION_SCRIPT = "\nif ($? -eq $true) {exit 0} elseif ( $LASTEXITCODE -ne 0) {exit $LASTEXITCODE} else { exit 1 }"
       EXIT_STATUS_RESET_SCRIPT = "$LASTEXITCODE=0\n"
 
@@ -36,15 +36,18 @@ class Chef
       # last process run in the script if it is the last command
       # executed, otherwise 0 or 1 based on whether $? is set to true
       # (success, where we return 0) or false (where we return 1).
-      def NormalizeScriptExitStatus( code )
-        @code = (! code.nil?) ? ( EXIT_STATUS_RESET_SCRIPT + code + EXIT_STATUS_NORMALIZATION_SCRIPT ) : nil
+      def normalize_script_exit_status( code )
+        @code = (! code.nil?) ? ( EXIT_STATUS_EXCEPTION_HANDLER +
+                                  EXIT_STATUS_RESET_SCRIPT +
+                                  code +
+                                  EXIT_STATUS_NORMALIZATION_SCRIPT ) : nil
       end
 
       public
 
       def initialize (new_resource, run_context)
         super(new_resource, run_context, '.ps1')
-        NormalizeScriptExitStatus(new_resource.code)
+        normalize_script_exit_status(new_resource.code)
       end
 
       def flags
