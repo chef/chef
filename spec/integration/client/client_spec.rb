@@ -15,7 +15,7 @@ cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
-      result = shell_out("chef-client -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("ruby #{chef_dir}/chef-client -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
       result.error!
     end
 
@@ -151,7 +151,7 @@ end
 EOM
 
         chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
-        result = shell_out("#{chef_dir}/chef-client -c \"#{path_to('config/client.rb')}\" arbitrary.rb", :cwd => path_to(''))
+        result = shell_out("ruby #{chef_dir}/chef-client -c \"#{path_to('config/client.rb')}\" arbitrary.rb", :cwd => path_to(''))
         result.error!
 
         IO.read(path_to('tempfile.txt')).should == '1'
@@ -176,7 +176,7 @@ end
 EOM
 
         chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
-        result = shell_out("#{chef_dir}/chef-client -c \"#{path_to('config/client.rb')}\" -o x::constant_definition arbitrary.rb", :cwd => path_to(''))
+        result = shell_out("ruby #{chef_dir}/chef-client -c \"#{path_to('config/client.rb')}\" -o x::constant_definition arbitrary.rb", :cwd => path_to(''))
         result.error!
 
         IO.read(path_to('tempfile.txt')).should == '1'
