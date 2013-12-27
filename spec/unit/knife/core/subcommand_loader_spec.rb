@@ -47,7 +47,7 @@ describe Chef::Knife::SubcommandLoader do
     $LOAD_PATH.should_receive(:map).and_return([])
     if Gem::Specification.respond_to? :latest_specs
       Gem::Specification.should_receive(:latest_specs).with(true).and_return(gems)
-      gems[0].should_receive(:matches_for_glob).with(/chef\/knife\/\*\.rb{(.*),\.rb,(.*)}/).and_return(gem_files)
+      gems[0].should_receive(:matches_for_glob).with(/chef\/knife\/\*\.rb\{(.*),\.rb,(.*)\}/).and_return(gem_files)
     else
       Gem.source_index.should_receive(:latest_specs).with(true).and_return(gems)
       gems[0].should_receive(:require_paths).twice.and_return(['lib'])
@@ -89,7 +89,11 @@ describe Chef::Knife::SubcommandLoader do
       end
 
       it "searches rubygems for plugins" do
-        Gem::Specification.should_receive(:latest_specs).and_call_original
+        if Gem::Specification.respond_to?(:latest_specs)
+          Gem::Specification.should_receive(:latest_specs).and_call_original
+        else
+          Gem.source_index.should_receive(:latest_specs).and_call_original
+        end
         @loader.subcommand_files.each do |require_path|
           require_path.should match(/chef\/knife\/.*|plugins\/knife\/.*/)
         end
@@ -101,7 +105,11 @@ describe Chef::Knife::SubcommandLoader do
         end
 
         it "searches rubygems for plugins" do
-          Gem::Specification.should_receive(:latest_specs).and_call_original
+          if Gem::Specification.respond_to?(:latest_specs)
+            Gem::Specification.should_receive(:latest_specs).and_call_original
+          else
+            Gem.source_index.should_receive(:latest_specs).and_call_original
+          end
           @loader.subcommand_files.each do |require_path|
             require_path.should match(/chef\/knife\/.*|plugins\/knife\/.*/)
           end
