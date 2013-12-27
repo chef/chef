@@ -84,7 +84,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     # last line executed -- in this case, we return the status of the
     # second to last line. This happens because Powershell gives no
     # way for us to determine whether the last operation was a cmdlet
-    # or Windows process. Because the latter gives more specified
+    # or Windows process. Because the latter gives more specific
     # errors than 0 or 1, we return that instead, which is acceptable
     # since callers can test for nonzero rather than testing for 1.
     it "returns 1 if the last command was a cmdlet that failed and was preceded by an unsuccessfully executed non-cmdlet Windows binary" do
