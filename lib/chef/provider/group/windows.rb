@@ -59,9 +59,8 @@ class Chef
           if @new_resource.append
             members_to_be_added = [ ]
             @new_resource.members.each do |member|
-              member = "#{ENV['COMPUTERNAME']}\\#{member}" if ! member.include?("\\")
-              member_sid = Chef::ReservedNames::Win32::Security.lookup_account_name(member)[1]
-              members_to_be_added << member if !@current_resource.members.include?(member_sid.to_s)
+              member_sid = local_group_name_to_sid(member)
+              members_to_be_added << member if !@current_resource.members.include?(member_sid)
             end
 
             # local_add_members will raise ERROR_MEMBER_IN_ALIAS if a
@@ -70,7 +69,8 @@ class Chef
 
             members_to_be_removed = [ ]
             @new_resource.excluded_members.each do |member|
-              members_to_be_removed << member if @current_resource.members.include?(member)
+              member_sid = local_group_name_to_sid(member)
+              members_to_be_removed << member if @current_resource.members.include?(member_sid)
             end
             @net_group.local_delete_members(members_to_be_removed) unless members_to_be_removed.empty?
           else
@@ -80,6 +80,16 @@ class Chef
 
         def remove_group
           @net_group.local_delete
+        end
+
+        def local_group_name_to_sid(group_name)
+          if ! group_name.include?("\\")
+            locally_qualified_name = "#{ENV['COMPUTERNAME']}\\#{group_name}"
+          else
+            locally_qualified_name = group_name
+          end
+
+          Chef::ReservedNames::Win32::Security.lookup_account_name(locally_qualified_name)[1].to_s
         end
 
       end
