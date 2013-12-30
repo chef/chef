@@ -185,6 +185,21 @@ describe Chef::Knife::CookbookUpload do
         @stderr.string.should include('being uploaded and cannot be found on the server.')
         @stderr.string.should include("The missing cookbook(s) are: 'dependency' version '>= 0.0.0', 'dependency2' version '>= 0.0.0'")
       end
+
+      it 'should sort cookbook dependencies and output a message for a multiple missing dependencies in sorted order' do
+        @cookbook_dependency2 = Chef::CookbookVersion.new('dependency2')
+        @cookbook.metadata.depends("a_dependency")
+        @cookbook_loader.stub!(:[])  do |ckbk|
+          { "test_cookbook" =>  @cookbook,
+            "dependency" => @cookbook_dependency,
+            "a_dependency" => @cookbook_dependency2}[ckbk]
+        end
+        @knife.stub!(:cookbook_names).and_return(["a_dependency", "dependency", "test_cookbook"])
+        expect {@knife.run}.to raise_error(SystemExit)
+        @stderr.string.should include('Cookbook test_cookbook depends on cookbooks which are not currently')
+        @stderr.string.should include('being uploaded and cannot be found on the server.')
+        @stderr.string.should include("The missing cookbook(s) are: 'a_dependency' version '>= 0.0.0', 'dependency' version '>= 0.0.0'")
+      end
     end
 
     it "should freeze the version of the cookbooks if --freeze is specified" do
