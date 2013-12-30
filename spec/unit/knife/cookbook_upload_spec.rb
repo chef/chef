@@ -183,7 +183,9 @@ describe Chef::Knife::CookbookUpload do
         expect {@knife.run}.to raise_error(SystemExit)
         @stderr.string.should include('Cookbook test_cookbook depends on cookbooks which are not currently')
         @stderr.string.should include('being uploaded and cannot be found on the server.')
-        @stderr.string.should include("The missing cookbook(s) are: 'dependency' version '>= 0.0.0', 'dependency2' version '>= 0.0.0'")
+        @stderr.string.should include("The missing cookbook(s) are:")
+        @stderr.string.should include("'dependency' version '>= 0.0.0'")
+        @stderr.string.should include("'dependency2' version '>= 0.0.0'")
       end
     end
 
