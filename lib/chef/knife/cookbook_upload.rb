@@ -264,8 +264,7 @@ WARNING
         end
 
         unless missing_dependencies.empty?
-          sorted_missing_dependencies = Hash[missing_dependencies.sort]
-          missing_cookbook_names = sorted_missing_dependencies.map { |cookbook_name, version|  "'#{cookbook_name}' version '#{version}'"}
+          missing_cookbook_names = missing_dependencies.map { |cookbook_name, version|  "'#{cookbook_name}' version '#{version}'"}
           ui.error "Cookbook #{cookbook.name} depends on cookbooks which are not currently"
           ui.error "being uploaded and cannot be found on the server."
           ui.error "The missing cookbook(s) are: #{missing_cookbook_names.join(', ')}"
