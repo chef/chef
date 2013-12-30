@@ -5,6 +5,19 @@ describe "chef-client" do
   extend IntegrationSupport
   include Chef::Mixin::ShellOut
 
+  let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
+
+  # Invoke `chef-client` as `ruby PATH/TO/chef-client`. This ensures the
+  # following constraints are satisfied:
+  # * Windows: windows can only run batch scripts as bare executables. Rubygems
+  # creates batch wrappers for installed gems, but we don't have batch wrappers
+  # in the source tree.
+  # * Other `chef-client` in PATH: A common case is running the tests on a
+  # machine that has omnibus chef installed. In that case we need to ensure
+  # we're running `chef-client` from the source tree and not the external one.
+  # cf. CHEF-4914
+  let(:chef_client) { "ruby #{chef_dir}/chef-client" }
+
   when_the_repository "has a cookbook with a no-op recipe" do
     file 'cookbooks/x/recipes/default.rb', ''
 
@@ -14,27 +27,23 @@ local_mode true
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
-      result = shell_out("ruby #{chef_dir}/chef-client -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
       result.error!
     end
 
     context 'and no config file' do
       it 'should complete with success when cwd is just above cookbooks and paths are not specified' do
-        chef_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "bin"))
-        result = shell_out("ruby #{chef_dir}/chef-client -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to(''))
+        result = shell_out("#{chef_client} -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to(''))
         result.error!
       end
 
       it 'should complete with success when cwd is below cookbooks and paths are not specified' do
-        chef_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "bin"))
-        result = shell_out("ruby #{chef_dir}/chef-client -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to('cookbooks/x'))
+        result = shell_out("#{chef_client} -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to('cookbooks/x'))
         result.error!
       end
 
       it 'should fail when cwd is below high above and paths are not specified' do
-        chef_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "bin"))
-        result = shell_out("ruby #{chef_dir}/chef-client -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => File.expand_path('..', path_to('')))
+        result = shell_out("#{chef_client} -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => File.expand_path('..', path_to('')))
         result.exitstatus.should == 1
       end
     end
@@ -43,15 +52,13 @@ EOM
       file '.chef/knife.rb', 'xxx.xxx'
 
       it 'should load .chef/knife.rb when -z is specified' do
-        chef_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "bin"))
-        result = shell_out("ruby #{chef_dir}/chef-client -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to(''))
+        result = shell_out("#{chef_client} -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to(''))
         # FATAL: Configuration error NoMethodError: undefined method `xxx' for nil:NilClass
         result.stdout.should include("xxx")
       end
 
       it 'fails to load .chef/knife.rb when -z is specified and --config-file-jail does not include the .chef/knife.rb' do
-        chef_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "bin"))
-        result = shell_out("ruby #{chef_dir}/chef-client -z -o 'x::default' --config-file-jail \"#{path_to('roles')}\"", :cwd => path_to(''))
+        result = shell_out("#{chef_client} -z -o 'x::default' --config-file-jail \"#{path_to('roles')}\"", :cwd => path_to(''))
         result.error!
       end
     end
@@ -62,8 +69,7 @@ local_mode true
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
-      result = shell_out("chef-client -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
       result.error!
     end
 
@@ -105,8 +111,7 @@ client_key #{path_to('mykey.pem').inspect}
 cookbook_path #{path_to('cookbooks').inspect}
 EOM
 
-        chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
-        result = shell_out("chef-client -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
         result.error!
       end
 
@@ -129,8 +134,7 @@ file #{path_to('tempfile2.txt').inspect} do
 end
 EOM
 
-        chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
-        result = shell_out("chef-client -c \"#{path_to('config/client.rb')}\" #{path_to('arbitrary.rb')} #{path_to('arbitrary2.rb')}", :cwd => chef_dir)
+        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" #{path_to('arbitrary.rb')} #{path_to('arbitrary2.rb')}", :cwd => chef_dir)
         result.error!
 
         IO.read(path_to('tempfile.txt')).should == '1'
@@ -150,8 +154,7 @@ file #{path_to('tempfile.txt').inspect} do
 end
 EOM
 
-        chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
-        result = shell_out("ruby #{chef_dir}/chef-client -c \"#{path_to('config/client.rb')}\" arbitrary.rb", :cwd => path_to(''))
+        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" arbitrary.rb", :cwd => path_to(''))
         result.error!
 
         IO.read(path_to('tempfile.txt')).should == '1'
@@ -175,8 +178,7 @@ file #{path_to('tempfile.txt').inspect} do
 end
 EOM
 
-        chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
-        result = shell_out("ruby #{chef_dir}/chef-client -c \"#{path_to('config/client.rb')}\" -o x::constant_definition arbitrary.rb", :cwd => path_to(''))
+        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o x::constant_definition arbitrary.rb", :cwd => path_to(''))
         result.error!
 
         IO.read(path_to('tempfile.txt')).should == '1'
@@ -190,8 +192,7 @@ chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
-      result = shell_out("chef-client -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", :cwd => chef_dir)
       result.error!
     end
 
@@ -201,8 +202,7 @@ chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
-      result = shell_out("chef-client -c \"#{path_to('config/client.rb')}\" -o 'x::default' --local-mode", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --local-mode", :cwd => chef_dir)
       result.error!
     end
 
@@ -212,8 +212,7 @@ chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
-      result = shell_out("chef-client -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", :cwd => chef_dir)
       result.error!
     end
   end
