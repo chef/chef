@@ -49,7 +49,13 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
 
     @version = Chef::ReservedNames::Win32::Version.new
   end
-
+  
+  context "Win32 version object" do
+    it "should contains legit method name" do
+      @version.methods.any? { |method_name| method_name.to_s.include?(".") }.should be_false
+    end
+  end
+  
   context "Windows Operating System version" do
     it "should match the version from WMI" do
       @current_os_version.should include(@version.marketing_name)
