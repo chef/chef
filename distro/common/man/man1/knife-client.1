@@ -31,7 +31,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" Man page generated from reStructuredText.
 .
 .sp
-When a node runs the chef\-client for the first time, it generally does not yet have an API client identity, and so it cannot make authenticated requests to the server. This is where the validation client\-\-\-known as the chef\-validator\-\-\-comes in. When the chef\-client runs, it checks if it has a client key. If the client key does not exist, it then attempts to borrow the identity of the chef\-validator to register itself with the server. In order to register with the server, the private key for the chef\-validator needs to be copied to the host and placed in /etc/chef/validation.pem.
+When a node runs the chef\-client for the first time, it generally does not yet have an API client identity, and so it cannot make authenticated requests to the server. This is where the validation client\-\-\-known as the chef\-validator\-\-\-comes in. When the chef\-client runs, it checks if it has a client key. If the client key does not exist, it then attempts to borrow the identity of the chef\-validator to register itself with the server. In order to register with the server, the private key for the chef\-validator needs to be copied to the host and placed in \fB/etc/chef/validation.pem\fP.
 .sp
 Once the chef\-client has registered itself with the server, it no longer uses the validation client for anything. It is recommended that you delete the private key for the chef\-validator from the host after the host has registered or use the \fBdelete_validation\fP recipe that can be found in the \fBchef\-client\fP cookbook (\fI\%https://github.com/opscode-cookbooks/chef-client\fP).
 .sp
@@ -46,14 +46,14 @@ $ knife client [ARGUMENT] (options)
 .fi
 .SH COMMON OPTIONS
 .sp
-The following options can be run with all Knife sub\-commands and plug\-ins:
+The following options may be used with any of the arguments available to the \fBknife client\fP subcommand:
 .INDENT 0.0
 .TP
-.B \fB\-c CONFIG\fP, \fB\-\-config CONFIG\fP
-The configuration file to use.
+.B \fB\-\-chef\-zero\-port PORT\fP
+The port on which chef\-zero will listen.
 .TP
-.B \fB\-\-color\fP
-Indicates that colored output will be used.
+.B \fB\-c CONFIG_FILE\fP, \fB\-\-config CONFIG_FILE\fP
+The configuration file to use.
 .TP
 .B \fB\-d\fP, \fB\-\-disable\-editing\fP
 Indicates that $EDITOR will not be opened; data will be accepted as\-is.
@@ -67,9 +67,6 @@ The $EDITOR that is used for all interactive commands.
 .B \fB\-E ENVIRONMENT\fP, \fB\-\-environment ENVIRONMENT\fP
 The name of the environment. When this option is added to a command, the command will run only against the named environment.
 .TP
-.B \fB\-f FILE_NAME\fP, \fB\-\-file FILE_NAME\fP
-Indicates that the private key will be saved to a specified file name.
-.TP
 .B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
 The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
 .TP
@@ -79,11 +76,8 @@ Shows help for the command.
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
 The private key that Knife will use to sign requests made by the API client to the server.
 .TP
-.B \fB\-\-no\-color\fP
-Indicates that color will not be used in the output.
-.TP
-.B \fB\-p PASSWORD\fP, \fB\-\-password PASSWORD\fP
-The user password.
+.B \fB\-\-[no\-]color\fP
+Indicates whether colored output will be used.
 .TP
 .B \fB\-\-print\-after\fP
 Indicates that data will be shown after a destructive operation.
@@ -94,14 +88,17 @@ The URL for the server.
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
 The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
 .TP
-.B \fB\-v\fP, \fB\-\-version\fP
-The version of the chef\-client.
-.TP
 .B \fB\-V\fP, \fB\-\-verbose\fP
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .TP
+.B \fB\-v\fP, \fB\-\-version\fP
+The version of the chef\-client.
+.TP
 .B \fB\-y\fP, \fB\-\-yes\fP
 Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
+.TP
+.B \fB\-z\fP, \fB\-\-local\-mode\fP
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
 .UNINDENT
 .SH BULK DELETE
 .sp
@@ -125,9 +122,9 @@ This command does not have any specific options.
 The \fBcreate\fP argument is used to create a new API client. This process will generate an RSA key pair for the named API client. The public key will be stored on the server and the private key will be displayed on \fBSTDOUT\fP or written to a named file.
 .INDENT 0.0
 .IP \(bu 2
-For the chef\-client, the private key should be copied to the system as /etc/chef/client.pem.
+For the chef\-client, the private key should be copied to the system as \fB/etc/chef/client.pem\fP.
 .IP \(bu 2
-For Knife, the private key is typically copied to ~/.chef/client_name.pem and referenced in the knife.rb configuration file.
+For Knife, the private key is typically copied to \fB~/.chef/client_name.pem\fP and referenced in the knife.rb configuration file.
 .UNINDENT
 .sp
 \fBSyntax\fP
@@ -146,7 +143,7 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fB\-a\fP, \fB\-\-admin\fP
-Indicates that a client will be created as an admin client. This is required when users of the open source server need to access the Chef Server API as an administrator. This option only works when used with the open source server and will have no effect when used with Hosted Chef or Private Chef.
+Indicates that a client will be created as an admin client. This is required when users of the open source server need to access the Chef Server API as an administrator. This option only works when used with the open source server and will have no effect when used with Enterprise Chef.
 .UNINDENT
 .sp
 \fBExamples\fP
@@ -159,7 +156,7 @@ $ knife client create exampleorg \-a \-f "/etc/chef/client.pem"
 .ft P
 .fi
 .sp
-When running the \fBcreate\fP argument on Hosted Chef or Private Chef, be sure to omit the \fB\-a\fP option:
+When running the \fBcreate\fP argument on Enterprise Chef, be sure to omit the \fB\-a\fP option:
 .sp
 .nf
 .ft C
@@ -363,6 +360,6 @@ $ knife role show devops \-F json
 .sp
 Other formats available include \fBtext\fP, \fByaml\fP, and \fBpp\fP.
 .SH AUTHOR
-Opscode
+Chef
 .\" Generated by docutils manpage writer.
 .

@@ -33,66 +33,6 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .sp
 The \fBknife diff\fP subcommand is used to compare the differences between files and directories on the server and in the chef\-repo. For example, to compare files on the server prior to an uploading or downloading files using the \fBknife download\fP and \fBknife upload\fP subcommands, or to ensure that certain files in multiple production environments are the same. This subcommand is similar to the \fBgit diff\fP command that can be used to diff what is in the chef\-repo with what is synced to a git repository.
 .sp
-\fBCommon Options\fP
-.sp
-The following options can be run with all Knife sub\-commands and plug\-ins:
-.INDENT 0.0
-.TP
-.B \fB\-c CONFIG\fP, \fB\-\-config CONFIG\fP
-The configuration file to use.
-.TP
-.B \fB\-\-color\fP
-Indicates that colored output will be used.
-.TP
-.B \fB\-d\fP, \fB\-\-disable\-editing\fP
-Indicates that $EDITOR will not be opened; data will be accepted as\-is.
-.TP
-.B \fB\-\-defaults\fP
-Indicates that Knife will use the default value, instead of asking a user to provide one.
-.TP
-.B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
-The $EDITOR that is used for all interactive commands.
-.TP
-.B \fB\-E ENVIRONMENT\fP, \fB\-\-environment ENVIRONMENT\fP
-The name of the environment. When this option is added to a command, the command will run only against the named environment.
-.TP
-.B \fB\-f FILE_NAME\fP, \fB\-\-file FILE_NAME\fP
-Indicates that the private key will be saved to a specified file name.
-.TP
-.B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
-The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
-.TP
-.B \fB\-h\fP, \fB\-\-help\fP
-Shows help for the command.
-.TP
-.B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the server.
-.TP
-.B \fB\-\-no\-color\fP
-Indicates that color will not be used in the output.
-.TP
-.B \fB\-p PASSWORD\fP, \fB\-\-password PASSWORD\fP
-The user password.
-.TP
-.B \fB\-\-print\-after\fP
-Indicates that data will be shown after a destructive operation.
-.TP
-.B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
-The URL for the server.
-.TP
-.B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
-.TP
-.B \fB\-v\fP, \fB\-\-version\fP
-The version of the chef\-client.
-.TP
-.B \fB\-V\fP, \fB\-\-verbose\fP
-Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
-.TP
-.B \fB\-y\fP, \fB\-\-yes\fP
-Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
-.UNINDENT
-.sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
@@ -108,8 +48,17 @@ $ knife diff [PATTERN...] (options)
 This subcommand has the following options:
 .INDENT 0.0
 .TP
+.B \fB\-c CONFIG_FILE\fP, \fB\-\-config CONFIG_FILE\fP
+The configuration file to use.
+.TP
 .B \fB\-\-chef\-repo\-path PATH\fP
 The path to the chef\-repo. This setting will override the default path to the chef\-repo. Default: same as specified by \fBchef_repo_path\fP in config.rb.
+.TP
+.B \fB\-\-chef\-zero\-port PORT\fP
+The port on which chef\-zero will listen.
+.TP
+.B \fB\-\-[no\-]color\fP
+Indicates whether colored output will be used.
 .TP
 .B \fB\-\-cookbook\-version VERSION\fP
 The version of a cookbook to be downloaded.
@@ -117,8 +66,29 @@ The version of a cookbook to be downloaded.
 .B \fB\-\-concurrency\fP
 The number of allowed concurrent connections. Default: \fB10\fP.
 .TP
+.B \fB\-d\fP, \fB\-\-disable\-editing\fP
+Indicates that $EDITOR will not be opened; data will be accepted as\-is.
+.TP
+.B \fB\-\-defaults\fP
+Indicates that Knife will use the default value, instead of asking a user to provide one.
+.TP
 .B \fB\-\-diff\-filter=[(A|D|M|T)...[*]]\fP
 Indicates that files will be selected that have been added (\fBA\fP), deleted (\fBD\fP), modified (\fBM\fP), and/or have had their type changed (\fBT\fP). Any combination of filter characters may be used, including no filter characters. Use \fB*\fP to select all paths if a file matches other criteria in the comparison. Default value: \fBnil\fP.
+.TP
+.B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
+The $EDITOR that is used for all interactive commands.
+.TP
+.B \fB\-E ENVIRONMENT\fP, \fB\-\-environment ENVIRONMENT\fP
+The name of the environment. When this option is added to a command, the command will run only against the named environment.
+.TP
+.B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
+The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
+.TP
+.B \fB\-h\fP, \fB\-\-help\fP
+Shows help for the command.
+.TP
+.B \fB\-k KEY\fP, \fB\-\-key KEY\fP
+The private key that Knife will use to sign requests made by the API client to the server.
 .TP
 .B \fB\-\-name\-only\fP
 Indicates that only the names of modified files will be shown.
@@ -129,8 +99,29 @@ Indicates that only the names of files with a status of \fBAdded\fP, \fBDeleted\
 .B \fB\-\-no\-recurse\fP
 Use \fB\-\-no\-recurse\fP to disable listing a directory recursively. Default: \fB\-\-recurse\fP.
 .TP
+.B \fB\-\-print\-after\fP
+Indicates that data will be shown after a destructive operation.
+.TP
 .B \fB\-\-repo\-mode MODE\fP
 The layout of the local chef\-repo. Possible values: \fBstatic\fP, \fBeverything\fP, or \fBhosted_everything\fP. Use \fBstatic\fP for just roles, environments, cookbooks, and data bags. By default, \fBeverything\fP and \fBhosted_everything\fP are dynamically selected depending on the server type. Default: \fBeverything\fP / \fBhosted_everything\fP.
+.TP
+.B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
+The URL for the server.
+.TP
+.B \fB\-u USER\fP, \fB\-\-user USER\fP
+The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
+.TP
+.B \fB\-v\fP, \fB\-\-version\fP
+The version of the chef\-client.
+.TP
+.B \fB\-V\fP, \fB\-\-verbose\fP
+Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
+.TP
+.B \fB\-y\fP, \fB\-\-yes\fP
+Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
+.TP
+.B \fB\-z\fP, \fB\-\-local\-mode\fP
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
 .UNINDENT
 .sp
 \fBknife.rb File Settings\fP
@@ -210,6 +201,6 @@ node\-lb/Rakefile
 .ft P
 .fi
 .SH AUTHOR
-Opscode
+Chef
 .\" Generated by docutils manpage writer.
 .

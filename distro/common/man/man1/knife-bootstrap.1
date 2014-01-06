@@ -38,66 +38,6 @@ The \fBknife bootstrap\fP subcommand is used run a bootstrap operation that inst
 To bootstrap the chef\-client on Microsoft Windows machines, the \fI\%knife-windows\fP plugins is required, which includes the necessary bootstrap scripts that are used to do the actual installation.
 .RE
 .sp
-\fBCommon Options\fP
-.sp
-The following options can be run with all Knife sub\-commands and plug\-ins:
-.INDENT 0.0
-.TP
-.B \fB\-c CONFIG\fP, \fB\-\-config CONFIG\fP
-The configuration file to use.
-.TP
-.B \fB\-\-color\fP
-Indicates that colored output will be used.
-.TP
-.B \fB\-d\fP, \fB\-\-disable\-editing\fP
-Indicates that $EDITOR will not be opened; data will be accepted as\-is.
-.TP
-.B \fB\-\-defaults\fP
-Indicates that Knife will use the default value, instead of asking a user to provide one.
-.TP
-.B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
-The $EDITOR that is used for all interactive commands.
-.TP
-.B \fB\-E ENVIRONMENT\fP, \fB\-\-environment ENVIRONMENT\fP
-The name of the environment. When this option is added to a command, the command will run only against the named environment.
-.TP
-.B \fB\-f FILE_NAME\fP, \fB\-\-file FILE_NAME\fP
-Indicates that the private key will be saved to a specified file name.
-.TP
-.B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
-The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
-.TP
-.B \fB\-h\fP, \fB\-\-help\fP
-Shows help for the command.
-.TP
-.B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the server.
-.TP
-.B \fB\-\-no\-color\fP
-Indicates that color will not be used in the output.
-.TP
-.B \fB\-p PASSWORD\fP, \fB\-\-password PASSWORD\fP
-The user password.
-.TP
-.B \fB\-\-print\-after\fP
-Indicates that data will be shown after a destructive operation.
-.TP
-.B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
-The URL for the server.
-.TP
-.B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
-.TP
-.B \fB\-v\fP, \fB\-\-version\fP
-The version of the chef\-client.
-.TP
-.B \fB\-V\fP, \fB\-\-verbose\fP
-Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
-.TP
-.B \fB\-y\fP, \fB\-\-yes\fP
-Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
-.UNINDENT
-.sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
@@ -116,20 +56,53 @@ This subcommand has the following options:
 .B \fB\-A\fP, \fB\-\-forward\-agent\fP
 Indicates that SSH agent forwarding is enabled.
 .TP
+.B \fB\-\-bootstrap\-no\-proxy NO_PROXY_URL_or_IP\fP
+A URL or IP address that specifies a location that should not be proxied. Note: This option is used internally by Chef to help verify bootstrap operations during testing and should never be used during an actual bootstrap operation.
+.TP
 .B \fB\-\-bootstrap\-proxy PROXY_URL\fP
 The proxy server for the node that is the target of a bootstrap operation.
 .TP
 .B \fB\-\-bootstrap\-version VERSION\fP
 The version of the chef\-client to install.
 .TP
+.B \fB\-c CONFIG_FILE\fP, \fB\-\-config CONFIG_FILE\fP
+The configuration file to use.
+.TP
+.B \fB\-\-chef\-zero\-port PORT\fP
+The port on which chef\-zero will listen.
+.TP
+.B \fB\-\-[no\-]color\fP
+Indicates whether colored output will be used.
+.TP
 .B \fB\-d DISTRO\fP, \fB\-\-distro DISTRO\fP
 The template file to be used during a bootstrap operation. The following distributions are supported: \fBchef\-full\fP (the default bootstrap), \fBcentos5\-gems\fP, \fBfedora13\-gems\fP, \fBubuntu10.04\-gems\fP, \fBubuntu10.04\-apt\fP, \fBubuntu12.04\-gems\fP, and the name of a custom bootstrap template file. When this option is used, Knife will search for the template file in the following order: the \fBbootstrap/\fP folder in the current working directory, the \fBbootstrap/\fP folder in the chef\-repo, the \fBbootstrap/\fP folder in the \fB~/.chef/\fP directory, or a default bootstrap file. Do not use the \fB\-\-template\-file\fP option when \fB\-\-distro\fP is specified.
+.TP
+.B \fB\-\-defaults\fP
+Indicates that Knife will use the default value, instead of asking a user to provide one.
+.TP
+.B \fB\-\-disable\-editing\fP
+Indicates that $EDITOR will not be opened; data will be accepted as\-is.
+.TP
+.B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
+The $EDITOR that is used for all interactive commands.
+.TP
+.B \fB\-E ENVIRONMENT\fP, \fB\-\-environment ENVIRONMENT\fP
+The name of the environment. When this option is added to a command, the command will run only against the named environment.
+.TP
+.B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
+The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
 .TP
 .B \fB\-G GATEWAY\fP, \fB\-\-ssh\-gateway GATEWAY\fP
 The SSH tunnel or gateway that is used to run a bootstrap action on a machine that is not accessible from the workstation.
 .TP
+.B \fB\-h\fP, \fB\-\-help\fP
+Shows help for the command.
+.TP
 .B \fB\-\-hint HINT_NAME[=HINT_FILE]\fP
 An Ohai hint to be set on the target of the bootstrap. The hint is contained in a file and is formatted as JSON: \fB{"attribute":"value","attribute":"value"...}\fP. \fBHINT_NAME\fP is the name of the hint and \fBHINT_FILE\fP is the name of the hint file located at \fB/etc/chef/ohai/hints/HINT_FILE.json\fP. Use multiple \fB\-\-hint\fP options in the command to specify multiple hints.
+.TP
+.B \fB\-\-[no\-]host\-key\-verify\fP
+Use \fB\-\-no\-host\-key\-verify\fP to disable host key verification. Default setting: \fB\-\-host\-key\-verify\fP.
 .TP
 .B \fB\-i IDENTITY_FILE\fP, \fB\-\-identity\-file IDENTITY_FILE\fP
 The SSH identity file used for authentication. Key\-based authentication is recommended.
@@ -137,11 +110,11 @@ The SSH identity file used for authentication. Key\-based authentication is reco
 .B \fB\-j JSON_ATTRIBS\fP, \fB\-\-json\-attributes JSON_ATTRIBS\fP
 A JSON string that is added to the first run of a chef\-client.
 .TP
+.B \fB\-k KEY\fP, \fB\-\-key KEY\fP
+The private key that Knife will use to sign requests made by the API client to the server.
+.TP
 .B \fB\-N NAME\fP, \fB\-\-node\-name NAME\fP
 The name of the node.
-.TP
-.B \fB\-\-[no\-]host\-key\-verify\fP
-Use \fB\-\-no\-host\-key\-verify\fP to disable host key verification. Default setting: \fB\-\-host\-key\-verify\fP.
 .TP
 .B \fB\-p PORT\fP, \fB\-\-ssh\-port PORT\fP
 The SSH port.
@@ -152,8 +125,14 @@ The SSH password. This can be used to pass the password directly on the command 
 .B \fB\-\-prerelease\fP
 Indicates that pre\-release gems should be installed.
 .TP
+.B \fB\-\-print\-after\fP
+Indicates that data will be shown after a destructive operation.
+.TP
 .B \fB\-r RUN_LIST\fP, \fB\-\-run\-list RUN_LIST\fP
 A comma\-separated list of roles and/or recipes to be applied.
+.TP
+.B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
+The URL for the server.
 .TP
 .B \fB\-\-secret SECRET\fP
 The encryption key that is used for values contained within a data bag.
@@ -167,11 +146,26 @@ Indicates that a bootstrap operation should be executed using sudo.
 .B \fB\-\-template\-file TEMPLATE\fP
 The path to a template file that will be used during a bootstrap operation. Do not use the \fB\-\-distro\fP option when \fB\-\-template\-file\fP is specified.
 .TP
+.B \fB\-u USER\fP, \fB\-\-user USER\fP
+The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
+.TP
 .B \fB\-\-use\-sudo\-password\fP
 Indicates that a bootstrap operation is done using sudo, with the password specified by the \fB\-P\fP (or \fB\-\-ssh\-password\fP) option.
 .TP
+.B \fB\-v\fP, \fB\-\-version\fP
+The version of the chef\-client.
+.TP
+.B \fB\-V\fP, \fB\-\-verbose\fP
+Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
+.TP
 .B \fB\-x USERNAME\fP, \fB\-\-ssh\-user USERNAME\fP
 The SSH user name.
+.TP
+.B \fB\-y\fP, \fB\-\-yes\fP
+Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
+.TP
+.B \fB\-z\fP, \fB\-\-local\-mode\fP
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
 .UNINDENT
 .sp
 \fBExamples\fP
@@ -192,6 +186,6 @@ $ knife bootstrap 192.168.1.1 \-x username \-i ~/.ssh/id_rsa \-\-sudo
 .ft P
 .fi
 .SH AUTHOR
-Opscode
+Chef
 .\" Generated by docutils manpage writer.
 .
