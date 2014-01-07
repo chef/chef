@@ -59,8 +59,7 @@ class Chef
           if @new_resource.append
             members_to_be_added = [ ]
             @new_resource.members.each do |member|
-              member_sid = local_group_name_to_sid(member)
-              members_to_be_added << member if !@current_resource.members.include?(member_sid)
+              members_to_be_added << member if ! find_current_group_member(member)
             end
 
             # local_add_members will raise ERROR_MEMBER_IN_ALIAS if a
@@ -70,12 +69,17 @@ class Chef
             members_to_be_removed = [ ]
             @new_resource.excluded_members.each do |member|
               member_sid = local_group_name_to_sid(member)
-              members_to_be_removed << member if @current_resource.members.include?(member_sid)
+              members_to_be_removed << member if find_current_group_member(member)
             end
             @net_group.local_delete_members(members_to_be_removed) unless members_to_be_removed.empty?
           else
             @net_group.local_set_members(@new_resource.members)
           end
+        end
+
+        def find_current_group_member(member)
+          member_sid = local_group_name_to_sid(member)
+          @current_resource.members.include?(member_sid)
         end
 
         def remove_group
