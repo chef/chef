@@ -53,6 +53,9 @@ class Chef
         "Windows 2000" => {:major => 5, :minor => 0}
       }
 
+      attr_reader :major_version, :minor_version, :build_number, :sp_major_version, :sp_minor_version
+      attr_reader :product_type, :suite_mask, :sku
+
       def initialize
         @major_version, @minor_version, @build_number = get_version
         ver_info = get_version_ex
