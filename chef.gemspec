@@ -41,6 +41,9 @@ Gem::Specification.new do |s|
 
   s.add_dependency "pry", "~> 0.9"
 
+  # CHEF-4902
+  s.add_dependency "ruby-augeas", "~> 0.5"
+
   %w(rdoc sdoc rake rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
   %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 2.13.0" }
 
