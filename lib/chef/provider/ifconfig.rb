@@ -172,23 +172,16 @@ class Chef
         return unless can_generate_config?
         b = binding
         template = ::ERB.new(@config_template)
-        converge_by ("generate configuration file : #{@config_path}") do
-          network_file = ::File.new(@config_path, "w")
-          network_file.puts(template.result(b))
-          network_file.close
+        file @config_path do
+          content template.result(b)
         end
-        Chef::Log.info("#{@new_resource} created configuration file")
       end
 
       def delete_config
         return unless can_generate_config?
-        require 'fileutils'
-        if ::File.exist?(@config_path)
-          converge_by ("delete the #{@config_path}") do
-            FileUtils.rm_f(@config_path, :verbose => false)
-          end
+        file @config_path do
+          action :delete
         end
-        Chef::Log.info("#{@new_resource} deleted configuration file")
       end
 
       private
