@@ -183,7 +183,7 @@ class Chef::Provider::Route < Chef::Provider
         conf.each do |k, v|
           network_file_name = "/etc/sysconfig/network-scripts/route-#{k}"
           begin
-            run_context.resouce_collection.lookup("file[#{network_file_name}]")
+            run_context.resource_collection.lookup("file[#{network_file_name}]")
           rescue Chef::Exceptions::ResourceNotFound
             file network_file_name do
               content conf[k]
