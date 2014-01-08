@@ -247,7 +247,7 @@ class Chef
                       else
                         @new_resource.revision + '*'
                       end
-        command = git("ls-remote \"#{@new_resource.repository}\"", rev_pattern)
+        command = git("ls-remote \"#{@new_resource.repository}\" \"#{rev_pattern}\"")
         @resolved_reference = shell_out!(command, run_options).stdout
         ref_lines = @resolved_reference.split("\n")
         refs = ref_lines.map { |line| line.split("\t") }
