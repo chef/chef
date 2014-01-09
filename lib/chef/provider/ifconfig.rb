@@ -19,6 +19,7 @@
 require 'chef/log'
 require 'chef/mixin/command'
 require 'chef/provider'
+require 'chef/resource/file'
 require 'chef/exceptions'
 require 'erb'
 
@@ -168,20 +169,27 @@ class Chef
         ! @config_template.nil? and ! @config_path.nil?
       end
 
+      def resource_for_config(path)
+        config = Chef::Resource::File.new(path, run_context)
+        config.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
+        config
+      end
+
       def generate_config
         return unless can_generate_config?
         b = binding
         template = ::ERB.new(@config_template)
-        file @config_path do
-          content template.result(b)
-        end
+        config = resource_for_config(@config_path)
+        config.content template.result(b)
+        config.run_action(:create)
+        @new_resource.updated_by_last_action(true) if config.updated?
       end
 
       def delete_config
         return unless can_generate_config?
-        file @config_path do
-          action :delete
-        end
+        config = resource_for_config(@config_path)
+        config.run_action(:delete)
+        @new_resource.updated_by_last_action(true) if config.updated?
       end
 
       private
