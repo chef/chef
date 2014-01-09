@@ -68,6 +68,15 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     sid.nil? ? nil : sid[1].to_s
   end
 
+  def windows_domain_user?(user_name)
+    domain, user = user_name.split('\\')
+
+    if user && domain != '.'
+      computer_name = ENV['computername']
+      domain.downcase != computer_name.downcase
+    end
+  end
+
   def user(username)
     usr = Chef::Resource::User.new("#{username}", run_context)
     if ohai[:platform_family] == "windows"
@@ -77,12 +86,12 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
   end
 
   def create_user(username)
-    user(username).run_action(:create)
+    user(username).run_action(:create) if ! windows_domain_user?(username)
     # TODO: User shouldn't exist
   end
 
   def remove_user(username)
-    user(username).run_action(:remove)
+    user(username).run_action(:remove) if ! windows_domain_user?(username)
     # TODO: User shouldn't exist
   end
 
@@ -119,24 +128,24 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     end
 
     describe "when append is not set" do
-      let(:included_members) { ["spec-Eric"] }
+      let(:included_members) { [spec_members[1]] }
 
       before do
-        create_user("spec-Eric")
-        create_user("spec-Gordon")
-        add_members_to_group(["spec-Gordon"])
+        create_user(spec_members[1])
+        create_user(spec_members[0])
+        add_members_to_group([spec_members[0]])
       end
 
       after do
-        remove_user("spec-Eric")
-        remove_user("spec-Gordon")
+        remove_user(spec_members[1])
+        remove_user(spec_members[0])
       end
 
       it "should remove the existing users and add the new users to the group" do
         group_resource.run_action(tested_action)
 
-        user_exist_in_group?("spec-Eric").should == true
-        user_exist_in_group?("spec-Gordon").should == false
+        user_exist_in_group?(spec_members[1]).should == true
+        user_exist_in_group?(spec_members[0]).should == false
       end
     end
 
@@ -171,7 +180,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
 
         describe "when group contains some users" do
           before(:each) do
-            add_members_to_group([ "spec-Gordon", "spec-Anthony" ])
+            add_members_to_group([ spec_members[0], spec_members[2] ])
           end
 
           it "should add the included users and remove excluded users" do
@@ -199,6 +208,42 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
             lambda { @grp_resource.run_action(tested_action) }.should raise_error
           end
         end
+      end
+    end
+  end
+
+  shared_examples_for "an expected invalid domain error case" do
+    let(:invalid_domain_user_name) { "no space\\administrator" }
+    let(:nonexistent_domain_user_name) { "xxfakedom\\administrator" }
+    before(:each) do
+      group_resource.members []
+      group_resource.excluded_members []
+      group_resource.append(true)
+      group_resource.run_action(:create)
+      group_should_exist(group_name)
+    end
+
+    describe "when updating membership" do
+      it "raises an error for a non well-formed domain name" do
+        group_resource.members [invalid_domain_user_name]
+        lambda { group_resource.run_action(tested_action) }.should raise_error Chef::Exceptions::Win32APIError
+      end
+
+      it "raises an error for a nonexistent domain" do
+        group_resource.members [nonexistent_domain_user_name]
+        lambda { group_resource.run_action(tested_action) }.should raise_error Chef::Exceptions::Win32APIError
+      end
+    end
+
+    describe "when removing members" do
+      it "raises an error for a non well-formed domain name" do
+        group_resource.excluded_members [invalid_domain_user_name]
+        lambda { group_resource.run_action(tested_action) }.should raise_error Chef::Exceptions::Win32APIError
+      end
+
+      it "raises an error for a nonexistent domain" do
+        group_resource.excluded_members [nonexistent_domain_user_name]
+        lambda { group_resource.run_action(tested_action) }.should raise_error Chef::Exceptions::Win32APIError
       end
     end
   end
@@ -285,8 +330,9 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group modify action", :not_supported_on_solaris do
-    let(:included_members) { ["spec-Gordon", "spec-Eric"] }
-    let(:excluded_members) { ["spec-Anthony"] }
+    let(:spec_members){ ["spec-Gordon", "spec-Eric", "spec-Anthony"] }
+    let(:included_members) { [spec_members[0], spec_members[1]] }
+    let(:excluded_members) { [spec_members[2]] }
     let(:tested_action) { :modify }
 
     describe "when there is no group" do
@@ -298,11 +344,23 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     describe "when there is a group" do
       it_behaves_like "correct group management"
     end
+
+    describe "when running on Windows", :windows_only do
+      describe "when members are Active Directory domain identities", :windows_domain_joined_only do
+        let(:computer_domain) { ohai[:kernel]['cs_info']['domain'].split('.')[0] }
+        let(:spec_members){ ["#{computer_domain}\\Domain Admins", "#{computer_domain}\\Domain Users", "#{computer_domain}\\Domain Computers"] }
+
+        it_behaves_like "correct group management"
+      end
+    end
+
+    it_behaves_like "an expected invalid domain error case"
   end
 
   describe "group manage action", :not_supported_on_solaris do
-    let(:included_members) { ["spec-Gordon", "spec-Eric"] }
-    let(:excluded_members) { ["spec-Anthony"] }
+    let(:spec_members){ ["spec-Gordon", "spec-Eric", "spec-Anthony"] }
+    let(:included_members) { [spec_members[0], spec_members[1]] }
+    let(:excluded_members) { [spec_members[2]] }
     let(:tested_action) { :manage }
 
     describe "when there is no group" do
@@ -314,6 +372,17 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
 
     describe "when there is a group" do
       it_behaves_like "correct group management"
+    end
+
+    describe "running on windows", :windows_only do
+      describe "when members are Windows domain identities", :windows_domain_joined_only do
+        let(:computer_domain) { ohai[:kernel]['cs_info']['domain'].split('.')[0] }
+        let(:spec_members){ ["#{computer_domain}\\Domain Admins", "#{computer_domain}\\Domain Users", "#{computer_domain}\\Domain Computers"] }
+
+        it_behaves_like "correct group management"
+      end
+
+      it_behaves_like "an expected invalid domain error case"
     end
   end
 
