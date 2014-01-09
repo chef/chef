@@ -497,8 +497,8 @@ class Chef
 
       default :fatal_windows_admin_check, false
     else
-      default :user_valid_regex, [ /^([-a-zA-Z0-9_.]+[\\@]?[-a-zA-Z0-9_.]*)$/, /^\d+$/ ]
-      default :group_valid_regex, [ /^([-a-zA-Z0-9_.\\@^ ]+)$/, /^\d+$/ ]
+      default :user_valid_regex, [ /^[^-+~:,\t\r\n\f\0]+[^:,\t\r\n\f\0]*$/ ]
+      default :group_valid_regex, [ /^[^-+~:,\t\r\n\f\0]+[^:,\t\r\n\f\0]*$/ ]
     end
 
     # returns a platform specific path to the user home dir
