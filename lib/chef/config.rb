@@ -497,8 +497,12 @@ class Chef
 
       default :fatal_windows_admin_check, false
     else
-      default :user_valid_regex, [ /^([-a-zA-Z0-9_.]+[\\@]?[-a-zA-Z0-9_.]*)$/, /^\d+$/ ]
-      default :group_valid_regex, [ /^([-a-zA-Z0-9_.\\@^ ]+)$/, /^\d+$/ ]
+      # user/group cannot start with '-', '+' or '~'
+      # user/group cannot contain ':', ',' or non-space-whitespace or null byte
+      # everything else is allowed (UTF-8, spaces, etc) and we delegate to your O/S useradd program to barf or not
+      # copies: http://anonscm.debian.org/viewvc/pkg-shadow/debian/trunk/debian/patches/506_relaxed_usernames?view=markup
+      default :user_valid_regex, [ /^[^-+~:,\t\r\n\f\0]+[^:,\t\r\n\f\0]*$/ ]
+      default :group_valid_regex, [ /^[^-+~:,\t\r\n\f\0]+[^:,\t\r\n\f\0]*$/ ]
     end
 
     # returns a platform specific path to the user home dir

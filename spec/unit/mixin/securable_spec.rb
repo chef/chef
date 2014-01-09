@@ -1,3 +1,4 @@
+# encoding: UTF-8
 #
 # Author:: Mark Mzyk (<mmzyk@opscode.com>)
 # Copyright:: Copyright (c) 2011 Opscode, Inc.
@@ -29,13 +30,13 @@ describe Chef::Mixin::Securable do
   it "should accept a group name or id for group" do
     lambda { @securable.group "root" }.should_not raise_error(ArgumentError)
     lambda { @securable.group 123 }.should_not raise_error(ArgumentError)
-    lambda { @securable.group "root*goo" }.should raise_error(ArgumentError)
+    lambda { @securable.group "+bad:group" }.should raise_error(ArgumentError)
   end
 
   it "should accept a user name or id for owner" do
     lambda { @securable.owner "root" }.should_not raise_error(ArgumentError)
     lambda { @securable.owner 123 }.should_not raise_error(ArgumentError)
-    lambda { @securable.owner "root*goo" }.should raise_error(ArgumentError)
+    lambda { @securable.owner "+bad:owner" }.should raise_error(ArgumentError)
   end
 
   it "allows the owner to be specified as #user" do
@@ -53,8 +54,81 @@ describe Chef::Mixin::Securable do
       end
     end
 
-    it "should accept a group name or id for group with spaces and backslashes" do
+    it "should accept group/owner names with spaces and backslashes" do
       lambda { @securable.group 'test\ group' }.should_not raise_error(ArgumentError)
+      lambda { @securable.owner 'test\ group' }.should_not raise_error(ArgumentError)
+    end
+
+    it "should accept group/owner names that are a single character or digit" do
+      lambda { @securable.group 'v' }.should_not raise_error(ArgumentError)
+      lambda { @securable.group '1' }.should_not raise_error(ArgumentError)
+      lambda { @securable.owner 'v' }.should_not raise_error(ArgumentError)
+      lambda { @securable.owner '1' }.should_not raise_error(ArgumentError)
+    end
+
+    it "should not accept group/owner names starting with '-', '+', or '~'" do
+      lambda { @securable.group '-test' }.should raise_error(ArgumentError)
+      lambda { @securable.group '+test' }.should raise_error(ArgumentError)
+      lambda { @securable.group '~test' }.should raise_error(ArgumentError)
+      lambda { @securable.group 'te-st' }.should_not raise_error(ArgumentError)
+      lambda { @securable.group 'te+st' }.should_not raise_error(ArgumentError)
+      lambda { @securable.group 'te~st' }.should_not raise_error(ArgumentError)
+      lambda { @securable.owner '-test' }.should raise_error(ArgumentError)
+      lambda { @securable.owner '+test' }.should raise_error(ArgumentError)
+      lambda { @securable.owner '~test' }.should raise_error(ArgumentError)
+      lambda { @securable.owner 'te-st' }.should_not raise_error(ArgumentError)
+      lambda { @securable.owner 'te+st' }.should_not raise_error(ArgumentError)
+      lambda { @securable.owner 'te~st' }.should_not raise_error(ArgumentError)
+    end
+
+    it "should not accept group/owner names containing ':', ',' or non-space whitespace" do
+      lambda { @securable.group ':test' }.should raise_error(ArgumentError)
+      lambda { @securable.group 'te:st' }.should raise_error(ArgumentError)
+      lambda { @securable.group ',test' }.should raise_error(ArgumentError)
+      lambda { @securable.group 'te,st' }.should raise_error(ArgumentError)
+      lambda { @securable.group "\ttest" }.should raise_error(ArgumentError)
+      lambda { @securable.group "te\tst" }.should raise_error(ArgumentError)
+      lambda { @securable.group "\rtest" }.should raise_error(ArgumentError)
+      lambda { @securable.group "te\rst" }.should raise_error(ArgumentError)
+      lambda { @securable.group "\ftest" }.should raise_error(ArgumentError)
+      lambda { @securable.group "te\fst" }.should raise_error(ArgumentError)
+      lambda { @securable.group "\0test" }.should raise_error(ArgumentError)
+      lambda { @securable.group "te\0st" }.should raise_error(ArgumentError)
+      lambda { @securable.owner ':test' }.should raise_error(ArgumentError)
+      lambda { @securable.owner 'te:st' }.should raise_error(ArgumentError)
+      lambda { @securable.owner ',test' }.should raise_error(ArgumentError)
+      lambda { @securable.owner 'te,st' }.should raise_error(ArgumentError)
+      lambda { @securable.owner "\ttest" }.should raise_error(ArgumentError)
+      lambda { @securable.owner "te\tst" }.should raise_error(ArgumentError)
+      lambda { @securable.owner "\rtest" }.should raise_error(ArgumentError)
+      lambda { @securable.owner "te\rst" }.should raise_error(ArgumentError)
+      lambda { @securable.owner "\ftest" }.should raise_error(ArgumentError)
+      lambda { @securable.owner "te\fst" }.should raise_error(ArgumentError)
+      lambda { @securable.owner "\0test" }.should raise_error(ArgumentError)
+      lambda { @securable.owner "te\0st" }.should raise_error(ArgumentError)
+    end
+
+    it "should accept Active Directory-style domain names pulled in via LDAP (on unix hosts)" do
+      lambda { @securable.owner "domain\@user" }.should_not raise_error(ArgumentError)
+      lambda { @securable.owner "domain\\user" }.should_not raise_error(ArgumentError)
+      lambda { @securable.group "domain\@group" }.should_not raise_error(ArgumentError)
+      lambda { @securable.group "domain\\group" }.should_not raise_error(ArgumentError)
+      lambda { @securable.group "domain\\group^name" }.should_not raise_error(ArgumentError)
+    end
+
+    it "should not accept group/owner names containing embedded carriage returns" do
+      pending "XXX: params_validate needs to be extended to support multi-line regex"
+      #lambda { @securable.group "\ntest" }.should raise_error(ArgumentError)
+      #lambda { @securable.group "te\nst" }.should raise_error(ArgumentError)
+      #lambda { @securable.owner "\ntest" }.should raise_error(ArgumentError)
+      #lambda { @securable.owner "te\nst" }.should raise_error(ArgumentError)
+    end
+
+    it "should accept group/owner names in UTF-8" do
+      lambda { @securable.group 'tëst' }.should_not raise_error(ArgumentError)
+      lambda { @securable.group 'ë' }.should_not raise_error(ArgumentError)
+      lambda { @securable.owner 'tëst' }.should_not raise_error(ArgumentError)
+      lambda { @securable.owner 'ë' }.should_not raise_error(ArgumentError)
     end
 
     it "should accept a unix file mode in string form as an octal number" do
