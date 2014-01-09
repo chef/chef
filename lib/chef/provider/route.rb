@@ -19,6 +19,7 @@
 require 'chef/log'
 require 'chef/mixin/command'
 require 'chef/provider'
+require 'chef/resource/file'
 require 'ipaddr'
 
 class Chef::Provider::Route < Chef::Provider
@@ -155,6 +156,12 @@ class Chef::Provider::Route < Chef::Provider
       generate_config
     end
 
+    def resource_for_config(path)
+      config = Chef::Resource::File.new(path, run_context)
+      config.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
+      config
+    end
+
     def generate_config
       conf = Hash.new
       case node[:platform]
@@ -185,9 +192,10 @@ class Chef::Provider::Route < Chef::Provider
           begin
             run_context.resource_collection.lookup("file[#{network_file_name}]")
           rescue Chef::Exceptions::ResourceNotFound
-            file network_file_name do
-              content conf[k]
-            end
+            config = resource_for_config(network_file_name)
+            config.content(conf[k])
+            config.run_action(:create)
+            @new_resource.updated_by_last_action(true) if config.updated?
           end
         end
       end
