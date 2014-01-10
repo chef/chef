@@ -194,5 +194,13 @@ new line inserted
       fedit.write_file
       expect(edited_file_contents).to eq(starting_content)
     end
+
+    it "should work more than once" do
+      @fedit.insert_line_if_no_match(/missing/, "added")
+      @fedit.insert_line_if_no_match(/missing/, "twice")
+      @fedit.write_file
+      newfile = File.new(@tempfile.path).readlines
+      newfile.last.should match(/twice/)
+    end
   end
 end
