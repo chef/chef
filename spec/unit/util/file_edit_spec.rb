@@ -59,6 +59,7 @@ HOSTS
   describe "search_file_replace" do
     it "should accept regex passed in as a string (not Regexp object) and replace the match if there is one" do
       @fedit.search_file_replace("localhost", "replacement")
+      @fedit.unwritten_changes?.should be_true
       @fedit.write_file
       newfile = File.new(@tempfile.path).readlines
       newfile[0].should match(/replacement/)
@@ -66,6 +67,7 @@ HOSTS
 
     it "should accept regex passed in as a Regexp object and replace the match if there is one" do
       @fedit.search_file_replace(/localhost/, "replacement")
+      @fedit.unwritten_changes?.should be_true
       @fedit.write_file
       newfile = File.new(@tempfile.path).readlines
       newfile[0].should match(/replacement/)
@@ -73,6 +75,7 @@ HOSTS
 
     it "should do nothing if there isn't a match" do
       @fedit.search_file_replace(/pattern/, "replacement")
+      @fedit.unwritten_changes?.should be_false
       @fedit.write_file
       newfile = File.new(@tempfile.path).readlines
       newfile[0].should_not match(/replacement/)
@@ -82,6 +85,7 @@ HOSTS
   describe "search_file_replace_line" do
     it "should search for match and replace the whole line" do
       @fedit.search_file_replace_line(/localhost/, "replacement line")
+      @fedit.unwritten_changes?.should be_true
       @fedit.write_file
       newfile = File.new(@tempfile.path).readlines
       newfile[0].should match(/replacement/)
@@ -92,6 +96,7 @@ HOSTS
   describe "search_file_delete" do
     it "should search for match and delete the match" do
       @fedit.search_file_delete(/localhost/)
+      @fedit.unwritten_changes?.should be_true
       @fedit.write_file
       newfile = File.new(@tempfile.path).readlines
       newfile[0].should_not match(/localhost/)
@@ -102,6 +107,7 @@ HOSTS
   describe "search_file_delete_line" do
     it "should search for match and delete the matching line" do
       @fedit.search_file_delete_line(/localhost/)
+      @fedit.unwritten_changes?.should be_true
       @fedit.write_file
       newfile = File.new(@tempfile.path).readlines
       newfile[0].should_not match(/localhost/)
@@ -112,6 +118,7 @@ HOSTS
   describe "insert_line_after_match" do
     it "should search for match and insert the given line after the matching line" do
       @fedit.insert_line_after_match(/localhost/, "new line inserted")
+      @fedit.unwritten_changes?.should be_true
       @fedit.write_file
       newfile = File.new(@tempfile.path).readlines
       newfile[1].should match(/new/)
@@ -121,6 +128,7 @@ HOSTS
   describe "insert_line_if_no_match" do
     it "should search for match and insert the given line if no line match" do
       @fedit.insert_line_if_no_match(/pattern/, "new line inserted")
+      @fedit.unwritten_changes?.should be_true
       @fedit.write_file
       newfile = File.new(@tempfile.path).readlines
       newfile.last.should match(/new/)
@@ -128,6 +136,7 @@ HOSTS
 
     it "should do nothing if there is a match" do
       @fedit.insert_line_if_no_match(/localhost/, "replacement")
+      @fedit.unwritten_changes?.should be_false
       @fedit.write_file
       newfile = File.new(@tempfile.path).readlines
       newfile[1].should_not match(/replacement/)
