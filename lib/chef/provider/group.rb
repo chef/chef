@@ -91,7 +91,7 @@ class Chef
         if(@new_resource.append)
           missing_members = []
           @new_resource.members.each do |member|
-            next if find_current_group_member(member)
+            next if has_current_group_member?(member)
             missing_members << member
           end
           if missing_members.length > 0
@@ -100,7 +100,7 @@ class Chef
 
           members_to_be_removed = []
           @new_resource.excluded_members.each do |member|
-            if find_current_group_member(member)
+            if has_current_group_member?(member)
               members_to_be_removed << member
             end
           end
@@ -116,7 +116,7 @@ class Chef
         !@change_desc.empty?
       end
 
-      def find_current_group_member(member)
+      def has_current_group_member?(member)
         @current_resource.members.include?(member)
       end
 
