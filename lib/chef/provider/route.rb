@@ -158,7 +158,6 @@ class Chef::Provider::Route < Chef::Provider
 
     def resource_for_config(path)
       config = Chef::Resource::File.new(path, run_context)
-      config.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
       config
     end
 
