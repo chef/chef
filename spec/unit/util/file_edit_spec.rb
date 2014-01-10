@@ -17,6 +17,7 @@
 #
 
 require 'spec_helper'
+require 'tempfile'
 
 describe Chef::Util::FileEdit do
 
