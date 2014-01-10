@@ -124,18 +124,21 @@ new line inserted
   describe "search_file_replace" do
     it "should accept regex passed in as a string (not Regexp object) and replace the match if there is one" do
       fedit.search_file_replace("localhost", "replacement")
+      fedit.unwritten_changes?.should be_true
       fedit.write_file
       expect(edited_file_contents).to eq(localhost_replaced)
     end
 
     it "should accept regex passed in as a Regexp object and replace the match if there is one" do
       fedit.search_file_replace(/localhost/, "replacement")
+      fedit.unwritten_changes?.should be_true
       fedit.write_file
       expect(edited_file_contents).to eq(localhost_replaced)
     end
 
     it "should do nothing if there isn't a match" do
       fedit.search_file_replace(/pattern/, "replacement")
+      fedit.unwritten_changes?.should be_true
       fedit.write_file
       expect(edited_file_contents).to eq(starting_content)
     end
@@ -144,6 +147,7 @@ new line inserted
   describe "search_file_replace_line" do
     it "should search for match and replace the whole line" do
       fedit.search_file_replace_line(/localhost/, "replacement line")
+      fedit.unwritten_changes?.should be_true
       fedit.write_file
       expect(edited_file_contents).to eq(localhost_line_replaced)
     end
@@ -152,6 +156,7 @@ new line inserted
   describe "search_file_delete" do
     it "should search for match and delete the match" do
       fedit.search_file_delete(/localhost/)
+      fedit.unwritten_changes?.should be_true
       fedit.write_file
       expect(edited_file_contents).to eq(localhost_deleted)
     end
@@ -160,6 +165,7 @@ new line inserted
   describe "search_file_delete_line" do
     it "should search for match and delete the matching line" do
       fedit.search_file_delete_line(/localhost/)
+      fedit.unwritten_changes?.should be_true
       fedit.write_file
       expect(edited_file_contents).to eq(localhost_line_deleted)
     end
@@ -168,6 +174,7 @@ new line inserted
   describe "insert_line_after_match" do
     it "should search for match and insert the given line after the matching line" do
       fedit.insert_line_after_match(/localhost/, "new line inserted")
+      fedit.unwritten_changes?.should be_true
       fedit.write_file
       expect(edited_file_contents).to eq(append_after_all_localhost)
     end
@@ -176,12 +183,14 @@ new line inserted
   describe "insert_line_if_no_match" do
     it "should search for match and insert the given line if no line match" do
       fedit.insert_line_if_no_match(/pattern/, "new line inserted")
+      fedit.unwritten_changes?.should be_true
       fedit.write_file
       expect(edited_file_contents).to eq(append_after_content)
     end
 
     it "should do nothing if there is a match" do
       fedit.insert_line_if_no_match(/localhost/, "replacement")
+      fedit.unwritten_changes?.should be_true
       fedit.write_file
       expect(edited_file_contents).to eq(starting_content)
     end

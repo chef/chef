@@ -69,6 +69,10 @@ class Chef
         @changes = (editor.append_line_if_missing(regex, newline) > 0) || @changes
       end
 
+      def unwritten_changes?
+        !!@changes
+      end
+
       #Make a copy of old_file and write new file out (only if file changed)
       def write_file
         if @changes
