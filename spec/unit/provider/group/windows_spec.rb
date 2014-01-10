@@ -55,6 +55,7 @@ describe Chef::Provider::Group::Windows do
       Chef::Util::Windows::NetGroup.stub!(:new).and_return(@net_group)
       @net_group.stub!(:local_add_members)
       @net_group.stub!(:local_set_members)
+      @provider.stub(:local_group_name_to_sid)
       @provider.current_resource = @current_resource
     end
 
