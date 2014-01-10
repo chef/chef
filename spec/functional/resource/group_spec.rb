@@ -350,7 +350,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
         let(:computer_domain) { ohai[:kernel]['cs_info']['domain'].split('.')[0] }
         let(:spec_members){ ["#{computer_domain}\\Domain Admins", "#{computer_domain}\\Domain Users", "#{computer_domain}\\Domain Computers"] }
 
-        it_behaves_like "correct group management"
+        include_examples "correct group management"
       end
     end
 
@@ -379,7 +379,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
         let(:computer_domain) { ohai[:kernel]['cs_info']['domain'].split('.')[0] }
         let(:spec_members){ ["#{computer_domain}\\Domain Admins", "#{computer_domain}\\Domain Users", "#{computer_domain}\\Domain Computers"] }
 
-        it_behaves_like "correct group management"
+        include_examples "correct group management"
       end
 
       it_behaves_like "an expected invalid domain error case"
