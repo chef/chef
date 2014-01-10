@@ -112,16 +112,16 @@ describe Chef::Provider::Route do
     it "should not delete config file for :add action (CHEF-3332)" do
       @node.automatic_attrs[:platform] = 'centos'
 
-      route_file = StringIO.new
-      File.should_receive(:new).and_return(route_file)
       @resource_add = Chef::Resource::Route.new('192.168.1.0/24 via 192.168.0.1')
       @run_context.resource_collection << @resource_add
       @provider.stub!(:run_command).and_return(true)
 
       @resource_add.action(:add)
       @provider.run_action(:add)
-      route_file.string.split("\n").should have(1).items
-      route_file.string.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
+      @route_config_file = "/etc/sysconfig/network-scripts/route-eth0"
+      route_file = File.read(@route_config_file)
+      route_file.split("\n").should have(1).items
+      route_file.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
     end
   end
 
@@ -211,33 +211,33 @@ describe Chef::Provider::Route do
   end
 
   describe Chef::Provider::Route, "generate_config method" do
+    before do
+      @route_config_file = "/etc/sysconfig/network-scripts/route-eth0"
+    end
     %w[ centos redhat fedora ].each do |platform|
       it "should write a route file on #{platform} platform" do
         @node.automatic_attrs[:platform] = platform
 
-        route_file = StringIO.new
-        File.should_receive(:new).with("/etc/sysconfig/network-scripts/route-eth0", "w").and_return(route_file)
-        #Chef::Log.should_receive(:debug).with("route[10.0.0.10] writing route.eth0\n10.0.0.10 via 10.0.0.9\n")
         @run_context.resource_collection << @new_resource
         @provider.generate_config
+        File.exist?(@route_config_file).should be_true
       end
     end
 
     it "should put all routes for a device in a route config file" do
       @node.automatic_attrs[:platform] = 'centos'
 
-      route_file = StringIO.new
-      File.should_receive(:new).and_return(route_file)
       @run_context.resource_collection << Chef::Resource::Route.new('192.168.1.0/24 via 192.168.0.1')
       @run_context.resource_collection << Chef::Resource::Route.new('192.168.2.0/24 via 192.168.0.1')
       @run_context.resource_collection << Chef::Resource::Route.new('192.168.3.0/24 via 192.168.0.1')
 
       @provider.action = :add
       @provider.generate_config
-      route_file.string.split("\n").should have(3).items
-      route_file.string.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
-      route_file.string.should match(/^192\.168\.2\.0\/24 via 192\.168\.0\.1$/)
-      route_file.string.should match(/^192\.168\.3\.0\/24 via 192\.168\.0\.1$/)
+      route_file = File.read(@route_config_file)
+      route_file.split("\n").should have(3).items
+      route_file.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
+      route_file.should match(/^192\.168\.2\.0\/24 via 192\.168\.0\.1$/)
+      route_file.should match(/^192\.168\.3\.0\/24 via 192\.168\.0\.1$/)
     end
   end
 end
