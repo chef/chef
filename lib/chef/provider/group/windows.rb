@@ -87,15 +87,9 @@ class Chef
         end
 
         def local_group_name_to_sid(group_name)
-          if ! group_name.include?("\\")
-            locally_qualified_name = "#{ENV['COMPUTERNAME']}\\#{group_name}"
-          else
-            locally_qualified_name = group_name
-          end
-
+          locally_qualified_name = group_name.include?("\\") ? group_name : "#{ENV['COMPUTERNAME']}\\#{group_name}"
           Chef::ReservedNames::Win32::Security.lookup_account_name(locally_qualified_name)[1].to_s
         end
-
       end
     end
   end
