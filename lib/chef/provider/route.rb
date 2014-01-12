@@ -157,8 +157,7 @@ class Chef::Provider::Route < Chef::Provider
     end
 
     def resource_for_config(path)
-      config = Chef::Resource::File.new(path, run_context)
-      config
+      Chef::Resource::File.new(path, run_context)
     end
 
     def generate_config
