@@ -37,22 +37,26 @@ describe Chef::Provider::Ifconfig::Redhat do
     status = double("Status", :exitstatus => 0)
     @provider.instance_variable_set("@status", status)
     @provider.current_resource = @current_resource
- end
+
+    config_filename = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
+    @config = double("chef-resource-file")
+    @provider.should_receive(:resource_for_config).with(config_filename).and_return(@config)
+  end
 
   describe "generate_config for action_add" do
 
-     it "should write network-script for centos" do
+    it "should write network-script for centos" do
       @provider.stub(:load_current_resource)
       @provider.stub(:run_command)
-      config_filename = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
-      config_file = StringIO.new
-      File.should_receive(:new).with(config_filename, "w").and_return(config_file)
-
+      @config.should_receive(:content) do |arg|
+        arg.should match(/^\s*DEVICE=eth0\s*$/)
+        arg.should match(/^\s*IPADDR=10\.0\.0\.1\s*$/)
+        arg.should match(/^\s*NETMASK=255\.255\.254\.0\s*$/)
+      end
+      @config.should_receive(:run_action).with(:create)
+      @config.should_receive(:updated?).and_return(true)
       @provider.run_action(:add)
-      config_file.string.should match(/^\s*DEVICE=eth0\s*$/)
-      config_file.string.should match(/^\s*IPADDR=10\.0\.0\.1\s*$/)
-      config_file.string.should match(/^\s*NETMASK=255\.255\.254\.0\s*$/)
-     end
+    end
   end
 
   describe "delete_config for action_delete" do
@@ -61,10 +65,8 @@ describe Chef::Provider::Ifconfig::Redhat do
       @current_resource.device @new_resource.device
       @provider.stub(:load_current_resource)
       @provider.stub(:run_command)
-      config_filename =  "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
-      File.should_receive(:exist?).with(config_filename).and_return(true)
-      FileUtils.should_receive(:rm_f).with(config_filename, :verbose => false)
-
+      @config.should_receive(:run_action).with(:delete)
+      @config.should_receive(:updated?).and_return(true)
       @provider.run_action(:delete)
     end
   end
