@@ -108,24 +108,24 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     end
 
     describe "when append is not set" do
-      let(:included_members) { ["spec-Eric"] }
+      let(:included_members) { ["Eric"] }
 
       before do
-        create_user("spec-Eric")
-        create_user("spec-Gordon")
-        add_members_to_group(["spec-Gordon"])
+        create_user("Eric")
+        create_user("Gordon")
+        add_members_to_group(["Gordon"])
       end
 
       after do
-        remove_user("spec-Eric")
-        remove_user("spec-Gordon")
+        remove_user("Eric")
+        remove_user("Gordon")
       end
 
       it "should remove the existing users and add the new users to the group" do
         group_resource.run_action(tested_action)
 
-        user_exist_in_group?("spec-Eric").should == true
-        user_exist_in_group?("spec-Gordon").should == false
+        user_exist_in_group?("Eric").should == true
+        user_exist_in_group?("Gordon").should == false
       end
     end
 
@@ -160,7 +160,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
 
         describe "when group contains some users" do
           before(:each) do
-            add_members_to_group([ "spec-Gordon", "spec-Anthony" ])
+            add_members_to_group([ "Gordon", "Anthony" ])
           end
 
           it "should add the included users and remove excluded users" do
@@ -192,7 +192,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     end
   end
 
-  let(:group_name) { "cheftest-#{SecureRandom.random_number(9999)}" }
+  let(:group_name) { "t-#{SecureRandom.random_number(9999)}" }
   let(:included_members) { nil }
   let(:excluded_members) { nil }
   let(:group_resource) {
@@ -274,8 +274,8 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group modify action", :not_supported_on_solaris do
-    let(:included_members) { ["spec-Gordon", "spec-Eric"] }
-    let(:excluded_members) { ["spec-Anthony"] }
+    let(:included_members) { ["Gordon", "Eric"] }
+    let(:excluded_members) { ["Anthony"] }
     let(:tested_action) { :modify }
 
     describe "when there is no group" do
@@ -290,8 +290,8 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group manage action", :not_supported_on_solaris do
-    let(:included_members) { ["spec-Gordon", "spec-Eric"] }
-    let(:excluded_members) { ["spec-Anthony"] }
+    let(:included_members) { ["Gordon", "Eric"] }
+    let(:excluded_members) { ["Anthony"] }
     let(:tested_action) { :manage }
 
     describe "when there is no group" do
@@ -308,7 +308,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
 
   describe "group resource with Usermod provider", :solaris_only do
     describe "when excluded_members is set" do
-      let(:excluded_members) { ["spec-Anthony"] }
+      let(:excluded_members) { ["Anthony"] }
 
       it ":manage should raise an error" do
         lambda {group_resource.run_action(:manage) }.should raise_error
@@ -324,7 +324,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     end
 
     describe "when append is not set" do
-      let(:included_members) { ["spec-Gordon", "spec-Eric"] }
+      let(:included_members) { ["Gordon", "Eric"] }
 
       before(:each) do
         group_resource.append(false)
@@ -340,4 +340,6 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     end
   end
 end
+
+
 
