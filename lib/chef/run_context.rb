@@ -169,7 +169,7 @@ class Chef
       cookbook = cookbook_collection[cookbook_name]
       raise Chef::Exceptions::CookbookNotFound, "could not find cookbook #{cookbook_name} while loading attribute #{name}" unless cookbook
 
-      attribute_filename = cookbook.attribute_filenames_by_short_filename[attr_file_name]
+      attribute_filename = cookbook.segment_filenames_by_name(:attributes)[attr_file_name]
       raise Chef::Exceptions::AttributeNotFound, "could not find filename for attribute #{attr_file_name} in cookbook #{cookbook_name}" unless attribute_filename
 
       attribute_filename

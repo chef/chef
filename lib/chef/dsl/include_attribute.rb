@@ -36,7 +36,13 @@ class Chef
             Chef::Log.debug("Loading Attribute #{cookbook_name}::#{attr_file}")
             run_context.loaded_attribute(cookbook_name, attr_file)
             attr_file_path = run_context.resolve_attribute(cookbook_name, attr_file)
-            node.from_file(attr_file_path)
+
+            begin
+              dialect = Chef::Dialect.find_by_extension(run_context, :attributes, attr_file_path)
+            rescue Chef::Exceptions::DialectNotFound
+              raise Chef::Exceptions::DialectNotFound, "could not find an attributes dialect for #{attr_file_path}"
+            end
+            dialect.compile_attributes(node, attr_file_path)
           end
         end
         true

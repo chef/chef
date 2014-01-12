@@ -17,6 +17,13 @@ class Chef
                                       :resource_filenames,
                                       :provider_filenames]
 
+      # Mapping from root shortcut basename to segment filenames accessor
+      # If you update this, also update the mapping in cookbook_version.rb
+      ROOT_SHORTCUTS = {
+        'attributes' => :attribute_filenames,
+        'recipe' => :recipe_filenames,
+        'library' => :library_filenames,
+      }
 
       attr_reader :cookbook_name
       attr_reader :cookbook_settings
@@ -44,9 +51,9 @@ class Chef
       end
 
       def load_cookbooks
-        load_as(:attribute_filenames, 'attributes', '*.rb')
+        load_as(:attribute_filenames, 'attributes', '*')
         load_as(:definition_filenames, 'definitions', '*.rb')
-        load_as(:recipe_filenames, 'recipes', '*.rb')
+        load_as(:recipe_filenames, 'recipes', '*')
         load_as(:library_filenames, 'libraries', '*.rb')
         load_recursively_as(:template_filenames, "templates", "*")
         load_recursively_as(:file_filenames, "files", "*")
@@ -122,7 +129,10 @@ class Chef
       def load_root_files
         Dir.glob(File.join(@cookbook_path, '*'), File::FNM_DOTMATCH).each do |file|
           next if File.directory?(file)
-          @cookbook_settings[:root_filenames][file[@relative_path, 1]] = file
+          basename = File.basename(file, File.extname(file))
+          # Special cases for certain root files
+          segment = ROOT_SHORTCUTS[basename] || :root_filenames
+          @cookbook_settings[segment][file[@relative_path, 1]] = file
         end
       end
 

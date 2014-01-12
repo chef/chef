@@ -41,6 +41,13 @@ class Chef
     include Comparable
 
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
+    # Mapping from segment name to root shortcut basename
+    # If you update this, also update the mapping in cookbook_version_loader.rb
+    ROOT_SHORTCUTS = {
+      :recipes => 'recipe',
+      :attributes => 'attributes',
+      :libraries => 'library',
+    }
 
     attr_accessor :root_dir
     attr_accessor :definition_filenames
@@ -62,9 +69,6 @@ class Chef
     # recipe_filenames also has a setter that has non-default
     # functionality.
     attr_reader :recipe_filenames
-
-    attr_reader :recipe_filenames_by_name
-    attr_reader :attribute_filenames_by_short_filename
 
     # This is the one and only method that knows how cookbook files'
     # checksums are generated.
@@ -91,13 +95,13 @@ class Chef
       @template_filenames = Array.new
       @file_filenames = Array.new
       @recipe_filenames = Array.new
-      @recipe_filenames_by_name = Hash.new
       @library_filenames = Array.new
       @resource_filenames = Array.new
       @provider_filenames = Array.new
       @metadata_filenames = Array.new
       @root_dir = nil
       @root_filenames = Array.new
+      @segment_filenames_by_name = Hash.new
       @status = :ready
       @manifest = nil
       @file_vendor = nil
@@ -193,7 +197,8 @@ class Chef
 
     def attribute_filenames=(*filenames)
       @attribute_filenames = filenames.flatten
-      @attribute_filenames_by_short_filename = filenames_by_name(attribute_filenames)
+      # Clear the cached value if any to preserve earlier semantics
+      @segment_filenames_by_name.delete(:attributes)
       attribute_filenames
     end
 
@@ -204,7 +209,7 @@ class Chef
     # Return recipe names in the form of cookbook_name::recipe_name
     def fully_qualified_recipe_names
       results = Array.new
-      recipe_filenames_by_name.each_key do |rname|
+      segment_filenames_by_name(:recipes).each_key do |rname|
         results << "#{name}::#{rname}"
       end
       results
@@ -212,7 +217,8 @@ class Chef
 
     def recipe_filenames=(*filenames)
       @recipe_filenames = filenames.flatten
-      @recipe_filenames_by_name = filenames_by_name(recipe_filenames)
+      # Clear the cached value if any to preserve earlier semantics
+      @segment_filenames_by_name.delete(:recipes)
       recipe_filenames
     end
 
@@ -222,19 +228,24 @@ class Chef
 
     # called from DSL
     def load_recipe(recipe_name, run_context)
-      unless recipe_filenames_by_name.has_key?(recipe_name)
+      unless segment_filenames_by_name(:recipes).has_key?(recipe_name)
         raise Chef::Exceptions::RecipeNotFound, "could not find recipe #{recipe_name} for cookbook #{name}"
       end
 
       Chef::Log.debug("Found recipe #{recipe_name} in cookbook #{name}")
       recipe = Chef::Recipe.new(name, recipe_name, run_context)
-      recipe_filename = recipe_filenames_by_name[recipe_name]
+      recipe_filename = segment_filenames_by_name(:recipes)[recipe_name]
 
       unless recipe_filename
         raise Chef::Exceptions::RecipeNotFound, "could not find #{recipe_name} files for cookbook #{name}"
       end
 
-      recipe.from_file(recipe_filename)
+      begin
+        dialect = Chef::Dialect.find_by_extension(run_context, :recipe, recipe_filename)
+      rescue Chef::Exceptions::DialectNotFound
+        raise Chef::Exceptions::DialectNotFound, "could not find a recipe dialect for #{recipe_filename}"
+      end
+      dialect.compile_recipe(recipe, recipe_filename)
       recipe
     end
 
@@ -263,6 +274,10 @@ class Chef
       when :root_files
         @root_filenames
       end
+    end
+
+    def segment_filenames_by_name(segment)
+      @segment_filenames_by_name[segment] ||= filenames_by_name(segment_filenames(segment), ROOT_SHORTCUTS[segment])
     end
 
     # Query whether a template file +template_filename+ is available. File
@@ -296,13 +311,20 @@ class Chef
       else
         if segment == :files || segment == :templates
           error_message = "Cookbook '#{name}' (#{version}) does not contain a file at any of these locations:\n"
-          error_locations = [
-            "  #{segment}/#{node[:platform]}-#{node[:platform_version]}/#{filename}",
-            "  #{segment}/#{node[:platform]}/#{filename}",
-            "  #{segment}/default/#{filename}",
-          ]
+          error_locations = if filename.is_a?(Array)
+            filename.map{|name| "  #{File.join(segment.to_s, name)}"}
+          else
+            [
+              "  #{segment}/host-#{node[:fqdn]}/#{filename}",
+              "  #{segment}/#{node[:platform]}-#{node[:platform_version]}/#{filename}",
+              "  #{segment}/#{node[:platform]}/#{filename}",
+              "  #{segment}/default/#{filename}",
+              "  #{segment}/#{filename}",
+            ]
+          end
           error_message << error_locations.join("\n")
           existing_files = segment_filenames(segment)
+          existing_files.map!{|path| path[root_dir.length+1..-1]} if root_dir
           # Show the files that the cookbook does have. If the user made a typo,
           # hopefully they'll see it here.
           unless existing_files.empty?
@@ -403,38 +425,44 @@ class Chef
     def preferences_for_path(node, segment, path)
       # only files and templates can be platform-specific
       if segment.to_sym == :files || segment.to_sym == :templates
-        begin
-          platform, version = Chef::Platform.find_platform_and_version(node)
-        rescue ArgumentError => e
-          # Skip platform/version if they were not found by find_platform_and_version
-          if e.message =~ /Cannot find a (?:platform|version)/
-            platform = "/unknown_platform/"
-            version = "/unknown_platform_version/"
-          else
-            raise
+        relative_search_path = if path.is_a?(Array)
+          path
+        else
+          begin
+            platform, version = Chef::Platform.find_platform_and_version(node)
+          rescue ArgumentError => e
+            # Skip platform/version if they were not found by find_platform_and_version
+            if e.message =~ /Cannot find a (?:platform|version)/
+              platform = "/unknown_platform/"
+              version = "/unknown_platform_version/"
+            else
+              raise
+            end
           end
+
+          fqdn = node[:fqdn]
+
+          # Break version into components, eg: "5.7.1" => [ "5.7.1", "5.7", "5" ]
+          search_versions = []
+          parts = version.to_s.split('.')
+
+          parts.size.times do
+            search_versions << parts.join('.')
+            parts.pop
+          end
+
+          # Most specific to least specific places to find the path
+          search_path = [ File.join("host-#{fqdn}", path) ]
+          search_versions.each do |v|
+            search_path << File.join("#{platform}-#{v}", path)
+          end
+          search_path << File.join(platform.to_s, path)
+          search_path << File.join("default", path)
+          search_path << path
+
+          search_path
         end
-
-        fqdn = node[:fqdn]
-
-        # Break version into components, eg: "5.7.1" => [ "5.7.1", "5.7", "5" ]
-        search_versions = []
-        parts = version.to_s.split('.')
-
-        parts.size.times do
-          search_versions << parts.join('.')
-          parts.pop
-        end
-
-        # Most specific to least specific places to find the path
-        search_path = [ File.join(segment.to_s, "host-#{fqdn}", path) ]
-        search_versions.each do |v|
-          search_path << File.join(segment.to_s, "#{platform}-#{v}", path)
-        end
-        search_path << File.join(segment.to_s, platform.to_s, path)
-        search_path << File.join(segment.to_s, "default", path)
-
-        search_path
+        relative_search_path.map {|relative_path| File.join(segment.to_s, relative_path)}
       else
         [File.join(segment, path)]
       end
@@ -585,8 +613,20 @@ class Chef
 
     # For each filename, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location
-    def filenames_by_name(filenames)
-      filenames.select{|filename| filename =~ /\.rb$/}.inject({}){|memo, filename| memo[File.basename(filename, '.rb')] = filename ; memo }
+    def filenames_by_name(filenames, root_default = nil)
+      # Only process root shortcuts if a root_dir is set. This mostly comes up in unit tests.
+      # Might be better to just fix the tests to set a root_dir.
+      root_regexp = /#{Regexp.escape(root_dir)}\/(.+?)(\..*)?$/ if root_dir
+      filenames.inject({}) do |memo, filename|
+        basename = if root_dir && root_default && filename[root_regexp, 1] == root_default
+          'default'
+        else
+          File.basename(filename, File.extname(filename))
+        end
+        raise Chef::Exceptions::CookbookFileCollision, "Duplicate files for #{basename}: #{filename}, #{memo[basename]}" if memo[basename]
+        memo[basename] = filename
+        memo
+      end
     end
 
     # See #manifest for a description of the manifest return value.
@@ -609,28 +649,22 @@ class Chef
         segment_filenames(segment).each do |segment_file|
           next if File.directory?(segment_file)
 
-          file_name = nil
-          path = nil
+          path = segment_file[root_dir.length+1..-1]
           specificity = "default"
 
-          if segment == :root_files
-            matcher = segment_file.match(".+/#{Regexp.escape(name.to_s)}/(.+)")
-            file_name = matcher[1]
-            path = file_name
-          elsif segment == :templates || segment == :files
-            matcher = segment_file.match("/#{Regexp.escape(name.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+?)/(.+))")
-            unless matcher
-              Chef::Log.debug("Skipping file #{segment_file}, as it isn't in any of the proper directories (platform-version, platform or default)")
-              Chef::Log.debug("You probably need to move #{segment_file} into the 'default' sub-directory")
-              next
+          file_name = if segment == :templates || segment == :files
+            parts = path.split('/')
+            parts.shift # Drop the segment name
+            specificity = if parts.length == 1
+              'default'
+            else
+              parts.shift
             end
-            path = matcher[1]
-            specificity = matcher[2]
-            file_name = matcher[3]
+            parts.join('/')
+          elsif segment != :root_files && path.start_with?("#{segment}/")
+            path[segment.length+1..-1]
           else
-            matcher = segment_file.match("/#{Regexp.escape(name.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+))")
-            path = matcher[1]
-            file_name = matcher[2]
+            path
           end
 
           csum = self.class.checksum_cookbook_file(segment_file)
@@ -638,9 +672,9 @@ class Chef
           rs = Mash.new({
             :name => file_name,
             :path => path,
-            :checksum => csum
+            :checksum => csum,
+            :specificity => specificity,
           })
-          rs[:specificity] = specificity
 
           manifest[segment] << rs
         end

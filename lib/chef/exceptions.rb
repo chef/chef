@@ -297,5 +297,8 @@ class Chef
     # non-GET and non-HEAD request will thus raise an InvalidRedirect.
     class InvalidRedirect < StandardError; end
 
+    class DialectNotFound < ArgumentError; end
+    class CookbookFileCollision < RuntimeError; end
+
   end
 end

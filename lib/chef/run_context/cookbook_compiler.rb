@@ -101,7 +101,7 @@ class Chef
       end
 
       # Loads attributes files from cookbooks. Attributes files are loaded
-      # according to #cookbook_order; within a cookbook, +default.rb+ is loaded
+      # according to #cookbook_order; within a cookbook, +default.*+ is loaded
       # first, then the remaining attributes files in lexical sort order.
       def compile_attributes
         @events.attribute_load_start(count_files_by_segment(:attributes))
@@ -152,21 +152,19 @@ class Chef
       private
 
       def load_attributes_from_cookbook(cookbook_name)
-        list_of_attr_files = files_in_cookbook_by_segment(cookbook_name, :attributes).dup
-        if default_file = list_of_attr_files.find {|path| File.basename(path) == "default.rb" }
-          list_of_attr_files.delete(default_file)
-          load_attribute_file(cookbook_name.to_s, default_file)
+        attr_files = cookbook_collection[cookbook_name].segment_filenames_by_name(:attributes).dup
+        if default_file = attr_files.delete('default')
+          load_attribute_file(cookbook_name.to_s, 'default', default_file)
         end
 
-        list_of_attr_files.each do |filename|
-          load_attribute_file(cookbook_name.to_s, filename)
+        attr_files.sort.each do |basename, filename|
+          load_attribute_file(cookbook_name.to_s, basename, filename)
         end
       end
 
-      def load_attribute_file(cookbook_name, filename)
+      def load_attribute_file(cookbook_name, basename, filename)
         Chef::Log.debug("Node #{node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
-        attr_file_basename = ::File.basename(filename, ".rb")
-        node.include_attribute("#{cookbook_name}::#{attr_file_basename}")
+        node.include_attribute("#{cookbook_name}::#{basename}")
       rescue Exception => e
         @events.attribute_file_load_failed(filename, e)
         raise
@@ -270,7 +268,7 @@ class Chef
       def resolve_recipe(recipe_name)
         cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
         cookbook = cookbook_collection[cookbook_name]
-        cookbook.recipe_filenames_by_name[recipe_short_name]
+        cookbook.segment_filenames_by_name(:recipes)[recipe_short_name]
       end
 
 

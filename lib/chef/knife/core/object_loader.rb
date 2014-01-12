@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'chef/dialect'
+
 class Chef
   class Knife
     module Core
@@ -23,6 +25,8 @@ class Chef
 
         attr_reader :ui
         attr_reader :klass
+
+        include Chef::Mixin::ConvertToClassName
 
         class ObjectType
           FILE = 1
@@ -81,24 +85,14 @@ class Chef
         end
 
         def object_from_file(filename)
-          case filename
-          when /\.(js|json)$/
-            r = Yajl::Parser.parse(IO.read(filename))
-
-            # Chef::DataBagItem doesn't work well with the json_create method
-            if @klass == Chef::DataBagItem
-              r
-            else
-              @klass.json_create(r)
-            end
-          when /\.rb$/
-            r = klass.new
-            r.from_file(filename)
-            r
-          else
-            ui.fatal("File must end in .js, .json, or .rb")
+          flavor = convert_to_snake_case(@klass.name, 'Chef')
+          begin
+            dialect = Chef::Dialect.find_by_extension(nil, flavor, filename)
+          rescue Chef::Exceptions::DialectNotFound
+            ui.fatal("Could not find a dialect for #{filename}")
             exit 30
           end
+          dialect.send("compile_#{flavor}", @klass, filename)
         end
 
         def file_exists_and_is_readable?(file)

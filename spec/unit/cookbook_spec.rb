@@ -36,20 +36,60 @@ describe Chef::CookbookVersion do
     @cookbook.name.should == :openldap
   end
 
+  def cookbook_files(*names)
+    names.map{|name| File.join(@cookbook.root_dir, name)}
+  end
+
   it "should allow you to set the list of attribute files and create the mapping from short names to paths" do
     @cookbook.attribute_filenames = [ "attributes/one.rb", "attributes/two.rb" ]
     @cookbook.attribute_filenames.should == [ "attributes/one.rb", "attributes/two.rb" ]
-    @cookbook.attribute_filenames_by_short_filename.keys.sort.should eql(["one", "two"])
-    @cookbook.attribute_filenames_by_short_filename["one"].should == "attributes/one.rb"
-    @cookbook.attribute_filenames_by_short_filename["two"].should == "attributes/two.rb"
+    @cookbook.segment_filenames_by_name(:attributes).keys.sort.should eql(["one", "two"])
+    @cookbook.segment_filenames_by_name(:attributes)["one"].should == "attributes/one.rb"
+    @cookbook.segment_filenames_by_name(:attributes)["two"].should == "attributes/two.rb"
+  end
+
+  it "should allow you to set the list of attribute files and respect root folder shortcuts" do
+    @cookbook.attribute_filenames = cookbook_files("attributes/one.rb", "attributes.rb")
+    @cookbook.attribute_filenames.should == cookbook_files("attributes/one.rb", "attributes.rb")
+    @cookbook.segment_filenames_by_name(:attributes).keys.sort.should eql(["default", "one"])
+    @cookbook.segment_filenames_by_name(:attributes)["default"].should end_with("attributes.rb")
+    @cookbook.segment_filenames_by_name(:attributes)["one"].should end_with("attributes/one.rb")
+  end
+
+  it "should raise an exception with both a default attribute file and a root shortcut" do
+    @cookbook.attribute_filenames = cookbook_files("attributes/default.rb", "attributes.rb")
+    lambda { @cookbook.segment_filenames_by_name(:attributes) }.should raise_error(Chef::Exceptions::CookbookFileCollision)
+  end
+
+  it "should raise an exception with multiple overlapping attribute files" do
+    @cookbook.attribute_filenames = cookbook_files("attributes/default.rb", "attributes/default.json")
+    lambda { @cookbook.segment_filenames_by_name(:attributes) }.should raise_error(Chef::Exceptions::CookbookFileCollision)
   end
 
   it "should allow you to set the list of recipe files and create the mapping of recipe short name to filename" do
     @cookbook.recipe_filenames = [ "recipes/one.rb", "recipes/two.rb" ]
     @cookbook.recipe_filenames.should == [ "recipes/one.rb", "recipes/two.rb" ]
-    @cookbook.recipe_filenames_by_name.keys.sort.should eql(["one", "two"])
-    @cookbook.recipe_filenames_by_name["one"].should == "recipes/one.rb"
-    @cookbook.recipe_filenames_by_name["two"].should == "recipes/two.rb"
+    @cookbook.segment_filenames_by_name(:recipes).keys.sort.should eql(["one", "two"])
+    @cookbook.segment_filenames_by_name(:recipes)["one"].should == "recipes/one.rb"
+    @cookbook.segment_filenames_by_name(:recipes)["two"].should == "recipes/two.rb"
+  end
+
+  it "should allow you to set the list of recipe files and respect root folder shortcuts" do
+    @cookbook.recipe_filenames = cookbook_files("recipes/one.rb", "recipe.rb")
+    @cookbook.recipe_filenames.should == cookbook_files("recipes/one.rb", "recipe.rb")
+    @cookbook.segment_filenames_by_name(:recipes).keys.sort.should eql(["default", "one"])
+    @cookbook.segment_filenames_by_name(:recipes)["default"].should end_with("recipe.rb")
+    @cookbook.segment_filenames_by_name(:recipes)["one"].should end_with("recipes/one.rb")
+  end
+
+  it "should raise an exception with both a default recipe file and a root shortcut" do
+    @cookbook.recipe_filenames = cookbook_files("recipes/default.rb", "recipe.rb")
+    lambda { @cookbook.segment_filenames_by_name(:recipes) }.should raise_error(Chef::Exceptions::CookbookFileCollision)
+  end
+
+  it "should raise an exception with multiple overlapping recipe files" do
+    @cookbook.recipe_filenames = cookbook_files("recipes/default.rb", "recipes/default.json")
+    lambda { @cookbook.segment_filenames_by_name(:recipes) }.should raise_error(Chef::Exceptions::CookbookFileCollision)
   end
 
   it "should generate a list of recipes by fully-qualified name" do
@@ -79,6 +119,29 @@ describe Chef::CookbookVersion do
 
   it "should raise an ArgumentException if you try to load a bad recipe name" do
     lambda { @cookbook.load_recipe("doesnt_exist", @node) }.should raise_error(ArgumentError)
+  end
+
+  context 'when the cookbook has root shortcuts' do
+    before(:each) do
+      @cookbook = @cookbook_collection[:root_shortcuts]
+    end
+
+    it "should generate a list of recipes by fully-qualified name" do
+      @cookbook.fully_qualified_recipe_names.sort.should == ['root_shortcuts::default', 'root_shortcuts::two']
+    end
+
+    it "should locate attribute files from a root shortcut" do
+      @cookbook.segment_filenames(:attributes).should == cookbook_files('attributes.rb')
+    end
+
+    it "should locate recipe files from a root shortcut" do
+      @cookbook.segment_filenames(:recipes).sort.should == cookbook_files('recipe.rb', 'recipes/two.rb')
+    end
+
+    it "should locate library files from a root shortcut" do
+      @cookbook.segment_filenames(:libraries).should == cookbook_files('library.rb')
+    end
+
   end
 
 end
