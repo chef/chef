@@ -116,12 +116,18 @@ describe Chef::Provider::Route do
       @run_context.resource_collection << @resource_add
       @provider.stub!(:run_command).and_return(true)
 
+      @config_filename = "/etc/sysconfig/network-scripts/route-eth0"
+      @config = double("chef-resource-file")
+      @config.should_receive(:content) do |arg|
+        arg.split("\n").should have(1).items
+        arg.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
+      end
+      @config.should_receive(:run_action).with(:create)
+      @config.should_receive(:updated?).and_return(true)
+      @provider.should_receive(:resource_for_config).with(@config_filename).and_return(@config)
+
       @resource_add.action(:add)
       @provider.run_action(:add)
-      @route_config_file = "/etc/sysconfig/network-scripts/route-eth0"
-      route_file = File.read(@route_config_file)
-      route_file.split("\n").should have(1).items
-      route_file.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
     end
   end
 
