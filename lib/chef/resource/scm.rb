@@ -172,6 +172,14 @@ class Chef
         )
       end
 
+      def locale(arg=nil)
+        set_or_return(
+          :locale,
+          arg,
+          :kind_of => String
+        )
+      end
+
     end
   end
 end

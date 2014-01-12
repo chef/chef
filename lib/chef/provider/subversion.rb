@@ -154,6 +154,10 @@ class Chef
       end
 
       def run_options(run_opts={})
+        run_opts[:environment] = {}
+        run_opts[:environment]["LC_ALL"] = ENV["LC_ALL"] if ENV['LC_ALL'] and not ENV['LC_ALL'].empty?
+        run_opts[:environment]["LC_ALL"] = ENV["LANG"] if ENV['LANG'] and not ENV['LANG'].empty?
+        run_opts[:environment]["LC_ALL"] = @new_resource.locale if @new_resource.locale
         run_opts[:user] = @new_resource.user if @new_resource.user
         run_opts[:group] = @new_resource.group if @new_resource.group
         run_opts[:timeout] = @new_resource.timeout if @new_resource.timeout
