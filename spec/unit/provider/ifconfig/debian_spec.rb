@@ -42,27 +42,38 @@ describe Chef::Provider::Ifconfig::Debian do
 
     @config_filename_ifaces = "/etc/network/interfaces"
     @config_filename_ifcfg = "/etc/network/interfaces.d/ifcfg-#{@new_resource.device}"
+
+    @config_ifcfg = double("chef-resource-file")
+    @provider.should_receive(:resource_for_config).with(@config_filename_ifcfg).and_return(@config_ifcfg)
   end
 
   describe "generate_config for action_add" do
+    before do
+      File.should_receive(:directory?).with(File.dirname(@config_filename_ifcfg)).and_return(false)
+      Dir.should_receive(:mkdir).with(File.dirname(@config_filename_ifcfg))
+      @config_ifaces = double("chef-resource-file")
+      @config_ifaces.should_receive(:insert_line_if_no_match){|*args| @config_ifaces_args = args }
+      @config_ifaces.should_receive(:write_file)
+      Chef::Util::FileEdit.should_receive(:new).with('/etc/network/interfaces').and_return(@config_ifaces)
+      @config_ifcfg.should_receive(:content){|arg| @config_ifcfg_content = arg }
+      @config_ifcfg.should_receive(:run_action).with(:create)
+      @config_ifcfg.should_receive(:updated?).and_return(true)
+    end
 
     it "should create network-scripts directory" do
       @provider.run_action(:add)
-      Dir.exist?(File.dirname(@config_filename_ifcfg)).should be_true
     end
 
     it "should write configure network-scripts directory" do
       @provider.run_action(:add)
-      config_ifaces = File.read(@config_filename_ifaces)
-      config_ifaces.should match(/^\s*source\s+\/etc\/network\/interfaces[.]d\/[*]\s*$/)
+      @config_ifaces_args.should == ['^\s*source\s+/etc/network/interfaces[.]d/[*]\s*$', 'source /etc/network/interfaces.d/*']
     end
 
     it "should write a network-script" do
       @provider.run_action(:add)
-      config_ifcfg = File.read(@config_filename_ifcfg)
-      config_ifcfg.should match(/^iface eth0 inet static\s*$/)
-      config_ifcfg.should match(/^\s+address 10\.0\.0\.1\s*$/)
-      config_ifcfg.should match(/^\s+netmask 255\.255\.254\.0\s*$/)
+      @config_ifcfg_content.should match(/^iface eth0 inet static\s*$/)
+      @config_ifcfg_content.should match(/^\s+address 10\.0\.0\.1\s*$/)
+      @config_ifcfg_content.should match(/^\s+netmask 255\.255\.254\.0\s*$/)
     end
   end
 
@@ -70,8 +81,9 @@ describe Chef::Provider::Ifconfig::Debian do
 
     it "should delete network-script if it exists" do
       @current_resource.device @new_resource.device
+      @config_ifcfg.should_receive(:run_action).with(:delete)
+      @config_ifcfg.should_receive(:updated?).and_return(true)
       @provider.run_action(:delete)
-      File.exist?(@config_filename_ifcfg).should be_false
     end
   end
 end

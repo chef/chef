@@ -37,6 +37,10 @@ describe Chef::Provider::Ifconfig::Redhat do
     status = double("Status", :exitstatus => 0)
     @provider.instance_variable_set("@status", status)
     @provider.current_resource = @current_resource
+
+    config_filename = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
+    @config = double("chef-resource-file")
+    @provider.should_receive(:resource_for_config).with(config_filename).and_return(@config)
   end
 
   describe "generate_config for action_add" do
@@ -44,12 +48,14 @@ describe Chef::Provider::Ifconfig::Redhat do
     it "should write network-script for centos" do
       @provider.stub(:load_current_resource)
       @provider.stub(:run_command)
-      config_filename = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
+      @config.should_receive(:content) do |arg|
+        arg.should match(/^\s*DEVICE=eth0\s*$/)
+        arg.should match(/^\s*IPADDR=10\.0\.0\.1\s*$/)
+        arg.should match(/^\s*NETMASK=255\.255\.254\.0\s*$/)
+      end
+      @config.should_receive(:run_action).with(:create)
+      @config.should_receive(:updated?).and_return(true)
       @provider.run_action(:add)
-      config = File.read(config_filename)
-      config.should match(/^\s*DEVICE=eth0\s*$/)
-      config.should match(/^\s*IPADDR=10\.0\.0\.1\s*$/)
-      config.should match(/^\s*NETMASK=255\.255\.254\.0\s*$/)
     end
   end
 
@@ -59,9 +65,9 @@ describe Chef::Provider::Ifconfig::Redhat do
       @current_resource.device @new_resource.device
       @provider.stub(:load_current_resource)
       @provider.stub(:run_command)
-      config_filename =  "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
+      @config.should_receive(:run_action).with(:delete)
+      @config.should_receive(:updated?).and_return(true)
       @provider.run_action(:delete)
-      File.exist?(config_filename).should be_false
     end
   end
 end
