@@ -299,7 +299,7 @@ class Chef
     def build_node
       # Allow user to override the environment of a node by specifying
       # a config parameter.
-      if Chef::Config[:environment] && !Chef::Config[:environment].chop.empty?
+      if Chef::Config[:environment] && !Chef::Config[:environment].chomp.empty?
         @node.chef_environment(Chef::Config[:environment])
       end
 
@@ -588,4 +588,3 @@ end
 require 'chef/cookbook_loader'
 require 'chef/cookbook_version'
 require 'chef/cookbook/synchronizer'
-
