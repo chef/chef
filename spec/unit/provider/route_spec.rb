@@ -212,7 +212,12 @@ describe Chef::Provider::Route do
 
   describe Chef::Provider::Route, "generate_config method" do
     before do
-      @route_config_file = "/etc/sysconfig/network-scripts/route-eth0"
+      @config_filename = "/etc/sysconfig/network-scripts/route-eth0"
+      @config = double("chef-resource-file")
+      @config.should_receive(:content){|arg| @config_content = arg }
+      @config.should_receive(:run_action).with(:create)
+      @config.should_receive(:updated?).and_return(true)
+      @provider.should_receive(:resource_for_config).with(@config_filename).and_return(@config)
     end
     %w[ centos redhat fedora ].each do |platform|
       it "should write a route file on #{platform} platform" do
@@ -220,7 +225,6 @@ describe Chef::Provider::Route do
 
         @run_context.resource_collection << @new_resource
         @provider.generate_config
-        File.exist?(@route_config_file).should be_true
       end
     end
 
@@ -233,11 +237,10 @@ describe Chef::Provider::Route do
 
       @provider.action = :add
       @provider.generate_config
-      route_file = File.read(@route_config_file)
-      route_file.split("\n").should have(3).items
-      route_file.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
-      route_file.should match(/^192\.168\.2\.0\/24 via 192\.168\.0\.1$/)
-      route_file.should match(/^192\.168\.3\.0\/24 via 192\.168\.0\.1$/)
+      @config_content.split("\n").should have(3).items
+      @config_content.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
+      @config_content.should match(/^192\.168\.2\.0\/24 via 192\.168\.0\.1$/)
+      @config_content.should match(/^192\.168\.3\.0\/24 via 192\.168\.0\.1$/)
     end
   end
 end
