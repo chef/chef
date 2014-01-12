@@ -46,8 +46,8 @@ describe Chef::Provider::Subversion do
     it "converts resource attributes to options and set LC_ALL value for run_command and popen4" do
       @provider.run_options.should == {:environment => {"LC_ALL" => "en_GB.UTF-8"}}
       @resource.user 'deployninja'
-      @resource.locale 'ja_JP.UTF-8'
-      @provider.run_options.should == {:environment => {"LC_ALL" => "ja_JP.UTF-8"}, :user => "deployninja"}
+      @resource.locale 'en_US.UTF-8'
+      @provider.run_options.should == {:environment => {"LC_ALL" => "en_US.UTF-8"}, :user => "deployninja"}
     end
   end
 
@@ -56,8 +56,8 @@ describe Chef::Provider::Subversion do
       ENV.delete("LANG")
       @provider.run_options.should == {:environment => {"LC_ALL" => "C"}}
       @resource.user 'deployninja'
-      @resource.locale 'ja_JP.UTF-8'
-      @provider.run_options.should == {:environment => {"LC_ALL" => "ja_JP.UTF-8"}, :user => "deployninja"}
+      @resource.locale 'en_US.UTF-8'
+      @provider.run_options.should == {:environment => {"LC_ALL" => "en_US.UTF-8"}, :user => "deployninja"}
     end
   end
 
@@ -66,8 +66,8 @@ describe Chef::Provider::Subversion do
       ENV.delete("LC_ALL")
       @provider.run_options.should == {:environment => {"LC_ALL" => "en_GB.UTF-8"}}
       @resource.user 'deployninja'
-      @resource.locale 'ja_JP.UTF-8'
-      @provider.run_options.should == {:environment => {"LC_ALL" => "ja_JP.UTF-8"}, :user => "deployninja"}
+      @resource.locale 'en_US.UTF-8'
+      @provider.run_options.should == {:environment => {"LC_ALL" => "en_US.UTF-8"}, :user => "deployninja"}
     end
   end
 
