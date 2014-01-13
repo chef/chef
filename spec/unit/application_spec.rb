@@ -163,6 +163,13 @@ describe Chef::Application do
       @app.configure_logging
     end
 
+    it "should raise fatals if log location is invalid" do
+      Chef::Config[:log_location] = "/tmp/non-existing-dir/logfile"
+      Chef::Log.should_receive(:fatal).at_least(:once)
+      Process.should_receive(:exit)
+      @app.configure_logging
+    end
+
     shared_examples_for "log_level_is_auto" do
       context "when STDOUT is to a tty" do
         before do
@@ -304,11 +311,6 @@ describe Chef::Application do
 
       after(:each) do
         @config_file.unlink
-      end
-
-      it "should raise informative fatals for missing log file dir" do
-        create_config_file('log_location "/tmp/non-existing-dir/logfile"')
-        raises_informative_fatals_on_configure_chef
       end
 
       it "should raise informative fatals for badly written config" do
