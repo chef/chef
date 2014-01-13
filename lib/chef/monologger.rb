@@ -48,9 +48,9 @@ class MonoLogger < Logger
         @dev = log
       else
         @dev = open_logfile(log)
-        @dev.sync = true
         @filename = log
       end
+      @dev.sync = true
     end
 
     def write(message)
@@ -75,7 +75,6 @@ class MonoLogger < Logger
 
     def create_logfile(filename)
       logdev = open(filename, (File::WRONLY | File::APPEND | File::CREAT))
-      logdev.sync = true
       add_log_header(logdev)
       logdev
     end

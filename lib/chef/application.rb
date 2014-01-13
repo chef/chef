@@ -125,7 +125,6 @@ class Chef::Application
 
   def configure_stdout_logger
     stdout_logger = MonoLogger.new(STDOUT)
-    STDOUT.sync = true
     stdout_logger.formatter = Chef::Log.logger.formatter
     Chef::Log.loggers <<  stdout_logger
   end
