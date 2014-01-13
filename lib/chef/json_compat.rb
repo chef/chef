@@ -17,8 +17,8 @@
 
 # Wrapper class for interacting with JSON.
 
-require 'json'
-require 'yajl'
+require 'ffi_yajl'
+require 'ffi_yajl/json_gem'  # XXX: parts of chef require JSON gem's Hash#to_json monkeypatch
 
 class Chef
   class JSONCompat
@@ -40,20 +40,11 @@ class Chef
 
     class <<self
 
-      # See CHEF-1292/PL-538. Increase the max nesting for JSON, which defaults
-      # to 19, and isn't enough for some (for example, a Node within a Node)
-      # structures.
-      def opts_add_max_nesting(opts)
-        if opts.nil? || !opts.has_key?(:max_nesting)
-          opts = opts.nil? ? Hash.new : opts.clone
-          opts[:max_nesting] = JSON_MAX_NESTING
-        end
-        opts
-      end
+      # opts_add_max_nesting() removed -- libyajl does not have a configurable max nesting depth
 
       # Just call the JSON gem's parse method with a modified :max_nesting field
       def from_json(source, opts = {})
-        obj = ::Yajl::Parser.parse(source)
+        obj = ::FFI_Yajl::Parser.parse(source)
 
         # JSON gem requires top level object to be a Hash or Array (otherwise
         # you get the "must contain two octets" error). Yajl doesn't impose the
@@ -99,11 +90,11 @@ class Chef
       end
 
       def to_json(obj, opts = nil)
-        obj.to_json(opts_add_max_nesting(opts))
+        obj.to_json(opts)
       end
 
       def to_json_pretty(obj, opts = nil)
-        ::JSON.pretty_generate(obj, opts_add_max_nesting(opts))
+        ::JSON.pretty_generate(obj, opts)
       end
 
 
