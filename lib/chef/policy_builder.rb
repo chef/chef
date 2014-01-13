@@ -51,6 +51,7 @@ class Chef
     attr_reader :override_runlist
     attr_reader :original_runlist
     attr_reader :run_context
+    attr_reader :run_list_expansion
 
     def initialize(node_name, ohai_data, json_attribs, override_runlist, events)
       @node_name = node_name
@@ -61,6 +62,7 @@ class Chef
 
       @node = nil
       @original_runlist = nil
+      @run_list_expansion = nil
     end
 
     def setup_run_context(specific_recipes=nil)
@@ -71,7 +73,7 @@ class Chef
         cookbook_collection = Chef::CookbookCollection.new(cl)
         run_context = Chef::RunContext.new(node, cookbook_collection, @events)
       else
-        Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, rest) }
+        Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, api_service) }
         cookbook_hash = sync_cookbooks
         cookbook_collection = Chef::CookbookCollection.new(cookbook_hash)
         run_context = Chef::RunContext.new(node, cookbook_collection, @events)
