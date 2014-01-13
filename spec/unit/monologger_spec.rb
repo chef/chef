@@ -20,6 +20,12 @@ require 'tempfile'
 require 'spec_helper'
 
 describe MonoLogger do
+  it "should disable buffering when passed an IO stream" do
+    STDOUT.sync = false
+    MonoLogger.new(STDOUT)
+    STDOUT.sync.should == true
+  end
+
   describe "when given an object that responds to write and close e.g. IO" do
     it "should use the object directly" do
       stream = StringIO.new
