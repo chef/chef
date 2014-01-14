@@ -103,6 +103,8 @@ describe Chef::Provider::HttpRequest do
       end
     end
 
+    # CHEF-4762: we expect a nil return value for a "200 Success" response
+    # and false for a "304 Not Modified" response
     describe "action_head" do
       before do
         @provider.http = @http

@@ -36,7 +36,8 @@ class Chef
       # Send a HEAD request to @new_resource.url, with ?message=@new_resource.message
       def action_head
         message = check_message(@new_resource.message)
-        # returns true from Chef::REST if returns 2XX (Net::HTTPSuccess)
+        # CHEF-4762: we expect a nil return value from Chef::HTTP for a "200 Success" response
+        # and false for a "304 Not Modified" response
         modified = @http.head(
           "#{@new_resource.url}?message=#{message}",
           @new_resource.headers
