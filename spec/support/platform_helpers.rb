@@ -27,9 +27,15 @@ def windows?
   !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
 end
 
+require 'ruby-wmi' if windows?
+
+def windows_domain_joined?
+  return false unless windows?
+  WMI::Win32_ComputerSystem.find(:first).PartOfDomain
+end
+
 def windows_win2k3?
   return false unless windows?
-  require 'ruby-wmi'
 
   host = WMI::Win32_OperatingSystem.find(:first)
   (host.version && host.version.start_with?("5.2"))
