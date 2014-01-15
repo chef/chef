@@ -150,20 +150,27 @@ class Chef
                  q = Chef::Search::Query.new
                  @action_nodes = q.search(:node, @name_args[0])[0]
                  @action_nodes.each do |item|
-                   # we should skip the loop to next iteration if the item returned by the search is nil
+                   # we should skip the loop to next iteration if the item
+                   # returned by the search is nil
                    next if item.nil?
-                   # if a command line attribute was not passed, and we have a cloud public_hostname, use that.
-                   # see #configure_attribute for the source of config[:attribute] and config[:override_attribute]
-                   if !config[:override_attribute] && item[:cloud] and item[:cloud][:public_hostname]
-                     i = item[:cloud][:public_hostname]
-                   elsif config[:override_attribute]
+                   # if a command line attribute was not passed, and we have a
+                   # cloud public_hostname, use that.  see #configure_attribute
+                   # for the source of config[:attribute] and
+                   # config[:override_attribute]
+                   if config[:override_attribute]
                      i = extract_nested_value(item, config[:override_attribute])
+                   elsif item[:cloud] && item[:cloud][:public_hostname]
+                     i = item[:cloud][:public_hostname]
                    else
                      i = extract_nested_value(item, config[:attribute])
                    end
-                   # next if we couldn't find the specified attribute in the returned node object
+                   # next if we couldn't find the specified attribute in the
+                   # returned node object
                    next if i.nil?
-                   r.push(i)
+                   # if ohai cloud plugin provides it, change to
+                   # item[:cloud][:ssh_port]
+                   srv = [i, item[:azure].nil? ? nil : item[:azure][:public_ssh_port]]
+                   r.push(srv)
                  end
                  r
                end
@@ -182,19 +189,23 @@ class Chef
 
       def session_from_list(list)
         list.each do |item|
-          Chef::Log.debug("Adding #{item}")
+          host = item.first
+          Chef::Log.debug("Adding #{host}")
           session_opts = {}
 
-          ssh_config = Net::SSH.configuration_for(item)
+          ssh_config = Net::SSH.configuration_for(host)
 
           # Chef::Config[:knife][:ssh_user] is parsed in #configure_user and written to config[:ssh_user]
           user = config[:ssh_user] || ssh_config[:user]
-          hostspec = user ? "#{user}@#{item}" : item
+          hostspec = user ? "#{user}@#{host}" : host
           session_opts[:keys] = File.expand_path(config[:identity_file]) if config[:identity_file]
           session_opts[:keys_only] = true if config[:identity_file]
           session_opts[:password] = config[:ssh_password] if config[:ssh_password]
           session_opts[:forward_agent] = config[:forward_agent]
-          session_opts[:port] = config[:ssh_port] || Chef::Config[:knife][:ssh_port] || ssh_config[:port]
+          session_opts[:port] = config[:ssh_port] ||
+                                Chef::Config[:knife][:ssh_port] ||
+                                item.last || # Use cloud port if available
+                                ssh_config[:port]
           session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
 
           if !config[:host_key_verify]
@@ -204,7 +215,7 @@ class Chef
 
           session.use(hostspec, session_opts)
 
-          @longest = item.length if item.length > @longest
+          @longest = host.length if host.length > @longest
         end
 
         session
