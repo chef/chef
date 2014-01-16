@@ -196,7 +196,7 @@ describe Chef::Resource::User, metadata do
           pw_entry.home.should == "/home/#{username}"
         end
 
-        if OHAI_SYSTEM["platform_family"] == "rhel"
+        if %w{rhel fedora}.include?(OHAI_SYSTEM["platform_family"])
           # Inconsistent behavior. See: CHEF-2205
           it "creates the home dir when not explicitly asked to on RHEL (XXX)" do
             File.should exist("/home/#{username}")
@@ -340,7 +340,7 @@ describe Chef::Resource::User, metadata do
           let(:existing_manage_home) { false }
           let(:manage_home) { true }
 
-          if OHAI_SYSTEM["platform_family"] == "rhel"
+          if %w{rhel fedora}.include?(OHAI_SYSTEM["platform_family"])
             # Inconsistent behavior. See: CHEF-2205
             it "created the home dir b/c of CHEF-2205 so it still exists" do
               # This behavior seems contrary to expectation and non-convergent.
