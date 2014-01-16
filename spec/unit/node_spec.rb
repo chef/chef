@@ -461,6 +461,22 @@ describe Chef::Node do
     end
   end
 
+  describe "loaded_recipe" do
+    it "should not add a recipe that is already in the recipes list" do
+      node.automatic_attrs[:recipes] = [ "nginx::module" ]
+      node.loaded_recipe(:nginx, "module")
+      expect(node.automatic_attrs[:recipes].length).to eq(1)
+    end
+
+    it "should add a recipe that is not already in the recipes list" do
+      node.automatic_attrs[:recipes] = [ "nginx::other_module" ]
+      node.loaded_recipe(:nginx, "module")
+      expect(node.automatic_attrs[:recipes].length).to eq(2)
+      expect(node.recipe?("nginx::module")).to be_true
+      expect(node.recipe?("nginx::other_module")).to be_true
+    end
+  end
+
   describe "when querying for recipes in the run list" do
     context "when a recipe is in the top level run list" do
       before do
