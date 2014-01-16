@@ -45,9 +45,10 @@ describe Chef::RunContext do
 
   describe "loading cookbooks for a run list" do
     before do
-      @node.should_receive(:loaded_recipe).with("test")
-      @node.should_receive(:loaded_recipe).with("test::one")
-      @node.should_receive(:loaded_recipe).with("test::two")
+      @node.run_list << "test" << "test::one" << "test::two"
+      @node.should_receive(:loaded_recipe).with(:test, "default")
+      @node.should_receive(:loaded_recipe).with(:test, "one")
+      @node.should_receive(:loaded_recipe).with(:test, "two")
       @run_context.load(@node.run_list.expand('_default'))
     end
 
