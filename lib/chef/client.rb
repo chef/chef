@@ -293,7 +293,7 @@ class Chef
     end
 
     def node_name
-      name = Chef::Config[:node_name] || ohai[:fqdn] || ohai[:hostname]
+      name = Chef::Config[:node_name] || ohai[:fqdn] || ohai[:machinename] || ohai[:hostname]
       Chef::Config[:node_name] = name
 
       unless name
