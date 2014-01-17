@@ -115,5 +115,4 @@ describe Chef::Resource::File do
       end
     end
   end
-
 end
