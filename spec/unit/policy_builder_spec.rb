@@ -26,7 +26,7 @@ describe Chef::PolicyBuilder do
   let(:json_attribs) { {"run_list" => []} }
   let(:override_runlist) { "recipe[foo::default]" }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
-  let(:policy_builder) { Chef::PolicyBuilder.new(node_name, ohai_data, json_attribs, override_runlist, events) }
+  let(:policy_builder) { Chef::PolicyBuilder::ExpandNodeObject.new(node_name, ohai_data, json_attribs, override_runlist, events) }
 
   # All methods that Chef::Client calls on this class.
   describe "Public API" do
