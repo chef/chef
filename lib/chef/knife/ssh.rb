@@ -65,10 +65,9 @@ class Chef
         :description => "The ssh username"
 
       option :ssh_password,
-        :short => "-P [PASSWORD]",
-        :long => "--ssh-password [PASSWORD]",
-        :description => "The ssh password - will prompt if flag is specified but no password is given",
-        :default => false
+        :short => "-P PASSWORD",
+        :long => "--ssh-password PASSWORD",
+        :description => "The ssh password"
 
       option :ssh_port,
         :short => "-p PORT",
@@ -433,15 +432,6 @@ class Chef
                              Chef::Config[:knife][:ssh_user])
       end
 
-      def configure_password
-        if config[:ssh_password].nil?
-          config[:ssh_password] = get_password
-        else
-          config[:ssh_password] = get_stripped_unfrozen_value(config[:ssh_password] ||
-                             Chef::Config[:knife][:ssh_password])
-        end
-      end
-
       def configure_identity_file
         config[:identity_file] = get_stripped_unfrozen_value(config[:identity_file] ||
                              Chef::Config[:knife][:ssh_identity_file])
@@ -458,7 +448,6 @@ class Chef
 
         configure_attribute
         configure_user
-        configure_password
         configure_identity_file
         configure_gateway
         configure_session
