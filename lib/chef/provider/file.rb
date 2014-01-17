@@ -355,24 +355,21 @@ class Chef
 
         # the file? on the next line suppresses the case in why-run when we have a not-file here that would have otherwise been removed
         if ::File.file?(@new_resource.path) && contents_changed?
-          if @new_resource.sensitive
-            @new_resource.diff('suppressed sensitive resource')
+          description = [ "update content in file #{@new_resource.path} from \
+#{short_cksum(@current_resource.checksum)} to #{short_cksum(checksum(tempfile.path))}" ]
 
-            converge_by(['suppressed sensitive resource']) do
-              update_file_contents
-            end
+          # Hide the diff output if the resource is marked as a sensitive resource
+          if @new_resource.sensitive
+            @new_resource.diff("suppressed sensitive resource")
+            description << "suppressed sensitive resource"
           else
             diff.diff(@current_resource.path, tempfile.path)
-
             @new_resource.diff( diff.for_reporting ) unless file_created?
-
-            description = [ "update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(checksum(tempfile.path))}" ]
-
             description << diff.for_output
+          end
 
-            converge_by(description) do
-              update_file_contents
-            end
+          converge_by(description) do
+            update_file_contents
           end
         end
 
@@ -434,4 +431,3 @@ class Chef
     end
   end
 end
-

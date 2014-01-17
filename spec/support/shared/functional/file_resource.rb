@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'pry'
+
 shared_context "deploying with move" do
   before do
     Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
@@ -133,25 +135,35 @@ shared_examples_for "a file with the wrong content" do
 
   end
 
-  context "`.diff`'s enabled" do
-    describe '.sensitive' do
-      context "`.sensitive`'s insensitive by default" do
+  context "when diff is enabled" do
+    describe 'sensitive attribute' do
+      context "should be insensitive by default" do
         it { expect(resource.sensitive).to(be_false) }
       end
 
-      context "`.sensitive`'s sensitive" do
+      context "when set" do
         before { resource.sensitive(true) }
 
-        it { expect(resource.sensitive).to(be_true) }
+        it "should be set on the resource" do
+          expect(resource.sensitive).to(be_true)
+        end
 
-        context '`.sensitive` suppresses a sensitive resource' do
-          subject(:provider) { resource.provider_for_action(:create) }
+        context "when running :create action" do
+          let(:provider) { resource.provider_for_action(:create) }
+          let(:reporter_messages) { provider.instance_variable_get("@converge_actions").actions[0][0] }
 
-          before { provider.run_action }
+          before do
+            provider.run_action
+          end
 
-          it { expect(resource.diff).to(include('suppressed sensitive resource')) }
+          it "should suppress the diff" do
+            expect(resource.diff).to(include('suppressed sensitive resource'))
+            expect(reporter_messages[1]).to eq("suppressed sensitive resource")
+          end
 
-          it { expect(provider.instance_variable_get("@converge_actions").actions[0][0]).to(eq(['suppressed sensitive resource'])) }
+          it "should still include the updated checksums" do
+            expect(reporter_messages[0]).to include("update content in file")
+          end
         end
       end
     end
