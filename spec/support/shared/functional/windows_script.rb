@@ -23,7 +23,7 @@ shared_context Chef::Resource::WindowsScript do
   before(:all) do
 
     ohai_reader = Ohai::System.new
-    ohai_reader.all_plugins(["os", "platform"])
+    ohai_reader.all_plugins("platform")
 
     new_node = Chef::Node.new
     new_node.consume_external_attrs(ohai_reader.data,{})

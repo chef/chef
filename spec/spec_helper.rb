@@ -87,7 +87,7 @@ Dir["spec/support/**/*.rb"].
   each { |f| require f }
 
 OHAI_SYSTEM = Ohai::System.new
-OHAI_SYSTEM.all_plugins(["os", "platform"])
+OHAI_SYSTEM.all_plugins("platform")
 TEST_PLATFORM = OHAI_SYSTEM["platform"].dup.freeze
 TEST_PLATFORM_VERSION = OHAI_SYSTEM["platform_version"].dup.freeze
 
