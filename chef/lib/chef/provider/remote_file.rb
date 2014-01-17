@@ -37,8 +37,13 @@ class Chef
         if current_resource_matches_target_checksum?
           Chef::Log.debug("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
         else
-          rest = Chef::REST.new(@new_resource.source, nil, nil, http_client_opts)
-          raw_file = rest.streaming_request(rest.create_url(@new_resource.source), {})
+          fileuri = URI.parse(@new_resource.source)
+          if local_file?(fileuri)
+            raw_file = read_local_file(fileuri)
+          else
+            rest = Chef::REST.new(@new_resource.source, nil, nil, http_client_opts)
+            raw_file = rest.streaming_request(rest.create_url(@new_resource.source), {})
+          end
           if matches_current_checksum?(raw_file)
             Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
           else
@@ -63,6 +68,16 @@ class Chef
 
       def current_resource_matches_target_checksum?
         @new_resource.checksum && @current_resource.checksum && @current_resource.checksum =~ /^#{Regexp.escape(@new_resource.checksum)}/
+      end
+
+      def local_file?(uri)
+          true if uri.scheme == "file"
+      end
+
+      def read_local_file(uri)
+         tf = Tempfile.open("chef-rest")
+         ::File.open(uri.path, "rb") {|io| tf << io.read}
+         tf.close
       end
 
       def matches_current_checksum?(candidate_file)
