@@ -45,7 +45,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
 
   before(:all) do
     @ohai = Ohai::System.new
-    @ohai.require_plugin("os")
+    @ohai.all_plugins("os")
   end
 
   let(:node) do

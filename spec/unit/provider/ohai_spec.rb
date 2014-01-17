@@ -42,7 +42,6 @@ describe Chef::Provider::Ohai do
       }
     }
     mock_ohai.stub!(:all_plugins).and_return(true)
-    mock_ohai.stub!(:require_plugin).and_return(true)
     mock_ohai.stub!(:data).and_return(mock_ohai[:data],
                                       mock_ohai[:data2])
     Ohai::System.stub!(:new).and_return(mock_ohai)
