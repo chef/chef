@@ -64,12 +64,12 @@ class Chef
         :long => "--ssh-user USERNAME",
         :description => "The ssh username"
 
-      option :ssh_password,
+      option :ssh_password_ng,
         :short => "-P [PASSWORD]",
         :long => "--ssh-password [PASSWORD]",
         :description => "The ssh password - will prompt if flag is specified but no password is given",
-        # default to a value that can not be a password (boolean) 
-        # so we can effectively test if this parameter was specified 
+        # default to a value that can not be a password (boolean)
+        # so we can effectively test if this parameter was specified
         # without a vlaue
         :default => false
 
@@ -437,15 +437,20 @@ class Chef
       end
 
       def configure_password
-        if config[:ssh_password].nil?
+        if config.has_key?(:ssh_password_ng) && config[:ssh_password_ng].nil?
           # If the parameter is called on the command line with no value
-          # it will set :ssh_password = nil
+          # it will set :ssh_password_ng = nil
           # This is where we want to trigger a prompt for password
           config[:ssh_password] = get_password
         else
+          # if ssh_password_ng is false then it has not been set at all, and we may be in knife ec2 and still
+          # using an old config[:ssh_password].  this is backwards compatibility.  all knife cloud plugins should
+          # be updated to use ssh_password_ng with a default of false and ssh_password should be retired, (but
+          # we'll still need to use the ssh_password out of knife.rb if we find that).
+          ssh_password = config.has_key?(:ssh_password_ng) ? config[:ssh_password_ng] : config[:ssh_password]
           # Otherwise, the password has either been specified on the command line,
           # in knife.rb, or key based auth will be attempted
-          config[:ssh_password] = get_stripped_unfrozen_value(config[:ssh_password] ||
+          config[:ssh_password] = get_stripped_unfrozen_value(ssh_password ||
                              Chef::Config[:knife][:ssh_password])
         end
       end
