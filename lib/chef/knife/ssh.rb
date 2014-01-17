@@ -68,9 +68,6 @@ class Chef
         :short => "-P [PASSWORD]",
         :long => "--ssh-password [PASSWORD]",
         :description => "The ssh password - will prompt if flag is specified but no password is given",
-        # default to a value that can not be a password (boolean) 
-        # so we can effectively test if this parameter was specified 
-        # without a vlaue
         :default => false
 
       option :ssh_port,
@@ -438,13 +435,8 @@ class Chef
 
       def configure_password
         if config[:ssh_password].nil?
-          # If the parameter is called on the command line with no value
-          # it will set :ssh_password = nil
-          # This is where we want to trigger a prompt for password
           config[:ssh_password] = get_password
         else
-          # Otherwise, the password has either been specified on the command line,
-          # in knife.rb, or key based auth will be attempted
           config[:ssh_password] = get_stripped_unfrozen_value(config[:ssh_password] ||
                              Chef::Config[:knife][:ssh_password])
         end
