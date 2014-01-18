@@ -110,11 +110,11 @@ class Chef
                 :command => command
               )
               Chef::Log.info("#{@new_resource} added")
-              # Write out the config files
-              generate_config
             end
           end
         end
+        # Write out the config files
+        generate_config
       end
 
       def action_enable
@@ -141,12 +141,12 @@ class Chef
             run_command(
               :command => command
             )
-            delete_config
             Chef::Log.info("#{@new_resource} deleted")
           end
         else
           Chef::Log.debug("#{@new_resource} does not exist - nothing to do")
         end
+        delete_config
       end
 
       def action_disable
