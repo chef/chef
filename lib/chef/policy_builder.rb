@@ -17,6 +17,7 @@
 #
 
 require 'chef/policy_builder/expand_node_object'
+require 'chef/policy_builder/policyfile'
 
 class Chef
 
