@@ -188,9 +188,11 @@ class Chef
         def reload_service
           if @new_resource.reload_command
             super
-          else
+          elsif @new_resource.supports[:reload]
             # upstart >= 0.6.3-4 supports reload (HUP)
             run_command_with_systems_locale(:command => "/sbin/reload #{@job}")
+          else
+            raise Chef::Exceptions::UnsupportedAction, "#{@new_resource} does not support :reload"
           end
         end
 
