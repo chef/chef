@@ -216,7 +216,7 @@ RUNNING_PS
       @provider.reload_service()
     end
 
-    it "should should run the user specified reload command if one is specified and the service doesn't support reload" do
+    it "should run the user specified reload command if one is specified and the service doesn't support reload" do
       @new_resource.reload_command("/etc/init.d/chef lollerpants")
       @provider.should_receive(:shell_out!).with("/etc/init.d/chef lollerpants")
       @provider.reload_service()
