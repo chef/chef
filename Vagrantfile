@@ -6,6 +6,25 @@ require "vagrant"
 if Vagrant::VERSION < "1.2.1"
   raise "The Omnibus Build Lab is only compatible with Vagrant 1.2.1+"
 end
+#
+# This is fixed as part of vagrant 1.5 - monkeypatch it here
+# This allows freebsd NFS shared folders to work
+# https://github.com/mitchellh/vagrant/issues/2749#issuecomment-32691701
+if Vagrant::VERSION < "1.5.0"
+  require Vagrant.source_root.join("plugins", "provisioners", "chef", "provisioner", "chef_solo")
+  class VagrantPlugins::Chef::Provisioner::ChefSolo
+    def share_folders(root_config, prefix, folders)
+      folders.each do |type, local_path, remote_path|
+        if type == :host
+          root_config.vm.synced_folder(
+          local_path, remote_path,
+          :id =>  "v-#{prefix}-#{self.class.get_and_update_counter(:shared_folder)}",
+          :type => (@config.nfs ? :nfs : nil))
+        end
+      end
+    end
+  end
+end
 
 host_project_path = File.expand_path("..", __FILE__)
 guest_project_path = "/home/vagrant/#{File.basename(host_project_path)}"
@@ -64,7 +83,7 @@ Vagrant.configure('2') do |config|
 
         c.vm.guest = :freebsd
         c.vm.box = "dyn-#{platform}"
-        c.vm.box_url = "http://dyn-vm.s3.amazonaws.com/vagrant/dyn-chef-11.4.0-virtualbox-#{platform}.box"
+        c.vm.box_url = "http://dyn-vm.s3.amazonaws.com/vagrant/#{platform}_chef-11.8.0.box"
         c.vm.network :private_network, :ip => "33.33.33.#{50 + index}"
 
         c.vm.provision :shell, :inline => <<-FREEBSD_SETUP
