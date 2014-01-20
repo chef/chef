@@ -207,6 +207,14 @@ describe Chef::REST do
   end
 
   context "when making REST requests" do
+    let(:body) { "ninja" }
+    let(:http_response) do
+      http_response = Net::HTTPSuccess.new("1.1", "200", "successful rest req")
+      http_response.stub(:read_body)
+      http_response.stub(:body).and_return(body)
+      http_response.content_length = body.length
+      http_response
+    end
     before(:each) do
       Chef::Config[:ssl_client_cert] = nil
       Chef::Config[:ssl_client_key]  = nil
@@ -214,14 +222,10 @@ describe Chef::REST do
 
       @host_header = "one:80"
 
-      @http_response = Net::HTTPSuccess.new("1.1", "200", "successful rest req")
-      @http_response.stub(:read_body)
-      @http_response.stub(:body).and_return("ninja")
-      @http_response.add_field("Content-Length", "5")
 
       @http_client = Net::HTTP.new(@url.host, @url.port)
       Net::HTTP.stub(:new).and_return(@http_client)
-      @http_client.stub(:request).and_yield(@http_response).and_return(@http_response)
+      @http_client.stub(:request).and_yield(http_response).and_return(http_response)
 
       @base_headers = { 'Accept' => 'application/json',
                         'X-Chef-Version' => Chef::VERSION,
@@ -255,12 +259,12 @@ describe Chef::REST do
       end
 
       it "should read the body of the response in chunks on a raw request" do
-        @http_response.should_receive(:read_body).and_return(true)
+        http_response.should_receive(:read_body).and_return(true)
         @rest.streaming_request(@url, {})
       end
 
       it "should populate the tempfile with the value of the raw request" do
-        @http_response.should_receive(:read_body).and_yield("ninja")
+        http_response.should_receive(:read_body).and_yield("ninja")
         @rest.streaming_request(@url, {})
         #@tempfile.string.should include("ninja")
       end
@@ -271,14 +275,14 @@ describe Chef::REST do
       end
 
       it "should not raise a divide by zero exception if the size is 0" do
-        @http_response.stub(:header).and_return({ 'Content-Length' => "5" })
-        @http_response.stub(:read_body).and_yield('')
+        http_response.stub(:header).and_return({ 'Content-Length' => "5" })
+        http_response.stub(:read_body).and_yield('')
         lambda { @rest.streaming_request(@url, {}) }.should_not raise_error
       end
 
       it "should not raise a divide by zero exception if the Content-Length is 0" do
-        @http_response.stub(:header).and_return({ 'Content-Length' => "0" })
-        @http_response.stub(:read_body).and_yield("ninja")
+        http_response.stub(:header).and_return({ 'Content-Length' => "0" })
+        http_response.stub(:read_body).and_yield("ninja")
         lambda { @rest.streaming_request(@url, {}) }.should_not raise_error
       end
 
@@ -319,7 +323,7 @@ describe Chef::REST do
         end
 
         it "does not decompress a response encoded as gzip" do
-          @http_response.add_field("content-encoding", "gzip")
+          http_response.add_field("content-encoding", "gzip")
           request = Net::HTTP::Get.new(@url.path)
           Net::HTTP::Get.should_receive(:new).and_return(request)
           # will raise a Zlib error if incorrect
@@ -389,18 +393,22 @@ describe Chef::REST do
       end
 
       it "should inflate the body as to an object if JSON is returned" do
-        @http_response.add_field('content-type', "application/json")
-        @http_response.stub(:body).and_return('{"ohai2u":"json_api"}')
+        http_response.add_field('content-type', "application/json")
+        http_response.stub(:body).and_return('{"ohai2u":"json_api"}')
         @rest.request(:GET, @url, {}).should == {"ohai2u"=>"json_api"}
+        http_response.stub(:header).and_return({ 'Content-Length' => "21" })
       end
 
       %w[ HTTPFound HTTPMovedPermanently HTTPSeeOther HTTPUseProxy HTTPTemporaryRedirect HTTPMultipleChoice ].each do |resp_name|
-        it "should call request again on a #{resp_name} response" do
-          resp_cls  = Net.const_get(resp_name)
-          resp_code = Net::HTTPResponse::CODE_TO_OBJ.keys.detect { |k| Net::HTTPResponse::CODE_TO_OBJ[k] == resp_cls }
+        let(:http_response) do
           http_response = Net::HTTPFound.new("1.1", resp_code, "bob is somewhere else again")
           http_response.add_field("location", @url.path)
           http_response.stub(:read_body)
+          http_response
+        end
+        it "should call request again on a #{resp_name} response" do
+          resp_cls  = Net.const_get(resp_name)
+          resp_code = Net::HTTPResponse::CODE_TO_OBJ.keys.detect { |k| Net::HTTPResponse::CODE_TO_OBJ[k] == resp_cls }
 
           @http_client.stub(:request).and_yield(http_response).and_return(http_response)
 
@@ -412,9 +420,13 @@ describe Chef::REST do
         end
       end
 
-      it "should return `false` when response is 304 NotModified" do
+      let (:http_response) do
         http_response = Net::HTTPNotModified.new("1.1", "304", "it's the same as when you asked 5 minutes ago")
         http_response.stub(:read_body)
+        http_response
+      end
+
+      it "should return `false` when response is 304 NotModified" do
 
         @http_client.stub(:request).and_yield(http_response).and_return(http_response)
 
@@ -570,12 +582,12 @@ describe Chef::REST do
       end
 
       it "passes the original block to the redirected request" do
-        http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
-        http_response.add_field("location","/that-thing-is-here-now")
-        http_response.stub(:read_body)
+        http_redirect = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
+        http_redirect.add_field("location","/that-thing-is-here-now")
+        http_redirect.stub(:read_body)
 
         block_called = false
-        @http_client.stub(:request).and_yield(@http_response).and_return(http_response, @http_response)
+        @http_client.stub(:request).and_yield(@http_response).and_return(http_redirect, @http_response)
         @rest.fetch("cookbooks/a_cookbook") do |tmpfile|
           block_called = true
         end
