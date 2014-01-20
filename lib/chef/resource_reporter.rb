@@ -107,13 +107,13 @@ class Chef
       @pending_update  = nil
       @status = "success"
       @exception = nil
-      @run_id = SecureRandom.uuid
       @rest_client = rest_client
       @error_descriptions = {}
     end
 
     def run_started(run_status)
       @run_status = run_status
+      @run_id = @run_status.run_id
 
       if reporting_enabled?
         begin
