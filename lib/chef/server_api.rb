@@ -22,6 +22,7 @@ require 'chef/http/cookie_manager'
 require 'chef/http/decompressor'
 require 'chef/http/json_input'
 require 'chef/http/json_output'
+require 'chef/http/remote_request_id'
 
 class Chef
   class ServerAPI < Chef::HTTP
@@ -37,5 +38,6 @@ class Chef
     use Chef::HTTP::CookieManager
     use Chef::HTTP::Decompressor
     use Chef::HTTP::Authenticator
+    use Chef::HTTP::RemoteRequestID
   end
 end

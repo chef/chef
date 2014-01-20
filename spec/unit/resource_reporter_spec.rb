@@ -38,7 +38,6 @@ describe Chef::ResourceReporter do
     @rest_client = double("Chef::REST (mock)")
     @rest_client.stub(:post_rest).and_return(true)
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
-    @run_id = @resource_reporter.run_id
     @new_resource      = Chef::Resource::File.new("/tmp/a-file.txt")
     @new_resource.cookbook_name = "monkey"
     @cookbook_version = double("Cookbook::Version", :version => "1.2.3")
@@ -49,6 +48,7 @@ describe Chef::ResourceReporter do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @run_status = Chef::RunStatus.new(@node, @events)
+    @run_id = @run_status.run_id
     Time.stub(:now).and_return(@start_time, @end_time)
   end
 
