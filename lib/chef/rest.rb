@@ -32,6 +32,7 @@ require 'chef/http/decompressor'
 require 'chef/http/json_input'
 require 'chef/http/json_to_model_output'
 require 'chef/http/cookie_manager'
+require 'chef/http/validate_response'
 require 'chef/config'
 require 'chef/exceptions'
 require 'chef/platform/query_helpers'
@@ -62,6 +63,7 @@ class Chef
       @decompressor = Decompressor.new(options)
       @authenticator = Authenticator.new(options)
 
+      @middlewares << ValidateResponse.new(options)
       @middlewares << JSONInput.new(options)
       @middlewares << JSONToModelOutput.new(options)
       @middlewares << CookieManager.new(options)
