@@ -126,6 +126,13 @@ class Chef
           end
           merge_onto
 
+        # If merge_onto is a Hash and merge_with is a Array,
+        # merge merge_onto and each element of merge_with recursively.
+        elsif merge_onto.is_a?(Hash) && merge_with.is_a?(Array)
+          merge_with.map do |elm|
+            hash_only_merge!(merge_onto, elm)
+          end
+
         # If merge_with is nil, don't replace merge_onto
         elsif merge_with.nil?
           merge_onto
