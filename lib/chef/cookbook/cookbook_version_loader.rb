@@ -43,7 +43,9 @@ class Chef
         @metadata_filenames = []
       end
 
-      def load_cookbooks
+      def load_cookbooks(opts = {})
+        ignore_metadata_rb = opts[:ignore_metadata_rb] || false
+
         load_as(:attribute_filenames, 'attributes', '*.rb')
         load_as(:definition_filenames, 'definitions', '*.rb')
         load_as(:recipe_filenames, 'recipes', '*.rb')
@@ -56,10 +58,16 @@ class Chef
 
         remove_ignored_files
 
-        if File.exists?(File.join(@cookbook_path, "metadata.rb"))
-          @metadata_filenames << File.join(@cookbook_path, "metadata.rb")
-        elsif File.exists?(File.join(@cookbook_path, "metadata.json"))
-          @metadata_filenames << File.join(@cookbook_path, "metadata.json")
+        if ignore_metadata_rb
+          if File.exists?(File.join(@cookbook_path, "metadata.json"))
+            @metadata_filenames << File.join(@cookbook_path, "metadata.json")
+          end
+        else
+          if File.exists?(File.join(@cookbook_path, "metadata.rb"))
+            @metadata_filenames << File.join(@cookbook_path, "metadata.rb")
+          elsif File.exists?(File.join(@cookbook_path, "metadata.json"))
+            @metadata_filenames << File.join(@cookbook_path, "metadata.json")
+          end
         end
 
         if empty?
