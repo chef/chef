@@ -118,10 +118,10 @@ class Chef
 
           data = Dir.glob(File.join(path, name.to_s, "*.json")).inject({}) do |bag, f|
             item = Chef::JSONCompat.from_json(IO.read(f))
-            bag[item['id']] = item
+            bag[item["id"]] = item
             bag
           end
-          data_bag.merge! data
+          data_bag = data.merge(data_bag)
         end
         return data_bag
       else

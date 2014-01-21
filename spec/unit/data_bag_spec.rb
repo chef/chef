@@ -163,15 +163,21 @@ describe Chef::DataBag do
         Chef::DataBag.load(:foo)
       end
 
-      it "should return the data bag" do
-        @paths.each do |path|
+      it "should return merged data bag with first seen values" do
+        @paths.each_with_index do |path, index|
           file_dir_stub(path)
           dir_glob_stub(path, [File.join(path, 'foo/bar.json'), File.join(path, 'foo/baz.json')])
-          IO.should_receive(:read).with(File.join(path, 'foo/bar.json')).and_return('{"id": "bar", "name": "Bob Bar" }')
-          IO.should_receive(:read).with(File.join(path, 'foo/baz.json')).and_return('{"id": "baz", "name": "John Baz" }')
+          test_dup_key = "{\"id\": \"bar\", \"name\": \"Bob Bar\", \"path\": \"#{path}\"}"
+          IO.should_receive(:read).with(File.join(path, 'foo/bar.json')).and_return(test_dup_key)
+          test_uniq_key = "{\"id\": \"baz_#{index}\", \"name\": \"John Baz\", \"path\": \"#{path}\"}"
+          IO.should_receive(:read).with(File.join(path, 'foo/baz.json')).and_return(test_uniq_key)
         end
         data_bag = Chef::DataBag.load('foo')
-        data_bag.should == { 'bar' => { 'id' => 'bar', 'name' => 'Bob Bar' }, 'baz' => { 'id' => 'baz', 'name' => 'John Baz' }}
+        test_data_bag = { 'bar' => { 'id' => 'bar', 'name' => 'Bob Bar', 'path' => @paths.first} }
+        @paths.each_with_index do |path, index|
+          test_data_bag["baz_#{index}"] = { "id" => "baz_#{index}", "name" => "John Baz", "path" => path }
+        end
+        data_bag.should == test_data_bag
       end
 
       it "should return the data bag list" do
