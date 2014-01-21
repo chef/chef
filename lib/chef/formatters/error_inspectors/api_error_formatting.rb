@@ -52,7 +52,8 @@ chef_server_url   "#{server_url}"
 node_name         "#{username}"
 client_key        "#{api_key}"
 
-If these settings are correct, your client_key may be invalid.
+If these settings are correct, your client_key may be invalid, or
+you may have a chef user with the same client name as this node.
 E
         end
       end
