@@ -26,6 +26,18 @@ class Chef
     # Middleware that takes an HTTP response, parses it as JSON if possible.
     class ValidateResponse
 
+      class ContentLengthCounter
+        attr_accessor :content_length
+
+        def initialize
+          @content_length = 0
+        end
+
+        def handle_chunk(chunk)
+          @content_length += chunk.bytesize
+        end
+      end
+
       def initialize(opts={})
       end
 
@@ -40,7 +52,7 @@ class Chef
         end
         content_length = http_response['content-length'].is_a?(Array) ? http_response['content-length'].first.to_i : http_response['content-length'].to_i
         Chef::Log.debug "Content-Length header = #{content_length}"
-        response_length = http_response.body.length  # FIXME: use byte length to deal with encoding?
+        response_length = http_response.body.bytesize
         Chef::Log.debug "Response body length = #{response_length}"
         if response_length != content_length
           raise "Response body length #{response_length} does not match HTTP Content-Length header #{content_length}"  #FIXME: real exception
@@ -49,7 +61,7 @@ class Chef
       end
 
       def stream_response_handler(response)
-        nil
+        @content_length_counter = ContentLengthCounter.new
       end
 
     end
