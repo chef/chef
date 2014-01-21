@@ -118,11 +118,13 @@ class Chef::Application
       configure_stdout_logger
     end
     Chef::Log.level = resolve_log_level
+    rescue => error
+      Chef::Log.fatal("Failed to open or create log file at #{Chef::Config[:log_location]}: #{error.class} (#{error.message})")
+      Chef::Application.fatal!("Aborting due to invalid 'log_location' configuration", 2)
   end
 
   def configure_stdout_logger
     stdout_logger = MonoLogger.new(STDOUT)
-    STDOUT.sync = true
     stdout_logger.formatter = Chef::Log.logger.formatter
     Chef::Log.loggers <<  stdout_logger
   end

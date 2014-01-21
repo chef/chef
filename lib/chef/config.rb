@@ -127,26 +127,6 @@ class Chef
     # properly.
     configurable(:daemonize).writes_value { |v| v }
 
-    # Override the config dispatch to set the value of log_location configuration option
-    #
-    # === Parameters
-    # location<IO||String>:: Logging location as either an IO stream or string representing log file path
-    #
-    config_attr_writer :log_location do |location|
-      if location.respond_to? :sync=
-        location.sync = true
-        location
-      elsif location.respond_to? :to_str
-        begin
-          f = File.new(location.to_str, "a")
-          f.sync = true
-        rescue Errno::ENOENT
-          raise Chef::Exceptions::ConfigurationError, "Failed to open or create log file at #{location.to_str}"
-        end
-        f
-      end
-    end
-
     # The root where all local chef object data is stored.  cookbooks, data bags,
     # environments are all assumed to be in separate directories under this.
     # chef-solo uses these directories for input data.  knife commands
@@ -299,6 +279,9 @@ class Chef
     # logger is the primary mode of output, and the log level is set to :info
     default :log_level, :auto
 
+    # Logging location as either an IO stream or string representing log file path
+    default :log_location, STDOUT
+
     # Using `force_formatter` causes chef to default to formatter output when STDOUT is not a tty
     default :force_formatter, false
 
@@ -310,7 +293,6 @@ class Chef
     default :interval, nil
     default :once, nil
     default :json_attribs, nil
-    default :log_location, STDOUT
     # toggle info level log items that can create a lot of output
     default :verbose_logging, true
     default :node_name, nil
