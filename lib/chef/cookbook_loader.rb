@@ -79,7 +79,7 @@ class Chef
         cookbook_path = File.join(repo_path, cookbook_name.to_s)
         next unless File.directory?(cookbook_path) and Dir[File.join(repo_path, "*")].include?(cookbook_path)
         loader = Cookbook::CookbookVersionLoader.new(cookbook_path, @chefignores[repo_path])
-        loader.load_cookbooks
+        loader.load_cookbooks(:ignore_metadata_rb => true)
         next if loader.empty?
         cookbook_name = loader.cookbook_name
         @cookbooks_paths[cookbook_name] << cookbook_path # for deprecation warnings
