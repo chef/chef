@@ -53,82 +53,90 @@ Y6S6MeZ69Rp89ma4ttMZ+kwi1+XyHqC/dlcVRW42Zl5Dc7BALRlJjQ==
 -----END RSA PRIVATE KEY-----"
 
 describe Chef::REST do
-  before(:each) do
-    @log_stringio = StringIO.new
-    Chef::Log.init(@log_stringio)
+  let(:base_url) { "http://chef.example.com:4000" }
 
+  let(:monkey_uri) { URI.parse("http://chef.example.com:4000/monkey") }
+
+  let(:log_stringio) { StringIO.new }
+
+  let(:rest) do
     Chef::REST::CookieJar.stub(:instance).and_return({})
-    @base_url   = "http://chef.example.com:4000"
-    @monkey_uri = URI.parse("http://chef.example.com:4000/monkey")
-    @rest = Chef::REST.new(@base_url, nil, nil)
-
+    rest = Chef::REST.new(base_url, nil, nil)
     Chef::REST::CookieJar.instance.clear
+    rest
+  end
+
+  before(:each) do
+    Chef::Log.init(log_stringio)
   end
 
 
   describe "calling an HTTP verb on a path or absolute URL" do
     it "adds a relative URL to the base url it was initialized with" do
-      @rest.create_url("foo/bar/baz").should == URI.parse(@base_url + "/foo/bar/baz")
+      rest.create_url("foo/bar/baz").should == URI.parse(base_url + "/foo/bar/baz")
     end
 
     it "replaces the base URL when given an absolute URL" do
-      @rest.create_url("http://chef-rulez.example.com:9000").should == URI.parse("http://chef-rulez.example.com:9000")
+      rest.create_url("http://chef-rulez.example.com:9000").should == URI.parse("http://chef-rulez.example.com:9000")
     end
 
     it "makes a :GET request with the composed url object" do
-      @rest.should_receive(:send_http_request).
-        with(:GET, @monkey_uri, STANDARD_READ_HEADERS, false).
+      rest.should_receive(:send_http_request).
+        with(:GET, monkey_uri, STANDARD_READ_HEADERS, false).
         and_return([1,2,3])
-      @rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
-      @rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
-      @rest.get_rest("monkey")
+      rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
+      rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
+      rest.get_rest("monkey")
     end
 
     it "makes a :GET reqest for a streaming download with the composed url" do
-      @rest.should_receive(:streaming_request).with('monkey', {})
-      @rest.get_rest("monkey", true)
+      rest.should_receive(:streaming_request).with('monkey', {})
+      rest.get_rest("monkey", true)
     end
 
     STANDARD_READ_HEADERS = {"Accept"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3"}
     STANDARD_WRITE_HEADERS = {"Accept"=>"application/json", "Content-Type"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3"}
 
     it "makes a :DELETE request with the composed url object" do
-      @rest.should_receive(:send_http_request).
-        with(:DELETE, @monkey_uri, STANDARD_READ_HEADERS, false).
+      rest.should_receive(:send_http_request).
+        with(:DELETE, monkey_uri, STANDARD_READ_HEADERS, false).
         and_return([1,2,3])
-      @rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
-      @rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
-      @rest.delete_rest("monkey")
+      rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
+      rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
+      rest.delete_rest("monkey")
     end
 
     it "makes a :POST request with the composed url object and data" do
-      @rest.should_receive(:send_http_request).
-        with(:POST, @monkey_uri, STANDARD_WRITE_HEADERS, "\"data\"").
+      rest.should_receive(:send_http_request).
+        with(:POST, monkey_uri, STANDARD_WRITE_HEADERS, "\"data\"").
         and_return([1,2,3])
-      @rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
-      @rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
-      @rest.post_rest("monkey", "data")
+      rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
+      rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
+      rest.post_rest("monkey", "data")
     end
 
     it "makes a :PUT request with the composed url object and data" do
-      @rest.should_receive(:send_http_request).
-        with(:PUT, @monkey_uri, STANDARD_WRITE_HEADERS, "\"data\"").
+      rest.should_receive(:send_http_request).
+        with(:PUT, monkey_uri, STANDARD_WRITE_HEADERS, "\"data\"").
         and_return([1,2,3])
-      @rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
-      @rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
-      @rest.put_rest("monkey", "data")
+      rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
+      rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
+      rest.put_rest("monkey", "data")
     end
   end
 
   describe "legacy API" do
+    let(:rest) do
+      Chef::REST.new(base_url)
+    end
+
     before(:each) do
       Chef::Config[:node_name]  = "webmonkey.example.com"
       Chef::Config[:client_key] = CHEF_SPEC_DATA + "/ssl/private_key.pem"
-      @rest = Chef::REST.new(@base_url)
     end
 
     it 'responds to raw_http_request as a public method' do
-      @rest.public_methods.map(&:to_s).should include("raw_http_request")
+      rest.public_methods.map(&:to_s).should include("raw_http_request")
     end
 
     it 'calls the authn middleware' do
@@ -136,72 +144,76 @@ describe Chef::REST do
 
       auth_headers = STANDARD_WRITE_HEADERS.merge({"auth_done"=>"yep"})
 
-      @rest.authenticator.should_receive(:handle_request).
-        with(:POST, @monkey_uri, STANDARD_WRITE_HEADERS, data).
-        and_return([:POST, @monkey_uri, auth_headers, data])
-      @rest.should_receive(:send_http_request).
-        with(:POST, @monkey_uri, auth_headers, data).
+      rest.authenticator.should_receive(:handle_request).
+        with(:POST, monkey_uri, STANDARD_WRITE_HEADERS, data).
+        and_return([:POST, monkey_uri, auth_headers, data])
+      rest.should_receive(:send_http_request).
+        with(:POST, monkey_uri, auth_headers, data).
         and_return([1,2,3])
-      @rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
-      @rest.raw_http_request(:POST, @monkey_uri, STANDARD_WRITE_HEADERS, data)
+      rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
+      rest.raw_http_request(:POST, monkey_uri, STANDARD_WRITE_HEADERS, data)
     end
 
     it 'sets correct authn headers' do
       data = "\"secure data\""
-      method, uri, auth_headers, d = @rest.authenticator.handle_request(:POST, @monkey_uri, STANDARD_WRITE_HEADERS, data)
+      method, uri, auth_headers, d = rest.authenticator.handle_request(:POST, monkey_uri, STANDARD_WRITE_HEADERS, data)
 
-      @rest.should_receive(:send_http_request).
-        with(:POST, @monkey_uri, auth_headers, data).
+      rest.should_receive(:send_http_request).
+        with(:POST, monkey_uri, auth_headers, data).
         and_return([1,2,3])
-      @rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
-      @rest.raw_http_request(:POST, @monkey_uri, STANDARD_WRITE_HEADERS, data)
+      rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
+      rest.raw_http_request(:POST, monkey_uri, STANDARD_WRITE_HEADERS, data)
     end
   end
 
 
   describe "when configured to authenticate to the Chef server" do
+    let(:base_url) { URI.parse("http://chef.example.com:4000") }
+
+    let(:rest) do
+      Chef::REST.new(base_url)
+    end
+
     before do
-      @url = URI.parse("http://chef.example.com:4000")
       Chef::Config[:node_name]  = "webmonkey.example.com"
       Chef::Config[:client_key] = CHEF_SPEC_DATA + "/ssl/private_key.pem"
-      @rest = Chef::REST.new(@url)
     end
 
     it "configures itself to use the node_name and client_key in the config by default" do
-      @rest.client_name.should == "webmonkey.example.com"
-      @rest.signing_key_filename.should == CHEF_SPEC_DATA + "/ssl/private_key.pem"
+      rest.client_name.should == "webmonkey.example.com"
+      rest.signing_key_filename.should == CHEF_SPEC_DATA + "/ssl/private_key.pem"
     end
 
     it "provides access to the raw key data" do
-      @rest.signing_key.should == SIGNING_KEY_DOT_PEM
+      rest.signing_key.should == SIGNING_KEY_DOT_PEM
     end
 
     it "does not error out when initialized without credentials" do
-      @rest = Chef::REST.new(@url, nil, nil) #should_not raise_error hides the bt from you, so screw it.
-      @rest.client_name.should be_nil
-      @rest.signing_key.should be_nil
+      rest = Chef::REST.new(base_url, nil, nil) #should_not raise_error hides the bt from you, so screw it.
+      rest.client_name.should be_nil
+      rest.signing_key.should be_nil
     end
 
     it "indicates that requests should not be signed when it has no credentials" do
-      @rest = Chef::REST.new(@url, nil, nil)
-      @rest.sign_requests?.should be_false
+      rest = Chef::REST.new(base_url, nil, nil)
+      rest.sign_requests?.should be_false
     end
 
     it "raises PrivateKeyMissing when the key file doesn't exist" do
-      lambda {Chef::REST.new(@url, "client-name", "/dev/null/nothing_here")}.should raise_error(Chef::Exceptions::PrivateKeyMissing)
+      lambda {Chef::REST.new(base_url, "client-name", "/dev/null/nothing_here")}.should raise_error(Chef::Exceptions::PrivateKeyMissing)
     end
 
     it "raises InvalidPrivateKey when the key file doesnt' look like a key" do
       invalid_key_file = CHEF_SPEC_DATA + "/bad-config.rb"
-      lambda {Chef::REST.new(@url, "client-name", invalid_key_file)}.should raise_error(Chef::Exceptions::InvalidPrivateKey)
+      lambda {Chef::REST.new(base_url, "client-name", invalid_key_file)}.should raise_error(Chef::Exceptions::InvalidPrivateKey)
     end
 
     it "can take private key as a sting :raw_key in options during initializaton" do
-      Chef::REST.new(@url, "client-name", nil, :raw_key => SIGNING_KEY_DOT_PEM).signing_key.should == SIGNING_KEY_DOT_PEM
+      Chef::REST.new(base_url, "client-name", nil, :raw_key => SIGNING_KEY_DOT_PEM).signing_key.should == SIGNING_KEY_DOT_PEM
     end
 
     it "raises InvalidPrivateKey when the key passed as string :raw_key in options doesnt' look like a key" do
-      lambda {Chef::REST.new(@url, "client-name", nil, :raw_key => "bad key string")}.should raise_error(Chef::Exceptions::InvalidPrivateKey)
+      lambda {Chef::REST.new(base_url, "client-name", nil, :raw_key => "bad key string")}.should raise_error(Chef::Exceptions::InvalidPrivateKey)
     end
 
   end
@@ -223,20 +235,18 @@ describe Chef::REST do
 
     let(:base_url) { "http://chef.example.com:4000" }
 
-    let(:http_client) do
+    let!(:http_client) do
       http_client = Net::HTTP.new(url.host, url.port)
       http_client.stub(:request).and_yield(http_response).and_return(http_response)
       http_client
     end
 
-    def stub_net_http_new
-      http_client_mock = http_client
-      Net::HTTP.stub(:new).and_return(http_client_mock)
-    end
-
     let(:rest) do
-      stub_net_http_new
-      Chef::REST.new(base_url, nil, nil)
+      Net::HTTP.stub(:new).and_return(http_client)
+      Chef::REST::CookieJar.stub(:instance).and_return({})
+      rest = Chef::REST.new(base_url, nil, nil)
+      Chef::REST::CookieJar.instance.clear
+      rest
     end
 
     let(:base_headers) do
@@ -257,12 +267,7 @@ describe Chef::REST do
     end
 
     describe "streaming downloads to a tempfile" do
-      let(:tempfile) do
-        tempfile = StringIO.new
-        tempfile.stub(:close!)
-        tempfile.stub(:path).and_return("/a-temporary-file")
-        tempfile
-      end
+      let!(:tempfile) { Tempfile.open("chef-rspec-rest_spec-line-@{__LINE__}--") }
 
       let(:request_mock) { {} }
 
@@ -287,14 +292,16 @@ describe Chef::REST do
       end
 
       it "should read the body of the response in chunks on a raw request" do
+        http_response.should_not_receive(:body)
         http_response.should_receive(:read_body).and_return(true)
         rest.streaming_request(url, {})
       end
 
       it "should populate the tempfile with the value of the raw request" do
+        http_response.should_not_receive(:body)
         http_response.should_receive(:read_body).and_yield("ninja")
         rest.streaming_request(url, {})
-        tempfile.string.should include("ninja")
+        IO.read(tempfile.path).chomp.should == "ninja"
       end
 
       it "should close the tempfile if we're doing a raw request" do
@@ -347,7 +354,7 @@ describe Chef::REST do
       # CHEF-3140
       context "when configured to disable compression" do
         let(:rest) do
-          stub_net_http_new
+          Net::HTTP.stub(:new).and_return(http_client)
           Chef::REST.new(base_url, nil, nil,  :disable_gzip => true)
         end
 
@@ -388,10 +395,18 @@ describe Chef::REST do
         end
       end
 
-      it "should set the cookie for this request if one exists for the given host:port" do
-        Chef::REST::CookieJar.instance["#{url.host}:#{url.port}"] = "cookie monster"
-        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", base_headers.merge('Cookie' => "cookie monster")).and_return(request_mock)
-        rest.request(:GET, url, {})
+      context "when setting cookies" do
+        let(:rest) do
+          Net::HTTP.stub(:new).and_return(http_client)
+          Chef::REST::CookieJar.instance["#{url.host}:#{url.port}"] = "cookie monster"
+          rest = Chef::REST.new(base_url, nil, nil)
+          rest
+        end
+
+        it "should set the cookie for this request if one exists for the given host:port" do
+          Net::HTTP::Get.should_receive(:new).with("/?foo=bar", base_headers.merge('Cookie' => "cookie monster")).and_return(request_mock)
+          rest.request(:GET, url, {})
+        end
       end
 
       it "should build a new HTTP GET request" do
@@ -493,7 +508,7 @@ describe Chef::REST do
             rest.stub(:sleep)
 
             lambda {rest.request(:GET, url)}.should raise_error(Net::HTTPFatalError)
-            @log_stringio.string.should match(Regexp.escape('INFO: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
+            log_stringio.string.should match(Regexp.escape('INFO: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
           end
         end
 
@@ -515,7 +530,7 @@ describe Chef::REST do
             rest.stub(:http_retry_count).and_return(0)
 
             lambda {rest.request(:GET, url)}.should raise_error(Net::HTTPFatalError)
-            @log_stringio.string.should match(Regexp.escape('INFO: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
+            log_stringio.string.should match(Regexp.escape('INFO: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
           end
         end
 
@@ -535,7 +550,7 @@ describe Chef::REST do
     end
 
     context "when streaming downloads to a tempfile" do
-      let(:tempfile) {  Tempfile.open("chef-rspec-rest_spec-line-@{__LINE__}--") }
+      let!(:tempfile) {  Tempfile.open("chef-rspec-rest_spec-line-@{__LINE__}--") }
 
       let(:request_mock) { {} }
 
@@ -549,8 +564,7 @@ describe Chef::REST do
       end
 
       before do
-        tempfile_mock = tempfile
-        Tempfile.stub(:new).with("chef-rest").and_return(tempfile_mock)
+        Tempfile.stub(:new).with("chef-rest").and_return(tempfile)
         Net::HTTP::Get.stub(:new).and_return(request_mock)
       end
 
@@ -568,7 +582,7 @@ describe Chef::REST do
       end
 
       it "returns a tempfile containing the streamed response body" do
-        rest.streaming_request(@url, {}).should equal(tempfile)
+        rest.streaming_request(url, {}).should equal(tempfile)
       end
 
       it "writes the response body to a tempfile" do
@@ -596,7 +610,7 @@ describe Chef::REST do
       it "does not raise a divide by zero exception if the content's actual size is 0" do
         http_response.add_field('Content-Length', "5")
         http_response.stub(:read_body).and_yield('')
-        lambda { rest.streaming_request(@url, {}) }.should_not raise_error
+        lambda { rest.streaming_request(url, {}) }.should_not raise_error
       end
 
       it "does not raise a divide by zero exception when the Content-Length is 0" do
@@ -653,21 +667,24 @@ describe Chef::REST do
   end
 
   context "when following redirects" do
+    let(:rest) do
+      Chef::REST.new(base_url)
+    end
+
     before do
       Chef::Config[:node_name]  = "webmonkey.example.com"
       Chef::Config[:client_key] = CHEF_SPEC_DATA + "/ssl/private_key.pem"
-      @rest = Chef::REST.new(@url)
     end
 
     it "raises a RedirectLimitExceeded when redirected more than 10 times" do
-      redirected = lambda {@rest.follow_redirect { redirected.call }}
+      redirected = lambda {rest.follow_redirect { redirected.call }}
       lambda {redirected.call}.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
     end
 
     it "does not count redirects from previous calls against the redirect limit" do
       total_redirects = 0
       redirected = lambda do
-        @rest.follow_redirect do
+        rest.follow_redirect do
           total_redirects += 1
           redirected.call unless total_redirects >= 9
         end
@@ -678,22 +695,22 @@ describe Chef::REST do
     end
 
     it "does not sign the redirected request when sign_on_redirect is false" do
-      @rest.sign_on_redirect = false
-      @rest.follow_redirect { @rest.sign_requests?.should be_false }
+      rest.sign_on_redirect = false
+      rest.follow_redirect { rest.sign_requests?.should be_false }
     end
 
     it "resets sign_requests to the original value after following an unsigned redirect" do
-      @rest.sign_on_redirect = false
-      @rest.sign_requests?.should be_true
+      rest.sign_on_redirect = false
+      rest.sign_requests?.should be_true
 
-      @rest.follow_redirect { @rest.sign_requests?.should be_false }
-      @rest.sign_requests?.should be_true
+      rest.follow_redirect { rest.sign_requests?.should be_false }
+      rest.sign_requests?.should be_true
     end
 
     it "configures the redirect limit" do
       total_redirects = 0
       redirected = lambda do
-        @rest.follow_redirect do
+        rest.follow_redirect do
           total_redirects += 1
           redirected.call unless total_redirects >= 9
         end
@@ -701,7 +718,7 @@ describe Chef::REST do
       lambda {redirected.call}.should_not raise_error
 
       total_redirects = 0
-      @rest.redirect_limit = 3
+      rest.redirect_limit = 3
       lambda {redirected.call}.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
     end
 
