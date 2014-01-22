@@ -38,7 +38,11 @@ class Chef
   module PolicyBuilder
 
     def self.strategy
-      ExpandNodeObject
+      if Chef::Config[:use_policyfile]
+        Policyfile
+      else
+        ExpandNodeObject
+      end
     end
 
   end

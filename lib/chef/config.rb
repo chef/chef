@@ -320,6 +320,16 @@ class Chef
     default :enable_reporting, true
     default :enable_reporting_url_fatals, false
 
+    # Policyfile is an experimental feature where a node gets its run list and
+    # cookbook version set from a single document on the server instead of
+    # expanding the run list and having the server compute the cookbook version
+    # set based on environment constraints.
+    #
+    # Because this feature is experimental, it is not recommended for
+    # production use. Developent/release of this feature may not adhere to
+    # semver guidelines.
+    default :use_policyfile, false
+
     # Set these to enable SSL authentication / mutual-authentication
     # with the server
 
