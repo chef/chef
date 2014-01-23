@@ -234,6 +234,7 @@ class Chef
     def build_node
       policy_builder.build_node
       @run_status = Chef::RunStatus.new(node, events)
+      node
     end
 
     def setup_run_context
