@@ -225,7 +225,7 @@ describe Chef::REST do
       http_response = Net::HTTPSuccess.new("1.1", "200", "successful rest req")
       http_response.stub(:read_body)
       http_response.stub(:body).and_return(body)
-      http_response.add_field("Content-Length", body.bytesize)
+      http_response["Content-Length"] = body.bytesize.to_s
       http_response
     end
 
@@ -310,15 +310,20 @@ describe Chef::REST do
       end
 
       it "should not raise a divide by zero exception if the size is 0" do
-        http_response.stub(:header).and_return({ 'Content-Length' => "5" })
+        http_response['Content-Length'] = "5"
         http_response.stub(:read_body).and_yield('')
         expect { rest.streaming_request(url, {}) }.not_to raise_error
       end
 
       it "should not raise a divide by zero exception if the Content-Length is 0" do
-        http_response.stub(:header).and_return({ 'Content-Length' => "0" })
+        http_response['Content-Length'] = "0"
         http_response.stub(:read_body).and_yield("ninja")
         expect { rest.streaming_request(url, {}) }.not_to raise_error
+      end
+
+      it "should fail if the response is truncated" do
+        http_response["Content-Length"] = (body.bytesize + 99).to_s
+        expect { rest.streaming_request(url, {}) }.not_to raise_error(RuntimeError)
       end
 
     end
@@ -444,11 +449,22 @@ describe Chef::REST do
         expect(rest.request(:GET, url)).to eq("ninja")
       end
 
+      it "should fail if the response is truncated" do
+        http_response["Content-Length"] = (body.bytesize + 99).to_s
+        expect { rest.request(:GET, url) }.to raise_error(RuntimeError)
+      end
+
       context "when JSON is returned" do
         let(:body) { '{"ohai2u":"json_api"}' }
         it "should inflate the body as to an object" do
           http_response.add_field('content-type', "application/json")
           expect(rest.request(:GET, url, {})).to eq({"ohai2u"=>"json_api"})
+        end
+
+        it "should fail if the response is truncated" do
+          http_response.add_field('content-type', "application/json")
+          http_response["Content-Length"] = (body.bytesize + 99).to_s
+          expect { rest.request(:GET, url, {}) }.to raise_error(RuntimeError)
         end
       end
 
@@ -532,6 +548,10 @@ describe Chef::REST do
             expect {rest.request(:GET, url)}.to raise_error(Net::HTTPFatalError)
             expect(log_stringio.string).to match(Regexp.escape('INFO: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
           end
+          it "fails when the compressed body is truncated" do
+            http_response["Content-Length"] = (body.bytesize + 99).to_s
+            expect {rest.request(:GET, url)}.to raise_error(RuntimeError)
+          end
         end
 
         context "on a generic unsuccessful request" do
@@ -559,7 +579,7 @@ describe Chef::REST do
 
         http_response.stub(:read_body)
         http_response.should_not_receive(:body)
-        http_response.add_field("Content-Length", body.bytesize)
+        http_response["Content-Length"] = body.bytesize.to_s
         http_response
       end
 
@@ -608,15 +628,21 @@ describe Chef::REST do
       end
 
       it "does not raise a divide by zero exception if the content's actual size is 0" do
-        http_response.add_field('Content-Length', "5")
+        http_response['Content-Length'] = "5"
         http_response.stub(:read_body).and_yield('')
         expect { rest.streaming_request(url, {}) }.not_to raise_error
       end
 
       it "does not raise a divide by zero exception when the Content-Length is 0" do
-        http_response.add_field('Content-Length', "0")
+        http_response['Content-Length'] = "0"
         http_response.stub(:read_body).and_yield("ninja")
         expect { rest.streaming_request(url, {}) }.not_to raise_error
+      end
+
+      it "it raises an exception when the download is truncated" do
+        http_response["Content-Length"] = (body.bytesize + 99).to_s
+        http_response.stub(:read_body).and_yield("ninja")
+        expect { rest.streaming_request(url, {}) }.to raise_error(RuntimeError)
       end
 
       it "fetches a file and yields the tempfile it is streamed to" do
