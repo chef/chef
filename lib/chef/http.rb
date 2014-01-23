@@ -165,17 +165,21 @@ class Chef
       response, rest_request, return_value = send_http_request(method, url, headers, data) do |http_response|
         if http_response.kind_of?(Net::HTTPSuccess)
           tempfile = stream_to_tempfile(url, http_response)
-          if block_given?
-            begin
-              yield tempfile
-            ensure
-              tempfile && tempfile.close!
-            end
-          end
         end
+        apply_stream_complete_middleware(http_response, rest_request, return_value)
       end
-      unless response.kind_of?(Net::HTTPSuccess) or response.kind_of?(Net::HTTPRedirection)
+
+      return nil if response.kind_of?(Net::HTTPRedirection)
+      unless response.kind_of?(Net::HTTPSuccess)
         response.error!
+      end
+
+      if block_given?
+        begin
+          yield tempfile
+        ensure
+          tempfile && tempfile.close!
+        end
       end
       tempfile
     rescue Exception => e
@@ -213,6 +217,12 @@ class Chef
     def apply_response_middleware(response, rest_request, return_value)
       middlewares.reverse.inject([response, rest_request, return_value]) do |res_data, middleware|
         middleware.handle_response(*res_data)
+      end
+    end
+
+    def apply_stream_complete_middleware(response, rest_request, return_value)
+      middlewares.reverse.inject([response, rest_request, return_value]) do |res_data, middleware|
+        middleware.handle_stream_complete(*res_data)
       end
     end
 

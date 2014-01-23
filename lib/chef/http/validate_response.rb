@@ -1,7 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Lamont Granquist (<lamont@getchef.com>)
+# Copyright:: Copyright (c) 2013 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,6 +34,7 @@ class Chef
 
         def handle_chunk(chunk)
           @content_length += chunk.bytesize
+          chunk
         end
       end
 
@@ -47,15 +47,20 @@ class Chef
 
       def handle_response(http_response, rest_request, return_value)
         unless http_response['content-length']
-          Chef::Log.warn "HTTP server did not include a Content-Length header in response, cannot identify truncated downloads."
+          Chef::Log.debug("HTTP server did not include a Content-Length header in response, cannot identify truncated downloads.")
           return [http_response, rest_request, return_value]
         end
-        content_length = http_response['content-length'].is_a?(Array) ? http_response['content-length'].first.to_i : http_response['content-length'].to_i
-        Chef::Log.debug "Content-Length header = #{content_length}"
-        response_length = http_response.body.bytesize
-        Chef::Log.debug "Response body length = #{response_length}"
-        if response_length != content_length
-          raise "Response body length #{response_length} does not match HTTP Content-Length header #{content_length}"  #FIXME: real exception
+        validate(response_content_length(http_response), http_response.body.bytesize)
+        return [http_response, rest_request, return_value]
+      end
+
+      def handle_stream_complete(http_response, rest_request, return_value)
+        if http_response['content-length'].nil?
+          Chef::Log.debug("HTTP server did not include a Content-Length header in response, cannot idenfity streamed download.")
+        elsif @content_length_counter.nil?
+          Chef::Log.debug("No content-length information collected for the streamed download, cannot identify streamed download.")
+        else
+          validate(response_content_length(http_response), @content_length_counter.content_length)
         end
         return [http_response, rest_request, return_value]
       end
@@ -64,6 +69,23 @@ class Chef
         @content_length_counter = ContentLengthCounter.new
       end
 
+      private
+      def response_content_length(response)
+        if response['content-length'].is_a?(Array)
+          response['content-length'].first.to_i
+        else
+          response['content-length'].to_i
+        end
+      end
+
+      def validate(content_length, response_length)
+        Chef::Log.debug "Content-Length header = #{content_length}"
+        Chef::Log.debug "Response body length = #{response_length}"
+        if response_length != content_length
+          raise "Response body length #{response_length} does not match HTTP Content-Length header #{content_length}"  #FIXME: real exception
+        end
+        true
+      end
     end
   end
 end

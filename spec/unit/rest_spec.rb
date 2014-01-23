@@ -266,68 +266,6 @@ describe Chef::REST do
       Chef::Config[:ssl_client_key]  = nil
     end
 
-    describe "streaming downloads to a tempfile" do
-      let!(:tempfile) { Tempfile.open("chef-rspec-rest_spec-line-@{__LINE__}--") }
-
-      let(:request_mock) { {} }
-
-      before do
-        Tempfile.stub(:new).with("chef-rest").and_return(tempfile)
-        Tempfile.stub(:open).and_return(tempfile)
-
-        Net::HTTP::Get.stub(:new).and_return(request_mock)
-      end
-
-      it "should build a new HTTP GET request without the application/json accept header" do
-        expected_headers = {'Accept' => "*/*",
-                            'X-Chef-Version' => Chef::VERSION,
-                            'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
-                            'Host' => host_header}
-        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(request_mock)
-        rest.streaming_request(url, {})
-      end
-
-      it "should create a tempfile for the output of a raw request" do
-        expect(rest.streaming_request(url, {})).to equal(tempfile)
-      end
-
-      it "should read the body of the response in chunks on a raw request" do
-        http_response.should_not_receive(:body)
-        http_response.should_receive(:read_body).and_return(true)
-        rest.streaming_request(url, {})
-      end
-
-      it "should populate the tempfile with the value of the raw request" do
-        http_response.should_not_receive(:body)
-        http_response.should_receive(:read_body).and_yield("ninja")
-        rest.streaming_request(url, {})
-        expect(IO.read(tempfile.path).chomp).to eq("ninja")
-      end
-
-      it "should close the tempfile if we're doing a raw request" do
-        tempfile.should_receive(:close).once.and_return(true)
-        rest.streaming_request(url, {})
-      end
-
-      it "should not raise a divide by zero exception if the size is 0" do
-        http_response['Content-Length'] = "5"
-        http_response.stub(:read_body).and_yield('')
-        expect { rest.streaming_request(url, {}) }.not_to raise_error
-      end
-
-      it "should not raise a divide by zero exception if the Content-Length is 0" do
-        http_response['Content-Length'] = "0"
-        http_response.stub(:read_body).and_yield("ninja")
-        expect { rest.streaming_request(url, {}) }.not_to raise_error
-      end
-
-      it "should fail if the response is truncated" do
-        http_response["Content-Length"] = (body.bytesize + 99).to_s
-        expect { rest.streaming_request(url, {}) }.not_to raise_error(RuntimeError)
-      end
-
-    end
-
     describe "as JSON API requests" do
       let(:request_mock) { {} }
 
@@ -579,8 +517,16 @@ describe Chef::REST do
 
         http_response.stub(:read_body)
         http_response.should_not_receive(:body)
-        http_response["Content-Length"] = body.bytesize.to_s
+        http_response["Content-Length"] = "0" # call set_content_length (in test), if otherwise
         http_response
+      end
+
+      def set_content_length
+        content_length = 0
+        http_response.read_body do |chunk|
+          content_length += chunk.bytesize
+        end
+        http_response["Content-Length"] = content_length.to_s
       end
 
       before do
@@ -607,6 +553,7 @@ describe Chef::REST do
 
       it "writes the response body to a tempfile" do
         http_response.stub(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
+        set_content_length
         rest.streaming_request(url, {})
         expect(IO.read(tempfile.path).chomp).to eq("realultimatepower")
       end
@@ -618,6 +565,7 @@ describe Chef::REST do
 
       it "yields the tempfile containing the streamed response body and then unlinks it when given a block" do
         http_response.stub(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
+        set_content_length
         tempfile_path = nil
         rest.streaming_request(url, {}) do |tempfile|
           tempfile_path = tempfile.path
@@ -630,13 +578,13 @@ describe Chef::REST do
       it "does not raise a divide by zero exception if the content's actual size is 0" do
         http_response['Content-Length'] = "5"
         http_response.stub(:read_body).and_yield('')
-        expect { rest.streaming_request(url, {}) }.not_to raise_error
+        expect { rest.streaming_request(url, {}) }.to_not raise_error(ZeroDivisionError)
       end
 
       it "does not raise a divide by zero exception when the Content-Length is 0" do
         http_response['Content-Length'] = "0"
         http_response.stub(:read_body).and_yield("ninja")
-        expect { rest.streaming_request(url, {}) }.not_to raise_error
+        expect { rest.streaming_request(url, {}) }.to_not raise_error(ZeroDivisionError)
       end
 
       it "it raises an exception when the download is truncated" do
@@ -647,6 +595,7 @@ describe Chef::REST do
 
       it "fetches a file and yields the tempfile it is streamed to" do
         http_response.stub(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
+        set_content_length
         tempfile_path = nil
         rest.fetch("cookbooks/a_cookbook") do |tempfile|
           tempfile_path = tempfile.path
