@@ -90,9 +90,15 @@ describe Chef::PolicyBuilder::Policyfile do
     }
   end
 
-  let(:http_api) { double("Chef::REST") }
-
   let(:err_namespace) { Chef::PolicyBuilder::Policyfile }
+
+  it "configures a Chef HTTP API client" do
+    http = double("Chef::REST")
+    server_url = "https://api.opscode.com/organizations/example"
+    Chef::Config[:chef_server_url] = server_url
+    Chef::REST.should_receive(:new).with(server_url).and_return(http)
+    expect(policy_builder.http_api).to eq(http)
+  end
 
   describe "reporting unsupported features" do
 
@@ -136,6 +142,8 @@ describe Chef::PolicyBuilder::Policyfile do
 
   describe "when using compatibility mode" do
 
+    let(:http_api) { double("Chef::REST") }
+
     let(:configured_environment) { nil }
 
     let(:override_runlist) { nil }
@@ -170,12 +178,12 @@ describe Chef::PolicyBuilder::Policyfile do
       end
 
       it "raises an error" do
-        expect { policy_builder.load_node }.to raise_error(Net::HTTPServerException)
+        expect { policy_builder.load_node }.to raise_error(err_namespace::ConfigurationError)
       end
 
       it "sends error message to the event system" do
-        events.should_receive(:node_load_failed).with(node_name, error404, Chef::Config)
-        expect { policy_builder.load_node }.to raise_error(Net::HTTPServerException)
+        events.should_receive(:node_load_failed).with(node_name, an_instance_of(err_namespace::ConfigurationError), Chef::Config)
+        expect { policy_builder.load_node }.to raise_error(err_namespace::ConfigurationError)
       end
 
     end

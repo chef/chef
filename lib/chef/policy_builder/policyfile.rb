@@ -218,6 +218,8 @@ class Chef
 
       def policy
         @policy ||= http_api.get(policyfile_location)
+      rescue Net::HTTPServerException => e
+        raise ConfigurationError, "Error loading policyfile from `#{policyfile_location}': #{e.class} - #{e.message}"
       end
 
       def policyfile_location
@@ -310,6 +312,9 @@ class Chef
         @api_service ||= Chef::REST.new(config[:chef_server_url])
       end
 
+      def config
+        Chef::Config
+      end
 
     end
   end
