@@ -278,7 +278,10 @@ describe Chef::PolicyBuilder::Policyfile do
         end
 
         it "applies ohai data" do
-          expect(node.automatic_attrs).to eq(ohai_data)
+          expect(ohai_data).to_not be_empty # ensure test is testing something
+          ohai_data.each do |key, value|
+            expect(node.automatic_attrs[key]).to eq(value)
+          end
         end
 
         it "applies attributes from json file" do
@@ -292,6 +295,14 @@ describe Chef::PolicyBuilder::Policyfile do
 
         it "sets the policyfile's run_list on the node object" do
           expect(node.run_list).to eq(policyfile_run_list)
+        end
+
+        it "creates node.automatic_attrs[:roles]" do
+          expect(node.automatic_attrs[:roles]).to eq([])
+        end
+
+        it "create node.automatic_attrs[:recipes]" do
+          expect(node.automatic_attrs[:recipes]).to eq(["example1::default", "example2::server"])
         end
 
       end
@@ -311,39 +322,61 @@ describe Chef::PolicyBuilder::Policyfile do
 
         let(:cookbook_synchronizer) { double("Chef::CookbookSynchronizer") }
 
-        before do
-          Chef::Node.should_receive(:find_or_create).with(node_name).and_return(node)
+        context "and a cookbook is missing" do
 
-          policy_builder.load_node
-          policy_builder.build_node
+          let(:error404) { Net::HTTPServerException.new("404 message", :body) }
 
-          http_api.should_receive(:get).with("cookbooks/example1/#{example1_xyz_version}").
-            and_return(example1_cookbook_object)
-          http_api.should_receive(:get).with("cookbooks/example2/#{example2_xyz_version}").
-            and_return(example2_cookbook_object)
+          before do
+            Chef::Node.should_receive(:find_or_create).with(node_name).and_return(node)
 
-          Chef::CookbookSynchronizer.stub(:new).
-            with(expected_cookbook_hash, events).
-            and_return(cookbook_synchronizer)
+            policy_builder.load_node
+            policy_builder.build_node
+
+            http_api.should_receive(:get).with("cookbooks/example1/#{example1_xyz_version}").
+              and_raise(error404)
+          end
+
+          it "raises an error indicating which cookbook is missing" do
+            expect { policy_builder.cookbooks_to_sync }.to raise_error(Chef::Exceptions::CookbookNotFound)
+          end
+
         end
 
-        it "builds a Hash of the form 'cookbook_name' => Chef::CookbookVersion" do
-          expect(policy_builder.cookbooks_to_sync).to eq(expected_cookbook_hash)
-        end
+        context "and the cookbooks can be fetched" do
+          before do
+            Chef::Node.should_receive(:find_or_create).with(node_name).and_return(node)
 
-        it "syncs the desired cookbooks via CookbookSynchronizer" do
-          cookbook_synchronizer.should_receive(:sync_cookbooks)
-          policy_builder.sync_cookbooks
-        end
+            policy_builder.load_node
+            policy_builder.build_node
 
-        it "builds a run context" do
-          cookbook_synchronizer.should_receive(:sync_cookbooks)
-          Chef::RunContext.any_instance.should_receive(:load).with(policy_builder.run_list_expansion_ish)
-          run_context = policy_builder.setup_run_context
-          expect(run_context.node).to eq(node)
-          expect(run_context.cookbook_collection.keys).to match_array(["example1", "example2"])
-        end
+            http_api.should_receive(:get).with("cookbooks/example1/#{example1_xyz_version}").
+              and_return(example1_cookbook_object)
+            http_api.should_receive(:get).with("cookbooks/example2/#{example2_xyz_version}").
+              and_return(example2_cookbook_object)
 
+            Chef::CookbookSynchronizer.stub(:new).
+              with(expected_cookbook_hash, events).
+              and_return(cookbook_synchronizer)
+          end
+
+          it "builds a Hash of the form 'cookbook_name' => Chef::CookbookVersion" do
+            expect(policy_builder.cookbooks_to_sync).to eq(expected_cookbook_hash)
+          end
+
+          it "syncs the desired cookbooks via CookbookSynchronizer" do
+            cookbook_synchronizer.should_receive(:sync_cookbooks)
+            policy_builder.sync_cookbooks
+          end
+
+          it "builds a run context" do
+            cookbook_synchronizer.should_receive(:sync_cookbooks)
+            Chef::RunContext.any_instance.should_receive(:load).with(policy_builder.run_list_expansion_ish)
+            run_context = policy_builder.setup_run_context
+            expect(run_context.node).to eq(node)
+            expect(run_context.cookbook_collection.keys).to match_array(["example1", "example2"])
+          end
+
+        end
       end
     end
 

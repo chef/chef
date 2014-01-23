@@ -195,6 +195,8 @@ class Chef
 
       def apply_policyfile_attributes
         node.run_list(run_list)
+        node.automatic_attrs[:roles] = []
+        node.automatic_attrs[:recipes] = run_list_expansion_ish.recipes
         node.attributes.role_default = policy["default_attributes"]
         node.attributes.role_override = policy["override_attributes"]
       end
@@ -302,6 +304,11 @@ class Chef
       def manifest_for(cookbook_name, lock_data)
         xyz_version = lock_data["dotted_decimal_identifier"]
         http_api.get("cookbooks/#{cookbook_name}/#{xyz_version}")
+      rescue Exception => e
+        message = "Error loading cookbook #{cookbook_name} at version #{xyz_version}: #{e.class} - #{e.message}"
+        err = Chef::Exceptions::CookbookNotFound.new(message)
+        err.set_backtrace(e.backtrace)
+        raise err
       end
 
       def cookbook_locks
