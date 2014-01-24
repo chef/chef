@@ -297,5 +297,9 @@ class Chef
     # non-GET and non-HEAD request will thus raise an InvalidRedirect.
     class InvalidRedirect < StandardError; end
 
+    # Raised when the content length of a download does not match the content
+    # length declared in the http response.
+    class ContentLengthMismatch < RuntimeError; end
+
   end
 end

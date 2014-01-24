@@ -389,7 +389,7 @@ describe Chef::REST do
 
       it "should fail if the response is truncated" do
         http_response["Content-Length"] = (body.bytesize + 99).to_s
-        expect { rest.request(:GET, url) }.to raise_error(RuntimeError)
+        expect { rest.request(:GET, url) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
       end
 
       context "when JSON is returned" do
@@ -402,7 +402,7 @@ describe Chef::REST do
         it "should fail if the response is truncated" do
           http_response.add_field('content-type', "application/json")
           http_response["Content-Length"] = (body.bytesize + 99).to_s
-          expect { rest.request(:GET, url, {}) }.to raise_error(RuntimeError)
+          expect { rest.request(:GET, url, {}) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
         end
       end
 
@@ -488,7 +488,7 @@ describe Chef::REST do
           end
           it "fails when the compressed body is truncated" do
             http_response["Content-Length"] = (body.bytesize + 99).to_s
-            expect {rest.request(:GET, url)}.to raise_error(RuntimeError)
+            expect {rest.request(:GET, url)}.to raise_error(Chef::Exceptions::ContentLengthMismatch)
           end
         end
 
@@ -590,7 +590,7 @@ describe Chef::REST do
       it "it raises an exception when the download is truncated" do
         http_response["Content-Length"] = (body.bytesize + 99).to_s
         http_response.stub(:read_body).and_yield("ninja")
-        expect { rest.streaming_request(url, {}) }.to raise_error(RuntimeError)
+        expect { rest.streaming_request(url, {}) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
       end
 
       it "fetches a file and yields the tempfile it is streamed to" do

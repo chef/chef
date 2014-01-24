@@ -82,7 +82,7 @@ class Chef
         Chef::Log.debug "Content-Length header = #{content_length}"
         Chef::Log.debug "Response body length = #{response_length}"
         if response_length != content_length
-          raise "Response body length #{response_length} does not match HTTP Content-Length header #{content_length}"  #FIXME: real exception
+          raise Chef::Exceptions::ContentLengthMismatch, "Response body length #{response_length} does not match HTTP Content-Length header #{content_length}."
         end
         true
       end
