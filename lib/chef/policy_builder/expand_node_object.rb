@@ -121,7 +121,23 @@ class Chef
 
         setup_run_list_override
 
-        @run_list_expansion = expand_run_list
+        expand_run_list
+
+        Chef::Log.info("Run List is [#{node.run_list}]")
+        Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(', ')}]")
+
+        events.node_load_completed(node, @expanded_run_list_with_versions, Chef::Config)
+
+        node
+      end
+
+      # Expands the node's run list. Stores the run_list_expansion object for later use.
+      def expand_run_list
+        @run_list_expansion = if Chef::Config[:solo]
+          node.expand!('disk')
+        else
+          node.expand!('server')
+        end
 
         # @run_list_expansion is a RunListExpansion.
         #
@@ -132,31 +148,16 @@ class Chef
         # Array of Strings of the form
         #   "#{NAME}@#{VERSION}"
         @expanded_run_list_with_versions = @run_list_expansion.recipes.with_version_constraints_strings
-
-        Chef::Log.info("Run List is [#{node.run_list}]")
-        Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(', ')}]")
-
-
-        events.node_load_completed(node, @expanded_run_list_with_versions, Chef::Config)
-
-        node
-      end
-
-      ########################################
-      # Internal public API
-      ########################################
-
-      def expand_run_list
-        if Chef::Config[:solo]
-          node.expand!('disk')
-        else
-          node.expand!('server')
-        end
+        @run_list_expansion
       rescue Exception => e
         # TODO: wrap/munge exception with useful error output.
         events.run_list_expand_failed(node, e)
         raise
       end
+
+      ########################################
+      # Internal public API
+      ########################################
 
       # Sync_cookbooks eagerly loads all files except files and
       # templates.  It returns the cookbook_hash -- the return result

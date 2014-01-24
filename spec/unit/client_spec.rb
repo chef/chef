@@ -333,7 +333,9 @@ shared_examples_for Chef::Client do
       @node[:recipes].should be_nil
 
       @client.policy_builder.stub!(:node).and_return(@node)
-      @client.policy_builder.build_node
+
+      # chefspec and possibly others use the return value of this method
+      @client.build_node.should == @node
 
       # check post-conditions.
       @node[:roles].should_not be_nil

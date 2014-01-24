@@ -51,7 +51,7 @@ class Chef
 
       class PolicyfileError < StandardError; end
 
-      RunListExpansionIsh = Struct.new(:recipes)
+      RunListExpansionIsh = Struct.new(:recipes, :roles)
 
       attr_reader :events
       attr_reader :node
@@ -100,10 +100,14 @@ class Chef
         nil
       end
 
-      # Policyfile gives you the run_list already expanded, no expansion is
-      # performed here.
+      # Policyfile gives you the run_list already expanded, but users of this
+      # class may expect to get a run_list expansion compatible object by
+      # calling this method.
+      #
+      # === Returns
+      # RunListExpansionIsh:: A RunListExpansion duck type
       def run_list_expansion
-        nil
+        run_list_expansion_ish
       end
 
       ## PolicyBuilder API ##
@@ -134,6 +138,7 @@ class Chef
 
         node.consume_external_attrs(ohai_data, json_attribs)
 
+        expand_run_list
         apply_policyfile_attributes
 
         Chef::Log.info("Run List is [#{run_list}]")
@@ -160,6 +165,13 @@ class Chef
         run_context.load(run_list_expansion_ish)
 
         run_context
+      end
+
+      def expand_run_list
+        node.run_list(run_list)
+        node.automatic_attrs[:roles] = []
+        node.automatic_attrs[:recipes] = run_list_expansion_ish.recipes
+        run_list_expansion_ish
       end
 
       ## Internal Public API ##
@@ -190,13 +202,10 @@ class Chef
           cookbook, recipe = parse_recipe_spec(recipe_spec)
           "#{cookbook}::#{recipe}"
         end
-        RunListExpansionIsh.new(recipes)
+        RunListExpansionIsh.new(recipes, [])
       end
 
       def apply_policyfile_attributes
-        node.run_list(run_list)
-        node.automatic_attrs[:roles] = []
-        node.automatic_attrs[:recipes] = run_list_expansion_ish.recipes
         node.attributes.role_default = policy["default_attributes"]
         node.attributes.role_override = policy["override_attributes"]
       end
