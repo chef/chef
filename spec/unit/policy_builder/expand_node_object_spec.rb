@@ -51,6 +51,10 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       expect(policy_builder).to respond_to(:run_context)
     end
 
+    it "implements an expand_run_list method" do
+      expect(policy_builder).to respond_to(:expand_run_list)
+    end
+
     describe "loading the node" do
 
       context "on chef-solo" do
@@ -108,6 +112,27 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
 
     it "has an override_runlist" do
       expect(policy_builder.override_runlist).to eq(override_runlist)
+    end
+
+  end
+
+  context "once the node has been loaded" do
+    let(:node) do
+      node = Chef::Node.new
+      node.name(node_name)
+      node.run_list(["recipe[a::default]", "recipe[b::server]"])
+      node
+    end
+
+    before do
+      Chef::Node.should_receive(:find_or_create).with(node_name).and_return(node)
+      policy_builder.load_node
+    end
+
+    it "expands the run_list" do
+      expect(policy_builder.expand_run_list).to be_a(Chef::RunList::RunListExpansion)
+      expect(policy_builder.run_list_expansion).to be_a(Chef::RunList::RunListExpansion)
+      expect(policy_builder.run_list_expansion.recipes).to eq(["a::default", "b::server"])
     end
 
   end

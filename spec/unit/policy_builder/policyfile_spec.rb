@@ -234,6 +234,14 @@ describe Chef::PolicyBuilder::Policyfile do
         expect(policy_builder.run_list_expansion_ish.recipes).to eq(["example1::default", "example2::server"])
       end
 
+      it "implements #expand_run_list in a manner compatible with ExpandNodeObject" do
+        Chef::Node.should_receive(:find_or_create).with(node_name).and_return(node)
+        policy_builder.load_node
+        expect(policy_builder.expand_run_list).to respond_to(:recipes)
+        expect(policy_builder.expand_run_list.recipes).to eq(["example1::default", "example2::server"])
+        expect(policy_builder.expand_run_list.roles).to eq([])
+      end
+
 
       describe "validating the Policyfile.lock" do
 

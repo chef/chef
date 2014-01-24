@@ -226,14 +226,26 @@ class Chef
       raise Exceptions::ChildConvergeError, message
     end
 
+    # Instantiates a Chef::Node object, possibly loading the node's prior state
+    # when using chef-client. Delegates to policy_builder
+    #
+    #
+    # === Returns
+    # Chef::Node:: The node object for this chef run
     def load_node
       policy_builder.load_node
       @node = policy_builder.node
     end
 
+    # Mutates the `node` object to prepare it for the chef run. Delegates to
+    # policy_builder
+    #
+    # === Returns
+    # Chef::Node:: The updated node object
     def build_node
       policy_builder.build_node
       @run_status = Chef::RunStatus.new(node, events)
+      node
     end
 
     def setup_run_context
@@ -324,6 +336,19 @@ class Chef
       @events.converge_complete
       raise
     end
+
+    # Expands the run list. Delegates to the policy_builder.
+    #
+    # Normally this does not need to be called from here, it will be called by
+    # build_node. This is provided so external users (like the chefspec
+    # project) can inject custom behavior into the run process.
+    #
+    # === Returns
+    # RunListExpansion: A RunListExpansion or API compatible object.
+    def expanded_run_list
+      policy_builder.expand_run_list
+    end
+
 
     def do_windows_admin_check
       if Chef::Platform.windows?
