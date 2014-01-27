@@ -35,20 +35,25 @@ class Chef
         Win32API.new('user32', 'GetSystemMetrics', 'I', 'I').call(n_index)
       end
 
+      def self.method_name_from_marketing_name(marketing_name)
+        "#{marketing_name.gsub(/\s/, '_').gsub(/\./, '_').downcase}?"
+        # "#{marketing_name.gsub(/\s/, '_').gsub(//, '_').downcase}?"       
+      end
+
       public
 
       WIN_VERSIONS = {
-        "Windows 8.1" => {:major => 6, :minor => 3, :callable => lambda{ @product_type == VER_NT_WORKSTATION }},
-        "Windows Server 2012 R2" => {:major => 6, :minor => 3, :callable => lambda{ @product_type != VER_NT_WORKSTATION }},
-        "Windows 8" => {:major => 6, :minor => 2, :callable => lambda{ @product_type == VER_NT_WORKSTATION }},
-        "Windows Server 2012" => {:major => 6, :minor => 2, :callable => lambda{ @product_type != VER_NT_WORKSTATION }},
-        "Windows 7" => {:major => 6, :minor => 1, :callable => lambda{ @product_type == VER_NT_WORKSTATION }},
-        "Windows Server 2008 R2" => {:major => 6, :minor => 1, :callable => lambda{ @product_type != VER_NT_WORKSTATION }},
-        "Windows Server 2008" => {:major => 6, :minor => 0, :callable => lambda{ @product_type != VER_NT_WORKSTATION }},
-        "Windows Vista" => {:major => 6, :minor => 0, :callable => lambda{ @product_type == VER_NT_WORKSTATION }},
-        "Windows Server 2003 R2" => {:major => 5, :minor => 2, :callable => lambda{ get_system_metrics(SM_SERVERR2) != 0 }},
-        "Windows Home Server" => {:major => 5, :minor => 2, :callable => lambda{  (@suite_mask & VER_SUITE_WH_SERVER) == VER_SUITE_WH_SERVER }},
-        "Windows Server 2003" => {:major => 5, :minor => 2, :callable => lambda{ get_system_metrics(SM_SERVERR2) == 0 }},
+        "Windows 8.1" => {:major => 6, :minor => 3, :callable => lambda{ |product_type, suite_mask| product_type == VER_NT_WORKSTATION }},
+        "Windows Server 2012 R2" => {:major => 6, :minor => 3, :callable => lambda {|product_type, suite_mask| product_type != VER_NT_WORKSTATION }},
+        "Windows 8" => {:major => 6, :minor => 2, :callable => lambda{ |product_type, suite_mask| product_type == VER_NT_WORKSTATION }},
+        "Windows Server 2012" => {:major => 6, :minor => 2, :callable => lambda{ |product_type, suite_mask| product_type != VER_NT_WORKSTATION }},
+        "Windows 7" => {:major => 6, :minor => 1, :callable => lambda{ |product_type, suite_mask| product_type == VER_NT_WORKSTATION }},
+        "Windows Server 2008 R2" => {:major => 6, :minor => 1, :callable => lambda{ |product_type, suite_mask| product_type != VER_NT_WORKSTATION }},
+        "Windows Server 2008" => {:major => 6, :minor => 0, :callable => lambda{ |product_type, suite_mask| product_type != VER_NT_WORKSTATION }},
+        "Windows Vista" => {:major => 6, :minor => 0, :callable => lambda{ |product_type, suite_mask| product_type == VER_NT_WORKSTATION }},
+        "Windows Server 2003 R2" => {:major => 5, :minor => 2, :callable => lambda{ |product_type, suite_mask| get_system_metrics(SM_SERVERR2) != 0 }},
+        "Windows Home Server" => {:major => 5, :minor => 2, :callable => lambda{ |product_type, suite_mask| (suite_mask & VER_SUITE_WH_SERVER) == VER_SUITE_WH_SERVER }},
+        "Windows Server 2003" => {:major => 5, :minor => 2, :callable => lambda{ |product_type, suite_mask| get_system_metrics(SM_SERVERR2) == 0 }},
         "Windows XP" => {:major => 5, :minor => 1},
         "Windows 2000" => {:major => 5, :minor => 0}
       }
@@ -77,11 +82,11 @@ class Chef
 
       # General Windows checks
       WIN_VERSIONS.each do |k,v|
-        method_name = "#{k.gsub(/\s/, '_').gsub(/\./, '_').downcase}?"
+        method_name = method_name_from_marketing_name(k)
         define_method(method_name) do
           (@major_version == v[:major]) &&
           (@minor_version == v[:minor]) &&
-          (v[:callable] ? v[:callable].call : true)
+          (v[:callable] ? v[:callable].call(@product_type, @suite_mask) : true)
         end
         marketing_names << [k, method_name]
       end
@@ -105,11 +110,19 @@ class Chef
       private
 
       def get_version
-        version = GetVersion()
-        major = LOBYTE(LOWORD(version))
-        minor = HIBYTE(LOWORD(version))
-        build = version < 0x80000000 ? HIWORD(version) : 0
-        [major, minor, build]
+        # Use WMI here because API's like GetVersion return faked
+        # version numbers on Windows Server 2012 R2 and Windows 8.1 --
+        # WMI always returns the truth. See article at
+        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms724439(v=vs.85).aspx
+        require 'ruby-wmi'
+
+        os_info = WMI::Win32_OperatingSystem.find(:first)
+        os_version = os_info.send('Version')
+
+        # The operating system version is a string in the following form
+        # that can be split into components based on the '.' delimiter:
+        # MajorVersionNumber.MinorVersionNumber.BuildNumber
+        os_version.split('.').collect { | version_string | version_string.to_i }
       end
 
       def get_version_ex

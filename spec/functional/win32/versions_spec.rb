@@ -49,10 +49,43 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
 
     @version = Chef::ReservedNames::Win32::Version.new
   end
+
+  def for_each_windows_version(&block)
+    @version.methods.each do |method_name|
+      if Chef::ReservedNames::Win32::Version::WIN_VERSIONS.keys.find { | key | method_name.to_s == Chef::ReservedNames::Win32::Version.send(:method_name_from_marketing_name,key) }
+        yield method_name
+      end
+    end
+  end
   
   context "Win32 version object" do
-    it "should contains legit method name" do
-      @version.methods.any? { |method_name| method_name.to_s.include?(".") }.should be_false
+    it "should have have one method for each marketing version" do
+      versions = 0
+      for_each_windows_version { versions += 1 }
+      versions.should > 0
+      versions.should == Chef::ReservedNames::Win32::Version::WIN_VERSIONS.length
+    end
+
+    it "should only contain version methods with legal method names" do
+      method_name_pattern = /[a-z]+([a-z]|[0-9]|_)*\?{0,1}/
+
+      for_each_windows_version do |method_name|
+        method_match = method_name_pattern.match(method_name.to_s)
+        method_match.should_not be_nil
+        method_name.to_s.should == method_match[0]
+      end
+    end
+
+    it "should have exactly one method that returns true" do
+      true_versions = 0
+      for_each_windows_version do |method_name|
+        true_versions += 1 if @version.send(method_name)
+      end
+      true_versions.should == 1
+    end
+
+    it "should successfully execute all version methods" do
+      for_each_windows_version { |method_name| @version.send(method_name.to_sym) }
     end
   end
   
