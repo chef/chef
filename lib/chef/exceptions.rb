@@ -299,7 +299,11 @@ class Chef
 
     # Raised when the content length of a download does not match the content
     # length declared in the http response.
-    class ContentLengthMismatch < RuntimeError; end
+    class ContentLengthMismatch < RuntimeError
+      def initialize(response_length, content_length)
+        super "Response body length #{response_length} does not match HTTP Content-Length header #{content_length}."
+      end
+    end
 
   end
 end
