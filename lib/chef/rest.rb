@@ -35,7 +35,7 @@ require 'chef/http/cookie_manager'
 require 'chef/config'
 require 'chef/exceptions'
 require 'chef/platform/query_helpers'
-require 'chef/http/request_id'
+require 'chef/http/remote_request_id'
 
 class Chef
   # == Chef::REST
@@ -62,7 +62,7 @@ class Chef
 
       @decompressor = Decompressor.new(options)
       @authenticator = Authenticator.new(options)
-      @request_id = RequestID.new
+      @request_id = RemoteRequestID.new(options)
 
       @middlewares << JSONInput.new(options)
       @middlewares << JSONToModelOutput.new(options)

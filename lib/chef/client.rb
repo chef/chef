@@ -44,7 +44,7 @@ require 'chef/version'
 require 'chef/resource_reporter'
 require 'chef/run_lock'
 require 'chef/policy_builder'
-require 'chef/run_id'
+require 'chef/request_id'
 require 'ohai'
 require 'rbconfig'
 
@@ -363,13 +363,12 @@ class Chef
       # don't add code that may fail before entering this section to be sure to release lock
       begin
         runlock.save_pid
-        Chef::RunID.instance.reset_run_id
-        @run_id = Chef::RunID.instance.run_id
+        request_id = Chef::RequestID.instance.request_id
         run_context = nil
         @events.run_start(Chef::VERSION)
         Chef::Log.info("*** Chef #{Chef::VERSION} ***")
         Chef::Log.info "Chef-client pid: #{Process.pid}"
-        Chef::Log.debug("Chef-client run_id: #{@run_id}")
+        Chef::Log.debug("Chef-client request_id: #{request_id}")
         enforce_path_sanity
         run_ohai
         @events.ohai_completed(node)
@@ -379,7 +378,7 @@ class Chef
 
         build_node
 
-        run_status.run_id = @run_id
+        run_status.run_id = request_id
         run_status.start_clock
         Chef::Log.info("Starting Chef Run for #{node.name}")
         run_started
@@ -410,6 +409,8 @@ class Chef
         @events.run_failed(e)
         raise
       ensure
+        Chef::RequestID.instance.reset_request_id
+        request_id = nil
         @run_status = nil
         run_context = nil
         runlock.release

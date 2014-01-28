@@ -64,13 +64,13 @@ describe Chef::REST do
 
     Chef::REST::CookieJar.instance.clear
     @request_id_mock = "1234"
-    Chef::RunID.instance.stub(:run_id).and_return(@request_id_mock)
+    Chef::RequestID.instance.stub(:request_id).and_return(@request_id_mock)
   end
 
 
   describe "calling an HTTP verb on a path or absolute URL" do
-    STANDARD_READ_HEADERS = {"Accept"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3", 'X-Ops-RequestId'=>"1234"}
-    STANDARD_WRITE_HEADERS = {"Accept"=>"application/json", "Content-Type"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3", 'X-Ops-RequestId'=>"1234"}
+    STANDARD_READ_HEADERS = {"Accept"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3", 'X-REMOTE-REQUEST-ID'=>"1234"}
+    STANDARD_WRITE_HEADERS = {"Accept"=>"application/json", "Content-Type"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3", 'X-REMOTE-REQUEST-ID'=>"1234"}
 
     it "adds a relative URL to the base url it was initialized with" do
       @rest.create_url("foo/bar/baz").should == URI.parse(@base_url + "/foo/bar/baz")
@@ -243,7 +243,7 @@ describe Chef::REST do
         @request_mock = {}
         Net::HTTP::Get.stub(:new).and_return(@request_mock)
         @request_id_mock = "1234"
-        Chef::RunID.instance.stub(:run_id).and_return(@request_id_mock)
+        Chef::RequestID.instance.stub(:request_id).and_return(@request_id_mock)
       end
 
       it "should build a new HTTP GET request without the application/json accept header" do
@@ -251,7 +251,7 @@ describe Chef::REST do
                             'X-Chef-Version' => Chef::VERSION,
                             'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
                             'Host' => @host_header,
-                            'X-Ops-RequestId' => @request_id_mock}
+                            'X-REMOTE-REQUEST-ID' => @request_id_mock}
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(@request_mock)
         @rest.streaming_request(@url, {})
       end
@@ -295,13 +295,13 @@ describe Chef::REST do
         @request_mock = {}
         Net::HTTP::Get.stub(:new).and_return(@request_mock)
         @request_id_mock = "1234"
-        Chef::RunID.instance.stub(:run_id).and_return(@request_id_mock)
+        Chef::RequestID.instance.stub(:request_id).and_return(@request_id_mock)
 
         @base_headers = {"Accept" => "application/json",
           "X-Chef-Version" => Chef::VERSION,
           "Accept-Encoding" => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
           "Host" => @host_header,
-          'X-Ops-RequestId' => @request_id_mock
+          'X-REMOTE-REQUEST-ID' => @request_id_mock
         }
       end
 
@@ -494,7 +494,7 @@ describe Chef::REST do
         @http_response.stub(:read_body)
         @http_client.stub(:request).and_yield(@http_response).and_return(@http_response)
         @request_id_mock = "1234"
-        Chef::RunID.instance.stub(:run_id).and_return(@request_id_mock)
+        Chef::RequestID.instance.stub(:request_id).and_return(@request_id_mock)
       end
 
       after do
@@ -506,7 +506,7 @@ describe Chef::REST do
                             'X-Chef-Version' => Chef::VERSION,
                             'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
                             'Host' => @host_header,
-                            'X-Ops-RequestId' => @request_id_mock}
+                            'X-REMOTE-REQUEST-ID' => @request_id_mock}
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(@request_mock)
         @rest.streaming_request(@url, {})
       end
