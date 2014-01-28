@@ -22,8 +22,11 @@ require 'chef/log'
 class Chef
   class HTTP
 
-    # Middleware that takes an HTTP response, parses it as JSON if possible.
-    class ValidateResponse
+    # Middleware that validates the Content-Length header against the downloaded number of bytes.
+    #
+    # This must run before the decompressor middleware, since otherwise we will count the uncompressed
+    # streamed bytes, rather than the on-the-wire compressed bytes.
+    class ValidateContentLength
 
       class ContentLengthCounter
         attr_accessor :content_length
