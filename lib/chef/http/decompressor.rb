@@ -69,6 +69,10 @@ class Chef
         [http_response, rest_request, return_value]
       end
 
+      def handle_stream_complete(http_response, rest_request, return_value)
+        [http_response, rest_request, return_value]
+      end
+
       def decompress_body(response)
         if gzip_disabled? || response.body.nil?
           response.body
