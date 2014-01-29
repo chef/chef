@@ -229,7 +229,7 @@ RUNNING_PS
     end
 
     it "should still pass all why run assertions" do
-      lambda { @provider.run_action(:start) }.should_not raise_error(Chef::Exceptions::Service)
+      lambda { @provider.run_action(:start) }.should_not raise_error
     end
   end
 end

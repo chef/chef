@@ -44,7 +44,7 @@ describe Chef::Provider::Group::Groupmod do
 
       it "shouldn't raise an error if the required binaries exist" do
         File.stub(:exists?).and_return(true)
-        lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Group)
+        lambda { @provider.load_current_resource }.should_not raise_error
       end
     end
 

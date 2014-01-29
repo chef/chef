@@ -75,7 +75,7 @@ RC_SAMPLE
 
     it "should not raise an exception if the rcscript have a name variable" do
       @provider.load_current_resource
-      lambda { @provider.service_enable_variable_name }.should_not raise_error(Chef::Exceptions::Service)
+      lambda { @provider.service_enable_variable_name }.should_not raise_error
     end
 
     describe "when the service supports status" do
@@ -294,7 +294,7 @@ RCVAR_SAMPLE
 
         it "should not raise an exception if the rcscript does not have a name variable" do
           @provider.load_current_resource
-          lambda { @provider.service_enable_variable_name }.should_not raise_error(Chef::Exceptions::Service)
+          lambda { @provider.service_enable_variable_name }.should_not raise_error
         end
       end
 
@@ -323,7 +323,7 @@ RCVAR_SAMPLE
             @provider.action = action
             @provider.load_current_resource
             @provider.define_resource_requirements
-            lambda { @provider.process_resource_requirements }.should_not raise_error(Chef::Exceptions::Service)
+            lambda { @provider.process_resource_requirements }.should_not raise_error
           end
         end
       end

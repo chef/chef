@@ -135,7 +135,7 @@ describe Chef::Runner do
     provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
     Chef::Provider::SnakeOil.stub(:new).once.and_return(provider)
     provider.stub(:action_sell).once.and_raise(ArgumentError)
-    lambda { @runner.converge }.should_not raise_error(ArgumentError)
+    lambda { @runner.converge }.should_not raise_error
   end
 
   it "should retry with the specified delay if retries are specified" do

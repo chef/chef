@@ -135,7 +135,7 @@ describe Chef::Provider::Git do
       @provider.action = :checkout
       ::File.stub(:directory?).with("/my/deploy").and_return(true)
       @provider.define_resource_requirements
-      lambda { @provider.process_resource_requirements }.should_not raise_error(RuntimeError)
+      lambda { @provider.process_resource_requirements }.should_not raise_error
     end
 
     it "gives the latest HEAD revision SHA if nothing is specified" do

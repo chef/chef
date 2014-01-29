@@ -61,9 +61,9 @@ describe Chef::Resource::User, "initialize" do
   end
 
   it "should accept domain users (@ or \ separator) on non-windows" do
-    lambda { @resource.username "domain\@user" }.should_not raise_error(ArgumentError)
+    lambda { @resource.username "domain\@user" }.should_not raise_error
     @resource.username.should == "domain\@user"
-    lambda { @resource.username "domain\\user" }.should_not raise_error(ArgumentError)
+    lambda { @resource.username "domain\\user" }.should_not raise_error
     @resource.username.should  == "domain\\user"
   end
 end

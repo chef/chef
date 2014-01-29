@@ -42,8 +42,8 @@ describe Chef::Search::Query do
     end
 
     it "should accept a type as the first argument" do
-      lambda { @query.search("foo") }.should_not raise_error(ArgumentError)
-      lambda { @query.search(:foo) }.should_not raise_error(ArgumentError)
+      lambda { @query.search("foo") }.should_not raise_error
+      lambda { @query.search(:foo) }.should_not raise_error
       lambda { @query.search(Hash.new) }.should raise_error(ArgumentError)
     end
 

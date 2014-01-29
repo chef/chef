@@ -247,7 +247,7 @@ describe Chef::Cookbook::Metadata do
     it "should not accept anything but a string for display_name" do
       lambda {
         @meta.grouping("db/mysql/databases", :title => "foo")
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
       lambda {
         @meta.grouping("db/mysql/databases", :title => Hash.new)
       }.should raise_error(ArgumentError)
@@ -256,7 +256,7 @@ describe Chef::Cookbook::Metadata do
     it "should not accept anything but a string for the description" do
       lambda {
         @meta.grouping("db/mysql/databases", :description => "foo")
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
       lambda {
         @meta.grouping("db/mysql/databases", :description => Hash.new)
       }.should raise_error(ArgumentError)
@@ -281,7 +281,7 @@ describe Chef::Cookbook::Metadata do
     it "should not accept anything but a string for display_name" do
       lambda {
         @meta.attribute("db/mysql/databases", :display_name => "foo")
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
       lambda {
         @meta.attribute("db/mysql/databases", :display_name => Hash.new)
       }.should raise_error(ArgumentError)
@@ -290,7 +290,7 @@ describe Chef::Cookbook::Metadata do
     it "should not accept anything but a string for the description" do
       lambda {
         @meta.attribute("db/mysql/databases", :description => "foo")
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
       lambda {
         @meta.attribute("db/mysql/databases", :description => Hash.new)
       }.should raise_error(ArgumentError)
@@ -299,7 +299,7 @@ describe Chef::Cookbook::Metadata do
     it "should not accept anything but an array of strings for choice" do
       lambda {
         @meta.attribute("db/mysql/databases", :choice => ['dedicated', 'shared'])
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
       lambda {
         @meta.attribute("db/mysql/databases", :choice => [10, 'shared'])
       }.should raise_error(ArgumentError)
@@ -316,10 +316,10 @@ describe Chef::Cookbook::Metadata do
      it "should let calculated be true or false" do
        lambda {
          @meta.attribute("db/mysql/databases", :calculated => true)
-       }.should_not raise_error(ArgumentError)
+       }.should_not raise_error
        lambda {
          @meta.attribute("db/mysql/databases", :calculated => false)
-       }.should_not raise_error(ArgumentError)
+       }.should_not raise_error
        lambda {
          @meta.attribute("db/mysql/databases", :calculated => Hash.new)
        }.should raise_error(ArgumentError)
@@ -333,13 +333,13 @@ describe Chef::Cookbook::Metadata do
     it "accepts String for the attribute type" do
       lambda {
         @meta.attribute("db/mysql/databases", :type => "string")
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
     end
 
     it "accepts Array for the attribute type" do
       lambda {
         @meta.attribute("db/mysql/databases", :type => "array")
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
       lambda {
         @meta.attribute("db/mysql/databases", :type => Array.new)
       }.should raise_error(ArgumentError)
@@ -348,38 +348,38 @@ describe Chef::Cookbook::Metadata do
     it "accepts symbol for the attribute type" do
       lambda {
         @meta.attribute("db/mysql/databases", :type => "symbol")
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
     end
 
      it "should let type be hash (backwards compatability only)" do
       lambda {
         @meta.attribute("db/mysql/databases", :type => "hash")
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
     end
 
     it "should let required be required, recommended or optional" do
       lambda {
         @meta.attribute("db/mysql/databases", :required => 'required')
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
       lambda {
         @meta.attribute("db/mysql/databases", :required => 'recommended')
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
       lambda {
         @meta.attribute("db/mysql/databases", :required => 'optional')
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
     end
 
     it "should convert required true to required" do
       lambda {
         @meta.attribute("db/mysql/databases", :required => true)
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
       #attrib = @meta.attributes["db/mysql/databases"][:required].should == "required"
     end
 
     it "should convert required false to optional" do
       lambda {
         @meta.attribute("db/mysql/databases", :required => false)
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
       #attrib = @meta.attributes["db/mysql/databases"][:required].should == "optional"
     end
 
@@ -391,7 +391,7 @@ describe Chef::Cookbook::Metadata do
     it "should make sure recipes is an array" do
       lambda {
         @meta.attribute("db/mysql/databases", :recipes => [])
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
       lambda {
         @meta.attribute("db/mysql/databases", :required => Hash.new)
       }.should raise_error(ArgumentError)
@@ -405,13 +405,13 @@ describe Chef::Cookbook::Metadata do
     it "should allow the default value to be a string, array, or hash" do
       lambda {
         @meta.attribute("db/mysql/databases", :default => [])
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
       lambda {
         @meta.attribute("db/mysql/databases", :default => {})
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
       lambda {
         @meta.attribute("db/mysql/databases", :default => "alice in chains")
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
       lambda {
         @meta.attribute("db/mysql/databases", :required => :not_gonna_do_it)
       }.should raise_error(ArgumentError)
@@ -441,14 +441,14 @@ describe Chef::Cookbook::Metadata do
           :default => "b"
         }
         @meta.attribute("db/mysql/databases", attrs)
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
       lambda {
         attrs = {
           :choice => [ "a", "b", "c", "d", "e"],
           :default => ["b", "d"]
         }
         @meta.attribute("db/mysql/databases", attrs)
-      }.should_not raise_error(ArgumentError)
+      }.should_not raise_error
      end
 
     it "should error if default is not a choice" do

@@ -386,7 +386,7 @@ shared_examples_for Chef::Provider::File do
 
           it "does not raise an exception in why-run mode" do
             Chef::Config[:why_run] = true
-            lambda {provider.run_action(action)}.should_not raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+            lambda {provider.run_action(action)}.should_not raise_error
             Chef::Config[:why_run] = false
           end
         end
@@ -635,7 +635,7 @@ shared_examples_for Chef::Provider::File do
       it "should not try to backup or delete the file, and should not be updated by last action" do
         provider.should_not_receive(:do_backup)
         File.should_not_receive(:delete)
-        lambda { provider.run_action(:delete) }.should_not raise_error()
+        lambda { provider.run_action(:delete) }.should_not raise_error
         resource.should_not be_updated_by_last_action
       end
     end

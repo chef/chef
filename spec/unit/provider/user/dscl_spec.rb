@@ -325,7 +325,7 @@ describe Chef::Provider::User::Dscl do
 
     it "shouldn't raise an error if /usr/bin/dscl exists" do
       ::File.stub(:exists?).and_return(true)
-      lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::User)
+      lambda { @provider.load_current_resource }.should_not raise_error
     end
   end
 

@@ -107,7 +107,7 @@ describe Chef::Provider::Group::Usermod do
 
     it "shouldn't raise an error if the required binaries exist" do
       File.stub(:exists?).and_return(true)
-      lambda { @provider.process_resource_requirements }.should_not raise_error(Chef::Exceptions::Group)
+      lambda { @provider.process_resource_requirements }.should_not raise_error
     end
   end
 end

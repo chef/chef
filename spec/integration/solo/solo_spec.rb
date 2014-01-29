@@ -79,7 +79,7 @@ EOM
           Process.waitpid(s1)
           Process.waitpid(s2)
         end
-      }.should_not raise_error(Timeout::Error)
+      }.should_not raise_error
 
       # Unfortunately file / directory helpers in integration tests
       # are implemented using before(:each) so we need to do all below

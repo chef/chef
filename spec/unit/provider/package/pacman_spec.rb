@@ -139,7 +139,7 @@ PACMAN_CONF
 
     it "should not raise an exception if pacman succeeds" do
       @status.should_receive(:exitstatus).and_return(0)
-      lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Package)
+      lambda { @provider.load_current_resource }.should_not raise_error
     end
 
     it "should raise an exception if pacman does not return a candidate version" do

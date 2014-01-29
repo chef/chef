@@ -547,7 +547,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
         @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
         @new_resource.recursive(false)
         @new_resource.run_action(:delete_key)
-        @new_resource.should_not raise_error(ArgumentError)
+        @new_resource.should_not raise_error
       end
       it "does nothing if the action is delete_key" do
         @new_resource.key(reg_parent + '\OpscodeWhyRun')

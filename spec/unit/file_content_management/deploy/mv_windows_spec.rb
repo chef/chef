@@ -51,11 +51,11 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
     let(:staging_file_path) { "/tmp/random-dir/staging-file.tmp" }
 
     let(:target_file_security_object) do
-      mock "Securable Object for target file"
+      double "Securable Object for target file"
     end
 
     let(:updated_target_security_object) do
-      mock "Securable Object for target file after staging file deploy"
+      double "Securable Object for target file after staging file deploy"
     end
 
     before do
@@ -83,13 +83,13 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
       let(:original_target_file_group) { double("original target file group") }
 
       let(:target_file_security_descriptor) do
-        mock "security descriptor for target file",
+        double "security descriptor for target file",
              :group => original_target_file_group,
              :owner => original_target_file_owner
       end
 
       let(:updated_target_security_descriptor) do
-        mock "security descriptor for target file"
+        double "security descriptor for target file"
       end
 
 

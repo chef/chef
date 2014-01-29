@@ -168,7 +168,7 @@ describe Chef::Knife::UI do
     it "should ignore Errno::EPIPE exceptions (CHEF-3516)" do
       @out.stub(:puts).and_raise(Errno::EPIPE)
       @err.stub(:puts).and_raise(Errno::EPIPE)
-      lambda {@ui.send(method, "hi")}.should_not raise_error(Errno::EPIPE)
+      lambda {@ui.send(method, "hi")}.should_not raise_error
     end
 
     it "should throw Errno::EPIPE exceptions with -VV (CHEF-3516)" do

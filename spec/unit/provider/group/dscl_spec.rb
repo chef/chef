@@ -247,7 +247,7 @@ describe Chef::Provider::Group::Dscl do
 
     it "doesn't raise an error if /usr/bin/dscl exists" do
       File.stub(:exists?).and_return(true)
-      lambda { @provider.process_resource_requirements }.should_not raise_error(Chef::Exceptions::Group)
+      lambda { @provider.process_resource_requirements }.should_not raise_error
     end
   end
 

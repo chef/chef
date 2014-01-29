@@ -212,7 +212,7 @@ describe Chef::Provider::User::Pw do
 
       it "should not raise an exception if pw usermod succeeds" do
         @status.should_receive(:exitstatus).and_return(0)
-        lambda { @provider.modify_password }.should_not raise_error(Chef::Exceptions::User)
+        lambda { @provider.modify_password }.should_not raise_error
       end
     end
   end
@@ -229,7 +229,7 @@ describe Chef::Provider::User::Pw do
 
     it "shouldn't raise an error if /usr/sbin/pw exists" do
       File.stub(:exists?).and_return(true)
-      lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::User)
+      lambda { @provider.load_current_resource }.should_not raise_error
     end
   end
 end

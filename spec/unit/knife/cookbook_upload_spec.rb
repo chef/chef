@@ -42,7 +42,7 @@ describe Chef::Knife::CookbookUpload do
 
   describe 'with --concurrency' do
     it 'should upload cookbooks with predefined concurrency' do
-      @cookbook_uploader = stub(:upload_cookbooks => nil)
+      @cookbook_uploader = double(:upload_cookbooks => nil)
       Chef::CookbookVersion.stub(:list_all_versions).and_return({})
       @knife.config[:concurrency] = 3
       @test_cookbook = Chef::CookbookVersion.new('test_cookbook')
@@ -56,7 +56,7 @@ describe Chef::Knife::CookbookUpload do
 
   describe 'run' do
     before(:each) do
-      @cookbook_uploader = stub(:upload_cookbooks => nil)
+      @cookbook_uploader = double(:upload_cookbooks => nil)
       Chef::CookbookUploader.stub(:new => @cookbook_uploader)
       Chef::CookbookVersion.stub(:list_all_versions).and_return({})
     end
@@ -139,7 +139,7 @@ describe Chef::Knife::CookbookUpload do
         @knife.should_receive(:upload).exactly(3).times
         Timeout::timeout(5) do
           @knife.run
-        end.should_not raise_error(Timeout::Error)
+        end.should_not raise_error
       end
     end
 

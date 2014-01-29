@@ -315,7 +315,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
           and_return(passwd_s_status)
         rpm_status = double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "passwd-0.73-1\n", :stderr => "")
         provider.should_receive(:shell_out!).with("rpm -q passwd").and_return(rpm_status)
-        lambda { provider.check_lock }.should_not raise_error(Chef::Exceptions::User)
+        lambda { provider.check_lock }.should_not raise_error
       end
 
       it "should raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os} and the passwd package is not version 0.73-1" do

@@ -437,7 +437,7 @@ describe Chef::Node::Attribute do
 
     it "should let you set an attribute value when another hash has an intermediate value" do
       @attributes.normal["the_ghost"] = { "exterminate" => "the future" }
-      lambda { @attributes.normal["the_ghost"]["exterminate"]["tomorrow"] = false }.should_not raise_error(NoMethodError)
+      lambda { @attributes.normal["the_ghost"]["exterminate"]["tomorrow"] = false }.should_not raise_error
     end
 
     it "should set the attribute value" do
@@ -597,7 +597,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should not raise an exception if one of the hashes has a nil value on a deep lookup" do
-      lambda { @attributes.place.keys { |k| } }.should_not raise_error(NoMethodError)
+      lambda { @attributes.place.keys { |k| } }.should_not raise_error
     end
   end
 
@@ -981,7 +981,7 @@ describe Chef::Node::Attribute do
 
     if RUBY_VERSION >= "1.8.7"
       it "should not raise a LocalJumpError if no block is given" do
-        lambda { @attributes.select }.should_not raise_error(LocalJumpError)
+        lambda { @attributes.select }.should_not raise_error
       end
     else
       it "should raise a LocalJumpError if no block is given" do

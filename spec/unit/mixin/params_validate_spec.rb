@@ -32,7 +32,7 @@ describe Chef::Mixin::ParamsValidate do
   end
 
   it "should allow a hash and a hash as arguments to validate" do
-    lambda { @vo.validate({:one => "two"}, {}) }.should_not raise_error(ArgumentError)
+    lambda { @vo.validate({:one => "two"}, {}) }.should_not raise_error
   end
 
   it "should raise an argument error if validate is called incorrectly" do
@@ -40,17 +40,17 @@ describe Chef::Mixin::ParamsValidate do
   end
 
   it "should require validation map keys to be symbols or strings" do
-    lambda { @vo.validate({:one => "two"}, { :one => true }) }.should_not raise_error(ArgumentError)
-    lambda { @vo.validate({:one => "two"}, { "one" => true }) }.should_not raise_error(ArgumentError)
+    lambda { @vo.validate({:one => "two"}, { :one => true }) }.should_not raise_error
+    lambda { @vo.validate({:one => "two"}, { "one" => true }) }.should_not raise_error
     lambda { @vo.validate({:one => "two"}, { Hash.new => true }) }.should raise_error(ArgumentError)
   end
 
   it "should allow options to be required with true" do
-    lambda { @vo.validate({:one => "two"}, { :one => true }) }.should_not raise_error(ArgumentError)
+    lambda { @vo.validate({:one => "two"}, { :one => true }) }.should_not raise_error
   end
 
   it "should allow options to be optional with false" do
-    lambda { @vo.validate({}, {:one => false})}.should_not raise_error(ArgumentError)
+    lambda { @vo.validate({}, {:one => false})}.should_not raise_error
   end
 
   it "should allow you to check what kind_of? thing an argument is with kind_of" do
@@ -63,7 +63,7 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error(ArgumentError)
+    }.should_not raise_error
 
     lambda {
       @vo.validate(
@@ -87,7 +87,7 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error(ArgumentError)
+    }.should_not raise_error
 
     lambda {
       @vo.validate(
@@ -109,7 +109,7 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error(ArgumentError)
+    }.should_not raise_error
   end
 
   it "should allow you to specify whether an object has a method with respond_to" do
@@ -122,7 +122,7 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error(ArgumentError)
+    }.should_not raise_error
 
     lambda {
       @vo.validate(
@@ -146,7 +146,7 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error(ArgumentError)
+    }.should_not raise_error
 
     lambda {
       @vo.validate(
@@ -180,7 +180,7 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error(ArgumentError)
+    }.should_not raise_error
 
     lambda {
       @vo.validate(
@@ -208,7 +208,7 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error(ArgumentError)
+    }.should_not raise_error
 
     lambda {
       @vo.validate(
@@ -250,7 +250,7 @@ describe Chef::Mixin::ParamsValidate do
           :three => { :default => "neato mosquito" }
         }
       )
-    }.should_not raise_error(ArgumentError)
+    }.should_not raise_error
     args[:three].should == "neato mosquito"
     lambda {
       @vo.validate(
@@ -292,7 +292,7 @@ describe Chef::Mixin::ParamsValidate do
   it "should accept keys that are strings in the options" do
     lambda {
       @vo.validate({ "one" => "two" }, { :one => { :regex => /^two$/ }})
-    }.should_not raise_error(ArgumentError)
+    }.should_not raise_error
   end
 
   it "should allow an array to kind_of" do
@@ -305,7 +305,7 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error(ArgumentError)
+    }.should_not raise_error
     lambda {
       @vo.validate(
         {:one => ["string"]},
@@ -315,7 +315,7 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error(ArgumentError)
+    }.should_not raise_error
     lambda {
       @vo.validate(
         {:one => Hash.new},
@@ -360,7 +360,7 @@ describe Chef::Mixin::ParamsValidate do
   it "should not raise an error when argument is nil and required is false" do
     lambda {
       @vo.set_or_return(:test, nil, { :required => false })
-    }.should_not raise_error(ArgumentError)
+    }.should_not raise_error
   end
 
   it "should set and return @name, then return @name for foo when argument is nil" do

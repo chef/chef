@@ -39,9 +39,9 @@ describe Chef::Resource::Mdadm do
   end
 
   it "should accept create, assemble, stop as actions" do
-    lambda { @resource.action :create }.should_not raise_error(ArgumentError)
-    lambda { @resource.action :assemble }.should_not raise_error(ArgumentError)
-    lambda { @resource.action :stop }.should_not raise_error(ArgumentError)
+    lambda { @resource.action :create }.should_not raise_error
+    lambda { @resource.action :assemble }.should_not raise_error
+    lambda { @resource.action :stop }.should_not raise_error
   end
 
   it "should allow you to set the raid_device attribute" do

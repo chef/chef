@@ -385,7 +385,7 @@ shared_examples_for Chef::Client do
 
         context "fatal admin check is configured" do
           it "should not raise an exception" do
-            @client.do_windows_admin_check.should_not raise_error(Chef::Exceptions::WindowsNotAdmin)
+            @client.do_windows_admin_check.should_not raise_error
           end
         end
       end
@@ -402,7 +402,7 @@ shared_examples_for Chef::Client do
 
         context "fatal admin check is configured" do
           it "should raise an exception" do
-            @client.do_windows_admin_check.should_not raise_error(Chef::Exceptions::WindowsNotAdmin)
+            @client.do_windows_admin_check.should_not raise_error
           end
         end
       end

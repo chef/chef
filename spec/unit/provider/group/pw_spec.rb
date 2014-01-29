@@ -131,7 +131,7 @@ describe Chef::Provider::Group::Pw do
 
     it "shouldn't raise an error if /usr/sbin/pw exists" do
       File.stub(:exists?).and_return(true)
-      lambda { @provider.process_resource_requirements }.should_not raise_error(Chef::Exceptions::Group)
+      lambda { @provider.process_resource_requirements }.should_not raise_error
     end
   end
 end

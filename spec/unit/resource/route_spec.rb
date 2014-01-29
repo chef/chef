@@ -39,8 +39,8 @@ describe Chef::Resource::Route do
   end
 
   it "should accept add or delete for action" do
-    lambda { @resource.action :add }.should_not raise_error(ArgumentError)
-    lambda { @resource.action :delete }.should_not raise_error(ArgumentError)
+    lambda { @resource.action :add }.should_not raise_error
+    lambda { @resource.action :delete }.should_not raise_error
     lambda { @resource.action :lolcat }.should raise_error(ArgumentError)
   end
 

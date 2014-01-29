@@ -82,7 +82,7 @@ describe Chef::Provider::Package::Zypper do
 
     it "should not raise an exception if zypper info succeeds" do
       @status.should_receive(:exitstatus).and_return(0)
-      lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Package)
+      lambda { @provider.load_current_resource }.should_not raise_error
     end
 
     it "should return the current resouce" do

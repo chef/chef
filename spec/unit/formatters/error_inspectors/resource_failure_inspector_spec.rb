@@ -172,7 +172,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
       end
 
       it "does not generate an error" do
-        lambda { @inspector.add_explanation(@description) }.should_not raise_error(TypeError)
+        lambda { @inspector.add_explanation(@description) }.should_not raise_error
         @description.display(@outputter)
       end
     end

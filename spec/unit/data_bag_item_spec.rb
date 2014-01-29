@@ -67,15 +67,15 @@ describe Chef::DataBagItem do
     end
 
     it "should accept alphanum/-/_ for the id" do
-      lambda { @data_bag_item.raw_data = { "id" => "h1-_" } }.should_not raise_error(ArgumentError)
+      lambda { @data_bag_item.raw_data = { "id" => "h1-_" } }.should_not raise_error
     end
 
     it "should accept alphanum.alphanum for the id" do
-      lambda { @data_bag_item.raw_data = { "id" => "foo.bar" } }.should_not raise_error(ArgumentError)
+      lambda { @data_bag_item.raw_data = { "id" => "foo.bar" } }.should_not raise_error
     end
 
     it "should accept .alphanum for the id" do
-      lambda { @data_bag_item.raw_data = { "id" => ".bozo" } }.should_not raise_error(ArgumentError)
+      lambda { @data_bag_item.raw_data = { "id" => ".bozo" } }.should_not raise_error
     end
 
     it "should raise an exception if the id contains anything but alphanum/-/_" do

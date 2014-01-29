@@ -205,8 +205,8 @@ describe Chef::Resource do
 
   describe "noop" do
     it "should accept true or false for noop" do
-      lambda { @resource.noop true }.should_not raise_error(ArgumentError)
-      lambda { @resource.noop false }.should_not raise_error(ArgumentError)
+      lambda { @resource.noop true }.should_not raise_error
+      lambda { @resource.noop false }.should_not raise_error
       lambda { @resource.noop "eat it" }.should raise_error(ArgumentError)
     end
   end

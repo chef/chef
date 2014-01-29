@@ -1690,8 +1690,8 @@ EOF
 
   describe "installed_version" do
     it "should take one or two arguments" do
-      lambda { @yc.installed_version("zip") }.should_not raise_error(ArgumentError)
-      lambda { @yc.installed_version("zip", "i386") }.should_not raise_error(ArgumentError)
+      lambda { @yc.installed_version("zip") }.should_not raise_error
+      lambda { @yc.installed_version("zip", "i386") }.should_not raise_error
       lambda { @yc.installed_version("zip", "i386", "extra") }.should raise_error(ArgumentError)
     end
 
@@ -1714,8 +1714,8 @@ EOF
 
   describe "available_version" do
     it "should take one or two arguments" do
-      lambda { @yc.available_version("zisofs-tools") }.should_not raise_error(ArgumentError)
-      lambda { @yc.available_version("zisofs-tools", "i386") }.should_not raise_error(ArgumentError)
+      lambda { @yc.available_version("zisofs-tools") }.should_not raise_error
+      lambda { @yc.available_version("zisofs-tools", "i386") }.should_not raise_error
       lambda { @yc.available_version("zisofs-tools", "i386", "extra") }.should raise_error(ArgumentError)
     end
 
@@ -1739,8 +1739,8 @@ EOF
   describe "version_available?" do
     it "should take two or three arguments" do
       lambda { @yc.version_available?("zisofs-tools") }.should raise_error(ArgumentError)
-      lambda { @yc.version_available?("zisofs-tools", "1.0.6-3.2.2") }.should_not raise_error(ArgumentError)
-      lambda { @yc.version_available?("zisofs-tools", "1.0.6-3.2.2", "x86_64") }.should_not raise_error(ArgumentError)
+      lambda { @yc.version_available?("zisofs-tools", "1.0.6-3.2.2") }.should_not raise_error
+      lambda { @yc.version_available?("zisofs-tools", "1.0.6-3.2.2", "x86_64") }.should_not raise_error
     end
 
     it "should return true if our package-version-arch is available" do
@@ -1768,8 +1768,8 @@ EOF
   describe "package_repository" do
     it "should take two or three arguments" do
       lambda { @yc.package_repository("zisofs-tools") }.should raise_error(ArgumentError)
-      lambda { @yc.package_repository("zisofs-tools", "1.0.6-3.2.2") }.should_not raise_error(ArgumentError)
-      lambda { @yc.package_repository("zisofs-tools", "1.0.6-3.2.2", "x86_64") }.should_not raise_error(ArgumentError)
+      lambda { @yc.package_repository("zisofs-tools", "1.0.6-3.2.2") }.should_not raise_error
+      lambda { @yc.package_repository("zisofs-tools", "1.0.6-3.2.2", "x86_64") }.should_not raise_error
     end
 
     it "should return repoid for package-version-arch" do
