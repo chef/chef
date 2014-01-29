@@ -26,7 +26,7 @@ describe Chef::Knife::CookbookCreate do
     @knife.config = {}
     @knife.name_args = ["foobar"]
     @stdout = StringIO.new
-    @knife.stub!(:stdout).and_return(@stdout)
+    @knife.stub(:stdout).and_return(@stdout)
   end
 
   describe "run" do
@@ -35,10 +35,10 @@ describe Chef::Knife::CookbookCreate do
     it "should expand the path of the cookbook directory" do
       File.should_receive(:expand_path).with("~/tmp/monkeypants")
       @knife.config = {:cookbook_path => "~/tmp/monkeypants"}
-      @knife.stub!(:create_cookbook)
-      @knife.stub!(:create_readme)
-      @knife.stub!(:create_changelog)
-      @knife.stub!(:create_metadata)
+      @knife.stub(:create_cookbook)
+      @knife.stub(:create_readme)
+      @knife.stub(:create_changelog)
+      @knife.stub(:create_metadata)
       @knife.run
     end
 

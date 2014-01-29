@@ -28,7 +28,7 @@ describe Chef::Provider::CookbookFile::Content do
   end
 
   it "prefers the explicit cookbook name on the resource to the implicit one" do
-    new_resource.stub!(:cookbook).and_return('nginx')
+    new_resource.stub(:cookbook).and_return('nginx')
     content.send(:resource_cookbook).should == 'nginx'
   end
 

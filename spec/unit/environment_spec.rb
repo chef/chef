@@ -356,9 +356,9 @@ describe Chef::Environment do
   describe "api model" do
     before(:each) do
       @rest = mock("Chef::REST")
-      Chef::REST.stub!(:new).and_return(@rest)
+      Chef::REST.stub(:new).and_return(@rest)
       @query = mock("Chef::Search::Query")
-      Chef::Search::Query.stub!(:new).and_return(@query)
+      Chef::Search::Query.stub(:new).and_return(@query)
     end
 
     describe "list" do

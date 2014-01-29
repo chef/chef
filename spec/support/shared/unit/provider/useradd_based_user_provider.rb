@@ -57,21 +57,21 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       end
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not nil" do
-        @new_resource.stub!(attribute).and_return("hola")
+        @new_resource.stub(attribute).and_return("hola")
         provider.universal_options.should eql([option, 'hola'])
       end
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not nil, without homedir management" do
-        @new_resource.stub!(:supports).and_return({:manage_home => false,
+        @new_resource.stub(:supports).and_return({:manage_home => false,
                                                     :non_unique => false})
-        @new_resource.stub!(attribute).and_return("hola")
+        @new_resource.stub(attribute).and_return("hola")
         provider.universal_options.should eql([option, 'hola'])
       end
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not nil, without homedir management (using real attributes)" do
-        @new_resource.stub!(:manage_home).and_return(false)
-        @new_resource.stub!(:non_unique).and_return(false)
-        @new_resource.stub!(attribute).and_return("hola")
+        @new_resource.stub(:manage_home).and_return(false)
+        @new_resource.stub(:non_unique).and_return(false)
+        @new_resource.stub(attribute).and_return("hola")
         provider.universal_options.should eql([option, 'hola'])
       end
     end
@@ -79,7 +79,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     it "should combine all the possible options" do
       combined_opts = []
       supported_useradd_options.sort{ |a,b| a[0] <=> b[0] }.each do |attribute, option|
-        @new_resource.stub!(attribute).and_return("hola")
+        @new_resource.stub(attribute).and_return("hola")
         combined_opts << option << 'hola'
       end
       provider.universal_options.should eql(combined_opts)
@@ -99,8 +99,8 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
     describe "when the resource has a different home directory and supports home directory management" do
       before do
-        @new_resource.stub!(:home).and_return("/wowaweea")
-        @new_resource.stub!(:supports).and_return({:manage_home => true,
+        @new_resource.stub(:home).and_return("/wowaweea")
+        @new_resource.stub(:supports).and_return({:manage_home => true,
                                                    :non_unique => false})
       end
 
@@ -112,9 +112,9 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
     describe "when the resource has a different home directory and supports home directory management (using real attributes)" do
       before do
-        @new_resource.stub!(:home).and_return("/wowaweea")
-        @new_resource.stub!(:manage_home).and_return(true)
-        @new_resource.stub!(:non_unique).and_return(false)
+        @new_resource.stub(:home).and_return("/wowaweea")
+        @new_resource.stub(:manage_home).and_return(true)
+        @new_resource.stub(:non_unique).and_return(false)
       end
 
       it "should set -m -d /homedir" do
@@ -125,7 +125,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
     describe "when the resource supports non_unique ids" do
       before do
-        @new_resource.stub!(:supports).and_return({:manage_home => false,
+        @new_resource.stub(:supports).and_return({:manage_home => false,
                                                   :non_unique => true})
       end
 
@@ -136,8 +136,8 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
     describe "when the resource supports non_unique ids (using real attributes)" do
       before do
-        @new_resource.stub!(:manage_home).and_return(false)
-        @new_resource.stub!(:non_unique).and_return(true)
+        @new_resource.stub(:manage_home).and_return(false)
+        @new_resource.stub(:non_unique).and_return(true)
       end
 
       it "should set -m -o" do

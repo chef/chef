@@ -7,9 +7,9 @@ describe Chef::Knife::TagList do
     @knife.name_args = [ Chef::Config[:node_name], "sadtag" ]
 
     @node = Chef::Node.new
-    @node.stub! :save
+    @node.stub :save
     @node.tags << "sadtag" << "happytag"
-    Chef::Node.stub!(:load).and_return @node
+    Chef::Node.stub(:load).and_return @node
   end
 
   describe "run" do

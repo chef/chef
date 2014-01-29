@@ -27,12 +27,12 @@ describe Chef::Knife::NodeRunListRemove do
     @node = Chef::Node.new()
     @node.name("knifetest-node")
     @node.run_list << "role[monkey]"
-    @node.stub!(:save).and_return(true)
+    @node.stub(:save).and_return(true)
 
-    @knife.ui.stub!(:output).and_return(true)
-    @knife.ui.stub!(:confirm).and_return(true)
+    @knife.ui.stub(:output).and_return(true)
+    @knife.ui.stub(:confirm).and_return(true)
 
-    Chef::Node.stub!(:load).and_return(@node)
+    Chef::Node.stub(:load).and_return(@node)
   end
 
   describe "run" do

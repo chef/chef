@@ -30,25 +30,25 @@ describe Chef::Provider::Package::Rpm do
     @provider = Chef::Provider::Package::Rpm.new(@new_resource, @run_context)
 
     @status = mock("Status", :exitstatus => 0)
-    ::File.stub!(:exists?).and_return(true)
+    ::File.stub(:exists?).and_return(true)
   end
 
   describe "when determining the current state of the package" do
 
     it "should create a current resource with the name of new_resource" do
-      @provider.stub!(:popen4).and_return(@status)
+      @provider.stub(:popen4).and_return(@status)
       @provider.load_current_resource
       @provider.current_resource.name.should == "emacs"
     end
 
     it "should set the current reource package name to the new resource package name" do
-      @provider.stub!(:popen4).and_return(@status)
+      @provider.stub(:popen4).and_return(@status)
       @provider.load_current_resource
       @provider.current_resource.package_name.should == 'emacs'
     end
 
     it "should raise an exception if a source is supplied but not found" do
-      ::File.stub!(:exists?).and_return(false)
+      ::File.stub(:exists?).and_return(false)
       lambda { @provider.run_action(:any) }.should raise_error(Chef::Exceptions::Package)
     end
 
@@ -77,7 +77,7 @@ describe Chef::Provider::Package::Rpm do
 
     it "should raise an exception if rpm fails to run" do
       status = mock("Status", :exitstatus => -1)
-      @provider.stub!(:popen4).and_return(status)
+      @provider.stub(:popen4).and_return(status)
       lambda { @provider.run_action(:any) }.should raise_error(Chef::Exceptions::Package)
     end
   end

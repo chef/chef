@@ -72,7 +72,7 @@ describe Shell::ModelWrapper do
 
       # Creating a Chef::Search::Query object tries to read the private key...
       @searcher = mock("Chef::Search::Query #{__FILE__}:#{__LINE__}")
-      Chef::Search::Query.stub!(:new).and_return(@searcher)
+      Chef::Search::Query.stub(:new).and_return(@searcher)
     end
 
     it "falls back to listing the objects when the 'query' is :all" do

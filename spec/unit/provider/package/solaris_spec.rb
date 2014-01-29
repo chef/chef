@@ -27,7 +27,7 @@ describe Chef::Provider::Package::Solaris do
     @new_resource.source("/tmp/bash.pkg")
 
     @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context)
-    ::File.stub!(:exists?).and_return(true)
+    ::File.stub(:exists?).and_return(true)
   end
 
   describe "assessing the current package status" do
@@ -50,20 +50,20 @@ PKGINFO
     end
 
     it "should create a current resource with the name of new_resource" do
-      @provider.stub!(:popen4).and_return(@status)
+      @provider.stub(:popen4).and_return(@status)
       @provider.load_current_resource
       @provider.current_resource.name.should == "SUNWbash"
     end
 
     it "should set the current reource package name to the new resource package name" do
-      @provider.stub!(:popen4).and_return(@status)
+      @provider.stub(:popen4).and_return(@status)
       @provider.load_current_resource
       @provider.current_resource.package_name.should == "SUNWbash"
     end
 
     it "should raise an exception if a source is supplied but not found" do
-      @provider.stub!(:popen4).and_return(@status)
-      ::File.stub!(:exists?).and_return(false)
+      @provider.stub(:popen4).and_return(@status)
+      ::File.stub(:exists?).and_return(false)
       @provider.define_resource_requirements
       @provider.load_current_resource
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Package)
@@ -93,13 +93,13 @@ PKGINFO
     it "should raise an exception if the source is not set but we are installing" do
       @new_resource = Chef::Resource::Package.new("SUNWbash")
       @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context)
-      @provider.stub!(:popen4).and_return(@status)
+      @provider.stub(:popen4).and_return(@status)
       lambda { @provider.run_action(:install) }.should raise_error(Chef::Exceptions::Package)
     end
 
     it "should raise an exception if pkginfo fails to run" do
       @status = mock("Status", :exitstatus => -1)
-      @provider.stub!(:popen4).and_return(@status)
+      @provider.stub(:popen4).and_return(@status)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
 
@@ -121,14 +121,14 @@ PKGINFO
 
     it "should lookup the candidate_version if the variable is not already set" do
       @status = mock("Status", :exitstatus => 0)
-      @provider.stub!(:popen4).and_return(@status)
+      @provider.stub(:popen4).and_return(@status)
       @provider.should_receive(:popen4)
       @provider.candidate_version
     end
 
     it "should throw and exception if the exitstatus is not 0" do
       @status = mock("Status", :exitstatus => 1)
-      @provider.stub!(:popen4).and_return(@status)
+      @provider.stub(:popen4).and_return(@status)
       lambda { @provider.candidate_version }.should raise_error(Chef::Exceptions::Package)
     end
 
@@ -153,7 +153,7 @@ PKGINFO
     end
 
     it "should run pkgadd -n -a /tmp/myadmin -d with the package options -a /tmp/myadmin" do
-      @new_resource.stub!(:options).and_return("-a /tmp/myadmin")
+      @new_resource.stub(:options).and_return("-a /tmp/myadmin")
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "pkgadd -n -a /tmp/myadmin -d /tmp/bash.pkg all"
       })
@@ -170,7 +170,7 @@ PKGINFO
     end
 
     it "should run pkgrm -n -a /tmp/myadmin with options -a /tmp/myadmin" do
-      @new_resource.stub!(:options).and_return("-a /tmp/myadmin")
+      @new_resource.stub(:options).and_return("-a /tmp/myadmin")
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "pkgrm -n -a /tmp/myadmin SUNWbash"
       })

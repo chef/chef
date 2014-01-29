@@ -46,7 +46,7 @@ describe Chef::Provider::Service::Debian do
 
     context "when update-rc.d shows init linked to rc*.d/" do
       before do
-        @provider.stub!(:assert_update_rcd_available)
+        @provider.stub(:assert_update_rcd_available)
 
         result = <<-UPDATE_RC_D_SUCCESS
   Removing any system startup links for /etc/init.d/chef ...
@@ -62,8 +62,8 @@ describe Chef::Provider::Service::Debian do
         @stdout = StringIO.new(result)
         @stderr = StringIO.new
         @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
-        @provider.stub!(:shell_out!).and_return(@status)
-        @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        @provider.stub(:shell_out!).and_return(@status)
+        @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       end
 
       it "says the service is enabled" do
@@ -71,7 +71,7 @@ describe Chef::Provider::Service::Debian do
       end
 
       it "stores the 'enabled' state" do
-        Chef::Resource::Service.stub!(:new).and_return(@current_resource)
+        Chef::Resource::Service.stub(:new).and_return(@current_resource)
         @provider.load_current_resource.should equal(@current_resource)
         @current_resource.enabled.should be_true
       end
@@ -79,14 +79,14 @@ describe Chef::Provider::Service::Debian do
 
     context "when update-rc.d shows init isn't linked to rc*.d/" do
       before do
-        @provider.stub!(:assert_update_rcd_available)
+        @provider.stub(:assert_update_rcd_available)
         @status = mock("Status", :exitstatus => 0)
         @stdout = StringIO.new(
           " Removing any system startup links for /etc/init.d/chef ...")
         @stderr = StringIO.new
         @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
-        @provider.stub!(:shell_out!).and_return(@status)
-        @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        @provider.stub(:shell_out!).and_return(@status)
+        @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       end
 
       it "says the service is disabled" do
@@ -94,7 +94,7 @@ describe Chef::Provider::Service::Debian do
       end
 
       it "stores the 'disabled' state" do
-        Chef::Resource::Service.stub!(:new).and_return(@current_resource)
+        Chef::Resource::Service.stub(:new).and_return(@current_resource)
         @provider.load_current_resource.should equal(@current_resource)
         @current_resource.enabled.should be_false
       end
@@ -103,7 +103,7 @@ describe Chef::Provider::Service::Debian do
     context "when update-rc.d fails" do
       before do
         @status = mock("Status", :exitstatus => -1)
-        @provider.stub!(:popen4).and_return(@status)
+        @provider.stub(:popen4).and_return(@status)
       end
 
       it "raises an error" do
@@ -196,13 +196,13 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
       context "on #{model}" do
         context "when update-rc.d shows init linked to rc*.d/" do
           before do
-            @provider.stub!(:assert_update_rcd_available)
+            @provider.stub(:assert_update_rcd_available)
 
             @stdout = StringIO.new(expected_results["linked"]["stdout"])
             @stderr = StringIO.new(expected_results["linked"]["stderr"])
             @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
-            @provider.stub!(:shell_out!).and_return(@status)
-            @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+            @provider.stub(:shell_out!).and_return(@status)
+            @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
           end
 
           it "says the service is enabled" do
@@ -210,7 +210,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
           end
 
           it "stores the 'enabled' state" do
-            Chef::Resource::Service.stub!(:new).and_return(@current_resource)
+            Chef::Resource::Service.stub(:new).and_return(@current_resource)
             @provider.load_current_resource.should equal(@current_resource)
             @current_resource.enabled.should be_true
           end
@@ -223,12 +223,12 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
 
         context "when update-rc.d shows init isn't linked to rc*.d/" do
           before do
-            @provider.stub!(:assert_update_rcd_available)
+            @provider.stub(:assert_update_rcd_available)
             @stdout = StringIO.new(expected_results["not linked"]["stdout"])
             @stderr = StringIO.new(expected_results["not linked"]["stderr"])
             @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
-            @provider.stub!(:shell_out!).and_return(@status)
-            @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+            @provider.stub(:shell_out!).and_return(@status)
+            @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
           end
 
           it "says the service is disabled" do
@@ -236,7 +236,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
           end
 
           it "stores the 'disabled' state" do
-            Chef::Resource::Service.stub!(:new).and_return(@current_resource)
+            Chef::Resource::Service.stub(:new).and_return(@current_resource)
             @provider.load_current_resource.should equal(@current_resource)
             @current_resource.enabled.should be_false
           end

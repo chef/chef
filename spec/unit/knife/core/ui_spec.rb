@@ -412,28 +412,28 @@ EOM
       @question = "monkeys rule"
       @stdout = StringIO.new
       @ui.stub(:stdout).and_return(@stdout)
-      @ui.stdin.stub!(:readline).and_return("y")
+      @ui.stdin.stub(:readline).and_return("y")
     end
 
     it "should return true if you answer Y" do
-      @ui.stdin.stub!(:readline).and_return("Y")
+      @ui.stdin.stub(:readline).and_return("Y")
       @ui.confirm(@question).should == true
     end
 
     it "should return true if you answer y" do
-      @ui.stdin.stub!(:readline).and_return("y")
+      @ui.stdin.stub(:readline).and_return("y")
       @ui.confirm(@question).should == true
     end
 
     it "should exit 3 if you answer N" do
-      @ui.stdin.stub!(:readline).and_return("N")
+      @ui.stdin.stub(:readline).and_return("N")
       lambda {
         @ui.confirm(@question)
       }.should raise_error(SystemExit) { |e| e.status.should == 3 }
     end
 
     it "should exit 3 if you answer n" do
-      @ui.stdin.stub!(:readline).and_return("n")
+      @ui.stdin.stub(:readline).and_return("n")
       lambda {
         @ui.confirm(@question)
       }.should raise_error(SystemExit) { |e| e.status.should == 3 }
@@ -449,16 +449,16 @@ EOM
     describe "when asking for free-form user input" do
       it "asks a question and returns the answer provided by the user" do
         out = StringIO.new
-        @ui.stub!(:stdout).and_return(out)
-        @ui.stub!(:stdin).and_return(StringIO.new("http://mychefserver.example.com\n"))
+        @ui.stub(:stdout).and_return(out)
+        @ui.stub(:stdin).and_return(StringIO.new("http://mychefserver.example.com\n"))
         @ui.ask_question("your chef server URL?").should == "http://mychefserver.example.com"
         out.string.should == "your chef server URL?"
       end
 
       it "suggests a default setting and returns the default when the user's response only contains whitespace" do
         out = StringIO.new
-        @ui.stub!(:stdout).and_return(out)
-        @ui.stub!(:stdin).and_return(StringIO.new(" \n"))
+        @ui.stub(:stdout).and_return(out)
+        @ui.stub(:stdin).and_return(StringIO.new(" \n"))
         @ui.ask_question("your chef server URL? ", :default => 'http://localhost:4000').should == "http://localhost:4000"
         out.string.should == "your chef server URL? [http://localhost:4000] "
       end

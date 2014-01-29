@@ -37,8 +37,8 @@ describe Chef::Provider::Ifconfig::Debian do
     status = mock("Status", :exitstatus => 0)
     @provider.instance_variable_set("@status", status)
     @provider.current_resource = @current_resource
-    @provider.stub!(:load_current_resource)
-    @provider.stub!(:run_command)
+    @provider.stub(:load_current_resource)
+    @provider.stub(:run_command)
 
     @config_filename_ifaces = "/etc/network/interfaces"
     @config_filename_ifcfg = "/etc/network/interfaces.d/ifcfg-#{@new_resource.device}"

@@ -46,7 +46,7 @@ describe Chef::Handler::JsonFile do
       @run_status.run_context = @run_context
       @run_status.exception = Exception.new("Boy howdy!")
       @file_mock = StringIO.new
-      File.stub!(:open).and_yield(@file_mock)
+      File.stub(:open).and_yield(@file_mock)
     end
 
 

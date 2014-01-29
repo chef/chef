@@ -30,7 +30,7 @@ describe Chef::Mixin::Checksum do
     @cache = Chef::Digester.instance
     @file = CHEF_SPEC_DATA + "/checksum/random.txt"
     @stat = mock("File::Stat", { :mtime => Time.at(0) })
-    File.stub!(:stat).and_return(@stat)
+    File.stub(:stat).and_return(@stat)
   end
 
   it "gets the checksum of a file" do

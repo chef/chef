@@ -30,13 +30,13 @@ describe Chef::Provider::Service::Insserv do
 
     @provider = Chef::Provider::Service::Insserv.new(@new_resource, @run_context)
     @status = mock("Process::Status mock", :exitstatus => 0, :stdout => "")
-    @provider.stub!(:shell_out!).and_return(@status)
+    @provider.stub(:shell_out!).and_return(@status)
   end
 
   describe "load_current_resource" do
     describe "when startup links exist" do
       before do
-        Dir.stub!(:glob).with("/etc/rc**/S*initgrediant").and_return(["/etc/rc5.d/S18initgrediant", "/etc/rc2.d/S18initgrediant", "/etc/rc4.d/S18initgrediant", "/etc/rc3.d/S18initgrediant"])
+        Dir.stub(:glob).with("/etc/rc**/S*initgrediant").and_return(["/etc/rc5.d/S18initgrediant", "/etc/rc2.d/S18initgrediant", "/etc/rc4.d/S18initgrediant", "/etc/rc3.d/S18initgrediant"])
       end
 
       it "sets the current enabled status to true" do
@@ -47,7 +47,7 @@ describe Chef::Provider::Service::Insserv do
 
     describe "when startup links do not exist" do
       before do
-        Dir.stub!(:glob).with("/etc/rc**/S*initgrediant").and_return([])
+        Dir.stub(:glob).with("/etc/rc**/S*initgrediant").and_return([])
       end
 
       it "sets the current enabled status to false" do

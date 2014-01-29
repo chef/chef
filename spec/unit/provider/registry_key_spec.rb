@@ -38,9 +38,9 @@ describe Chef::Provider::RegistryKey do
 
     @provider = Chef::Provider::RegistryKey.new(@new_resource, @run_context)
 
-    @provider.stub!(:running_on_windows!).and_return(true)
+    @provider.stub(:running_on_windows!).and_return(true)
     @double_registry = double(Chef::Win32::Registry)
-    @provider.stub!(:registry).and_return(@double_registry)
+    @provider.stub(:registry).and_return(@double_registry)
   end
 
   describe "when first created" do

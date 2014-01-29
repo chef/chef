@@ -21,16 +21,16 @@ require 'spec_helper'
 describe Chef::Knife::EnvironmentCreate do
   before(:each) do
     @knife = Chef::Knife::EnvironmentCreate.new
-    @knife.stub!(:msg).and_return true
-    @knife.stub!(:output).and_return true
-    @knife.stub!(:show_usage).and_return true
+    @knife.stub(:msg).and_return true
+    @knife.stub(:output).and_return true
+    @knife.stub(:show_usage).and_return true
     @knife.name_args = [ "production" ]
 
     @environment = Chef::Environment.new
-    @environment.stub!(:save)
+    @environment.stub(:save)
 
-    Chef::Environment.stub!(:new).and_return @environment
-    @knife.stub!(:edit_data).and_return @environment
+    Chef::Environment.stub(:new).and_return @environment
+    @knife.stub(:edit_data).and_return @environment
   end
 
   describe "run" do

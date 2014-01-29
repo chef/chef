@@ -36,20 +36,20 @@ describe Chef::ResourceReporter do
     @node = Chef::Node.new
     @node.name("spitfire")
     @rest_client = mock("Chef::REST (mock)")
-    @rest_client.stub!(:post_rest).and_return(true)
+    @rest_client.stub(:post_rest).and_return(true)
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
     @run_id = @resource_reporter.run_id
     @new_resource      = Chef::Resource::File.new("/tmp/a-file.txt")
     @new_resource.cookbook_name = "monkey"
     @cookbook_version = mock("Cookbook::Version", :version => "1.2.3")
-    @new_resource.stub!(:cookbook_version).and_return(@cookbook_version)
+    @new_resource.stub(:cookbook_version).and_return(@cookbook_version)
     @current_resource  = Chef::Resource::File.new("/tmp/a-file.txt")
     @start_time = Time.new
     @end_time = Time.new + 20
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @run_status = Chef::RunStatus.new(@node, @events)
-    Time.stub!(:now).and_return(@start_time, @end_time)
+    Time.stub(:now).and_return(@start_time, @end_time)
   end
 
   context "when first created" do
@@ -87,9 +87,9 @@ describe Chef::ResourceReporter do
 
   context "when chef fails" do
     before do
-      @rest_client.stub!(:create_url).and_return("reports/nodes/spitfire/runs/#{@run_id}");
-      @rest_client.stub!(:raw_http_request).and_return({"result"=>"ok"});
-      @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/#{@run_id}"});
+      @rest_client.stub(:create_url).and_return("reports/nodes/spitfire/runs/#{@run_id}");
+      @rest_client.stub(:raw_http_request).and_return({"result"=>"ok"});
+      @rest_client.stub(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/#{@run_id}"});
 
     end
 
@@ -255,9 +255,9 @@ describe Chef::ResourceReporter do
   describe "when generating a report for the server" do
 
     before do
-      @rest_client.stub!(:create_url).and_return("reports/nodes/spitfire/runs/#{@run_id}");
-      @rest_client.stub!(:raw_http_request).and_return({"result"=>"ok"});
-      @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/#{@run_id}"});
+      @rest_client.stub(:create_url).and_return("reports/nodes/spitfire/runs/#{@run_id}");
+      @rest_client.stub(:raw_http_request).and_return({"result"=>"ok"});
+      @rest_client.stub(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/#{@run_id}"});
 
       @resource_reporter.run_started(@run_status)
     end
@@ -382,9 +382,9 @@ describe Chef::ResourceReporter do
         @node = Chef::Node.new
         @node.name("spitfire")
         @exception = mock("ArgumentError")
-        @exception.stub!(:inspect).and_return("Net::HTTPServerException")
-        @exception.stub!(:message).and_return("Object not found")
-        @exception.stub!(:backtrace).and_return(@backtrace)
+        @exception.stub(:inspect).and_return("Net::HTTPServerException")
+        @exception.stub(:message).and_return("Object not found")
+        @exception.stub(:backtrace).and_return(@backtrace)
         @resource_reporter.run_list_expand_failed(@node, @exception)
         @resource_reporter.run_failed(@exception)
         @report = @resource_reporter.prepare_run_data
@@ -602,7 +602,7 @@ describe Chef::ResourceReporter do
         @resource_reporter.resource_current_state_loaded(@new_resource, :create, @current_resource)
         @resource_reporter.resource_updated(@new_resource, :create)
 
-        @resource_reporter.stub!(:end_time).and_return(@end_time)
+        @resource_reporter.stub(:end_time).and_return(@end_time)
         @expected_data = @resource_reporter.prepare_run_data
 
         post_url = "https://chef_server/example_url"

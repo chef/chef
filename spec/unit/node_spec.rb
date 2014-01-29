@@ -46,12 +46,12 @@ describe Chef::Node do
     before do
       response = OpenStruct.new(:code => '404')
       exception = Net::HTTPServerException.new("404 not found", response)
-      Chef::Node.stub!(:load).and_raise(exception)
+      Chef::Node.stub(:load).and_raise(exception)
       node.name("created-node")
     end
 
     it "creates a new node for find_or_create" do
-      Chef::Node.stub!(:new).and_return(node)
+      Chef::Node.stub(:new).and_return(node)
       node.should_receive(:create).and_return(node)
       node = Chef::Node.find_or_create("created-node")
       node.name.should == 'created-node'
@@ -62,7 +62,7 @@ describe Chef::Node do
   describe "when the node exists on the server" do
     before do
       node.name('existing-node')
-      Chef::Node.stub!(:load).and_return(node)
+      Chef::Node.stub(:load).and_return(node)
     end
 
     it "loads the node via the REST API for find_or_create" do
@@ -405,7 +405,7 @@ describe Chef::Node do
 
     it "saves non-runlist json attrs for later" do
       expansion = Chef::RunList::RunListExpansion.new('_default', [])
-      node.run_list.stub!(:expand).and_return(expansion)
+      node.run_list.stub(:expand).and_return(expansion)
       node.consume_external_attrs(@ohai_data, {"foo" => "bar"})
       node.expand!
       node.normal_attrs.should == {"foo" => "bar", "tags" => []}
@@ -423,7 +423,7 @@ describe Chef::Node do
       Chef::Environment.should_receive(:load).with("rspec_env").and_return(@environment)
       @expansion = Chef::RunList::RunListExpansion.new("rspec_env", [])
       node.chef_environment("rspec_env")
-      node.run_list.stub!(:expand).and_return(@expansion)
+      node.run_list.stub(:expand).and_return(@expansion)
     end
 
     it "sets the 'recipes' automatic attribute to the recipes in the expanded run_list" do
@@ -540,7 +540,7 @@ describe Chef::Node do
       @environment = Chef::Environment.new
       @environment.default_attributes = {:default => "from env", :d_env => "env only" }
       @environment.override_attributes = {:override => "from env", :o_env => "env only"}
-      Chef::Environment.stub!(:load).and_return(@environment)
+      Chef::Environment.stub(:load).and_return(@environment)
       node.apply_expansion_attributes(@expansion)
     end
 
@@ -765,9 +765,9 @@ describe Chef::Node do
   describe "api model" do
     before(:each) do
       @rest = mock("Chef::REST")
-      Chef::REST.stub!(:new).and_return(@rest)
+      Chef::REST.stub(:new).and_return(@rest)
       @query = mock("Chef::Search::Query")
-      Chef::Search::Query.stub!(:new).and_return(@query)
+      Chef::Search::Query.stub(:new).and_return(@query)
     end
 
     describe "list" do

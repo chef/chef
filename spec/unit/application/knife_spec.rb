@@ -35,8 +35,8 @@ describe Chef::Application::Knife do
 
   before(:each) do
     @knife = Chef::Application::Knife.new
-    @knife.stub!(:puts)
-    Chef::Knife.stub!(:list_commands)
+    @knife.stub(:puts)
+    Chef::Knife.stub(:list_commands)
   end
 
   it "should exit 1 and print the options if no arguments are given at all" do
@@ -76,7 +76,7 @@ describe Chef::Application::Knife do
   describe "when given a path to the client key" do
     it "expands a relative path relative to the CWD" do
       relative_path = '.chef/client.pem'
-      Dir.stub!(:pwd).and_return(CHEF_SPEC_DATA)
+      Dir.stub(:pwd).and_return(CHEF_SPEC_DATA)
       with_argv(*%W{noop knife command -k #{relative_path}}) do
         @knife.should_receive(:exit).with(0)
         @knife.run

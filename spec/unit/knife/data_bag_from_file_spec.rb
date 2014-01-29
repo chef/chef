@@ -30,9 +30,9 @@ describe Chef::Knife::DataBagFromFile do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::DataBagFromFile.new
     @rest = mock("Chef::REST")
-    @knife.stub!(:rest).and_return(@rest)
+    @knife.stub(:rest).and_return(@rest)
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
     @tmp_dir = Dir.mktmpdir
     @db_folder = File.join(@tmp_dir, 'data_bags', 'bag_name')
     FileUtils.mkdir_p(@db_folder)
@@ -64,7 +64,7 @@ describe Chef::Knife::DataBagFromFile do
   it "loads from a file and saves" do
     @knife.loader.should_receive(:load_from).with("data_bags", 'bag_name', @db_file.path).and_return(@plain_data)
     dbag = Chef::DataBagItem.new
-    Chef::DataBagItem.stub!(:new).and_return(dbag)
+    Chef::DataBagItem.stub(:new).and_return(dbag)
     dbag.should_receive(:save)
     @knife.run
 
@@ -77,7 +77,7 @@ describe Chef::Knife::DataBagFromFile do
     @knife.loader.should_receive(:load_from).with("data_bags", 'bag_name', @db_file.path).and_return(@plain_data)
     @knife.loader.should_receive(:load_from).with("data_bags", 'bag_name', @db_file2.path).and_return(@plain_data)
     dbag = Chef::DataBagItem.new
-    Chef::DataBagItem.stub!(:new).and_return(dbag)
+    Chef::DataBagItem.stub(:new).and_return(dbag)
     dbag.should_receive(:save).twice
     @knife.run
 
@@ -91,7 +91,7 @@ describe Chef::Knife::DataBagFromFile do
     @knife.loader.should_receive(:load_from).with("data_bags", 'bag_name', @db_file.path).and_return(@plain_data)
     @knife.loader.should_receive(:load_from).with("data_bags", 'bag_name', @db_file2.path).and_return(@plain_data)
     dbag = Chef::DataBagItem.new
-    Chef::DataBagItem.stub!(:new).and_return(dbag)
+    Chef::DataBagItem.stub(:new).and_return(dbag)
     dbag.should_receive(:save).twice
     @knife.run
   end
@@ -109,7 +109,7 @@ describe Chef::Knife::DataBagFromFile do
 
     it "loads all data bags when -a or --all options is provided" do
       @knife.name_args = []
-      @knife.stub!(:config).and_return({:all => true})
+      @knife.stub(:config).and_return({:all => true})
       @knife.loader.should_receive(:load_from).with("data_bags", "bag_name", File.basename(@db_file.path)).
         and_return(@plain_data)
       @knife.loader.should_receive(:load_from).with("data_bags", "bag_name", File.basename(@db_file2.path)).
@@ -117,18 +117,18 @@ describe Chef::Knife::DataBagFromFile do
       @knife.loader.should_receive(:load_from).with("data_bags", "bag_name2", File.basename(@db_file3.path)).
         and_return(@plain_data)
       dbag = Chef::DataBagItem.new
-      Chef::DataBagItem.stub!(:new).and_return(dbag)
+      Chef::DataBagItem.stub(:new).and_return(dbag)
       dbag.should_receive(:save).exactly(3).times
       @knife.run
     end
 
     it "loads all data bags items when -a or --all options is provided" do
       @knife.name_args = ["bag_name2"]
-      @knife.stub!(:config).and_return({:all => true})
+      @knife.stub(:config).and_return({:all => true})
       @knife.loader.should_receive(:load_from).with("data_bags", "bag_name2", File.basename(@db_file3.path)).
         and_return(@plain_data)
       dbag = Chef::DataBagItem.new
-      Chef::DataBagItem.stub!(:new).and_return(dbag)
+      Chef::DataBagItem.stub(:new).and_return(dbag)
       dbag.should_receive(:save)
       @knife.run
       dbag.data_bag.should == 'bag_name2'
@@ -158,11 +158,11 @@ describe Chef::Knife::DataBagFromFile do
     end
 
     it "encrypts values when given --secret" do
-      @knife.stub!(:config).and_return({:secret => @secret})
+      @knife.stub(:config).and_return({:secret => @secret})
 
       @knife.loader.should_receive(:load_from).with("data_bags", "bag_name", @db_file.path).and_return(@plain_data)
       dbag = Chef::DataBagItem.new
-      Chef::DataBagItem.stub!(:new).and_return(dbag)
+      Chef::DataBagItem.stub(:new).and_return(dbag)
       dbag.should_receive(:save)
       @knife.run
       dbag.data_bag.should == 'bag_name'
@@ -170,11 +170,11 @@ describe Chef::Knife::DataBagFromFile do
     end
 
     it "encrypts values when given --secret_file" do
-      @knife.stub!(:config).and_return({:secret_file => @secret_file.path})
+      @knife.stub(:config).and_return({:secret_file => @secret_file.path})
 
-      @knife.loader.stub!(:load_from).with("data_bags", 'bag_name', @db_file.path).and_return(@plain_data)
+      @knife.loader.stub(:load_from).with("data_bags", 'bag_name', @db_file.path).and_return(@plain_data)
       dbag = Chef::DataBagItem.new
-      Chef::DataBagItem.stub!(:new).and_return(dbag)
+      Chef::DataBagItem.stub(:new).and_return(dbag)
       dbag.should_receive(:save)
       @knife.run
       dbag.data_bag.should == 'bag_name'

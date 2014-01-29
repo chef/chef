@@ -29,12 +29,12 @@ describe Chef::Knife::ClientCreate do
     }
     @knife.name_args = [ "adam" ]
     @client = Chef::ApiClient.new
-    @client.stub!(:save).and_return({ 'private_key' => '' })
-    @knife.stub!(:edit_data).and_return(@client)
-    @knife.stub!(:puts)
-    Chef::ApiClient.stub!(:new).and_return(@client)
+    @client.stub(:save).and_return({ 'private_key' => '' })
+    @knife.stub(:edit_data).and_return(@client)
+    @knife.stub(:puts)
+    Chef::ApiClient.stub(:new).and_return(@client)
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
   describe "run" do
@@ -62,7 +62,7 @@ describe Chef::Knife::ClientCreate do
     describe "with -f or --file" do
       it "should write the private key to a file" do
         @knife.config[:file] = "/tmp/monkeypants"
-        @client.stub!(:save).and_return({ 'private_key' => "woot" })
+        @client.stub(:save).and_return({ 'private_key' => "woot" })
         filehandle = mock("Filehandle")
         filehandle.should_receive(:print).with('woot')
         File.should_receive(:open).with("/tmp/monkeypants", "w").and_yield(filehandle)

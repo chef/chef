@@ -23,12 +23,12 @@ describe Chef::Daemon do
     if windows?
       mock_struct = #Struct::Passwd.new(nil, nil, 111, 111)
       mock_struct = OpenStruct.new(:uid => 2342, :gid => 2342)
-      Etc.stub!(:getpwnam).and_return mock_struct
-      Etc.stub!(:getgrnam).and_return mock_struct
+      Etc.stub(:getpwnam).and_return mock_struct
+      Etc.stub(:getgrnam).and_return mock_struct
       # mock unimplemented methods
-      Process.stub!(:initgroups).and_return nil
-      Process::GID.stub!(:change_privilege).and_return 11
-      Process::UID.stub!(:change_privilege).and_return 11
+      Process.stub(:initgroups).and_return nil
+      Process::GID.stub(:change_privilege).and_return 11
+      Process::UID.stub(:change_privilege).and_return 11
     end
   end
 
@@ -73,9 +73,9 @@ describe Chef::Daemon do
   describe ".change_privilege" do
 
     before do
-      Chef::Application.stub!(:fatal!).and_return(true)
+      Chef::Application.stub(:fatal!).and_return(true)
       Chef::Config[:user] = 'aj'
-      Dir.stub!(:chdir)
+      Dir.stub(:chdir)
     end
 
     it "changes the working directory to root" do
@@ -117,25 +117,25 @@ describe Chef::Daemon do
   describe "._change_privilege" do
 
     before do
-      Process.stub!(:euid).and_return(0)
-      Process.stub!(:egid).and_return(0)
+      Process.stub(:euid).and_return(0)
+      Process.stub(:egid).and_return(0)
 
-      Process::UID.stub!(:change_privilege).and_return(nil)
-      Process::GID.stub!(:change_privilege).and_return(nil)
+      Process::UID.stub(:change_privilege).and_return(nil)
+      Process::GID.stub(:change_privilege).and_return(nil)
 
       @pw_user = mock("Struct::Passwd", :uid => 501)
       @pw_group = mock("Struct::Group", :gid => 20)
 
-      Process.stub!(:initgroups).and_return(true)
+      Process.stub(:initgroups).and_return(true)
 
-      Etc.stub!(:getpwnam).and_return(@pw_user)
-      Etc.stub!(:getgrnam).and_return(@pw_group)
+      Etc.stub(:getpwnam).and_return(@pw_user)
+      Etc.stub(:getgrnam).and_return(@pw_group)
     end
 
     describe "with sufficient privileges" do
       before do
-        Process.stub!(:euid).and_return(0)
-        Process.stub!(:egid).and_return(0)
+        Process.stub(:euid).and_return(0)
+        Process.stub(:egid).and_return(0)
       end
 
       it "should initialize the supplemental group list" do
@@ -156,12 +156,12 @@ describe Chef::Daemon do
 
     describe "with insufficient privileges" do
       before do
-        Process.stub!(:euid).and_return(999)
-        Process.stub!(:egid).and_return(999)
+        Process.stub(:euid).and_return(999)
+        Process.stub(:egid).and_return(999)
       end
 
       it "should log an appropriate error message and fail miserably" do
-        Process.stub!(:initgroups).and_raise(Errno::EPERM)
+        Process.stub(:initgroups).and_raise(Errno::EPERM)
         error = "Operation not permitted"
         if RUBY_PLATFORM.match("solaris2") || RUBY_PLATFORM.match("aix")
           error = "Not owner"

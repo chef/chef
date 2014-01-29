@@ -30,7 +30,7 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
     @current_resource = Chef::Resource::Service.new("chef")
 
     @provider = Chef::Provider::Service::Init.new(@new_resource, @run_context)
-    Chef::Resource::Service.stub!(:new).and_return(@current_resource)
+    Chef::Resource::Service.stub(:new).and_return(@current_resource)
 
     @stdout = StringIO.new(<<-PS)
 aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
@@ -38,7 +38,7 @@ aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
 aj        8119  6041  0 21:34 pts/3    00:00:03 vi init_service_spec.rb
 PS
     @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
-    @provider.stub!(:shell_out!).and_return(@status)
+    @provider.stub(:shell_out!).and_return(@status)
   end
 
   it "should create a current resource with the name of the new resource" do
@@ -62,20 +62,20 @@ PS
     end
 
     it "should set running to true if the status command returns 0" do
-      @provider.stub!(:shell_out).with("/etc/init.d/#{@current_resource.service_name} status").and_return(@status)
+      @provider.stub(:shell_out).with("/etc/init.d/#{@current_resource.service_name} status").and_return(@status)
       @provider.load_current_resource
       @current_resource.running.should be_true
     end
 
     it "should set running to false if the status command returns anything except 0" do
-      @status.stub!(:exitstatus).and_return(1)
-      @provider.stub!(:shell_out).with("/etc/init.d/#{@current_resource.service_name} status").and_return(@status)
+      @status.stub(:exitstatus).and_return(1)
+      @provider.stub(:shell_out).with("/etc/init.d/#{@current_resource.service_name} status").and_return(@status)
       @provider.load_current_resource
       @current_resource.running.should be_false
     end
 
     it "should set running to false if the status command raises" do
-      @provider.stub!(:shell_out).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      @provider.stub(:shell_out).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       @provider.load_current_resource
       @current_resource.running.should be_false
     end
@@ -83,7 +83,7 @@ PS
 
   describe "when a status command has been specified" do
     before do
-      @new_resource.stub!(:status_command).and_return("/etc/init.d/chefhasmonkeypants status")
+      @new_resource.stub(:status_command).and_return("/etc/init.d/chefhasmonkeypants status")
     end
 
     it "should run the services status command if one has been specified" do
@@ -95,7 +95,7 @@ PS
 
   describe "when an init command has been specified" do
     before do
-      @new_resource.stub!(:init_command).and_return("/opt/chef-server/service/erchef")
+      @new_resource.stub(:init_command).and_return("/opt/chef-server/service/erchef")
       @provider = Chef::Provider::Service::Init.new(@new_resource, @run_context)
     end
 
@@ -138,19 +138,19 @@ PS
 aj        7842  5057  0 21:26 pts/2    00:00:06 chef
 aj        7842  5057  0 21:26 pts/2    00:00:06 poos
 RUNNING_PS
-      @status.stub!(:stdout).and_return(@stdout)
+      @status.stub(:stdout).and_return(@stdout)
       @provider.load_current_resource
       @current_resource.running.should be_true
     end
 
     it "should set running to false if the regex doesn't match" do
-      @provider.stub!(:shell_out!).and_return(@status)
+      @provider.stub(:shell_out!).and_return(@status)
       @provider.load_current_resource
       @current_resource.running.should be_false
     end
 
     it "should raise an exception if ps fails" do
-      @provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      @provider.stub(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       @provider.load_current_resource
       @provider.action = :start
       @provider.define_resource_requirements

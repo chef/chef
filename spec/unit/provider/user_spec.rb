@@ -69,7 +69,7 @@ describe Chef::Provider::User do
       #  :password => nil,
       #  :updated => nil
       #)
-      Chef::Resource::User.stub!(:new).and_return(@current_resource)
+      Chef::Resource::User.stub(:new).and_return(@current_resource)
       @pw_user = EtcPwnamIsh.new
       @pw_user.name = "adam"
       @pw_user.gid = 1000
@@ -78,7 +78,7 @@ describe Chef::Provider::User do
       @pw_user.dir = "/home/adam"
       @pw_user.shell = "/usr/bin/zsh"
       @pw_user.passwd = "*"
-      Etc.stub!(:getpwnam).and_return(@pw_user)
+      Etc.stub(:getpwnam).and_return(@pw_user)
     end
 
     it "should create a current resource with the same name as the new resource" do
@@ -129,7 +129,7 @@ describe Chef::Provider::User do
     end
 
     it "shouldn't try and convert the group gid if none has been supplied" do
-      @new_resource.stub!(:gid).and_return(nil)
+      @new_resource.stub(:gid).and_return(nil)
       @provider.should_not_receive(:convert_group_name)
       @provider.load_current_resource
     end
@@ -156,7 +156,7 @@ describe Chef::Provider::User do
         user.name = "root"
         user.passwd = "x"
         @new_resource.password "some new password"
-        Etc.stub!(:getpwnam).and_return(user)
+        Etc.stub(:getpwnam).and_return(user)
       end
 
       unless shadow_lib_unavail?
@@ -225,7 +225,7 @@ describe Chef::Provider::User do
 
   describe "action_create" do
     before(:each) do
-      @provider.stub!(:load_current_resource)
+      @provider.stub(:load_current_resource)
       # @current_resource = mock("Chef::Resource::User",
       #   :null_object => true,
       #   :username => "adam",
@@ -240,8 +240,8 @@ describe Chef::Provider::User do
       # @provider = Chef::Provider::User.new(@node, @new_resource)
       # @provider.current_resource = @current_resource
       # @provider.user_exists = false
-      # @provider.stub!(:create_user).and_return(true)
-      # @provider.stub!(:manage_user).and_return(true)
+      # @provider.stub(:create_user).and_return(true)
+      # @provider.stub(:manage_user).and_return(true)
     end
 
     it "should call create_user if the user does not exist" do
@@ -254,15 +254,15 @@ describe Chef::Provider::User do
 
     it "should call manage_user if the user exists and has mismatched attributes" do
       @provider.user_exists = true
-      @provider.stub!(:compare_user).and_return(true)
+      @provider.stub(:compare_user).and_return(true)
       @provider.should_receive(:manage_user).and_return(true)
       @provider.action_create
     end
 
     it "should set the new_resources updated flag when it creates the user if we call manage_user" do
       @provider.user_exists = true
-      @provider.stub!(:compare_user).and_return(true)
-      @provider.stub!(:manage_user).and_return(true)
+      @provider.stub(:compare_user).and_return(true)
+      @provider.stub(:manage_user).and_return(true)
       @provider.action_create
       @provider.set_updated_status
       @new_resource.should be_updated
@@ -271,7 +271,7 @@ describe Chef::Provider::User do
 
   describe "action_remove" do
     before(:each) do
-      @provider.stub!(:load_current_resource)
+      @provider.stub(:load_current_resource)
     end
 
     it "should not call remove_user if the user does not exist" do
@@ -297,7 +297,7 @@ describe Chef::Provider::User do
 
   describe "action_manage" do
     before(:each) do
-      @provider.stub!(:load_current_resource)
+      @provider.stub(:load_current_resource)
       # @node = Chef::Node.new
       # @new_resource = mock("Chef::Resource::User",
       #   :null_object => true
@@ -308,7 +308,7 @@ describe Chef::Provider::User do
       # @provider = Chef::Provider::User.new(@node, @new_resource)
       # @provider.current_resource = @current_resource
       # @provider.user_exists = true
-      # @provider.stub!(:manage_user).and_return(true)
+      # @provider.stub(:manage_user).and_return(true)
     end
 
     it "should run manage_user if the user exists and has mismatched attributes" do
@@ -318,8 +318,8 @@ describe Chef::Provider::User do
     end
 
     it "should set the new resources updated flag to true if manage_user is called" do
-      @provider.stub!(:compare_user).and_return(true)
-      @provider.stub!(:manage_user).and_return(true)
+      @provider.stub(:compare_user).and_return(true)
+      @provider.stub(:manage_user).and_return(true)
       @provider.action_manage
       @provider.set_updated_status
       @new_resource.should be_updated
@@ -340,7 +340,7 @@ describe Chef::Provider::User do
 
   describe "action_modify" do
     before(:each) do
-      @provider.stub!(:load_current_resource)
+      @provider.stub(:load_current_resource)
       # @node = Chef::Node.new
       # @new_resource = mock("Chef::Resource::User",
       #   :null_object => true
@@ -351,7 +351,7 @@ describe Chef::Provider::User do
       # @provider = Chef::Provider::User.new(@node, @new_resource)
       # @provider.current_resource = @current_resource
       # @provider.user_exists = true
-      # @provider.stub!(:manage_user).and_return(true)
+      # @provider.stub(:manage_user).and_return(true)
     end
 
     it "should run manage_user if the user exists and has mismatched attributes" do
@@ -361,8 +361,8 @@ describe Chef::Provider::User do
     end
 
     it "should set the new resources updated flag to true if manage_user is called" do
-      @provider.stub!(:compare_user).and_return(true)
-      @provider.stub!(:manage_user).and_return(true)
+      @provider.stub(:compare_user).and_return(true)
+      @provider.stub(:manage_user).and_return(true)
       @provider.action_modify
       @provider.set_updated_status
       @new_resource.should be_updated
@@ -383,16 +383,16 @@ describe Chef::Provider::User do
 
   describe "action_lock" do
     before(:each) do
-      @provider.stub!(:load_current_resource)
+      @provider.stub(:load_current_resource)
     end
     it "should lock the user if it exists and is unlocked" do
-      @provider.stub!(:check_lock).and_return(false)
+      @provider.stub(:check_lock).and_return(false)
       @provider.should_receive(:lock_user).and_return(true)
       @provider.action_lock
     end
 
     it "should set the new resources updated flag to true if lock_user is called" do
-      @provider.stub!(:check_lock).and_return(false)
+      @provider.stub(:check_lock).and_return(false)
       @provider.should_receive(:lock_user)
       @provider.action_lock
       @provider.set_updated_status
@@ -409,7 +409,7 @@ describe Chef::Provider::User do
 
   describe "action_unlock" do
     before(:each) do
-      @provider.stub!(:load_current_resource)
+      @provider.stub(:load_current_resource)
       # @node = Chef::Node.new
       # @new_resource = mock("Chef::Resource::User",
       #   :null_object => true
@@ -420,12 +420,12 @@ describe Chef::Provider::User do
       # @provider = Chef::Provider::User.new(@node, @new_resource)
       # @provider.current_resource = @current_resource
       # @provider.user_exists = true
-      # @provider.stub!(:check_lock).and_return(true)
-      # @provider.stub!(:unlock_user).and_return(true)
+      # @provider.stub(:check_lock).and_return(true)
+      # @provider.stub(:unlock_user).and_return(true)
     end
 
     it "should unlock the user if it exists and is locked" do
-      @provider.stub!(:check_lock).and_return(true)
+      @provider.stub(:check_lock).and_return(true)
       @provider.should_receive(:unlock_user).and_return(true)
       @provider.action_unlock
       @provider.set_updated_status

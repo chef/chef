@@ -64,7 +64,7 @@ describe Chef::Provider::User::Dscl do
 
   describe "get_free_uid" do
     before do
-      @provider.stub!(:safe_dscl).and_return("\nwheel      200\nstaff      201\n")
+      @provider.stub(:safe_dscl).and_return("\nwheel      200\nstaff      201\n")
     end
 
     it "should run safe_dscl with list /Users uid" do
@@ -84,7 +84,7 @@ describe Chef::Provider::User::Dscl do
 
   describe "uid_used?" do
     before do
-      @provider.stub!(:safe_dscl).and_return("\naj      500\n")
+      @provider.stub(:safe_dscl).and_return("\naj      500\n")
     end
 
     it "should run safe_dscl with list /Users uid" do
@@ -107,7 +107,7 @@ describe Chef::Provider::User::Dscl do
 
   describe "when determining the uid to set" do
     it "raises RequestedUIDUnavailable if the requested uid is already in use" do
-      @provider.stub!(:uid_used?).and_return(true)
+      @provider.stub(:uid_used?).and_return(true)
       @provider.should_receive(:get_free_uid).and_return(501)
       lambda { @provider.set_uid }.should raise_error(Chef::Exceptions::RequestedUIDUnavailable)
     end
@@ -156,8 +156,8 @@ describe Chef::Provider::User::Dscl do
       current_home_files = [current_home + '/my-dot-emacs', current_home + '/my-dot-vim']
       @current_resource.home(current_home)
       @new_resource.gid(23)
-      ::File.stub!(:exists?).with('/old/home/toor').and_return(true)
-      ::File.stub!(:exists?).with('/Users/toor').and_return(true)
+      ::File.stub(:exists?).with('/old/home/toor').and_return(true)
+      ::File.stub(:exists?).with('/Users/toor').and_return(true)
 
       FileUtils.should_receive(:mkdir_p).with('/Users/toor').and_return(true)
       FileUtils.should_receive(:rmdir).with(current_home)
@@ -170,7 +170,7 @@ describe Chef::Provider::User::Dscl do
     end
 
     it "should raise an exception when the systems user template dir (skel) cannot be found" do
-      ::File.stub!(:exists?).and_return(false,false,false)
+      ::File.stub(:exists?).and_return(false,false,false)
       lambda { @provider.modify_home }.should raise_error(Chef::Exceptions::User)
     end
 
@@ -284,7 +284,7 @@ describe Chef::Provider::User::Dscl do
         uuid = "B398449E-CEE0-45E0-80F8-B0B5B1BFDEAA"
         File.should_receive(:open).with('/var/db/shadow/hash/B398449E-CEE0-45E0-80F8-B0B5B1BFDEAA', "w", 384).and_yield(@output)
         @new_resource.password("password")
-        OpenSSL::Random.stub!(:random_bytes).and_return("\377\377\377\377\377\377\377\377")
+        OpenSSL::Random.stub(:random_bytes).and_return("\377\377\377\377\377\377\377\377")
         expected_salted_sha1 = "F"*8+"SHA1-"*8
         expected_shadow_hash = "00000000"*155
         expected_shadow_hash[168] = expected_salted_sha1
@@ -324,7 +324,7 @@ describe Chef::Provider::User::Dscl do
     end
 
     it "shouldn't raise an error if /usr/bin/dscl exists" do
-      ::File.stub!(:exists?).and_return(true)
+      ::File.stub(:exists?).and_return(true)
       lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::User)
     end
   end

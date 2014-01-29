@@ -23,13 +23,13 @@ describe Chef::Knife::NodeList do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     Chef::Config[:environment] = nil # reset this value each time, as it is not reloaded
     @knife = Chef::Knife::NodeList.new
-    @knife.stub!(:output).and_return(true)
+    @knife.stub(:output).and_return(true)
     @list = {
       "foo" => "http://example.com/foo",
       "bar" => "http://example.com/foo"
     }
-    Chef::Node.stub!(:list).and_return(@list)
-    Chef::Node.stub!(:list_by_environment).and_return(@list)
+    Chef::Node.stub(:list).and_return(@list)
+    Chef::Node.stub(:list_by_environment).and_return(@list)
   end
 
   describe "run" do

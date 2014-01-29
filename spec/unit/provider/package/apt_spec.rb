@@ -163,8 +163,8 @@ SHOWPKG_STDOUT
       @new_resource = Chef::Resource::AptPackage.new("irssi", @run_context)
       @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context)
 
-      @new_resource.stub!(:default_release).and_return("lenny-backports")
-      @new_resource.stub!(:provider).and_return("Chef::Provider::Package::Apt")
+      @new_resource.stub(:default_release).and_return("lenny-backports")
+      @new_resource.stub(:provider).and_return("Chef::Provider::Package::Apt")
       @provider.should_receive(:shell_out!).with("apt-cache -o APT::Default-Release=lenny-backports policy irssi").and_return(@shell_out)
       @provider.load_current_resource
     end
@@ -256,7 +256,7 @@ SHOWPKG_STDOUT
 
     describe "when preseeding a package" do
       before(:each) do
-        @provider.stub!(:get_preseed_file).and_return("/tmp/irssi-0.8.12-7.seed")
+        @provider.stub(:get_preseed_file).and_return("/tmp/irssi-0.8.12-7.seed")
       end
 
       it "should get the full path to the preseed response file" do
@@ -282,7 +282,7 @@ SHOWPKG_STDOUT
         @provider.stub(:check_package_state)
         @current_resource.version "0.8.11"
         @new_resource.response_file "/tmp/file"
-        @provider.stub!(:get_preseed_file).and_return(false)
+        @provider.stub(:get_preseed_file).and_return(false)
         @provider.should_not_receive(:shell_out!)
         @provider.run_action(:reconfig)
       end

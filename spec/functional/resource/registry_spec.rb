@@ -112,9 +112,9 @@ describe Chef::Resource::RegistryKey, :windows_only do
     @node.name("windowsbox")
 
     @rest_client = mock("Chef::REST (mock)")
-    @rest_client.stub!(:create_url).and_return("reports/nodes/windowsbox/runs/#{@run_id}");
-    @rest_client.stub!(:raw_http_request).and_return({"result"=>"ok"});
-    @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/windowsbox/runs/#{@run_id}"});
+    @rest_client.stub(:create_url).and_return("reports/nodes/windowsbox/runs/#{@run_id}");
+    @rest_client.stub(:raw_http_request).and_return({"result"=>"ok"});
+    @rest_client.stub(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/windowsbox/runs/#{@run_id}"});
 
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
     @events.register(@resource_reporter)
@@ -125,7 +125,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
 
     @new_resource.cookbook_name = "monkey"
     @cookbook_version = mock("Cookbook::Version", :version => "1.2.3")
-    @new_resource.stub!(:cookbook_version).and_return(@cookbook_version)
+    @new_resource.stub(:cookbook_version).and_return(@cookbook_version)
   end
 
   after (:all) do

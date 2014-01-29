@@ -25,15 +25,15 @@ describe Chef::Knife::EnvironmentFromFile do
   before(:each) do
     @knife = Chef::Knife::EnvironmentFromFile.new
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
     @knife.name_args = [ "spec.rb" ]
 
     @environment = Chef::Environment.new
     @environment.name("spec")
     @environment.description("runs the unit tests")
     @environment.cookbook_versions({"apt" => "= 1.2.3"})
-    @environment.stub!(:save).and_return true
-    @knife.loader.stub!(:load_from).and_return @environment
+    @environment.stub(:save).and_return true
+    @knife.loader.stub(:load_from).and_return @environment
   end
 
   describe "run" do
@@ -47,7 +47,7 @@ describe Chef::Knife::EnvironmentFromFile do
       before(:each) do
         @env_apple = @environment.dup
         @env_apple.name("apple")
-        @knife.loader.stub!(:load_from).with("apple.rb").and_return @env_apple
+        @knife.loader.stub(:load_from).with("apple.rb").and_return @env_apple
       end
 
       it "loads multiple environments if given" do
@@ -57,10 +57,10 @@ describe Chef::Knife::EnvironmentFromFile do
       end
 
       it "loads all environments with -a" do
-        File.stub!(:expand_path).with("./environments/*.{json,rb}").and_return("/tmp/environments")
-        Dir.stub!(:glob).with("/tmp/environments").and_return(["spec.rb", "apple.rb"])
+        File.stub(:expand_path).with("./environments/*.{json,rb}").and_return("/tmp/environments")
+        Dir.stub(:glob).with("/tmp/environments").and_return(["spec.rb", "apple.rb"])
         @knife.name_args = []
-        @knife.stub!(:config).and_return({:all => true})
+        @knife.stub(:config).and_return({:all => true})
         @environment.should_receive(:save).twice
         @knife.run
       end

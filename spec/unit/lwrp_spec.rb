@@ -33,7 +33,7 @@ describe "LWRP" do
 
   describe "when overriding an existing class" do
     before :each do
-      $stderr.stub!(:write)
+      $stderr.stub(:write)
     end
 
     it "should log if attempting to load resource of same name" do

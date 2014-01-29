@@ -27,70 +27,70 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
     @current_resource = Chef::Resource::Package.new("dev-util/git")
 
     @provider = Chef::Provider::Package::Portage.new(@new_resource, @run_context)
-    Chef::Resource::Package.stub!(:new).and_return(@current_resource)
+    Chef::Resource::Package.stub(:new).and_return(@current_resource)
   end
 
   describe "when determining the current state of the package" do
 
     it "should create a current resource with the name of new_resource" do
-      ::Dir.stub!(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0"])
+      ::Dir.stub(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0"])
       Chef::Resource::Package.should_receive(:new).and_return(@current_resource)
       @provider.load_current_resource
     end
 
     it "should set the current resource package name to the new resource package name" do
-      ::Dir.stub!(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0"])
+      ::Dir.stub(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0"])
       @current_resource.should_receive(:package_name).with(@new_resource.package_name)
       @provider.load_current_resource
     end
 
     it "should return a current resource with the correct version if the package is found" do
-      ::Dir.stub!(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/git-foobar-0.9", "/var/db/pkg/dev-util/git-1.0.0"])
+      ::Dir.stub(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/git-foobar-0.9", "/var/db/pkg/dev-util/git-1.0.0"])
       @provider.load_current_resource
       @provider.current_resource.version.should == "1.0.0"
     end
 
     it "should return a current resource with the correct version if the package is found with revision" do
-      ::Dir.stub!(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0-r1"])
+      ::Dir.stub(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0-r1"])
       @provider.load_current_resource
       @provider.current_resource.version.should == "1.0.0-r1"
     end
 
     it "should return a current resource with a nil version if the package is not found" do
-      ::Dir.stub!(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/notgit-1.0.0"])
+      ::Dir.stub(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/notgit-1.0.0"])
       @provider.load_current_resource
       @provider.current_resource.version.should be_nil
     end
 
     it "should return a package name match from /var/db/pkg/* if a category isn't specified and a match is found" do
-      ::Dir.stub!(:[]).with("/var/db/pkg/*/git-*").and_return(["/var/db/pkg/dev-util/git-foobar-0.9", "/var/db/pkg/dev-util/git-1.0.0"])
+      ::Dir.stub(:[]).with("/var/db/pkg/*/git-*").and_return(["/var/db/pkg/dev-util/git-foobar-0.9", "/var/db/pkg/dev-util/git-1.0.0"])
       @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
       @provider.load_current_resource
       @provider.current_resource.version.should == "1.0.0"
     end
 
     it "should return a current resource with a nil version if a category isn't specified and a name match from /var/db/pkg/* is not found" do
-      ::Dir.stub!(:[]).with("/var/db/pkg/*/git-*").and_return(["/var/db/pkg/dev-util/notgit-1.0.0"])
+      ::Dir.stub(:[]).with("/var/db/pkg/*/git-*").and_return(["/var/db/pkg/dev-util/notgit-1.0.0"])
       @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
       @provider.load_current_resource
       @provider.current_resource.version.should be_nil
     end
 
     it "should throw an exception if a category isn't specified and multiple packages are found" do
-      ::Dir.stub!(:[]).with("/var/db/pkg/*/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0", "/var/db/pkg/funny-words/git-1.0.0"])
+      ::Dir.stub(:[]).with("/var/db/pkg/*/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0", "/var/db/pkg/funny-words/git-1.0.0"])
       @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
 
     it "should return a current resource with a nil version if a category is specified and multiple packages are found" do
-      ::Dir.stub!(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0", "/var/db/pkg/funny-words/git-1.0.0"])
+      ::Dir.stub(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0", "/var/db/pkg/funny-words/git-1.0.0"])
       @provider = Chef::Provider::Package::Portage.new(@new_resource, @run_context)
       @provider.load_current_resource
       @provider.current_resource.version.should be_nil
     end
 
     it "should return a current resource with a nil version if a category is not specified and multiple packages from the same category are found" do
-      ::Dir.stub!(:[]).with("/var/db/pkg/*/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0", "/var/db/pkg/dev-util/git-1.0.1"])
+      ::Dir.stub(:[]).with("/var/db/pkg/*/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0", "/var/db/pkg/dev-util/git-1.0.1"])
       @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
       @provider.load_current_resource
       @provider.current_resource.version.should be_nil
@@ -108,7 +108,7 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
 
       it "should throw an exception if the exitstatus is not 0" do
         @status = mock("Status", :exitstatus => 1)
-        @provider.stub!(:popen4).and_return(@status)
+        @provider.stub(:popen4).and_return(@status)
         lambda { @provider.candidate_version }.should raise_error(Chef::Exceptions::Package)
       end
 
@@ -295,7 +295,7 @@ EOF
         @provider.should_receive(:run_command_with_systems_locale).with({
           :command => "emerge -g --color n --nospinner --quiet --oneshot =dev-util/git-1.0.0"
         })
-        @new_resource.stub!(:options).and_return("--oneshot")
+        @new_resource.stub(:options).and_return("--oneshot")
 
         @provider.install_package("dev-util/git", "1.0.0")
       end

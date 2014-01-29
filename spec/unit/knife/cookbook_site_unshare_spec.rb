@@ -24,13 +24,13 @@ describe Chef::Knife::CookbookSiteUnshare do
   before(:each) do
     @knife = Chef::Knife::CookbookSiteUnshare.new
     @knife.name_args = ['cookbook_name']
-    @knife.stub!(:confirm).and_return(true)
+    @knife.stub(:confirm).and_return(true)
 
     @rest = mock('Chef::REST')
-    @rest.stub!(:delete_rest).and_return(true)
-    @knife.stub!(:rest).and_return(@rest)
+    @rest.stub(:delete_rest).and_return(true)
+    @knife.stub(:rest).and_return(@rest)
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
   describe 'run' do
@@ -56,7 +56,7 @@ describe Chef::Knife::CookbookSiteUnshare do
 
     it 'should log an error and exit when forbidden' do
       exception = mock('403 "Forbidden"', :code => '403')
-      @rest.stub!(:delete_rest).and_raise(Net::HTTPServerException.new('403 "Forbidden"', exception))
+      @rest.stub(:delete_rest).and_raise(Net::HTTPServerException.new('403 "Forbidden"', exception))
       @knife.ui.should_receive(:error)
       lambda { @knife.run }.should raise_error(SystemExit)
     end

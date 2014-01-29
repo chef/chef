@@ -99,8 +99,8 @@ describe Chef::Config do
 
   describe "class method: manage_secret_key" do
     before do
-      Chef::FileCache.stub!(:load).and_return(true)
-      Chef::FileCache.stub!(:has_key?).with("chef_server_cookie_id").and_return(false)
+      Chef::FileCache.stub(:load).and_return(true)
+      Chef::FileCache.stub(:has_key?).with("chef_server_cookie_id").and_return(false)
     end
 
     it "should generate and store a chef server cookie id" do
@@ -110,7 +110,7 @@ describe Chef::Config do
 
     describe "when the filecache has a chef server cookie id key" do
       before do
-        Chef::FileCache.stub!(:has_key?).with("chef_server_cookie_id").and_return(true)
+        Chef::FileCache.stub(:has_key?).with("chef_server_cookie_id").and_return(true)
       end
 
       it "should not generate and store a chef server cookie id" do
@@ -132,7 +132,7 @@ describe Chef::Config do
     it "should return a windows path on windows systems" do
       platform_mock :windows do
         path = "/etc/chef/cookbooks"
-        ENV.stub!(:[]).with('SYSTEMDRIVE').and_return('C:')
+        ENV.stub(:[]).with('SYSTEMDRIVE').and_return('C:')
         # match on a regex that looks for the base path with an optional
         # system drive at the beginning (c:)
         # system drive is not hardcoded b/c it can change and b/c it is not present on linux systems

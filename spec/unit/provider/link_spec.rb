@@ -45,12 +45,12 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
   describe "when the target is a symlink" do
     before(:each) do
       lstat = mock("stats", :ino => 5)
-      lstat.stub!(:uid).and_return(501)
-      lstat.stub!(:gid).and_return(501)
-      lstat.stub!(:mode).and_return(0777)
-      File.stub!(:lstat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(lstat)
-      provider.file_class.stub!(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
-      provider.file_class.stub!(:readlink).with("#{CHEF_SPEC_DATA}/fofile-link").and_return("#{CHEF_SPEC_DATA}/fofile")
+      lstat.stub(:uid).and_return(501)
+      lstat.stub(:gid).and_return(501)
+      lstat.stub(:mode).and_return(0777)
+      File.stub(:lstat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(lstat)
+      provider.file_class.stub(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+      provider.file_class.stub(:readlink).with("#{CHEF_SPEC_DATA}/fofile-link").and_return("#{CHEF_SPEC_DATA}/fofile")
     end
 
     describe "to a file that exists" do
@@ -95,9 +95,9 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
 
     describe "to a file that doesn't exist" do
       before do
-        File.stub!(:exist?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
-        provider.file_class.stub!(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
-        provider.file_class.stub!(:readlink).with("#{CHEF_SPEC_DATA}/fofile-link").and_return("#{CHEF_SPEC_DATA}/fofile")
+        File.stub(:exist?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
+        provider.file_class.stub(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+        provider.file_class.stub(:readlink).with("#{CHEF_SPEC_DATA}/fofile-link").and_return("#{CHEF_SPEC_DATA}/fofile")
         new_resource.owner "501" # only loaded in current_resource if present in new
         new_resource.group "501"
         provider.load_current_resource
@@ -123,8 +123,8 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
 
   describe "when the target doesn't exist" do
     before do
-      File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
-      provider.file_class.stub!(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
+      File.stub(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
+      provider.file_class.stub(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
       provider.load_current_resource
     end
 
@@ -145,18 +145,18 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
   describe "when the target is a regular old file" do
     before do
       stat = mock("stats", :ino => 5)
-      stat.stub!(:uid).and_return(501)
-      stat.stub!(:gid).and_return(501)
-      stat.stub!(:mode).and_return(0755)
-      provider.file_class.stub!(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
+      stat.stub(:uid).and_return(501)
+      stat.stub(:gid).and_return(501)
+      stat.stub(:mode).and_return(0755)
+      provider.file_class.stub(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
 
-      File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
-      provider.file_class.stub!(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
+      File.stub(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+      provider.file_class.stub(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
     end
 
     describe "and the source does not exist" do
       before do
-        File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(false)
+        File.stub(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(false)
         provider.load_current_resource
       end
 
@@ -177,13 +177,13 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
     describe "and the source exists" do
       before do
         stat = mock("stats", :ino => 6)
-        stat.stub!(:uid).and_return(502)
-        stat.stub!(:gid).and_return(502)
-        stat.stub!(:mode).and_return(0644)
+        stat.stub(:uid).and_return(502)
+        stat.stub(:gid).and_return(502)
+        stat.stub(:mode).and_return(0644)
 
-        provider.file_class.stub!(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
+        provider.file_class.stub(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
 
-        File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
+        File.stub(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
         provider.load_current_resource
       end
 
@@ -204,13 +204,13 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
     describe "and is hardlinked to the source" do
       before do
         stat = mock("stats", :ino => 5)
-        stat.stub!(:uid).and_return(502)
-        stat.stub!(:gid).and_return(502)
-        stat.stub!(:mode).and_return(0644)
+        stat.stub(:uid).and_return(502)
+        stat.stub(:gid).and_return(502)
+        stat.stub(:mode).and_return(0644)
 
-        provider.file_class.stub!(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
+        provider.file_class.stub(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
 
-        File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
+        File.stub(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
         provider.load_current_resource
       end
 

@@ -24,9 +24,9 @@ describe Chef::Knife::UserReregister do
     @knife = Chef::Knife::UserReregister.new
     @knife.name_args = [ 'a_user' ]
     @user_mock = mock('user_mock', :private_key => "private_key")
-    Chef::User.stub!(:load).and_return(@user_mock)
+    Chef::User.stub(:load).and_return(@user_mock)
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
   it 'prints usage and exits when a user name is not provided' do

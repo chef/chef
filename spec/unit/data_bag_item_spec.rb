@@ -204,7 +204,7 @@ describe Chef::DataBagItem do
   describe "save" do
     before do
       @rest = mock("Chef::REST")
-      Chef::REST.stub!(:new).and_return(@rest)
+      Chef::REST.stub(:new).and_return(@rest)
       @data_bag_item['id'] = "heart of darkness"
       raw_data = {"id" => "heart_of_darkness", "author" => "Conrad"}
       @data_bag_item.raw_data = raw_data
@@ -248,7 +248,7 @@ describe Chef::DataBagItem do
     describe "from an API call" do
       before do
         @http_client = mock("Chef::REST")
-        Chef::REST.stub!(:new).and_return(@http_client)
+        Chef::REST.stub(:new).and_return(@http_client)
       end
 
       it "converts raw data to a data bag item" do

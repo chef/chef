@@ -30,9 +30,9 @@ describe Chef::Knife::DataBagShow do
     @knife = Chef::Knife::DataBagShow.new
     @knife.config[:format] = 'json'
     @rest = mock("Chef::REST")
-    @knife.stub!(:rest).and_return(@rest)
+    @knife.stub(:rest).and_return(@rest)
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
 
@@ -83,7 +83,7 @@ describe Chef::Knife::DataBagShow do
     end
 
     it "prints the decrypted contents of an item when given --secret" do
-      @knife.stub!(:config).and_return({:secret => @secret})
+      @knife.stub(:config).and_return({:secret => @secret})
       Chef::EncryptedDataBagItem.should_receive(:load).
         with('bag_name', 'item_name', @secret).
         and_return(Chef::EncryptedDataBagItem.new(@enc_data, @secret))
@@ -92,7 +92,7 @@ describe Chef::Knife::DataBagShow do
     end
 
     it "prints the decrypted contents of an item when given --secret_file" do
-      @knife.stub!(:config).and_return({:secret_file => @secret_file.path})
+      @knife.stub(:config).and_return({:secret_file => @secret_file.path})
       Chef::EncryptedDataBagItem.should_receive(:load).
         with('bag_name', 'item_name', @secret).
         and_return(Chef::EncryptedDataBagItem.new(@enc_data, @secret))

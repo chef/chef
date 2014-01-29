@@ -27,7 +27,7 @@ describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
     @new_resource.members %w{lobster rage fist}
     @new_resource.append false
     @provider = Chef::Provider::Group::Gpasswd.new(@new_resource, @run_context)
-    #@provider.stub!(:run_command).and_return(true)
+    #@provider.stub(:run_command).and_return(true)
   end
 
   describe "when determining the current group state" do
@@ -40,13 +40,13 @@ describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
     # for Chef::Provider::Group - no need to repeat it here.  We'll
     # include only what's specific to this provider.
     it "should raise an error if the required binary /usr/bin/gpasswd doesn't exist" do
-      File.stub!(:exists?).and_return(true)
+      File.stub(:exists?).and_return(true)
       File.should_receive(:exists?).with("/usr/bin/gpasswd").and_return(false)
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Group)
     end
 
     it "shouldn't raise an error if the required binaries exist" do
-      File.stub!(:exists?).and_return(true)
+      File.stub(:exists?).and_return(true)
       lambda { @provider.process_resource_requirements }.should_not raise_error(Chef::Exceptions::Group)
     end
   end
@@ -85,7 +85,7 @@ describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
     describe "when the resource specifies group members" do
       it "should log an appropriate debug message" do
         Chef::Log.should_receive(:debug).with("group[wheel] setting group members to: lobster, rage, fist")
-        @provider.stub!(:shell_out!)
+        @provider.stub(:shell_out!)
         @provider.modify_group_members
       end
 

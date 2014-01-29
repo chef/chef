@@ -22,7 +22,7 @@ require 'chef/search/query'
 describe Chef::Search::Query do
   before(:each) do
     @rest = mock("Chef::REST")
-    Chef::REST.stub!(:new).and_return(@rest)
+    Chef::REST.stub(:new).and_return(@rest)
     @query = Chef::Search::Query.new
   end
 
@@ -38,7 +38,7 @@ describe Chef::Search::Query do
         "start" => 0,
         "total" => 4
       }
-      @rest.stub!(:get_rest).and_return(@response)
+      @rest.stub(:get_rest).and_return(@response)
     end
 
     it "should accept a type as the first argument" do

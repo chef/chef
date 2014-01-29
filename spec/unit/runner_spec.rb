@@ -125,24 +125,24 @@ describe Chef::Runner do
 
   it "should raise exceptions as thrown by a provider" do
     provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
-    Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
-    provider.stub!(:action_sell).once.and_raise(ArgumentError)
+    Chef::Provider::SnakeOil.stub(:new).once.and_return(provider)
+    provider.stub(:action_sell).once.and_raise(ArgumentError)
     lambda { @runner.converge }.should raise_error(ArgumentError)
   end
 
   it "should not raise exceptions thrown by providers if the resource has ignore_failure set to true" do
-    @run_context.resource_collection[0].stub!(:ignore_failure).and_return(true)
+    @run_context.resource_collection[0].stub(:ignore_failure).and_return(true)
     provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
-    Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
-    provider.stub!(:action_sell).once.and_raise(ArgumentError)
+    Chef::Provider::SnakeOil.stub(:new).once.and_return(provider)
+    provider.stub(:action_sell).once.and_raise(ArgumentError)
     lambda { @runner.converge }.should_not raise_error(ArgumentError)
   end
 
   it "should retry with the specified delay if retries are specified" do
     @first_resource.retries 3
     provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
-    Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
-    provider.stub!(:action_sell).and_raise(ArgumentError)
+    Chef::Provider::SnakeOil.stub(:new).once.and_return(provider)
+    provider.stub(:action_sell).and_raise(ArgumentError)
     @first_resource.should_receive(:sleep).with(2).exactly(3).times
     lambda { @runner.converge }.should raise_error(ArgumentError)
   end

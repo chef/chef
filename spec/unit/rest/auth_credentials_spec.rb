@@ -84,7 +84,7 @@ describe Chef::REST::AuthCredentials do
     end
 
     it "generates signature headers for the request" do
-      Time.stub!(:now).and_return(@request_time)
+      Time.stub(:now).and_return(@request_time)
       actual = @auth_credentials.signature_headers(@request_params)
       actual["HOST"].should                    == "localhost"
       actual["X-OPS-AUTHORIZATION-1"].should == "kBssX1ENEwKtNYFrHElN9vYGWS7OeowepN9EsYc9csWfh8oUovryPKDxytQ/"
@@ -110,7 +110,7 @@ describe Chef::REST::AuthCredentials do
       end
 
       it "generates the correct signature for version 1.1" do
-        Time.stub!(:now).and_return(@request_time)
+        Time.stub(:now).and_return(@request_time)
         actual = @auth_credentials.signature_headers(@request_params)
         actual["HOST"].should                    == "localhost"
         actual["X-OPS-CONTENT-HASH"].should == "1tuzs5XKztM1ANrkGNPah6rW9GY="

@@ -42,8 +42,8 @@ describe Chef::Provider::Ifconfig::Redhat do
   describe "generate_config for action_add" do
 
      it "should write network-script for centos" do
-      @provider.stub!(:load_current_resource)
-      @provider.stub!(:run_command)
+      @provider.stub(:load_current_resource)
+      @provider.stub(:run_command)
       config_filename = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
       config_file = StringIO.new
       File.should_receive(:new).with(config_filename, "w").and_return(config_file)
@@ -59,8 +59,8 @@ describe Chef::Provider::Ifconfig::Redhat do
 
     it "should delete network-script if it exists for centos" do
       @current_resource.device @new_resource.device
-      @provider.stub!(:load_current_resource)
-      @provider.stub!(:run_command)
+      @provider.stub(:load_current_resource)
+      @provider.stub(:run_command)
       config_filename =  "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
       File.should_receive(:exist?).with(config_filename).and_return(true)
       FileUtils.should_receive(:rm_f).with(config_filename, :verbose => false)

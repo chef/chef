@@ -32,20 +32,20 @@ describe Chef::Provider::Mdadm do
 
   describe "when determining the current metadevice status" do
     it "should set the current resources mount point to the new resources mount point" do
-      @provider.stub!(:shell_out!).and_return(OpenStruct.new(:status => 0))
+      @provider.stub(:shell_out!).and_return(OpenStruct.new(:status => 0))
       @provider.load_current_resource
       @provider.current_resource.name.should == '/dev/md1'
       @provider.current_resource.raid_device.should == '/dev/md1'
     end
 
     it "determines that the metadevice exists when mdadm exit code is zero" do
-      @provider.stub!(:shell_out!).with("mdadm --detail --test /dev/md1", :returns => [0,4]).and_return(OpenStruct.new(:status => 0))
+      @provider.stub(:shell_out!).with("mdadm --detail --test /dev/md1", :returns => [0,4]).and_return(OpenStruct.new(:status => 0))
       @provider.load_current_resource
       @provider.current_resource.exists.should be_true
     end
 
     it "determines that the metadevice does not exist when mdadm exit code is 4" do
-      @provider.stub!(:shell_out!).with("mdadm --detail --test /dev/md1", :returns => [0,4]).and_return(OpenStruct.new(:status => 4))
+      @provider.stub(:shell_out!).with("mdadm --detail --test /dev/md1", :returns => [0,4]).and_return(OpenStruct.new(:status => 4))
       @provider.load_current_resource
       @provider.current_resource.exists.should be_false
     end
@@ -55,7 +55,7 @@ describe Chef::Provider::Mdadm do
     before(:each) do
       @current_resource = Chef::Resource::Mdadm.new('/dev/md1')
       @new_resource.level 5
-      @provider.stub!(:load_current_resource).and_return(true)
+      @provider.stub(:load_current_resource).and_return(true)
       @provider.current_resource = @current_resource
     end
 

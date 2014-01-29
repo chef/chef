@@ -67,7 +67,7 @@ IFCONFIG
 
     it "should add an interface if it does not exist" do
       @new_resource.device "en10"
-      @provider.stub!(:load_current_resource) do
+      @provider.stub(:load_current_resource) do
         @provider.instance_variable_set("@status", double("Status", :exitstatus => 0))
         @provider.instance_variable_set("@current_resource", Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
       end
@@ -81,7 +81,7 @@ IFCONFIG
     it "should raise exception if metric attribute is set" do
       @new_resource.device "en0"
       @new_resource.metric "1"
-      @provider.stub!(:load_current_resource) do
+      @provider.stub(:load_current_resource) do
         @provider.instance_variable_set("@status", double("Status", :exitstatus => 0))
         @provider.instance_variable_set("@current_resource", Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
       end
@@ -93,7 +93,7 @@ IFCONFIG
   describe "#action_enable" do
     it "should enable an interface if it does not exist" do
       @new_resource.device "en10"
-      @provider.stub!(:load_current_resource) do
+      @provider.stub(:load_current_resource) do
         @provider.instance_variable_set("@status", double("Status", :exitstatus => 0))
         @provider.instance_variable_set("@current_resource", Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
       end
@@ -109,7 +109,7 @@ IFCONFIG
 
     it "should not disable an interface if it does not exist" do
       @new_resource.device "en10"
-      @provider.stub!(:load_current_resource) do
+      @provider.stub(:load_current_resource) do
         @provider.instance_variable_set("@status", double("Status", :exitstatus => 0))
         @provider.instance_variable_set("@current_resource", Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
       end
@@ -123,7 +123,7 @@ IFCONFIG
     context "interface exists" do
       before do
         @new_resource.device "en10"
-        @provider.stub!(:load_current_resource) do
+        @provider.stub(:load_current_resource) do
           @provider.instance_variable_set("@status", double("Status", :exitstatus => 0))
           current_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
           current_resource.device @new_resource.device
@@ -146,7 +146,7 @@ IFCONFIG
 
     it "should not delete an interface if it does not exist" do
       @new_resource.device "en10"
-      @provider.stub!(:load_current_resource) do
+      @provider.stub(:load_current_resource) do
         @provider.instance_variable_set("@status", double("Status", :exitstatus => 0))
         @provider.instance_variable_set("@current_resource", Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
       end
@@ -160,7 +160,7 @@ IFCONFIG
     context "interface exists" do
       before do
         @new_resource.device "en10"
-        @provider.stub!(:load_current_resource) do
+        @provider.stub(:load_current_resource) do
           @provider.instance_variable_set("@status", double("Status", :exitstatus => 0))
           current_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
           current_resource.device @new_resource.device

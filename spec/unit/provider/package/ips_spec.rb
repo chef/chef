@@ -28,7 +28,7 @@ describe Chef::Provider::Package::Ips do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Package.new("crypto/gnupg", @run_context)
     @current_resource = Chef::Resource::Package.new("crypto/gnupg", @run_context)
-    Chef::Resource::Package.stub!(:new).and_return(@current_resource)
+    Chef::Resource::Package.stub(:new).and_return(@current_resource)
     @provider = Chef::Provider::Package::Ips.new(@new_resource, @run_context)
 
     @stdin = StringIO.new
@@ -117,7 +117,7 @@ INSTALLED
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "pkg --no-refresh install -q crypto/gnupg@2.0.17"
       })
-      @new_resource.stub!(:options).and_return("--no-refresh")
+      @new_resource.stub(:options).and_return("--no-refresh")
       @provider.install_package("crypto/gnupg", "2.0.17")
     end
 
@@ -168,7 +168,7 @@ PKG_STATUS
 
       context "when accept_license is true" do
         before do
-          @new_resource.stub!(:accept_license).and_return(true)
+          @new_resource.stub(:accept_license).and_return(true)
         end
 
         it "should run pkg install with the --accept flag" do
@@ -202,7 +202,7 @@ PKG_STATUS
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "pkg --no-refresh uninstall -q crypto/gnupg@2.0.17"
       })
-      @new_resource.stub!(:options).and_return("--no-refresh")
+      @new_resource.stub(:options).and_return("--no-refresh")
       @provider.remove_package("crypto/gnupg", "2.0.17")
     end
   end

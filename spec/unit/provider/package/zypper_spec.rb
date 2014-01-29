@@ -30,12 +30,12 @@ describe Chef::Provider::Package::Zypper do
     @status = mock("Status", :exitstatus => 0)
 
     @provider = Chef::Provider::Package::Zypper.new(@new_resource, @run_context)
-    Chef::Resource::Package.stub!(:new).and_return(@current_resource)
-    @provider.stub!(:popen4).and_return(@status)
+    Chef::Resource::Package.stub(:new).and_return(@current_resource)
+    @provider.stub(:popen4).and_return(@status)
     @stderr = StringIO.new
     @stdout = StringIO.new
     @pid = mock("PID")
-    @provider.stub!(:`).and_return("2.0")
+    @provider.stub(:`).and_return("2.0")
   end
 
   describe "when loading the current package state" do
@@ -55,14 +55,14 @@ describe Chef::Provider::Package::Zypper do
     end
 
     it "should set the installed version to nil on the current resource if zypper info installed version is (none)" do
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @current_resource.should_receive(:version).with(nil).and_return(true)
       @provider.load_current_resource
     end
 
     it "should set the installed version if zypper info has one" do
       @stdout = StringIO.new("Version: 1.0\nInstalled: Yes\n")
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @current_resource.should_receive(:version).with("1.0").and_return(true)
       @provider.load_current_resource
     end
@@ -70,7 +70,7 @@ describe Chef::Provider::Package::Zypper do
     it "should set the candidate version if zypper info has one" do
       @stdout = StringIO.new("Version: 1.0\nInstalled: No\nStatus: out-of-date (version 0.9 installed)")
 
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @provider.load_current_resource
       @provider.candidate_version.should eql("1.0")
     end
@@ -191,7 +191,7 @@ describe Chef::Provider::Package::Zypper do
 
   describe "on an older zypper" do
     before(:each) do
-      @provider.stub!(:`).and_return("0.11.6")
+      @provider.stub(:`).and_return("0.11.6")
     end
 
     describe "install_package" do

@@ -23,7 +23,7 @@ describe Chef::CookbookCacheCleaner do
       file_cache.should_receive(:delete).with('cookbooks/unused/templates/default/foo.conf.erb')
       file_cache.should_receive(:delete).with('cookbooks/unused/tempaltes/default/bar.conf.erb')
       cookbook_hash = {"valid1"=> {}, "valid2" => {}}
-      @cleaner.stub!(:cache).and_return(file_cache)
+      @cleaner.stub(:cache).and_return(file_cache)
       @cleaner.cleanup_file_cache
     end
 
@@ -37,7 +37,7 @@ describe Chef::CookbookCacheCleaner do
       end
 
       it "does not remove anything" do
-        @cleaner.cache.stub!(:find).and_return(%w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb})
+        @cleaner.cache.stub(:find).and_return(%w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb})
         @cleaner.cache.should_not_receive(:delete)
         @cleaner.cleanup_file_cache
       end
@@ -94,7 +94,7 @@ describe Chef::CookbookSynchronizer do
       @file_cache.should_receive(:find).with(File.join(%w{cookbooks ** *})).and_return(@valid_cached_cb_files + @obsolete_cb_files)
       @file_cache.should_receive(:delete).with('cookbooks/old1/recipes/default.rb')
       @file_cache.should_receive(:delete).with('cookbooks/old2/recipes/default.rb')
-      @synchronizer.stub!(:cache).and_return(@file_cache)
+      @synchronizer.stub(:cache).and_return(@file_cache)
       @synchronizer.clear_obsoleted_cookbooks
     end
   end
@@ -103,12 +103,12 @@ describe Chef::CookbookSynchronizer do
     before do
       # Would rather not stub out methods on the test subject, but setting up
       # the state is a PITA and tests for this behavior are above.
-      @synchronizer.stub!(:clear_obsoleted_cookbooks)
+      @synchronizer.stub(:clear_obsoleted_cookbooks)
 
       @server_api = mock("Chef::REST (mock)")
       @file_cache = mock("Chef::FileCache (mock)")
-      @synchronizer.stub!(:server_api).and_return(@server_api)
-      @synchronizer.stub!(:cache).and_return(@file_cache)
+      @synchronizer.stub(:server_api).and_return(@server_api)
+      @synchronizer.stub(:cache).and_return(@file_cache)
 
 
       @cookbook_a_default_recipe_tempfile = mock("Tempfile for cookbook_a default.rb recipe",
@@ -167,9 +167,9 @@ describe Chef::CookbookSynchronizer do
         before do
           Chef::Config[:no_lazy_load] = true
           @synchronizer = Chef::CookbookSynchronizer.new(@cookbook_manifest, @events)
-          @synchronizer.stub!(:server_api).and_return(@server_api)
-          @synchronizer.stub!(:cache).and_return(@file_cache)
-          @synchronizer.stub!(:clear_obsoleted_cookbooks)
+          @synchronizer.stub(:server_api).and_return(@server_api)
+          @synchronizer.stub(:cache).and_return(@file_cache)
+          @synchronizer.stub(:clear_obsoleted_cookbooks)
 
           @cookbook_a_file_default_tempfile = mock("Tempfile for cookbook_a megaman.conf file",
                                                      :path => "/tmp/cookbook_a_file_default_tempfile")

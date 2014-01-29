@@ -38,7 +38,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
     @outputter = Chef::Formatters::Outputter.new(@stdout, STDERR)
     #@outputter = Chef::Formatters::Outputter.new(STDOUT, STDERR)
 
-    Chef::Config.stub!(:cookbook_path).and_return([ "/var/chef/cache" ])
+    Chef::Config.stub(:cookbook_path).and_return([ "/var/chef/cache" ])
   end
 
   describe "when explaining an error converging a resource" do
@@ -112,8 +112,8 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
       before do
         # fake code to run through #recipe_snippet
         source_file = [ "if true", "var = non_existant", "end" ]
-        IO.stub!(:readlines).and_return(source_file)
-        File.stub!(:exists?).and_return(true)
+        IO.stub(:readlines).and_return(source_file)
+        File.stub(:exists?).and_return(true)
       end
 
       it "parses a Windows path" do
@@ -132,8 +132,8 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
 
       context "when the recipe file does not exist" do
         before do
-          File.stub!(:exists?).and_return(false)
-          IO.stub!(:readlines).and_raise(Errno::ENOENT)
+          File.stub(:exists?).and_return(false)
+          IO.stub(:readlines).and_raise(Errno::ENOENT)
         end
 
         it "does not try to parse a recipe in chef-shell/irb (CHEF-3411)" do

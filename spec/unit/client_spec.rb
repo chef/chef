@@ -37,9 +37,9 @@ shared_examples_for Chef::Client do
                   :platform         => 'example-platform',
                   :platform_version => 'example-platform-1.0',
                   :data             => {} }
-    ohai_data.stub!(:all_plugins).and_return(true)
-    ohai_data.stub!(:data).and_return(ohai_data)
-    Ohai::System.stub!(:new).and_return(ohai_data)
+    ohai_data.stub(:all_plugins).and_return(true)
+    ohai_data.stub(:data).and_return(ohai_data)
+    Ohai::System.stub(:new).and_return(ohai_data)
 
     @node = Chef::Node.new
     @node.name(@fqdn)
@@ -81,7 +81,7 @@ shared_examples_for Chef::Client do
 
       context "and STDOUT is a TTY" do
         before do
-          STDOUT.stub!(:tty?).and_return(true)
+          STDOUT.stub(:tty?).and_return(true)
         end
 
         it "configures the :doc formatter" do
@@ -104,7 +104,7 @@ shared_examples_for Chef::Client do
 
       context "and STDOUT is not a TTY" do
         before do
-          STDOUT.stub!(:tty?).and_return(false)
+          STDOUT.stub(:tty?).and_return(false)
         end
 
         it "configures the :null formatter" do
@@ -254,14 +254,14 @@ shared_examples_for Chef::Client do
 
     it "should remove the run_lock on failure of #load_node" do
       @run_lock = mock("Chef::RunLock", :acquire => true)
-      Chef::RunLock.stub!(:new).and_return(@run_lock)
+      Chef::RunLock.stub(:new).and_return(@run_lock)
 
       @events = mock("Chef::EventDispatch::Dispatcher").as_null_object
-      Chef::EventDispatch::Dispatcher.stub!(:new).and_return(@events)
+      Chef::EventDispatch::Dispatcher.stub(:new).and_return(@events)
 
       # @events is created on Chef::Client.new, so we need to recreate it after mocking
       @client = Chef::Client.new
-      @client.stub!(:load_node).and_raise(Exception)
+      @client.stub(:load_node).and_raise(Exception)
       @run_lock.should_receive(:release)
       if(Chef::Config[:client_fork] && !windows?)
         @client.should_receive(:fork) do |&block|
@@ -274,8 +274,8 @@ shared_examples_for Chef::Client do
     describe "when notifying other objects of the status of the chef run" do
       before do
         Chef::Client.clear_notifications
-        Chef::Node.stub!(:find_or_create).and_return(@node)
-        @node.stub!(:save)
+        Chef::Node.stub(:find_or_create).and_return(@node)
+        @node.stub(:save)
         @client.load_node
         @client.build_node
       end
@@ -332,7 +332,7 @@ shared_examples_for Chef::Client do
       @node[:roles].should be_nil
       @node[:recipes].should be_nil
 
-      @client.policy_builder.stub!(:node).and_return(@node)
+      @client.policy_builder.stub(:node).and_return(@node)
 
       # chefspec and possibly others use the return value of this method
       @client.build_node.should == @node

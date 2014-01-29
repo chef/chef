@@ -29,7 +29,7 @@ describe Chef::Knife::IndexRebuild do
 
   before :each do
     # This keeps the test output clean
-    knife.ui.stub!(:stdout).and_return(StringIO.new)
+    knife.ui.stub(:stdout).and_return(StringIO.new)
   end
 
   context "#grab_api_info" do

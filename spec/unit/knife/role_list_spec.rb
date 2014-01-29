@@ -22,12 +22,12 @@ describe Chef::Knife::RoleList do
   before(:each) do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::RoleList.new
-    @knife.stub!(:output).and_return(true)
+    @knife.stub(:output).and_return(true)
     @list = {
       "foo" => "http://example.com/foo",
       "bar" => "http://example.com/foo"
     }
-    Chef::Role.stub!(:list).and_return(@list)
+    Chef::Role.stub(:list).and_return(@list)
   end
 
   describe "run" do

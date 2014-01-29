@@ -47,8 +47,8 @@ describe Chef::Provider::RemoteFile::Content do
 
   describe "when the checksum of the current_resource matches the checksum set on the resource" do
     before do
-      new_resource.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-      current_resource.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+      new_resource.stub(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+      current_resource.stub(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     end
 
     it "should return nil for the tempfile" do
@@ -62,8 +62,8 @@ describe Chef::Provider::RemoteFile::Content do
 
   describe "when the checksum of the current_resource is a partial match for the checksum set on the resource" do
     before do
-      new_resource.stub!(:checksum).and_return("0fd012fd")
-      current_resource.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+      new_resource.stub(:checksum).and_return("0fd012fd")
+      current_resource.stub(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     end
 
     it "should return nil for the tempfile" do
@@ -119,24 +119,24 @@ describe Chef::Provider::RemoteFile::Content do
 
   describe "when the current_resource checksum is nil" do
     before do
-      new_resource.stub!(:checksum).and_return("fd012fd")
-      current_resource.stub!(:checksum).and_return(nil)
+      new_resource.stub(:checksum).and_return("fd012fd")
+      current_resource.stub(:checksum).and_return(nil)
     end
     it_behaves_like "the resource needs fetching"
   end
 
   describe "when the new_resource checksum is nil" do
     before do
-      new_resource.stub!(:checksum).and_return(nil)
-      current_resource.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+      new_resource.stub(:checksum).and_return(nil)
+      current_resource.stub(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     end
     it_behaves_like "the resource needs fetching"
   end
 
   describe "when the checksums are a partial match, but not to the leading portion" do
     before do
-      new_resource.stub!(:checksum).and_return("fd012fd")
-      current_resource.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+      new_resource.stub(:checksum).and_return("fd012fd")
+      current_resource.stub(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     end
     it_behaves_like "the resource needs fetching"
   end
@@ -144,8 +144,8 @@ describe Chef::Provider::RemoteFile::Content do
 
   describe "when the fetcher throws an exception" do
     before do
-      new_resource.stub!(:checksum).and_return(nil)
-      current_resource.stub!(:checksum).and_return(nil)
+      new_resource.stub(:checksum).and_return(nil)
+      current_resource.stub(:checksum).and_return(nil)
       @uri = mock("URI")
       URI.should_receive(:parse).with(new_resource.source[0]).and_return(@uri)
       http_fetcher = mock("Chef::Provider::RemoteFile::HTTP")
@@ -162,8 +162,8 @@ describe Chef::Provider::RemoteFile::Content do
 
     let(:source) { [ "http://opscode.com/seattle.txt", "http://opscode.com/nyc.txt" ] }
     before do
-      new_resource.stub!(:checksum).and_return(nil)
-      current_resource.stub!(:checksum).and_return(nil)
+      new_resource.stub(:checksum).and_return(nil)
+      current_resource.stub(:checksum).and_return(nil)
       @uri0 = mock("URI0")
       @uri1 = mock("URI1")
       URI.should_receive(:parse).with(new_resource.source[0]).and_return(@uri0)
@@ -205,8 +205,8 @@ describe Chef::Provider::RemoteFile::Content do
   describe "when there is an array of sources and the first succeeds" do
     let(:source) { [ "http://opscode.com/seattle.txt", "http://opscode.com/nyc.txt" ] }
     before do
-      new_resource.stub!(:checksum).and_return(nil)
-      current_resource.stub!(:checksum).and_return(nil)
+      new_resource.stub(:checksum).and_return(nil)
+      current_resource.stub(:checksum).and_return(nil)
       @uri0 = mock("URI0")
       URI.should_receive(:parse).with(new_resource.source[0]).and_return(@uri0)
       URI.should_not_receive(:parse).with(new_resource.source[1])

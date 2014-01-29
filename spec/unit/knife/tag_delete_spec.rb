@@ -7,11 +7,11 @@ describe Chef::Knife::TagDelete do
     @knife.name_args = [ Chef::Config[:node_name], "sadtag" ]
 
     @node = Chef::Node.new
-    @node.stub! :save
+    @node.stub :save
     @node.tags << "sadtag" << "happytag"
-    Chef::Node.stub!(:load).and_return @node
+    Chef::Node.stub(:load).and_return @node
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
   describe "run" do

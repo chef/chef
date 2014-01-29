@@ -37,10 +37,10 @@ describe Chef::Knife::Help do
 
   it "should suggest topics" do
     @knife.name_args = [ "list" ]
-    @knife.ui.stub!(:msg)
+    @knife.ui.stub(:msg)
     @knife.ui.should_receive(:info).with("Available help topics are: ")
     @knife.ui.should_receive(:msg).with(/knife/)
-    @knife.stub!(:exec)
+    @knife.stub(:exec)
     @knife.should_receive(:exit).with(1)
     @knife.run
   end
@@ -57,9 +57,9 @@ describe Chef::Knife::Help do
 
   describe "find_manpages_for_query" do
     it "should error if it does not find a match" do
-      @knife.ui.stub!(:error)
-      @knife.ui.stub!(:info)
-      @knife.ui.stub!(:msg)
+      @knife.ui.stub(:error)
+      @knife.ui.stub(:info)
+      @knife.ui.stub(:msg)
       @knife.should_receive(:exit).with(1)
       @knife.ui.should_receive(:error).with("No help found for 'chickens'")
       @knife.ui.should_receive(:msg).with(/knife/)
@@ -69,22 +69,22 @@ describe Chef::Knife::Help do
 
   describe "print_help_topics" do
     it "should print the known help topics" do
-      @knife.ui.stub!(:msg)
-      @knife.ui.stub!(:info)
+      @knife.ui.stub(:msg)
+      @knife.ui.stub(:info)
       @knife.ui.should_receive(:msg).with(/knife/)
       @knife.print_help_topics
     end
 
     it "should shorten topics prefixed by knife-" do
-      @knife.ui.stub!(:msg)
-      @knife.ui.stub!(:info)
+      @knife.ui.stub(:msg)
+      @knife.ui.stub(:info)
       @knife.ui.should_receive(:msg).with(/node/)
       @knife.print_help_topics
     end
 
     it "should not leave topics prefixed by knife-" do
-      @knife.ui.stub!(:msg)
-      @knife.ui.stub!(:info)
+      @knife.ui.stub(:msg)
+      @knife.ui.stub(:info)
       @knife.ui.should_not_receive(:msg).with(/knife-node/)
       @knife.print_help_topics
     end

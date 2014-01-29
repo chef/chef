@@ -30,14 +30,14 @@ describe Chef::Provider::Package::EasyInstall do
     @current_resource.version('1.8d')
 
     @provider = Chef::Provider::Package::EasyInstall.new(@new_resource, @run_context)
-    Chef::Resource::Package.stub!(:new).and_return(@current_resource)
+    Chef::Resource::Package.stub(:new).and_return(@current_resource)
 
     @stdin = StringIO.new
     @stdout = StringIO.new
     @status = mock("Status", :exitstatus => 0)
     @stderr = StringIO.new
     @pid = 2342
-    @provider.stub!(:popen4).and_return(@status)
+    @provider.stub(:popen4).and_return(@status)
   end
 
   describe "easy_install_binary_path" do
@@ -47,7 +47,7 @@ describe Chef::Provider::Package::EasyInstall do
     end
 
     it "should set the current resources package name to the new resources package name" do
-      $stdout.stub!(:write)
+      $stdout.stub(:write)
       @current_resource.should_receive(:package_name).with(@new_resource.package_name)
       @provider.load_current_resource
     end
@@ -75,7 +75,7 @@ describe Chef::Provider::Package::EasyInstall do
       @provider.should_receive(:run_command).with({
         :command => "easy_install --always-unzip \"boto==1.8d\""
       })
-      @new_resource.stub!(:options).and_return("--always-unzip")
+      @new_resource.stub(:options).and_return("--always-unzip")
       @provider.install_package("boto", "1.8d")
     end
 
@@ -97,7 +97,7 @@ describe Chef::Provider::Package::EasyInstall do
       @provider.should_receive(:run_command).with({
         :command => "easy_install -x -m boto"
       })
-      @new_resource.stub!(:options).and_return("-x")
+      @new_resource.stub(:options).and_return("-x")
       @provider.remove_package("boto", "1.8d")
     end
 

@@ -165,8 +165,8 @@ describe Chef::Provider::RemoteFile::HTTP do
 
     let(:rest) do
       rest = mock(Chef::HTTP::Simple)
-      rest.stub!(:streaming_request).and_return(tempfile)
-      rest.stub!(:last_response).and_return(last_response)
+      rest.stub(:streaming_request).and_return(tempfile)
+      rest.stub(:last_response).and_return(last_response)
       rest
     end
 

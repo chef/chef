@@ -27,7 +27,7 @@ describe Chef::Provider::Package::Macports do
     @current_resource = Chef::Resource::Package.new("zsh")
 
     @provider = Chef::Provider::Package::Macports.new(@new_resource, @run_context)
-    Chef::Resource::Package.stub!(:new).and_return(@current_resource)
+    Chef::Resource::Package.stub(:new).and_return(@current_resource)
 
     @status = mock("Status", :exitstatus => 0)
     @stdin = StringIO.new
@@ -121,7 +121,7 @@ EOF
     it "should add options to the port command when specified" do
       @current_resource.should_receive(:version).and_return("4.1.6")
       @provider.current_resource = @current_resource
-      @new_resource.stub!(:options).and_return("-f")
+      @new_resource.stub(:options).and_return("-f")
       @provider.should_receive(:run_command_with_systems_locale).with(:command => "port -f install zsh @4.2.7")
 
       @provider.install_package("zsh", "4.2.7")
@@ -140,7 +140,7 @@ EOF
     end
 
     it "should add options to the port command when specified" do
-      @new_resource.stub!(:options).and_return("-f")
+      @new_resource.stub(:options).and_return("-f")
       @provider.should_receive(:run_command_with_systems_locale).with(:command => "port -f uninstall zsh @4.2.7")
       @provider.purge_package("zsh", "4.2.7")
     end
@@ -158,7 +158,7 @@ EOF
     end
 
     it "should add options to the port command when specified" do
-      @new_resource.stub!(:options).and_return("-f")
+      @new_resource.stub(:options).and_return("-f")
       @provider.should_receive(:run_command_with_systems_locale).with(:command => "port -f deactivate zsh @4.2.7")
       @provider.remove_package("zsh", "4.2.7")
     end
@@ -191,7 +191,7 @@ EOF
     end
 
     it "should add options to the port command when specified" do
-      @new_resource.stub!(:options).and_return("-f")
+      @new_resource.stub(:options).and_return("-f")
       @current_resource.should_receive(:version).at_least(:once).and_return("4.1.6")
       @provider.current_resource = @current_resource
 

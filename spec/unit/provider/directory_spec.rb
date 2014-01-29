@@ -48,18 +48,18 @@ describe Chef::Provider::Directory do
 
   describe "scanning file security metadata on unix" do
     before do
-      Chef::Platform.stub!(:windows?).and_return(false)
+      Chef::Platform.stub(:windows?).and_return(false)
     end
     let(:mock_stat) do
       cstats = mock("stats")
-      cstats.stub!(:uid).and_return(500)
-      cstats.stub!(:gid).and_return(500)
-      cstats.stub!(:mode).and_return(0755)
+      cstats.stub(:uid).and_return(500)
+      cstats.stub(:gid).and_return(500)
+      cstats.stub(:mode).and_return(0755)
       cstats
     end
 
     it "describes the access mode as a String of octal integers" do
-      File.stub!(:exists?).and_return(true)
+      File.stub(:exists?).and_return(true)
       File.should_receive(:stat).and_return(mock_stat)
       @directory.load_current_resource
       @directory.current_resource.mode.should == "0755"
@@ -67,7 +67,7 @@ describe Chef::Provider::Directory do
 
     context "when user and group are specified with UID/GID" do
       it "describes the current owner and group as UID and GID" do
-        File.stub!(:exists?).and_return(true)
+        File.stub(:exists?).and_return(true)
         File.should_receive(:stat).and_return(mock_stat)
         @directory.load_current_resource
         @directory.current_resource.path.should eql(@new_resource.path)
@@ -91,7 +91,7 @@ describe Chef::Provider::Directory do
     Dir.should_receive(:mkdir).with(@new_resource.path).once.and_return(true)
 
     @directory.should_receive(:do_acl_changes)
-    @directory.stub!(:do_selinux)
+    @directory.stub(:do_selinux)
     @directory.run_action(:create)
     @directory.new_resource.should be_updated
   end
@@ -117,7 +117,7 @@ describe Chef::Provider::Directory do
 
     FileUtils.should_receive(:mkdir_p).with(@new_resource.path).and_return(true)
     @directory.should_receive(:do_acl_changes)
-    @directory.stub!(:do_selinux)
+    @directory.stub(:do_selinux)
     @directory.run_action(:create)
     @new_resource.should be_updated
   end
@@ -152,14 +152,14 @@ describe Chef::Provider::Directory do
   end
 
   it "should raise an exception if it cannot delete the directory due to bad permissions" do
-    File.stub!(:exists?).and_return(true)
-    File.stub!(:writable?).and_return(false)
+    File.stub(:exists?).and_return(true)
+    File.stub(:writable?).and_return(false)
     lambda {  @directory.run_action(:delete) }.should raise_error(RuntimeError)
   end
 
   it "should take no action when deleting a target directory that does not exist" do
     @new_resource.path "/an/invalid/path"
-    File.stub!(:exists?).and_return(false)
+    File.stub(:exists?).and_return(false)
     Dir.should_not_receive(:delete).with(@new_resource.path)
     @directory.run_action(:delete)
     @directory.new_resource.should_not be_updated
@@ -168,7 +168,7 @@ describe Chef::Provider::Directory do
   it "should raise an exception when deleting a directory when target directory is a file" do
     stub_file_cstats
     @new_resource.path "/an/invalid/path"
-    File.stub!(:exists?).and_return(true)
+    File.stub(:exists?).and_return(true)
     File.should_receive(:directory?).and_return(false)
     Dir.should_not_receive(:delete).with(@new_resource.path)
     lambda { @directory.run_action(:delete) }.should raise_error(RuntimeError)
@@ -177,12 +177,12 @@ describe Chef::Provider::Directory do
 
   def stub_file_cstats
     cstats = mock("stats")
-    cstats.stub!(:uid).and_return(500)
-    cstats.stub!(:gid).and_return(500)
-    cstats.stub!(:mode).and_return(0755)
+    cstats.stub(:uid).and_return(500)
+    cstats.stub(:gid).and_return(500)
+    cstats.stub(:mode).and_return(0755)
     # File.stat is called in:
     # - Chef::Provider::File.load_current_resource_attrs
     # - Chef::ScanAccessControl via Chef::Provider::File.setup_acl
-    File.stub!(:stat).and_return(cstats)
+    File.stub(:stat).and_return(cstats)
   end
 end

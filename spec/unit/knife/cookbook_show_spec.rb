@@ -26,9 +26,9 @@ describe Chef::Knife::CookbookShow do
     @knife.config = { }
     @knife.name_args = [ "cookbook_name" ]
     @rest = mock(Chef::REST)
-    @knife.stub!(:rest).and_return(@rest)
-    @knife.stub!(:pretty_print).and_return(true)
-    @knife.stub!(:output).and_return(true)
+    @knife.stub(:rest).and_return(@rest)
+    @knife.stub(:pretty_print).and_return(true)
+    @knife.stub(:output).and_return(true)
   end
 
   describe "run" do

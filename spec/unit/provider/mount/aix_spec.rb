@@ -60,8 +60,8 @@ ENABLED
 
     @provider = Chef::Provider::Mount::Aix.new(@new_resource, @run_context)
 
-    ::File.stub!(:exists?).with("/dev/sdz1").and_return true
-    ::File.stub!(:exists?).with("/tmp/foo").and_return true
+    ::File.stub(:exists?).with("/dev/sdz1").and_return true
+    ::File.stub(:exists?).with("/tmp/foo").and_return true
   end
 
   def stub_mounted(provider, mounted_output)
@@ -179,7 +179,7 @@ ENABLED
       @new_resource.options("nodev,rw")
       stub_mounted_enabled(@provider, @mounted_output, "")
       filesystems = StringIO.new
-      ::File.stub!(:open).with("/etc/filesystems", "a").and_yield(filesystems)
+      ::File.stub(:open).with("/etc/filesystems", "a").and_yield(filesystems)
 
       @provider.run_action(:enable)
 
@@ -200,7 +200,7 @@ ENABLED
     it "should disable mount if it is mounted and enabled" do
       stub_mounted_enabled(@provider, @mounted_output, @enabled_output)
 
-      ::File.stub!(:open).with("/etc/filesystems", "r").and_return(<<-ETCFILESYSTEMS)
+      ::File.stub(:open).with("/etc/filesystems", "r").and_return(<<-ETCFILESYSTEMS)
 /tmp/foo:
   dev   = /dev/sdz1
   vfs   = jfs2
@@ -219,7 +219,7 @@ ENABLED
 ETCFILESYSTEMS
 
       filesystems = StringIO.new
-      ::File.stub!(:open).with("/etc/filesystems", "w").and_yield(filesystems)
+      ::File.stub(:open).with("/etc/filesystems", "w").and_yield(filesystems)
 
       @provider.run_action(:disable)
 

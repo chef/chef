@@ -36,7 +36,7 @@ describe Chef::Recipe do
     # Shell/ext.rb is on the run path, and it defines
     # Chef::Recipe#resources to call pp, which we don't want when
     # we're running tests.
-    @recipe.stub!(:pp)
+    @recipe.stub(:pp)
   end
 
   describe "method_missing" do
