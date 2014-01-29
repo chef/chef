@@ -47,7 +47,7 @@ class Chef
             out = shell_out!("rpm -q #{@new_resource.package_name}", :env => nil, :returns => [0,1])
             if out.stdout
                 Chef::Log.debug("rpm STDOUT: #{out.stdout}");
-                version = out.stdout[/^#{@new_resource.package_name}-(.+)/, 1]
+                version = version_from_nvra(out.stdout)
                 if version
                     @current_resource.version(version)
                     installed = true
@@ -66,7 +66,7 @@ class Chef
             out = shell_out!(cmd, :env => nil, :returns => [0,1,255])
             if out.stdout
                 Chef::Log.debug("poldek STDOUT: #{out.stdout}");
-                version = out.stdout[/^#{@new_resource.package_name}-(.+)/, 1]
+                version = version_from_nvra(out.stdout)
                 if version
                     @candidate_version = version
                 end
@@ -99,8 +99,13 @@ class Chef
             remove_package(name, version)
         end
 
-        @@updated = Hash.new
         private
+        @@updated = Hash.new
+
+        def version_from_nvra(stdout)
+            stdout[/^#{Regexp.escape(@new_resource.package_name)}-(.+)/, 1]
+        end
+
         def update_indexes()
             Chef::Log.debug("#{@new_resource} call update indexes #{expand_options(@new_resource.options)}")
             checksum = Digest::MD5.hexdigest(@new_resource.options || '').to_s
@@ -108,7 +113,7 @@ class Chef
             if @@updated[checksum]
                 return
             end
-            Chef::Log.info("#{@new_resource} updating package indexes: #{expand_options(@new_resource.options)}")
+            Chef::Log.debug("#{@new_resource} updating package indexes: #{expand_options(@new_resource.options)}")
             shell_out!("poldek --up #{expand_options(@new_resource.options)}", :env => nil)
             @@updated[checksum] = true
         end
