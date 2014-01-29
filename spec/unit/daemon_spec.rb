@@ -79,7 +79,7 @@ describe Chef::Daemon do
     end
 
     it "changes the working directory to root" do
-      Dir.rspec_reset
+      reset Dir
       Dir.should_receive(:chdir).with("/").and_return(0)
       Chef::Daemon.change_privilege
     end
