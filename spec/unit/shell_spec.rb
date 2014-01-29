@@ -42,7 +42,7 @@ describe Shell do
 
   before do
     Shell.irb_conf = {}
-    Shell::ShellSession.instance.rspec_reset
+    reset Shell::ShellSession.instance
     Shell::ShellSession.instance.stub!(:reset!)
   end
 

@@ -86,6 +86,15 @@ Dir["spec/support/**/*.rb"].
   map { |f| f.gsub(%r[spec/], '')}.
   each { |f| require f }
 
+module VerifyAndResetHelpers
+  def verify(object)
+    RSpec::Mocks.proxy_for(object).verify
+  end
+
+  def reset(object)
+    RSpec::Mocks.proxy_for(object).reset
+  end
+end
 
 OHAI_SYSTEM = Ohai::System.new
 OHAI_SYSTEM.require_plugin("os")
@@ -149,6 +158,8 @@ RSpec.configure do |config|
 
   config.run_all_when_everything_filtered = true
   config.treat_symbols_as_metadata_keys_with_true_values = true
+
+  config.include VerifyAndResetHelpers
 
   config.before(:each) do
     Chef::Config.reset

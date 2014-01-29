@@ -24,8 +24,8 @@ describe Chef::Application do
     ARGV.clear
     Chef::Log.logger = Logger.new(StringIO.new)
     @app = Chef::Application.new
-    Dir.stub!(:chdir).and_return(0)
-    @app.stub!(:reconfigure)
+    Dir.stub(:chdir).and_return(0)
+    @app.stub(:reconfigure)
     Chef::Log.init(STDERR)
   end
 
@@ -36,8 +36,8 @@ describe Chef::Application do
   describe "reconfigure" do
     before do
       @app = Chef::Application.new
-      @app.stub!(:configure_chef).and_return(true)
-      @app.stub!(:configure_logging).and_return(true)
+      @app.stub(:configure_chef).and_return(true)
+      @app.stub(:configure_logging).and_return(true)
     end
 
     it "should configure chef" do
@@ -59,10 +59,10 @@ describe Chef::Application do
 
     describe "run" do
       before do
-        @app.stub!(:setup_application).and_return(true)
-        @app.stub!(:run_application).and_return(true)
-        @app.stub!(:configure_chef).and_return(true)
-        @app.stub!(:configure_logging).and_return(true)
+        @app.stub(:setup_application).and_return(true)
+        @app.stub(:run_application).and_return(true)
+        @app.stub(:configure_chef).and_return(true)
+        @app.stub(:configure_logging).and_return(true)
       end
 
       it "should reconfigure the application before running" do
@@ -85,8 +85,8 @@ describe Chef::Application do
   describe "configure_chef" do
     before do
       @app = Chef::Application.new
-      #Chef::Config.stub!(:merge!).and_return(true)
-      @app.stub!(:parse_options).and_return(true)
+      #Chef::Config.stub(:merge!).and_return(true)
+      @app.stub(:parse_options).and_return(true)
     end
 
     it "should parse the commandline options" do
@@ -152,11 +152,11 @@ describe Chef::Application do
   describe "when configuring the logger" do
     before do
       @app = Chef::Application.new
-      Chef::Log.stub!(:init)
+      Chef::Log.stub(:init)
     end
 
     it "should initialise the chef logger" do
-      Chef::Log.stub!(:level=)
+      Chef::Log.stub(:level=)
       @monologger = mock("Monologger")
       MonoLogger.should_receive(:new).with(Chef::Config[:log_location]).and_return(@monologger)
       Chef::Log.should_receive(:init).with(@monologger)
@@ -173,7 +173,7 @@ describe Chef::Application do
     shared_examples_for "log_level_is_auto" do
       context "when STDOUT is to a tty" do
         before do
-          STDOUT.stub!(:tty?).and_return(true)
+          STDOUT.stub(:tty?).and_return(true)
         end
 
         it "configures the log level to :warn" do
@@ -195,7 +195,7 @@ describe Chef::Application do
 
       context "when STDOUT is not to a tty" do
         before do
-          STDOUT.stub!(:tty?).and_return(false)
+          STDOUT.stub(:tty?).and_return(false)
         end
 
         it "configures the log level to :info" do
@@ -230,9 +230,9 @@ describe Chef::Application do
 
   describe "class method: fatal!" do
     before do
-      STDERR.stub!(:puts).with("FATAL: blah").and_return(true)
-      Chef::Log.stub!(:fatal).with("blah").and_return(true)
-      Process.stub!(:exit).and_return(true)
+      STDERR.stub(:puts).with("FATAL: blah").and_return(true)
+      Chef::Log.stub(:fatal).and_return(true)
+      Process.stub(:exit).and_return(true)
     end
 
     it "should log an error message to the logger" do
