@@ -30,7 +30,7 @@ describe Chef::Provider::Deploy::Revision do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @provider = Chef::Provider::Deploy::Revision.new(@resource, @run_context)
     @provider.load_current_resource
-    @runner = mock("runnah")
+    @runner = double("runnah")
     Chef::Runner.stub(:new).and_return(@runner)
     @expected_release_dir = "/my/deploy/dir/releases/8a3195bf3efa246f743c5dfa83683201880f935c"
   end

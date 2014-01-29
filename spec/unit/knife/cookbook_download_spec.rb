@@ -44,7 +44,7 @@ describe Chef::Knife::CookbookDownload do
       before(:each) do
         @knife.name_args = ['foobar']
         @knife.config[:download_directory] = '/var/tmp/chef'
-        @rest_mock = mock('rest')
+        @rest_mock = double('rest')
         @knife.stub(:rest).and_return(@rest_mock)
 
         @manifest_data = {
@@ -66,7 +66,7 @@ describe Chef::Knife::CookbookDownload do
           ]
         }
 
-        @cookbook_mock = mock('cookbook')
+        @cookbook_mock = double('cookbook')
         @cookbook_mock.stub(:version).and_return('1.0.0')
         @cookbook_mock.stub(:manifest).and_return(@manifest_data)
         @rest_mock.should_receive(:get_rest).with('cookbooks/foobar/1.0.0').
@@ -87,7 +87,7 @@ describe Chef::Knife::CookbookDownload do
           @files = @manifest_data.values.map { |v| v.map { |i| i['path'] } }.flatten.uniq
           @files_mocks = {}
           @files.map { |f| File.basename(f) }.flatten.uniq.each do |f|
-            @files_mocks[f] = mock("#{f}_mock")
+            @files_mocks[f] = double("#{f}_mock")
             @files_mocks[f].stub(:path).and_return("/var/tmp/#{f}")
           end
         end

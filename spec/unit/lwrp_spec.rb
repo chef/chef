@@ -179,7 +179,7 @@ describe "LWRP" do
     end
 
     it "should create a method for each attribute" do
-      new_resource = mock("new resource", :null_object=>true)
+      new_resource = double("new resource", :null_object=>true)
       Chef::Provider::LwrpBuckPasser.new(nil, new_resource).methods.map{|m|m.to_sym}.should include(:action_pass_buck)
       Chef::Provider::LwrpThumbTwiddler.new(nil, new_resource).methods.map{|m|m.to_sym}.should include(:action_twiddle_thumbs)
     end

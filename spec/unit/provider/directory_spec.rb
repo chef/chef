@@ -51,7 +51,7 @@ describe Chef::Provider::Directory do
       Chef::Platform.stub(:windows?).and_return(false)
     end
     let(:mock_stat) do
-      cstats = mock("stats")
+      cstats = double("stats")
       cstats.stub(:uid).and_return(500)
       cstats.stub(:gid).and_return(500)
       cstats.stub(:mode).and_return(0755)
@@ -176,7 +176,7 @@ describe Chef::Provider::Directory do
   end
 
   def stub_file_cstats
-    cstats = mock("stats")
+    cstats = double("stats")
     cstats.stub(:uid).and_return(500)
     cstats.stub(:gid).and_return(500)
     cstats.stub(:mode).and_return(0755)

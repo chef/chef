@@ -44,7 +44,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
 
   describe "when the target is a symlink" do
     before(:each) do
-      lstat = mock("stats", :ino => 5)
+      lstat = double("stats", :ino => 5)
       lstat.stub(:uid).and_return(501)
       lstat.stub(:gid).and_return(501)
       lstat.stub(:mode).and_return(0777)
@@ -144,7 +144,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
 
   describe "when the target is a regular old file" do
     before do
-      stat = mock("stats", :ino => 5)
+      stat = double("stats", :ino => 5)
       stat.stub(:uid).and_return(501)
       stat.stub(:gid).and_return(501)
       stat.stub(:mode).and_return(0755)
@@ -176,7 +176,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
 
     describe "and the source exists" do
       before do
-        stat = mock("stats", :ino => 6)
+        stat = double("stats", :ino => 6)
         stat.stub(:uid).and_return(502)
         stat.stub(:gid).and_return(502)
         stat.stub(:mode).and_return(0644)
@@ -203,7 +203,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
 
     describe "and is hardlinked to the source" do
       before do
-        stat = mock("stats", :ino => 5)
+        stat = double("stats", :ino => 5)
         stat.stub(:uid).and_return(502)
         stat.stub(:gid).and_return(502)
         stat.stub(:mode).and_return(0644)

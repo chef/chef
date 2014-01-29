@@ -30,9 +30,9 @@ describe Chef::Provider::Package::Dpkg do
 
     @stdin = StringIO.new
     @stdout = StringIO.new
-    @status = mock("Status", :exitstatus => 0)
+    @status = double("Status", :exitstatus => 0)
     @stderr = StringIO.new
-    @pid = mock("PID")
+    @pid = double("PID")
     @provider.stub(:popen4).and_return(@status)
 
     ::File.stub(:exists?).and_return(true)
@@ -110,7 +110,7 @@ DPKG_S
     end
 
     it "should raise an exception if dpkg fails to run" do
-      @status = mock("Status", :exitstatus => -1)
+      @status = double("Status", :exitstatus => -1)
       @provider.stub(:popen4).and_return(@status)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end

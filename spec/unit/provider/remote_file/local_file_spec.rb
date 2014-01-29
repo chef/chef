@@ -40,8 +40,8 @@ describe Chef::Provider::RemoteFile::LocalFile do
 
   describe "when fetching the object" do
 
-    let(:tempfile) { mock("Tempfile", :path => "/tmp/foo/bar/nyan.png", :close => nil) }
-    let(:chef_tempfile) { mock("Chef::FileContentManagement::Tempfile", :tempfile => tempfile) }
+    let(:tempfile) { double("Tempfile", :path => "/tmp/foo/bar/nyan.png", :close => nil) }
+    let(:chef_tempfile) { double("Chef::FileContentManagement::Tempfile", :tempfile => tempfile) }
 
     before do
       current_resource.source("file:///nyan_cat.png")

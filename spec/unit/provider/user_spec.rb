@@ -58,7 +58,7 @@ describe Chef::Provider::User do
   describe "executing load_current_resource" do
     before(:each) do
       @node = Chef::Node.new
-      #@new_resource = mock("Chef::Resource::User",
+      #@new_resource = double("Chef::Resource::User",
       #  :null_object => true,
       #  :username => "adam",
       #  :comment => "Adam Jacob",
@@ -226,7 +226,7 @@ describe Chef::Provider::User do
   describe "action_create" do
     before(:each) do
       @provider.stub(:load_current_resource)
-      # @current_resource = mock("Chef::Resource::User",
+      # @current_resource = double("Chef::Resource::User",
       #   :null_object => true,
       #   :username => "adam",
       #   :comment => "Adam Jacob",
@@ -299,10 +299,10 @@ describe Chef::Provider::User do
     before(:each) do
       @provider.stub(:load_current_resource)
       # @node = Chef::Node.new
-      # @new_resource = mock("Chef::Resource::User",
+      # @new_resource = double("Chef::Resource::User",
       #   :null_object => true
       # )
-      # @current_resource = mock("Chef::Resource::User",
+      # @current_resource = double("Chef::Resource::User",
       #   :null_object => true
       # )
       # @provider = Chef::Provider::User.new(@node, @new_resource)
@@ -342,10 +342,10 @@ describe Chef::Provider::User do
     before(:each) do
       @provider.stub(:load_current_resource)
       # @node = Chef::Node.new
-      # @new_resource = mock("Chef::Resource::User",
+      # @new_resource = double("Chef::Resource::User",
       #   :null_object => true
       # )
-      # @current_resource = mock("Chef::Resource::User",
+      # @current_resource = double("Chef::Resource::User",
       #   :null_object => true
       # )
       # @provider = Chef::Provider::User.new(@node, @new_resource)
@@ -411,10 +411,10 @@ describe Chef::Provider::User do
     before(:each) do
       @provider.stub(:load_current_resource)
       # @node = Chef::Node.new
-      # @new_resource = mock("Chef::Resource::User",
+      # @new_resource = double("Chef::Resource::User",
       #   :null_object => true
       # )
-      # @current_resource = mock("Chef::Resource::User",
+      # @current_resource = double("Chef::Resource::User",
       #   :null_object => true
       # )
       # @provider = Chef::Provider::User.new(@node, @new_resource)

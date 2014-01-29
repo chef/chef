@@ -54,7 +54,7 @@ describe Chef::Application::Knife do
 
   it "should run a sub command with the applications command line option prototype" do
     with_argv(*%w{noop knife command with some args}) do
-      knife = mock(Chef::Knife)
+      knife = double(Chef::Knife)
       Chef::Knife.should_receive(:run).with(ARGV, @knife.options).and_return(knife)
       @knife.should_receive(:exit).with(0)
       @knife.run
@@ -158,7 +158,7 @@ describe Chef::Application::Knife do
 
     it "should run a sub command with the applications command line option prototype" do
       with_argv(*%w{noop knife command with some args}) do
-        knife = mock(Chef::Knife)
+        knife = double(Chef::Knife)
         Chef::Knife.should_receive(:run).with(ARGV, @knife.options).and_return(knife)
         @knife.should_receive(:exit).with(0)
         @knife.run

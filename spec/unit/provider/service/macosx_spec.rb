@@ -53,9 +53,9 @@ describe Chef::Provider::Service::Macosx do
         Dir.stub(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist"], [])
         provider.stub(:shell_out!).
                  with("launchctl list", {:group => 1001, :user => 101}).
-                 and_return(mock("ouput", :stdout => stdout))
+                 and_return(double("ouput", :stdout => stdout))
 
-        File.stub(:stat).and_return(mock("stat", :gid => 1001, :uid => 101))
+        File.stub(:stat).and_return(double("stat", :gid => 1001, :uid => 101))
       end
 
       context "#{service_name}" do

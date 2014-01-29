@@ -24,8 +24,8 @@ describe Chef::Provider::Package::Yum do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Package.new('cups')
-    @status = mock("Status", :exitstatus => 0)
-    @yum_cache = mock(
+    @status = double("Status", :exitstatus => 0)
+    @yum_cache = double(
       'Chef::Provider::Yum::YumCache',
       :reload_installed => true,
       :reset => true,
@@ -39,7 +39,7 @@ describe Chef::Provider::Package::Yum do
     )
     Chef::Provider::Package::Yum::YumCache.stub(:instance).and_return(@yum_cache)
     @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-    @pid = mock("PID")
+    @pid = double("PID")
   end
 
   describe "when loading the current system state" do
@@ -76,7 +76,7 @@ describe Chef::Provider::Package::Yum do
     describe "when arch in package_name" do
       it "should set the arch if no existing package_name is found and new_package_name+new_arch is available" do
         @new_resource = Chef::Resource::YumPackage.new('testing.noarch')
-        @yum_cache = mock(
+        @yum_cache = double(
           'Chef::Provider::Yum::YumCache'
         )
         @yum_cache.stub(:installed_version) do |package_name, arch|
@@ -110,7 +110,7 @@ describe Chef::Provider::Package::Yum do
 
       it "should not set the arch when an existing package_name is found" do
         @new_resource = Chef::Resource::YumPackage.new('testing.beta3')
-        @yum_cache = mock(
+        @yum_cache = double(
           'Chef::Provider::Yum::YumCache'
         )
         @yum_cache.stub(:installed_version) do |package_name, arch|
@@ -145,7 +145,7 @@ describe Chef::Provider::Package::Yum do
 
       it "should not set the arch when no existing package_name or new_package_name+new_arch is found" do
         @new_resource = Chef::Resource::YumPackage.new('testing.beta3')
-        @yum_cache = mock(
+        @yum_cache = double(
           'Chef::Provider::Yum::YumCache'
         )
         @yum_cache.stub(:installed_version) do |package_name, arch|
@@ -176,7 +176,7 @@ describe Chef::Provider::Package::Yum do
       it "should ensure it doesn't clobber an existing arch if passed" do
         @new_resource = Chef::Resource::YumPackage.new('testing.i386')
         @new_resource.arch("x86_64")
-        @yum_cache = mock(
+        @yum_cache = double(
           'Chef::Provider::Yum::YumCache'
         )
          @yum_cache.stub(:installed_version) do |package_name, arch|
@@ -232,7 +232,7 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should search provides if package name can't be found then set package_name to match" do
-      @yum_cache = mock(
+      @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
         :reload_installed => true,
         :reset => true,
@@ -251,7 +251,7 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should search provides if package name can't be found, warn about multiple matches, but use the first one" do
-      @yum_cache = mock(
+      @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
         :reload_installed => true,
         :reset => true,
@@ -272,7 +272,7 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should search provides if no package is available - if no match in installed provides then load the complete set" do
-      @yum_cache = mock(
+      @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
         :reload_installed => true,
         :reset => true,
@@ -290,7 +290,7 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should search provides if no package is available and not load the complete set if action is :remove or :purge" do
-      @yum_cache = mock(
+      @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
         :reload_installed => true,
         :reset => true,
@@ -313,7 +313,7 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should search provides if no package is available - if no match in provides leave the name intact" do
-      @yum_cache = mock(
+      @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
         :reload_provides => true,
         :reload_installed => true,
@@ -383,7 +383,7 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should raise an exception if the package is not available" do
-      @yum_cache = mock(
+      @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
         :reload_from_cache => true,
         :reset => true,
@@ -400,7 +400,7 @@ describe Chef::Provider::Package::Yum do
 
     it "should raise an exception if candidate version is older than the installed version and allow_downgrade is false" do
       @new_resource.stub(:allow_downgrade).and_return(false)
-      @yum_cache = mock(
+      @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
         :reload_installed => true,
         :reset => true,
@@ -418,7 +418,7 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should not raise an exception if candidate version is older than the installed version and the package is list in yum's installonlypkg option" do
-      @yum_cache = mock(
+      @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
         :reload_installed => true,
         :reset => true,
@@ -441,7 +441,7 @@ describe Chef::Provider::Package::Yum do
 
     it "should run yum downgrade if candidate version is older than the installed version and allow_downgrade is true" do
       @new_resource.stub(:allow_downgrade).and_return(true)
-      @yum_cache = mock(
+      @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
         :reload_installed => true,
         :reset => true,
@@ -508,7 +508,7 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should raise an exception if candidate version is older than the installed version" do
-      @yum_cache = mock(
+      @yum_cache = double(
         'Chef::Provider::Yum::YumCache',
         :reload_installed => true,
         :reset => true,
@@ -595,7 +595,7 @@ describe Chef::Provider::Package::Yum do
 
   describe "when running yum" do
     it "should run yum once if it exits with a return code of 0" do
-      @status = mock("Status", :exitstatus => 0)
+      @status = double("Status", :exitstatus => 0)
       @provider.stub(:output_of_command).and_return([@status, "", ""])
       @provider.should_receive(:output_of_command).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
@@ -605,7 +605,7 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should run yum once if it exits with a return code > 0 and no scriptlet failures" do
-      @status = mock("Status", :exitstatus => 2)
+      @status = double("Status", :exitstatus => 2)
       @provider.stub(:output_of_command).and_return([@status, "failure failure", "problem problem"])
       @provider.should_receive(:output_of_command).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
@@ -615,7 +615,7 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should run yum once if it exits with a return code of 1 and %pre scriptlet failures" do
-      @status = mock("Status", :exitstatus => 1)
+      @status = double("Status", :exitstatus => 1)
       @provider.stub(:output_of_command).and_return([@status, "error: %pre(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2", ""])
       @provider.should_receive(:output_of_command).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
@@ -626,7 +626,7 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should run yum twice if it exits with a return code of 1 and %post scriptlet failures" do
-      @status = mock("Status", :exitstatus => 1)
+      @status = double("Status", :exitstatus => 1)
       @provider.stub(:output_of_command).and_return([@status, "error: %post(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2", ""])
       @provider.should_receive(:output_of_command).twice.with(
         "yum -d0 -e0 -y install emacs-1.0",
@@ -1543,8 +1543,8 @@ describe Chef::Provider::Package::Yum::YumCache do
   end
 
   before(:each) do
-    @stdin = mock("STDIN", :nil_object => true)
-    @stdout = mock("STDOUT", :nil_object => true)
+    @stdin = double("STDIN", :nil_object => true)
+    @stdout = double("STDOUT", :nil_object => true)
 
     @stdout_good = <<EOF
 [option installonlypkgs] kernel kernel-bigmem kernel-enterprise
@@ -1586,7 +1586,7 @@ yum-dump Config Error: File contains no section headers.
 file: file://///etc/yum.repos.d/CentOS-Base.repo, line: 12
 'qeqwewe\n'
 EOF
-    @status = mock("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_good, :stderr => @stderr)
+    @status = double("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_good, :stderr => @stderr)
 
     # new singleton each time
     Chef::Provider::Package::Yum::YumCache.reset_instance
@@ -1642,28 +1642,28 @@ EOF
     end
 
     it "should warn about invalid data with too many separators" do
-      @status = mock("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_bad_separators, :stderr => @stderr)
+      @status = double("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_bad_separators, :stderr => @stderr)
       @yc.stub(:shell_out!).and_return(@status)
       Chef::Log.should_receive(:warn).exactly(3).times.with(%r{Problem parsing})
       @yc.refresh
     end
 
     it "should warn about invalid data with an incorrect type" do
-      @status = mock("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_bad_type, :stderr => @stderr)
+      @status = double("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_bad_type, :stderr => @stderr)
       @yc.stub(:shell_out!).and_return(@status)
       Chef::Log.should_receive(:warn).exactly(2).times.with(%r{Problem parsing})
       @yc.refresh
     end
 
     it "should warn about no output from yum-dump.py" do
-      @status = mock("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_no_output, :stderr => @stderr)
+      @status = double("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_no_output, :stderr => @stderr)
       @yc.stub(:shell_out!).and_return(@status)
       Chef::Log.should_receive(:warn).exactly(1).times.with(%r{no output from yum-dump.py})
       @yc.refresh
     end
 
     it "should raise exception yum-dump.py exits with a non zero status" do
-      @status = mock("Status", :exitstatus => 1, :stdin => @stdin, :stdout => @stdout_no_output, :stderr => @stderr)
+      @status = double("Status", :exitstatus => 1, :stdin => @stdin, :stdout => @stdout_no_output, :stderr => @stderr)
       @yc.stub(:shell_out!).and_return(@status)
       lambda { @yc.refresh}.should raise_error(Chef::Exceptions::Package, %r{CentOS-Base.repo, line: 12})
     end

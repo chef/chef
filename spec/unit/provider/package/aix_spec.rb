@@ -36,7 +36,7 @@ describe Chef::Provider::Package::Aix do
      @bffinfo ="/usr/lib/objrepos:samba.base:3.3.12.0::COMMITTED:I:Samba for AIX:
  /etc/objrepos:samba.base:3.3.12.0::COMMITTED:I:Samba for AIX:"
 
-      @status = mock("Status", :exitstatus => 0)
+      @status = double("Status", :exitstatus => 0)
     end
 
     it "should create a current resource with the name of new_resource" do
@@ -88,7 +88,7 @@ describe Chef::Provider::Package::Aix do
     end
 
     it "should raise an exception if installp/lslpp fails to run" do
-      @status = mock("Status", :exitstatus => -1)
+      @status = double("Status", :exitstatus => -1)
       @provider.stub(:popen4).and_return(@status)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
@@ -110,13 +110,13 @@ describe Chef::Provider::Package::Aix do
     end
 
     it "should lookup the candidate_version if the variable is not already set" do
-      @status = mock("Status", :exitstatus => 0)
+      @status = double("Status", :exitstatus => 0)
       @provider.should_receive(:popen4).and_return(@status)
       @provider.candidate_version
     end
 
     it "should throw and exception if the exitstatus is not 0" do
-      @status = mock("Status", :exitstatus => 1)
+      @status = double("Status", :exitstatus => 1)
       @provider.stub(:popen4).and_return(@status)
       lambda { @provider.candidate_version }.should raise_error(Chef::Exceptions::Package)
     end

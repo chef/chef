@@ -108,7 +108,7 @@ describe Chef::Application::Solo do
       Chef::Config[:solo] = true
 
       Chef::Daemon.stub(:change_privilege)
-      @chef_client = mock("Chef::Client")
+      @chef_client = double("Chef::Client")
       Chef::Client.stub(:new).and_return(@chef_client)
       @app = Chef::Application::Solo.new
       # this is all stuff the reconfigure method needs

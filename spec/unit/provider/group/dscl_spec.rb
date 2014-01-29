@@ -27,7 +27,7 @@ describe Chef::Provider::Group::Dscl do
     @current_resource = Chef::Resource::Group.new("aj")
     @provider = Chef::Provider::Group::Dscl.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
-    @status = mock("Process::Status", :exitstatus => 0)
+    @status = double("Process::Status", :exitstatus => 0)
     @pid = 2342
     @stdin = StringIO.new
     @stdout = StringIO.new("\n")
@@ -60,7 +60,7 @@ describe Chef::Provider::Group::Dscl do
 
     describe "with the dscl command returning a non zero exit status for a delete" do
       before do
-        @status = mock("Process::Status", :exitstatus => 1)
+        @status = double("Process::Status", :exitstatus => 1)
         @provider.stub(:dscl).and_return(["cmd", @status, "stdout", "stderr"])
       end
 

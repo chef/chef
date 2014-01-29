@@ -29,7 +29,7 @@ describe Chef::Knife::DataBagFromFile do
   before :each do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::DataBagFromFile.new
-    @rest = mock("Chef::REST")
+    @rest = double("Chef::REST")
     @knife.stub(:rest).and_return(@rest)
     @stdout = StringIO.new
     @knife.ui.stub(:stdout).and_return(@stdout)

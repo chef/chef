@@ -89,7 +89,7 @@ describe Shell::StandAloneSession do
   it "runs chef with the standalone recipe" do
     @session.stub(:node_built?).and_return(true)
     Chef::Log.stub(:level)
-    chef_runner = mock("Chef::Runner.new", :converge => :converged)
+    chef_runner = double("Chef::Runner.new", :converge => :converged)
     # pre-heat resource collection cache
     @session.resource_collection
 
@@ -145,7 +145,7 @@ describe Shell::SoloSession do
   it "runs chef with a resource collection from the compiled cookbooks" do
     @session.stub(:node_built?).and_return(true)
     Chef::Log.stub(:level)
-    chef_runner = mock("Chef::Runner.new", :converge => :converged)
+    chef_runner = double("Chef::Runner.new", :converge => :converged)
     Chef::Runner.should_receive(:new).with(an_instance_of(Chef::RunContext)).and_return(chef_runner)
 
     @recipe.run_chef.should == :converged

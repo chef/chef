@@ -34,7 +34,7 @@ describe Chef::Knife::CookbookBulkDelete do
       cookbook = Chef::CookbookVersion.new(cookbook_name)
       @cookbooks[cookbook_name] = cookbook
     end
-    @rest = mock("Chef::REST")
+    @rest = double("Chef::REST")
     @rest.stub(:get_rest).and_return(@cookbooks)
     @rest.stub(:delete_rest).and_return(true)
     @knife.stub(:rest).and_return(@rest)

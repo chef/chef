@@ -36,7 +36,7 @@ describe Chef::Provider::User do
 
     @provider.current_resource = @current_resource
 
-    @pw_group = mock("Struct::Group",
+    @pw_group = double("Struct::Group",
       :name => "wheel",
       :gid => 20,
       :mem => [ "root", "aj" ]

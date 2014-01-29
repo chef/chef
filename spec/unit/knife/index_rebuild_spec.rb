@@ -21,7 +21,7 @@ require 'spec_helper'
 describe Chef::Knife::IndexRebuild do
 
   let(:knife){Chef::Knife::IndexRebuild.new}
-  let(:rest_client){mock(Chef::REST)}
+  let(:rest_client){double(Chef::REST)}
 
   let(:stub_rest!) do
     knife.should_receive(:rest).and_return(rest_client)

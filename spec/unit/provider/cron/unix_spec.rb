@@ -39,7 +39,7 @@ describe Chef::Provider::Cron::Unix do
 
   describe "read_crontab" do
     before :each do
-      @status = mock("Status", :exitstatus => 0)
+      @status = double("Status", :exitstatus => 0)
       @stdout = StringIO.new(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -69,13 +69,13 @@ CRONTAB
     end
 
     it "should return nil if the user has no crontab" do
-      status = mock("Status", :exitstatus => 1)
+      status = double("Status", :exitstatus => 1)
       @provider.stub(:popen4).and_return(status)
       @provider.send(:read_crontab).should == nil
     end
 
     it "should raise an exception if another error occurs" do
-      status = mock("Status", :exitstatus => 2)
+      status = double("Status", :exitstatus => 2)
       @provider.stub(:popen4).and_return(status)
       lambda do
         @provider.send(:read_crontab)
@@ -85,9 +85,9 @@ CRONTAB
 
   describe "write_crontab" do
     before :each do
-      @status = mock("Status", :exitstatus => 0)
+      @status = double("Status", :exitstatus => 0)
       @provider.stub(:run_command_and_return_stdout_stderr).and_return(@status, String.new, String.new)
-      @tempfile = mock("foo", :path => "/tmp/foo", :close => true)
+      @tempfile = double("foo", :path => "/tmp/foo", :close => true)
       Tempfile.stub(:new).and_return(@tempfile)
       @tempfile.should_receive(:flush)
       @tempfile.should_receive(:chmod).with(420)

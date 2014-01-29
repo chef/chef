@@ -196,7 +196,7 @@ describe Chef::User do
     before (:each) do
       @user = Chef::User.new
       @user.name "foobar"
-      @http_client = mock("Chef::REST mock")
+      @http_client = double("Chef::REST mock")
       Chef::REST.stub(:new).and_return(@http_client)
     end
 

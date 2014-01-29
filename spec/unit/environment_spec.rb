@@ -355,16 +355,16 @@ describe Chef::Environment do
 
   describe "api model" do
     before(:each) do
-      @rest = mock("Chef::REST")
+      @rest = double("Chef::REST")
       Chef::REST.stub(:new).and_return(@rest)
-      @query = mock("Chef::Search::Query")
+      @query = double("Chef::Search::Query")
       Chef::Search::Query.stub(:new).and_return(@query)
     end
 
     describe "list" do
       describe "inflated" do
         it "should return a hash of environment names and objects" do
-          e1 = mock("Chef::Environment", :name => "one")
+          e1 = double("Chef::Environment", :name => "one")
           @query.should_receive(:search).with(:environment).and_yield(e1)
           r = Chef::Environment.list(true)
           r["one"].should == e1

@@ -159,7 +159,7 @@ describe Chef::Provider::User::Pw do
 
   describe "when modifying the password" do
     before(:each) do
-      @status = mock("Status", :exitstatus => 0)
+      @status = double("Status", :exitstatus => 0)
       @provider.stub(:popen4).and_return(@status)
       @pid, @stdin, @stdout, @stderr = nil, nil, nil, nil
     end

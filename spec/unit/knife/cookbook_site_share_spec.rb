@@ -29,7 +29,7 @@ describe Chef::Knife::CookbookSiteShare do
 
     @cookbook = Chef::CookbookVersion.new('cookbook_name')
 
-    @cookbook_loader = mock('Chef::CookbookLoader')
+    @cookbook_loader = double('Chef::CookbookLoader')
     @cookbook_loader.stub(:cookbook_exists?).and_return(true)
     @cookbook_loader.stub(:[]).and_return(@cookbook)
     Chef::CookbookLoader.stub(:new).and_return(@cookbook_loader)
@@ -98,7 +98,7 @@ describe Chef::Knife::CookbookSiteShare do
   describe 'do_upload' do
 
     before(:each) do
-      @upload_response = mock('Net::HTTPResponse')
+      @upload_response = double('Net::HTTPResponse')
       Chef::CookbookSiteStreamingUploader.stub(:post).and_return(@upload_response)
 
       @stdout = StringIO.new

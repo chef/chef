@@ -260,12 +260,12 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
   describe "when checking the lock" do
     # lazy initialize so we can modify stdout and stderr strings
     let(:passwd_s_status) do
-      mock("Mixlib::ShellOut command", :exitstatus => 0, :stdout => @stdout, :stderr => @stderr)
+      double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => @stdout, :stderr => @stderr)
     end
 
     before(:each) do
       # @node = Chef::Node.new
-      # @new_resource = mock("Chef::Resource::User",
+      # @new_resource = double("Chef::Resource::User",
       #   :nil_object => true,
       #   :username => "adam"
       # )
@@ -313,7 +313,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
         provider.should_receive(:shell_out!).
           with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
           and_return(passwd_s_status)
-        rpm_status = mock("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "passwd-0.73-1\n", :stderr => "")
+        rpm_status = double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "passwd-0.73-1\n", :stderr => "")
         provider.should_receive(:shell_out!).with("rpm -q passwd").and_return(rpm_status)
         lambda { provider.check_lock }.should_not raise_error(Chef::Exceptions::User)
       end
@@ -324,7 +324,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
         provider.should_receive(:shell_out!).
           with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
           and_return(passwd_s_status)
-        rpm_status = mock("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "passwd-0.73-2\n", :stderr => "")
+        rpm_status = double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "passwd-0.73-2\n", :stderr => "")
         provider.should_receive(:shell_out!).with("rpm -q passwd").and_return(rpm_status)
         lambda { provider.check_lock }.should raise_error(Chef::Exceptions::User)
       end
@@ -338,7 +338,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
     context "when in why run mode" do
       before do
-        passwd_status = mock("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "", :stderr => "passwd: user 'chef-test' does not exist\n")
+        passwd_status = double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "", :stderr => "passwd: user 'chef-test' does not exist\n")
         provider.should_receive(:shell_out!).
           with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
           and_return(passwd_status)
@@ -398,9 +398,9 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     ].each do |home_check|
       it home_check["action"] do
         provider.current_resource.home home_check["current_resource_home"].first
-        @current_home_mock = mock("Pathname")
+        @current_home_mock = double("Pathname")
         provider.new_resource.home home_check["new_resource_home"].first
-        @new_home_mock = mock("Pathname")
+        @new_home_mock = double("Pathname")
 
         Pathname.should_receive(:new).with(@current_resource.home).and_return(@current_home_mock)
         @current_home_mock.should_receive(:cleanpath).and_return(home_check["current_resource_home"].last)

@@ -62,7 +62,7 @@ describe Chef::Knife::UI do
       before do
         @ui.config[:disable_editing] = false
         @ui.config[:editor] = my_editor
-        @mock = mock('Tempfile')
+        @mock = double('Tempfile')
         @mock.should_receive(:sync=).with(true)
         @mock.should_receive(:puts).with(json_from_ruby)
         @mock.should_receive(:close)

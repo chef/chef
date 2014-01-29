@@ -68,11 +68,11 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
 
       #@provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
 
-      #@status = mock("Status", :exitstatus => 0)
-      #@stdin = mock("STDIN", :null_object => true)
-      #@stdout = mock("STDOUT", :null_object => true)
-      #@stderr = mock("STDERR", :null_object => true)
-      #@pid = mock("PID", :null_object => true)
+      #@status = double("Status", :exitstatus => 0)
+      #@stdin = double("STDIN", :null_object => true)
+      #@stdout = double("STDOUT", :null_object => true)
+      #@stderr = double("STDERR", :null_object => true)
+      #@pid = double("PID", :null_object => true)
     end
 
     it "should return the version number when it is installed" do
@@ -161,7 +161,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
     end
 
     it "should use the package_name as a relative path from /usr/ports when it contains / but doesn't start with it" do
-      # @new_resource = mock( "Chef::Resource::Package",
+      # @new_resource = double( "Chef::Resource::Package",
       #                       :package_name => "www/wordpress",
       #                       :cookbook_name => "xenoparadox")
       new_resource = Chef::Resource::Package.new("www/wordpress")

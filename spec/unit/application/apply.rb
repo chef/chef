@@ -36,7 +36,7 @@ describe Chef::Application::Apply do
     before do
       @recipe_file_name = "foo.rb"
       @recipe_path = File.expand_path("foo.rb")
-      @recipe_file = mock("Tempfile (mock)", :read => @recipe_text)
+      @recipe_file = double("Tempfile (mock)", :read => @recipe_text)
       @app.stub(:open).with(@recipe_path).and_return(@recipe_file)
       File.stub(:exist?).with("foo.rb").and_return(true)
       Chef::Application.stub(:fatal!).and_return(true)

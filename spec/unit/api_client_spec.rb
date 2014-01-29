@@ -189,7 +189,7 @@ describe Chef::ApiClient do
 
   describe "when requesting a new key" do
     before do
-      @http_client = mock("Chef::REST mock")
+      @http_client = double("Chef::REST mock")
       Chef::REST.stub(:new).and_return(@http_client)
     end
 

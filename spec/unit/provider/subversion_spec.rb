@@ -43,9 +43,9 @@ describe Chef::Provider::Subversion do
   context "determining the revision of the currently deployed code" do
 
     before do
-      @stdout = mock("stdout")
-      @stderr = mock("stderr")
-      @exitstatus = mock("exitstatus")
+      @stdout = double("stdout")
+      @stderr = double("stderr")
+      @exitstatus = double("exitstatus")
     end
 
     it "sets the revision to nil if there isn't any deployed code yet" do
@@ -109,8 +109,8 @@ describe Chef::Provider::Subversion do
   context "resolving revisions to an integer" do
 
     before do
-      @stdout = mock("stdout")
-      @stderr = mock("stderr")
+      @stdout = double("stdout")
+      @stderr = double("stderr")
       @resource.svn_info_args "--no-auth-cache"
     end
 
@@ -128,7 +128,7 @@ describe Chef::Provider::Subversion do
                           "Last Changed Author: codeninja\n" +
                           "Last Changed Rev: 11410\n" + # Last Changed Rev is preferred to Revision
                           "Last Changed Date: 2009-03-25 06:09:56 -0600 (Wed, 25 Mar 2009)\n\n"
-      exitstatus = mock("exitstatus")
+      exitstatus = double("exitstatus")
       exitstatus.stub(:exitstatus).and_return(0)
       @resource.revision "HEAD"
       @stdout.stub(:string).and_return(example_svn_info)
@@ -142,7 +142,7 @@ describe Chef::Provider::Subversion do
 
     it "returns a helpful message if data from `svn info` can't be parsed" do
       example_svn_info =  "some random text from an error message\n"
-      exitstatus = mock("exitstatus")
+      exitstatus = double("exitstatus")
       exitstatus.stub(:exitstatus).and_return(0)
       @resource.revision "HEAD"
       @stdout.stub(:string).and_return(example_svn_info)

@@ -764,16 +764,16 @@ describe Chef::Node do
 
   describe "api model" do
     before(:each) do
-      @rest = mock("Chef::REST")
+      @rest = double("Chef::REST")
       Chef::REST.stub(:new).and_return(@rest)
-      @query = mock("Chef::Search::Query")
+      @query = double("Chef::Search::Query")
       Chef::Search::Query.stub(:new).and_return(@query)
     end
 
     describe "list" do
       describe "inflated" do
         it "should return a hash of node names and objects" do
-          n1 = mock("Chef::Node", :name => "one")
+          n1 = double("Chef::Node", :name => "one")
           @query.should_receive(:search).with(:node).and_yield(n1)
           r = Chef::Node.list(true)
           r["one"].should == n1
@@ -818,7 +818,7 @@ describe Chef::Node do
 
       it "should create if it cannot update" do
         node.name("monkey")
-        exception = mock("404 error", :code => "404")
+        exception = double("404 error", :code => "404")
         @rest.should_receive(:put_rest).and_raise(Net::HTTPServerException.new("foo", exception))
         @rest.should_receive(:post_rest).with("nodes", node)
         node.save

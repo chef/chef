@@ -46,7 +46,7 @@ INSTDATE:  Nov 04 2009 01:02
 HOTLINE:  Please contact your local service provider
 PKGINFO
 
-      @status = mock("Status", :exitstatus => 0)
+      @status = double("Status", :exitstatus => 0)
     end
 
     it "should create a current resource with the name of new_resource" do
@@ -98,7 +98,7 @@ PKGINFO
     end
 
     it "should raise an exception if pkginfo fails to run" do
-      @status = mock("Status", :exitstatus => -1)
+      @status = double("Status", :exitstatus => -1)
       @provider.stub(:popen4).and_return(@status)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
@@ -120,14 +120,14 @@ PKGINFO
     end
 
     it "should lookup the candidate_version if the variable is not already set" do
-      @status = mock("Status", :exitstatus => 0)
+      @status = double("Status", :exitstatus => 0)
       @provider.stub(:popen4).and_return(@status)
       @provider.should_receive(:popen4)
       @provider.candidate_version
     end
 
     it "should throw and exception if the exitstatus is not 0" do
-      @status = mock("Status", :exitstatus => 1)
+      @status = double("Status", :exitstatus => 1)
       @provider.stub(:popen4).and_return(@status)
       lambda { @provider.candidate_version }.should raise_error(Chef::Exceptions::Package)
     end

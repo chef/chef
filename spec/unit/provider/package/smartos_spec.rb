@@ -29,7 +29,7 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
     @current_resource = Chef::Resource::Package.new("varnish")
 
 
-	  @status = mock("Status", :exitstatus => 0)
+	  @status = double("Status", :exitstatus => 0)
 		@provider = Chef::Provider::Package::SmartOS.new(@new_resource, @run_context)
 		Chef::Resource::Package.stub(:new).and_return(@current_resource)
 		@stdin = StringIO.new
@@ -77,11 +77,11 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
     end
 
     it "should lookup the candidate_version if the variable is not already set" do
-      search = mock()
+      search = double()
       search.should_receive(:each_line).
         and_yield("something-varnish-1.1.1  something varnish like\n").
         and_yield("varnish-2.3.4 actual varnish\n")
-      @shell_out = mock('shell_out!', :stdout => search)
+      @shell_out = double('shell_out!', :stdout => search)
       @provider.should_receive(:shell_out!).with('/opt/local/bin/pkgin se varnish', :env => nil, :returns => [0,1]).and_return(@shell_out)
       @provider.candidate_version.should == "2.3.4"
     end

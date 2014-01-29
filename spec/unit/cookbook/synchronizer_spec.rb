@@ -14,7 +14,7 @@ describe Chef::CookbookCacheCleaner do
     end
 
     it "removes all files not validated during the chef run" do
-      file_cache = mock("Chef::FileCache with files from unused cookbooks")
+      file_cache = double("Chef::FileCache with files from unused cookbooks")
       unused_template_files = %w{cookbooks/unused/templates/default/foo.conf.erb cookbooks/unused/tempaltes/default/bar.conf.erb}
       valid_cached_cb_files = %w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb}
       @cleaner.mark_file_as_valid('cookbooks/valid1/recipes/default.rb')
@@ -81,7 +81,7 @@ describe Chef::CookbookSynchronizer do
 
   context "when the cache contains unneeded cookbooks" do
     before do
-      @file_cache = mock("Chef::FileCache with files from unused cookbooks")
+      @file_cache = double("Chef::FileCache with files from unused cookbooks")
       @valid_cached_cb_files = %w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb}
       @obsolete_cb_files = %w{cookbooks/old1/recipes/default.rb cookbooks/old2/recipes/default.rb}
 
@@ -105,16 +105,16 @@ describe Chef::CookbookSynchronizer do
       # the state is a PITA and tests for this behavior are above.
       @synchronizer.stub(:clear_obsoleted_cookbooks)
 
-      @server_api = mock("Chef::REST (mock)")
-      @file_cache = mock("Chef::FileCache (mock)")
+      @server_api = double("Chef::REST (mock)")
+      @file_cache = double("Chef::FileCache (mock)")
       @synchronizer.stub(:server_api).and_return(@server_api)
       @synchronizer.stub(:cache).and_return(@file_cache)
 
 
-      @cookbook_a_default_recipe_tempfile = mock("Tempfile for cookbook_a default.rb recipe",
+      @cookbook_a_default_recipe_tempfile = double("Tempfile for cookbook_a default.rb recipe",
                                                  :path => "/tmp/cookbook_a_recipes_default_rb")
 
-      @cookbook_a_default_attribute_tempfile = mock("Tempfile for cookbook_a default.rb attr file",
+      @cookbook_a_default_attribute_tempfile = double("Tempfile for cookbook_a default.rb attr file",
                                                  :path => "/tmp/cookbook_a_attributes_default_rb")
 
     end
@@ -171,9 +171,9 @@ describe Chef::CookbookSynchronizer do
           @synchronizer.stub(:cache).and_return(@file_cache)
           @synchronizer.stub(:clear_obsoleted_cookbooks)
 
-          @cookbook_a_file_default_tempfile = mock("Tempfile for cookbook_a megaman.conf file",
+          @cookbook_a_file_default_tempfile = double("Tempfile for cookbook_a megaman.conf file",
                                                      :path => "/tmp/cookbook_a_file_default_tempfile")
-          @cookbook_a_template_default_tempfile = mock("Tempfile for cookbook_a apache.conf.erb template",
+          @cookbook_a_template_default_tempfile = double("Tempfile for cookbook_a apache.conf.erb template",
                                                      :path => "/tmp/cookbook_a_template_default_tempfile")
         end
 

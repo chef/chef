@@ -45,7 +45,7 @@ describe Chef::Provider::HttpRequest do
       # run_action(x) forces load_current_resource to run;
       # that would overwrite our supplied mock Chef::Rest # object
       @provider.stub(:load_current_resource).and_return(true)
-      @http = mock("Chef::REST")
+      @http = double("Chef::REST")
       @provider.http = @http
     end
 

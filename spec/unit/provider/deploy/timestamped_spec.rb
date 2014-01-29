@@ -29,7 +29,7 @@ describe Chef::Provider::Deploy::Timestamped do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @timestamped_deploy = Chef::Provider::Deploy::Timestamped.new(@resource, @run_context)
-    @runner = mock("runnah")
+    @runner = double("runnah")
     Chef::Runner.stub(:new).and_return(@runner)
   end
 

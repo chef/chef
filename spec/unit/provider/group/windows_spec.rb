@@ -33,7 +33,7 @@ describe Chef::Provider::Group::Windows do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Group.new("staff")
-    @net_group = mock("Chef::Util::Windows::NetGroup")
+    @net_group = double("Chef::Util::Windows::NetGroup")
     Chef::Util::Windows::NetGroup.stub(:new).and_return(@net_group)
     @provider = Chef::Provider::Group::Windows.new(@new_resource, @run_context)
   end

@@ -27,14 +27,14 @@ describe Chef::Provider::Package::Zypper do
 
     @current_resource = Chef::Resource::Package.new("cups")
 
-    @status = mock("Status", :exitstatus => 0)
+    @status = double("Status", :exitstatus => 0)
 
     @provider = Chef::Provider::Package::Zypper.new(@new_resource, @run_context)
     Chef::Resource::Package.stub(:new).and_return(@current_resource)
     @provider.stub(:popen4).and_return(@status)
     @stderr = StringIO.new
     @stdout = StringIO.new
-    @pid = mock("PID")
+    @pid = double("PID")
     @provider.stub(:`).and_return("2.0")
   end
 

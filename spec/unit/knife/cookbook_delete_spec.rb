@@ -125,7 +125,7 @@ describe Chef::Knife::CookbookDelete do
 
   describe 'available_versions' do
     before(:each) do
-      @rest_mock = mock('rest')
+      @rest_mock = double('rest')
       @knife.should_receive(:rest).and_return(@rest_mock)
       @cookbook_data = { 'foobar' => { 'versions' => [{'version' => '1.0.0'},
                                                       {'version' => '1.1.0'},

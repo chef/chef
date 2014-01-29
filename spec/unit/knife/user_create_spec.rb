@@ -78,7 +78,7 @@ describe Chef::Knife::UserCreate do
 
   it "writes the private key to a file when --file is specified" do
     @knife.config[:file] = "/tmp/a_file"
-    filehandle = mock("filehandle")
+    filehandle = double("filehandle")
     filehandle.should_receive(:print).with('private_key')
     File.should_receive(:open).with("/tmp/a_file", "w").and_yield(filehandle)
     @knife.run

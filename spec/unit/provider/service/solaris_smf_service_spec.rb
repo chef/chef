@@ -37,7 +37,7 @@ describe Chef::Provider::Service::Solaris do
     @pid = 2342
     @stdout_string = "state disabled"
     @stdout.stub(:gets).and_return(@stdout_string)
-    @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+    @status = double("Status", :exitstatus => 0, :stdout => @stdout)
     @provider.stub(:shell_out!).and_return(@status)
   end
 
@@ -129,7 +129,7 @@ describe Chef::Provider::Service::Solaris do
 
     describe "when reloading the service" do
       before(:each) do
-        @status = mock("Process::Status", :exitstatus => 0)
+        @status = double("Process::Status", :exitstatus => 0)
         @provider.current_resource = @current_resource
       end
 

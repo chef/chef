@@ -265,7 +265,7 @@ describe Chef::Provider::Deploy do
   end
 
   it "runs the new resource collection in the runner during a callback" do
-    @runner = mock("Runner")
+    @runner = double("Runner")
     Chef::Runner.stub(:new).and_return(@runner)
     @runner.should_receive(:converge)
     callback_code = Proc.new { :noop }
@@ -543,7 +543,7 @@ describe Chef::Provider::Deploy do
     end
 
     it "defines run as a forwarder to execute, setting the user, group, cwd and environment to new_resource.user" do
-      mock_execution = mock("Resource::Execute")
+      mock_execution = double("Resource::Execute")
       @provider.should_receive(:execute).with("iGoToHell4this").and_return(mock_execution)
       @resource.user("notCoolMan")
       @resource.group("Ggroup")
@@ -572,7 +572,7 @@ describe Chef::Provider::Deploy do
     end
 
     it "defines run as a forwarder to execute, setting cwd and environment but not override" do
-      mock_execution = mock("Resource::Execute")
+      mock_execution = double("Resource::Execute")
       @provider.should_receive(:execute).with("iGoToHell4this").and_return(mock_execution)
       @resource.user("notCoolMan")
       mock_execution.should_receive(:user).with("notCoolMan")
@@ -583,7 +583,7 @@ describe Chef::Provider::Deploy do
 
 
     it "converts sudo and run to exec resources in hooks" do
-      runner = mock("tehRunner")
+      runner = double("tehRunner")
       Chef::Runner.stub(:new).and_return(runner)
 
       snitch = nil

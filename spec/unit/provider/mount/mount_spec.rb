@@ -56,7 +56,7 @@ describe Chef::Provider::Mount::Mount do
     it "should accecpt device_type :uuid" do
       @new_resource.device_type :uuid
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
-      @stdout_findfs = mock("STDOUT", :first => "/dev/sdz1")
+      @stdout_findfs = double("STDOUT", :first => "/dev/sdz1")
       @provider.should_receive(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,@stdout_findfs,@stderr).and_return(@status)
       @provider.load_current_resource()
       @provider.mountable?
@@ -95,8 +95,8 @@ describe Chef::Provider::Mount::Mount do
     it "should raise an error if the mount device (uuid) does not exist" do
       @new_resource.device_type :uuid
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
-      status_findfs = mock("Status", :exitstatus => 1)
-      stdout_findfs = mock("STDOUT", :first => nil)
+      status_findfs = double("Status", :exitstatus => 1)
+      stdout_findfs = double("STDOUT", :first => nil)
       @provider.should_receive(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,stdout_findfs,@stderr).and_return(status_findfs)
       ::File.should_receive(:exists?).with("").and_return(false)
       lambda { @provider.load_current_resource();@provider.mountable? }.should raise_error(Chef::Exceptions::Mount)
@@ -278,9 +278,9 @@ describe Chef::Provider::Mount::Mount do
       it "should mount the filesystem specified by uuid" do
         @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
         @new_resource.device_type :uuid
-        @stdout_findfs = mock("STDOUT", :first => "/dev/sdz1")
+        @stdout_findfs = double("STDOUT", :first => "/dev/sdz1")
         @provider.stub(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,@stdout_findfs,@stderr).and_return(@status)
-        @stdout_mock = mock('stdout mock')
+        @stdout_mock = double('stdout mock')
         @stdout_mock.stub(:each).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
         @provider.should_receive(:shell_out!).with("mount -t #{@new_resource.fstype} -o defaults -U #{@new_resource.device} #{@new_resource.mount_point}").and_return(@stdout_mock)
         @provider.mount_fs()

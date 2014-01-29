@@ -67,12 +67,12 @@ describe Chef::Provider::Service::Upstart do
       @current_resource = Chef::Resource::Service.new("rsyslog")
       Chef::Resource::Service.stub(:new).and_return(@current_resource)
 
-      @status = mock("Status", :exitstatus => 0)
+      @status = double("Status", :exitstatus => 0)
       @provider.stub(:popen4).and_return(@status)
       @stdin = StringIO.new
       @stdout = StringIO.new
       @stderr = StringIO.new
-      @pid = mock("PID")
+      @pid = double("PID")
 
       ::File.stub(:exists?).and_return(true)
       ::File.stub(:open).and_return(true)
@@ -135,14 +135,14 @@ describe Chef::Provider::Service::Upstart do
     end
 
     it "should set enabled to true when it finds 'starts on'" do
-      @lines = mock("start on filesystem", :gets => "start on filesystem")
+      @lines = double("start on filesystem", :gets => "start on filesystem")
       ::File.stub(:open).and_yield(@lines)
       @current_resource.should_receive(:running).with(false)
       @provider.load_current_resource
     end
 
     it "should set enabled to false when it finds '#starts on'" do
-      @lines = mock("start on filesystem", :gets => "#start on filesystem")
+      @lines = double("start on filesystem", :gets => "#start on filesystem")
       ::File.stub(:open).and_yield(@lines)
       @current_resource.should_receive(:running).with(false)
       @provider.load_current_resource

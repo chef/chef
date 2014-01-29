@@ -157,7 +157,7 @@ describe Chef::Application do
 
     it "should initialise the chef logger" do
       Chef::Log.stub(:level=)
-      @monologger = mock("Monologger")
+      @monologger = double("Monologger")
       MonoLogger.should_receive(:new).with(Chef::Config[:log_location]).and_return(@monologger)
       Chef::Log.should_receive(:init).with(@monologger)
       @app.configure_logging

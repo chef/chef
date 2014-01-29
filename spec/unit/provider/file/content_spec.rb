@@ -25,7 +25,7 @@ describe Chef::Provider::File::Content do
   #
 
   let(:current_resource) do
-    mock("Chef::Provider::File::Resource (current)")
+    double("Chef::Provider::File::Resource (current)")
   end
 
   let(:enclosing_directory) {
@@ -36,11 +36,11 @@ describe Chef::Provider::File::Content do
   }
 
   let(:new_resource) do
-    mock("Chef::Provider::File::Resource (new)", :name => "seattle.txt", :path => resource_path)
+    double("Chef::Provider::File::Resource (new)", :name => "seattle.txt", :path => resource_path)
   end
 
   let(:run_context) do
-    mock("Chef::RunContext")
+    double("Chef::RunContext")
   end
 
   #

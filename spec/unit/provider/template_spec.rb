@@ -50,7 +50,7 @@ describe Chef::Provider::Template do
   end
 
   let(:content) do
-    content = mock('Chef::Provider::File::Content::Template', :template_location => "/foo/bar/baz")
+    content = double('Chef::Provider::File::Content::Template', :template_location => "/foo/bar/baz")
     File.stub(:exists?).with("/foo/bar/baz").and_return(true)
     content
   end

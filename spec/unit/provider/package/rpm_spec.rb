@@ -29,7 +29,7 @@ describe Chef::Provider::Package::Rpm do
 
     @provider = Chef::Provider::Package::Rpm.new(@new_resource, @run_context)
 
-    @status = mock("Status", :exitstatus => 0)
+    @status = double("Status", :exitstatus => 0)
     ::File.stub(:exists?).and_return(true)
   end
 
@@ -76,7 +76,7 @@ describe Chef::Provider::Package::Rpm do
     end
 
     it "should raise an exception if rpm fails to run" do
-      status = mock("Status", :exitstatus => -1)
+      status = double("Status", :exitstatus => -1)
       @provider.stub(:popen4).and_return(status)
       lambda { @provider.run_action(:any) }.should raise_error(Chef::Exceptions::Package)
     end

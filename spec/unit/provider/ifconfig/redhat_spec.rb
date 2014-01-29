@@ -34,7 +34,7 @@ describe Chef::Provider::Ifconfig::Redhat do
     @provider = Chef::Provider::Ifconfig::Redhat.new(@new_resource, @run_context)
     @current_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
 
-    status = mock("Status", :exitstatus => 0)
+    status = double("Status", :exitstatus => 0)
     @provider.instance_variable_set("@status", status)
     @provider.current_resource = @current_resource
  end

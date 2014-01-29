@@ -49,7 +49,7 @@ describe Chef::Provider::CookbookFile do
   end
 
   let(:content) do
-    content = mock('Chef::Provider::CookbookFile::Content')
+    content = double('Chef::Provider::CookbookFile::Content')
   end
 
   it_behaves_like Chef::Provider::File

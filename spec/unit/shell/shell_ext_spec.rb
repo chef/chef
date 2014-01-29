@@ -28,14 +28,14 @@ describe Shell::Extensions do
       @root_context = Object.new
       @root_context.instance_eval(&ObjectTestHarness)
       Shell::Extensions.extend_context_object(@root_context)
-      @root_context.conf = mock("irbconf")
+      @root_context.conf = double("irbconf")
     end
 
     it "finds a subsession in irb for an object" do
       target_context_obj = Chef::Node.new
 
-      irb_context = mock("context", :main => target_context_obj)
-      irb_session = mock("irb session", :context => irb_context)
+      irb_context = double("context", :main => target_context_obj)
+      irb_session = double("irb session", :context => irb_context)
       @job_manager.jobs = [[:thread, irb_session]]
       @root_context.stub(:jobs).and_return(@job_manager)
       @root_context.ensure_session_select_defined
@@ -92,7 +92,7 @@ describe Shell::Extensions do
     end
 
     it "prints node attributes" do
-      node = mock("node", :attribute => {:foo => :bar})
+      node = double("node", :attribute => {:foo => :bar})
       @shell_client.node = node
       @root_context.should_receive(:pp).with({:foo => :bar})
       @root_context.ohai

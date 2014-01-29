@@ -38,7 +38,7 @@ describe Chef::Provider::RemoteFile::FTP do
   end
 
   let(:ftp) do
-    ftp = mock(Net::FTP, { })
+    ftp = double(Net::FTP, { })
     ftp.stub(:connect)
     ftp.stub(:login)
     ftp.stub(:voidcmd)

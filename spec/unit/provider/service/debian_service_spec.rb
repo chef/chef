@@ -61,7 +61,7 @@ describe Chef::Provider::Service::Debian do
 
         @stdout = StringIO.new(result)
         @stderr = StringIO.new
-        @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+        @status = double("Status", :exitstatus => 0, :stdout => @stdout)
         @provider.stub(:shell_out!).and_return(@status)
         @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       end
@@ -80,11 +80,11 @@ describe Chef::Provider::Service::Debian do
     context "when update-rc.d shows init isn't linked to rc*.d/" do
       before do
         @provider.stub(:assert_update_rcd_available)
-        @status = mock("Status", :exitstatus => 0)
+        @status = double("Status", :exitstatus => 0)
         @stdout = StringIO.new(
           " Removing any system startup links for /etc/init.d/chef ...")
         @stderr = StringIO.new
-        @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+        @status = double("Status", :exitstatus => 0, :stdout => @stdout)
         @provider.stub(:shell_out!).and_return(@status)
         @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       end
@@ -102,7 +102,7 @@ describe Chef::Provider::Service::Debian do
 
     context "when update-rc.d fails" do
       before do
-        @status = mock("Status", :exitstatus => -1)
+        @status = double("Status", :exitstatus => -1)
         @provider.stub(:popen4).and_return(@status)
       end
 
@@ -200,7 +200,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
 
             @stdout = StringIO.new(expected_results["linked"]["stdout"])
             @stderr = StringIO.new(expected_results["linked"]["stderr"])
-            @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+            @status = double("Status", :exitstatus => 0, :stdout => @stdout)
             @provider.stub(:shell_out!).and_return(@status)
             @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
           end
@@ -226,7 +226,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
             @provider.stub(:assert_update_rcd_available)
             @stdout = StringIO.new(expected_results["not linked"]["stdout"])
             @stderr = StringIO.new(expected_results["not linked"]["stderr"])
-            @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+            @status = double("Status", :exitstatus => 0, :stdout => @stdout)
             @provider.stub(:shell_out!).and_return(@status)
             @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
           end

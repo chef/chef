@@ -78,12 +78,12 @@ describe Chef::DataBag do
   describe "when saving" do
     before do
       @data_bag.name('piggly_wiggly')
-      @rest = mock("Chef::REST")
+      @rest = double("Chef::REST")
       Chef::REST.stub(:new).and_return(@rest)
     end
 
     it "should silently proceed when the data bag already exists" do
-      exception = mock("409 error", :code => "409")
+      exception = double("409 error", :code => "409")
       @rest.should_receive(:post_rest).and_raise(Net::HTTPServerException.new("foo", exception))
       @data_bag.save
     end
@@ -111,7 +111,7 @@ describe Chef::DataBag do
     describe "from an API call" do
       before do
         Chef::Config[:chef_server_url] = 'https://myserver.example.com'
-        @http_client = mock('Chef::REST')
+        @http_client = double('Chef::REST')
       end
 
       it "should get the data bag from the server" do

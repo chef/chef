@@ -29,7 +29,7 @@ describe Chef::Provider::Package::Macports do
     @provider = Chef::Provider::Package::Macports.new(@new_resource, @run_context)
     Chef::Resource::Package.stub(:new).and_return(@current_resource)
 
-    @status = mock("Status", :exitstatus => 0)
+    @status = double("Status", :exitstatus => 0)
     @stdin = StringIO.new
     @stdout = StringIO.new
     @stderr = StringIO.new

@@ -26,7 +26,7 @@ describe Chef::Provider::Package::Apt do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Package.new("irssi", @run_context)
 
-    @status = mock("Status", :exitstatus => 0)
+    @status = double("Status", :exitstatus => 0)
     @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context)
     @stdin = StringIO.new
     @stdout =<<-PKG_STATUS
@@ -83,7 +83,7 @@ libmysqlclient15-dev:
   Candidate: (none)
   Version table:
 VPKG_STDOUT
-      virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
+      virtual_package = double(:stdout => virtual_package_out,:exitstatus => 0)
       @provider.should_receive(:shell_out!).with("apt-cache policy libmysqlclient15-dev").and_return(virtual_package)
       showpkg_out =<<-SHOWPKG_STDOUT
 Package: libmysqlclient15-dev
@@ -103,7 +103,7 @@ libmysqlclient-dev 5.1.41-3ubuntu12.7
 libmysqlclient-dev 5.1.41-3ubuntu12.10
 libmysqlclient-dev 5.1.41-3ubuntu12
 SHOWPKG_STDOUT
-      showpkg = mock(:stdout => showpkg_out,:exitstatus => 0)
+      showpkg = double(:stdout => showpkg_out,:exitstatus => 0)
       @provider.should_receive(:shell_out!).with("apt-cache showpkg libmysqlclient15-dev").and_return(showpkg)
       real_package_out=<<-RPKG_STDOUT
 libmysqlclient-dev:
@@ -118,7 +118,7 @@ libmysqlclient-dev:
      5.1.41-3ubuntu12 0
         500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
 RPKG_STDOUT
-      real_package = mock(:stdout => real_package_out,:exitstatus => 0)
+      real_package = double(:stdout => real_package_out,:exitstatus => 0)
       @provider.should_receive(:shell_out!).with("apt-cache policy libmysqlclient-dev").and_return(real_package)
       @provider.load_current_resource
     end
@@ -131,7 +131,7 @@ mp3-decoder:
   Candidate: (none)
   Version table:
 VPKG_STDOUT
-      virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
+      virtual_package = double(:stdout => virtual_package_out,:exitstatus => 0)
       @provider.should_receive(:shell_out!).with("apt-cache policy mp3-decoder").and_return(virtual_package)
       showpkg_out=<<-SHOWPKG_STDOUT
 Package: mp3-decoder
@@ -154,7 +154,7 @@ opencubicplayer 1:0.1.17-2
 mpg321 0.2.10.6
 mpg123 1.12.1-0ubuntu1
 SHOWPKG_STDOUT
-      showpkg = mock(:stdout => showpkg_out,:exitstatus => 0)
+      showpkg = double(:stdout => showpkg_out,:exitstatus => 0)
       @provider.should_receive(:shell_out!).with("apt-cache showpkg mp3-decoder").and_return(showpkg)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end

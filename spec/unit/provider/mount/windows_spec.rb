@@ -42,9 +42,9 @@ describe Chef::Provider::Mount::Windows do
     @current_resource = Chef::Resource::Mount.new("X:")
     Chef::Resource::Mount.stub(:new).and_return(@current_resource)
 
-    @net_use = mock("Chef::Util::Windows::NetUse")
+    @net_use = double("Chef::Util::Windows::NetUse")
     Chef::Util::Windows::NetUse.stub(:new).and_return(@net_use)
-    @vol = mock("Chef::Util::Windows::Volume")
+    @vol = double("Chef::Util::Windows::Volume")
     Chef::Util::Windows::Volume.stub(:new).and_return(@vol)
 
     @provider = Chef::Provider::Mount::Windows.new(@new_resource, @run_context)

@@ -44,12 +44,12 @@ describe Chef::Provider::Service::Freebsd do
 539  ??  Is     0:00.14 /usr/sbin/sshd
 545  ??  Ss     0:17.53 sendmail: accepting connections (sendmail)
 PS_SAMPLE
-      @status = mock(:stdout => @stdout, :exitstatus => 0)
+      @status = double(:stdout => @stdout, :exitstatus => 0)
       @provider.stub(:shell_out!).with(@node[:command][:ps]).and_return(@status)
 
       ::File.stub(:exists?).and_return(false)
       ::File.stub(:exists?).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(true)
-      @lines = mock("lines")
+      @lines = double("lines")
       @lines.stub(:each).and_yield("sshd_enable=\"YES\"").
                           and_yield("#{@new_resource.name}_enable=\"YES\"")
       ::File.stub(:open).and_return(@lines)
@@ -282,7 +282,7 @@ RC_SAMPLE
 # #{@current_resource.service_name}_enable="YES"
 #   (default: "")
 RCVAR_SAMPLE
-          @status = mock(:stdout => @rcvar_stdout, :exitstatus => 0)
+          @status = double(:stdout => @rcvar_stdout, :exitstatus => 0)
           @provider.stub(:shell_out!).with("/usr/local/etc/rc.d/#{@current_resource.service_name} rcvar").and_return(@status)
         end
 
@@ -304,7 +304,7 @@ RCVAR_SAMPLE
 # service_with_noname
 #
 RCVAR_SAMPLE
-          @status = mock(:stdout => @rcvar_stdout, :exitstatus => 0)
+          @status = double(:stdout => @rcvar_stdout, :exitstatus => 0)
           @provider.stub(:shell_out!).with("/usr/local/etc/rc.d/#{@current_resource.service_name} rcvar").and_return(@status)
         end
 

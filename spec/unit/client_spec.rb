@@ -168,10 +168,10 @@ shared_examples_for Chef::Client do
   describe "run" do
 
     it "should identify the node and run ohai, then register the client" do
-      mock_chef_rest_for_node = mock("Chef::REST (node)")
-      mock_chef_rest_for_cookbook_sync = mock("Chef::REST (cookbook sync)")
-      mock_chef_rest_for_node_save = mock("Chef::REST (node save)")
-      mock_chef_runner = mock("Chef::Runner")
+      mock_chef_rest_for_node = double("Chef::REST (node)")
+      mock_chef_rest_for_cookbook_sync = double("Chef::REST (cookbook sync)")
+      mock_chef_rest_for_node_save = double("Chef::REST (node save)")
+      mock_chef_runner = double("Chef::Runner")
 
       # --Client.register
       #   Make sure Client#register thinks the client key doesn't
@@ -253,10 +253,10 @@ shared_examples_for Chef::Client do
     end
 
     it "should remove the run_lock on failure of #load_node" do
-      @run_lock = mock("Chef::RunLock", :acquire => true)
+      @run_lock = double("Chef::RunLock", :acquire => true)
       Chef::RunLock.stub(:new).and_return(@run_lock)
 
-      @events = mock("Chef::EventDispatch::Dispatcher").as_null_object
+      @events = double("Chef::EventDispatch::Dispatcher").as_null_object
       Chef::EventDispatch::Dispatcher.stub(:new).and_return(@events)
 
       # @events is created on Chef::Client.new, so we need to recreate it after mocking
@@ -324,7 +324,7 @@ shared_examples_for Chef::Client do
 
       # build_node will call Node#expand! with server, which will
       # eventually hit the server to expand the included role.
-      mock_chef_rest = mock("Chef::REST")
+      mock_chef_rest = double("Chef::REST")
       mock_chef_rest.should_receive(:get_rest).with("roles/role_containing_cookbook1").and_return(role_containing_cookbook1)
       Chef::REST.should_receive(:new).and_return(mock_chef_rest)
 
@@ -434,7 +434,7 @@ shared_examples_for Chef::Client do
 
       original_runlist = @node.run_list.dup
 
-      mock_chef_rest = mock("Chef::REST")
+      mock_chef_rest = double("Chef::REST")
       mock_chef_rest.should_receive(:get_rest).with("roles/test_role").and_return(override_role)
       Chef::REST.should_receive(:new).and_return(mock_chef_rest)
 

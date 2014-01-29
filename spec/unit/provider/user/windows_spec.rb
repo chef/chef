@@ -35,7 +35,7 @@ describe Chef::Provider::User::Windows do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @current_resource = Chef::Resource::User.new("monkey")
 
-    @net_user = mock("Chef::Util::Windows::NetUser")
+    @net_user = double("Chef::Util::Windows::NetUser")
     Chef::Util::Windows::NetUser.stub(:new).and_return(@net_user)
 
     @provider = Chef::Provider::User::Windows.new(@new_resource, @run_context)

@@ -220,11 +220,11 @@ shared_examples_for Chef::Provider::File do
         Chef::Platform.stub(:windows?).and_return(false)
         # mock up the filesystem to behave like unix
         setup_normal_file
-        stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
+        stat_struct = double("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
         resource_real_path = File.realpath(resource.path)
         File.should_receive(:stat).with(resource_real_path).at_least(:once).and_return(stat_struct)
-        Etc.stub(:getgrgid).with(0).and_return(mock("Group Ent", :name => "wheel"))
-        Etc.stub(:getpwuid).with(0).and_return(mock("User Ent", :name => "root"))
+        Etc.stub(:getgrgid).with(0).and_return(double("Group Ent", :name => "wheel"))
+        Etc.stub(:getpwuid).with(0).and_return(double("User Ent", :name => "root"))
       end
 
       context "when the new_resource does not specify any state" do
@@ -345,11 +345,11 @@ shared_examples_for Chef::Provider::File do
       Chef::Platform.stub(:windows?).and_return(false)
       # mock up the filesystem to behave like unix
       setup_normal_file
-      stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
+      stat_struct = double("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
       resource_real_path = File.realpath(resource.path)
       File.stub(:stat).with(resource_real_path).and_return(stat_struct)
-      Etc.stub(:getgrgid).with(0).and_return(mock("Group Ent", :name => "wheel"))
-      Etc.stub(:getpwuid).with(0).and_return(mock("User Ent", :name => "root"))
+      Etc.stub(:getgrgid).with(0).and_return(double("Group Ent", :name => "wheel"))
+      Etc.stub(:getpwuid).with(0).and_return(double("User Ent", :name => "root"))
       provider.send(:load_resource_attributes_from_file, resource)
     end
 

@@ -63,7 +63,7 @@ describe Chef::Knife::ClientCreate do
       it "should write the private key to a file" do
         @knife.config[:file] = "/tmp/monkeypants"
         @client.stub(:save).and_return({ 'private_key' => "woot" })
-        filehandle = mock("Filehandle")
+        filehandle = double("Filehandle")
         filehandle.should_receive(:print).with('woot')
         File.should_receive(:open).with("/tmp/monkeypants", "w").and_yield(filehandle)
         @knife.run

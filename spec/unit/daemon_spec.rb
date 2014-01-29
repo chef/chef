@@ -123,8 +123,8 @@ describe Chef::Daemon do
       Process::UID.stub(:change_privilege).and_return(nil)
       Process::GID.stub(:change_privilege).and_return(nil)
 
-      @pw_user = mock("Struct::Passwd", :uid => 501)
-      @pw_group = mock("Struct::Group", :gid => 20)
+      @pw_user = double("Struct::Passwd", :uid => 501)
+      @pw_group = double("Struct::Group", :gid => 20)
 
       Process.stub(:initgroups).and_return(true)
 

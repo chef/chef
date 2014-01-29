@@ -107,7 +107,7 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
       end
 
       it "should throw an exception if the exitstatus is not 0" do
-        @status = mock("Status", :exitstatus => 1)
+        @status = double("Status", :exitstatus => 1)
         @provider.stub(:popen4).and_return(@status)
         lambda { @provider.candidate_version }.should raise_error(Chef::Exceptions::Package)
       end
@@ -143,7 +143,7 @@ Searching...
       License:       GPL-2
 EOF
 
-        @status = mock("Status", :exitstatus => 0)
+        @status = double("Status", :exitstatus => 0)
         @provider.should_receive(:popen4).and_yield(nil, nil, StringIO.new(output), nil).and_return(@status)
         @provider.candidate_version.should == "1.6.0.6"
       end
@@ -179,7 +179,7 @@ Searching...
       License:       GPL-2
 EOF
 
-        @status = mock("Status", :exitstatus => 0)
+        @status = double("Status", :exitstatus => 0)
         @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
         @provider.should_receive(:popen4).and_yield(nil, nil, StringIO.new(output), nil).and_return(@status)
         @provider.candidate_version.should == "1.6.0.6"
@@ -224,7 +224,7 @@ Searching...
       License:       GPL-2
 EOF
 
-        @status = mock("Status", :exitstatus => 0)
+        @status = double("Status", :exitstatus => 0)
         @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
         @provider.should_receive(:popen4).and_yield(nil, nil, StringIO.new(output), nil).and_return(@status)
         lambda { @provider.candidate_version }.should raise_error(Chef::Exceptions::Package)
@@ -269,7 +269,7 @@ Searching...
       License:       GPL-2
 EOF
 
-        @status = mock("Status", :exitstatus => 0)
+        @status = double("Status", :exitstatus => 0)
         @provider = Chef::Provider::Package::Portage.new(@new_resource, @run_context)
         @provider.should_receive(:popen4).and_yield(nil, nil, StringIO.new(output), nil).and_return(@status)
         @provider.candidate_version.should == "1.6.0.6"

@@ -35,13 +35,13 @@ describe Chef::ResourceReporter do
   before do
     @node = Chef::Node.new
     @node.name("spitfire")
-    @rest_client = mock("Chef::REST (mock)")
+    @rest_client = double("Chef::REST (mock)")
     @rest_client.stub(:post_rest).and_return(true)
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
     @run_id = @resource_reporter.run_id
     @new_resource      = Chef::Resource::File.new("/tmp/a-file.txt")
     @new_resource.cookbook_name = "monkey"
-    @cookbook_version = mock("Cookbook::Version", :version => "1.2.3")
+    @cookbook_version = double("Cookbook::Version", :version => "1.2.3")
     @new_resource.stub(:cookbook_version).and_return(@cookbook_version)
     @current_resource  = Chef::Resource::File.new("/tmp/a-file.txt")
     @start_time = Time.new
@@ -381,7 +381,7 @@ describe Chef::ResourceReporter do
         @backtrace = ["foo.rb:1 in `foo!'","bar.rb:2 in `bar!","'baz.rb:3 in `baz!'"]
         @node = Chef::Node.new
         @node.name("spitfire")
-        @exception = mock("ArgumentError")
+        @exception = double("ArgumentError")
         @exception.stub(:inspect).and_return("Net::HTTPServerException")
         @exception.stub(:message).and_return("Object not found")
         @exception.stub(:backtrace).and_return(@backtrace)

@@ -50,7 +50,7 @@ describe Chef::ApiClient::Registration do
   end
 
   describe "when creating/updating the client on the server" do
-    let(:http_mock) { mock("Chef::REST mock") }
+    let(:http_mock) { double("Chef::REST mock") }
 
     before do
       registration.stub(:http_api).and_return(http_mock)
@@ -125,7 +125,7 @@ describe Chef::ApiClient::Registration do
 
   describe "when registering a client" do
 
-    let(:http_mock) { mock("Chef::REST mock") }
+    let(:http_mock) { double("Chef::REST mock") }
 
     before do
       registration.stub(:http_api).and_return(http_mock)

@@ -34,7 +34,7 @@ describe Chef::Provider::Package::EasyInstall do
 
     @stdin = StringIO.new
     @stdout = StringIO.new
-    @status = mock("Status", :exitstatus => 0)
+    @status = double("Status", :exitstatus => 0)
     @stderr = StringIO.new
     @pid = 2342
     @provider.stub(:popen4).and_return(@status)

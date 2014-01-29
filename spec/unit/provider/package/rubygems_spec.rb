@@ -99,8 +99,8 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     dep = Gem::Dependency.new('rspec', '>= 0')
     dep_installer = Gem::DependencyInstaller.new
     @gem_env.stub(:dependency_installer).and_return(dep_installer)
-    best_gem = mock("best gem match", :spec => gemspec("rspec", Gem::Version.new("1.3.0")), :source => "https://rubygems.org")
-    available_set = mock("Gem::AvailableSet test double")
+    best_gem = double("best gem match", :spec => gemspec("rspec", Gem::Version.new("1.3.0")), :source => "https://rubygems.org")
+    available_set = double("Gem::AvailableSet test double")
     available_set.should_receive(:pick_best!)
     available_set.should_receive(:set).and_return([best_gem])
     dep_installer.should_receive(:find_gems_with_sources).with(dep).and_return(available_set)
@@ -131,7 +131,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     end
 
     it "finds a matching gem candidate version on rubygems 2.0+ with some rubygems 1.8 code loaded" do
-      package = mock("Gem::Package", :spec => "a gemspec from package")
+      package = double("Gem::Package", :spec => "a gemspec from package")
       Gem::Package.should_receive(:new).with("/path/to/package.gem").and_return(package)
       @gem_env.spec_from_file("/path/to/package.gem").should == "a gemspec from package"
     end
@@ -180,14 +180,14 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   end
 
   it "uninstalls all versions of a gem" do
-    uninstaller = mock('gem uninstaller')
+    uninstaller = double('gem uninstaller')
     uninstaller.should_receive(:uninstall)
     @gem_env.should_receive(:uninstaller).with('rspec', :all => true).and_return(uninstaller)
     @gem_env.uninstall('rspec')
   end
 
   it "uninstalls a specific version of a gem" do
-    uninstaller = mock('gem uninstaller')
+    uninstaller = double('gem uninstaller')
     uninstaller.should_receive(:uninstall)
     @gem_env.should_receive(:uninstaller).with('rspec', :version => '1.2.3').and_return(uninstaller)
     @gem_env.uninstall('rspec', '1.2.3')
@@ -295,7 +295,7 @@ RubyGems Environment:
      - http://rubygems.org/
      - http://gems.github.com/
 JRUBY_GEM_ENV
-    @gem_env.should_receive(:shell_out!).with('/usr/weird/bin/gem env').and_return(mock('jruby_gem_env', :stdout => gem_env_out))
+    @gem_env.should_receive(:shell_out!).with('/usr/weird/bin/gem env').and_return(double('jruby_gem_env', :stdout => gem_env_out))
     expected = ['ruby', Gem::Platform.new('universal-java-1.6')]
     @gem_env.gem_platforms.should == expected
     # it should also cache the result
@@ -337,7 +337,7 @@ RubyGems Environment:
      - http://rubygems.org/
      - http://gems.github.com/
 RBX_GEM_ENV
-    @gem_env.should_receive(:shell_out!).with('/usr/weird/bin/gem env').and_return(mock('rbx_gem_env', :stdout => gem_env_out))
+    @gem_env.should_receive(:shell_out!).with('/usr/weird/bin/gem env').and_return(double('rbx_gem_env', :stdout => gem_env_out))
     @gem_env.gem_platforms.should == Gem.platforms
     Chef::Provider::Package::Rubygems::AlternateGemEnvironment.platform_cache['/usr/weird/bin/gem'].should == Gem.platforms
   end

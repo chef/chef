@@ -41,9 +41,9 @@ describe Chef::Provider::Git do
   context "determining the revision of the currently deployed checkout" do
 
     before do
-      @stdout = mock("standard out")
-      @stderr = mock("standard error")
-      @exitstatus = mock("exitstatus")
+      @stdout = double("standard out")
+      @stderr = double("standard error")
+      @exitstatus = double("exitstatus")
     end
 
     it "sets the current revision to nil if the deploy dir does not exist" do
@@ -54,7 +54,7 @@ describe Chef::Provider::Git do
     it "determines the current revision when there is one" do
       ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
       @stdout = "9b4d8dc38dd471246e7cfb1c3c1ad14b0f2bee13\n"
-      @provider.should_receive(:shell_out!).with('git rev-parse HEAD', {:cwd => '/my/deploy/dir', :returns => [0,128]}).and_return(mock("ShellOut result", :stdout => @stdout))
+      @provider.should_receive(:shell_out!).with('git rev-parse HEAD', {:cwd => '/my/deploy/dir', :returns => [0,128]}).and_return(double("ShellOut result", :stdout => @stdout))
       @provider.find_current_revision.should eql("9b4d8dc38dd471246e7cfb1c3c1ad14b0f2bee13")
     end
 
@@ -62,7 +62,7 @@ describe Chef::Provider::Git do
       ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
       @stderr = "fatal: Not a git repository (or any of the parent directories): .git"
       @stdout = ""
-      @provider.should_receive(:shell_out!).with('git rev-parse HEAD', :cwd => '/my/deploy/dir', :returns => [0,128]).and_return(mock("ShellOut result", :stdout => "", :stderr => @stderr))
+      @provider.should_receive(:shell_out!).with('git rev-parse HEAD', :cwd => '/my/deploy/dir', :returns => [0,128]).and_return(double("ShellOut result", :stdout => "", :stderr => @stderr))
       @provider.find_current_revision.should be_nil
     end
   end
@@ -93,7 +93,7 @@ describe Chef::Provider::Git do
       @resource.revision "v1.0"
       @stdout = ("d03c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n" +
                  "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/v1.0\n")
-      @provider.should_receive(:shell_out!).with(@git_ls_remote + "v1.0*", {:log_tag=>"git[web2.0 app]"}).and_return(mock("ShellOut result", :stdout => @stdout))
+      @provider.should_receive(:shell_out!).with(@git_ls_remote + "v1.0*", {:log_tag=>"git[web2.0 app]"}).and_return(double("ShellOut result", :stdout => @stdout))
       @provider.target_revision.should eql("503c22a5e41f5ae3193460cca044ed1435029f53")
     end
 
@@ -102,7 +102,7 @@ describe Chef::Provider::Git do
       @stdout = ("d03c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n" +
                  "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/v1.0\n" +
                  "663c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/v1.0^{}\n")
-      @provider.should_receive(:shell_out!).with(@git_ls_remote + "v1.0*", {:log_tag=>"git[web2.0 app]"}).and_return(mock("ShellOut result", :stdout => @stdout))
+      @provider.should_receive(:shell_out!).with(@git_ls_remote + "v1.0*", {:log_tag=>"git[web2.0 app]"}).and_return(double("ShellOut result", :stdout => @stdout))
       @provider.target_revision.should eql("663c22a5e41f5ae3193460cca044ed1435029f53")
     end
 
@@ -117,21 +117,21 @@ describe Chef::Provider::Git do
     it "raises an unresolvable git reference error if the revision can't be resolved to any revision and assertions are run" do
       @resource.revision "FAIL, that's the revision I want"
       @provider.action = :checkout
-      @provider.should_receive(:shell_out!).and_return(mock("ShellOut result", :stdout => "\n"))
+      @provider.should_receive(:shell_out!).and_return(double("ShellOut result", :stdout => "\n"))
       @provider.define_resource_requirements
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::UnresolvableGitReference)
     end
 
     it "does not raise an error if the revision can't be resolved when assertions are not run" do
       @resource.revision "FAIL, that's the revision I want"
-      @provider.should_receive(:shell_out!).and_return(mock("ShellOut result", :stdout => "\n"))
+      @provider.should_receive(:shell_out!).and_return(double("ShellOut result", :stdout => "\n"))
       @provider.target_revision.should == nil
     end
 
     it "does not raise an error when the revision is valid and assertions are run." do
       @resource.revision "0.8-alpha"
       @stdout = "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n"
-      @provider.should_receive(:shell_out!).with(@git_ls_remote + "0.8-alpha*", {:log_tag=>"git[web2.0 app]"}).and_return(mock("ShellOut result", :stdout => @stdout))
+      @provider.should_receive(:shell_out!).with(@git_ls_remote + "0.8-alpha*", {:log_tag=>"git[web2.0 app]"}).and_return(double("ShellOut result", :stdout => @stdout))
       @provider.action = :checkout
       ::File.stub(:directory?).with("/my/deploy").and_return(true)
       @provider.define_resource_requirements
@@ -156,7 +156,7 @@ b7d19519a1c15f1c1a324e2683bd728b6198ce5a\trefs/tags/0.7.8^{}
 ebc1b392fe7e8f0fbabc305c299b4d365d2b4d9b\trefs/tags/chef-server-package
 SHAS
       @resource.revision ''
-      @provider.should_receive(:shell_out!).with(@git_ls_remote + "HEAD", {:log_tag=>"git[web2.0 app]"}).and_return(mock("ShellOut result", :stdout => @stdout))
+      @provider.should_receive(:shell_out!).with(@git_ls_remote + "HEAD", {:log_tag=>"git[web2.0 app]"}).and_return(double("ShellOut result", :stdout => @stdout))
       @provider.target_revision.should eql("28af684d8460ba4793eda3e7ac238c864a5d029a")
     end
   end

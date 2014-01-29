@@ -127,7 +127,7 @@ aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
 aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
 aj        8119  6041  0 21:34 pts/3    00:00:03 vi init_service_spec.rb
 DEFAULT_PS
-      @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+      @status = double("Status", :exitstatus => 0, :stdout => @stdout)
       @provider.stub(:shell_out!).and_return(@status)
 
       @node.automatic_attrs[:command] = {:ps => "ps -ef"}
@@ -171,7 +171,7 @@ RUNNING_PS
 
     describe Chef::Provider::Service::Arch, "enable_service" do
       # before(:each) do
-      #   @new_resource = mock("Chef::Resource::Service",
+      #   @new_resource = double("Chef::Resource::Service",
       #     :null_object => true,
       #     :name => "chef",
       #     :service_name => "chef",
@@ -192,7 +192,7 @@ RUNNING_PS
 
     describe Chef::Provider::Service::Arch, "disable_service" do
       # before(:each) do
-      #   @new_resource = mock("Chef::Resource::Service",
+      #   @new_resource = double("Chef::Resource::Service",
       #     :null_object => true,
       #     :name => "chef",
       #     :service_name => "chef",
@@ -214,7 +214,7 @@ RUNNING_PS
 
     describe Chef::Provider::Service::Arch, "start_service" do
       # before(:each) do
-      #   @new_resource = mock("Chef::Resource::Service",
+      #   @new_resource = double("Chef::Resource::Service",
       #     :null_object => true,
       #     :name => "chef",
       #     :service_name => "chef",
@@ -240,7 +240,7 @@ RUNNING_PS
 
     describe Chef::Provider::Service::Arch, "stop_service" do
       # before(:each) do
-      #   @new_resource = mock("Chef::Resource::Service",
+      #   @new_resource = double("Chef::Resource::Service",
       #     :null_object => true,
       #     :name => "chef",
       #     :service_name => "chef",
@@ -266,7 +266,7 @@ RUNNING_PS
 
     describe Chef::Provider::Service::Arch, "restart_service" do
       # before(:each) do
-      #   @new_resource = mock("Chef::Resource::Service",
+      #   @new_resource = double("Chef::Resource::Service",
       #     :null_object => true,
       #     :name => "chef",
       #     :service_name => "chef",
@@ -301,7 +301,7 @@ RUNNING_PS
 
     describe Chef::Provider::Service::Arch, "reload_service" do
       # before(:each) do
-      #   @new_resource = mock("Chef::Resource::Service",
+      #   @new_resource = double("Chef::Resource::Service",
       #     :null_object => true,
       #     :name => "chef",
       #     :service_name => "chef",

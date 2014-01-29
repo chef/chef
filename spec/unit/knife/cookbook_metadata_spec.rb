@@ -105,8 +105,8 @@ describe Chef::Knife::CookbookMetadata do
 
   describe 'generate_metadata_from_file' do
     before(:each) do
-      @metadata_mock = mock('metadata')
-      @json_file_mock = mock('json_file')
+      @metadata_mock = double('metadata')
+      @json_file_mock = double('json_file')
     end
 
     it 'should generate the metatdata json from metatdata.rb' do

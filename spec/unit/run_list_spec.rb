@@ -174,7 +174,7 @@ describe Chef::RunList do
       @role.override_attributes :three => :four
 
       Chef::Role.stub(:load).and_return(@role)
-      @rest = mock("Chef::REST", { :get_rest => @role, :url => "/" })
+      @rest = double("Chef::REST", { :get_rest => @role, :url => "/" })
       Chef::REST.stub(:new).and_return(@rest)
 
       @run_list << "role[stubby]"
@@ -218,7 +218,7 @@ describe Chef::RunList do
 
         describe "and multiply nested roles" do
           before do
-            @multiple_rest_requests = mock("Chef::REST")
+            @multiple_rest_requests = double("Chef::REST")
 
             @role.env_run_list["production"] << "role[prod-base]"
 
