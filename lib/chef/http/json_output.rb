@@ -60,6 +60,10 @@ class Chef
         end
       end
 
+      def handle_stream_complete(http_response, rest_request, return_value)
+        [http_response, rest_request, return_value]
+      end
+
       def stream_response_handler(response)
         nil
       end

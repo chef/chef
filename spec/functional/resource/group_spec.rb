@@ -20,33 +20,37 @@
 require 'spec_helper'
 require 'functional/resource/base'
 
-describe Chef::Resource::Group, :requires_root_or_running_windows do
-
-  def group_should_exist(resource)
+# Chef::Resource::Group are turned off on Mac OS X 10.6 due to caching
+# issues around Etc.getgrnam() not picking up the group membership
+# changes that are done on the system. Etc.endgrent is not functioning
+# correctly on certain 10.6 boxes.
+describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supported_on_mac_osx_106 do
+  def group_should_exist(group)
     case ohai[:platform_family]
     when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
-      expect { Etc::getgrnam(resource.name) }.to_not raise_error(ArgumentError, "can't find group for #{resource.name}")
-      expect(resource.name).to eq(Etc::getgrnam(resource.name).name)
+      expect { Etc::getgrnam(group) }.to_not raise_error(ArgumentError, "can't find group for #{group}")
+      expect(group).to eq(Etc::getgrnam(group).name)
     when "windows"
-      expect { Chef::Util::Windows::NetGroup.new(resource.group_name).local_get_members }.to_not raise_error(ArgumentError, "The group name could not be found.")
+      expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.to_not raise_error(ArgumentError, "The group name could not be found.")
     end
   end
 
-  def user_exist_in_group?(resource, user)
+  def user_exist_in_group?(user)
     case ohai[:platform_family]
-    when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
-      Etc::getgrnam(resource.name).mem.include?(user)
     when "windows"
-      Chef::Util::Windows::NetGroup.new(resource.group_name).local_get_members.include?(user)
+      user_sid = sid_string_from_user(user)
+      user_sid.nil? ? false : Chef::Util::Windows::NetGroup.new(group_name).local_get_members.include?(user_sid)
+    else
+      Etc::getgrnam(group_name).mem.include?(user)
     end
   end
 
-  def group_should_not_exist(resource)
+  def group_should_not_exist(group)
     case ohai[:platform_family]
     when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
-      expect { Etc::getgrnam(resource.name) }.to raise_error(ArgumentError, "can't find group for #{resource.name}")
+      expect { Etc::getgrnam(group) }.to raise_error(ArgumentError, "can't find group for #{group}")
     when "windows"
-      expect { Chef::Util::Windows::NetGroup.new(resource.group_name).local_get_members }.to raise_error(ArgumentError, "The group name could not be found.")
+      expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.to raise_error(ArgumentError, "The group name could not be found.")
     end
   end
 
@@ -54,151 +58,366 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     return resource.gid == Etc::getgrnam(resource.name).gid if unix?
   end
 
-  def get_user_resource(username)
+  def sid_string_from_user(user)
+    begin
+      sid = Chef::ReservedNames::Win32::Security.lookup_account_name(user)
+    rescue Chef::Exceptions::Win32APIError
+      sid = nil
+    end
+
+    sid.nil? ? nil : sid[1].to_s
+  end
+
+  def windows_domain_user?(user_name)
+    domain, user = user_name.split('\\')
+
+    if user && domain != '.'
+      computer_name = ENV['computername']
+      domain.downcase != computer_name.downcase
+    end
+  end
+
+  def user(username)
     usr = Chef::Resource::User.new("#{username}", run_context)
-    usr.password("Jetsream123!")
+    if ohai[:platform_family] == "windows"
+      usr.password("ComplexPass11!")
+    end
     usr
   end
 
   def create_user(username)
-    get_user_resource(username).run_action(:create)
+    user(username).run_action(:create) if ! windows_domain_user?(username)
+    # TODO: User shouldn't exist
   end
 
   def remove_user(username)
-    get_user_resource(username).run_action(:remove)
+    user(username).run_action(:remove) if ! windows_domain_user?(username)
+    # TODO: User shouldn't exist
   end
 
-  before do
-    @grp_resource = Chef::Resource::Group.new("test-group-#{SecureRandom.random_number(9999)}", run_context)
-  end
-
-  context "group create action" do
-    after(:each) do
-      @grp_resource.run_action(:remove)
-    end
-
-    it "create a group" do
-      @grp_resource.run_action(:create)
-      group_should_exist(@grp_resource)
-    end
-
-    context "group name with 256 characters", :windows_only do
-      before(:each) do
-        grp_name = "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree"
-        @new_grp = Chef::Resource::Group.new(grp_name, run_context)
+  shared_examples_for "correct group management" do
+    def add_members_to_group(members)
+      temp_resource = group_resource.dup
+      temp_resource.members(members)
+      temp_resource.excluded_members([ ])
+      temp_resource.append(true)
+      temp_resource.run_action(:modify)
+      members.each do |member|
+        user_exist_in_group?(member).should == true
       end
+    end
+
+    def create_group
+      temp_resource = group_resource.dup
+      temp_resource.members([ ])
+      temp_resource.excluded_members([ ])
+      temp_resource.run_action(:create)
+      group_should_exist(group_name)
+      included_members.each do |member|
+        user_exist_in_group?(member).should == false
+      end
+    end
+
+    before(:each) do
+      create_group
+    end
+
+    after(:each) do
+      group_resource.run_action(:remove)
+      group_should_not_exist(group_name)
+    end
+
+    describe "when append is not set" do
+      let(:included_members) { [spec_members[1]] }
+
+      before do
+        create_user(spec_members[1])
+        create_user(spec_members[0])
+        add_members_to_group([spec_members[0]])
+      end
+
       after do
-        @new_grp.run_action(:remove)
+        remove_user(spec_members[1])
+        remove_user(spec_members[0])
       end
-      it " create a group" do
-        @new_grp.run_action(:create)
-        group_should_exist(@new_grp)
+
+      it "should remove the existing users and add the new users to the group" do
+        group_resource.run_action(tested_action)
+
+        user_exist_in_group?(spec_members[1]).should == true
+        user_exist_in_group?(spec_members[0]).should == false
       end
     end
-    context "group name with more than 256 characters", :windows_only do
+
+    describe "when append is set" do
       before(:each) do
-        grp_name = "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQQQQQQQQQQQQ"
-        @new_grp = Chef::Resource::Group.new(grp_name, run_context)
+        group_resource.append(true)
       end
-      it " not create a group" do
-        expect { @new_grp.run_action(:create) }.to raise_error
-        group_should_not_exist(@new_grp)
+
+      describe "when the users exist" do
+        before do
+          (included_members + excluded_members).each do |member|
+            create_user(member)
+          end
+        end
+
+        after do
+          (included_members + excluded_members).each do |member|
+            remove_user(member)
+          end
+        end
+
+        it "should add included members to the group" do
+          group_resource.run_action(tested_action)
+
+          included_members.each do |member|
+            user_exist_in_group?(member).should == true
+          end
+          excluded_members.each do |member|
+            user_exist_in_group?(member).should == false
+          end
+        end
+
+        describe "when group contains some users" do
+          before(:each) do
+            add_members_to_group([ spec_members[0], spec_members[2] ])
+          end
+
+          it "should add the included users and remove excluded users" do
+            group_resource.run_action(tested_action)
+
+            included_members.each do |member|
+              user_exist_in_group?(member).should == true
+            end
+            excluded_members.each do |member|
+              user_exist_in_group?(member).should == false
+            end
+          end
+        end
+      end
+
+      describe "when the users doesn't exist" do
+        describe "when append is not set" do
+          it "should raise an error" do
+            lambda { @grp_resource.run_action(tested_action) }.should raise_error
+          end
+        end
+
+        describe "when append is set" do
+          it "should raise an error" do
+            lambda { @grp_resource.run_action(tested_action) }.should raise_error
+          end
+        end
       end
     end
   end
 
-  context "group remove action" do
+  shared_examples_for "an expected invalid domain error case" do
+    let(:invalid_domain_user_name) { "no space\\administrator" }
+    let(:nonexistent_domain_user_name) { "xxfakedom\\administrator" }
     before(:each) do
-      @grp_resource.run_action(:create)
+      group_resource.members []
+      group_resource.excluded_members []
+      group_resource.append(true)
+      group_resource.run_action(:create)
+      group_should_exist(group_name)
     end
 
-    it "remove a group" do
-      @grp_resource.run_action(:remove)
-      group_should_not_exist(@grp_resource)
+    describe "when updating membership" do
+      it "raises an error for a non well-formed domain name" do
+        group_resource.members [invalid_domain_user_name]
+        lambda { group_resource.run_action(tested_action) }.should raise_error Chef::Exceptions::Win32APIError
+      end
+
+      it "raises an error for a nonexistent domain" do
+        group_resource.members [nonexistent_domain_user_name]
+        lambda { group_resource.run_action(tested_action) }.should raise_error Chef::Exceptions::Win32APIError
+      end
+    end
+
+    describe "when removing members" do
+      it "raises an error for a non well-formed domain name" do
+        group_resource.excluded_members [invalid_domain_user_name]
+        lambda { group_resource.run_action(tested_action) }.should raise_error Chef::Exceptions::Win32APIError
+      end
+
+      it "raises an error for a nonexistent domain" do
+        group_resource.excluded_members [nonexistent_domain_user_name]
+        lambda { group_resource.run_action(tested_action) }.should raise_error Chef::Exceptions::Win32APIError
+      end
     end
   end
 
-  context "group modify action", :unsupported_group_provider_platform do
-    before(:each) do
-      @grp_resource.run_action(:create)
-    end
+  let(:group_name) { "cheftest-#{SecureRandom.random_number(9999)}" }
+  let(:included_members) { nil }
+  let(:excluded_members) { nil }
+  let(:group_resource) {
+    group = Chef::Resource::Group.new(group_name, run_context)
+    group.members(included_members)
+    group.excluded_members(excluded_members)
+    group
+  }
 
+  it "append should be false by default" do
+    group_resource.append.should == false
+  end
+
+  describe "group create action" do
     after(:each) do
-      @grp_resource.run_action(:remove)
+      group_resource.run_action(:remove)
+      group_should_not_exist(group_name)
     end
 
-    it "add user to group" do
-      user1 = "user1-#{SecureRandom.random_number(9999)}"
-      user2 = "user2-#{SecureRandom.random_number(9999)}"
-
-      create_user(user1)
-      @grp_resource.members(user1)
-      expect(user_exist_in_group?(@grp_resource, user1)).to be_false
-      @grp_resource.run_action(:modify)
-      group_should_exist(@grp_resource)
-      expect(user_exist_in_group?(@grp_resource, user1)).to be_true
-
-      create_user(user2)
-      expect(user_exist_in_group?(@grp_resource, user2)).to be_false
-      @grp_resource.members(user2)
-      @grp_resource.run_action(:modify)
-      group_should_exist(@grp_resource)
-
-      #default append is false, so modify action remove old member user1 from group and add new member user2
-      expect(user_exist_in_group?(@grp_resource, user1)).to be_false
-      expect(user_exist_in_group?(@grp_resource, user2)).to be_true
-      remove_user(user1)
-      remove_user(user2)
+    it "should create a group" do
+      group_resource.run_action(:create)
+      group_should_exist(group_name)
     end
 
+    describe "when group name is length 256", :windows_only do
+      let!(:group_name) { "theoldmanwalkingdownthestreetalwayshadagood\
+smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface\
+theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
+downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree" }
 
-    it "append user to a group" do
-      user1 = "user1-#{SecureRandom.random_number(9999)}"
-      user2 = "user2-#{SecureRandom.random_number(9999)}"
-      create_user(user1)
-      @grp_resource.members(user1)
-      expect(user_exist_in_group?(@grp_resource, user1)).to be_false
-      #default append attribute is false
-      @grp_resource.run_action(:modify)
-      group_should_exist(@grp_resource)
-      expect(user_exist_in_group?(@grp_resource, user1)).to be_true
-      #set append attribute to true
-      @grp_resource.append(true)
-      create_user(user2)
-      expect(user_exist_in_group?(@grp_resource, user2)).to be_false
-      @grp_resource.members(user2)
-      @grp_resource.run_action(:modify)
-      group_should_exist(@grp_resource)
-      expect(user_exist_in_group?(@grp_resource, user1)).to be_true
-      expect(user_exist_in_group?(@grp_resource, user2)).to be_true
-      remove_user(user1)
-      remove_user(user2)
+      it "should create a group" do
+        group_resource.run_action(:create)
+        group_should_exist(group_name)
+      end
     end
 
-    it "raise error on add non-existent user to group" do
-      user1 = "user1-#{SecureRandom.random_number(9999)}"
-      @grp_resource.members(user1)
-      @grp_resource.append(true)
-      expect(user_exist_in_group?(@grp_resource, user1)).to be_false
-      expect { @grp_resource.run_action(:modify) }.to raise_error
+    describe "when group name length is more than 256", :windows_only do
+      let!(:group_name) { "theoldmanwalkingdownthestreetalwayshadagood\
+smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface\
+theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
+downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
+
+      it "should not create a group" do
+        lambda { group_resource.run_action(:create) }.should raise_error
+        group_should_not_exist(group_name)
+      end
+    end
+
+    # not_supported_on_solaris because of the use of excluded_members
+    describe "should raise an error when same member is included in the members and excluded_members", :not_supported_on_solaris do
+      it "should raise an error" do
+        invalid_resource = group_resource.dup
+        invalid_resource.members(["Jack"])
+        invalid_resource.excluded_members(["Jack"])
+        lambda { invalid_resource.run_action(:create)}.should raise_error(Chef::Exceptions::ConflictingMembersInGroup)
+      end
     end
   end
 
-  context "group manage action", :unix_only, :unsupported_group_provider_platform do
-    before(:each) do
-      @grp_resource.run_action(:create)
+  describe "group remove action" do
+    describe "when there is a group" do
+      before do
+        group_resource.run_action(:create)
+        group_should_exist(group_name)
+      end
+
+      it "should remove a group" do
+        group_resource.run_action(:remove)
+        group_should_not_exist(group_name)
+      end
     end
 
-    after(:each) do
-      @grp_resource.run_action(:remove)
+    describe "when there is no group" do
+      it "should be no-op" do
+        group_resource.run_action(:remove)
+        group_should_not_exist(group_name)
+      end
+    end
+  end
+
+  describe "group modify action", :not_supported_on_solaris do
+    let(:spec_members){ ["spec-Gordon", "spec-Eric", "spec-Anthony"] }
+    let(:included_members) { [spec_members[0], spec_members[1]] }
+    let(:excluded_members) { [spec_members[2]] }
+    let(:tested_action) { :modify }
+
+    describe "when there is no group" do
+      it "should raise an error" do
+        lambda { group_resource.run_action(:modify) }.should raise_error
+      end
     end
 
-    it "change gid of the group" do
-      grp_id = 1234567890
-      @grp_resource.gid(grp_id)
-      @grp_resource.run_action(:manage)
-      group_should_exist(@grp_resource)
-      expect(compare_gid(@grp_resource, grp_id)).to be_true
+    describe "when there is a group" do
+      it_behaves_like "correct group management"
+    end
+
+    describe "when running on Windows", :windows_only do
+      describe "when members are Active Directory domain identities", :windows_domain_joined_only do
+        let(:computer_domain) { ohai[:kernel]['cs_info']['domain'].split('.')[0] }
+        let(:spec_members){ ["#{computer_domain}\\Domain Admins", "#{computer_domain}\\Domain Users", "#{computer_domain}\\Domain Computers"] }
+
+        include_examples "correct group management"
+      end
+
+      it_behaves_like "an expected invalid domain error case"
+    end
+  end
+
+  describe "group manage action", :not_supported_on_solaris do
+    let(:spec_members){ ["spec-Gordon", "spec-Eric", "spec-Anthony"] }
+    let(:included_members) { [spec_members[0], spec_members[1]] }
+    let(:excluded_members) { [spec_members[2]] }
+    let(:tested_action) { :manage }
+
+    describe "when there is no group" do
+      it "should raise an error" do
+        lambda { group_resource.run_action(:manage) }.should_not raise_error
+        group_should_not_exist(group_name)
+      end
+    end
+
+    describe "when there is a group" do
+      it_behaves_like "correct group management"
+    end
+
+    describe "running on windows", :windows_only do
+      describe "when members are Windows domain identities", :windows_domain_joined_only do
+        let(:computer_domain) { ohai[:kernel]['cs_info']['domain'].split('.')[0] }
+        let(:spec_members){ ["#{computer_domain}\\Domain Admins", "#{computer_domain}\\Domain Users", "#{computer_domain}\\Domain Computers"] }
+
+        include_examples "correct group management"
+      end
+
+      it_behaves_like "an expected invalid domain error case"
+    end
+  end
+
+  describe "group resource with Usermod provider", :solaris_only do
+    describe "when excluded_members is set" do
+      let(:excluded_members) { ["spec-Anthony"] }
+
+      it ":manage should raise an error" do
+        lambda {group_resource.run_action(:manage) }.should raise_error
+      end
+
+      it ":modify should raise an error" do
+        lambda {group_resource.run_action(:modify) }.should raise_error
+      end
+
+      it ":create should raise an error" do
+        lambda {group_resource.run_action(:create) }.should raise_error
+      end
+    end
+
+    describe "when append is not set" do
+      let(:included_members) { ["spec-Gordon", "spec-Eric"] }
+
+      before(:each) do
+        group_resource.append(false)
+      end
+
+      it ":manage should raise an error" do
+        lambda {group_resource.run_action(:manage) }.should raise_error
+      end
+
+      it ":modify should raise an error" do
+        lambda {group_resource.run_action(:modify) }.should raise_error
+      end
     end
   end
 end
+

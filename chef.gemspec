@@ -13,10 +13,10 @@ Gem::Specification.new do |s|
   s.homepage = "http://wiki.opscode.com/display/chef"
 
   s.add_dependency "mixlib-config", "~> 2.0"
-  s.add_dependency "mixlib-cli", "~> 1.3"
+  s.add_dependency "mixlib-cli", "~> 1.4"
   s.add_dependency "mixlib-log", "~> 1.3"
   s.add_dependency "mixlib-authentication", "~> 1.3"
-  s.add_dependency "mixlib-shellout", "~> 1.2"
+  s.add_dependency "mixlib-shellout", "~> 1.3"
   s.add_dependency "ohai", "~> 6.0"
 
   s.add_dependency "rest-client", ">= 1.0.4", "< 1.7.0"
@@ -27,21 +27,22 @@ Gem::Specification.new do |s|
   s.add_dependency "mime-types", "~> 1.16"
 
   # The JSON gem reliably releases breaking changes as a patch release
-  s.add_dependency "json", ">= 1.4.4", "<=  1.7.7"
+  s.add_dependency "json", ">= 1.4.4", "<=  1.8.1"
   s.add_dependency "yajl-ruby", "~> 1.1"
   s.add_dependency "net-ssh", "~> 2.6"
-  s.add_dependency "net-ssh-multi", "~> 1.1.0"
+  s.add_dependency "net-ssh-multi", "~> 1.1"
   # CHEF-3027: The knife-cloud plugins require newer features from highline, core chef should not.
   s.add_dependency "highline", "~> 1.6", ">= 1.6.9"
   s.add_dependency "erubis", "~> 2.7"
   s.add_dependency "diff-lcs", "~> 1.2", ">= 1.2.4"
 
-  s.add_dependency "chef-zero", "~> 1.6", ">= 1.6.2"
+  s.add_dependency "chef-zero", "~> 1.7", ">= 1.7.2"
   s.add_dependency "puma", "~> 1.6"
 
   s.add_dependency "pry", "~> 0.9"
 
-  %w(rdoc sdoc rake rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
+  s.add_development_dependency "sdoc", "~> 0.3.0"
+  %w(rake rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
   %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 2.13.0" }
 
   s.bindir       = "bin"

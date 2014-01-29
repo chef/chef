@@ -58,6 +58,8 @@ class Chef
 
       SLASH = "/".freeze
 
+      HOST_LOWER = "host".freeze
+
       def self.user_agent=(ua)
         @user_agent = ua
       end
@@ -76,6 +78,10 @@ class Chef
       end
 
       def host
+        @url.hostname
+      end
+
+      def uri_safe_host
         @url.host
       end
 
@@ -132,6 +138,7 @@ class Chef
         # No response compression unless we asked for it explicitly:
         @headers[HTTPRequest::ACCEPT_ENCODING] ||= "identity"
         @headers['X-Chef-Version'] = ::Chef::VERSION
+        @headers['Host'] = "#{uri_safe_host}:#{port}" unless @headers.keys.any? {|k| k.downcase.to_s == HOST_LOWER }
         @headers
       end
 

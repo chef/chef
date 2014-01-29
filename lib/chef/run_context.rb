@@ -146,10 +146,21 @@ class Chef
         false
       else
         loaded_recipe(cookbook_name, recipe_short_name)
-
+        node.loaded_recipe(cookbook_name, recipe_short_name)
         cookbook = cookbook_collection[cookbook_name]
         cookbook.load_recipe(recipe_short_name, self)
       end
+    end
+
+    def load_recipe_file(recipe_file)
+      if !File.exist?(recipe_file)
+        raise Chef::Exceptions::RecipeNotFound, "could not find recipe file #{recipe_file}"
+      end
+
+      Chef::Log.debug("Loading Recipe File #{recipe_file}")
+      recipe = Chef::Recipe.new('@recipe_files', recipe_file, self)
+      recipe.from_file(recipe_file)
+      recipe
     end
 
     # Looks up an attribute file given the +cookbook_name+ and

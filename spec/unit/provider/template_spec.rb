@@ -39,7 +39,7 @@ describe Chef::Provider::Template do
 
   let(:provider) do
     provider = described_class.new(resource, run_context)
-    provider.stub!(:content).and_return(content)
+    provider.stub(:content).and_return(content)
     provider
   end
 
@@ -73,16 +73,18 @@ describe Chef::Provider::Template do
 
     let(:provider) do
       provider = described_class.new(resource, run_context)
-      provider.stub!(:content).and_return(content)
+      provider.stub(:content).and_return(content)
       provider
     end
 
     it "stops executing when the local template source can't be found" do
       setup_normal_file
-      content.stub!(:template_location).and_return("/baz/bar/foo")
+      content.stub(:template_location).and_return("/baz/bar/foo")
       File.stub(:exists?).with("/baz/bar/foo").and_return(false)
       lambda { provider.run_action(:create) }.should raise_error Chef::Mixin::WhyRun::ResourceRequirements::Assertion::AssertionFailure
     end
 
   end
+
+  it_behaves_like "a file provider with source field"
 end

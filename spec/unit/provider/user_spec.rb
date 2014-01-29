@@ -91,6 +91,12 @@ describe Chef::Provider::User do
       @current_resource.username.should == @new_resource.username
     end
 
+    it "should change the encoding of gecos to the encoding of the new resource", :ruby_gte_19_only do
+      @pw_user.gecos.force_encoding('ASCII-8BIT')
+      @provider.load_current_resource
+      @provider.current_resource.comment.encoding.should == @new_resource.comment.encoding
+    end
+
     it "should look up the user in /etc/passwd with getpwnam" do
       Etc.should_receive(:getpwnam).with(@new_resource.username).and_return(@pw_user)
       @provider.load_current_resource

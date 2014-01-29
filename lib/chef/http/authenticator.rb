@@ -52,6 +52,10 @@ class Chef
         nil
       end
 
+      def handle_stream_complete(http_response, rest_request, return_value)
+        [http_response, rest_request, return_value]
+      end
+
       def sign_requests?
         auth_credentials.sign_requests? && @sign_request
       end

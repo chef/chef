@@ -17,11 +17,14 @@
 #
 
 require 'chef/provider/group/groupadd'
+require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
     class Group
       class Usermod < Chef::Provider::Group::Groupadd
+
+        include Chef::Mixin::ShellOut
 
         def load_current_resource
           super
@@ -36,32 +39,52 @@ class Chef
             # No whyrun alternative: this component should be available in the base install of any given system that uses it
           end
 
-          requirements.assert(:modify, :create) do |a|
+          requirements.assert(:modify, :manage) do |a|
             a.assertion { @new_resource.members.empty? || @new_resource.append }
             a.failure_message Chef::Exceptions::Group, "setting group members directly is not supported by #{self.to_s}, must set append true in group"
             # No whyrun alternative - this action is simply not supported.
           end
+
+          requirements.assert(:all_actions) do |a|
+            a.assertion { @new_resource.excluded_members.empty? }
+            a.failure_message Chef::Exceptions::Group, "excluded_members is not supported by #{self.to_s}"
+            # No whyrun alternative - this action is simply not supported.
+          end
         end
 
-        def modify_group_members
-          case node[:platform]
-          when "openbsd", "netbsd", "aix", "solaris2", "smartos"
-            append_flags = "-G"
-          when "solaris", "suse", "opensuse"
-            append_flags = "-a -G"
-          end
-
-          unless @new_resource.members.empty?
-            if(@new_resource.append)
-              @new_resource.members.each do |member|
-                Chef::Log.debug("#{@new_resource} appending member #{member} to group #{@new_resource.group_name}")
-                run_command(:command => "usermod #{append_flags} #{@new_resource.group_name} #{member}" )
-              end
+        def set_members(members)
+          return if members.empty?
+          # This provider only supports adding members with
+          # append. Only if the action is create we will go
+          # ahead and add members.
+          if @new_resource.action == :create
+            members.each do |member|
+              add_member(member)
             end
           else
-            Chef::Log.debug("#{@new_resource} not changing group members, the group has no members")
+            raise Chef::Exceptions::UnsupportedAction, "Setting members directly is not supported by #{self.to_s}"
           end
         end
+
+        def add_member(member)
+          shell_out!("usermod #{append_flags} #{@new_resource.group_name} #{member}")
+        end
+
+        def remove_member(member)
+          # This provider only supports adding members with
+          # append. This function should never be called.
+          raise Chef::Exceptions::UnsupportedAction, "Removing members members is not supported by #{self.to_s}"
+        end
+
+        def append_flags
+          case node[:platform]
+          when "openbsd", "netbsd", "aix", "solaris2", "smartos"
+            "-G"
+          when "solaris", "suse", "opensuse"
+            "-a -G"
+          end
+        end
+
       end
     end
   end

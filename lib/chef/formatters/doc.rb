@@ -8,31 +8,46 @@ class Chef
     # "specdoc"
     class Doc < Formatters::Base
 
+      attr_reader :start_time, :end_time
       cli_name(:doc)
+      
 
       def initialize(out, err)
         super
 
         @updated_resources = 0
+        @up_to_date_resources = 0
+        @start_time = Time.now
+        @end_time = @start_time
+      end
+
+      def elapsed_time
+        end_time - start_time
       end
 
       def run_start(version)
         puts "Starting Chef Client, version #{version}"
       end
 
+      def total_resources
+        @up_to_date_resources + @updated_resources
+      end
+
       def run_completed(node)
+        @end_time = Time.now
         if Chef::Config[:why_run]
-          puts "Chef Client finished, #{@updated_resources} resources would have been updated"
+          puts "Chef Client finished, #{@updated_resources}/#{total_resources} resources would have been updated"
         else
-          puts "Chef Client finished, #{@updated_resources} resources updated"
+          puts "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated in #{elapsed_time} seconds"
         end
       end
 
       def run_failed(exception)
+        @end_time = Time.now
         if Chef::Config[:why_run]
           puts "Chef Client failed. #{@updated_resources} resources would have been updated"
         else
-          puts "Chef Client failed. #{@updated_resources} resources updated"
+          puts "Chef Client failed. #{@updated_resources} resources updated in #{elapsed_time} seconds"
         end
       end
 
@@ -171,6 +186,7 @@ class Chef
 
       # Called when a resource has no converge actions, e.g., it was already correct.
       def resource_up_to_date(resource, action)
+        @up_to_date_resources+= 1
         puts " (up to date)"
       end
 
@@ -212,6 +228,21 @@ class Chef
       # not supporting whyrun mode.
       def resource_current_state_load_bypassed(resource, action, current_resource)
         @output.color("\n    * Whyrun not supported for #{resource}, bypassing load.", :yellow)
+      end
+
+      # Called before handlers run
+      def handlers_start(handler_count)
+        puts "\nRunning handlers:"
+      end
+
+      # Called after an individual handler has run
+      def handler_executed(handler)
+        puts "  - #{handler.class.name}"
+      end
+
+      # Called after all handlers have executed
+      def handlers_completed
+        puts "Running handlers complete\n"
       end
 
       # Called when a provider makes an assumption after a failed assertion

@@ -26,6 +26,7 @@ describe Chef::Application::Client, "reconfigure" do
     @app.stub!(:configure_opt_parser).and_return(true)
     @app.stub!(:configure_chef).and_return(true)
     @app.stub!(:configure_logging).and_return(true)
+    @app.cli_arguments = []
     Chef::Config[:interval] = 10
 
     Chef::Config[:once] = false

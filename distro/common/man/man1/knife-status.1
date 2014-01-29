@@ -33,66 +33,6 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .sp
 The \fBknife status\fP subcommand is used to display a brief summary of the nodes on a server, including the time of the most recent successful chef\-client run.
 .sp
-\fBCommon Options\fP
-.sp
-The following options can be run with all Knife sub\-commands and plug\-ins:
-.INDENT 0.0
-.TP
-.B \fB\-c CONFIG\fP, \fB\-\-config CONFIG\fP
-The configuration file to use.
-.TP
-.B \fB\-\-color\fP
-Indicates that colored output will be used.
-.TP
-.B \fB\-d\fP, \fB\-\-disable\-editing\fP
-Indicates that $EDITOR will not be opened; data will be accepted as\-is.
-.TP
-.B \fB\-\-defaults\fP
-Indicates that Knife will use the default value, instead of asking a user to provide one.
-.TP
-.B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
-The $EDITOR that is used for all interactive commands.
-.TP
-.B \fB\-E ENVIRONMENT\fP, \fB\-\-environment ENVIRONMENT\fP
-The name of the environment. When this option is added to a command, the command will run only against the named environment.
-.TP
-.B \fB\-f FILE_NAME\fP, \fB\-\-file FILE_NAME\fP
-Indicates that the private key will be saved to a specified file name.
-.TP
-.B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
-The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
-.TP
-.B \fB\-h\fP, \fB\-\-help\fP
-Shows help for the command.
-.TP
-.B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the server.
-.TP
-.B \fB\-\-no\-color\fP
-Indicates that color will not be used in the output.
-.TP
-.B \fB\-p PASSWORD\fP, \fB\-\-password PASSWORD\fP
-The user password.
-.TP
-.B \fB\-\-print\-after\fP
-Indicates that data will be shown after a destructive operation.
-.TP
-.B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
-The URL for the server.
-.TP
-.B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
-.TP
-.B \fB\-v\fP, \fB\-\-version\fP
-The version of the chef\-client.
-.TP
-.B \fB\-V\fP, \fB\-\-verbose\fP
-Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
-.TP
-.B \fB\-y\fP, \fB\-\-yes\fP
-Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
-.UNINDENT
-.sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
@@ -108,17 +48,68 @@ $ knife status (options)
 This subcommand has the following options:
 .INDENT 0.0
 .TP
-.B \fBQUERY\fP
-The search query used to identify a a list of items on a server. This option uses the same syntax as the \fBsearch\fP sub\-command.
+.B \fB\-c CONFIG_FILE\fP, \fB\-\-config CONFIG_FILE\fP
+The configuration file to use.
+.TP
+.B \fB\-\-chef\-zero\-port PORT\fP
+The port on which chef\-zero will listen.
+.TP
+.B \fB\-\-[no\-]color\fP
+Indicates whether colored output will be used.
+.TP
+.B \fB\-d\fP, \fB\-\-disable\-editing\fP
+Indicates that $EDITOR will not be opened; data will be accepted as\-is.
+.TP
+.B \fB\-\-defaults\fP
+Indicates that Knife will use the default value, instead of asking a user to provide one.
+.TP
+.B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
+The $EDITOR that is used for all interactive commands.
+.TP
+.B \fB\-E ENVIRONMENT\fP, \fB\-\-environment ENVIRONMENT\fP
+The name of the environment. When this option is added to a command, the command will run only against the named environment.
+.TP
+.B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
+The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
+.TP
+.B \fB\-h\fP, \fB\-\-help\fP
+Shows help for the command.
 .TP
 .B \fB\-H\fP, \fB\-\-hide\-healthy\fP
 Indicates that nodes on which a chef\-client run has occurred within the previous hour will be hidden.
+.TP
+.B \fB\-k KEY\fP, \fB\-\-key KEY\fP
+The private key that Knife will use to sign requests made by the API client to the server.
+.TP
+.B \fB\-\-print\-after\fP
+Indicates that data will be shown after a destructive operation.
+.TP
+.B \fBSEARCH_QUERY\fP
+The search query used to identify a a list of items on a server. This option uses the same syntax as the \fBsearch\fP sub\-command.
 .TP
 .B \fB\-r RUN_LIST\fP, \fB\-\-run\-list RUN_LIST\fP
 A comma\-separated list of roles and/or recipes to be applied.
 .TP
 .B \fB\-s\fP, \fB\-\-sort\-reverse\fP
 Indicates that the list will be sorted by last run time, descending.
+.TP
+.B \fB\-\-server\-url URL\fP
+The URL for the server.
+.TP
+.B \fB\-u USER\fP, \fB\-\-user USER\fP
+The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
+.TP
+.B \fB\-v\fP, \fB\-\-version\fP
+The version of the chef\-client.
+.TP
+.B \fB\-V\fP, \fB\-\-verbose\fP
+Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
+.TP
+.B \fB\-y\fP, \fB\-\-yes\fP
+Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
+.TP
+.B \fB\-z\fP, \fB\-\-local\-mode\fP
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
 .UNINDENT
 .sp
 \fBExamples\fP
@@ -202,6 +193,6 @@ to return something like:
 .ft P
 .fi
 .SH AUTHOR
-Opscode
+Chef
 .\" Generated by docutils manpage writer.
 .

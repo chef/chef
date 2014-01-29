@@ -67,11 +67,14 @@ The configuration file to use.
 .B \fB\-d\fP, \fB\-\-daemonize\fP
 Indicates that the executable will be run as a daemon. This option is only available on machines that run in UNIX or Linux environments. For machines that are running Microsoft Windows that require similar functionality, use the \fBchef\-client::service\fP recipe in the \fBchef\-client\fP cookbook: \fI\%http://community.opscode.com/cookbooks/chef-client\fP. This will install a chef\-client service under Microsoft Windows using the Windows Service Wrapper.
 .TP
+.B \fB\-E ENVIRONMENT_NAME\fP, \fB\-\-environment ENVIRONMENT_NAME\fP
+The name of the environment.
+.TP
 .B \fB\-f\fP, \fB\-\-[no\-]fork\fP
 Indicates that a chef\-client run will be contained in a secondary process with dedicated RAM. When the chef\-client run is complete the RAM will be returned to the master process. This option helps ensure that a chef\-client will use a steady amount of RAM over time because the master process will not run recipes. This option will also help prevent memory leaks (such as those that can be introduced by the code contained within a poorly designed cookbook). Use \fB\-\-no\-fork\fP to disable running the chef\-client in fork node. Default value: \fB\-\-fork\fP.
 .TP
 .B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
-The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
+The output format: \fBdoc\fP (default) or \fBmin\fP. Other formatting options are available by using 3rd party formatters.
 .TP
 .B \fB\-\-force\-formatter\fP
 Indicates that formatter output will be used instead of logger output.
@@ -86,7 +89,7 @@ The name of the group that owns a process. This is required when starting any ex
 Shows help for the command.
 .TP
 .B \fB\-i SECONDS\fP, \fB\-\-interval SECONDS\fP
-The frequency (in seconds) at which the chef\-client runs. This value is configured for the chef\-client application run time, rather than in \fBChef::Config\fP.
+The frequency (in seconds) at which the chef\-client runs.
 .TP
 .B \fB\-j PATH\fP, \fB\-\-json\-attributes PATH\fP
 The path to a file that contains JSON data. Use this option to override attributes that are set from other locations, such as from within a cookbook or by a role.

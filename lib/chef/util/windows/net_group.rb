@@ -55,19 +55,20 @@ class Chef::Util::Windows::NetGroup < Chef::Util::Windows
       nread = 0.chr * PTR_SIZE
       total = 0.chr * PTR_SIZE
 
-      rc = NetLocalGroupGetMembers.call(nil, @name, 1, ptr, -1,
+      rc = NetLocalGroupGetMembers.call(nil, @name, 0, ptr, -1,
                                         nread, total, handle)
       if (rc == NERR_Success) || (rc == ERROR_MORE_DATA)
         ptr = ptr.unpack('L')[0]
         nread = nread.unpack('i')[0]
-        members = 0.chr * (nread * (PTR_SIZE * 3)) #nread * sizeof(LOCALGROUP_MEMBERS_INFO_1)
+        members = 0.chr * (nread * PTR_SIZE ) #nread * sizeof(LOCALGROUP_MEMBERS_INFO_0)
         memcpy(members, ptr, members.size)
 
-        #3 pointer fields in LOCALGROUP_MEMBERS_INFO_1, offset 2*PTR_SIZE is lgrmi1_name
+        # 1 pointer field in LOCALGROUP_MEMBERS_INFO_0, offset 0 is lgrmi0_sid
         nread.times do |i|
-          offset = (i * 3) + 2
-          member = lpwstr_to_s(members, offset)
-          group_members << member
+          sid_address = members[i * PTR_SIZE, PTR_SIZE].unpack('L')[0]
+          sid_ptr = FFI::Pointer.new(sid_address)
+          member_sid = Chef::ReservedNames::Win32::Security::SID.new(sid_ptr)
+          group_members << member_sid.to_s
         end
         NetApiBufferFree(ptr)
       else
@@ -90,6 +91,10 @@ class Chef::Util::Windows::NetGroup < Chef::Util::Windows
 
   def local_add_members(members)
     modify_members(members, NetLocalGroupAddMembers)
+  end
+
+  def local_delete_members(members)
+    modify_members(members, NetLocalGroupDelMembers)
   end
 
   def local_delete

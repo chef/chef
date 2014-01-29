@@ -65,8 +65,48 @@ class Chef
         end
 
         def modify_group_members
-          raise Chef::Exceptions::Group, "you must override modify_group_members in #{self.to_s}"
+          if @new_resource.append
+            if @new_resource.members && !@new_resource.members.empty?
+              members_to_be_added = [ ]
+              @new_resource.members.each do |member|
+                members_to_be_added << member if !@current_resource.members.include?(member)
+              end
+              members_to_be_added.each do |member|
+                Chef::Log.debug("#{@new_resource} appending member #{member} to group #{@new_resource.group_name}")
+                add_member(member)
+              end
+            end
+
+            if @new_resource.excluded_members && !@new_resource.excluded_members.empty?
+              members_to_be_removed = [ ]
+              @new_resource.excluded_members.each do |member|
+                members_to_be_removed << member if @current_resource.members.include?(member)
+              end
+
+              members_to_be_removed.each do |member|
+                Chef::Log.debug("#{@new_resource} removing member #{member} from group #{@new_resource.group_name}")
+                remove_member(member)
+              end
+            end
+          else
+            members_description = @new_resource.members.empty? ? "none" : @new_resource.members.join(", ")
+            Chef::Log.debug("#{@new_resource} setting group members to: #{members_description}")
+            set_members(@new_resource.members)
+          end
         end
+
+        def add_member(member)
+          raise Chef::Exceptions::Group, "you must override add_member in #{self.to_s}"
+        end
+
+        def remove_member(member)
+          raise Chef::Exceptions::Group, "you must override remove_member in #{self.to_s}"
+        end
+
+        def set_members(members)
+          raise Chef::Exceptions::Group, "you must override set_members in #{self.to_s}"
+        end
+
         # Little bit of magic as per Adam's useradd provider to pull the assign the command line flags
         #
         # ==== Returns

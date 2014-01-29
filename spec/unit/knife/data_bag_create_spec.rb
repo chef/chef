@@ -53,6 +53,13 @@ describe Chef::Knife::DataBagCreate do
     @knife.run
   end
 
+  it "tries to create a data bag with an invalid name when given one argument" do
+    @knife.name_args = ['invalid&char']
+    @knife.should_receive(:exit).with(1)
+
+    @knife.run
+  end
+
   it "creates a data bag item when given two arguments" do
     @knife.name_args = ['sudoing_admins', 'ME']
     user_supplied_hash = {"login_name" => "alphaomega", "id" => "ME"}

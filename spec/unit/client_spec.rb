@@ -169,7 +169,7 @@ shared_examples_for Chef::Client do
 
     it "should identify the node and run ohai, then register the client" do
       mock_chef_rest_for_node = mock("Chef::REST (node)")
-      mock_chef_rest_for_client = mock("Chef::REST (client)")
+      mock_chef_rest_for_cookbook_sync = mock("Chef::REST (cookbook sync)")
       mock_chef_rest_for_node_save = mock("Chef::REST (node save)")
       mock_chef_runner = mock("Chef::Runner")
 
@@ -202,7 +202,8 @@ shared_examples_for Chef::Client do
       # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
       #
       Chef::CookbookSynchronizer.any_instance.should_receive(:sync_cookbooks)
-      mock_chef_rest_for_node.should_receive(:post_rest).with("environments/_default/cookbook_versions", {:run_list => []}).and_return({})
+      Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url]).and_return(mock_chef_rest_for_cookbook_sync)
+      mock_chef_rest_for_cookbook_sync.should_receive(:post).with("environments/_default/cookbook_versions", {:run_list => []}).and_return({})
 
       # --Client#converge
       Chef::Runner.should_receive(:new).and_return(mock_chef_runner)
@@ -275,6 +276,7 @@ shared_examples_for Chef::Client do
         Chef::Client.clear_notifications
         Chef::Node.stub!(:find_or_create).and_return(@node)
         @node.stub!(:save)
+        @client.load_node
         @client.build_node
       end
 
@@ -330,7 +332,10 @@ shared_examples_for Chef::Client do
       @node[:roles].should be_nil
       @node[:recipes].should be_nil
 
-      @client.build_node
+      @client.policy_builder.stub!(:node).and_return(@node)
+
+      # chefspec and possibly others use the return value of this method
+      @client.build_node.should == @node
 
       # check post-conditions.
       @node[:roles].should_not be_nil
@@ -435,7 +440,8 @@ shared_examples_for Chef::Client do
 
       @node.should_receive(:save).and_return(nil)
 
-      @client.build_node
+      @client.policy_builder.stub(:node).and_return(@node)
+      @client.policy_builder.build_node
 
       @node[:roles].should_not be_nil
       @node[:roles].should eql(['test_role'])
@@ -445,6 +451,20 @@ shared_examples_for Chef::Client do
 
       @node.run_list.should == original_runlist
 
+    end
+  end
+
+  describe "assert_cookbook_path_not_empty" do
+    before do
+      Chef::Config[:solo] = true
+      Chef::Config[:cookbook_path] = ["/path/to/invalid/cookbook_path"]
+    end
+    context "when any directory of cookbook_path contains no cookbook" do
+      it "raises CookbookNotFound error" do
+        expect do
+          @client.send(:assert_cookbook_path_not_empty, nil)
+        end.to raise_error(Chef::Exceptions::CookbookNotFound, 'None of the cookbook paths set in Chef::Config[:cookbook_path], ["/path/to/invalid/cookbook_path"], contain any cookbooks')
+      end
     end
   end
 

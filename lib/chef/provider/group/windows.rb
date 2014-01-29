@@ -57,22 +57,39 @@ class Chef
 
         def manage_group
           if @new_resource.append
-            begin
-              #ERROR_MEMBER_IN_ALIAS if a member already exists in the group
-              @net_group.local_add_members(@new_resource.members)
-            rescue
-              members = @new_resource.members + @current_resource.members
-              @net_group.local_set_members(members.uniq)
+            members_to_be_added = [ ]
+            @new_resource.members.each do |member|
+              members_to_be_added << member if ! has_current_group_member?(member)
             end
+
+            # local_add_members will raise ERROR_MEMBER_IN_ALIAS if a
+            # member already exists in the group.
+            @net_group.local_add_members(members_to_be_added) unless members_to_be_added.empty?
+
+            members_to_be_removed = [ ]
+            @new_resource.excluded_members.each do |member|
+              member_sid = local_group_name_to_sid(member)
+              members_to_be_removed << member if has_current_group_member?(member)
+            end
+            @net_group.local_delete_members(members_to_be_removed) unless members_to_be_removed.empty?
           else
             @net_group.local_set_members(@new_resource.members)
           end
+        end
+
+        def has_current_group_member?(member)
+          member_sid = local_group_name_to_sid(member)
+          @current_resource.members.include?(member_sid)
         end
 
         def remove_group
           @net_group.local_delete
         end
 
+        def local_group_name_to_sid(group_name)
+          locally_qualified_name = group_name.include?("\\") ? group_name : "#{ENV['COMPUTERNAME']}\\#{group_name}"
+          Chef::ReservedNames::Win32::Security.lookup_account_name(locally_qualified_name)[1].to_s
+        end
       end
     end
   end

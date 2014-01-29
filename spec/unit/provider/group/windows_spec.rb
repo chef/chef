@@ -55,6 +55,7 @@ describe Chef::Provider::Group::Windows do
       Chef::Util::Windows::NetGroup.stub!(:new).and_return(@net_group)
       @net_group.stub!(:local_add_members)
       @net_group.stub!(:local_set_members)
+      @provider.stub(:local_group_name_to_sid)
       @provider.current_resource = @current_resource
     end
 
@@ -67,14 +68,6 @@ describe Chef::Provider::Group::Windows do
     it "should call @net_group.local_add_members" do
       @new_resource.stub!(:append).and_return(true)
       @net_group.should_receive(:local_add_members).with(@new_resource.members)
-      @provider.manage_group
-    end
-
-    it "should call @net_group.local_set_members if append fails" do
-      @new_resource.stub!(:append).and_return(true)
-      @net_group.stub!(:local_add_members).and_raise(ArgumentError)
-      @net_group.should_receive(:local_add_members).with(@new_resource.members)
-      @net_group.should_receive(:local_set_members).with(@new_resource.members + @current_resource.members)
       @provider.manage_group
     end
 

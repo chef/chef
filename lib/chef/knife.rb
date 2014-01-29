@@ -239,7 +239,13 @@ class Chef
     end
 
     def self.working_directory
-      ENV['PWD'] || Dir.pwd
+      a = if Chef::Platform.windows?
+            ENV['CD']
+          else
+            ENV['PWD']
+          end || Dir.pwd
+
+      a
     end
 
     def self.reset_config_path!

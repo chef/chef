@@ -103,7 +103,7 @@ class Chef
           priority.each { |runlevel, arguments|
             Chef::Log.debug("#{@new_resource} runlevel #{runlevel}, action #{arguments[0]}, priority #{arguments[1]}")
             # if we are in a update-rc.d default startup runlevel && we start in this runlevel
-            if (2..5).include?(runlevel.to_i) && arguments[0] == :start
+            if %w[ 1 2 3 4 5 S ].include?(runlevel) && arguments[0] == :start
               enabled = true
             end
           }
@@ -113,7 +113,12 @@ class Chef
 
         # Override method from parent to ensure priority is up-to-date
         def action_enable
-          if @current_resource.enabled && @current_resource.priority == @new_resource.priority
+          if @new_resource.priority.nil?
+            priority_ok = true
+          else
+            priority_ok = @current_resource.priority == @new_resource.priority
+          end
+          if @current_resource.enabled and priority_ok
             Chef::Log.debug("#{@new_resource} already enabled - nothing to do")
           else
             converge_by("enable service #{@new_resource}") do

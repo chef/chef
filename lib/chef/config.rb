@@ -127,26 +127,6 @@ class Chef
     # properly.
     configurable(:daemonize).writes_value { |v| v }
 
-    # Override the config dispatch to set the value of log_location configuration option
-    #
-    # === Parameters
-    # location<IO||String>:: Logging location as either an IO stream or string representing log file path
-    #
-    config_attr_writer :log_location do |location|
-      if location.respond_to? :sync=
-        location.sync = true
-        location
-      elsif location.respond_to? :to_str
-        begin
-          f = File.new(location.to_str, "a")
-          f.sync = true
-        rescue Errno::ENOENT
-          raise Chef::Exceptions::ConfigurationError, "Failed to open or create log file at #{location.to_str}"
-        end
-        f
-      end
-    end
-
     # The root where all local chef object data is stored.  cookbooks, data bags,
     # environments are all assumed to be in separate directories under this.
     # chef-solo uses these directories for input data.  knife commands
@@ -299,6 +279,9 @@ class Chef
     # logger is the primary mode of output, and the log level is set to :info
     default :log_level, :auto
 
+    # Logging location as either an IO stream or string representing log file path
+    default :log_location, STDOUT
+
     # Using `force_formatter` causes chef to default to formatter output when STDOUT is not a tty
     default :force_formatter, false
 
@@ -310,7 +293,6 @@ class Chef
     default :interval, nil
     default :once, nil
     default :json_attribs, nil
-    default :log_location, STDOUT
     # toggle info level log items that can create a lot of output
     default :verbose_logging, true
     default :node_name, nil
@@ -337,6 +319,16 @@ class Chef
     default :client_fork, true
     default :enable_reporting, true
     default :enable_reporting_url_fatals, false
+
+    # Policyfile is an experimental feature where a node gets its run list and
+    # cookbook version set from a single document on the server instead of
+    # expanding the run list and having the server compute the cookbook version
+    # set based on environment constraints.
+    #
+    # Because this feature is experimental, it is not recommended for
+    # production use. Developent/release of this feature may not adhere to
+    # semver guidelines.
+    default :use_policyfile, false
 
     # Set these to enable SSL authentication / mutual-authentication
     # with the server
@@ -449,6 +441,9 @@ class Chef
     # Report Handlers
     default :report_handlers, []
 
+    # Event Handlers
+    default :event_handlers, []
+
     # Exception Handlers
     default :exception_handlers, []
 
@@ -494,8 +489,12 @@ class Chef
 
       default :fatal_windows_admin_check, false
     else
-      default :user_valid_regex, [ /^([-a-zA-Z0-9_.]+[\\@]?[-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
-      default :group_valid_regex, [ /^([-a-zA-Z0-9_.\\@^ ]+)$/, /^\d+$/ ]
+      # user/group cannot start with '-', '+' or '~'
+      # user/group cannot contain ':', ',' or non-space-whitespace or null byte
+      # everything else is allowed (UTF-8, spaces, etc) and we delegate to your O/S useradd program to barf or not
+      # copies: http://anonscm.debian.org/viewvc/pkg-shadow/debian/trunk/debian/patches/506_relaxed_usernames?view=markup
+      default :user_valid_regex, [ /^[^-+~:,\t\r\n\f\0]+[^:,\t\r\n\f\0]*$/ ]
+      default :group_valid_regex, [ /^[^-+~:,\t\r\n\f\0]+[^:,\t\r\n\f\0]*$/ ]
     end
 
     # returns a platform specific path to the user home dir

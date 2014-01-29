@@ -121,29 +121,6 @@ describe Chef::Config do
 
   end
 
-  describe "config attribute writer: log_method=" do
-    describe "when given an object that responds to sync= e.g. IO" do
-      it "should configure itself to use the IO as log_location" do
-        Chef::Config.log_location = STDOUT
-        Chef::Config.log_location.should == STDOUT
-      end
-    end
-
-    describe "when given an object that is stringable (to_str)" do
-      before do
-        @mockfile = mock("File", :path => "/var/log/chef/client.log", :sync= => true)
-        File.should_receive(:new).
-          with("/var/log/chef/client.log", "a").
-          and_return(@mockfile)
-      end
-
-      it "should configure itself to use a File object based upon the String" do
-        Chef::Config.log_location = "/var/log/chef/client.log"
-        Chef::Config.log_location.path.should == "/var/log/chef/client.log"
-      end
-    end
-  end
-
   describe "class method: plaform_specific_path" do
     it "should return given path on non-windows systems" do
       platform_mock :unix do
@@ -354,10 +331,23 @@ describe Chef::Config do
     end
   end
 
-  describe "Chef::Config[:log_location]" do
-    it "raises ConfigurationError when log_location directory is missing" do
-      missing_path = "/tmp/non-existing-dir/file"
-      expect{Chef::Config.log_location = missing_path}.to raise_error Chef::Exceptions::ConfigurationError
+  describe "Chef::Config[:event_handlers]" do
+    it "sets a event_handlers to an empty array by default" do
+      Chef::Config[:event_handlers].should eq([])
+    end
+    it "should be able to add custom handlers" do
+      o = Object.new
+      Chef::Config[:event_handlers] << o
+      Chef::Config[:event_handlers].should be_include(o)
+    end
+  end
+
+  describe "Chef::Config[:user_valid_regex]" do
+    context "on a platform that is not Windows" do
+      it "allows one letter usernames" do
+        any_match = Chef::Config[:user_valid_regex].any? { |regex| regex.match('a') }
+        expect(any_match).to be_true
+      end
     end
   end
 end

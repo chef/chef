@@ -69,6 +69,7 @@ describe Chef::Provider::Deploy do
 
     it "creates deploy_to dir" do
       ::Dir.should_receive(:chdir).with(@expected_release_dir).exactly(4).times
+      @provider.should_receive(:enforce_ownership).twice
       @provider.stub(:update_cached_repo)
       @provider.deploy
     end
@@ -80,6 +81,7 @@ describe Chef::Provider::Deploy do
     ::Dir.should_receive(:chdir).with(@expected_release_dir).exactly(4).times
     FileUtils.should_not_receive(:mkdir_p).with(@resource.deploy_to)
     FileUtils.should_not_receive(:mkdir_p).with(@resource.shared_path)
+    @provider.should_receive(:enforce_ownership).twice
     @provider.stub(:copy_cached_repo)
     @provider.stub(:update_cached_repo)
     @provider.stub(:symlink)
@@ -94,6 +96,7 @@ describe Chef::Provider::Deploy do
     @provider.stub(:copy_cached_repo)
     @provider.stub(:update_cached_repo)
     @provider.stub(:install_gems)
+    @provider.should_receive(:enforce_ownership).ordered
     @provider.stub(:enforce_ownership)
     @provider.stub(:symlink)
     @provider.stub(:migrate)

@@ -88,7 +88,7 @@ class Chef
           status = popen4("installp -L -d #{@new_resource.source}") do |pid, stdin, stdout, stderr|
             stdout.each_line do |line|
               case line
-              when /\w:{Regexp.escape(@new_resource.package_name)}:(.*)/
+              when /\w:#{Regexp.escape(@new_resource.package_name)}:(.*)/
                 fields = line.split(":")
                 @candidate_version = fields[2]
                 @new_resource.version(fields[2])

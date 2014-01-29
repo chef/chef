@@ -290,7 +290,7 @@ e.g.
 
 Attributes
 ----------
-TODO: List you cookbook attributes here.
+TODO: List your cookbook attributes here.
 
 e.g.
 #### #{cookbook_name}::default
@@ -358,7 +358,7 @@ Requirements
   toaster         #{cookbook_name} needs toaster to brown your bagel.
 
 Attributes
-  TODO: List you cookbook attributes here.
+  TODO: List your cookbook attributes here.
 
   #{cookbook_name}
   Key                                   Type        Description                           Default

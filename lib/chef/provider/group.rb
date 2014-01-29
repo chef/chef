@@ -63,6 +63,17 @@ class Chef
           a.failure_message(Chef::Exceptions::Group, "Cannot modify #{@new_resource} - group does not exist!")
           a.whyrun("Group #{@new_resource} does not exist. Unless it would have been created earlier in this run, this attempt to modify it would fail.")
         end
+
+        requirements.assert(:all_actions) do |a|
+          # Make sure that the resource doesn't contain any common
+          # user names in the members and exclude_members properties.
+          if !@new_resource.members.nil? && !@new_resource.excluded_members.nil?
+            common_members = @new_resource.members & @new_resource.excluded_members
+            a.assertion { common_members.empty? }
+            a.failure_message(Chef::Exceptions::ConflictingMembersInGroup, "Attempting to both add and remove users from a group: '#{common_members.join(', ')}'")
+            # No why-run alternative
+          end
+        end
       end
 
       # Check to see if a group needs any changes. Populate
@@ -72,29 +83,41 @@ class Chef
       # <true>:: If a change is required
       # <false>:: If a change is not required
       def compare_group
-        @change_desc = nil
+        @change_desc = [ ]
         if @new_resource.gid != @current_resource.gid
-          @change_desc = "change gid #{@current_resource.gid} to #{@new_resource.gid}"
-          return true
+          @change_desc << "change gid #{@current_resource.gid} to #{@new_resource.gid}"
         end
 
         if(@new_resource.append)
           missing_members = []
           @new_resource.members.each do |member|
-            next if @current_resource.members.include?(member)
+            next if has_current_group_member?(member)
             missing_members << member
           end
           if missing_members.length > 0
-            @change_desc = "add missing member(s): #{missing_members.join(", ")}"
-            return true
+            @change_desc << "add missing member(s): #{missing_members.join(", ")}"
+          end
+
+          members_to_be_removed = []
+          @new_resource.excluded_members.each do |member|
+            if has_current_group_member?(member)
+              members_to_be_removed << member
+            end
+          end
+          if members_to_be_removed.length > 0
+            @change_desc << "remove existing member(s): #{members_to_be_removed.join(", ")}"
           end
         else
           if @new_resource.members != @current_resource.members
-            @change_desc = "replace group members with new list of members"
-            return true
+            @change_desc << "replace group members with new list of members"
           end
         end
-        return false
+
+        !@change_desc.empty?
+      end
+
+      def has_current_group_member?(member)
+        @current_resource.members.include?(member)
       end
 
       def action_create
@@ -106,7 +129,7 @@ class Chef
           end
         else
           if compare_group
-            converge_by(["alter group #{@new_resource}", @change_desc ]) do
+            converge_by(["alter group #{@new_resource}"] + change_desc) do
               manage_group
               Chef::Log.info("#{@new_resource} altered")
             end
@@ -125,7 +148,7 @@ class Chef
 
       def action_manage
         if @group_exists && compare_group
-          converge_by(["manage group #{@new_resource}", @change_desc]) do
+          converge_by(["manage group #{@new_resource}"] + change_desc) do
             manage_group
             Chef::Log.info("#{@new_resource} managed")
           end
@@ -134,7 +157,7 @@ class Chef
 
       def action_modify
         if compare_group
-          converge_by(["modify group #{@new_resource}", @change_desc]) do
+          converge_by(["modify group #{@new_resource}"] + change_desc) do
             manage_group
             Chef::Log.info("#{@new_resource} modified")
           end
