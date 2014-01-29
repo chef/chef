@@ -1,0 +1,90 @@
+/bin/sh -c '
+<%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
+
+if [ -d /usr/ports ]; then
+    portsnap fetch update
+else
+    portsnap fetch extract
+fi
+
+RUBYVSN=`grep "DEFAULT_VERSIONS=ruby" /etc/make.conf`
+
+if [ ! $RUBYVSN ]; then
+    echo "DEFAULT_VERSIONS=ruby=1.9" >> /etc/make.conf
+fi
+
+PKGNG=`grep "WITH_PKGNG=yes" /etc/make.conf`
+
+if [ ! $PKGNG ]; then
+    echo "WITH_PKGNG=yes" >> /etc/make.conf
+fi
+
+if [ ! -f /usr/local/sbin/portmaster ]; then
+    cd /usr/ports/ports-mgmt/portmaster && make -DBATCH install clean
+fi
+
+if [ ! -f /usr/local/etc/pkg/repos/FreeBSD.conf ]; then
+    cd /usr/ports/ports-mgmt/pkg && make -DFORCE_PKG_REGISTER -DBATCH install clean
+    /usr/local/sbin/pkg2ng
+    ABI=$(pkg -vv | grep ABI | cut -f3 -w)
+    mkdir -p /usr/local/etc/pkg/repos
+    cat > /usr/local/etc/pkg/repos/FreeBSD.conf <<EOF
+FreeBSD: {
+      url: "pkg+http://pkg.FreeBSD.org/$ABI/latest",
+      mirror_type: "srv",
+      enabled: yes
+}
+EOF
+fi
+
+BASE_PACKAGES="net/rsync ftp/curl devel/ruby-gems converters/ruby-iconv devel/rubygem-rake sysutils/rubygem-chef"
+
+for pkg in $BASE_PACKAGES
+do
+    pkg install -y $pkg
+done
+
+CHEF_ENABLED=`grep "chef_client_enable=" /etc/rc.conf`
+
+if [ ! $CHEF_ENABLED ]; then
+    echo "chef_client_enable=\"YES\"" >> /etc/rc.conf
+fi
+
+mkdir -p /usr/local/etc/chef
+
+cat > /usr/local/etc/chef/validation.pem <<'EOP'
+<%= validation_key %>
+EOP
+chmod 0600 /usr/local/etc/chef/validation.pem
+
+<% if encrypted_data_bag_secret -%>
+cat > /usr/local/etc/chef/encrypted_data_bag_secret <<'EOP'
+<%= encrypted_data_bag_secret %>
+EOP
+chmod 0600 /usr/local/etc/chef/encrypted_data_bag_secret
+<% end -%>
+
+<%# Generate Ohai Hints -%>
+<% unless @chef_config[:knife][:hints].nil? || @chef_config[:knife][:hints].empty? -%>
+mkdir -p /usr/local/etc/chef/ohai/hints
+
+<% @chef_config[:knife][:hints].each do |name, hash| -%>
+cat > /usr/local/etc/chef/ohai/hints/<%= name %>.json <<'EOP'
+<%= hash.to_json %>
+EOP
+<% end -%>
+<% end -%>
+
+cat > /usr/local/etc/chef/client.rb <<'EOP'
+<%= config_content %>
+EOP
+
+echo "pid_file \"/var/run/chef_client.pid\"" >> /usr/local/etc/chef/client.rb
+echo "client_key \"/usr/local/etc/chef/client.pem\"" >> /usr/local/etc/chef/client.rb
+echo "validation_key \"/usr/local/etc/chef/validation.pem\"" >> /usr/local/etc/chef/client.rb
+
+cat > /usr/local/etc/chef/first-boot.json <<'EOP'
+<%= first_boot.to_json %>
+EOP
+
+<%= start_chef %>'
