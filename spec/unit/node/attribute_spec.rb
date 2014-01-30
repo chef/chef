@@ -437,7 +437,7 @@ describe Chef::Node::Attribute do
 
     it "should let you set an attribute value when another hash has an intermediate value" do
       @attributes.normal["the_ghost"] = { "exterminate" => "the future" }
-      lambda { @attributes.normal["the_ghost"]["exterminate"]["tomorrow"] = false }.should_not raise_error
+      lambda { @attributes.normal["the_ghost"]["eviscerate"]["tomorrow"] = false }.should_not raise_error
     end
 
     it "should set the attribute value" do
