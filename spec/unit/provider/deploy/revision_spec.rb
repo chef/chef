@@ -37,7 +37,6 @@ describe Chef::Provider::Deploy::Revision do
 
   after do
     # Make sure we don't keep any state in our tests
-    reset FileUtils
     FileUtils.rm_rf @temp_dir if File.directory?( @temp_dir )
   end
 

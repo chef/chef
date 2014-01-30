@@ -263,7 +263,6 @@ describe Chef::Provider::Mount::Mount do
 
     describe "mount_fs" do
       it "should mount the filesystem if it is not mounted" do
-        reset @provider
         @provider.should_receive(:shell_out!).with("mount -t ext3 -o defaults /dev/sdz1 /tmp/foo")
         @provider.mount_fs()
       end
