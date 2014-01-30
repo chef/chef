@@ -16,8 +16,6 @@
 # limitations under the License.
 #
 
-require 'pry'
-
 shared_context "deploying with move" do
   before do
     Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
