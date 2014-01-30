@@ -108,6 +108,16 @@ end
 
 shared_examples_for Chef::Provider::File do
 
+  let!(:tempfile) do
+    Tempfile.new("rspec-shared-file-provider")
+  end
+
+  before(:each) do
+    content.stub(:tempfile).and_return(tempfile)
+    File.stub(:exist?).with(tempfile.path).and_call_original
+    File.stub(:exists?).with(tempfile.path).and_call_original
+  end
+
   it "should return a #{described_class}" do
     provider.should be_a_kind_of(described_class)
   end
