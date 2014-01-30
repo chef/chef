@@ -96,6 +96,7 @@ describe Chef::Provider::Group::Usermod do
   describe "when loading the current resource" do
     before(:each) do
       File.stub(:exists?).and_return(false)
+      @provider.action = :create
       @provider.define_resource_requirements
     end
 
