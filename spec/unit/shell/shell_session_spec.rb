@@ -52,7 +52,7 @@ describe Shell::ClientSession do
     @session = Shell::ClientSession.instance
     @node = Chef::Node.build("foo")
     @session.node = @node
-    @session.instance_variable_set(:@client, stub(:sync_cookbooks => {}))
+    @session.instance_variable_set(:@client, double(:sync_cookbooks => {}))
     @expansion = Chef::RunList::RunListExpansion.new(@node.chef_environment, [])
 
     @node.run_list.should_receive(:expand).with(@node.chef_environment).and_return(@expansion)

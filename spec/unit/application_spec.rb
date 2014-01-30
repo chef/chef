@@ -281,7 +281,7 @@ describe Chef::Application do
       @app.config[:config_file] = "/tmp/non-existing-dir/file"
       config_file_regexp = Regexp.new @app.config[:config_file]
       Chef::Log.should_receive(:warn).at_least(:once).with(config_file_regexp).and_return(true)
-      Chef::Log.should_receive(:warn).any_number_of_times.and_return(true)
+      Chef::Log.stub(:warn).and_return(true)
       @app.configure_chef
     end
   end
