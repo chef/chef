@@ -24,7 +24,11 @@ require 'spec_helper'
 describe Chef::Knife::UI do
   before do
     @out, @err, @in = StringIO.new, StringIO.new, StringIO.new
-    @config = {}
+    @config = {
+      :verbosity => 0,
+      :yes => nil,
+      :format => "summary",
+    }
     @ui = Chef::Knife::UI.new(@out, @err, @in, @config)
   end
 
@@ -168,7 +172,7 @@ describe Chef::Knife::UI do
     it "should ignore Errno::EPIPE exceptions (CHEF-3516)" do
       @out.stub(:puts).and_raise(Errno::EPIPE)
       @err.stub(:puts).and_raise(Errno::EPIPE)
-      lambda {@ui.send(method, "hi")}.should_not raise_error
+      lambda {@ui.send(method, "hi")}.should raise_error(SystemExit)
     end
 
     it "should throw Errno::EPIPE exceptions with -VV (CHEF-3516)" do
@@ -298,15 +302,9 @@ EOM
 
     it "formats hashes with nested array values appropriately" do
       @ui.output({ 'a' => [ [ 'foo', 'bar' ], [ 'baz', 'bjork' ] ], 'b' => 'c' })
-      @out.string.should == <<EOM
-a:
-  foo
-  bar
-  
-  baz
-  bjork
-b: c
-EOM
+      # XXX: using a HEREDOC at this point results in a line with required spaces which auto-whitespace removal settings
+      # on editors will remove and will break this test.
+      @out.string.should == "a:\n  foo\n  bar\n  \n  baz\n  bjork\nb: c\n"
     end
 
     it "formats hashes with hash values appropriately" do
