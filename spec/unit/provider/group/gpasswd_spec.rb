@@ -32,6 +32,7 @@ describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
 
   describe "when determining the current group state" do
     before (:each) do
+      @provider.action = :create
       @provider.load_current_resource
       @provider.define_resource_requirements
     end
