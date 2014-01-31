@@ -34,14 +34,6 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 A node is any physical, virtual, or cloud machine that is configured to be maintained by a chef\-client.
 .sp
 The \fBknife node\fP subcommand is used to manage the nodes that exist on a server.
-.sp
-This subcommand has the following syntax:
-.sp
-.nf
-.ft C
-$ knife node [ARGUMENT] (options)
-.ft P
-.fi
 .SH COMMON OPTIONS
 .sp
 The following options may be used with any of the arguments available to the \fBknife node\fP subcommand:
@@ -118,7 +110,7 @@ This command does not have any specific options.
 .sp
 \fBExamples\fP
 .sp
-To bulk delete many nodes, use a regular expression to define the pattern:
+Use a regular expression to define the pattern used to bulk delete nodes:
 .sp
 .nf
 .ft C
@@ -204,11 +196,9 @@ This command does not have any specific options.
 .sp
 \fBExamples\fP
 .sp
-To delete a node called "dev", enter:
-.sp
 .nf
 .ft C
-$ knife node delete dev
+$ knife node delete node_name
 .ft P
 .fi
 .SH EDIT

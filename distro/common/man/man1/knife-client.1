@@ -36,14 +36,6 @@ When a node runs the chef\-client for the first time, it generally does not yet 
 Once the chef\-client has registered itself with the server, it no longer uses the validation client for anything. It is recommended that you delete the private key for the chef\-validator from the host after the host has registered or use the \fBdelete_validation\fP recipe that can be found in the \fBchef\-client\fP cookbook (\fI\%https://github.com/opscode-cookbooks/chef-client\fP).
 .sp
 The \fBknife client\fP subcommand is used to manage an API client list and their associated RSA public key\-pairs. This allows authentication requests to be made to the server by any entity that uses the Chef Server API, such as the chef\-client and Knife.
-.sp
-This subcommand has the following syntax:
-.sp
-.nf
-.ft C
-$ knife client [ARGUMENT] (options)
-.ft P
-.fi
 .SH COMMON OPTIONS
 .sp
 The following options may be used with any of the arguments available to the \fBknife client\fP subcommand:

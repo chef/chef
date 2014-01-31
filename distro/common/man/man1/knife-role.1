@@ -34,14 +34,6 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 A role is a way to define certain patterns and processes that exist across nodes in an organization as belonging to a single job function. Each role consists of zero (or more) attributes and a run list. Each node can have zero (or more) roles assigned to it. When a role is run against a node, the configuration details of that node are compared against the attributes of the role, and then the contents of that role\(aqs run list are applied to the node\(aqs configuration details. When a chef\-client runs, it merges its own attributes and run lists with those contained within each assigned role.
 .sp
 The \fBknife role\fP subcommand is used to manage the roles that are associated with one or more nodes on a server.
-.sp
-This subcommand has the following syntax:
-.sp
-.nf
-.ft C
-$ knife role [ARGUMENT] (options)
-.ft P
-.fi
 .SH COMMON OPTIONS
 .sp
 The following options may be used with any of the arguments available to the \fBknife role\fP subcommand:
@@ -118,7 +110,7 @@ This command does not have any specific options.
 .sp
 \fBExamples\fP
 .sp
-To bulk delete roles using a regular expression:
+Use a regular expression to define the pattern used to bulk delete roles:
 .sp
 .nf
 .ft C
@@ -199,8 +191,6 @@ $ knife role delete ROLE_NAME
 This command does not have any specific options.
 .sp
 \fBExamples\fP
-.sp
-To delete a role:
 .sp
 .nf
 .ft C

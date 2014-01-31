@@ -34,14 +34,6 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 The Cookbooks Site API is used to provide access to the cookbooks community hosted at \fI\%https://cookbooks.opscode.com\fP. All of the cookbooks in the community are accessible through a REST API located at \fI\%https://cookbooks.opscode.com/api/v1/\fP by using any of the supported endpoints. In most cases, using Knife and the \fBknife cookbook site\fP sub\-command (and any of its arguments) is the recommended method of interacting with these cookbooks, but in some cases, using the REST API directly may make sense.
 .sp
 The \fBknife cookbook site\fP subcommand is used to interact with cookbooks that are located at \fI\%https://cookbooks.opscode.com\fP. A user account is required for any community actions that write data to this site. The following arguments do not require a user account: \fBdownload\fP, \fBsearch\fP, \fBinstall\fP, and \fBlist\fP.
-.sp
-This subcommand has the following syntax:
-.sp
-.nf
-.ft C
-$ knife cookbook site [ARGUMENT] (options)
-.ft P
-.fi
 .SH COMMON OPTIONS
 .sp
 The following options may be used with any of the arguments available to the \fBknife cookbook site\fP subcommand:

@@ -120,15 +120,11 @@ Indicates that the chef\-client will be run in local mode, which allows all comm
 .sp
 \fBExamples\fP
 .sp
-To find the dependencies for a node:
-.sp
 .nf
 .ft C
 $ knife deps nodes/node_name.json
 .ft P
 .fi
-.sp
-To find the dependencies for a role:
 .sp
 .nf
 .ft C
@@ -136,15 +132,11 @@ $ knife deps roles/role_name.json
 .ft P
 .fi
 .sp
-To find the dependencies for a cookbook:
-.sp
 .nf
 .ft C
 $ knife deps cookbooks/cookbook_name.json
 .ft P
 .fi
-.sp
-To find the dependencies for an environment:
 .sp
 .nf
 .ft C
@@ -160,7 +152,7 @@ $ knife deps cookbooks/git.json cookbooks/github.json roles/base.json environmen
 .ft P
 .fi
 .sp
-To use a wildcard to return all the child nodes:
+A wildcard can be used to return all of the child nodes. For example, all of the environments:
 .sp
 .nf
 .ft C
@@ -189,7 +181,7 @@ roles/webserver.json
 .ft P
 .fi
 .sp
-To pass the output of \fBknife deps\fP to \fBknife upload\fP, do something like the following:
+The output of \fBknife deps\fP can be passed to \fBknife upload\fP:
 .sp
 .nf
 .ft C
@@ -197,7 +189,7 @@ $ knife upload \(gaknife deps nodes/*.json
 .ft P
 .fi
 .sp
-To pass the output of \fBknife deps\fP to \fBknife xargs\fP:
+The output of \fBknife deps\fP can be passed to \fBknife xargs\fP:
 .sp
 .nf
 .ft C
