@@ -129,7 +129,7 @@ Indicates that the chef\-client will be run in local mode, which allows all comm
 .sp
 \fBExamples\fP
 .sp
-To upload the entire chef\-repo to the server, browse to the top level of the chef\-repo and enter:
+Browse to the top level of the chef\-repo and enter:
 .sp
 .nf
 .ft C
@@ -145,7 +145,7 @@ $ knife upload /
 .ft P
 .fi
 .sp
-To upload the \fBcookbooks/\fP directory to the server, browse to the top level of the chef\-repo and enter:
+Browse to the top level of the chef\-repo and enter:
 .sp
 .nf
 .ft C
@@ -161,7 +161,7 @@ $ knife upload /cookbooks
 .ft P
 .fi
 .sp
-To upload the \fBenvironments/\fP directory to the server, browse to the top level of the chef\-repo and enter:
+Browse to the top level of the chef\-repo and enter:
 .sp
 .nf
 .ft C
@@ -177,7 +177,7 @@ $ knife upload /environments
 .ft P
 .fi
 .sp
-To upload an environment named "production" to the server, browse to the top level of the chef\-repo and enter:
+Browse to the top level of the chef\-repo and enter:
 .sp
 .nf
 .ft C
@@ -193,7 +193,7 @@ $ knife upload production.json
 .ft P
 .fi
 .sp
-To upload the \fBroles/\fP directory to the server, browse to the top level of the chef\-repo and enter:
+Browse to the top level of the chef\-repo and enter:
 .sp
 .nf
 .ft C
@@ -209,15 +209,13 @@ $ knife upload /roles
 .ft P
 .fi
 .sp
-To upload all cookbooks that start with "apache" and belong to the "webserver" role, browse to the top level of the chef\-repo and enter:
+Browse to the top level of the chef\-repo and enter:
 .sp
 .nf
 .ft C
 $ knife upload cookbooks/apache\e* roles/webserver.json
 .ft P
 .fi
-.sp
-Use the output of \fBknife deps\fP to pass a command to \fBknife upload\fP. For example:
 .sp
 .nf
 .ft C

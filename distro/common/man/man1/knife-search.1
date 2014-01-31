@@ -31,7 +31,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" Man page generated from reStructuredText.
 .
 .sp
-Search indexes allow queries to be made for any type of data that is indexed by the server, including data bags (and data bag items), environments, nodes, and roles. A defined query syntax is used to support search patterns like exact, wildcard, range, and fuzzy. A search is a full\-text query that can be done from several locations, including from within a recipe, by using the \fBsearch\fP subcommand in Knife, by using the search functionality in the Chef Manager, or by using the \fB/search\fP or \fB/search/INDEX\fP endpoints in the Chef Server API. The search engine is based on Apache Solr and is run from the server.
+Search indexes allow queries to be made for any type of data that is indexed by the server, including data bags (and data bag items), environments, nodes, and roles. A defined query syntax is used to support search patterns like exact, wildcard, range, and fuzzy. A search is a full\-text query that can be done from several locations, including from within a recipe, by using the \fBsearch\fP subcommand in Knife, by using the search functionality in the Chef Manage, or by using the \fB/search\fP or \fB/search/INDEX\fP endpoints in the Chef Server API. The search engine is based on Apache Solr and is run from the server.
 .sp
 The \fBknife search\fP subcommand is used run a search query for information that is indexed on a server.
 .sp
@@ -76,7 +76,7 @@ and is the same search as:
 .sp
 .nf
 .ft C
-$ knife node search \(aq*:*" \-i
+$ knife search node \(aq*:*" \-i
 .ft P
 .fi
 .sp
@@ -264,7 +264,7 @@ $ knife search node <query_to_run> \-a <main_attribute>.<nested_attribute>
 .ft P
 .fi
 .sp
-To build a search query to use more than one attribute, use an underscore ( _ ) to separate each attribute. For example, the following query will search for all nodes running a specific version of Ruby:
+To build a search query to use more than one attribute, use an underscore (\fB_\fP) to separate each attribute. For example, the following query will search for all nodes running a specific version of Ruby:
 .sp
 .nf
 .ft C
@@ -284,7 +284,7 @@ To test a search query that will be used in a \fBknife ssh\fP command:
 .sp
 .nf
 .ft C
-$ knife search node "role:web AND NOT name:web03"
+$ knife search node "role:web NOT name:web03"
 .ft P
 .fi
 .sp

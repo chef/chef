@@ -54,14 +54,6 @@ Metadata about recipes (including dependencies), version constraints, supported 
 .UNINDENT
 .sp
 The \fBknife cookbook\fP subcommand is used to interact with cookbooks that are located on the server or the local chef\-repo.
-.sp
-This subcommand has the following syntax:
-.sp
-.nf
-.ft C
-$ knife cookbook [ARGUMENT] (options)
-.ft P
-.fi
 .SH COMMON OPTIONS
 .sp
 The following options may be used with any of the arguments available to the \fBknife cookbook\fP subcommand:
@@ -143,7 +135,7 @@ Indicates that a cookbook (or cookbook version) will be removed entirely from th
 .sp
 \fBExamples\fP
 .sp
-To bulk delete many cookbooks, use a regular expression to define the pattern:
+Use a regular expression to define the pattern used to bulk delete cookbooks:
 .sp
 .nf
 .ft C
@@ -265,7 +257,13 @@ Indicates that a cookbook (or cookbook version) will be removed entirely from th
 .sp
 \fBExamples\fP
 .sp
-To delete version "0.8" from a cookbook named "smartmon", enter:
+.nf
+.ft C
+$ knife cookbook delete cookbook_name version
+.ft P
+.fi
+.sp
+For example:
 .sp
 .nf
 .ft C
@@ -375,8 +373,6 @@ The directory in which cookbook are created. This can be a colon\-separated path
 .sp
 \fBExamples\fP
 .sp
-To generate metadata for all cookbooks:
-.sp
 .nf
 .ft C
 $ knife cookbook metadata \-a
@@ -401,8 +397,6 @@ $ knife cookbook metadata from file FILE
 This command does not have any specific options.
 .sp
 \fBExamples\fP
-.sp
-To view cookbook metadata from a JSON file:
 .sp
 .nf
 .ft C
@@ -553,11 +547,9 @@ The directory in which cookbook are created. This can be a colon\-separated path
 .sp
 \fBExamples\fP
 .sp
-To test a cookbook named "getting\-started", enter:
-.sp
 .nf
 .ft C
-$ knife cookbook test getting\-started
+$ knife cookbook test cookbook_name
 .ft P
 .fi
 .SH UPLOAD
@@ -600,11 +592,9 @@ The directory in which cookbook are created. This can be a colon\-separated path
 .sp
 \fBExamples\fP
 .sp
-To upload a cookbook named "getting\-started":
-.sp
 .nf
 .ft C
-$ knife cookbook upload getting\-started
+$ knife cookbook upload cookbook_name
 .ft P
 .fi
 .sp

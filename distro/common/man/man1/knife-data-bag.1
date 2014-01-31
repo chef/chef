@@ -33,17 +33,9 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .sp
 A data bag is a global variable that is stored as JSON data and is accessible from a server. A data bag is indexed for searching and can be loaded by a recipe or accessed during a search. The contents of a data bag can vary, but they often include sensitive information (such as database passwords).
 .sp
-The contents of a data bag can be encrypted using \fI\%shared secret encryption\fP. This allows a data bag to store confidential information (such as a database password) or to be managed in a source control system (without plain\-text data appearing in revision history).
+A data bag item may be encrypted using \fI\%shared secret encryption\fP. This allows each data bag item to store confidential information (such as a database password) or to be managed in a source control system (without plain\-text data appearing in revision history). Each data bag item may be encrypted individually; if a data bag contains multiple encrypted data bag items, these data bag items are not required to share the same encryption keys.
 .sp
 The \fBknife data bag\fP subcommand is used to manage arbitrary stores of globally available JSON data.
-.sp
-This subcommand has the following syntax:
-.sp
-.nf
-.ft C
-$ knife data bag [ARGUMENT] (options)
-.ft P
-.fi
 .SH COMMON OPTIONS
 .sp
 The following options may be used with any of the arguments available to the \fBknife data bag\fP subcommand:
@@ -123,7 +115,7 @@ This argument has the following options:
 The name of a specific item within a data bag.
 .TP
 .B \fB\-\-secret SECRET\fP
-The encryption key that is used for values contained within a data bag.
+The encryption key that is used for values contained within a data bag item.
 .TP
 .B \fB\-\-secret\-file FILE\fP
 The path to the file that contains the encryption key.
@@ -174,11 +166,9 @@ The name of a specific item within a data bag.
 .sp
 \fBExamples\fP
 .sp
-To a data bag named "admins", enter:
-.sp
 .nf
 .ft C
-$ knife data bag delete admins
+$ knife data bag delete data_bag_name
 .ft P
 .fi
 .sp
@@ -214,7 +204,7 @@ This argument has the following options:
 The name of a specific item within a data bag.
 .TP
 .B \fB\-\-secret SECRET\fP
-The encryption key that is used for values contained within a data bag.
+The encryption key that is used for values contained within a data bag item.
 .TP
 .B \fB\-\-secret\-file FILE\fP
 The path to the file that contains the encryption key.
@@ -298,7 +288,7 @@ This argument has the following options:
 Indicates that all data bags found at the specified path will be uploaded.
 .TP
 .B \fB\-\-secret SECRET\fP
-The encryption key that is used for values contained within a data bag.
+The encryption key that is used for values contained within a data bag item.
 .TP
 .B \fB\-\-secret\-file FILE\fP
 The path to the file that contains the encryption key.
@@ -349,8 +339,6 @@ Indicates that the corresponding URIs will be shown.
 .sp
 \fBExamples\fP
 .sp
-For example, to view a list of data bags on the server, enter:
-.sp
 .nf
 .ft C
 $ knife data bag list
@@ -379,7 +367,7 @@ This argument has the following options:
 The name of a specific item within a data bag.
 .TP
 .B \fB\-\-secret SECRET\fP
-The encryption key that is used for values contained within a data bag.
+The encryption key that is used for values contained within a data bag item.
 .TP
 .B \fB\-\-secret\-file FILE\fP
 The path to the file that contains the encryption key.
@@ -390,15 +378,13 @@ For encrypted data bag items, use \fIeither\fP \fB\-\-secret\fP or \fB\-\-secret
 .sp
 \fBExamples\fP
 .sp
-To show the contents of a data bag, enter:
-.sp
 .nf
 .ft C
 $ knife data bag show admins
 .ft P
 .fi
 .sp
-to return:
+to return something like:
 .sp
 .nf
 .ft C

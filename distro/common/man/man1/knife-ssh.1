@@ -161,8 +161,6 @@ ec2\-184\-73\-60\-141.compute\-1.amazonaws.com    13:50:48 up 1 day, 23:30,  1 u
 .ft P
 .fi
 .sp
-To run the chef\-client on all nodes, enter:
-.sp
 .nf
 .ft C
 $ knife ssh \(aqname:*\(aq \(aqsudo chef\-client\(aq
@@ -216,8 +214,6 @@ To query for all nodes that have the "webserver" role and then use SSH to run th
 $ knife ssh "role:webserver" "sudo chef\-client"
 .ft P
 .fi
-.sp
-To upgrade all nodes, enter:
 .sp
 .nf
 .ft C

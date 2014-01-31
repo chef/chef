@@ -34,9 +34,6 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 A bootstrap is a process that installs the chef\-client on a target system so that it can run as a chef\-client and communicate with a server.
 .sp
 The \fBknife bootstrap\fP subcommand is used run a bootstrap operation that installs the chef\-client on the target system. The bootstrap operation must specify the IP address or FQDN of the target system.
-.IP Note
-To bootstrap the chef\-client on Microsoft Windows machines, the \fI\%knife-windows\fP plugins is required, which includes the necessary bootstrap scripts that are used to do the actual installation.
-.RE
 .sp
 \fBSyntax\fP
 .sp
@@ -75,6 +72,10 @@ The port on which chef\-zero will listen.
 Indicates whether colored output will be used.
 .TP
 .B \fB\-d DISTRO\fP, \fB\-\-distro DISTRO\fP
+.IP Warning
+The default bootstrap operation uses the omnibus installer, which means the default template file (\fBchef\-full\fP) should work on all supported platforms. It is recommended to use custom bootstrap templates only when the omnibus installer cannot be used.
+.RE
+.sp
 The template file to be used during a bootstrap operation. The following distributions are supported: \fBchef\-full\fP (the default bootstrap), \fBcentos5\-gems\fP, \fBfedora13\-gems\fP, \fBubuntu10.04\-gems\fP, \fBubuntu10.04\-apt\fP, \fBubuntu12.04\-gems\fP, and the name of a custom bootstrap template file. When this option is used, Knife will search for the template file in the following order: the \fBbootstrap/\fP folder in the current working directory, the \fBbootstrap/\fP folder in the chef\-repo, the \fBbootstrap/\fP folder in the \fB~/.chef/\fP directory, or a default bootstrap file. Do not use the \fB\-\-template\-file\fP option when \fB\-\-distro\fP is specified.
 .TP
 .B \fB\-\-defaults\fP
@@ -135,7 +136,7 @@ A comma\-separated list of roles and/or recipes to be applied.
 The URL for the server.
 .TP
 .B \fB\-\-secret SECRET\fP
-The encryption key that is used for values contained within a data bag.
+The encryption key that is used for values contained within a data bag item.
 .TP
 .B \fB\-\-secret\-file FILE\fP
 The path to the file that contains the encryption key.
@@ -170,15 +171,11 @@ Indicates that the chef\-client will be run in local mode, which allows all comm
 .sp
 \fBExamples\fP
 .sp
-To pass an SSH password as part of the command:
-.sp
 .nf
 .ft C
 $ knife bootstrap 192.168.1.1 \-x username \-P PASSWORD \-\-sudo
 .ft P
 .fi
-.sp
-To use a file that contains a private key:
 .sp
 .nf
 .ft C
