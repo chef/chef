@@ -26,10 +26,10 @@ describe Chef::Knife::NodeRunListAdd do
       :after => nil
     }
     @knife.name_args = [ "adam", "role[monkey]" ]
-    @knife.stub!(:output).and_return(true)
+    @knife.stub(:output).and_return(true)
     @node = Chef::Node.new()
-    @node.stub!(:save).and_return(true)
-    Chef::Node.stub!(:load).and_return(@node)
+    @node.stub(:save).and_return(true)
+    Chef::Node.stub(:load).and_return(@node)
   end
 
   describe "run" do

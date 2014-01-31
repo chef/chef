@@ -53,7 +53,7 @@ describe Chef::Util::Selinux do
   describe "when selinuxenabled binary exists" do
     before do
       @selinux_enabled_path = File.join("/sbin", "selinuxenabled")
-      File.stub!(:executable?) do |file_path|
+      File.stub(:executable?) do |file_path|
         file_path.end_with?("selinuxenabled").should be_true
         file_path == @selinux_enabled_path
       end
@@ -61,7 +61,7 @@ describe Chef::Util::Selinux do
 
     describe "when selinux is enabled" do
       before do
-        cmd_result = mock("Cmd Result", :exitstatus => 0)
+        cmd_result = double("Cmd Result", :exitstatus => 0)
         @test_instance.should_receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
       end
 
@@ -74,7 +74,7 @@ describe Chef::Util::Selinux do
 
     describe "when selinux is disabled" do
       before do
-        cmd_result = mock("Cmd Result", :exitstatus => 1)
+        cmd_result = double("Cmd Result", :exitstatus => 1)
         @test_instance.should_receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
       end
 
@@ -87,7 +87,7 @@ describe Chef::Util::Selinux do
 
     describe "when selinux gives an unexpected status" do
       before do
-        cmd_result = mock("Cmd Result", :exitstatus => 101)
+        cmd_result = double("Cmd Result", :exitstatus => 101)
         @test_instance.should_receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
       end
 
@@ -99,7 +99,7 @@ describe Chef::Util::Selinux do
 
   describe "when selinuxenabled binary doesn't exist" do
     before do
-      File.stub!(:executable?) do |file_path|
+      File.stub(:executable?) do |file_path|
         file_path.end_with?("selinuxenabled").should be_true
         false
       end
@@ -118,7 +118,7 @@ describe Chef::Util::Selinux do
 
     before do
       @restorecon_enabled_path = File.join("/sbin", "restorecon")
-      File.stub!(:executable?) do |file_path|
+      File.stub(:executable?) do |file_path|
         file_path.end_with?("restorecon").should be_true
         file_path == @restorecon_enabled_path
       end
@@ -150,7 +150,7 @@ describe Chef::Util::Selinux do
 
     describe "when restorecon doesn't exist on the system" do
       before do
-        File.stub!(:executable?) do |file_path|
+        File.stub(:executable?) do |file_path|
           file_path.end_with?("restorecon").should be_true
           false
         end

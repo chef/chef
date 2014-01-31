@@ -77,8 +77,8 @@ describe Chef::Provider::Group::Pw do
 
     describe "with an empty members array in both the new and current resource" do
       before do
-        @new_resource.stub!(:members).and_return([])
-        @current_resource.stub!(:members).and_return([])
+        @new_resource.stub(:members).and_return([])
+        @current_resource.stub(:members).and_return([])
       end
 
       it "should set no options" do
@@ -88,8 +88,8 @@ describe Chef::Provider::Group::Pw do
 
     describe "with an empty members array in the new resource and existing members in the current resource" do
       before do
-        @new_resource.stub!(:members).and_return([])
-        @current_resource.stub!(:members).and_return(["all", "your", "base"])
+        @new_resource.stub(:members).and_return([])
+        @current_resource.stub(:members).and_return(["all", "your", "base"])
       end
 
       it "should log an appropriate message" do
@@ -104,8 +104,8 @@ describe Chef::Provider::Group::Pw do
 
     describe "with supplied members array in the new resource and an empty members array in the current resource" do
       before do
-        @new_resource.stub!(:members).and_return(["all", "your", "base"])
-        @current_resource.stub!(:members).and_return([])
+        @new_resource.stub(:members).and_return(["all", "your", "base"])
+        @current_resource.stub(:members).and_return([])
       end
 
       it "should log an appropriate debug message" do
@@ -121,6 +121,7 @@ describe Chef::Provider::Group::Pw do
 
   describe"load_current_resource" do
     before (:each) do
+      @provider.action = :create
       @provider.load_current_resource
       @provider.define_resource_requirements
     end
@@ -130,8 +131,8 @@ describe Chef::Provider::Group::Pw do
     end
 
     it "shouldn't raise an error if /usr/sbin/pw exists" do
-      File.stub!(:exists?).and_return(true)
-      lambda { @provider.process_resource_requirements }.should_not raise_error(Chef::Exceptions::Group)
+      File.stub(:exists?).and_return(true)
+      lambda { @provider.process_resource_requirements }.should_not raise_error
     end
   end
 end

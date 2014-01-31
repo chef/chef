@@ -45,8 +45,8 @@ describe Chef::Knife::Ssh do
       end
 
       def configure_query(node_array)
-        @query.stub!(:search).and_return([node_array])
-        Chef::Search::Query.stub!(:new).and_return(@query)
+        @query.stub(:search).and_return([node_array])
+        Chef::Search::Query.stub(:new).and_return(@query)
       end
 
       def self.should_return_specified_attributes
@@ -99,10 +99,10 @@ describe Chef::Knife::Ssh do
 
       context "when there are some hosts found but they do not have an attribute to connect with" do
         before do
-          @query.stub!(:search).and_return([[@node_foo, @node_bar]])
+          @query.stub(:search).and_return([[@node_foo, @node_bar]])
           @node_foo.automatic_attrs[:fqdn] = nil
           @node_bar.automatic_attrs[:fqdn] = nil
-          Chef::Search::Query.stub!(:new).and_return(@query)
+          Chef::Search::Query.stub(:new).and_return(@query)
         end
 
         it "should raise a specific error (CHEF-3402)" do
@@ -175,7 +175,7 @@ describe Chef::Knife::Ssh do
     before :each do
       @knife.instance_variable_set(:@longest, 0)
       ssh_config = {:timeout => 50, :user => "locutus", :port => 23 }
-      Net::SSH.stub!(:configuration_for).with('the.b.org').and_return(ssh_config)
+      Net::SSH.stub(:configuration_for).with('the.b.org').and_return(ssh_config)
     end
 
     it "uses the port from an ssh config file" do
@@ -257,7 +257,7 @@ describe Chef::Knife::Ssh do
     before do
       @query = Chef::Search::Query.new
       @query.should_receive(:search).and_return([[@node_foo]])
-      Chef::Search::Query.stub!(:new).and_return(@query)
+      Chef::Search::Query.stub(:new).and_return(@query)
       @knife.stub(:ssh_command).and_return(exit_code)
       @knife.name_args = ['*:*', 'false']
     end

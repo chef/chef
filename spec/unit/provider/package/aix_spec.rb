@@ -28,7 +28,7 @@ describe Chef::Provider::Package::Aix do
     @new_resource.source("/tmp/samba.base")
 
     @provider = Chef::Provider::Package::Aix.new(@new_resource, @run_context)
-    ::File.stub!(:exists?).and_return(true)
+    ::File.stub(:exists?).and_return(true)
   end
 
   describe "assessing the current package status" do
@@ -36,24 +36,24 @@ describe Chef::Provider::Package::Aix do
      @bffinfo ="/usr/lib/objrepos:samba.base:3.3.12.0::COMMITTED:I:Samba for AIX:
  /etc/objrepos:samba.base:3.3.12.0::COMMITTED:I:Samba for AIX:"
 
-      @status = mock("Status", :exitstatus => 0)
+      @status = double("Status", :exitstatus => 0)
     end
 
     it "should create a current resource with the name of new_resource" do
-      @provider.stub!(:popen4).and_return(@status)
+      @provider.stub(:popen4).and_return(@status)
       @provider.load_current_resource
       @provider.current_resource.name.should == "samba.base"
     end
 
     it "should set the current resource bff package name to the new resource bff package name" do
-      @provider.stub!(:popen4).and_return(@status)
+      @provider.stub(:popen4).and_return(@status)
       @provider.load_current_resource
       @provider.current_resource.package_name.should == "samba.base"
     end
 
     it "should raise an exception if a source is supplied but not found" do
-      @provider.stub!(:popen4).and_return(@status)
-      ::File.stub!(:exists?).and_return(false)
+      @provider.stub(:popen4).and_return(@status)
+      ::File.stub(:exists?).and_return(false)
       @provider.define_resource_requirements
       @provider.load_current_resource
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Package)
@@ -83,13 +83,13 @@ describe Chef::Provider::Package::Aix do
     it "should raise an exception if the source is not set but we are installing" do
       @new_resource = Chef::Resource::Package.new("samba.base")
       @provider = Chef::Provider::Package::Aix.new(@new_resource, @run_context)
-      @provider.stub!(:popen4).and_return(@status)
+      @provider.stub(:popen4).and_return(@status)
       lambda { @provider.run_action(:install) }.should raise_error(Chef::Exceptions::Package)
     end
 
     it "should raise an exception if installp/lslpp fails to run" do
-      @status = mock("Status", :exitstatus => -1)
-      @provider.stub!(:popen4).and_return(@status)
+      @status = double("Status", :exitstatus => -1)
+      @provider.stub(:popen4).and_return(@status)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
 
@@ -110,14 +110,14 @@ describe Chef::Provider::Package::Aix do
     end
 
     it "should lookup the candidate_version if the variable is not already set" do
-      @status = mock("Status", :exitstatus => 0)
+      @status = double("Status", :exitstatus => 0)
       @provider.should_receive(:popen4).and_return(@status)
       @provider.candidate_version
     end
 
     it "should throw and exception if the exitstatus is not 0" do
-      @status = mock("Status", :exitstatus => 1)
-      @provider.stub!(:popen4).and_return(@status)
+      @status = double("Status", :exitstatus => 1)
+      @provider.stub(:popen4).and_return(@status)
       lambda { @provider.candidate_version }.should raise_error(Chef::Exceptions::Package)
     end
 
@@ -142,7 +142,7 @@ describe Chef::Provider::Package::Aix do
     end
 
     it "should run installp with -eLogfile option." do
-      @new_resource.stub!(:options).and_return("-e/tmp/installp.log")
+      @new_resource.stub(:options).and_return("-e/tmp/installp.log")
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "installp -aYF  -e/tmp/installp.log -d /tmp/samba.base samba.base"
       })
@@ -159,7 +159,7 @@ describe Chef::Provider::Package::Aix do
     end
 
     it "should run installp -u -e/tmp/installp.log  with options -e/tmp/installp.log" do
-      @new_resource.stub!(:options).and_return("-e/tmp/installp.log")
+      @new_resource.stub(:options).and_return("-e/tmp/installp.log")
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "installp -u  -e/tmp/installp.log samba.base"
       })

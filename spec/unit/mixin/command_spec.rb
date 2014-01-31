@@ -76,7 +76,7 @@ describe Chef::Mixin::Command, :volatile do
       include Chef::Mixin::Command
 
       it "logs the command's stderr and stdout output if the command failed" do
-        Chef::Log.stub!(:level).and_return(:debug)
+        Chef::Log.stub(:level).and_return(:debug)
         begin
           run_command(:command => "sh -c 'echo hello; echo world >&2; false'")
           violated "Exception expected, but nothing raised."

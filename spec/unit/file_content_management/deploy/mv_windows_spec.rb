@@ -51,11 +51,11 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
     let(:staging_file_path) { "/tmp/random-dir/staging-file.tmp" }
 
     let(:target_file_security_object) do
-      mock "Securable Object for target file"
+      double "Securable Object for target file"
     end
 
     let(:updated_target_security_object) do
-      mock "Securable Object for target file after staging file deploy"
+      double "Securable Object for target file after staging file deploy"
     end
 
     before do
@@ -79,17 +79,17 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
 
     context "when run with administrator privileges" do
 
-      let(:original_target_file_owner) { mock("original target file owner") }
-      let(:original_target_file_group) { mock("original target file group") }
+      let(:original_target_file_owner) { double("original target file owner") }
+      let(:original_target_file_group) { double("original target file group") }
 
       let(:target_file_security_descriptor) do
-        mock "security descriptor for target file",
+        double "security descriptor for target file",
              :group => original_target_file_group,
              :owner => original_target_file_owner
       end
 
       let(:updated_target_security_descriptor) do
-        mock "security descriptor for target file"
+        double "security descriptor for target file"
       end
 
 
@@ -116,17 +116,17 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
       end
 
       context "and the target has a dacl and sacl" do
-        let(:inherited_dacl_ace) { mock("Windows dacl ace (inherited)", :inherited? => true) }
-        let(:not_inherited_dacl_ace) { mock("Windows dacl ace (not inherited)", :inherited? => false) }
+        let(:inherited_dacl_ace) { double("Windows dacl ace (inherited)", :inherited? => true) }
+        let(:not_inherited_dacl_ace) { double("Windows dacl ace (not inherited)", :inherited? => false) }
 
         let(:original_target_file_dacl) { [inherited_dacl_ace, not_inherited_dacl_ace] }
 
-        let(:inherited_sacl_ace) { mock("Windows sacl ace (inherited)", :inherited? => true) }
-        let(:not_inherited_sacl_ace) { mock("Windows sacl ace (not inherited)", :inherited? => false) }
+        let(:inherited_sacl_ace) { double("Windows sacl ace (inherited)", :inherited? => true) }
+        let(:not_inherited_sacl_ace) { double("Windows sacl ace (not inherited)", :inherited? => false) }
         let(:original_target_file_sacl) { [inherited_sacl_ace, not_inherited_sacl_ace] }
 
-        let(:custom_dacl) { mock("Windows ACL for non-inherited dacl aces") }
-        let(:custom_sacl) { mock("Windows ACL for non-inherited sacl aces") }
+        let(:custom_dacl) { double("Windows ACL for non-inherited dacl aces") }
+        let(:custom_sacl) { double("Windows ACL for non-inherited sacl aces") }
 
         before do
           target_file_security_descriptor.stub(:dacl_present?).and_return(true)

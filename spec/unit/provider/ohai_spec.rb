@@ -41,17 +41,17 @@ describe Chef::Provider::Ohai do
         :newdata => "somevalue"
       }
     }
-    mock_ohai.stub!(:all_plugins).and_return(true)
-    mock_ohai.stub!(:require_plugin).and_return(true)
-    mock_ohai.stub!(:data).and_return(mock_ohai[:data],
+    mock_ohai.stub(:all_plugins).and_return(true)
+    mock_ohai.stub(:require_plugin).and_return(true)
+    mock_ohai.stub(:data).and_return(mock_ohai[:data],
                                       mock_ohai[:data2])
-    Ohai::System.stub!(:new).and_return(mock_ohai)
-    Chef::Platform.stub!(:find_platform_and_version).and_return({ "platform" => @platform,
+    Ohai::System.stub(:new).and_return(mock_ohai)
+    Chef::Platform.stub(:find_platform_and_version).and_return({ "platform" => @platform,
                                                                   "platform_version" => @platform_version})
     # Fake node with a dummy save
     @node = Chef::Node.new
     @node.name(@fqdn)
-    @node.stub!(:save).and_return(@node)
+    @node.stub(:save).and_return(@node)
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Ohai.new("ohai_reload")

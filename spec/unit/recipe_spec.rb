@@ -36,7 +36,7 @@ describe Chef::Recipe do
     # Shell/ext.rb is on the run path, and it defines
     # Chef::Recipe#resources to call pp, which we don't want when
     # we're running tests.
-    @recipe.stub!(:pp)
+    @recipe.stub(:pp)
   end
 
   describe "method_missing" do
@@ -46,7 +46,7 @@ describe Chef::Recipe do
           @recipe.zen_master "monkey" do
             peace true
           end
-        end.should_not raise_error(ArgumentError)
+        end.should_not raise_error
       end
 
       it "should load a one word (cat) resource" do
@@ -54,7 +54,7 @@ describe Chef::Recipe do
           @recipe.cat "loulou" do
             pretty_kitty true
           end
-        end.should_not raise_error(ArgumentError)
+        end.should_not raise_error
       end
 
       it "should load a four word (one_two_three_four) resource" do
@@ -62,7 +62,7 @@ describe Chef::Recipe do
           @recipe.one_two_three_four "numbers" do
             i_can_count true
           end
-        end.should_not raise_error(ArgumentError)
+        end.should_not raise_error
       end
 
       it "should throw an error if you access a resource that we can't find" do

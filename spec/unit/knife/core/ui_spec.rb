@@ -24,7 +24,11 @@ require 'spec_helper'
 describe Chef::Knife::UI do
   before do
     @out, @err, @in = StringIO.new, StringIO.new, StringIO.new
-    @config = {}
+    @config = {
+      :verbosity => 0,
+      :yes => nil,
+      :format => "summary",
+    }
     @ui = Chef::Knife::UI.new(@out, @err, @in, @config)
   end
 
@@ -62,7 +66,7 @@ describe Chef::Knife::UI do
       before do
         @ui.config[:disable_editing] = false
         @ui.config[:editor] = my_editor
-        @mock = mock('Tempfile')
+        @mock = double('Tempfile')
         @mock.should_receive(:sync=).with(true)
         @mock.should_receive(:puts).with(json_from_ruby)
         @mock.should_receive(:close)
@@ -168,7 +172,7 @@ describe Chef::Knife::UI do
     it "should ignore Errno::EPIPE exceptions (CHEF-3516)" do
       @out.stub(:puts).and_raise(Errno::EPIPE)
       @err.stub(:puts).and_raise(Errno::EPIPE)
-      lambda {@ui.send(method, "hi")}.should_not raise_error(Errno::EPIPE)
+      lambda {@ui.send(method, "hi")}.should raise_error(SystemExit)
     end
 
     it "should throw Errno::EPIPE exceptions with -VV (CHEF-3516)" do
@@ -298,15 +302,9 @@ EOM
 
     it "formats hashes with nested array values appropriately" do
       @ui.output({ 'a' => [ [ 'foo', 'bar' ], [ 'baz', 'bjork' ] ], 'b' => 'c' })
-      @out.string.should == <<EOM
-a:
-  foo
-  bar
-  
-  baz
-  bjork
-b: c
-EOM
+      # XXX: using a HEREDOC at this point results in a line with required spaces which auto-whitespace removal settings
+      # on editors will remove and will break this test.
+      @out.string.should == "a:\n  foo\n  bar\n  \n  baz\n  bjork\nb: c\n"
     end
 
     it "formats hashes with hash values appropriately" do
@@ -412,28 +410,28 @@ EOM
       @question = "monkeys rule"
       @stdout = StringIO.new
       @ui.stub(:stdout).and_return(@stdout)
-      @ui.stdin.stub!(:readline).and_return("y")
+      @ui.stdin.stub(:readline).and_return("y")
     end
 
     it "should return true if you answer Y" do
-      @ui.stdin.stub!(:readline).and_return("Y")
+      @ui.stdin.stub(:readline).and_return("Y")
       @ui.confirm(@question).should == true
     end
 
     it "should return true if you answer y" do
-      @ui.stdin.stub!(:readline).and_return("y")
+      @ui.stdin.stub(:readline).and_return("y")
       @ui.confirm(@question).should == true
     end
 
     it "should exit 3 if you answer N" do
-      @ui.stdin.stub!(:readline).and_return("N")
+      @ui.stdin.stub(:readline).and_return("N")
       lambda {
         @ui.confirm(@question)
       }.should raise_error(SystemExit) { |e| e.status.should == 3 }
     end
 
     it "should exit 3 if you answer n" do
-      @ui.stdin.stub!(:readline).and_return("n")
+      @ui.stdin.stub(:readline).and_return("n")
       lambda {
         @ui.confirm(@question)
       }.should raise_error(SystemExit) { |e| e.status.should == 3 }
@@ -449,16 +447,16 @@ EOM
     describe "when asking for free-form user input" do
       it "asks a question and returns the answer provided by the user" do
         out = StringIO.new
-        @ui.stub!(:stdout).and_return(out)
-        @ui.stub!(:stdin).and_return(StringIO.new("http://mychefserver.example.com\n"))
+        @ui.stub(:stdout).and_return(out)
+        @ui.stub(:stdin).and_return(StringIO.new("http://mychefserver.example.com\n"))
         @ui.ask_question("your chef server URL?").should == "http://mychefserver.example.com"
         out.string.should == "your chef server URL?"
       end
 
       it "suggests a default setting and returns the default when the user's response only contains whitespace" do
         out = StringIO.new
-        @ui.stub!(:stdout).and_return(out)
-        @ui.stub!(:stdin).and_return(StringIO.new(" \n"))
+        @ui.stub(:stdout).and_return(out)
+        @ui.stub(:stdin).and_return(StringIO.new(" \n"))
         @ui.ask_question("your chef server URL? ", :default => 'http://localhost:4000').should == "http://localhost:4000"
         out.string.should == "your chef server URL? [http://localhost:4000] "
       end

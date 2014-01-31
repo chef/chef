@@ -60,11 +60,11 @@ describe Chef::Resource::Group, "initialize" do
   end
 
   it "should accept domain groups (@ or \ separator) on non-windows" do
-    lambda { @resource.group_name "domain\@group" }.should_not raise_error(ArgumentError)
+    lambda { @resource.group_name "domain\@group" }.should_not raise_error
     @resource.group_name.should == "domain\@group"
-    lambda { @resource.group_name "domain\\group" }.should_not raise_error(ArgumentError)
+    lambda { @resource.group_name "domain\\group" }.should_not raise_error
     @resource.group_name.should == "domain\\group"
-    lambda { @resource.group_name "domain\\group^name" }.should_not raise_error(ArgumentError)
+    lambda { @resource.group_name "domain\\group^name" }.should_not raise_error
     @resource.group_name.should == "domain\\group^name"
   end
 end

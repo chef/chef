@@ -24,7 +24,7 @@ describe Chef::Knife::CookbookSiteDownload do
     before do
       @knife            = Chef::Knife::CookbookSiteDownload.new
       @knife.name_args  = ['apache2']
-      @noauth_rest      = mock 'no auth rest'
+      @noauth_rest      = double('no auth rest')
       @stdout           = StringIO.new
       @cookbook_api_url = 'http://cookbooks.opscode.com/api/v1/cookbooks'
       @version          = '1.0.2'
@@ -58,7 +58,7 @@ describe Chef::Knife::CookbookSiteDownload do
       before do
         @cookbook_data = { 'version' => @version,
                            'file'    => "http://example.com/apache2_#{@version_us}.tgz" }
-        @temp_file     =  stub :path => "/tmp/apache2_#{@version_us}.tgz"
+        @temp_file     =  double( :path => "/tmp/apache2_#{@version_us}.tgz" )
         @file          = File.join(Dir.pwd, "apache2-#{@version}.tar.gz")
 
         @noauth_rest.should_receive(:sign_on_redirect=).with(false)
@@ -125,7 +125,7 @@ describe Chef::Knife::CookbookSiteDownload do
           @version_us      = @version.gsub '.', '_'
           @cookbook_data   = { 'version' => @version,
                                'file'    => "http://example.com/apache2_#{@version_us}.tgz" }
-          @temp_file       = stub :path => "/tmp/apache2_#{@version_us}.tgz"
+          @temp_file       = double(:path => "/tmp/apache2_#{@version_us}.tgz")
           @file            = File.join(Dir.pwd, "apache2-#{@version}.tar.gz")
           @knife.name_args << @version
         end

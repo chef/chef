@@ -24,7 +24,7 @@ describe Chef::Knife::Core::ObjectLoader do
   before(:each) do
     @knife = Chef::Knife.new
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
     Dir.chdir(File.join(CHEF_SPEC_DATA, 'object_loader'))
   end
 

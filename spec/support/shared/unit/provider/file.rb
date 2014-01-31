@@ -108,6 +108,16 @@ end
 
 shared_examples_for Chef::Provider::File do
 
+  let!(:tempfile) do
+    Tempfile.new("rspec-shared-file-provider")
+  end
+
+  before(:each) do
+    content.stub(:tempfile).and_return(tempfile)
+    File.stub(:exist?).with(tempfile.path).and_call_original
+    File.stub(:exists?).with(tempfile.path).and_call_original
+  end
+
   it "should return a #{described_class}" do
     provider.should be_a_kind_of(described_class)
   end
@@ -220,11 +230,11 @@ shared_examples_for Chef::Provider::File do
         Chef::Platform.stub(:windows?).and_return(false)
         # mock up the filesystem to behave like unix
         setup_normal_file
-        stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
+        stat_struct = double("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
         resource_real_path = File.realpath(resource.path)
         File.should_receive(:stat).with(resource_real_path).at_least(:once).and_return(stat_struct)
-        Etc.stub(:getgrgid).with(0).and_return(mock("Group Ent", :name => "wheel"))
-        Etc.stub(:getpwuid).with(0).and_return(mock("User Ent", :name => "root"))
+        Etc.stub(:getgrgid).with(0).and_return(double("Group Ent", :name => "wheel"))
+        Etc.stub(:getpwuid).with(0).and_return(double("User Ent", :name => "root"))
       end
 
       context "when the new_resource does not specify any state" do
@@ -345,11 +355,11 @@ shared_examples_for Chef::Provider::File do
       Chef::Platform.stub(:windows?).and_return(false)
       # mock up the filesystem to behave like unix
       setup_normal_file
-      stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
+      stat_struct = double("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
       resource_real_path = File.realpath(resource.path)
       File.stub(:stat).with(resource_real_path).and_return(stat_struct)
-      Etc.stub(:getgrgid).with(0).and_return(mock("Group Ent", :name => "wheel"))
-      Etc.stub(:getpwuid).with(0).and_return(mock("User Ent", :name => "root"))
+      Etc.stub(:getgrgid).with(0).and_return(double("Group Ent", :name => "wheel"))
+      Etc.stub(:getpwuid).with(0).and_return(double("User Ent", :name => "root"))
       provider.send(:load_resource_attributes_from_file, resource)
     end
 
@@ -386,7 +396,7 @@ shared_examples_for Chef::Provider::File do
 
           it "does not raise an exception in why-run mode" do
             Chef::Config[:why_run] = true
-            lambda {provider.run_action(action)}.should_not raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+            lambda {provider.run_action(action)}.should_not raise_error
             Chef::Config[:why_run] = false
           end
         end
@@ -635,7 +645,7 @@ shared_examples_for Chef::Provider::File do
       it "should not try to backup or delete the file, and should not be updated by last action" do
         provider.should_not_receive(:do_backup)
         File.should_not_receive(:delete)
-        lambda { provider.run_action(:delete) }.should_not raise_error()
+        lambda { provider.run_action(:delete) }.should_not raise_error
         resource.should_not be_updated_by_last_action
       end
     end

@@ -26,8 +26,8 @@ describe Chef::Knife::CookbookMetadata do
     @json_data = '{ "version": "1.0.0" }'
     @stdout = StringIO.new
     @stderr = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
-    @knife.ui.stub!(:stderr).and_return(@stderr)
+    @knife.ui.stub(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stderr).and_return(@stderr)
   end
 
   describe 'run' do
@@ -84,7 +84,7 @@ describe Chef::Knife::CookbookMetadata do
   describe 'generate_metadata' do
     before(:each) do
       @knife.config[:cookbook_path] = @cookbook_dir
-      File.stub!(:expand_path).with("#{@cookbook_dir}/foobar/metadata.rb").
+      File.stub(:expand_path).with("#{@cookbook_dir}/foobar/metadata.rb").
                                     and_return("#{@cookbook_dir}/foobar/metadata.rb")
     end
 
@@ -105,12 +105,12 @@ describe Chef::Knife::CookbookMetadata do
 
   describe 'generate_metadata_from_file' do
     before(:each) do
-      @metadata_mock = mock('metadata')
-      @json_file_mock = mock('json_file')
+      @metadata_mock = double('metadata')
+      @json_file_mock = double('json_file')
     end
 
     it 'should generate the metatdata json from metatdata.rb' do
-      Chef::Cookbook::Metadata.stub!(:new).and_return(@metadata_mock)
+      Chef::Cookbook::Metadata.stub(:new).and_return(@metadata_mock)
       @metadata_mock.should_receive(:name).with('foobar')
       @metadata_mock.should_receive(:from_file).with("#{@cookbook_dir}/foobar/metadata.rb")
       File.should_receive(:open).with("#{@cookbook_dir}/foobar/metadata.json", 'w').
@@ -127,7 +127,7 @@ describe Chef::Knife::CookbookMetadata do
     }.each_pair do |klass, description|
       it "should print an error and exit when an #{description} syntax exception is encountered" do
         exception = klass.new("#{description} blah")
-        Chef::Cookbook::Metadata.stub!(:new).and_raise(exception)
+        Chef::Cookbook::Metadata.stub(:new).and_raise(exception)
         lambda {
           @knife.generate_metadata_from_file('foobar', "#{@cookbook_dir}/foobar/metadata.rb")
         }.should raise_error(SystemExit)
@@ -165,7 +165,7 @@ describe Chef::Knife::CookbookMetadata do
         IO.should_receive(:read).with("#{@cookbook_dir}/foobar/metadata.json").
                                  and_return(@json_data)
         exception = klass.new("#{description} blah")
-        Chef::Cookbook::Metadata.stub!(:validate_json).and_raise(exception)
+        Chef::Cookbook::Metadata.stub(:validate_json).and_raise(exception)
         lambda {
           @knife.validate_metadata_json(@cookbook_dir, 'foobar')
         }.should raise_error(SystemExit)

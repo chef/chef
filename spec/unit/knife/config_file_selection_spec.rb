@@ -45,7 +45,7 @@ describe Chef::Knife do
   end
 
   before :each do
-    Chef::Config.stub!(:from_file).and_return(true)
+    Chef::Config.stub(:from_file).and_return(true)
     Chef::ConfigFetcher.stub(:new).and_return(missing_config_fetcher)
   end
 
@@ -72,7 +72,7 @@ describe Chef::Knife do
     upward_dir = File.expand_path "#{Dir.pwd}/.chef"
     upward_config = File.expand_path "#{upward_dir}/knife.rb"
     have_config_file(upward_config)
-    Chef::Knife.stub!(:chef_config_dir).and_return(upward_dir)
+    Chef::Knife.stub(:chef_config_dir).and_return(upward_dir)
 
     @knife = Chef::Knife.new
     @knife.configure_chef
@@ -89,7 +89,7 @@ describe Chef::Knife do
   end
 
   it "configure knife from nothing" do
-    ::File.stub!(:exist?).and_return(false)
+    ::File.stub(:exist?).and_return(false)
     @knife = Chef::Knife.new
     @knife.ui.should_receive(:warn).with("No knife configuration file found")
     @knife.configure_chef
@@ -104,7 +104,7 @@ describe Chef::Knife do
     home_config = File.expand_path(File.join("#{ENV['HOME']}", "/.chef/knife.rb"))
     configs = [ env_config, pwd_config, upward_config, home_config ]
 
-    Chef::Knife.stub!(:chef_config_dir).and_return(upward_dir)
+    Chef::Knife.stub(:chef_config_dir).and_return(upward_dir)
     ENV['KNIFE_HOME'] = Dir.tmpdir
 
     @knife = Chef::Knife.new

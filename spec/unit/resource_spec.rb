@@ -205,8 +205,8 @@ describe Chef::Resource do
 
   describe "noop" do
     it "should accept true or false for noop" do
-      lambda { @resource.noop true }.should_not raise_error(ArgumentError)
-      lambda { @resource.noop false }.should_not raise_error(ArgumentError)
+      lambda { @resource.noop true }.should_not raise_error
+      lambda { @resource.noop false }.should_not raise_error
       lambda { @resource.noop "eat it" }.should raise_error(ArgumentError)
     end
   end
@@ -589,7 +589,7 @@ describe Chef::Resource do
 
     it "should print \"skipped due to action :nothing\" message for doc formatter when action is :nothing" do
       fdoc = Chef::Formatters.new(:doc, STDOUT, STDERR)
-      @run_context.stub!(:events).and_return(fdoc)
+      @run_context.stub(:events).and_return(fdoc)
       fdoc.should_receive(:puts).with(" (skipped due to action :nothing)")
       @resource.should_skip?(:nothing)
     end

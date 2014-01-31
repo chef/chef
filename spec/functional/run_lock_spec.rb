@@ -163,7 +163,7 @@ describe Chef::RunLock do
     let!(:run_lock) { Chef::RunLock.new(lockfile) }
 
     it "creates the full path to the lockfile" do
-      lambda { run_lock.acquire }.should_not raise_error(Errno::ENOENT)
+      lambda { run_lock.acquire }.should_not raise_error
       File.should exist(lockfile)
     end
 

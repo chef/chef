@@ -24,9 +24,9 @@ describe Chef::Knife::CookbookDelete do
     @knife.name_args = ['foobar']
     @knife.cookbook_name = 'foobar'
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
     @stderr = StringIO.new
-    @knife.ui.stub!(:stderr).and_return(@stderr)
+    @knife.ui.stub(:stderr).and_return(@stderr)
   end
 
   describe 'run' do
@@ -125,7 +125,7 @@ describe Chef::Knife::CookbookDelete do
 
   describe 'available_versions' do
     before(:each) do
-      @rest_mock = mock('rest')
+      @rest_mock = double('rest')
       @knife.should_receive(:rest).and_return(@rest_mock)
       @cookbook_data = { 'foobar' => { 'versions' => [{'version' => '1.0.0'},
                                                       {'version' => '1.1.0'},
@@ -163,7 +163,7 @@ describe Chef::Knife::CookbookDelete do
 
   describe 'ask_which_version_to_delete' do
     before(:each) do
-      @knife.stub!(:available_versions).and_return(['1.0.0', '1.1.0', '2.0.0'])
+      @knife.stub(:available_versions).and_return(['1.0.0', '1.1.0', '2.0.0'])
     end
 
     it 'should prompt the user to select a version' do
@@ -202,7 +202,7 @@ describe Chef::Knife::CookbookDelete do
     end
 
     it 'should output that the cookbook was deleted' do
-      @knife.stub!(:delete_request)
+      @knife.stub(:delete_request)
       @knife.delete_version_without_confirmation('1.0.0')
       @stdout.string.should match /deleted cookbook\[foobar\]\[1.0.0\]/im
     end
@@ -211,7 +211,7 @@ describe Chef::Knife::CookbookDelete do
       it 'should display the cookbook data' do
         object = ''
         @knife.config[:print_after] = true
-        @knife.stub!(:delete_request).and_return(object)
+        @knife.stub(:delete_request).and_return(object)
         @knife.should_receive(:format_for_display).with(object)
         @knife.delete_version_without_confirmation('1.0.0')
       end

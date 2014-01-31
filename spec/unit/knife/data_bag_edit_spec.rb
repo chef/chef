@@ -29,11 +29,11 @@ describe Chef::Knife::DataBagEdit do
     Chef::Config[:node_name]  = "webmonkey.example.com"
 
     @knife = Chef::Knife::DataBagEdit.new
-    @rest = mock('chef-rest-mock')
-    @knife.stub!(:rest).and_return(@rest)
+    @rest = double('chef-rest-mock')
+    @knife.stub(:rest).and_return(@rest)
 
     @stdout = StringIO.new
-    @knife.stub!(:stdout).and_return(@stdout)
+    @knife.stub(:stdout).and_return(@stdout)
     @log = Chef::Log
     @knife.name_args = ['bag_name', 'item_name']
   end
@@ -45,7 +45,7 @@ describe Chef::Knife::DataBagEdit do
   end
 
   it "saves edits on a data bag item" do
-    Chef::DataBagItem.stub!(:load).with('bag_name', 'item_name').and_return(@plain_data)
+    Chef::DataBagItem.stub(:load).with('bag_name', 'item_name').and_return(@plain_data)
     @knife.should_receive(:edit_data).with(@plain_data).and_return(@edited_data)
     @rest.should_receive(:put_rest).with("data/bag_name/item_name", @edited_data).ordered
     @knife.run
@@ -58,7 +58,7 @@ describe Chef::Knife::DataBagEdit do
                                                                    @secret)
       @enc_edited_data = Chef::EncryptedDataBagItem.encrypt_data_bag_item(@edited_data,
                                                                           @secret)
-      Chef::DataBagItem.stub!(:load).with('bag_name', 'item_name').and_return(@enc_data)
+      Chef::DataBagItem.stub(:load).with('bag_name', 'item_name').and_return(@enc_data)
 
       # Random IV is used each time the data bag item is encrypted, so values
       # will not be equal if we encrypt same value twice.
@@ -75,7 +75,7 @@ describe Chef::Knife::DataBagEdit do
     end
 
     it "decrypts and encrypts via --secret" do
-      @knife.stub!(:config).and_return({:secret => @secret})
+      @knife.stub(:config).and_return({:secret => @secret})
       @knife.should_receive(:edit_data).with(@plain_data).and_return(@edited_data)
       @rest.should_receive(:put_rest).with("data/bag_name/item_name", @enc_edited_data).ordered
 
@@ -83,7 +83,7 @@ describe Chef::Knife::DataBagEdit do
     end
 
     it "decrypts and encrypts via --secret_file" do
-      @knife.stub!(:config).and_return({:secret_file => @secret_file.path})
+      @knife.stub(:config).and_return({:secret_file => @secret_file.path})
       @knife.should_receive(:edit_data).with(@plain_data).and_return(@edited_data)
       @rest.should_receive(:put_rest).with("data/bag_name/item_name", @enc_edited_data).ordered
 

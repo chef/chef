@@ -26,8 +26,8 @@ describe Chef::Checksum::Storage::Filesystem do
 
     @now = Time.now
 
-    Time.stub!(:now).and_return(@now)
-    Chef::Config.stub!(:checksum_path).and_return("/var/chef/checksums")
+    Time.stub(:now).and_return(@now)
+    Chef::Config.stub(:checksum_path).and_return("/var/chef/checksums")
 
     @checksum_of_the_file = "3fafecfb15585ede6b840158cbc2f399"
     @storage = Chef::Checksum::Storage::Filesystem.new("/not/used/path", @checksum_of_the_file)

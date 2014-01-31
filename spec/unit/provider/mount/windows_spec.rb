@@ -40,12 +40,12 @@ describe Chef::Provider::Mount::Windows do
     @new_resource = Chef::Resource::Mount.new("X:")
     @new_resource.device GUID
     @current_resource = Chef::Resource::Mount.new("X:")
-    Chef::Resource::Mount.stub!(:new).and_return(@current_resource)
+    Chef::Resource::Mount.stub(:new).and_return(@current_resource)
 
-    @net_use = mock("Chef::Util::Windows::NetUse")
-    Chef::Util::Windows::NetUse.stub!(:new).and_return(@net_use)
-    @vol = mock("Chef::Util::Windows::Volume")
-    Chef::Util::Windows::Volume.stub!(:new).and_return(@vol)
+    @net_use = double("Chef::Util::Windows::NetUse")
+    Chef::Util::Windows::NetUse.stub(:new).and_return(@net_use)
+    @vol = double("Chef::Util::Windows::Volume")
+    Chef::Util::Windows::Volume.stub(:new).and_return(@vol)
 
     @provider = Chef::Provider::Mount::Windows.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
@@ -53,13 +53,13 @@ describe Chef::Provider::Mount::Windows do
 
   describe "when loading the current resource" do
     it "should set mounted true if the mount point is found" do
-      @vol.stub!(:device).and_return(@new_resource.device)
+      @vol.stub(:device).and_return(@new_resource.device)
       @current_resource.should_receive(:mounted).with(true)
       @provider.load_current_resource
     end
 
     it "should set mounted false if the mount point is not found" do
-      @vol.stub!(:device).and_raise(ArgumentError)
+      @vol.stub(:device).and_raise(ArgumentError)
       @current_resource.should_receive(:mounted).with(false)
       @provider.load_current_resource
     end
@@ -67,8 +67,8 @@ describe Chef::Provider::Mount::Windows do
     describe "with a local device" do
       before do
         @new_resource.device GUID
-        @vol.stub!(:device).and_return(@new_resource.device)
-        @net_use.stub!(:device).and_raise(ArgumentError)
+        @vol.stub(:device).and_return(@new_resource.device)
+        @net_use.stub(:device).and_raise(ArgumentError)
       end
 
       it "should determine the device is a volume GUID" do
@@ -80,8 +80,8 @@ describe Chef::Provider::Mount::Windows do
     describe "with a remote device" do
       before do
         @new_resource.device REMOTE
-        @net_use.stub!(:device).and_return(@new_resource.device)
-        @vol.stub!(:device).and_raise(ArgumentError)
+        @net_use.stub(:device).and_return(@new_resource.device)
+        @vol.stub(:device).and_raise(ArgumentError)
       end
 
       it "should determine the device is remote" do
@@ -93,8 +93,8 @@ describe Chef::Provider::Mount::Windows do
     describe "when mounting a file system" do
       before do
         @new_resource.device GUID
-        @vol.stub!(:add)
-        @vol.stub!(:device).and_raise(ArgumentError)
+        @vol.stub(:add)
+        @vol.stub(:device).and_raise(ArgumentError)
         @provider.load_current_resource
       end
 
@@ -108,7 +108,7 @@ describe Chef::Provider::Mount::Windows do
 
       it "should not mount the filesystem if it is mounted" do
         @vol.should_not_receive(:add)
-        @current_resource.stub!(:mounted).and_return(true)
+        @current_resource.stub(:mounted).and_return(true)
         @provider.mount_fs
       end
     end
@@ -116,19 +116,19 @@ describe Chef::Provider::Mount::Windows do
     describe "when unmounting a file system" do
       before do
         @new_resource.device GUID
-        @vol.stub!(:delete)
-        @vol.stub!(:device).and_raise(ArgumentError)
+        @vol.stub(:delete)
+        @vol.stub(:device).and_raise(ArgumentError)
         @provider.load_current_resource
       end
 
       it "should umount the filesystem if it is mounted" do
-        @current_resource.stub!(:mounted).and_return(true)
+        @current_resource.stub(:mounted).and_return(true)
         @vol.should_receive(:delete)
         @provider.umount_fs
       end
 
       it "should not umount the filesystem if it is not mounted" do
-        @current_resource.stub!(:mounted).and_return(false)
+        @current_resource.stub(:mounted).and_return(false)
         @vol.should_not_receive(:delete)
         @provider.umount_fs
       end

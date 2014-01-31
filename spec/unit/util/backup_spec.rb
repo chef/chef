@@ -27,7 +27,7 @@ describe Chef::Util::Backup do
   end
 
   before(:each) do
-    @new_resource = mock("new_resource")
+    @new_resource = double("new_resource")
     @new_resource.should_receive(:path).at_least(:once).and_return(tempfile.path)
     @backup = Chef::Util::Backup.new(@new_resource)
   end

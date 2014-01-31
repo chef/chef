@@ -50,12 +50,12 @@ describe Chef::Provider::Service::Macosx do
 
     ["redis-server", "io.redis.redis-server"].each do |service_name|
       before do
-        Dir.stub!(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist"], [])
-        provider.stub!(:shell_out!).
+        Dir.stub(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist"], [])
+        provider.stub(:shell_out!).
                  with("launchctl list", {:group => 1001, :user => 101}).
-                 and_return(mock("ouput", :stdout => stdout))
+                 and_return(double("ouput", :stdout => stdout))
 
-        File.stub!(:stat).and_return(mock("stat", :gid => 1001, :uid => 101))
+        File.stub(:stat).and_return(double("stat", :gid => 1001, :uid => 101))
       end
 
       context "#{service_name}" do
@@ -85,7 +85,7 @@ describe Chef::Provider::Service::Macosx do
 
           describe "running unsupported actions" do
             before do
-              Dir.stub!(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist"], [])
+              Dir.stub(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist"], [])
             end
             it "should throw an exception when enable action is attempted" do
               lambda {provider.run_action(:enable)}.should raise_error(Chef::Exceptions::UnsupportedAction)
@@ -130,7 +130,7 @@ describe Chef::Provider::Service::Macosx do
 
             context "and plist for service is not available" do
               before do
-                Dir.stub!(:glob).and_return([])
+                Dir.stub(:glob).and_return([])
                 provider.load_current_resource
               end
 
@@ -141,7 +141,7 @@ describe Chef::Provider::Service::Macosx do
 
             context "and plist for service is available" do
               before do
-                Dir.stub!(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist"], [])
+                Dir.stub(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist"], [])
                 provider.load_current_resource
               end
 
@@ -152,7 +152,7 @@ describe Chef::Provider::Service::Macosx do
 
             describe "and several plists match service name" do
               it "throws exception" do
-                Dir.stub!(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist",
+                Dir.stub(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist",
                                              "/Users/wtf/something.plist"])
                 provider.load_current_resource
                 provider.define_resource_requirements
@@ -163,20 +163,20 @@ describe Chef::Provider::Service::Macosx do
         end
         describe "#start_service" do
           before do
-            Chef::Resource::Service.stub!(:new).and_return(current_resource)
+            Chef::Resource::Service.stub(:new).and_return(current_resource)
             provider.load_current_resource
-            current_resource.stub!(:running).and_return(false)
+            current_resource.stub(:running).and_return(false)
           end
 
           it "calls the start command if one is specified and service is not running" do
-            new_resource.stub!(:start_command).and_return("cowsay dirty")
+            new_resource.stub(:start_command).and_return("cowsay dirty")
 
             provider.should_receive(:shell_out!).with("cowsay dirty")
             provider.start_service
           end
 
           it "shows warning message if service is already running" do
-            current_resource.stub!(:running).and_return(true)
+            current_resource.stub(:running).and_return(true)
             Chef::Log.should_receive(:debug).with("service[#{service_name}] already running, not starting")
 
             provider.start_service
@@ -194,21 +194,21 @@ describe Chef::Provider::Service::Macosx do
 
         describe "#stop_service" do
           before do
-            Chef::Resource::Service.stub!(:new).and_return(current_resource)
+            Chef::Resource::Service.stub(:new).and_return(current_resource)
 
             provider.load_current_resource
-            current_resource.stub!(:running).and_return(true)
+            current_resource.stub(:running).and_return(true)
           end
 
           it "calls the stop command if one is specified and service is running" do
-            new_resource.stub!(:stop_command).and_return("kill -9 123")
+            new_resource.stub(:stop_command).and_return("kill -9 123")
 
             provider.should_receive(:shell_out!).with("kill -9 123")
             provider.stop_service
           end
 
           it "shows warning message if service is not running" do
-            current_resource.stub!(:running).and_return(false)
+            current_resource.stub(:running).and_return(false)
             Chef::Log.should_receive(:debug).with("service[#{service_name}] not running, not stopping")
 
             provider.stop_service
@@ -226,15 +226,15 @@ describe Chef::Provider::Service::Macosx do
 
         describe "#restart_service" do
           before do
-            Chef::Resource::Service.stub!(:new).and_return(current_resource)
+            Chef::Resource::Service.stub(:new).and_return(current_resource)
 
             provider.load_current_resource
-            current_resource.stub!(:running).and_return(true)
-            provider.stub!(:sleep)
+            current_resource.stub(:running).and_return(true)
+            provider.stub(:sleep)
           end
 
           it "issues a command if given" do
-            new_resource.stub!(:restart_command).and_return("reload that thing")
+            new_resource.stub(:restart_command).and_return("reload that thing")
 
             provider.should_receive(:shell_out!).with("reload that thing")
             provider.restart_service

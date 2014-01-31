@@ -25,12 +25,12 @@ describe Chef::Knife::Status do
       n.automatic_attrs["fqdn"] = "foobar"
       n.automatic_attrs["ohai_time"] = 1343845969
     end
-    query = mock("Chef::Search::Query")
-    query.stub!(:search).and_yield(node)
-    Chef::Search::Query.stub!(:new).and_return(query)
+    query = double("Chef::Search::Query")
+    query.stub(:search).and_yield(node)
+    Chef::Search::Query.stub(:new).and_return(query)
     @knife  = Chef::Knife::Status.new
     @stdout = StringIO.new
-    @knife.stub!(:highline).and_return(HighLine.new(StringIO.new, @stdout))
+    @knife.stub(:highline).and_return(HighLine.new(StringIO.new, @stdout))
   end
 
   describe "run" do

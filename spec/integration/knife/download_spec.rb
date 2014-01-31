@@ -973,7 +973,7 @@ EOM
     cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
 
     when_the_repository 'is empty' do
-      it 'knife download /cookbooks/x signs all requests' do
+      it 'knife download /cookbooks/x signs all requests', :ruby_gte_19_only do
 
         # Check that BasicClient.request() always gets called with X-OPS-USERID
         original_new = Chef::HTTP::BasicClient.method(:new)

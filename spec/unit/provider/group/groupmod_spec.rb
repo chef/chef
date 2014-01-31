@@ -43,8 +43,8 @@ describe Chef::Provider::Group::Groupmod do
       end
 
       it "shouldn't raise an error if the required binaries exist" do
-        File.stub!(:exists?).and_return(true)
-        lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Group)
+        File.stub(:exists?).and_return(true)
+        lambda { @provider.load_current_resource }.should_not raise_error
       end
     end
 
@@ -89,7 +89,7 @@ describe Chef::Provider::Group::Groupmod do
         end
 
         it "updates group membership correctly" do
-          Chef::Log.stub!(:debug)
+          Chef::Log.stub(:debug)
           @provider.should_receive(:shell_out!).with("group mod -n wheel_bak wheel")
           @provider.should_receive(:shell_out!).with("user mod -G wheel lobster")
           @provider.should_receive(:shell_out!).with("group add -g '123' -o wheel")

@@ -52,7 +52,7 @@ describe Shell::ClientSession do
     @session = Shell::ClientSession.instance
     @node = Chef::Node.build("foo")
     @session.node = @node
-    @session.instance_variable_set(:@client, stub(:sync_cookbooks => {}))
+    @session.instance_variable_set(:@client, double(:sync_cookbooks => {}))
     @expansion = Chef::RunList::RunListExpansion.new(@node.chef_environment, [])
 
     @node.run_list.should_receive(:expand).with(@node.chef_environment).and_return(@expansion)
@@ -87,9 +87,9 @@ describe Shell::StandAloneSession do
   end
 
   it "runs chef with the standalone recipe" do
-    @session.stub!(:node_built?).and_return(true)
-    Chef::Log.stub!(:level)
-    chef_runner = mock("Chef::Runner.new", :converge => :converged)
+    @session.stub(:node_built?).and_return(true)
+    Chef::Log.stub(:level)
+    chef_runner = double("Chef::Runner.new", :converge => :converged)
     # pre-heat resource collection cache
     @session.resource_collection
 
@@ -116,7 +116,7 @@ describe Shell::SoloSession do
   end
 
   it "returns a collection based on it's compilation object and the extra recipe provided by chef-shell" do
-    @session.stub!(:node_built?).and_return(true)
+    @session.stub(:node_built?).and_return(true)
     kitteh = Chef::Resource::Cat.new("keyboard")
     @recipe.run_context.resource_collection << kitteh
     @session.resource_collection.should include(kitteh)
@@ -133,7 +133,7 @@ describe Shell::SoloSession do
   end
 
   it "generates its resource collection from the compiled cookbooks and the ad hoc recipe" do
-    @session.stub!(:node_built?).and_return(true)
+    @session.stub(:node_built?).and_return(true)
     kitteh_cat = Chef::Resource::Cat.new("kitteh")
     @run_context.resource_collection << kitteh_cat
     keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
@@ -143,9 +143,9 @@ describe Shell::SoloSession do
   end
 
   it "runs chef with a resource collection from the compiled cookbooks" do
-    @session.stub!(:node_built?).and_return(true)
-    Chef::Log.stub!(:level)
-    chef_runner = mock("Chef::Runner.new", :converge => :converged)
+    @session.stub(:node_built?).and_return(true)
+    Chef::Log.stub(:level)
+    chef_runner = double("Chef::Runner.new", :converge => :converged)
     Chef::Runner.should_receive(:new).with(an_instance_of(Chef::RunContext)).and_return(chef_runner)
 
     @recipe.run_chef.should == :converged

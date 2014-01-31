@@ -20,9 +20,9 @@ require 'spec_helper'
 describe Chef::Application::Solo do
   before do
     @app = Chef::Application::Solo.new
-    @app.stub!(:configure_opt_parser).and_return(true)
-    @app.stub!(:configure_chef).and_return(true)
-    @app.stub!(:configure_logging).and_return(true)
+    @app.stub(:configure_opt_parser).and_return(true)
+    @app.stub(:configure_chef).and_return(true)
+    @app.stub(:configure_logging).and_return(true)
     Chef::Config[:recipe_url] = false
     Chef::Config[:json_attribs] = false
     Chef::Config[:solo] = true
@@ -70,14 +70,14 @@ describe Chef::Application::Solo do
       before do
         Chef::Config[:cookbook_path] = "#{Dir.tmpdir}/chef-solo/cookbooks"
         Chef::Config[:recipe_url] = "http://junglist.gen.nz/recipes.tgz"
-        FileUtils.stub!(:mkdir_p).and_return(true)
+        FileUtils.stub(:mkdir_p).and_return(true)
         @tarfile = StringIO.new("remote_tarball_content")
-        @app.stub!(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(@tarfile)
+        @app.stub(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(@tarfile)
 
         @target_file = StringIO.new
-        File.stub!(:open).with("#{Dir.tmpdir}/chef-solo/recipes.tgz", "wb").and_yield(@target_file)
+        File.stub(:open).with("#{Dir.tmpdir}/chef-solo/recipes.tgz", "wb").and_yield(@target_file)
 
-        Chef::Mixin::Command.stub!(:run_command).and_return(true)
+        Chef::Mixin::Command.stub(:run_command).and_return(true)
       end
 
       it "should create the recipes path based on the parent of the cookbook path" do
@@ -107,14 +107,14 @@ describe Chef::Application::Solo do
     before do
       Chef::Config[:solo] = true
 
-      Chef::Daemon.stub!(:change_privilege)
-      @chef_client = mock("Chef::Client")
-      Chef::Client.stub!(:new).and_return(@chef_client)
+      Chef::Daemon.stub(:change_privilege)
+      @chef_client = double("Chef::Client")
+      Chef::Client.stub(:new).and_return(@chef_client)
       @app = Chef::Application::Solo.new
       # this is all stuff the reconfigure method needs
-      @app.stub!(:configure_opt_parser).and_return(true)
-      @app.stub!(:configure_chef).and_return(true)
-      @app.stub!(:configure_logging).and_return(true)
+      @app.stub(:configure_opt_parser).and_return(true)
+      @app.stub(:configure_chef).and_return(true)
+      @app.stub(:configure_logging).and_return(true)
     end
 
     it "should change privileges" do

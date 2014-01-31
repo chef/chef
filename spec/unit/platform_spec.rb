@@ -151,7 +151,7 @@ describe Chef::Platform do
 
   it "should prefer an explicit provider" do
     kitty = Chef::Resource::Cat.new("loulou")
-    kitty.stub!(:provider).and_return(Chef::Provider::File)
+    kitty.stub(:provider).and_return(Chef::Provider::File)
     node = Chef::Node.new
     node.name("Intel")
     node.automatic_attrs[:platform] = "mac_os_x"

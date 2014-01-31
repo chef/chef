@@ -78,8 +78,8 @@ describe Chef::Resource::YumPackage, "allow_downgrade" do
   end
 
   it "should allow you to specify whether allow_downgrade is true or false" do
-    lambda { @resource.allow_downgrade true }.should_not raise_error(ArgumentError)
-    lambda { @resource.allow_downgrade false }.should_not raise_error(ArgumentError)
+    lambda { @resource.allow_downgrade true }.should_not raise_error
+    lambda { @resource.allow_downgrade false }.should_not raise_error
     lambda { @resource.allow_downgrade "monkey" }.should raise_error(ArgumentError)
   end
 end

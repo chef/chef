@@ -22,7 +22,7 @@ describe Chef::Knife::CookbookDownload do
   before(:each) do
     @knife = Chef::Knife::CookbookDownload.new
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
   describe 'run' do
@@ -44,7 +44,7 @@ describe Chef::Knife::CookbookDownload do
       before(:each) do
         @knife.name_args = ['foobar']
         @knife.config[:download_directory] = '/var/tmp/chef'
-        @rest_mock = mock('rest')
+        @rest_mock = double('rest')
         @knife.stub(:rest).and_return(@rest_mock)
 
         @manifest_data = {
@@ -66,18 +66,18 @@ describe Chef::Knife::CookbookDownload do
           ]
         }
 
-        @cookbook_mock = mock('cookbook')
-        @cookbook_mock.stub!(:version).and_return('1.0.0')
-        @cookbook_mock.stub!(:manifest).and_return(@manifest_data)
+        @cookbook_mock = double('cookbook')
+        @cookbook_mock.stub(:version).and_return('1.0.0')
+        @cookbook_mock.stub(:manifest).and_return(@manifest_data)
         @rest_mock.should_receive(:get_rest).with('cookbooks/foobar/1.0.0').
                                              and_return(@cookbook_mock)
       end
 
       it 'should determine which version if one was not explicitly specified'do
-        @cookbook_mock.stub!(:manifest).and_return({})
+        @cookbook_mock.stub(:manifest).and_return({})
         @knife.should_receive(:determine_version).and_return('1.0.0')
         File.should_receive(:exists?).with('/var/tmp/chef/foobar-1.0.0').and_return(false)
-        Chef::CookbookVersion.stub!(:COOKBOOK_SEGEMENTS).and_return([])
+        Chef::CookbookVersion.stub(:COOKBOOK_SEGEMENTS).and_return([])
         @knife.run
       end
 
@@ -87,8 +87,8 @@ describe Chef::Knife::CookbookDownload do
           @files = @manifest_data.values.map { |v| v.map { |i| i['path'] } }.flatten.uniq
           @files_mocks = {}
           @files.map { |f| File.basename(f) }.flatten.uniq.each do |f|
-            @files_mocks[f] = mock("#{f}_mock")
-            @files_mocks[f].stub!(:path).and_return("/var/tmp/#{f}")
+            @files_mocks[f] = double("#{f}_mock")
+            @files_mocks[f].stub(:path).and_return("/var/tmp/#{f}")
           end
         end
 
@@ -207,7 +207,7 @@ describe Chef::Knife::CookbookDownload do
   describe 'ask_which_version' do
     before(:each) do
       @knife.cookbook_name = 'foobar'
-      @knife.stub!(:available_versions).and_return(['1.0.0', '1.1.0', '2.0.0'])
+      @knife.stub(:available_versions).and_return(['1.0.0', '1.1.0', '2.0.0'])
     end
 
     it 'should prompt the user to select a version' do

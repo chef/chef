@@ -34,7 +34,7 @@ describe Chef::Provider::Service::Freebsd do
     @provider = Chef::Provider::Service::Freebsd.new(@new_resource,@run_context)
     @provider.action = :start
     @init_command = "/usr/local/etc/rc.d/apache22"
-    Chef::Resource::Service.stub!(:new).and_return(@current_resource)
+    Chef::Resource::Service.stub(:new).and_return(@current_resource)
   end
 
   describe "load_current_resource" do
@@ -44,21 +44,21 @@ describe Chef::Provider::Service::Freebsd do
 539  ??  Is     0:00.14 /usr/sbin/sshd
 545  ??  Ss     0:17.53 sendmail: accepting connections (sendmail)
 PS_SAMPLE
-      @status = mock(:stdout => @stdout, :exitstatus => 0)
-      @provider.stub!(:shell_out!).with(@node[:command][:ps]).and_return(@status)
+      @status = double(:stdout => @stdout, :exitstatus => 0)
+      @provider.stub(:shell_out!).with(@node[:command][:ps]).and_return(@status)
 
-      ::File.stub!(:exists?).and_return(false)
-      ::File.stub!(:exists?).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(true)
-      @lines = mock("lines")
-      @lines.stub!(:each).and_yield("sshd_enable=\"YES\"").
+      ::File.stub(:exists?).and_return(false)
+      ::File.stub(:exists?).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(true)
+      @lines = double("lines")
+      @lines.stub(:each).and_yield("sshd_enable=\"YES\"").
                           and_yield("#{@new_resource.name}_enable=\"YES\"")
-      ::File.stub!(:open).and_return(@lines)
+      ::File.stub(:open).and_return(@lines)
 
       @rc_with_name = StringIO.new(<<-RC_SAMPLE)
 name="apache22"
 rcvar=`set_rcvar`
 RC_SAMPLE
-      ::File.stub!(:open).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(@rc_with_name)
+      ::File.stub(:open).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(@rc_with_name)
       @provider.stub(:service_enable_variable_name).and_return nil
 
     end
@@ -75,7 +75,7 @@ RC_SAMPLE
 
     it "should not raise an exception if the rcscript have a name variable" do
       @provider.load_current_resource
-      lambda { @provider.service_enable_variable_name }.should_not raise_error(Chef::Exceptions::Service)
+      lambda { @provider.service_enable_variable_name }.should_not raise_error
     end
 
     describe "when the service supports status" do
@@ -129,14 +129,14 @@ RC_SAMPLE
     describe "when executing assertions" do
       it "should verify that /etc/rc.conf exists" do
         ::File.should_receive(:exists?).with("/etc/rc.conf")
-        @provider.stub!(:service_enable_variable_name).and_return("#{@current_resource.service_name}_enable")
+        @provider.stub(:service_enable_variable_name).and_return("#{@current_resource.service_name}_enable")
         @provider.load_current_resource
       end
 
       context "and the init script is not found" do
         [ "start", "reload", "restart", "enable" ].each do |action|
           it "should raise an exception when the action is #{action}" do
-            ::File.stub!(:exists?).and_return(false)
+            ::File.stub(:exists?).and_return(false)
             @provider.load_current_resource
             @provider.define_resource_requirements
             @provider.instance_variable_get("@rcd_script_found").should be_false
@@ -160,7 +160,7 @@ RC_SAMPLE
       end
 
       it "update state when current resource enabled state could be determined" do
-        ::File.stub!(:exist?).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(true)
+        ::File.stub(:exist?).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(true)
         ::File.should_receive(:exists?).with("/etc/rc.conf").and_return  true
         @provider.load_current_resource
         @provider.instance_variable_get("@enabled_state_found").should be_false
@@ -189,26 +189,26 @@ RC_SAMPLE
       end
 
       it "should read stdout of the ps command" do
-        @provider.stub!(:shell_out!).and_return(@status)
+        @provider.stub(:shell_out!).and_return(@status)
         @stdout.should_receive(:each_line).and_return(true)
         @provider.load_current_resource
       end
 
       it "should set running to true if the regex matches the output" do
-        @stdout.stub!(:each_line).and_yield("555  ??  Ss     0:05.16 /usr/sbin/cron -s").
+        @stdout.stub(:each_line).and_yield("555  ??  Ss     0:05.16 /usr/sbin/cron -s").
                                   and_yield(" 9881  ??  Ss     0:06.67 /usr/local/sbin/httpd -DNOHTTPACCEPT")
         @provider.load_current_resource
         @current_resource.running.should be_true
       end
 
       it "should set running to false if the regex doesn't match" do
-        @provider.stub!(:shell_out!).and_return(@status)
+        @provider.stub(:shell_out!).and_return(@status)
         @provider.load_current_resource
         @current_resource.running.should be_false
       end
 
       it "should raise an exception if ps fails" do
-        @provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+        @provider.stub(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
         @provider.load_current_resource
         @provider.define_resource_requirements
         lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
@@ -270,7 +270,7 @@ RC_SAMPLE
         @rc_without_name = StringIO.new(<<-RC_SAMPLE)
 rcvar=`set_rcvar`
 RC_SAMPLE
-        ::File.stub!(:open).with("/usr/local/etc/rc.d/#{@current_resource.service_name}").and_return(@rc_with_noname)
+        ::File.stub(:open).with("/usr/local/etc/rc.d/#{@current_resource.service_name}").and_return(@rc_with_noname)
         @provider.current_resource = @current_resource
       end
 
@@ -282,19 +282,19 @@ RC_SAMPLE
 # #{@current_resource.service_name}_enable="YES"
 #   (default: "")
 RCVAR_SAMPLE
-          @status = mock(:stdout => @rcvar_stdout, :exitstatus => 0)
-          @provider.stub!(:shell_out!).with("/usr/local/etc/rc.d/#{@current_resource.service_name} rcvar").and_return(@status)
+          @status = double(:stdout => @rcvar_stdout, :exitstatus => 0)
+          @provider.stub(:shell_out!).with("/usr/local/etc/rc.d/#{@current_resource.service_name} rcvar").and_return(@status)
         end
 
         it "should get the service name from rcvar if the rcscript does not have a name variable" do
           @provider.load_current_resource
-          @provider.unstub!(:service_enable_variable_name)
+          @provider.unstub(:service_enable_variable_name)
           @provider.service_enable_variable_name.should == "#{@current_resource.service_name}_enable"
         end
 
         it "should not raise an exception if the rcscript does not have a name variable" do
           @provider.load_current_resource
-          lambda { @provider.service_enable_variable_name }.should_not raise_error(Chef::Exceptions::Service)
+          lambda { @provider.service_enable_variable_name }.should_not raise_error
         end
       end
 
@@ -304,8 +304,8 @@ RCVAR_SAMPLE
 # service_with_noname
 #
 RCVAR_SAMPLE
-          @status = mock(:stdout => @rcvar_stdout, :exitstatus => 0)
-          @provider.stub!(:shell_out!).with("/usr/local/etc/rc.d/#{@current_resource.service_name} rcvar").and_return(@status)
+          @status = double(:stdout => @rcvar_stdout, :exitstatus => 0)
+          @provider.stub(:shell_out!).with("/usr/local/etc/rc.d/#{@current_resource.service_name} rcvar").and_return(@status)
         end
 
         [ "start", "reload", "restart", "enable" ].each do |action|
@@ -319,11 +319,11 @@ RCVAR_SAMPLE
 
         [ "stop", "disable" ].each do |action|
           it "should not raise an error when the action is #{action}" do
-            ::File.stub!(:exist?).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(true)
+            ::File.stub(:exist?).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(true)
             @provider.action = action
             @provider.load_current_resource
             @provider.define_resource_requirements
-            lambda { @provider.process_resource_requirements }.should_not raise_error(Chef::Exceptions::Service)
+            lambda { @provider.process_resource_requirements }.should_not raise_error
           end
         end
       end
@@ -333,25 +333,25 @@ RCVAR_SAMPLE
   describe Chef::Provider::Service::Freebsd, "enable_service" do
     before do
       @provider.current_resource = @current_resource
-      @provider.stub!(:service_enable_variable_name).and_return("#{@current_resource.service_name}_enable")
+      @provider.stub(:service_enable_variable_name).and_return("#{@current_resource.service_name}_enable")
     end
 
     it "should enable the service if it is not enabled" do
-      @current_resource.stub!(:enabled).and_return(false)
+      @current_resource.stub(:enabled).and_return(false)
       @provider.should_receive(:read_rc_conf).and_return([ "foo", "#{@current_resource.service_name}_enable=\"NO\"", "bar" ])
       @provider.should_receive(:write_rc_conf).with(["foo", "bar", "#{@current_resource.service_name}_enable=\"YES\""])
       @provider.enable_service()
     end
 
     it "should enable the service if it is not enabled and not already specified in the rc.conf file" do
-      @current_resource.stub!(:enabled).and_return(false)
+      @current_resource.stub(:enabled).and_return(false)
       @provider.should_receive(:read_rc_conf).and_return([ "foo", "bar" ])
       @provider.should_receive(:write_rc_conf).with(["foo", "bar", "#{@current_resource.service_name}_enable=\"YES\""])
       @provider.enable_service()
     end
 
     it "should not enable the service if it is already enabled" do
-      @current_resource.stub!(:enabled).and_return(true)
+      @current_resource.stub(:enabled).and_return(true)
       @provider.should_not_receive(:write_rc_conf)
       @provider.enable_service
     end
@@ -360,18 +360,18 @@ RCVAR_SAMPLE
   describe Chef::Provider::Service::Freebsd, "disable_service" do
     before do
       @provider.current_resource = @current_resource
-      @provider.stub!(:service_enable_variable_name).and_return("#{@current_resource.service_name}_enable")
+      @provider.stub(:service_enable_variable_name).and_return("#{@current_resource.service_name}_enable")
     end
 
     it "should should disable the service if it is not disabled" do
-      @current_resource.stub!(:enabled).and_return(true)
+      @current_resource.stub(:enabled).and_return(true)
       @provider.should_receive(:read_rc_conf).and_return([ "foo", "#{@current_resource.service_name}_enable=\"YES\"", "bar" ])
       @provider.should_receive(:write_rc_conf).with(["foo", "bar", "#{@current_resource.service_name}_enable=\"NO\""])
       @provider.disable_service()
     end
 
     it "should not disable the service if it is already disabled" do
-      @current_resource.stub!(:enabled).and_return(false)
+      @current_resource.stub(:enabled).and_return(false)
       @provider.should_not_receive(:write_rc_conf)
       @provider.disable_service()
     end

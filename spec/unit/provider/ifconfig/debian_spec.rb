@@ -34,11 +34,11 @@ describe Chef::Provider::Ifconfig::Debian do
     @provider = Chef::Provider::Ifconfig::Debian.new(@new_resource, @run_context)
     @current_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
 
-    status = mock("Status", :exitstatus => 0)
+    status = double("Status", :exitstatus => 0)
     @provider.instance_variable_set("@status", status)
     @provider.current_resource = @current_resource
-    @provider.stub!(:load_current_resource)
-    @provider.stub!(:run_command)
+    @provider.stub(:load_current_resource)
+    @provider.stub(:run_command)
 
     @config_filename_ifaces = "/etc/network/interfaces"
     @config_filename_ifcfg = "/etc/network/interfaces.d/ifcfg-#{@new_resource.device}"

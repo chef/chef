@@ -23,9 +23,9 @@ describe Chef::Application::Client, "reconfigure" do
     ARGV.clear
 
     @app = Chef::Application::Client.new
-    @app.stub!(:configure_opt_parser).and_return(true)
-    @app.stub!(:configure_chef).and_return(true)
-    @app.stub!(:configure_logging).and_return(true)
+    @app.stub(:configure_opt_parser).and_return(true)
+    @app.stub(:configure_chef).and_return(true)
+    @app.stub(:configure_logging).and_return(true)
     @app.cli_arguments = []
     Chef::Config[:interval] = 10
 
@@ -91,9 +91,9 @@ describe Chef::Application::Client, "setup_application" do
   before do
     @app = Chef::Application::Client.new
     # this is all stuff the reconfigure method needs
-    @app.stub!(:configure_opt_parser).and_return(true)
-    @app.stub!(:configure_chef).and_return(true)
-    @app.stub!(:configure_logging).and_return(true)
+    @app.stub(:configure_opt_parser).and_return(true)
+    @app.stub(:configure_chef).and_return(true)
+    @app.stub(:configure_logging).and_return(true)
   end
 
   it "should change privileges" do

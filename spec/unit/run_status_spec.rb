@@ -55,7 +55,7 @@ describe Chef::RunStatus do
       before do
         @start_time = Time.new
         @end_time = @start_time + 23
-        Time.stub!(:now).and_return(@start_time, @end_time)
+        Time.stub(:now).and_return(@start_time, @end_time)
         @run_status.start_clock
         @run_status.stop_clock
       end

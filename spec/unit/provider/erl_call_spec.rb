@@ -31,7 +31,7 @@ describe Chef::Provider::ErlCall do
 
     @provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
 
-    @provider.stub!(:popen4).and_return(@status)
+    @provider.stub(:popen4).and_return(@status)
     @stdin = StringIO.new
     @stdout = StringIO.new('{ok, woohoo}')
     @stderr = StringIO.new

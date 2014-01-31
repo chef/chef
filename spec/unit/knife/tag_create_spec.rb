@@ -7,10 +7,10 @@ describe Chef::Knife::TagCreate do
     @knife.name_args = [ Chef::Config[:node_name], "happytag" ]
 
     @node = Chef::Node.new
-    @node.stub! :save
-    Chef::Node.stub!(:load).and_return @node
+    @node.stub :save
+    Chef::Node.stub(:load).and_return @node
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
   describe "run" do

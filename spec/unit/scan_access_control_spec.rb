@@ -49,7 +49,7 @@ describe Chef::ScanAccessControl do
   describe "when the fs entity exists" do
 
     before do
-      @stat = mock("File::Stat for #{@new_resource.path}", :uid => 0, :gid => 0, :mode => 00100644)
+      @stat = double("File::Stat for #{@new_resource.path}", :uid => 0, :gid => 0, :mode => 00100644)
       File.should_receive(:realpath).with(@new_resource.path).and_return(@real_file)
       File.should_receive(:stat).with(@real_file).and_return(@stat)
       File.should_receive(:exist?).with(@new_resource.path).and_return(true)
@@ -128,7 +128,7 @@ describe Chef::ScanAccessControl do
       end
 
       it "sets the owner of current_resource to the username of the current owner" do
-        @root_passwd = mock("Struct::Passwd for uid 0", :name => "root")
+        @root_passwd = double("Struct::Passwd for uid 0", :name => "root")
         Etc.should_receive(:getpwuid).with(0).and_return(@root_passwd)
         @scanner.set_all!
 
@@ -163,7 +163,7 @@ describe Chef::ScanAccessControl do
       end
 
       it "sets the group of the current resource to the group name" do
-        @group_entry = mock("Struct::Group for wheel", :name => "wheel")
+        @group_entry = double("Struct::Group for wheel", :name => "wheel")
         Etc.should_receive(:getgrgid).with(0).and_return(@group_entry)
         @scanner.set_all!
 

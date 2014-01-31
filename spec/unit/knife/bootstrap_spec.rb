@@ -29,9 +29,9 @@ describe Chef::Knife::Bootstrap do
     @knife.merge_configs
     @knife.config[:template_file] = File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "test.erb"))
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
     @stderr = StringIO.new
-    @knife.ui.stub!(:stderr).and_return(@stderr)
+    @knife.ui.stub(:stderr).and_return(@stderr)
   end
 
   it "should return a name of default bootstrap template" do
@@ -47,8 +47,8 @@ describe Chef::Knife::Bootstrap do
   it "should look for templates early in the run" do
     File.stub(:exists?).and_return(true)
     @knife.name_args = ['shatner']
-    @knife.stub!(:read_template).and_return("")
-    @knife.stub!(:knife_ssh).and_return(true)
+    @knife.stub(:read_template).and_return("")
+    @knife.stub(:knife_ssh).and_return(true)
     @knife_ssh = @knife.knife_ssh
     @knife.should_receive(:find_template).ordered
     @knife.should_receive(:knife_ssh).ordered
@@ -110,10 +110,10 @@ describe Chef::Knife::Bootstrap do
   it "should populate a hint file with JSON when given a file to read" do
     @knife.stub(:find_template).and_return(true)
     @knife.config[:template_file] = File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "test-hints.erb"))
-    ::File.stub!(:read).and_return('{ "foo" : "bar" }')
+    ::File.stub(:read).and_return('{ "foo" : "bar" }')
     @knife.instance_variable_set("@template_file", @knife.config[:template_file])
     template_string = @knife.read_template
-    @knife.stub!(:read_template).and_return('{ "foo" : "bar" }')
+    @knife.stub(:read_template).and_return('{ "foo" : "bar" }')
     @knife.parse_options(["--hint", "openstack=hints/openstack.json"])
     @knife.render_template(template_string).should match /\{\"foo\":\"bar\"\}/
   end
@@ -214,7 +214,7 @@ describe Chef::Knife::Bootstrap do
         Chef::Config[:knife][:ssh_port] = nil
         @knife.config[:forward_agent] = true
         @knife.config[:identity_file] = "~/.ssh/me.rsa"
-        @knife.stub!(:read_template).and_return("")
+        @knife.stub(:read_template).and_return("")
         @knife_ssh = @knife.knife_ssh
       end
 
@@ -282,7 +282,7 @@ describe Chef::Knife::Bootstrap do
         Chef::Config[:knife][:identity_file] = "~/.ssh/you.rsa"
         Chef::Config[:knife][:ssh_gateway] = "towel.blinkenlights.nl"
         Chef::Config[:knife][:host_key_verify] = true
-        @knife.stub!(:read_template).and_return("")
+        @knife.stub(:read_template).and_return("")
         @knife_ssh = @knife.knife_ssh
       end
 
@@ -316,20 +316,20 @@ describe Chef::Knife::Bootstrap do
         @knife.name_args = ["foo.example.com"]
         @knife.config[:ssh_user]      = "rooty"
         @knife.config[:identity_file] = "~/.ssh/me.rsa"
-        @knife.stub!(:read_template).and_return("")
+        @knife.stub(:read_template).and_return("")
         @knife_ssh = @knife.knife_ssh
       end
 
       it "prompts the user for a password " do
-        @knife.stub!(:knife_ssh).and_return(@knife_ssh)
-        @knife_ssh.stub!(:get_password).and_return('typed_in_password')
+        @knife.stub(:knife_ssh).and_return(@knife_ssh)
+        @knife_ssh.stub(:get_password).and_return('typed_in_password')
         alternate_knife_ssh = @knife.knife_ssh_with_password_auth
         alternate_knife_ssh.config[:ssh_password].should == 'typed_in_password'
       end
 
       it "configures knife not to use the identity file that didn't work previously" do
-        @knife.stub!(:knife_ssh).and_return(@knife_ssh)
-        @knife_ssh.stub!(:get_password).and_return('typed_in_password')
+        @knife.stub(:knife_ssh).and_return(@knife_ssh)
+        @knife_ssh.stub(:get_password).and_return('typed_in_password')
         alternate_knife_ssh = @knife.knife_ssh_with_password_auth
         alternate_knife_ssh.config[:identity_file].should be_nil
       end
@@ -341,9 +341,9 @@ describe Chef::Knife::Bootstrap do
       @knife.name_args = ["foo.example.com"]
       @knife.config[:ssh_user]      = "rooty"
       @knife.config[:identity_file] = "~/.ssh/me.rsa"
-      @knife.stub!(:read_template).and_return("")
+      @knife.stub(:read_template).and_return("")
       @knife_ssh = @knife.knife_ssh
-      @knife.stub!(:knife_ssh).and_return(@knife_ssh)
+      @knife.stub(:knife_ssh).and_return(@knife_ssh)
     end
 
     it "verifies that a server to bootstrap was given as a command line arg" do
@@ -358,11 +358,11 @@ describe Chef::Knife::Bootstrap do
     end
 
     it "falls back to password based auth when auth fails the first time" do
-      @knife.stub!(:puts)
+      @knife.stub(:puts)
 
       @fallback_knife_ssh = @knife_ssh.dup
       @knife_ssh.should_receive(:run).and_raise(Net::SSH::AuthenticationFailed.new("no ssh for you"))
-      @knife.stub!(:knife_ssh_with_password_auth).and_return(@fallback_knife_ssh)
+      @knife.stub(:knife_ssh_with_password_auth).and_return(@fallback_knife_ssh)
       @fallback_knife_ssh.should_receive(:run)
       @knife.run
     end

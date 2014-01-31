@@ -62,13 +62,13 @@ describe Chef::Provider::User::Pw do
       end
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not null" do
-        @new_resource.stub!(attribute).and_return("hola")
+        @new_resource.stub(attribute).and_return("hola")
         @provider.set_options.should eql(" #{@new_resource.username} #{option} '#{@new_resource.send(attribute)}' -m")
       end
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not null, without homedir management" do
-        @new_resource.stub!(:supports).and_return({:manage_home => false})
-        @new_resource.stub!(attribute).and_return("hola")
+        @new_resource.stub(:supports).and_return({:manage_home => false})
+        @new_resource.stub(attribute).and_return("hola")
         @provider.set_options.should eql(" #{@new_resource.username} #{option} '#{@new_resource.send(attribute)}'")
       end
     end
@@ -76,7 +76,7 @@ describe Chef::Provider::User::Pw do
     it "should combine all the possible options" do
       match_string = " adam"
       field_list.sort{ |a,b| a[0] <=> b[0] }.each do |attribute, option|
-        @new_resource.stub!(attribute).and_return("hola")
+        @new_resource.stub(attribute).and_return("hola")
         match_string << " #{option} 'hola'"
       end
       match_string << " -m"
@@ -86,8 +86,8 @@ describe Chef::Provider::User::Pw do
 
   describe "create_user" do
     before(:each) do
-      @provider.stub!(:run_command).and_return(true)
-      @provider.stub!(:modify_password).and_return(true)
+      @provider.stub(:run_command).and_return(true)
+      @provider.stub(:modify_password).and_return(true)
     end
 
     it "should run pw useradd with the return of set_options" do
@@ -103,8 +103,8 @@ describe Chef::Provider::User::Pw do
 
   describe "manage_user" do
     before(:each) do
-      @provider.stub!(:run_command).and_return(true)
-      @provider.stub!(:modify_password).and_return(true)
+      @provider.stub(:run_command).and_return(true)
+      @provider.stub(:modify_password).and_return(true)
     end
 
     it "should run pw usermod with the return of set_options" do
@@ -133,12 +133,12 @@ describe Chef::Provider::User::Pw do
 
   describe "determining if the user is locked" do
     it "should return true if user is locked" do
-      @current_resource.stub!(:password).and_return("*LOCKED*abracadabra")
+      @current_resource.stub(:password).and_return("*LOCKED*abracadabra")
       @provider.check_lock.should eql(true)
     end
 
     it "should return false if user is not locked" do
-      @current_resource.stub!(:password).and_return("abracadabra")
+      @current_resource.stub(:password).and_return("abracadabra")
       @provider.check_lock.should eql(false)
     end
   end
@@ -159,8 +159,8 @@ describe Chef::Provider::User::Pw do
 
   describe "when modifying the password" do
     before(:each) do
-      @status = mock("Status", :exitstatus => 0)
-      @provider.stub!(:popen4).and_return(@status)
+      @status = double("Status", :exitstatus => 0)
+      @provider.stub(:popen4).and_return(@status)
       @pid, @stdin, @stdout, @stderr = nil, nil, nil, nil
     end
 
@@ -172,8 +172,8 @@ describe Chef::Provider::User::Pw do
 
     describe "and the passwords are identical" do
       before(:each) do
-        @new_resource.stub!(:password).and_return("abracadabra")
-        @current_resource.stub!(:password).and_return("abracadabra")
+        @new_resource.stub(:password).and_return("abracadabra")
+        @current_resource.stub(:password).and_return("abracadabra")
       end
 
       it "logs an appropriate message" do
@@ -184,8 +184,8 @@ describe Chef::Provider::User::Pw do
 
     describe "and the passwords are different" do
       before(:each) do
-        @new_resource.stub!(:password).and_return("abracadabra")
-        @current_resource.stub!(:password).and_return("sesame")
+        @new_resource.stub(:password).and_return("abracadabra")
+        @current_resource.stub(:password).and_return("sesame")
       end
 
       it "should log an appropriate message" do
@@ -200,7 +200,7 @@ describe Chef::Provider::User::Pw do
 
       it "should send the new password to the stdin of pw usermod" do
         @stdin = StringIO.new
-        @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
         @provider.modify_password
         @stdin.string.should == "abracadabra\n"
       end
@@ -212,7 +212,7 @@ describe Chef::Provider::User::Pw do
 
       it "should not raise an exception if pw usermod succeeds" do
         @status.should_receive(:exitstatus).and_return(0)
-        lambda { @provider.modify_password }.should_not raise_error(Chef::Exceptions::User)
+        lambda { @provider.modify_password }.should_not raise_error
       end
     end
   end
@@ -228,8 +228,8 @@ describe Chef::Provider::User::Pw do
     end
 
     it "shouldn't raise an error if /usr/sbin/pw exists" do
-      File.stub!(:exists?).and_return(true)
-      lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::User)
+      File.stub(:exists?).and_return(true)
+      lambda { @provider.load_current_resource }.should_not raise_error
     end
   end
 end

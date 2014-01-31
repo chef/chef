@@ -196,8 +196,8 @@ describe Chef::User do
     before (:each) do
       @user = Chef::User.new
       @user.name "foobar"
-      @http_client = mock("Chef::REST mock")
-      Chef::REST.stub!(:new).and_return(@http_client)
+      @http_client = double("Chef::REST mock")
+      Chef::REST.stub(:new).and_return(@http_client)
     end
 
     describe "list" do
@@ -208,12 +208,12 @@ describe Chef::User do
       end
 
       it "lists all clients on an OSC server" do
-        @http_client.stub!(:get_rest).with("users").and_return(@osc_response)
+        @http_client.stub(:get_rest).with("users").and_return(@osc_response)
         Chef::User.list.should == @osc_response
       end
 
       it "lists all clients on an OHC/OPC server" do
-        @http_client.stub!(:get_rest).with("users").and_return(@ohc_response)
+        @http_client.stub(:get_rest).with("users").and_return(@ohc_response)
         # We expect that Chef::User.list will give a consistent response
         # so OHC API responses should be transformed to OSC-style output.
         Chef::User.list.should == @osc_response
