@@ -127,6 +127,54 @@ describe Chef::Recipe do
       end
     end
 
+    describe "creating resources via build_resource" do
+      let(:zm_resource) do
+        @recipe.build_resource(:zen_master, "klopp") do
+          something "bvb"
+        end
+      end
+
+      it "applies attributes from the block to the resource" do
+        zm_resource.something.should == "bvb"
+      end
+
+      it "sets contextual attributes on the resource" do
+        zm_resource.recipe_name.should == "test"
+        zm_resource.cookbook_name.should == "hjk"
+        zm_resource.source_line.should include(__FILE__)
+      end
+
+      it "does not add the resource to the resource collection" do
+        zm_resource # force let binding evaluation
+        expect { @run_context.resource_collection.resources(:zen_master => "klopp") }.to raise_error(Chef::Exceptions::ResourceNotFound)
+      end
+
+    end
+
+    describe "creating resources via declare_resource" do
+      let(:zm_resource) do
+        @recipe.declare_resource(:zen_master, "klopp") do
+          something "bvb"
+        end
+      end
+
+      it "applies attributes from the block to the resource" do
+        zm_resource.something.should == "bvb"
+      end
+
+      it "sets contextual attributes on the resource" do
+        zm_resource.recipe_name.should == "test"
+        zm_resource.cookbook_name.should == "hjk"
+        zm_resource.source_line.should include(__FILE__)
+      end
+
+      it "adds the resource to the resource collection" do
+        zm_resource # force let binding evaluation
+        @run_context.resource_collection.resources(:zen_master => "klopp").should == zm_resource
+      end
+
+    end
+
     describe "resource definitions" do
       it "should execute defined resources" do
         crow_define = Chef::ResourceDefinition.new
