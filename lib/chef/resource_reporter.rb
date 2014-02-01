@@ -50,8 +50,8 @@ class Chef
       def for_json
         as_hash = {}
         as_hash["type"]   = new_resource.class.dsl_name
-        as_hash["name"]   = new_resource.name
-        as_hash["id"]     = new_resource.identity
+        as_hash["name"]   = new_resource.name.to_s
+        as_hash["id"]     = new_resource.identity.to_s
         as_hash["after"]  = state(new_resource)
         as_hash["before"] = current_resource ? state(current_resource) : {}
         as_hash["duration"] = (elapsed_time * 1000).to_i.to_s
