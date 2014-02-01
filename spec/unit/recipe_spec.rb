@@ -175,6 +175,33 @@ describe Chef::Recipe do
 
     end
 
+    describe "when attempting to create a resource of an invalid type" do
+
+      it "gives a sane error message when using method_missing" do
+        lambda do
+          @recipe.no_such_resource("foo")
+        end.should raise_error(NoMethodError, %q[No resource or method named `no_such_resource' for `Chef::Recipe "test"'])
+      end
+
+      it "gives a sane error message when using method_missing 'bare'" do
+        lambda do
+          @recipe.instance_eval do
+            # Giving an argument will change this from NameError to NoMethodError
+            no_such_resource
+          end
+        end.should raise_error(NameError, %q[No resource, method, or local variable named `no_such_resource' for `Chef::Recipe "test"'])
+      end
+
+      it "gives a sane error message when using build_resource" do
+        expect { @recipe.build_resource(:no_such_resource, "foo") }.to raise_error(Chef::Exceptions::NoSuchResourceType)
+      end
+
+      it "gives a sane error message when using declare_resource" do
+        expect { @recipe.declare_resource(:no_such_resource, "bar") }.to raise_error(Chef::Exceptions::NoSuchResourceType)
+      end
+
+    end
+
     describe "resource definitions" do
       it "should execute defined resources" do
         crow_define = Chef::ResourceDefinition.new

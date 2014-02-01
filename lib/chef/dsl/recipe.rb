@@ -51,10 +51,16 @@ class Chef
         # to.
         if has_resource_definition?(method_symbol)
           evaluate_resource_definition(method_symbol, *args, &block)
-        else
+        elsif have_resource_class_for?(method_symbol)
           # Otherwise, we're rocking the regular resource call route.
           declare_resource(method_symbol, args[0], caller[0], &block)
+        else
+          super
         end
+      rescue NoMethodError
+        raise NoMethodError, "No resource or method named `#{method_symbol}' for #{describe_self_for_error}"
+      rescue NameError
+        raise NameError, "No resource, method, or local variable named `#{method_symbol}' for #{describe_self_for_error}"
       end
 
       def has_resource_definition?(name)
@@ -107,7 +113,6 @@ class Chef
         # backward compatibility
         resource_class = resource_class_for(type)
 
-        super unless resource_class
         raise ArgumentError, "You must supply a name when declaring a #{type} resource" if name.nil?
 
         resource = resource_class.new(name, run_context)
@@ -136,6 +141,22 @@ class Chef
 
       def resource_class_for(snake_case_name)
         Chef::Resource.resource_for_node(snake_case_name, run_context.node)
+      end
+
+      def have_resource_class_for?(snake_case_name)
+        not resource_class_for(snake_case_name).nil?
+      rescue NameError
+        false
+      end
+
+      def describe_self_for_error
+        if respond_to?(:name)
+          %Q[`#{self.class.name} "#{name}"']
+        elsif respond_to?(:recipe_name)
+          %Q[`#{self.class.name} "#{recipe_name}"']
+        else
+          to_s
+        end
       end
 
     end

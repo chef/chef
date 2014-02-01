@@ -80,6 +80,10 @@ class Chef
     class ConflictingMembersInGroup < ArgumentError; end
     class InvalidResourceReference < RuntimeError; end
     class ResourceNotFound < RuntimeError; end
+
+    # Can't find a Resource of this type that is valid on this platform.
+    class NoSuchResourceType < NameError; end
+
     class InvalidResourceSpecification < ArgumentError; end
     class SolrConnectionError < RuntimeError; end
     class IllegalChecksumRevert < RuntimeError; end
