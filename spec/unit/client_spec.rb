@@ -422,7 +422,7 @@ shared_examples_for Chef::Client do
       @client = Chef::Client.new(nil, :override_runlist => 'role[a], role[b]')
     end
 
-    it "should override the run list and save original runlist" do
+    it "should override the run list and skip the final node save" do
       @client = Chef::Client.new(nil, :override_runlist => 'role[test_role]')
       @client.node = @node
 
@@ -438,7 +438,7 @@ shared_examples_for Chef::Client do
       mock_chef_rest.should_receive(:get_rest).with("roles/test_role").and_return(override_role)
       Chef::REST.should_receive(:new).and_return(mock_chef_rest)
 
-      @node.should_receive(:save).and_return(nil)
+      @node.should_not_receive(:save)
 
       @client.policy_builder.stub(:node).and_return(@node)
       @client.policy_builder.build_node

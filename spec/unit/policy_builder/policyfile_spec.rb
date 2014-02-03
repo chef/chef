@@ -106,6 +106,10 @@ describe Chef::PolicyBuilder::Policyfile do
       Chef::PolicyBuilder::Policyfile.new(node_name, ohai_data, json_attribs, override_runlist, events)
     end
 
+    it "always gives `false` for #temporary_policy?" do
+      expect(initialize_pb.temporary_policy?).to be_false
+    end
+
     context "chef-solo" do
       before { Chef::Config[:solo] = true }
 

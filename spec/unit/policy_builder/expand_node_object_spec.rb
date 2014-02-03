@@ -59,6 +59,10 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       expect(policy_builder).to respond_to(:sync_cookbooks)
     end
 
+    it "implements a temporary_policy? method" do
+      expect(policy_builder).to respond_to(:temporary_policy?)
+    end
+
     describe "loading the node" do
 
       context "on chef-solo" do
@@ -181,6 +185,10 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       expect(node["fqdn"]).to eq(ohai_data["fqdn"])
     end
 
+    it "reports that a temporary_policy is not being used" do
+      expect(policy_builder.temporary_policy?).to be_false
+    end
+
     describe "when the given run list is not in expanded form" do
 
       # NOTE: for chef-client, the behavior is always to expand the run list,
@@ -237,6 +245,10 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       it "sets the override run_list on the node" do
         expect(node.run_list).to eq([override_runlist])
         expect(policy_builder.original_runlist).to eq(primary_runlist)
+      end
+
+      it "reports that a temporary policy is being used" do
+        expect(policy_builder.temporary_policy?).to be_true
       end
 
     end

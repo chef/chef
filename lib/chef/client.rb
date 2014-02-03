@@ -265,12 +265,12 @@ class Chef
 
 
     def save_updated_node
-      unless Chef::Config[:solo]
+      if Chef::Config[:solo]
+        # nothing to do
+      elsif policy_builder.temporary_policy?
+        Chef::Log.warn("Skipping final node save because override_runlist was given")
+      else
         Chef::Log.debug("Saving the current state of node #{node_name}")
-        if(@original_runlist)
-          @node.run_list(*@original_runlist)
-          @node.automatic_attrs[:runlist_override_history] = {Time.now.to_i => @override_runlist.inspect}
-        end
         @node.save
       end
     end
