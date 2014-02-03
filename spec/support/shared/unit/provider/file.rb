@@ -106,16 +106,37 @@ def setup_missing_enclosing_directory
   File.stub(:directory?).with(enclosing_directory).and_return(false)
 end
 
+class BasicTempfile < ::File
+
+  def self.new(path)
+    super(path, File::RDWR|File::CREAT|File::EXCL, 0600)
+  end
+
+  def unlink
+    self.class.unlink(path)
+  end
+
+end
+
 shared_examples_for Chef::Provider::File do
 
+  let(:tempfile_path) do
+    slug = "rspec-shared-file-provider-#{rand(1 << 128)}"
+    File.join(Dir.tmpdir, slug)
+  end
+
   let!(:tempfile) do
-    Tempfile.new("rspec-shared-file-provider")
+    BasicTempfile.new(tempfile_path)
   end
 
   before(:each) do
     content.stub(:tempfile).and_return(tempfile)
     File.stub(:exist?).with(tempfile.path).and_call_original
     File.stub(:exists?).with(tempfile.path).and_call_original
+  end
+
+  after do
+    File.unlink(tempfile_path) rescue nil
   end
 
   it "should return a #{described_class}" do
