@@ -391,14 +391,14 @@ class Chef
             :description => { :kind_of => String },
             :choice => { :kind_of => [ Array ], :default => [] },
             :calculated => { :equal_to => [ true, false ], :default => false },
-            :type => { :equal_to => [ "string", "array", "hash", "symbol" ], :default => "string" },
+            :type => { :equal_to => [ "string", "array", "hash", "symbol", "boolean", "numeric" ], :default => "string" },
             :required => { :equal_to => [ "required", "recommended", "optional", true, false ], :default => "optional" },
             :recipes => { :kind_of => [ Array ], :default => [] },
-            :default => { :kind_of => [ String, Array, Hash ] }
+            :default => { :kind_of => [ String, Array, Hash, Symbol, Numeric, TrueClass, FalseClass ] }
           }
         )
         options[:required] = remap_required_attribute(options[:required]) unless options[:required].nil?
-        validate_string_array(options[:choice])
+        validate_choice_array(options)
         validate_calculated_default_rule(options)
         validate_choice_default_rule(options)
 
@@ -542,6 +542,19 @@ INVALID
         if arry.kind_of?(Array)
           arry.each do |choice|
             validate( {:choice => choice}, {:choice => {:kind_of => String}} )
+          end
+        end
+      end
+
+      # Validate the choice of the options hash
+      #
+      # Raise an exception if the members of the array do not match the defaults
+      # === Parameters
+      # opts<Hash>:: The options hash
+      def validate_choice_array(opts)
+        if opts[:choices].kind_of?(Array)
+          opts[:choices].each do |choice|
+            validate( {:choice => choice}, {:choice => opts[:default]} )
           end
         end
       end
