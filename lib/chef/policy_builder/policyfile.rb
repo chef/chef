@@ -174,7 +174,6 @@ class Chef
         run_list_expansion_ish
       end
 
-      ## Internal Public API ##
 
       def sync_cookbooks
         Chef::Log.debug("Synchronizing cookbooks")
@@ -187,6 +186,7 @@ class Chef
         cookbooks_to_sync
       end
 
+      ## Internal Public API ##
 
       def run_list_with_versions_for_display
         run_list.map do |recipe_spec|

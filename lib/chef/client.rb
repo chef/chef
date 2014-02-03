@@ -255,6 +255,10 @@ class Chef
       run_context
     end
 
+    def sync_cookbooks
+      policy_builder.sync_cookbooks
+    end
+
     def policy_builder
       @policy_builder ||= Chef::PolicyBuilder.strategy.new(node_name, ohai.data, json_attribs, @override_runlist, events)
     end
