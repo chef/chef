@@ -20,7 +20,7 @@ class Chef
     def self.setup_worker_threads(concurrency=10)
       @worker_threads ||= begin
         work_queue
-        (1...concurrency).map do
+        (1..concurrency).map do
           Thread.new do
             loop do
               work_queue.pop.call
