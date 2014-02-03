@@ -55,6 +55,10 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       expect(policy_builder).to respond_to(:expand_run_list)
     end
 
+    it "implements a sync_cookbooks method" do
+      expect(policy_builder).to respond_to(:sync_cookbooks)
+    end
+
     describe "loading the node" do
 
       context "on chef-solo" do

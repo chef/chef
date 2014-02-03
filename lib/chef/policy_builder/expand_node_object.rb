@@ -155,10 +155,6 @@ class Chef
         raise
       end
 
-      ########################################
-      # Internal public API
-      ########################################
-
       # Sync_cookbooks eagerly loads all files except files and
       # templates.  It returns the cookbook_hash -- the return result
       # from /environments/#{node.chef_environment}/cookbook_versions,
@@ -189,6 +185,10 @@ class Chef
 
         cookbook_hash
       end
+
+      ########################################
+      # Internal public API
+      ########################################
 
       def setup_run_list_override
         runlist_override_sanity_check!
