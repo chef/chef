@@ -28,7 +28,7 @@ class Chef
         # Win32 API Bindings
         ###############################################
 
-        class PROCESS_MEMORY_COUNTERS < FFI::Struct
+        class PROCESS_MEMORY_COUNTERS_EX < FFI::Struct
           layout :cb, :DWORD,
             :PageFaultCount, :DWORD,
             :PeakWorkingSetSize, :SIZE_T,
@@ -38,7 +38,8 @@ class Chef
             :QuotaPeakNonPagedPoolUsage, :SIZE_T,
             :QuotaNonPagedPoolUsage, :SIZE_T,
             :PagefileUsage, :SIZE_T,
-            :PeakPagefileUsage, :SIZE_T
+            :PeakPagefileUsage, :SIZE_T,
+            :PrivateUsage, :SIZE_T
         end
 
         ffi_lib 'psapi'

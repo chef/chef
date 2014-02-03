@@ -72,7 +72,7 @@ class Chef
         # Must have PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION rights,
         # AND the PROCESS_VM_READ right
       def self.get_process_memory_info(handle)
-        memory_info = PROCESS_MEMORY_COUNTERS.new
+        memory_info = PROCESS_MEMORY_COUNTERS_EX.new
         unless GetProcessMemoryInfo(handle.handle, memory_info, memory_info.size)
           Chef::ReservedNames::Win32::Error.raise!
         end
