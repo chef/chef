@@ -108,12 +108,16 @@ end
 
 # A File subclass that we use as a replacement for Tempfile. Some versions of
 # Tempfile call `File.exist?()` internally which will cause test failures if
-# `File.exist?()` has been stubbed. This implementation doesn't actually handle
-# selecting the tempfile's name, that is left for the caller to decide.
+# `File.exist?()` has been stubbed.
 class BasicTempfile < ::File
 
-  def self.new(path)
-    super(path, File::RDWR|File::CREAT|File::EXCL, 0600)
+  def self.make_tmp_path(basename)
+    slug = "#{basename}-#{rand(1 << 128)}"
+    File.join(Dir.tmpdir, slug)
+  end
+
+  def self.new(basename)
+    super(make_tmp_path(basename), File::RDWR|File::CREAT|File::EXCL, 0600)
   end
 
   def unlink
@@ -125,12 +129,10 @@ end
 shared_examples_for Chef::Provider::File do
 
   let(:tempfile_path) do
-    slug = "rspec-shared-file-provider-#{rand(1 << 128)}"
-    File.join(Dir.tmpdir, slug)
   end
 
   let!(:tempfile) do
-    BasicTempfile.new(tempfile_path)
+    BasicTempfile.new("rspec-shared-file-provider")
   end
 
   before(:each) do
@@ -140,7 +142,8 @@ shared_examples_for Chef::Provider::File do
   end
 
   after do
-    File.unlink(tempfile_path) rescue nil
+    tempfile.close if (tempfile && !tempfile.closed?)
+    File.unlink(tempfile.path) rescue nil
   end
 
   it "should return a #{described_class}" do
