@@ -402,7 +402,7 @@ describe Chef::Cookbook::Metadata do
       @meta.attributes["db/mysql/databases"][:recipes].should == []
     end
 
-    it "should allow the default value to be a string, array, or hash" do
+    it "should allow the default value to be a string, array, hash, boolean or numeric" do
       lambda {
         @meta.attribute("db/mysql/databases", :default => [])
       }.should_not raise_error
@@ -413,8 +413,52 @@ describe Chef::Cookbook::Metadata do
         @meta.attribute("db/mysql/databases", :default => "alice in chains")
       }.should_not raise_error
       lambda {
+        @meta.attribute("db/mysql/databases", :default => 1337)
+      }.should_not raise_error
+      lambda {
+        @meta.attribute("db/mysql/databases", :default => true)
+      }.should_not raise_error
+      lambda {
         @meta.attribute("db/mysql/databases", :required => :not_gonna_do_it)
       }.should raise_error(ArgumentError)
+    end
+
+    it "should limit the types allowed in the choice array" do
+      options = {
+        :type => "string",
+        :choice => [ "test1", "test2" ],
+        :default => "test1"
+      }
+      lambda {
+        @meta.attribute("test_cookbook/test", options)
+      }.should_not raise_error
+  
+      options = {
+        :type => "boolean",
+        :choice => [ true, false ],
+        :default => true
+      }
+      lambda {
+        @meta.attribute("test_cookbook/test", options)
+      }.should_not raise_error
+
+      options = {
+        :type => "numeric",
+        :choice => [ 1337, 420 ],
+        :default => 1337
+      }
+      lambda {
+        @meta.attribute("test_cookbook/test", options)
+      }.should_not raise_error
+
+      options = {
+        :type => "numeric",
+        :choice => [ true, "false" ],
+        :default => false
+      }
+      lambda {
+        @meta.attribute("test_cookbook/test", options)
+      }.should raise_error
     end
 
     it "should error if default used with calculated" do
