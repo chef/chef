@@ -374,6 +374,7 @@ class Chef
         end
 
         # unlink necessary to clean up in why-run mode
+        tempfile.close
         tempfile.unlink
       end
 

@@ -483,6 +483,7 @@ shared_examples_for Chef::Provider::File do
           tempfile = double('Tempfile', :path => "/tmp/foo-bar-baz")
           content.stub(:tempfile).and_return(tempfile)
           File.should_receive(:exists?).with("/tmp/foo-bar-baz").and_return(true)
+          tempfile.should_receive(:close).once
           tempfile.should_receive(:unlink).once
         end
 
