@@ -186,6 +186,13 @@ class Chef
         cookbook_hash
       end
 
+      # Indicates whether the policy is temporary, which means an
+      # override_runlist was provided. Chef::Client uses this to decide whether
+      # to do the final node save at the end of the run or not.
+      def temporary_policy?
+        !!@original_runlist
+      end
+
       ########################################
       # Internal public API
       ########################################
