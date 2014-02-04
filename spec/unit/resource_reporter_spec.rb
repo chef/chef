@@ -262,6 +262,61 @@ describe Chef::ResourceReporter do
       @resource_reporter.run_started(@run_status)
     end
 
+    context "when the new_resource does not have a string for name and identity" do
+      context "the new_resource name and id are nil" do
+        before do
+          @bad_resource = Chef::Resource::File.new("/tmp/nameless_file.txt")
+          @bad_resource.stub(:name).and_return(nil)
+          @bad_resource.stub(:identity).and_return(nil)
+          @resource_reporter.resource_action_start(@bad_resource, :create)
+          @resource_reporter.resource_current_state_loaded(@bad_resource, :create, @current_resource)
+          @resource_reporter.resource_updated(@bad_resource, :create)
+          @resource_reporter.resource_completed(@bad_resource)
+          @run_status.stop_clock
+          @report = @resource_reporter.prepare_run_data
+          @first_update_report = @report["resources"].first
+        end
+
+        it "resource_name in prepared_run_data is a string" do
+          @first_update_report["name"].class.should == String
+        end
+
+        it "resource_id in prepared_run_data is a string" do
+          @first_update_report["id"].class.should == String
+        end
+      end
+
+      context "the new_resource name and id are hashes" do
+        before do
+          @bad_resource = Chef::Resource::File.new("/tmp/filename_as_hash.txt")
+          @bad_resource.stub(:name).and_return({:foo=>:bar})
+          @bad_resource.stub(:identity).and_return({:foo=>:bar})
+          @resource_reporter.resource_action_start(@bad_resource, :create)
+          @resource_reporter.resource_current_state_loaded(@bad_resource, :create, @current_resource)
+          @resource_reporter.resource_updated(@bad_resource, :create)
+          @resource_reporter.resource_completed(@bad_resource)
+          @run_status.stop_clock
+          @report = @resource_reporter.prepare_run_data
+          @first_update_report = @report["resources"].first
+        end
+        # Ruby 1.8.7 flattens out hash to string using join instead of inspect, resulting in
+        # irb(main):001:0> {:foo => :bar}.to_s
+        # => "foobar"
+        # instead of the expected
+        # irb(main):001:0> {:foo => :bar}.to_s
+        # => "{:foo=>:bar}"
+        # Hence checking for the class instead of the actual value.
+        it "resource_name in prepared_run_data is a string" do
+          @first_update_report["name"].class.should == String
+        end
+
+        it "resource_id in prepared_run_data is a string" do
+          @first_update_report["id"].class.should == String
+        end
+      end
+    end
+
+
     context "for a successful client run" do
       before do
         # TODO: add inputs to generate expected output.
