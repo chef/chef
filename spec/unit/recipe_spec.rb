@@ -127,6 +127,81 @@ describe Chef::Recipe do
       end
     end
 
+    describe "creating resources via build_resource" do
+      let(:zm_resource) do
+        @recipe.build_resource(:zen_master, "klopp") do
+          something "bvb"
+        end
+      end
+
+      it "applies attributes from the block to the resource" do
+        zm_resource.something.should == "bvb"
+      end
+
+      it "sets contextual attributes on the resource" do
+        zm_resource.recipe_name.should == "test"
+        zm_resource.cookbook_name.should == "hjk"
+        zm_resource.source_line.should include(__FILE__)
+      end
+
+      it "does not add the resource to the resource collection" do
+        zm_resource # force let binding evaluation
+        expect { @run_context.resource_collection.resources(:zen_master => "klopp") }.to raise_error(Chef::Exceptions::ResourceNotFound)
+      end
+
+    end
+
+    describe "creating resources via declare_resource" do
+      let(:zm_resource) do
+        @recipe.declare_resource(:zen_master, "klopp") do
+          something "bvb"
+        end
+      end
+
+      it "applies attributes from the block to the resource" do
+        zm_resource.something.should == "bvb"
+      end
+
+      it "sets contextual attributes on the resource" do
+        zm_resource.recipe_name.should == "test"
+        zm_resource.cookbook_name.should == "hjk"
+        zm_resource.source_line.should include(__FILE__)
+      end
+
+      it "adds the resource to the resource collection" do
+        zm_resource # force let binding evaluation
+        @run_context.resource_collection.resources(:zen_master => "klopp").should == zm_resource
+      end
+
+    end
+
+    describe "when attempting to create a resource of an invalid type" do
+
+      it "gives a sane error message when using method_missing" do
+        lambda do
+          @recipe.no_such_resource("foo")
+        end.should raise_error(NoMethodError, %q[No resource or method named `no_such_resource' for `Chef::Recipe "test"'])
+      end
+
+      it "gives a sane error message when using method_missing 'bare'" do
+        lambda do
+          @recipe.instance_eval do
+            # Giving an argument will change this from NameError to NoMethodError
+            no_such_resource
+          end
+        end.should raise_error(NameError, %q[No resource, method, or local variable named `no_such_resource' for `Chef::Recipe "test"'])
+      end
+
+      it "gives a sane error message when using build_resource" do
+        expect { @recipe.build_resource(:no_such_resource, "foo") }.to raise_error(Chef::Exceptions::NoSuchResourceType)
+      end
+
+      it "gives a sane error message when using declare_resource" do
+        expect { @recipe.declare_resource(:no_such_resource, "bar") }.to raise_error(Chef::Exceptions::NoSuchResourceType)
+      end
+
+    end
+
     describe "resource definitions" do
       it "should execute defined resources" do
         crow_define = Chef::ResourceDefinition.new
