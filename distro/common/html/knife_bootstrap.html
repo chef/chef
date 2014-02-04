@@ -1,0 +1,250 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>knife bootstrap &mdash; chef-client Man Pages</title>
+    
+    <link rel="stylesheet" href="_static/guide.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/chef.ico"/>
+
+
+  </head>
+  <body>
+<div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
+<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+</div>
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+
+          <div class="body">
+            
+  <div class="section" id="knife-bootstrap">
+<h1>knife bootstrap<a class="headerlink" href="#knife-bootstrap" title="Permalink to this headline">¶</a></h1>
+<p>A bootstrap is a process that installs the chef-client on a target system so that it can run as a chef-client and communicate with a server.</p>
+<p>The <strong>knife bootstrap</strong> subcommand is used to run a bootstrap operation that installs the chef-client on the target system. The bootstrap operation must specify the IP address or FQDN of the target system.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">To bootstrap the chef-client on Microsoft Windows machines, the <a class="reference external" href="http://docs.opscode.com/plugin_knife_windows.html">knife-windows</a> plugins is required, which includes the necessary bootstrap scripts that are used to do the actual installation.</p>
+</div>
+<div class="section" id="syntax">
+<h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
+<p>This argument has the following syntax:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife bootstrap FQDN_or_IP_ADDRESS <span class="o">(</span>options<span class="o">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="options">
+<h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
+</div>
+<p>This subcommand has the following options:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">-A</span></tt>, <tt class="docutils literal"><span class="pre">--forward-agent</span></tt></dt>
+<dd>Indicates that SSH agent forwarding is enabled.</dd>
+<dt><tt class="docutils literal"><span class="pre">--bootstrap-no-proxy</span> <span class="pre">NO_PROXY_URL_or_IP</span></tt></dt>
+<dd>A URL or IP address that specifies a location that should not be proxied. Note: This option is used internally by Chef to help verify bootstrap operations during testing and should never be used during an actual bootstrap operation.</dd>
+<dt><tt class="docutils literal"><span class="pre">--bootstrap-proxy</span> <span class="pre">PROXY_URL</span></tt></dt>
+<dd>The proxy server for the node that is the target of a bootstrap operation.</dd>
+<dt><tt class="docutils literal"><span class="pre">--bootstrap-version</span> <span class="pre">VERSION</span></tt></dt>
+<dd>The version of the chef-client to install.</dd>
+<dt><tt class="docutils literal"><span class="pre">-d</span> <span class="pre">DISTRO</span></tt>, <tt class="docutils literal"><span class="pre">--distro</span> <span class="pre">DISTRO</span></tt></dt>
+<dd><div class="first admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The default bootstrap operation uses the omnibus installer, which means the default template file (<tt class="docutils literal"><span class="pre">chef-full</span></tt>) should work on all supported platforms. It is recommended to use custom bootstrap templates only when the omnibus installer cannot be used.</p>
+</div>
+<p class="last">The template file to be used during a bootstrap operation. The following distributions are supported: <tt class="docutils literal"><span class="pre">chef-full</span></tt> (the default bootstrap), <tt class="docutils literal"><span class="pre">centos5-gems</span></tt>, <tt class="docutils literal"><span class="pre">fedora13-gems</span></tt>, <tt class="docutils literal"><span class="pre">ubuntu10.04-gems</span></tt>, <tt class="docutils literal"><span class="pre">ubuntu10.04-apt</span></tt>, <tt class="docutils literal"><span class="pre">ubuntu12.04-gems</span></tt>, and the name of a custom bootstrap template file. When this option is used, Knife will search for the template file in the following order: the <tt class="docutils literal"><span class="pre">bootstrap/</span></tt> folder in the current working directory, the <tt class="docutils literal"><span class="pre">bootstrap/</span></tt> folder in the chef-repo, the <tt class="docutils literal"><span class="pre">bootstrap/</span></tt> folder in the <tt class="docutils literal"><span class="pre">~/.chef/</span></tt> directory, or a default bootstrap file. Do not use the <tt class="docutils literal"><span class="pre">--template-file</span></tt> option when <tt class="docutils literal"><span class="pre">--distro</span></tt> is specified.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">-G</span> <span class="pre">GATEWAY</span></tt>, <tt class="docutils literal"><span class="pre">--ssh-gateway</span> <span class="pre">GATEWAY</span></tt></dt>
+<dd>The SSH tunnel or gateway that is used to run a bootstrap action on a machine that is not accessible from the workstation.</dd>
+<dt><tt class="docutils literal"><span class="pre">--hint</span> <span class="pre">HINT_NAME[=HINT_FILE]</span></tt></dt>
+<dd>An Ohai hint to be set on the target of the bootstrap. The hint is contained in a file and is formatted as JSON: <tt class="docutils literal"><span class="pre">{&quot;attribute&quot;:&quot;value&quot;,&quot;attribute&quot;:&quot;value&quot;...}</span></tt>. <tt class="docutils literal"><span class="pre">HINT_NAME</span></tt> is the name of the hint and <tt class="docutils literal"><span class="pre">HINT_FILE</span></tt> is the name of the hint file located at <tt class="docutils literal"><span class="pre">/etc/chef/ohai/hints/HINT_FILE.json</span></tt>. Use multiple <tt class="docutils literal"><span class="pre">--hint</span></tt> options in the command to specify multiple hints.</dd>
+<dt><tt class="docutils literal"><span class="pre">-i</span> <span class="pre">IDENTITY_FILE</span></tt>, <tt class="docutils literal"><span class="pre">--identity-file</span> <span class="pre">IDENTITY_FILE</span></tt></dt>
+<dd>The SSH identity file used for authentication. Key-based authentication is recommended.</dd>
+<dt><tt class="docutils literal"><span class="pre">-j</span> <span class="pre">JSON_ATTRIBS</span></tt>, <tt class="docutils literal"><span class="pre">--json-attributes</span> <span class="pre">JSON_ATTRIBS</span></tt></dt>
+<dd>A JSON string that is added to the first run of a chef-client.</dd>
+<dt><tt class="docutils literal"><span class="pre">-N</span> <span class="pre">NAME</span></tt>, <tt class="docutils literal"><span class="pre">--node-name</span> <span class="pre">NAME</span></tt></dt>
+<dd>The name of the node.</dd>
+<dt><tt class="docutils literal"><span class="pre">--[no-]host-key-verify</span></tt></dt>
+<dd>Use <tt class="docutils literal"><span class="pre">--no-host-key-verify</span></tt> to disable host key verification. Default setting: <tt class="docutils literal"><span class="pre">--host-key-verify</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">-p</span> <span class="pre">PORT</span></tt>, <tt class="docutils literal"><span class="pre">--ssh-port</span> <span class="pre">PORT</span></tt></dt>
+<dd>The SSH port.</dd>
+<dt><tt class="docutils literal"><span class="pre">-P</span> <span class="pre">PASSWORD</span></tt>, <tt class="docutils literal"><span class="pre">--ssh-password</span> <span class="pre">PASSWORD</span></tt></dt>
+<dd>The SSH password. This can be used to pass the password directly on the command line. If this option is not specified (and a password is required) Knife will prompt for the password.</dd>
+<dt><tt class="docutils literal"><span class="pre">--prerelease</span></tt></dt>
+<dd>Indicates that pre-release gems should be installed.</dd>
+<dt><tt class="docutils literal"><span class="pre">-r</span> <span class="pre">RUN_LIST</span></tt>, <tt class="docutils literal"><span class="pre">--run-list</span> <span class="pre">RUN_LIST</span></tt></dt>
+<dd>A comma-separated list of roles and/or recipes to be applied.</dd>
+<dt><tt class="docutils literal"><span class="pre">--secret</span> <span class="pre">SECRET</span></tt></dt>
+<dd>The encryption key that is used for values contained within a data bag item.</dd>
+<dt><tt class="docutils literal"><span class="pre">--secret-file</span> <span class="pre">FILE</span></tt></dt>
+<dd>The path to the file that contains the encryption key.</dd>
+<dt><tt class="docutils literal"><span class="pre">--sudo</span></tt></dt>
+<dd>Indicates that a bootstrap operation should be executed using sudo.</dd>
+<dt><tt class="docutils literal"><span class="pre">--template-file</span> <span class="pre">TEMPLATE</span></tt></dt>
+<dd>The path to a template file that will be used during a bootstrap operation. Do not use the <tt class="docutils literal"><span class="pre">--distro</span></tt> option when <tt class="docutils literal"><span class="pre">--template-file</span></tt> is specified.</dd>
+<dt><tt class="docutils literal"><span class="pre">--use-sudo-password</span></tt></dt>
+<dd>Indicates that a bootstrap operation is done using sudo, with the password specified by the <tt class="docutils literal"><span class="pre">-P</span></tt> (or <tt class="docutils literal"><span class="pre">--ssh-password</span></tt>) option.</dd>
+<dt><tt class="docutils literal"><span class="pre">-x</span> <span class="pre">USERNAME</span></tt>, <tt class="docutils literal"><span class="pre">--ssh-user</span> <span class="pre">USERNAME</span></tt></dt>
+<dd>The SSH user name.</dd>
+</dl>
+</div>
+<div class="section" id="custom-templates">
+<h2>Custom Templates<a class="headerlink" href="#custom-templates" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">chef-full</span></tt> distribution uses the omnibus installer. For most bootstrap operations, regardless of the platform on which the target node is running, using the <tt class="docutils literal"><span class="pre">chef-full</span></tt> distribution is the best approach for installing the chef-client on a target node. In some situations, using another supported distribution is necessary. And in some situations, a custom template may be required. For example, the default bootstrap operation relies on an Internet connection to get the distribution to the target node. If a target node cannot access the Internet, then a custom template can be used to define a specific location for the distribution so that the target node may access it during the bootstrap operation.</p>
+<p>A custom bootstrap template file (<tt class="docutils literal"><span class="pre">template_filename.erb</span></tt>) must be located in a <tt class="docutils literal"><span class="pre">bootstrap/</span></tt> directory. Use the <tt class="docutils literal"><span class="pre">--distro</span></tt> option with the <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">bootstrap</span></tt> subcommand to specify the bootstrap template file. For example, a bootstrap template file named &#8220;british_sea_power.erb&#8221;:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife bootstrap 123.456.7.8 -x username -P password --sudo --distro <span class="s2">&quot;british_sea_power.erb&quot;</span>
+</pre></div>
+</div>
+<p>The following examples show how a bootstrap template file can be customized for various platforms.</p>
+<div class="section" id="ubuntu-12-04">
+<h3>Ubuntu 12.04<a class="headerlink" href="#ubuntu-12-04" title="Permalink to this headline">¶</a></h3>
+<p>The following example shows how to modify the default script for Ubuntu 12.04. First, copy the bootstrap template from the default location. If the chef-client is installed from a RubyGems, the full path can be found in the gem contents:</p>
+<div class="highlight-bash"><div class="highlight"><pre>% gem contents chef | grep ubuntu12.04-gems
+/Users/jtimberman/.rvm/gems/ruby-1.9.2-p180/gems/chef-0.10.2/lib/chef/knife/bootstrap/ubuntu12.04-gems.erb
+</pre></div>
+</div>
+<p>Copy the template to the chef-repo in the <tt class="docutils literal"><span class="pre">.chef/bootstrap</span></tt> directory:</p>
+<div class="highlight-bash"><div class="highlight"><pre>% cp /Users/jtimberman/.rvm/gems/ruby-1.9.2-p180/gems/chef-0.10.2/
+   lib/chef/knife/bootstrap/ubuntu12.04-gems.erb ~/chef-repo/.chef/
+   bootstrap/ubuntu12.04-gems-mine.erb
+</pre></div>
+</div>
+<p>Modify the template with any editor, then use it with the <tt class="docutils literal"><span class="pre">-d</span></tt> or <tt class="docutils literal"><span class="pre">--distro</span></tt> option in the <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">bootstrap</span></tt> operation, or use any of the Knife plug-ins that support cloud computing.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife bootstrap 192.168.1.100 -r <span class="s1">&#39;role[webserver]&#39;</span> -d ubuntu12.04-gems-mine
+</pre></div>
+</div>
+<p>Alternatively, an example bootstrap template can be found in the git source for the chef-repo: <a class="reference external" href="https://github.com/opscode/chef/blob/master/lib/chef/knife/bootstrap/ubuntu12.04-gems.erb">https://github.com/opscode/chef/blob/master/lib/chef/knife/bootstrap/ubuntu12.04-gems.erb</a>. Copy the template to <tt class="docutils literal"><span class="pre">~/.chef-repo/.chef/bootstrap/ubuntu12.04-apt.erb</span></tt> and modify the template appropriately.</p>
+</div>
+<div class="section" id="debian-and-apt">
+<h3>Debian and Apt<a class="headerlink" href="#debian-and-apt" title="Permalink to this headline">¶</a></h3>
+<p>The following example shows how to use the <strong>knife bootstrap</strong> sub-command to create a client configuration file (/etc/chef/client.rb) that uses Hosted Chef as the server. The configuration file will look something like:</p>
+<div class="highlight-ruby"><div class="highlight"><pre><span class="n">log_level</span>        <span class="ss">:info</span>
+<span class="n">log_location</span>     <span class="no">STDOUT</span>
+<span class="n">chef_server_url</span>  <span class="s1">&#39;https://api.opscode.com/organizations/ORGNAME&#39;</span>
+<span class="n">validation_client_name</span> <span class="s1">&#39;ORGNAME-validator&#39;</span>
+</pre></div>
+</div>
+<p>The <strong>knife bootstrap</strong> sub-command will look in three locations for the template that is used during the bootstrap operation. The locations are:</p>
+<ol class="arabic simple">
+<li>A bootstrap directory in the installed Knife library; the actual location may vary, depending how the chef-client is installed</li>
+<li>A bootstrap directory in the <tt class="docutils literal"><span class="pre">$PWD/.chef</span></tt>, e.g. in <tt class="docutils literal"><span class="pre">~/chef-repo/.chef</span></tt></li>
+<li>A bootstrap directory in the users <tt class="docutils literal"><span class="pre">$HOME/.chef</span></tt></li>
+</ol>
+<p>If, in the example above, the second location was used, then create the <tt class="docutils literal"><span class="pre">.chef/bootstrap/</span></tt> directory in the chef-repo, and then create the Embedded Ruby (ERB) template file by running commands similar to the following:</p>
+<div class="highlight-bash"><div class="highlight"><pre>mkdir ~/.chef/bootstrap
+vi ~/.chef/bootstrap/debian5.0-apt.erb
+</pre></div>
+</div>
+<p>When finished creating the directory and the Embedded Ruby (ERB) template file, edit the template to run the SSH commands. Then set up the validation certificate and the client configuration file.</p>
+<p>Finally, run the chef-client on the node using a <strong>knife bootstrap</strong> command that specifies a run-list (the <tt class="docutils literal"><span class="pre">-r</span></tt> option). The bootstrap template can be called using a command similar to the following:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife bootstrap mynode.example.com -r <span class="s1">&#39;role[webserver]&#39;</span>,<span class="s1">&#39;role[production]&#39;</span> --distro debian5.0-apt
+</pre></div>
+</div>
+</div>
+<div class="section" id="microsoft-windows">
+<h3>Microsoft Windows<a class="headerlink" href="#microsoft-windows" title="Permalink to this headline">¶</a></h3>
+<p>The following example shows how to modify the default script for Microsoft Windows and Windows PowerShell:</p>
+<div class="highlight-bash"><div class="highlight"><pre>@setlocal
+
+&lt;%<span class="o">=</span> <span class="s2">&quot;SETX HTTP_PROXY \&quot;#{knife_config[:bootstrap_proxy]}\&quot;&quot;</span> <span class="k">if </span>knife_config<span class="o">[</span>:bootstrap_proxy<span class="o">]</span> %&gt;
+@mkdir &lt;%<span class="o">=</span> bootstrap_directory %&gt;
+
+&gt; &lt;%<span class="o">=</span> bootstrap_directory %&gt;<span class="se">\w</span>get.ps1 <span class="o">(</span>
+ &lt;%<span class="o">=</span> win_wget_ps %&gt;
+<span class="o">)</span>
+
+:install
+@rem Install Chef using chef-client MSI installer
+
+&lt;% <span class="nv">url</span><span class="o">=</span><span class="s2">&quot;http://reposerver.example.com/chef-client-11.6.0.rc.1-1.windows.msi&quot;</span> -%&gt;
+@set <span class="s2">&quot;REMOTE_SOURCE_MSI_URL=&lt;%= url %&gt;&quot;</span>
+@set <span class="s2">&quot;LOCAL_DESTINATION_MSI_PATH=&lt;%= local_download_path %&gt;&quot;</span>
+
+@powershell -ExecutionPolicy Unrestricted -NoProfile -NonInteractive <span class="s2">&quot;&amp; &#39;&lt;%= bootstrap_directory %&gt;\wget.ps1&#39; &#39;%REMOTE_SOURCE_MSI_URL%&#39; &#39;%LOCAL_DESTINATION_MSI_PATH%&#39;&quot;</span>
+
+@REM Replace install_chef from knife-windows Gem with one that has extra flags to turn on Chef service feature -- only available in Chef &gt;<span class="o">=</span> 11.6.x
+@REM &lt;%<span class="o">=</span> install_chef %&gt;
+@echo Installing Chef Client 11.6.0.rc1 with msiexec
+@msiexec /q /i <span class="s2">&quot;%LOCAL_DESTINATION_MSI_PATH%&quot;</span> <span class="nv">ADDLOCAL</span><span class="o">=</span><span class="s2">&quot;ChefClientFeature,ChefServiceFeature&quot;</span>
+@endlocal
+
+@echo Writing validation key...
+
+&gt; &lt;%<span class="o">=</span> bootstrap_directory %&gt;<span class="se">\v</span>alidation.pem <span class="o">(</span>
+ &lt;%<span class="o">=</span> validation_key %&gt;
+<span class="o">)</span>
+
+@echo Validation key written.
+
+&lt;% <span class="k">if</span> @config<span class="o">[</span>:encrypted_data_bag_secret<span class="o">]</span> -%&gt;
+&gt; &lt;%<span class="o">=</span> bootstrap_directory %&gt;<span class="se">\e</span>ncrypted_data_bag_secret <span class="o">(</span>
+ &lt;%<span class="o">=</span> encrypted_data_bag_secret %&gt;
+<span class="o">)</span>
+&lt;% end -%&gt;
+
+&gt; &lt;%<span class="o">=</span> bootstrap_directory %&gt;<span class="se">\c</span>lient.rb <span class="o">(</span>
+ &lt;%<span class="o">=</span> config_content %&gt;
+<span class="o">)</span>
+
+&gt; &lt;%<span class="o">=</span> bootstrap_directory %&gt;<span class="se">\f</span>irst-boot.json <span class="o">(</span>
+ &lt;%<span class="o">=</span> run_list %&gt;
+<span class="o">)</span>
+
+&lt;%<span class="o">=</span> start_chef %&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The following examples show how to use this Knife subcommand:</p>
+<p><strong>Use an SSH password</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife bootstrap 192.168.1.1 -x username -P PASSWORD --sudo
+</pre></div>
+</div>
+<p><strong>Use a file that contains a private key</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife bootstrap 192.168.1.1 -x username -i ~/.ssh/id_rsa --sudo
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+
+      </div>
+
+  
+      <div class="clearer"></div>
+    </div>
+
+
+
+
+  </body>
+</html>
