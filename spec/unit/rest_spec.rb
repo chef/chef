@@ -70,6 +70,7 @@ describe Chef::REST do
     Chef::Log.init(log_stringio)
   end
 
+
   describe "calling an HTTP verb on a path or absolute URL" do
     it "adds a relative URL to the base url it was initialized with" do
       expect(rest.create_url("foo/bar/baz")).to eq(URI.parse(base_url + "/foo/bar/baz"))
@@ -162,44 +163,6 @@ describe Chef::REST do
         and_return([1,2,3])
       rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
       rest.raw_http_request(:POST, monkey_uri, STANDARD_WRITE_HEADERS, data)
-    end
-  end
-
-  describe "legacy API" do
-    before(:each) do
-      Chef::Config[:node_name]  = "webmonkey.example.com"
-      Chef::Config[:client_key] = CHEF_SPEC_DATA + "/ssl/private_key.pem"
-      @rest = Chef::REST.new(@base_url)
-    end
-
-    it 'responds to raw_http_request as a public method' do
-      @rest.public_methods.map(&:to_s).should include("raw_http_request")
-    end
-
-    it 'calls the authn middleware' do
-      data = "\"secure data\""
-
-      auth_headers = STANDARD_WRITE_HEADERS.merge({"auth_done"=>"yep"})
-
-      @rest.authenticator.should_receive(:handle_request).
-        with(:POST, monkey_uri, STANDARD_WRITE_HEADERS, data).
-        and_return([:POST, monkey_uri, auth_headers, data])
-      @rest.should_receive(:send_http_request).
-        with(:POST, monkey_uri, auth_headers, data).
-        and_return([1,2,3])
-      @rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
-      @rest.raw_http_request(:POST, monkey_uri, STANDARD_WRITE_HEADERS, data)
-    end
-
-    it 'sets correct authn headers' do
-      data = "\"secure data\""
-      method, uri, auth_headers, d = @rest.authenticator.handle_request(:POST, monkey_uri, STANDARD_WRITE_HEADERS, data)
-
-      @rest.should_receive(:send_http_request).
-        with(:POST, monkey_uri, auth_headers, data).
-        and_return([1,2,3])
-      @rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
-      @rest.raw_http_request(:POST, monkey_uri, STANDARD_WRITE_HEADERS, data)
     end
   end
 
