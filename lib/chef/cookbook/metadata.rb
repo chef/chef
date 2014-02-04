@@ -551,13 +551,28 @@ INVALID
       # Raise an exception if the members of the array do not match the defaults
       # === Parameters
       # opts<Hash>:: The options hash
-      def validate_choice_array(opts)
-        if opts[:choices].kind_of?(Array)
-          opts[:choices].each do |choice|
-            validate( {:choice => choice}, {:choice => opts[:default]} )
+        def validate_choice_array(opts)
+          if opts[:choice].kind_of?(Array)
+            case opts[:type]
+            when "string"
+              validator = [ String ]
+            when "array"
+              validator = [ Array ]
+            when "hash"
+              validator = [ Hash ]
+            when "symbol"
+              validator = [ Symbol ]
+            when "boolean"
+              validator = [ TrueClass, FalseClass ]
+            when "numeric"
+              validator = [ Numeric ]
+            end
+
+            opts[:choice].each do |choice|
+              validate( {:choice => choice}, {:choice => {:kind_of => validator}} )
+            end
           end
         end
-      end
 
       # For backwards compatibility, remap Boolean values to String
       #   true is mapped to "required"
