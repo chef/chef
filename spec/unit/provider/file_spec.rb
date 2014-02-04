@@ -29,7 +29,7 @@ describe Chef::Provider::File do
   end
 
   let(:content) do
-    content = mock('Chef::Provider::File::Content')
+    content = double('Chef::Provider::File::Content')
   end
 
   let(:node) { double('Chef::Node') }

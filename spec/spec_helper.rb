@@ -86,7 +86,6 @@ Dir["spec/support/**/*.rb"].
   map { |f| f.gsub(%r[spec/], '')}.
   each { |f| require f }
 
-
 OHAI_SYSTEM = Ohai::System.new
 OHAI_SYSTEM.require_plugin("os")
 OHAI_SYSTEM.require_plugin("platform")

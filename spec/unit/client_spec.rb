@@ -37,9 +37,9 @@ shared_examples_for Chef::Client do
                   :platform         => 'example-platform',
                   :platform_version => 'example-platform-1.0',
                   :data             => {} }
-    ohai_data.stub!(:all_plugins).and_return(true)
-    ohai_data.stub!(:data).and_return(ohai_data)
-    Ohai::System.stub!(:new).and_return(ohai_data)
+    ohai_data.stub(:all_plugins).and_return(true)
+    ohai_data.stub(:data).and_return(ohai_data)
+    Ohai::System.stub(:new).and_return(ohai_data)
 
     @node = Chef::Node.new
     @node.name(@fqdn)
@@ -81,7 +81,7 @@ shared_examples_for Chef::Client do
 
       context "and STDOUT is a TTY" do
         before do
-          STDOUT.stub!(:tty?).and_return(true)
+          STDOUT.stub(:tty?).and_return(true)
         end
 
         it "configures the :doc formatter" do
@@ -104,7 +104,7 @@ shared_examples_for Chef::Client do
 
       context "and STDOUT is not a TTY" do
         before do
-          STDOUT.stub!(:tty?).and_return(false)
+          STDOUT.stub(:tty?).and_return(false)
         end
 
         it "configures the :null formatter" do
@@ -168,10 +168,10 @@ shared_examples_for Chef::Client do
   describe "run" do
 
     it "should identify the node and run ohai, then register the client" do
-      mock_chef_rest_for_node = mock("Chef::REST (node)")
-      mock_chef_rest_for_cookbook_sync = mock("Chef::REST (cookbook sync)")
-      mock_chef_rest_for_node_save = mock("Chef::REST (node save)")
-      mock_chef_runner = mock("Chef::Runner")
+      mock_chef_rest_for_node = double("Chef::REST (node)")
+      mock_chef_rest_for_cookbook_sync = double("Chef::REST (cookbook sync)")
+      mock_chef_rest_for_node_save = double("Chef::REST (node save)")
+      mock_chef_runner = double("Chef::Runner")
 
       # --Client.register
       #   Make sure Client#register thinks the client key doesn't
@@ -253,15 +253,15 @@ shared_examples_for Chef::Client do
     end
 
     it "should remove the run_lock on failure of #load_node" do
-      @run_lock = mock("Chef::RunLock", :acquire => true)
-      Chef::RunLock.stub!(:new).and_return(@run_lock)
+      @run_lock = double("Chef::RunLock", :acquire => true)
+      Chef::RunLock.stub(:new).and_return(@run_lock)
 
-      @events = mock("Chef::EventDispatch::Dispatcher").as_null_object
-      Chef::EventDispatch::Dispatcher.stub!(:new).and_return(@events)
+      @events = double("Chef::EventDispatch::Dispatcher").as_null_object
+      Chef::EventDispatch::Dispatcher.stub(:new).and_return(@events)
 
       # @events is created on Chef::Client.new, so we need to recreate it after mocking
       @client = Chef::Client.new
-      @client.stub!(:load_node).and_raise(Exception)
+      @client.stub(:load_node).and_raise(Exception)
       @run_lock.should_receive(:release)
       if(Chef::Config[:client_fork] && !windows?)
         @client.should_receive(:fork) do |&block|
@@ -274,8 +274,8 @@ shared_examples_for Chef::Client do
     describe "when notifying other objects of the status of the chef run" do
       before do
         Chef::Client.clear_notifications
-        Chef::Node.stub!(:find_or_create).and_return(@node)
-        @node.stub!(:save)
+        Chef::Node.stub(:find_or_create).and_return(@node)
+        @node.stub(:save)
         @client.load_node
         @client.build_node
       end
@@ -324,7 +324,7 @@ shared_examples_for Chef::Client do
 
       # build_node will call Node#expand! with server, which will
       # eventually hit the server to expand the included role.
-      mock_chef_rest = mock("Chef::REST")
+      mock_chef_rest = double("Chef::REST")
       mock_chef_rest.should_receive(:get_rest).with("roles/role_containing_cookbook1").and_return(role_containing_cookbook1)
       Chef::REST.should_receive(:new).and_return(mock_chef_rest)
 
@@ -332,7 +332,7 @@ shared_examples_for Chef::Client do
       @node[:roles].should be_nil
       @node[:recipes].should be_nil
 
-      @client.policy_builder.stub!(:node).and_return(@node)
+      @client.policy_builder.stub(:node).and_return(@node)
 
       # chefspec and possibly others use the return value of this method
       @client.build_node.should == @node
@@ -385,7 +385,7 @@ shared_examples_for Chef::Client do
 
         context "fatal admin check is configured" do
           it "should not raise an exception" do
-            @client.do_windows_admin_check.should_not raise_error(Chef::Exceptions::WindowsNotAdmin)
+            @client.do_windows_admin_check.should_not raise_error
           end
         end
       end
@@ -402,7 +402,7 @@ shared_examples_for Chef::Client do
 
         context "fatal admin check is configured" do
           it "should raise an exception" do
-            @client.do_windows_admin_check.should_not raise_error(Chef::Exceptions::WindowsNotAdmin)
+            @client.do_windows_admin_check.should_not raise_error
           end
         end
       end
@@ -422,7 +422,7 @@ shared_examples_for Chef::Client do
       @client = Chef::Client.new(nil, :override_runlist => 'role[a], role[b]')
     end
 
-    it "should override the run list and save original runlist" do
+    it "should override the run list and skip the final node save" do
       @client = Chef::Client.new(nil, :override_runlist => 'role[test_role]')
       @client.node = @node
 
@@ -434,11 +434,11 @@ shared_examples_for Chef::Client do
 
       original_runlist = @node.run_list.dup
 
-      mock_chef_rest = mock("Chef::REST")
+      mock_chef_rest = double("Chef::REST")
       mock_chef_rest.should_receive(:get_rest).with("roles/test_role").and_return(override_role)
       Chef::REST.should_receive(:new).and_return(mock_chef_rest)
 
-      @node.should_receive(:save).and_return(nil)
+      @node.should_not_receive(:save)
 
       @client.policy_builder.stub(:node).and_return(@node)
       @client.policy_builder.build_node

@@ -26,16 +26,16 @@ describe Chef::Knife::ClientBulkDelete do
     @knife = Chef::Knife::ClientBulkDelete.new
     @knife.name_args = ["."]
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
-    @knife.ui.stub!(:confirm).and_return(true)
+    @knife.ui.stub(:stdout).and_return(@stdout)
+    @knife.ui.stub(:confirm).and_return(true)
     @clients = Hash.new
     %w{tim dan stephen}.each do |client_name|
       client = Chef::ApiClient.new()
       client.name(client_name)
-      client.stub!(:destroy).and_return(true)
+      client.stub(:destroy).and_return(true)
       @clients[client_name] = client
     end
-    Chef::ApiClient.stub!(:list).and_return(@clients)
+    Chef::ApiClient.stub(:list).and_return(@clients)
   end
 
   describe "run" do

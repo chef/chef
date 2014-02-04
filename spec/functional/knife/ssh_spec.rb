@@ -252,7 +252,7 @@ describe Chef::Knife::Ssh do
     # if available, but #merge_configs (which is called by #configure_chef) is
     # necessary to have default options merged in.
     @knife.merge_configs
-    @knife.stub!(:ssh_command).and_return { 0 }
+    @knife.stub(:ssh_command).and_return { 0 }
     @api = TinyServer::API.instance
     @api.clear
 

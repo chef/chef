@@ -39,7 +39,7 @@ describe Chef::Resource::ErlCall do
   end
 
   it "should accept run as an action" do
-    lambda { @resource.action :run }.should_not raise_error(ArgumentError)
+    lambda { @resource.action :run }.should_not raise_error
   end
 
   it "should allow you to set the code attribute" do

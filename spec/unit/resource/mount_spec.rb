@@ -42,9 +42,9 @@ describe Chef::Resource::Mount do
   end
 
   it "should accept mount, umount and remount as actions" do
-    lambda { @resource.action :mount }.should_not raise_error(ArgumentError)
-    lambda { @resource.action :umount }.should_not raise_error(ArgumentError)
-    lambda { @resource.action :remount }.should_not raise_error(ArgumentError)
+    lambda { @resource.action :mount }.should_not raise_error
+    lambda { @resource.action :umount }.should_not raise_error
+    lambda { @resource.action :remount }.should_not raise_error
     lambda { @resource.action :brooklyn }.should raise_error(ArgumentError)
   end
 

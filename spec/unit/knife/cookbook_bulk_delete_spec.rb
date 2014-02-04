@@ -27,18 +27,18 @@ describe Chef::Knife::CookbookBulkDelete do
     @knife.config = {:print_after => nil}
     @knife.name_args = ["."]
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
-    @knife.ui.stub!(:confirm).and_return(true)
+    @knife.ui.stub(:stdout).and_return(@stdout)
+    @knife.ui.stub(:confirm).and_return(true)
     @cookbooks = Hash.new
     %w{cheezburger pizza lasagna}.each do |cookbook_name|
       cookbook = Chef::CookbookVersion.new(cookbook_name)
       @cookbooks[cookbook_name] = cookbook
     end
-    @rest = mock("Chef::REST")
-    @rest.stub!(:get_rest).and_return(@cookbooks)
-    @rest.stub!(:delete_rest).and_return(true)
-    @knife.stub!(:rest).and_return(@rest)
-    Chef::CookbookVersion.stub!(:list).and_return(@cookbooks)
+    @rest = double("Chef::REST")
+    @rest.stub(:get_rest).and_return(@cookbooks)
+    @rest.stub(:delete_rest).and_return(true)
+    @knife.stub(:rest).and_return(@rest)
+    Chef::CookbookVersion.stub(:list).and_return(@cookbooks)
 
   end
 
@@ -47,11 +47,11 @@ describe Chef::Knife::CookbookBulkDelete do
   describe "when there are several cookbooks on the server" do
     before do
       @cheezburger = {'cheezburger' => {"url" => "file:///dev/null", "versions" => [{"url" => "file:///dev/null-cheez", "version" => "1.0.0"}]}}
-      @rest.stub!(:get_rest).with('cookbooks/cheezburger').and_return(@cheezburger)
+      @rest.stub(:get_rest).with('cookbooks/cheezburger').and_return(@cheezburger)
       @pizza = {'pizza' => {"url" => "file:///dev/null", "versions" => [{"url" => "file:///dev/null-pizza", "version" => "2.0.0"}]}}
-      @rest.stub!(:get_rest).with('cookbooks/pizza').and_return(@pizza)
+      @rest.stub(:get_rest).with('cookbooks/pizza').and_return(@pizza)
       @lasagna = {'lasagna' => {"url" => "file:///dev/null", "versions" => [{"url" => "file:///dev/null-lasagna", "version" => "3.0.0"}]}}
-      @rest.stub!(:get_rest).with('cookbooks/lasagna').and_return(@lasagna)
+      @rest.stub(:get_rest).with('cookbooks/lasagna').and_return(@lasagna)
     end
 
     it "should print the cookbooks you are about to delete" do

@@ -111,10 +111,10 @@ describe Chef::Resource::RegistryKey, :windows_only do
   before do
     @node.name("windowsbox")
 
-    @rest_client = mock("Chef::REST (mock)")
-    @rest_client.stub!(:create_url).and_return("reports/nodes/windowsbox/runs/#{@run_id}");
-    @rest_client.stub!(:raw_http_request).and_return({"result"=>"ok"});
-    @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/windowsbox/runs/#{@run_id}"});
+    @rest_client = double("Chef::REST (mock)")
+    @rest_client.stub(:create_url).and_return("reports/nodes/windowsbox/runs/#{@run_id}");
+    @rest_client.stub(:raw_http_request).and_return({"result"=>"ok"});
+    @rest_client.stub(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/windowsbox/runs/#{@run_id}"});
 
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
     @events.register(@resource_reporter)
@@ -124,8 +124,8 @@ describe Chef::Resource::RegistryKey, :windows_only do
     @resource_reporter.run_started(@run_status)
 
     @new_resource.cookbook_name = "monkey"
-    @cookbook_version = mock("Cookbook::Version", :version => "1.2.3")
-    @new_resource.stub!(:cookbook_version).and_return(@cookbook_version)
+    @cookbook_version = double("Cookbook::Version", :version => "1.2.3")
+    @new_resource.stub(:cookbook_version).and_return(@cookbook_version)
   end
 
   after (:all) do
@@ -547,7 +547,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
         @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
         @new_resource.recursive(false)
         @new_resource.run_action(:delete_key)
-        @new_resource.should_not raise_error(ArgumentError)
+        @new_resource.should_not raise_error
       end
       it "does nothing if the action is delete_key" do
         @new_resource.key(reg_parent + '\OpscodeWhyRun')

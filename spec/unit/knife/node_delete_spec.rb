@@ -26,13 +26,13 @@ describe Chef::Knife::NodeDelete do
       :print_after => nil
     }
     @knife.name_args = [ "adam" ]
-    @knife.stub!(:output).and_return(true)
-    @knife.stub!(:confirm).and_return(true)
+    @knife.stub(:output).and_return(true)
+    @knife.stub(:confirm).and_return(true)
     @node = Chef::Node.new()
-    @node.stub!(:destroy).and_return(true)
-    Chef::Node.stub!(:load).and_return(@node)
+    @node.stub(:destroy).and_return(true)
+    Chef::Node.stub(:load).and_return(@node)
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
   describe "run" do

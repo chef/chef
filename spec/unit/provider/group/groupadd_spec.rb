@@ -48,7 +48,7 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
         @provider.set_options
     end
     it "should set the option for #{attribute} if the new resources #{attribute} is not null" do
-      @new_resource.stub!(attribute).and_return("wowaweea")
+      @new_resource.stub(attribute).and_return("wowaweea")
       @provider.set_options.should eql(" #{option} '#{@new_resource.send(attribute)}' #{@new_resource.group_name}")
     end
   end
@@ -56,7 +56,7 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
   it "should combine all the possible options" do
     match_string = ""
     field_list.sort{ |a,b| a[0] <=> b[0] }.each do |attribute, option|
-      @new_resource.stub!(attribute).and_return("hola")
+      @new_resource.stub(attribute).and_return("hola")
       match_string << " #{option} 'hola'"
     end
     match_string << " aj"
@@ -93,10 +93,10 @@ describe Chef::Provider::Group::Groupadd, "create_group" do
     @node = Chef::Node.new
     @new_resource = Chef::Resource::Group.new("aj")
     @provider = Chef::Provider::Group::Groupadd.new(@node, @new_resource)
-    @provider.stub!(:run_command).and_return(true)
-    @provider.stub!(:set_options).and_return(" monkey")
-    @provider.stub!(:groupadd_options).and_return("")
-    @provider.stub!(:modify_group_members).and_return(true)
+    @provider.stub(:run_command).and_return(true)
+    @provider.stub(:set_options).and_return(" monkey")
+    @provider.stub(:groupadd_options).and_return("")
+    @provider.stub(:modify_group_members).and_return(true)
   end
 
   it "should run groupadd with the return of set_options" do
@@ -117,14 +117,14 @@ describe Chef::Provider::Group::Groupadd do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Group.new("aj")
     @provider = Chef::Provider::Group::Groupadd.new(@new_resource, @run_context)
-    @provider.stub!(:run_command).and_return(true)
-    @provider.stub!(:set_options).and_return(" monkey")
+    @provider.stub(:run_command).and_return(true)
+    @provider.stub(:set_options).and_return(" monkey")
   end
 
   describe "manage group" do
 
     it "should run groupmod with the return of set_options" do
-      @provider.stub!(:modify_group_members).and_return(true)
+      @provider.stub(:modify_group_members).and_return(true)
       @provider.should_receive(:run_command).with({ :command => "groupmod monkey" }).and_return(true)
       @provider.manage_group
     end
@@ -151,7 +151,7 @@ describe Chef::Provider::Group::Groupadd do
 
   describe "load_current_resource" do
     before do
-      File.stub!(:exists?).and_return(false)
+      File.stub(:exists?).and_return(false)
       @provider.define_resource_requirements
     end
     it "should raise an error if the required binary /usr/sbin/groupadd doesn't exist" do

@@ -62,7 +62,7 @@ describe Chef::Deprecation do
   context 'deprecation warning messages' do
     before(:each) do
       @warning_output = [ ]
-      Chef::Log.stub!(:warn) { |msg| @warning_output << msg }
+      Chef::Log.stub(:warn) { |msg| @warning_output << msg }
     end
 
     it 'should be enabled for deprecated methods' do

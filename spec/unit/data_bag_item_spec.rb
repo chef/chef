@@ -67,15 +67,15 @@ describe Chef::DataBagItem do
     end
 
     it "should accept alphanum/-/_ for the id" do
-      lambda { @data_bag_item.raw_data = { "id" => "h1-_" } }.should_not raise_error(ArgumentError)
+      lambda { @data_bag_item.raw_data = { "id" => "h1-_" } }.should_not raise_error
     end
 
     it "should accept alphanum.alphanum for the id" do
-      lambda { @data_bag_item.raw_data = { "id" => "foo.bar" } }.should_not raise_error(ArgumentError)
+      lambda { @data_bag_item.raw_data = { "id" => "foo.bar" } }.should_not raise_error
     end
 
     it "should accept .alphanum for the id" do
-      lambda { @data_bag_item.raw_data = { "id" => ".bozo" } }.should_not raise_error(ArgumentError)
+      lambda { @data_bag_item.raw_data = { "id" => ".bozo" } }.should_not raise_error
     end
 
     it "should raise an exception if the id contains anything but alphanum/-/_" do
@@ -203,8 +203,8 @@ describe Chef::DataBagItem do
 
   describe "save" do
     before do
-      @rest = mock("Chef::REST")
-      Chef::REST.stub!(:new).and_return(@rest)
+      @rest = double("Chef::REST")
+      Chef::REST.stub(:new).and_return(@rest)
       @data_bag_item['id'] = "heart of darkness"
       raw_data = {"id" => "heart_of_darkness", "author" => "Conrad"}
       @data_bag_item.raw_data = raw_data
@@ -216,7 +216,7 @@ describe Chef::DataBagItem do
     end
 
     it "should create if the item is not found" do
-      exception = mock("404 error", :code => "404")
+      exception = double("404 error", :code => "404")
       @rest.should_receive(:put_rest).and_raise(Net::HTTPServerException.new("foo", exception))
       @rest.should_receive(:post_rest).with("data/books", @data_bag_item)
       @data_bag_item.save
@@ -247,8 +247,8 @@ describe Chef::DataBagItem do
 
     describe "from an API call" do
       before do
-        @http_client = mock("Chef::REST")
-        Chef::REST.stub!(:new).and_return(@http_client)
+        @http_client = double("Chef::REST")
+        Chef::REST.stub(:new).and_return(@http_client)
       end
 
       it "converts raw data to a data bag item" do

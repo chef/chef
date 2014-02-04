@@ -39,7 +39,7 @@ describe Chef::Mixin::Template, "render_template" do
 
   describe "when running on windows" do
     before do
-      Chef::Platform.stub!(:windows?).and_return(true)
+      Chef::Platform.stub(:windows?).and_return(true)
     end
 
     it "should render the templates with windows line endings" do
@@ -54,7 +54,7 @@ describe Chef::Mixin::Template, "render_template" do
 
   describe "when running on unix" do
     before do
-      Chef::Platform.stub!(:windows?).and_return(false)
+      Chef::Platform.stub(:windows?).and_return(false)
     end
 
     it "should render the templates with unix line endings" do

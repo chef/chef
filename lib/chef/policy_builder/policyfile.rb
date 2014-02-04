@@ -186,6 +186,12 @@ class Chef
         cookbooks_to_sync
       end
 
+      # Whether or not this is a temporary policy. Since PolicyBuilder doesn't
+      # support override_runlist, this is always false.
+      def temporary_policy?
+        false
+      end
+
       ## Internal Public API ##
 
       def run_list_with_versions_for_display

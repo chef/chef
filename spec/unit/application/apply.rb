@@ -21,7 +21,7 @@ describe Chef::Application::Apply do
 
   before do
     @app = Chef::Application::Recipe.new
-    @app.stub!(:configure_logging).and_return(true)
+    @app.stub(:configure_logging).and_return(true)
     @recipe_text = "package 'nyancat'"
     Chef::Config[:solo] = true
   end
@@ -36,10 +36,10 @@ describe Chef::Application::Apply do
     before do
       @recipe_file_name = "foo.rb"
       @recipe_path = File.expand_path("foo.rb")
-      @recipe_file = mock("Tempfile (mock)", :read => @recipe_text)
-      @app.stub!(:open).with(@recipe_path).and_return(@recipe_file)
-      File.stub!(:exist?).with("foo.rb").and_return(true)
-      Chef::Application.stub!(:fatal!).and_return(true)
+      @recipe_file = double("Tempfile (mock)", :read => @recipe_text)
+      @app.stub(:open).with(@recipe_path).and_return(@recipe_file)
+      File.stub(:exist?).with("foo.rb").and_return(true)
+      Chef::Application.stub(:fatal!).and_return(true)
     end
     it "should read text properly" do
       @app.read_recipe_file(@recipe_file_name)[0].should == @recipe_text
@@ -49,7 +49,7 @@ describe Chef::Application::Apply do
     end
     describe "when recipe doesn't exist" do
       before do
-        File.stub!(:exist?).with(@recipe_file_name).and_return(false)
+        File.stub(:exist?).with(@recipe_file_name).and_return(false)
       end
       it "should raise a fatal" do
         Chef::Application.should_receive(:fatal!)

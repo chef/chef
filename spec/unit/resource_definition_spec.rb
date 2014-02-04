@@ -58,7 +58,7 @@ describe Chef::ResourceDefinition do
     lambda {
       @def.define :smoke do
       end
-    }.should_not raise_error(ArgumentError)
+    }.should_not raise_error
     lambda {
       @def.define "george washington" do
       end
@@ -70,7 +70,7 @@ describe Chef::ResourceDefinition do
     lambda {
       @def.define :smoke, :cigar => "cuban", :cigarette => "marlboro" do
       end
-    }.should_not raise_error(ArgumentError)
+    }.should_not raise_error
   end
 
   it "should expose the prototype hash params in the params hash" do

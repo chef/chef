@@ -132,7 +132,7 @@ describe Chef::Resource::Link do
       describe 'the :delete action' do
         before(:each) do
           @info = []
-          Chef::Log.stub!(:info) { |msg| @info << msg }
+          Chef::Log.stub(:info) { |msg| @info << msg }
           resource.run_action(:delete)
         end
 
@@ -153,7 +153,7 @@ describe Chef::Resource::Link do
       describe 'the :delete action' do
         before(:each) do
           @info = []
-          Chef::Log.stub!(:info) { |msg| @info << msg }
+          Chef::Log.stub(:info) { |msg| @info << msg }
           resource.run_action(:delete)
         end
 
@@ -174,7 +174,7 @@ describe Chef::Resource::Link do
       describe 'the :create action' do
         before(:each) do
           @info = []
-          Chef::Log.stub!(:info) { |msg| @info << msg }
+          Chef::Log.stub(:info) { |msg| @info << msg }
           resource.run_action(:create)
         end
 
@@ -195,7 +195,7 @@ describe Chef::Resource::Link do
       describe 'the :create action' do
         before(:each) do
           @info = []
-          Chef::Log.stub!(:info) { |msg| @info << msg }
+          Chef::Log.stub(:info) { |msg| @info << msg }
           resource.run_action(:create)
         end
 
@@ -216,7 +216,7 @@ describe Chef::Resource::Link do
       describe 'the :create action' do
         before(:each) do
           @info = []
-          Chef::Log.stub!(:info) { |msg| @info << msg }
+          Chef::Log.stub(:info) { |msg| @info << msg }
           resource.run_action(:create)
         end
         it 'preserves the hard link' do
@@ -241,7 +241,7 @@ describe Chef::Resource::Link do
       describe 'the :create action' do
         before(:each) do
           @info = []
-          Chef::Log.stub!(:info) { |msg| @info << msg }
+          Chef::Log.stub(:info) { |msg| @info << msg }
           resource.run_action(:create)
         end
         it 'links to the target file' do

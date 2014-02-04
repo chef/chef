@@ -22,7 +22,7 @@ describe Chef::Knife::ClientShow do
   before(:each) do
     @knife = Chef::Knife::ClientShow.new
     @knife.name_args = [ 'adam' ]
-    @client_mock = mock('client_mock')
+    @client_mock = double('client_mock')
   end
 
   describe 'run' do

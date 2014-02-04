@@ -36,10 +36,10 @@ describe Chef::Provider::Env do
   describe "when loading the current status" do
     before do
       #@current_resource = @new_resource.clone
-      #Chef::Resource::Env.stub!(:new).and_return(@current_resource)
+      #Chef::Resource::Env.stub(:new).and_return(@current_resource)
       @provider.current_resource = @current_resource
-      @provider.stub!(:env_value).with("FOO").and_return("bar")
-      @provider.stub!(:env_key_exists).and_return(true)
+      @provider.stub(:env_value).with("FOO").and_return("bar")
+      @provider.stub(:env_key_exists).and_return(true)
     end
 
     it "should create a current resource with the same name as the new resource" do
@@ -72,8 +72,8 @@ describe Chef::Provider::Env do
   describe "action_create" do
     before do
       @provider.key_exists = false
-      @provider.stub!(:create_env).and_return(true)
-      @provider.stub!(:modify_env).and_return(true)
+      @provider.stub(:create_env).and_return(true)
+      @provider.stub(:modify_env).and_return(true)
     end
 
     it "should call create_env if the key does not exist" do
@@ -94,15 +94,15 @@ describe Chef::Provider::Env do
 
     it "should call modify_env if the key exists and values are not equal" do
       @provider.key_exists = true
-      @provider.stub!(:compare_value).and_return(true)
+      @provider.stub(:compare_value).and_return(true)
       @provider.should_receive(:modify_env).and_return(true)
       @provider.action_create
     end
 
     it "should set the new_resources updated flag when it updates an existing value" do
       @provider.key_exists = true
-      @provider.stub!(:compare_value).and_return(true)
-      @provider.stub!(:modify_env).and_return(true)
+      @provider.stub(:compare_value).and_return(true)
+      @provider.stub(:modify_env).and_return(true)
       @provider.action_create
       @new_resource.should be_updated
     end
@@ -112,8 +112,8 @@ describe Chef::Provider::Env do
     before(:each) do
       @provider.current_resource = @current_resource
       @provider.key_exists = false
-      @provider.stub!(:delete_element).and_return(false)
-      @provider.stub!(:delete_env).and_return(true)
+      @provider.stub(:delete_element).and_return(false)
+      @provider.stub(:delete_env).and_return(true)
     end
 
     it "should not call delete_env if the key does not exist" do
@@ -143,7 +143,7 @@ describe Chef::Provider::Env do
     before(:each) do
       @provider.current_resource = @current_resource
       @provider.key_exists = true
-      @provider.stub!(:modify_env).and_return(true)
+      @provider.stub(:modify_env).and_return(true)
     end
 
     it "should call modify_group if the key exists and values are not equal" do
@@ -153,8 +153,8 @@ describe Chef::Provider::Env do
     end
 
     it "should set the new resources updated flag to true if modify_env is called" do
-      @provider.stub!(:compare_value).and_return(true)
-      @provider.stub!(:modify_env).and_return(true)
+      @provider.stub(:compare_value).and_return(true)
+      @provider.stub(:modify_env).and_return(true)
       @provider.action_modify
       @new_resource.should be_updated
     end
@@ -183,12 +183,12 @@ describe Chef::Provider::Env do
     end
 
     it "should return true if the element is not found" do
-      @new_resource.stub!(:value).and_return("C:/baz/bin")
+      @new_resource.stub(:value).and_return("C:/baz/bin")
       @provider.delete_element.should eql(true)
     end
 
     it "should return false if the delim not defined" do
-      @new_resource.stub!(:delim).and_return(nil)
+      @new_resource.stub(:delim).and_return(nil)
       @provider.delete_element.should eql(false)
     end
 

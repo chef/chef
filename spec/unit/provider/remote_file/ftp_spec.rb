@@ -38,14 +38,14 @@ describe Chef::Provider::RemoteFile::FTP do
   end
 
   let(:ftp) do
-    ftp = mock(Net::FTP, { })
-    ftp.stub!(:connect)
-    ftp.stub!(:login)
-    ftp.stub!(:voidcmd)
-    ftp.stub!(:mtime).and_return(Time.now)
-    ftp.stub!(:getbinaryfile)
-    ftp.stub!(:close)
-    ftp.stub!(:passive=)
+    ftp = double(Net::FTP, { })
+    ftp.stub(:connect)
+    ftp.stub(:login)
+    ftp.stub(:voidcmd)
+    ftp.stub(:mtime).and_return(Time.now)
+    ftp.stub(:getbinaryfile)
+    ftp.stub(:close)
+    ftp.stub(:passive=)
     ftp
   end
 
@@ -60,8 +60,8 @@ describe Chef::Provider::RemoteFile::FTP do
   let(:uri) { URI.parse("ftp://opscode.com/seattle.txt") }
 
   before(:each) do
-    Net::FTP.stub!(:new).with().and_return(ftp)
-    Tempfile.stub!(:new).and_return(tempfile)
+    Net::FTP.stub(:new).with().and_return(ftp)
+    Tempfile.stub(:new).and_return(tempfile)
   end
 
   describe "when first created" do

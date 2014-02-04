@@ -30,20 +30,19 @@ describe Chef::Provider::Deploy::Revision do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @provider = Chef::Provider::Deploy::Revision.new(@resource, @run_context)
     @provider.load_current_resource
-    @runner = mock("runnah")
-    Chef::Runner.stub!(:new).and_return(@runner)
+    @runner = double("runnah")
+    Chef::Runner.stub(:new).and_return(@runner)
     @expected_release_dir = "/my/deploy/dir/releases/8a3195bf3efa246f743c5dfa83683201880f935c"
   end
 
   after do
     # Make sure we don't keep any state in our tests
-    FileUtils.rspec_reset
     FileUtils.rm_rf @temp_dir if File.directory?( @temp_dir )
   end
 
 
   it "uses the resolved revision from the SCM as the release slug" do
-    @provider.scm_provider.stub!(:revision_slug).and_return("uglySlugly")
+    @provider.scm_provider.stub(:revision_slug).and_return("uglySlugly")
     @provider.send(:release_slug).should == "uglySlugly"
   end
 
@@ -52,10 +51,10 @@ describe Chef::Provider::Deploy::Revision do
   end
 
   it "stores the release dir in the file cache in the cleanup step" do
-    FileUtils.stub!(:mkdir_p)
-    FileUtils.stub!(:cp_r)
+    FileUtils.stub(:mkdir_p)
+    FileUtils.stub(:cp_r)
     @provider.cleanup!
-    @provider.stub!(:release_slug).and_return("73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2")
+    @provider.stub(:release_slug).and_return("73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2")
     @provider.load_current_resource
     @provider.cleanup!
     second_release = "/my/deploy/dir/releases/73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2"
@@ -64,17 +63,17 @@ describe Chef::Provider::Deploy::Revision do
   end
 
   it "removes a release from the file cache when it's used again in another release and append it to the end" do
-    FileUtils.stub!(:mkdir_p)
-    FileUtils.stub!(:cp_r)
+    FileUtils.stub(:mkdir_p)
+    FileUtils.stub(:cp_r)
     @provider.cleanup!
-    @provider.stub!(:release_slug).and_return("73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2")
+    @provider.stub(:release_slug).and_return("73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2")
     @provider.load_current_resource
     @provider.cleanup!
     second_release = "/my/deploy/dir/releases/73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2"
     @provider.all_releases.should == [@expected_release_dir,second_release]
     @provider.cleanup!
 
-    @provider.stub!(:release_slug).and_return("8a3195bf3efa246f743c5dfa83683201880f935c")
+    @provider.stub(:release_slug).and_return("8a3195bf3efa246f743c5dfa83683201880f935c")
     @provider.load_current_resource
     @provider.cleanup!
     @provider.all_releases.should == [second_release, @expected_release_dir]
@@ -89,7 +88,7 @@ describe Chef::Provider::Deploy::Revision do
     end
     @provider.all_releases.should == release_paths
 
-    FileUtils.stub!(:rm_rf)
+    FileUtils.stub(:rm_rf)
     @provider.cleanup!
 
     expected_release_paths = (%w{second third fourth fifth} << @resource.revision).map do |release_name|

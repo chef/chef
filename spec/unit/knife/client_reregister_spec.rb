@@ -22,9 +22,9 @@ describe Chef::Knife::ClientReregister do
   before(:each) do
     @knife = Chef::Knife::ClientReregister.new
     @knife.name_args = [ 'adam' ]
-    @client_mock = mock('client_mock', :private_key => "foo_key")
+    @client_mock = double('client_mock', :private_key => "foo_key")
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
   context "when no client name is given on the command line" do

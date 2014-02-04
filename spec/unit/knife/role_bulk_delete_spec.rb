@@ -27,16 +27,16 @@ describe Chef::Knife::RoleBulkDelete do
     }
     @knife.name_args = ["."]
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
-    @knife.ui.stub!(:confirm).and_return(true)
+    @knife.ui.stub(:stdout).and_return(@stdout)
+    @knife.ui.stub(:confirm).and_return(true)
     @roles = Hash.new
     %w{dev staging production}.each do |role_name|
       role = Chef::Role.new()
       role.name(role_name)
-      role.stub!(:destroy).and_return(true)
+      role.stub(:destroy).and_return(true)
       @roles[role_name] = role
     end
-    Chef::Role.stub!(:list).and_return(@roles)
+    Chef::Role.stub(:list).and_return(@roles)
   end
 
   describe "run" do

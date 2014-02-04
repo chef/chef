@@ -45,7 +45,7 @@ describe Chef::Knife::NodeEdit do
 
   describe "after loading the node" do
     before do
-      @knife.stub!(:node).and_return(@node)
+      @knife.stub(:node).and_return(@node)
       @node.automatic_attrs = {:go => :away}
       @node.default_attrs = {:hide => :me}
       @node.override_attrs = {:dont => :show}
@@ -94,7 +94,7 @@ describe Chef::Knife::NodeEdit do
   describe "edit_node" do
 
     before do
-      @knife.stub!(:node).and_return(@node)
+      @knife.stub(:node).and_return(@node)
     end
 
     let(:subject) { @knife.node_editor.edit_node }

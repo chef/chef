@@ -30,9 +30,9 @@ describe Chef::Provider::Script, "action_run" do
     @provider = Chef::Provider::Script.new(@new_resource, @run_context)
 
     @script_file = StringIO.new
-    @script_file.stub!(:path).and_return('/tmp/the_script_file')
+    @script_file.stub(:path).and_return('/tmp/the_script_file')
 
-    @provider.stub!(:shell_out!).and_return(true)
+    @provider.stub(:shell_out!).and_return(true)
   end
 
   it "creates a temporary file to store the script" do
@@ -48,15 +48,15 @@ describe Chef::Provider::Script, "action_run" do
   it "sets the owner and group for the script file" do
     @new_resource.user 'toor'
     @new_resource.group 'wheel'
-    @provider.stub!(:script_file).and_return(@script_file)
+    @provider.stub(:script_file).and_return(@script_file)
     FileUtils.should_receive(:chown).with('toor', 'wheel', "/tmp/the_script_file")
     @provider.set_owner_and_group
   end
 
   context "with the script file set to the correct owner and group" do
     before do
-      @provider.stub!(:set_owner_and_group)
-      @provider.stub!(:script_file).and_return(@script_file)
+      @provider.stub(:set_owner_and_group)
+      @provider.stub(:script_file).and_return(@script_file)
     end
     describe "when writing the script to the file" do
       it "should put the contents of the script in the temp file" do

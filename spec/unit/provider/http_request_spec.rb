@@ -44,8 +44,8 @@ describe Chef::Provider::HttpRequest do
     before(:each) do
       # run_action(x) forces load_current_resource to run;
       # that would overwrite our supplied mock Chef::Rest # object
-      @provider.stub!(:load_current_resource).and_return(true)
-      @http = mock("Chef::REST")
+      @provider.stub(:load_current_resource).and_return(true)
+      @http = double("Chef::REST")
       @provider.http = @http
     end
 
@@ -73,7 +73,7 @@ describe Chef::Provider::HttpRequest do
       end
 
       it "should inflate a message block at runtime" do
-        @new_resource.stub!(:message).and_return(lambda { "return" })
+        @new_resource.stub(:message).and_return(lambda { "return" })
         @http.should_receive(:put).with("http://www.opscode.com/", "return", {})
         @provider.run_action(:put)
         @new_resource.should be_updated

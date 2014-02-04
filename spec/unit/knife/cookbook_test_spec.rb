@@ -26,25 +26,25 @@ describe Chef::Knife::CookbookTest do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::CookbookTest.new
     @knife.config[:cookbook_path] = File.join(CHEF_SPEC_DATA,'cookbooks')
-    @knife.cookbook_loader.stub!(:cookbook_exists?).and_return(true)
+    @knife.cookbook_loader.stub(:cookbook_exists?).and_return(true)
     @cookbooks = []
     %w{tats central_market jimmy_johns pho}.each do |cookbook_name|
       @cookbooks << Chef::CookbookVersion.new(cookbook_name)
     end
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
   describe "run" do
     it "should test the cookbook" do
-      @knife.stub!(:test_cookbook).and_return(true)
+      @knife.stub(:test_cookbook).and_return(true)
       @knife.name_args = ["italian"]
       @knife.should_receive(:test_cookbook).with("italian")
       @knife.run
     end
 
     it "should test multiple cookbooks when provided" do
-      @knife.stub!(:test_cookbook).and_return(true)
+      @knife.stub(:test_cookbook).and_return(true)
       @knife.name_args = ["tats", "jimmy_johns"]
       @knife.should_receive(:test_cookbook).with("tats")
       @knife.should_receive(:test_cookbook).with("jimmy_johns")
@@ -65,14 +65,14 @@ describe Chef::Knife::CookbookTest do
 
     describe "with -a or --all" do
       it "should test all of the cookbooks" do
-        @knife.stub!(:test_cookbook).and_return(true)
+        @knife.stub(:test_cookbook).and_return(true)
         @knife.config[:all] = true
         @loader = {}
-        @loader.stub!(:load_cookbooks).and_return(@loader)
+        @loader.stub(:load_cookbooks).and_return(@loader)
         @cookbooks.each do |cookbook|
           @loader[cookbook.name] = cookbook
         end
-        @knife.stub!(:cookbook_loader).and_return(@loader)
+        @knife.stub(:cookbook_loader).and_return(@loader)
         @loader.each do |key, cookbook|
           @knife.should_receive(:test_cookbook).with(cookbook.name)
         end

@@ -615,13 +615,13 @@ describe Chef::REST do
       it "does not raise a divide by zero exception if the content's actual size is 0" do
         http_response['Content-Length'] = "5"
         http_response.stub(:read_body).and_yield('')
-        expect { rest.streaming_request(url, {}) }.to_not raise_error(ZeroDivisionError)
+        expect { rest.streaming_request(url, {}) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
       end
 
       it "does not raise a divide by zero exception when the Content-Length is 0" do
         http_response['Content-Length'] = "0"
         http_response.stub(:read_body).and_yield("ninja")
-        expect { rest.streaming_request(url, {}) }.to_not raise_error(ZeroDivisionError)
+        expect { rest.streaming_request(url, {}) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
       end
 
       it "it raises an exception when the download is truncated" do

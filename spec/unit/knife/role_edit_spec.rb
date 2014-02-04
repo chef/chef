@@ -24,12 +24,12 @@ describe Chef::Knife::RoleEdit do
     @knife = Chef::Knife::RoleEdit.new
     @knife.config[:print_after] = nil
     @knife.name_args = [ "adam" ]
-    @knife.ui.stub!(:output).and_return(true)
+    @knife.ui.stub(:output).and_return(true)
     @role = Chef::Role.new()
-    @role.stub!(:save)
-    Chef::Role.stub!(:load).and_return(@role)
-    @knife.ui.stub!(:edit_data).and_return(@role)
-    @knife.ui.stub!(:msg)
+    @role.stub(:save)
+    Chef::Role.stub(:load).and_return(@role)
+    @knife.ui.stub(:edit_data).and_return(@role)
+    @knife.ui.stub(:msg)
   end
 
   describe "run" do

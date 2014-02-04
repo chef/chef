@@ -26,13 +26,13 @@ describe Chef::Knife::RoleCreate do
       :description => nil
     }
     @knife.name_args = [ "adam" ]
-    @knife.stub!(:output).and_return(true)
+    @knife.stub(:output).and_return(true)
     @role = Chef::Role.new()
-    @role.stub!(:save)
-    Chef::Role.stub!(:new).and_return(@role)
-    @knife.stub!(:edit_data).and_return(@role)
+    @role.stub(:save)
+    Chef::Role.stub(:new).and_return(@role)
+    @knife.stub(:edit_data).and_return(@role)
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
   describe "run" do

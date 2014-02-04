@@ -28,9 +28,9 @@ describe Chef::Knife::NodeShow do
       :environment => nil
     }
     @knife.name_args = [ "adam" ]
-    @knife.stub!(:output).and_return(true)
+    @knife.stub(:output).and_return(true)
     @node = Chef::Node.new()
-    Chef::Node.stub!(:load).and_return(@node)
+    Chef::Node.stub(:load).and_return(@node)
   end
 
   describe "run" do

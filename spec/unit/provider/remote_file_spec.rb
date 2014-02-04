@@ -32,7 +32,7 @@ describe Chef::Provider::RemoteFile do
   end
 
   let(:content) do
-    content = mock('Chef::Provider::File::Content::RemoteFile')
+    content = double('Chef::Provider::File::Content::RemoteFile')
   end
 
   let(:node) { double('Chef::Node') }

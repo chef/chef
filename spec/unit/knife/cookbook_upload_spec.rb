@@ -30,24 +30,24 @@ describe Chef::Knife::CookbookUpload do
     @cookbook = Chef::CookbookVersion.new('test_cookbook')
 
     @cookbook_loader = {}
-    @cookbook_loader.stub!(:[]).and_return(@cookbook)
-    @cookbook_loader.stub!(:merged_cookbooks).and_return([])
-    @cookbook_loader.stub!(:load_cookbooks).and_return(@cookbook_loader)
-    Chef::CookbookLoader.stub!(:new).and_return(@cookbook_loader)
+    @cookbook_loader.stub(:[]).and_return(@cookbook)
+    @cookbook_loader.stub(:merged_cookbooks).and_return([])
+    @cookbook_loader.stub(:load_cookbooks).and_return(@cookbook_loader)
+    Chef::CookbookLoader.stub(:new).and_return(@cookbook_loader)
 
     @output = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@output)
-    @knife.ui.stub!(:stderr).and_return(@output)
+    @knife.ui.stub(:stdout).and_return(@output)
+    @knife.ui.stub(:stderr).and_return(@output)
   end
 
   describe 'with --concurrency' do
     it 'should upload cookbooks with predefined concurrency' do
-      @cookbook_uploader = stub(:upload_cookbooks => nil)
+      @cookbook_uploader = double(:upload_cookbooks => nil)
       Chef::CookbookVersion.stub(:list_all_versions).and_return({})
       @knife.config[:concurrency] = 3
       @test_cookbook = Chef::CookbookVersion.new('test_cookbook')
-      @cookbook_loader.stub!(:each).and_yield("test_cookbook", @test_cookbook)
-      @cookbook_loader.stub!(:cookbook_names).and_return(["test_cookbook"])
+      @cookbook_loader.stub(:each).and_yield("test_cookbook", @test_cookbook)
+      @cookbook_loader.stub(:cookbook_names).and_return(["test_cookbook"])
       Chef::CookbookUploader.should_receive(:new).with( kind_of(Array),  kind_of(Array),
         {:force=>nil, :concurrency => 3}).and_return(double("Chef::CookbookUploader", :upload_cookbooks=> true))
       @knife.run
@@ -56,7 +56,7 @@ describe Chef::Knife::CookbookUpload do
 
   describe 'run' do
     before(:each) do
-      @cookbook_uploader = stub(:upload_cookbooks => nil)
+      @cookbook_uploader = double(:upload_cookbooks => nil)
       Chef::CookbookUploader.stub(:new => @cookbook_uploader)
       Chef::CookbookVersion.stub(:list_all_versions).and_return({})
     end
@@ -98,9 +98,9 @@ describe Chef::Knife::CookbookUpload do
           'test_cookbook3' => Chef::CookbookVersion.new('test_cookbook3')
         }
         @cookbook_loader = {}
-        @cookbook_loader.stub!(:merged_cookbooks).and_return([])
+        @cookbook_loader.stub(:merged_cookbooks).and_return([])
         @cookbook_loader.stub(:[]) { |ckbk| @cookbooks[ckbk] }
-        Chef::CookbookLoader.stub!(:new).and_return(@cookbook_loader)
+        Chef::CookbookLoader.stub(:new).and_return(@cookbook_loader)
       end
 
       it "should read only one cookbook" do
@@ -130,16 +130,16 @@ describe Chef::Knife::CookbookUpload do
         @test_cookbook2.metadata.depends("test_cookbook3")
         @test_cookbook3.metadata.depends("test_cookbook1")
         @test_cookbook3.metadata.depends("test_cookbook2")
-        @cookbook_loader.stub!(:[])  do |ckbk|
+        @cookbook_loader.stub(:[])  do |ckbk|
           { "test_cookbook1" =>  @test_cookbook1,
             "test_cookbook2" =>  @test_cookbook2,
             "test_cookbook3" => @test_cookbook3 }[ckbk]
         end
-        @knife.stub!(:cookbook_names).and_return(["test_cookbook1", "test_cookbook2", "test_cookbook3"])
+        @knife.stub(:cookbook_names).and_return(["test_cookbook1", "test_cookbook2", "test_cookbook3"])
         @knife.should_receive(:upload).exactly(3).times
         Timeout::timeout(5) do
           @knife.run
-        end.should_not raise_error(Timeout::Error)
+        end.should_not raise_error
       end
     end
 
@@ -154,8 +154,8 @@ describe Chef::Knife::CookbookUpload do
         @knife.config[:all] = true
         @test_cookbook1 = Chef::CookbookVersion.new('test_cookbook1')
         @test_cookbook2 = Chef::CookbookVersion.new('test_cookbook2')
-        @cookbook_loader.stub!(:each).and_yield("test_cookbook1", @test_cookbook1).and_yield("test_cookbook2", @test_cookbook2)
-        @cookbook_loader.stub!(:cookbook_names).and_return(["test_cookbook1", "test_cookbook2"])
+        @cookbook_loader.stub(:each).and_yield("test_cookbook1", @test_cookbook1).and_yield("test_cookbook2", @test_cookbook2)
+        @cookbook_loader.stub(:cookbook_names).and_return(["test_cookbook1", "test_cookbook2"])
       end
 
       it 'should upload all cookbooks' do
@@ -170,7 +170,7 @@ describe Chef::Knife::CookbookUpload do
       end
 
       it 'should update the version constraints for an environment' do
-        @knife.stub!(:assert_environment_valid!).and_return(true)
+        @knife.stub(:assert_environment_valid!).and_return(true)
         @knife.config[:environment] = "production"
         @knife.should_receive(:update_version_constraints).once
         @knife.run
@@ -188,9 +188,9 @@ describe Chef::Knife::CookbookUpload do
       end
 
       it 'should not update the version constraints for an environment' do
-        @knife.stub!(:assert_environment_valid!).and_return(true)
+        @knife.stub(:assert_environment_valid!).and_return(true)
         @knife.config[:environment] = "production"
-        @knife.stub!(:upload).and_raise(Chef::Exceptions::CookbookFrozen)
+        @knife.stub(:upload).and_raise(Chef::Exceptions::CookbookFrozen)
         @knife.ui.should_receive(:error).with(/Failed to upload 1 cookbook/)
         @knife.ui.should_receive(:warn).with(/Not updating version constraints/)
         @knife.should_not_receive(:update_version_constraints)

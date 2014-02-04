@@ -24,10 +24,10 @@ describe Chef::Knife::NodeRunListSet do
     @knife = Chef::Knife::NodeRunListSet.new
     @knife.config = {}
     @knife.name_args = [ "adam", "role[monkey]" ]
-    @knife.stub!(:output).and_return(true)
+    @knife.stub(:output).and_return(true)
     @node = Chef::Node.new()
-    @node.stub!(:save).and_return(true)
-    Chef::Node.stub!(:load).and_return(@node)
+    @node.stub(:save).and_return(true)
+    Chef::Node.stub(:load).and_return(@node)
   end
 
   describe "run" do
@@ -117,8 +117,8 @@ describe Chef::Knife::NodeRunListSet do
         @stdout = StringIO.new
         @stderr = StringIO.new
 
-        @knife.ui.stub!(:stdout).and_return(@stdout)
-        @knife.ui.stub!(:stderr).and_return(@stderr)
+        @knife.ui.stub(:stdout).and_return(@stdout)
+        @knife.ui.stub(:stderr).and_return(@stderr)
       end
 
       it "should exit" do
