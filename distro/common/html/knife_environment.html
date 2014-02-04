@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,9 +7,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>knife environment &mdash; Knife Man Pages</title>
+    <title>knife environment &mdash; chef-client Man Pages</title>
     
-    <link rel="stylesheet" href="_static/chef.css" type="text/css" />
+    <link rel="stylesheet" href="_static/guide.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -26,87 +25,20 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/chef.ico"/>
-    <link rel="top" title="Knife Man Pages" href="index.html" /> 
+
+
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
 <a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li><a href="http://docs.opscode.com/chef/knife.html" target="_products">Knife</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/chef/resources.html" target="_products">Resources</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/chef/dsl_recipe.html" target="_products">Recipe DSL</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/chef/lwrps_custom.html" target="_products">LWRPs</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/search.html">Search the Docs</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/">Home</a> &raquo;</li>
- 
-      </ul>
-    </div>
 
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="knife.html">
-              <img class="logo" src="_static/chef_logo.png" alt="Logo"/>
-            </a></p>
-  <h3><a href="knife.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">knife environment</a><ul>
-<li><a class="reference internal" href="#compare">compare</a></li>
-<li><a class="reference internal" href="#create">create</a><ul>
-<li><a class="reference internal" href="#syntax">Syntax</a></li>
-<li><a class="reference internal" href="#options">Options</a><ul>
-<li><a class="reference internal" href="#knife-rb-settings">knife.rb Settings</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#examples">Examples</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#delete">delete</a><ul>
-<li><a class="reference internal" href="#id1">Syntax</a></li>
-<li><a class="reference internal" href="#id2">Options</a></li>
-<li><a class="reference internal" href="#id3">Examples</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#edit">edit</a><ul>
-<li><a class="reference internal" href="#id4">Syntax</a></li>
-<li><a class="reference internal" href="#id5">Options</a></li>
-<li><a class="reference internal" href="#id6">Examples</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#from-file">from file</a><ul>
-<li><a class="reference internal" href="#id7">Syntax</a></li>
-<li><a class="reference internal" href="#id8">Options</a><ul>
-<li><a class="reference internal" href="#id9">knife.rb Settings</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id10">Examples</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#list">list</a><ul>
-<li><a class="reference internal" href="#id11">Syntax</a></li>
-<li><a class="reference internal" href="#id12">Options</a></li>
-<li><a class="reference internal" href="#id13">Examples</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#show">show</a><ul>
-<li><a class="reference internal" href="#id14">Syntax</a></li>
-<li><a class="reference internal" href="#id15">Options</a></li>
-<li><a class="reference internal" href="#id16">Examples</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-        </div>
-      </div>
+  
 
     <div class="document">
       <div class="documentwrapper">
-        <div class="bodywrapper">
+
           <div class="body">
             
   <div class="section" id="knife-environment">
@@ -208,18 +140,6 @@ windows            1.0.0    4.1.2
 <dt><tt class="docutils literal"><span class="pre">-d</span> <span class="pre">DESCRIPTION</span></tt>, <tt class="docutils literal"><span class="pre">--description</span> <span class="pre">DESCRIPTION</span></tt></dt>
 <dd>The description of the environment. This value will populate the description field for the environment on the server.</dd>
 </dl>
-<div class="section" id="knife-rb-settings">
-<h4>knife.rb Settings<a class="headerlink" href="#knife-rb-settings" title="Permalink to this headline">¶</a></h4>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">See <tt class="xref doc docutils literal"><span class="pre">knife.rb</span></tt> for more information about how to add optional settings to the knife.rb file.</p>
-</div>
-<p>The following <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">environment</span> <span class="pre">create</span></tt> settings can be added to the knife.rb file:</p>
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">knife[:description]</span></tt></dt>
-<dd>Use to add the <tt class="docutils literal"><span class="pre">--description</span></tt> option.</dd>
-</dl>
-</div>
 </div>
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
@@ -297,23 +217,9 @@ windows            1.0.0    4.1.2
 <dt><tt class="docutils literal"><span class="pre">-a</span></tt>, <tt class="docutils literal"><span class="pre">--all</span></tt></dt>
 <dd>Indicates that all environments found at the specified path will be uploaded.</dd>
 </dl>
+</div>
 <div class="section" id="id9">
-<h4>knife.rb Settings<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">See <tt class="xref doc docutils literal"><span class="pre">knife.rb</span></tt> for more information about how to add optional settings to the knife.rb file.</p>
-</div>
-<p>The following <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">environment</span> <span class="pre">from</span> <span class="pre">file</span></tt> settings can be added to the knife.rb file:</p>
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">knife[:all]</span></tt></dt>
-<dd>Use to add the <tt class="docutils literal"><span class="pre">--all</span></tt> option.</dd>
-<dt><tt class="docutils literal"><span class="pre">knife[:print_after]</span></tt></dt>
-<dd>Use to add the <tt class="docutils literal"><span class="pre">--print-after</span></tt> option.</dd>
-</dl>
-</div>
-</div>
-<div class="section" id="id10">
-<h3>Examples<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<h3>Examples<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <p>The following examples show how to use this Knife subcommand:</p>
 <p><strong>Create an environment from a JSON file</strong></p>
 <p>To add an environment using data contained in a JSON file:</p>
@@ -329,23 +235,23 @@ windows            1.0.0    4.1.2
 <div class="section" id="list">
 <h2>list<a class="headerlink" href="#list" title="Permalink to this headline">¶</a></h2>
 <p>The <tt class="docutils literal"><span class="pre">list</span></tt> argument is used to list all of the environments that are currently available on the server.</p>
-<div class="section" id="id11">
-<h3>Syntax<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id10">
+<h3>Syntax<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife environment list -w
 </pre></div>
 </div>
 </div>
-<div class="section" id="id12">
-<h3>Options<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id11">
+<h3>Options<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-w</span></tt>, <tt class="docutils literal"><span class="pre">--with-uri</span></tt></dt>
 <dd>Indicates that the corresponding URIs will be shown.</dd>
 </dl>
 </div>
-<div class="section" id="id13">
-<h3>Examples<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id12">
+<h3>Examples<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <p>The following examples show how to use this Knife subcommand:</p>
 <p><strong>View a list of environments</strong></p>
 <p>To view a list of environments:</p>
@@ -357,23 +263,23 @@ windows            1.0.0    4.1.2
 <div class="section" id="show">
 <h2>show<a class="headerlink" href="#show" title="Permalink to this headline">¶</a></h2>
 <p>The <tt class="docutils literal"><span class="pre">show</span></tt> argument is used to display information about the specified environment.</p>
-<div class="section" id="id14">
-<h3>Syntax<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id13">
+<h3>Syntax<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife environment show ENVIRONMENT_NAME
 </pre></div>
 </div>
 </div>
-<div class="section" id="id15">
-<h3>Options<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id14">
+<h3>Options<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-a</span> <span class="pre">ATTR</span></tt>, <tt class="docutils literal"><span class="pre">--attribute</span> <span class="pre">ATTR</span></tt></dt>
 <dd>The attribute (or attributes) to show.</dd>
 </dl>
 </div>
-<div class="section" id="id16">
-<h3>Examples<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id15">
+<h3>Examples<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <p>The following examples show how to use this Knife subcommand:</p>
 <p><strong>Show environments</strong></p>
 <p>To view information about the &#8220;dev&#8221; environment enter:</p>
@@ -408,78 +314,14 @@ override_attributes:
 
 
           </div>
-        </div>
+
       </div>
+
+  
       <div class="clearer"></div>
     </div>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li><a href="http://docs.opscode.com/chef/knife.html" target="_products">Knife</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/chef/resources.html" target="_products">Resources</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/chef/dsl_recipe.html" target="_products">Recipe DSL</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/chef/lwrps_custom.html" target="_products">LWRPs</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/search.html">Search the Docs</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/">Home</a> &raquo;</li>
- 
-      </ul>
-    </div>
 
 
-    <div class="footer">
-      Documentation for current man pages for Knife.
-
-    &nbsp;Send feedback to <a href="mailto:docs@getchef.com">docs@getchef.com</a>.
-       This work is licensed under a Creative Commons Attribution 3.0 Unported License. 
-
-    </div>
-
-<!-- Start of Async Google Analytics Code -->
-<script type="text/javascript">
-var _gaq = _gaq || [];
-var pluginUrl = (('https:' == document.location.protocol) ? 'https://ssl.' : 'http://www.') + 'google-analytics.com/plugins/ga/inpage_linkid.js';
-_gaq.push(['_setAccount', 'UA-6369228-7']);
-_gaq.push(['_setDomainName', '.opscode.com']);
-_gaq.push(['_setAllowHash', false]);
-_gaq.push(['_setAllowLinker', true]);
-_gaq.push(['_addIgnoredRef','opscode.com']);
-_gaq.push(['_trackPageview']);
-
-(function() {
-  var ga = document.createElement('script'); ga.type = 'text/javascript';
-  ga.async = true;
-  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-  var s = document.getElementsByTagName('script')[0];
-  s.parentNode.insertBefore(ga, s); })();
-</script>
-<!-- End of Async Google Analytics Code -->
-
-
-
-<!-- Start of Contact Analytics Code -->
-<script type="text/javascript">
-(function() {
-  var didInit = false;
-  function initMunchkin() {
-    if(didInit === false) {
-      didInit = true;
-      Munchkin.init('255-VFB-268');
-    }
-  }
-  var s = document.createElement('script');
-  s.type = 'text/javascript';
-  s.async = true;
-  s.src = document.location.protocol + '//munchkin.marketo.net/munchkin.js';
-  s.onreadystatechange = function() {
-    if (this.readyState == 'complete' || this.readyState == 'loaded') {
-      initMunchkin();
-    }
-  };
-  s.onload = initMunchkin;
-  document.getElementsByTagName('head')[0].appendChild(s);
-})();
-</script>
-<!-- End of Contact Analytics Code -->
 
 
   </body>

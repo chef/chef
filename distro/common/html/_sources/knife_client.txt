@@ -34,12 +34,6 @@ Options
 -----------------------------------------------------
 .. include:: ../../includes_knife/includes_knife_client_create_options.rst
 
-knife.rb Settings
-+++++++++++++++++++++++++++++++++++++++++++++++++++++
-.. note:: See :doc:`knife.rb </config_rb_knife>` for more information about how to add optional settings to the |knife rb| file.
-
-.. include:: ../../includes_knife/includes_knife_client_create_settings.rst
-
 Examples
 -----------------------------------------------------
 The following examples show how to use this |knife| subcommand:
@@ -68,7 +62,7 @@ Examples
 -----------------------------------------------------
 The following examples show how to use this |knife| subcommand:
 
-**xxxxx**
+**Delete a client**
 
 .. include:: ../../step_knife/step_knife_client_delete.rst
 
@@ -88,7 +82,7 @@ Examples
 -----------------------------------------------------
 The following examples show how to use this |knife| subcommand:
 
-**xxxxx**
+**Edit a client**
 
 .. include:: ../../step_knife/step_knife_client_edit.rst
 
@@ -108,7 +102,7 @@ Examples
 -----------------------------------------------------
 The following examples show how to use this |knife| subcommand:
 
-**xxxxx**
+**View a list of clients**
 
 .. include:: ../../step_knife/step_knife_client_list_all.rst
 
@@ -126,17 +120,11 @@ Options
 -----------------------------------------------------
 .. include:: ../../includes_knife/includes_knife_client_reregister_options.rst
 
-knife.rb Settings
-+++++++++++++++++++++++++++++++++++++++++++++++++++++
-.. note:: See :doc:`knife.rb </config_rb_knife>` for more information about how to add optional settings to the |knife rb| file.
-
-.. include:: ../../includes_knife/includes_knife_client_reregister_settings.rst
-
 Examples
 -----------------------------------------------------
 The following examples show how to use this |knife| subcommand:
 
-**xxxxx**
+**Reregister clients**
 
 .. include:: ../../step_knife/step_knife_client_reregister.rst
 
@@ -156,7 +144,7 @@ Examples
 -----------------------------------------------------
 The following examples show how to use this |knife| subcommand:
 
-**xxxxx**
+**Show clients**
 
 .. include:: ../../step_knife/step_knife_client_show.rst
 

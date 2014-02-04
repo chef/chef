@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,9 +7,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>knife client &mdash; Knife Man Pages</title>
+    <title>knife client &mdash; chef-client Man Pages</title>
     
-    <link rel="stylesheet" href="_static/chef.css" type="text/css" />
+    <link rel="stylesheet" href="_static/guide.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -26,92 +25,20 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/chef.ico"/>
-    <link rel="top" title="Knife Man Pages" href="index.html" /> 
+
+
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
 <a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li><a href="http://docs.opscode.com/chef/knife.html" target="_products">Knife</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/chef/resources.html" target="_products">Resources</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/chef/dsl_recipe.html" target="_products">Recipe DSL</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/chef/lwrps_custom.html" target="_products">LWRPs</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/search.html">Search the Docs</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/">Home</a> &raquo;</li>
- 
-      </ul>
-    </div>
 
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="knife.html">
-              <img class="logo" src="_static/chef_logo.png" alt="Logo"/>
-            </a></p>
-  <h3><a href="knife.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">knife client</a><ul>
-<li><a class="reference internal" href="#bulk-delete">bulk delete</a><ul>
-<li><a class="reference internal" href="#syntax">Syntax</a></li>
-<li><a class="reference internal" href="#options">Options</a></li>
-<li><a class="reference internal" href="#examples">Examples</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#create">create</a><ul>
-<li><a class="reference internal" href="#id1">Syntax</a></li>
-<li><a class="reference internal" href="#id2">Options</a><ul>
-<li><a class="reference internal" href="#knife-rb-settings">knife.rb Settings</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id3">Examples</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#delete">delete</a><ul>
-<li><a class="reference internal" href="#id4">Syntax</a></li>
-<li><a class="reference internal" href="#id5">Options</a></li>
-<li><a class="reference internal" href="#id6">Examples</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#edit">edit</a><ul>
-<li><a class="reference internal" href="#id7">Syntax</a></li>
-<li><a class="reference internal" href="#id8">Options</a></li>
-<li><a class="reference internal" href="#id9">Examples</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#list">list</a><ul>
-<li><a class="reference internal" href="#id10">Syntax</a></li>
-<li><a class="reference internal" href="#id11">Options</a></li>
-<li><a class="reference internal" href="#id12">Examples</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#reregister">reregister</a><ul>
-<li><a class="reference internal" href="#id13">Syntax</a></li>
-<li><a class="reference internal" href="#id14">Options</a><ul>
-<li><a class="reference internal" href="#id15">knife.rb Settings</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id16">Examples</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#show">show</a><ul>
-<li><a class="reference internal" href="#id17">Syntax</a></li>
-<li><a class="reference internal" href="#id18">Options</a></li>
-<li><a class="reference internal" href="#id19">Examples</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-        </div>
-      </div>
+  
 
     <div class="document">
       <div class="documentwrapper">
-        <div class="bodywrapper">
+
           <div class="body">
             
   <div class="section" id="knife-client">
@@ -161,20 +88,6 @@
 <dt><tt class="docutils literal"><span class="pre">-a</span></tt>, <tt class="docutils literal"><span class="pre">--admin</span></tt></dt>
 <dd>Indicates that a client will be created as an admin client. This is required when users of the open source server need to access the Chef Server API as an administrator. This option only works when used with the open source server and will have no effect when used with Enterprise Chef.</dd>
 </dl>
-<div class="section" id="knife-rb-settings">
-<h4>knife.rb Settings<a class="headerlink" href="#knife-rb-settings" title="Permalink to this headline">¶</a></h4>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">See <tt class="xref doc docutils literal"><span class="pre">knife.rb</span></tt> for more information about how to add optional settings to the knife.rb file.</p>
-</div>
-<p>The following <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">client</span> <span class="pre">create</span></tt> settings can be added to the knife.rb file:</p>
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">knife[:admin]</span></tt></dt>
-<dd>Use to add the <tt class="docutils literal"><span class="pre">--admin</span></tt> option.</dd>
-<dt><tt class="docutils literal"><span class="pre">knife[:file]</span></tt></dt>
-<dd>Use to add the <tt class="docutils literal"><span class="pre">--file</span></tt> option.</dd>
-</dl>
-</div>
 </div>
 <div class="section" id="id3">
 <h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
@@ -208,7 +121,7 @@
 <div class="section" id="id6">
 <h3>Examples<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <p>The following examples show how to use this Knife subcommand:</p>
-<p><strong>xxxxx</strong></p>
+<p><strong>Delete a client</strong></p>
 <p>To delete a client with the name &#8220;client_foo&#8221;, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife client delete client_foo
 </pre></div>
@@ -233,7 +146,7 @@
 <div class="section" id="id9">
 <h3>Examples<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <p>The following examples show how to use this Knife subcommand:</p>
-<p><strong>xxxxx</strong></p>
+<p><strong>Edit a client</strong></p>
 <p>To edit a client with the name &#8220;exampleorg&#8221;, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife client edit exampleorg
 </pre></div>
@@ -261,7 +174,7 @@
 <div class="section" id="id12">
 <h3>Examples<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <p>The following examples show how to use this Knife subcommand:</p>
-<p><strong>xxxxx</strong></p>
+<p><strong>View a list of clients</strong></p>
 <p>To verify the API client list for the server, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife client list
 </pre></div>
@@ -300,23 +213,11 @@ server correctly, try getting a list of clients using <tt class="docutils litera
 <dt><tt class="docutils literal"><span class="pre">-f</span> <span class="pre">FILE_NAME</span></tt>, <tt class="docutils literal"><span class="pre">--file</span> <span class="pre">FILE_NAME</span></tt></dt>
 <dd>Indicates that the private key will be saved to a specified file name.</dd>
 </dl>
+</div>
 <div class="section" id="id15">
-<h4>knife.rb Settings<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">See <tt class="xref doc docutils literal"><span class="pre">knife.rb</span></tt> for more information about how to add optional settings to the knife.rb file.</p>
-</div>
-<p>The following <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">client</span> <span class="pre">reregister</span></tt> settings can be added to the knife.rb file:</p>
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">knife[:file]</span></tt></dt>
-<dd>Use to add the <tt class="docutils literal"><span class="pre">--file</span></tt> option.</dd>
-</dl>
-</div>
-</div>
-<div class="section" id="id16">
-<h3>Examples<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<h3>Examples<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <p>The following examples show how to use this Knife subcommand:</p>
-<p><strong>xxxxx</strong></p>
+<p><strong>Reregister clients</strong></p>
 <p>To regenerate the RSA key pair for a client named &#8220;testclient&#8221; and save it to a file named &#8220;rsa_key&#8221;, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife client regenerate testclient -f rsa_key
 </pre></div>
@@ -326,25 +227,25 @@ server correctly, try getting a list of clients using <tt class="docutils litera
 <div class="section" id="show">
 <h2>show<a class="headerlink" href="#show" title="Permalink to this headline">¶</a></h2>
 <p>The <tt class="docutils literal"><span class="pre">show</span></tt> argument is used to show the details of an API client.</p>
-<div class="section" id="id17">
-<h3>Syntax<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id16">
+<h3>Syntax<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife client show CLIENT_NAME <span class="o">(</span>options<span class="o">)</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="id18">
-<h3>Options<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id17">
+<h3>Options<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-a</span> <span class="pre">ATTR</span></tt>, <tt class="docutils literal"><span class="pre">--attribute</span> <span class="pre">ATTR</span></tt></dt>
 <dd>The attribute (or attributes) to show.</dd>
 </dl>
 </div>
-<div class="section" id="id19">
-<h3>Examples<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id18">
+<h3>Examples<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
 <p>The following examples show how to use this Knife subcommand:</p>
-<p><strong>xxxxx</strong></p>
+<p><strong>Show clients</strong></p>
 <p>To view a client named &#8220;testclient&#8221;, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife client show testclient
 </pre></div>
@@ -368,78 +269,14 @@ public_key:
 
 
           </div>
-        </div>
+
       </div>
+
+  
       <div class="clearer"></div>
     </div>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li><a href="http://docs.opscode.com/chef/knife.html" target="_products">Knife</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/chef/resources.html" target="_products">Resources</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/chef/dsl_recipe.html" target="_products">Recipe DSL</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/chef/lwrps_custom.html" target="_products">LWRPs</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/search.html">Search the Docs</a>&#149;</li>
-        <li><a href="http://docs.opscode.com/">Home</a> &raquo;</li>
- 
-      </ul>
-    </div>
 
 
-    <div class="footer">
-      Documentation for current man pages for Knife.
-
-    &nbsp;Send feedback to <a href="mailto:docs@getchef.com">docs@getchef.com</a>.
-       This work is licensed under a Creative Commons Attribution 3.0 Unported License. 
-
-    </div>
-
-<!-- Start of Async Google Analytics Code -->
-<script type="text/javascript">
-var _gaq = _gaq || [];
-var pluginUrl = (('https:' == document.location.protocol) ? 'https://ssl.' : 'http://www.') + 'google-analytics.com/plugins/ga/inpage_linkid.js';
-_gaq.push(['_setAccount', 'UA-6369228-7']);
-_gaq.push(['_setDomainName', '.opscode.com']);
-_gaq.push(['_setAllowHash', false]);
-_gaq.push(['_setAllowLinker', true]);
-_gaq.push(['_addIgnoredRef','opscode.com']);
-_gaq.push(['_trackPageview']);
-
-(function() {
-  var ga = document.createElement('script'); ga.type = 'text/javascript';
-  ga.async = true;
-  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-  var s = document.getElementsByTagName('script')[0];
-  s.parentNode.insertBefore(ga, s); })();
-</script>
-<!-- End of Async Google Analytics Code -->
-
-
-
-<!-- Start of Contact Analytics Code -->
-<script type="text/javascript">
-(function() {
-  var didInit = false;
-  function initMunchkin() {
-    if(didInit === false) {
-      didInit = true;
-      Munchkin.init('255-VFB-268');
-    }
-  }
-  var s = document.createElement('script');
-  s.type = 'text/javascript';
-  s.async = true;
-  s.src = document.location.protocol + '//munchkin.marketo.net/munchkin.js';
-  s.onreadystatechange = function() {
-    if (this.readyState == 'complete' || this.readyState == 'loaded') {
-      initMunchkin();
-    }
-  };
-  s.onload = initMunchkin;
-  document.getElementsByTagName('head')[0].appendChild(s);
-})();
-</script>
-<!-- End of Contact Analytics Code -->
 
 
   </body>

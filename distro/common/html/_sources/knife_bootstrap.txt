@@ -18,12 +18,6 @@ Options
 
 .. include:: ../../includes_knife/includes_knife_bootstrap_options.rst
 
-knife.rb Settings
------------------------------------------------------
-.. note:: See :doc:`knife.rb </config_rb_knife>` for more information about how to add optional settings to the |knife rb| file.
-
-.. include:: ../../includes_knife/includes_knife_bootstrap_settings.rst
-
 Custom Templates
 =====================================================
 The ``chef-full`` distribution uses the |omnibus installer|. For most bootstrap operations, regardless of the platform on which the target node is running, using the ``chef-full`` distribution is the best approach for installing the |chef client| on a target node. In some situations, using another supported distribution is necessary. And in some situations, a custom template may be required. For example, the default bootstrap operation relies on an Internet connection to get the distribution to the target node. If a target node cannot access the Internet, then a custom template can be used to define a specific location for the distribution so that the target node may access it during the bootstrap operation.
