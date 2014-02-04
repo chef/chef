@@ -26,9 +26,6 @@ require './tasks/rspec.rb'
 
 GEM_NAME = "chef"
 
-# This has to be here or else the docs get generated *after* the gem is created
-task :gem => 'docs:all'
-
 Dir[File.expand_path("../*gemspec", __FILE__)].reverse.each do |gemspec_path|
   gemspec = eval(IO.read(gemspec_path))
   Gem::PackageTask.new(gemspec).define
