@@ -44,7 +44,7 @@ describe Chef::Version do
   end
 
   describe "when creating valid Versions" do
-    good_versions = %w(1.2 1.2.3 1000.80.50000 0.300.25 001.02.00003)
+    good_versions = %w(1.2 1.2.3 1000.80.50000 0.300.25 001.02.00003 12.2.3.rc 33.3.1.rc.5)
     good_versions.each do |v|
       it "should accept '#{v}'" do
         Chef::Version.new v
@@ -54,7 +54,8 @@ describe Chef::Version do
 
   describe "when given bogus input" do
     bad_versions = ["1.2.3.4", "1.2.a4", "1", "a", "1.2 3", "1.2 a",
-                    "1 2 3", "1-2-3", "1_2_3", "1.2_3", "1.2-3"]
+                    "1 2 3", "1-2-3", "1_2_3", "1.2_3", "1.2-3",
+                    "12.33.1.rc.b", "12.33.4444.12.rc", "55.32.11.cr.2"]
     the_error = Chef::Exceptions::InvalidCookbookVersion
     bad_versions.each do |v|
       it "should raise #{the_error} when given '#{v}'" do
