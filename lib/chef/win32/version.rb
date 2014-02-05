@@ -53,8 +53,19 @@ class Chef
         "Windows 2000" => {:major => 5, :minor => 0}
       }
 
-      attr_reader :major_version, :minor_version, :build_number, :sp_major_version, :sp_minor_version
-      attr_reader :product_type, :suite_mask, :sku
+      # Publicly-readable attributes of the Windows version. See http://msdn.microsoft.com/en-us/library/windows/desktop/ms724833%28v=vs.85%29.aspx
+      # for the complete explanation of these fields, but briefly:
+      #
+      # major version, e.g. "6" for the Windows Vista/2008+ family
+      attr_reader :major_version
+      # minor version, e.g. "2" for Windows 8
+      attr_reader :minor_version
+      # build number, e.g "2600"
+      attr_reader :build_number
+      # service pack major version, e.g. "3" for Service Pack 3
+      attr_reader :sp_major_version
+      # service pack minor version, e.g. "0"
+      attr_reader :sp_minor_version
 
       def initialize
         @major_version, @minor_version, @build_number = get_version
