@@ -107,6 +107,7 @@ class Chef
           else
             stop_service
             sleep 1
+            set_service_status
             start_service
           end
         end
@@ -121,13 +122,15 @@ class Chef
             @owner_uid = ::File.stat(@plist).uid
             @owner_gid = ::File.stat(@plist).gid
 
+            running = false;
             shell_out!("launchctl list", :user => @owner_uid, :group => @owner_gid).stdout.each_line do |line|
               case line
               when /(\d+|-)\s+(?:\d+|-)\s+(.*\.?)#{@current_resource.service_name}/
                 pid = $1
-                @current_resource.running(!pid.to_i.zero?)
+                running = true if (!pid.to_i.zero?)
               end
             end
+            @current_resource.running(running)
           else
             @current_resource.running(false)
           end
