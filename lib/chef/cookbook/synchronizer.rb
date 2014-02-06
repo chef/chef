@@ -17,7 +17,7 @@ class Chef
 
     # Register a notification to cleanup unused files from cookbooks
     Chef::Client.when_run_completes_successfully do |run_status|
-      instance.cleanup_file_cache
+      instance.cleanup_file_cache if Chef::Config[:override_runlist].nil?
     end
 
     include Singleton
@@ -95,7 +95,7 @@ class Chef
       Chef::Log.info("Loading cookbooks [#{cookbook_names.sort.join(', ')}]")
       Chef::Log.debug("Cookbooks detail: #{cookbooks.inspect}")
 
-      clear_obsoleted_cookbooks
+      clear_obsoleted_cookbooks if Chef::Config[:override_runlist].nil?
 
       @events.cookbook_sync_start(cookbook_count)
 
