@@ -66,4 +66,10 @@ cat > /etc/chef/first-boot.json <<'EOP'
 <%= first_boot.to_json %>
 EOP
 
+<% if @chef_config[:pre_boot] && @chef_config[:pre_boot][:run_list] -%>
+cat > /etc/chef/pre-boot.json <<'EOP'
+<%= pre_boot.to_json %>
+EOP
+<% end -%>
+
 <%= start_chef %>'
