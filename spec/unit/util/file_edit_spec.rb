@@ -131,5 +131,10 @@ HOSTS
       newfile = File.new(@tempfile.path).readlines
       newfile[1].should_not match(/replacement/)
     end
+
+    it "should not set file_edited if it does nothing" do
+      @fedit.insert_line_if_no_match(/localhost/, "replacement")
+      @fedit.instance_eval { file_edited } .should_not be_true
+    end
   end
 end
