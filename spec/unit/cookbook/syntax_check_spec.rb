@@ -28,7 +28,6 @@ describe Chef::Cookbook::SyntaxCheck do
     Chef::Log.logger = Logger.new(StringIO.new)
     Chef::Log.level = :warn # suppress "Syntax OK" messages
 
-
     @attr_files = %w{default.rb smokey.rb}.map { |f| File.join(cookbook_path, 'attributes', f) }
     @defn_files = %w{client.rb server.rb}.map { |f| File.join(cookbook_path, 'definitions', f)}
     @recipes = %w{default.rb gigantor.rb one.rb}.map { |f| File.join(cookbook_path, 'recipes', f) }
