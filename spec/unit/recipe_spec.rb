@@ -202,6 +202,19 @@ describe Chef::Recipe do
 
     end
 
+    describe "when creating a resource that contains an error in the attributes block" do
+
+      it "does not obfuscate the error source" do
+        lambda do
+          @recipe.zen_master("klopp") do
+            this_method_doesnt_exist
+          end
+        end.should raise_error(NoMethodError, "undefined method `this_method_doesnt_exist' for Chef::Resource::ZenMaster")
+
+      end
+
+    end
+
     describe "resource definitions" do
       it "should execute defined resources" do
         crow_define = Chef::ResourceDefinition.new
