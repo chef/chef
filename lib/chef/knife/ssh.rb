@@ -167,9 +167,7 @@ class Chef
                    # next if we couldn't find the specified attribute in the
                    # returned node object
                    next if i.nil?
-                   # if ohai cloud plugin provides it, change to
-                   # item[:cloud][:ssh_port]
-                   srv = [i, item[:azure].nil? ? nil : item[:azure][:public_ssh_port]]
+                   srv = [i, item[:cloud].nil? ? nil : item[:cloud][:public_ssh_port]]
                    r.push(srv)
                  end
                  r
@@ -203,8 +201,8 @@ class Chef
           session_opts[:password] = config[:ssh_password] if config[:ssh_password]
           session_opts[:forward_agent] = config[:forward_agent]
           session_opts[:port] = config[:ssh_port] ||
-                                Chef::Config[:knife][:ssh_port] ||
                                 item.last || # Use cloud port if available
+                                Chef::Config[:knife][:ssh_port] ||
                                 ssh_config[:port]
           session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
 
