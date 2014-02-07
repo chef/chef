@@ -42,6 +42,7 @@ class Chef
         use Chef::HTTP::CookieManager
         use Chef::HTTP::Decompressor
         use Chef::HTTP::Authenticator
+        use Chef::HTTP::RemoteRequestID
       end
 
       def run

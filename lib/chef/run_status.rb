@@ -37,6 +37,8 @@ class Chef::RunStatus
 
   attr_writer :exception
 
+  attr_accessor :run_id
+
   def initialize(node, events)
     @node = node
     @events = events
@@ -112,7 +114,8 @@ class Chef::RunStatus
       :all_resources => all_resources,
       :updated_resources => updated_resources,
       :exception => formatted_exception,
-      :backtrace => backtrace}
+      :backtrace => backtrace,
+      :run_id => run_id}
   end
 
   # Returns a string of the format "ExceptionClass: message" or +nil+ if no
