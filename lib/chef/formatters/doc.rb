@@ -26,7 +26,7 @@ class Chef
       end
 
       def run_start(version)
-        puts "Starting Chef Client, version #{version}"
+        puts_line "Starting Chef Client, version #{version}"
       end
 
       def total_resources
@@ -36,18 +36,18 @@ class Chef
       def run_completed(node)
         @end_time = Time.now
         if Chef::Config[:why_run]
-          puts "Chef Client finished, #{@updated_resources}/#{total_resources} resources would have been updated"
+          puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources would have been updated"
         else
-          puts "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated in #{elapsed_time} seconds"
+          puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated in #{elapsed_time} seconds"
         end
       end
 
       def run_failed(exception)
         @end_time = Time.now
         if Chef::Config[:why_run]
-          puts "Chef Client failed. #{@updated_resources} resources would have been updated"
+          puts_line "Chef Client failed. #{@updated_resources} resources would have been updated"
         else
-          puts "Chef Client failed. #{@updated_resources} resources updated in #{elapsed_time} seconds"
+          puts_line "Chef Client failed. #{@updated_resources} resources updated in #{elapsed_time} seconds"
         end
       end
 
@@ -61,7 +61,7 @@ class Chef
 
       # About to attempt to register as +node_name+
       def registration_start(node_name, config)
-        puts "Creating a new client identity for #{node_name} using the validator key."
+        puts_line "Creating a new client identity for #{node_name} using the validator key."
       end
 
       def registration_completed
@@ -82,7 +82,7 @@ class Chef
 
       # Called before the cookbook collection is fetched from the server.
       def cookbook_resolution_start(expanded_run_list)
-        puts "resolving cookbooks for run list: #{expanded_run_list.inspect}"
+        puts_line "resolving cookbooks for run list: #{expanded_run_list.inspect}"
       end
 
       # Called when there is an error getting the cookbook collection from the
@@ -111,12 +111,13 @@ class Chef
 
       # Called before cookbook sync starts
       def cookbook_sync_start(cookbook_count)
-        puts "Synchronizing Cookbooks:"
+        puts_line "Synchronizing Cookbooks:"
+        indent_by(2)
       end
 
       # Called when cookbook +cookbook_name+ has been sync'd
       def synchronized_cookbook(cookbook_name)
-        puts "  - #{cookbook_name}"
+        puts_line "- #{cookbook_name}"
       end
 
       # Called when an individual file in a cookbook has been updated
@@ -125,11 +126,12 @@ class Chef
 
       # Called after all cookbooks have been sync'd.
       def cookbook_sync_complete
+        indent_by(-2)
       end
 
       # Called when cookbook loading starts.
       def library_load_start(file_count)
-        puts "Compiling Cookbooks..."
+        puts_line "Compiling Cookbooks..."
       end
 
       # Called after a file in a cookbook is loaded.
@@ -142,11 +144,12 @@ class Chef
 
       # Called before convergence starts
       def converge_start(run_context)
-        puts "Converging #{run_context.resource_collection.all_resources.size} resources"
+        puts_line "Converging #{run_context.resource_collection.all_resources.size} resources"
       end
 
       # Called when the converge phase is finished.
       def converge_complete
+        indent_by(-2) if @current_recipe
       end
 
       # Called before action is executed on a resource.
@@ -157,12 +160,15 @@ class Chef
           resource_recipe = "<Dynamically Defined Resource>"
         end
 
-        if resource_recipe != @current_recipe
-          puts "Recipe: #{resource_recipe}"
+        if resource_recipe != @current_recipe && !resource.enclosing_provider
+          indent_by(-2) if @current_recipe
+          puts_line "Recipe: #{resource_recipe}"
           @current_recipe = resource_recipe
+          indent_by(2)
         end
         # TODO: info about notifies
-        print "  * #{resource} action #{action}"
+        start_line "* #{resource} action #{action}"
+        indent_by(2)
       end
 
       # Called when a resource fails, but will retry.
@@ -172,12 +178,14 @@ class Chef
       # Called when a resource fails and will not be retried.
       def resource_failed(resource, action, exception)
         super
+        indent_by(-2)
       end
 
       # Called when a resource action has been skipped b/c of a conditional
       def resource_skipped(resource, action, conditional)
         # TODO: more info about conditional
         puts " (skipped due to #{conditional.short_description})"
+        indent_by(-2)
       end
 
       # Called after #load_current_resource has run.
@@ -188,10 +196,12 @@ class Chef
       def resource_up_to_date(resource, action)
         @up_to_date_resources+= 1
         puts " (up to date)"
+        indent_by(-2)
       end
 
       def resource_bypassed(resource, action, provider)
         puts " (Skipped: whyrun not supported by provider #{provider.class.name})"
+        indent_by(-2)
       end
 
       def output_record(line)
@@ -207,12 +217,12 @@ class Chef
           next if line.nil?
           output_record line
           if line.kind_of? String
-            @output.color "\n    - #{prefix}#{line}", :green
+            start_line "- #{prefix}#{line}", :green
           elsif line.kind_of? Array
             # Expanded output - delta
             # @todo should we have a resource_update_delta callback?
             line.each do |detail|
-              @output.color "\n        #{detail}", :white
+              start_line detail, :white
             end
           end
         end
@@ -221,28 +231,32 @@ class Chef
       # Called after a resource has been completely converged.
       def resource_updated(resource, action)
         @updated_resources += 1
+        indent_by(-2)
         puts "\n"
       end
 
       # Called when resource current state load is skipped due to the provider
       # not supporting whyrun mode.
       def resource_current_state_load_bypassed(resource, action, current_resource)
-        @output.color("\n    * Whyrun not supported for #{resource}, bypassing load.", :yellow)
+        puts_line("* Whyrun not supported for #{resource}, bypassing load.", :yellow)
       end
 
       # Called before handlers run
       def handlers_start(handler_count)
-        puts "\nRunning handlers:"
+        puts ''
+        puts "Running handlers:"
+        indent_by(2)
       end
 
       # Called after an individual handler has run
       def handler_executed(handler)
-        puts "  - #{handler.class.name}"
+        puts_line "- #{handler.class.name}"
       end
 
       # Called after all handlers have executed
       def handlers_completed
-        puts "Running handlers complete\n"
+        indent_by(-2)
+        puts_line "Running handlers complete\n"
       end
 
       # Called when a provider makes an assumption after a failed assertion
@@ -250,7 +264,7 @@ class Chef
       def whyrun_assumption(action, resource, message)
         return unless message
         [ message ].flatten.each do |line|
-          @output.color("\n    * #{line}", :yellow)
+          start_line("* #{line}", :yellow)
         end
       end
 
@@ -259,7 +273,7 @@ class Chef
         return unless message
         color = Chef::Config[:why_run] ? :yellow : :red
         [ message ].flatten.each do |line|
-          @output.color("\n    * #{line}", color)
+          start_line("* #{line}", color)
         end
       end
     end
