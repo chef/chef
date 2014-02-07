@@ -64,9 +64,13 @@ class Chef
 
       attr_reader :out
       attr_reader :err
+      attr_accessor :indent
+      attr_reader :line_started
 
       def initialize(out, err)
         @out, @err = out, err
+        @indent = 0
+        @line_started = false
       end
 
       def highline
@@ -76,7 +80,18 @@ class Chef
         end
       end
 
+      # Print text.  This will start a new line and indent if necessary
+      # but will not terminate the line (future print and puts statements
+      # will start off where this print left off).
       def color(string, *colors)
+        if !@line_started
+          @out.print ' ' * indent
+          @line_started = true
+        end
+        if string[-1..-1] == "\n"
+          @line_started = false
+        end
+
         if Chef::Config[:color]
           @out.print highline.color(string, *colors)
         else
@@ -86,12 +101,41 @@ class Chef
 
       alias :print :color
 
+      # Print a line.  This will continue from the last start_line or print,
+      # or start a new line and indent if necessary.
       def puts(string, *colors)
+        if !@line_started
+          @out.print ' ' * indent
+        end
+
         if Chef::Config[:color]
           @out.puts highline.color(string, *colors)
         else
           @out.puts string
         end
+        @line_started = false
+      end
+
+      # Print an entire line from start to end.  This will terminate any existing
+      # lines and cause indentation.
+      def puts_line(string, *colors)
+        if @line_started
+          @out.puts ''
+          @line_started = false
+        end
+
+        puts(string, *colors)
+      end
+
+      # Print the start of a new line.  This will terminate any existing lines and
+      # cause indentation but will not move to the next line yet (future 'print'
+      # and 'puts' statements will stay on this line).
+      def start_line(string, *colors)
+        if @line_started
+          @out.puts ''
+          @line_started = false
+        end
+        print(string, *colors)
       end
 
     end
@@ -121,6 +165,18 @@ class Chef
 
       def print(*args)
         @output.print(*args)
+      end
+
+      def puts_line(*args)
+        @output.puts_line(*args)
+      end
+
+      def start_line(*args)
+        @output.start_line(*args)
+      end
+
+      def indent_by(amount)
+        @output.indent += amount
       end
 
       # Input: a Formatters::ErrorDescription object.
@@ -237,7 +293,7 @@ class Chef
 
 
     # == NullFormatter
-    # Formatter that doesn't actually produce any ouput. You can use this to
+    # Formatter that doesn't actually produce any output. You can use this to
     # disable the use of output formatters.
     class NullFormatter < Base
 
