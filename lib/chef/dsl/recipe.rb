@@ -55,12 +55,14 @@ class Chef
           # Otherwise, we're rocking the regular resource call route.
           declare_resource(method_symbol, args[0], caller[0], &block)
         else
-          super
+          begin
+            super
+          rescue NoMethodError
+            raise NoMethodError, "No resource or method named `#{method_symbol}' for #{describe_self_for_error}"
+          rescue NameError
+            raise NameError, "No resource, method, or local variable named `#{method_symbol}' for #{describe_self_for_error}"
+          end
         end
-      rescue NoMethodError
-        raise NoMethodError, "No resource or method named `#{method_symbol}' for #{describe_self_for_error}"
-      rescue NameError
-        raise NameError, "No resource, method, or local variable named `#{method_symbol}' for #{describe_self_for_error}"
       end
 
       def has_resource_definition?(name)
