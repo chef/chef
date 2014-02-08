@@ -293,6 +293,9 @@ class Chef
     # Report Handlers
     report_handlers []
 
+    # Event Handlers
+    event_handlers []
+
     # Exception Handlers
     exception_handlers []
 
