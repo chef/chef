@@ -50,7 +50,7 @@ describe Chef::Config do
     before do
       Chef::Config.chef_server_url = "https://junglist.gen.nz"
     end
-    
+
     it_behaves_like "server URL"
   end
 
@@ -58,7 +58,7 @@ describe Chef::Config do
     before do
       Chef::Config.chef_server_url = " https://junglist.gen.nz"
     end
-    
+
     it_behaves_like "server URL"
   end
 
@@ -214,6 +214,17 @@ describe Chef::Config do
       @original_env.each do |env_setting|
         ENV[env_setting[0]] = env_setting[1]
       end
+    end
+  end
+
+  describe "Chef::Config[:event_handlers]" do
+    it "sets a event_handlers to an empty array by default" do
+      Chef::Config[:event_handlers].should eq([])
+    end
+    it "should be able to add custom handlers" do
+      o = Object.new
+      Chef::Config[:event_handlers] << o
+      Chef::Config[:event_handlers].should be_include(o)
     end
   end
 
