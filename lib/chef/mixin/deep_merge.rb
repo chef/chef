@@ -122,7 +122,11 @@ class Chef
         # If there are two Hashes, recursively merge.
         if merge_onto.kind_of?(Hash) && merge_with.kind_of?(Hash)
           merge_with.each do |key, merge_with_value|
-            merge_onto[key] = hash_only_merge!(merge_onto[key], merge_with_value)
+            merge_onto[key] = if merge_onto.has_key?(key)
+                                hash_only_merge(merge_onto[key], merge_with_value)
+                              else
+                                merge_with_value
+                              end
           end
           merge_onto
 
@@ -164,5 +168,3 @@ class Chef
     end
   end
 end
-
-

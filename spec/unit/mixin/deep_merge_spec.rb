@@ -347,5 +347,12 @@ describe Chef::Mixin::DeepMerge do
       merged_result["top_level_a"]["1_deep_b"].should == %w[B B B]
     end
 
+    it "does not mutate deeply-nested original hashes by default" do
+      merge_ee_hash =   {"top_level_a" => {"1_deep_a" => { "2_deep_a" => { "3_deep_a" => "foo" }}}}
+      merge_with_hash = {"top_level_a" => {"1_deep_a" => { "2_deep_a" => { "3_deep_b" => "bar" }}}}
+      @dm.hash_only_merge(merge_ee_hash, merge_with_hash)
+      merge_ee_hash.should == {"top_level_a" => {"1_deep_a" => { "2_deep_a" => { "3_deep_a" => "foo" }}}}
+      merge_with_hash.should == {"top_level_a" => {"1_deep_a" => { "2_deep_a" => { "3_deep_b" => "bar" }}}}
+    end
   end
 end
