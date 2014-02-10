@@ -89,7 +89,7 @@
     -->
     <Icon Id="oc.ico" SourceFile="assets\oc_16x16.ico"/>
     <Property Id="ARPPRODUCTICON" Value="oc.ico" />
-    <Property Id="ARPHELPLINK" Value="http://help.opscode.com/" />
+    <Property Id="ARPHELPLINK" Value="http://www.getchef.com/support/" />
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
 
     <UIRef Id="ChefClientUI_InstallDir"/>
