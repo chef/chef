@@ -49,7 +49,7 @@ describe Chef::Provider::Ifconfig::Debian do
     @config_file_ifaces = StringIO.new
     @config_file_ifcfg = StringIO.new
     FileUtils.should_receive(:cp)
-    File.should_receive(:new).with(@config_filename_ifaces).and_return(StringIO.new)
+    File.should_receive(:open).with(@config_filename_ifaces).and_return(StringIO.new)
     File.should_receive(:open).with(@config_filename_ifaces, "w").and_yield(@config_file_ifaces)
     File.should_receive(:new).with(@config_filename_ifcfg, "w").and_return(@config_file_ifcfg)
     File.should_receive(:exist?).with(@config_filename_ifaces).and_return(true)
