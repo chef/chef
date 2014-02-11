@@ -20,116 +20,160 @@ require 'spec_helper'
 
 describe Chef::Util::FileEdit do
 
-  before(:each) do
-
-    @hosts_content=<<-HOSTS
+  let(:starting_content) do
+    <<-EOF
 127.0.0.1       localhost
 255.255.255.255 broadcasthost
 ::1             localhost
 fe80::1%lo0     localhost
-HOSTS
-
-    @tempfile = Tempfile.open('file_edit_spec')
-    @tempfile.write(@hosts_content)
-    @tempfile.close
-    @fedit = Chef::Util::FileEdit.new(@tempfile.path)
+    EOF
   end
 
+  let(:localhost_replaced) do
+    <<-EOF
+127.0.0.1       replacement
+255.255.255.255 broadcasthost
+::1             replacement
+fe80::1%lo0     replacement
+    EOF
+  end
+
+  let(:localhost_line_replaced) do
+    <<-EOF
+replacement line
+255.255.255.255 broadcasthost
+replacement line
+replacement line
+    EOF
+  end
+
+  let(:localhost_deleted) do
+    # sensitive to deliberate trailing whitespace
+    "127.0.0.1       \n255.255.255.255 broadcasthost\n::1             \nfe80::1%lo0     \n"
+  end
+
+  let(:localhost_line_deleted) do
+    <<-EOF
+255.255.255.255 broadcasthost
+    EOF
+  end
+
+  let(:append_after_all_localhost) do
+    <<-EOF
+127.0.0.1       localhost
+new line inserted
+255.255.255.255 broadcasthost
+::1             localhost
+new line inserted
+fe80::1%lo0     localhost
+new line inserted
+    EOF
+  end
+
+  let(:append_after_content) do
+    <<-EOF
+127.0.0.1       localhost
+255.255.255.255 broadcasthost
+::1             localhost
+fe80::1%lo0     localhost
+new line inserted
+    EOF
+  end
+
+  let(:target_file) do
+    f = Tempfile.open('file_edit_spec')
+    f.write(starting_content)
+    f.close
+    f
+  end
+
+  let(:fedit) { Chef::Util::FileEdit.new(target_file.path) }
+
   after(:each) do
-    @tempfile && @tempfile.close!
+    target_file.close!
   end
 
   describe "initialiize" do
     it "should create a new Chef::Util::FileEdit object" do
-      Chef::Util::FileEdit.new(@tempfile.path).should be_kind_of(Chef::Util::FileEdit)
+      expect(fedit).to be_kind_of(Chef::Util::FileEdit)
     end
 
     it "should throw an exception if the input file does not exist" do
-      lambda{Chef::Util::FileEdit.new("nonexistfile")}.should raise_error
+      expect{Chef::Util::FileEdit.new("nonexistfile")}.to raise_error(ArgumentError)
     end
+  end
 
-    it "should throw an exception if the input file is blank" do
-      lambda do
-        Chef::Util::FileEdit.new(File.join(CHEF_SPEC_DATA, "filedit", "blank"))
-      end.should raise_error
+  describe "when the file is blank" do
+    let(:hosts_content) { "" }
+
+    it "should not throw an exception" do
+      expect{ fedit }.not_to raise_error
     end
   end
 
   describe "search_file_replace" do
     it "should accept regex passed in as a string (not Regexp object) and replace the match if there is one" do
-      @fedit.search_file_replace("localhost", "replacement")
-      @fedit.write_file
-      newfile = File.new(@tempfile.path).readlines
-      newfile[0].should match(/replacement/)
+      fedit.search_file_replace("localhost", "replacement")
+      fedit.write_file
+      expect(IO.read(target_file.path)).to eq(localhost_replaced)
     end
 
     it "should accept regex passed in as a Regexp object and replace the match if there is one" do
-      @fedit.search_file_replace(/localhost/, "replacement")
-      @fedit.write_file
-      newfile = File.new(@tempfile.path).readlines
-      newfile[0].should match(/replacement/)
+      fedit.search_file_replace(/localhost/, "replacement")
+      fedit.write_file
+      expect(IO.read(target_file.path)).to eq(localhost_replaced)
     end
 
     it "should do nothing if there isn't a match" do
-      @fedit.search_file_replace(/pattern/, "replacement")
-      @fedit.write_file
-      newfile = File.new(@tempfile.path).readlines
-      newfile[0].should_not match(/replacement/)
+      fedit.search_file_replace(/pattern/, "replacement")
+      fedit.write_file
+      expect(IO.read(target_file.path)).to eq(starting_content)
     end
   end
 
   describe "search_file_replace_line" do
     it "should search for match and replace the whole line" do
-      @fedit.search_file_replace_line(/localhost/, "replacement line")
-      @fedit.write_file
-      newfile = File.new(@tempfile.path).readlines
-      newfile[0].should match(/replacement/)
-      newfile[0].should_not match(/127/)
+      fedit.search_file_replace_line(/localhost/, "replacement line")
+      fedit.write_file
+      expect(IO.read(target_file.path)).to eq(localhost_line_replaced)
     end
   end
 
   describe "search_file_delete" do
     it "should search for match and delete the match" do
-      @fedit.search_file_delete(/localhost/)
-      @fedit.write_file
-      newfile = File.new(@tempfile.path).readlines
-      newfile[0].should_not match(/localhost/)
-      newfile[0].should match(/127/)
+      fedit.search_file_delete(/localhost/)
+      fedit.write_file
+      expect(IO.read(target_file.path)).to eq(localhost_deleted)
     end
   end
 
   describe "search_file_delete_line" do
     it "should search for match and delete the matching line" do
-      @fedit.search_file_delete_line(/localhost/)
-      @fedit.write_file
-      newfile = File.new(@tempfile.path).readlines
-      newfile[0].should_not match(/localhost/)
-      newfile[0].should match(/broadcasthost/)
+      fedit.search_file_delete_line(/localhost/)
+      fedit.write_file
+      expect(IO.read(target_file.path)).to eq(localhost_line_deleted)
     end
   end
 
   describe "insert_line_after_match" do
     it "should search for match and insert the given line after the matching line" do
-      @fedit.insert_line_after_match(/localhost/, "new line inserted")
-      @fedit.write_file
-      newfile = File.new(@tempfile.path).readlines
-      newfile[1].should match(/new/)
+      fedit.insert_line_after_match(/localhost/, "new line inserted")
+      fedit.write_file
+      expect(IO.read(target_file.path)).to eq(append_after_all_localhost)
     end
   end
 
   describe "insert_line_if_no_match" do
     it "should search for match and insert the given line if no line match" do
-      @fedit.insert_line_if_no_match(/pattern/, "new line inserted")
-      @fedit.write_file
-      newfile = File.new(@tempfile.path).readlines
-      newfile.last.should match(/new/)
+      fedit.insert_line_if_no_match(/pattern/, "new line inserted")
+      fedit.write_file
+      expect(IO.read(target_file.path)).to eq(append_after_content)
     end
 
     it "should do nothing if there is a match" do
-      @fedit.insert_line_if_no_match(/localhost/, "replacement")
-      @fedit.write_file
-      newfile = File.new(@tempfile.path).readlines
-      newfile[1].should_not match(/replacement/)
+      fedit.insert_line_if_no_match(/localhost/, "replacement")
+      fedit.write_file
+      expect(IO.read(target_file.path)).to eq(starting_content)
     end
   end
 end
