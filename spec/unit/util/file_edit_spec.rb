@@ -95,11 +95,16 @@ new line inserted
 
   describe "initialiize" do
     it "should create a new Chef::Util::FileEdit object" do
-      expect(fedit).to be_kind_of(Chef::Util::FileEdit)
+      expect(fedit).to be_instance_of(Chef::Util::FileEdit)
     end
 
     it "should throw an exception if the input file does not exist" do
       expect{Chef::Util::FileEdit.new("nonexistfile")}.to raise_error(ArgumentError)
+    end
+
+    # CHEF-5018: people have monkey patched this and it has accidentally been broken
+    it "should read the contents into memory as an array" do
+      expect(fedit.send(:contents)).to be_instance_of(Array)
     end
   end
 
