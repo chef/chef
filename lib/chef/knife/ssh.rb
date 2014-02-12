@@ -114,7 +114,7 @@ class Chef
           end
           case config[:on_error]
           when :skip
-            ui.warn "Failed to connect to #{node_name} -- #{$!.class.name}: #{$!.message}"
+            ui.warn "Failed to connect to #{server.host} -- #{$!.class.name}: #{$!.message}"
             $!.backtrace.each { |l| Chef::Log.debug(l) }
           when :raise
             #Net::SSH::Multi magic to force exception to be re-raised.
