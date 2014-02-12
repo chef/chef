@@ -44,8 +44,8 @@ describe Chef::Provider::Ifconfig::Debian do
     provider = Chef::Provider::Ifconfig::Debian.new(new_resource, run_context)
     provider.instance_variable_set("@status", status)
     provider.current_resource = current_resource
-    provider.stub(:load_current_resource)
-    provider.stub(:run_command)
+    allow(provider).to receive(:load_current_resource)
+    allow(provider).to receive(:run_command)
     provider
   end
 
@@ -60,31 +60,31 @@ describe Chef::Provider::Ifconfig::Debian do
     let(:config_file_ifcfg) { StringIO.new }
 
     before do
-      FileUtils.should_receive(:cp)
-      File.should_receive(:open).with(config_filename_ifaces).and_return(StringIO.new)
-      File.should_receive(:open).with(config_filename_ifaces, "w").and_yield(config_file_ifaces)
-      File.should_receive(:new).with(config_filename_ifcfg, "w").and_return(config_file_ifcfg)
-      File.should_receive(:exist?).with(config_filename_ifaces).and_return(true)
+      expect(FileUtils).to receive(:cp)
+      expect(File).to receive(:open).with(config_filename_ifaces).and_return(StringIO.new)
+      expect(File).to receive(:open).with(config_filename_ifaces, "w").and_yield(config_file_ifaces)
+      expect(File).to receive(:new).with(config_filename_ifcfg, "w").and_return(config_file_ifcfg)
+      expect(File).to receive(:exist?).with(config_filename_ifaces).and_return(true)
     end
 
     it "should create network-scripts directory" do
-      File.should_receive(:directory?).with(File.dirname(config_filename_ifcfg)).and_return(false)
-      Dir.should_receive(:mkdir).with(File.dirname(config_filename_ifcfg))
+      expect(File).to receive(:directory?).with(File.dirname(config_filename_ifcfg)).and_return(false)
+      expect(Dir).to receive(:mkdir).with(File.dirname(config_filename_ifcfg))
       provider.run_action(:add)
     end
 
     it "should write configure network-scripts directory" do
-      File.should_receive(:directory?).with(File.dirname(config_filename_ifcfg)).and_return(true)
+      expect(File).to receive(:directory?).with(File.dirname(config_filename_ifcfg)).and_return(true)
       provider.run_action(:add)
-      config_file_ifaces.string.should match(/^\s*source\s+\/etc\/network\/interfaces[.]d\/[*]\s*$/)
+      expect(config_file_ifaces.string).to match(/^\s*source\s+\/etc\/network\/interfaces[.]d\/[*]\s*$/)
     end
 
     it "should write a network-script" do
-      File.should_receive(:directory?).with(File.dirname(config_filename_ifcfg)).and_return(true)
+      expect(File).to receive(:directory?).with(File.dirname(config_filename_ifcfg)).and_return(true)
       provider.run_action(:add)
-      config_file_ifcfg.string.should match(/^iface eth0 inet static\s*$/)
-      config_file_ifcfg.string.should match(/^\s+address 10\.0\.0\.1\s*$/)
-      config_file_ifcfg.string.should match(/^\s+netmask 255\.255\.254\.0\s*$/)
+      expect(config_file_ifcfg.string).to match(/^iface eth0 inet static\s*$/)
+      expect(config_file_ifcfg.string).to match(/^\s+address 10\.0\.0\.1\s*$/)
+      expect(config_file_ifcfg.string).to match(/^\s+netmask 255\.255\.254\.0\s*$/)
     end
   end
 
@@ -92,8 +92,8 @@ describe Chef::Provider::Ifconfig::Debian do
 
     it "should delete network-script if it exists" do
       current_resource.device new_resource.device
-      File.should_receive(:exist?).with(config_filename_ifcfg).and_return(true)
-      FileUtils.should_receive(:rm_f).with(config_filename_ifcfg, :verbose => false)
+      expect(File).to receive(:exist?).with(config_filename_ifcfg).and_return(true)
+      expect(FileUtils).to receive(:rm_f).with(config_filename_ifcfg, :verbose => false)
 
       provider.run_action(:delete)
     end
