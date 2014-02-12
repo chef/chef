@@ -116,23 +116,27 @@ new line inserted
     end
   end
 
+  def edited_file_contents
+    IO.read(target_file.path)
+  end
+
   describe "search_file_replace" do
     it "should accept regex passed in as a string (not Regexp object) and replace the match if there is one" do
       fedit.search_file_replace("localhost", "replacement")
       fedit.write_file
-      expect(IO.read(target_file.path)).to eq(localhost_replaced)
+      expect(edited_file_contents).to eq(localhost_replaced)
     end
 
     it "should accept regex passed in as a Regexp object and replace the match if there is one" do
       fedit.search_file_replace(/localhost/, "replacement")
       fedit.write_file
-      expect(IO.read(target_file.path)).to eq(localhost_replaced)
+      expect(edited_file_contents).to eq(localhost_replaced)
     end
 
     it "should do nothing if there isn't a match" do
       fedit.search_file_replace(/pattern/, "replacement")
       fedit.write_file
-      expect(IO.read(target_file.path)).to eq(starting_content)
+      expect(edited_file_contents).to eq(starting_content)
     end
   end
 
@@ -140,7 +144,7 @@ new line inserted
     it "should search for match and replace the whole line" do
       fedit.search_file_replace_line(/localhost/, "replacement line")
       fedit.write_file
-      expect(IO.read(target_file.path)).to eq(localhost_line_replaced)
+      expect(edited_file_contents).to eq(localhost_line_replaced)
     end
   end
 
@@ -148,7 +152,7 @@ new line inserted
     it "should search for match and delete the match" do
       fedit.search_file_delete(/localhost/)
       fedit.write_file
-      expect(IO.read(target_file.path)).to eq(localhost_deleted)
+      expect(edited_file_contents).to eq(localhost_deleted)
     end
   end
 
@@ -156,7 +160,7 @@ new line inserted
     it "should search for match and delete the matching line" do
       fedit.search_file_delete_line(/localhost/)
       fedit.write_file
-      expect(IO.read(target_file.path)).to eq(localhost_line_deleted)
+      expect(edited_file_contents).to eq(localhost_line_deleted)
     end
   end
 
@@ -164,7 +168,7 @@ new line inserted
     it "should search for match and insert the given line after the matching line" do
       fedit.insert_line_after_match(/localhost/, "new line inserted")
       fedit.write_file
-      expect(IO.read(target_file.path)).to eq(append_after_all_localhost)
+      expect(edited_file_contents).to eq(append_after_all_localhost)
     end
   end
 
@@ -172,13 +176,13 @@ new line inserted
     it "should search for match and insert the given line if no line match" do
       fedit.insert_line_if_no_match(/pattern/, "new line inserted")
       fedit.write_file
-      expect(IO.read(target_file.path)).to eq(append_after_content)
+      expect(edited_file_contents).to eq(append_after_content)
     end
 
     it "should do nothing if there is a match" do
       fedit.insert_line_if_no_match(/localhost/, "replacement")
       fedit.write_file
-      expect(IO.read(target_file.path)).to eq(starting_content)
+      expect(edited_file_contents).to eq(starting_content)
     end
   end
 end
