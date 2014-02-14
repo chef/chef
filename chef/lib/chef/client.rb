@@ -139,23 +139,30 @@ class Chef
       @ohai = Ohai::System.new
 
       # If we want why-run output and user hasn't explicitly specified a format
-      # we need to use a formatter that will render whyrun output. 
+      # we need to use a formatter that will render whyrun output.
       if Chef::Config.why_run
         if Chef::Config.formatter == "null"
           Chef::Log.warn("Forcing formatter of 'doc' to capture whyrun output.")
           Chef::Config[:formatter] = 'doc'
         end
       end
-      formatter = Chef::Formatters.new(Chef::Config.formatter, STDOUT, STDERR)
-      @events = EventDispatch::Dispatcher.new(formatter)
+
+      event_handlers = configure_formatters
+      event_handlers += Array(Chef::Config[:event_handlers])
+
+      @events = EventDispatch::Dispatcher.new(*event_handlers)
       @override_runlist = args.delete(:override_runlist)
       runlist_override_sanity_check!
+    end
+
+    def configure_formatters
+      [Chef::Formatters.new(Chef::Config.formatter, STDOUT, STDERR)]
     end
 
     # Do a full run for this Chef::Client.  Calls:
     # * do_run
     #
-    # This provides a wrapper around #do_run allowing the 
+    # This provides a wrapper around #do_run allowing the
     # run to be optionally forked.
     # === Returns
     # boolean:: Return value from #do_run. Should always returns true.
