@@ -5,3 +5,5 @@ Example Contribution:
 * **kalistec**: Improved file resource greatly.
 -->
 # Chef Client 10.x Contributions:
+
+* **jaymzh**: Service Provider for MacOSX now supports `enable` and `disable`

@@ -23,13 +23,31 @@ describe Chef::Provider::Service::Macosx do
   let(:events) {Chef::EventDispatch::Dispatcher.new}
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:provider) { described_class.new(new_resource, run_context) }
-  let(:stdout) { StringIO.new }
+  let(:launchctl_stdout) { StringIO.new }
+  let(:plutil_stdout) { String.new <<-XML }
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>io.redis.redis-server</string>
+</dict>
+</plist>
+XML
 
   before do
     Dir.stub!(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist"], [])
     provider.stub!(:shell_out!).
              with("launchctl list", {:group => 1001, :user => 101}).
-             and_return(mock("ouput", :stdout => stdout))
+             and_return(mock("Status", :stdout => launchctl_stdout))
+    provider.stub!(:shell_out).
+             with(/launchctl list /,
+                  {:group => nil, :user => nil}).
+             and_return(mock("Status",
+                        :stdout => launchctl_stdout, :exitstatus => 0))
+    provider.stub!(:shell_out!).
+             with(/plutil -convert xml1 -o/).
+             and_return(mock("Status", :stdout => plutil_stdout))
 
     File.stub!(:stat).and_return(mock("stat", :gid => 1001, :uid => 101))
   end
@@ -41,7 +59,7 @@ describe Chef::Provider::Service::Macosx do
 
       describe "#load_current_resource" do
         context "when launchctl returns pid in service list" do
-          let(:stdout) { StringIO.new <<-SVC_LIST }
+          let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
 12761 - 0x100114220.old.machinit.thing
 7777  - io.redis.redis-server
 - - com.lol.stopped-thing
@@ -61,21 +79,21 @@ SVC_LIST
         end
 
         describe "running unsupported actions" do
+          let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
+12761 - 0x100114220.old.machinit.thing
+7777  - io.redis.redis-server
+- - com.lol.stopped-thing
+SVC_LIST
+
           before do
             Dir.stub!(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist"], [])
-          end
-          it "should throw an exception when enable action is attempted" do
-            lambda {provider.run_action(:enable)}.should raise_error(Chef::Exceptions::UnsupportedAction)
           end
           it "should throw an exception when reload action is attempted" do
             lambda {provider.run_action(:reload)}.should raise_error(Chef::Exceptions::UnsupportedAction)
           end
-          it "should throw an exception when disable action is attempted" do
-            lambda {provider.run_action(:disable)}.should raise_error(Chef::Exceptions::UnsupportedAction)
-          end
         end
         context "when launchctl returns empty service pid" do
-          let(:stdout) { StringIO.new <<-SVC_LIST }
+          let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
 12761 - 0x100114220.old.machinit.thing
 - - io.redis.redis-server
 - - com.lol.stopped-thing
@@ -95,7 +113,7 @@ SVC_LIST
         end
 
         context "when launchctl doesn't return service entry at all" do
-          let(:stdout) { StringIO.new <<-SVC_LIST }
+          let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
 12761 - 0x100114220.old.machinit.thing
 - - com.lol.stopped-thing
 SVC_LIST
