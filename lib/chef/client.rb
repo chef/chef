@@ -151,10 +151,18 @@ class Chef
       @specific_recipes = args.delete(:specific_recipes)
     end
 
+    def stdout
+      STDOUT
+    end
+
+    def stderr
+      STDERR
+    end
+
     def configure_formatters
       formatters_for_run.map do |formatter_name, output_path|
         if output_path.nil?
-          Chef::Formatters.new(formatter_name, STDOUT, STDERR)
+          Chef::Formatters.new(formatter_name, stdout, stderr)
         else
           io = File.open(output_path, "a+")
           io.sync = true
