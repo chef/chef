@@ -52,15 +52,16 @@ class Chef
         end
 
         if config[:after] && config[:before]
-          raise ArgumentError, "You cannot specify both --before and --after"
+          ui.fatal("You cannot specify both --before and --after!")
+          exit 1
         end
 
         if config[:after]
-          add_to_run_list(node, entries, :after, config[:after])
+          add_to_run_list_after(node, entries, config[:after])
         elsif config[:before]
-          add_to_run_list(node, entries, :before, config[:before])
+          add_to_run_list_before(node, entries, config[:before])
         else
-          add_to_run_list(node, entries)
+          add_to_run_list_after(node, entries)
         end
 
         node.save
@@ -70,24 +71,32 @@ class Chef
         output(format_for_display(node))
       end
 
-      def add_to_run_list(node, entries, after_or_before=nil, item=nil)
-        if after_or_before
+      private
+
+      def add_to_run_list_after(node, entries, after=nil)
+        if after
           nlist = []
           node.run_list.each do |entry|
-            if after_or_before == :after && entry == item
-              nlist << entry
+            nlist << entry
+            if entry == after
               entries.each { |e| nlist << e }
-            elsif after_or_before == :before && entry == item
-              entries.each { |e| nlist << e }
-              nlist << entry
-            else
-              nlist << entry
             end
           end
           node.run_list.reset!(nlist)
         else
           entries.each { |e| node.run_list << e }
         end
+      end
+
+      def add_to_run_list_before(node, entries, before)
+        nlist = []
+        node.run_list.each do |entry|
+          if entry == before
+            entries.each { |e| nlist << e }
+          end
+          nlist << entry
+        end
+        node.run_list.reset!(nlist)
       end
 
     end
