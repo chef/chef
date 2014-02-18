@@ -164,7 +164,7 @@ describe Chef::ApiClient do
 
   end
 
-  describe "when loading from JSON", :focus => true do
+  describe "when loading from JSON" do
     before do
     end
 
