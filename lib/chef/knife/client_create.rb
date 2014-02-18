@@ -38,6 +38,11 @@ class Chef
         :description => "Create the client as an admin",
         :boolean => true
 
+      option :validator,
+        :long  => "--validator",
+        :description => "Create the client as a validator",
+        :boolean => true
+
       banner "knife client create CLIENT (options)"
 
       def run
@@ -52,6 +57,7 @@ class Chef
         client = Chef::ApiClient.new
         client.name(@client_name)
         client.admin(config[:admin])
+        client.validator(config[:validator])
 
         output = edit_data(client)
 
