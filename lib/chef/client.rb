@@ -55,6 +55,16 @@ class Chef
   class Client
     include Chef::Mixin::PathSanity
 
+    # IO stream that will be used as 'STDOUT' for formatters. Formatters are
+    # configured during `initialize`, so this provides a convenience for
+    # setting alternative IO stream during tests.
+    STDOUT_FD = STDOUT
+
+    # IO stream that will be used as 'STDERR' for formatters. Formatters are
+    # configured during `initialize`, so this provides a convenience for
+    # setting alternative IO stream during tests.
+    STDERR_FD = STDERR
+
     # Clears all notifications for client run status events.
     # Primarily for testing purposes.
     def self.clear_notifications
@@ -129,15 +139,13 @@ class Chef
     attr_accessor :rest
     attr_accessor :runner
 
-    #--
-    # TODO: timh/cw: 5-19-2010: json_attribs should be moved to RunContext?
     attr_reader :json_attribs
     attr_reader :run_status
     attr_reader :events
 
     # Creates a new Chef::Client.
     def initialize(json_attribs=nil, args={})
-      @json_attribs = json_attribs
+      @json_attribs = json_attribs || {}
       @node = nil
       @run_status = nil
       @runner = nil
@@ -149,20 +157,16 @@ class Chef
       @events = EventDispatch::Dispatcher.new(*event_handlers)
       @override_runlist = args.delete(:override_runlist)
       @specific_recipes = args.delete(:specific_recipes)
-    end
 
-    def stdout
-      STDOUT
-    end
-
-    def stderr
-      STDERR
+      if new_runlist = args.delete(:runlist)
+        @json_attribs["run_list"] = new_runlist
+      end
     end
 
     def configure_formatters
       formatters_for_run.map do |formatter_name, output_path|
         if output_path.nil?
-          Chef::Formatters.new(formatter_name, stdout, stderr)
+          Chef::Formatters.new(formatter_name, STDOUT_FD, STDERR_FD)
         else
           io = File.open(output_path, "a+")
           io.sync = true

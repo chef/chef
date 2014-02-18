@@ -269,8 +269,8 @@ describe Chef::Client do
       before do
         Chef::Config[:client_fork] = enable_fork
 
-        Chef::Client.any_instance.stub(:stdout).and_return(stdout)
-        Chef::Client.any_instance.stub(:stderr).and_return(stderr)
+        stub_const("Chef::Client::STDOUT_FD", stdout)
+        stub_const("Chef::Client::STDERR_FD", stderr)
 
         stub_for_register
         stub_for_node_load
@@ -353,6 +353,38 @@ describe Chef::Client do
             node.should_not_receive(:save)
           end
         end
+      end
+    end
+
+    describe "when a permanent run list is passed as an option" do
+
+      include_examples "a successful client run" do
+
+        let(:new_runlist) { "recipe[new_run_list_recipe]" }
+        let(:client_opts) { {:runlist => new_runlist} }
+
+        def stub_for_sync_cookbooks
+          # --Client#setup_run_context
+          # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
+          #
+          Chef::CookbookSynchronizer.any_instance.should_receive(:sync_cookbooks)
+          Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
+          http_cookbook_sync.should_receive(:post).
+            with("environments/_default/cookbook_versions", {:run_list => ["new_run_list_recipe"]}).
+            and_return({})
+        end
+
+        before do
+          # Client will try to compile and run the new_run_list_recipe, but we
+          # do not create a fixture for this.
+          Chef::RunContext::CookbookCompiler.any_instance.should_receive(:compile)
+        end
+
+        it "sets the new run list on the node" do
+          client.run
+          node.run_list.should == Chef::RunList.new(new_runlist)
+        end
+
       end
     end
 
