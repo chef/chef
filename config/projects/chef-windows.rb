@@ -26,6 +26,7 @@ package_name    "chef-client"
 
 dependency "preparation"
 dependency "ruby-windows"
+dependency "libyaml-windows"
 dependency "ruby-windows-devkit"
 dependency "chef-windows"
 dependency "ohai" if ENV["OHAI_GIT_REV"]
