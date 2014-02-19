@@ -22,28 +22,38 @@
 require 'spec_helper'
 
 describe Chef::Recipe do
-  before(:each) do
-    @cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
-    cl = Chef::CookbookLoader.new(@cookbook_repo)
-    cl.load_cookbooks
-    @cookbook_collection = Chef::CookbookCollection.new(cl)
-    @node = Chef::Node.new
-    @node.normal[:tags] = Array.new
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
-    @recipe = Chef::Recipe.new("hjk", "test", @run_context)
 
-    # Shell/ext.rb is on the run path, and it defines
-    # Chef::Recipe#resources to call pp, which we don't want when
-    # we're running tests.
-    @recipe.stub(:pp)
+  let(:cookbook_repo) { File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks")) }
+
+  let(:cookbook_loader) do
+    loader = Chef::CookbookLoader.new(cookbook_repo)
+    loader.load_cookbooks
+    loader
+  end
+
+  let(:cookbook_collection) { Chef::CookbookCollection.new(cookbook_loader) }
+
+  let(:node) do
+    Chef::Node.new.tap {|n| n.normal[:tags] = [] }
+  end
+
+  let(:events) do
+    Chef::EventDispatch::Dispatcher.new
+  end
+
+  let(:run_context) do
+    Chef::RunContext.new(node, cookbook_collection, events)
+  end
+
+  let(:recipe) do
+    Chef::Recipe.new("hjk", "test", run_context)
   end
 
   describe "method_missing" do
     describe "resources" do
       it "should load a two word (zen_master) resource" do
         lambda do
-          @recipe.zen_master "monkey" do
+          recipe.zen_master "monkey" do
             peace true
           end
         end.should_not raise_error
@@ -51,7 +61,7 @@ describe Chef::Recipe do
 
       it "should load a one word (cat) resource" do
         lambda do
-          @recipe.cat "loulou" do
+          recipe.cat "loulou" do
             pretty_kitty true
           end
         end.should_not raise_error
@@ -59,47 +69,47 @@ describe Chef::Recipe do
 
       it "should load a four word (one_two_three_four) resource" do
         lambda do
-          @recipe.one_two_three_four "numbers" do
+          recipe.one_two_three_four "numbers" do
             i_can_count true
           end
         end.should_not raise_error
       end
 
       it "should throw an error if you access a resource that we can't find" do
-        lambda { @recipe.not_home("not_home_resource") }.should raise_error(NameError)
+        lambda { recipe.not_home("not_home_resource") }.should raise_error(NameError)
       end
 
       it "should require a name argument" do
         lambda {
-          @recipe.cat
+          recipe.cat
         }.should raise_error(ArgumentError, "You must supply a name when declaring a cat resource")
       end
 
       it "should allow regular errors (not NameErrors) to pass unchanged" do
         lambda {
-          @recipe.cat("felix") { raise ArgumentError, "You Suck" }
+          recipe.cat("felix") { raise ArgumentError, "You Suck" }
         }.should raise_error(ArgumentError)
       end
 
       it "should add our zen_master to the collection" do
-        @recipe.zen_master "monkey" do
+        recipe.zen_master "monkey" do
           peace true
         end
-        @run_context.resource_collection.lookup("zen_master[monkey]").name.should eql("monkey")
+        run_context.resource_collection.lookup("zen_master[monkey]").name.should eql("monkey")
       end
 
       it "should add our zen masters to the collection in the order they appear" do
         %w{monkey dog cat}.each do |name|
-          @recipe.zen_master name do
+          recipe.zen_master name do
             peace true
           end
         end
 
-        @run_context.resource_collection.map{|r| r.name}.should eql(["monkey", "dog", "cat"])
+        run_context.resource_collection.map{|r| r.name}.should eql(["monkey", "dog", "cat"])
       end
 
       it "should return the new resource after creating it" do
-        res = @recipe.zen_master "makoto" do
+        res = recipe.zen_master "makoto" do
           peace true
         end
         res.resource_name.should eql(:zen_master)
@@ -110,16 +120,16 @@ describe Chef::Recipe do
 
         it "locate resource for particular platform" do
           Object.const_set('ShaunTheSheep', Class.new(Chef::Resource){ provides :laughter, :on_platforms => ["television"] })
-          @node.automatic[:platform] = "television"
-          @node.automatic[:platform_version] = "123"
-          res = @recipe.laughter "timmy"
+          node.automatic[:platform] = "television"
+          node.automatic[:platform_version] = "123"
+          res = recipe.laughter "timmy"
           res.name.should eql("timmy")
           res.kind_of?(ShaunTheSheep)
         end
 
         it "locate a resource for all platforms" do
           Object.const_set("YourMom", Class.new(Chef::Resource){ provides :love_and_caring })
-          res = @recipe.love_and_caring "mommy"
+          res = recipe.love_and_caring "mommy"
           res.name.should eql("mommy")
           res.kind_of?(YourMom)
         end
@@ -129,7 +139,7 @@ describe Chef::Recipe do
 
     describe "creating resources via build_resource" do
       let(:zm_resource) do
-        @recipe.build_resource(:zen_master, "klopp") do
+        recipe.build_resource(:zen_master, "klopp") do
           something "bvb"
         end
       end
@@ -146,14 +156,14 @@ describe Chef::Recipe do
 
       it "does not add the resource to the resource collection" do
         zm_resource # force let binding evaluation
-        expect { @run_context.resource_collection.resources(:zen_master => "klopp") }.to raise_error(Chef::Exceptions::ResourceNotFound)
+        expect { run_context.resource_collection.resources(:zen_master => "klopp") }.to raise_error(Chef::Exceptions::ResourceNotFound)
       end
 
     end
 
     describe "creating resources via declare_resource" do
       let(:zm_resource) do
-        @recipe.declare_resource(:zen_master, "klopp") do
+        recipe.declare_resource(:zen_master, "klopp") do
           something "bvb"
         end
       end
@@ -170,7 +180,7 @@ describe Chef::Recipe do
 
       it "adds the resource to the resource collection" do
         zm_resource # force let binding evaluation
-        @run_context.resource_collection.resources(:zen_master => "klopp").should == zm_resource
+        run_context.resource_collection.resources(:zen_master => "klopp").should == zm_resource
       end
 
     end
@@ -179,13 +189,13 @@ describe Chef::Recipe do
 
       it "gives a sane error message when using method_missing" do
         lambda do
-          @recipe.no_such_resource("foo")
+          recipe.no_such_resource("foo")
         end.should raise_error(NoMethodError, %q[No resource or method named `no_such_resource' for `Chef::Recipe "test"'])
       end
 
       it "gives a sane error message when using method_missing 'bare'" do
         lambda do
-          @recipe.instance_eval do
+          recipe.instance_eval do
             # Giving an argument will change this from NameError to NoMethodError
             no_such_resource
           end
@@ -193,11 +203,11 @@ describe Chef::Recipe do
       end
 
       it "gives a sane error message when using build_resource" do
-        expect { @recipe.build_resource(:no_such_resource, "foo") }.to raise_error(Chef::Exceptions::NoSuchResourceType)
+        expect { recipe.build_resource(:no_such_resource, "foo") }.to raise_error(Chef::Exceptions::NoSuchResourceType)
       end
 
       it "gives a sane error message when using declare_resource" do
-        expect { @recipe.declare_resource(:no_such_resource, "bar") }.to raise_error(Chef::Exceptions::NoSuchResourceType)
+        expect { recipe.declare_resource(:no_such_resource, "bar") }.to raise_error(Chef::Exceptions::NoSuchResourceType)
       end
 
     end
@@ -206,7 +216,7 @@ describe Chef::Recipe do
 
       it "does not obfuscate the error source" do
         lambda do
-          @recipe.zen_master("klopp") do
+          recipe.zen_master("klopp") do
             this_method_doesnt_exist
           end
         end.should raise_error(NoMethodError, "undefined method `this_method_doesnt_exist' for Chef::Resource::ZenMaster")
@@ -224,12 +234,12 @@ describe Chef::Recipe do
             something params[:something]
           end
         end
-        @run_context.definitions[:crow] = crow_define
-        @recipe.crow "mine" do
+        run_context.definitions[:crow] = crow_define
+        recipe.crow "mine" do
           peace true
         end
-        @run_context.resource_collection.resources(:zen_master => "lao tzu").name.should eql("lao tzu")
-        @run_context.resource_collection.resources(:zen_master => "lao tzu").something.should eql(true)
+        run_context.resource_collection.resources(:zen_master => "lao tzu").name.should eql("lao tzu")
+        run_context.resource_collection.resources(:zen_master => "lao tzu").something.should eql(true)
       end
 
       it "should set the node on defined resources" do
@@ -240,12 +250,12 @@ describe Chef::Recipe do
             something params[:something]
           end
         end
-        @run_context.definitions[:crow] = crow_define
-        @node.normal[:foo] = false
-        @recipe.crow "mine" do
+        run_context.definitions[:crow] = crow_define
+        node.normal[:foo] = false
+        recipe.crow "mine" do
           something node[:foo]
         end
-        @recipe.resources(:zen_master => "lao tzu").something.should eql(false)
+        recipe.resources(:zen_master => "lao tzu").something.should eql(false)
       end
     end
 
@@ -258,15 +268,15 @@ describe Chef::Recipe do
     peace = true
   end
   CODE
-      lambda { @recipe.instance_eval(code) }.should_not raise_error
-      @recipe.resources(:zen_master => "gnome").name.should eql("gnome")
+      lambda { recipe.instance_eval(code) }.should_not raise_error
+      recipe.resources(:zen_master => "gnome").name.should eql("gnome")
     end
   end
 
   describe "from_file" do
     it "should load a resource from a ruby file" do
-      @recipe.from_file(File.join(CHEF_SPEC_DATA, "recipes", "test.rb"))
-      res = @recipe.resources(:file => "/etc/nsswitch.conf")
+      recipe.from_file(File.join(CHEF_SPEC_DATA, "recipes", "test.rb"))
+      res = recipe.resources(:file => "/etc/nsswitch.conf")
       res.name.should eql("/etc/nsswitch.conf")
       res.action.should eql([:create])
       res.owner.should eql("root")
@@ -275,88 +285,88 @@ describe Chef::Recipe do
     end
 
     it "should raise an exception if the file cannot be found or read" do
-      lambda { @recipe.from_file("/tmp/monkeydiving") }.should raise_error(IOError)
+      lambda { recipe.from_file("/tmp/monkeydiving") }.should raise_error(IOError)
     end
   end
 
   describe "include_recipe" do
     it "should evaluate another recipe with include_recipe" do
-      @node.should_receive(:loaded_recipe).with(:openldap, "gigantor")
-      @run_context.include_recipe "openldap::gigantor"
-      res = @run_context.resource_collection.resources(:cat => "blanket")
+      node.should_receive(:loaded_recipe).with(:openldap, "gigantor")
+      run_context.include_recipe "openldap::gigantor"
+      res = run_context.resource_collection.resources(:cat => "blanket")
       res.name.should eql("blanket")
       res.pretty_kitty.should eql(false)
     end
 
     it "should load the default recipe for a cookbook if include_recipe is called without a ::" do
-      @node.should_receive(:loaded_recipe).with(:openldap, "default")
-      @run_context.include_recipe "openldap"
-      res = @run_context.resource_collection.resources(:cat => "blanket")
+      node.should_receive(:loaded_recipe).with(:openldap, "default")
+      run_context.include_recipe "openldap"
+      res = run_context.resource_collection.resources(:cat => "blanket")
       res.name.should eql("blanket")
       res.pretty_kitty.should eql(true)
     end
 
     it "should store that it has seen a recipe in the run_context" do
-      @node.should_receive(:loaded_recipe).with(:openldap, "default")
-      @run_context.include_recipe "openldap"
-      @run_context.loaded_recipe?("openldap").should be_true
+      node.should_receive(:loaded_recipe).with(:openldap, "default")
+      run_context.include_recipe "openldap"
+      run_context.loaded_recipe?("openldap").should be_true
     end
 
     it "should not include the same recipe twice" do
-      @node.should_receive(:loaded_recipe).with(:openldap, "default").exactly(:once)
-      @cookbook_collection[:openldap].should_receive(:load_recipe).with("default", @run_context)
-      @recipe.include_recipe "openldap"
-      @cookbook_collection[:openldap].should_not_receive(:load_recipe).with("default", @run_context)
-      @recipe.include_recipe "openldap"
+      node.should_receive(:loaded_recipe).with(:openldap, "default").exactly(:once)
+      cookbook_collection[:openldap].should_receive(:load_recipe).with("default", run_context)
+      recipe.include_recipe "openldap"
+      cookbook_collection[:openldap].should_not_receive(:load_recipe).with("default", run_context)
+      recipe.include_recipe "openldap"
     end
   end
 
   describe "tags" do
     it "should set tags via tag" do
-      @recipe.tag "foo"
-      @node[:tags].should include("foo")
+      recipe.tag "foo"
+      node[:tags].should include("foo")
     end
 
     it "should set multiple tags via tag" do
-      @recipe.tag "foo", "bar"
-      @node[:tags].should include("foo")
-      @node[:tags].should include("bar")
+      recipe.tag "foo", "bar"
+      node[:tags].should include("foo")
+      node[:tags].should include("bar")
     end
 
     it "should not set the same tag twice via tag" do
-      @recipe.tag "foo"
-      @recipe.tag "foo"
-      @node[:tags].should eql([ "foo" ])
+      recipe.tag "foo"
+      recipe.tag "foo"
+      node[:tags].should eql([ "foo" ])
     end
 
     it "should return the current list of tags from tag with no arguments" do
-      @recipe.tag "foo"
-      @recipe.tag.should eql([ "foo" ])
+      recipe.tag "foo"
+      recipe.tag.should eql([ "foo" ])
     end
 
     it "should return true from tagged? if node is tagged" do
-      @recipe.tag "foo"
-      @recipe.tagged?("foo").should be(true)
+      recipe.tag "foo"
+      recipe.tagged?("foo").should be(true)
     end
 
     it "should return false from tagged? if node is not tagged" do
-      @recipe.tagged?("foo").should be(false)
+      recipe.tagged?("foo").should be(false)
     end
 
     it "should return false from tagged? if node is not tagged" do
-      @recipe.tagged?("foo").should be(false)
+      recipe.tagged?("foo").should be(false)
     end
 
     it "should remove a tag from the tag list via untag" do
-      @recipe.tag "foo"
-      @recipe.untag "foo"
-      @node[:tags].should eql([])
+      recipe.tag "foo"
+      recipe.untag "foo"
+      node[:tags].should eql([])
     end
 
     it "should remove multiple tags from the tag list via untag" do
-      @recipe.tag "foo", "bar"
-      @recipe.untag "bar", "foo"
-      @node[:tags].should eql([])
+      recipe.tag "foo", "bar"
+      recipe.untag "bar", "foo"
+      node[:tags].should eql([])
     end
   end
 end
