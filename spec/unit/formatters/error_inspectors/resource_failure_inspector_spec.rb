@@ -32,6 +32,10 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
     "rspec-example"
   end
 
+  def recipe_name
+    "rspec-example-recipe"
+  end
+
   before do
     @description = Chef::Formatters::ErrorDescription.new("Error Converging Resource:")
     @stdout = StringIO.new
@@ -43,7 +47,6 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
 
   describe "when explaining an error converging a resource" do
     before do
-      source_line = caller(0)[0]
       @resource = package("non-existing-package") do
 
         only_if do
