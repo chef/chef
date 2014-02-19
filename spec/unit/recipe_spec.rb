@@ -263,12 +263,10 @@ describe Chef::Recipe do
       end
 
       it "sets the cookbook name on the cloned resource to that resource's cookbook" do
-        pending "CHEF-5052"
         duplicated_resource.cookbook_name.should == "second_cb"
       end
 
       it "sets the recipe name on the cloned resource to that resoure's recipe" do
-        pending "CHEF-5052"
         duplicated_resource.recipe_name.should == "second_recipe"
       end
 
