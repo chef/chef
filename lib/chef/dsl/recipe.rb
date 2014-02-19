@@ -31,20 +31,6 @@ class Chef
 
       include Chef::Mixin::ConvertToClassName
 
-      # Default +cookbook_name+ implementation, always returns "none". This
-      # should be overriden in including classes whenever a meaningful value
-      # can be provided.
-      def cookbook_name
-        "none"
-      end
-
-      # Default +recipe_name+ implementation, always returns "none". This
-      # should be overridden in including classes whenever a meaningful value
-      # can be provided.
-      def recipe_name
-        "none"
-      end
-
       def method_missing(method_symbol, *args, &block)
         # If we have a definition that matches, we want to use that instead.  This should
         # let you do some really crazy over-riding of "native" types, if you really want
