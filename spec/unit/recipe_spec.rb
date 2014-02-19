@@ -225,6 +225,55 @@ describe Chef::Recipe do
 
     end
 
+    describe "resource cloning" do
+
+      let(:second_recipe) do
+        Chef::Recipe.new("second_cb", "second_recipe", run_context)
+      end
+
+      let(:original_resource) do
+        recipe.zen_master("klopp") do
+          something "bvb09"
+          action :score
+        end
+      end
+
+      let(:duplicated_resource) do
+        original_resource
+        second_recipe.zen_master("klopp") do
+          # attrs should be cloned
+        end
+      end
+
+      it "copies attributes from the first resource" do
+        duplicated_resource.something.should == "bvb09"
+      end
+
+      it "does not copy the action from the first resource" do
+        original_resource.action.should == [:score]
+        duplicated_resource.action.should == :nothing
+      end
+
+      it "does not copy the source location of the first resource" do
+        # sanity check source location:
+        original_resource.source_line.should include(__FILE__)
+        duplicated_resource.source_line.should include(__FILE__)
+        # actual test:
+        original_resource.source_line.should_not == duplicated_resource.source_line
+      end
+
+      it "sets the cookbook name on the cloned resource to that resource's cookbook" do
+        pending "CHEF-5052"
+        duplicated_resource.cookbook_name.should == "second_cb"
+      end
+
+      it "sets the recipe name on the cloned resource to that resoure's recipe" do
+        pending "CHEF-5052"
+        duplicated_resource.recipe_name.should == "second_recipe"
+      end
+
+    end
+
     describe "resource definitions" do
       it "should execute defined resources" do
         crow_define = Chef::ResourceDefinition.new
