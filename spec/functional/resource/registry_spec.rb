@@ -118,10 +118,10 @@ describe Chef::Resource::RegistryKey, :windows_only do
 
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
     @events.register(@resource_reporter)
-    @run_id = @resource_reporter.run_id
     @run_status = Chef::RunStatus.new(@node, @events)
-
     @resource_reporter.run_started(@run_status)
+    @run_id = @resource_reporter.run_id
+
 
     @new_resource.cookbook_name = "monkey"
     @cookbook_version = double("Cookbook::Version", :version => "1.2.3")
@@ -265,7 +265,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
         @new_resource.key(reg_child + '\Slitheen\Raxicoricofallapatorius')
         @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
         @new_resource.recursive(false)
-        lambda{@new_resource.run_action(:create)}.should_not raise_error
+        @new_resource.run_action(:create) # should not raise_error
         @registry.key_exists?(reg_child + '\Slitheen').should == false
         @registry.key_exists?(reg_child + '\Slitheen\Raxicoricofallapatorius').should == false
       end
@@ -376,7 +376,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
         @new_resource.key(reg_child + '\Zygons\Zygor')
         @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
         @new_resource.recursive(false)
-        lambda{@new_resource.run_action(:create_if_missing)}.should_not raise_error
+        @new_resource.run_action(:create_if_missing) # should not raise_error
         @registry.key_exists?(reg_child + '\Zygons').should == false
         @registry.key_exists?(reg_child + '\Zygons\Zygor').should == false
       end
@@ -547,7 +547,6 @@ describe Chef::Resource::RegistryKey, :windows_only do
         @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
         @new_resource.recursive(false)
         @new_resource.run_action(:delete_key)
-        @new_resource.should_not raise_error
       end
       it "does nothing if the action is delete_key" do
         @new_resource.key(reg_parent + '\OpscodeWhyRun')
