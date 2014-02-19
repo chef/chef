@@ -119,12 +119,13 @@ class Chef
 
         resource = resource_class.new(name, run_context)
         resource.source_line = created_at
-        resource.cookbook_name = cookbook_name
-        resource.recipe_name = recipe_name
         # If we have a resource like this one, we want to steal its state
         # This behavior is very counter-intuitive and should be removed.
         # See CHEF-3694, https://tickets.opscode.com/browse/CHEF-3694
+        # Moved to this location to resolve CHEF-5052, https://tickets.opscode.com/browse/CHEF-5052
         resource.load_prior_resource
+        resource.cookbook_name = cookbook_name
+        resource.recipe_name = recipe_name
         # Determine whether this resource is being created in the context of an enclosing Provider
         resource.enclosing_provider = self.is_a?(Chef::Provider) ? self : nil
 
