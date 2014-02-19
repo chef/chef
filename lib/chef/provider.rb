@@ -31,6 +31,9 @@ class Chef
     attr_accessor :current_resource
     attr_accessor :run_context
 
+    attr_reader :recipe_name
+    attr_reader :cookbook_name
+
     #--
     # TODO: this should be a reader, and the action should be passed in the
     # constructor; however, many/most subclasses override the constructor so
@@ -44,6 +47,9 @@ class Chef
       @current_resource = nil
       @run_context = run_context
       @converge_actions = nil
+
+      @recipe_name = nil
+      @cookbook_name = nil
     end
 
     def whyrun_mode?
