@@ -309,5 +309,10 @@ class Chef
       end
     end
 
+    class UnsupportedPlatform < RuntimeError
+      def initialize(platform)
+        super "This functionality is not supported on platform #{platform}."
+      end
+    end
   end
 end
