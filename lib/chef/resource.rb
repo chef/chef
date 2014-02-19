@@ -21,6 +21,7 @@ require 'chef/mixin/params_validate'
 require 'chef/dsl/platform_introspection'
 require 'chef/dsl/data_query'
 require 'chef/dsl/registry_helper'
+require 'chef/dsl/reboot_pending'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/resource/conditional'
 require 'chef/resource/conditional_action_not_nothing'
@@ -125,6 +126,7 @@ F
     include Chef::Mixin::ParamsValidate
     include Chef::DSL::PlatformIntrospection
     include Chef::DSL::RegistryHelper
+    include Chef::DSL::RebootPending
     include Chef::Mixin::ConvertToClassName
     include Chef::Mixin::Deprecation
 
