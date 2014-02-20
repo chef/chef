@@ -205,13 +205,23 @@ class Chef
         output(format_for_display(object)) if config[:print_after]
       end
 
-      def confirm(question, append_instructions=true)
+      def confirm(question, append_instructions=true, default_choice=nil)
         return true if config[:yes]
 
+        case default_choice
+        when 'Y', 'y'
+          instructions = '? (Y/n)'
+        when 'N', 'n'
+          instructions = '? (y/N)'
+        else
+          instructions = '? (Y/N)'
+        end
+
         stdout.print question
-        stdout.print "? (Y/N) " if append_instructions
+        stdout.print instructions if append_instructions
         answer = stdin.readline
         answer.chomp!
+        answer == '' ? answer = default_choice : answer
         case answer
         when "Y", "y"
           true
