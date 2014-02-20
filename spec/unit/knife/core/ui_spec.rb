@@ -437,13 +437,38 @@ EOM
       }.should raise_error(SystemExit) { |e| e.status.should == 3 }
     end
 
-    it "should not exit 3 if you answer n and return false if asked for it" do
-      @ui.stdin.stub(:readline).and_return("n")
-      value = nil
-      lambda {
-        value = @ui.confirm(@question,true,false)
-      }.should_not raise_error(SystemExit)
-      value.should be(false)
+    describe "with 'Y' as a default choice" do
+      it 'should return true if you answer default' do
+        @ui.stdin.stub(:readline).and_return("\n")
+        @ui.confirm(@question, false, 'Y').should == true
+      end
+
+      it "should show 'Y' as the default in the instructions" do
+        out = StringIO.new
+        @ui.stdin.stub(:readline).and_return("\n")
+        @ui.stub(:stdout).and_return(out)
+        @ui.confirm(@question, true, 'Y').should == true
+        out.string.should == "#{@question}? (Y/n)"
+      end
+    end
+
+    describe "with 'N' as a default choice" do
+      it 'should exit 3 if you answer default' do
+        @ui.stdin.stub(:readline).and_return("\n")
+        lambda {
+          @ui.confirm(@question, false, 'N')
+        }.should raise_error(SystemExit) { |e| e.status.should == 3 }
+      end
+
+      it "should show 'N' as the default in the instructions" do
+        out = StringIO.new
+        @ui.stdin.stub(:readline).and_return("\n")
+        @ui.stub(:stdout).and_return(out)
+        lambda {
+          @ui.confirm(@question, true, 'N')
+        }.should raise_error(SystemExit) { |e| e.status.should == 3 }
+        out.string.should == "#{@question}? (y/N)You said no, so I'm done here.\n"
+      end
     end
 
     describe "with --y or --yes passed" do
