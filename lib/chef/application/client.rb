@@ -170,7 +170,7 @@ class Chef::Application::Client < Chef::Application
   option :override_runlist,
     :short        => "-o RunlistItem,RunlistItem...",
     :long         => "--override-runlist RunlistItem,RunlistItem...",
-    :description  => "Replace current run list with specified items",
+    :description  => "Replace current run list with specified items for a single run",
     :proc         => lambda{|items|
       items = items.split(',')
       items.compact.map{|item|
@@ -178,6 +178,16 @@ class Chef::Application::Client < Chef::Application
       }
     }
 
+  option :runlist,
+    :short        => "-r RunlistItem,RunlistItem...",
+    :long         => "--runlist RunlistItem,RunlistItem...",
+    :description  => "Permanently replace current run list with specified items",
+    :proc         => lambda{|items|
+      items = items.split(',')
+      items.compact.map{|item|
+        Chef::RunList::RunListItem.new(item)
+      }
+    }
   option :why_run,
     :short        => '-W',
     :long         => '--why-run',
