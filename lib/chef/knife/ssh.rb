@@ -142,36 +142,9 @@ class Chef
       end
 
       def configure_session
-        list = case config[:manual]
-               when true
-                 @name_args[0].split(" ")
-               when false
-                 r = Array.new
-                 q = Chef::Search::Query.new
-                 @action_nodes = q.search(:node, @name_args[0])[0]
-                 @action_nodes.each do |item|
-                   # we should skip the loop to next iteration if the item
-                   # returned by the search is nil
-                   next if item.nil?
-                   # if a command line attribute was not passed, and we have a
-                   # cloud public_hostname, use that.  see #configure_attribute
-                   # for the source of config[:attribute] and
-                   # config[:override_attribute]
-                   if config[:override_attribute]
-                     i = extract_nested_value(item, config[:override_attribute])
-                   elsif item[:cloud] && item[:cloud][:public_hostname]
-                     i = item[:cloud][:public_hostname]
-                   else
-                     i = extract_nested_value(item, config[:attribute])
-                   end
-                   # next if we couldn't find the specified attribute in the
-                   # returned node object
-                   next if i.nil?
-                   srv = [i, item[:cloud].nil? ? nil : item[:cloud][:public_ssh_port]]
-                   r.push(srv)
-                 end
-                 r
-               end
+        list = config[:manual] ?
+               @name_args[0].split(" ") :
+               search_nodes
         if list.length == 0
           if @action_nodes.length == 0
             ui.fatal("No nodes returned from search!")
@@ -185,9 +158,38 @@ class Chef
         session_from_list(list)
       end
 
+      def search_nodes
+        list = Array.new
+        query = Chef::Search::Query.new
+        @action_nodes = query.search(:node, @name_args[0])[0]
+        @action_nodes.each do |item|
+          # we should skip the loop to next iteration if the item
+          # returned by the search is nil
+          next if item.nil?
+          # if a command line attribute was not passed, and we have a
+          # cloud public_hostname, use that.  see #configure_attribute
+          # for the source of config[:attribute] and
+          # config[:override_attribute]
+          if config[:override_attribute]
+            host = extract_nested_value(item, config[:override_attribute])
+          elsif item[:cloud] && item[:cloud][:public_hostname]
+            host = item[:cloud][:public_hostname]
+          else
+            host = extract_nested_value(item, config[:attribute])
+          end
+          # next if we couldn't find the specified attribute in the
+          # returned node object
+          next if host.nil?
+          ssh_port = item[:cloud].nil? ? nil : item[:cloud][:public_ssh_port]
+          srv = [host, ssh_port]
+          list.push(srv)
+        end
+        list
+      end
+
       def session_from_list(list)
         list.each do |item|
-          host = item.first
+          host, ssh_port = item
           Chef::Log.debug("Adding #{host}")
           session_opts = {}
 
@@ -201,7 +203,7 @@ class Chef
           session_opts[:password] = config[:ssh_password] if config[:ssh_password]
           session_opts[:forward_agent] = config[:forward_agent]
           session_opts[:port] = config[:ssh_port] ||
-                                item.last || # Use cloud port if available
+                                ssh_port || # Use cloud port if available
                                 Chef::Config[:knife][:ssh_port] ||
                                 ssh_config[:port]
           session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
@@ -518,6 +520,8 @@ class Chef
           exit_status
         end
       end
+
+      private :search_nodes
 
     end
   end
