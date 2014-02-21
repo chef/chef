@@ -76,6 +76,11 @@ describe Chef::REST do
     Chef::Log.init(log_stringio)
   end
 
+  it "should allow the options hash to be frozen" do
+    options = {}.freeze
+    # should not raise any exception
+    Chef::REST.new(base_url, nil, nil, options)
+  end
 
   describe "calling an HTTP verb on a path or absolute URL" do
     it "adds a relative URL to the base url it was initialized with" do
