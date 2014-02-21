@@ -25,7 +25,9 @@ describe Chef::Knife::ClientCreate do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::ClientCreate.new
     @knife.config = {
-      :file => nil
+      :file => nil,
+      :admin => false,
+      :validator => false
     }
     @knife.name_args = [ "adam" ]
     @client = Chef::ApiClient.new
@@ -49,6 +51,16 @@ describe Chef::Knife::ClientCreate do
       @knife.run
     end
 
+    it "by default it is not an admin" do
+      @client.should_receive(:admin).with(false)
+      @knife.run
+    end
+
+    it "by default it is not a validator" do
+      @client.should_receive(:validator).with(false)
+      @knife.run
+    end
+
     it "should allow you to edit the data" do
       @knife.should_receive(:edit_data).with(@client)
       @knife.run
@@ -66,6 +78,22 @@ describe Chef::Knife::ClientCreate do
         filehandle = double("Filehandle")
         filehandle.should_receive(:print).with('woot')
         File.should_receive(:open).with("/tmp/monkeypants", "w").and_yield(filehandle)
+        @knife.run
+      end
+    end
+
+    describe "with -a or --admin" do
+      it "should create an admin client" do
+        @knife.config[:admin] = true
+        @client.should_receive(:admin).with(true)
+        @knife.run
+      end
+    end
+
+    describe "with --validator" do
+      it "should create an validator client" do
+        @knife.config[:validator] = true
+        @client.should_receive(:validator).with(true)
         @knife.run
       end
     end
