@@ -65,6 +65,22 @@ describe Chef::RunContext::CookbookCompiler do
       node[:attr_load_order].should == ["dependency1::default", "dependency1::aa_first", "dependency1::zz_last"]
     end
 
+    it "raises Exception when trying to load a missing dependency" do
+      node.run_list("does-not-exist::default")
+
+      expect { compiler.compile_attributes }.to raise_error(
+        Chef::Exceptions::CookbookNotFound,
+        /^Cookbook does-not-exist not found. If you're loading does-not-exist from another cookbook, make sure you configure the dependency in your metadata.$/)
+    end
+
+    it "shows the full list of dependencies when a dep in a tree is missing" do
+      node.run_list("test-missing-dep-level-two::default")
+
+      expect { compiler.compile_attributes }.to raise_error(
+        Chef::Exceptions::CookbookNotFound,
+        /^Cookbook does-not-exist not found. If you're loading does-not-exist from another cookbook, make sure you configure the dependency in your metadata. These cookbooks are dependent on does-not-exist: test-missing-dep-level-two -> test-missing-dep-level-one -> does-not-exist$/)
+    end
+
     it "loads dependencies before loading the depending cookbook's attributes" do
       # Also make sure that attributes aren't loaded twice if we have two
       # recipes from the same cookbook in the run list

@@ -235,13 +235,27 @@ class Chef
       # dependencies of +cookbook+, and then adding +cookbook+ to the list of
       # +ordered_cookbooks+. A cookbook is skipped if it appears in
       # +seen_cookbooks+, otherwise it is added to the set of +seen_cookbooks+
-      # before its dependencies are processed.
-      def add_cookbook_with_deps(ordered_cookbooks, seen_cookbooks, cookbook)
+      # before its dependencies are processed. +reverse_deps+ tracks the list
+      # of cookbooks which depend on the current one
+      def add_cookbook_with_deps(
+          ordered_cookbooks, seen_cookbooks, cookbook, reverse_deps=[])
         return false if seen_cookbooks.key?(cookbook)
 
         seen_cookbooks[cookbook] = true
-        each_cookbook_dep(cookbook) do |dependency|
-          add_cookbook_with_deps(ordered_cookbooks, seen_cookbooks, dependency)
+        reverse_deps += [cookbook]
+
+        begin
+          deps = dependencies(cookbook)
+        rescue Chef::Exceptions::CookbookNotFound => e
+          e.message << " These cookbooks are dependent on #{cookbook}: "\
+          "#{reverse_deps.join(" -> ")}" if reverse_deps.length > 1
+
+          raise
+        end
+
+        deps.each do |dependency|
+          add_cookbook_with_deps(
+            ordered_cookbooks, seen_cookbooks, dependency, reverse_deps)
         end
         ordered_cookbooks << cookbook
       end
@@ -259,11 +273,11 @@ class Chef
         cookbook_collection[cookbook].segment_filenames(segment).sort
       end
 
-      # Yields the name, as a symbol, of each cookbook depended on by
-      # +cookbook_name+ in lexical sort order.
-      def each_cookbook_dep(cookbook_name, &block)
+      # Returns a list of the cookbooks depended on by +cookbook_name+
+      # as symbols in lexical sort order.
+      def dependencies(cookbook_name)
         cookbook = cookbook_collection[cookbook_name]
-        cookbook.metadata.dependencies.keys.sort.map{|x| x.to_sym}.each(&block)
+        cookbook.metadata.dependencies.keys.sort.map{|x| x.to_sym}
       end
 
       # Given a +recipe_name+, finds the file associated with the recipe.
