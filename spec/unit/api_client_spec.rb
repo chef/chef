@@ -164,6 +164,52 @@ describe Chef::ApiClient do
 
   end
 
+  describe "when loading from JSON" do
+    before do
+    end
+
+    before(:each) do
+      client = {
+      "name" => "black",
+      "clientname" => "black",
+      "public_key" => "crowes",
+      "private_key" => "monkeypants",
+      "admin" => true,
+      "validator" => true,
+      "json_class" => "Chef::ApiClient"
+      }
+      @http_client = double("Chef::REST mock")
+      Chef::REST.stub(:new).and_return(@http_client)
+      @http_client.should_receive(:get).with("clients/black").and_return(client)
+      @client = Chef::ApiClient.load(client['name'])
+    end
+
+    it "should deserialize to a Chef::ApiClient object" do
+      @client.should be_a_kind_of(Chef::ApiClient)
+    end
+
+    it "preserves the name" do
+      @client.name.should == "black"
+    end
+
+    it "preserves the public key" do
+      @client.public_key.should == "crowes"
+    end
+
+    it "preserves the admin status" do
+      @client.admin.should be_a_kind_of(Chef::TrueClass)
+    end
+
+    it "preserves the 'validator' status" do
+      @client.validator.should be_a_kind_of(Chef::TrueClass)
+    end
+
+    it "includes the private key if present" do
+      @client.private_key.should == "monkeypants"
+    end
+
+  end
+
   describe "with correctly configured API credentials" do
     before do
       Chef::Config[:node_name] = "silent-bob"
