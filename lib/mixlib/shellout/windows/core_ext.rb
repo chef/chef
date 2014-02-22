@@ -346,9 +346,9 @@ module Process
     # Automatically close the process and thread handles in the
     # PROCESS_INFORMATION struct unless explicitly told not to.
     if hash['close_handles']
-      CloseHandle(procinfo[:hProcess])
-      CloseHandle(procinfo[:hThread])
-      CloseHandle(token)
+      CloseHandle(procinfo[:hProcess]) if procinfo[:hProcess]
+      CloseHandle(procinfo[:hThread]) if procinfo[:hThread]
+      CloseHandle(token) if token
     end
 
     ProcessInfo.new(
