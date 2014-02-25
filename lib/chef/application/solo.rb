@@ -185,11 +185,6 @@ class Chef::Application::Solo < Chef::Application
       Chef::Config[:interval] ||= 1800
     end
 
-    if Chef::Config[:json_attribs]
-      config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
-      @chef_client_json = config_fetcher.fetch_json
-    end
-
     if Chef::Config[:recipe_url]
       cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
@@ -203,6 +198,11 @@ class Chef::Application::Solo < Chef::Application
         end
       end
       Chef::Mixin::Command.run_command(:command => "tar zxvf #{path} -C #{recipes_path}")
+    end
+
+    if Chef::Config[:json_attribs]
+      config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
+      @chef_client_json = config_fetcher.fetch_json
     end
   end
 
