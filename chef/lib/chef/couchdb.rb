@@ -69,10 +69,19 @@ class Chef
     end
 
     def create_db(check_for_existing=true)
-      @database_list = @rest.get_rest("_all_dbs")
-      if !check_for_existing || !@database_list.any? { |db| db == couchdb_database }
-        response = @rest.put_rest(couchdb_database, Hash.new)
+      database_exists = false
+
+      if check_for_existing
+        database_list = @rest.get_rest("_all_dbs")
+        if database_list.any? { |db| db == couchdb_database }
+          database_exists = true
+        end
       end
+
+      if !database_exists
+        @rest.put_rest(couchdb_database, Hash.new)
+      end
+
       couchdb_database
     end
 

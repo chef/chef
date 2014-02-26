@@ -48,26 +48,53 @@ describe Chef::CouchDB do
       @couchdb.stub!(:create_design_document).and_return(true)
     end
 
-    it "should get a list of current databases" do
-      @rest.should_receive(:get_rest).and_return(["chef"])
-      @couchdb.create_db
+    context "with check_for_existing = true" do
+      it "should get a list of current databases" do
+        @rest.should_receive(:get_rest) { ["chef"] }
+        @couchdb.create_db
+      end
+
+      it "should create the chef database if it does not exist" do
+        @rest.stub!(:get_rest) { [] }
+        @rest.should_receive(:put_rest).with("chef", {}) { true }
+        @couchdb.create_db
+      end
+
+      it "should not create the chef database if it does exist" do
+        @rest.stub!(:get_rest) { ["chef"] }
+        @rest.should_not_receive(:put_rest)
+        @couchdb.create_db
+      end
+
+      it "should return 'chef'" do
+        @rest.should_receive(:get_rest).with("_all_dbs") { ["chef"] }
+        @couchdb.create_db.should eql("chef")
+      end
     end
 
-    it "should create the chef database if it does not exist" do
-      @rest.stub!(:get_rest).and_return([])
-      @rest.should_receive(:put_rest).with("chef", {}).and_return(true)
-      @couchdb.create_db
-    end
+    context "with check_for_existing = false" do
+      it "should not get a list of current databases" do
+        @rest.should_not_receive(:get_rest)
+        @rest.should_receive(:put_rest).with("chef", {}) { true }
+        @couchdb.create_db(false)
+      end
 
-    it "should not create the chef database if it does exist" do
-      @rest.stub!(:get_rest).and_return(["chef"])
-      @rest.should_not_receive(:put_rest)
-      @couchdb.create_db
-    end
+      it "should create the database if does not exist" do
+        @rest.stub!(:get_rest) { [] }
+        @rest.should_receive(:put_rest).with("chef", {}) { true }
+        @couchdb.create_db(false)
+      end
 
-    it "should return 'chef'" do
-      @rest.should_receive(:get_rest).with("_all_dbs").and_return(%w{chef})
-      @couchdb.create_db.should eql("chef")
+      it "should create the database if it exists" do
+        @rest.stub!(:get_rest) { ["chef"] }
+        @rest.should_receive(:put_rest).with("chef", {}) { true }
+        @couchdb.create_db(false)
+      end
+
+      it "should return 'chef'" do
+        @rest.stub!(:put_rest) { true }
+        @couchdb.create_db(false).should eql("chef")
+      end
     end
   end
 
