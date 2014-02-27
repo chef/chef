@@ -1,12 +1,12 @@
 <!---
-This file is reset everytime when a new release is done. Contents of this file is for the currently unreleased version.
+This file is reset every time a new release is done. The contents of this file are for the currently unreleased version.
 
 Example Doc Change:
 ### Headline for the required change
 Description of the required change.
 -->
 
-# Chef CLient Doc Changes:
+# Chef Client Doc Changes:
 
 ### --validator option for `knife client create`
 Boolean value. If set to true, knife creates a validator client o.w. it creates a user client. Default is false.
