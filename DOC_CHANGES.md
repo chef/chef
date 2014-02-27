@@ -140,3 +140,32 @@ The default value of this setting is `false`
 feature. Enabling this on a client that connects to a 10.X API server
 will cause client registration to silently fail. Don't do it.
 
+### Windows Installer (MSI) Package Provider
+
+The windows_package provider installs and removes Windows Installer (MSI) packages.
+This provider utilizies the ProductCode extracted from the MSI package to determine
+if the package is currently installed.
+
+You may use the ```package``` resource to use this provider, and you must use the
+```package``` resource if you are also using the windows cookbook, which contains
+the windows_package LWRP.
+
+#### Example
+
+```
+package "7zip" do
+  action :install
+  source 'C:\7z920.msi'
+end
+```
+
+#### Actions
+* :install
+* :remove
+
+#### Attributes
+* source - The location of the package to install. Default value: the ```name``` of the resource.
+* options - Additional options that are passed to msiexec.
+* installer_type - The type of package being installed. Can be auto-detected. Currently only :msi is supported.
+* timeout - The time in seconds allowed for the package to successfully be installed. Defaults to 600 seconds.
+* returns - Return codes that signal a successful installation. Defaults to 0.
