@@ -30,12 +30,12 @@ describe Chef::Provider::Package::Dpkg do
 
     @stdin = StringIO.new
     @stdout = StringIO.new
-    @status = mock("Status", :exitstatus => 0)
+    @status = double("Status", :exitstatus => 0)
     @stderr = StringIO.new
-    @pid = mock("PID")
-    @provider.stub!(:popen4).and_return(@status)
+    @pid = double("PID")
+    @provider.stub(:popen4).and_return(@status)
 
-    ::File.stub!(:exists?).and_return(true)
+    ::File.stub(:exists?).and_return(true)
   end
 
   describe "when loading the current resource state" do
@@ -48,27 +48,27 @@ describe Chef::Provider::Package::Dpkg do
     it "should raise an exception if a source is supplied but not found" do
       @provider.load_current_resource
       @provider.define_resource_requirements
-      ::File.stub!(:exists?).and_return(false)
+      ::File.stub(:exists?).and_return(false)
       lambda { @provider.run_action(:install) }.should raise_error(Chef::Exceptions::Package)
     end
 
     describe 'gets the source package version from dpkg-deb' do
       def check_version(version)
         @stdout = StringIO.new("wget\t#{version}")
-        @provider.stub!(:popen4).with("dpkg-deb -W #{@new_resource.source}").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        @provider.stub(:popen4).with("dpkg-deb -W #{@new_resource.source}").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
         @provider.load_current_resource
         @provider.current_resource.package_name.should == "wget"
         @new_resource.version.should == version
       end
-      
+
       it 'if short version provided' do
         check_version('1.11.4')
       end
-      
+
       it 'if extended version provided' do
         check_version('1.11.4-1ubuntu1')
       end
-      
+
       it 'if distro-specific version provided' do
         check_version('1.11.4-1ubuntu1~lucid')
       end
@@ -76,7 +76,7 @@ describe Chef::Provider::Package::Dpkg do
 
     it "gets the source package name from dpkg-deb correctly when the package name has `-', `+' or `.' characters" do
       @stdout = StringIO.new("f.o.o-pkg++2\t1.11.4-1ubuntu1")
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @provider.load_current_resource
       @provider.current_resource.package_name.should == "f.o.o-pkg++2"
     end
@@ -103,15 +103,15 @@ Config-Version: 1.11.4-1ubuntu1
 Depends: libc6 (>= 2.8~20080505), libssl0.9.8 (>= 0.9.8f-5)
 Conflicts: wget-ssl
 DPKG_S
-      @provider.stub!(:popen4).with("dpkg -s wget").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @provider.stub(:popen4).with("dpkg -s wget").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
 
       @provider.load_current_resource
       @provider.current_resource.version.should == "1.11.4-1ubuntu1"
     end
 
     it "should raise an exception if dpkg fails to run" do
-      @status = mock("Status", :exitstatus => -1)
-      @provider.stub!(:popen4).and_return(@status)
+      @status = double("Status", :exitstatus => -1)
+      @provider.stub(:popen4).and_return(@status)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
   end
@@ -158,7 +158,7 @@ DPKG_S
           "DEBIAN_FRONTEND" => "noninteractive"
         }
       })
-      @new_resource.stub!(:options).and_return("--force-yes")
+      @new_resource.stub(:options).and_return("--force-yes")
 
       @provider.install_package("wget", "1.11.4-1ubuntu1")
     end
@@ -186,7 +186,7 @@ DPKG_S
           "DEBIAN_FRONTEND" => "noninteractive"
         }
       })
-      @new_resource.stub!(:options).and_return("--force-yes")
+      @new_resource.stub(:options).and_return("--force-yes")
 
       @provider.remove_package("wget", "1.11.4-1ubuntu1")
     end
@@ -208,7 +208,7 @@ DPKG_S
           "DEBIAN_FRONTEND" => "noninteractive"
         }
       })
-      @new_resource.stub!(:options).and_return("--force-yes")
+      @new_resource.stub(:options).and_return("--force-yes")
 
       @provider.purge_package("wget", "1.11.4-1ubuntu1")
     end

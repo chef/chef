@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,18 +32,21 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
     "rspec-example"
   end
 
+  def recipe_name
+    "rspec-example-recipe"
+  end
+
   before do
     @description = Chef::Formatters::ErrorDescription.new("Error Converging Resource:")
     @stdout = StringIO.new
     @outputter = Chef::Formatters::Outputter.new(@stdout, STDERR)
     #@outputter = Chef::Formatters::Outputter.new(STDOUT, STDERR)
 
-    Chef::Config.stub!(:cookbook_path).and_return([ "/var/chef/cache" ])
+    Chef::Config.stub(:cookbook_path).and_return([ "/var/chef/cache" ])
   end
 
   describe "when explaining an error converging a resource" do
     before do
-      source_line = caller(0)[0]
       @resource = package("non-existing-package") do
 
         only_if do
@@ -83,14 +86,15 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         @description = Chef::Formatters::ErrorDescription.new("Error Converging Resource:")
         @template_class = Class.new { include Chef::Mixin::Template }
         @template = @template_class.new
-        @context = {:chef => "cool"}
+        @context = Chef::Mixin::Template::TemplateContext.new({})
+        @context[:chef] = "cool"
 
         @resource = template("/tmp/foo.txt") do
           mode "0644"
         end
 
         @error = begin
-                   @template.render_template("foo\nbar\nbaz\n<%= this_is_not_defined %>\nquin\nqunx\ndunno", @context) {|r| r}
+                   @context.render_template_from_string("foo\nbar\nbaz\n<%= this_is_not_defined %>\nquin\nqunx\ndunno")
                  rescue  Chef::Mixin::Template::TemplateError => e
                    e
                  end
@@ -111,8 +115,8 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
       before do
         # fake code to run through #recipe_snippet
         source_file = [ "if true", "var = non_existant", "end" ]
-        IO.stub!(:readlines).and_return(source_file)
-        File.stub!(:exists?).and_return(true)
+        IO.stub(:readlines).and_return(source_file)
+        File.stub(:exists?).and_return(true)
       end
 
       it "parses a Windows path" do
@@ -128,11 +132,11 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
         @inspector.recipe_snippet.should match(/^# In \/home\/btm/)
       end
-      
+
       context "when the recipe file does not exist" do
         before do
-          File.stub!(:exists?).and_return(false)
-          IO.stub!(:readlines).and_raise(Errno::ENOENT)
+          File.stub(:exists?).and_return(false)
+          IO.stub(:readlines).and_raise(Errno::ENOENT)
         end
 
         it "does not try to parse a recipe in chef-shell/irb (CHEF-3411)" do
@@ -140,7 +144,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
           @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
           @inspector.recipe_snippet.should be_nil
         end
-  
+
         it "does not raise an exception trying to load a non-existant file (CHEF-3411)" do
           @resource.source_line = "/somewhere/in/space"
           @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
@@ -171,7 +175,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
       end
 
       it "does not generate an error" do
-        lambda { @inspector.add_explanation(@description) }.should_not raise_error(TypeError)
+        lambda { @inspector.add_explanation(@description) }.should_not raise_error
         @description.display(@outputter)
       end
     end

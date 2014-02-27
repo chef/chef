@@ -34,14 +34,16 @@ class Chef
 
         def children
           begin
-            @children ||= rest.get_rest(api_path).keys.map do |entry|
+            @children ||= root.get_json(api_path).keys.sort.map do |entry|
               DataBagDir.new(entry, self, true)
             end
-          rescue Net::HTTPServerException
-            if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new($!), "#{path_for_printing} not found"
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e), "Timeout getting children: #{e}"
+          rescue Net::HTTPServerException => e
+            if e.response.code == "404"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
             else
-              raise
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e), "HTTP error getting children: #{e}"
             end
           end
         end
@@ -52,12 +54,17 @@ class Chef
 
         def create_child(name, file_contents)
           begin
-            rest.post_rest(api_path, { 'name' => name })
-          rescue Net::HTTPServerException
-            if $!.response.code != "409"
-              raise
+            rest.post(api_path, { 'name' => name })
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e), "Timeout creating child '#{name}': #{e}"
+          rescue Net::HTTPServerException => e
+            if e.response.code == "409"
+              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self, e), "Cannot create #{name} under #{path}: already exists"
+            else
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e), "HTTP error creating child '#{name}': #{e}"
             end
           end
+          @children = nil
           DataBagDir.new(name, self, true)
         end
       end

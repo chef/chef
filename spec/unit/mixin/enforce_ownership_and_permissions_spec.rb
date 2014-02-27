@@ -48,6 +48,7 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
     before do
       Chef::FileAccessControl.any_instance.stub(:uid_from_resource).and_return(0)
       Chef::FileAccessControl.any_instance.stub(:requires_changes?).and_return(false)
+      Chef::FileAccessControl.any_instance.stub(:define_resource_requirements)
 
       passwd_struct = if windows?
                         Struct::Passwd.new("root", "x", 0, 0, "/root", "/bin/bash")
@@ -55,8 +56,8 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
                         Struct::Passwd.new("root", "x", 0, 0, "root", "/root", "/bin/bash")
                       end
       group_struct = OpenStruct.new(:name => "root", :passwd => "x", :gid => 0)
-      Etc.stub!(:getpwuid).and_return(passwd_struct)
-      Etc.stub!(:getgrgid).and_return(group_struct)
+      Etc.stub(:getpwuid).and_return(passwd_struct)
+      Etc.stub(:getgrgid).and_return(group_struct)
     end
 
     it "does not set updated_by_last_action on the new resource" do
@@ -79,8 +80,8 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
                         Struct::Passwd.new("root", "x", 0, 0, "root", "/root", "/bin/bash")
                       end
       group_struct = OpenStruct.new(:name => "root", :passwd => "x", :gid => 0)
-      Etc.stub!(:getpwuid).and_return(passwd_struct)
-      Etc.stub!(:getgrgid).and_return(group_struct)
+      Etc.stub(:getpwuid).and_return(passwd_struct)
+      Etc.stub(:getgrgid).and_return(group_struct)
     end
 
     it "sets updated_by_last_action on the new resource" do

@@ -23,8 +23,13 @@ class Chef
   class Provider
     class Script < Chef::Provider::Execute
 
+      def initialize(new_resource, run_context)
+        super
+        @code = @new_resource.code
+      end
+
       def action_run
-        script_file.puts(@new_resource.code)
+        script_file.puts(@code)
         script_file.close
 
         set_owner_and_group

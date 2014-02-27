@@ -31,7 +31,7 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
-    VALID_NAME = /^[\-[:alnum:]_]+$/
+    VALID_NAME = /^[\.\-[:alnum:]_]+$/
 
     def self.validate_name!(name)
       unless name =~ VALID_NAME
@@ -82,14 +82,23 @@ class Chef
     end
 
     def self.list(inflate=false)
-      if inflate
-        # Can't search for all data bags like other objects, fall back to N+1 :(
-        list(false).inject({}) do |response, bag_and_uri|
-          response[bag_and_uri.first] = load(bag_and_uri.first)
-          response
+      if Chef::Config[:solo]
+        unless File.directory?(Chef::Config[:data_bag_path])
+          raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{Chef::Config[:data_bag_path]}' is invalid"
         end
+
+        names = Dir.glob(File.join(Chef::Config[:data_bag_path], "*")).map{|f|File.basename(f)}.sort
+        names.inject({}) {|h, n| h[n] = n; h}
       else
-        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data")
+        if inflate
+          # Can't search for all data bags like other objects, fall back to N+1 :(
+          list(false).inject({}) do |response, bag_and_uri|
+            response[bag_and_uri.first] = load(bag_and_uri.first)
+            response
+          end
+        else
+          Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data")
+        end
       end
     end
 
@@ -120,11 +129,10 @@ class Chef
         if Chef::Config[:why_run]
           Chef::Log.warn("In whyrun mode, so NOT performing data bag save.")
         else
-          chef_server_rest.put_rest("data/#{@name}", self)
+          create
         end
       rescue Net::HTTPServerException => e
-        raise e unless e.response.code == "404"
-        chef_server_rest.post_rest("data", self)
+        raise e unless e.response.code == "409"
       end
       self
     end

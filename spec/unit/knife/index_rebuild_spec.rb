@@ -21,7 +21,7 @@ require 'spec_helper'
 describe Chef::Knife::IndexRebuild do
 
   let(:knife){Chef::Knife::IndexRebuild.new}
-  let(:rest_client){mock(Chef::REST)}
+  let(:rest_client){double(Chef::REST)}
 
   let(:stub_rest!) do
     knife.should_receive(:rest).and_return(rest_client)
@@ -29,7 +29,7 @@ describe Chef::Knife::IndexRebuild do
 
   before :each do
     # This keeps the test output clean
-    knife.ui.stub!(:stdout).and_return(StringIO.new)
+    knife.ui.stub(:stdout).and_return(StringIO.new)
   end
 
   context "#grab_api_info" do
@@ -91,7 +91,7 @@ describe Chef::Knife::IndexRebuild do
 
     context "against a Chef 11 server" do
       let(:api_info) do
-        {"flavor" => "osc", 
+        {"flavor" => "osc",
           "version" => "11.0.0",
           "erchef" => "1.2.3"
         }

@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,10 +29,10 @@ describe Chef::Knife::DataBagShow do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::DataBagShow.new
     @knife.config[:format] = 'json'
-    @rest = mock("Chef::REST")
-    @knife.stub!(:rest).and_return(@rest)
+    @rest = double("Chef::REST")
+    @knife.stub(:rest).and_return(@rest)
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
 
@@ -83,7 +83,7 @@ describe Chef::Knife::DataBagShow do
     end
 
     it "prints the decrypted contents of an item when given --secret" do
-      @knife.stub!(:config).and_return({:secret => @secret})
+      @knife.stub(:config).and_return({:secret => @secret})
       Chef::EncryptedDataBagItem.should_receive(:load).
         with('bag_name', 'item_name', @secret).
         and_return(Chef::EncryptedDataBagItem.new(@enc_data, @secret))
@@ -92,7 +92,7 @@ describe Chef::Knife::DataBagShow do
     end
 
     it "prints the decrypted contents of an item when given --secret_file" do
-      @knife.stub!(:config).and_return({:secret_file => @secret_file.path})
+      @knife.stub(:config).and_return({:secret_file => @secret_file.path})
       Chef::EncryptedDataBagItem.should_receive(:load).
         with('bag_name', 'item_name', @secret).
         and_return(Chef::EncryptedDataBagItem.new(@enc_data, @secret))

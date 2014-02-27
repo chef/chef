@@ -22,16 +22,12 @@ require 'tiny_server'
 describe Chef::Knife::Ssh do
 
   before(:all) do
-    @original_config = Chef::Config.hash_dup
-    @original_knife_config = Chef::Config[:knife].dup
     Chef::Knife::Ssh.load_deps
     @server = TinyServer::Manager.new
     @server.start
   end
 
   after(:all) do
-    Chef::Config.configuration = @original_config
-    Chef::Config[:knife] = @original_knife_config
     @server.stop
   end
 
@@ -153,9 +149,9 @@ describe Chef::Knife::Ssh do
         Chef::Config[:knife][:ssh_user] = nil
       end
 
-      it "uses the default" do
+      it "uses the default (current user)" do
         @knife.run
-        @knife.config[:ssh_user].should == "root"
+        @knife.config[:ssh_user].should == nil
       end
     end
   end
@@ -256,7 +252,7 @@ describe Chef::Knife::Ssh do
     # if available, but #merge_configs (which is called by #configure_chef) is
     # necessary to have default options merged in.
     @knife.merge_configs
-    @knife.stub!(:ssh_command).and_return { 0 }
+    @knife.stub(:ssh_command).and_return { 0 }
     @api = TinyServer::API.instance
     @api.clear
 

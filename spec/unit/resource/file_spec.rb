@@ -44,25 +44,25 @@ describe Chef::Resource::File do
     lambda { @resource.content 5 }.should raise_error(ArgumentError)
     lambda { @resource.content :foo }.should raise_error(ArgumentError)
     lambda { @resource.content "hello" => "there" }.should raise_error(ArgumentError)
-    lambda { @resource.content "hi" }.should_not raise_error(ArgumentError)
+    lambda { @resource.content "hi" }.should_not raise_error
   end
 
   it "should only accept false or a number for backup" do
     lambda { @resource.backup true }.should raise_error(ArgumentError)
-    lambda { @resource.backup false }.should_not raise_error(ArgumentError)
-    lambda { @resource.backup 10 }.should_not raise_error(ArgumentError)
+    lambda { @resource.backup false }.should_not raise_error
+    lambda { @resource.backup 10 }.should_not raise_error
     lambda { @resource.backup "blues" }.should raise_error(ArgumentError)
   end
 
   it "should accept a sha256 for checksum" do
-    lambda { @resource.checksum "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa" }.should_not raise_error(ArgumentError)
+    lambda { @resource.checksum "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa" }.should_not raise_error
     lambda { @resource.checksum "monkey!" }.should raise_error(ArgumentError)
   end
 
   it "should accept create, delete or touch for action" do
-    lambda { @resource.action :create }.should_not raise_error(ArgumentError)
-    lambda { @resource.action :delete }.should_not raise_error(ArgumentError)
-    lambda { @resource.action :touch }.should_not raise_error(ArgumentError)
+    lambda { @resource.action :create }.should_not raise_error
+    lambda { @resource.action :delete }.should_not raise_error
+    lambda { @resource.action :touch }.should_not raise_error
     lambda { @resource.action :blues }.should raise_error(ArgumentError)
   end
 
@@ -71,7 +71,7 @@ describe Chef::Resource::File do
   end
 
   it "should accept a string as the path" do
-    lambda { @resource.path "/tmp" }.should_not raise_error(ArgumentError)
+    lambda { @resource.path "/tmp" }.should_not raise_error
     @resource.path.should eql("/tmp")
     lambda { @resource.path Hash.new }.should raise_error(ArgumentError)
   end
@@ -93,11 +93,6 @@ describe Chef::Resource::File do
         state[:mode].should == "0644"
         state[:checksum].should == "1" * 64
       end
-    end
-
-    context "on windows", :windows_only do
-      # according to Chef::Resource::File, windows state attributes are rights + deny_rights
-      pending "it describes its state"
     end
 
     it "returns the file path as its identity" do

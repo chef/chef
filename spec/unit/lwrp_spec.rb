@@ -33,7 +33,7 @@ describe "LWRP" do
 
   describe "when overriding an existing class" do
     before :each do
-      $stderr.stub!(:write)
+      $stderr.stub(:write)
     end
 
     it "should log if attempting to load resource of same name" do
@@ -179,7 +179,7 @@ describe "LWRP" do
     end
 
     it "should create a method for each attribute" do
-      new_resource = mock("new resource", :null_object=>true)
+      new_resource = double("new resource").as_null_object
       Chef::Provider::LwrpBuckPasser.new(nil, new_resource).methods.map{|m|m.to_sym}.should include(:action_pass_buck)
       Chef::Provider::LwrpThumbTwiddler.new(nil, new_resource).methods.map{|m|m.to_sym}.should include(:action_twiddle_thumbs)
     end

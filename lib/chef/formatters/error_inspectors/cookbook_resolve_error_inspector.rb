@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -80,6 +80,9 @@ E
         def describe_412_error(error_description)
           explanation = ""
           error_reasons = extract_412_error_message
+
+          # Prepare the error message if there is detailed information
+          # about individual cookbooks.
           if !error_reasons.respond_to?(:key?)
             explanation << error_reasons.to_s
           else
@@ -99,7 +102,24 @@ E
             end
           end
 
-          error_description.section("Missing Cookbooks:", explanation)
+          if !explanation.empty?
+            error_description.section("Missing Cookbooks:", explanation)
+          else
+            # If we don't have any cookbook details print a more
+            # generic error message.
+            if error_reasons.respond_to?(:key?) && error_reasons["message"]
+              explanation << "Error message: #{error_reasons["message"]}\n"
+            end
+
+            explanation << <<EOM
+You might be able to resolve this issue with:
+  1-) Removing cookbook versions that depend on deleted cookbooks.
+  2-) Removing unused cookbook versions.
+  3-) Pinning exact cookbook versions using environments.
+EOM
+            error_description.section("Cookbook dependency resolution error:", explanation)
+          end
+
           error_description.section("Expanded Run List:", expanded_run_list_ul)
         end
 

@@ -21,7 +21,8 @@ require 'chef/scan_access_control'
 describe Chef::ScanAccessControl do
 
   before do
-    @new_resource = Chef::Resource::File.new("/tmp/foo/bar/baz/qux")
+    @new_resource = Chef::Resource::File.new("/tmp/foo/bar/baz/link")
+    @real_file = "/tmp/foo/bar/real/file"
     @current_resource = Chef::Resource::File.new(@new_resource.path)
     @scanner = Chef::ScanAccessControl.new(@new_resource, @current_resource)
   end
@@ -48,8 +49,9 @@ describe Chef::ScanAccessControl do
   describe "when the fs entity exists" do
 
     before do
-      @stat = mock("File::Stat for #{@new_resource.path}", :uid => 0, :gid => 0, :mode => 00100644)
-      File.should_receive(:stat).with(@new_resource.path).and_return(@stat)
+      @stat = double("File::Stat for #{@new_resource.path}", :uid => 0, :gid => 0, :mode => 00100644)
+      File.should_receive(:realpath).with(@new_resource.path).and_return(@real_file)
+      File.should_receive(:stat).with(@real_file).and_return(@stat)
       File.should_receive(:exist?).with(@new_resource.path).and_return(true)
     end
 
@@ -67,7 +69,7 @@ describe Chef::ScanAccessControl do
         it "sets the group of the current resource to the current group as a String" do
           @current_resource.group.should == Etc.getgrgid(0).name
         end
-  
+
         it "sets the owner of the current resource to the current owner as a String" do
           @current_resource.user.should == "root"
         end
@@ -77,7 +79,7 @@ describe Chef::ScanAccessControl do
         it "sets the group of the current resource to the current group as a String" do
           @current_resource.group.should == 0
         end
-  
+
         it "sets the owner of the current resource to the current owner as a String" do
           @current_resource.user.should == 0
         end
@@ -126,7 +128,7 @@ describe Chef::ScanAccessControl do
       end
 
       it "sets the owner of current_resource to the username of the current owner" do
-        @root_passwd = mock("Struct::Passwd for uid 0", :name => "root")
+        @root_passwd = double("Struct::Passwd for uid 0", :name => "root")
         Etc.should_receive(:getpwuid).with(0).and_return(@root_passwd)
         @scanner.set_all!
 
@@ -161,7 +163,7 @@ describe Chef::ScanAccessControl do
       end
 
       it "sets the group of the current resource to the group name" do
-        @group_entry = mock("Struct::Group for wheel", :name => "wheel")
+        @group_entry = double("Struct::Group for wheel", :name => "wheel")
         Etc.should_receive(:getgrgid).with(0).and_return(@group_entry)
         @scanner.set_all!
 

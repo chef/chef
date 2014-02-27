@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,7 +18,7 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::Powershell do
+describe Chef::Resource::PowershellScript do
 
   before(:each) do
     node = Chef::Node.new
@@ -28,21 +28,21 @@ describe Chef::Resource::Powershell do
 
     run_context = Chef::RunContext.new(node, nil, nil)
 
-    @resource = Chef::Resource::Powershell.new("powershell_unit_test", run_context)
+    @resource = Chef::Resource::PowershellScript.new("powershell_unit_test", run_context)
 
-  end  
-
-  it "should create a new Chef::Resource::Powershell" do
-    @resource.should be_a_kind_of(Chef::Resource::Powershell)
   end
-  
+
+  it "should create a new Chef::Resource::PowershellScript" do
+    @resource.should be_a_kind_of(Chef::Resource::PowershellScript)
+  end
+
   context "windowsscript" do
     let(:resource_instance) { @resource }
     let(:resource_instance_name ) { @resource.command }
-    let(:resource_name) { :powershell }
+    let(:resource_name) { :powershell_script }
     let(:interpreter_file_name) { 'powershell.exe' }
 
-    it_should_behave_like "a Windows script resource"  
+    it_should_behave_like "a Windows script resource"
   end
 
 end

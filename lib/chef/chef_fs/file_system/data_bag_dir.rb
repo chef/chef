@@ -17,16 +17,16 @@
 #
 
 require 'chef/chef_fs/file_system/rest_list_dir'
-require 'chef/chef_fs/file_system/data_bag_item'
 require 'chef/chef_fs/file_system/not_found_error'
 require 'chef/chef_fs/file_system/must_delete_recursively_error'
+require 'chef/chef_fs/data_handler/data_bag_item_data_handler'
 
 class Chef
   module ChefFS
     module FileSystem
       class DataBagDir < RestListDir
         def initialize(name, parent, exists = nil)
-          super(name, parent)
+          super(name, parent, nil, Chef::ChefFS::DataHandler::DataBagItemDataHandler.new)
           @exists = nil
         end
 
@@ -36,7 +36,7 @@ class Chef
 
         def read
           # This will only be called if dir? is false, which means exists? is false.
-          raise Chef::ChefFS::FileSystem::NotFoundError, "#{path_for_printing} not found"
+          raise Chef::ChefFS::FileSystem::NotFoundError.new(self)
         end
 
         def exists?
@@ -46,29 +46,20 @@ class Chef
           @exists
         end
 
-        def create_child(name, file_contents)
-          json = Chef::JSONCompat.from_json(file_contents).to_hash
-          id = name[0,name.length-5]
-          if json.include?('id') && json['id'] != id
-            raise "ID in #{path_for_printing}/#{name} must be '#{id}' (is '#{json['id']}')"
-          end
-          rest.post_rest(api_path, json)
-          _make_child_entry(name, true)
-        end
-
-        def _make_child_entry(name, exists = nil)
-          DataBagItem.new(name, self, exists)
-        end
-
         def delete(recurse)
           if !recurse
-            raise Chef::ChefFS::FileSystem::MustDeleteRecursivelyError.new, "#{path_for_printing} must be deleted recursively"
+            raise NotFoundError.new(self) if !exists?
+            raise MustDeleteRecursivelyError.new(self), "#{path_for_printing} must be deleted recursively"
           end
           begin
-            rest.delete_rest(api_path)
-          rescue Net::HTTPServerException
-            if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new($!), "#{path_for_printing} not found"
+            rest.delete(api_path)
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "Timeout deleting: #{e}"
+          rescue Net::HTTPServerException => e
+            if e.response.code == "404"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
+            else
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "HTTP error deleting: #{e}"
             end
           end
         end

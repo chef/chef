@@ -79,115 +79,6 @@ class Chef
       Chef::FileCache
     end
 
-    # Synchronizes all the cookbooks from the chef-server.
-    #
-    # === Returns
-    # true:: Always returns true
-    def self.sync_cookbooks(cookbook_hash)
-      Chef::Log.info("Loading cookbooks [#{cookbook_hash.keys.sort.join(', ')}]")
-      Chef::Log.debug("Cookbooks detail: #{cookbook_hash.inspect}")
-
-      clear_obsoleted_cookbooks(cookbook_hash)
-
-      # Synchronize each of the node's cookbooks, and add to the
-      # valid_cache_entries hash.
-      cookbook_hash.values.each do |cookbook|
-        sync_cookbook_file_cache(cookbook)
-      end
-
-      true
-    end
-
-    # Iterates over cached cookbooks' files, removing files belonging to
-    # cookbooks that don't appear in +cookbook_hash+
-    def self.clear_obsoleted_cookbooks(cookbook_hash)
-      # Remove all cookbooks no longer relevant to this node
-      cache.find(File.join(%w{cookbooks ** *})).each do |cache_file|
-        cache_file =~ /^cookbooks\/([^\/]+)\//
-        unless cookbook_hash.has_key?($1)
-          Chef::Log.info("Removing #{cache_file} from the cache; its cookbook is no longer needed on this client.")
-          cache.delete(cache_file)
-        end
-      end
-    end
-
-    # Update the file caches for a given cache segment.  Takes a segment name
-    # and a hash that matches one of the cookbooks/_attribute_files style
-    # remote file listings.
-    #
-    # === Parameters
-    # cookbook<Chef::Cookbook>:: The cookbook to update
-    # valid_cache_entries<Hash>:: Out-param; Added to this hash are the files that
-    # were referred to by this cookbook
-    def self.sync_cookbook_file_cache(cookbook)
-      Chef::Log.debug("Synchronizing cookbook #{cookbook.name}")
-
-      # files and templates are lazily loaded, and will be done later.
-      eager_segments = COOKBOOK_SEGMENTS.dup
-
-      unless Chef::Config[:no_lazy_load] then
-        eager_segments.delete(:files)
-        eager_segments.delete(:templates)
-      end
-
-      eager_segments.each do |segment|
-        segment_filenames = Array.new
-        cookbook.manifest[segment].each do |manifest_record|
-          # segment = cookbook segment
-          # remote_list = list of file hashes
-          #
-          # We need the list of known good attribute files, so we can delete any that are
-          # just laying about.
-
-          cache_filename = File.join("cookbooks", cookbook.name, manifest_record['path'])
-          valid_cache_entries[cache_filename] = true
-
-          current_checksum = nil
-          if cache.has_key?(cache_filename)
-            current_checksum = checksum_cookbook_file(cache.load(cache_filename, false))
-          end
-
-          # If the checksums are different between on-disk (current) and on-server
-          # (remote, per manifest), do the update. This will also execute if there
-          # is no current checksum.
-          if current_checksum != manifest_record['checksum']
-            raw_file = chef_server_rest.get_rest(manifest_record[:url], true)
-
-            Chef::Log.info("Storing updated #{cache_filename} in the cache.")
-            cache.move_to(raw_file.path, cache_filename)
-          else
-            Chef::Log.debug("Not storing #{cache_filename}, as the cache is up to date.")
-          end
-
-          # make the segment filenames a full path.
-          full_path_cache_filename = cache.load(cache_filename, false)
-          segment_filenames << full_path_cache_filename
-        end
-
-        # replace segment filenames with a full-path one.
-        if segment.to_sym == :recipes
-          cookbook.recipe_filenames = segment_filenames
-        elsif segment.to_sym == :attributes
-          cookbook.attribute_filenames = segment_filenames
-        else
-          cookbook.segment_filenames(segment).replace(segment_filenames)
-        end
-      end
-    end
-
-    def self.cleanup_file_cache
-      unless Chef::Config[:solo]
-        # Delete each file in the cache that we didn't encounter in the
-        # manifest.
-        cache.find(File.join(%w{cookbooks ** *})).each do |cache_filename|
-          unless valid_cache_entries[cache_filename]
-            Chef::Log.info("Removing #{cache_filename} from the cache; it is no longer needed by chef-client.")
-            cache.delete(cache_filename)
-          end
-        end
-      end
-    end
-
     # Creates a new Chef::CookbookVersion object.
     #
     # === Returns
@@ -374,6 +265,18 @@ class Chef
       end
     end
 
+    # Query whether a template file +template_filename+ is available. File
+    # specificity for the given +node+ is obeyed in the lookup.
+    def has_template_for_node?(node, template_filename)
+      !!find_preferred_manifest_record(node, :templates, template_filename)
+    end
+
+    # Query whether a cookbook_file file +cookbook_filename+ is available. File
+    # specificity for the given +node+ is obeyed in the lookup.
+    def has_cookbook_file_for_node?(node, cookbook_filename)
+      !!find_preferred_manifest_record(node, :files, cookbook_filename)
+    end
+
     # Determine the most specific manifest record for the given
     # segment/filename, given information in the node. Throws
     # FileNotFound if there is no such segment and filename in the
@@ -387,14 +290,7 @@ class Chef
     #   :checksum => "1234"
     # }
     def preferred_manifest_record(node, segment, filename)
-      preferences = preferences_for_path(node, segment, filename)
-
-      # ensure that we generate the manifest, which will also generate
-      # @manifest_records_by_path
-      manifest
-
-      # in order of prefernce, look for the filename in the manifest
-      found_pref = preferences.find {|preferred_filename| @manifest_records_by_path[preferred_filename] }
+      found_pref = find_preferred_manifest_record(node, segment, filename)
       if found_pref
         @manifest_records_by_path[found_pref]
       else
@@ -675,6 +571,17 @@ class Chef
     end
 
     private
+
+    def find_preferred_manifest_record(node, segment, filename)
+      preferences = preferences_for_path(node, segment, filename)
+
+      # ensure that we generate the manifest, which will also generate
+      # @manifest_records_by_path
+      manifest
+
+      # in order of prefernce, look for the filename in the manifest
+      preferences.find {|preferred_filename| @manifest_records_by_path[preferred_filename] }
+    end
 
     # For each filename, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location

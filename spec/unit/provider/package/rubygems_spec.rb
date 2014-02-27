@@ -89,7 +89,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   it "finds a matching gem candidate version" do
     dep = Gem::Dependency.new('rspec', '>= 0')
     dep_installer = Gem::DependencyInstaller.new
-    @gem_env.stub!(:dependency_installer).and_return(dep_installer)
+    @gem_env.stub(:dependency_installer).and_return(dep_installer)
     latest = [[gemspec("rspec", Gem::Version.new("1.3.0")), "http://rubygems.org/"]]
     dep_installer.should_receive(:find_gems_with_sources).with(dep).and_return(latest)
     @gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0')).should == Gem::Version.new('1.3.0')
@@ -98,20 +98,51 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   it "finds a matching gem candidate version on rubygems 2.0.0+" do
     dep = Gem::Dependency.new('rspec', '>= 0')
     dep_installer = Gem::DependencyInstaller.new
-    @gem_env.stub!(:dependency_installer).and_return(dep_installer)
-    best_gem = mock("best gem match", :spec => gemspec("rspec", Gem::Version.new("1.3.0")), :source => "https://rubygems.org")
-    available_set = mock("Gem::AvailableSet test double")
+    @gem_env.stub(:dependency_installer).and_return(dep_installer)
+    best_gem = double("best gem match", :spec => gemspec("rspec", Gem::Version.new("1.3.0")), :source => "https://rubygems.org")
+    available_set = double("Gem::AvailableSet test double")
     available_set.should_receive(:pick_best!)
     available_set.should_receive(:set).and_return([best_gem])
     dep_installer.should_receive(:find_gems_with_sources).with(dep).and_return(available_set)
     @gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0')).should == Gem::Version.new('1.3.0')
   end
 
+  context "when rubygems was upgraded from 1.8->2.0" do
+    # https://github.com/rubygems/rubygems/issues/404
+    # tl;dr rubygems 1.8 and 2.0 can both be in the load path, which means that
+    # require "rubygems/format" will load even though rubygems 2.0 doesn't have
+    # that file.
+
+    before do
+      if defined?(Gem::Format)
+        # tests are running under rubygems 1.8, or 2.0 upgraded from 1.8
+        @remove_gem_format = false
+      else
+        Gem.const_set(:Format, Object.new)
+        @remove_gem_format = true
+      end
+      Gem::Package.stub(:respond_to?).with(:open).and_return(false)
+    end
+
+    after do
+      if @remove_gem_format
+        Gem.send(:remove_const, :Format)
+      end
+    end
+
+    it "finds a matching gem candidate version on rubygems 2.0+ with some rubygems 1.8 code loaded" do
+      package = double("Gem::Package", :spec => "a gemspec from package")
+      Gem::Package.should_receive(:new).with("/path/to/package.gem").and_return(package)
+      @gem_env.spec_from_file("/path/to/package.gem").should == "a gemspec from package"
+    end
+
+  end
+
   it "gives the candidate version as nil if none is found" do
     dep = Gem::Dependency.new('rspec', '>= 0')
     latest = []
     dep_installer = Gem::DependencyInstaller.new
-    @gem_env.stub!(:dependency_installer).and_return(dep_installer)
+    @gem_env.stub(:dependency_installer).and_return(dep_installer)
     dep_installer.should_receive(:find_gems_with_sources).with(dep).and_return(latest)
     @gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0')).should be_nil
   end
@@ -128,7 +159,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
 
     @gem_env.should_receive(:with_gem_sources).with('http://gems.example.com').and_yield
     dep_installer = Gem::DependencyInstaller.new
-    @gem_env.stub!(:dependency_installer).and_return(dep_installer)
+    @gem_env.stub(:dependency_installer).and_return(dep_installer)
     dep_installer.should_receive(:find_gems_with_sources).with(dep).and_return(latest)
     @gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>=0'), 'http://gems.example.com').should == Gem::Version.new('1.3.0')
   end
@@ -149,14 +180,14 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   end
 
   it "uninstalls all versions of a gem" do
-    uninstaller = mock('gem uninstaller')
+    uninstaller = double('gem uninstaller')
     uninstaller.should_receive(:uninstall)
     @gem_env.should_receive(:uninstaller).with('rspec', :all => true).and_return(uninstaller)
     @gem_env.uninstall('rspec')
   end
 
   it "uninstalls a specific version of a gem" do
-    uninstaller = mock('gem uninstaller')
+    uninstaller = double('gem uninstaller')
     uninstaller.should_receive(:uninstall)
     @gem_env.should_receive(:uninstaller).with('rspec', :version => '1.2.3').and_return(uninstaller)
     @gem_env.uninstall('rspec', '1.2.3')
@@ -199,7 +230,7 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
   end
 
   it "builds the gems source index from the gem paths" do
-    @gem_env.stub!(:gem_paths).and_return(['/path/to/gems', '/another/path/to/gems'])
+    @gem_env.stub(:gem_paths).and_return(['/path/to/gems', '/another/path/to/gems'])
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.8.0')
       @gem_env.gem_specification
       Gem::Specification.dirs.should == [ '/path/to/gems/specifications', '/another/path/to/gems/specifications' ]
@@ -213,19 +244,19 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
     gems = [gemspec('rspec', Gem::Version.new('1.2.9')), gemspec('rspec', Gem::Version.new('1.3.0'))]
     rspec_dep = Gem::Dependency.new('rspec', nil)
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.8.0')
-      @gem_env.stub!(:gem_specification).and_return(Gem::Specification)
+      @gem_env.stub(:gem_specification).and_return(Gem::Specification)
       @gem_env.gem_specification.should_receive(:find_all_by_name).with(rspec_dep.name, rspec_dep.requirement).and_return(gems)
     else
-      @gem_env.stub!(:gem_source_index).and_return(Gem.source_index)
+      @gem_env.stub(:gem_source_index).and_return(Gem.source_index)
       @gem_env.gem_source_index.should_receive(:search).with(rspec_dep).and_return(gems)
     end
     @gem_env.installed_versions(Gem::Dependency.new('rspec', nil)).should == gems
   end
 
   it "determines the installed versions of gems from the source index (part2: the unmockening)" do
-    $stdout.stub!(:write)
+    $stdout.stub(:write)
     path_to_gem = if windows?
-      `where gem`.split[-1]
+      `where gem`.split[1]
     else
       `which gem`.strip
     end
@@ -264,7 +295,7 @@ RubyGems Environment:
      - http://rubygems.org/
      - http://gems.github.com/
 JRUBY_GEM_ENV
-    @gem_env.should_receive(:shell_out!).with('/usr/weird/bin/gem env').and_return(mock('jruby_gem_env', :stdout => gem_env_out))
+    @gem_env.should_receive(:shell_out!).with('/usr/weird/bin/gem env').and_return(double('jruby_gem_env', :stdout => gem_env_out))
     expected = ['ruby', Gem::Platform.new('universal-java-1.6')]
     @gem_env.gem_platforms.should == expected
     # it should also cache the result
@@ -306,7 +337,7 @@ RubyGems Environment:
      - http://rubygems.org/
      - http://gems.github.com/
 RBX_GEM_ENV
-    @gem_env.should_receive(:shell_out!).with('/usr/weird/bin/gem env').and_return(mock('rbx_gem_env', :stdout => gem_env_out))
+    @gem_env.should_receive(:shell_out!).with('/usr/weird/bin/gem env').and_return(double('rbx_gem_env', :stdout => gem_env_out))
     @gem_env.gem_platforms.should == Gem.platforms
     Chef::Provider::Package::Rubygems::AlternateGemEnvironment.platform_cache['/usr/weird/bin/gem'].should == Gem.platforms
   end
@@ -336,7 +367,7 @@ describe Chef::Provider::Package::Rubygems do
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
     # We choose detect omnibus via RbConfig::CONFIG['bindir'] in Chef::Provider::Package::Rubygems.new
-    RbConfig::CONFIG.stub!(:[]).with('bindir').and_return("/usr/bin/ruby")
+    RbConfig::CONFIG.stub(:[]).with('bindir').and_return("/usr/bin/ruby")
     @provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
   end
 
@@ -357,11 +388,11 @@ describe Chef::Provider::Package::Rubygems do
 
   it "searches for a gem binary when running on Omnibus on Unix" do
     platform_mock :unix do
-      RbConfig::CONFIG.stub!(:[]).with('bindir').and_return("/opt/chef/embedded/bin")
-      ENV.stub!(:[]).with('PATH').and_return("/usr/bin:/usr/sbin:/opt/chef/embedded/bin")
-      File.stub!(:exists?).with('/usr/bin/gem').and_return(false)
-      File.stub!(:exists?).with('/usr/sbin/gem').and_return(true)
-      File.stub!(:exists?).with('/opt/chef/embedded/bin/gem').and_return(true) # should not get here
+      RbConfig::CONFIG.stub(:[]).with('bindir').and_return("/opt/chef/embedded/bin")
+      ENV.stub(:[]).with('PATH').and_return("/usr/bin:/usr/sbin:/opt/chef/embedded/bin")
+      File.stub(:exists?).with('/usr/bin/gem').and_return(false)
+      File.stub(:exists?).with('/usr/sbin/gem').and_return(true)
+      File.stub(:exists?).with('/opt/chef/embedded/bin/gem').and_return(true) # should not get here
       provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
       provider.gem_env.gem_binary_location.should == '/usr/sbin/gem'
     end
@@ -369,13 +400,13 @@ describe Chef::Provider::Package::Rubygems do
 
   it "searches for a gem binary when running on Omnibus on Windows" do
     platform_mock :windows do
-      RbConfig::CONFIG.stub!(:[]).with('bindir').and_return("d:/opscode/chef/embedded/bin")
-      ENV.stub!(:[]).with('PATH').and_return('C:\windows\system32;C:\windows;C:\Ruby186\bin;d:\opscode\chef\embedded\bin')
-      File.stub!(:exists?).with('C:\\windows\\system32\\gem').and_return(false)
-      File.stub!(:exists?).with('C:\\windows\\gem').and_return(false)
-      File.stub!(:exists?).with('C:\\Ruby186\\bin\\gem').and_return(true)
-      File.stub!(:exists?).with('d:\\opscode\\chef\\bin\\gem').and_return(false) # should not get here
-      File.stub!(:exists?).with('d:\\opscode\\chef\\embedded\\bin\\gem').and_return(false) # should not get here
+      RbConfig::CONFIG.stub(:[]).with('bindir').and_return("d:/opscode/chef/embedded/bin")
+      ENV.stub(:[]).with('PATH').and_return('C:\windows\system32;C:\windows;C:\Ruby186\bin;d:\opscode\chef\embedded\bin')
+      File.stub(:exists?).with('C:\\windows\\system32\\gem').and_return(false)
+      File.stub(:exists?).with('C:\\windows\\gem').and_return(false)
+      File.stub(:exists?).with('C:\\Ruby186\\bin\\gem').and_return(true)
+      File.stub(:exists?).with('d:\\opscode\\chef\\bin\\gem').and_return(false) # should not get here
+      File.stub(:exists?).with('d:\\opscode\\chef\\embedded\\bin\\gem').and_return(false) # should not get here
       provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
       provider.gem_env.gem_binary_location.should == 'C:\Ruby186\bin\gem'
     end
@@ -444,7 +475,7 @@ describe Chef::Provider::Package::Rubygems do
       @current_resource = Chef::Resource::GemPackage.new('rspec-core')
       @provider.current_resource = @current_resource
       @gem_dep = Gem::Dependency.new('rspec-core', @spec_version)
-      @provider.stub!(:load_current_resource)
+      @provider.stub(:load_current_resource)
     end
 
     describe "in the current gem environment" do
@@ -477,7 +508,7 @@ describe Chef::Provider::Package::Rubygems do
 
       # this catches 'gem_package "foo"' when "./foo" is a file in the cwd, and instead of installing './foo' it fetches the remote gem
       it "installs the gem via the gems api, when the package has no file separator characters in it, but a matching file exists in cwd" do
-        ::File.stub!(:exists?).and_return(true)
+        ::File.stub(:exists?).and_return(true)
         @new_resource.package_name('rspec-core')
         @provider.gem_env.should_receive(:install).with(@gem_dep, :sources => nil)
         @provider.action_install.should be_true

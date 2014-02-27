@@ -208,8 +208,11 @@ class Chef
         @parts.inject(0) {|size, part| size + part.size}
       end
 
-      def read(how_much)
-        return nil if @part_no >= @parts.size
+      def read(how_much, dst_buf = nil)
+        if @part_no >= @parts.size
+          dst_buf.replace('') if dst_buf
+          return dst_buf
+        end
 
         how_much_current_part = @parts[@part_no].size - @part_offset
 
@@ -228,15 +231,16 @@ class Chef
           @part_no += 1
           @part_offset = 0
           next_part = read(how_much_next_part)
-          current_part + if next_part
+          result = current_part + if next_part
                            next_part
                          else
                            ''
                          end
         else
           @part_offset += how_much_current_part
-          current_part
+          result = current_part
         end
+        dst_buf ? dst_buf.replace(result || '') : result
       end
     end
 

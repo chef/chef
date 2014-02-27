@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ describe Chef::Formatters::ErrorInspectors::CookbookSyncErrorInspector do
     before do
       @response_body = "sad trombone orchestra"
       @response = Net::HTTPBadGateway.new("1.1", "502", "(response) bad gateway")
-      @response.stub!(:body).and_return(@response_body)
+      @response.stub(:body).and_return(@response_body)
       @exception = Net::HTTPFatalError.new("(exception) bad gateway", @response)
       @inspector = described_class.new({}, @exception)
       @inspector.add_explanation(@description)

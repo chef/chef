@@ -20,10 +20,12 @@ class Chef
   module ChefFS
     module FileSystem
       class FileSystemError < StandardError
-        def initialize(cause = nil)
+        def initialize(entry, cause = nil)
+          @entry = entry
           @cause = cause
         end
 
+        attr_reader :entry
         attr_reader :cause
       end
     end

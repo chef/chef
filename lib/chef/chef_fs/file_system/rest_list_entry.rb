@@ -18,6 +18,7 @@
 
 require 'chef/chef_fs/file_system/base_fs_object'
 require 'chef/chef_fs/file_system/not_found_error'
+require 'chef/chef_fs/file_system/operation_failed_error'
 require 'chef/role'
 require 'chef/node'
 
@@ -30,12 +31,23 @@ class Chef
           @exists = exists
         end
 
-        def api_path
+        def data_handler
+          parent.data_handler
+        end
+
+        def api_child_name
           if name.length < 5 || name[-5,5] != ".json"
             raise "Invalid name #{path}: must end in .json"
           end
-          api_child_name = name[0,name.length-5]
+          name[0,name.length-5]
+        end
+
+        def api_path
           "#{parent.api_path}/#{api_child_name}"
+        end
+
+        def org
+          parent.org
         end
 
         def environment
@@ -55,46 +67,76 @@ class Chef
 
         def delete(recurse)
           begin
-            rest.delete_rest(api_path)
-          rescue Net::HTTPServerException
-            if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new($!), "#{path_for_printing} not found"
+            rest.delete(api_path)
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "Timeout deleting: #{e}"
+          rescue Net::HTTPServerException => e
+            if e.response.code == "404"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
             else
-              raise
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "Timeout deleting: #{e}"
             end
           end
         end
 
         def read
-          Chef::JSONCompat.to_json_pretty(chef_object.to_hash)
+          Chef::JSONCompat.to_json_pretty(_read_hash)
         end
 
-        def chef_object
+        def _read_hash
           begin
-            # REST will inflate the Chef object using json_class
-            rest.get_rest(api_path)
-          rescue Net::HTTPServerException
+            # Minimize the value (get rid of defaults) so the results don't look terrible
+            minimize_value(root.get_json(api_path))
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "Timeout reading: #{e}"
+          rescue Net::HTTPServerException => e
             if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new($!), "#{path_for_printing} not found"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
             else
-              raise
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "HTTP error reading: #{e}"
             end
           end
         end
 
+        def chef_object
+          # REST will inflate the Chef object using json_class
+          data_handler.json_class.json_create(read)
+        end
+
+        def minimize_value(value)
+          data_handler.minimize(data_handler.normalize(value, self), self)
+        end
+
         def compare_to(other)
+          # TODO this pair of reads can be parallelized
+
+          # Grab the other value
           begin
-            other_value = other.read
+            other_value_json = other.read
           rescue Chef::ChefFS::FileSystem::NotFoundError
             return [ nil, nil, :none ]
           end
+
+          # Grab this value
           begin
-            value = chef_object.to_hash
+            value = _read_hash
           rescue Chef::ChefFS::FileSystem::NotFoundError
-            return [ false, :none, other_value ]
+            return [ false, :none, other_value_json ]
           end
-          are_same = (value == Chef::JSONCompat.from_json(other_value, :create_additions => false))
-          [ are_same, Chef::JSONCompat.to_json_pretty(value), other_value ]
+
+          # Minimize (and normalize) both values for easy and beautiful diffs
+          value = minimize_value(value)
+          value_json = Chef::JSONCompat.to_json_pretty(value)
+          begin
+            other_value = JSON.parse(other_value_json, :create_additions => false)
+          rescue JSON::ParserError => e
+            Chef::Log.warn("Parse error reading #{other.path_for_printing} as JSON: #{e}")
+            return [ nil, value_json, other_value_json ]
+          end
+          other_value = minimize_value(other_value)
+          other_value_json = Chef::JSONCompat.to_json_pretty(other_value)
+
+          [ value == other_value, value_json, other_value_json ]
         end
 
         def rest
@@ -102,18 +144,28 @@ class Chef
         end
 
         def write(file_contents)
-          json = Chef::JSONCompat.from_json(file_contents).to_hash
-          base_name = name[0,name.length-5]
-          if json['name'] != base_name
-            raise "Name in #{path_for_printing}/#{name} must be '#{base_name}' (is '#{json['name']}')"
-          end
           begin
-            rest.put_rest(api_path, json)
-          rescue Net::HTTPServerException
-            if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new($!), "#{path_for_printing} not found"
+            object = JSON.parse(file_contents, :create_additions => false)
+          rescue JSON::ParserError => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "Parse error reading JSON: #{e}"
+          end
+
+          if data_handler
+            object = data_handler.normalize_for_put(object, self)
+            data_handler.verify_integrity(object, self) do |error|
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self), "#{error}"
+            end
+          end
+
+          begin
+            rest.put(api_path, object)
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "Timeout writing: #{e}"
+          rescue Net::HTTPServerException => e
+            if e.response.code == "404"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
             else
-              raise
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "HTTP error writing: #{e}"
             end
           end
         end

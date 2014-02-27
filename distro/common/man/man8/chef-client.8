@@ -1,104 +1,273 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.TH "CHEF-CLIENT" "8" "Chef 11.10.0" "" "chef-client"
+.SH NAME
+chef-client \- The man page for the chef-client command line tool.
 .
-.TH "CHEF\-CLIENT" "8" "February 2013" "Chef 11.2.0" "Chef Manual"
+.nr rst2man-indent-level 0
 .
-.SH "NAME"
-\fBchef\-client\fR \- Runs a client node connecting to a chef\-server\.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.\" Man page generated from reStructuredText.
 .
-.SH "SYNOPSIS"
-\fBchef\-client\fR \fI(options)\fR
-.
+.sp
+A chef\-client is an agent that runs locally on every node that is registered with the server. When a chef\-client is run, it will perform all of the steps that are required to bring the node into the expected state, including:
+.INDENT 0.0
+.IP \(bu 2
+Registering and authenticating the node with the server
+.IP \(bu 2
+Building the node object
+.IP \(bu 2
+Synchronizing cookbooks
+.IP \(bu 2
+Compiling the resource collection by loading each of the required cookbooks, including recipes, attributes, and all other dependencies
+.IP \(bu 2
+Taking the appropriate and required actions to configure the node
+.IP \(bu 2
+Looking for exceptions and notifications, handling each as required
+.UNINDENT
+.sp
+The chef\-client executable can be run as a command\-line tool.
+.IP Note
+A client.rb file is used to specify the configuration details for the chef\-client. This file is the default configuration file and is loaded every time the chef\-client executable is run. The chef\-client executable can be run as a daemon. On UNIX\- and Linux\-based machines, the configuration file is located at: \fB/etc/chef/client.rb\fP. On Microsoft Windows machines, the configuration file is located at \fBC:\echef\eclient.rb\fP.
+.RE
+.SH OPTIONS
+.sp
+This command has the following syntax:
+.sp
+.nf
+.ft C
+chef\-client OPTION VALUE OPTION VALUE ...
+.ft P
+.fi
+.sp
+This command has the following options:
+.INDENT 0.0
 .TP
-\fB\-S\fR, \fB\-\-server CHEFSERVERURL\fR
-The chef server URL
-.
+.B \fB\-A\fP, \fB\-\-fatal\-windows\-admin\-check\fP
+Indicates that a chef\-client run should fail if the chef\-client does not have administrator privileges in Microsoft Windows.
 .TP
-\fB\-c\fR, \fB\-\-config CONFIG\fR
-The configuration file to use
-.
+.B \fB\-\-chef\-zero\-port PORT\fP
+The port on which chef\-zero will listen.
 .TP
-\fB\-d\fR, \fB\-\-daemonize\fR
-Daemonize the process
-.
+.B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
+The output format: \fBdoc\fP (default) or \fBmin\fP.
+.sp
+Use \fBdoc\fP to print the progress of the chef\-client run using full strings that display a summary of updates as they occur.
+.sp
+Use \fBmin\fP to print the progress of the chef\-client run using single characters. A summary of updates is printed at the end of the chef\-client run. A dot (\fB.\fP) is printed for events that do not have meaningful status information, such as loading a file or synchronizing a cookbook. For resources, a dot (\fB.\fP) is printed when the resource is up to date, an \fBS\fP is printed when the resource is skipped by \fBnot_if\fP or \fBonly_if\fP, and a \fBU\fP is printed when the resource is updated.
+.sp
+Other formatting options are available when those formatters are configured in the client.rb file using the \fBadd_formatter\fP option.
 .TP
-\fB\-g\fR, \fB\-\-group GROUP\fR
-Group to set privilege to
-.
+.B \fB\-\-force\-formatter\fP
+Indicates that formatter output will be used instead of logger output.
 .TP
-\fB\-i\fR, \fB\-\-interval SECONDS\fR
-Run chef\-client periodically, in seconds
-.
+.B \fB\-\-force\-logger\fP
+Indicates that logger output will be used instead of formatter output.
 .TP
-\fB\-j\fR, \fB\-\-json\-attributes JSON_ATTRIBS\fR
-Load attributes from a JSON file or URL
-.
+.B \fB\-g GROUP\fP, \fB\-\-group GROUP\fP
+The name of the group that owns a process. This is required when starting any executable as a daemon.
 .TP
-\fB\-E\fR, \fB\-\-environment ENVIRONMENT\fR
-Set the Chef Environment on the node
-.
+.B \fB\-h\fP, \fB\-\-help\fP
+Shows help for the command.
 .TP
-\fB\-l\fR, \fB\-\-log_level LEVEL\fR
-Set the log level (debug, info, warn, error, fatal)
-.
+.B \fB\-i SECONDS\fP, \fB\-\-interval SECONDS\fP
+The frequency (in seconds) at which the chef\-client runs. Default value: \fB1800\fP.
 .TP
-\fB\-L\fR, \fB\-\-logfile LOGLOCATION\fR
-Set the log file location, defaults to STDOUT \- recommended for daemonizing
-.
+.B \fB\-j PATH\fP, \fB\-\-json\-attributes PATH\fP
+The path to a file that contains JSON data.
 .TP
-\fB\-N\fR, \fB\-\-node\-name NODE_NAME\fR
-The node name for this client
-.
+.B \fB\-k KEY_FILE\fP, \fB\-\-client_key KEY_FILE\fP
+The location of the file which contains the client key. Default value: \fB/etc/chef/client.pem\fP.
 .TP
-\fB\-o\fR, \fB\-\-override\-runlist\fR
-Replace current run list with specified items
-.
+.B \fB\-K KEY_FILE\fP, \fB\-\-validation_key KEY_FILE\fP
+The location of the file which contains the key used when a chef\-client is registered with a server. A validation key is signed using the \fBvalidation_client_name\fP for authentication. Default value: \fB/etc/chef/validation.pem\fP.
 .TP
-\fB\-K\fR, \fB\-\-validation_key KEY_FILE\fR
-Set the validation key file location, used for registering new clients
-.
+.B \fB\-l LEVEL\fP, \fB\-\-log_level LEVEL\fP
+The level of logging that will be stored in a log file.
 .TP
-\fB\-k\fR, \fB\-\-client_key KEY_FILE\fR
-Set the client key file location
-.
+.B \fB\-L LOGLOCATION\fP, \fB\-\-logfile c\fP
+The location in which log file output files will be saved. If this location is set to something other than \fBSTDOUT\fP, standard output logging will still be performed (otherwise there would be no output other than to a file). This is recommended when starting any executable as a daemon. Default value: \fBSTDOUT\fP.
 .TP
-\fB\-s\fR, \fB\-\-splay SECONDS\fR
-The splay time for running at intervals, in seconds
-.
+.B \fB\-\-[no\-]color\fP
+Indicates whether colored output will be used. Default setting: \fB\-\-color\fP.
 .TP
-\fB\-u\fR, \fB\-\-user USER\fR
-User to set privilege to
-.
+.B \fB\-N NODE_NAME\fP, \fB\-\-node\-name NODE_NAME\fP
+The name of the node.
 .TP
-\fB\-P\fR, \fB\-\-pid PIDFILE\fR
-Set the PID file location, defaults to /tmp/chef\-client\.pid
-.
+.B \fB\-o RUN_LIST_ITEM\fP, \fB\-\-override\-runlist RUN_LIST_ITEM\fP
+Replace the current run list with the specified items.
 .TP
-\fB\-\-once\fR
-Cancel any interval or splay options, run chef once and exit
-.
+.B \fB\-\-once\fP
+Indicates that the chef\-client is run once and that interval and splay options are cancelled.
 .TP
-\fB\-v\fR, \fB\-\-version\fR
-Show chef version
-.
+.B \fB\-P PID_FILE\fP, \fB\-\-pid PID_FILE\fP
+The location in which a process identification number (pid) is saved. An executable, when started as a daemon, will write the pid to the specified file. Default value: \fB/tmp/name\-of\-executable.pid\fP.
 .TP
-\fB\-h\fR, \fB\-\-help\fR
-Show this message
+.B \fB\-R\fP, \fB\-\-enable\-reporting\fP
+Indicates that data collection reporting is enabled during a chef\-client run.
+.TP
+.B \fBRECIPE_FILE\fP
+The path to a recipe. For example, if a recipe file is in the current directory, use \fBrecipe_file.rb\fP. This is typically used with the \fB\-\-local\-mode\fP option.
+.TP
+.B \fB\-s SECONDS\fP, \fB\-\-splay SECONDS\fP
+A number (in seconds) to add to the \fBinterval\fP that is used to determine the frequency of chef\-client runs. This number can help prevent server load when there are many clients running at the same time.
+.TP
+.B \fB\-S CHEF_SERVER_URL\fP, \fB\-\-server CHEF_SERVER_URL\fP
+The URL for the server.
+.TP
+.B \fB\-u USER\fP, \fB\-\-user USER\fP
+The user that owns a process. This is required when starting any executable as a daemon.
+.TP
+.B \fB\-v\fP, \fB\-\-version\fP
+The version of the chef\-client.
+.TP
+.B \fB\-W\fP, \fB\-\-why\-run\fP
+Indicates that the executable will be run in why\-run mode, which is a type of chef\-client run that does everything except modify the system. Use why\-run mode to understand why the chef\-client makes the decisions that it makes and to learn more about the current and proposed state of the system.
+.TP
+.B \fB\-z\fP, \fB\-\-local\-mode\fP
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo..
+.UNINDENT
+.SH RUN WITH ELEVATED PRIVILEGES
+.sp
+The chef\-client may need to be run with elevated privileges in order to get a recipe to converge correctly. On UNIX and UNIX\-like operating systems this can be done by running the command as root. On Microsoft Windows this can be done by running the command prompt as an administrator.
+.SS Linux
+.sp
+On Linux, the following error sometimes occurs when the permissions used to run the chef\-client are incorrect:
+.sp
+.nf
+.ft C
+$ chef\-client
+[Tue, 29 Nov 2011 19:46:17 \-0800] INFO: *** Chef 10.X.X ***
+[Tue, 29 Nov 2011 19:46:18 \-0800] WARN: Failed to read the private key /etc/chef/client.pem: #<Errno::EACCES: Permission denied \- /etc/chef/client.pem>
+.ft P
+.fi
+.sp
+This can be resolved by running the command as root. There are a few ways this can be done:
+.INDENT 0.0
+.IP \(bu 2
+Log in as root and then run the chef\-client
+.IP \(bu 2
+Use \fBsu\fP to become the root user, and then run the chef\-client. For example:
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ su
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.sp
+and then:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ chef\-client
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Use the sudo utility
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ sudo chef\-client
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+Give a user access to read \fB/etc/chef\fP and also the files accessed by the chef\-client. This requires super user privileges and, as such, is not a recommended approach
+.UNINDENT
+.SS Windows
+.sp
+On Microsoft Windows, running without elevated privileges (when they are necessary) is an issue that fails silently. It will appear that the chef\-client completed its run successfully, but the changes will not have been made. When this occurs, do one of the following to run the chef\-client as the administrator:
+.INDENT 0.0
+.IP \(bu 2
+Log in to the administrator account. (This is not the same as an account in the administrator\(aqs security group.)
+.IP \(bu 2
+Run the chef\-client process from the administrator account while being logged into another account. Run the following command:
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ runas /user:Administrator "cmd /C chef\-client"
+.ft P
+.fi
+.sp
+This will prompt for the administrator account password.
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+Open a command prompt by right\-clicking on the command prompt application, and then selecting \fBRun as administrator\fP. After the command window opens, the chef\-client can be run as the administrator
+.UNINDENT
+.SH EXAMPLES
+.sp
+\fBStart a Chef run when the chef\-client is running as a daemon\fP
+.sp
+A chef\-client that is running as a daemon can be woken up and started by sending the process a \fBSIGUSR1\fP. For example, to trigger a chef\-client run on a machine running Linux:
+.sp
+.nf
+.ft C
+$ sudo killall \-USR1 chef\-client
+.ft P
+.fi
+.sp
+\fBStart a Chef run manually\fP
+.sp
+.nf
+.ft C
+$ ps auxw|grep chef\-client
+.ft P
+.fi
+.sp
+to return something like:
+.sp
+.nf
+.ft C
+root           66066   0.9  0.0  2488880    264 s001  S+   10:26AM   0:03.05
+/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/bin/ruby /usr/bin/chef\-client \-i 3600 \-s 20
+.ft P
+.fi
+.sp
+and then enter:
+.sp
+.nf
+.ft C
+$ sudo kill \-USR1 66066
+.ft P
+.fi
+.SH AUTHOR
+Chef
+.\" Generated by docutils manpage writer.
 .
-.SH "DESCRIPTION"
-The Chef Client is where almost all of the work in Chef is done\. It communicates with the Chef Server via REST, authenticates via Signed Header Authentication, and compiles and executes Cookbooks\.
-.
-.P
-A Chef Client does work on behalf of a Node\. A single Chef Client can run recipes for multiple Nodes\.
-.
-.P
-Clients are where all the action happens \- the Chef Server and Chef Expander are largely services that exist only to provide the Client with information\.
-.
-.SH "SEE ALSO"
-Full documentation for Chef and chef\-client is located on the Chef wiki, http://wiki\.opscode\.com/display/chef/Home\.
-.
-.SH "AUTHOR"
-Chef was written by Adam Jacob \fIadam@ospcode\.com\fR of Opscode (http://www\.opscode\.com), with contributions from the community\. This manual page was written by Joshua Timberman \fIjoshua@opscode\.com\fR with help2man\. Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2\.0 License\.
-.
-.P
-On Debian systems, the complete text of the Apache 2\.0 License can be found in /usr/share/common\-licenses/Apache\-2\.0\.

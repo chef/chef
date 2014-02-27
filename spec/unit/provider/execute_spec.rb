@@ -31,14 +31,14 @@ describe Chef::Provider::Execute do
     @provider = Chef::Provider::Execute.new(@new_resource, @run_context)
     @current_resource = Chef::Resource::Ifconfig.new("foo_resource", @run_context)
     @provider.current_resource = @current_resource
-    Chef::Log.level = :info 
+    Chef::Log.level = :info
     # FIXME: There should be a test for how STDOUT.tty? changes the live_stream option being passed
-    STDOUT.stub!(:tty?).and_return(true)
+    STDOUT.stub(:tty?).and_return(true)
   end
 
 
   it "should execute foo_resource" do
-    @provider.stub!(:load_current_resource)
+    @provider.stub(:load_current_resource)
     opts = {}
     opts[:timeout] = @new_resource.timeout
     opts[:returns] = @new_resource.returns
@@ -53,7 +53,7 @@ describe Chef::Provider::Execute do
   end
 
   it "should do nothing if the sentinel file exists" do
-    @provider.stub!(:load_current_resource)
+    @provider.stub(:load_current_resource)
     File.should_receive(:exists?).with(@new_resource.creates).and_return(true)
     @provider.should_not_receive(:shell_out!)
     Chef::Log.should_not_receive(:warn)
@@ -65,7 +65,7 @@ describe Chef::Provider::Execute do
   it "should respect cwd options for 'creates'" do
     @new_resource.cwd "/tmp"
     @new_resource.creates "foo_resource"
-    @provider.stub!(:load_current_resource)
+    @provider.stub(:load_current_resource)
     File.should_receive(:exists?).with(@new_resource.creates).and_return(false)
     File.should_receive(:exists?).with(File.join("/tmp", @new_resource.creates)).and_return(true)
     Chef::Log.should_not_receive(:warn)
@@ -73,11 +73,11 @@ describe Chef::Provider::Execute do
 
     @provider.run_action(:run)
     @new_resource.should_not be_updated
-  end 
+  end
 
   it "should warn if user specified relative path without cwd" do
     @new_resource.creates "foo_resource"
-    @provider.stub!(:load_current_resource)
+    @provider.stub(:load_current_resource)
     Chef::Log.should_receive(:warn).with(/relative path/)
     File.should_receive(:exists?).with(@new_resource.creates).and_return(true)
     @provider.should_not_receive(:shell_out!)

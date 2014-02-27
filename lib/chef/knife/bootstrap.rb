@@ -59,6 +59,12 @@ class Chef
         :description => "The ssh gateway",
         :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key }
 
+      option :forward_agent,
+        :short => "-A",
+        :long => "--forward-agent",
+        :description => "Enable SSH agent forwarding",
+        :boolean => true
+
       option :identity_file,
         :short => "-i IDENTITY_FILE",
         :long => "--identity-file IDENTITY_FILE",
@@ -82,6 +88,11 @@ class Chef
         :long => "--bootstrap-proxy PROXY_URL",
         :description => "The proxy server for the node being bootstrapped",
         :proc => Proc.new { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
+
+      option :bootstrap_no_proxy,
+        :long => "--bootstrap-no-proxy [NO_PROXY_URL|NO_PROXY_IP]",
+        :description => "Do not proxy locations for the node being bootstrapped; this option is used internally by Opscode",
+        :proc => Proc.new { |np| Chef::Config[:knife][:bootstrap_no_proxy] = np }
 
       option :distro,
         :short => "-d DISTRO",
@@ -135,11 +146,13 @@ class Chef
       option :secret,
         :short => "-s SECRET",
         :long  => "--secret ",
-        :description => "The secret key to use to encrypt data bag item values"
+        :description => "The secret key to use to encrypt data bag item values",
+        :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
 
       option :secret_file,
         :long => "--secret-file SECRET_FILE",
-        :description => "A file containing the secret key to use to encrypt data bag item values"
+        :description => "A file containing the secret key to use to encrypt data bag item values",
+        :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
 
       def find_template(template=nil)
         # Are we bootstrapping using an already shipped template?
@@ -219,6 +232,7 @@ class Chef
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:ssh_port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
         ssh.config[:ssh_gateway] = Chef::Config[:knife][:ssh_gateway] || config[:ssh_gateway]
+        ssh.config[:forward_agent] = Chef::Config[:knife][:forward_agent] || config[:forward_agent]
         ssh.config[:identity_file] = Chef::Config[:knife][:identity_file] || config[:identity_file]
         ssh.config[:manual] = true
         ssh.config[:host_key_verify] = Chef::Config[:knife][:host_key_verify] || config[:host_key_verify]
@@ -237,7 +251,7 @@ class Chef
         command = render_template(read_template)
 
         if config[:use_sudo]
-          command = config[:use_sudo_password] ? "echo #{config[:ssh_password]} | sudo -S #{command}" : "sudo #{command}"
+          command = config[:use_sudo_password] ? "echo '#{config[:ssh_password]}' | sudo -S #{command}" : "sudo #{command}"
         end
 
         command

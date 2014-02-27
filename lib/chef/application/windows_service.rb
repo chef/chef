@@ -27,11 +27,13 @@ require 'chef/rest'
 require 'mixlib/cli'
 require 'socket'
 require 'win32/daemon'
+require 'chef/mixin/shell_out'
 
 class Chef
   class Application
     class WindowsService < ::Win32::Daemon
       include Mixlib::CLI
+      include Chef::Mixin::ShellOut
 
       option :config_file,
         :short => "-c CONFIG",
@@ -99,11 +101,14 @@ class Chef
               Chef::Log.error("#{e.class}: #{e}")
             rescue Exception => e
               Chef::Log.error("#{e.class}: #{e}")
-              Chef::Application.debug_stacktrace(e)
             end
           end
         end
 
+        # Daemon class needs to have all the signal callbacks return
+        # before service_main returns.
+        Chef::Log.debug("Giving signal callbacks some time to exit...")
+        sleep 1
         Chef::Log.debug("Exiting service...")
       end
 
@@ -112,15 +117,27 @@ class Chef
       ################################################################################
 
       def service_stop
+        run_warning_displayed = false
         Chef::Log.info("STOP request from operating system.")
-        if @service_action_mutex.try_lock
-          @service_signal.signal
-          @service_action_mutex.unlock
-          Chef::Log.info("Service is stopping....")
-        else
-          Chef::Log.info("Currently a chef-client run is happening.")
-          Chef::Log.info("Service will stop once it's completed.")
+        loop do
+          # See if a run is in flight
+          if @service_action_mutex.try_lock
+            # Run is not in flight. Wake up service_main to exit.
+            @service_signal.signal
+            @service_action_mutex.unlock
+            break
+          else
+            unless run_warning_displayed
+              Chef::Log.info("Currently a chef run is happening on this system.")
+              Chef::Log.info("Service  will stop when run is completed.")
+              run_warning_displayed = true
+            end
+
+            Chef::Log.debug("Waiting for chef-client run...")
+            sleep 1
+          end
         end
+        Chef::Log.info("Service is stopping....")
       end
 
       def service_pause
@@ -161,16 +178,28 @@ class Chef
 
       # Initializes Chef::Client instance and runs it
       def run_chef_client
-        @chef_client = Chef::Client.new(
-          @chef_client_json,
-          :override_runlist => config[:override_runlist]
-        )
-        @chef_client_json = nil
-
-        @chef_client.run
-        @chef_client = nil
+        # The chef client will be started in a new process. We have used shell_out to start the chef-client.
+        # The log_location and config_file of the parent process is passed to the new chef-client process.
+        # We need to add the --no-fork, as by default it is set to fork=true.
+        begin
+          Chef::Log.info "Starting chef-client in a new process"
+          # Pass config params to the new process
+          config_params = " --no-fork"
+          config_params += " -c #{Chef::Config[:config_file]}" unless  Chef::Config[:config_file].nil?
+          config_params += " -L #{Chef::Config[:log_location]}" unless Chef::Config[:log_location] == STDOUT
+          # Starts a new process and waits till the process exits
+          result = shell_out("chef-client #{config_params}")
+          Chef::Log.debug "#{result.stdout}"
+          Chef::Log.debug "#{result.stderr}"
+        rescue Mixlib::ShellOut::ShellCommandFailed => e
+          Chef::Log.warn "Not able to start chef-client in new process (#{e})"
+        rescue => e
+          Chef::Log.error e
+        ensure
+          # Once process exits, we log the current process' pid
+          Chef::Log.info "Child process exited (pid: #{Process.pid})"
+        end
       end
-
 
       def apply_config(config_file_path)
         Chef::Config.from_file(config_file_path)
@@ -204,7 +233,6 @@ class Chef
 
       def configure_stdout_logger
         stdout_logger = MonoLogger.new(STDOUT)
-        STDOUT.sync = true
         stdout_logger.formatter = Chef::Log.logger.formatter
         Chef::Log.loggers <<  stdout_logger
       end
@@ -242,7 +270,7 @@ class Chef
       def configure_chef(startup_parameters)
         # Bit of a hack ahead:
         # It is possible to specify a service's binary_path_name with arguments, like "foo.exe -x argX".
-        # It is also possible to specify startup parameters separately, either via the the Services manager
+        # It is also possible to specify startup parameters separately, either via the Services manager
         # or by using the registry (I think).
 
         # In order to accommodate all possible sources of parameterization, we first parse any command line

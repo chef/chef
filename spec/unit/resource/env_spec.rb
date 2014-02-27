@@ -43,7 +43,7 @@ describe Chef::Resource::Env do
       if bad_value
         lambda { @resource.action action }.should raise_error(ArgumentError)
       else
-        lambda { @resource.action action }.should_not raise_error(ArgumentError)
+        lambda { @resource.action action }.should_not raise_error
       end
     end
   end
@@ -53,7 +53,7 @@ describe Chef::Resource::Env do
   end
 
   it "should accept a string as the env value via 'value'" do
-    lambda { @resource.value "bar" }.should_not raise_error(ArgumentError)
+    lambda { @resource.value "bar" }.should_not raise_error
   end
 
   it "should not accept a Hash for the env value via 'to'" do
@@ -66,7 +66,7 @@ describe Chef::Resource::Env do
   end
 
   describe "when it has key name and value" do
-    before do 
+    before do
       @resource.key_name("charmander")
       @resource.value("level7")
       @resource.delim("hi")

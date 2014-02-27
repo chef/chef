@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,14 +27,14 @@ describe Chef::Provider::Group::Dscl do
     @current_resource = Chef::Resource::Group.new("aj")
     @provider = Chef::Provider::Group::Dscl.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
-    @status = mock("Process::Status", :exitstatus => 0) 
+    @status = double("Process::Status", :exitstatus => 0)
     @pid = 2342
     @stdin = StringIO.new
     @stdout = StringIO.new("\n")
     @stderr = StringIO.new("")
-    @provider.stub!(:popen4).and_yield(@pid,@stdin,@stdout,@stderr).and_return(@status)
+    @provider.stub(:popen4).and_yield(@pid,@stdin,@stdout,@stderr).and_return(@status)
   end
-  
+
   it "should run popen4 with the supplied array of arguments appended to the dscl command" do
     @provider.should_receive(:popen4).with("dscl . -cmd /Path arg1 arg2")
     @provider.dscl("cmd", "/Path", "arg1", "arg2")
@@ -50,9 +50,9 @@ describe Chef::Provider::Group::Dscl do
     before do
       @node = Chef::Node.new
       @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
-      @provider.stub!(:dscl).and_return(["cmd", @status, "stdout", "stderr"])
+      @provider.stub(:dscl).and_return(["cmd", @status, "stdout", "stderr"])
     end
- 
+
     it "should run dscl with the supplied cmd /Path args" do
       @provider.should_receive(:dscl).with("cmd /Path args")
       @provider.safe_dscl("cmd /Path args")
@@ -60,8 +60,8 @@ describe Chef::Provider::Group::Dscl do
 
     describe "with the dscl command returning a non zero exit status for a delete" do
       before do
-        @status = mock("Process::Status", :exitstatus => 1)
-        @provider.stub!(:dscl).and_return(["cmd", @status, "stdout", "stderr"])
+        @status = double("Process::Status", :exitstatus => 1)
+        @provider.stub(:dscl).and_return(["cmd", @status, "stdout", "stderr"])
       end
 
       it "should return an empty string of standard output for a delete" do
@@ -77,14 +77,14 @@ describe Chef::Provider::Group::Dscl do
 
     describe "with the dscl command returning no such key" do
       before do
-        @provider.stub!(:dscl).and_return(["cmd", @status, "No such key: ", "stderr"])
+        @provider.stub(:dscl).and_return(["cmd", @status, "No such key: ", "stderr"])
       end
 
       it "should raise an exception" do
         lambda { @provider.safe_dscl("cmd /Path arguments") }.should raise_error(Chef::Exceptions::Group)
       end
     end
- 
+
     describe "with the dscl command returning a zero exit status" do
       it "should return the third array element, the string of standard output" do
         safe_dscl_retval = @provider.safe_dscl("cmd /Path args")
@@ -98,9 +98,9 @@ describe Chef::Provider::Group::Dscl do
     before do
       @node = Chef::Node.new
       @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
-      @provider.stub!(:safe_dscl).and_return("\naj      200\njt      201\n")
+      @provider.stub(:safe_dscl).and_return("\naj      200\njt      201\n")
     end
-  
+
     it "should run safe_dscl with list /Groups gid" do
       @provider.should_receive(:safe_dscl).with("list /Groups gid")
       @provider.get_free_gid
@@ -109,7 +109,7 @@ describe Chef::Provider::Group::Dscl do
     it "should return the first unused gid number on or above 200" do
       @provider.get_free_gid.should equal(202)
     end
-  
+
     it "should raise an exception when the search limit is exhausted" do
       search_limit = 1
       lambda { @provider.get_free_gid(search_limit) }.should raise_error(RuntimeError)
@@ -120,14 +120,14 @@ describe Chef::Provider::Group::Dscl do
     before do
       @node = Chef::Node.new
       @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
-      @provider.stub!(:safe_dscl).and_return("\naj      500\n")
+      @provider.stub(:safe_dscl).and_return("\naj      500\n")
     end
 
     it "should run safe_dscl with list /Groups gid" do
       @provider.should_receive(:safe_dscl).with("list /Groups gid")
       @provider.gid_used?(500)
     end
-  
+
     it "should return true for a used gid number" do
       @provider.gid_used?(500).should be_true
     end
@@ -144,14 +144,14 @@ describe Chef::Provider::Group::Dscl do
   describe "set_gid" do
     describe "with the new resource and a gid number which is already in use" do
       before do
-        @provider.stub!(:gid_used?).and_return(true)
+        @provider.stub(:gid_used?).and_return(true)
       end
 
       it "should raise an exception if the new resources gid is already in use" do
         lambda { @provider.set_gid }.should raise_error(Chef::Exceptions::Group)
       end
     end
-  
+
     describe "with no gid number for the new resources" do
       it "should run get_free_gid and return a valid, unused gid number" do
         @provider.should_receive(:get_free_gid).and_return(501)
@@ -162,7 +162,7 @@ describe Chef::Provider::Group::Dscl do
     describe "with blank gid number for the new resources" do
       before do
         @new_resource.instance_variable_set(:@gid, nil)
-        @new_resource.stub!(:safe_dscl)
+        @new_resource.stub(:safe_dscl)
       end
 
       it "should run get_free_gid and return a valid, unused gid number" do
@@ -185,9 +185,9 @@ describe Chef::Provider::Group::Dscl do
 
     describe "with existing members in the current resource and append set to false in the new resource" do
       before do
-        @new_resource.stub!(:members).and_return([])
-        @new_resource.stub!(:append).and_return(false)
-        @current_resource.stub!(:members).and_return(["all", "your", "base"])
+        @new_resource.stub(:members).and_return([])
+        @new_resource.stub(:append).and_return(false)
+        @current_resource.stub(:members).and_return(["all", "your", "base"])
       end
 
       it "should log an appropriate message" do
@@ -220,7 +220,7 @@ describe Chef::Provider::Group::Dscl do
         @provider.set_members
       end
     end
-  
+
     describe "with no members in the new resource" do
       before do
         @new_resource.append(true)
@@ -236,6 +236,7 @@ describe Chef::Provider::Group::Dscl do
 
   describe "when loading the current system state" do
     before (:each) do
+      @provider.action = :create
       @provider.load_current_resource
       @provider.define_resource_requirements
     end
@@ -246,8 +247,8 @@ describe Chef::Provider::Group::Dscl do
     end
 
     it "doesn't raise an error if /usr/bin/dscl exists" do
-      File.stub!(:exists?).and_return(true)
-      lambda { @provider.process_resource_requirements }.should_not raise_error(Chef::Exceptions::Group)
+      File.stub(:exists?).and_return(true)
+      lambda { @provider.process_resource_requirements }.should_not raise_error
     end
   end
 
@@ -265,6 +266,7 @@ describe Chef::Provider::Group::Dscl do
     it "should manage the group_name if it changed and the new resources group_name is not null" do
       @current_resource.group_name("oldval")
       @new_resource.group_name("newname")
+      @provider.should_receive(:set_members).and_return(true)
       @provider.should_receive(:safe_dscl).with("create /Groups/newname")
       @provider.should_receive(:safe_dscl).with("create /Groups/newname Password '*'")
       @provider.manage_group
@@ -276,7 +278,7 @@ describe Chef::Provider::Group::Dscl do
       @provider.should_receive(:set_gid)
       @provider.manage_group
     end
-    
+
     it "should manage the members if it changed and the new resources members is not null" do
       @current_resource.members(%{charlie root})
       @new_resource.members(%{crab revenge})

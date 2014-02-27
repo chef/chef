@@ -23,7 +23,7 @@ describe Chef::Resource::Directory do
 
   let(:directory_base) { "directory_spec" }
 
-  let(:default_mode) { "755" }
+  let(:default_mode) { ((0100777 - File.umask) & 07777).to_s(8) }
 
   def create_resource
     events = Chef::EventDispatch::Dispatcher.new
@@ -32,7 +32,7 @@ describe Chef::Resource::Directory do
     Chef::Resource::Directory.new(path, run_context)
   end
 
-  let!(:resource) do
+  let(:resource) do
   	create_resource
   end
 

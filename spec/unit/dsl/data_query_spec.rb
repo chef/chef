@@ -27,7 +27,7 @@ describe Chef::DSL::DataQuery do
   before(:each) do
     @language = DataQueryDSLTester.new
     @node = Hash.new
-    @language.stub!(:node).and_return(@node)
+    @language.stub(:node).and_return(@node)
   end
 
   describe "when loading data bags and items" do

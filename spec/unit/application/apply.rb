@@ -20,19 +20,11 @@ require 'spec_helper'
 describe Chef::Application::Apply do
 
   before do
-    @original_config = Chef::Config.configuration
     @app = Chef::Application::Recipe.new
-    @app.stub!(:configure_logging).and_return(true)
+    @app.stub(:configure_logging).and_return(true)
     @recipe_text = "package 'nyancat'"
     Chef::Config[:solo] = true
   end
-
-  after do
-    Chef::Config[:solo] = nil
-    Chef::Config.configuration.replace(@original_config)
-    Chef::Config[:solo] = false
-  end
-
 
   describe "configuring the application" do
     it "should set solo mode to true" do
@@ -44,10 +36,10 @@ describe Chef::Application::Apply do
     before do
       @recipe_file_name = "foo.rb"
       @recipe_path = File.expand_path("foo.rb")
-      @recipe_file = mock("Tempfile (mock)", :read => @recipe_text)
-      @app.stub!(:open).with(@recipe_path).and_return(@recipe_file)
-      File.stub!(:exist?).with("foo.rb").and_return(true)
-      Chef::Application.stub!(:fatal!).and_return(true)
+      @recipe_file = double("Tempfile (mock)", :read => @recipe_text)
+      @app.stub(:open).with(@recipe_path).and_return(@recipe_file)
+      File.stub(:exist?).with("foo.rb").and_return(true)
+      Chef::Application.stub(:fatal!).and_return(true)
     end
     it "should read text properly" do
       @app.read_recipe_file(@recipe_file_name)[0].should == @recipe_text
@@ -57,7 +49,7 @@ describe Chef::Application::Apply do
     end
     describe "when recipe doesn't exist" do
       before do
-        File.stub!(:exist?).with(@recipe_file_name).and_return(false)
+        File.stub(:exist?).with(@recipe_file_name).and_return(false)
       end
       it "should raise a fatal" do
         Chef::Application.should_receive(:fatal!)
@@ -68,7 +60,7 @@ describe Chef::Application::Apply do
   describe "temp_recipe_file" do
     before do
       @app.instance_variable_set(:@recipe_text, @recipe_text)
-      @app.temp_recipe_file      
+      @app.temp_recipe_file
       @recipe_fh = @app.instance_variable_get(:@recipe_fh)
     end
     it "should open a tempfile" do

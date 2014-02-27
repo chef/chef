@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -259,11 +259,11 @@ class Chef
         cookbook_collection[cookbook].segment_filenames(segment).sort
       end
 
-      # Yields the name of each cookbook depended on by +cookbook_name+ in
-      # lexical sort order.
+      # Yields the name, as a symbol, of each cookbook depended on by
+      # +cookbook_name+ in lexical sort order.
       def each_cookbook_dep(cookbook_name, &block)
         cookbook = cookbook_collection[cookbook_name]
-        cookbook.metadata.dependencies.keys.sort.each(&block)
+        cookbook.metadata.dependencies.keys.sort.map{|x| x.to_sym}.each(&block)
       end
 
       # Given a +recipe_name+, finds the file associated with the recipe.

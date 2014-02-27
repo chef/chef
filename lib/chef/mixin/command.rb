@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,26 @@ require 'etc'
 
 class Chef
   module Mixin
+
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # NOTE:
+    # The popen4 method upon which all the code here is based has a race
+    # condition where it may fail to read all of the data written to stdout and
+    # stderr after the child process exits. The tests for the code here
+    # occasionally fail because of this race condition, so they have been
+    # tagged "volatile".
+    #
+    # This code is considered deprecated, so it should not need to be modified
+    # frequently, if at all. HOWEVER, if you do modify the code here, you must
+    # explicitly enable volatile tests:
+    #
+    #   bundle exec rspec spec/unit/mixin/command_spec.rb -t volatile
+    #
+    # In addition, you should make a note that tests need to be run with
+    # volatile tests enabled on any pull request or bug report you submit with
+    # your patch.
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     module Command
       extend self
 
@@ -41,23 +61,32 @@ class Chef
 
       # === Parameters
       # args<Hash>: A number of required and optional arguments
-      #   command<String>, <Array>: A complete command with options to execute or a command and options as an Array 
+      #   command<String>, <Array>: A complete command with options to execute or a command and options as an Array
       #   creates<String>: The absolute path to a file that prevents the command from running if it exists
       #   cwd<String>: Working directory to execute command in, defaults to Dir.tmpdir
       #   timeout<String>: How many seconds to wait for the command to execute before timing out
       #   returns<String>: The single exit value command is expected to return, otherwise causes an exception
       #   ignore_failure<Boolean>: Whether to raise an exception on failure, or just return the status
       #   output_on_failure<Boolean>: Return output in raised exception regardless of Log.level
-      # 
+      #
       #   user<String>: The UID or user name of the user to execute the command as
       #   group<String>: The GID or group name of the group to execute the command as
       #   environment<Hash>: Pairs of environment variable names and their values to set before execution
       #
       # === Returns
       # Returns the exit status of args[:command]
-      def run_command(args={})         
+      def run_command(args={})
+        status, stdout, stderr = run_command_and_return_stdout_stderr(args)
+
+        status
+      end
+
+      # works same as above, except that it returns stdout and stderr
+      # requirement => platforms like solaris 9,10 has wierd issues where
+      # even in command failure the exit code is zero, so we need to lookup stderr.
+      def run_command_and_return_stdout_stderr(args={})
         command_output = ""
-        
+
         args[:ignore_failure] ||= false
         args[:output_on_failure] ||= false
 
@@ -68,28 +97,28 @@ class Chef
             return false
           end
         end
-        
+
         status, stdout, stderr = output_of_command(args[:command], args)
         command_output << "STDOUT: #{stdout}"
         command_output << "STDERR: #{stderr}"
         handle_command_failures(status, command_output, args)
-        
-        status
+
+        return status, stdout, stderr
       end
-      
+
       def output_of_command(command, args)
         Chef::Log.debug("Executing #{command}")
         stderr_string, stdout_string, status = "", "", nil
-        
+
         exec_processing_block = lambda do |pid, stdin, stdout, stderr|
           stdout_string, stderr_string = stdout.string.chomp, stderr.string.chomp
         end
-        
+
         args[:cwd] ||= Dir.tmpdir
         unless ::File.directory?(args[:cwd])
           raise Chef::Exceptions::Exec, "#{args[:cwd]} does not exist or is not a directory"
         end
-        
+
         Dir.chdir(args[:cwd]) do
           if args[:timeout]
             begin
@@ -103,33 +132,32 @@ class Chef
           else
             status = popen4(command, args, &exec_processing_block)
           end
-          
+
           Chef::Log.debug("---- Begin output of #{command} ----")
           Chef::Log.debug("STDOUT: #{stdout_string}")
           Chef::Log.debug("STDERR: #{stderr_string}")
           Chef::Log.debug("---- End output of #{command} ----")
           Chef::Log.debug("Ran #{command} returned #{status.exitstatus}")
         end
-        
+
         return status, stdout_string, stderr_string
       end
-      
+
       def handle_command_failures(status, command_output, opts={})
-        unless opts[:ignore_failure]
-          opts[:returns] ||= 0
-          unless Array(opts[:returns]).include?(status.exitstatus)
-            # if the log level is not debug, through output of command when we fail
-            output = ""
-            if Chef::Log.level == :debug || opts[:output_on_failure]
-              output << "\n---- Begin output of #{opts[:command]} ----\n"
-              output << command_output.to_s
-              output << "\n---- End output of #{opts[:command]} ----\n"
-            end
-            raise Chef::Exceptions::Exec, "#{opts[:command]} returned #{status.exitstatus}, expected #{opts[:returns]}#{output}"
-          end
+        return if opts[:ignore_failure]
+        opts[:returns] ||= 0
+        return if Array(opts[:returns]).include?(status.exitstatus)
+
+        # if the log level is not debug, through output of command when we fail
+        output = ""
+        if Chef::Log.level == :debug || opts[:output_on_failure]
+          output << "\n---- Begin output of #{opts[:command]} ----\n"
+          output << command_output.to_s
+          output << "\n---- End output of #{opts[:command]} ----\n"
         end
+        raise Chef::Exceptions::Exec, "#{opts[:command]} returned #{status.exitstatus}, expected #{opts[:returns]}#{output}"
       end
-      
+
       # Call #run_command but set LC_ALL to the system's current environment so it doesn't get changed to C.
       #
       # === Parameters

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,17 +29,17 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
     @current_resource = Chef::Resource::Service.new("chef")
 
     @provider = Chef::Provider::Service::Simple.new(@new_resource, @run_context)
-    Chef::Resource::Service.stub!(:new).and_return(@current_resource)
+    Chef::Resource::Service.stub(:new).and_return(@current_resource)
 
     @stdout = StringIO.new(<<-NOMOCKINGSTRINGSPLZ)
 aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
 aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
 aj        8119  6041  0 21:34 pts/3    00:00:03 vi simple_service_spec.rb
 NOMOCKINGSTRINGSPLZ
-    @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
-    @provider.stub!(:shell_out!).and_return(@status)
+    @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+    @provider.stub(:shell_out!).and_return(@status)
   end
-  
+
   it "should create a current resource with the name of the new resource" do
     Chef::Resource::Service.should_receive(:new).and_return(@current_resource)
     @provider.load_current_resource
@@ -69,7 +69,7 @@ NOMOCKINGSTRINGSPLZ
     end
 
     it "should read stdout of the ps command" do
-      @provider.stub!(:shell_out!).and_return(@status)
+      @provider.stub(:shell_out!).and_return(@status)
       @stdout.should_receive(:each_line).and_return(true)
       @provider.load_current_resource
     end
@@ -79,20 +79,20 @@ NOMOCKINGSTRINGSPLZ
 aj        7842  5057  0 21:26 pts/2    00:00:06 chef
 aj        7842  5057  0 21:26 pts/2    00:00:06 poos
 NOMOCKINGSTRINGSPLZ
-      @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
-      @provider.stub!(:shell_out!).and_return(@status)
-      @provider.load_current_resource 
+      @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+      @provider.stub(:shell_out!).and_return(@status)
+      @provider.load_current_resource
       @current_resource.running.should be_true
     end
 
     it "should set running to false if the regex doesn't match" do
-      @provider.stub!(:shell_out!).and_return(@status)
+      @provider.stub(:shell_out!).and_return(@status)
       @provider.load_current_resource
       @current_resource.running.should be_false
     end
 
     it "should raise an exception if ps fails" do
-      @provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      @provider.stub(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       @provider.action = :start
       @provider.load_current_resource
       @provider.define_resource_requirements
@@ -108,7 +108,7 @@ NOMOCKINGSTRINGSPLZ
 
   describe "when starting the service" do
     it "should call the start command if one is specified" do
-      @new_resource.stub!(:start_command).and_return("#{@new_resource.start_command}")
+      @new_resource.stub(:start_command).and_return("#{@new_resource.start_command}")
       @provider.should_receive(:shell_out!).with("#{@new_resource.start_command}")
       @provider.start_service()
     end
@@ -117,7 +117,7 @@ NOMOCKINGSTRINGSPLZ
       @provider.define_resource_requirements
       @provider.action = :start
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
-    end 
+    end
   end
 
   describe "when stopping a service" do
@@ -144,7 +144,7 @@ NOMOCKINGSTRINGSPLZ
     it "should raise an exception if the resource doesn't support restart, no restart command is provided, and no stop command is provided" do
       @provider.define_resource_requirements
       @provider.action = :restart
-      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service) 
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
 
     it "should just call stop, then start when the resource doesn't support restart and no restart_command is specified" do

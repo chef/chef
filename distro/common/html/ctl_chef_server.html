@@ -1,0 +1,111 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>chef-server-ctl &mdash; chef-client Man Pages</title>
+    
+    <link rel="stylesheet" href="_static/guide.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/chef.ico"/>
+
+
+  </head>
+  <body>
+<div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
+<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+</div>
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+
+          <div class="body">
+            
+  <div class="section" id="chef-server-ctl">
+<h1>chef-server-ctl<a class="headerlink" href="#chef-server-ctl" title="Permalink to this headline">¶</a></h1>
+<p>The open source server includes a command-line utility named chef-server-ctl, which is used to start and stop individual services, reconfigure the server, and tail server log files.</p>
+<div class="section" id="options">
+<h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<p>This command has the following syntax:</p>
+<div class="highlight-python"><pre>chef-server-ctl OPTION</pre>
+</div>
+<p>This command has the following options:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">help</span></tt></dt>
+<dd>Shows help for the command.</dd>
+<dt><tt class="docutils literal"><span class="pre">reconfigure</span></tt></dt>
+<dd>Use to reconfigure the server. This option will read from the <tt class="docutils literal"><span class="pre">/etc/chef-server/chef-server.rb</span></tt> file and apply that configuration to the server. Any time changes are made to the chef-server.rb file, the chef-server-ctl command should be run with this option.</dd>
+<dt><tt class="docutils literal"><span class="pre">restart</span> <span class="pre">[SERVICE_NAME]</span></tt></dt>
+<dd>Use to restart all enabled services or to restart a single service.</dd>
+<dt><tt class="docutils literal"><span class="pre">start</span> <span class="pre">[SERVICE_NAME]</span></tt></dt>
+<dd>Use to start all enabled services or to start a single service.</dd>
+<dt><tt class="docutils literal"><span class="pre">status</span> <span class="pre">[SERVICE_NAME]</span></tt></dt>
+<dd>Use to view the status of all services or to view the status of a single service.</dd>
+<dt><tt class="docutils literal"><span class="pre">stop</span> <span class="pre">[SERVICE_NAME]</span></tt></dt>
+<dd>Use to stop all enabled services or to stop a single service.</dd>
+<dt><tt class="docutils literal"><span class="pre">tail</span> <span class="pre">[SERVICE_NAME]</span></tt></dt>
+<dd>Use to follow the server logs for all services or for a single service.</dd>
+<dt><tt class="docutils literal"><span class="pre">test</span> <span class="pre">--all</span></tt></dt>
+<dd>Use to execute chef-pedant, an integration test suite for the server installation. By default, only a subset of the available test are run. Add the <tt class="docutils literal"><span class="pre">--all</span></tt> flag to run the full test suite.</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The following examples show how to use chef-server-ctl to manage services.</p>
+<p><strong>View the status of a service</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>ctl-chef-server status name_of_service
+</pre></div>
+</div>
+<p>For example, to view the status for a service named <tt class="docutils literal"><span class="pre">erchef</span></tt>, enter:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>ctl-chef-server status erchef
+</pre></div>
+</div>
+<p><strong>Restart a service</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>ctl-chef-server restart name_of_service
+</pre></div>
+</div>
+<p>For example, to restart a service named <tt class="docutils literal"><span class="pre">erchef</span></tt>, enter:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>ctl-chef-server restart erchef
+</pre></div>
+</div>
+<p><strong>Restart all services</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>ctl-chef-server restart
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+
+      </div>
+
+  
+      <div class="clearer"></div>
+    </div>
+
+
+
+
+  </body>
+</html>

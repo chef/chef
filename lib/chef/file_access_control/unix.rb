@@ -43,6 +43,11 @@ class Chef
         should_update_mode? || should_update_owner? || should_update_group?
       end
 
+      def define_resource_requirements
+        uid_from_resource(resource)
+        gid_from_resource(resource)
+      end
+
       def describe_changes
         changes = []
         changes << "change mode from '#{mode_to_s(current_mode)}' to '#{mode_to_s(target_mode)}'" if should_update_mode?
@@ -60,7 +65,23 @@ class Chef
       end
 
       def should_update_owner?
-        !target_uid.nil? && target_uid != current_uid
+        if target_uid.nil?
+          # the user has not specified a permission on the new resource, so we never manage it with FAC
+          Chef::Log.debug("found target_uid == nil, so no owner was specified on resource, not managing owner")
+          return false
+        elsif current_uid.nil?
+          # the user has specified a permission, and we are creating a file, so always enforce permissions
+          Chef::Log.debug("found current_uid == nil, so we are creating a new file, updating owner")
+          return true
+        elsif target_uid != current_uid
+          # the user has specified a permission, and it does not match the file, so fix the permission
+          Chef::Log.debug("found target_uid != current_uid, updating owner")
+          return true
+        else
+          Chef::Log.debug("found target_uid == current_uid, not updating owner")
+          # the user has specified a permission, but it matches the file, so behave idempotently
+          return false
+        end
       end
 
       def set_owner!
@@ -103,7 +124,23 @@ class Chef
       end
 
       def should_update_group?
-        !target_gid.nil? && target_gid != current_gid
+        if target_gid.nil?
+          # the user has not specified a permission on the new resource, so we never manage it with FAC
+          Chef::Log.debug("found target_gid == nil, so no group was specified on resource, not managing group")
+          return false
+        elsif current_gid.nil?
+          # the user has specified a permission, and we are creating a file, so always enforce permissions
+          Chef::Log.debug("found current_gid == nil, so we are creating a new file, updating group")
+          return true
+        elsif target_gid != current_gid
+          # the user has specified a permission, and it does not match the file, so fix the permission
+          Chef::Log.debug("found target_gid != current_gid, updating group")
+          return true
+        else
+          Chef::Log.debug("found target_gid == current_gid, not updating group")
+          # the user has specified a permission, but it matches the file, so behave idempotently
+          return false
+        end
       end
 
       def set_group!
@@ -136,7 +173,23 @@ class Chef
       end
 
       def should_update_mode?
-        !target_mode.nil? && current_mode != target_mode 
+        if target_mode.nil?
+          # the user has not specified a permission on the new resource, so we never manage it with FAC
+          Chef::Log.debug("found target_mode == nil, so no mode was specified on resource, not managing mode")
+          return false
+        elsif current_mode.nil?
+          # the user has specified a permission, and we are creating a file, so always enforce permissions
+          Chef::Log.debug("found current_mode == nil, so we are creating a new file, updating mode")
+          return true
+        elsif target_mode != current_mode
+          # the user has specified a permission, and it does not match the file, so fix the permission
+          Chef::Log.debug("found target_mode != current_mode, updating mode")
+          return true
+        else
+          Chef::Log.debug("found target_mode == current_mode, not updating mode")
+          # the user has specified a permission, but it matches the file, so behave idempotently
+          return false
+        end
       end
 
       def set_mode!
@@ -152,17 +205,21 @@ class Chef
       end
 
       def stat
-        if File.symlink?(file)
+        if manage_symlink_attrs?
           @stat ||= File.lstat(file)
         else
           @stat ||= File.stat(file)
         end
       end
 
+      def manage_symlink_attrs?
+        @provider.manage_symlink_access?
+      end
+
       private
 
       def chmod(mode, file)
-        if File.symlink?(file)
+        if manage_symlink_attrs?
           begin
             File.lchmod(mode, file)
           rescue NotImplementedError
@@ -174,7 +231,7 @@ class Chef
       end
 
       def chown(uid, gid, file)
-        if ::File.symlink?(file)
+        if manage_symlink_attrs?
           File.lchown(uid, gid, file)
         else
           File.chown(uid, gid, file)
@@ -192,7 +249,7 @@ class Chef
         end
       end
 
-      def uid_from_resource(resource) 
+      def uid_from_resource(resource)
         return nil if resource == nil or resource.owner.nil?
         if resource.owner.kind_of?(String)
           diminished_radix_complement( Etc.getpwnam(resource.owner).uid )

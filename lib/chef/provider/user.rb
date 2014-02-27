@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -63,10 +63,14 @@ class Chef
         if user_info
           @current_resource.uid(user_info.uid)
           @current_resource.gid(user_info.gid)
-          @current_resource.comment(user_info.gecos)
           @current_resource.home(user_info.dir)
           @current_resource.shell(user_info.shell)
           @current_resource.password(user_info.passwd)
+
+          if @new_resource.comment && user_info.gecos.respond_to?(:force_encoding)
+            user_info.gecos.force_encoding(@new_resource.comment.encoding)
+          end
+          @current_resource.comment(user_info.gecos)
 
           if @new_resource.password && @current_resource.password == 'x'
             begin
@@ -79,9 +83,7 @@ class Chef
             end
           end
 
-          if @new_resource.gid
-            convert_group_name
-          end
+          convert_group_name if @new_resource.gid
         end
 
         @current_resource
@@ -89,14 +91,14 @@ class Chef
 
       def define_resource_requirements
         requirements.assert(:all_actions) do |a|
-          a.assertion { @group_name_resolved } 
+          a.assertion { @group_name_resolved }
           a.failure_message Chef::Exceptions::User, "Couldn't lookup integer GID for group name #{@new_resource.gid}"
           a.whyrun "group name #{@new_resource.gid} does not exist.  This will cause group assignment to fail.  Assuming this group will have been created previously."
         end
         requirements.assert(:all_actions) do |a|
-          a.assertion { @shadow_lib_ok } 
+          a.assertion { @shadow_lib_ok }
           a.failure_message Chef::Exceptions::MissingLibrary, "You must have ruby-shadow installed for password support!"
-          a.whyrun "ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed." + 
+          a.whyrun "ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed." +
                    "Note that user update converge may report false-positive on the basis of mismatched password. "
         end
         requirements.assert(:modify, :lock, :unlock) do |a|
@@ -112,9 +114,15 @@ class Chef
       # <true>:: If a change is required
       # <false>:: If the users are identical
       def compare_user
-        [ :uid, :gid, :comment, :home, :shell, :password ].any? do |user_attrib|
+        changed = [ :comment, :home, :shell, :password ].select do |user_attrib|
           !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib) != @current_resource.send(user_attrib)
         end
+
+        changed += [ :uid, :gid ].select do |user_attrib|
+          !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib).to_s != @current_resource.send(user_attrib).to_s
+        end
+
+        changed.any?
       end
 
       def action_create

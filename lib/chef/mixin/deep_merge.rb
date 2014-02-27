@@ -8,9 +8,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -84,17 +84,17 @@ class Chef
         when nil
           dest
         when Hash
-          source.each do |src_key, src_value|
-            if dest.kind_of?(Hash)
+          if dest.kind_of?(Hash)
+            source.each do |src_key, src_value|
               if dest[src_key]
                 dest[src_key] = deep_merge!(src_value, dest[src_key])
               else # dest[src_key] doesn't exist so we take whatever source has
                 raise_if_knockout_used!(src_value)
                 dest[src_key] = src_value
               end
-            else # dest isn't a hash, so we overwrite it completely
-              dest = source
             end
+          else # dest isn't a hash, so we overwrite it completely
+            dest = source
           end
         when Array
           if dest.kind_of?(Array)

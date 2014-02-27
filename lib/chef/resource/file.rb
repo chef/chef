@@ -36,6 +36,8 @@ class Chef
         state_attrs :checksum, :owner, :group, :mode
       end
 
+      attr_writer :checksum
+
       provides :file, :on_platforms => :all
 
       def initialize(name, run_context=nil)
@@ -46,13 +48,16 @@ class Chef
         @action = "create"
         @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
         @provider = Chef::Provider::File
+        @atomic_update = Chef::Config[:file_atomic_update]
+        @force_unlink = false
+        @manage_symlink_source = nil
         @diff = nil
+        @sensitive = false
       end
-
 
       def content(arg=nil)
         set_or_return(
-                      :content,
+          :content,
           arg,
           :kind_of => String
         )
@@ -81,7 +86,7 @@ class Chef
           :kind_of => String
         )
       end
-      
+
       def diff(arg=nil)
         set_or_return(
           :diff,
@@ -90,7 +95,37 @@ class Chef
         )
       end
 
+      def atomic_update(arg=nil)
+        set_or_return(
+          :atomic_update,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
 
+      def force_unlink(arg=nil)
+        set_or_return(
+          :force_unlink,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      def manage_symlink_source(arg=nil)
+        set_or_return(
+          :manage_symlink_source,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      def sensitive(arg=nil)
+        set_or_return(
+          :sensitive,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
     end
   end
 end

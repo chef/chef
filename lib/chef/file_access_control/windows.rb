@@ -41,6 +41,10 @@ class Chef
         set_dacl
       end
 
+      def define_resource_requirements
+        # windows FAC has no assertions
+      end
+
       def requires_changes?
         should_update_dacl? || should_update_owner? || should_update_group?
       end
@@ -214,17 +218,24 @@ class Chef
       def calculate_flags(rights)
         # Handle inheritance flags
         flags = 0
-        case rights[:applies_to_children]
-        when :containers_only
-          flags |= CONTAINER_INHERIT_ACE
-        when :objects_only
-          flags |= OBJECT_INHERIT_ACE
-        when true
-          flags |= CONTAINER_INHERIT_ACE
-          flags |= OBJECT_INHERIT_ACE
-        when nil
-          flags |= CONTAINER_INHERIT_ACE
-          flags |= OBJECT_INHERIT_ACE
+
+        #
+        # Configure child inheritence only if the resource is some
+        # type of a directory.
+        #
+        if resource.is_a? Chef::Resource::Directory
+          case rights[:applies_to_children]
+          when :containers_only
+            flags |= CONTAINER_INHERIT_ACE
+          when :objects_only
+            flags |= OBJECT_INHERIT_ACE
+          when true
+            flags |= CONTAINER_INHERIT_ACE
+            flags |= OBJECT_INHERIT_ACE
+          when nil
+            flags |= CONTAINER_INHERIT_ACE
+            flags |= OBJECT_INHERIT_ACE
+          end
         end
 
         if rights[:applies_to_self] == false

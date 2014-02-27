@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,7 @@
 
 require 'rubygems'
 require 'webrick'
+require 'webrick/https'
 require 'rack'
 #require 'thin'
 require 'singleton'
@@ -90,7 +91,7 @@ module TinyServer
       true
     rescue OpenURI::HTTPError
       true
-    rescue Errno::ECONNREFUSED => e
+    rescue Errno::ECONNREFUSED, EOFError, Errno::ECONNRESET => e
       sleep 0.1
       # If the host has ":::1 localhost" in its hosts file and if IPv6
       # is not enabled we can get NetworkUnreachable exception...
@@ -127,20 +128,20 @@ module TinyServer
       @routes = {GET => [], PUT => [], POST => [], DELETE => []}
     end
 
-    def get(path, response_code, data=nil, &block)
-      @routes[GET] << Route.new(path, Response.new(response_code,data, &block))
+    def get(path, response_code, data=nil, headers=nil, &block)
+      @routes[GET] << Route.new(path, Response.new(response_code, data, headers, &block))
     end
 
-    def put(path, response_code, data=nil, &block)
-      @routes[PUT] << Route.new(path, Response.new(response_code,data, &block))
+    def put(path, response_code, data=nil, headers=nil, &block)
+      @routes[PUT] << Route.new(path, Response.new(response_code, data, headers, &block))
     end
 
-    def post(path, response_code, data=nil, &block)
-      @routes[POST] << Route.new(path, Response.new(response_code,data, &block))
+    def post(path, response_code, data=nil, headers=nil, &block)
+      @routes[POST] << Route.new(path, Response.new(response_code, data, headers, &block))
     end
 
-    def delete(path, response_code, data=nil, &block)
-      @routes[DELETE] << Route.new(path, Response.new(response_code,data, &block))
+    def delete(path, response_code, data=nil, headers=nil, &block)
+      @routes[DELETE] << Route.new(path, Response.new(response_code, data, headers, &block))
     end
 
     def call(env)
@@ -183,14 +184,15 @@ module TinyServer
   class Response
     HEADERS = {'Content-Type' => 'application/json'}
 
-    def initialize(response_code=200,data=nil, &block)
+    def initialize(response_code=200, data=nil, headers=nil, &block)
       @response_code, @data = response_code, data
+      @response_headers = headers ? HEADERS.merge(headers) : HEADERS
       @block = block_given? ? block : nil
     end
 
     def call
       data = @data || @block.call
-      [@response_code, HEADERS, Array(data)]
+      [@response_code, @response_headers, Array(data)]
     end
 
     def to_s

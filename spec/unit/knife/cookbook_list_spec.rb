@@ -21,8 +21,8 @@ require 'spec_helper'
 describe Chef::Knife::CookbookList do
   before do
     @knife = Chef::Knife::CookbookList.new
-    @rest_mock = mock('rest')
-    @knife.stub!(:rest).and_return(@rest_mock)
+    @rest_mock = double('rest')
+    @knife.stub(:rest).and_return(@rest_mock)
     @cookbook_names = ['apache2', 'mysql']
     @base_url = 'https://server.example.com/cookbooks'
     @cookbook_data = {}
@@ -32,7 +32,7 @@ describe Chef::Knife::CookbookList do
                                               'url' => "#{@base_url}/#{item}/1.0.1"}]}
     end
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
   describe 'run' do

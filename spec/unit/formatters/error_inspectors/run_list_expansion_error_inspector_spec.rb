@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -55,10 +55,10 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
 
       @response_body = "forbidden"
       @response = Net::HTTPForbidden.new("1.1", "403", "(response) forbidden")
-      @response.stub!(:body).and_return(@response_body)
+      @response.stub(:body).and_return(@response_body)
       @exception = Net::HTTPServerException.new("(exception) forbidden", @response)
       @inspector = Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector.new(@node, @exception)
-      @inspector.stub!(:config).and_return(:node_name => "unit-test.example.com")
+      @inspector.stub(:config).and_return(:node_name => "unit-test.example.com")
 
       @inspector.add_explanation(@description)
     end
@@ -73,11 +73,11 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
     before do
       @response_body = "check your key and node name"
       @response = Net::HTTPUnauthorized.new("1.1", "401", "(response) unauthorized")
-      @response.stub!(:body).and_return(@response_body)
+      @response.stub(:body).and_return(@response_body)
       @exception = Net::HTTPServerException.new("(exception) unauthorized", @response)
 
       @inspector = Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector.new(@node, @exception)
-      @inspector.stub!(:config).and_return(:node_name => "unit-test.example.com",
+      @inspector.stub(:config).and_return(:node_name => "unit-test.example.com",
                                            :client_key => "/etc/chef/client.pem",
                                            :chef_server_url => "http://chef.example.com")
 

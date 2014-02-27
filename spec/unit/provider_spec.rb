@@ -93,15 +93,15 @@ describe Chef::Provider do
   it "does not re-load recipes when creating the temporary run context" do
     # we actually want to test that RunContext#load is never called, but we
     # can't stub all instances of an object with rspec's mocks. :/
-    Chef::RunContext.stub!(:new).and_raise("not supposed to happen")
+    Chef::RunContext.stub(:new).and_raise("not supposed to happen")
     snitch = Proc.new {temporary_collection = @run_context.resource_collection}
     @provider.send(:recipe_eval, &snitch)
   end
 
   context "when no converge actions are queued" do
     before do
-      @provider.stub!(:whyrun_supported?).and_return(true)
-      @provider.stub!(:load_current_resource)
+      @provider.stub(:whyrun_supported?).and_return(true)
+      @provider.stub(:load_current_resource)
     end
 
     it "does not mark the new resource as updated" do

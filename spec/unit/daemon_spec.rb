@@ -20,52 +20,15 @@ require 'ostruct'
 
 describe Chef::Daemon do
   before do
-    @original_config = Chef::Config.configuration
     if windows?
       mock_struct = #Struct::Passwd.new(nil, nil, 111, 111)
       mock_struct = OpenStruct.new(:uid => 2342, :gid => 2342)
-      Etc.stub!(:getpwnam).and_return mock_struct
-      Etc.stub!(:getgrnam).and_return mock_struct
+      Etc.stub(:getpwnam).and_return mock_struct
+      Etc.stub(:getgrnam).and_return mock_struct
       # mock unimplemented methods
-      Process.stub!(:initgroups).and_return nil
-      Process::GID.stub!(:change_privilege).and_return 11
-      Process::UID.stub!(:change_privilege).and_return 11
-    end
-  end
-
-  after do
-    Chef::Config.configuration.replace(@original_config)
-  end
-
-  describe ".running?" do
-
-    before do
-      Chef::Daemon.name = "spec"
-    end
-
-    describe "when a pid file exists" do
-
-      before do
-        Chef::Daemon.stub!(:pid_from_file).and_return(1337)
-      end
-
-      it "should check that there is a process matching the pidfile" do
-        Process.should_receive(:kill).with(0, 1337)
-        Chef::Daemon.running?
-      end
-
-    end
-
-    describe "when the pid file is nonexistent" do
-
-      before do
-        Chef::Daemon.stub!(:pid_from_file).and_return(nil)
-      end
-
-      it "should return false" do
-        Chef::Daemon.running?.should be_false
-      end
-
+      Process.stub(:initgroups).and_return nil
+      Process::GID.stub(:change_privilege).and_return 11
+      Process::UID.stub(:change_privilege).and_return 11
     end
   end
 
@@ -77,10 +40,6 @@ describe Chef::Daemon do
         Chef::Config[:pid_file] = "/var/run/chef/chef-client.pid"
       end
 
-      after do
-        Chef::Config.configuration.replace(@original_config)
-      end
-
       it "should return the supplied value" do
         Chef::Daemon.pid_file.should eql("/var/run/chef/chef-client.pid")
       end
@@ -89,7 +48,6 @@ describe Chef::Daemon do
     describe "without the pid_file option set" do
 
       before do
-        Chef::Config[:pid_file] = nil
         Chef::Daemon.name = "chef-client"
       end
 
@@ -112,102 +70,15 @@ describe Chef::Daemon do
     end
   end
 
-  describe ".save_pid_file" do
-
-    before do
-      Process.stub!(:pid).and_return(1337)
-      Chef::Config[:pid_file] = "/var/run/chef/chef-client.pid"
-      Chef::Application.stub!(:fatal!).and_return(true)
-      @f_mock = mock(File, { :print => true, :close => true, :write => true })
-      File.stub!(:open).with("/var/run/chef/chef-client.pid", "w").and_yield(@f_mock)
-    end
-
-    it "should try and create the parent directory" do
-      FileUtils.should_receive(:mkdir_p).with("/var/run/chef")
-      Chef::Daemon.save_pid_file
-    end
-
-    it "should open the pid file for writing" do
-      File.should_receive(:open).with("/var/run/chef/chef-client.pid", "w")
-      Chef::Daemon.save_pid_file
-    end
-
-    it "should write the pid, converted to string, to the pid file" do
-      @f_mock.should_receive(:write).with("1337").once.and_return(true)
-      Chef::Daemon.save_pid_file
-    end
-
-  end
-
-  describe ".remove_pid_file" do
-    before do
-      Chef::Config[:pid_file] = "/var/run/chef/chef-client.pid"
-    end
-
-    describe "when the pid file exists" do
-
-      before do
-        File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(true)
-      end
-
-      it "should remove the file" do
-        FileUtils.should_receive(:rm).with("/var/run/chef/chef-client.pid")
-        Chef::Daemon.remove_pid_file
-      end
-    
-
-    end
-
-    describe "when the pid file exists and the process is forked" do
-      
-      before do
-        File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(true)
-        Chef::Daemon.stub!(:forked?) { true }
-      end
-      
-      it "should not remove the file" do
-        FileUtils.should_not_receive(:rm)
-        Chef::Daemon.remove_pid_file
-      end
-      
-    end
-    
-    describe "when the pid file exists and the process is not forked" do
-      before do
-        File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(true)
-        Chef::Daemon.stub!(:forked?) { false }
-      end
-      
-      it "should remove the file" do
-        FileUtils.should_receive(:rm)
-        Chef::Daemon.remove_pid_file
-      end
-    end
-
-    describe "when the pid file does not exist" do
-
-      before do
-        File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(false)
-      end
-
-      it "should not remove the file" do
-        FileUtils.should_not_receive(:rm)
-        Chef::Daemon.remove_pid_file
-      end
-
-    end
-  end
-
   describe ".change_privilege" do
 
     before do
-      Chef::Application.stub!(:fatal!).and_return(true)
+      Chef::Application.stub(:fatal!).and_return(true)
       Chef::Config[:user] = 'aj'
-      Dir.stub!(:chdir)
+      Dir.stub(:chdir)
     end
 
     it "changes the working directory to root" do
-      Dir.rspec_reset
       Dir.should_receive(:chdir).with("/").and_return(0)
       Chef::Daemon.change_privilege
     end
@@ -230,10 +101,6 @@ describe Chef::Daemon do
     end
 
     describe "when just the user option is supplied" do
-      before do
-        Chef::Config[:group] = nil
-      end
-
       it "should log an appropriate info message" do
         Chef::Log.should_receive(:info).with("About to change privilege to aj")
         Chef::Daemon.change_privilege
@@ -249,25 +116,25 @@ describe Chef::Daemon do
   describe "._change_privilege" do
 
     before do
-      Process.stub!(:euid).and_return(0)
-      Process.stub!(:egid).and_return(0)
+      Process.stub(:euid).and_return(0)
+      Process.stub(:egid).and_return(0)
 
-      Process::UID.stub!(:change_privilege).and_return(nil)
-      Process::GID.stub!(:change_privilege).and_return(nil)
+      Process::UID.stub(:change_privilege).and_return(nil)
+      Process::GID.stub(:change_privilege).and_return(nil)
 
-      @pw_user = mock("Struct::Passwd", :uid => 501)
-      @pw_group = mock("Struct::Group", :gid => 20)
+      @pw_user = double("Struct::Passwd", :uid => 501)
+      @pw_group = double("Struct::Group", :gid => 20)
 
-      Process.stub!(:initgroups).and_return(true)
+      Process.stub(:initgroups).and_return(true)
 
-      Etc.stub!(:getpwnam).and_return(@pw_user)
-      Etc.stub!(:getgrnam).and_return(@pw_group)
+      Etc.stub(:getpwnam).and_return(@pw_user)
+      Etc.stub(:getgrnam).and_return(@pw_group)
     end
 
     describe "with sufficient privileges" do
       before do
-        Process.stub!(:euid).and_return(0)
-        Process.stub!(:egid).and_return(0)
+        Process.stub(:euid).and_return(0)
+        Process.stub(:egid).and_return(0)
       end
 
       it "should initialize the supplemental group list" do
@@ -288,14 +155,14 @@ describe Chef::Daemon do
 
     describe "with insufficient privileges" do
       before do
-        Process.stub!(:euid).and_return(999)
-        Process.stub!(:egid).and_return(999)
+        Process.stub(:euid).and_return(999)
+        Process.stub(:egid).and_return(999)
       end
 
       it "should log an appropriate error message and fail miserably" do
-        Process.stub!(:initgroups).and_raise(Errno::EPERM)
+        Process.stub(:initgroups).and_raise(Errno::EPERM)
         error = "Operation not permitted"
-        if RUBY_PLATFORM.match("solaris2")
+        if RUBY_PLATFORM.match("solaris2") || RUBY_PLATFORM.match("aix")
           error = "Not owner"
         end
         Chef::Application.should_receive(:fatal!).with("Permission denied when trying to change 999:999 to 501:20. #{error}")

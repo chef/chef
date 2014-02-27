@@ -173,7 +173,7 @@ module Shell
       cl = Chef::CookbookLoader.new(Chef::Config[:cookbook_path])
       cl.load_cookbooks
       cookbook_collection = Chef::CookbookCollection.new(cl)
-      @run_context = Chef::RunContext.new(node, cookbook_collection, @events) 
+      @run_context = Chef::RunContext.new(node, cookbook_collection, @events)
       @run_context.load(Chef::RunList::RunListExpansionFromDisk.new("_default", []))
       @run_status.run_context = run_context
     end

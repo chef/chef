@@ -26,7 +26,7 @@ describe Chef::Knife::ConfigureClient do
     Chef::Config[:validation_key] = '/etc/chef/validation.pem'
 
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
   describe 'run' do
@@ -56,7 +56,7 @@ describe Chef::Knife::ConfigureClient do
       end
 
       it 'should write out the config file' do
-        FileUtils.stub!(:mkdir_p)
+        FileUtils.stub(:mkdir_p)
         @knife.run
         @client_file.string.should match /log_level\s+\:info/
         @client_file.string.should match /log_location\s+STDOUT/
@@ -65,13 +65,13 @@ describe Chef::Knife::ConfigureClient do
       end
 
       it 'should write out the validation.pem file' do
-        FileUtils.stub!(:mkdir_p)
+        FileUtils.stub(:mkdir_p)
         @knife.run
         @validation_file.string.should match /foo_bar_baz/
       end
 
       it 'should print information on what is being configured' do
-        FileUtils.stub!(:mkdir_p)
+        FileUtils.stub(:mkdir_p)
         @knife.run
         @stdout.string.should match /creating client configuration/i
         @stdout.string.should match /writing client\.rb/i

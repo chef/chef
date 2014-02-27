@@ -22,15 +22,15 @@ describe Chef::Provider::Deploy do
 
   before do
     @release_time = Time.utc( 2004, 8, 15, 16, 23, 42)
-    Time.stub!(:now).and_return(@release_time)
+    Time.stub(:now).and_return(@release_time)
     @expected_release_dir = "/my/deploy/dir/releases/20040815162342"
     @resource = Chef::Resource::Deploy.new("/my/deploy/dir")
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @provider = Chef::Provider::Deploy.new(@resource, @run_context)
-    @provider.stub!(:release_slug)
-    @provider.stub!(:release_path).and_return(@expected_release_dir)
+    @provider.stub(:release_slug)
+    @provider.stub(:release_path).and_return(@expected_release_dir)
   end
 
   it "loads scm resource" do
@@ -43,11 +43,25 @@ describe Chef::Provider::Deploy do
     @provider.should respond_to(:action_rollback)
   end
 
+  context "when the deploy resource has a timeout attribute" do
+    let(:ten_seconds) { 10 }
+    before { @resource.timeout(ten_seconds) }
+    it "relays the timeout to the scm resource" do
+      @provider.scm_provider.new_resource.timeout.should == ten_seconds
+    end
+  end
+
+  context "when the deploy resource has no timeout attribute" do
+    it "should not set a timeout on the scm resource" do
+      @provider.scm_provider.new_resource.timeout.should be_nil
+    end
+  end
+
   context "when the deploy_to dir does not exist yet" do
     before do
       FileUtils.should_receive(:mkdir_p).with(@resource.deploy_to).ordered
       FileUtils.should_receive(:mkdir_p).with(@resource.shared_path).ordered
-      ::File.stub!(:directory?).and_return(false)
+      ::File.stub(:directory?).and_return(false)
       @provider.stub(:symlink)
       @provider.stub(:migrate)
       @provider.stub(:copy_cached_repo)
@@ -55,6 +69,7 @@ describe Chef::Provider::Deploy do
 
     it "creates deploy_to dir" do
       ::Dir.should_receive(:chdir).with(@expected_release_dir).exactly(4).times
+      @provider.should_receive(:enforce_ownership).twice
       @provider.stub(:update_cached_repo)
       @provider.deploy
     end
@@ -62,10 +77,11 @@ describe Chef::Provider::Deploy do
   end
 
   it "does not create deploy_to dir if it exists" do
-    ::File.stub!(:directory?).and_return(true)
+    ::File.stub(:directory?).and_return(true)
     ::Dir.should_receive(:chdir).with(@expected_release_dir).exactly(4).times
     FileUtils.should_not_receive(:mkdir_p).with(@resource.deploy_to)
     FileUtils.should_not_receive(:mkdir_p).with(@resource.shared_path)
+    @provider.should_receive(:enforce_ownership).twice
     @provider.stub(:copy_cached_repo)
     @provider.stub(:update_cached_repo)
     @provider.stub(:symlink)
@@ -80,6 +96,7 @@ describe Chef::Provider::Deploy do
     @provider.stub(:copy_cached_repo)
     @provider.stub(:update_cached_repo)
     @provider.stub(:install_gems)
+    @provider.should_receive(:enforce_ownership).ordered
     @provider.stub(:enforce_ownership)
     @provider.stub(:symlink)
     @provider.stub(:migrate)
@@ -105,22 +122,22 @@ describe Chef::Provider::Deploy do
   end
 
   it "should not deploy if there is already a deploy at release_path, and it is the current release" do
-    @provider.stub!(:all_releases).and_return([@expected_release_dir])
-    @provider.stub!(:current_release?).with(@expected_release_dir).and_return(true)
+    @provider.stub(:all_releases).and_return([@expected_release_dir])
+    @provider.stub(:current_release?).with(@expected_release_dir).and_return(true)
     @provider.should_not_receive(:deploy)
     @provider.run_action(:deploy)
   end
 
   it "should call action_rollback if there is already a deploy of this revision at release_path, and it is not the current release" do
-    @provider.stub!(:all_releases).and_return([@expected_release_dir, "102021"])
-    @provider.stub!(:current_release?).with(@expected_release_dir).and_return(false)
+    @provider.stub(:all_releases).and_return([@expected_release_dir, "102021"])
+    @provider.stub(:current_release?).with(@expected_release_dir).and_return(false)
     @provider.should_receive(:rollback_to).with(@expected_release_dir)
     @provider.should_receive(:current_release?)
     @provider.run_action(:deploy)
   end
 
   it "calls deploy when deploying a new release" do
-    @provider.stub!(:all_releases).and_return([])
+    @provider.stub(:all_releases).and_return([])
     @provider.should_receive(:deploy)
     @provider.run_action(:deploy)
   end
@@ -132,44 +149,44 @@ describe Chef::Provider::Deploy do
   end
 
   it "Removes the old release before deploying when force deploying over it" do
-    @provider.stub!(:all_releases).and_return([@expected_release_dir])
+    @provider.stub(:all_releases).and_return([@expected_release_dir])
     FileUtils.should_receive(:rm_rf).with(@expected_release_dir)
     @provider.should_receive(:deploy)
     @provider.run_action(:force_deploy)
   end
 
   it "deploys as normal when force deploying and there's no prior release at the same path" do
-    @provider.stub!(:all_releases).and_return([])
+    @provider.stub(:all_releases).and_return([])
     @provider.should_receive(:deploy)
     @provider.run_action(:force_deploy)
   end
 
   it "dont care by default if error happens on deploy" do
-    @provider.stub!(:all_releases).and_return(['previous_release'])
-    @provider.stub!(:deploy).and_return{ raise "Unexpected error" }
-    @provider.stub!(:previous_release_path).and_return('previous_release')
+    @provider.stub(:all_releases).and_return(['previous_release'])
+    @provider.stub(:deploy).and_return{ raise "Unexpected error" }
+    @provider.stub(:previous_release_path).and_return('previous_release')
     @provider.should_not_receive(:rollback)
-    lambda { 
+    lambda {
       @provider.run_action(:deploy)
     }.should raise_exception(RuntimeError, "Unexpected error")
   end
-  
+
   it "rollbacks to previous release if error happens on deploy" do
     @resource.rollback_on_error true
-    @provider.stub!(:all_releases).and_return(['previous_release'])
-    @provider.stub!(:deploy).and_return{ raise "Unexpected error" }
-    @provider.stub!(:previous_release_path).and_return('previous_release')
+    @provider.stub(:all_releases).and_return(['previous_release'])
+    @provider.stub(:deploy).and_return{ raise "Unexpected error" }
+    @provider.stub(:previous_release_path).and_return('previous_release')
     @provider.should_receive(:rollback)
-    lambda { 
+    lambda {
       @provider.run_action(:deploy)
     }.should raise_exception(RuntimeError, "Unexpected error")
   end
 
   describe "on systems without broken Dir.glob results" do
     it "sets the release path to the penultimate release when one is not specified, symlinks, and rm's the last release on rollback" do
-      @provider.stub!(:release_path).and_return("/my/deploy/dir/releases/3")
+      @provider.stub(:release_path).and_return("/my/deploy/dir/releases/3")
       all_releases = ["/my/deploy/dir/releases/1", "/my/deploy/dir/releases/2", "/my/deploy/dir/releases/3", "/my/deploy/dir/releases/4", "/my/deploy/dir/releases/5"]
-      Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
+      Dir.stub(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
       @provider.should_receive(:symlink)
       FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/4")
       FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/5")
@@ -178,10 +195,10 @@ describe Chef::Provider::Deploy do
     end
 
     it "sets the release path to the specified release, symlinks, and rm's any newer releases on rollback" do
-      @provider.unstub!(:release_path)
+      @provider.unstub(:release_path)
       all_releases = ["/my/deploy/dir/releases/20040815162342", "/my/deploy/dir/releases/20040700000000",
                       "/my/deploy/dir/releases/20040600000000", "/my/deploy/dir/releases/20040500000000"].sort!
-      Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
+      Dir.stub(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
       @provider.should_receive(:symlink)
       FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
       @provider.run_action(:rollback)
@@ -189,12 +206,12 @@ describe Chef::Provider::Deploy do
     end
 
     it "sets the release path to the penultimate release, symlinks, and rm's the last release on rollback" do
-      @provider.unstub!(:release_path)
+      @provider.unstub(:release_path)
       all_releases = [ "/my/deploy/dir/releases/20040815162342",
                        "/my/deploy/dir/releases/20040700000000",
                        "/my/deploy/dir/releases/20040600000000",
                        "/my/deploy/dir/releases/20040500000000"]
-      Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
+      Dir.stub(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
       @provider.should_receive(:symlink)
       FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
       @provider.run_action(:rollback)
@@ -204,22 +221,22 @@ describe Chef::Provider::Deploy do
     describe "if there are no releases to fallback to" do
 
       it "an exception is raised when there is only 1 release" do
-        #@provider.unstub!(:release_path) -- unstub the release path on top to feed our own release path
+        #@provider.unstub(:release_path) -- unstub the release path on top to feed our own release path
         all_releases = [ "/my/deploy/dir/releases/20040815162342"]
-        Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
+        Dir.stub(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
         #@provider.should_receive(:symlink)
         #FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
         #@provider.run_action(:rollback)
         #@provider.release_path.should eql(NIL) -- no check needed since assertions will fail
-        lambda { 
+        lambda {
           @provider.run_action(:rollback)
         }.should raise_exception(RuntimeError, "There is no release to rollback to!")
       end
-      
+
       it "an exception is raised when there are no releases" do
         all_releases = []
-        Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
-        lambda { 
+        Dir.stub(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
+        lambda {
           @provider.run_action(:rollback)
         }.should raise_exception(RuntimeError, "There is no release to rollback to!")
       end
@@ -228,12 +245,12 @@ describe Chef::Provider::Deploy do
 
   describe "CHEF-628: on systems with broken Dir.glob results" do
     it "sets the release path to the penultimate release, symlinks, and rm's the last release on rollback" do
-      @provider.unstub!(:release_path)
+      @provider.unstub(:release_path)
       all_releases = [ "/my/deploy/dir/releases/20040500000000",
                        "/my/deploy/dir/releases/20040600000000",
                        "/my/deploy/dir/releases/20040700000000",
                        "/my/deploy/dir/releases/20040815162342" ]
-      Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
+      Dir.stub(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
       @provider.should_receive(:symlink)
       FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
       @provider.run_action(:rollback)
@@ -243,13 +260,13 @@ describe Chef::Provider::Deploy do
 
   it "raises a runtime error when there's no release to rollback to" do
     all_releases = []
-    Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
+    Dir.stub(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
     lambda {@provider.run_action(:rollback)}.should raise_error(RuntimeError)
   end
 
   it "runs the new resource collection in the runner during a callback" do
-    @runner = mock("Runner")
-    Chef::Runner.stub!(:new).and_return(@runner)
+    @runner = double("Runner")
+    Chef::Runner.stub(:new).and_return(@runner)
     @runner.should_receive(:converge)
     callback_code = Proc.new { :noop }
     @provider.callback(:whatevs, callback_code)
@@ -324,11 +341,11 @@ describe Chef::Provider::Deploy do
     @provider.copy_cached_repo
   end
 
-  it "calls the internal callback :release_created when copying the cached repo" do
-    FileUtils.stub!(:mkdir_p)
-    FileUtils.stub!(:cp_r)
+  it "calls the internal callback :release_created when cleaning up the releases" do
+    FileUtils.stub(:mkdir_p)
+    FileUtils.stub(:cp_r)
     @provider.should_receive(:release_created)
-    @provider.copy_cached_repo
+    @provider.cleanup!
   end
 
   it "chowns the whole release dir to user and group specified in the resource" do
@@ -354,8 +371,8 @@ describe Chef::Provider::Deploy do
     FileUtils.should_receive(:ln_sf).with("/my/deploy/dir/shared/config/database.yml", @expected_release_dir + "/config/database.yml")
     @provider.should_receive(:enforce_ownership)
 
-    STDOUT.stub!(:tty?).and_return(true)
-    Chef::Log.stub!(:info?).and_return(true)
+    STDOUT.stub(:tty?).and_return(true)
+    Chef::Log.stub(:info?).and_return(true)
     @provider.should_receive(:run_command).with(:command => "migration_foo", :cwd => @expected_release_dir,
                                                 :user => "deployNinja", :group => "deployNinjas",
                                                 :log_level => :info, :live_stream => STDOUT,
@@ -419,7 +436,7 @@ describe Chef::Provider::Deploy do
       @provider.should_receive(:enforce_ownership)
       @provider.link_tempfiles_to_current_release
     end
-    
+
   end
 
   it "does nothing for restart if restart_command is empty" do
@@ -445,7 +462,7 @@ describe Chef::Provider::Deploy do
                     "/my/deploy/dir/20040600000000", "/my/deploy/dir/20040500000000",
                     "/my/deploy/dir/20040400000000", "/my/deploy/dir/20040300000000",
                     "/my/deploy/dir/20040200000000", "/my/deploy/dir/20040100000000"].sort!
-    @provider.stub!(:all_releases).and_return(all_releases)
+    @provider.stub(:all_releases).and_return(all_releases)
     FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/20040100000000")
     FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/20040200000000")
     FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/20040300000000")
@@ -458,7 +475,7 @@ describe Chef::Provider::Deploy do
                     "/my/deploy/dir/20040600000000", "/my/deploy/dir/20040500000000",
                     "/my/deploy/dir/20040400000000", "/my/deploy/dir/20040300000000",
                     "/my/deploy/dir/20040200000000", "/my/deploy/dir/20040100000000"].sort!
-    @provider.stub!(:all_releases).and_return(all_releases)
+    @provider.stub(:all_releases).and_return(all_releases)
     FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/20040100000000")
     @provider.cleanup!
   end
@@ -467,8 +484,8 @@ describe Chef::Provider::Deploy do
     all_releases = ["/my/deploy/dir/20040815162342", "/my/deploy/dir/20040700000000",
                     "/my/deploy/dir/20040600000000", "/my/deploy/dir/20040500000000",
                     "/my/deploy/dir/20040400000000", "/my/deploy/dir/20040300000000"].sort!
-    @provider.stub!(:all_releases).and_return(all_releases)
-    FileUtils.stub!(:rm_rf)
+    @provider.stub(:all_releases).and_return(all_releases)
+    FileUtils.stub(:rm_rf)
     @provider.should_receive(:release_deleted).with("/my/deploy/dir/20040300000000")
     @provider.cleanup!
   end
@@ -485,9 +502,9 @@ describe Chef::Provider::Deploy do
   end
 
   it "shouldn't give a no method error on migrate if the environment is nil" do
-    @provider.stub!(:enforce_ownership)
-    @provider.stub!(:run_symlinks_before_migrate)
-    @provider.stub!(:run_command)
+    @provider.stub(:enforce_ownership)
+    @provider.stub(:run_symlinks_before_migrate)
+    @provider.stub(:run_command)
     @provider.migrate
 
   end
@@ -526,7 +543,7 @@ describe Chef::Provider::Deploy do
     end
 
     it "defines run as a forwarder to execute, setting the user, group, cwd and environment to new_resource.user" do
-      mock_execution = mock("Resource::Execute")
+      mock_execution = double("Resource::Execute")
       @provider.should_receive(:execute).with("iGoToHell4this").and_return(mock_execution)
       @resource.user("notCoolMan")
       @resource.group("Ggroup")
@@ -555,7 +572,7 @@ describe Chef::Provider::Deploy do
     end
 
     it "defines run as a forwarder to execute, setting cwd and environment but not override" do
-      mock_execution = mock("Resource::Execute")
+      mock_execution = double("Resource::Execute")
       @provider.should_receive(:execute).with("iGoToHell4this").and_return(mock_execution)
       @resource.user("notCoolMan")
       mock_execution.should_receive(:user).with("notCoolMan")
@@ -566,8 +583,8 @@ describe Chef::Provider::Deploy do
 
 
     it "converts sudo and run to exec resources in hooks" do
-      runner = mock("tehRunner")
-      Chef::Runner.stub!(:new).and_return(runner)
+      runner = double("tehRunner")
+      Chef::Runner.stub(:new).and_return(runner)
 
       snitch = nil
       @resource.user("tehCat")
@@ -590,7 +607,7 @@ describe Chef::Provider::Deploy do
   describe "installing gems from a gems.yml" do
 
     before do
-      ::File.stub!(:exist?).with("#{@expected_release_dir}/gems.yml").and_return(true)
+      ::File.stub(:exist?).with("#{@expected_release_dir}/gems.yml").and_return(true)
       @gem_list = [{:name=>"eventmachine", :version=>"0.12.9"}]
     end
 
@@ -606,8 +623,8 @@ describe Chef::Provider::Deploy do
     end
 
     it "takes a list of gem providers converges them" do
-      IO.stub!(:read)
-      YAML.stub!(:load).and_return(@gem_list)
+      IO.stub(:read)
+      YAML.stub(:load).and_return(@gem_list)
       expected_gem_resources = @provider.send(:gem_packages).map { |r| [r.name, r.version] }
       gem_runner = @provider.send(:gem_resource_collection_runner)
       # no one has heard of defining == to be meaningful so I have use this monstrosity

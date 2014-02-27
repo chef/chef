@@ -50,14 +50,14 @@ describe Chef::ApiClient::Registration do
   end
 
   describe "when creating/updating the client on the server" do
-    let(:http_mock) { mock("Chef::REST mock") }
+    let(:http_mock) { double("Chef::REST mock") }
 
     before do
-      registration.stub!(:http_api).and_return(http_mock)
+      registration.stub(:http_api).and_return(http_mock)
     end
 
     it "creates a new ApiClient on the server using the validator identity" do
-      response = {"uri" => "https://chef.local/clients/silent-bob", 
+      response = {"uri" => "https://chef.local/clients/silent-bob",
                   "private_key" => "--begin rsa key etc--"}
       http_mock.should_receive(:post).
         with("clients", :name => 'silent-bob', :admin => false).
@@ -103,7 +103,7 @@ describe Chef::ApiClient::Registration do
 
   describe "when writing the private key to disk" do
     before do
-      registration.stub!(:private_key).and_return('--begin rsa key etc--')
+      registration.stub(:private_key).and_return('--begin rsa key etc--')
     end
 
     # Permission read via File.stat is busted on windows, though creating the
@@ -125,10 +125,10 @@ describe Chef::ApiClient::Registration do
 
   describe "when registering a client" do
 
-    let(:http_mock) { mock("Chef::REST mock") }
+    let(:http_mock) { double("Chef::REST mock") }
 
     before do
-      registration.stub!(:http_api).and_return(http_mock)
+      registration.stub(:http_api).and_return(http_mock)
     end
 
     it "creates the client on the server and writes the key" do

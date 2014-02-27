@@ -25,31 +25,27 @@ describe Chef::Provider::Mdadm do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-
     @new_resource = Chef::Resource::Mdadm.new('/dev/md1')
-    @new_resource.devices ["/dev/sdz1","/dev/sdz2"]
-    @new_resource.level   1
-    @new_resource.chunk   256
-
+    @new_resource.devices ["/dev/sdz1","/dev/sdz2","/dev/sdz3"]
     @provider = Chef::Provider::Mdadm.new(@new_resource, @run_context)
   end
 
   describe "when determining the current metadevice status" do
     it "should set the current resources mount point to the new resources mount point" do
-      @provider.stub!(:shell_out!).and_return(OpenStruct.new(:status => 0))
+      @provider.stub(:shell_out!).and_return(OpenStruct.new(:status => 0))
       @provider.load_current_resource
       @provider.current_resource.name.should == '/dev/md1'
       @provider.current_resource.raid_device.should == '/dev/md1'
     end
 
     it "determines that the metadevice exists when mdadm exit code is zero" do
-      @provider.stub!(:shell_out!).with("mdadm --detail --test /dev/md1", :returns => [0,4]).and_return(OpenStruct.new(:status => 0))
+      @provider.stub(:shell_out!).with("mdadm --detail --test /dev/md1", :returns => [0,4]).and_return(OpenStruct.new(:status => 0))
       @provider.load_current_resource
       @provider.current_resource.exists.should be_true
     end
 
     it "determines that the metadevice does not exist when mdadm exit code is 4" do
-      @provider.stub!(:shell_out!).with("mdadm --detail --test /dev/md1", :returns => [0,4]).and_return(OpenStruct.new(:status => 4))
+      @provider.stub(:shell_out!).with("mdadm --detail --test /dev/md1", :returns => [0,4]).and_return(OpenStruct.new(:status => 4))
       @provider.load_current_resource
       @provider.current_resource.exists.should be_false
     end
@@ -58,17 +54,15 @@ describe Chef::Provider::Mdadm do
   describe "after the metadevice status is known" do
     before(:each) do
       @current_resource = Chef::Resource::Mdadm.new('/dev/md1')
-      @current_resource.devices ["/dev/sdz1","/dev/sdz2"]
-      @current_resource.level   1
-      @current_resource.chunk   256
-      @provider.stub!(:load_current_resource).and_return(true)
+      @new_resource.level 5
+      @provider.stub(:load_current_resource).and_return(true)
       @provider.current_resource = @current_resource
     end
 
     describe "when creating the metadevice" do
       it "should create the raid device if it doesnt exist" do
         @current_resource.exists(false)
-        expected_command = "yes | mdadm --create /dev/md1 --chunk=256 --level 1 --metadata=0.90 --raid-devices 2 /dev/sdz1 /dev/sdz2"
+        expected_command = "yes | mdadm --create /dev/md1 --level 5 --chunk=16 --metadata=0.90 --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
         @provider.should_receive(:shell_out!).with(expected_command)
         @provider.run_action(:create)
       end
@@ -76,7 +70,16 @@ describe Chef::Provider::Mdadm do
       it "should specify a bitmap only if set" do
         @current_resource.exists(false)
         @new_resource.bitmap('grow')
-        expected_command = "yes | mdadm --create /dev/md1 --chunk=256 --level 1 --metadata=0.90 --bitmap=grow --raid-devices 2 /dev/sdz1 /dev/sdz2"
+        expected_command = "yes | mdadm --create /dev/md1 --level 5 --chunk=16 --metadata=0.90 --bitmap=grow --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
+        @provider.should_receive(:shell_out!).with(expected_command)
+        @provider.run_action(:create)
+        @new_resource.should be_updated_by_last_action
+      end
+
+      it "should not specify a chunksize if raid level 1" do
+        @current_resource.exists(false)
+        @new_resource.level 1
+        expected_command = "yes | mdadm --create /dev/md1 --level 1 --metadata=0.90 --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
         @provider.should_receive(:shell_out!).with(expected_command)
         @provider.run_action(:create)
         @new_resource.should be_updated_by_last_action
@@ -93,7 +96,7 @@ describe Chef::Provider::Mdadm do
     describe "when asembling the metadevice" do
       it "should assemble the raid device if it doesnt exist" do
         @current_resource.exists(false)
-        expected_mdadm_cmd = "yes | mdadm --assemble /dev/md1 /dev/sdz1 /dev/sdz2"
+        expected_mdadm_cmd = "yes | mdadm --assemble /dev/md1 /dev/sdz1 /dev/sdz2 /dev/sdz3"
         @provider.should_receive(:shell_out!).with(expected_mdadm_cmd)
         @provider.run_action(:assemble)
         @new_resource.should be_updated_by_last_action

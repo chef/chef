@@ -30,6 +30,7 @@ require 'chef/provider/group'
 require 'chef/provider/mount'
 require 'chef/provider/service'
 require 'chef/provider/package'
+require 'chef/provider/ifconfig'
 
 
 class Chef
@@ -71,6 +72,9 @@ class Chef
               :service => Chef::Provider::Service::Debian,
               :cron => Chef::Provider::Cron,
               :mdadm => Chef::Provider::Mdadm
+            },
+            ">= 11.10" => {
+              :ifconfig => Chef::Provider::Ifconfig::Debian
             }
           },
           :gcel   => {
@@ -114,6 +118,9 @@ class Chef
             },
             ">= 6.0" => {
               :service => Chef::Provider::Service::Insserv
+            },
+            ">= 7.0" => {
+              :ifconfig => Chef::Provider::Ifconfig::Debian
             }
           },
           :xenserver   => {
@@ -137,7 +144,8 @@ class Chef
               :service => Chef::Provider::Service::Redhat,
               :cron => Chef::Provider::Cron,
               :package => Chef::Provider::Package::Yum,
-              :mdadm => Chef::Provider::Mdadm
+              :mdadm => Chef::Provider::Mdadm,
+              :ifconfig => Chef::Provider::Ifconfig::Redhat
             }
           },
           :amazon   => {
@@ -161,7 +169,19 @@ class Chef
               :service => Chef::Provider::Service::Redhat,
               :cron => Chef::Provider::Cron,
               :package => Chef::Provider::Package::Yum,
-              :mdadm => Chef::Provider::Mdadm
+              :mdadm => Chef::Provider::Mdadm,
+              :ifconfig => Chef::Provider::Ifconfig::Redhat
+            }
+          },
+          :opensuse     => {
+            :default => {
+              :service => Chef::Provider::Service::Redhat,
+              :cron => Chef::Provider::Cron,
+              :package => Chef::Provider::Package::Zypper,
+              :group => Chef::Provider::Group::Suse
+            },
+            ">= 12.3" => {
+              :group => Chef::Provider::Group::Usermod
             }
           },
           :suse     => {
@@ -170,6 +190,19 @@ class Chef
               :cron => Chef::Provider::Cron,
               :package => Chef::Provider::Package::Zypper,
               :group => Chef::Provider::Group::Suse
+            },
+            ###############################################
+            # TODO: Remove this after ohai update is released.
+            # Only OpenSuSE 12.3+ should use the Usermod group provider:
+            # Ohai before OHAI-339 is applied reports both OpenSuSE and SuSE
+            # Enterprise as "suse", Ohai after OHAI-339 will report OpenSuSE as
+            # "opensuse".
+            #
+            # In order to support OpenSuSE both before and after the Ohai
+            # change, I'm leaving this here. It needs to get removed before
+            # SuSE enterprise 12.3 ships.
+            ">= 12.3" => {
+              :group => Chef::Provider::Group::Usermod
             }
           },
           :oracle  => {
@@ -185,7 +218,8 @@ class Chef
               :service => Chef::Provider::Service::Redhat,
               :cron => Chef::Provider::Cron,
               :package => Chef::Provider::Package::Yum,
-              :mdadm => Chef::Provider::Mdadm
+              :mdadm => Chef::Provider::Mdadm,
+              :ifconfig => Chef::Provider::Ifconfig::Redhat
             }
           },
           :gentoo   => {
@@ -307,7 +341,11 @@ class Chef
           },
           :aix => {
             :default => {
-              :group => Chef::Provider::Group::Aix
+              :group => Chef::Provider::Group::Aix,
+              :mount => Chef::Provider::Mount::Aix,
+              :ifconfig => Chef::Provider::Ifconfig::Aix,
+              :cron => Chef::Provider::Cron::Aix,
+              :package => Chef::Provider::Package::Aix
             }
           },
           :default  => {
@@ -331,6 +369,7 @@ class Chef
             :route => Chef::Provider::Route,
             :ifconfig => Chef::Provider::Ifconfig,
             :ruby_block => Chef::Provider::RubyBlock,
+            :whyrun_safe_ruby_block => Chef::Provider::WhyrunSafeRubyBlock,
             :erl_call => Chef::Provider::ErlCall,
             :log => Chef::Provider::Log::ChefLog
           }

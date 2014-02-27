@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
+# Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
 # Copyright:: Copyright 2008-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -76,8 +77,13 @@ class Chef
     class DsclCommandFailed < RuntimeError; end
     class UserIDNotFound < ArgumentError; end
     class GroupIDNotFound < ArgumentError; end
+    class ConflictingMembersInGroup < ArgumentError; end
     class InvalidResourceReference < RuntimeError; end
     class ResourceNotFound < RuntimeError; end
+
+    # Can't find a Resource of this type that is valid on this platform.
+    class NoSuchResourceType < NameError; end
+
     class InvalidResourceSpecification < ArgumentError; end
     class SolrConnectionError < RuntimeError; end
     class IllegalChecksumRevert < RuntimeError; end
@@ -114,6 +120,9 @@ class Chef
     # match OP VERSION. ArgumentError?
     class InvalidVersionConstraint < ArgumentError; end
 
+    # Version constraints are not allowed in chef-solo
+    class IllegalVersionConstraint < NotImplementedError; end
+
     # File operation attempted but no permissions to perform it
     class InsufficientPermissions < RuntimeError; end
 
@@ -133,7 +142,7 @@ class Chef
     # of merged attributes will trigger this error.
     class StaleAttributeRead < StandardError; end
 
-    #Registry Helper throws the following errors
+    # Registry Helper throws the following errors
     class Win32RegArchitectureIncorrect < Win32ArchitectureIncorrect; end
     class Win32RegHiveMissing < ArgumentError; end
     class Win32RegKeyMissing < RuntimeError; end
@@ -145,6 +154,18 @@ class Chef
     class Win32RegBadType < ArgumentError; end
     class Win32RegBadValueSize < ArgumentError; end
     class Win32RegTypesMismatch < ArgumentError; end
+
+    class InvalidEnvironmentPath < ArgumentError; end
+    class EnvironmentNotFound < RuntimeError; end
+
+    # File-like resource found a non-file (socket, pipe, directory, etc) at its destination
+    class FileTypeMismatch < RuntimeError; end
+
+    # File (or descendent) resource configured to manage symlink source, but
+    # the symlink that is there either loops or points to a nonexistent file
+    class InvalidSymlink < RuntimeError; end
+
+    class ChildConvergeError < RuntimeError; end
 
     class MissingRole < RuntimeError
       NULL = Object.new
@@ -280,5 +301,18 @@ class Chef
     # non-GET and non-HEAD request will thus raise an InvalidRedirect.
     class InvalidRedirect < StandardError; end
 
+    # Raised when the content length of a download does not match the content
+    # length declared in the http response.
+    class ContentLengthMismatch < RuntimeError
+      def initialize(response_length, content_length)
+        super "Response body length #{response_length} does not match HTTP Content-Length header #{content_length}."
+      end
+    end
+
+    class UnsupportedPlatform < RuntimeError
+      def initialize(platform)
+        super "This functionality is not supported on platform #{platform}."
+      end
+    end
   end
 end

@@ -4,28 +4,22 @@ describe Chef::Knife::Configure do
   before do
     Chef::Log.logger = Logger.new(StringIO.new)
 
-    @original_config = Chef::Config.configuration.dup
-
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::Configure.new
-    @rest_client = mock("null rest client", :post_rest => { :result => :true })
-    @knife.stub!(:rest).and_return(@rest_client)
+    @rest_client = double("null rest client", :post_rest => { :result => :true })
+    @knife.stub(:rest).and_return(@rest_client)
 
     @out = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@out)
+    @knife.ui.stub(:stdout).and_return(@out)
     @knife.config[:config_file] = '/home/you/.chef/knife.rb'
 
     @in = StringIO.new("\n" * 7)
-    @knife.ui.stub!(:stdin).and_return(@in)
+    @knife.ui.stub(:stdin).and_return(@in)
 
     @err = StringIO.new
-    @knife.ui.stub!(:stderr).and_return(@err)
+    @knife.ui.stub(:stderr).and_return(@err)
 
-    Ohai::System.stub!(:new).and_return(ohai)
-  end
-
-  after do
-    Chef::Config.configuration.replace(@original_config)
+    Ohai::System.stub(:new).and_return(ohai)
   end
 
 
@@ -39,10 +33,10 @@ describe Chef::Knife::Configure do
   end
 
   let(:default_admin_key) { "/etc/chef-server/admin.pem" }
-  let(:default_admin_key_win32) { "C:#{default_admin_key}" }
+  let(:default_admin_key_win32) { File.expand_path(default_admin_key) }
 
   let(:default_validator_key) { "/etc/chef-server/chef-validator.pem" }
-  let(:default_validator_key_win32) { "C:#{default_validator_key}" }
+  let(:default_validator_key_win32) { File.expand_path(default_validator_key) }
 
   let(:default_server_url) { "https://#{fqdn}:443" }
 
@@ -55,7 +49,7 @@ describe Chef::Knife::Configure do
 
   it "asks the user for the clientname they want for the new client if -i is specified" do
     @knife.config[:initial] = true
-    Etc.stub!(:getlogin).and_return("a-new-user")
+    Etc.stub(:getlogin).and_return("a-new-user")
     @knife.ask_user_for_config
     @out.string.should match(Regexp.escape("Please enter a name for the new user: [a-new-user]"))
     @knife.new_client_name.should == Etc.getlogin
@@ -64,14 +58,14 @@ describe Chef::Knife::Configure do
   it "should not ask the user for the clientname they want for the new client if -i and --node_name are specified" do
     @knife.config[:initial] = true
     @knife.config[:node_name] = 'testnode'
-    Etc.stub!(:getlogin).and_return("a-new-user")
+    Etc.stub(:getlogin).and_return("a-new-user")
     @knife.ask_user_for_config
     @out.string.should_not match(Regexp.escape("Please enter a name for the new user"))
     @knife.new_client_name.should == 'testnode'
   end
 
   it "asks the user for the existing API username or clientname if -i is not specified" do
-    Etc.stub!(:getlogin).and_return("a-new-user")
+    Etc.stub(:getlogin).and_return("a-new-user")
     @knife.ask_user_for_config
     @out.string.should match(Regexp.escape("Please enter an existing username or clientname for the API: [a-new-user]"))
     @knife.new_client_name.should == Etc.getlogin
@@ -103,7 +97,7 @@ describe Chef::Knife::Configure do
     @knife.ask_user_for_config
     @out.string.should match(Regexp.escape("Please enter the location of the existing admin's private key: [#{default_admin_key}]"))
     if windows?
-      @knife.admin_client_key.should == default_admin_key_win32
+      @knife.admin_client_key.capitalize.should == default_admin_key_win32.capitalize
     else
       @knife.admin_client_key.should == default_admin_key
     end
@@ -115,7 +109,7 @@ describe Chef::Knife::Configure do
     @knife.ask_user_for_config
     @out.string.should_not match(Regexp.escape("Please enter the location of the existing admin client's private key:"))
     if windows?
-      @knife.admin_client_key.should == 'C:/home/you/.chef/my-webui.pem'
+      @knife.admin_client_key.should match %r{^[A-Za-z]:/home/you/\.chef/my-webui\.pem$}
     else
       @knife.admin_client_key.should == '/home/you/.chef/my-webui.pem'
     end
@@ -154,7 +148,7 @@ describe Chef::Knife::Configure do
     @knife.ask_user_for_config
     @out.string.should match(Regexp.escape("Please enter the location of the validation key: [#{default_validator_key}]"))
     if windows?
-      @knife.validation_key.should == default_validator_key_win32
+      @knife.validation_key.capitalize.should == default_validator_key_win32.capitalize
     else
       @knife.validation_key.should == default_validator_key
     end
@@ -165,7 +159,7 @@ describe Chef::Knife::Configure do
     @knife.ask_user_for_config
     @out.string.should_not match(Regexp.escape("Please enter the location of the validation key:"))
     if windows?
-      @knife.validation_key.should == 'C:/home/you/.chef/my-validation.pem'
+      @knife.validation_key.should match %r{^[A-Za-z]:/home/you/\.chef/my-validation\.pem$}
     else
       @knife.validation_key.should == '/home/you/.chef/my-validation.pem'
     end
@@ -181,7 +175,7 @@ describe Chef::Knife::Configure do
     @knife.config[:validation_key] = '/home/you/.chef/my-validation.pem'
     @knife.config[:repository] = ''
     @knife.config[:client_key] = '/home/you/a-new-user.pem'
-    Etc.stub!(:getlogin).and_return('a-new-user')
+    Etc.stub(:getlogin).and_return('a-new-user')
 
     @knife.ask_user_for_config
     @out.string.should match(/\s*/)
@@ -190,9 +184,9 @@ describe Chef::Knife::Configure do
     @knife.chef_server.should == 'http://localhost:5000'
     @knife.admin_client_name.should == 'my-webui'
     if windows?
-      @knife.admin_client_key.should == 'C:/home/you/.chef/my-webui.pem'
-      @knife.validation_key.should == 'C:/home/you/.chef/my-validation.pem'
-      @knife.new_client_key.should == 'C:/home/you/a-new-user.pem'
+      @knife.admin_client_key.should match %r{^[A-Za-z]:/home/you/\.chef/my-webui\.pem$}
+      @knife.validation_key.should match %r{^[A-Za-z]:/home/you/\.chef/my-validation\.pem$}
+      @knife.new_client_key.should match %r{^[A-Za-z]:/home/you/a-new-user\.pem$}
     else
       @knife.admin_client_key.should == '/home/you/.chef/my-webui.pem'
       @knife.validation_key.should == '/home/you/.chef/my-validation.pem'
@@ -203,10 +197,10 @@ describe Chef::Knife::Configure do
   end
 
   it "writes the new data to a config file" do
-    File.stub!(:expand_path).with("/home/you/.chef/knife.rb").and_return("/home/you/.chef/knife.rb")
-    File.stub!(:expand_path).with("/home/you/.chef/#{Etc.getlogin}.pem").and_return("/home/you/.chef/#{Etc.getlogin}.pem")
-    File.stub!(:expand_path).with(default_validator_key).and_return(default_validator_key)
-    File.stub!(:expand_path).with(default_admin_key).and_return(default_admin_key)
+    File.stub(:expand_path).with("/home/you/.chef/knife.rb").and_return("/home/you/.chef/knife.rb")
+    File.stub(:expand_path).with("/home/you/.chef/#{Etc.getlogin}.pem").and_return("/home/you/.chef/#{Etc.getlogin}.pem")
+    File.stub(:expand_path).with(default_validator_key).and_return(default_validator_key)
+    File.stub(:expand_path).with(default_admin_key).and_return(default_admin_key)
     FileUtils.should_receive(:mkdir_p).with("/home/you/.chef")
     config_file = StringIO.new
     ::File.should_receive(:open).with("/home/you/.chef/knife.rb", "w").and_yield config_file
@@ -230,9 +224,9 @@ describe Chef::Knife::Configure do
     user_command = Chef::Knife::UserCreate.new
     user_command.should_receive(:run)
 
-    Etc.stub!(:getlogin).and_return("a-new-user")
+    Etc.stub(:getlogin).and_return("a-new-user")
 
-    Chef::Knife::UserCreate.stub!(:new).and_return(user_command)
+    Chef::Knife::UserCreate.stub(:new).and_return(user_command)
     FileUtils.should_receive(:mkdir_p).with("/home/you/.chef")
     ::File.should_receive(:open).with("/home/you/.chef/knife.rb", "w")
     @knife.config[:initial] = true

@@ -43,8 +43,8 @@ describe Chef::Provider::RegistryKey do
 
     Win32::Registry::Error = Class.new(RuntimeError)
 
-    @hive_mock = mock("::Win32::Registry::HKEY_CURRENT_USER")
-    @reg_mock = mock("reg")
+    @hive_mock = double("::Win32::Registry::HKEY_CURRENT_USER")
+    @reg_mock = double("reg")
   end
 
   describe "get_values" do

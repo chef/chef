@@ -30,14 +30,14 @@ describe Chef::Knife::UserCreate do
     @user_with_private_key = Chef::User.new
     @user_with_private_key.name "a_user"
     @user_with_private_key.private_key 'private_key'
-    @user.stub!(:create).and_return(@user_with_private_key)
-    Chef::User.stub!(:new).and_return(@user)
-    Chef::User.stub!(:from_hash).and_return(@user)
-    @knife.stub!(:edit_data).and_return(@user.to_hash)
+    @user.stub(:create).and_return(@user_with_private_key)
+    Chef::User.stub(:new).and_return(@user)
+    Chef::User.stub(:from_hash).and_return(@user)
+    @knife.stub(:edit_data).and_return(@user.to_hash)
     @stdout = StringIO.new
     @stderr = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
-    @knife.ui.stub!(:stderr).and_return(@stderr)
+    @knife.ui.stub(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stderr).and_return(@stderr)
   end
 
   it "creates a new user" do
@@ -78,7 +78,7 @@ describe Chef::Knife::UserCreate do
 
   it "writes the private key to a file when --file is specified" do
     @knife.config[:file] = "/tmp/a_file"
-    filehandle = mock("filehandle")
+    filehandle = double("filehandle")
     filehandle.should_receive(:print).with('private_key')
     File.should_receive(:open).with("/tmp/a_file", "w").and_yield(filehandle)
     @knife.run

@@ -31,6 +31,9 @@ class Chef
     attr_accessor :current_resource
     attr_accessor :run_context
 
+    attr_reader :recipe_name
+    attr_reader :cookbook_name
+
     #--
     # TODO: this should be a reader, and the action should be passed in the
     # constructor; however, many/most subclasses override the constructor so
@@ -44,6 +47,9 @@ class Chef
       @current_resource = nil
       @run_context = run_context
       @converge_actions = nil
+
+      @recipe_name = nil
+      @cookbook_name = nil
     end
 
     def whyrun_mode?
@@ -103,7 +109,7 @@ class Chef
       define_resource_requirements
       process_resource_requirements
 
-      # user-defined providers including LWRPs may 
+      # user-defined providers including LWRPs may
       # not include whyrun support - if they don't support it
       # we can't execute any actions while we're running in
       # whyrun mode. Instead we 'fake' whyrun by documenting that
@@ -128,12 +134,16 @@ class Chef
       requirements.run(@action)
     end
 
+    def resource_updated?
+      !converge_actions.empty? || @new_resource.updated_by_last_action?
+    end
+
     def set_updated_status
-      if converge_actions.empty? && !@new_resource.updated_by_last_action?
+      if !resource_updated?
         events.resource_up_to_date(@new_resource, @action)
       else
         events.resource_updated(@new_resource, @action)
-        new_resource.updated_by_last_action(true) 
+        new_resource.updated_by_last_action(true)
       end
     end
 
@@ -141,16 +151,15 @@ class Chef
       @requirements ||= ResourceRequirements.new(@new_resource, run_context)
     end
 
+    def converge_by(descriptions, &block)
+      converge_actions.add_action(descriptions, &block)
+    end
+
     protected
 
     def converge_actions
       @converge_actions ||= ConvergeActions.new(@new_resource, run_context, @action)
     end
-
-    def converge_by(descriptions, &block)
-      converge_actions.add_action(descriptions, &block)
-    end
-
 
     def recipe_eval(&block)
       # This block has new resource definitions within it, which

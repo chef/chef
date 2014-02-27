@@ -27,6 +27,7 @@ class Chef
       def initialize(name, run_context=nil)
         @resource_name = :zen_master
         super
+        allowed_actions << :win << :score
       end
 
       def peace(tf)
@@ -34,7 +35,7 @@ class Chef
       end
 
       def something(arg=nil)
-        if arg == true or arg == false
+        if !arg.nil?
           @something = arg
         end
         @something

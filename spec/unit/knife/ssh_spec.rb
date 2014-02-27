@@ -21,15 +21,8 @@ require 'net/ssh'
 require 'net/ssh/multi'
 
 describe Chef::Knife::Ssh do
-  before(:all) do
-    @original_config = Chef::Config.hash_dup
-    @original_knife_config = Chef::Config[:knife].dup
+  before(:each) do
     Chef::Config[:client_key] = CHEF_SPEC_DATA + "/ssl/private_key.pem"
-  end
-
-  after(:all) do
-    Chef::Config.configuration = @original_config
-    Chef::Config[:knife] = @original_knife_config
   end
 
   before do
@@ -52,8 +45,8 @@ describe Chef::Knife::Ssh do
       end
 
       def configure_query(node_array)
-        @query.stub!(:search).and_return([node_array])
-        Chef::Search::Query.stub!(:new).and_return(@query)
+        @query.stub(:search).and_return([node_array])
+        Chef::Search::Query.stub(:new).and_return(@query)
       end
 
       def self.should_return_specified_attributes
@@ -106,10 +99,10 @@ describe Chef::Knife::Ssh do
 
       context "when there are some hosts found but they do not have an attribute to connect with" do
         before do
-          @query.stub!(:search).and_return([[@node_foo, @node_bar]])
+          @query.stub(:search).and_return([[@node_foo, @node_bar]])
           @node_foo.automatic_attrs[:fqdn] = nil
           @node_bar.automatic_attrs[:fqdn] = nil
-          Chef::Search::Query.stub!(:new).and_return(@query)
+          Chef::Search::Query.stub(:new).and_return(@query)
         end
 
         it "should raise a specific error (CHEF-3402)" do
@@ -182,7 +175,7 @@ describe Chef::Knife::Ssh do
     before :each do
       @knife.instance_variable_set(:@longest, 0)
       ssh_config = {:timeout => 50, :user => "locutus", :port => 23 }
-      Net::SSH.stub!(:configuration_for).with('the.b.org').and_return(ssh_config)
+      Net::SSH.stub(:configuration_for).with('the.b.org').and_return(ssh_config)
     end
 
     it "uses the port from an ssh config file" do
@@ -264,7 +257,7 @@ describe Chef::Knife::Ssh do
     before do
       @query = Chef::Search::Query.new
       @query.should_receive(:search).and_return([[@node_foo]])
-      Chef::Search::Query.stub!(:new).and_return(@query)
+      Chef::Search::Query.stub(:new).and_return(@query)
       @knife.stub(:ssh_command).and_return(exit_code)
       @knife.name_args = ['*:*', 'false']
     end
@@ -284,6 +277,113 @@ describe Chef::Knife::Ssh do
       it "should not exit" do
         @knife.should_not_receive(:exit)
         @knife.run
+      end
+    end
+  end
+
+  describe "#configure_password" do
+    before do
+      @knife.config.delete(:ssh_password_ng)
+      @knife.config.delete(:ssh_password)
+    end
+
+    context "when setting ssh_password_ng from knife ssh" do
+      # in this case ssh_password_ng exists, but ssh_password does not
+      it "should prompt for a password when ssh_passsword_ng is nil"  do
+        @knife.config[:ssh_password_ng] = nil
+        @knife.should_receive(:get_password).and_return("mysekretpassw0rd")
+        @knife.configure_password
+        @knife.config[:ssh_password].should == "mysekretpassw0rd"
+      end
+
+      it "should set ssh_password to false if ssh_password_ng is false"  do
+        @knife.config[:ssh_password_ng] = false
+        @knife.should_not_receive(:get_password)
+        @knife.configure_password
+        @knife.config[:ssh_password].should be_false
+      end
+
+      it "should set ssh_password to ssh_password_ng if we set a password" do
+        @knife.config[:ssh_password_ng] = "mysekretpassw0rd"
+        @knife.should_not_receive(:get_password)
+        @knife.configure_password
+        @knife.config[:ssh_password].should == "mysekretpassw0rd"
+      end
+    end
+
+    context "when setting ssh_password from knife bootstrap / knife * server create" do
+      # in this case ssh_password exists, but ssh_password_ng does not
+      it "should set ssh_password to nil when ssh_password is nil" do
+        @knife.config[:ssh_password] = nil
+        @knife.should_not_receive(:get_password)
+        @knife.configure_password
+        @knife.config[:ssh_password].should be_nil
+      end
+
+      it "should set ssh_password to false when ssh_password is false" do
+        @knife.config[:ssh_password] = false
+        @knife.should_not_receive(:get_password)
+        @knife.configure_password
+        @knife.config[:ssh_password].should be_false
+      end
+
+      it "should set ssh_password to ssh_password if we set a password" do
+        @knife.config[:ssh_password] = "mysekretpassw0rd"
+        @knife.should_not_receive(:get_password)
+        @knife.configure_password
+        @knife.config[:ssh_password].should == "mysekretpassw0rd"
+      end
+    end
+    context "when setting ssh_password in the config variable" do
+      before(:each) do
+        Chef::Config[:knife][:ssh_password] = "my_knife_passw0rd"
+      end
+      context "when setting ssh_password_ng from knife ssh" do
+        # in this case ssh_password_ng exists, but ssh_password does not
+        it "should prompt for a password when ssh_passsword_ng is nil"  do
+          @knife.config[:ssh_password_ng] = nil
+          @knife.should_receive(:get_password).and_return("mysekretpassw0rd")
+          @knife.configure_password
+          @knife.config[:ssh_password].should == "mysekretpassw0rd"
+        end
+
+        it "should set ssh_password to the configured knife.rb value if ssh_password_ng is false"  do
+          @knife.config[:ssh_password_ng] = false
+          @knife.should_not_receive(:get_password)
+          @knife.configure_password
+          @knife.config[:ssh_password].should == "my_knife_passw0rd"
+        end
+
+        it "should set ssh_password to ssh_password_ng if we set a password" do
+          @knife.config[:ssh_password_ng] = "mysekretpassw0rd"
+          @knife.should_not_receive(:get_password)
+          @knife.configure_password
+          @knife.config[:ssh_password].should == "mysekretpassw0rd"
+        end
+      end
+
+      context "when setting ssh_password from knife bootstrap / knife * server create" do
+        # in this case ssh_password exists, but ssh_password_ng does not
+        it "should set ssh_password to the configured knife.rb value when ssh_password is nil" do
+          @knife.config[:ssh_password] = nil
+          @knife.should_not_receive(:get_password)
+          @knife.configure_password
+          @knife.config[:ssh_password].should == "my_knife_passw0rd"
+        end
+
+        it "should set ssh_password to the configured knife.rb value when ssh_password is false" do
+          @knife.config[:ssh_password] = false
+          @knife.should_not_receive(:get_password)
+          @knife.configure_password
+          @knife.config[:ssh_password].should == "my_knife_passw0rd"
+        end
+
+        it "should set ssh_password to ssh_password if we set a password" do
+          @knife.config[:ssh_password] = "mysekretpassw0rd"
+          @knife.should_not_receive(:get_password)
+          @knife.configure_password
+          @knife.config[:ssh_password].should == "mysekretpassw0rd"
+        end
       end
     end
   end

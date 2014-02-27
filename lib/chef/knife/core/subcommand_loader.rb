@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,9 +20,6 @@ require 'chef/version'
 class Chef
   class Knife
     class SubcommandLoader
-
-      CHEF_FILE_IN_GEM = /chef-[\d]+\.[\d]+\.[\d]+/
-      CURRENT_CHEF_GEM = /chef-#{Regexp.escape(Chef::VERSION)}/
 
       attr_reader :chef_config_dir
       attr_reader :env
@@ -63,15 +60,49 @@ class Chef
       # subcommand loader has been modified to load the plugins by using Kernel.load
       # with the absolute path.
       def gem_and_builtin_subcommands
-        # search all gems for chef/knife/*.rb
-        require 'rubygems'
-        find_subcommands_via_rubygems
+        if have_plugin_manifest?
+          find_subcommands_via_manifest
+        else
+          # search all gems for chef/knife/*.rb
+          require 'rubygems'
+          find_subcommands_via_rubygems
+        end
       rescue LoadError
         find_subcommands_via_dirglob
       end
 
       def subcommand_files
         @subcommand_files ||= (gem_and_builtin_subcommands.values + site_subcommands).flatten.uniq
+      end
+
+      # If the user has created a ~/.chef/plugin_manifest.json file, we'll use
+      # that instead of inspecting the on-system gems to find the plugins. The
+      # file format is expected to look like:
+      #
+      #   { "plugins": {
+      #       "knife-ec2": {
+      #         "paths": [
+      #           "/home/alice/.rubymanagerthing/gems/knife-ec2-x.y.z/lib/chef/knife/ec2_server_create.rb",
+      #           "/home/alice/.rubymanagerthing/gems/knife-ec2-x.y.z/lib/chef/knife/ec2_server_delete.rb"
+      #         ]
+      #       }
+      #     }
+      #   }
+      #
+      # Extraneous content in this file is ignored. This intentional so that we
+      # can adapt the file format for potential behavior changes to knife in
+      # the future.
+      def find_subcommands_via_manifest
+        # Format of subcommand_files is "relative_path" (something you can
+        # Kernel.require()) => full_path. The relative path isn't used
+        # currently, so we just map full_path => full_path.
+        subcommand_files = {}
+        plugin_manifest["plugins"].each do |plugin_name, plugin_manifest|
+          plugin_manifest["paths"].each do |cmd_path|
+            subcommand_files[cmd_path] = cmd_path
+          end
+        end
+        subcommand_files.merge(find_subcommands_via_dirglob)
       end
 
       def find_subcommands_via_dirglob
@@ -86,8 +117,7 @@ class Chef
       end
 
       def find_subcommands_via_rubygems
-        files = Gem.find_files 'chef/knife/*.rb'
-        files.reject! {|f| from_old_gem?(f) }
+        files = find_files_latest_gems 'chef/knife/*.rb'
         subcommand_files = {}
         files.each do |file|
           rel_path = file[/(#{Regexp.escape File.join('chef', 'knife', '')}.*)\.rb/, 1]
@@ -97,15 +127,62 @@ class Chef
         subcommand_files.merge(find_subcommands_via_dirglob)
       end
 
+      def have_plugin_manifest?
+        ENV["HOME"] && File.exist?(plugin_manifest_path)
+      end
+
+      def plugin_manifest
+        Chef::JSONCompat.from_json(File.read(plugin_manifest_path))
+      end
+
+      def plugin_manifest_path
+        File.join(ENV['HOME'], '.chef', 'plugin_manifest.json')
+      end
+
       private
 
-      # wow, this is a sad hack :(
-      # Gem.find_files finds files in all versions of a gem, which
-      # means that if chef 0.10 and 0.9.x are installed, we'll try to
-      # require, e.g., chef/knife/ec2_server_create, which will cause
-      # a gem activation error. So remove files from older chef gems.
-      def from_old_gem?(path)
-        path =~ CHEF_FILE_IN_GEM && path !~ CURRENT_CHEF_GEM
+      def find_files_latest_gems(glob, check_load_path=true)
+        files = []
+
+        if check_load_path
+          files = $LOAD_PATH.map { |load_path|
+            Dir["#{File.expand_path glob, load_path}#{Gem.suffix_pattern}"]
+          }.flatten.select { |file| File.file? file.untaint }
+        end
+
+        gem_files = latest_gem_specs.map do |spec|
+          # Gem::Specification#matches_for_glob wasn't added until RubyGems 1.8
+          if spec.respond_to? :matches_for_glob
+            spec.matches_for_glob("#{glob}#{Gem.suffix_pattern}")
+          else
+            check_spec_for_glob(spec, glob)
+          end
+        end.flatten
+
+        files.concat gem_files
+        files.uniq! if check_load_path
+
+        return files
+      end
+
+      def latest_gem_specs
+        @latest_gem_specs ||= if Gem::Specification.respond_to? :latest_specs
+          Gem::Specification.latest_specs(true)  # find prerelease gems
+        else
+          Gem.source_index.latest_specs(true)
+        end
+      end
+
+      def check_spec_for_glob(spec, glob)
+        dirs = if spec.require_paths.size > 1 then
+          "{#{spec.require_paths.join(',')}}"
+        else
+          spec.require_paths.first
+        end
+
+        glob = File.join("#{spec.full_gem_path}/#{dirs}", glob)
+
+        Dir[glob].map { |f| f.untaint }
       end
     end
   end

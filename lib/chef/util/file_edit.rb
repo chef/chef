@@ -33,7 +33,7 @@ class Chef
         @file_edited = false
 
         raise ArgumentError, "File doesn't exist" unless File.exist? @original_pathname
-        raise ArgumentError, "File is blank" unless (@contents = File.new(@original_pathname).readlines).length > 0
+        @contents = File.open(@original_pathname) { |f| f.readlines }
       end
 
       #search the file line by line and match each line with the given regex

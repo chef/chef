@@ -39,9 +39,9 @@ describe Chef::Knife::DataBagCreate do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::DataBagCreate.new
     @rest = ChefSpecs::ChefRest.new
-    @knife.stub!(:rest).and_return(@rest)
+    @knife.stub(:rest).and_return(@rest)
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
 
@@ -49,6 +49,13 @@ describe Chef::Knife::DataBagCreate do
     @knife.name_args = ['sudoing_admins']
     @rest.should_receive(:post_rest).with("data", {"name" => "sudoing_admins"})
     @knife.ui.should_receive(:info).with("Created data_bag[sudoing_admins]")
+
+    @knife.run
+  end
+
+  it "tries to create a data bag with an invalid name when given one argument" do
+    @knife.name_args = ['invalid&char']
+    @knife.should_receive(:exit).with(1)
 
     @knife.run
   end
@@ -94,7 +101,7 @@ describe Chef::Knife::DataBagCreate do
     end
 
     it "creates an encrypted data bag item via --secret" do
-      @knife.stub!(:config).and_return({:secret => @secret})
+      @knife.stub(:config).and_return({:secret => @secret})
       @knife.run
     end
 
@@ -102,7 +109,7 @@ describe Chef::Knife::DataBagCreate do
       secret_file = Tempfile.new("encrypted_data_bag_secret_file_test")
       secret_file.puts(@secret)
       secret_file.flush
-      @knife.stub!(:config).and_return({:secret_file => secret_file.path})
+      @knife.stub(:config).and_return({:secret_file => secret_file.path})
       @knife.run
     end
   end

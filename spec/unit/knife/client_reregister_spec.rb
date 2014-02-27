@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,9 +22,9 @@ describe Chef::Knife::ClientReregister do
   before(:each) do
     @knife = Chef::Knife::ClientReregister.new
     @knife.name_args = [ 'adam' ]
-    @client_mock = mock('client_mock', :private_key => "foo_key")
+    @client_mock = double('client_mock', :private_key => "foo_key")
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
   context "when no client name is given on the command line" do

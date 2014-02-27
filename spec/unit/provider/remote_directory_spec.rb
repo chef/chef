@@ -28,9 +28,6 @@ end
 describe Chef::Provider::RemoteDirectory do
   before do
     Chef::FileAccessControl.any_instance.stub(:set_all)
-    #Terrible, but we need to implement a pseduo-filesystem for testing
-    #to not have this line. Only affects updating state fields.
-    Chef::Provider::CookbookFile.any_instance.stub(:update_new_file_state)
 
     @resource = Chef::Resource::RemoteDirectory.new(File.join(Dir.tmpdir, "tafty"))
     # in CHEF_SPEC_DATA/cookbooks/openldap/files/default/remotedir
@@ -60,10 +57,10 @@ describe Chef::Provider::RemoteDirectory do
       @provider_second_run.run_action(:create)
     end
     it "identifies that the state has changed the after first run" do
-      @provider_second_run.new_resource.updated_by_last_action? == true 
+      @provider_second_run.new_resource.updated_by_last_action? == true
     end
     it "identifies that the state has not changed after the second run" do
-      @provider_second_run.new_resource.updated_by_last_action? == false 
+      @provider_second_run.new_resource.updated_by_last_action? == false
     end
   end
 
@@ -214,7 +211,6 @@ describe Chef::Provider::RemoteDirectory do
         ::File.open(@destination_dir + '/remotesubdir/remote_subdir_file1.txt', 'a') {|f| f.puts "blah blah blah" }
         file1md5 = Digest::MD5.hexdigest(::File.read(@destination_dir + '/remote_dir_file1.txt'))
         subdirfile1md5 = Digest::MD5.hexdigest(::File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))
-        @provider.stub!(:update_new_file_state)
         @provider.run_action(:create)
         file1md5.eql?(Digest::MD5.hexdigest(::File.read(@destination_dir + '/remote_dir_file1.txt'))).should be_true
         subdirfile1md5.eql?(Digest::MD5.hexdigest(::File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))).should be_true

@@ -14,7 +14,7 @@ describe Chef::CookbookCacheCleaner do
     end
 
     it "removes all files not validated during the chef run" do
-      file_cache = mock("Chef::FileCache with files from unused cookbooks")
+      file_cache = double("Chef::FileCache with files from unused cookbooks")
       unused_template_files = %w{cookbooks/unused/templates/default/foo.conf.erb cookbooks/unused/tempaltes/default/bar.conf.erb}
       valid_cached_cb_files = %w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb}
       @cleaner.mark_file_as_valid('cookbooks/valid1/recipes/default.rb')
@@ -23,7 +23,7 @@ describe Chef::CookbookCacheCleaner do
       file_cache.should_receive(:delete).with('cookbooks/unused/templates/default/foo.conf.erb')
       file_cache.should_receive(:delete).with('cookbooks/unused/tempaltes/default/bar.conf.erb')
       cookbook_hash = {"valid1"=> {}, "valid2" => {}}
-      @cleaner.stub!(:cache).and_return(file_cache)
+      @cleaner.stub(:cache).and_return(file_cache)
       @cleaner.cleanup_file_cache
     end
 
@@ -37,7 +37,7 @@ describe Chef::CookbookCacheCleaner do
       end
 
       it "does not remove anything" do
-        @cleaner.cache.stub!(:find).and_return(%w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb})
+        @cleaner.cache.stub(:find).and_return(%w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb})
         @cleaner.cache.should_not_receive(:delete)
         @cleaner.cleanup_file_cache
       end
@@ -63,6 +63,7 @@ describe Chef::CookbookSynchronizer do
                                    "checksum" => "abc456" }
     @cookbook_a_manifest["attributes"] = [ @cookbook_a_default_attrs ]
     @cookbook_a_manifest["templates"] = [{"path" => "templates/default/apache2.conf.erb", "url" => "http://chef.example.com/ffffff"}]
+    @cookbook_a_manifest["files"] = [{"path" => "files/default/megaman.conf", "url" => "http://chef.example.com/megaman.conf"}]
     @cookbook_a.manifest = @cookbook_a_manifest
     @cookbook_manifest["cookbook_a"] = @cookbook_a
 
@@ -80,7 +81,7 @@ describe Chef::CookbookSynchronizer do
 
   context "when the cache contains unneeded cookbooks" do
     before do
-      @file_cache = mock("Chef::FileCache with files from unused cookbooks")
+      @file_cache = double("Chef::FileCache with files from unused cookbooks")
       @valid_cached_cb_files = %w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb}
       @obsolete_cb_files = %w{cookbooks/old1/recipes/default.rb cookbooks/old2/recipes/default.rb}
 
@@ -93,7 +94,7 @@ describe Chef::CookbookSynchronizer do
       @file_cache.should_receive(:find).with(File.join(%w{cookbooks ** *})).and_return(@valid_cached_cb_files + @obsolete_cb_files)
       @file_cache.should_receive(:delete).with('cookbooks/old1/recipes/default.rb')
       @file_cache.should_receive(:delete).with('cookbooks/old2/recipes/default.rb')
-      @synchronizer.stub!(:cache).and_return(@file_cache)
+      @synchronizer.stub(:cache).and_return(@file_cache)
       @synchronizer.clear_obsoleted_cookbooks
     end
   end
@@ -102,18 +103,18 @@ describe Chef::CookbookSynchronizer do
     before do
       # Would rather not stub out methods on the test subject, but setting up
       # the state is a PITA and tests for this behavior are above.
-      @synchronizer.should_receive(:clear_obsoleted_cookbooks)
+      @synchronizer.stub(:clear_obsoleted_cookbooks)
 
-      @server_api = mock("Chef::REST (mock)")
-      @file_cache = mock("Chef::FileCache (mock)")
-      @synchronizer.stub!(:server_api).and_return(@server_api)
-      @synchronizer.stub!(:cache).and_return(@file_cache)
+      @server_api = double("Chef::REST (mock)")
+      @file_cache = double("Chef::FileCache (mock)")
+      @synchronizer.stub(:server_api).and_return(@server_api)
+      @synchronizer.stub(:cache).and_return(@file_cache)
 
 
-      @cookbook_a_default_recipe_tempfile = mock("Tempfile for cookbook_a default.rb recipe",
+      @cookbook_a_default_recipe_tempfile = double("Tempfile for cookbook_a default.rb recipe",
                                                  :path => "/tmp/cookbook_a_recipes_default_rb")
 
-      @cookbook_a_default_attribute_tempfile = mock("Tempfile for cookbook_a default.rb attr file",
+      @cookbook_a_default_attribute_tempfile = double("Tempfile for cookbook_a default.rb attr file",
                                                  :path => "/tmp/cookbook_a_attributes_default_rb")
 
     end
@@ -162,6 +163,53 @@ describe Chef::CookbookSynchronizer do
         @synchronizer.sync_cookbooks
       end
 
+      context "Chef::Config[:no_lazy_load] is true" do
+        before do
+          Chef::Config[:no_lazy_load] = true
+          @synchronizer = Chef::CookbookSynchronizer.new(@cookbook_manifest, @events)
+          @synchronizer.stub(:server_api).and_return(@server_api)
+          @synchronizer.stub(:cache).and_return(@file_cache)
+          @synchronizer.stub(:clear_obsoleted_cookbooks)
+
+          @cookbook_a_file_default_tempfile = double("Tempfile for cookbook_a megaman.conf file",
+                                                     :path => "/tmp/cookbook_a_file_default_tempfile")
+          @cookbook_a_template_default_tempfile = double("Tempfile for cookbook_a apache.conf.erb template",
+                                                     :path => "/tmp/cookbook_a_template_default_tempfile")
+        end
+
+        after do
+          Chef::Config[:no_lazy_load] = false
+        end
+
+        it "fetches templates and cookbook files" do
+          @file_cache.should_receive(:has_key?).
+            with("cookbooks/cookbook_a/files/default/megaman.conf").
+            and_return(false)
+          @file_cache.should_receive(:has_key?).
+            with("cookbooks/cookbook_a/templates/default/apache2.conf.erb").
+            and_return(false)
+
+          @server_api.should_receive(:get_rest).
+            with('http://chef.example.com/megaman.conf', true).
+            and_return(@cookbook_a_file_default_tempfile)
+          @file_cache.should_receive(:move_to).
+            with("/tmp/cookbook_a_file_default_tempfile", "cookbooks/cookbook_a/files/default/megaman.conf")
+          @file_cache.should_receive(:load).
+            with("cookbooks/cookbook_a/files/default/megaman.conf", false).
+            and_return("/file-cache/cookbooks/cookbook_a/default/megaman.conf")
+
+          @server_api.should_receive(:get_rest).
+            with('http://chef.example.com/ffffff', true).
+            and_return(@cookbook_a_template_default_tempfile)
+          @file_cache.should_receive(:move_to).
+            with("/tmp/cookbook_a_template_default_tempfile", "cookbooks/cookbook_a/templates/default/apache2.conf.erb")
+          @file_cache.should_receive(:load).
+            with("cookbooks/cookbook_a/templates/default/apache2.conf.erb", false).
+            and_return("/file-cache/cookbooks/cookbook_a/templates/default/apache2.conf.erb")
+
+          @synchronizer.sync_cookbooks
+        end
+      end
     end
 
     context "when the cache contains outdated files" do

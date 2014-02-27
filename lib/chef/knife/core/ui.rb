@@ -21,6 +21,7 @@
 require 'forwardable'
 require 'chef/platform/query_helpers'
 require 'chef/knife/core/generic_presenter'
+require 'tempfile'
 
 class Chef
   class Knife
@@ -165,19 +166,14 @@ class Chef
         output = Chef::JSONCompat.to_json_pretty(data)
 
         if (!config[:disable_editing])
-          filename = "knife-edit-"
-          0.upto(20) { filename += rand(9).to_s }
-          filename << ".js"
-          filename = File.join(Dir.tmpdir, filename)
-          tf = File.open(filename, "w")
-          tf.sync = true
-          tf.puts output
-          tf.close
-          raise "Please set EDITOR environment variable" unless system("#{config[:editor]} #{tf.path}")
-          tf = File.open(filename, "r")
-          output = tf.gets(nil)
-          tf.close
-          File.unlink(filename)
+          Tempfile.open([ 'knife-edit-', '.json' ]) do |tf|
+            tf.sync = true
+            tf.puts output
+            tf.close
+            raise "Please set EDITOR environment variable" unless system("#{config[:editor]} #{tf.path}")
+
+            output = IO.read(tf.path)
+          end
         end
 
         parse_output ? Chef::JSONCompat.from_json(output) : output

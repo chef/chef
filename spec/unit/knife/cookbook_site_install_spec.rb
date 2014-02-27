@@ -25,25 +25,25 @@ describe Chef::Knife::CookbookSiteInstall do
     @knife.config = {}
     if Chef::Platform.windows?
       @install_path = 'C:/tmp/chef'
-    else 
+    else
       @install_path = '/var/tmp/chef'
     end
     @knife.config[:cookbook_path] = [ @install_path ]
 
     @stdout = StringIO.new
     @stderr = StringIO.new
-    @knife.stub!(:stderr).and_return(@stdout)
-    @knife.stub!(:stdout).and_return(@stdout)
+    @knife.stub(:stderr).and_return(@stdout)
+    @knife.stub(:stdout).and_return(@stdout)
 
     #Assume all external commands would have succeed. :(
-    File.stub!(:unlink)
-    File.stub!(:rmtree)
-    @knife.stub!(:shell_out!).and_return(true)
+    File.stub(:unlink)
+    File.stub(:rmtree)
+    @knife.stub(:shell_out!).and_return(true)
 
     #CookbookSiteDownload Stup
     @downloader = {}
-    @knife.stub!(:download_cookbook_to).and_return(@downloader)
-    @downloader.stub!(:version).and_return do
+    @knife.stub(:download_cookbook_to).and_return(@downloader)
+    @downloader.stub(:version).and_return do
       if @knife.name_args.size == 2
         @knife.name_args[1]
       else
@@ -55,7 +55,7 @@ describe Chef::Knife::CookbookSiteInstall do
     @repo = stub(:sanity_check => true, :reset_to_default_state => true,
                  :prepare_to_import => true, :finalize_updates_to => true,
                  :merge_updates_from => true)
-    Chef::Knife::CookbookSCMRepo.stub!(:new).and_return(@repo)
+    Chef::Knife::CookbookSCMRepo.stub(:new).and_return(@repo)
   end
 
 

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,9 @@
 # limitations under the License.
 #
 
+require 'pathname'
+require 'stringio'
+require 'erubis'
 require 'chef/mixin/shell_out'
 require 'chef/mixin/checksum'
 
@@ -38,19 +41,9 @@ class Chef
         attr_reader :cache_path
 
         # Create a new PersistentSet. Values in the set are persisted by
-        # creating a file in the +cache_path+ directory. If not given, the
-        # value of Chef::Config[:syntax_check_cache_path] is used; if that
-        # value is not configured, the value of
-        # Chef::Config[:cache_options][:path] is used.
-        #--
-        # history: prior to Chef 11, the cache implementation was based on
-        # moneta and configured via cache_options[:path]. Knife configs
-        # generated with Chef 11 will have `syntax_check_cache_path`, but older
-        # configs will have `cache_options[:path]`. `cache_options` is marked
-        # deprecated in chef/config.rb but doesn't currently trigger a warning.
-        # See also: CHEF-3715
-        def initialize(cache_path=nil)
-          @cache_path = cache_path || Chef::Config[:syntax_check_cache_path] || Chef::Config[:cache_options][:path]
+        # creating a file in the +cache_path+ directory.
+        def initialize(cache_path=Chef::Config[:syntax_check_cache_path])
+          @cache_path = cache_path
           @cache_path_created = false
         end
 
@@ -102,8 +95,22 @@ class Chef
         @validated_files = PersistentSet.new
       end
 
+      def chefignore
+        @chefignore ||= Chefignore.new(File.dirname(cookbook_path))
+      end
+
+      def remove_ignored_files(file_list)
+        return file_list unless chefignore.ignores.length > 0
+        file_list.reject do |full_path|
+          cookbook_pn = Pathname.new cookbook_path
+          full_pn = Pathname.new full_path
+          relative_pn = full_pn.relative_path_from cookbook_pn
+          chefignore.ignored? relative_pn.to_s
+        end
+      end
+
       def ruby_files
-        Dir[File.join(cookbook_path, '**', '*.rb')]
+        remove_ignored_files Dir[File.join(cookbook_path, '**', '*.rb')]
       end
 
       def untested_ruby_files
@@ -118,11 +125,11 @@ class Chef
       end
 
       def template_files
-        Dir[File.join(cookbook_path, '**', '*.erb')]
+        remove_ignored_files Dir[File.join(cookbook_path, '**', '*.erb')]
       end
 
       def untested_template_files
-        template_files.reject do |file| 
+        template_files.reject do |file|
           if validated?(file)
             Chef::Log.debug("Template #{file} is unchanged, skipping syntax check")
             true
@@ -156,26 +163,125 @@ class Chef
 
       def validate_template(erb_file)
         Chef::Log.debug("Testing template #{erb_file} for syntax errors...")
-        result = shell_out("erubis -x #{erb_file} | ruby -c")
-        result.error!
-        true
-      rescue Mixlib::ShellOut::ShellCommandFailed
-        file_relative_path = erb_file[/^#{Regexp.escape(cookbook_path+File::Separator)}(.*)/, 1]
-        Chef::Log.fatal("Erb template #{file_relative_path} has a syntax error:")
-        result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
-        false
+        if validate_inline?
+          validate_erb_file_inline(erb_file)
+        else
+          validate_erb_via_subcommand(erb_file)
+        end
       end
 
       def validate_ruby_file(ruby_file)
         Chef::Log.debug("Testing #{ruby_file} for syntax errors...")
-        result = shell_out("ruby -c #{ruby_file}")
+        if validate_inline?
+          validate_ruby_file_inline(ruby_file)
+        else
+          validate_ruby_by_subcommand(ruby_file)
+        end
+      end
+
+      # Whether or not we're running on a version of ruby that can support
+      # inline validation. Inline validation relies on the `RubyVM` features
+      # introduced with ruby 1.9, so 1.8 cannot be supported.
+      def validate_inline?
+        defined?(RubyVM::InstructionSequence)
+      end
+
+      # Validate the ruby code in an erb template. Uses RubyVM to do syntax
+      # checking, so callers should check #validate_inline? before calling.
+      def validate_erb_file_inline(erb_file)
+        old_stderr = $stderr
+
+        engine = Erubis::Eruby.new
+        engine.convert!(IO.read(erb_file))
+
+        ruby_code = engine.src
+
+        # Even when we're compiling the code w/ RubyVM, syntax errors just
+        # print to $stderr. We want to capture this and handle the printing
+        # ourselves, so we must temporarily swap $stderr to capture the output.
+        tmp_stderr = $stderr = StringIO.new
+
+        abs_path = File.expand_path(erb_file)
+        RubyVM::InstructionSequence.new(ruby_code, erb_file, abs_path, 0)
+
+        true
+      rescue SyntaxError
+        $stderr = old_stderr
+        invalid_erb_file(erb_file, tmp_stderr.string)
+        false
+      ensure
+        # be paranoid about setting stderr back to the old value.
+        $stderr = old_stderr if defined?(old_stderr) && old_stderr
+      end
+
+      # Validate the ruby code in an erb template. Pipes the output of `erubis
+      # -x` to `ruby -c`, so it works with any ruby version, but is much slower
+      # than the inline version.
+      # --
+      # TODO: This can be removed when ruby 1.8 support is dropped.
+      def validate_erb_via_subcommand(erb_file)
+        result = shell_out("erubis -x #{erb_file} | #{ruby} -c")
         result.error!
         true
       rescue Mixlib::ShellOut::ShellCommandFailed
+        invalid_erb_file(erb_file, result.stderr)
+        false
+      end
+
+      # Debug a syntax error in a template.
+      def invalid_erb_file(erb_file, error_message)
+        file_relative_path = erb_file[/^#{Regexp.escape(cookbook_path+File::Separator)}(.*)/, 1]
+        Chef::Log.fatal("Erb template #{file_relative_path} has a syntax error:")
+        error_message.each_line { |l| Chef::Log.fatal(l.chomp) }
+        nil
+      end
+
+      # Validate the syntax of a ruby file. Uses (Ruby 1.9+ only) RubyVM to
+      # compile the code without evaluating it or spawning a new process.
+      # Callers should check #validate_inline? before calling.
+      def validate_ruby_file_inline(ruby_file)
+        # Even when we're compiling the code w/ RubyVM, syntax errors just
+        # print to $stderr. We want to capture this and handle the printing
+        # ourselves, so we must temporarily swap $stderr to capture the output.
+        old_stderr = $stderr
+        tmp_stderr = $stderr = StringIO.new
+        abs_path = File.expand_path(ruby_file)
+        file_content = IO.read(abs_path)
+        RubyVM::InstructionSequence.new(file_content, ruby_file, abs_path, 0)
+        true
+      rescue SyntaxError
+        $stderr = old_stderr
+        invalid_ruby_file(ruby_file, tmp_stderr.string)
+        false
+      ensure
+        # be paranoid about setting stderr back to the old value.
+        $stderr = old_stderr if defined?(old_stderr) && old_stderr
+      end
+
+      # Validate the syntax of a ruby file by shelling out to `ruby -c`. Should
+      # work for all ruby versions, but is slower and uses more resources than
+      # the inline strategy.
+      def validate_ruby_by_subcommand(ruby_file)
+        result = shell_out("#{ruby} -c #{ruby_file}")
+        result.error!
+        true
+      rescue Mixlib::ShellOut::ShellCommandFailed
+        invalid_ruby_file(ruby_file, result.stderr)
+        false
+      end
+
+      # Debugs ruby syntax errors by printing the path to the file and any
+      # diagnostic info given in +error_message+
+      def invalid_ruby_file(ruby_file, error_message)
         file_relative_path = ruby_file[/^#{Regexp.escape(cookbook_path+File::Separator)}(.*)/, 1]
         Chef::Log.fatal("Cookbook file #{file_relative_path} has a ruby syntax error:")
-        result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
+        error_message.each_line { |l| Chef::Log.fatal(l.chomp) }
         false
+      end
+
+      # Returns the full path to the running ruby.
+      def ruby
+        Gem.ruby
       end
 
     end

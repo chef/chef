@@ -22,7 +22,7 @@ describe Chef::Knife::CookbookDownload do
   before(:each) do
     @knife = Chef::Knife::CookbookDownload.new
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
   describe 'run' do
@@ -33,11 +33,18 @@ describe Chef::Knife::CookbookDownload do
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 
+    it 'should exit with a fatal error when there is no cookbook on the server' do
+      @knife.name_args = ['foobar', nil]
+      @knife.should_receive(:determine_version).and_return(nil)
+      @knife.ui.should_receive(:fatal).with('No such cookbook found')
+      lambda { @knife.run }.should raise_error(SystemExit)
+    end
+
     describe 'with a cookbook name' do
       before(:each) do
         @knife.name_args = ['foobar']
         @knife.config[:download_directory] = '/var/tmp/chef'
-        @rest_mock = mock('rest')
+        @rest_mock = double('rest')
         @knife.stub(:rest).and_return(@rest_mock)
 
         @manifest_data = {
@@ -59,18 +66,18 @@ describe Chef::Knife::CookbookDownload do
           ]
         }
 
-        @cookbook_mock = mock('cookbook')
-        @cookbook_mock.stub!(:version).and_return('1.0.0')
-        @cookbook_mock.stub!(:manifest).and_return(@manifest_data)
+        @cookbook_mock = double('cookbook')
+        @cookbook_mock.stub(:version).and_return('1.0.0')
+        @cookbook_mock.stub(:manifest).and_return(@manifest_data)
         @rest_mock.should_receive(:get_rest).with('cookbooks/foobar/1.0.0').
                                              and_return(@cookbook_mock)
       end
 
       it 'should determine which version if one was not explicitly specified'do
-        @cookbook_mock.stub!(:manifest).and_return({})
+        @cookbook_mock.stub(:manifest).and_return({})
         @knife.should_receive(:determine_version).and_return('1.0.0')
         File.should_receive(:exists?).with('/var/tmp/chef/foobar-1.0.0').and_return(false)
-        Chef::CookbookVersion.stub!(:COOKBOOK_SEGEMENTS).and_return([])
+        Chef::CookbookVersion.stub(:COOKBOOK_SEGEMENTS).and_return([])
         @knife.run
       end
 
@@ -80,8 +87,8 @@ describe Chef::Knife::CookbookDownload do
           @files = @manifest_data.values.map { |v| v.map { |i| i['path'] } }.flatten.uniq
           @files_mocks = {}
           @files.map { |f| File.basename(f) }.flatten.uniq.each do |f|
-            @files_mocks[f] = mock("#{f}_mock")
-            @files_mocks[f].stub!(:path).and_return("/var/tmp/#{f}")
+            @files_mocks[f] = double("#{f}_mock")
+            @files_mocks[f].stub(:path).and_return("/var/tmp/#{f}")
           end
         end
 
@@ -136,6 +143,13 @@ describe Chef::Knife::CookbookDownload do
   end
 
   describe 'determine_version' do
+
+    it 'should return nil if there are no versions' do
+      @knife.should_receive(:available_versions).and_return(nil)
+      @knife.determine_version.should == nil
+      @knife.version.should == nil
+    end
+
     it 'should return and set the version if there is only one version' do
       @knife.should_receive(:available_versions).at_least(:once).and_return(['1.0.0'])
       @knife.determine_version.should == '1.0.0'
@@ -143,7 +157,7 @@ describe Chef::Knife::CookbookDownload do
     end
 
     it 'should ask which version to download and return it if there is more than one' do
-      @knife.should_receive(:available_versions).and_return(['1.0.0', '2.0.0'])
+      @knife.should_receive(:available_versions).at_least(:once).and_return(['1.0.0', '2.0.0'])
       @knife.should_receive(:ask_which_version).and_return('1.0.0')
       @knife.determine_version.should == '1.0.0'
     end
@@ -152,7 +166,7 @@ describe Chef::Knife::CookbookDownload do
       it 'should return and set the version to the latest version' do
         @knife.config[:latest] = true
         @knife.should_receive(:available_versions).at_least(:once).
-                                                   and_return(['1.0.0', '2.0.0', '1.1.0'])
+                                                   and_return(['1.0.0', '1.1.0', '2.0.0'])
         @knife.determine_version
         @knife.version.to_s.should == '2.0.0'
       end
@@ -164,7 +178,14 @@ describe Chef::Knife::CookbookDownload do
       @knife.cookbook_name = 'foobar'
     end
 
-    it 'should return the available vesions' do
+    it 'should return nil if there are no versions' do
+      Chef::CookbookVersion.should_receive(:available_versions).
+                            with('foobar').
+                            and_return(nil)
+      @knife.available_versions.should == nil
+    end
+
+    it 'should return the available versions' do
       Chef::CookbookVersion.should_receive(:available_versions).
                             with('foobar').
                             and_return(['1.1.0', '2.0.0', '1.0.0'])
@@ -186,7 +207,7 @@ describe Chef::Knife::CookbookDownload do
   describe 'ask_which_version' do
     before(:each) do
       @knife.cookbook_name = 'foobar'
-      @knife.stub!(:available_versions).and_return(['1.0.0', '1.1.0', '2.0.0'])
+      @knife.stub(:available_versions).and_return(['1.0.0', '1.1.0', '2.0.0'])
     end
 
     it 'should prompt the user to select a version' do

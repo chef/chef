@@ -21,8 +21,10 @@ require 'chef/mixin/params_validate'
 require 'chef/dsl/platform_introspection'
 require 'chef/dsl/data_query'
 require 'chef/dsl/registry_helper'
+require 'chef/dsl/reboot_pending'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/resource/conditional'
+require 'chef/resource/conditional_action_not_nothing'
 require 'chef/resource_collection'
 require 'chef/resource_platform_map'
 require 'chef/node'
@@ -124,6 +126,7 @@ F
     include Chef::Mixin::ParamsValidate
     include Chef::DSL::PlatformIntrospection
     include Chef::DSL::RegistryHelper
+    include Chef::DSL::RebootPending
     include Chef::Mixin::ConvertToClassName
     include Chef::Mixin::Deprecation
 
@@ -404,6 +407,9 @@ F
       # could end up with multiple resources.
       resources = [ resource_spec ].flatten
       resources.each do |resource|
+
+        validate_resource_spec!(resource_spec)
+
         case timing.to_s
         when 'delayed'
           notifies_delayed(action, resource)
@@ -458,6 +464,10 @@ F
         resource.notifies(action, self, timing)
       end
       true
+    end
+
+    def validate_resource_spec!(resource_spec)
+      run_context.resource_collection.validate_lookup_spec!(resource_spec)
     end
 
     def is(*args)
@@ -665,10 +675,12 @@ F
     # "fails" its check. Subsequent conditionals are not evaluated, so in
     # general it's not a good idea to rely on side effects from not_if or
     # only_if commands/blocks being evaluated.
+    #
+    # Also skips conditional checking when the action is :nothing
     def should_skip?(action)
-      conditionals = only_if + not_if
-      return false if conditionals.empty?
+      conditional_action = ConditionalActionNotNothing.new(action)
 
+      conditionals = [ conditional_action ] + only_if + not_if
       conditionals.find do |conditional|
         if conditional.continue?
           false

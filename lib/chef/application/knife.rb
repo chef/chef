@@ -19,6 +19,8 @@ require 'chef/knife'
 require 'chef/application'
 require 'mixlib/log'
 require 'ohai/config'
+require 'chef/monkey_patches/net_http.rb'
+require 'chef/monkey_patches/uri.rb'
 
 class Chef::Application::Knife < Chef::Application
 
@@ -105,6 +107,16 @@ class Chef::Application::Knife < Chef::Application
     :long => "--format FORMAT",
     :description => "Which format to use for output",
     :default => "summary"
+
+  option :local_mode,
+    :short        => "-z",
+    :long         => "--local-mode",
+    :description  => "Point knife commands at local repository instead of server",
+    :boolean      => true
+
+  option :chef_zero_port,
+    :long         => "--chef-zero-port PORT",
+    :description  => "Port to start chef-zero on"
 
   option :version,
     :short        => "-v",

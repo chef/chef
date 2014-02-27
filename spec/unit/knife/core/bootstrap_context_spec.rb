@@ -118,14 +118,22 @@ EXPECTED
 
   describe "when an encrypted_data_bag_secret is provided" do
     context "via config[:secret]" do
-      let(:config){ {:secret => "supersekret" }}
+      let(:chef_config) do
+        {
+          :knife => {:secret => "supersekret" }
+        }
+      end
       it "reads the encrypted_data_bag_secret" do
         bootstrap_context.encrypted_data_bag_secret.should eq "supersekret"
       end
     end
 
     context "via config[:secret_file]" do
-      let(:config){ {:secret_file =>  secret_file}}
+      let(:chef_config) do
+        {
+          :knife => {:secret_file =>  secret_file}
+        }
+      end
       it "reads the encrypted_data_bag_secret" do
         bootstrap_context.encrypted_data_bag_secret.should eq IO.read(secret_file)
       end
