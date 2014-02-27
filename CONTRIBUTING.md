@@ -134,7 +134,7 @@ The versioning for the Chef project is X.Y.Z.
 * Y is a minor release, which adds both new features and bug fixes
 * Z is a patch release, which adds just bug fixes
 
-Major releases and have historically been once a year. Minor releases for Chef average every two months and patch releases come as needed.
+Major releases and have historically been once a year. Minor releases for Chef average every three months and patch releases come as needed.
 
 There are usually beta releases and release candidates (RC) of major and minor releases announced on
 the [chef-dev mailing list](http://lists.opscode.com/sympa/info/chef-dev). Once an RC is released, we wait at least three
