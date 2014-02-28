@@ -1,0 +1,19 @@
+Package Name: chef
+Package VRMF: TBS
+Update: N
+Fileset
+  Fileset Name: chef
+  Fileset VRMF: TBS
+  Fileset Description: Opscode Chef Client
+  USRLIBLPPFiles
+  Configuration Script: /opt/chef/bin/postinstall.sh
+  Unconfiguration Script: /opt/chef/bin/unpostinstall.sh
+  EOUSRLIBLPPFiles
+  Bosboot required: N
+  License agreement acceptance required: N
+  Include license files in this package: N
+  Requisites: 
+  ROOT Part: N
+    ROOTFiles
+    EOROOTFiles
+  USRFiles

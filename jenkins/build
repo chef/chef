@@ -33,27 +33,13 @@ exists() {
   fi
 }
 
-usage() {
-  echo >&2 \
-  "usage: $0 [-p project_name]"
-}
-
 if [ "x$os" = "xAIX" ]; then
   # need to unset LIBPATH on AIX (like LD_LIBRARY_PATH on Solaris, Jenkins sets this (wrongly) on AIX)
   unset LIBPATH
 fi
 
-# Get command line arguments
-while getopts :p: opt; do
-  echo $opt
-  case "$opt" in
-    p)  project_name="$OPTARG";;
-    [\?]|[\:]) usage; exit 1;;
-  esac
-done
-
-if [ -z $project_name ]; then
-  usage
+if [ -z $OMNIBUS_PROJECT_NAME ]; then
+  echo "OMNIBUS_PROJECT_NAME environment variable is not set!"
   exit 1
 fi
 
@@ -113,7 +99,7 @@ if [ "x$os" = "xAIX" ]; then
   sudo chown jenkins /.info || true
   sudo rm -rf /tmp/bff || true
   # deinstall the bff if it got installed, can't build if it is installed
-  sudo installp -u chef || true
+  sudo installp -u $OMNIBUS_PROJECT_NAME || true
   # AIX needs /opt/freeware/bin and /usr/sbin
   if [ -d "/opt/freeware/bin" ]; then
     PATH=/opt/freeware/bin:$PATH:/usr/sbin
@@ -122,8 +108,8 @@ if [ "x$os" = "xAIX" ]; then
 fi
 
 if [ "$CLEAN" = "true" ]; then
-  sudo rm -rf "/opt/${project_name}" || true
-  sudo mkdir -p "/opt/${project_name}"
+  sudo rm -rf "/opt/${OMNIBUS_PROJECT_NAME}" || true
+  sudo mkdir -p "/opt/${OMNIBUS_PROJECT_NAME}"
   sudo rm -rf /var/cache/omnibus/pkg/* || true
   sudo rm -rf /var/cache/omnibus/src/* || true
   sudo rm -f /var/cache/omnibus/build/*/*.manifest || true
@@ -131,7 +117,7 @@ if [ "$CLEAN" = "true" ]; then
 fi
 
 # always fix up permissions
-sudo chown -R jenkins-node "/opt/${project_name}" || sudo chown -R jenkins "/opt/${project_name}"
+sudo chown -R jenkins-node "/opt/${OMNIBUS_PROJECT_NAME}" || sudo chown -R jenkins "/opt/${OMNIBUS_PROJECT_NAME}"
 sudo chown -R jenkins-node "/var/cache/omnibus" || sudo chown -R jenkins "/var/cache/omnibus"
 
 # copy config into place
@@ -156,9 +142,9 @@ fi
 bundle install --without docs
 
 if [ "$RELEASE_BUILD" = "true" ]; then
-  bundle exec omnibus build project $project_name --no-timestamp
+  bundle exec omnibus build project $OMNIBUS_PROJECT_NAME --no-timestamp
 else
-  bundle exec omnibus build project $project_name
+  bundle exec omnibus build project $OMNIBUS_PROJECT_NAME
 fi
 
 # Sign the package on some platforms:
@@ -170,4 +156,4 @@ fi
 
 # Dump the build-generated version so the Omnitruck release script uses the
 # correct version string format.
-echo "`awk -v p=$project_name '$1 == p {print $2}' /opt/${project_name}/version-manifest.txt`" > pkg/BUILD_VERSION
+echo "`awk -v p=$OMNIBUS_PROJECT_NAME '$1 == p {print $2}' /opt/${OMNIBUS_PROJECT_NAME}/version-manifest.txt`" > pkg/BUILD_VERSION

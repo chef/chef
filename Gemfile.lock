@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: 3d9d097332199fdafc3237c0ec11fcd784c11b4d
+  revision: 677fefdcf611f4a2ce08014fb16acb7003401760
   branch: master
   specs:
     omnibus-software (0.0.1)
@@ -9,15 +9,15 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.3.5)
-    arr-pm (0.0.8)
+    arr-pm (0.0.9)
       cabin (> 0)
-    backports (3.3.5)
+    backports (3.6.0)
     cabin (0.6.1)
-    childprocess (0.3.9)
+    childprocess (0.5.1)
       ffi (~> 1.0, >= 1.0.11)
     clamp (0.6.3)
     ffi (1.9.3)
-    fpm (1.0.0)
+    fpm (1.0.2)
       arr-pm (~> 0.0.8)
       backports (>= 2.6.2)
       cabin (>= 0.6.0)
@@ -26,7 +26,7 @@ GEM
       ffi
       ftw (~> 0.0.30)
       json (>= 1.7.7)
-    ftw (0.0.37)
+    ftw (0.0.39)
       addressable
       backports (>= 2.6.2)
       cabin (> 0)
@@ -47,24 +47,24 @@ GEM
       mixlib-shellout
       systemu (~> 2.5.2)
       yajl-ruby
-    omnibus (1.3.0)
+    omnibus (2.0.0.rc1)
       fpm (~> 1.0.0)
-      mixlib-config (~> 2.1.0)
-      mixlib-shellout (~> 1.3.0)
-      ohai (>= 0.6.12)
-      rake (>= 0.9)
+      mixlib-config (~> 2.1)
+      mixlib-shellout (~> 1.3)
+      ohai (~> 6.12)
+      rake
       thor (>= 0.16.0)
       uber-s3
-    rake (10.1.0)
+    rake (10.1.1)
     systemu (2.5.2)
     thor (0.18.1)
     uber-s3 (0.2.4)
       mime-types (~> 1.17)
-    yajl-ruby (1.1.0)
+    yajl-ruby (1.2.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  omnibus (~> 1.3.0)
+  omnibus (>= 2.0.0.rc1)
   omnibus-software!

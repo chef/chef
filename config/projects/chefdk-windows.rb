@@ -15,17 +15,22 @@
 # limitations under the License.
 #
 
-name "chef-windows"
+name "chefdk-windows"
 maintainer "Opscode, Inc."
 homepage "http://www.opscode.com"
 
 # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
 #       Native gems will use gcc which will barf on files with spaces,
 #       which is only fixable if everyone in the world fixes their Makefiles
-install_path    "c:\\opscode\\chef"
+install_path    "c:\\opscode\\chefdk"
 build_version   Omnibus::BuildVersion.full
 build_iteration 4
-package_name    "chef-client"
+
+package_name    "chef-dk"
+
+override :berkshelf, version: "3.0.0.beta6"
+override :bundler,   version: "1.5.2"
+override :nokogiri,  version: "1.6.1"
 
 dependency "preparation"
 dependency "ruby-windows"
@@ -33,4 +38,5 @@ dependency "libyaml-windows"
 dependency "ruby-windows-devkit"
 dependency "chef-windows"
 dependency "ohai" if ENV["OHAI_GIT_REV"]
+dependency "chefdk"
 dependency "chef-client-msi"

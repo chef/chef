@@ -94,7 +94,7 @@ build do
     "libbz2-2.dll" => "libbz2-2.dll",
     "libz-1.dll" => "libz-1.dll"
   }.each do |target, to|
-    command "mklink C:\\opscode\\chef\\bin\\#{target} C:\\opscode\\chef\\embedded\\mingw\\bin\\#{to}"
+    command "mklink #{File.expand_path(File.join(install_dir, "bin", target)).gsub(/\//, "\\")} #{File.expand_path(File.join(install_dir, "embedded", "mingw", "bin", to)).gsub(/\//, "\\")}"
   end
 
   rake "gem"
@@ -128,19 +128,22 @@ EOBATCH
 
     gem_executables = []
     %w{chef}.each do |gem|
-      gem_file = Dir["C:/opscode/chef/embedded/**/cache/#{gem}*mingw32.gem"].first
+      puts "#{install_dir.gsub(/\\/, '/')}/embedded/**/cache/#{gem}*mingw32.gem"
+      require 'pp'
+      pp Dir["#{install_dir.gsub(/\\/, '/')}/embedded/**/cache/#{gem}*mingw32.gem"]
+      gem_file = Dir["#{install_dir.gsub(/\\/, '/')}/embedded/**/cache/#{gem}*mingw32.gem"].first
       gem_executables << Gem::Format.from_file_by_path(gem_file).spec.executables
     end
 
     # XXX: need to fix ohai to use own gemspec as well and eliminate copypasta
     %w{ohai}.each do |gem|
-      gem_file = Dir["C:/opscode/chef/embedded/**/cache/#{gem}*.gem"].first
+      gem_file = Dir["#{install_dir.gsub(/\\/, '/')}/embedded/**/cache/#{gem}*.gem"].first
       gem_executables << Gem::Format.from_file_by_path(gem_file).spec.executables
     end
 
     gem_executables.flatten.each do |bin|
       @bin = bin
-      File.open("C:\\opscode\\chef\\bin\\#{@bin}.bat", "w") do |f|
+      File.open("#{install_dir}/bin/#{@bin}.bat", "w") do |f|
         f.puts batch_template.result(binding)
       end
     end
