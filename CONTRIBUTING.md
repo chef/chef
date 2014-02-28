@@ -24,7 +24,7 @@ Chef uses the Apache 2.0 license to strike a balance between open contribution a
 The license tells you what rights you have that are provided by the copyright holder. It is important that the contributor fully understands what rights
 they are licensing and agrees to them. Sometimes the copyright holder isn't the contributor, most often when the contributor is doing work for a company.
 
-To make a good faith effort to ensure these criteria are met, Opscode requires a Contributor License Agreement (CLA) or a Corporate Contributor License
+To make a good faith effort to ensure these criteria are met, Chef requires a Contributor License Agreement (CLA) or a Corporate Contributor License
 Agreement (CCLA) for all contributions. This is without exception due to some matters not being related to copyright and to avoid having to continually
 check with our lawyers about small patches.
 
@@ -74,7 +74,7 @@ helpful to be clear about your use case and change so they can understand it eve
 
 ### Github and Pull Requests
 
-All of Opscode's open source projects are available on [Github](http://www.github.com/opscode).
+All of Chef's open source projects are available on [Github](http://www.github.com/opscode).
 
 We don't require you to use Github, and we will even take patch diffs attached to tickets on the tracker.
 However Github has a lot of convenient features, such as being able to see a diff of changes between a
@@ -115,7 +115,7 @@ and accounting for it.
 
 ## Code Review
 
-Opscode regularly reviews code contributions and provides suggestions for improvement in the code itself or the implementation.
+Chef regularly reviews code contributions and provides suggestions for improvement in the code itself or the implementation.
 
 We find contributions by searching the ticket tracker for _resolved_ tickets with a status of _fixed_. If we have feedback we will
 reopen the ticket and you should resolve it again when you've made the changes or have a response to our feedback. When we believe
@@ -134,14 +134,14 @@ The versioning for the Chef project is X.Y.Z.
 * Y is a minor release, which adds both new features and bug fixes
 * Z is a patch release, which adds just bug fixes
 
-Major releases and have historically been once a year. Minor releases for Chef average every two months and patch releases come as needed.
+Major releases have historically been once a year. Minor releases for Chef average every three months and patch releases come as needed.
 
 There are usually beta releases and release candidates (RC) of major and minor releases announced on
 the [chef-dev mailing list](http://lists.opscode.com/sympa/info/chef-dev). Once an RC is released, we wait at least three
 days to allow for testing for regressions before the final release. If a blocking regression is found then another RC is made containing
 the fix and the timer is reset.
 
-Once the official release is made, the release notes are available on the [Opscode blog](http://www.opscode.com/blog).
+Once the official release is made, the release notes are available on the [Chef blog](http://www.getchef.com/blog).
 
 ## Working with the community
 
@@ -151,5 +151,5 @@ These resources will help you learn more about Chef and connect to other members
 * #chef and #chef-hacking IRC channels on irc.freenode.net
 * [Community Cookbook site](http://community.opscode.com)
 * [Chef wiki](http://wiki.opscode.com/display/chef)
-* Opscode Chef [product page](http://www.opscode.com/chef)
+* Chef [product page](http://www.getchef.com/chef)
 

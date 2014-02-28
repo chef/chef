@@ -61,7 +61,7 @@ Then get the source and install it:
 
 Before working on the code, if you plan to contribute your changes, you need to
 read the
-[Opscode Contributing document](http://docs.opscode.com/community_contributions.html).
+[Chef Contributions document](http://docs.opscode.com/community_contributions.html).
 
 You will also need to set up the repository with the appropriate branches. We
 document the process on the
