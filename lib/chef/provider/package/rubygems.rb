@@ -525,7 +525,11 @@ class Chef
         end
 
         def gem_binary_path
-          @new_resource.gem_binary || 'gem'
+          if is_omnibus? && @new_resource.instance_of?(Chef::Resource::ChefGem)
+            RbConfig::CONFIG['bindir'] + "/gem"
+          else
+            @new_resource.gem_binary || 'gem'
+          end
         end
 
         def install_via_gem_command(name, version)
