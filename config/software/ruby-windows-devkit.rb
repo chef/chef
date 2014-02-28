@@ -24,7 +24,7 @@ source :url => "http://cloud.github.com/downloads/oneclick/rubyinstaller/DevKit-
        :md5 => "4bf8f2dd1d582c8733a67027583e19a6"
 
 build do
-  command "DevKit-tdm-32-#{version}-sfx.exe -y -oC:\\opscode\\chef\\embedded"
-  command "echo - C:/opscode/chef/embedded > config.yml", :cwd => "C:\\opscode\\chef\\embedded"
-  ruby "dk.rb install", :cwd => "C:\\opscode\\chef\\embedded"
+  command "DevKit-tdm-32-#{version}-sfx.exe -y -o#{File.expand_path(File.join(install_dir, "embedded")).gsub(/\//, "\\")}"
+  command "echo - #{install_dir}/embedded > config.yml", :cwd => "#{install_dir}/embedded"
+  ruby "dk.rb install", :cwd => "#{install_dir}/embedded"
 end
