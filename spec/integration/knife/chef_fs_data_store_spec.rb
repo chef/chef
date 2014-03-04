@@ -133,7 +133,7 @@ EOM
     context 'PUT /TYPE/NAME' do
       file 'empty.json', {}
       file 'rolestuff.json', '{"description":"hi there","name":"x"}'
-      file 'cookbooks_to_upload/x/metadata.rb', "version '1.0.0'\n\n"
+      file 'cookbooks_to_upload/x/metadata.rb', "name 'x'\nversion '1.0.0'\n\n"
 
       it 'knife raw -z -i empty.json -m PUT /clients/x' do
         knife("raw -z -i #{path_to('empty.json')} -m PUT /clients/x").should_succeed /"x"/
@@ -190,7 +190,7 @@ EOM
       file 'empty.json', { 'name' => 'z' }
       file 'empty_id.json', { 'id' => 'z' }
       file 'rolestuff.json', '{"description":"hi there","name":"x"}'
-      file 'cookbooks_to_upload/z/metadata.rb', "version '1.0.0'"
+      file 'cookbooks_to_upload/z/metadata.rb', "name 'z'; version '1.0.0'"
 
       it 'knife raw -z -i empty.json -m POST /clients' do
         knife("raw -z -i #{path_to('empty.json')} -m POST /clients").should_succeed /uri/

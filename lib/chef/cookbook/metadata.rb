@@ -91,7 +91,7 @@ class Chef
       # metadata<Chef::Cookbook::Metadata>
       def initialize(cookbook=nil, maintainer='YOUR_COMPANY_NAME', maintainer_email='YOUR_EMAIL', license='none')
         @cookbook = cookbook
-        @name = cookbook ? cookbook.name : ""
+        @name = cookbook ? cookbook.name : nil
         @long_description = ""
         self.maintainer(maintainer)
         self.maintainer_email(maintainer_email)
