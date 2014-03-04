@@ -110,6 +110,8 @@ The only requirements for standing up this virtualized build lab are:
 from the [VirtualBox downloads page](https://www.virtualbox.org/wiki/Downloads).
 * Vagrant 1.2.1+ - native packages exist for most platforms and can be downloaded
 from the [Vagrant downloads page](http://downloads.vagrantup.com/).
+* NOTE: If you are building omnibus-chef for any FreeBSD release - you must be
+using Vagrant > 1.5.0 which includes multiple FreeBSD fixes.
 
 The [vagrant-berkshelf](https://github.com/RiotGames/vagrant-berkshelf) and
 [vagrant-omnibus](https://github.com/schisamo/vagrant-omnibus) Vagrant plugins

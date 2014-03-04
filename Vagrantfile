@@ -63,8 +63,8 @@ Vagrant.configure('2') do |config|
         major_version = platform.split(/freebsd-(.*)\..*/).last
 
         c.vm.guest = :freebsd
-        c.vm.box = "dyn-#{platform}"
-        c.vm.box_url = "http://dyn-vm.s3.amazonaws.com/vagrant/dyn-chef-11.4.0-virtualbox-#{platform}.box"
+        c.vm.box = platform
+        c.vm.box_url = "http://dyn-vm.s3.amazonaws.com/vagrant/#{platform}_chef-11.8.0.box"
         c.vm.network :private_network, :ip => "33.33.33.#{50 + index}"
 
         c.vm.provision :shell, :inline => <<-FREEBSD_SETUP
