@@ -18,45 +18,29 @@
 
 shared_context "deploying with move" do
   before do
-    @original_atomic_update = Chef::Config[:file_atomic_update]
+    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
     Chef::Config[:file_atomic_update] = true
-  end
-
-  after do
-    Chef::Config[:file_atomic_update] = @original_atomic_update
   end
 end
 
 shared_context "deploying with copy" do
   before do
-    @original_atomic_update = Chef::Config[:file_atomic_update]
+    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
     Chef::Config[:file_atomic_update] = false
-  end
-
-  after do
-    Chef::Config[:file_atomic_update] = @original_atomic_update
   end
 end
 
 shared_context "deploying via tmpdir" do
   before do
-    @original_stage_via = Chef::Config[:file_staging_uses_destdir]
     Chef::Config[:file_staging_uses_destdir] = false
-  end
-
-  after do
-    Chef::Config[:file_staging_uses_destdir] = @original_stage_via
+    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
   end
 end
 
 shared_context "deploying via destdir" do
   before do
-    @original_stage_via = Chef::Config[:file_staging_uses_destdir]
     Chef::Config[:file_staging_uses_destdir] = true
-  end
-
-  after do
-    Chef::Config[:file_staging_uses_destdir] = @original_stage_via
+    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
   end
 end
 
@@ -70,80 +54,116 @@ shared_examples_for "a file with the wrong content" do
     sha256_checksum(path).should == @expected_checksum
   end
 
-  include_context "diff disabled"
+  describe "when diff is disabled" do
 
-  context "when running action :create" do
-    context "with backups enabled" do
+    include_context "diff disabled"
+
+    context "when running action :create" do
+      context "with backups enabled" do
+        before do
+          resource.run_action(:create)
+        end
+
+        it "overwrites the file with the updated content when the :create action is run" do
+          File.stat(path).mtime.should > @expected_mtime
+          sha256_checksum(path).should_not == @expected_checksum
+        end
+
+        it "backs up the existing file" do
+          Dir.glob(backup_glob).size.should equal(1)
+        end
+
+        it "is marked as updated by last action" do
+          resource.should be_updated_by_last_action
+        end
+
+        it "should restore the security contexts on selinux", :selinux_only do
+          selinux_security_context_restored?(path).should be_true
+        end
+      end
+
+      context "with backups disabled" do
+        before do
+          resource.backup(0)
+          resource.run_action(:create)
+        end
+
+        it "should not attempt to backup the existing file if :backup == 0" do
+          Dir.glob(backup_glob).size.should equal(0)
+        end
+
+        it "should restore the security contexts on selinux", :selinux_only do
+          selinux_security_context_restored?(path).should be_true
+        end
+      end
+    end
+
+    describe "when running action :create_if_missing" do
       before do
-        Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
-        resource.run_action(:create)
+        resource.run_action(:create_if_missing)
       end
 
-      it "overwrites the file with the updated content when the :create action is run" do
-        File.stat(path).mtime.should > @expected_mtime
-        sha256_checksum(path).should_not == @expected_checksum
+      it "doesn't overwrite the file when the :create_if_missing action is run" do
+        File.stat(path).mtime.should == @expected_mtime
+        sha256_checksum(path).should == @expected_checksum
       end
 
-      it "backs up the existing file" do
-        Dir.glob(backup_glob).size.should equal(1)
+      it "is not marked as updated" do
+        resource.should_not be_updated_by_last_action
+      end
+
+      it "should restore the security contexts on selinux", :selinux_only do
+        selinux_security_context_restored?(path).should be_true
+      end
+    end
+
+    describe "when running action :delete" do
+      before do
+        resource.run_action(:delete)
+      end
+
+      it "deletes the file" do
+        File.should_not exist(path)
       end
 
       it "is marked as updated by last action" do
         resource.should be_updated_by_last_action
       end
-
-      it "should restore the security contexts on selinux", :selinux_only do
-        selinux_security_context_restored?(path).should be_true
-      end
     end
 
-    context "with backups disabled" do
-      before do
-        Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
-        resource.backup(0)
-        resource.run_action(:create)
-      end
-
-      it "should not attempt to backup the existing file if :backup == 0" do
-        Dir.glob(backup_glob).size.should equal(0)
-      end
-
-      it "should restore the security contexts on selinux", :selinux_only do
-        selinux_security_context_restored?(path).should be_true
-      end
-    end
   end
 
-  describe "when running action :create_if_missing" do
-    before do
-      resource.run_action(:create_if_missing)
-    end
+  context "when diff is enabled" do
+    describe 'sensitive attribute' do
+      context "should be insensitive by default" do
+        it { expect(resource.sensitive).to(be_false) }
+      end
 
-    it "doesn't overwrite the file when the :create_if_missing action is run" do
-      File.stat(path).mtime.should == @expected_mtime
-      sha256_checksum(path).should == @expected_checksum
-    end
+      context "when set" do
+        before { resource.sensitive(true) }
 
-    it "is not marked as updated" do
-      resource.should_not be_updated_by_last_action
-    end
+        it "should be set on the resource" do
+          expect(resource.sensitive).to(be_true)
+        end
 
-    it "should restore the security contexts on selinux", :selinux_only do
-      selinux_security_context_restored?(path).should be_true
-    end
-  end
+        context "when running :create action" do
+          let(:provider) { resource.provider_for_action(:create) }
+          let(:reporter_messages) { provider.instance_variable_get("@converge_actions").actions[0][0] }
 
-  describe "when running action :delete" do
-    before do
-      resource.run_action(:delete)
-    end
+          before do
+            provider.run_action
+          end
 
-    it "deletes the file" do
-      File.should_not exist(path)
-    end
+          it "should suppress the diff" do
+            expect(resource.diff).to(include('suppressed sensitive resource'))
+            expect(reporter_messages[1]).to eq("suppressed sensitive resource")
+          end
 
-    it "is marked as updated by last action" do
-      resource.should be_updated_by_last_action
+          it "should still include the updated checksums" do
+            expect(reporter_messages[0]).to include("update content in file")
+          end
+        end
+      end
     end
   end
 end
@@ -892,6 +912,43 @@ shared_examples_for "a configured file resource" do
       it_behaves_like "a file with the correct content"
 
       it_behaves_like "a securable resource with existing target"
+    end
+  end
+
+  # Regression test for http://tickets.opscode.com/browse/CHEF-4419
+  context "when the path starts with '/' and target file exists", :windows_only do
+    let(:path) do
+      File.join(test_file_dir[2..test_file_dir.length], make_tmpname(file_base))
+    end
+
+    before do
+      File.open(path, "wb") { |f| f.print expected_content }
+      now = Time.now.to_i
+      File.utime(now - 9000, now - 9000, path)
+
+      @expected_mtime = File.stat(path).mtime
+      @expected_checksum = sha256_checksum(path)
+    end
+
+    describe ":create action should run without any updates" do
+      before do
+        # Assert starting state is as expected
+        File.should exist(path)
+        sha256_checksum(path).should == @expected_checksum
+        resource.run_action(:create)
+      end
+
+      it "does not overwrite the original when the :create action is run" do
+        sha256_checksum(path).should == @expected_checksum
+      end
+
+      it "does not update the mtime of the file when the :create action is run" do
+        File.stat(path).mtime.should == @expected_mtime
+      end
+
+      it "is not marked as updated by last action" do
+        resource.should_not be_updated_by_last_action
+      end
     end
   end
 

@@ -38,6 +38,11 @@ class Chef
         :description => "Create the client as an admin",
         :boolean => true
 
+      option :validator,
+        :long  => "--validator",
+        :description => "Create the client as a validator",
+        :boolean => true
+
       banner "knife client create CLIENT (options)"
 
       def run
@@ -52,6 +57,7 @@ class Chef
         client = Chef::ApiClient.new
         client.name(@client_name)
         client.admin(config[:admin])
+        client.validator(config[:validator])
 
         output = edit_data(client)
 
@@ -61,7 +67,7 @@ class Chef
         # We only get a private_key on client creation, not on client update.
         if client['private_key']
           ui.info("Created #{output}")
-  
+
           if config[:file]
             File.open(config[:file], "w") do |f|
               f.print(client['private_key'])

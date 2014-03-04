@@ -34,7 +34,7 @@ describe Chef::Provider::Package do
   describe "when installing a package" do
     before(:each) do
       @provider.current_resource = @current_resource
-      @provider.stub!(:install_package).and_return(true)
+      @provider.stub(:install_package).and_return(true)
     end
 
     it "should raise a Chef::Exceptions::Package if no version is specified, and no candidate is available" do
@@ -81,7 +81,7 @@ describe Chef::Provider::Package do
 
     it "should install the package at the version specified if a different version is installed" do
       @new_resource.version("1.0")
-      @current_resource.stub!(:version).and_return("0.99")
+      @current_resource.stub(:version).and_return("0.99")
       @provider.should_receive(:install_package).with(
         @new_resource.name,
         @new_resource.version
@@ -107,7 +107,7 @@ describe Chef::Provider::Package do
 
     it "should call the candidate_version accessor only once if the package is already installed and no version is specified" do
       @current_resource.version("1.0")
-      @provider.stub!(:candidate_version).and_return("1.0")
+      @provider.stub(:candidate_version).and_return("1.0")
       @provider.run_action(:install)
     end
 
@@ -126,7 +126,7 @@ describe Chef::Provider::Package do
 
   describe "when upgrading the package" do
     before(:each) do
-      @provider.stub!(:upgrade_package).and_return(true)
+      @provider.stub(:upgrade_package).and_return(true)
     end
 
     it "should upgrade the package if the current version is not the candidate version" do
@@ -151,14 +151,14 @@ describe Chef::Provider::Package do
     end
 
     it "should print the word 'uninstalled' if there was no original version" do
-      @current_resource.stub!(:version).and_return(nil)
+      @current_resource.stub(:version).and_return(nil)
       Chef::Log.should_receive(:info).with("package[emacs] upgraded from uninstalled to 1.0")
       @provider.run_action(:upgrade)
       @new_resource.should be_updated_by_last_action
     end
 
     it "should raise a Chef::Exceptions::Package if current version and candidate are nil" do
-      @current_resource.stub!(:version).and_return(nil)
+      @current_resource.stub(:version).and_return(nil)
       @provider.candidate_version = nil
       lambda { @provider.run_action(:upgrade) }.should raise_error(Chef::Exceptions::Package)
     end
@@ -174,7 +174,7 @@ describe Chef::Provider::Package do
 
   describe "When removing the package" do
     before(:each) do
-      @provider.stub!(:remove_package).and_return(true)
+      @provider.stub(:remove_package).and_return(true)
       @current_resource.version '1.4.2'
     end
 
@@ -204,7 +204,7 @@ describe Chef::Provider::Package do
 
     it "should not remove the package if it is not installed" do
       @provider.should_not_receive(:remove_package)
-      @current_resource.stub!(:version).and_return(nil)
+      @current_resource.stub(:version).and_return(nil)
       @provider.run_action(:remove)
       @new_resource.should_not be_updated_by_last_action
     end
@@ -218,7 +218,7 @@ describe Chef::Provider::Package do
 
   describe "When purging the package" do
     before(:each) do
-      @provider.stub!(:purge_package).and_return(true)
+      @provider.stub(:purge_package).and_return(true)
       @current_resource.version '1.4.2'
     end
 
@@ -264,15 +264,15 @@ describe Chef::Provider::Package do
 
   describe "when reconfiguring the package" do
     before(:each) do
-      @provider.stub!(:reconfig_package).and_return(true)
+      @provider.stub(:reconfig_package).and_return(true)
     end
 
     it "should info log, reconfigure the package and update the resource" do
-      @current_resource.stub!(:version).and_return('1.0')
-      @new_resource.stub!(:response_file).and_return(true)
+      @current_resource.stub(:version).and_return('1.0')
+      @new_resource.stub(:response_file).and_return(true)
       @provider.should_receive(:get_preseed_file).and_return('/var/cache/preseed-test')
-      @provider.stub!(:preseed_package).and_return(true)
-      @provider.stub!(:reconfig_package).and_return(true)
+      @provider.stub(:preseed_package).and_return(true)
+      @provider.stub(:reconfig_package).and_return(true)
       Chef::Log.should_receive(:info).with("package[emacs] reconfigured")
       @provider.should_receive(:reconfig_package)
       @provider.run_action(:reconfig)
@@ -281,16 +281,16 @@ describe Chef::Provider::Package do
     end
 
     it "should debug log and not reconfigure the package if the package is not installed" do
-      @current_resource.stub!(:version).and_return(nil)
+      @current_resource.stub(:version).and_return(nil)
       Chef::Log.should_receive(:debug).with("package[emacs] is NOT installed - nothing to do")
       @provider.should_not_receive(:reconfig_package)
       @provider.run_action(:reconfig)
       @new_resource.should_not be_updated_by_last_action
-    end 
+    end
 
     it "should debug log and not reconfigure the package if no response_file is given" do
-      @current_resource.stub!(:version).and_return('1.0')
-      @new_resource.stub!(:response_file).and_return(nil)
+      @current_resource.stub(:version).and_return('1.0')
+      @new_resource.stub(:response_file).and_return(nil)
       Chef::Log.should_receive(:debug).with("package[emacs] no response_file provided - nothing to do")
       @provider.should_not_receive(:reconfig_package)
       @provider.run_action(:reconfig)
@@ -298,10 +298,10 @@ describe Chef::Provider::Package do
     end
 
     it "should debug log and not reconfigure the package if the response_file has not changed" do
-      @current_resource.stub!(:version).and_return('1.0')
-      @new_resource.stub!(:response_file).and_return(true)
+      @current_resource.stub(:version).and_return('1.0')
+      @new_resource.stub(:response_file).and_return(true)
       @provider.should_receive(:get_preseed_file).and_return(false)
-      @provider.stub!(:preseed_package).and_return(false)
+      @provider.stub(:preseed_package).and_return(false)
       Chef::Log.should_receive(:debug).with("package[emacs] preseeding has not changed - nothing to do")
       @provider.should_not_receive(:reconfig_package)
       @provider.run_action(:reconfig)
@@ -362,7 +362,7 @@ describe Chef::Provider::Package do
       end
 
       it "sets the preseed resource's runcontext to its own run context" do
-        Chef::FileCache.stub!(:create_cache_path).and_return("/tmp/preseed/java")
+        Chef::FileCache.stub(:create_cache_path).and_return("/tmp/preseed/java")
         @provider.preseed_resource('java', '6').run_context.should_not be_nil
         @provider.preseed_resource('java', '6').run_context.should equal(@provider.run_context)
       end

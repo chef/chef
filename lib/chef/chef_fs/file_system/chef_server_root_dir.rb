@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/server_api'
 require 'chef/chef_fs/file_system/acls_dir'
 require 'chef/chef_fs/file_system/base_fs_dir'
 require 'chef/chef_fs/file_system/rest_list_dir'
@@ -23,7 +24,6 @@ require 'chef/chef_fs/file_system/cookbooks_dir'
 require 'chef/chef_fs/file_system/data_bags_dir'
 require 'chef/chef_fs/file_system/nodes_dir'
 require 'chef/chef_fs/file_system/environments_dir'
-require 'chef/rest'
 require 'chef/chef_fs/data_handler/client_data_handler'
 require 'chef/chef_fs/data_handler/role_data_handler'
 require 'chef/chef_fs/data_handler/user_data_handler'
@@ -34,7 +34,7 @@ class Chef
   module ChefFS
     module FileSystem
       class ChefServerRootDir < BaseFSDir
-        def initialize(root_name, chef_config)
+        def initialize(root_name, chef_config, options = {})
           super("", nil)
           @chef_server_url = chef_config[:chef_server_url]
           @chef_username = chef_config[:node_name]
@@ -42,6 +42,7 @@ class Chef
           @environment = chef_config[:environment]
           @repo_mode = chef_config[:repo_mode]
           @root_name = root_name
+          @cookbook_version = options[:cookbook_version] # Used in knife diff and download for server cookbook version
         end
 
         attr_reader :chef_server_url
@@ -49,12 +50,21 @@ class Chef
         attr_reader :chef_private_key
         attr_reader :environment
         attr_reader :repo_mode
+        attr_reader :cookbook_version
 
         def fs_description
           "Chef server at #{chef_server_url} (user #{chef_username}), repo_mode = #{repo_mode}"
         end
 
         def rest
+          Chef::ServerAPI.new(chef_server_url, :client_name => chef_username, :signing_key_filename => chef_private_key, :raw_output => true)
+        end
+
+        def get_json(path)
+          Chef::ServerAPI.new(chef_server_url, :client_name => chef_username, :signing_key_filename => chef_private_key).get(path)
+        end
+
+        def chef_rest
           Chef::REST.new(chef_server_url, chef_username, chef_private_key)
         end
 

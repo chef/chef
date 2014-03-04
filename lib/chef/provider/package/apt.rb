@@ -65,7 +65,8 @@ class Chef
                 @is_virtual_package = true
                 showpkg = shell_out!("apt-cache showpkg #{package}").stdout
                 providers = Hash.new
-                showpkg.rpartition(/Reverse Provides:? #{$/}/)[2].each_line do |line|
+                # Returns all lines after 'Reverse Provides:'
+                showpkg.rpartition(/Reverse Provides:\s*#{$/}/)[2].each_line do |line|
                   provider, version = line.split
                   providers[provider] = version
                 end

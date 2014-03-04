@@ -89,6 +89,11 @@ class Chef
         :description => "The proxy server for the node being bootstrapped",
         :proc => Proc.new { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
 
+      option :bootstrap_no_proxy,
+        :long => "--bootstrap-no-proxy [NO_PROXY_URL|NO_PROXY_IP]",
+        :description => "Do not proxy locations for the node being bootstrapped; this option is used internally by Opscode",
+        :proc => Proc.new { |np| Chef::Config[:knife][:bootstrap_no_proxy] = np }
+
       option :distro,
         :short => "-d DISTRO",
         :long => "--distro DISTRO",
@@ -141,11 +146,13 @@ class Chef
       option :secret,
         :short => "-s SECRET",
         :long  => "--secret ",
-        :description => "The secret key to use to encrypt data bag item values"
+        :description => "The secret key to use to encrypt data bag item values",
+        :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
 
       option :secret_file,
         :long => "--secret-file SECRET_FILE",
-        :description => "A file containing the secret key to use to encrypt data bag item values"
+        :description => "A file containing the secret key to use to encrypt data bag item values",
+        :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
 
       def find_template(template=nil)
         # Are we bootstrapping using an already shipped template?
@@ -244,7 +251,7 @@ class Chef
         command = render_template(read_template)
 
         if config[:use_sudo]
-          command = config[:use_sudo_password] ? "echo #{config[:ssh_password]} | sudo -S #{command}" : "sudo #{command}"
+          command = config[:use_sudo_password] ? "echo '#{config[:ssh_password]}' | sudo -S #{command}" : "sudo #{command}"
         end
 
         command

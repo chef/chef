@@ -38,14 +38,14 @@ describe Chef::Provider::RemoteFile::FTP do
   end
 
   let(:ftp) do
-    ftp = mock(Net::FTP, { })
-    ftp.stub!(:connect)
-    ftp.stub!(:login)
-    ftp.stub!(:voidcmd)
-    ftp.stub!(:mtime).and_return(Time.now)
-    ftp.stub!(:getbinaryfile)
-    ftp.stub!(:close)
-    ftp.stub!(:passive=)
+    ftp = double(Net::FTP, { })
+    ftp.stub(:connect)
+    ftp.stub(:login)
+    ftp.stub(:voidcmd)
+    ftp.stub(:mtime).and_return(Time.now)
+    ftp.stub(:getbinaryfile)
+    ftp.stub(:close)
+    ftp.stub(:passive=)
     ftp
   end
 
@@ -60,8 +60,8 @@ describe Chef::Provider::RemoteFile::FTP do
   let(:uri) { URI.parse("ftp://opscode.com/seattle.txt") }
 
   before(:each) do
-    Net::FTP.stub!(:new).with().and_return(ftp)
-    Tempfile.stub!(:new).and_return(tempfile)
+    Net::FTP.stub(:new).with().and_return(ftp)
+    Tempfile.stub(:new).and_return(tempfile)
   end
 
   describe "when first created" do
@@ -200,14 +200,9 @@ describe Chef::Provider::RemoteFile::FTP do
 
     context "and proxying is enabled" do
       before do
-        @original_config = Chef::Config.hash_dup
         Chef::Config[:ftp_proxy] = "socks5://socks.example.com:5000"
         Chef::Config[:ftp_proxy_user] = "bill"
         Chef::Config[:ftp_proxy_pass] = "ted"
-      end
-
-      after do
-        Chef::Config.configuration = @original_config
       end
 
       it "fetches the file via the proxy" do

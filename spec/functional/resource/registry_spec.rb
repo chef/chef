@@ -104,8 +104,6 @@ describe Chef::Resource::RegistryKey, :windows_only do
     @new_resource = Chef::Resource::RegistryKey.new(resource_name, @run_context)
     @registry = Chef::Win32::Registry.new(@run_context)
 
-    @current_whyrun = Chef::Config[:why_run]
-
     reset_registry
   end
 
@@ -113,21 +111,21 @@ describe Chef::Resource::RegistryKey, :windows_only do
   before do
     @node.name("windowsbox")
 
-    @rest_client = mock("Chef::REST (mock)")
-    @rest_client.stub!(:create_url).and_return("reports/nodes/windowsbox/runs/#{@run_id}");
-    @rest_client.stub!(:raw_http_request).and_return({"result"=>"ok"});
-    @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/windowsbox/runs/#{@run_id}"});
+    @rest_client = double("Chef::REST (mock)")
+    @rest_client.stub(:create_url).and_return("reports/nodes/windowsbox/runs/#{@run_id}");
+    @rest_client.stub(:raw_http_request).and_return({"result"=>"ok"});
+    @rest_client.stub(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/windowsbox/runs/#{@run_id}"});
 
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
     @events.register(@resource_reporter)
-    @run_id = @resource_reporter.run_id
     @run_status = Chef::RunStatus.new(@node, @events)
-
     @resource_reporter.run_started(@run_status)
+    @run_id = @resource_reporter.run_id
+
 
     @new_resource.cookbook_name = "monkey"
-    @cookbook_version = mock("Cookbook::Version", :version => "1.2.3")
-    @new_resource.stub!(:cookbook_version).and_return(@cookbook_version)
+    @cookbook_version = double("Cookbook::Version", :version => "1.2.3")
+    @new_resource.stub(:cookbook_version).and_return(@cookbook_version)
   end
 
   after (:all) do
@@ -259,18 +257,15 @@ describe Chef::Resource::RegistryKey, :windows_only do
     end
 
     context "while running in whyrun mode" do
-      before (:all) do
+      before (:each) do
         Chef::Config[:why_run] = true
-      end
-      after (:all) do
-        Chef::Config[:why_run] = @current_whyrun
       end
 
       it "does not throw an exception if the keys do not exist but recursive is set to false" do
         @new_resource.key(reg_child + '\Slitheen\Raxicoricofallapatorius')
         @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
         @new_resource.recursive(false)
-        lambda{@new_resource.run_action(:create)}.should_not raise_error
+        @new_resource.run_action(:create) # should not raise_error
         @registry.key_exists?(reg_child + '\Slitheen').should == false
         @registry.key_exists?(reg_child + '\Slitheen\Raxicoricofallapatorius').should == false
       end
@@ -373,18 +368,15 @@ describe Chef::Resource::RegistryKey, :windows_only do
     end
 
     context "while running in whyrun mode" do
-      before (:all) do
+      before (:each) do
         Chef::Config[:why_run] = true
-      end
-      after (:all) do
-        Chef::Config[:why_run] = @current_whyrun
       end
 
       it "does not throw an exception if the keys do not exist but recursive is set to false" do
         @new_resource.key(reg_child + '\Zygons\Zygor')
         @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
         @new_resource.recursive(false)
-        lambda{@new_resource.run_action(:create_if_missing)}.should_not raise_error
+        @new_resource.run_action(:create_if_missing) # should not raise_error
         @registry.key_exists?(reg_child + '\Zygons').should == false
         @registry.key_exists?(reg_child + '\Zygons\Zygor').should == false
       end
@@ -469,11 +461,8 @@ describe Chef::Resource::RegistryKey, :windows_only do
     end
 
     context "while running in whyrun mode" do
-      before (:all) do
+      before (:each) do
         Chef::Config[:why_run] = true
-      end
-      after (:all) do
-        Chef::Config[:why_run] = @current_whyrun
       end
       it "does nothing if the action is delete" do
         @new_resource.key(reg_parent + '\OpscodeWhyRun')
@@ -549,11 +538,8 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @report["total_res_count"].should == "1"
     end
     context "while running in whyrun mode" do
-      before (:all) do
+      before (:each) do
         Chef::Config[:why_run] = true
-      end
-      after (:all) do
-        Chef::Config[:why_run] = @current_whyrun
       end
 
       it "does not throw an exception if the key has subkeys but recursive is set to false" do
@@ -561,7 +547,6 @@ describe Chef::Resource::RegistryKey, :windows_only do
         @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
         @new_resource.recursive(false)
         @new_resource.run_action(:delete_key)
-        @new_resource.should_not raise_error(ArgumentError)
       end
       it "does nothing if the action is delete_key" do
         @new_resource.key(reg_parent + '\OpscodeWhyRun')

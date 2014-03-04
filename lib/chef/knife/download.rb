@@ -5,6 +5,8 @@ class Chef
     class Download < Chef::ChefFS::Knife
       banner "knife download PATTERNS"
 
+      category "path-based"
+
       deps do
         require 'chef/chef_fs/command_line'
       end
@@ -39,6 +41,10 @@ class Chef
         :boolean => true,
         :default => true,
         :description => 'Turn off to avoid uploading existing files; only new (and possibly deleted) files with --no-diff'
+
+      option :cookbook_version,
+        :long => '--cookbook-version VERSION',
+        :description => 'Version of cookbook to download (if there are multiple versions and cookbook_versions is false)'
 
       def run
         if name_args.length == 0

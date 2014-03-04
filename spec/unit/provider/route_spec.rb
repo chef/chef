@@ -55,13 +55,13 @@ describe Chef::Provider::Route do
         routing_table = "Iface	Destination	Gateway 	Flags	RefCnt	Use	Metric	Mask		MTU	Window	IRTT\n" +
                         "eth0	0064A8C0	0984A8C0	0003	0	0	0	00FFFFFF	0	0	0\n"
         route_file = StringIO.new(routing_table)
-        File.stub!(:open).with("/proc/net/route", "r").and_return(route_file)
+        File.stub(:open).with("/proc/net/route", "r").and_return(route_file)
       end
 
       it "should set is_running to false when a route is not detected" do
         resource = Chef::Resource::Route.new('10.10.10.0/24')
-        resource.stub!(:gateway).and_return("10.0.0.1")
-        resource.stub!(:device).and_return("eth0")
+        resource.stub(:gateway).and_return("10.0.0.1")
+        resource.stub(:device).and_return("eth0")
         provider = Chef::Provider::Route.new(resource, @run_context)
 
         provider.load_current_resource
@@ -70,8 +70,8 @@ describe Chef::Provider::Route do
 
       it "should detect existing routes and set is_running attribute correctly" do
         resource = Chef::Resource::Route.new('192.168.100.0/24')
-        resource.stub!(:gateway).and_return("192.168.132.9")
-        resource.stub!(:device).and_return("eth0")
+        resource.stub(:gateway).and_return("192.168.132.9")
+        resource.stub(:device).and_return("eth0")
         provider = Chef::Provider::Route.new(resource, @run_context)
 
         provider.load_current_resource
@@ -80,8 +80,8 @@ describe Chef::Provider::Route do
 
       it "should use gateway value when matching routes" do
         resource = Chef::Resource::Route.new('192.168.100.0/24')
-        resource.stub!(:gateway).and_return("10.10.10.10")
-        resource.stub!(:device).and_return("eth0")
+        resource.stub(:gateway).and_return("10.10.10.10")
+        resource.stub(:device).and_return("eth0")
         provider = Chef::Provider::Route.new(resource, @run_context)
 
         provider.load_current_resource
@@ -92,8 +92,8 @@ describe Chef::Provider::Route do
 
   describe Chef::Provider::Route, "action_add" do
     it "should add the route if it does not exist" do
-      @provider.stub!(:run_command).and_return(true)
-      @current_resource.stub!(:gateway).and_return(nil)
+      @provider.stub(:run_command).and_return(true)
+      @current_resource.stub(:gateway).and_return(nil)
       @provider.should_receive(:generate_command).once.with(:add)
       @provider.should_receive(:generate_config)
       @provider.run_action(:add)
@@ -101,8 +101,8 @@ describe Chef::Provider::Route do
     end
 
     it "should not add the route if it exists" do
-      @provider.stub!(:run_command).and_return(true)
-      @provider.stub!(:is_running).and_return(true)
+      @provider.stub(:run_command).and_return(true)
+      @provider.stub(:is_running).and_return(true)
       @provider.should_not_receive(:generate_command).with(:add)
       @provider.should_receive(:generate_config)
       @provider.run_action(:add)
@@ -111,13 +111,13 @@ describe Chef::Provider::Route do
 
     it "should not delete config file for :add action (CHEF-3332)" do
       @node.automatic_attrs[:platform] = 'centos'
-  
+
       route_file = StringIO.new
       File.should_receive(:new).and_return(route_file)
       @resource_add = Chef::Resource::Route.new('192.168.1.0/24 via 192.168.0.1')
       @run_context.resource_collection << @resource_add
-      @provider.stub!(:run_command).and_return(true)
-  
+      @provider.stub(:run_command).and_return(true)
+
       @resource_add.action(:add)
       @provider.run_action(:add)
       route_file.string.split("\n").should have(1).items
@@ -127,16 +127,16 @@ describe Chef::Provider::Route do
 
   describe Chef::Provider::Route, "action_delete" do
     it "should delete the route if it exists" do
-      @provider.stub!(:run_command).and_return(true)
+      @provider.stub(:run_command).and_return(true)
       @provider.should_receive(:generate_command).once.with(:delete)
-      @provider.stub!(:is_running).and_return(true)
+      @provider.stub(:is_running).and_return(true)
       @provider.run_action(:delete)
       @new_resource.should be_updated
     end
 
     it "should not delete the route if it does not exist" do
-      @current_resource.stub!(:gateway).and_return(nil)
-      @provider.stub!(:run_command).and_return(true)
+      @current_resource.stub(:gateway).and_return(nil)
+      @provider.stub(:run_command).and_return(true)
       @provider.should_not_receive(:generate_command).with(:add)
       @provider.run_action(:delete)
       @new_resource.should_not be_updated
@@ -145,12 +145,12 @@ describe Chef::Provider::Route do
 
   describe Chef::Provider::Route, "generate_command for action_add" do
     it "should include a netmask when a one is specified" do
-      @new_resource.stub!(:netmask).and_return('255.255.0.0')
+      @new_resource.stub(:netmask).and_return('255.255.0.0')
       @provider.generate_command(:add).should match(/\/\d{1,2}\s/)
     end
 
     it "should not include a netmask when a one is specified" do
-      @new_resource.stub!(:netmask).and_return(nil)
+      @new_resource.stub(:netmask).and_return(nil)
       @provider.generate_command(:add).should_not match(/\/\d{1,2}\s/)
     end
 
@@ -159,19 +159,19 @@ describe Chef::Provider::Route do
     end
 
     it "should not include ' via $gateway ' when a gateway is not specified" do
-      @new_resource.stub!(:gateway).and_return(nil)
+      @new_resource.stub(:gateway).and_return(nil)
       @provider.generate_command(:add).should_not match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\s/)
     end
   end
 
   describe Chef::Provider::Route, "generate_command for action_delete" do
     it "should include a netmask when a one is specified" do
-      @new_resource.stub!(:netmask).and_return('255.255.0.0')
+      @new_resource.stub(:netmask).and_return('255.255.0.0')
       @provider.generate_command(:delete).should match(/\/\d{1,2}\s/)
     end
 
     it "should not include a netmask when a one is specified" do
-      @new_resource.stub!(:netmask).and_return(nil)
+      @new_resource.stub(:netmask).and_return(nil)
       @provider.generate_command(:delete).should_not match(/\/\d{1,2}\s/)
     end
 
@@ -180,14 +180,14 @@ describe Chef::Provider::Route do
     end
 
     it "should not include ' via $gateway ' when a gateway is not specified" do
-      @new_resource.stub!(:gateway).and_return(nil)
+      @new_resource.stub(:gateway).and_return(nil)
       @provider.generate_command(:delete).should_not match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\s/)
     end
   end
 
   describe Chef::Provider::Route, "config_file_contents for action_add" do
     it "should include a netmask when a one is specified" do
-      @new_resource.stub!(:netmask).and_return('255.255.0.0')
+      @new_resource.stub(:netmask).and_return('255.255.0.0')
       @provider.config_file_contents(:add, { :target => @new_resource.target, :netmask => @new_resource.netmask}).should match(/\/\d{1,2}.*\n$/)
     end
 

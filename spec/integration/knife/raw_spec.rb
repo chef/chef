@@ -162,5 +162,68 @@ EOM
 EOM
       end
     end
+
+    context 'When a server returns raw json' do
+      before :each do
+        @real_chef_server_url = Chef::Config.chef_server_url
+        Chef::Config.chef_server_url = "http://127.0.0.1:9018"
+        app = lambda do |env|
+          [200, {'Content-Type' => 'application/json' }, ['{ "x": "y", "a": "b" }'] ]
+        end
+        @raw_server = Puma::Server.new(app, Puma::Events.new(STDERR, STDOUT))
+        @raw_server.add_tcp_listener("127.0.0.1", 9018)
+        @raw_server.run
+      end
+
+      after :each do
+        Chef::Config.chef_server_url = @real_chef_server_url
+        @raw_server.stop(true)
+      end
+
+      it 'knife raw /blah returns the prettified json', :pending => (RUBY_VERSION < "1.9") do
+        knife('raw /blah').should_succeed <<EOM
+{
+  "x": "y",
+  "a": "b"
+}
+EOM
+      end
+
+      it 'knife raw --no-pretty /blah returns the raw json' do
+        knife('raw --no-pretty /blah').should_succeed <<EOM
+{ "x": "y", "a": "b" }
+EOM
+      end
+    end
+
+    context 'When a server returns text' do
+      before :each do
+        @real_chef_server_url = Chef::Config.chef_server_url
+        Chef::Config.chef_server_url = "http://127.0.0.1:9018"
+        app = lambda do |env|
+          [200, {'Content-Type' => 'text' }, ['{ "x": "y", "a": "b" }'] ]
+        end
+        @raw_server = Puma::Server.new(app, Puma::Events.new(STDERR, STDOUT))
+        @raw_server.add_tcp_listener("127.0.0.1", 9018)
+        @raw_server.run
+      end
+
+      after :each do
+        Chef::Config.chef_server_url = @real_chef_server_url
+        @raw_server.stop(true)
+      end
+
+      it 'knife raw /blah returns the raw text' do
+        knife('raw /blah').should_succeed(<<EOM)
+{ "x": "y", "a": "b" }
+EOM
+      end
+
+      it 'knife raw --no-pretty /blah returns the raw text' do
+        knife('raw --no-pretty /blah').should_succeed(<<EOM)
+{ "x": "y", "a": "b" }
+EOM
+      end
+    end
   end
 end

@@ -23,8 +23,8 @@ class Chef
   class Resource
     class Scm < Chef::Resource
 
-      identity_attr :destination 
-      
+      identity_attr :destination
+
       state_attrs :revision
 
       def initialize(name, run_context=nil)
@@ -32,12 +32,14 @@ class Chef
         @destination = name
         @resource_name = :scm
         @enable_submodules = false
+        @enable_checkout = true
         @revision = "HEAD"
         @remote = "origin"
         @ssh_wrapper = nil
         @depth = nil
         @allowed_actions.push(:checkout, :export, :sync, :diff, :log)
         @action = [:sync]
+        @checkout_branch = "deploy"
       end
 
       def destination(arg=nil)
@@ -130,6 +132,14 @@ class Chef
         )
       end
 
+      def enable_checkout(arg=nil)
+        set_or_return(
+          :enable_checkout,
+          arg,
+          :kind_of => [TrueClass, FalseClass]
+        )
+      end
+
       def remote(arg=nil)
         set_or_return(
           :remote,
@@ -141,6 +151,22 @@ class Chef
       def ssh_wrapper(arg=nil)
         set_or_return(
           :ssh_wrapper,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def timeout(arg=nil)
+        set_or_return(
+          :timeout,
+          arg,
+          :kind_of => Integer
+        )
+      end
+
+      def checkout_branch(arg=nil)
+        set_or_return(
+          :checkout_branch,
           arg,
           :kind_of => String
         )

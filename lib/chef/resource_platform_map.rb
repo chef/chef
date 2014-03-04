@@ -123,7 +123,7 @@ class Chef
         resource_klass = platform_resource(short_name, platform, version) ||
                          resource_matching_short_name(short_name)
 
-        raise NameError, "Cannot find a resource for #{short_name} on #{platform} version #{version}" if resource_klass.nil?
+        raise Exceptions::NoSuchResourceType, "Cannot find a resource for #{short_name} on #{platform} version #{version}" if resource_klass.nil?
 
         resource_klass
       end

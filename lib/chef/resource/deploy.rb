@@ -50,9 +50,9 @@ class Chef
     # release directory. Callback files can contain chef code (resources, etc.)
     #
     class Deploy < Chef::Resource
-      
+
       provider_base Chef::Provider::Deploy
-      
+
       identity_attr :repository
 
       state_attrs :deploy_to, :revision
@@ -81,6 +81,8 @@ class Chef
         @allowed_actions.push(:force_deploy, :deploy, :rollback)
         @additional_remotes = Hash[]
         @keep_releases = 5
+        @enable_checkout = true
+        @checkout_branch = "deploy"
       end
 
       # where the checked out/cloned code goes
@@ -389,12 +391,41 @@ class Chef
         arg ||= block
         set_or_return(:after_restart, arg, :kind_of => [Proc, String])
       end
-      
+
       def additional_remotes(arg=nil)
         set_or_return(
           :additional_remotes,
           arg,
           :kind_of => Hash
+        )
+      end
+
+      def enable_checkout(arg=nil)
+        set_or_return(
+          :enable_checkout,
+          arg,
+          :kind_of => [TrueClass, FalseClass]
+        )
+      end
+
+      def checkout_branch(arg=nil)
+        set_or_return(
+          :checkout_branch,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      # FIXME The Deploy resource may be passed to an SCM provider as its
+      # resource.  The SCM provider knows that SCM resources can specify a
+      # timeout for SCM operations. The deploy resource must therefore support
+      # a timeout method, but the timeout it describes is for SCM operations,
+      # not the overall deployment. This is potentially confusing.
+      def timeout(arg=nil)
+        set_or_return(
+          :timeout,
+          arg,
+          :kind_of => Integer
         )
       end
 

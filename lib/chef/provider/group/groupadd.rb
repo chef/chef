@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +20,7 @@ class Chef
   class Provider
     class Group
       class Groupadd < Chef::Provider::Group
-        
+
         def required_binaries
           [ "/usr/sbin/groupadd",
             "/usr/sbin/groupmod",
@@ -34,9 +34,9 @@ class Chef
         def define_resource_requirements
           super
           required_binaries.each do |required_binary|
-            requirements.assert(:all_actions) do |a| 
-              a.assertion { ::File.exists?(required_binary) } 
-              a.failure_message Chef::Exceptions::Group, "Could not find binary #{required_binary} for #{@new_resource}" 
+            requirements.assert(:all_actions) do |a|
+              a.assertion { ::File.exists?(required_binary) }
+              a.failure_message Chef::Exceptions::Group, "Could not find binary #{required_binary} for #{@new_resource}"
               # No whyrun alternative: this component should be available in the base install of any given system that uses it
             end
           end
@@ -48,9 +48,9 @@ class Chef
           command << set_options
           command << groupadd_options
           run_command(:command => command)
-          modify_group_members    
+          modify_group_members
         end
-        
+
         # Manage the group when it already exists
         def manage_group
           command = "groupmod"
@@ -58,15 +58,55 @@ class Chef
           run_command(:command => command)
           modify_group_members
         end
-        
+
         # Remove the group
         def remove_group
           run_command(:command => "groupdel #{@new_resource.group_name}")
         end
-        
+
         def modify_group_members
-          raise Chef::Exceptions::Group, "you must override modify_group_members in #{self.to_s}"
+          if @new_resource.append
+            if @new_resource.members && !@new_resource.members.empty?
+              members_to_be_added = [ ]
+              @new_resource.members.each do |member|
+                members_to_be_added << member if !@current_resource.members.include?(member)
+              end
+              members_to_be_added.each do |member|
+                Chef::Log.debug("#{@new_resource} appending member #{member} to group #{@new_resource.group_name}")
+                add_member(member)
+              end
+            end
+
+            if @new_resource.excluded_members && !@new_resource.excluded_members.empty?
+              members_to_be_removed = [ ]
+              @new_resource.excluded_members.each do |member|
+                members_to_be_removed << member if @current_resource.members.include?(member)
+              end
+
+              members_to_be_removed.each do |member|
+                Chef::Log.debug("#{@new_resource} removing member #{member} from group #{@new_resource.group_name}")
+                remove_member(member)
+              end
+            end
+          else
+            members_description = @new_resource.members.empty? ? "none" : @new_resource.members.join(", ")
+            Chef::Log.debug("#{@new_resource} setting group members to: #{members_description}")
+            set_members(@new_resource.members)
+          end
         end
+
+        def add_member(member)
+          raise Chef::Exceptions::Group, "you must override add_member in #{self.to_s}"
+        end
+
+        def remove_member(member)
+          raise Chef::Exceptions::Group, "you must override remove_member in #{self.to_s}"
+        end
+
+        def set_members(members)
+          raise Chef::Exceptions::Group, "you must override set_members in #{self.to_s}"
+        end
+
         # Little bit of magic as per Adam's useradd provider to pull the assign the command line flags
         #
         # ==== Returns
@@ -87,6 +127,7 @@ class Chef
         def groupadd_options
           opts = ''
           opts << " -r" if @new_resource.system
+          opts << " -o" if @new_resource.non_unique
           opts
         end
 

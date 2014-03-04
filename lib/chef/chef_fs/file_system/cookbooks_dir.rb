@@ -18,10 +18,10 @@
 
 require 'chef/chef_fs/file_system/rest_list_dir'
 require 'chef/chef_fs/file_system/cookbook_dir'
-require 'chef/chef_fs/raw_request'
 require 'chef/chef_fs/file_system/operation_failed_error'
 require 'chef/chef_fs/file_system/cookbook_frozen_error'
 require 'chef/chef_fs/file_system/chef_repository_file_system_cookbook_dir'
+require 'chef/mixin/file_class'
 
 require 'tmpdir'
 
@@ -29,6 +29,9 @@ class Chef
   module ChefFS
     module FileSystem
       class CookbooksDir < RestListDir
+
+        include Chef::Mixin::FileClass
+
         def initialize(parent)
           super("cookbooks", parent)
         end
@@ -50,19 +53,20 @@ class Chef
           @children ||= begin
             if Chef::Config[:versioned_cookbooks]
               result = []
-              Chef::ChefFS::RawRequest.raw_json(rest, "#{api_path}/?num_versions=all").each_pair do |cookbook_name, cookbooks|
+              root.get_json("#{api_path}/?num_versions=all").each_pair do |cookbook_name, cookbooks|
                 cookbooks['versions'].each do |cookbook_version|
                   result << CookbookDir.new("#{cookbook_name}-#{cookbook_version['version']}", self, :exists => true)
                 end
               end
             else
-              result = Chef::ChefFS::RawRequest.raw_json(rest, api_path).keys.map { |cookbook_name| CookbookDir.new(cookbook_name, self, :exists => true) }
+              result = root.get_json(api_path).keys.map { |cookbook_name| CookbookDir.new(cookbook_name, self, :exists => true) }
             end
             result.sort_by(&:name)
           end
         end
 
         def create_child_from(other, options = {})
+          @children = nil
           upload_cookbook_from(other, options)
         end
 
@@ -92,7 +96,7 @@ class Chef
             proxy_cookbook_path = "#{temp_cookbooks_path}/#{cookbook_name}"
 
             # Make a symlink
-            File.symlink other.file_path, proxy_cookbook_path
+            file_class.symlink other.file_path, proxy_cookbook_path
 
             # Instantiate a proxy loader using the temporary symlink
             proxy_loader = Chef::Cookbook::CookbookVersionLoader.new(proxy_cookbook_path, other.parent.chefignore)
@@ -102,10 +106,21 @@ class Chef
             cookbook_to_upload.freeze_version if options[:freeze]
 
             # Instantiate a new uploader based on the proxy loader
-            uploader = Chef::CookbookUploader.new(cookbook_to_upload, proxy_cookbook_path, :force => options[:force], :rest => rest)
+            uploader = Chef::CookbookUploader.new(cookbook_to_upload, proxy_cookbook_path, :force => options[:force], :rest => root.chef_rest)
 
             with_actual_cookbooks_dir(temp_cookbooks_path) do
               upload_cookbook!(uploader)
+            end
+
+            #
+            # When the temporary directory is being deleted on
+            # windows, the contents of the symlink under that
+            # directory is also deleted. So explicitly remove
+            # the symlink without removing the original contents if we
+            # are running on windows
+            #
+            if Chef::Platform.windows?
+              Dir.rmdir proxy_cookbook_path
             end
           end
         end
@@ -113,7 +128,7 @@ class Chef
         def upload_unversioned_cookbook(other, options)
           cookbook_to_upload = other.chef_object
           cookbook_to_upload.freeze_version if options[:freeze]
-          uploader = Chef::CookbookUploader.new(cookbook_to_upload, other.parent.file_path, :force => options[:force], :rest => rest)
+          uploader = Chef::CookbookUploader.new(cookbook_to_upload, other.parent.file_path, :force => options[:force], :rest => root.chef_rest)
 
           with_actual_cookbooks_dir(other.parent.file_path) do
             upload_cookbook!(uploader)

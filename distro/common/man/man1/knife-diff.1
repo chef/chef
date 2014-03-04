@@ -1,0 +1,206 @@
+.TH "KNIFE-DIFF" "1" "Chef 11.10.0" "" "knife diff"
+.SH NAME
+knife-diff \- The man page for the knife diff subcommand.
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.\" Man page generated from reStructuredText.
+.
+.sp
+The \fBknife diff\fP subcommand is used to compare the differences between files and directories on the server and in the chef\-repo. For example, to compare files on the server prior to an uploading or downloading files using the \fBknife download\fP and \fBknife upload\fP subcommands, or to ensure that certain files in multiple production environments are the same. This subcommand is similar to the \fBgit diff\fP command that can be used to diff what is in the chef\-repo with what is synced to a git repository.
+.sp
+\fBSyntax\fP
+.sp
+This argument has the following syntax:
+.sp
+.nf
+.ft C
+$ knife diff [PATTERN...] (options)
+.ft P
+.fi
+.sp
+\fBOptions\fP
+.sp
+This subcommand has the following options:
+.INDENT 0.0
+.TP
+.B \fB\-c CONFIG_FILE\fP, \fB\-\-config CONFIG_FILE\fP
+The configuration file to use.
+.TP
+.B \fB\-\-chef\-repo\-path PATH\fP
+The path to the chef\-repo. This setting will override the default path to the chef\-repo. Default: same as specified by \fBchef_repo_path\fP in config.rb.
+.TP
+.B \fB\-\-chef\-zero\-port PORT\fP
+The port on which chef\-zero will listen.
+.TP
+.B \fB\-\-[no\-]color\fP
+Indicates whether colored output will be used.
+.TP
+.B \fB\-\-cookbook\-version VERSION\fP
+The version of a cookbook to be downloaded.
+.TP
+.B \fB\-\-concurrency\fP
+The number of allowed concurrent connections. Default: \fB10\fP.
+.TP
+.B \fB\-d\fP, \fB\-\-disable\-editing\fP
+Indicates that $EDITOR will not be opened; data will be accepted as\-is.
+.TP
+.B \fB\-\-defaults\fP
+Indicates that Knife will use the default value, instead of asking a user to provide one.
+.TP
+.B \fB\-\-diff\-filter=[(A|D|M|T)...[*]]\fP
+Indicates that files will be selected that have been added (\fBA\fP), deleted (\fBD\fP), modified (\fBM\fP), and/or have had their type changed (\fBT\fP). Any combination of filter characters may be used, including no filter characters. Use \fB*\fP to select all paths if a file matches other criteria in the comparison. Default value: \fBnil\fP.
+.TP
+.B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
+The $EDITOR that is used for all interactive commands.
+.TP
+.B \fB\-E ENVIRONMENT\fP, \fB\-\-environment ENVIRONMENT\fP
+The name of the environment. When this option is added to a command, the command will run only against the named environment.
+.TP
+.B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
+The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
+.TP
+.B \fB\-h\fP, \fB\-\-help\fP
+Shows help for the command.
+.TP
+.B \fB\-k KEY\fP, \fB\-\-key KEY\fP
+The private key that Knife will use to sign requests made by the API client to the server.
+.TP
+.B \fB\-\-name\-only\fP
+Indicates that only the names of modified files will be shown.
+.TP
+.B \fB\-\-name\-status\fP
+Indicates that only the names of files with a status of \fBAdded\fP, \fBDeleted\fP, \fBModified\fP, or \fBType Changed\fP will be shown.
+.TP
+.B \fB\-\-no\-recurse\fP
+Use \fB\-\-no\-recurse\fP to disable listing a directory recursively. Default: \fB\-\-recurse\fP.
+.TP
+.B \fB\-\-print\-after\fP
+Indicates that data will be shown after a destructive operation.
+.TP
+.B \fB\-\-repo\-mode MODE\fP
+The layout of the local chef\-repo. Possible values: \fBstatic\fP, \fBeverything\fP, or \fBhosted_everything\fP. Use \fBstatic\fP for just roles, environments, cookbooks, and data bags. By default, \fBeverything\fP and \fBhosted_everything\fP are dynamically selected depending on the server type. Default: \fBeverything\fP / \fBhosted_everything\fP.
+.TP
+.B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
+The URL for the server.
+.TP
+.B \fB\-u USER\fP, \fB\-\-user USER\fP
+The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
+.TP
+.B \fB\-v\fP, \fB\-\-version\fP
+The version of the chef\-client.
+.TP
+.B \fB\-V\fP, \fB\-\-verbose\fP
+Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
+.TP
+.B \fB\-y\fP, \fB\-\-yes\fP
+Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
+.TP
+.B \fB\-z\fP, \fB\-\-local\-mode\fP
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
+.UNINDENT
+.sp
+\fBknife.rb File Settings\fP
+.sp
+In addition to the default settings in a knife.rb file, there are other subcommand\-specific settings that can be added. When a subcommand is run, Knife will use:
+.INDENT 0.0
+.IP 1. 3
+A value passed via the command\-line
+.IP 2. 3
+A value contained in the knife.rb file
+.IP 3. 3
+The default value
+.UNINDENT
+.sp
+A value passed via the command line will override a value in the knife.rb file; a value in a knife.rb file will override a default value.
+.sp
+The following \fBknife diff\fP settings can be added to the knife.rb file:
+.INDENT 0.0
+.TP
+.B \fBknife[:chef_repo_path]\fP
+Use to add the \fB\-\-chef\-repo\-path\fP option.
+.TP
+.B \fBknife[:concurrency]\fP
+Use to add the \fB\-\-concurrency\fP option.
+.TP
+.B \fBknife[:name_only]\fP
+Use to add the \fB\-\-name\-only\fP option.
+.TP
+.B \fBknife[:name_status]\fP
+Use to add the \fB\-\-name\-status\fP option.
+.TP
+.B \fBknife[:recurse]\fP
+Use to add the \fB\-\-recurse\fP option.
+.TP
+.B \fBknife[:repo_mode]\fP
+Use to add the \fB\-\-repo\-mode\fP option.
+.UNINDENT
+.sp
+\fBExamples\fP
+.sp
+To compare the "base.json" role to a "webserver.json" role, enter:
+.sp
+.nf
+.ft C
+$ knife diff roles/base.json roles/webserver.json
+.ft P
+.fi
+.sp
+To compare the differences between the local chef\-repo and the files that are on the server, enter:
+.sp
+.nf
+.ft C
+$ knife diff
+.ft P
+.fi
+.sp
+To diff a node named \fBnode\-lb\fP and then only return files that have been added, deleted, modified, or changed, enter:
+.sp
+.nf
+.ft C
+$ knife diff \-\-name\-status node\-lb
+.ft P
+.fi
+.sp
+to return something like:
+.sp
+.nf
+.ft C
+node\-lb/recipes/eip.rb
+node\-lb/recipes/heartbeat\-int.rb
+node\-lb/templates/default/corpsite.conf.erb
+node\-lb/files/default/wildcard.node.com.crt
+node\-lb/files/default/wildcard.node.com.crt\-2009
+node\-lb/files/default/wildcard.node.com.key
+node\-lb/.gitignore
+node\-lb/Rakefile
+.ft P
+.fi
+.SH AUTHOR
+Chef
+.\" Generated by docutils manpage writer.
+.

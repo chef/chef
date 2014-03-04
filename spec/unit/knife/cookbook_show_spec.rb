@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,10 +25,10 @@ describe Chef::Knife::CookbookShow do
     @knife = Chef::Knife::CookbookShow.new
     @knife.config = { }
     @knife.name_args = [ "cookbook_name" ]
-    @rest = mock(Chef::REST)
-    @knife.stub!(:rest).and_return(@rest)
-    @knife.stub!(:pretty_print).and_return(true)
-    @knife.stub!(:output).and_return(true)
+    @rest = double(Chef::REST)
+    @knife.stub(:rest).and_return(@rest)
+    @knife.stub(:pretty_print).and_return(true)
+    @knife.stub(:output).and_return(true)
   end
 
   describe "run" do
@@ -171,7 +171,7 @@ describe Chef::Knife::CookbookShow do
 
         @response = "Example recipe text"
       end
-      
+
       describe "with --fqdn" do
         it "should pass the fqdn" do
           @knife.config[:platform] = "example_platform"

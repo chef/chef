@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,7 +38,7 @@ class Chef
           raise(Chef::Exceptions::Group,"dscl error: #{result.inspect}") if result[2] =~ /No such key: /
           return result[2]
         end
-        
+
         # This is handled in providers/group.rb by Etc.getgrnam()
         # def group_exists?(group)
         #   groups = safe_dscl("list /Groups")
@@ -73,21 +73,43 @@ class Chef
         end
 
         def set_members
+          # First reset the memberships if the append is not set
           unless @new_resource.append
             Chef::Log.debug("#{@new_resource} removing group members #{@current_resource.members.join(' ')}") unless @current_resource.members.empty?
             safe_dscl("create /Groups/#{@new_resource.group_name} GroupMembers ''") # clear guid list
             safe_dscl("create /Groups/#{@new_resource.group_name} GroupMembership ''") # clear user list
+            @current_resource.members([ ])
           end
-          unless @new_resource.members.empty?
-            Chef::Log.debug("#{@new_resource} setting group members #{@new_resource.members.join(', ')}")
-            safe_dscl("append /Groups/#{@new_resource.group_name} GroupMembership #{@new_resource.members.join(' ')}")
+
+          # Add any members that need to be added
+          if @new_resource.members && !@new_resource.members.empty?
+            members_to_be_added = [ ]
+            @new_resource.members.each do |member|
+              members_to_be_added << member if !@current_resource.members.include?(member)
+            end
+            unless members_to_be_added.empty?
+              Chef::Log.debug("#{@new_resource} setting group members #{members_to_be_added.join(', ')}")
+              safe_dscl("append /Groups/#{@new_resource.group_name} GroupMembership #{members_to_be_added.join(' ')}")
+            end
+          end
+
+          # Remove any members that need to be removed
+          if @new_resource.excluded_members && !@new_resource.excluded_members.empty?
+            members_to_be_removed = [ ]
+            @new_resource.excluded_members.each do |member|
+              members_to_be_removed << member if @current_resource.members.include?(member)
+            end
+            unless members_to_be_removed.empty?
+              Chef::Log.debug("#{@new_resource} removing group members #{members_to_be_removed.join(', ')}")
+              safe_dscl("delete /Groups/#{@new_resource.group_name} GroupMembership #{members_to_be_removed.join(' ')}")
+            end
           end
         end
 
         def define_resource_requirements
           super
-          requirements.assert(:all_actions) do |a| 
-            a.assertion { ::File.exists?("/usr/bin/dscl") } 
+          requirements.assert(:all_actions) do |a|
+            a.assertion { ::File.exists?("/usr/bin/dscl") }
             a.failure_message Chef::Exceptions::Group, "Could not find binary /usr/bin/dscl for #{@new_resource.name}"
             # No whyrun alternative: this component should be available in the base install of any given system that uses it
           end
@@ -96,13 +118,13 @@ class Chef
         def load_current_resource
           super
         end
-        
+
         def create_group
           dscl_create_group
           set_gid
           set_members
         end
-        
+
         def manage_group
           if @new_resource.group_name && (@current_resource.group_name != @new_resource.group_name)
             dscl_create_group
@@ -110,16 +132,16 @@ class Chef
           if @new_resource.gid && (@current_resource.gid != @new_resource.gid)
             set_gid
           end
-          if @new_resource.members && (@current_resource.members != @new_resource.members)
+          if @new_resource.members || @new_resource.excluded_members
             set_members
           end
         end
-        
+
         def dscl_create_group
           safe_dscl("create /Groups/#{@new_resource.group_name}")
           safe_dscl("create /Groups/#{@new_resource.group_name} Password '*'")
         end
-        
+
         def remove_group
           safe_dscl("delete /Groups/#{@new_resource.group_name}")
         end

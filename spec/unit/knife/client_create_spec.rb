@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,16 +25,18 @@ describe Chef::Knife::ClientCreate do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::ClientCreate.new
     @knife.config = {
-      :file => nil
+      :file => nil,
+      :admin => false,
+      :validator => false
     }
     @knife.name_args = [ "adam" ]
     @client = Chef::ApiClient.new
-    @client.stub!(:save).and_return({ 'private_key' => '' })
-    @knife.stub!(:edit_data).and_return(@client)
-    @knife.stub!(:puts)
-    Chef::ApiClient.stub!(:new).and_return(@client)
+    @client.stub(:save).and_return({ 'private_key' => '' })
+    @knife.stub(:edit_data).and_return(@client)
+    @knife.stub(:puts)
+    Chef::ApiClient.stub(:new).and_return(@client)
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
   describe "run" do
@@ -46,6 +48,16 @@ describe Chef::Knife::ClientCreate do
 
     it "should set the Client name" do
       @client.should_receive(:name).with("adam")
+      @knife.run
+    end
+
+    it "by default it is not an admin" do
+      @client.should_receive(:admin).with(false)
+      @knife.run
+    end
+
+    it "by default it is not a validator" do
+      @client.should_receive(:validator).with(false)
       @knife.run
     end
 
@@ -62,10 +74,26 @@ describe Chef::Knife::ClientCreate do
     describe "with -f or --file" do
       it "should write the private key to a file" do
         @knife.config[:file] = "/tmp/monkeypants"
-        @client.stub!(:save).and_return({ 'private_key' => "woot" })
-        filehandle = mock("Filehandle")
+        @client.stub(:save).and_return({ 'private_key' => "woot" })
+        filehandle = double("Filehandle")
         filehandle.should_receive(:print).with('woot')
         File.should_receive(:open).with("/tmp/monkeypants", "w").and_yield(filehandle)
+        @knife.run
+      end
+    end
+
+    describe "with -a or --admin" do
+      it "should create an admin client" do
+        @knife.config[:admin] = true
+        @client.should_receive(:admin).with(true)
+        @knife.run
+      end
+    end
+
+    describe "with --validator" do
+      it "should create an validator client" do
+        @knife.config[:validator] = true
+        @client.should_receive(:validator).with(true)
         @knife.run
       end
     end

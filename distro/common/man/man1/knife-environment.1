@@ -1,168 +1,420 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.TH "KNIFE-ENVIRONMENT" "1" "Chef 11.10.0" "" "knife environment"
+.SH NAME
+knife-environment \- The man page for the knife environment subcommand.
 .
-.TH "KNIFE\-ENVIRONMENT" "1" "July 2013" "Chef 11.8.0.alpha.0" "Chef Manual"
+.nr rst2man-indent-level 0
 .
-.SH "NAME"
-\fBknife\-environment\fR \- Define cookbook policies for the environments in your infrastructure
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.\" Man page generated from reStructuredText.
 .
-.SH "SYNOPSIS"
-\fBknife\fR \fBenvironment\fR \fIsub\-command\fR \fI(options)\fR
-.
-.SH "SUBCOMMANDS"
-Environment subcommands follow a basic create, read, update, delete (CRUD) pattern\. The following subcommands are available:
-.
-.SH "CREATE"
-\fBknife environment create\fR \fIenvironment\fR \fI(options)\fR
-.
+.sp
+An environment is a way to map an organization\(aqs real\-life workflow to what can be configured and managed when using server. Every organization begins with a single environment called the \fB_default\fP environment, which cannot be modified (or deleted). Additional environments can be created to reflect each organization\(aqs patterns and workflow. For example, creating \fBproduction\fP, \fBstaging\fP, \fBtesting\fP, and \fBdevelopment\fP environments. Generally, an environment is also associated with one (or more) cookbook versions.
+.sp
+The \fBknife environment\fP subcommand is used to manage environments within a single organization on the server.
+.SH COMMON OPTIONS
+.sp
+The following options may be used with any of the arguments available to the \fBknife environment\fP subcommand:
+.INDENT 0.0
 .TP
-\fB\-d\fR, \fB\-\-description DESCRIPTION\fR
-The value of the description field\.
-.
-.P
-Create a new environment object on the Chef Server\. The envrionment will be opened in the text editor for editing prior to creation if the \-n option is not present\.
-.
-.SH "DELETE"
-\fBknife environment delete\fR \fIenvironment\fR \fI(options)\fR
-.
-.P
-Destroy an environment on the Chef Server\. A prompt for confirmation will be displayed if the \-y options is not given\.
-.
-.SH "EDIT"
-\fBknife environment edit\fR \fIenvironment\fR \fI(options)\fR
-.
-.P
-Fetch \fIenvironment\fR and display it in the text editor for editing\. The environment will be saved to the Chef Server when the editing session exits\.
-.
-.SH "FROM FILE"
-\fBknife environment from file\fR \fIfile\fR \fI(options)\fR
-.
-.P
-Create or update an environment from the JSON or Ruby format \fIfile\fR\. See \fBformat\fR for the proper format of this file\.
-.
-.SH "LIST"
-\fBknife environment list\fR \fI(options)\fR * \fB\-w\fR, \fB\-\-with\-uri\fR: Show the resource URI for each environment
-.
-.SH "SHOW"
-\fBknife environment show\fR \fIenvironment\fR \fI(options)\fR
-.
-.SH "DESCRIPTION"
-Environments provide a means to apply policies to hosts in your infrastructure based on business function\. For example, you may have a separate copy of your infrastructure called "dev" that runs the latest version of your application and should use the newest versions of your cookbooks when configuring systems, and a production instance of your infrastructure where you wish to update code and cookbooks in a more controlled fashion\. In Chef, this function is implemented with \fIenvironments\fR\.
-.
-.P
-Environments contain two major components: a set of cookbook version constraints and environment attributes\.
-.
-.SH "SYNTAX"
-A cookbook version constraint is comprised of a \fIcookbook name\fR and a \fIversion constraint\fR\. The \fIcookbook name\fR is the name of a cookbook in your system, and the \fIversion constraint\fR is a String describing the version(s) of that cookbook allowed in the environment\. Only one \fIversion constraint\fR is supported for a given \fIcookbook name\fR\.
-.
-.P
-The exact syntax used to define a cookbook version constraint varies depending on whether you use the JSON format or the Ruby format\. In the JSON format, the cookbook version constraints for an environment are represented as a single JSON object, like this:
-.
-.IP "" 4
-.
+.B \fB\-\-chef\-zero\-port PORT\fP
+The port on which chef\-zero will listen.
+.TP
+.B \fB\-c CONFIG_FILE\fP, \fB\-\-config CONFIG_FILE\fP
+The configuration file to use.
+.TP
+.B \fB\-d\fP, \fB\-\-disable\-editing\fP
+Indicates that $EDITOR will not be opened; data will be accepted as\-is.
+.TP
+.B \fB\-\-defaults\fP
+Indicates that Knife will use the default value, instead of asking a user to provide one.
+.TP
+.B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
+The $EDITOR that is used for all interactive commands.
+.TP
+.B \fB\-E ENVIRONMENT\fP, \fB\-\-environment ENVIRONMENT\fP
+The name of the environment. When this option is added to a command, the command will run only against the named environment.
+.TP
+.B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
+The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
+.TP
+.B \fB\-h\fP, \fB\-\-help\fP
+Shows help for the command.
+.TP
+.B \fB\-k KEY\fP, \fB\-\-key KEY\fP
+The private key that Knife will use to sign requests made by the API client to the server.
+.TP
+.B \fB\-\-[no\-]color\fP
+Indicates whether colored output will be used.
+.TP
+.B \fB\-\-print\-after\fP
+Indicates that data will be shown after a destructive operation.
+.TP
+.B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
+The URL for the server.
+.TP
+.B \fB\-u USER\fP, \fB\-\-user USER\fP
+The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
+.TP
+.B \fB\-V\fP, \fB\-\-verbose\fP
+Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
+.TP
+.B \fB\-v\fP, \fB\-\-version\fP
+The version of the chef\-client.
+.TP
+.B \fB\-y\fP, \fB\-\-yes\fP
+Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
+.TP
+.B \fB\-z\fP, \fB\-\-local\-mode\fP
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
+.UNINDENT
+.SH COMPARE
+.sp
+The \fBcompare\fP argument is used to compare the cookbook version constraints that are set on one (or more) environments.
+.sp
+\fBSyntax\fP
+.sp
+This argument has the following syntax:
+.sp
 .nf
-
-{"apache2": ">= 1\.5\.0"}
-.
+.ft C
+$ knife environment compare [ENVIRONMENT_NAME...] (options)
+.ft P
 .fi
-.
-.IP "" 0
-.
-.P
-In the Ruby format, the cookbook version contraints for an environment are represented as a Ruby Hash, like this:
-.
-.IP "" 4
-.
+.sp
+\fBOptions\fP
+.sp
+This argument has the following options:
+.INDENT 0.0
+.TP
+.B \fB\-a\fP, \fB\-\-all\fP
+Indicates that all environments found at the specified path will be uploaded.
+.TP
+.B \fB\-m\fP, \fB\-\-mismatch\fP
+Use to show only matching versions.
+.UNINDENT
+.sp
+\fBExample\fP
+.sp
+To compare cookbook versions for a single environment:
+.sp
 .nf
-
-{"apache2" => ">= 1\.5\.0"}
-.
+.ft C
+$ knife environment compare development
+.ft P
 .fi
-.
-.IP "" 0
-.
-.P
-A \fIversion number\fR is a String comprised of two or three digits separated by a dot (\.) character, or in other words, strings of the form "major\.minor" or "major\.minor\.patch"\. "1\.2" and "1\.2\.3" are examples of valid version numbers\. Version numbers containing more than three digits or alphabetic characters are not supported\.
-.
-.P
-A \fIversion constraint\fR String is composed of an \fIoperator\fR and a \fIversion number\fR\. The following operators are available:
-.
-.TP
-\fB= VERSION\fR
-Equality\. Only the exact version specified may be used\.
-.
-.TP
-\fB> VERSION\fR
-Greater than\. Only versions greater than \fBVERSION\fR may be used\.
-.
-.TP
-\fB>= VERSION\fR
-Greater than or equal to\. Only versions equal to VERSION or greater may be used\.
-.
-.TP
-\fB< VERSION\fR
-Less than\. Only versions less than VERSION may be used\.
-.
-.TP
-\fB<= VERSION\fR
-Less than or equal to\. Only versions lesser or equal to VERSION may be used\.
-.
-.TP
-\fB~> VERSION\fR
-Pessimistic greater than\. Depending on the number of components in the given VERSION, the constraint will be optimistic about future minor or patch revisions only\. For example, \fB~> 1\.1\fR will match any version less than \fB2\.0\fR and greater than or equal to \fB1\.1\.0\fR, whereas \fB~> 2\.0\.5\fR will match any version less than \fB2\.1\.0\fR and greater than or equal to \fB2\.0\.5\fR\.
-.
-.SH "FORMAT"
-The JSON format of an envioronment is as follows:
-.
-.IP "" 4
-.
+.sp
+to return something similar to:
+.sp
 .nf
-
-{
-  "name": "dev",
-  "description": "The development environment",
-  "cookbook_versions": {
-    "couchdb": "= 11\.0\.0"
-  },
-  "json_class": "Chef::Environment",
-  "chef_type": "environment",
-  "default_attributes": {
-    "apache2": { "listen_ports": [ "80", "443" ] }
-  },
-  "override_attributes": {
-    "aws_s3_bucket": "production"
-  }
-}
-.
+.ft C
+           development
+apache     2.3.1
+windows    4.1.2
+.ft P
 .fi
-.
-.IP "" 0
-.
-.P
-The Ruby format of an environment is as follows:
-.
-.IP "" 4
-.
+.sp
+To compare cookbook versions for multiple environments:
+.sp
 .nf
-
-name "dev"
-description "The development environment"
-cookbook_versions  "couchdb" => "= 11\.0\.0"
-default_attributes "apache2" => { "listen_ports" => [ "80", "443" ] }
-override_attributes "aws_s3_bucket" => "production"
-.
+.ft C
+$ knife environment compare development staging
+.ft P
 .fi
+.sp
+to return something similar to:
+.sp
+.nf
+.ft C
+              development    staging
+apache        2.3.1          1.2.2
+windows       4.1.2          1.0.0
+postgresql    1.0.0          1.0.0
+.ft P
+.fi
+.sp
+To compare all cookbook versions for all environments:
+.sp
+.nf
+.ft C
+$ knife environment compare \-\-all
+.ft P
+.fi
+.sp
+to return something similar to:
+.sp
+.nf
+.ft C
+                   staging  development
+ulimit             latest   latest
+redisio            latest   latest
+journly            latest   latest
+aws                latest   latest
+test               latest   latest
+unicorn            latest   latest
+sensu              latest   latest
+runit              latest   latest
+templater          latest   latest
+powershell         latest   latest
+openssl            latest   latest
+rbenv              latest   latest
+rabbitmq           latest   latest
+postgresql         latest   latest
+mysql              latest   latest
+ohai               latest   latest
+git                latest   latest
+erlang             latest   latest
+ssh_known_hosts    latest   latest
+nginx              latest   latest
+database           latest   latest
+yum                latest   latest
+xfs                latest   latest
+apt                latest   latest
+dmg                latest   latest
+chef_handler       latest   latest
+windows            1.0.0    4.1.2
+.ft P
+.fi
+.SH CREATE
+.sp
+The \fBcreate\fP argument is used to add an environment object to the server. When this argument is run, Knife will open $EDITOR to enable editing of the \fBENVIRONMENT\fP description field (unless a description is specified as part of the command). When finished, Knife will add the environment to the server.
+.sp
+\fBSyntax\fP
+.sp
+This argument has the following syntax:
+.sp
+.nf
+.ft C
+$ knife environment create ENVIRONMENT_NAME \-d DESCRIPTION
+.ft P
+.fi
+.sp
+\fBOptions\fP
+.sp
+This argument has the following options:
+.INDENT 0.0
+.TP
+.B \fB\-d DESCRIPTION\fP, \fB\-\-description DESCRIPTION\fP
+The description of the environment. This value will populate the description field for the environment on the server.
+.UNINDENT
+.sp
+\fBExamples\fP
+.sp
+To create an environment named "dev" with a description of "The development environment.":
+.sp
+.nf
+.ft C
+$ knife environment create dev \-d "The development environment."
+.ft P
+.fi
+.SH DELETE
+.sp
+The \fBdelete\fP argument is used to delete an environment from a server.
+.sp
+\fBSyntax\fP
+.sp
+This argument has the following syntax:
+.sp
+.nf
+.ft C
+$ knife environment delete ENVIRONMENT_NAME
+.ft P
+.fi
+.sp
+\fBOptions\fP
+.sp
+This command does not have any specific options.
+.sp
+\fBExamples\fP
+.sp
+To delete an environment named "dev", enter:
+.sp
+.nf
+.ft C
+$ knife environment delete dev
+.ft P
+.fi
+.sp
+Type \fBY\fP to confirm a deletion.
+.SH EDIT
+.sp
+The \fBedit\fP argument is used to edit the attributes of an environment. When this argument is run, Knife will open $EDITOR to enable editing of \fBENVIRONMENT\fP attributes. When finished, Knife will update the server with those changes.
+.sp
+\fBSyntax\fP
+.sp
+This argument has the following syntax:
+.sp
+.nf
+.ft C
+$ knife environment edit ENVIRONMENT_NAME
+.ft P
+.fi
+.sp
+\fBOptions\fP
+.sp
+This command does not have any specific options.
+.sp
+\fBExamples\fP
+.sp
+To edit an environment named "devops", enter:
+.sp
+.nf
+.ft C
+$ knife environment edit devops
+.ft P
+.fi
+.SH FROM FILE
+.sp
+The \fBfrom file\fP argument is used to add or update an environment using a JSON or Ruby DSL description. It must be run with the \fBcreate\fP or \fBedit\fP arguments.
+.sp
+\fBSyntax\fP
+.sp
+This argument has the following syntax:
+.sp
+.nf
+.ft C
+$ knife environment [create | edit] from file FILE (options)
+.ft P
+.fi
+.sp
+\fBOptions\fP
+.sp
+This argument has the following options:
+.INDENT 0.0
+.TP
+.B \fB\-a\fP, \fB\-\-all\fP
+Indicates that all environments found at the specified path will be uploaded.
+.UNINDENT
+.sp
+\fBExamples\fP
+.sp
+To add an environment using data contained in a JSON file:
+.sp
+.nf
+.ft C
+$ knife environment create devops from file "path to JSON file"
+.ft P
+.fi
+.sp
+or:
+.sp
+.nf
+.ft C
+$ knife environment edit devops from file "path to JSON file"
+.ft P
+.fi
+.SH LIST
+.sp
+The \fBlist\fP argument is used to list all of the environments that are currently available on the server.
+.sp
+\fBSyntax\fP
+.sp
+This argument has the following syntax:
+.sp
+.nf
+.ft C
+$ knife environment list \-w
+.ft P
+.fi
+.sp
+\fBOptions\fP
+.sp
+This argument has the following options:
+.INDENT 0.0
+.TP
+.B \fB\-w\fP, \fB\-\-with\-uri\fP
+Indicates that the corresponding URIs will be shown.
+.UNINDENT
+.sp
+\fBExamples\fP
+.sp
+To view a list of environments:
+.sp
+.nf
+.ft C
+$ knife environment list \-w
+.ft P
+.fi
+.SH SHOW
+.sp
+The \fBshow\fP argument is used to display information about the specified environment.
+.sp
+\fBSyntax\fP
+.sp
+This argument has the following syntax:
+.sp
+.nf
+.ft C
+$ knife environment show ENVIRONMENT_NAME
+.ft P
+.fi
+.sp
+\fBOptions\fP
+.sp
+This command does not have any specific options.
+.sp
+\fBExamples\fP
+.sp
+To view information about the "dev" environment enter:
+.sp
+.nf
+.ft C
+$ knife environment show dev
+.ft P
+.fi
+.sp
+to return:
+.sp
+.nf
+.ft C
+% knife environment show dev
+chef_type:            environment
+cookbook_versions:
+default_attributes:
+description:
+json_class:           Chef::Environment
+name:                 dev
+override_attributes:
+
+\e\e
+\e\e
+\e\e
+\e\e
+.ft P
+.fi
+.sp
+To view information in JSON format, use the \fB\-F\fP common option as part of the command like this:
+.sp
+.nf
+.ft C
+$ knife role show devops \-F json
+.ft P
+.fi
+.sp
+Other formats available include \fBtext\fP, \fByaml\fP, and \fBpp\fP.
+.SH AUTHOR
+Chef
+.\" Generated by docutils manpage writer.
 .
-.IP "" 0
-.
-.SH "SEE ALSO"
-\fBknife\-node(1)\fR \fBknife\-cookbook(1)\fR \fBknife\-role(1)\fR \fIhttp://wiki\.opscode\.com/display/chef/Environments\fR \fIhttp://wiki\.opscode\.com/display/chef/Version+Constraints\fR
-.
-.SH "AUTHOR"
-Chef was written by Adam Jacob \fIadam@opscode\.com\fR with many contributions from the community\.
-.
-.SH "DOCUMENTATION"
-This manual page was written by Daniel DeLeo \fIdan@opscode\.com\fR\. Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2\.0 License\.
-.
-.SH "CHEF"
-Knife is distributed with Chef\. \fIhttp://wiki\.opscode\.com/display/chef/Home\fR

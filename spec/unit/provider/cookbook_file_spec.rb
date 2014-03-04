@@ -37,7 +37,7 @@ describe Chef::Provider::CookbookFile do
 
   let(:provider) do
     provider = described_class.new(resource, run_context)
-    provider.stub!(:content).and_return(content)
+    provider.stub(:content).and_return(content)
     provider
   end
 
@@ -49,9 +49,10 @@ describe Chef::Provider::CookbookFile do
   end
 
   let(:content) do
-    content = mock('Chef::Provider::CookbookFile::Content')
+    content = double('Chef::Provider::CookbookFile::Content')
   end
 
   it_behaves_like Chef::Provider::File
 
+  it_behaves_like "a file provider with source field"
 end

@@ -39,7 +39,7 @@ describe Chef::Provider::Cron::Unix do
 
   describe "read_crontab" do
     before :each do
-      @status = mock("Status", :exitstatus => 0)
+      @status = double("Status", :exitstatus => 0)
       @stdout = StringIO.new(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -48,7 +48,7 @@ describe Chef::Provider::Cron::Unix do
 
 # Another comment
       CRONTAB
-      @provider.stub!(:popen4).and_yield(1234, StringIO.new, @stdout, StringIO.new).and_return(@status)
+      @provider.stub(:popen4).and_yield(1234, StringIO.new, @stdout, StringIO.new).and_return(@status)
     end
 
     it "should call crontab -l with the user" do
@@ -69,14 +69,14 @@ CRONTAB
     end
 
     it "should return nil if the user has no crontab" do
-      status = mock("Status", :exitstatus => 1)
-      @provider.stub!(:popen4).and_return(status)
+      status = double("Status", :exitstatus => 1)
+      @provider.stub(:popen4).and_return(status)
       @provider.send(:read_crontab).should == nil
     end
 
     it "should raise an exception if another error occurs" do
-      status = mock("Status", :exitstatus => 2)
-      @provider.stub!(:popen4).and_return(status)
+      status = double("Status", :exitstatus => 2)
+      @provider.stub(:popen4).and_return(status)
       lambda do
         @provider.send(:read_crontab)
       end.should raise_error(Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: 2")
@@ -85,10 +85,10 @@ CRONTAB
 
   describe "write_crontab" do
     before :each do
-      @status = mock("Status", :exitstatus => 0)
-      @provider.stub!(:run_command_and_return_stdout_stderr).and_return(@status, String.new, String.new)
-      @tempfile = mock("foo", :path => "/tmp/foo", :close => true)
-      Tempfile.stub!(:new).and_return(@tempfile)
+      @status = double("Status", :exitstatus => 0)
+      @provider.stub(:run_command_and_return_stdout_stderr).and_return(@status, String.new, String.new)
+      @tempfile = double("foo", :path => "/tmp/foo", :close => true)
+      Tempfile.stub(:new).and_return(@tempfile)
       @tempfile.should_receive(:flush)
       @tempfile.should_receive(:chmod).with(420)
       @tempfile.should_receive(:close!)
@@ -112,7 +112,7 @@ CRONTAB
 
     it "should raise an exception if the command returns non-zero" do
       @tempfile.should_receive(:<<).with("Foo")
-      @status.stub!(:exitstatus).and_return(1)
+      @status.stub(:exitstatus).and_return(1)
       lambda do
         @provider.send(:write_crontab, "Foo")
       end.should raise_error(Chef::Exceptions::Cron, /Error updating state of #{@new_resource.name}, exit: 1/)

@@ -26,10 +26,10 @@ describe Chef::Provider::Package::Pacman do
     @new_resource = Chef::Resource::Package.new("nano")
     @current_resource = Chef::Resource::Package.new("nano")
 
-    @status = mock("Status", :exitstatus => 0)
+    @status = double("Status", :exitstatus => 0)
     @provider = Chef::Provider::Package::Pacman.new(@new_resource, @run_context)
-    Chef::Resource::Package.stub!(:new).and_return(@current_resource)
-    @provider.stub!(:popen4).and_return(@status)
+    Chef::Resource::Package.stub(:new).and_return(@current_resource)
+    @provider.stub(:popen4).and_return(@status)
     @stdin = StringIO.new
     @stdout = StringIO.new(<<-ERR)
 error: package "nano" not found
@@ -55,13 +55,13 @@ ERR
     end
 
     it "should read stdout on pacman" do
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @stdout.should_receive(:each).and_return(true)
       @provider.load_current_resource
     end
 
     it "should set the installed version to nil on the current resource if pacman installed version not exists" do
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @current_resource.should_receive(:version).with(nil).and_return(true)
       @provider.load_current_resource
     end
@@ -88,17 +88,17 @@ Install Reason : Explicitly installed
 Install Script : Yes
 Description    : Pico editor clone with enhancements
 PACMAN
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @provider.load_current_resource
       @current_resource.version.should == "2.2.2-1"
     end
 
     it "should set the candidate version if pacman has one" do
-      @stdout.stub!(:each).and_yield("core/nano 2.2.3-1 (base)").
+      @stdout.stub(:each).and_yield("core/nano 2.2.3-1 (base)").
                             and_yield("    Pico editor clone with enhancements").
                             and_yield("community/nanoblogger 3.4.1-1").
                             and_yield("    NanoBlogger is a small weblog engine written in Bash for the command line")
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @provider.load_current_resource
       @provider.candidate_version.should eql("2.2.3-1")
     end
@@ -122,11 +122,11 @@ Include = /etc/pacman.d/mirrorlist
 Include = /etc/pacman.d/mirrorlist
 PACMAN_CONF
 
-      ::File.stub!(:exists?).with("/etc/pacman.conf").and_return(true)
-      ::File.stub!(:read).with("/etc/pacman.conf").and_return(@pacman_conf)
-      @stdout.stub!(:each).and_yield("customrepo/nano 1.2.3-4").
+      ::File.stub(:exists?).with("/etc/pacman.conf").and_return(true)
+      ::File.stub(:read).with("/etc/pacman.conf").and_return(@pacman_conf)
+      @stdout.stub(:each).and_yield("customrepo/nano 1.2.3-4").
                             and_yield("    My custom package")
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
 
       @provider.load_current_resource
       @provider.candidate_version.should eql("1.2.3-4")
@@ -139,12 +139,12 @@ PACMAN_CONF
 
     it "should not raise an exception if pacman succeeds" do
       @status.should_receive(:exitstatus).and_return(0)
-      lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Package)
+      lambda { @provider.load_current_resource }.should_not raise_error
     end
 
     it "should raise an exception if pacman does not return a candidate version" do
-      @stdout.stub!(:each).and_yield("")
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @stdout.stub(:each).and_yield("")
+      @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       lambda { @provider.candidate_version }.should raise_error(Chef::Exceptions::Package)
     end
 
@@ -165,7 +165,7 @@ PACMAN_CONF
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "pacman --sync --noconfirm --noprogressbar --debug nano"
       })
-      @new_resource.stub!(:options).and_return("--debug")
+      @new_resource.stub(:options).and_return("--debug")
 
       @provider.install_package("nano", "1.0")
     end
@@ -190,7 +190,7 @@ PACMAN_CONF
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "pacman --remove --noconfirm --noprogressbar --debug nano"
       })
-      @new_resource.stub!(:options).and_return("--debug")
+      @new_resource.stub(:options).and_return("--debug")
 
       @provider.remove_package("nano", "1.0")
     end

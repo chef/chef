@@ -44,7 +44,7 @@ describe Chef::Resource::Link do
       if bad_value
         lambda { @resource.action action }.should raise_error(ArgumentError)
       else
-        lambda { @resource.action action }.should_not raise_error(ArgumentError)
+        lambda { @resource.action action }.should_not raise_error
       end
     end
   end
@@ -54,7 +54,7 @@ describe Chef::Resource::Link do
   end
 
   it "should accept a string as the link source via 'to'" do
-    lambda { @resource.to "/tmp" }.should_not raise_error(ArgumentError)
+    lambda { @resource.to "/tmp" }.should_not raise_error
   end
 
   it "should not accept a Hash for the link source via 'to'" do
@@ -85,19 +85,19 @@ describe Chef::Resource::Link do
   end
 
   it "should accept a group name or id for group" do
-    lambda { @resource.group "root" }.should_not raise_error(ArgumentError)
-    lambda { @resource.group 123 }.should_not raise_error(ArgumentError)
-    lambda { @resource.group "root*goo" }.should raise_error(ArgumentError)
+    lambda { @resource.group "root" }.should_not raise_error
+    lambda { @resource.group 123 }.should_not raise_error
+    lambda { @resource.group "root:goo" }.should raise_error(ArgumentError)
   end
 
   it "should accept a user name or id for owner" do
-    lambda { @resource.owner "root" }.should_not raise_error(ArgumentError)
-    lambda { @resource.owner 123 }.should_not raise_error(ArgumentError)
-    lambda { @resource.owner "root*goo" }.should raise_error(ArgumentError)
+    lambda { @resource.owner "root" }.should_not raise_error
+    lambda { @resource.owner 123 }.should_not raise_error
+    lambda { @resource.owner "root:goo" }.should raise_error(ArgumentError)
   end
 
   describe "when it has to, link_type, owner, and group" do
-    before do 
+    before do
       @resource.target_file("/var/target.tar")
       @resource.to("/to/dir/file.tar")
       @resource.link_type(:symbolic)

@@ -20,6 +20,7 @@
 require 'forwardable'
 require 'chef/version'
 require 'mixlib/cli'
+require 'chef/config_fetcher'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/path_sanity'
 require 'chef/knife/core/subcommand_loader'
@@ -238,7 +239,13 @@ class Chef
     end
 
     def self.working_directory
-      ENV['PWD'] || Dir.pwd
+      a = if Chef::Platform.windows?
+            ENV['CD']
+          else
+            ENV['PWD']
+          end || Dir.pwd
+
+      a
     end
 
     def self.reset_config_path!
@@ -314,7 +321,11 @@ class Chef
       config_file_settings
     end
 
-    def locate_config_file
+    def self.config_fetcher(candidate_config)
+      Chef::ConfigFetcher.new(candidate_config, Chef::Config.config_file_jail)
+    end
+
+    def self.locate_config_file
       candidate_configs = []
 
       # Look for $KNIFE_HOME/knife.rb (allow multiple knives config on same machine)
@@ -326,8 +337,8 @@ class Chef
         candidate_configs << File.join(Dir.pwd, 'knife.rb')
       end
       # Look for $UPWARD/.chef/knife.rb
-      if self.class.chef_config_dir
-        candidate_configs << File.join(self.class.chef_config_dir, 'knife.rb')
+      if chef_config_dir
+        candidate_configs << File.join(chef_config_dir, 'knife.rb')
       end
       # Look for $HOME/.chef/knife.rb
       if ENV['HOME']
@@ -335,12 +346,12 @@ class Chef
       end
 
       candidate_configs.each do | candidate_config |
-        candidate_config = File.expand_path(candidate_config)
-        if File.exist?(candidate_config)
-          config[:config_file] = candidate_config
-          break
+        fetcher = config_fetcher(candidate_config)
+        if !fetcher.config_missing?
+          return candidate_config
         end
       end
+      return nil
     end
 
     # Apply Config in this order:
@@ -379,6 +390,12 @@ class Chef
       Chef::Config[:chef_server_url]   = config[:chef_server_url] if config[:chef_server_url]
       Chef::Config[:environment]       = config[:environment]     if config[:environment]
 
+      Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
+      if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+        Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
+      end
+      Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
+
       # Expand a relative path from the config directory. Config from command
       # line should already be expanded, and absolute paths will be unchanged.
       if Chef::Config[:client_key] && config[:config_file]
@@ -397,14 +414,20 @@ class Chef
     end
 
     def configure_chef
-      unless config[:config_file]
-        locate_config_file
+      if !config[:config_file]
+        located_config_file = self.class.locate_config_file
+        config[:config_file] = located_config_file if located_config_file
       end
 
-      # Don't try to load a knife.rb if it doesn't exist.
+      # Don't try to load a knife.rb if it wasn't specified.
       if config[:config_file]
+        fetcher = Chef::ConfigFetcher.new(config[:config_file], Chef::Config.config_file_jail)
+        if fetcher.config_missing?
+          ui.error("Specified config file #{config[:config_file]} does not exist#{Chef::Config.config_file_jail ? " or is not under config file jail #{Chef::Config.config_file_jail}" : ""}!")
+          exit 1
+        end
         Chef::Log.debug("Using configuration from #{config[:config_file]}")
-        read_config_file(config[:config_file])
+        read_config(fetcher.read_config, config[:config_file])
       else
         # ...but do log a message if no config was found.
         Chef::Config[:color] = config[:color]
@@ -415,24 +438,24 @@ class Chef
       apply_computed_config
     end
 
-    def read_config_file(file)
-      Chef::Config.from_file(file)
+    def read_config(config_content, config_file_path)
+      Chef::Config.from_string(config_content, config_file_path)
     rescue SyntaxError => e
-      ui.error "You have invalid ruby syntax in your config file #{file}"
+      ui.error "You have invalid ruby syntax in your config file #{config_file_path}"
       ui.info(ui.color(e.message, :red))
-      if file_line = e.message[/#{Regexp.escape(file)}:[\d]+/]
+      if file_line = e.message[/#{Regexp.escape(config_file_path)}:[\d]+/]
         line = file_line[/:([\d]+)$/, 1].to_i
-        highlight_config_error(file, line)
+        highlight_config_error(config_file_path, line)
       end
       exit 1
     rescue Exception => e
-      ui.error "You have an error in your config file #{file}"
+      ui.error "You have an error in your config file #{config_file_path}"
       ui.info "#{e.class.name}: #{e.message}"
-      filtered_trace = e.backtrace.grep(/#{Regexp.escape(file)}/)
+      filtered_trace = e.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
       filtered_trace.each {|line| ui.msg("  " + ui.color(line, :red))}
       if !filtered_trace.empty?
-        line_nr = filtered_trace.first[/#{Regexp.escape(file)}:([\d]+)/, 1]
-        highlight_config_error(file, line_nr.to_i)
+        line_nr = filtered_trace.first[/#{Regexp.escape(config_file_path)}:([\d]+)/, 1]
+        highlight_config_error(config_file_path, line_nr.to_i)
       end
 
       exit 1
@@ -458,14 +481,19 @@ class Chef
       stdout.puts("USAGE: " + self.opt_parser.to_s)
     end
 
-    def run_with_pretty_exceptions
+    def run_with_pretty_exceptions(raise_exception = false)
       unless self.respond_to?(:run)
         ui.error "You need to add a #run method to your knife command before you can use it"
       end
       enforce_path_sanity
-      run
+      Chef::Application.setup_server_connectivity
+      begin
+        run
+      ensure
+        Chef::Application.destroy_server_connectivity
+      end
     rescue Exception => e
-      raise if Chef::Config[:verbosity] == 2
+      raise if raise_exception || Chef::Config[:verbosity] == 2
       humanize_exception(e)
       exit 100
     end

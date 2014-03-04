@@ -173,9 +173,9 @@ describe Chef::RunList do
       @role.default_attributes :one => :two
       @role.override_attributes :three => :four
 
-      Chef::Role.stub!(:load).and_return(@role)
-      @rest = mock("Chef::REST", { :get_rest => @role, :url => "/" })
-      Chef::REST.stub!(:new).and_return(@rest)
+      Chef::Role.stub(:load).and_return(@role)
+      @rest = double("Chef::REST", { :get_rest => @role, :url => "/" })
+      Chef::REST.stub(:new).and_return(@rest)
 
       @run_list << "role[stubby]"
       @run_list << "kitty"
@@ -188,7 +188,7 @@ describe Chef::RunList do
       end
 
       it "should log a helpful error if the role is not available" do
-        Chef::Role.stub!(:from_disk).and_raise(Chef::Exceptions::RoleNotFound)
+        Chef::Role.stub(:from_disk).and_raise(Chef::Exceptions::RoleNotFound)
         Chef::Log.should_receive(:error).with("Role stubby (included by 'top level') is in the runlist but does not exist. Skipping expand.")
         @run_list.expand("_default", "disk")
       end
@@ -218,7 +218,7 @@ describe Chef::RunList do
 
         describe "and multiply nested roles" do
           before do
-            @multiple_rest_requests = mock("Chef::REST")
+            @multiple_rest_requests = double("Chef::REST")
 
             @role.env_run_list["production"] << "role[prod-base]"
 
@@ -233,7 +233,7 @@ describe Chef::RunList do
           end
 
           it "expands the run list using the specified environment for all nested roles" do
-            Chef::REST.stub!(:new).and_return(@multiple_rest_requests)
+            Chef::REST.stub(:new).and_return(@multiple_rest_requests)
             @multiple_rest_requests.should_receive(:get_rest).with("roles/stubby").and_return(@role)
             @multiple_rest_requests.should_receive(:get_rest).with("roles/prod-base").and_return(@role_prod_base)
             @multiple_rest_requests.should_receive(:get_rest).with("roles/nested-deeper").and_return(@role_nested_deeper)
@@ -270,8 +270,8 @@ describe Chef::RunList do
       dog.default_attributes :seven => :nine
       dog.run_list "three"
       @role.run_list << "role[dog]"
-      Chef::Role.stub!(:from_disk).with("stubby").and_return(@role)
-      Chef::Role.stub!(:from_disk).with("dog").and_return(dog)
+      Chef::Role.stub(:from_disk).with("stubby").and_return(@role)
+      Chef::Role.stub(:from_disk).with("dog").and_return(dog)
 
       expansion = @run_list.expand("_default", 'disk')
       expansion.recipes[2].should == "three"
@@ -284,7 +284,7 @@ describe Chef::RunList do
       dog.default_attributes :seven => :nine
       dog.run_list "role[dog]", "three"
       @role.run_list << "role[dog]"
-      Chef::Role.stub!(:from_disk).with("stubby").and_return(@role)
+      Chef::Role.stub(:from_disk).with("stubby").and_return(@role)
       Chef::Role.should_receive(:from_disk).with("dog").once.and_return(dog)
 
       expansion = @run_list.expand("_default", 'disk')

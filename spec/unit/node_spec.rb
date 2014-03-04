@@ -46,12 +46,12 @@ describe Chef::Node do
     before do
       response = OpenStruct.new(:code => '404')
       exception = Net::HTTPServerException.new("404 not found", response)
-      Chef::Node.stub!(:load).and_raise(exception)
+      Chef::Node.stub(:load).and_raise(exception)
       node.name("created-node")
     end
 
     it "creates a new node for find_or_create" do
-      Chef::Node.stub!(:new).and_return(node)
+      Chef::Node.stub(:new).and_return(node)
       node.should_receive(:create).and_return(node)
       node = Chef::Node.find_or_create("created-node")
       node.name.should == 'created-node'
@@ -62,7 +62,7 @@ describe Chef::Node do
   describe "when the node exists on the server" do
     before do
       node.name('existing-node')
-      Chef::Node.stub!(:load).and_return(node)
+      Chef::Node.stub(:load).and_return(node)
     end
 
     it "loads the node via the REST API for find_or_create" do
@@ -204,6 +204,11 @@ describe Chef::Node do
         node.fuu.bahrr.baz.should == "qux"
       end
 
+      it "should let you use tag as a convience method for the tags attribute" do
+        node.normal['tags'] = ['one', 'two']
+        node.tag('three', 'four')
+        node['tags'].should == ['one', 'two', 'three', 'four']
+      end
     end
 
     describe "default attributes" do
@@ -400,7 +405,7 @@ describe Chef::Node do
 
     it "saves non-runlist json attrs for later" do
       expansion = Chef::RunList::RunListExpansion.new('_default', [])
-      node.run_list.stub!(:expand).and_return(expansion)
+      node.run_list.stub(:expand).and_return(expansion)
       node.consume_external_attrs(@ohai_data, {"foo" => "bar"})
       node.expand!
       node.normal_attrs.should == {"foo" => "bar", "tags" => []}
@@ -418,7 +423,7 @@ describe Chef::Node do
       Chef::Environment.should_receive(:load).with("rspec_env").and_return(@environment)
       @expansion = Chef::RunList::RunListExpansion.new("rspec_env", [])
       node.chef_environment("rspec_env")
-      node.run_list.stub!(:expand).and_return(@expansion)
+      node.run_list.stub(:expand).and_return(@expansion)
     end
 
     it "sets the 'recipes' automatic attribute to the recipes in the expanded run_list" do
@@ -453,6 +458,22 @@ describe Chef::Node do
       @expansion.override_attrs["role override key"] = "role override value"
       node.expand!
       node.attributes.role_override["role override key"].should == "role override value"
+    end
+  end
+
+  describe "loaded_recipe" do
+    it "should not add a recipe that is already in the recipes list" do
+      node.automatic_attrs[:recipes] = [ "nginx::module" ]
+      node.loaded_recipe(:nginx, "module")
+      expect(node.automatic_attrs[:recipes].length).to eq(1)
+    end
+
+    it "should add a recipe that is not already in the recipes list" do
+      node.automatic_attrs[:recipes] = [ "nginx::other_module" ]
+      node.loaded_recipe(:nginx, "module")
+      expect(node.automatic_attrs[:recipes].length).to eq(2)
+      expect(node.recipe?("nginx::module")).to be_true
+      expect(node.recipe?("nginx::other_module")).to be_true
     end
   end
 
@@ -519,7 +540,7 @@ describe Chef::Node do
       @environment = Chef::Environment.new
       @environment.default_attributes = {:default => "from env", :d_env => "env only" }
       @environment.override_attributes = {:override => "from env", :o_env => "env only"}
-      Chef::Environment.stub!(:load).and_return(@environment)
+      Chef::Environment.stub(:load).and_return(@environment)
       node.apply_expansion_attributes(@expansion)
     end
 
@@ -752,16 +773,16 @@ describe Chef::Node do
 
   describe "api model" do
     before(:each) do
-      @rest = mock("Chef::REST")
-      Chef::REST.stub!(:new).and_return(@rest)
-      @query = mock("Chef::Search::Query")
-      Chef::Search::Query.stub!(:new).and_return(@query)
+      @rest = double("Chef::REST")
+      Chef::REST.stub(:new).and_return(@rest)
+      @query = double("Chef::Search::Query")
+      Chef::Search::Query.stub(:new).and_return(@query)
     end
 
     describe "list" do
       describe "inflated" do
         it "should return a hash of node names and objects" do
-          n1 = mock("Chef::Node", :name => "one")
+          n1 = double("Chef::Node", :name => "one")
           @query.should_receive(:search).with(:node).and_yield(n1)
           r = Chef::Node.list(true)
           r["one"].should == n1
@@ -806,7 +827,7 @@ describe Chef::Node do
 
       it "should create if it cannot update" do
         node.name("monkey")
-        exception = mock("404 error", :code => "404")
+        exception = double("404 error", :code => "404")
         @rest.should_receive(:put_rest).and_raise(Net::HTTPServerException.new("foo", exception))
         @rest.should_receive(:post_rest).with("nodes", node)
         node.save

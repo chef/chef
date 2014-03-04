@@ -212,7 +212,7 @@ E
         puts  "This is the chef-shell.\n" +
               " Chef Version: #{::Chef::VERSION}\n" +
               " http://www.opscode.com/chef\n" +
-              " http://wiki.opscode.com/display/chef/Home"
+              " http://docs.opscode.com/"
         :ucanhaz_automation
       end
       alias :shell :version

@@ -23,6 +23,7 @@ require 'chef/dsl/data_query'
 require 'chef/dsl/platform_introspection'
 require 'chef/dsl/include_recipe'
 require 'chef/dsl/registry_helper'
+require 'chef/dsl/reboot_pending'
 
 require 'chef/mixin/from_file'
 
@@ -38,6 +39,7 @@ class Chef
     include Chef::DSL::IncludeRecipe
     include Chef::DSL::Recipe
     include Chef::DSL::RegistryHelper
+    include Chef::DSL::RebootPending
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::Deprecation
@@ -81,26 +83,9 @@ class Chef
       run_context.resource_collection.find(*args)
     end
 
-    # Sets a tag, or list of tags, for this node.  Syntactic sugar for
-    # run_context.node[:tags].
-    #
-    # With no arguments, returns the list of tags.
-    #
-    # === Parameters
-    # tags<Array>:: A list of tags to add - can be a single string
-    #
-    # === Returns
-    # tags<Array>:: The contents of run_context.node[:tags]
+    # This was moved to Chef::Node#tag, redirecting here for compatability
     def tag(*tags)
-      if tags.length > 0
-        tags.each do |tag|
-          tag = tag.to_s
-          run_context.node.normal[:tags] << tag unless run_context.node[:tags].include?(tag)
-        end
-        run_context.node[:tags]
-      else
-        run_context.node[:tags]
-      end
+      run_context.node.tag(*tags)
     end
 
     # Returns true if the node is tagged with *all* of the supplied +tags+.

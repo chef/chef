@@ -19,6 +19,7 @@
 require 'chef/chef_fs/file_system'
 require 'chef/chef_fs/file_system/operation_failed_error'
 require 'chef/chef_fs/file_system/operation_not_allowed_error'
+require 'chef/util/diff'
 
 class Chef
   module ChefFS
@@ -268,7 +269,7 @@ class Chef
             old_tempfile.write(old_value)
             old_tempfile.close
 
-            result = `diff -u #{old_tempfile.path} #{new_tempfile.path}`
+            result = Chef::Util::Diff.new.udiff(old_tempfile.path, new_tempfile.path)
             result = result.gsub(/^--- #{old_tempfile.path}/, "--- #{old_path}")
             result = result.gsub(/^\+\+\+ #{new_tempfile.path}/, "+++ #{new_path}")
             result

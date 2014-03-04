@@ -202,7 +202,6 @@ describe Chef::Resource::Package, metadata do
         let(:file_cache_path) { Dir.mktmpdir }
 
         before do
-          @old_config = Chef::Config.configuration.dup
           Chef::Config[:file_cache_path] = file_cache_path
           debconf_reset = 'chef-integration-test chef-integration-test/sample-var string "INVALID"'
           shell_out!("echo #{debconf_reset} |debconf-set-selections")
@@ -210,7 +209,6 @@ describe Chef::Resource::Package, metadata do
 
         after do
           FileUtils.rm_rf(file_cache_path)
-          Chef::Config.configuration = @old_config
         end
 
         context "with a preseed file" do
@@ -273,6 +271,23 @@ describe Chef::Resource::Package, metadata do
             cmd = shell_out!("debconf-show chef-integration-test")
             cmd.stdout.should include('chef-integration-test/sample-var: "FROM TEMPLATE"')
             package_resource.should be_updated_by_last_action
+          end
+
+          context "with variables" do
+            let(:package_resource) do
+              r = base_resource
+              r.cookbook_name = "preseed"
+              r.response_file("preseed-template-variables.seed")
+              r.response_file_variables({ :template_variable => 'SUPPORTS VARIABLES' })
+              r
+            end
+
+            it "preseeds the package, then installs it" do
+              package_resource.run_action(:install)
+              cmd = shell_out!("debconf-show chef-integration-test")
+              cmd.stdout.should include('chef-integration-test/sample-var: "SUPPORTS VARIABLES"')
+              package_resource.should be_updated_by_last_action
+            end
           end
 
         end

@@ -19,7 +19,6 @@
 require 'chef/chef_fs/file_system/base_fs_object'
 require 'chef/chef_fs/file_system/not_found_error'
 require 'chef/chef_fs/file_system/operation_failed_error'
-require 'chef/chef_fs/raw_request'
 require 'chef/role'
 require 'chef/node'
 
@@ -68,7 +67,7 @@ class Chef
 
         def delete(recurse)
           begin
-            rest.delete_rest(api_path)
+            rest.delete(api_path)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "Timeout deleting: #{e}"
           rescue Net::HTTPServerException => e
@@ -86,7 +85,8 @@ class Chef
 
         def _read_hash
           begin
-            json = Chef::ChefFS::RawRequest.raw_request(rest, api_path)
+            # Minimize the value (get rid of defaults) so the results don't look terrible
+            minimize_value(root.get_json(api_path))
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "Timeout reading: #{e}"
           rescue Net::HTTPServerException => e
@@ -96,8 +96,6 @@ class Chef
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "HTTP error reading: #{e}"
             end
           end
-          # Minimize the value (get rid of defaults) so the results don't look terrible
-          minimize_value(JSON.parse(json, :create_additions => false))
         end
 
         def chef_object
@@ -160,7 +158,7 @@ class Chef
           end
 
           begin
-            rest.put_rest(api_path, object)
+            rest.put(api_path, object)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "Timeout writing: #{e}"
           rescue Net::HTTPServerException => e

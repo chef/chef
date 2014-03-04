@@ -20,20 +20,12 @@ require 'spec_helper'
 
 describe Chef::Provider::File::Content do
 
-  before(:all) do
-    @original_config = Chef::Config.configuration
-  end
-
-  after(:all) do
-    Chef::Config.configuration.replace(@original_config)
-  end
-
   #
   # mock setup
   #
 
   let(:current_resource) do
-    mock("Chef::Provider::File::Resource (current)")
+    double("Chef::Provider::File::Resource (current)")
   end
 
   let(:enclosing_directory) {
@@ -44,11 +36,11 @@ describe Chef::Provider::File::Content do
   }
 
   let(:new_resource) do
-    mock("Chef::Provider::File::Resource (new)", :name => "seattle.txt", :path => resource_path)
+    double("Chef::Provider::File::Resource (new)", :name => "seattle.txt", :path => resource_path)
   end
 
   let(:run_context) do
-    mock("Chef::RunContext")
+    double("Chef::RunContext")
   end
 
   #
@@ -61,7 +53,7 @@ describe Chef::Provider::File::Content do
   describe "when the resource has a content attribute set" do
 
     before do
-      new_resource.stub!(:content).and_return("Do do do do, do do do do, do do do do, do do do do")
+      new_resource.stub(:content).and_return("Do do do do, do do do do, do do do do, do do do do")
     end
 
     it "returns a tempfile" do
@@ -89,7 +81,7 @@ describe Chef::Provider::File::Content do
   describe "when the resource does not have a content attribute set" do
 
     before do
-      new_resource.stub!(:content).and_return(nil)
+      new_resource.stub(:content).and_return(nil)
     end
 
     it "should return nil instead of a tempfile" do

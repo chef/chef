@@ -34,7 +34,7 @@ describe Chef::Provider::Cron do
   describe "when examining the current system state" do
     context "with no crontab for the user" do
       before :each do
-        @provider.stub!(:read_crontab).and_return(nil)
+        @provider.stub(:read_crontab).and_return(nil)
       end
 
       it "should set cron_empty" do
@@ -51,7 +51,7 @@ describe Chef::Provider::Cron do
 
     context "with no matching entry in the user's crontab" do
       before :each do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: something else
@@ -73,7 +73,7 @@ CRONTAB
       end
 
       it "should not fail if there's an existing cron with a numerical argument" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 # Chef Name: foo[bar] (baz)
 21 */4 * * * some_prog 1234567
 CRONTAB
@@ -85,7 +85,7 @@ CRONTAB
 
     context "with a matching entry in the user's crontab" do
       before :each do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -114,7 +114,7 @@ CRONTAB
       end
 
       it "should pull env vars out" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -142,7 +142,7 @@ CRONTAB
       end
 
       it "should parse and load generic and standard environment variables from cron entry" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 # Chef Name: cronhole some stuff
 MAILTO=warn@example.com
 TEST=lol
@@ -156,7 +156,7 @@ CRONTAB
       end
 
       it "should not break with variabels that match the cron resource internals" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 # Chef Name: cronhole some stuff
 MINUTE=40
 HOUR=midnight
@@ -179,9 +179,9 @@ CRONTAB
 
     context "with a matching entry in the user's crontab using month names and weekday names (#CHEF-3178)" do
       before :each do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
-      
+
 # Chef Name: cronhole some stuff
 * 5 * Jan Mon /bin/true param1 param2
 # Chef Name: something else
@@ -196,7 +196,7 @@ CRONTAB
         @provider.cron_exists.should == true
         @provider.cron_empty.should == false
       end
-        
+
       it "should pull the details out of the cron line" do
         cron = @provider.load_current_resource
         cron.minute.should == '*'
@@ -215,7 +215,7 @@ CRONTAB
 
     context "with a matching entry without a crontab line" do
       it "should set cron_exists and leave current_resource values at defaults" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -231,7 +231,7 @@ CRONTAB
       end
 
       it "should not pick up a commented out crontab line" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -248,7 +248,7 @@ CRONTAB
       end
 
       it "should not pick up a later crontab entry" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -291,6 +291,12 @@ CRONTAB
       @provider.cron_different?.should eql(true)
     end
 
+    it "should return true if mailto doesn't match" do
+      @current_resource.mailto "foo@bar.com"
+      @new_resource.mailto(nil)
+      @provider.cron_different?.should eql(true)
+    end
+
     it "should return false if the objects are identical" do
       @provider.cron_different?.should == false
     end
@@ -298,8 +304,8 @@ CRONTAB
 
   describe "action_create" do
     before :each do
-      @provider.stub!(:write_crontab)
-      @provider.stub!(:read_crontab).and_return(nil)
+      @provider.stub(:write_crontab)
+      @provider.stub(:read_crontab).and_return(nil)
     end
 
     context "when there is no existing crontab" do
@@ -348,7 +354,7 @@ TEST=LOL
     context "when there is a crontab with no matching section" do
       before :each do
         @provider.cron_exists = false
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: something else
@@ -410,8 +416,8 @@ TEST=LOL
     context "when there is a crontab with a matching but different section" do
       before :each do
         @provider.cron_exists = true
-        @provider.stub!(:cron_different?).and_return(true)
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:cron_different?).and_return(true)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -475,11 +481,11 @@ TEST=LOL
     context "when there is a crontab with a matching section with no crontab line in it" do
       before :each do
         @provider.cron_exists = true
-        @provider.stub!(:cron_different?).and_return(true)
+        @provider.stub(:cron_different?).and_return(true)
       end
 
       it "should add the crontab to the entry" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -494,7 +500,7 @@ TEST=LOL
       end
 
       it "should not blat any following entries" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -519,7 +525,7 @@ TEST=LOL
       end
 
       it "should handle env vars with no crontab" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -559,8 +565,8 @@ HOME=/home/foo
     context "when there is a crontab with a matching and identical section" do
       before :each do
         @provider.cron_exists = true
-        @provider.stub!(:cron_different?).and_return(false)
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:cron_different?).and_return(false)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -581,7 +587,7 @@ CRONTAB
       end
 
       it "should log nothing changed" do
-        Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'") 
+        Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'")
         Chef::Log.should_receive(:debug).with("Skipping existing cron entry '#{@new_resource.name}'")
         @provider.run_action(:create)
       end
@@ -590,8 +596,8 @@ CRONTAB
 
   describe "action_delete" do
     before :each do
-      @provider.stub!(:write_crontab)
-      @provider.stub!(:read_crontab).and_return(nil)
+      @provider.stub(:write_crontab)
+      @provider.stub(:read_crontab).and_return(nil)
     end
 
     context "when the user's crontab has no matching section" do
@@ -614,7 +620,7 @@ CRONTAB
     context "when the user has a crontab with a matching section" do
       before :each do
         @provider.cron_exists = true
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -639,7 +645,7 @@ CRONTAB
       end
 
       it "should remove any env vars with the entry" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -679,7 +685,7 @@ FOO=test
       end
 
       it "should remove the section" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -692,7 +698,7 @@ FOO=test
       end
 
       it "should not blat following sections" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -715,7 +721,7 @@ FOO=test
       end
 
       it "should remove any envvars with the section" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -742,7 +748,7 @@ MAILTO=foo@example.com
 
   describe "read_crontab" do
     before :each do
-      @status = mock("Status", :exitstatus => 0)
+      @status = double("Status", :exitstatus => 0)
       @stdout = StringIO.new(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -751,7 +757,7 @@ MAILTO=foo@example.com
 
 # Another comment
       CRONTAB
-      @provider.stub!(:popen4).and_yield(1234, StringIO.new, @stdout, StringIO.new).and_return(@status)
+      @provider.stub(:popen4).and_yield(1234, StringIO.new, @stdout, StringIO.new).and_return(@status)
     end
 
     it "should call crontab -l with the user" do
@@ -772,14 +778,14 @@ MAILTO=foo@example.com
     end
 
     it "should return nil if the user has no crontab" do
-      status = mock("Status", :exitstatus => 1)
-      @provider.stub!(:popen4).and_return(status)
+      status = double("Status", :exitstatus => 1)
+      @provider.stub(:popen4).and_return(status)
       @provider.send(:read_crontab).should == nil
     end
 
     it "should raise an exception if another error occurs" do
-      status = mock("Status", :exitstatus => 2)
-      @provider.stub!(:popen4).and_return(status)
+      status = double("Status", :exitstatus => 2)
+      @provider.stub(:popen4).and_return(status)
       lambda do
         @provider.send(:read_crontab)
       end.should raise_error(Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: 2")
@@ -788,9 +794,9 @@ MAILTO=foo@example.com
 
   describe "write_crontab" do
     before :each do
-      @status = mock("Status", :exitstatus => 0)
+      @status = double("Status", :exitstatus => 0)
       @stdin = StringIO.new
-      @provider.stub!(:popen4).and_yield(1234, @stdin, StringIO.new, StringIO.new).and_return(@status)
+      @provider.stub(:popen4).and_yield(1234, @stdin, StringIO.new, StringIO.new).and_return(@status)
     end
 
     it "should call crontab for the user" do
@@ -804,7 +810,7 @@ MAILTO=foo@example.com
     end
 
     it "should raise an exception if the command returns non-zero" do
-      @status.stub!(:exitstatus).and_return(1)
+      @status.stub(:exitstatus).and_return(1)
       lambda do
         @provider.send(:write_crontab, "Foo")
       end.should raise_error(Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: 1")
@@ -816,8 +822,8 @@ MAILTO=foo@example.com
           raise Errno::EPIPE, "Test"
         end
       end
-      @status.stub!(:exitstatus).and_return(1)
-      @provider.stub!(:popen4).and_yield(1234, WriteErrPipe.new, StringIO.new, StringIO.new).and_return(@status)
+      @status.stub(:exitstatus).and_return(1)
+      @provider.stub(:popen4).and_yield(1234, WriteErrPipe.new, StringIO.new, StringIO.new).and_return(@status)
 
       Chef::Log.should_receive(:debug).with("Broken pipe - Test")
 

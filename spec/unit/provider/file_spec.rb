@@ -29,7 +29,7 @@ describe Chef::Provider::File do
   end
 
   let(:content) do
-    content = mock('Chef::Provider::File::Content')
+    content = double('Chef::Provider::File::Content')
   end
 
   let(:node) { double('Chef::Node') }
@@ -46,10 +46,12 @@ describe Chef::Provider::File do
 
   let(:provider) do
     provider = described_class.new(resource, run_context)
-    provider.stub!(:content).and_return(content)
+    provider.stub(:content).and_return(content)
     provider
   end
 
   it_behaves_like Chef::Provider::File
+
+  it_behaves_like "a file provider with content field"
 end
 

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,10 +19,10 @@
 require 'spec_helper'
 require 'chef/search/query'
 
-describe Chef::Search::Query do 
+describe Chef::Search::Query do
   before(:each) do
-    @rest = mock("Chef::REST")
-    Chef::REST.stub!(:new).and_return(@rest)
+    @rest = double("Chef::REST")
+    Chef::REST.stub(:new).and_return(@rest)
     @query = Chef::Search::Query.new
   end
 
@@ -38,12 +38,12 @@ describe Chef::Search::Query do
         "start" => 0,
         "total" => 4
       }
-      @rest.stub!(:get_rest).and_return(@response)
+      @rest.stub(:get_rest).and_return(@response)
     end
 
     it "should accept a type as the first argument" do
-      lambda { @query.search("foo") }.should_not raise_error(ArgumentError)
-      lambda { @query.search(:foo) }.should_not raise_error(ArgumentError)
+      lambda { @query.search("foo") }.should_not raise_error
+      lambda { @query.search(:foo) }.should_not raise_error
       lambda { @query.search(Hash.new) }.should raise_error(ArgumentError)
     end
 
@@ -85,13 +85,13 @@ describe Chef::Search::Query do
     end
 
     it "should call a block for each object in the response" do
-      @call_me = mock("blocky")
+      @call_me = double("blocky")
       @response["rows"].each { |r| @call_me.should_receive(:do).with(r) }
       @query.search(:foo) { |r| @call_me.do(r) }
     end
 
     it "should page through the responses" do
-      @call_me = mock("blocky")
+      @call_me = double("blocky")
       @response["rows"].each { |r| @call_me.should_receive(:do).with(r) }
       @query.search(:foo, "*:*", nil, 0, 1) { |r| @call_me.do(r) }
     end

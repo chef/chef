@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,17 +30,17 @@ describe Chef::Provider::Service::Invokercd, "load_current_resource" do
     @current_resource = Chef::Resource::Service.new("chef")
 
     @provider = Chef::Provider::Service::Invokercd.new(@new_resource, @run_context)
-    Chef::Resource::Service.stub!(:new).and_return(@current_resource)
+    Chef::Resource::Service.stub(:new).and_return(@current_resource)
 
     @stdout = StringIO.new(<<-PS)
 aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
 aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
 aj        8119  6041  0 21:34 pts/3    00:00:03 vi init_service_spec.rb
 PS
-    @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
-    @provider.stub!(:shell_out!).and_return(@status)
+    @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+    @provider.stub(:shell_out!).and_return(@status)
   end
-  
+
   it "should create a current resource with the name of the new resource" do
     @provider.load_current_resource
     @provider.current_resource.should equal(@current_resource)
@@ -60,22 +60,22 @@ PS
       @provider.should_receive(:shell_out).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_return(@status)
       @provider.load_current_resource
     end
-  
+
     it "should set running to true if the status command returns 0" do
-      @provider.stub!(:shell_out).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_return(@status)
+      @provider.stub(:shell_out).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_return(@status)
       @provider.load_current_resource
       @current_resource.running.should be_true
     end
 
     it "should set running to false if the status command returns anything except 0" do
-      @status.stub!(:exitstatus).and_return(1)
-      @provider.stub!(:shell_out).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_return(@status)
+      @status.stub(:exitstatus).and_return(1)
+      @provider.stub(:shell_out).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_return(@status)
       @provider.load_current_resource
       @current_resource.running.should be_false
     end
 
     it "should set running to false if the status command raises" do
-      @provider.stub!(:shell_out).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      @provider.stub(:shell_out).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_raise(Mixlib::ShellOut::ShellCommandFailed)
       @provider.load_current_resource
       @current_resource.running.should be_false
     end
@@ -83,16 +83,16 @@ PS
 
   describe "when a status command has been specified" do
     before do
-      @new_resource.stub!(:status_command).and_return("/usr/sbin/invoke-rc.d chefhasmonkeypants status")
+      @new_resource.stub(:status_command).and_return("/usr/sbin/invoke-rc.d chefhasmonkeypants status")
     end
 
     it "should run the services status command if one has been specified" do
       @provider.should_receive(:shell_out).with("/usr/sbin/invoke-rc.d chefhasmonkeypants status").and_return(@status)
       @provider.load_current_resource
     end
-    
+
   end
-  
+
   describe "when the node has not specified a ps command" do
     it "should raise error if the node has a nil ps attribute and no other means to get status" do
       @node.automatic_attrs[:command] = {:ps => nil}
@@ -107,13 +107,13 @@ PS
       @provider.define_resource_requirements
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
-    
+
   end
 
 
   describe "when we have a 'ps' attribute" do
     it "should shell_out! the node's ps command" do
-      @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+      @status = double("Status", :exitstatus => 0, :stdout => @stdout)
       @provider.should_receive(:shell_out!).with(@node[:command][:ps]).and_return(@status)
       @provider.load_current_resource
     end
@@ -123,21 +123,21 @@ PS
 aj        7842  5057  0 21:26 pts/2    00:00:06 chef
 aj        7842  5057  0 21:26 pts/2    00:00:06 poos
 RUNNING_PS
-      @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+      @status = double("Status", :exitstatus => 0, :stdout => @stdout)
       @provider.should_receive(:shell_out!).and_return(@status)
-      @provider.load_current_resource 
+      @provider.load_current_resource
       @current_resource.running.should be_true
     end
 
     it "should set running to false if the regex doesn't match" do
-      @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+      @status = double("Status", :exitstatus => 0, :stdout => @stdout)
       @provider.should_receive(:shell_out!).and_return(@status)
       @provider.load_current_resource
       @current_resource.running.should be_false
     end
 
     it "should raise an exception if ps fails" do
-      @provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      @provider.stub(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       @provider.action = :start
       @provider.load_current_resource
       @provider.define_resource_requirements
@@ -159,7 +159,7 @@ RUNNING_PS
     it "should call '/usr/sbin/invoke-rc.d service_name start' if no start command is specified" do
       @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} start")
       @provider.start_service()
-    end 
+    end
   end
 
   describe Chef::Provider::Service::Invokercd, "stop_service" do

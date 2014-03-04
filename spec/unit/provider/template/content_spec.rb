@@ -21,7 +21,7 @@ require 'spec_helper'
 describe Chef::Provider::Template::Content do
 
   let(:new_resource) do
-    mock("Chef::Resource::Template (new)",
+    double("Chef::Resource::Template (new)",
          :cookbook_name => 'openldap',
          :source => 'openldap_stuff.conf.erb',
          :local => false,
@@ -41,11 +41,11 @@ describe Chef::Provider::Template::Content do
     cl.load_cookbooks
     cookbook_collection = Chef::CookbookCollection.new(cl)
     node = Chef::Node.new
-    mock("Chef::Resource::RunContext", :node => node, :cookbook_collection => cookbook_collection)
+    double("Chef::Resource::RunContext", :node => node, :cookbook_collection => cookbook_collection)
   end
 
   let(:content) do
-    current_resource = mock("Chef::Resource::Template (current)")
+    current_resource = double("Chef::Resource::Template (current)")
     Chef::Provider::Template::Content.new(new_resource, current_resource, run_context)
   end
 
@@ -58,15 +58,15 @@ describe Chef::Provider::Template::Content do
   end
 
   it "finds the template file locally if it is local" do
-    new_resource.stub!(:local).and_return(true)
-    new_resource.stub!(:source).and_return('/tmp/its_on_disk.erb')
+    new_resource.stub(:local).and_return(true)
+    new_resource.stub(:source).and_return('/tmp/its_on_disk.erb')
     content.template_location.should == '/tmp/its_on_disk.erb'
   end
 
   it "should use the cookbook name if defined in the template resource" do
-    new_resource.stub!(:cookbook_name).and_return('apache2')
-    new_resource.stub!(:cookbook).and_return('openldap')
-    new_resource.stub!(:source).and_return("test.erb")
+    new_resource.stub(:cookbook_name).and_return('apache2')
+    new_resource.stub(:cookbook).and_return('openldap')
+    new_resource.stub(:source).and_return("test.erb")
     content.template_location.should == CHEF_SPEC_DATA + '/cookbooks/openldap/templates/default/test.erb'
   end
 

@@ -23,21 +23,21 @@ describe Shell::Extensions do
 
     before do
       @shell_client = TestableShellSession.instance
-      Shell.stub!(:session).and_return(@shell_client)
+      Shell.stub(:session).and_return(@shell_client)
       @job_manager = TestJobManager.new
       @root_context = Object.new
       @root_context.instance_eval(&ObjectTestHarness)
       Shell::Extensions.extend_context_object(@root_context)
-      @root_context.conf = mock("irbconf")
+      @root_context.conf = double("irbconf")
     end
 
     it "finds a subsession in irb for an object" do
       target_context_obj = Chef::Node.new
 
-      irb_context = mock("context", :main => target_context_obj)
-      irb_session = mock("irb session", :context => irb_context)
+      irb_context = double("context", :main => target_context_obj)
+      irb_session = double("irb session", :context => irb_context)
       @job_manager.jobs = [[:thread, irb_session]]
-      @root_context.stub!(:jobs).and_return(@job_manager)
+      @root_context.stub(:jobs).and_return(@job_manager)
       @root_context.ensure_session_select_defined
       @root_context.jobs.select_shell_session(target_context_obj).should == irb_session
       @root_context.jobs.select_shell_session(:idontexist).should be_nil
@@ -45,8 +45,8 @@ describe Shell::Extensions do
 
     it "finds, then switches to a session" do
       @job_manager.jobs = []
-      @root_context.stub!(:ensure_session_select_defined)
-      @root_context.stub!(:jobs).and_return(@job_manager)
+      @root_context.stub(:ensure_session_select_defined)
+      @root_context.stub(:jobs).and_return(@job_manager)
       @job_manager.should_receive(:select_shell_session).and_return(:the_shell_session)
       @job_manager.should_receive(:switch).with(:the_shell_session)
       @root_context.find_or_create_session_for(:foo)
@@ -54,8 +54,8 @@ describe Shell::Extensions do
 
     it "creates a new session if an existing one isn't found" do
       @job_manager.jobs = []
-      @root_context.stub!(:jobs).and_return(@job_manager)
-      @job_manager.stub!(:select_shell_session).and_return(nil)
+      @root_context.stub(:jobs).and_return(@job_manager)
+      @job_manager.stub(:select_shell_session).and_return(nil)
       @root_context.should_receive(:irb).with(:foo)
       @root_context.find_or_create_session_for(:foo)
     end
@@ -81,18 +81,18 @@ describe Shell::Extensions do
     it "turns irb tracing on and off" do
       @root_context.should respond_to(:trace)
       @root_context.conf.should_receive(:use_tracer=).with(true)
-      @root_context.stub!(:tracing?)
+      @root_context.stub(:tracing?)
       @root_context.tracing :on
     end
 
     it "says if tracing is on or off" do
-      @root_context.conf.stub!(:use_tracer).and_return(true)
+      @root_context.conf.stub(:use_tracer).and_return(true)
       @root_context.should_receive(:puts).with("tracing is on")
       @root_context.tracing?
     end
 
     it "prints node attributes" do
-      node = mock("node", :attribute => {:foo => :bar})
+      node = double("node", :attribute => {:foo => :bar})
       @shell_client.node = node
       @root_context.should_receive(:pp).with({:foo => :bar})
       @root_context.ohai
@@ -111,14 +111,14 @@ describe Shell::Extensions do
     end
 
     it "says if echo is on or off" do
-      @root_context.conf.stub!(:echo).and_return(true)
+      @root_context.conf.stub(:echo).and_return(true)
       @root_context.should_receive(:puts).with("echo is on")
       @root_context.echo?
     end
 
     it "gives access to the stepable iterator" do
-      Shell::StandAloneSession.instance.stub!(:reset!)
-      Shell.session.stub!(:rebuild_context)
+      Shell::StandAloneSession.instance.stub(:reset!)
+      Shell.session.stub(:rebuild_context)
       events = Chef::EventDispatch::Dispatcher.new
       run_context = Chef::RunContext.new(Chef::Node.new, {}, events)
       run_context.resource_collection.instance_variable_set(:@iterator, :the_iterator)

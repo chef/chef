@@ -64,10 +64,14 @@ class Chef
         :long => "--ssh-user USERNAME",
         :description => "The ssh username"
 
-      option :ssh_password,
-        :short => "-P PASSWORD",
-        :long => "--ssh-password PASSWORD",
-        :description => "The ssh password"
+      option :ssh_password_ng,
+        :short => "-P [PASSWORD]",
+        :long => "--ssh-password [PASSWORD]",
+        :description => "The ssh password - will prompt if flag is specified but no password is given",
+        # default to a value that can not be a password (boolean)
+        # so we can effectively test if this parameter was specified
+        # without a vlaue
+        :default => false
 
       option :ssh_port,
         :short => "-p PORT",
@@ -147,7 +151,7 @@ class Chef
                  @action_nodes = q.search(:node, @name_args[0])[0]
                  @action_nodes.each do |item|
                    # we should skip the loop to next iteration if the item returned by the search is nil
-                   next if item.nil? 
+                   next if item.nil?
                    # if a command line attribute was not passed, and we have a cloud public_hostname, use that.
                    # see #configure_attribute for the source of config[:attribute] and config[:override_attribute]
                    if !config[:override_attribute] && item[:cloud] and item[:cloud][:public_hostname]
@@ -397,7 +401,7 @@ class Chef
         # Thus we can differentiate between a config file value and a command line override at this point by checking config[:attribute]
         # We can tell here if fqdn was passed from the command line, rather than being the default, by checking config[:attribute]
         # However, after here, we cannot tell these things, so we must preserve config[:attribute]
-        config[:override_attribute] = config[:attribute] || Chef::Config[:knife][:ssh_attribute] 
+        config[:override_attribute] = config[:attribute] || Chef::Config[:knife][:ssh_attribute]
         config[:attribute] = (Chef::Config[:knife][:ssh_attribute] ||
                               config[:attribute] ||
                               "fqdn").strip
@@ -432,6 +436,31 @@ class Chef
                              Chef::Config[:knife][:ssh_user])
       end
 
+      # This is a bit overly complicated because of the way we want knife ssh to work with -P causing a password prompt for
+      # the user, but we have to be conscious that this code gets included in knife bootstrap and knife * server create as
+      # well.  We want to change the semantics so that the default is false and 'nil' means -P without an argument on the
+      # command line.  But the other utilities expect nil to be the default and we can't prompt in that case. So we effectively
+      # use ssh_password_ng to determine if we're coming from knife ssh or from the other utilities.  The other utilties can
+      # also be patched to use ssh_password_ng easily as long they follow the convention that the default is false.
+      def configure_password
+        if config.has_key?(:ssh_password_ng) && config[:ssh_password_ng].nil?
+          # If the parameter is called on the command line with no value
+          # it will set :ssh_password_ng = nil
+          # This is where we want to trigger a prompt for password
+          config[:ssh_password] = get_password
+        else
+          # if ssh_password_ng is false then it has not been set at all, and we may be in knife ec2 and still
+          # using an old config[:ssh_password].  this is backwards compatibility.  all knife cloud plugins should
+          # be updated to use ssh_password_ng with a default of false and ssh_password should be retired, (but
+          # we'll still need to use the ssh_password out of knife.rb if we find that).
+          ssh_password = config.has_key?(:ssh_password_ng) ? config[:ssh_password_ng] : config[:ssh_password]
+          # Otherwise, the password has either been specified on the command line,
+          # in knife.rb, or key based auth will be attempted
+          config[:ssh_password] = get_stripped_unfrozen_value(ssh_password ||
+                             Chef::Config[:knife][:ssh_password])
+        end
+      end
+
       def configure_identity_file
         config[:identity_file] = get_stripped_unfrozen_value(config[:identity_file] ||
                              Chef::Config[:knife][:ssh_identity_file])
@@ -448,6 +477,7 @@ class Chef
 
         configure_attribute
         configure_user
+        configure_password
         configure_identity_file
         configure_gateway
         configure_session

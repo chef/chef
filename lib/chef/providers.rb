@@ -48,6 +48,7 @@ require 'chef/provider/service'
 require 'chef/provider/subversion'
 require 'chef/provider/template'
 require 'chef/provider/user'
+require 'chef/provider/whyrun_safe_ruby_block'
 
 require 'chef/provider/env/windows'
 
@@ -65,6 +66,7 @@ require 'chef/provider/package/yum'
 require 'chef/provider/package/zypper'
 require 'chef/provider/package/solaris'
 require 'chef/provider/package/smartos'
+require 'chef/provider/package/aix'
 
 require 'chef/provider/service/arch'
 require 'chef/provider/service/debian'

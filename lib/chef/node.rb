@@ -248,6 +248,13 @@ class Chef
       run_list.include?(recipe_name) || Array(self[:recipes]).include?(recipe_name)
     end
 
+    # used by include_recipe to add recipes to the expanded run_list to be
+    # saved back to the node and be searchable
+    def loaded_recipe(cookbook, recipe)
+      fully_qualified_recipe = "#{cookbook}::#{recipe}"
+      automatic_attrs[:recipes] << fully_qualified_recipe unless Array(self[:recipes]).include?(fully_qualified_recipe)
+    end
+
     # Returns true if this Node expects a given role, false if not.
     def role?(role_name)
       run_list.include?("role[#{role_name}]")
@@ -309,6 +316,14 @@ class Chef
       normal[:tags]
     end
 
+    def tag(*tags)
+      tags.each do |tag|
+        self.normal[:tags].push(tag.to_s) unless self[:tags].include? tag.to_s
+      end
+
+      self[:tags]
+    end
+
     # Extracts the run list from +attrs+ and applies it. Returns the remaining attributes
     def consume_run_list(attrs)
       attrs = attrs ? attrs.dup : {}
@@ -316,7 +331,7 @@ class Chef
         if attrs.key?("recipes") || attrs.key?("run_list")
           raise Chef::Exceptions::AmbiguousRunlistSpecification, "please set the node's run list using the 'run_list' attribute only."
         end
-        Chef::Log.info("Setting the run_list to #{new_run_list.inspect} from JSON")
+        Chef::Log.info("Setting the run_list to #{new_run_list.inspect} from CLI options")
         run_list(new_run_list)
       end
       attrs

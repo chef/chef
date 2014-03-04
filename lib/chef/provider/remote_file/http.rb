@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/rest'
+require 'chef/http/simple'
 require 'chef/digester'
 require 'chef/provider/remote_file'
 require 'chef/provider/remote_file/cache_control_data'
@@ -56,19 +56,12 @@ class Chef
         end
 
         def fetch
-          tempfile = nil
-          begin
-            rest = Chef::REST.new(uri, nil, nil, http_client_opts)
-            tempfile = rest.streaming_request(uri, headers)
-            update_cache_control_data(tempfile, rest.last_response)
-          rescue Net::HTTPRetriableError => e
-            if e.response.is_a? Net::HTTPNotModified
-              tempfile = nil
-            else
-              raise e
-            end
+          http = Chef::HTTP::Simple.new(uri, http_client_opts)
+          tempfile = http.streaming_request(uri, headers)
+          if tempfile
+            update_cache_control_data(tempfile, http.last_response)
+            tempfile.close
           end
-          
           tempfile
         end
 

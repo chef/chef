@@ -66,31 +66,26 @@ class Chef::Application
     run_application
   end
 
-  # Parse the configuration file
+  # Parse configuration (options and config file)
   def configure_chef
     parse_options
+    load_config_file
+  end
 
-    begin
-      case config[:config_file]
-      when /^(http|https):\/\//
-        Chef::REST.new("", nil, nil).fetch(config[:config_file]) { |f| apply_config(f.path) }
-      else
-        ::File::open(config[:config_file]) { |f| apply_config(f.path) }
-      end
-    rescue Errno::ENOENT => error
+  # Parse the config file
+  def load_config_file
+    config_fetcher = Chef::ConfigFetcher.new(config[:config_file], Chef::Config.config_file_jail)
+    if config[:config_file].nil?
+      Chef::Log.warn("No config file found or specified on command line, using command line options.")
+    elsif config_fetcher.config_missing?
       Chef::Log.warn("*****************************************")
       Chef::Log.warn("Did not find config file: #{config[:config_file]}, using command line options.")
       Chef::Log.warn("*****************************************")
-
-      Chef::Config.merge!(config)
-    rescue SocketError => error
-      Chef::Application.fatal!("Error getting config file #{config[:config_file]}", 2)
-    rescue Chef::Exceptions::ConfigurationError => error
-      Chef::Application.fatal!("Error processing config file #{config[:config_file]} with error #{error.message}", 2)
-    rescue Exception => error
-      Chef::Application.fatal!("Unknown error processing config file #{config[:config_file]} with error #{error.message}", 2)
+    else
+      config_content = config_fetcher.read_config
+      apply_config(config_content, config[:config_file])
     end
-
+    Chef::Config.merge!(config)
   end
 
   # Initialize and configure the logger.
@@ -123,11 +118,13 @@ class Chef::Application
       configure_stdout_logger
     end
     Chef::Log.level = resolve_log_level
+  rescue StandardError => error
+    Chef::Log.fatal("Failed to open or create log file at #{Chef::Config[:log_location]}: #{error.class} (#{error.message})")
+    Chef::Application.fatal!("Aborting due to invalid 'log_location' configuration", 2)
   end
 
   def configure_stdout_logger
     stdout_logger = MonoLogger.new(STDOUT)
-    STDOUT.sync = true
     stdout_logger.formatter = Chef::Log.logger.formatter
     Chef::Log.loggers <<  stdout_logger
   end
@@ -172,23 +169,65 @@ class Chef::Application
     raise Chef::Exceptions::Application, "#{self.to_s}: you must override run_application"
   end
 
+  def self.setup_server_connectivity
+    if Chef::Config.chef_zero.enabled
+      destroy_server_connectivity
+
+      require 'chef_zero/server'
+      require 'chef/chef_fs/chef_fs_data_store'
+      require 'chef/chef_fs/config'
+
+      chef_fs = Chef::ChefFS::Config.new.local_fs
+      chef_fs.write_pretty_json = true
+      server_options = {}
+      server_options[:data_store] = Chef::ChefFS::ChefFSDataStore.new(chef_fs)
+      server_options[:log_level] = Chef::Log.level
+      server_options[:port] = Chef::Config.chef_zero.port
+      Chef::Log.info("Starting chef-zero on port #{Chef::Config.chef_zero.port} with repository at #{server_options[:data_store].chef_fs.fs_description}")
+      @chef_zero_server = ChefZero::Server.new(server_options)
+      @chef_zero_server.start_background
+      Chef::Config.chef_server_url = @chef_zero_server.url
+    end
+  end
+
+  def self.destroy_server_connectivity
+    if @chef_zero_server
+      @chef_zero_server.stop
+      @chef_zero_server = nil
+    end
+  end
+
   # Initializes Chef::Client instance and runs it
-  def run_chef_client
+  def run_chef_client(specific_recipes = [])
+    Chef::Application.setup_server_connectivity
+
+    override_runlist = config[:override_runlist]
+    if specific_recipes.size > 0
+      override_runlist ||= []
+    end
     @chef_client = Chef::Client.new(
-      @chef_client_json, 
-      :override_runlist => config[:override_runlist]
+      @chef_client_json,
+      :override_runlist => config[:override_runlist],
+      :specific_recipes => specific_recipes,
+      :runlist => config[:runlist]
     )
     @chef_client_json = nil
 
     @chef_client.run
     @chef_client = nil
+
+    Chef::Application.destroy_server_connectivity
   end
 
   private
 
-  def apply_config(config_file_path)
-    Chef::Config.from_file(config_file_path)
-    Chef::Config.merge!(config)
+  def apply_config(config_content, config_file_path)
+    Chef::Config.from_string(config_content, config_file_path)
+  rescue Exception => error
+    Chef::Log.fatal("Configuration error #{error.class}: #{error.message}")
+    filtered_trace = error.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
+    filtered_trace.each {|line| Chef::Log.fatal("  " + line )}
+    Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", 2)
   end
 
   class << self

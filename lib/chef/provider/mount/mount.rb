@@ -39,7 +39,7 @@ class Chef
           mounted?
           enabled?
         end
-        
+
         def mountable?
           # only check for existence of non-remote devices
           if (device_should_exist? && !::File.exists?(device_real) )
@@ -49,7 +49,7 @@ class Chef
           end
           return true
         end
-        
+
         def enabled?
           # Check to see if there is a entry in /etc/fstab. Last entry for a volume wins.
           enabled = false
@@ -72,17 +72,27 @@ class Chef
           end
           @current_resource.enabled(enabled)
         end
-        
+
         def mounted?
           mounted = false
+
+          # "mount" outputs the mount points as real paths. Convert
+          # the mount_point of the resource to a real path in case it
+          # contains symlinks in its parents dirs.
+          real_mount_point = if ::File.exists? @new_resource.mount_point
+                               ::File.realpath(@new_resource.mount_point)
+                             else
+                               @new_resource.mount_point
+                             end
+
           shell_out!("mount").stdout.each_line do |line|
             case line
-            when /^#{device_mount_regex}\s+on\s+#{Regexp.escape(@new_resource.mount_point)}/
+            when /^#{device_mount_regex}\s+on\s+#{Regexp.escape(real_mount_point)}/
               mounted = true
-              Chef::Log.debug("Special device #{device_logstring} mounted as #{@new_resource.mount_point}")
-            when /^([\/\w])+\son\s#{Regexp.escape(@new_resource.mount_point)}\s+/
+              Chef::Log.debug("Special device #{device_logstring} mounted as #{real_mount_point}")
+            when /^([\/\w])+\son\s#{Regexp.escape(real_mount_point)}\s+/
               mounted = false
-              Chef::Log.debug("Special device #{$~[1]} mounted as #{@new_resource.mount_point}")
+              Chef::Log.debug("Special device #{$~[1]} mounted as #{real_mount_point}")
             end
           end
           @current_resource.mounted(mounted)
@@ -141,7 +151,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} is already enabled - nothing to do")
             return nil
           end
-          
+
           if @current_resource.enabled
             # The current options don't match what we have, so
             # disable, then enable.
@@ -156,7 +166,7 @@ class Chef
         def disable_fs
           if @current_resource.enabled
             contents = []
-            
+
             found = false
             ::File.readlines("/etc/fstab").reverse_each do |line|
               if !found && line =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}/
@@ -167,7 +177,7 @@ class Chef
                 contents << line
               end
             end
-            
+
             ::File.open("/etc/fstab", "w") do |fstab|
               contents.reverse_each { |line| fstab.puts line}
             end
@@ -181,7 +191,7 @@ class Chef
         end
 
         def device_should_exist?
-          ( @new_resource.device != "none" ) && 
+          ( @new_resource.device != "none" ) &&
             ( not network_device? ) &&
             ( not %w[ tmpfs fuse ].include? @new_resource.fstype )
         end
@@ -200,7 +210,7 @@ class Chef
         end
 
         def device_real
-          if @real_device == nil 
+          if @real_device == nil
             if @new_resource.device_type == :device
               @real_device = @new_resource.device
             else
@@ -247,14 +257,14 @@ class Chef
             device_fstab
           end
         end
-        
+
         def mount_options_unchanged?
           @current_resource.fstype == @new_resource.fstype and
           @current_resource.options == @new_resource.options and
           @current_resource.dump == @new_resource.dump and
           @current_resource.pass == @new_resource.pass
         end
-        
+
       end
     end
   end

@@ -1,0 +1,144 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>chef-solo &mdash; chef-client Man Pages</title>
+    
+    <link rel="stylesheet" href="_static/guide.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/chef.ico"/>
+
+
+  </head>
+  <body>
+<div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
+<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+</div>
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+
+          <div class="body">
+            
+  <div class="section" id="chef-solo">
+<h1>chef-solo<a class="headerlink" href="#chef-solo" title="Permalink to this headline">¶</a></h1>
+<p>chef-solo is an open source version of the chef-client that allows using cookbooks with nodes without requiring access to a server. chef-solo runs locally and requires that a cookbook (and any of its dependencies) be on the same physical disk as the node. chef-solo is a limited-functionality version of the chef-client and <strong>does not support</strong> the following:</p>
+<ul class="simple">
+<li>Node data storage</li>
+<li>Search indexes</li>
+<li>Centralized distribution of cookbooks</li>
+<li>A centralized API that interacts with and integrates infrastructure components</li>
+<li>Authentication or authorization</li>
+<li>Persistent attributes</li>
+</ul>
+<p>The chef-solo executable can be run as a command-line tool.</p>
+<div class="section" id="options">
+<h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<p>This command has the following syntax:</p>
+<div class="highlight-python"><pre>chef-solo OPTION VALUE OPTION VALUE ...</pre>
+</div>
+<p>This command has the following options:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">-c</span> <span class="pre">CONFIG</span></tt>, <tt class="docutils literal"><span class="pre">--config</span> <span class="pre">CONFIG</span></tt></dt>
+<dd>The configuration file to use.</dd>
+<dt><tt class="docutils literal"><span class="pre">-d</span></tt>, <tt class="docutils literal"><span class="pre">--daemonize</span></tt></dt>
+<dd>Indicates that the executable will be run as a daemon. This option is only available on machines that run in UNIX or Linux environments. For machines that are running Microsoft Windows that require similar functionality, use the <tt class="docutils literal"><span class="pre">chef-client::service</span></tt> recipe in the <tt class="docutils literal"><span class="pre">chef-client</span></tt> cookbook: <a class="reference external" href="http://community.opscode.com/cookbooks/chef-client">http://community.opscode.com/cookbooks/chef-client</a>. This will install a chef-client service under Microsoft Windows using the Windows Service Wrapper.</dd>
+<dt><tt class="docutils literal"><span class="pre">-E</span> <span class="pre">ENVIRONMENT_NAME</span></tt>, <tt class="docutils literal"><span class="pre">--environment</span> <span class="pre">ENVIRONMENT_NAME</span></tt></dt>
+<dd>The name of the environment.</dd>
+<dt><tt class="docutils literal"><span class="pre">-f</span></tt>, <tt class="docutils literal"><span class="pre">--[no-]fork</span></tt></dt>
+<dd>Indicates that a chef-client run will be contained in a secondary process with dedicated RAM. When the chef-client run is complete the RAM will be returned to the master process. This option helps ensure that a chef-client will use a steady amount of RAM over time because the master process will not run recipes. This option will also help prevent memory leaks (such as those that can be introduced by the code contained within a poorly designed cookbook). Use <tt class="docutils literal"><span class="pre">--no-fork</span></tt> to disable running the chef-client in fork node. Default value: <tt class="docutils literal"><span class="pre">--fork</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">-F</span> <span class="pre">FORMAT</span></tt>, <tt class="docutils literal"><span class="pre">--format</span> <span class="pre">FORMAT</span></tt></dt>
+<dd><p class="first">The output format: <tt class="docutils literal"><span class="pre">doc</span></tt> (default) or <tt class="docutils literal"><span class="pre">min</span></tt>.</p>
+<p>Use <tt class="docutils literal"><span class="pre">doc</span></tt> to print the progress of the chef-client run using full strings that display a summary of updates as they occur.</p>
+<p>Use <tt class="docutils literal"><span class="pre">min</span></tt> to print the progress of the chef-client run using single characters. A summary of updates is printed at the end of the chef-client run. A dot (<tt class="docutils literal"><span class="pre">.</span></tt>) is printed for events that do not have meaningful status information, such as loading a file or synchronizing a cookbook. For resources, a dot (<tt class="docutils literal"><span class="pre">.</span></tt>) is printed when the resource is up to date, an <tt class="docutils literal"><span class="pre">S</span></tt> is printed when the resource is skipped by <tt class="docutils literal"><span class="pre">not_if</span></tt> or <tt class="docutils literal"><span class="pre">only_if</span></tt>, and a <tt class="docutils literal"><span class="pre">U</span></tt> is printed when the resource is updated.</p>
+<p class="last">Other formatting options are available when those formatters are configured in the client.rb file using the <tt class="docutils literal"><span class="pre">add_formatter</span></tt> option.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--force-formatter</span></tt></dt>
+<dd>Indicates that formatter output will be used instead of logger output.</dd>
+<dt><tt class="docutils literal"><span class="pre">--force-logger</span></tt></dt>
+<dd>Indicates that logger output will be used instead of formatter output.</dd>
+<dt><tt class="docutils literal"><span class="pre">-g</span> <span class="pre">GROUP</span></tt>, <tt class="docutils literal"><span class="pre">--group</span> <span class="pre">GROUP</span></tt></dt>
+<dd>The name of the group that owns a process. This is required when starting any executable as a daemon.</dd>
+<dt><tt class="docutils literal"><span class="pre">-h</span></tt>, <tt class="docutils literal"><span class="pre">--help</span></tt></dt>
+<dd>Shows help for the command.</dd>
+<dt><tt class="docutils literal"><span class="pre">-i</span> <span class="pre">SECONDS</span></tt>, <tt class="docutils literal"><span class="pre">--interval</span> <span class="pre">SECONDS</span></tt></dt>
+<dd>The frequency (in seconds) at which the chef-client runs.</dd>
+<dt><tt class="docutils literal"><span class="pre">-j</span> <span class="pre">PATH</span></tt>, <tt class="docutils literal"><span class="pre">--json-attributes</span> <span class="pre">PATH</span></tt></dt>
+<dd>The path to a file that contains JSON data. Use this option to override <tt class="docutils literal"><span class="pre">normal</span></tt> attributes set elsewhere.</dd>
+<dt><tt class="docutils literal"><span class="pre">-l</span> <span class="pre">LEVEL</span></tt>, <tt class="docutils literal"><span class="pre">--log_level</span> <span class="pre">LEVEL</span></tt></dt>
+<dd>The level of logging that will be stored in a log file.</dd>
+<dt><tt class="docutils literal"><span class="pre">-L</span> <span class="pre">LOGLOCATION</span></tt>, <tt class="docutils literal"><span class="pre">--logfile</span> <span class="pre">c</span></tt></dt>
+<dd>The location in which log file output files will be saved. If this location is set to something other than <tt class="docutils literal"><span class="pre">STDOUT</span></tt>, standard output logging will still be performed (otherwise there would be no output other than to a file). This is recommended when starting any executable as a daemon.</dd>
+<dt><tt class="docutils literal"><span class="pre">--[no-]color</span></tt></dt>
+<dd>Indicates whether colored output will be used. Default setting: <tt class="docutils literal"><span class="pre">--color</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">-N</span> <span class="pre">NODE_NAME</span></tt>, <tt class="docutils literal"><span class="pre">--node-name</span> <span class="pre">NODE_NAME</span></tt></dt>
+<dd>The name of the node.</dd>
+<dt><tt class="docutils literal"><span class="pre">-o</span> <span class="pre">RUN_LIST_ITEM</span></tt>, <tt class="docutils literal"><span class="pre">--override-runlist</span> <span class="pre">RUN_LIST_ITEM</span></tt></dt>
+<dd>Replace the current run list with the specified items.</dd>
+<dt><tt class="docutils literal"><span class="pre">-r</span> <span class="pre">RECIPE_URL</span></tt>, <tt class="docutils literal"><span class="pre">--recipe-url</span> <span class="pre">RECIPE_URL</span></tt></dt>
+<dd>The URL location from which a remote cookbook tar.gz will be downloaded.</dd>
+<dt><tt class="docutils literal"><span class="pre">-s</span> <span class="pre">SECONDS</span></tt>, <tt class="docutils literal"><span class="pre">--splay</span> <span class="pre">SECONDS</span></tt></dt>
+<dd>A number (in seconds) to add to the <tt class="docutils literal"><span class="pre">interval</span></tt> that is used to determine the frequency of chef-client runs. This number can help prevent server load when there are many clients running at the same time.</dd>
+<dt><tt class="docutils literal"><span class="pre">-u</span> <span class="pre">USER</span></tt>, <tt class="docutils literal"><span class="pre">--user</span> <span class="pre">USER</span></tt></dt>
+<dd>The user that owns a process. This is required when starting any executable as a daemon.</dd>
+<dt><tt class="docutils literal"><span class="pre">-v</span></tt>, <tt class="docutils literal"><span class="pre">--version</span></tt></dt>
+<dd>The version of the chef-client.</dd>
+<dt><tt class="docutils literal"><span class="pre">-W</span></tt>, <tt class="docutils literal"><span class="pre">--why-run</span></tt></dt>
+<dd>Indicates that the executable will be run in why-run mode, which is a type of chef-client run that does everything except modify the system. Use why-run mode to understand why the chef-client makes the decisions that it makes and to learn more about the current and proposed state of the system.</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p><strong>Use a URL</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-solo -c ~/solo.rb -j ~/node.json -r http://www.example.com/chef-solo.tar.gz
+</pre></div>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">-r</span></tt> uses the <strong>remote_file</strong> resource to retrieve the tar.gz archive into the <tt class="docutils literal"><span class="pre">file_cache_path</span></tt>, and then extract it to <tt class="docutils literal"><span class="pre">cookbooks_path</span></tt>.</p>
+<p><strong>Use a directory</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-solo -c ~/solo.rb -j ~/node.json
+</pre></div>
+</div>
+<p>where the <tt class="docutils literal"><span class="pre">-r</span> <span class="pre">URL</span></tt> option is not used. chef-solo will look in the solo.rb file to determine the directory in which cookbooks are located.</p>
+<p><strong>Use a URL for cookbook and JSON data</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-solo -c ~/solo.rb -j http://www.example.com/node.json -r http://www.example.com/chef-solo.tar.gz
+</pre></div>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">-r</span></tt> corresponds to <tt class="docutils literal"><span class="pre">recipe_url</span></tt> and <tt class="docutils literal"><span class="pre">-j</span></tt> corresponds to <tt class="docutils literal"><span class="pre">json_attribs</span></tt>, both of which are configuration options in solo.rb.</p>
+</div>
+</div>
+
+
+          </div>
+
+      </div>
+
+  
+      <div class="clearer"></div>
+    </div>
+
+
+
+
+  </body>
+</html>

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,7 +51,7 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
       # Error inspector originally used file_cache_path which is incorrect on
       # chef-solo. Using cookbook_path should do the right thing for client and
       # solo.
-      Chef::Config.stub!(:cookbook_path).and_return([ "/home/someuser/dev-laptop/cookbooks" ])
+      Chef::Config.stub(:cookbook_path).and_return([ "/home/someuser/dev-laptop/cookbooks" ])
       @trace = [
         "/home/someuser/dev-laptop/cookbooks/syntax-err/recipes/default.rb:14:in `from_file'",
         "/home/someuser/dev-laptop/cookbooks/syntax-err/recipes/default.rb:11:in `from_file'",
@@ -71,7 +71,7 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
 
   describe "when explaining an error in the compile phase" do
     before do
-      Chef::Config.stub!(:cookbook_path).and_return([ "/var/chef/cache/cookbooks" ])
+      Chef::Config.stub(:cookbook_path).and_return([ "/var/chef/cache/cookbooks" ])
       recipe_lines = BAD_RECIPE.split("\n").map {|l| l << "\n" }
       IO.should_receive(:readlines).with("/var/chef/cache/cookbooks/syntax-err/recipes/default.rb").and_return(recipe_lines)
       @trace = [
@@ -96,9 +96,9 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
 
   describe "when explaining an error on windows" do
     before do
-      Chef::Config.stub!(:cookbook_path).and_return([ "C:/opscode/chef/var/cache/cookbooks" ])
+      Chef::Config.stub(:cookbook_path).and_return([ "C:/opscode/chef/var/cache/cookbooks" ])
       recipe_lines = BAD_RECIPE.split("\n").map {|l| l << "\n" }
-      IO.should_receive(:readlines).at_least(1).times.with(/:\/opscode\/chef\/var\/cache\/cookbooks\/foo\/recipes\/default.rb/).and_return(recipe_lines)      
+      IO.should_receive(:readlines).at_least(1).times.with(/:\/opscode\/chef\/var\/cache\/cookbooks\/foo\/recipes\/default.rb/).and_return(recipe_lines)
       @trace = [
         "C:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb:14 in `from_file'",
         "C:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:144:in `rescue in block in load_libraries'",
@@ -141,7 +141,7 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
         @inspector.add_explanation(@description)
         @inspector.culprit_file.should == "c:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb"
       end
-    end 
+    end
 
     it "finds the line number of the error from the stack trace" do
       @inspector.culprit_line.should == 14
@@ -154,7 +154,7 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
 
   describe "when explaining an error on windows, and the backtrace lowercases the drive letter" do
     before do
-      Chef::Config.stub!(:cookbook_path).and_return([ "C:/opscode/chef/var/cache/cookbooks" ])
+      Chef::Config.stub(:cookbook_path).and_return([ "C:/opscode/chef/var/cache/cookbooks" ])
       recipe_lines = BAD_RECIPE.split("\n").map {|l| l << "\n" }
       IO.should_receive(:readlines).with("c:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb").and_return(recipe_lines)
       @trace = [

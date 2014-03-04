@@ -21,21 +21,18 @@ describe Chef::Application::Client, "reconfigure" do
   before do
     @original_argv = ARGV.dup
     ARGV.clear
-    @original_config = Chef::Config.configuration.dup
 
     @app = Chef::Application::Client.new
-    @app.stub!(:configure_opt_parser).and_return(true)
-    @app.stub!(:configure_chef).and_return(true)
-    @app.stub!(:configure_logging).and_return(true)
-    Chef::Config[:json_attribs] = nil
+    @app.stub(:configure_opt_parser).and_return(true)
+    @app.stub(:configure_chef).and_return(true)
+    @app.stub(:configure_logging).and_return(true)
+    @app.cli_arguments = []
     Chef::Config[:interval] = 10
-    Chef::Config[:splay] = nil
 
     Chef::Config[:once] = false
   end
 
   after do
-    Chef::Config.configuration.replace(@original_config)
     ARGV.replace(@original_argv)
   end
 
@@ -73,49 +70,19 @@ describe Chef::Application::Client, "reconfigure" do
 
   describe "when the json_attribs configuration option is specified" do
 
-    describe "and the json_attribs matches a HTTP regex" do
-      before do
-        @json = StringIO.new({:a=>"b"}.to_json)
-        @json_tempfile = mock("Tempfile for remote JSON", :open => @json)
-        @rest = mock("Chef::REST", :get_rest => @json_tempfile)
+    let(:json_attribs) { {"a" => "b"} }
+    let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
+    let(:json_source) { "https://foo.com/foo.json" }
 
-        Chef::Config[:json_attribs] = "https://foo.com/foo.json"
-        Chef::REST.stub!(:new).with("https://foo.com/foo.json", nil, nil).and_return(@rest)
-        @app.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
-      end
-
-      it "should perform a RESTful GET on the supplied URL" do
-        @app.reconfigure
-        @app.chef_client_json.should == {"a" => "b"}
-      end
+    before do
+      Chef::Config[:json_attribs] = json_source
+      Chef::ConfigFetcher.should_receive(:new).with(json_source).
+        and_return(config_fetcher)
     end
 
-    describe "and the json_attribs does not match the HTTP regex" do
-      before do
-        Chef::Config[:json_attribs] = "/etc/chef/dna.json"
-        @json = StringIO.new({:a=>"b"}.to_json)
-        @app.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
-      end
-
-      it "should parse the json out of the file" do
-        @app.reconfigure
-        @app.chef_client_json.should == {"a" => "b"}
-      end
-    end
-
-    describe "when parsing fails" do
-      before do
-        Chef::Config[:json_attribs] = "/etc/chef/dna.json"
-        @json = mock("Tempfile", :read => {:a=>"b"}.to_json)
-        @app.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
-        Chef::JSONCompat.stub!(:from_json).with(@json.read).and_raise(JSON::ParserError)
-        Chef::Application.stub!(:fatal!).and_return(true)
-      end
-
-      it "should hard fail the application" do
-        Chef::Application.should_receive(:fatal!).with("Could not parse the provided JSON file (/etc/chef/dna.json)!: JSON::ParserError", 2).and_return(true)
-        @app.reconfigure
-      end
+    it "reads the JSON attributes from the specified source" do
+      @app.reconfigure
+      @app.chef_client_json.should == json_attribs
     end
   end
 end
@@ -124,9 +91,9 @@ describe Chef::Application::Client, "setup_application" do
   before do
     @app = Chef::Application::Client.new
     # this is all stuff the reconfigure method needs
-    @app.stub!(:configure_opt_parser).and_return(true)
-    @app.stub!(:configure_chef).and_return(true)
-    @app.stub!(:configure_logging).and_return(true)
+    @app.stub(:configure_opt_parser).and_return(true)
+    @app.stub(:configure_chef).and_return(true)
+    @app.stub(:configure_logging).and_return(true)
   end
 
   it "should change privileges" do

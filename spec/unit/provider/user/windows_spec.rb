@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,13 +35,13 @@ describe Chef::Provider::User::Windows do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @current_resource = Chef::Resource::User.new("monkey")
 
-    @net_user = mock("Chef::Util::Windows::NetUser")
-    Chef::Util::Windows::NetUser.stub!(:new).and_return(@net_user)
+    @net_user = double("Chef::Util::Windows::NetUser")
+    Chef::Util::Windows::NetUser.stub(:new).and_return(@net_user)
 
     @provider = Chef::Provider::User::Windows.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
   end
-  
+
   describe "when comparing the user's current attributes to the desired attributes" do
     before do
       @new_resource.comment   "Adam Jacob"
@@ -79,7 +79,7 @@ describe Chef::Provider::User::Windows do
       end
 
     end
-    
+
     describe "and the attributes do not match" do
       before do
         @current_resource = Chef::Resource::User.new("adam")
@@ -120,7 +120,7 @@ describe Chef::Provider::User::Windows do
 
   describe "when creating the user" do
     it "should call @net_user.add with the return of set_options" do
-      @provider.stub!(:set_options).and_return(:name=> "monkey")
+      @provider.stub(:set_options).and_return(:name=> "monkey")
       @net_user.should_receive(:add).with(:name=> "monkey")
       @provider.create_user
     end
@@ -128,9 +128,9 @@ describe Chef::Provider::User::Windows do
 
   describe "manage_user" do
     before(:each) do
-      @provider.stub!(:set_options).and_return(:name=> "monkey")
+      @provider.stub(:set_options).and_return(:name=> "monkey")
     end
-  
+
     it "should call @net_user.update with the return of set_options" do
       @net_user.should_receive(:update).with(:name=> "monkey")
       @provider.manage_user
@@ -150,19 +150,19 @@ describe Chef::Provider::User::Windows do
     end
 
     it "should return true if user is locked" do
-      @net_user.stub!(:check_enabled).and_return(true)
+      @net_user.stub(:check_enabled).and_return(true)
       @provider.check_lock.should eql(true)
     end
 
     it "should return false if user is not locked" do
-      @net_user.stub!(:check_enabled).and_return(false)
+      @net_user.stub(:check_enabled).and_return(false)
       @provider.check_lock.should eql(false)
     end
   end
 
   describe "locking the user" do
     it "should call @net_user.disable_account" do
-      @net_user.stub!(:check_enabled).and_return(true)
+      @net_user.stub(:check_enabled).and_return(true)
       @net_user.should_receive(:disable_account)
       @provider.lock_user
     end
@@ -170,7 +170,7 @@ describe Chef::Provider::User::Windows do
 
   describe "unlocking the user" do
     it "should call @net_user.enable_account" do
-      @net_user.stub!(:check_enabled).and_return(false)
+      @net_user.stub(:check_enabled).and_return(false)
       @net_user.should_receive(:enable_account)
       @provider.unlock_user
     end

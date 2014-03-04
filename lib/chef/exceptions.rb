@@ -77,8 +77,13 @@ class Chef
     class DsclCommandFailed < RuntimeError; end
     class UserIDNotFound < ArgumentError; end
     class GroupIDNotFound < ArgumentError; end
+    class ConflictingMembersInGroup < ArgumentError; end
     class InvalidResourceReference < RuntimeError; end
     class ResourceNotFound < RuntimeError; end
+
+    # Can't find a Resource of this type that is valid on this platform.
+    class NoSuchResourceType < NameError; end
+
     class InvalidResourceSpecification < ArgumentError; end
     class SolrConnectionError < RuntimeError; end
     class IllegalChecksumRevert < RuntimeError; end
@@ -296,5 +301,18 @@ class Chef
     # non-GET and non-HEAD request will thus raise an InvalidRedirect.
     class InvalidRedirect < StandardError; end
 
+    # Raised when the content length of a download does not match the content
+    # length declared in the http response.
+    class ContentLengthMismatch < RuntimeError
+      def initialize(response_length, content_length)
+        super "Response body length #{response_length} does not match HTTP Content-Length header #{content_length}."
+      end
+    end
+
+    class UnsupportedPlatform < RuntimeError
+      def initialize(platform)
+        super "This functionality is not supported on platform #{platform}."
+      end
+    end
   end
 end

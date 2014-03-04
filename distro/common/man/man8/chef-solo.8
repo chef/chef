@@ -1,126 +1,167 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.TH "CHEF-SOLO" "8" "Chef 11.10.0" "" "chef-solo"
+.SH NAME
+chef-solo \- The man page for the chef-solo command line tool.
 .
-.TH "CHEF\-SOLO" "8" "July 2013" "Chef 11.8.0.alpha.0" "Chef Manual"
+.nr rst2man-indent-level 0
 .
-.SH "NAME"
-\fBchef\-solo\fR \- Runs chef in solo mode against a specified cookbook location\.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.\" Man page generated from reStructuredText.
 .
-.SH "SYNOPSIS"
-\fBchef\-solo\fR \fI(options)\fR
-.
-.TP
-\fB\-c\fR, \fB\-\-config CONFIG\fR
-The configuration file to use
-.
-.TP
-\fB\-d\fR, \fB\-\-daemonize\fR
-Daemonize the process
-.
-.TP
-\fB\-g\fR, \fB\-\-group GROUP\fR
-Group to set privilege to
-.
-.TP
-\fB\-i\fR, \fB\-\-interval SECONDS\fR
-Run chef\-client periodically, in seconds
-.
-.TP
-\fB\-j\fR, \fB\-\-json\-attributes JSON_ATTRIBS\fR
-Load attributes from a JSON file or URL
-.
-.TP
-\fB\-l\fR, \fB\-\-log_level LEVEL\fR
-Set the log level (debug, info, warn, error, fatal)
-.
-.TP
-\fB\-L\fR, \fB\-\-logfile LOGLOCATION\fR
-Set the log file location, defaults to STDOUT \- recommended for daemonizing
-.
-.TP
-\fB\-N\fR, \fB\-\-node\-name NODE_NAME\fR
-The node name for this client
-.
-.TP
-\fB\-r\fR, \fB\-\-recipe\-url RECIPE_URL\fR
-Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache\.
-.
-.TP
-\fB\-s\fR, \fB\-\-splay SECONDS\fR
-The splay time for running at intervals, in seconds
-.
-.TP
-\fB\-u\fR, \fB\-\-user USER\fR
-User to set privilege to
-.
-.TP
-\fB\-v\fR, \fB\-\-version\fR
-Show chef version
-.
-.TP
-\fB\-h\fR, \fB\-\-help\fR
-Show this message
-.
-.SH "DESCRIPTION"
-Chef Solo allows you to run Chef Cookbooks in the absence of a Chef Server\. To do this, the complete cookbook needs to be present on disk\.
-.
-.P
-By default Chef Solo will look in /etc/chef/solo\.rb for its configuration\. This configuration file has two required variables: file_cache_path and cookbook_path\.
-.
-.P
-For example: file_cache_path "/var/chef\-solo" cookbook_path "/var/chef\-solo/cookbooks"
-.
-.P
-For your own systems, you can change this to reflect any directory you like, but you\'ll need to specify absolute paths and the cookbook_path directory should be a subdirectory of the file_cache_path\.
-.
-.P
-You can also specify cookbook_path as an array, passing multiple locations to search for cookbooks\.
-.
-.P
-For example: file_cache_path "/var/chef\-solo" cookbook_path ["/var/chef\-solo/cookbooks", "/var/chef\-solo/site\-cookbooks"]
-.
-.P
-Note that earlier entries are now overridden by later ones\.
-.
-.P
-Since chef\-solo doesn\'t have any interaction with a Chef Server, you\'ll need to specify node\-specifc attributes in a JSON file\. This can be located on the target system itself, or it can be stored on a remote server such as S3, or a web server on your network\.
-.
-.P
-Within the JSON file, you\'ll also specify the recipes that Chef should run in the "run_list"\. An example JSON file, which sets a resolv\.conf:
-.
-.IP "" 4
-.
+.sp
+chef\-solo is an open source version of the chef\-client that allows using cookbooks with nodes without requiring access to a server. chef\-solo runs locally and requires that a cookbook (and any of its dependencies) be on the same physical disk as the node. chef\-solo is a limited\-functionality version of the chef\-client and \fBdoes not support\fP the following:
+.INDENT 0.0
+.IP \(bu 2
+Node data storage
+.IP \(bu 2
+Search indexes
+.IP \(bu 2
+Centralized distribution of cookbooks
+.IP \(bu 2
+A centralized API that interacts with and integrates infrastructure components
+.IP \(bu 2
+Authentication or authorization
+.IP \(bu 2
+Persistent attributes
+.UNINDENT
+.sp
+The chef\-solo executable can be run as a command\-line tool.
+.SH OPTIONS
+.sp
+This command has the following syntax:
+.sp
 .nf
-
-{
-  "resolver": {
-    "nameservers": [ "10\.0\.0\.1" ],
-    "search":"int\.example\.com"
-  },
-  "run_list": [ "recipe[resolver]" ]
-}
-.
+.ft C
+chef\-solo OPTION VALUE OPTION VALUE ...
+.ft P
 .fi
+.sp
+This command has the following options:
+.INDENT 0.0
+.TP
+.B \fB\-c CONFIG\fP, \fB\-\-config CONFIG\fP
+The configuration file to use.
+.TP
+.B \fB\-d\fP, \fB\-\-daemonize\fP
+Indicates that the executable will be run as a daemon. This option is only available on machines that run in UNIX or Linux environments. For machines that are running Microsoft Windows that require similar functionality, use the \fBchef\-client::service\fP recipe in the \fBchef\-client\fP cookbook: \fI\%http://community.opscode.com/cookbooks/chef-client\fP. This will install a chef\-client service under Microsoft Windows using the Windows Service Wrapper.
+.TP
+.B \fB\-E ENVIRONMENT_NAME\fP, \fB\-\-environment ENVIRONMENT_NAME\fP
+The name of the environment.
+.TP
+.B \fB\-f\fP, \fB\-\-[no\-]fork\fP
+Indicates that a chef\-client run will be contained in a secondary process with dedicated RAM. When the chef\-client run is complete the RAM will be returned to the master process. This option helps ensure that a chef\-client will use a steady amount of RAM over time because the master process will not run recipes. This option will also help prevent memory leaks (such as those that can be introduced by the code contained within a poorly designed cookbook). Use \fB\-\-no\-fork\fP to disable running the chef\-client in fork node. Default value: \fB\-\-fork\fP.
+.TP
+.B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
+The output format: \fBdoc\fP (default) or \fBmin\fP.
+.sp
+Use \fBdoc\fP to print the progress of the chef\-client run using full strings that display a summary of updates as they occur.
+.sp
+Use \fBmin\fP to print the progress of the chef\-client run using single characters. A summary of updates is printed at the end of the chef\-client run. A dot (\fB.\fP) is printed for events that do not have meaningful status information, such as loading a file or synchronizing a cookbook. For resources, a dot (\fB.\fP) is printed when the resource is up to date, an \fBS\fP is printed when the resource is skipped by \fBnot_if\fP or \fBonly_if\fP, and a \fBU\fP is printed when the resource is updated.
+.sp
+Other formatting options are available when those formatters are configured in the client.rb file using the \fBadd_formatter\fP option.
+.TP
+.B \fB\-\-force\-formatter\fP
+Indicates that formatter output will be used instead of logger output.
+.TP
+.B \fB\-\-force\-logger\fP
+Indicates that logger output will be used instead of formatter output.
+.TP
+.B \fB\-g GROUP\fP, \fB\-\-group GROUP\fP
+The name of the group that owns a process. This is required when starting any executable as a daemon.
+.TP
+.B \fB\-h\fP, \fB\-\-help\fP
+Shows help for the command.
+.TP
+.B \fB\-i SECONDS\fP, \fB\-\-interval SECONDS\fP
+The frequency (in seconds) at which the chef\-client runs.
+.TP
+.B \fB\-j PATH\fP, \fB\-\-json\-attributes PATH\fP
+The path to a file that contains JSON data. Use this option to override \fBnormal\fP attributes set elsewhere.
+.TP
+.B \fB\-l LEVEL\fP, \fB\-\-log_level LEVEL\fP
+The level of logging that will be stored in a log file.
+.TP
+.B \fB\-L LOGLOCATION\fP, \fB\-\-logfile c\fP
+The location in which log file output files will be saved. If this location is set to something other than \fBSTDOUT\fP, standard output logging will still be performed (otherwise there would be no output other than to a file). This is recommended when starting any executable as a daemon.
+.TP
+.B \fB\-\-[no\-]color\fP
+Indicates whether colored output will be used. Default setting: \fB\-\-color\fP.
+.TP
+.B \fB\-N NODE_NAME\fP, \fB\-\-node\-name NODE_NAME\fP
+The name of the node.
+.TP
+.B \fB\-o RUN_LIST_ITEM\fP, \fB\-\-override\-runlist RUN_LIST_ITEM\fP
+Replace the current run list with the specified items.
+.TP
+.B \fB\-r RECIPE_URL\fP, \fB\-\-recipe\-url RECIPE_URL\fP
+The URL location from which a remote cookbook tar.gz will be downloaded.
+.TP
+.B \fB\-s SECONDS\fP, \fB\-\-splay SECONDS\fP
+A number (in seconds) to add to the \fBinterval\fP that is used to determine the frequency of chef\-client runs. This number can help prevent server load when there are many clients running at the same time.
+.TP
+.B \fB\-u USER\fP, \fB\-\-user USER\fP
+The user that owns a process. This is required when starting any executable as a daemon.
+.TP
+.B \fB\-v\fP, \fB\-\-version\fP
+The version of the chef\-client.
+.TP
+.B \fB\-W\fP, \fB\-\-why\-run\fP
+Indicates that the executable will be run in why\-run mode, which is a type of chef\-client run that does everything except modify the system. Use why\-run mode to understand why the chef\-client makes the decisions that it makes and to learn more about the current and proposed state of the system.
+.UNINDENT
+.SH EXAMPLES
+.sp
+\fBUse a URL\fP
+.sp
+.nf
+.ft C
+$ chef\-solo \-c ~/solo.rb \-j ~/node.json \-r http://www.example.com/chef\-solo.tar.gz
+.ft P
+.fi
+.sp
+where \fB\-r\fP uses the \fBremote_file\fP resource to retrieve the tar.gz archive into the \fBfile_cache_path\fP, and then extract it to \fBcookbooks_path\fP.
+.sp
+\fBUse a directory\fP
+.sp
+.nf
+.ft C
+$ chef\-solo \-c ~/solo.rb \-j ~/node.json
+.ft P
+.fi
+.sp
+where the \fB\-r URL\fP option is not used. chef\-solo will look in the solo.rb file to determine the directory in which cookbooks are located.
+.sp
+\fBUse a URL for cookbook and JSON data\fP
+.sp
+.nf
+.ft C
+$ chef\-solo \-c ~/solo.rb \-j http://www.example.com/node.json \-r http://www.example.com/chef\-solo.tar.gz
+.ft P
+.fi
+.sp
+where \fB\-r\fP corresponds to \fBrecipe_url\fP and \fB\-j\fP corresponds to \fBjson_attribs\fP, both of which are configuration options in solo.rb.
+.SH AUTHOR
+Chef
+.\" Generated by docutils manpage writer.
 .
-.IP "" 0
-.
-.P
-Then you can run chef\-solo with \-j to specify the JSON file\. It will look for cookbooks in the cookbook_path configured in the configuration file, and apply attributes and use the run_list from the JSON file specified\.
-.
-.P
-You can use \-c to specify the path to the configuration file (if you don\'t want chef\-solo to use the default)\. You can also specify \-r for a cookbook tarball\.
-.
-.P
-For example: chef\-solo \-c ~/solo\.rb \-j ~/node\.json \-r http://www\.example\.com/chef\-solo\.tar\.gz
-.
-.P
-In the above case, chef\-solo would extract the tarball to your specified cookbook_path, use ~/solo\.rb as the configuration file, and apply attributes and use the run_list from ~/node\.json\.
-.
-.SH "SEE ALSO"
-Full documentation for Chef and chef\-solo is located on the Chef wiki, http://wiki\.opscode\.com/display/chef/Home\.
-.
-.SH "AUTHOR"
-Chef was written by Adam Jacob \fIadam@ospcode\.com\fR of Opscode (http://www\.opscode\.com), with contributions from the community\. This manual page was written by Joshua Timberman \fIjoshua@opscode\.com\fR with help2man\. Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2\.0 License\.
-.
-.P
-On Debian systems, the complete text of the Apache 2\.0 License can be found in /usr/share/common\-licenses/Apache\-2\.0\.

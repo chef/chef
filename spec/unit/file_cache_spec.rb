@@ -41,10 +41,10 @@ describe Chef::FileCache do
     end
 
   end
-  
+
   describe "when storing a file" do
     before do
-      File.stub!(:open).and_yield(@io)
+      File.stub(:open).and_yield(@io)
     end
 
     it "should print the contents to the file" do

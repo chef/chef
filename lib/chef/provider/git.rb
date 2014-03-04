@@ -17,6 +17,7 @@
 #
 
 
+require 'chef/exceptions'
 require 'chef/log'
 require 'chef/provider'
 require 'chef/mixin/shell_out'
@@ -75,7 +76,9 @@ class Chef
       def action_checkout
         if target_dir_non_existent_or_empty?
           clone
-          checkout
+          if @new_resource.enable_checkout
+            checkout
+          end
           enable_submodules
           add_remotes
         else
@@ -151,10 +154,11 @@ class Chef
 
       def checkout
         sha_ref = target_revision
+
         converge_by("checkout ref #{sha_ref} branch #{@new_resource.revision}") do
           # checkout into a local branch rather than a detached HEAD
-          shell_out!("git checkout -b deploy #{sha_ref}", run_options(:cwd => @new_resource.destination))
-          Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision} reference: #{sha_ref}"
+          shell_out!("git checkout -b #{@new_resource.checkout_branch} #{sha_ref}", run_options(:cwd => @new_resource.destination))
+          Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision} onto: #{@new_resource.checkout_branch} reference: #{sha_ref}"
         end
       end
 
@@ -269,11 +273,26 @@ class Chef
       private
 
       def run_options(run_opts={})
-        run_opts[:user] = @new_resource.user if @new_resource.user
+        env = {}
+        if @new_resource.user
+          run_opts[:user] = @new_resource.user
+          # Certain versions of `git` misbehave if git configuration is
+          # inaccessible in $HOME. We need to ensure $HOME matches the
+          # user who is executing `git` not the user running Chef.
+          env['HOME'] = begin
+            require 'etc'
+            Etc.getpwnam(@new_resource.user).dir
+          rescue ArgumentError # user not found
+            raise Chef::Exceptions::User, "Could not determine HOME for specified user '#{@new_resource.user}' for resource '#{@new_resource.name}'"
+          end
+        end
         run_opts[:group] = @new_resource.group if @new_resource.group
-        run_opts[:environment] = {"GIT_SSH" => @new_resource.ssh_wrapper} if @new_resource.ssh_wrapper
+        env['GIT_SSH'] = @new_resource.ssh_wrapper if @new_resource.ssh_wrapper
         run_opts[:log_tag] = @new_resource.to_s
+        run_opts[:timeout] = @new_resource.timeout if @new_resource.timeout
+        run_opts[:environment] = env unless env.empty?
         run_opts
+
       end
 
       def cwd

@@ -47,6 +47,12 @@ describe Chef::DataBag do
     it "should throw an ArgumentError if you feed it anything but a string" do
       lambda { @data_bag.name Hash.new }.should raise_error(ArgumentError)
     end
+
+    [ ".", "-", "_", "1"].each do |char|
+      it "should allow a '#{char}' character in the data bag name" do
+        @data_bag.name("clown#{char}clown").should == "clown#{char}clown"
+      end
+    end
   end
 
   describe "deserialize" do
@@ -69,24 +75,23 @@ describe Chef::DataBag do
 
   end
 
-  describe "when saving" do 
+  describe "when saving" do
     before do
       @data_bag.name('piggly_wiggly')
-      @rest = mock("Chef::REST")
-      Chef::REST.stub!(:new).and_return(@rest)
+      @rest = double("Chef::REST")
+      Chef::REST.stub(:new).and_return(@rest)
     end
 
-    it "should update the data bag when it already exists" do
-      @rest.should_receive(:put_rest).with("data/piggly_wiggly", @data_bag) 
+    it "should silently proceed when the data bag already exists" do
+      exception = double("409 error", :code => "409")
+      @rest.should_receive(:post_rest).and_raise(Net::HTTPServerException.new("foo", exception))
       @data_bag.save
     end
 
-    it "should create the data bag when it is not found" do 
-      exception = mock("404 error", :code => "404")
-      @rest.should_receive(:put_rest).and_raise(Net::HTTPServerException.new("foo", exception))
+    it "should create the data bag" do
       @rest.should_receive(:post_rest).with("data", @data_bag)
       @data_bag.save
-    end 
+    end
 
     describe "when whyrun mode is enabled" do
       before do
@@ -96,7 +101,6 @@ describe Chef::DataBag do
         Chef::Config[:why_run] = false
       end
       it "should not save" do
-        @rest.should_not_receive(:put_rest)
         @rest.should_not_receive(:post_rest)
         @data_bag.save
       end
@@ -107,7 +111,7 @@ describe Chef::DataBag do
     describe "from an API call" do
       before do
         Chef::Config[:chef_server_url] = 'https://myserver.example.com'
-        @http_client = mock('Chef::REST')
+        @http_client = double('Chef::REST')
       end
 
       it "should get the data bag from the server" do
@@ -117,7 +121,7 @@ describe Chef::DataBag do
       end
 
       it "should return the data bag" do
-        Chef::REST.stub!(:new).and_return(@http_client)
+        Chef::REST.stub(:new).and_return(@http_client)
         @http_client.should_receive(:get_rest).with('data/foo').and_return({'bar' => 'https://myserver.example.com/data/foo/bar'})
         data_bag = Chef::DataBag.load('foo')
         data_bag.should == {'bar' => 'https://myserver.example.com/data/foo/bar'}
@@ -148,7 +152,7 @@ describe Chef::DataBag do
 
       it "should return the data bag" do
         File.should_receive(:directory?).with('/var/chef/data_bags').and_return(true)
-        Dir.stub!(:glob).and_return(["/var/chef/data_bags/foo/bar.json", "/var/chef/data_bags/foo/baz.json"])
+        Dir.stub(:glob).and_return(["/var/chef/data_bags/foo/bar.json", "/var/chef/data_bags/foo/baz.json"])
         IO.should_receive(:read).with('/var/chef/data_bags/foo/bar.json').and_return('{"id": "bar", "name": "Bob Bar" }')
         IO.should_receive(:read).with('/var/chef/data_bags/foo/baz.json').and_return('{"id": "baz", "name": "John Baz" }')
         data_bag = Chef::DataBag.load('foo')

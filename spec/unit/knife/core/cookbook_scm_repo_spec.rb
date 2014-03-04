@@ -54,17 +54,17 @@ BRANCHES
 
     describe "and the repo dir exists" do
       before do
-        ::File.stub!(:directory?).with(@repo_path).and_return(true)
+        ::File.stub(:directory?).with(@repo_path).and_return(true)
       end
 
       it "exits when there is no git repo" do
-        ::File.stub!(:directory?).with(/.*\.git/).and_return(false)
+        ::File.stub(:directory?).with(/.*\.git/).and_return(false)
         lambda {@cookbook_repo.sanity_check}.should raise_error(SystemExit)
       end
 
       describe "and the repo is a git repo" do
         before do
-          ::File.stub!(:directory?).with(File.join(@repo_path, '.git')).and_return(true)
+          ::File.stub(:directory?).with(File.join(@repo_path, '.git')).and_return(true)
         end
 
         it "exits when the default branch doesn't exist" do
@@ -92,7 +92,7 @@ DIRTY
           describe "and the repo is clean" do
             before do
               @clean_status = Mixlib::ShellOut.new.tap {|s| s.stdout.replace("\n")}
-              @cookbook_repo.stub!(:shell_out!).with('git status --porcelain', :cwd => @repo_path).and_return(@clean_status)
+              @cookbook_repo.stub(:shell_out!).with('git status --porcelain', :cwd => @repo_path).and_return(@clean_status)
             end
 
             it "passes the sanity check" do
@@ -143,7 +143,7 @@ DIRTY
     before do
       @updates = Mixlib::ShellOut.new
       @updates.stdout.replace("\n")
-      @cookbook_repo.stub!(:shell_out!).with('git status --porcelain -- apache2', :cwd => @repo_path).and_return(@updates)
+      @cookbook_repo.stub(:shell_out!).with('git status --porcelain -- apache2', :cwd => @repo_path).and_return(@updates)
     end
 
     it "shows no changes in the pristine copy" do
@@ -159,7 +159,7 @@ DIRTY
     before do
       @updates = Mixlib::ShellOut.new
       @updates.stdout.replace(" M cookbooks/apache2/recipes/default.rb\n")
-      @cookbook_repo.stub!(:shell_out!).with('git status --porcelain -- apache2', :cwd => @repo_path).and_return(@updates)
+      @cookbook_repo.stub(:shell_out!).with('git status --porcelain -- apache2', :cwd => @repo_path).and_return(@updates)
     end
 
     it "shows changes in the pristine copy" do

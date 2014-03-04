@@ -57,6 +57,13 @@ class Chef
           # we can get an exit code of 1 even when it's successful on
           # rhel/centos (redhat bug 578534). See additional error checks below.
           passwd_s = shell_out!("passwd", "-S", new_resource.username, :returns => [0,1])
+          if whyrun_mode? && passwd_s.stdout.empty? && passwd_s.stderr.match(/does not exist/)
+            # if we're in whyrun mode and the user is not yet created we assume it would be
+            return false
+          end
+
+          raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!" if passwd_s.stdout.empty?
+
           status_line = passwd_s.stdout.split(' ')
           case status_line[1]
           when /^P/
@@ -124,7 +131,7 @@ class Chef
         end
 
         def update_options(field, option, opts)
-          if @current_resource.send(field) != new_resource.send(field)
+          if @current_resource.send(field).to_s != new_resource.send(field).to_s
             if new_resource.send(field)
               Chef::Log.debug("#{new_resource} setting #{field} to #{new_resource.send(field)}")
               opts << option << new_resource.send(field).to_s

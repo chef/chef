@@ -1,0 +1,505 @@
+/*
+ * opscode.css_t
+ * ~~~~~~~~~~~~~~~
+ *
+ * Sphinx stylesheet -- opscode theme.  Originally created by
+ * Opscode for docs.opscode.com.
+ *
+ * :copyright: None.
+ * :license: This work is licensed under a Creative Commons 
+ * Attribution 3.0 Unported License
+ *
+ */
+
+/*
+ * Colors
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * #f18a20 is Opscode orange.
+ * #212c35 is Opscode blue.
+ * 
+ * #212c35 is used for text color and header colors
+ * #f18a20 for header underlines and border treatments
+ *
+ * Triads for #f18a20: #273fa4 (blue) and #18b246 (green)
+ * Triads for #212c35: #524a31 (tan) and #523a31 (salmon)
+ * Triads should only be used to accent the Opscode blue or orange
+ * 
+ * For div.admonition: #6bb1e1
+ * For div.warning: #fcb614
+ * 
+ * For subheaders and other treatments: #7c858c, then #b5bec6, then #d8dde3
+ * For table headers: #7c858c (with #000000 text color)
+ * For links: #6d3528, rollover #59b6b2
+ *
+ * Alternate colors in the official color palette (but try not to use): #59b6b2, #6d3528
+ *
+ * For regular text: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+ * For monospace text: 'Consolas', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+ * 
+ * For div.related, the 8px ensures that the | is spaced evenly.
+ *
+ */
+
+@import url("basic.css");
+
+/* -- the background color for the whole page and the borders for the topic page, header, footer */
+/* -- IMPORTANT -- color is the color of the text on div.document; must be black or Opscode blue */
+
+body {
+    font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    letter-spacing: -0.00em;
+    line-height: 150%;
+    text-align: center;
+    background-color: #7c858c;
+    color: #212c35;
+    padding: 0;
+    border: 4px solid #7c858c;
+    border-top: 0px solid #7c858c;
+    border-bottom: 0px solid #7c858c;
+    margin: 0px 80px 0px 80px;
+    min-width: 740px;
+}
+
+
+
+/* -- the actual topic background, must be white all the time no exceptions */
+
+div.document {
+    background-color: #ffffff;
+    text-align: left;
+    background-image: url(contents.png);
+    background-repeat: repeat-x;
+}
+
+
+
+/* -- the vertical line between the topics and the TOC */
+
+div.bodywrapper {
+    margin: 0 240px 0 0;
+    border-right: 4px solid #d8dde3;
+}
+
+div.body {
+    margin: 0;
+    padding: 0.5em 20px 20px 20px;
+}
+
+div.related {
+    font-size: 1em;
+}
+
+
+
+/* -- the borders above and below the header and footer */
+
+div.related ul {
+    background-color: #ffffff;
+    height: 1.8em;
+    border-top: 4px solid #d8dde3;
+    border-bottom: 4px solid #d8dde3;
+}
+
+div.related ul li {
+    margin: 0;
+    padding: 0;
+    height: 2em;
+    float: left;
+}
+
+div.related ul li.right {
+    float: right;
+    margin-right: 5px;
+}
+
+
+
+/* -- the Sphinx-specific navigation text located just below the header and just above the footer */
+
+div.related ul li a {
+    margin: 0;
+    padding: 0 8px 0 5px;
+    line-height: 1.75em;
+    color: #7c858c;
+}
+
+div.related ul li a:hover {
+    color: #b5bec6;
+}
+
+
+div.sphinxsidebarwrapper {
+    padding: 0;
+}
+
+div.sphinxsidebar {
+    margin: 0;
+    padding: 0.5em 15px 15px 0;
+    width: 210px;
+    float: right;
+    font-size: 1em;
+    text-align: left;
+
+}
+
+
+
+/* -- The colors of the TOC sidebar; h3 is headers, a is the text links and both should be same color */
+
+div.sphinxsidebar h3, div.sphinxsidebar h4 {
+    margin: 1em 0 0.5em 0;
+    font-size: 1em;
+    padding: 0.1em 0 0.1em 0.5em;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+    background-color: #7c858c;
+}
+
+div.sphinxsidebar a {
+    color: #212c35;
+    padding: 0.1em 0 0.1em 0.5em;
+    text-decoration: none;
+}
+
+div.sphinxsidebar h3 a {
+    color: #ffffff;
+}
+
+div.sphinxsidebar ul {
+    padding-left: 1.5em;
+    margin-top: 7px;
+    padding: 0;
+    line-height: 130%;
+}
+
+div.sphinxsidebar ul ul {
+    margin-left: 20px;
+}
+
+
+
+
+/*
+ * footer
+ * ~~~~~~~~~~~~~~~~~~~
+ *
+ */
+
+
+div.footer {
+    background-color: #ffffff;
+    color: #ffffff;
+    padding: 3px 8px 3px 0;
+    clear: both;
+    font-size: 0.8em;
+    text-align: right;
+}
+
+div.footer a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+/* -- body styles ----------------------------------------------------------- */
+
+p {    
+    margin: 0.8em 0 0.5em 0;
+}
+
+
+a { 
+    color: #4d97c6; 
+    text-decoration: none;
+}
+
+a:hover {
+    color: #7c858c;
+}
+
+div.body a {
+    text-decoration: none;
+}
+
+em {
+    font-style: normal;
+}
+
+/* -- header styles, basically Opscode blue with colored underlines and decreasing border bottom sizes */
+
+h1 {
+    margin: 0.5;
+    padding: 0.7em 0 0.3em 0;
+    font-size: 1.75em;
+    color: #212c35;
+    border-bottom:solid 4px #f18a20;
+}
+
+h2 {
+    margin: 1.3em 0 0.2em 0;
+    font-size: 1.55em;
+    color: #212c35;
+    padding: 0.7em 0 0.3em 0;
+    border-bottom:solid 2px #7c858c;
+}
+
+h3 {
+    margin: 1em 0 -0.3em 0;
+    font-size: 1.35em;
+    color: #212c35;
+    padding: 0.7em 0 0.3em 0;
+    border-bottom:solid 1px #7c858c;
+}
+
+h4 {
+    margin: 1em 0 -0.3em 0;
+    font-size: 1.15em;
+    color: #212c35;
+    padding: 0.7em 0 0.3em 0;
+    border-bottom:solid 0px #7c858c;
+}
+
+div.body h1 a, div.body h2 a, div.body h3 a, div.body h4 a, div.body h5 a, div.body h6 a {
+    color: #ffffff!important;
+}
+
+h1 a.anchor, h2 a.anchor, h3 a.anchor, h4 a.anchor, h5 a.anchor, h6 a.anchor {
+    display: none;
+    margin: 0 0 0 0.3em;
+    padding: 0 0.2em 0 0.2em;
+    color: #ffffff!important;
+}
+
+h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor,
+h5:hover a.anchor, h6:hover a.anchor {
+    display: inline;
+}
+
+h1 a.anchor:hover, h2 a.anchor:hover, h3 a.anchor:hover, h4 a.anchor:hover,
+h5 a.anchor:hover, h6 a.anchor:hover {
+    color: #ffffff;
+    background-color: #ffffff;
+}
+
+
+
+
+a.headerlink {
+    color: #ffffff!important;
+    font-size: 1em;
+    margin-left: 6px;
+    padding: 0 4px 0 4px;
+    text-decoration: none!important;
+}
+
+a.headerlink:hover {
+    background-color: #ffffff;
+    color: #ffffff!important;
+}
+
+cite, code, tt {
+    font-family: 'Consolas', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+    font-size: 0.95em;
+    letter-spacing: 0.01em;
+}
+
+
+
+
+
+tt {
+    background-color: #ebecf1;
+    border-bottom: 1px solid #d8dde3;
+    color: #212c35;
+}
+
+tt.descname, tt.descclassname, tt.xref {
+    border: 0;
+}
+
+/* -- has Opscode orange for testing */
+
+hr {
+    border: 1px solid #f18a20;
+    margin: 2em;
+}
+
+/* -- has Opscode orange for testing */
+
+a tt {
+    border: 0;
+    color: #f18a20;
+}
+
+/* -- has Opscode orange for testing */
+
+a tt:hover {
+    color: #f18a20;
+}
+
+/* -- has Opscode orange for testing */
+
+pre {
+    font-family: 'Consolas', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+    font-size: 0.95em;
+    letter-spacing: 0.015em;
+    line-height: 120%;
+    padding: 0.5em;
+    border: 0.0px solid #d8dde3;
+    background-color: #ebecf1;
+}
+
+pre a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+td.linenos pre {
+    padding: 0.5em 0;
+}
+
+/* -- has Opscode orange for testing */
+
+div.quotebar {
+    background-color: #f18a20;
+    max-width: 250px;
+    float: right;
+    padding: 2px 7px;
+    border: 1px solid #f18a20;
+}
+
+/* -- has Opscode orange for testing */
+
+div.topic {
+    background-color: #f18a20;
+}
+
+
+/* -- table styles */
+
+table.docutils {
+    border: 0;
+    border-collapse: separate;
+    border-spacing:4px;
+
+}
+
+table.docutils th {
+    padding: 1px 8px 1px 5px;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0px solid #ffffff;
+    background-color: #7c858c;
+    color: #ffffff;
+}
+
+table.docutils td {
+    padding: 5px 5px 5px 5px;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 1px dashed #7c858c;
+}
+
+table.field-list td, table.field-list th {
+    border: 0 !important;
+}
+
+table.footnote td, table.footnote th {
+    border: 0 !important;
+}
+
+th {
+    text-align: left;
+    padding-right: 5px;
+}
+
+table.citation {
+    border-left: solid 1px gray;
+    margin-left: 1px;
+}
+
+table.citation td {
+    border-bottom: none;
+}
+
+
+
+
+
+
+
+div.admonition, div.warning {
+    font-size: 0.9em;
+    margin: 1em 0 1em 0;
+    border: 1px solid #6bb1e1;
+    background-color: #ffffff;
+    padding: 0;
+}
+
+div.admonition p, div.warning p {
+    margin: 0.5em 1em 0.5em 1em;
+    padding: 0;
+}
+
+div.admonition pre, div.warning pre {
+    margin: 0.4em 1em 0.4em 1em;
+}
+
+div.admonition p.admonition-title,
+div.warning p.admonition-title {
+    margin: 0;
+    padding: 0.1em 0 0.1em 0.5em;
+    color: #ffffff;
+    border-bottom: 1px solid #6bb1e1;
+    font-weight: bold;
+    background-color: #6bb1e1;
+}
+
+
+
+
+div.warning {
+    border: 1px solid #fcb614;
+}
+
+div.warning p.admonition-title {
+    background-color: #fcb614;
+    border-bottom-color: #fcb614;
+}
+
+div.admonition ul, div.admonition ol,
+div.warning ul, div.warning ol {
+    margin: 0.1em 0.5em 0.5em 3em;
+    padding: 0;
+}
+
+
+
+
+div.versioninfo {
+    margin: 1em 0 0 0;
+    border: 1px solid #ffffff;
+    background-color: #ffffff;
+    padding: 8px;
+    line-height: 1.3em;
+    font-size: 0.9em;
+}
+
+
+
+
+.viewcode-back {
+    font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+}
+
+
+
+
+div.viewcode-block:target {
+    background-color: #ffffff;
+    border-top: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
+}

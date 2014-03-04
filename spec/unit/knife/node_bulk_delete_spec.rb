@@ -26,8 +26,8 @@ describe Chef::Knife::NodeBulkDelete do
     @knife = Chef::Knife::NodeBulkDelete.new
     @knife.name_args = ["."]
     @stdout = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@stdout)
-    @knife.ui.stub!(:confirm).and_return(true)
+    @knife.ui.stub(:stdout).and_return(@stdout)
+    @knife.ui.stub(:confirm).and_return(true)
     @nodes = Hash.new
     %w{adam brent jacob}.each do |node_name|
       @nodes[node_name] = "http://localhost:4000/nodes/#{node_name}"
@@ -53,11 +53,11 @@ describe Chef::Knife::NodeBulkDelete do
       @inflatedish_list = @nodes.keys.inject({}) do |nodes_by_name, name|
         node = Chef::Node.new()
         node.name(name)
-        node.stub!(:destroy).and_return(true)
+        node.stub(:destroy).and_return(true)
         nodes_by_name[name] = node
         nodes_by_name
       end
-      @knife.stub!(:all_nodes).and_return(@inflatedish_list)
+      @knife.stub(:all_nodes).and_return(@inflatedish_list)
     end
 
     it "should print the nodes you are about to delete" do

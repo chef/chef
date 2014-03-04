@@ -118,7 +118,7 @@ describe Chef::ResourceCollection do
         @rc.each_index do |i|
           results << @rc[i].name
         end
-      }.should_not raise_error()
+      }.should_not raise_error
       results.each_index do |i|
         case i
         when 0

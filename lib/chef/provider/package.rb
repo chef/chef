@@ -50,7 +50,7 @@ class Chef
 
         requirements.assert(:upgrade) do |a|
           # Can't upgrade what we don't have
-          a.assertion  { !(@current_resource.version.nil? && candidate_version.nil?) } 
+          a.assertion  { !(@current_resource.version.nil? && candidate_version.nil?) }
           a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{@new_resource.package_name}")
           a.whyrun("Assuming a repository that offers #{@new_resource.package_name} would have been configured")
         end
@@ -71,9 +71,9 @@ class Chef
         # We need to make sure we handle the preseed file
         if @new_resource.response_file
           if preseed_file = get_preseed_file(@new_resource.package_name, install_version)
-            converge_by("preseed package #{@new_resource.package_name}") do  
+            converge_by("preseed package #{@new_resource.package_name}") do
               preseed_package(preseed_file)
-            end 
+            end
           end
         end
         description = install_version ? "version #{install_version} of" : ""
@@ -202,6 +202,7 @@ class Chef
         if template_available?(@new_resource.response_file)
           Chef::Log.debug("#{@new_resource} fetching preseed file via Template")
           remote_file = Chef::Resource::Template.new(cache_seed_to, run_context)
+          remote_file.variables(@new_resource.response_file_variables)
         elsif cookbook_file_available?(@new_resource.response_file)
           Chef::Log.debug("#{@new_resource} fetching preseed file via cookbook_file")
           remote_file = Chef::Resource::CookbookFile.new(cache_seed_to, run_context)

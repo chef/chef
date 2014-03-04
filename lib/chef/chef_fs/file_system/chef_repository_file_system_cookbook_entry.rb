@@ -18,6 +18,7 @@
 
 require 'chef/chef_fs/file_system/chef_repository_file_system_entry'
 require 'chef/chef_fs/file_system/chef_repository_file_system_cookbooks_dir'
+require 'chef/chef_fs/file_system/not_found_error'
 
 class Chef
   module ChefFS
@@ -33,10 +34,14 @@ class Chef
         attr_reader :recursive
 
         def children
-          Dir.entries(file_path).sort.
-              select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
-              map { |child_name| ChefRepositoryFileSystemCookbookEntry.new(child_name, self, nil, ruby_only, recursive) }.
-              select { |entry| !(entry.dir? && entry.children.size == 0) }
+          begin
+            Dir.entries(file_path).sort.
+                select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
+                map { |child_name| make_child(child_name) }.
+                select { |entry| !(entry.dir? && entry.children.size == 0) }
+          rescue Errno::ENOENT
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+          end
         end
 
         def can_have_child?(name, is_dir)
@@ -64,6 +69,16 @@ class Chef
           end while ignorer
 
           true
+        end
+
+        def write_pretty_json
+          false
+        end
+
+        protected
+
+        def make_child(child_name)
+          ChefRepositoryFileSystemCookbookEntry.new(child_name, self, nil, ruby_only, recursive)
         end
       end
     end

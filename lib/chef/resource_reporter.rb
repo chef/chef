@@ -50,10 +50,10 @@ class Chef
       def for_json
         as_hash = {}
         as_hash["type"]   = new_resource.class.dsl_name
-        as_hash["name"]   = new_resource.name
-        as_hash["id"]     = new_resource.identity
-        as_hash["after"]  = new_resource.state
-        as_hash["before"] = current_resource ? current_resource.state : {}
+        as_hash["name"]   = new_resource.name.to_s
+        as_hash["id"]     = new_resource.identity.to_s
+        as_hash["after"]  = state(new_resource)
+        as_hash["before"] = current_resource ? state(current_resource) : {}
         as_hash["duration"] = (elapsed_time * 1000).to_i.to_s
         as_hash["delta"]  = new_resource.diff if new_resource.respond_to?("diff")
         as_hash["delta"]  = "" if as_hash["delta"].nil?
@@ -80,6 +80,12 @@ class Chef
         !self.exception
       end
 
+      def state(r)
+        r.class.state_attrs.inject({}) do |state_attrs, attr_name|
+          state_attrs[attr_name] = r.send(attr_name)
+          state_attrs
+        end
+      end
     end # End class ResouceReport
 
     attr_reader :updated_resources
@@ -101,7 +107,6 @@ class Chef
       @pending_update  = nil
       @status = "success"
       @exception = nil
-      @run_id = SecureRandom.uuid
       @rest_client = rest_client
       @error_descriptions = {}
     end
@@ -112,7 +117,7 @@ class Chef
       if reporting_enabled?
         begin
           resource_history_url = "reports/nodes/#{node_name}/runs"
-          server_response = @rest_client.post_rest(resource_history_url, {:action => :start, :run_id => @run_id,
+          server_response = @rest_client.post_rest(resource_history_url, {:action => :start, :run_id => run_id,
                                                                           :start_time => start_time.to_s}, headers)
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
           handle_error_starting_run(e, resource_history_url)
@@ -150,6 +155,10 @@ class Chef
       end
 
       @reporting_enabled = false
+    end
+
+    def run_id
+      @run_status.run_id
     end
 
     def resource_current_state_loaded(new_resource, action, current_resource)
@@ -208,8 +217,8 @@ class Chef
     def post_reporting_data
       if reporting_enabled?
         run_data = prepare_run_data
-        resource_history_url = "reports/nodes/#{node_name}/runs/#{@run_id}"
-        Chef::Log.info("Sending resource update report (run-id: #{@run_id})")
+        resource_history_url = "reports/nodes/#{node_name}/runs/#{run_id}"
+        Chef::Log.info("Sending resource update report (run-id: #{run_id})")
         Chef::Log.debug run_data.inspect
         compressed_data = encode_gzip(run_data.to_json)
         begin
