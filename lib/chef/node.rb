@@ -261,11 +261,20 @@ class Chef
       args.length > 0 ? @override_runlist.reset!(args) : @override_runlist
     end
 
+    def select_run_list
+      @override_runlist.empty? ? @primary_runlist : @override_runlist
+    end
+
     # Returns an Array of roles and recipes, in the order they will be applied.
     # If you call it with arguments, they will become the new list of roles and recipes.
     def run_list(*args)
-      rl = @override_runlist.empty? ? @primary_runlist : @override_runlist
+      rl = select_run_list
       args.length > 0 ? rl.reset!(args) : rl
+    end
+
+    def run_list=(list)
+      rl = select_run_list
+      rl = list
     end
 
     # Returns true if this Node expects a given role, false if not.
