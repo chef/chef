@@ -23,7 +23,7 @@ install_path    "/opt/chefdk"
 build_version   Omnibus::BuildVersion.full
 build_iteration 4
 
-override :berkshelf, version: "3.0.0.beta7"
+override :berkshelf, version: "v3.0.0.beta7"
 override :bundler,   version: "1.5.2"
 override :libedit,   version: "20130712-3.1"
 override :libtool,   version: "2.4.2"
