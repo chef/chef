@@ -296,10 +296,7 @@ class Chef
       name = Chef::Config[:node_name] || ohai[:fqdn] || ohai[:machinename] || ohai[:hostname]
       Chef::Config[:node_name] = name
 
-      unless name
-        msg = "Unable to determine node name: configure node_name or configure the system's hostname and fqdn"
-        raise Chef::Exceptions::CannotDetermineNodeName, msg
-      end
+      raise Chef::Exceptions::CannotDetermineNodeName unless name
 
       # node names > 90 bytes only work with authentication protocol >= 1.1
       # see discussion in config.rb.
