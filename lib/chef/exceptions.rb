@@ -50,7 +50,13 @@ class Chef
     class Override < RuntimeError; end
     class UnsupportedAction < RuntimeError; end
     class MissingLibrary < RuntimeError; end
-    class CannotDetermineNodeName < RuntimeError; end
+
+    class CannotDetermineNodeName < RuntimeError
+      def initialize
+        super "Unable to determine node name: configure node_name or configure the system's hostname and fqdn"
+      end
+    end
+
     class User < RuntimeError; end
     class Group < RuntimeError; end
     class Link < RuntimeError; end

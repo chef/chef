@@ -27,11 +27,13 @@ require 'rbconfig'
 describe Chef::Client do
 
   let(:hostname) { "hostname" }
+  let(:machinename) { "machinename.example.org" }
   let(:fqdn) { "hostname.example.org" }
 
   let(:ohai_data) do
     { :fqdn             => fqdn,
       :hostname         => hostname,
+      :machinename      => machinename,
       :platform         => 'example-platform',
       :platform_version => 'example-platform-1.0',
       :data             => {}
@@ -560,5 +562,40 @@ describe Chef::Client do
     end
   end
 
+  describe "setting node name" do
+    context "when machinename, hostname and fqdn are all set" do
+      it "favors the fqdn" do
+        expect(client.node_name).to eql(fqdn)
+      end
+    end
+
+    context "when fqdn is missing" do
+      # ohai 7 should always have machinename == return of hostname
+      let(:fqdn) { nil }
+      it "favors the machinename" do
+        expect(client.node_name).to eql(machinename)
+      end
+    end
+
+    context "when fqdn and machinename are missing" do
+      # ohai 6 will not have machinename, return the short hostname
+      let(:fqdn) { nil }
+      let(:machinename) { nil }
+      it "falls back to hostname" do
+        expect(client.node_name).to eql(hostname)
+      end
+    end
+
+    context "when they're all missing" do
+      let(:machinename) { nil }
+      let(:hostname) { nil }
+      let(:fqdn) { nil }
+
+      it "throws an exception" do
+        expect { client.node_name }.to raise_error(Chef::Exceptions::CannotDetermineNodeName)
+      end
+    end
+
+  end
 end
 
