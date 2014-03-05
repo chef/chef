@@ -201,7 +201,7 @@ class Chef
 
         $stdout.sync = true
 
-        ui.info("Bootstrapping Chef on #{ui.color(@node_name, :bold)}")
+        ui.info("Attempting to connect to and bootstrap Chef onto #{ui.color(@node_name, :bold)}")
 
         begin
           knife_ssh.run
