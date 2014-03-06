@@ -1,6 +1,6 @@
 #
-# Author:: AJ Christensen (<aj@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Authors:: Richard Manyanza (liseki@nyikacraftsmen.com)
+# Copyright:: Copyright (c) 2014 Richard Manyanza
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,20 +16,5 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-
-class Chef
-  class Resource
-    class FreebsdPackage < Chef::Resource::Package
-
-      def initialize(name, run_context=nil)
-        super
-        @resource_name = :freebsd_package
-
-        # The provider is resolved by Chef::ProviderResolver::Package::Freebsd.
-      end
-
-    end
-  end
-end
+require 'chef/provider_resolver/package/freebsd'
 

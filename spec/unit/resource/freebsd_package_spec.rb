@@ -32,8 +32,9 @@ describe Chef::Resource::FreebsdPackage, "initialize" do
     @resource.resource_name.should eql(:freebsd_package)
   end
 
-  it "should set the provider to Chef::Provider::Package::freebsd" do
-    @resource.provider.should eql(Chef::Provider::Package::Freebsd)
+  it "should not set the provider" do
+    # This will be handlded by Chef::ProviderResolver::Package::Freebsd
+    @resource.provider.should be_nil
   end
 end
 
