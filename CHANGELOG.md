@@ -13,6 +13,7 @@
 * CHEF-5030: clean up debian ifconfig provider code
 * CHEF-5001: spec tests for multiple rollbacks
 * Added ohai7 'machinename' attribute as source of `node_name` information
+* CHEF-4773: add ruby-shadow support to Mac and FreeBSD distros
 
 ## Last Release: 11.10.0 (02/06/2014)
 
