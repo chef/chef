@@ -20,6 +20,11 @@ module Mixlib
   class ShellOut
     module Unix
 
+      # "1.8.7" as a frozen string. We use this with a hack that disables GC to
+      # avoid segfaults on Ruby 1.8.7, so we need to allocate the fewest
+      # objects we possibly can.
+      ONE_DOT_EIGHT_DOT_SEVEN = "1.8.7".freeze
+
       # Option validation that is unix specific
       def validate_options(opts)
         # No options to validate, raise exceptions here if needed
@@ -50,10 +55,10 @@ module Mixlib
         configure_parent_process_file_descriptors
 
         # Ruby 1.8.7 and 1.8.6 from mid 2009 try to allocate objects during GC
-        # when calling IO.select and IO#read. Some OS Vendors are not interested
-        # in updating their ruby packages (Apple, *cough*) and we *have to*
-        # make it work. So I give you this epic hack:
-        GC.disable
+        # when calling IO.select and IO#read. Disabling GC works around the
+        # segfault, but obviously it's a bad workaround. We no longer support
+        # 1.8.6 so we only need this hack for 1.8.7.
+        GC.disable if RUBY_VERSION == ONE_DOT_EIGHT_DOT_SEVEN
 
         # CHEF-3390: Marshall.load on Ruby < 1.8.7p369 also has a GC bug related
         # to Marshall.load, so try disabling GC first.
