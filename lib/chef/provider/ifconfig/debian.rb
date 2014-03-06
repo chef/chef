@@ -24,6 +24,9 @@ class Chef
     class Ifconfig
       class Debian < Chef::Provider::Ifconfig
 
+        INTERFACES_FILE = "/etc/network/interfaces"
+        INTERFACES_DOT_D_DIR = "/etc/network/interfaces.d"
+
         def initialize(new_resource, run_context)
           super(new_resource, run_context)
           @config_template = %{
@@ -46,22 +49,30 @@ iface <%= @new_resource.device %> inet static
 <% end %>
 <% end %>
           }
-          @config_path = "/etc/network/interfaces.d/ifcfg-#{@new_resource.device}"
+          @config_path = "#{INTERFACES_DOT_D_DIR}/ifcfg-#{@new_resource.device}"
         end
 
         def generate_config
-          check_interfaces_config
+          enforce_interfaces_dot_d_sanity
           super
         end
 
         protected
 
-        def check_interfaces_config
-          converge_by ('modify configuration file : /etc/network/interfaces') do
-            Dir.mkdir('/etc/network/interfaces.d') unless ::File.directory?('/etc/network/interfaces.d')
-            conf = Chef::Util::FileEdit.new('/etc/network/interfaces')
-            conf.insert_line_if_no_match('^\s*source\s+/etc/network/interfaces[.]d/[*]\s*$', 'source /etc/network/interfaces.d/*')
-            conf.write_file
+        def enforce_interfaces_dot_d_sanity
+          # create /etc/network/interfaces.d via dir resource (to get reporting, etc)
+          dir = Chef::Resource::Directory.new(INTERFACES_DOT_D_DIR, run_context)
+          dir.run_action(:create)
+          new_resource.updated_by_last_action(true) if dir.updated_by_last_action?
+          # roll our own file_edit resource, this will not get reported until we have a file_edit resource
+          interfaces_dot_d_for_regexp = INTERFACES_DOT_D_DIR.gsub(/\./, '\.')  # escape dots for the regexp
+          regexp = %r{^\s*source\s+#{interfaces_dot_d_for_regexp}/\*\s*$}
+          unless ::File.exists?(INTERFACES_FILE) && regexp.match(IO.read(INTERFACES_FILE))
+            converge_by("modifying #{INTERFACES_FILE} to source #{INTERFACES_DOT_D_DIR}") do
+              conf = Chef::Util::FileEdit.new(INTERFACES_FILE)
+              conf.insert_line_if_no_match(regexp, "source #{INTERFACES_DOT_D_DIR}/*")
+              conf.write_file
+            end
           end
         end
 
