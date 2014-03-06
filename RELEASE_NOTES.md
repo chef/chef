@@ -9,5 +9,6 @@ Details about the thing that changed that needs to get included in the Release N
 # Chef Client Release Notes:
 
 * CHEF-4773: add ruby-shadow support to Mac and FreeBSD distros
+* Service Provider for MacOSX now supports `enable` and `disable`
 
 # Chef Client Breaking Changes:

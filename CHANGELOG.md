@@ -14,6 +14,7 @@
 * CHEF-5001: spec tests for multiple rollbacks
 * Added ohai7 'machinename' attribute as source of `node_name` information
 * CHEF-4773: add ruby-shadow support to Mac and FreeBSD distros
+* Service Provider for MacOSX now supports `enable` and `disable`
 
 ## Last Release: 11.10.0 (02/06/2014)
 
