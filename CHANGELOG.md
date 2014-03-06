@@ -10,6 +10,9 @@
 * Add --validator option to `knife client create` to be able to create validator clients via knife.
 * Add --force option to `knife client delete` in order to prevent accidental deletion of validator clients.
 * Add -r / --runlist option to chef-client which permanently sets or changes the run_list of a node.
+* CHEF-5030: clean up debian ifconfig provider code
+* CHEF-5001: spec tests for multiple rollbacks
+* Added ohai7 'machinename' attribute as source of `node_name` information
 
 ## Last Release: 11.10.0 (02/06/2014)
 
