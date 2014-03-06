@@ -15,6 +15,7 @@
 * Added ohai7 'machinename' attribute as source of `node_name` information
 * CHEF-4773: add ruby-shadow support to Mac and FreeBSD distros
 * Service Provider for MacOSX now supports `enable` and `disable`
+* CHEF-5086: Add reboot_pending? helper to DSL
 
 ## Last Release: 11.10.0 (02/06/2014)
 
