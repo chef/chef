@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-*
+* Service Provider for MacOSX now supports `enable` and `disable`
 
 ## Last Release: 10.30.4 (02/18/2014)
 
