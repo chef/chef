@@ -23,8 +23,8 @@ homepage "http://www.opscode.com"
 #       Native gems will use gcc which will barf on files with spaces,
 #       which is only fixable if everyone in the world fixes their Makefiles
 install_path    "c:\\opscode\\chefdk"
-build_version   Omnibus::BuildVersion.full
-build_iteration 4
+build_version   Omnibus::BuildVersion.new.semver
+build_iteration 1
 
 package_name    "chef-dk"
 

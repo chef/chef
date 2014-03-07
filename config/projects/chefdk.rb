@@ -20,8 +20,8 @@ maintainer "Opscode, Inc."
 homepage   "http://www.opscode.com"
 
 install_path    "/opt/chefdk"
-build_version   Omnibus::BuildVersion.full
-build_iteration 4
+build_version   Omnibus::BuildVersion.new.semver
+build_iteration 1
 
 override :berkshelf, version: "v3.0.0.beta7"
 override :bundler,   version: "1.5.2"
