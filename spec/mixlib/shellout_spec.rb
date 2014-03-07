@@ -944,19 +944,37 @@ describe Mixlib::ShellOut do
             CODE
           end
 
+
           it "should TERM the wayward child and grandchild, then KILL whoever is left" do
             # note: let blocks don't correctly memoize if an exception is raised,
             # so can't use executed_cmd
             lambda { shell_cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
 
-            shell_cmd.stdout.should include("got term in child")
-            shell_cmd.stdout.should include("got term in grandchild")
+            begin
 
-            # A little janky. We get the process group id out of the command
-            # object, then try to kill a process in it to make sure none
-            # exists. Trusting the system under test like this isn't great but
-            # it's difficult to test otherwise.
-            lambda { Process.kill(:INT, shell_cmd.send(:child_pgid)) }.should raise_error(Errno::ESRCH)
+              # A little janky. We get the process group id out of the command
+              # object, then try to kill a process in it to make sure none
+              # exists. Trusting the system under test like this isn't great but
+              # it's difficult to test otherwise.
+              child_pgid = shell_cmd.send(:child_pgid)
+              initial_process_listing = `ps -j`
+
+              shell_cmd.stdout.should include("got term in child")
+              shell_cmd.stdout.should include("got term in grandchild")
+
+              Process.kill(:INT, child_pgid) # should raise ESRCH
+
+              # Debug the failure:
+              puts "child pgid=#{child_pgid.inspect}"
+              Process.wait
+              puts "collected process: #{$?.inspect}"
+              puts "initial process listing:\n#{initial_process_listing}"
+              puts "current process listing:"
+              puts `ps -j`
+              raise "Failed to kill all expected processes"
+            rescue Errno::ESRCH
+              # this is what we want
+            end
           end
 
         end
