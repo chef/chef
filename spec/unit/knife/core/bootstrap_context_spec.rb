@@ -41,6 +41,13 @@ describe Chef::Knife::Core::BootstrapContext do
     bootstrap_context.start_chef.should eq "chef-client -j /etc/chef/first-boot.json -E _default"
   end
 
+  describe "when in verbosity mode" do
+    let(:config) { {:verbosity => 2} }
+    it "adds '-l debug' when verbosity is >= 2" do
+      bootstrap_context.start_chef.should eq "chef-client -j /etc/chef/first-boot.json -l debug -E _default"
+    end
+  end
+
   it "reads the validation key" do
     bootstrap_context.validation_key.should eq IO.read(File.join(CHEF_SPEC_DATA, 'ssl', 'private_key.pem'))
   end
