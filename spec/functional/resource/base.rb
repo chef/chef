@@ -22,9 +22,7 @@ def ohai
   # provider is platform-dependent, we need platform ohai data:
   @OHAI_SYSTEM ||= begin
     ohai = Ohai::System.new
-    ohai.require_plugin("os")
-    ohai.require_plugin("platform")
-    ohai.require_plugin("passwd")
+    ohai.all_plugins("platform")
     ohai
   end
 end

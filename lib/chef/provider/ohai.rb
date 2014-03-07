@@ -33,11 +33,12 @@ class Chef
       def action_reload
         converge_by("re-run ohai and merge results into node attributes") do
           ohai = ::Ohai::System.new
-          if @new_resource.plugin
-            ohai.require_plugin @new_resource.plugin
-          else
-            ohai.all_plugins
-          end
+
+          # If @new_resource.plugin is nil, ohai will reload all the plugins
+          # Otherwise it will only reload the specified plugin
+          # Note that any changes to plugins, or new plugins placed on
+          # the path are picked up by ohai.
+          ohai.all_plugins @new_resource.plugin
           node.automatic_attrs.merge! ohai.data
           Chef::Log.info("#{@new_resource} reloaded")
         end

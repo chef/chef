@@ -16,3 +16,6 @@ Option that is required to be specified if user is attempting to delete a valida
 
 ### -r / --runlist option for chef-client
 Option similar to `-o` which sets or changes the run_list of a node permanently.
+
+### OHAI 7 Upgrade
+Unless there are major issues, 11.12.0 will include OHAI 7. We already have ohai 7 docs in place. We probably need to add some notes to ohai 6 notes that one should now use the newer version when possible.
