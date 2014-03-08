@@ -23,6 +23,7 @@ install_sh="https://www.opscode.com/chef/install.sh"
 version_string="-v <%= chef_version %>"
 
 if ! exists /usr/bin/chef-client; then
+  echo "Installing Chef Client..."
   if exists wget; then
     bash <(wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %> ${install_sh} -O -) ${version_string}
   elif exists curl; then
@@ -65,5 +66,7 @@ EOP
 cat > /etc/chef/first-boot.json <<'EOP'
 <%= first_boot.to_json %>
 EOP
+
+echo "Starting first Chef Client run..."
 
 <%= start_chef %>'
