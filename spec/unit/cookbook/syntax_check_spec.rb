@@ -47,6 +47,23 @@ describe Chef::Cookbook::SyntaxCheck do
     Chef::Config[:cookbook_path] = File.dirname(cookbook_path)
     syntax_check = Chef::Cookbook::SyntaxCheck.for_cookbook(:openldap)
     syntax_check.cookbook_path.should == cookbook_path
+    syntax_check.ruby_files.length.should == 8
+  end
+
+  it "creates a syntax checker given the cookbook name and cookbook_path" do
+    syntax_check = Chef::Cookbook::SyntaxCheck.for_cookbook(:openldap, File.join(CHEF_SPEC_DATA, 'cookbooks'))
+    syntax_check.cookbook_path.should == cookbook_path
+    syntax_check.ruby_files.length.should == 8
+  end
+
+  context "when using a standalone cookbook" do
+    let(:cookbook_path) { File.join(CHEF_SPEC_DATA, 'standalone_cookbook') }
+
+    it "creates a syntax checker given the cookbook name and cookbook_path for a standalone cookbook" do
+      syntax_check = Chef::Cookbook::SyntaxCheck.for_cookbook(:standalone_cookbook, CHEF_SPEC_DATA)
+      syntax_check.cookbook_path.should == cookbook_path
+      syntax_check.ruby_files.length.should == 1
+    end
   end
 
   describe "when first created" do

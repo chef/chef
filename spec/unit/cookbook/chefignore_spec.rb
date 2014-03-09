@@ -36,4 +36,14 @@ describe Chef::Cookbook::Chefignore do
     @chefignore.ignored?('recipes/ignoreme.rb').should be_true
     @chefignore.ignored?('recipes/dontignoreme.rb').should be_false
   end
+
+  context "when using the single cookbook pattern" do
+    before do
+      @chefignore = Chef::Cookbook::Chefignore.new(File.join(CHEF_SPEC_DATA, 'standalone_cookbook'))
+    end
+
+    it "loads the globs in the chefignore file" do
+      @chefignore.ignores.should =~ %w[recipes/ignoreme.rb ignored vendor/bundle/*]
+    end
+  end
 end
