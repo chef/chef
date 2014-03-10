@@ -77,6 +77,8 @@ class Chef
       # validated.
       attr_reader :validated_files
 
+      attr_reader :chefignore
+
       # Creates a new SyntaxCheck given the +cookbook_name+ and a +cookbook_path+.
       # If no +cookbook_path+ is given, +Chef::Config.cookbook_path+ is used.
       def self.for_cookbook(cookbook_name, cookbook_path=nil)
@@ -98,12 +100,12 @@ class Chef
       end
 
       def remove_ignored_files(file_list)
-        return file_list unless @chefignore.ignores.length > 0
+        return file_list unless chefignore.ignores.length > 0
         file_list.reject do |full_path|
           cookbook_pn = Pathname.new cookbook_path
           full_pn = Pathname.new full_path
           relative_pn = full_pn.relative_path_from cookbook_pn
-          @chefignore.ignored? relative_pn.to_s
+          chefignore.ignored? relative_pn.to_s
         end
       end
 
