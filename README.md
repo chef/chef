@@ -73,18 +73,16 @@ $ bin/omnibus help
 
 By default, the package you build will be based on master branch HEAD of the
 [opscode/chef](https://github.com/opscode/chef) git repository. You can build
-packages for a specific version of Chef by leveraging the `CHEF_GIT_REV`
-environment variable. The value can be any valid git reference (e.g., tag,
-branch name, or SHA).
+packages for a specific version of Chef by overriding the version of chef in
+Chef project definition.
 
-For example, to build a package for Chef 11.4.4 you would run the following
-command:
-
-```shell
-CHEF_GIT_REV=11.4.4 bin/omnibus build project chef
+```ruby
+# config/projects/chef.rb
+override :chef,   version: "11.10.0"
 ```
-The `CHEF_GIT_REV` environment variable is also respected when using the
-Vagrant-based build lab documented below.
+
+The value of version can be any valid git reference (e.g., tag,
+branch name, or SHA).
 
 ## Vagrant-based Virtualized Build Labs
 

@@ -22,7 +22,7 @@ dependency "ruby-windows-devkit"
 dependency "bundler"
 dependency "cacerts"
 
-version ENV['CHEF_GIT_REV'] || "master"
+default_version "master"
 
 source :git => "git://github.com/opscode/chef"
 
