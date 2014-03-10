@@ -266,5 +266,5 @@ EOM
 /cookbooks/chefignore/metadata.rb
 EOM
     end
- end
+  end
 end
