@@ -21,11 +21,20 @@ fi
 # Clean up binary symlinks if they exist
 # see: http://tickets.opscode.com/browse/CHEF-3022
 if [ ! -f /etc/redhat-release -o "x$1" = "x0" ]; then
+  rm -f $PREFIX/bin/chef
   rm -f $PREFIX/bin/chef-client
   rm -f $PREFIX/bin/chef-solo
   rm -f $PREFIX/bin/chef-apply
   rm -f $PREFIX/bin/chef-shell
-  rm -f $PREFIX/bin/shef
   rm -f $PREFIX/bin/knife
+  rm -f $PREFIX/bin/shef
   rm -f $PREFIX/bin/ohai
+  rm -f $PREFIX/bin/berks
+  rm -f $PREFIX/bin/chef-zero
+  rm -f $PREFIX/bin/fauxhai
+  rm -f $PREFIX/bin/foodcritic
+  rm -f $PREFIX/bin/kitchen
+  rm -f $PREFIX/bin/rubocop
+  rm -f $PREFIX/bin/strain
+  rm -f $PREFIX/bin/strainer
 fi
