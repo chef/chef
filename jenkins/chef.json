@@ -83,6 +83,16 @@
             "mac_os_x",
             "10.7",
             "x86_64"
+        ],
+        [
+            "mac_os_x",
+            "10.8",
+            "x86_64"
+        ],
+        [
+            "mac_os_x",
+            "10.9",
+            "x86_64"
         ]
     ],
     "build_os=solaris-10,machine_architecture=intel,role=oss-builder": [
@@ -253,6 +263,16 @@
         [
             "windows",
             "2012",
+            "x86_64"
+        ],
+        [
+            "windows",
+            "7",
+            "x86_64"
+        ],
+        [
+            "windows",
+            "8",
             "x86_64"
         ]
     ]
