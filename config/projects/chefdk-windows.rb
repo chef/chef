@@ -37,6 +37,5 @@ dependency "ruby-windows"
 dependency "libyaml-windows"
 dependency "ruby-windows-devkit"
 dependency "chef-windows"
-dependency "ohai" if ENV["OHAI_GIT_REV"]
 dependency "chefdk"
 dependency "chef-client-msi"

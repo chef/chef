@@ -27,5 +27,4 @@ mac_pkg_identifier "com.getchef.pkg.chef-client"
 
 dependency "preparation"
 dependency "chef"
-dependency "ohai" if ENV["OHAI_GIT_REV"]
 dependency "version-manifest"

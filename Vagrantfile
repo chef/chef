@@ -141,7 +141,6 @@ Vagrant.configure('2') do |config|
         export PATH=/usr/local/bin:$PATH
         cd #{guest_project_path}
         sudo su vagrant -c "bundle install --path=/home/vagrant/.bundler"
-        export CHEF_GIT_REV=#{ENV['CHEF_GIT_REV'] || 'master'}
         sudo su vagrant -c "bundle exec omnibus build project #{project_name}"
       OMNIBUS_BUILD
 
