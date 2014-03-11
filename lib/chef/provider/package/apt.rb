@@ -37,6 +37,15 @@ class Chef
           @current_resource
         end
 
+        def define_resource_requirements
+          super
+
+          requirements.assert(:all_actions) do |a|
+            a.assertion { !@new_resource.source }
+            a.failure_message(Chef::Exceptions::Package, 'apt package provider cannot handle source attribute. Use dpkg provider instead')
+          end
+        end
+
         def default_release_options
           # Use apt::Default-Release option only if provider was explicitly defined
           "-o APT::Default-Release=#{@new_resource.default_release}" if @new_resource.provider && @new_resource.default_release
