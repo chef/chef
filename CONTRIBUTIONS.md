@@ -7,5 +7,5 @@ Example Contribution:
 # Chef Client Contributions:
 
 * **jonlives**: Changed the order of recipe and cookbook name setting. Fixes CHEF-5052.
-* **jaymzh**: Service Provider for MacOSX now supports `enable` and `disable`
-
+* **jaymzh**: Added support for `enable` and `disable` to MacOSX service provider.
+* **bossmc**: Made formatters more resilient to nil exception messages.

@@ -18,6 +18,7 @@
 * CHEF-5086: Add reboot_pending? helper to DSL
 * Upgrade ohai to 7.0.0.rc.0
 * Make the initial bootstrap message more user friendly (CHEF-5102)
+* Correctly handle exceptions in formatters when exception.message is nil (CHEF-4743)
 
 ## Last Release: 11.10.0 (02/06/2014)
 
