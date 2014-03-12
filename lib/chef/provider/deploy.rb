@@ -266,7 +266,7 @@ class Chef
 
       def copy_cached_repo
         target_dir_path = @new_resource.deploy_to + "/releases"
-        converge_by("deploy from repo to #{@target_dir_path} ") do
+        converge_by("deploy from repo to #{target_dir_path} ") do
           FileUtils.rm_rf(release_path) if ::File.exist?(release_path)
           FileUtils.mkdir_p(target_dir_path)
           FileUtils.cp_r(::File.join(@new_resource.destination, "."), release_path, :preserve => true)
