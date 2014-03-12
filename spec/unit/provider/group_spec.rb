@@ -96,6 +96,11 @@ describe Chef::Provider::User do
       @provider.compare_group.should be_false
     end
 
+    it "should coerce an integer to a string for comparison" do
+      @current_resource.stub!(:gid).and_return("500")
+      @provider.compare_group.should be_false
+    end
+
     it "should return false if append is true and the group member(s) already exists" do
       @current_resource.members << "extra_user"
       @new_resource.stub(:append).and_return(true)

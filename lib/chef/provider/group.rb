@@ -84,7 +84,7 @@ class Chef
       # <false>:: If a change is not required
       def compare_group
         @change_desc = [ ]
-        if @new_resource.gid != @current_resource.gid
+        if @new_resource.gid.to_s  != @current_resource.gid.to_s
           @change_desc << "change gid #{@current_resource.gid} to #{@new_resource.gid}"
         end
 
