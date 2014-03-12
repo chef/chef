@@ -31,7 +31,7 @@ class Chef
       end
 
       def section(heading, text)
-        @sections << {heading => text}
+        @sections << {heading => (text or "")}
       end
 
       def display(out)
