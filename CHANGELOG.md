@@ -20,6 +20,7 @@
 * Make the initial bootstrap message more user friendly (CHEF-5102)
 * Correctly handle exceptions in formatters when exception.message is nil (CHEF-4743)
 * Fix convergence message in deploy provider (CHEF-4929)
+* Make group resource idempotent when gid is specified as a string. (CHEF-4927)
 
 ## Last Release: 11.10.0 (02/06/2014)
 
