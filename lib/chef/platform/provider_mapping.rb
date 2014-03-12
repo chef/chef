@@ -31,7 +31,6 @@ require 'chef/provider/mount'
 require 'chef/provider/service'
 require 'chef/provider/package'
 require 'chef/provider/ifconfig'
-require 'chef/provider_resolver'
 
 
 class Chef
@@ -61,7 +60,6 @@ class Chef
           :freebsd => {
             :default => {
               :group   => Chef::Provider::Group::Pw,
-              :package => Chef::ProviderResolver::Package::Freebsd,
               :service => Chef::Provider::Service::Freebsd,
               :user    => Chef::Provider::User::Pw,
               :cron    => Chef::Provider::Cron
@@ -451,13 +449,7 @@ class Chef
 
       def find_provider_for_node(node, resource_type)
         platform, version = find_platform_and_version(node)
-        provider = find_provider(platform, version, resource_type)
-
-        if provider.is_a?(Class) && provider.ancestors.include?(Chef::ProviderResolver)
-          provider.new(node, resource_type).resolve
-        else
-          provider
-        end
+        find_provider(platform, version, resource_type)
       end
 
       def set(args)
