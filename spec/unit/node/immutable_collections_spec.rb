@@ -86,7 +86,7 @@ end
 describe Chef::Node::ImmutableArray do
 
   before do
-    @immutable_array = Chef::Node::ImmutableArray.new(%w[foo bar baz])
+    @immutable_array = Chef::Node::ImmutableArray.new(%w[foo bar baz] + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ])
   end
 
   ##
@@ -128,6 +128,10 @@ describe Chef::Node::ImmutableArray do
     it "does not allow mutation via `#{mutator}" do
       lambda { @immutable_array.send(mutator)}.should raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
+  end
+
+  it "can be duped even if some elements can't" do
+    @immutable_array.dup
   end
 
   it "returns a mutable version of itself when duped" do
