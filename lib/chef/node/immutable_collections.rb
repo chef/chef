@@ -85,8 +85,15 @@ class Chef
         METHOD_DEFN
       end
 
+      # For elements like Fixnums, true, nil...
+      def safe_dup(e)
+        e.dup
+      rescue TypeError
+        e
+      end
+
       def dup
-        Array.new(map {|e| e.dup })
+        Array.new(map {|e| safe_dup(e)})
       end
 
     end
