@@ -10,3 +10,4 @@ Example Contribution:
 * **jaymzh**: Added support for `enable` and `disable` to MacOSX service provider.
 * **bossmc**: Made formatters more resilient to nil exception messages.
 * **valodzka**: Fixed the convergence message in deploy provider.
+* **brugidou**: Made attribute arrays able to handle non-dupable elements while being duped.
