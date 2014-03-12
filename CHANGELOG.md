@@ -22,6 +22,7 @@
 * Fix convergence message in deploy provider (CHEF-4929)
 * Make group resource idempotent when gid is specified as a string. (CHEF-4927)
 * Non-dupable elements are now handled when duping attribute arrays. (CHEF-4799)
+* ruby-shadow is not installed on cygwin platform anymore. (CHEF-4946)
 
 ## Last Release: 11.10.0 (02/06/2014)
 
