@@ -19,6 +19,7 @@
 * Upgrade ohai to 7.0.0.rc.0
 * Make the initial bootstrap message more user friendly (CHEF-5102)
 * Correctly handle exceptions in formatters when exception.message is nil (CHEF-4743)
+* Fix convergence message in deploy provider (CHEF-4929)
 
 ## Last Release: 11.10.0 (02/06/2014)
 

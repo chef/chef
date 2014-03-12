@@ -9,3 +9,4 @@ Example Contribution:
 * **jonlives**: Changed the order of recipe and cookbook name setting. Fixes CHEF-5052.
 * **jaymzh**: Added support for `enable` and `disable` to MacOSX service provider.
 * **bossmc**: Made formatters more resilient to nil exception messages.
+* **valodzka**: Fixed the convergence message in deploy provider.
