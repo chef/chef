@@ -26,43 +26,18 @@ else
     PREFIX="/usr"
 fi
 
+# We test for the presence of /usr/bin/chef-client to know if this script succeeds,
+# so chef-client must appear as the last item here.
+binaries="chef chef-solo chef-apply chef-shell knife shef ohai berks chef-zero fauxhai foodcritic kitchen rubocop strain strainer chef-client"
+
 # rm -f before ln -sf is required for solaris 9
-rm -f $PREFIX/bin/chef
-rm -f $PREFIX/bin/chef-client
-rm -f $PREFIX/bin/chef-solo
-rm -f $PREFIX/bin/chef-apply
-rm -f $PREFIX/bin/chef-shell
-rm -f $PREFIX/bin/knife
-rm -f $PREFIX/bin/shef
-rm -f $PREFIX/bin/ohai
-rm -f $PREFIX/bin/berks
-rm -f $PREFIX/bin/chef-zero
-rm -f $PREFIX/bin/fauxhai
-rm -f $PREFIX/bin/foodcritic
-rm -f $PREFIX/bin/kitchen
-rm -f $PREFIX/bin/rubocop
-rm -f $PREFIX/bin/strain
-rm -f $PREFIX/bin/strainer
+for binary in $binaries; do
+  rm -f $PREFIX/bin/$binary
+done
 
-ln -sf $INSTALLER_DIR/bin/chef-solo $PREFIX/bin || error_exit "Cannot link chef-solo to $PREFIX/bin"
-ln -sf $INSTALLER_DIR/bin/chef-apply $PREFIX/bin || error_exit "Cannot link chef-apply to $PREFIX/bin"
-ln -sf $INSTALLER_DIR/bin/chef-shell $PREFIX/bin || error_exit "Cannot link chef-shell to $PREFIX/bin"
-ln -sf $INSTALLER_DIR/bin/knife $PREFIX/bin || error_exit "Cannot link knife to $PREFIX/bin"
-ln -sf $INSTALLER_DIR/bin/shef $PREFIX/bin || error_exit "Cannot link shef to $PREFIX/bin"
-ln -sf $INSTALLER_DIR/bin/ohai $PREFIX/bin || error_exit "Cannot link ohai to $PREFIX/bin"
-ln -sf $INSTALLER_DIR/bin/berks $PREFIX/bin || error_exit "Cannot link berks to $PREFIX/bin"
-ln -sf $INSTALLER_DIR/bin/chef-zero $PREFIX/bin || error_exit "Cannot link chef-zero to $PREFIX/bin"
-ln -sf $INSTALLER_DIR/bin/fauxhai $PREFIX/bin || error_exit "Cannot link fauxhai to $PREFIX/bin"
-ln -sf $INSTALLER_DIR/bin/foodcritic $PREFIX/bin || error_exit "Cannot link foodcritic to $PREFIX/bin"
-ln -sf $INSTALLER_DIR/bin/kitchen $PREFIX/bin || error_exit "Cannot link kitchen to $PREFIX/bin"
-ln -sf $INSTALLER_DIR/bin/rubocop $PREFIX/bin || error_exit "Cannot link rubocop to $PREFIX/bin"
-ln -sf $INSTALLER_DIR/bin/strain $PREFIX/bin || error_exit "Cannot link strain to $PREFIX/bin"
-ln -sf $INSTALLER_DIR/bin/strainer $PREFIX/bin || error_exit "Cannot link strainer to $PREFIX/bin"
-ln -sf $INSTALLER_DIR/bin/chef $PREFIX/bin || error_exit "Cannot link chef-client to $PREFIX/bin"
-
-# We test for the presence of /usr/bin/chef-client to know if this script succeeds, so this
-# must appear as the last real action in the script
-ln -sf $INSTALLER_DIR/bin/chef-client $PREFIX/bin || error_exit "Cannot link chef to $PREFIX/bin"
+for binary in $binaries; do
+  ln -sf $INSTALLER_DIR/bin/$binary $PREFIX/bin || error_exit "Cannot link $binary to $PREFIX/bin"
+done
 
 echo "Thank you for installing Chef Development Kit!"
 
