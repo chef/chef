@@ -58,8 +58,55 @@ class Chef
         # by the bare `node` everywhere.
         def node
           return @node if @node
+          # XXX: we include @node even if you explicitly pass vars, so is this warning never reached?
           raise "Could not find a value for node. If you are explicitly setting variables in a template, " +
                 "include a node variable if you plan to use it."
+        end
+
+        #
+        # Helpers for adding context of which resource is rendering the template (CHEF-5012)
+        #
+
+        # name of the cookbook containing the template resource, e.g.:
+        #   test
+        def cookbook_name
+          return @cookbook_name if @cookbook_name
+        end
+
+        # name of the recipe containing the template resource, e.g.:
+        #   default
+        def recipe_name
+          return @recipe_name if @recipe_name
+        end
+
+        # string representation of the line in the recipe containing the template resource, e.g.:
+        #   /Users/lamont/solo/cookbooks/test/recipes/default.rb:2:in `from_file'
+        def recipe_line_string
+          return @recipe_line_string if @recipe_line_string
+        end
+
+        # path to the recipe containing the template resource, e.g.:
+        #   /Users/lamont/solo/cookbooks/test/recipes/default.rb
+        def recipe_path
+          return @recipe_path if @recipe_path
+        end
+
+        # line in the recipe containing the template reosurce, e.g.:
+        #   2
+        def recipe_line
+          return @recipe_line if @recipe_line
+        end
+
+        # name of the template source itself, e.g.:
+        #   foo.erb
+        def template_name
+          return @template_name if @template_name
+        end
+
+        # path to the template source itself, e.g.:
+        #   /Users/lamont/solo/cookbooks/test/templates/default/foo.erb
+        def template_path
+          return @template_path if @template_path
         end
 
         #
