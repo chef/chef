@@ -76,6 +76,7 @@ class Chef
     class CookbookNotFoundInRepo < ArgumentError; end
     class RecipeNotFound < ArgumentError; end
     class AttributeNotFound < RuntimeError; end
+    class MissingCookbookDependency < StandardError; end
     class InvalidCommandOption < RuntimeError; end
     class CommandTimeout < RuntimeError; end
     class RequestedUIDUnavailable < RuntimeError; end

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Including a recipe from a cookbook not in the dependency graph raises
+  a MissingCookbookDependency exception. Fixes CHEF-4367.
 * Improves syntax check speed for Ruby 1.9+, especially when using bundler.
 * Send X-Remote-Request-Id header in order to be able to correlate actions during a single run.
 * Fix for CHEF-5048.
