@@ -79,6 +79,13 @@ describe Chef::RunContext do
       @node.include_attribute("test::george")
     end
 
+    it "raises an error when attempting to include_recipe from a cookbook not reachable by run list or dependencies" do
+      @node.should_receive(:loaded_recipe).with(:ancient, "aliens")
+      lambda do
+        @run_context.include_recipe("ancient::aliens")
+      # In CHEF-5120, this becomes a Chef::Exceptions::MissingCookbookDependency error:
+      end.should raise_error(Chef::Exceptions::CookbookNotFound)
+    end
 
   end
 

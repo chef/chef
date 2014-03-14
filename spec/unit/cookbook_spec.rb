@@ -68,16 +68,6 @@ describe Chef::CookbookVersion do
     @cookbook.preferred_filename(@node, :files, 'a-filename', 'the-checksum').should be_nil
   end
 
-  it "should allow you to include a fully-qualified recipe using the DSL" do
-    # DSL method include_recipe allows multiple arguments, so extract the first
-    @node.should_receive(:loaded_recipe).with(:openldap, "gigantor")
-    recipe = @run_context.include_recipe("openldap::gigantor").first
-
-    recipe.recipe_name.should == "gigantor"
-    recipe.cookbook_name.should == :openldap
-    @run_context.resource_collection[0].name.should == "blanket"
-  end
-
   it "should raise an ArgumentException if you try to load a bad recipe name" do
     lambda { @cookbook.load_recipe("doesnt_exist", @node) }.should raise_error(ArgumentError)
   end

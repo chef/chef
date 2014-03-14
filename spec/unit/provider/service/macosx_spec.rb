@@ -63,15 +63,15 @@ XML
         Dir.stub(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist"], [])
         provider.stub(:shell_out!).
                  with("launchctl list", {:group => 1001, :user => 101}).
-                 and_return(mock("Status", :stdout => launchctl_stdout))
+                 and_return(double("Status", :stdout => launchctl_stdout))
         provider.stub(:shell_out).
                  with(/launchctl list /,
                       {:group => nil, :user => nil}).
-                 and_return(mock("Status",
+                 and_return(double("Status",
                                  :stdout => launchctl_stdout, :exitstatus => 0))
         provider.stub(:shell_out!).
                  with(/plutil -convert xml1 -o/).
-                 and_return(mock("Status", :stdout => plutil_stdout))
+                 and_return(double("Status", :stdout => plutil_stdout))
 
         File.stub(:stat).and_return(double("stat", :gid => 1001, :uid => 101))
       end
