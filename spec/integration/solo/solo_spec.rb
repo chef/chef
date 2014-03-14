@@ -42,6 +42,25 @@ E
 
   end
 
+  when_the_repository "has a cookbook with an undeclared dependency" do
+    file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+    file 'cookbooks/x/recipes/default.rb', 'include_recipe "ancient::aliens"'
+
+    file 'cookbooks/ancient/metadata.rb', 'version "1.0.0"'
+    file 'cookbooks/ancient/recipes/aliens.rb', 'print "it was aliens"'
+
+    it "should exit with an error" do
+      file 'config/solo.rb', <<EOM
+cookbook_path "#{path_to('cookbooks')}"
+file_cache_path "#{path_to('config/cache')}"
+EOM
+      result = shell_out("ruby bin/chef-solo -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
+      result.exitstatus.should == 0 # For CHEF-5120 this becomes 1
+      result.stdout.should include("WARN: MissingCookbookDependency")
+    end
+  end
+
+
   when_the_repository "has a cookbook with a recipe with sleep" do
     directory 'logs'
     file 'logs/runs.log', ''

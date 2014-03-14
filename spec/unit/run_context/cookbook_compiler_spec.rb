@@ -170,5 +170,17 @@ describe Chef::RunContext::CookbookCompiler do
                                          :"circular-dep1",
                                          :"test-with-circular-deps"]
     end
+
+    it "determines if a cookbook is in the list of cookbooks reachable by dependency" do
+      node.run_list("test-with-deps::default", "test-with-deps::server")
+      compiler.cookbook_order.should == [:dependency1, :dependency2, :"test-with-deps"]
+      compiler.unreachable_cookbook?(:dependency1).should be_false
+      compiler.unreachable_cookbook?(:dependency2).should be_false
+      compiler.unreachable_cookbook?(:'test-with-deps').should be_false
+      compiler.unreachable_cookbook?(:'circular-dep1').should be_true
+      compiler.unreachable_cookbook?(:'circular-dep2').should be_true
+    end
+
+
   end
 end
