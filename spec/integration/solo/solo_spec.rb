@@ -55,8 +55,8 @@ cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
       result = shell_out("ruby bin/chef-solo -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
-      result.exitstatus.should == 1
-      result.stdout.should include("Chef::Exceptions::MissingCookbookDependency")
+      result.exitstatus.should == 0 # For CHEF-5120 this becomes 1
+      result.stdout.should include("WARN: MissingCookbookDependency")
     end
   end
 

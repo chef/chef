@@ -8,7 +8,7 @@ Details about the thing that changed that needs to get included in the Release N
 -->
 # Chef Client Release Notes:
 
-#### Chef Solo Missing Dependency Improvments ([CHEF-4367](https://tickets.opscode.com/browse/CHEF-4367))
+#### Chef Solo Missing Dependency Warning ([CHEF-4367](https://tickets.opscode.com/browse/CHEF-4367))
 
 Chef 11.0 introduced ordered evaluation of non-recipe files in
 cookbooks, based on the dependencies specified in your cookbooks'
@@ -23,8 +23,8 @@ did not suggest the actual cause of the failure.
 
 We've added a check to `include_recipe` so that attempting to include a
 recipe which is not a dependency of any cookbook specified in the run
-list will now raise an error with a message describing the problem and
-solution.
+list will now log a warning with a message describing the problem and
+solution. In the future, this warning will become an error.
 
 #### reboot_pending?  
 

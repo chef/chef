@@ -145,7 +145,8 @@ class Chef
       cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
 
       if unreachable_cookbook?(cookbook_name) # CHEF-4367
-        raise(Exceptions::MissingCookbookDependency,<<-ERROR_MESSAGE)
+        Chef::Log.warn(<<-ERROR_MESSAGE)
+MissingCookbookDependency:
 Recipe `#{recipe_name}` is not in the run_list, and cookbook '#{cookbook_name}'
 is not a dependency of any cookbook in the run_list.  To load this recipe,
 first add a dependency on cookbook '#{cookbook_name}' in the cookbook you're
