@@ -43,6 +43,9 @@ elif test -n "`ls pkg/chef*.bff 2>/dev/null || true`"; then
 elif test -n "`ls pkg/chef*.sh 2>/dev/null || true`"; then
   package_file=`ls pkg/chef*.sh`
   filetype="sh"
+elif test -n "`ls pkg/chef*.pkg 2>/dev/null || true`"; then
+  package_file=`ls pkg/chef*.pkg`
+  filetype="pkg"
 fi
 
 # remove the chef package / clobber the files
@@ -64,6 +67,10 @@ case "$filetype" in
     ;;
   "bff")
     sudo installp -u chef || true
+    ;;
+  "pkg")
+    sudo rm -rf /opt/chef
+    sudo pkgutil --forget chef || true
     ;;
   "sh")
     # intentionally left blank
@@ -89,6 +96,7 @@ case "$filetype" in
   "solaris") sudo pkgadd -n -d pkg/chef*.solaris -a /tmp/nocheck chef ;;
   "bff") sudo installp -a -d pkg/chef*.bff chef;;
   "sh") sudo ./pkg/chef*.sh ;;
+  "pkg") cd / && sudo /usr/sbin/installer -pkg pkg/chef*.pkg -target /;;
 esac
 
 # sanity check that we're getting symlinks from the pre-install script
