@@ -30,6 +30,29 @@ class Chef
 
       CRON_ATTRIBUTES = [:minute, :hour, :day, :month, :weekday, :command, :mailto, :path, :shell, :home, :environment]
 
+      implements  :cron,
+                  :on_platforms => [
+                    :amazon,
+                    :arch,
+                    :centos,
+                    :debian,
+                    :fedora,
+                    :freebsd,
+                    :gcel,
+                    :gentoo,
+                    :linaro,
+                    :linuxmint,
+                    :opensuse,
+                    :oracle,
+                    :raspbian,
+                    :redhat,
+                    :scientific,
+                    :suse,
+                    :ubuntu,
+                    :xcp,
+                    :xenserver
+                  ]
+
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
         @cron_exists = false

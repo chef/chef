@@ -23,6 +23,9 @@ class Chef
     class User
       class Pw < Chef::Provider::User
 
+        implements  :user,
+                    :on_platforms => :freebsd
+
         def load_current_resource
           super
           raise Chef::Exceptions::User, "Could not find binary /usr/sbin/pw for #{@new_resource}" unless ::File.exists?("/usr/sbin/pw")

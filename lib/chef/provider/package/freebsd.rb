@@ -30,6 +30,11 @@ class Chef
 
         include Chef::Mixin::GetSourceFromPackage
 
+        implements  :package,
+                    :freebsd_package,
+                    :on_platforms => :freebsd
+
+
         def initialize(*args)
           super
           @current_resource = Chef::Resource::Package.new(@new_resource.name)

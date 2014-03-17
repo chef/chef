@@ -27,6 +27,9 @@ class Chef
 
         include Chef::Mixin::ShellOut
 
+        implements  :service,
+                    :on_platforms => [:freebsd, :netbsd]
+
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
