@@ -22,6 +22,7 @@ homepage   "http://www.opscode.com"
 install_path    "/opt/chefdk"
 build_version   Omnibus::BuildVersion.new.semver
 build_iteration 1
+mac_pkg_identifier "com.getchef.pkg.chefdk"
 
 override :berkshelf, version: "master"
 override :bundler,   version: "1.5.2"
