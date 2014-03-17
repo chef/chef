@@ -70,7 +70,7 @@ case "$filetype" in
     ;;
   "pkg")
     sudo rm -rf /opt/chef
-    sudo pkgutil --forget chef || true
+    sudo pkgutil --forget com.getchef.pkg.chef-client || true
     ;;
   "sh")
     # intentionally left blank
@@ -96,7 +96,7 @@ case "$filetype" in
   "solaris") sudo pkgadd -n -d pkg/chef*.solaris -a /tmp/nocheck chef ;;
   "bff") sudo installp -a -d pkg/chef*.bff chef;;
   "sh") sudo ./pkg/chef*.sh ;;
-  "pkg") cd / && sudo /usr/sbin/installer -pkg pkg/chef*.pkg -target /;;
+  "pkg") sudo /usr/sbin/installer -pkg pkg/chef*.pkg -target /;;
 esac
 
 # sanity check that we're getting symlinks from the pre-install script
@@ -173,8 +173,11 @@ case "$filetype" in
   "bff")
     sudo installp -u chef
     ;;
+  "pkg")
+    sudo rm -rf /opt/chef
+    sudo pkgutil --forget com.getchef.pkg.chef-client || true
+    ;;
   "sh")
     # intentionally left blank
     ;;
 esac
-
