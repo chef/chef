@@ -27,6 +27,11 @@ class Chef
         require 'chef/json_compat'
       end
 
+      option :force,
+       :short => "-f",
+       :long => "--force-validators",
+       :description => "Force deletion of clients if they're validators"
+
       banner "knife client bulk delete REGEX (options)"
 
       def run
@@ -38,28 +43,55 @@ class Chef
 
         matcher = /#{name_args[0]}/
         clients_to_delete = {}
+        validators_to_delete = {}
         all_clients.each do |name, client|
           next unless name =~ matcher
-          clients_to_delete[client.name] = client
+          if client.validator
+            validators_to_delete[client.name] = client
+          else
+            clients_to_delete[client.name] = client
+          end
         end
 
-        if clients_to_delete.empty?
+        if clients_to_delete.empty? && validators_to_delete.empty?
           ui.info "No clients match the expression /#{name_args[0]}/"
           exit 0
         end
 
-        ui.msg("The following clients will be deleted:")
-        ui.msg("")
-        ui.msg(ui.list(clients_to_delete.keys.sort, :columns_down))
-        ui.msg("")
-        ui.confirm("Are you sure you want to delete these clients")
+        unless validators_to_delete.empty?
+          unless config[:force]
+            ui.msg("Following clients are validators and will not be deleted.")
+            print_clients(validators_to_delete)
+            ui.msg("You must specify --force-validators to delete the validator clients")
+          else
+            ui.msg("The following validators will be deleted:")
+            print_clients(validators_to_delete)
+            if ui.confirm("Are you sure you want to delete these validators", true, false)
+              destroy_clients(validators_to_delete)
+            end
+          end
+        end
 
-        clients_to_delete.sort.each do |name, client|
+        unless clients_to_delete.empty?
+          ui.msg("The following clients will be deleted:")
+          print_clients(clients_to_delete)
+          ui.confirm("Are you sure you want to delete these clients")
+          destroy_clients(clients_to_delete)
+        end
+      end
+
+      def destroy_clients(clients)
+        clients.sort.each do |name, client|
           client.destroy
           ui.msg("Deleted client #{name}")
         end
       end
+
+      def print_clients(clients)
+        ui.msg("")
+        ui.msg(ui.list(clients.keys.sort, :columns_down))
+        ui.msg("")
+      end
     end
   end
 end
-
