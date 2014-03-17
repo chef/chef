@@ -27,6 +27,9 @@ class Chef
 
         attr_reader :enabled_state_found
 
+        implements  :service,
+                    :on_platforms => [:freebsd, :netbsd]
+
         def initialize(new_resource, run_context)
           super
           @enabled_state_found = false

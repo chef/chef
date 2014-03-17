@@ -687,6 +687,10 @@ F
       raise ArgumentError, "nil is not a valid action for resource #{self}" if action.nil?
     end
 
+    def evaluate_providers(providers)
+      provider = providers.first
+    end
+
     def provider_for_action(action)
       # leverage new platform => short_name => resource
       # which requires explicitly setting provider in
