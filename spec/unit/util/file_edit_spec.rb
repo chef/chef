@@ -81,6 +81,17 @@ new line inserted
     EOF
   end
 
+  let(:append_twice) do
+    <<-EOF
+127.0.0.1       localhost
+255.255.255.255 broadcasthost
+::1             localhost
+fe80::1%lo0     localhost
+once
+twice
+    EOF
+  end
+
   let(:target_file) do
     f = Tempfile.open('file_edit_spec')
     f.write(starting_content)
@@ -105,7 +116,7 @@ new line inserted
 
     # CHEF-5018: people have monkey patched this and it has accidentally been broken
     it "should read the contents into memory as an array" do
-      expect(fedit.send(:contents)).to be_instance_of(Array)
+      expect(fedit.send(:editor).lines).to be_instance_of(Array)
     end
   end
 
@@ -138,7 +149,7 @@ new line inserted
 
     it "should do nothing if there isn't a match" do
       fedit.search_file_replace(/pattern/, "replacement")
-      fedit.unwritten_changes?.should be_true
+      fedit.unwritten_changes?.should be_false
       fedit.write_file
       expect(edited_file_contents).to eq(starting_content)
     end
@@ -190,17 +201,16 @@ new line inserted
 
     it "should do nothing if there is a match" do
       fedit.insert_line_if_no_match(/localhost/, "replacement")
-      fedit.unwritten_changes?.should be_true
+      fedit.unwritten_changes?.should be_false
       fedit.write_file
       expect(edited_file_contents).to eq(starting_content)
     end
 
     it "should work more than once" do
-      @fedit.insert_line_if_no_match(/missing/, "added")
-      @fedit.insert_line_if_no_match(/missing/, "twice")
-      @fedit.write_file
-      newfile = File.new(@tempfile.path).readlines
-      newfile.last.should match(/twice/)
+      fedit.insert_line_if_no_match(/missing/, "once")
+      fedit.insert_line_if_no_match(/missing/, "twice")
+      fedit.write_file
+      expect(edited_file_contents).to eq(append_twice)
     end
   end
 end

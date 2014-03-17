@@ -37,7 +37,6 @@ describe Chef::Provider::Ifconfig::Debian do
     new_resource
   end
 
-<<<<<<< HEAD
   let(:current_resource) {  Chef::Resource::Ifconfig.new("10.0.0.1", run_context) }
 
   let(:provider) do
@@ -313,37 +312,6 @@ source #{tempdir_path}/*
         end
       end
     end
-=======
-  describe "generate_config for action_add" do
-   before do
-    @config_file_ifaces = StringIO.new
-    @config_file_ifcfg = StringIO.new
-    FileUtils.should_receive(:cp)
-    File.should_receive(:open).with(@config_filename_ifaces).and_yield(@config_file_ifaces)
-    File.should_receive(:open).with(@config_filename_ifaces, "w").and_yield(@config_file_ifaces)
-    File.should_receive(:new).with(@config_filename_ifcfg, "w").and_return(@config_file_ifcfg)
-   end
-
-   it "should create network-scripts directory" do
-    File.should_receive(:directory?).with(File.dirname(@config_filename_ifcfg)).and_return(false)
-    Dir.should_receive(:mkdir).with(File.dirname(@config_filename_ifcfg))
-    @provider.run_action(:add)
-   end
-
-   it "should write configure network-scripts directory" do
-    File.should_receive(:directory?).with(File.dirname(@config_filename_ifcfg)).and_return(true)
-    @provider.run_action(:add)
-    @config_file_ifaces.string.should match(/^\s*source\s+\/etc\/network\/interfaces[.]d\/[*]\s*$/)
-   end
-
-   it "should write a network-script" do
-    File.should_receive(:directory?).with(File.dirname(@config_filename_ifcfg)).and_return(true)
-    @provider.run_action(:add)
-    @config_file_ifcfg.string.should match(/^iface eth0 inet static\s*$/)
-    @config_file_ifcfg.string.should match(/^\s+address 10\.0\.0\.1\s*$/)
-    @config_file_ifcfg.string.should match(/^\s+netmask 255\.255\.254\.0\s*$/)
-   end
->>>>>>> CHEF-3714: Use Editor to manipulate text
   end
 
   describe "delete_config for action_delete" do
