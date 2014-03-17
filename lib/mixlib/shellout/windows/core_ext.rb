@@ -288,19 +288,23 @@ module Process
 
         token = token.read_ulong
 
-        bool = CreateProcessAsUserW(
-          token,                  # User token handle
-          app,                    # App name
-          cmd,                    # Command line 
-          process_security,       # Process attributes
-          thread_security,        # Thread attributes
-          inherit,                # Inherit handles
-          hash['creation_flags'], # Creation Flags
-          env,                    # Environment
-          cwd,                    # Working directory
-          startinfo,              # Startup Info
-          procinfo                # Process Info
-        )
+        begin
+          bool = CreateProcessAsUserW(
+            token,                  # User token handle
+            app,                    # App name
+            cmd,                    # Command line
+            process_security,       # Process attributes
+            thread_security,        # Thread attributes
+            inherit,                # Inherit handles
+            hash['creation_flags'], # Creation Flags
+            env,                    # Environment
+            cwd,                    # Working directory
+            startinfo,              # Startup Info
+            procinfo                # Process Info
+          )
+        ensure
+          CloseHandle(token)
+        end
 
         unless bool
           raise SystemCallError.new("CreateProcessAsUserW (You must hold the 'Replace a process level token' permission)", FFI.errno)
@@ -348,7 +352,12 @@ module Process
     if hash['close_handles']
       CloseHandle(procinfo[:hProcess]) if procinfo[:hProcess]
       CloseHandle(procinfo[:hThread]) if procinfo[:hThread]
-      CloseHandle(token) if token
+
+      # Set fields to nil so callers don't attempt to close the handle
+      # which can result in the wrong handle being closed or an
+      # exception in some circumstances
+      procinfo[:hProcess] = nil
+      procinfo[:hThread] = nil
     end
 
     ProcessInfo.new(

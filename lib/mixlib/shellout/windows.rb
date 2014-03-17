@@ -122,8 +122,8 @@ module Mixlib
             end
 
           ensure
-            CloseHandle(process.thread_handle)
-            CloseHandle(process.process_handle)
+            CloseHandle(process.thread_handle) if process.thread_handle
+            CloseHandle(process.process_handle) if process.process_handle
           end
 
         ensure
