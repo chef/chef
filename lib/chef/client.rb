@@ -311,7 +311,7 @@ class Chef
     # === Returns
     # rest<Chef::REST>:: returns Chef::REST connection object
     def register(client_name=node_name, config=Chef::Config)
-      if Chef::Config[:ssl_verify_mode] == :verify_none && !Chef::Config[:verify_api_cert]
+      if config[:ssl_verify_mode] == :verify_none && !config[:verify_api_cert]
         Chef::Log.warn "SSL validation of Chef API Endpoint is disabled, " \
                        "set verify_api_cert to true or ssl_verify_mode to :verify_peer to enable."
       end
