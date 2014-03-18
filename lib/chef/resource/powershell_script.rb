@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 require 'chef/resource/windows_script'
 
 class Chef
@@ -24,6 +23,27 @@ class Chef
 
       def initialize(name, run_context=nil)
         super(name, run_context, :powershell_script, "powershell.exe")
+        append_block_inherited_attributes([:architecture])
+        guard_interpreter(:powershell_script)
+        @convert_boolean_return = nil
+      end
+
+      def convert_boolean_return(arg=nil)
+        set_or_return(
+          :convert_boolean_return,
+          arg,
+          :kind_of => [ FalseClass, TrueClass ]
+        )
+      end
+
+      def only_if(command=nil, opts={}, &block)
+        augmented_opts = opts.merge({:convert_boolean_return => true}) {|key, original_value, augmented_value| original_value}
+        super(command, augmented_opts, &block)
+      end
+
+      def not_if(command=nil, opts={}, &block)
+        augmented_opts = opts.merge({:convert_boolean_return => true}) {|key, original_value, augmented_value| original_value}
+        super(command, augmented_opts, &block)
       end
 
     end

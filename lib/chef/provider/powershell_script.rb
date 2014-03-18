@@ -24,7 +24,7 @@ class Chef
 
       protected
       EXIT_STATUS_EXCEPTION_HANDLER = "\ntrap [Exception] {write-error -exception ($_.Exception.Message);exit 1}"
-      EXIT_STATUS_NORMALIZATION_SCRIPT = "\nif ($? -eq $true) {exit 0} elseif ( $LASTEXITCODE -ne 0) {exit $LASTEXITCODE} else { exit 1 }"
+      EXIT_STATUS_NORMALIZATION_SCRIPT = "\nif ($? -ne $true) { if ( $LASTEXITCODE -ne 0) {exit $LASTEXITCODE} else { exit 1 }}"
       EXIT_STATUS_RESET_SCRIPT = "\n$LASTEXITCODE=0"
 
       # Process exit codes are strange with PowerShell. Unless you
@@ -37,11 +37,23 @@ class Chef
       # executed, otherwise 0 or 1 based on whether $? is set to true
       # (success, where we return 0) or false (where we return 1).
       def normalize_script_exit_status( code )
-        @code = (! code.nil?) ? ( EXIT_STATUS_EXCEPTION_HANDLER +
-                                  EXIT_STATUS_RESET_SCRIPT +
-                                  "\n" +
-                                  code +
-                                  EXIT_STATUS_NORMALIZATION_SCRIPT ) : nil
+        if code
+          target_code = ( EXIT_STATUS_EXCEPTION_HANDLER +
+                          EXIT_STATUS_RESET_SCRIPT +
+                          "\n" +
+                          code +
+                          EXIT_STATUS_NORMALIZATION_SCRIPT )
+          convert_boolean_return = @new_resource.convert_boolean_return.nil? ? false : @new_resource.convert_boolean_return
+          @code = <<EOH
+new-variable -name interpolatedexitcode -visibility private -value #{convert_boolean_return}
+new-variable -name chefscriptresult -visibility private
+$chefscriptresult = {
+#{target_code}
+}.invokereturnasis()
+if ($interpolatedexitcode -and $chefscriptresult.gettype().name -eq 'boolean') { exit [int32](!$chefscriptresult) } else { exit 0 }
+EOH
+
+        end
       end
 
       public
