@@ -150,17 +150,10 @@ describe Chef::Application::Client, "run_application", :unix_only do
 
   describe "when splay is set" do
     before do
-      @original_splay = Chef::Config[:splay]
-      @original_interval = Chef::Config[:interva]
       Chef::Config[:splay] = 1
       Chef::Config[:interval] = 10
     end
-
-    after do
-      Chef::Config[:splay] = @original_splay
-      Chef::Config[:interval] = @original_interval
-    end
-
+    
     it "shouldn't sleep when sent USR1" do
       pid = fork do
         @app.run_application
