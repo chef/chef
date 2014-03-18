@@ -8,3 +8,9 @@ Details about the thing that changed that needs to get included in the Release N
 -->
 # Chef Client Release Notes:
 
+#### Signal Regression Fix
+
+CHEF-1761 introduced a regression for signal handling when not in daemon mode
+(see CHEF-5172). Chef will now, once again, exit immediately on SIGTERM if it
+is not in daemon mode, otherwise it will complete it's current run before
+existing.
