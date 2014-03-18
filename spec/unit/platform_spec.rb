@@ -37,7 +37,8 @@ describe "Chef::Platform supports" do
     :mswin,
     :mingw32,
     :windows,
-    :gcel
+    :gcel,
+    :ibm_powerkvm
   ].each do |platform|
     it "#{platform}" do
       Chef::Platform.platforms.should have_key(platform)
