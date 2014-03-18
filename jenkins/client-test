@@ -70,7 +70,7 @@ case "$filetype" in
     ;;
   "pkg")
     sudo rm -rf /opt/chef
-    sudo pkgutil --forget com.getchef.pkg.chef-client || true
+    sudo pkgutil --forget com.getchef.pkg.chef || true
     ;;
   "sh")
     # intentionally left blank
@@ -175,7 +175,7 @@ case "$filetype" in
     ;;
   "pkg")
     sudo rm -rf /opt/chef
-    sudo pkgutil --forget com.getchef.pkg.chef-client || true
+    sudo pkgutil --forget com.getchef.pkg.chef || true
     ;;
   "sh")
     # intentionally left blank
