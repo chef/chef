@@ -150,20 +150,28 @@ describe Chef::Application::Client, "run_application", :unix_only do
 
   describe "when splay is set" do
     before do
-      Chef::Config[:splay] = 1
+      Chef::Config[:splay] = 0.5
       Chef::Config[:interval] = 10
+
+      @app.stub(:run_chef_client) do
+        @pipe[1].puts 'started'
+        sleep 0.5
+        @pipe[1].puts 'finished'
+        # If everything is fine, sending USR1 to self should prevent
+        # app to go into splay sleep forever.
+        Process.kill("USR1", Process.pid)
+      end
     end
-    
+
     it "shouldn't sleep when sent USR1" do
       pid = fork do
+        # Kernel.sleep should only be called once that is the first time.
+        Kernel.should_receive(:sleep).once
         @app.run_application
       end
-      # Sleep for 3 and give app a change to conclude it's first run
-      sleep 3
-      Kernel.should_not_receive(:sleep)
-      Process.kill("USR1", pid)
-      # Sleep for 3 and give app some time to conclude the second run
-      sleep 3
+      # Wait for 1 sec and do a few runs to see if we'll ever go
+      # into splay sleep
+      sleep 1
       Process.kill("TERM", pid)
       Process.wait
     end
