@@ -137,11 +137,12 @@ end
 
 describe Chef::Application::Client, "run_application", :unix_only do
   before do
-    Chef::Config[:daemonize] = false
+    Chef::Config[:daemonize] = true
     Chef::Config[:interval] = 10
 
     @pipe = IO.pipe
     @app = Chef::Application::Client.new
+    Chef::Daemon.stub!(:daemonize).and_return(true)
     @app.stub(:run_chef_client) do
       @pipe[1].puts 'started'
       sleep 1
