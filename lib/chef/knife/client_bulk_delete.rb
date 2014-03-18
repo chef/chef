@@ -58,25 +58,32 @@ class Chef
           exit 0
         end
 
-        unless validators_to_delete.empty?
+        check_and_delete_validators(validators_to_delete)
+        check_and_delete_clients(clients_to_delete)
+      end
+
+      def check_and_delete_validators(validators)
+        unless validators.empty?
           unless config[:delete_validators]
             ui.msg("Following clients are validators and will not be deleted.")
-            print_clients(validators_to_delete)
+            print_clients(validators)
             ui.msg("You must specify --delete-validators to delete the validator clients")
           else
             ui.msg("The following validators will be deleted:")
-            print_clients(validators_to_delete)
+            print_clients(validators)
             if ui.confirm("Are you sure you want to delete these validators", true, false)
-              destroy_clients(validators_to_delete)
+              destroy_clients(validators)
             end
           end
         end
+      end
 
-        unless clients_to_delete.empty?
+      def check_and_delete_clients(clients)
+        unless clients.empty?
           ui.msg("The following clients will be deleted:")
-          print_clients(clients_to_delete)
+          print_clients(clients)
           ui.confirm("Are you sure you want to delete these clients")
-          destroy_clients(clients_to_delete)
+          destroy_clients(clients)
         end
       end
 
