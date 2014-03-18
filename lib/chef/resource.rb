@@ -25,6 +25,7 @@ require 'chef/dsl/reboot_pending'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/resource/conditional'
 require 'chef/resource/conditional_action_not_nothing'
+require 'chef/resource/conditional/guard_interpreter'
 require 'chef/resource_collection'
 require 'chef/resource_platform_map'
 require 'chef/node'
@@ -120,7 +121,7 @@ F
     end
 
     FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if, :@enclosing_provider]
-    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider]
+    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node, :@not_if, :@only_if, :@guard_inherited_attributes, :@elapsed_time, :@enclosing_provider]
 
     include Chef::DSL::DataQuery
     include Chef::Mixin::ParamsValidate
@@ -225,6 +226,7 @@ F
     attr_reader :resource_name
     attr_reader :not_if_args
     attr_reader :only_if_args
+    attr_reader :guard_inherited_attributes
 
     attr_reader :elapsed_time
 
@@ -248,6 +250,8 @@ F
       @retry_delay = 2
       @not_if = []
       @only_if = []
+      @guard_interpreter = nil
+      @guard_inherited_attributes = []
       @source_line = nil
       @elapsed_time = 0
 
@@ -401,6 +405,14 @@ F
       ignore_failure(arg)
     end
 
+    def guard_interpreter(arg=nil)
+      set_or_return(
+        :guard_interpreter,
+        arg,
+        :kind_of => Symbol
+      )
+    end
+
     # Sets up a notification from this resource to the resource specified by +resource_spec+.
     def notifies(action, resource_spec, timing=:delayed)
       # when using old-style resources(:template => "/foo.txt") style, you
@@ -551,8 +563,9 @@ F
     # * evaluates to true if the block is true, or if the command returns 0
     # * evaluates to false if the block is false, or if the command returns a non-zero exit code.
     def only_if(command=nil, opts={}, &block)
+      translated_command, translated_block = translate_command_block(command, opts, &block)
       if command || block_given?
-        @only_if << Conditional.only_if(command, opts, &block)
+        @only_if << Conditional.only_if(translated_command, opts, &translated_block)
       end
       @only_if
     end
@@ -572,8 +585,9 @@ F
     # * evaluates to true if the block is false, or if the command returns a non-zero exit status.
     # * evaluates to false if the block is true, or if the command returns a 0 exit status.
     def not_if(command=nil, opts={}, &block)
+      translated_command, translated_block = translate_command_block(command, opts, &block)
       if command || block_given?
-        @not_if << Conditional.not_if(command, opts, &block)
+        @not_if << Conditional.not_if(translated_command, opts, &translated_block)
       end
       @not_if
     end
@@ -805,6 +819,11 @@ F
       resource = resource_for_platform(short_name, platform, version)
       resource
     end
+    protected
+
+    def append_guard_inherited_attributes(inherited_attributes)
+      @guard_inherited_attributes.concat(inherited_attributes)
+    end
 
     private
 
@@ -817,6 +836,17 @@ F
         else
           raise e
         end
+      end
+    end
+
+    def translate_command_block(command, opts, &block)
+      if @guard_interpreter && command && ! block_given?
+        evaluator = Conditional::GuardInterpreter.new(guard_interpreter, self, [Mixlib::ShellOut::ShellCommandFailed])
+        block_attributes = opts.merge({:code => command})
+        translated_block = evaluator.to_block(block_attributes)
+        [nil, translated_block]
+      else
+        [command, block]
       end
     end
 
