@@ -99,11 +99,15 @@ class Chef
       def to_a
         a = Array.new
         each do |v|
-          if v.kind_of?(Chef::Node::ImmutableArray)
-            a.push v.to_a
-          else
-            a.push v
-          end
+          a <<
+            case v
+            when ImmutableArray
+              v.to_a
+            when ImmutableMash
+              v.to_hash
+            else
+              v
+            end
         end
         a
       end
@@ -201,12 +205,16 @@ class Chef
 
       def to_hash
         h = Hash.new
-        each_pair do |k,v|
-          if v.kind_of?(Chef::Node::ImmutableMash)
-            h[k] = v.to_hash
-          else
-            h[k] = v
-          end
+        each_pair do |k, v|
+          h[k] =
+            case v
+            when ImmutableMash
+              v.to_hash
+            when ImmutableArray
+              v.to_a
+            else
+              v
+            end
         end
         h
       end
