@@ -70,7 +70,7 @@ class Chef
       def block_from_attributes(attributes)
         Proc.new do
           attributes.keys.each do |attribute_name|
-            send(attribute_name, attributes[attribute_name])
+            send(attribute_name, attributes[attribute_name]) if respond_to?(attribute_name)
           end
         end
       end
