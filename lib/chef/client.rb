@@ -311,6 +311,10 @@ class Chef
     # === Returns
     # rest<Chef::REST>:: returns Chef::REST connection object
     def register(client_name=node_name, config=Chef::Config)
+      if Chef::Config[:ssl_verify_mode] == :verify_none && !Chef::Config[:verify_api_cert]
+        Chef::Log.warn "SSL validation of Chef API Endpoint is disabled, " \
+                       "set verify_api_cert to true or ssl_verify_mode to :verify_peer to enable."
+      end
       if !config[:client_key]
         @events.skipping_registration(client_name, config)
         Chef::Log.debug("Client key is unspecified - skipping registration")
