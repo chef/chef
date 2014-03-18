@@ -105,8 +105,8 @@ describe Chef::Knife::ClientBulkDelete do
         it "should mention that validator clients wont be deleted" do
           knife.run
           stdout.should include("Following clients are validators and will not be deleted.")
-          info = stdout.lines.index "Following clients are validators and will not be deleted.\n"
-          val = stdout.lines.index "myorg-validator\n"
+          info = stdout.index "Following clients are validators and will not be deleted."
+          val = stdout.index "myorg-validator"
           (val > info).should be_true
         end
 
