@@ -99,8 +99,8 @@ class Chef
         #
         def render(partial_name, options = {})
           raise "You cannot render partials in this context" unless @template_finder
-
-          partial_variables = options.delete(:variables) || _public_instance_variables
+          
+          partial_variables = options.select! {|key,value| key == :variables} || _public_instance_variables
           partial_context = self.class.new(partial_variables)
           partial_context._extend_modules(@_extension_modules)
 
