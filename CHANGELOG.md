@@ -10,7 +10,8 @@
 * Fix for CHEF-5052.
 * Fix for CHEF-5018.
 * Add --validator option to `knife client create` to be able to create validator clients via knife.
-* Add --force option to `knife client delete` in order to prevent accidental deletion of validator clients.
+* Add --delete-validators option to `knife client delete` in order to prevent accidental deletion of validator clients.
+* Add --delete-validators option to `knife client bulk delete` in order to prevent accidental deletion of validator clients.
 * Add -r / --runlist option to chef-client which permanently sets or changes the run_list of a node.
 * CHEF-5030: clean up debian ifconfig provider code
 * CHEF-5001: spec tests for multiple rollbacks

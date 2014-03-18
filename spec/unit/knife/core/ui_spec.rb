@@ -437,6 +437,15 @@ EOM
       }.should raise_error(SystemExit) { |e| e.status.should == 3 }
     end
 
+    it "should not exit 3 if you answer n and return false if asked for it" do
+      @ui.stdin.stub(:readline).and_return("n")
+      value = nil
+      lambda {
+        value = @ui.confirm(@question,true,false)
+      }.should_not raise_error(SystemExit)
+      value.should be(false)
+    end
+
     describe "with --y or --yes passed" do
       it "should return true" do
         @ui.config[:yes] = true

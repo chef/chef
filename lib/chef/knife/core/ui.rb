@@ -205,7 +205,7 @@ class Chef
         output(format_for_display(object)) if config[:print_after]
       end
 
-      def confirm(question, append_instructions=true)
+      def confirm(question, append_instructions=true, should_exit=true)
         return true if config[:yes]
 
         stdout.print question
@@ -217,7 +217,11 @@ class Chef
           true
         when "N", "n"
           self.msg("You said no, so I'm done here.")
-          exit 3
+          if should_exit
+            exit 3
+          else
+            false
+          end
         else
           self.msg("I have no idea what to do with #{answer}")
           self.msg("Just say Y or N, please.")

@@ -23,7 +23,7 @@ describe Chef::Knife::ClientDelete do
     @knife = Chef::Knife::ClientDelete.new
     # defaults
     @knife.config = {
-      :force => false
+      :delete_validators => false
     }
     @knife.name_args = [ 'adam' ]
   end
@@ -51,7 +51,7 @@ describe Chef::Knife::ClientDelete do
     end
 
     it 'should delete non-validator client if --force is not set' do
-      @knife.config[:force] = false
+      @knife.config[:delete_validators] = false
       @client.should_receive(:destroy).and_return(@client)
       @knife.should_receive(:msg)
 
@@ -59,7 +59,7 @@ describe Chef::Knife::ClientDelete do
     end
 
     it 'should delete non-validator client if --force is set' do
-      @knife.config[:force] = true
+      @knife.config[:delete_validators] = true
       @client.should_receive(:destroy).and_return(@client)
       @knife.should_receive(:msg)
 
@@ -73,7 +73,7 @@ describe Chef::Knife::ClientDelete do
     end
 
     it 'should delete validator client if --force is set' do
-      @knife.config[:force] = true
+      @knife.config[:delete_validators] = true
       @client.should_receive(:destroy).and_return(@client)
       @knife.should_receive(:msg)
 

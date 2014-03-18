@@ -27,9 +27,9 @@ class Chef
         require 'chef/json_compat'
       end
 
-      option :force,
-       :short => "-f",
-       :long => "--force",
+      option :delete_validators,
+       :short => "-D",
+       :long => "--delete-validators",
        :description => "Force deletion of client if it's a validator"
 
       banner "knife client delete CLIENT (options)"
@@ -46,7 +46,7 @@ class Chef
         delete_object(Chef::ApiClient, @client_name, 'client') {
           object = Chef::ApiClient.load(@client_name)
           if object.validator
-            unless config[:force]
+            unless config[:delete_validators]
               ui.fatal("You must specify --force to delete the validator client #{@client_name}")
               exit 2
             end

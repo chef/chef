@@ -11,8 +11,17 @@ Description of the required change.
 ### --validator option for `knife client create`
 Boolean value. If set to true, knife creates a validator client o.w. it creates a user client. Default is false.
 
-###  --force for `knife client delete`
+###  --delete-validators for `knife client delete`
 Option that is required to be specified if user is attempting to delete a validator client. No effect while deleting a user client.
+
+###  --delete-validators for `knife client bulk delete`
+Option that is required to be specified if user is attempting to delete a validator client. If not specified users cannot delete a client if it's validator client. If specified knife asks users for confirmation of deleting clients and validator clients seperately. Some examples for scripting:
+
+To delete all non-validator clients:
+`knife client bulk delete regexp --yes`
+
+To delete all clients including validators:
+`knife client bulk delete regexp --delete-validators --yes`
 
 ### -r / --runlist option for chef-client
 Option similar to `-o` which sets or changes the run_list of a node permanently.
