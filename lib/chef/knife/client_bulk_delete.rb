@@ -27,9 +27,9 @@ class Chef
         require 'chef/json_compat'
       end
 
-      option :force,
-       :short => "-f",
-       :long => "--force-validators",
+      option :delete_validators,
+       :short => "-D",
+       :long => "--delete-validators",
        :description => "Force deletion of clients if they're validators"
 
       banner "knife client bulk delete REGEX (options)"
@@ -59,10 +59,10 @@ class Chef
         end
 
         unless validators_to_delete.empty?
-          unless config[:force]
+          unless config[:delete_validators]
             ui.msg("Following clients are validators and will not be deleted.")
             print_clients(validators_to_delete)
-            ui.msg("You must specify --force-validators to delete the validator clients")
+            ui.msg("You must specify --delete-validators to delete the validator clients")
           else
             ui.msg("The following validators will be deleted:")
             print_clients(validators_to_delete)
