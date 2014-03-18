@@ -25,7 +25,6 @@ require 'chef/log'
 require 'chef/config_fetcher'
 require 'chef/handler/error_report'
 
-
 class Chef::Application::Client < Chef::Application
 
   # Mimic self_pipe sleep from Unicorn to capture signals safely
@@ -233,6 +232,7 @@ class Chef::Application::Client < Chef::Application
   def initialize
     super
     @exit_gracefully = false
+    @immediate_run = false
   end
 
   # Reconfigure the chef client
@@ -295,6 +295,7 @@ class Chef::Application::Client < Chef::Application
 
       trap("USR1") do
         Chef::Log.info("SIGUSR1 received, waking up")
+        @immediate_run = true
         SELF_PIPE[1].putc('.') # wakeup master process from select
       end
 
@@ -316,10 +317,13 @@ class Chef::Application::Client < Chef::Application
     loop do
       begin
         Chef::Application.exit!("Exiting", 0) if @exit_gracefully
-        if Chef::Config[:splay]
-          splay = rand Chef::Config[:splay]
-          Chef::Log.debug("Splay sleep #{splay} seconds")
-          sleep splay
+        unless @immediate_run
+          @immediate_run = false
+          if Chef::Config[:splay]
+            splay = rand Chef::Config[:splay]
+            Chef::Log.debug("Splay sleep #{splay} seconds")
+            sleep splay
+          end
         end
         run_chef_client(Chef::Config[:specific_recipes])
         if Chef::Config[:interval]

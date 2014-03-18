@@ -26,6 +26,7 @@
 * Non-dupable elements are now handled when duping attribute arrays. (CHEF-4799)
 * ruby-shadow is not installed on cygwin platform anymore. (CHEF-4946)
 * Upgrade chef-zero to 2.0, remove native-compiled puma as chef dependency. (CHEF-4901/CHEF-5005)
+* Don't honor splay when sent USR1 signal.
 
 ## Last Release: 11.10.0 (02/06/2014)
 

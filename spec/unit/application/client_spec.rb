@@ -127,7 +127,7 @@ describe Chef::Application::Client, "configure_chef" do
 end
 
 describe Chef::Application::Client, "run_application", :unix_only do
-  before do
+  before(:each) do
     @pipe = IO.pipe
     @app = Chef::Application::Client.new
     @app.stub(:run_chef_client) do
@@ -146,5 +146,33 @@ describe Chef::Application::Client, "run_application", :unix_only do
     Process.wait
     IO.select([@pipe[0]], nil, nil, 0).should_not be_nil
     @pipe[0].gets.should == "finished\n"
+  end
+
+  describe "when splay is set" do
+    before do
+      @original_splay = Chef::Config[:splay]
+      @original_interval = Chef::Config[:interva]
+      Chef::Config[:splay] = 1
+      Chef::Config[:interval] = 10
+    end
+
+    after do
+      Chef::Config[:splay] = @original_splay
+      Chef::Config[:interval] = @original_interval
+    end
+
+    it "shouldn't sleep when sent USR1" do
+      pid = fork do
+        @app.run_application
+      end
+      # Sleep for 3 and give app a change to conclude it's first run
+      sleep 3
+      Kernel.should_not_receive(:sleep)
+      Process.kill("USR1", pid)
+      # Sleep for 3 and give app some time to conclude the second run
+      sleep 3
+      Process.kill("TERM", pid)
+      Process.wait
+    end
   end
 end
