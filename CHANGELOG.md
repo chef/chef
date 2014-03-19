@@ -3,6 +3,7 @@
 ## Unreleased
 
 * Service Provider for MacOSX now supports `enable` and `disable`
+* Chef now gracefully handles corrupted cache files.
 
 ## Last Release: 10.30.4 (02/18/2014)
 
