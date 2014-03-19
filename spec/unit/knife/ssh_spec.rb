@@ -54,7 +54,7 @@ describe Chef::Knife::Ssh do
           @knife.config[:attribute] = "ipaddress"
           @knife.config[:override_attribute] = "ipaddress"
           configure_query([@node_foo, @node_bar])
-          @knife.should_receive(:session_from_list).with(['10.0.0.1', '10.0.0.2'])
+          @knife.should_receive(:session_from_list).with([['10.0.0.1', nil], ['10.0.0.2', nil]])
           @knife.configure_session
         end
 
@@ -62,14 +62,17 @@ describe Chef::Knife::Ssh do
           @knife.config[:attribute] = "config_file" # this value will be the config file
           @knife.config[:override_attribute] = "ipaddress" # this is the value of the command line via #configure_attribute
           configure_query([@node_foo, @node_bar])
-          @knife.should_receive(:session_from_list).with(['10.0.0.1', '10.0.0.2'])
+          @knife.should_receive(:session_from_list).with([['10.0.0.1', nil], ['10.0.0.2', nil]])
           @knife.configure_session
         end
       end
 
       it "searchs for and returns an array of fqdns" do
         configure_query([@node_foo, @node_bar])
-        @knife.should_receive(:session_from_list).with(['foo.example.org', 'bar.example.org'])
+        @knife.should_receive(:session_from_list).with([
+          ['foo.example.org', nil],
+          ['bar.example.org', nil]
+        ])
         @knife.configure_session
       end
 
@@ -83,7 +86,10 @@ describe Chef::Knife::Ssh do
 
         it "returns an array of cloud public hostnames" do
           configure_query([@node_foo, @node_bar])
-          @knife.should_receive(:session_from_list).with(['ec2-10-0-0-1.compute-1.amazonaws.com', 'ec2-10-0-0-2.compute-1.amazonaws.com'])
+          @knife.should_receive(:session_from_list).with([
+            ['ec2-10-0-0-1.compute-1.amazonaws.com', nil],
+            ['ec2-10-0-0-2.compute-1.amazonaws.com', nil]
+          ])
           @knife.configure_session
         end
 
@@ -179,12 +185,17 @@ describe Chef::Knife::Ssh do
     end
 
     it "uses the port from an ssh config file" do
-      @knife.session_from_list(['the.b.org'])
+      @knife.session_from_list([['the.b.org', nil]])
       @knife.session.servers[0].port.should == 23
     end
 
+    it "uses the port from a cloud attr" do
+      @knife.session_from_list([['the.b.org', 123]])
+      @knife.session.servers[0].port.should == 123
+    end
+
     it "uses the user from an ssh config file" do
-      @knife.session_from_list(['the.b.org'])
+      @knife.session_from_list([['the.b.org', 123]])
       @knife.session.servers[0].user.should == "locutus"
     end
   end
