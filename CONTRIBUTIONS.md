@@ -17,3 +17,8 @@ Example Contribution:
 * **jeffmendoza**: Made knife to use cloud attribute for port when available.
 * **ryotarai**: Added a method to capture IO for live stream.
 * **sawanoboly**: Fixed service provider to be aware of maintenance state on Solaris.
+* **cbandy**: Refactored Chef::Util::FileEdit
+* **cbandy**: Fixed insert_line_if_no_match to run multiple times
+* **pavelbrylov**: Modified subversion resource to hide password from error messages.
+* **eherot**: Add support for epoch versions to the dpkg package provider
+* **jdmurphy**: Display all missing dependencies when uploading cookbooks

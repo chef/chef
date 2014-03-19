@@ -35,6 +35,11 @@
 * Client info and debug logs now contain cookbook versions in addition to cookbook names.
 * ShellOut mixin now exposes a method to capture the live stream during command execution.
 * Service provider is now aware of maintenance state on Solaris.
+* Refactor Chef::Util::FileEdit to indicate the purpose of the former file_edited, now unwritten_changes?. (CHEF-3714)
+* Fixed FileEdit#insert_line_if_no_match to match multiple times. (CHEF-4173)
+* Hide passwords in error messages from the Subversion resource. (CHEF-4680)
+* The dpkg package provider now supports epoch versions. (CHEF-1752)
+* Multiple missing dependencies are now listed on knife cookbook upload. (CHEF-4851)
 
 ## Last Release: 11.10.0 (02/06/2014)
 
