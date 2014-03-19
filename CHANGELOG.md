@@ -44,6 +44,9 @@
 * Package provider defaults to IPS provider on Solaris 5.11+ (CHEF-5037)
 * Chef::REST works with frozen options. (CHEF-5064)
 * Service provider now uses Systemd on ArchLinux. (CHEF-4905)
+* Support knife node run_list add --before. (CHEF-3812)
+* Don't destructively merge subhashes in hash_only_merge!. (CHEF-4918)
+* Display correct host name in knife ssh error message (CHEF-5029)
 
 ## Last Release: 11.10.0 (02/06/2014)
 

@@ -42,14 +42,21 @@ end
 
 #### FileEdit
 
-Chef::Util::Filedit has been refactored into a Chef::Util::Editor class. The existing class continues to manage the files being edited while the new class handles the actual modification of the data.
-Along with this refactor, #insert_line_if_no_match can now manipulate a file multiple times.
+Chef::Util::FileEdit has been refactored into a Chef::Util::Editor class. The existing class continues to manage the files being edited while the new class handles the actual modification of the data.
+Along with this refactor, #insert_line_if_no_match can now manipulate a file multiple times. FileEdit also now has a #file_edited? method that can be used to tell if changes were made to the file on disk.
+
+#### DeepMerge sub-hash precedence bugfix ([CHEF-4918](https://tickets.opscode.com/browse/CHEF-4918))
+
+We discovered a bug where Chef incorrectly merged override attribute sub-hashes that were at least three levels deep as normal attributes. 
+This has been corrected, and is not expected to cause any behavior change
+If you're an advanced user of attribute precedence, you may find some attributes were saved to your node object that you hadn't expected.
 
 #### Miscellaneous
 
 * The subversion resource will now mask plaintext passwords in error output.
 * The debian pkg provider now supports epochs in the version string.
 * When a cookbook upload is missing multiple dependencies, all of them are now listed.
+* knife node run_list add now supports a --before option.
 
 #### OHAI 7
 
