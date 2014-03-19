@@ -47,13 +47,16 @@ describe Chef::Knife::Core::BootstrapContext do
 
   it "generates the config file data" do
     expected=<<-EXPECTED
-log_level        :auto
 log_location     STDOUT
 chef_server_url  "http://chef.example.com:4444"
 validation_client_name "chef-validator-testing"
 # Using default node name (fqdn)
 EXPECTED
     bootstrap_context.config_content.should eq expected
+  end
+
+  it "does not set a default log_level" do
+    expect(bootstrap_context.config_content).not_to match(/log_level/)
   end
 
   describe "alternate chef-client path" do
