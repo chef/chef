@@ -391,14 +391,14 @@ class Chef
             :description => { :kind_of => String },
             :choice => { :kind_of => [ Array ], :default => [] },
             :calculated => { :equal_to => [ true, false ], :default => false },
-            :type => { :equal_to => [ "string", "array", "hash", "symbol" ], :default => "string" },
+            :type => { :equal_to => [ "string", "array", "hash", "symbol", "boolean", "numeric" ], :default => "string" },
             :required => { :equal_to => [ "required", "recommended", "optional", true, false ], :default => "optional" },
             :recipes => { :kind_of => [ Array ], :default => [] },
-            :default => { :kind_of => [ String, Array, Hash ] }
+            :default => { :kind_of => [ String, Array, Hash, Symbol, Numeric, TrueClass, FalseClass ] }
           }
         )
         options[:required] = remap_required_attribute(options[:required]) unless options[:required].nil?
-        validate_string_array(options[:choice])
+        validate_choice_array(options)
         validate_calculated_default_rule(options)
         validate_choice_default_rule(options)
 
@@ -545,6 +545,34 @@ INVALID
           end
         end
       end
+
+      # Validate the choice of the options hash
+      #
+      # Raise an exception if the members of the array do not match the defaults
+      # === Parameters
+      # opts<Hash>:: The options hash
+        def validate_choice_array(opts)
+          if opts[:choice].kind_of?(Array)
+            case opts[:type]
+            when "string"
+              validator = [ String ]
+            when "array"
+              validator = [ Array ]
+            when "hash"
+              validator = [ Hash ]
+            when "symbol"
+              validator = [ Symbol ]
+            when "boolean"
+              validator = [ TrueClass, FalseClass ]
+            when "numeric"
+              validator = [ Numeric ]
+            end
+
+            opts[:choice].each do |choice|
+              validate( {:choice => choice}, {:choice => {:kind_of => validator}} )
+            end
+          end
+        end
 
       # For backwards compatibility, remap Boolean values to String
       #   true is mapped to "required"
