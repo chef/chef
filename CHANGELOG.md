@@ -30,6 +30,7 @@
 * Don't honor splay when sent USR1 signal.
 * Don't set log_level in client.rb by default (CHEF-3698)
 * Add IBM PowerKVM to Platform map. (CHEF-5135)
+* Cookbook metadata now allows boolean and numeric attributes.
 
 ## Last Release: 11.10.0 (02/06/2014)
 

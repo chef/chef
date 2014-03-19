@@ -13,3 +13,4 @@ Example Contribution:
 * **linkfanel**: Made attribute arrays able to handle non-dupable elements while being duped.
 * **linkfanel**: Removed ruby-shadow installation on cygwin platform.
 * **lbragstad**: Add IBM PowerKVM to platform map
+* **slantview**: Allow boolean and numerics in cookbook metadata.
