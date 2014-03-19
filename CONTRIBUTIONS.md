@@ -15,3 +15,4 @@ Example Contribution:
 * **lbragstad**: Add IBM PowerKVM to platform map
 * **slantview**: Allow boolean and numerics in cookbook metadata.
 * **jeffmendoza**: Made knife to use cloud attribute for port when available.
+* **ryotarai**: Added a method to capture IO for live stream.
