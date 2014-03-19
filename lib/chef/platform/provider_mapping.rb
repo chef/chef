@@ -242,7 +242,7 @@ class Chef
           :arch   => {
             :default => {
               :package => Chef::Provider::Package::Pacman,
-              :service => Chef::Provider::Service::Arch,
+              :service => Chef::Provider::Service::Systemd,
               :cron => Chef::Provider::Cron,
               :mdadm => Chef::Provider::Mdadm
             }
