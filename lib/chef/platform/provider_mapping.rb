@@ -316,7 +316,7 @@ class Chef
               :group => Chef::Provider::Group::Usermod,
               :user => Chef::Provider::User::Solaris,
             },
-            ">= 5.9" => {
+            "< 5.11" => {
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::Solaris,
               :cron => Chef::Provider::Cron::Solaris,
