@@ -72,6 +72,10 @@ describe Chef::Provider::Package::Dpkg do
       it 'if distro-specific version provided' do
         check_version('1.11.4-1ubuntu1~lucid')
       end
+
+      it 'returns the version if an epoch is used' do
+        check_version('1:1.8.3-2')
+      end
     end
 
     it "gets the source package name from dpkg-deb correctly when the package name has `-', `+' or `.' characters" do

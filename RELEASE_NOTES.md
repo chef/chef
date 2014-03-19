@@ -40,6 +40,17 @@ execute "Install Application" do
 end
 ```
 
+#### FileEdit
+
+Chef::Util::Filedit has been refactored into a Chef::Util::Editor class. The existing class continues to manage the files being edited while the new class handles the actual modification of the data.
+Along with this refactor, #insert_line_if_no_match can now manipulate a file multiple times.
+
+#### Miscellaneous
+
+* The subversion resource will now mask plaintext passwords in error output.
+* The debian pkg provider now supports epochs in the version string.
+* When a cookbook upload is missing multiple dependencies, all of them are now listed.
+
 #### OHAI 7
 
 After spending 3 months in the RC stage, OHAI 7 is now included in Chef Client 11.10.0. Note that Chef Client 10.32.0 still includes OHAI 6.
