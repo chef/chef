@@ -25,7 +25,6 @@ require 'chef/log'
 require 'chef/config_fetcher'
 require 'chef/handler/error_report'
 
-
 class Chef::Application::Client < Chef::Application
 
   # Mimic self_pipe sleep from Unicorn to capture signals safely
@@ -228,12 +227,10 @@ class Chef::Application::Client < Chef::Application
       :boolean      => true
   end
 
-  attr_reader :chef_client_json
+  IMMEDIATE_RUN_SIGNAL = "1".freeze
+  GRACEFUL_EXIT_SIGNAL = "2".freeze
 
-  def initialize
-    super
-    @exit_gracefully = false
-  end
+  attr_reader :chef_client_json
 
   # Reconfigure the chef client
   # Re-open the JSON attributes and load them into the node
@@ -295,13 +292,12 @@ class Chef::Application::Client < Chef::Application
 
       trap("USR1") do
         Chef::Log.info("SIGUSR1 received, waking up")
-        SELF_PIPE[1].putc('.') # wakeup master process from select
+        SELF_PIPE[1].putc(IMMEDIATE_RUN_SIGNAL) # wakeup master process from select
       end
 
       trap("TERM") do
         Chef::Log.info("SIGTERM received, exiting gracefully")
-        @exit_gracefully = true
-        SELF_PIPE[1].putc('.')
+        SELF_PIPE[1].putc(GRACEFUL_EXIT_SIGNAL)
       end
     end
 
@@ -313,23 +309,24 @@ class Chef::Application::Client < Chef::Application
       Chef::Daemon.daemonize("chef-client")
     end
 
+    signal = nil
+
     loop do
       begin
-        Chef::Application.exit!("Exiting", 0) if @exit_gracefully
-        if Chef::Config[:splay]
+        Chef::Application.exit!("Exiting", 0) if signal == GRACEFUL_EXIT_SIGNAL
+
+        if Chef::Config[:splay] and signal != IMMEDIATE_RUN_SIGNAL
           splay = rand Chef::Config[:splay]
           Chef::Log.debug("Splay sleep #{splay} seconds")
           sleep splay
         end
+
+        signal = nil
         run_chef_client(Chef::Config[:specific_recipes])
+
         if Chef::Config[:interval]
           Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
-          unless SELF_PIPE.empty?
-            client_sleep Chef::Config[:interval]
-          else
-            # Windows
-            sleep Chef::Config[:interval]
-          end
+          signal = interval_sleep
         else
           Chef::Application.exit! "Exiting", 0
         end
@@ -339,12 +336,7 @@ class Chef::Application::Client < Chef::Application
         if Chef::Config[:interval]
           Chef::Log.error("#{e.class}: #{e}")
           Chef::Log.error("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
-          unless SELF_PIPE.empty?
-            client_sleep Chef::Config[:interval]
-          else
-            # Windows
-            sleep Chef::Config[:interval]
-          end
+          signal = interval_sleep
           retry
         else
           Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
@@ -355,8 +347,17 @@ class Chef::Application::Client < Chef::Application
 
   private
 
+  def interval_sleep
+    unless SELF_PIPE.empty?
+      client_sleep Chef::Config[:interval]
+    else
+      # Windows
+      sleep Chef::Config[:interval]
+    end
+  end
+
   def client_sleep(sec)
     IO.select([ SELF_PIPE[0] ], nil, nil, sec) or return
-    SELF_PIPE[0].getc
+    SELF_PIPE[0].getc.chr
   end
 end
