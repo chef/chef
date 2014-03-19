@@ -41,15 +41,6 @@ class Chef
         @user = nil
         @allowed_actions.push(:run)
         @umask = nil
-        append_guard_inherited_attributes(
-          [
-           :cwd,
-           :environment,
-           :group,
-           :path,
-           :user,
-           :umask
-          ])
       end
 
       def umask(arg=nil)
@@ -134,7 +125,11 @@ class Chef
         )
       end
 
+      protected
 
+      def append_guard_inherited_attributes(inherited_attributes)
+        @guard_inherited_attributes.concat(inherited_attributes)
+      end
 
     end
   end

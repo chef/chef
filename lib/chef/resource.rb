@@ -121,7 +121,7 @@ F
     end
 
     FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if, :@enclosing_provider]
-    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node, :@not_if, :@only_if, :@guard_inherited_attributes, :@elapsed_time, :@enclosing_provider]
+    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider]
 
     include Chef::DSL::DataQuery
     include Chef::Mixin::ParamsValidate
@@ -251,7 +251,6 @@ F
       @not_if = []
       @only_if = []
       @guard_interpreter = :default
-      @guard_inherited_attributes = []
       @source_line = nil
       @elapsed_time = 0
 
@@ -818,11 +817,6 @@ F
       end
       resource = resource_for_platform(short_name, platform, version)
       resource
-    end
-    protected
-
-    def append_guard_inherited_attributes(inherited_attributes)
-      @guard_inherited_attributes.concat(inherited_attributes)
     end
 
     private

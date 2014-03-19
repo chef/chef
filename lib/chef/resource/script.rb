@@ -32,6 +32,16 @@ class Chef
         @code = nil
         @interpreter = nil
         @flags = nil
+        @guard_inherited_attributes = []
+        append_guard_inherited_attributes(
+          [
+           :cwd,
+           :environment,
+           :group,
+           :path,
+           :user,
+           :umask
+          ])
       end
 
       def code(arg=nil)
