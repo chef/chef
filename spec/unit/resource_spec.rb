@@ -344,7 +344,7 @@ describe Chef::Resource do
       expected_keys = [ :allowed_actions, :params, :provider, :updated,
         :updated_by_last_action, :before, :supports,
         :noop, :ignore_failure, :name, :source_line,
-        :action, :retries, :retry_delay, :elapsed_time]
+        :action, :retries, :retry_delay, :elapsed_time, :guard_interpreter]
       (hash.keys - expected_keys).should == []
       (expected_keys - hash.keys).should == []
       hash[:name].should eql("funk")
