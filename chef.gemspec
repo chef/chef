@@ -39,6 +39,8 @@ Gem::Specification.new do |s|
   # There's a bug with Chef Zero and IPV6 prior to version 2.0.2
   s.add_dependency "chef-zero", "~> 2.0", ">= 2.0.2"
 
+  s.add_dependency "chef-sugar", "~> 1.2"
+
   s.add_dependency "pry", "~> 0.9"
 
   %w(rake rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }

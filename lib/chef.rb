@@ -25,6 +25,7 @@ require 'chef/config'
 require 'chef/providers'
 require 'chef/resources'
 require 'chef/shell_out'
+require 'chef/sugar'
 
 require 'chef/daemon'
 
