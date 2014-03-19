@@ -34,6 +34,7 @@
 * Knife ssh uses cloud port attribute when available.
 * Client info and debug logs now contain cookbook versions in addition to cookbook names.
 * ShellOut mixin now exposes a method to capture the live stream during command execution.
+* Service provider is now aware of maintenance state on Solaris.
 
 ## Last Release: 11.10.0 (02/06/2014)
 
