@@ -150,30 +150,48 @@ describe Chef::Application::Client, "run_application", :unix_only do
 
   describe "when splay is set" do
     before do
-      Chef::Config[:splay] = 0.5
+      Chef::Config[:splay] = 10
       Chef::Config[:interval] = 10
 
+      run_count = 0
+
+      # uncomment to debug failures...
+      # Chef::Log.init($stderr)
+      # Chef::Log.level = :debug
+
       @app.stub(:run_chef_client) do
-        @pipe[1].puts 'started'
-        sleep 0.5
-        @pipe[1].puts 'finished'
+
+        run_count += 1
+        if run_count > 3
+          exit 0
+        end
+
         # If everything is fine, sending USR1 to self should prevent
         # app to go into splay sleep forever.
         Process.kill("USR1", Process.pid)
+      end
+
+      number_of_sleep_calls = 0
+
+      # This is a very complicated way of writing
+      # @app.should_receive(:sleep).once.
+      # We have to do it this way because the main loop of
+      # Chef::Application::Client swallows most exceptions, and we need to be
+      # able to expose our expectation failures to the parent process in the test.
+      @app.stub(:sleep) do |arg|
+        number_of_sleep_calls += 1
+        if number_of_sleep_calls > 1
+          exit 127
+        end
       end
     end
 
     it "shouldn't sleep when sent USR1" do
       pid = fork do
-        # Kernel.sleep should only be called once that is the first time.
-        Kernel.should_receive(:sleep).once
         @app.run_application
       end
-      # Wait for 1 sec and do a few runs to see if we'll ever go
-      # into splay sleep
-      sleep 1
-      Process.kill("TERM", pid)
-      Process.wait
+      _pid, result = Process.waitpid2(pid)
+      result.exitstatus.should == 0
     end
   end
 end

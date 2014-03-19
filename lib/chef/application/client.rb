@@ -315,7 +315,7 @@ class Chef::Application::Client < Chef::Application
       begin
         Chef::Application.exit!("Exiting", 0) if signal == GRACEFUL_EXIT_SIGNAL
 
-        if Chef::Config[:splay] && signal != IMMEDIATE_RUN_SIGNAL
+        if Chef::Config[:splay] and signal != IMMEDIATE_RUN_SIGNAL
           splay = rand Chef::Config[:splay]
           Chef::Log.debug("Splay sleep #{splay} seconds")
           sleep splay
@@ -358,6 +358,6 @@ class Chef::Application::Client < Chef::Application
 
   def client_sleep(sec)
     IO.select([ SELF_PIPE[0] ], nil, nil, sec) or return
-    SELF_PIPE[0].getc
+    SELF_PIPE[0].getc.chr
   end
 end
