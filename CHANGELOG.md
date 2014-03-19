@@ -40,6 +40,7 @@
 * Hide passwords in error messages from the Subversion resource. (CHEF-4680)
 * The dpkg package provider now supports epoch versions. (CHEF-1752)
 * Multiple missing dependencies are now listed on knife cookbook upload. (CHEF-4851)
+* Add a public file_edited? method to Chef::Util::FileEdit. (CHEF-3714)
 
 ## Last Release: 11.10.0 (02/06/2014)
 

@@ -22,3 +22,4 @@ Example Contribution:
 * **pavelbrylov**: Modified subversion resource to hide password from error messages.
 * **eherot**: Add support for epoch versions to the dpkg package provider
 * **jdmurphy**: Display all missing dependencies when uploading cookbooks
+* **nkrinner**: Add a public file_edited? method to Chef::Util::FileEdit
