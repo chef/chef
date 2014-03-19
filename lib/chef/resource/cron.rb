@@ -115,19 +115,29 @@ class Chef
       end
 
       def weekday(arg=nil)
-        if arg.is_a?(Integer)
-          converted_arg = arg.to_s
-        else
-          converted_arg = arg
-        end
+        arg = arg.to_s if arg.is_a?(Integer)
+
         begin
-          if integerize(arg) > 7 then raise RangeError end
+          # Validate the contents of the argument for acceptable values
+          error_message = "You provided '#{arg}' as a weekday, acceptable values are 0-7, "
+          error_message << Provider::Cron::WEEKDAY_SYMBOLS.map {|sym| "#{sym.to_s}"}.join(', ') << "."
+
+          # Check if the weekday was provided as a symbol, but isn't a valid weekday, e.g. :monday
+          raise RangeError, error_message if arg.is_a?(Symbol) && !Provider::Cron::WEEKDAY_SYMBOLS.include?(arg)
+
+          if arg.is_a?(String)
+            # Is it a number 0-7? (sunday - sunday)
+            raise RangeError, error_message if arg =~ /^-?[\d]+$/ and (integerize(arg) < 0 || integerize(arg) > 7)
+
+            # Is it a day of week as a non-digit string? (Mon, Tue..) (* is also valid)
+            raise RangeError, error_message if arg =~ /^[a-zA-Z]+$/ and Provider::Cron::WEEKDAY_SYMBOLS.select { |w| w.to_s == (arg.downcase) }.empty?
+          end
         rescue ArgumentError
         end
         set_or_return(
           :weekday,
-          converted_arg,
-          :kind_of => String
+          arg,
+          :kind_of => [String, Symbol]
         )
       end
 
@@ -193,7 +203,7 @@ class Chef
       def integerize(integerish)
         Integer(integerish)
       rescue TypeError
-        0
+       -1 
       end
     end
   end
