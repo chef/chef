@@ -149,7 +149,7 @@ class Chef
 
     def fetch(key)
       @moneta.fetch(key)
-    rescue ArgumentError => e
+    rescue ArgumentError, TypeError => e
       Log.warn "Error loading cached checksum for key #{key.inspect}"
       Log.warn(e)
       repair_checksum_cache
