@@ -43,6 +43,7 @@
 * Add a public file_edited? method to Chef::Util::FileEdit. (CHEF-3714)
 * Package provider defaults to IPS provider on Solaris 5.11+ (CHEF-5037)
 * Chef::REST works with frozen options. (CHEF-5064)
+* Service provider now uses Systemd on ArchLinux. (CHEF-4905)
 
 ## Last Release: 11.10.0 (02/06/2014)
 
