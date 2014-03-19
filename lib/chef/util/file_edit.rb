@@ -69,7 +69,12 @@ class Chef
       #search the file line by line and match each line with the given regex
       #if not matched, insert newline at the end of the file
       def insert_line_if_no_match(regex, newline)
-        search_match(regex, newline, 'i', 2)
+        regex = Regexp.new(regex)
+
+        unless @contents.find { |line| line.match(regex) }
+          @contents << newline
+          @file_edited = true
+        end
       end
 
       #Make a copy of old_file and write new file out (only if file changed)
@@ -114,15 +119,11 @@ class Chef
               end
             when command == 'i'
               new_contents << line
-              new_contents << replace unless method == 2
+              new_contents << replace
             end
           else
             new_contents << line
           end
-        end
-        if command == 'i' && method == 2 && ! file_edited
-          new_contents << replace
-          self.file_edited = true
         end
 
         self.contents = new_contents
