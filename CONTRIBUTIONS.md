@@ -23,3 +23,4 @@ Example Contribution:
 * **eherot**: Add support for epoch versions to the dpkg package provider
 * **jdmurphy**: Display all missing dependencies when uploading cookbooks
 * **nkrinner**: Add a public file_edited? method to Chef::Util::FileEdit
+* **ccope**: Made package provider to use IPS provider in Solaris 5.11+

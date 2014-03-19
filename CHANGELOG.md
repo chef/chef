@@ -30,17 +30,18 @@
 * Don't honor splay when sent USR1 signal.
 * Don't set log_level in client.rb by default (CHEF-3698)
 * Add IBM PowerKVM to Platform map. (CHEF-5135)
-* Cookbook metadata now allows boolean and numeric attributes.
-* Knife ssh uses cloud port attribute when available.
-* Client info and debug logs now contain cookbook versions in addition to cookbook names.
-* ShellOut mixin now exposes a method to capture the live stream during command execution.
-* Service provider is now aware of maintenance state on Solaris.
+* Cookbook metadata now allows boolean and numeric attributes. (CHEF-4075)
+* Knife ssh uses cloud port attribute when available. (CHEF-4962)
+* Client info and debug logs now contain cookbook versions in addition to cookbook names. (CHEF-4643)
+* ShellOut mixin now exposes a method to capture the live stream during command execution. (CHEF-5017)
+* Service provider is now aware of maintenance state on Solaris. (CHEF-4990)
 * Refactor Chef::Util::FileEdit to indicate the purpose of the former file_edited, now unwritten_changes?. (CHEF-3714)
 * Fixed FileEdit#insert_line_if_no_match to match multiple times. (CHEF-4173)
 * Hide passwords in error messages from the Subversion resource. (CHEF-4680)
 * The dpkg package provider now supports epoch versions. (CHEF-1752)
 * Multiple missing dependencies are now listed on knife cookbook upload. (CHEF-4851)
 * Add a public file_edited? method to Chef::Util::FileEdit. (CHEF-3714)
+* Package provider defaults to IPS provider on Solaris 5.11+ (CHEF-5037)
 
 ## Last Release: 11.10.0 (02/06/2014)
 
