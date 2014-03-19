@@ -31,7 +31,7 @@
 * Don't set log_level in client.rb by default (CHEF-3698)
 * Add IBM PowerKVM to Platform map. (CHEF-5135)
 * Cookbook metadata now allows boolean and numeric attributes.
-
+* Knife ssh uses cloud port attribute when available.
 ## Last Release: 11.10.0 (02/06/2014)
 
 http://docs.opscode.com/release/11-10/release_notes.html

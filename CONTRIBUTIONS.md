@@ -14,3 +14,4 @@ Example Contribution:
 * **linkfanel**: Removed ruby-shadow installation on cygwin platform.
 * **lbragstad**: Add IBM PowerKVM to platform map
 * **slantview**: Allow boolean and numerics in cookbook metadata.
+* **jeffmendoza**: Made knife to use cloud attribute for port when available.
