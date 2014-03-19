@@ -213,4 +213,12 @@ twice
       expect(edited_file_contents).to eq(append_twice)
     end
   end
+
+  describe "file_edited" do
+    it "should return true if a file got edited" do
+      fedit.insert_line_if_no_match(/pattern/, "new line inserted")
+      fedit.write_file
+      expect(fedit.file_edited?).to be_true
+    end
+  end
 end

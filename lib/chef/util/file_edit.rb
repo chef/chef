@@ -32,6 +32,12 @@ class Chef
         raise ArgumentError, "File '#{filepath}' does not exist" unless File.exist?(filepath)
         @editor = Editor.new(File.open(filepath, &:readlines))
         @original_pathname = filepath
+        @file_edited = false
+      end
+
+      # return if file has been edited
+      def file_edited?
+        @file_edited
       end
 
       #search the file line by line and match each line with the given regex
@@ -85,6 +91,7 @@ class Chef
             end
             newfile.flush
           end
+          @file_edited = true
         end
         @changes = false
       end
