@@ -24,7 +24,6 @@ class Chef
       def initialize(name, run_context=nil)
         super(name, run_context, :powershell_script, "powershell.exe")
         append_guard_inherited_attributes([:architecture])
-        guard_interpreter(:powershell_script)
         @convert_boolean_return = nil
       end
 
@@ -37,12 +36,12 @@ class Chef
       end
 
       def only_if(command=nil, opts={}, &block)
-        augmented_opts = opts.merge({:convert_boolean_return => true}) {|key, original_value, augmented_value| original_value}
+        augmented_opts = opts.merge((guard_interpreter.nil? || guard_interpreter == :default) ? {} : {:convert_boolean_return => true}) {|key, original_value, augmented_value| original_value}
         super(command, augmented_opts, &block)
       end
 
       def not_if(command=nil, opts={}, &block)
-        augmented_opts = opts.merge({:convert_boolean_return => true}) {|key, original_value, augmented_value| original_value}
+        augmented_opts = opts.merge((guard_interpreter.nil? || guard_interpreter == :default) ? {} : {:convert_boolean_return => true}) {|key, original_value, augmented_value| original_value}
         super(command, augmented_opts, &block)
       end
 

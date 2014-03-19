@@ -250,7 +250,7 @@ F
       @retry_delay = 2
       @not_if = []
       @only_if = []
-      @guard_interpreter = nil
+      @guard_interpreter = :default
       @guard_inherited_attributes = []
       @source_line = nil
       @elapsed_time = 0
@@ -840,8 +840,10 @@ F
     end
 
     def translate_command_block(command, opts, &block)
-      if @guard_interpreter && command && ! block_given?
-        evaluator = Conditional::GuardInterpreter.new(guard_interpreter, self, [Mixlib::ShellOut::ShellCommandFailed])
+      guard_resource = guard_interpreter
+      guard_resource = nil if guard_interpreter == :default
+      if guard_resource && command && ! block_given?
+        evaluator = Conditional::GuardInterpreter.new(guard_resource, self, [Mixlib::ShellOut::ShellCommandFailed])
         block_attributes = opts.merge({:code => command})
         translated_block = evaluator.to_block(block_attributes)
         [nil, translated_block]

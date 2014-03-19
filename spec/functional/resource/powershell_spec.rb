@@ -182,14 +182,39 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     before(:each) do
       resource.not_if.clear
       resource.only_if.clear
+      resource.guard_interpreter :powershell_script
     end
 
-    it "evaluates a powershell $false for a not_if block as false" do
+    it "evaluates a succeeding not_if block using cmd.exe as false by default" do
+      resource.guard_interpreter :default
+      resource.not_if  "exit /b 0"
+      resource.should_skip?(:run).should be_true
+    end
+
+    it "evaluates a failing not_if block using cmd.exe as true by default" do
+      resource.guard_interpreter :default
+      resource.not_if  "exit /b 2"
+      resource.should_skip?(:run).should be_false
+    end
+
+    it "evaluates an succeeding only_if block using cmd.exe as true by default" do
+      resource.guard_interpreter :default
+      resource.only_if  "exit /b 0"
+      resource.should_skip?(:run).should be_false
+    end
+
+    it "evaluates a failing only_if block using cmd.exe as false by default" do
+      resource.guard_interpreter :default
+      resource.only_if  "exit /b 2"
+      resource.should_skip?(:run).should be_true
+    end
+
+    it "evaluates a powershell $false for a not_if block as true" do
       resource.not_if  "$false"
       resource.should_skip?(:run).should be_false
     end
 
-    it "evaluates a powershell $true for a not_if block as true" do
+    it "evaluates a powershell $true for a not_if block as false" do
       resource.not_if  "$true"
       resource.should_skip?(:run).should be_true
     end
@@ -199,7 +224,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       resource.should_skip?(:run).should be_true
     end
 
-    it "evaluates a powershell $true for a not_if block as true" do
+    it "evaluates a powershell $true for a only_if block as true" do
       resource.only_if  "$true"
       resource.should_skip?(:run).should be_false
     end
