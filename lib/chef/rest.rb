@@ -66,13 +66,13 @@ class Chef
       @authenticator = Authenticator.new(options)
       @request_id = RemoteRequestID.new(options)
 
-      @middlewares << ValidateContentLength.new(options)
       @middlewares << JSONInput.new(options)
       @middlewares << JSONToModelOutput.new(options)
       @middlewares << CookieManager.new(options)
       @middlewares << @decompressor
       @middlewares << @authenticator
       @middlewares << @request_id
+      @middlewares << ValidateContentLength.new(options)
 
     end
 
