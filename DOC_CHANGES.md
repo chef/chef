@@ -76,3 +76,9 @@ With the recent change in OHAI to differentiate between SUSE (or SLES - SUSE Ent
 This page is an example but we probably want to search for `suse` in our doc repo and see if there is anywhere else.
 
 http://docs.opscode.com/dsl_recipe_method_platform_family.html
+
+### Cron Resource
+
+The weekday attribute now accepts the weekday as a symbol, e.g. :monday or :thursday.
+
+The new time attribute takes special time values specified by cron as a symbol, such as :reboot or :monthly.
