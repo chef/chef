@@ -34,6 +34,11 @@ class Chef
         :long  => "--after ITEM",
         :description => "Place the ENTRY in the run list after ITEM"
 
+      option :before,
+             :short => "-b ITEM",
+             :long  => "--before ITEM",
+             :description => "Place the ENTRY in the run list before ITEM"
+
       def run
         node = Chef::Node.load(@name_args[0])
         if @name_args.size > 2
@@ -46,7 +51,18 @@ class Chef
           entries = @name_args[1].split(',').map { |e| e.strip }
         end
 
-        add_to_run_list(node, entries, config[:after])
+        if config[:after] && config[:before]
+          ui.fatal("You cannot specify both --before and --after!")
+          exit 1
+        end
+
+        if config[:after]
+          add_to_run_list_after(node, entries, config[:after])
+        elsif config[:before]
+          add_to_run_list_before(node, entries, config[:before])
+        else
+          add_to_run_list_after(node, entries)
+        end
 
         node.save
 
@@ -55,7 +71,9 @@ class Chef
         output(format_for_display(node))
       end
 
-      def add_to_run_list(node, entries, after=nil)
+      private
+
+      def add_to_run_list_after(node, entries, after=nil)
         if after
           nlist = []
           node.run_list.each do |entry|
@@ -68,6 +86,17 @@ class Chef
         else
           entries.each { |e| node.run_list << e }
         end
+      end
+
+      def add_to_run_list_before(node, entries, before)
+        nlist = []
+        node.run_list.each do |entry|
+          if entry == before
+            entries.each { |e| nlist << e }
+          end
+          nlist << entry
+        end
+        node.run_list.reset!(nlist)
       end
 
     end
