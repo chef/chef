@@ -32,10 +32,12 @@ class Chef
         attr_accessor :content_length
 
         def initialize
+          Chef::Log.debug "initializing stream counter for response body size"
           @content_length = 0
         end
 
         def handle_chunk(chunk)
+          Chef::Log.debug "adding chunk to response body size: #{@content_length}"
           @content_length += chunk.bytesize
           chunk
         end
@@ -49,21 +51,15 @@ class Chef
       end
 
       def handle_response(http_response, rest_request, return_value)
-        unless http_response['content-length']
-          Chef::Log.debug("HTTP server did not include a Content-Length header in response, cannot identify truncated downloads.")
-          return [http_response, rest_request, return_value]
-        end
-        validate(response_content_length(http_response), http_response.body.bytesize)
+        validate(http_response, http_response.body.bytesize)
         return [http_response, rest_request, return_value]
       end
 
       def handle_stream_complete(http_response, rest_request, return_value)
-        if http_response['content-length'].nil?
-          Chef::Log.debug("HTTP server did not include a Content-Length header in response, cannot idenfity streamed download.")
-        elsif @content_length_counter.nil?
+        if @content_length_counter.nil?
           Chef::Log.debug("No content-length information collected for the streamed download, cannot identify streamed download.")
         else
-          validate(response_content_length(http_response), @content_length_counter.content_length)
+          validate(http_response, @content_length_counter.content_length)
         end
         return [http_response, rest_request, return_value]
       end
@@ -73,6 +69,7 @@ class Chef
       end
 
       private
+
       def response_content_length(response)
         if response['content-length'].is_a?(Array)
           response['content-length'].first.to_i
@@ -81,12 +78,33 @@ class Chef
         end
       end
 
-      def validate(content_length, response_length)
+      def validate(http_response, response_length)
+        content_length    = response_content_length(http_response)
+        transfer_encoding = http_response['transfer_encoding']
+        content_encoding  = http_response['content_encoding']
+
+        Chef::Log.debug "Attempting to validate the Content-Length header of the response"
         Chef::Log.debug "Content-Length header = #{content_length}"
-        Chef::Log.debug "Response body length = #{response_length}"
+        Chef::Log.debug "Transfer-Encoding header = #{transfer_encoding}"
+        Chef::Log.debug "Content-Encoding header = #{content_encoding}"
+        Chef::Log.debug "Actual response body length = #{response_length}"
+
+        if content_length.nil?
+          Chef::Log.debug "HTTP server did not include a Content-Length header in response, cannot identify truncated downloads."
+          return true
+        end
+
+        # if Transfer-Encoding is set the RFC states that we must ignore the Content-Length field
+        # CHEF-5041: some proxies uncompress gzip content, leave the incorrect content-length, but set the transfer-encoding field
+        unless transfer_encoding.nil?
+          Chef::Log.debug "Transfer-Encoding header is set, skipping Content-Length check."
+          return true
+        end
+
         if response_length != content_length
           raise Chef::Exceptions::ContentLengthMismatch.new(response_length, content_length)
         end
+
         true
       end
     end

@@ -26,6 +26,7 @@ class Chef
     class Decompressor
       class NoopInflater
         def inflate(chunk)
+          Chef::Log.debug "decompressing compressed chunk"
           chunk
         end
         alias :handle_chunk :inflate
@@ -98,10 +99,10 @@ class Chef
         else
           case response[CONTENT_ENCODING]
           when GZIP
-            Chef::Log.debug "decompressing gzip stream"
+            Chef::Log.debug "initializing gzip stream deflator"
             GzipInflater.new
           when DEFLATE
-            Chef::Log.debug "decompressing inflate stream"
+            Chef::Log.debug "initializing deflate stream deflator"
             DeflateInflater.new
           else
             NoopInflater.new
