@@ -26,7 +26,8 @@ Example Contribution:
 * **ccope**: Made package provider to use IPS provider in Solaris 5.11+
 * **josephholsten**: Changed Chef::REST to be able to handle frozen options.
 * **andreasrs**: Changed service provider to use Systemd on ArchLinux.
-* **eherot**: Add support for epoch versions to the dpkg package provider
-* **jdmurphy**: Display all missing dependencies when uploading cookbooks
-* **nkrinner**: Add a public file_edited? method to Chef::Util::FileEdit
-* **jjasghar**: Output correct host name in knife ssh error message
+* **eherot**: Add support for epoch versions to the dpkg package provider.
+* **jdmurphy**: Display all missing dependencies when uploading cookbooks.
+* **nkrinner**: Add a public file_edited? method to Chef::Util::FileEdit.
+* **jjasghar**: Output correct host name in knife ssh error message.
+* **esigler**: Added default_choice option to Knife::UI#confirm.
