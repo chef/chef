@@ -31,3 +31,5 @@ Example Contribution:
 * **nkrinner**: Add a public file_edited? method to Chef::Util::FileEdit.
 * **jjasghar**: Output correct host name in knife ssh error message.
 * **esigler**: Added default_choice option to Knife::UI#confirm.
+* **DracoAter**: Add support to the Cron resource for special strings, e.g. @reboot
+* **ryotarai**: Add support to the Cron resource for weekday passed as a symbol

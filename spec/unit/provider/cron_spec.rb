@@ -19,15 +19,137 @@
 require 'spec_helper'
 
 describe Chef::Provider::Cron do
+  describe "when with special time string" do
+    before do
+      @node = Chef::Node.new
+      @events = Chef::EventDispatch::Dispatcher.new
+      @run_context = Chef::RunContext.new(@node, {}, @events)
+      
+      @new_resource = Chef::Resource::Cron.new("cronhole some stuff", @run_context)
+      @new_resource.user "root"
+      @new_resource.minute "30"
+      @new_resource.command "/bin/true"
+      @new_resource.time :reboot
+      @provider = Chef::Provider::Cron.new(@new_resource, @run_context)
+    end
+    
+    context "with a matching entry in the user's crontab" do
+      before :each do
+        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+0 2 * * * /some/other/command
+
+# Chef Name: cronhole some stuff
+@reboot /bin/true param1 param2
+# Chef Name: something else
+2 * 1 * * /bin/false
+
+# Another comment
+CRONTAB
+      end
+      
+      it "should set cron_exists" do
+        @provider.load_current_resource
+        @provider.cron_exists.should == true
+        @provider.cron_empty.should == false
+      end
+
+      it "should pull the details out of the cron line" do
+        cron = @provider.load_current_resource
+        cron.time.should == :reboot
+        cron.command.should == '/bin/true param1 param2'
+      end
+
+      it "should pull env vars out" do
+        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+0 2 * * * /some/other/command
+
+# Chef Name: cronhole some stuff
+MAILTO=foo@example.com
+SHELL=/bin/foosh
+PATH=/bin:/foo
+HOME=/home/foo
+@reboot /bin/true param1 param2
+# Chef Name: something else
+2 * 1 * * /bin/false
+
+# Another comment
+CRONTAB
+        cron = @provider.load_current_resource
+        cron.mailto.should == 'foo@example.com'
+        cron.shell.should == '/bin/foosh'
+        cron.path.should == '/bin:/foo'
+        cron.home.should == '/home/foo'
+        cron.time.should == :reboot
+        cron.command.should == '/bin/true param1 param2'
+      end
+
+      it "should parse and load generic and standard environment variables from cron entry" do
+        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+# Chef Name: cronhole some stuff
+MAILTO=warn@example.com
+TEST=lol
+FLAG=1
+@reboot /bin/true
+CRONTAB
+        cron = @provider.load_current_resource
+
+        cron.mailto.should == "warn@example.com"
+        cron.environment.should == {"TEST" => "lol", "FLAG" => "1"}
+      end
+
+      it "should not break with variables that match the cron resource internals" do
+        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+# Chef Name: cronhole some stuff
+MINUTE=40
+REBOOT=midnight
+TEST=lol
+ENVIRONMENT=production
+@reboot /bin/true
+CRONTAB
+        cron = @provider.load_current_resource
+
+        cron.time.should == :reboot
+        cron.environment.should == {"MINUTE" => "40", "REBOOT" => "midnight", "TEST" => "lol", "ENVIRONMENT" => "production"}
+      end
+
+      it "should report the match" do
+        Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'")
+        @provider.load_current_resource
+      end
+      
+      describe "action_create" do
+        before :each do
+          @provider.stub!(:write_crontab)
+          @provider.stub!(:read_crontab).and_return(nil)
+        end
+
+        context "when there is no existing crontab" do
+          before :each do
+            @provider.cron_exists = false
+            @provider.cron_empty = true
+          end
+    
+          it "should create a crontab with the entry" do
+            @provider.should_receive(:write_crontab).with(<<-ENDCRON)
+# Chef Name: cronhole some stuff
+@reboot /bin/true
+            ENDCRON
+            @provider.run_action(:create)
+          end
+        end
+      end
+    end
+  end
+  
   before do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
+    
     @new_resource = Chef::Resource::Cron.new("cronhole some stuff", @run_context)
     @new_resource.user "root"
     @new_resource.minute "30"
     @new_resource.command "/bin/true"
-
     @provider = Chef::Provider::Cron.new(@new_resource, @run_context)
   end
 
@@ -110,6 +232,7 @@ CRONTAB
         cron.day.should == '*'
         cron.month.should == '1'
         cron.weekday.should == '*'
+        cron.time.should == nil
         cron.command.should == '/bin/true param1 param2'
       end
 
@@ -138,6 +261,7 @@ CRONTAB
         cron.day.should == '*'
         cron.month.should == '1'
         cron.weekday.should == '*'
+        cron.time.should == nil
         cron.command.should == '/bin/true param1 param2'
       end
 
@@ -227,6 +351,7 @@ CRONTAB
         cron.day.should == '*'
         cron.month.should == '*'
         cron.weekday.should == '*'
+        cron.time.should == nil
         cron.command.should == nil
       end
 
@@ -244,6 +369,7 @@ CRONTAB
         cron.day.should == '*'
         cron.month.should == '*'
         cron.weekday.should == '*'
+        cron.time.should == nil
         cron.command.should == nil
       end
 
@@ -265,6 +391,7 @@ CRONTAB
         cron.day.should == '*'
         cron.month.should == '*'
         cron.weekday.should == '*'
+        cron.time.should == nil
         cron.command.should == nil
       end
     end
@@ -286,6 +413,11 @@ CRONTAB
       end
     end
 
+    it "should return true if special time string doesn't match" do
+      @new_resource.send(:time, :reboot)
+      @provider.cron_different?.should eql(true)
+    end
+    
     it "should return true if environment doesn't match" do
       @new_resource.environment "FOO" => "something_else"
       @provider.cron_different?.should eql(true)
@@ -832,5 +964,47 @@ MAILTO=foo@example.com
       end.should raise_error(Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: 1")
     end
 
+  end
+
+  describe "weekday_in_crontab" do
+    context "when weekday is symbol" do
+      it "should return weekday in crontab format" do
+        @new_resource.weekday :wednesday
+        @provider.send(:weekday_in_crontab).should eq("3")
+      end
+
+      it "should raise an error with an unknown weekday" do
+        expect { @new_resource.weekday :caturday }.to raise_error(RangeError)
+      end
+    end
+
+    context "when weekday is a number in a string" do
+      it "should return the string" do
+        @new_resource.weekday "3"
+        @provider.send(:weekday_in_crontab).should eq("3")
+      end
+
+      it "should raise an error with an out of range number" do
+        expect { @new_resource.weekday "-1" }.to raise_error(RangeError)
+      end
+    end
+
+    context "when weekday is string with the name of the week" do
+      it "should return the string" do
+        @new_resource.weekday "mon"
+        @provider.send(:weekday_in_crontab).should eq("mon")
+      end
+    end
+
+    context "when weekday is an integer" do
+      it "should return the integer" do
+        @new_resource.weekday 1
+        @provider.send(:weekday_in_crontab).should eq("1")
+      end
+
+      it "should raise an error with an out of range integer" do
+        expect { @new_resource.weekday 45 }.to raise_error(RangeError)
+      end
+    end
   end
 end

@@ -105,6 +105,11 @@ We discovered a bug where Chef incorrectly merged override attribute sub-hashes 
 This has been corrected, and is not expected to cause any behavior change
 If you're an advanced user of attribute precedence, you may find some attributes were saved to your node object that you hadn't expected.
 
+#### Cron Resource
+
+The weekday attribute now accepts the weekday as a symbol, e.g. :monday or :thursday.
+There is a new attribute named ```time``` that takes special cron time values as a symbol, such as :reboot or :monthly.
+
 #### Miscellaneous
 
 * The subversion resource will now mask plaintext passwords in error output.
