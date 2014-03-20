@@ -48,6 +48,7 @@
 * Don't destructively merge subhashes in hash_only_merge!. (CHEF-4918)
 * Display correct host name in knife ssh error message (CHEF-5029)
 * Knife::UI#confirm now has a default_choice option. (CHEF-5057)
+* Add knife 'ssl check' and 'ssl fetch' commands for debugging SSL errors (CHEF-4711)
 
 ## Last Release: 11.10.0 (02/06/2014)
 
