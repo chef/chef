@@ -52,7 +52,7 @@ all that is required for knife or chef-client to verify the remote
 server in the future. WARNING: `knife` has no way to determine whether
 the certificates were tampered with in transit. If that happens,
 knife/chef-client will trust potentially forged/malicious certificates
-until they are deleted from the `trusted_certs_dir`. Users are *VERY STRONGLY* 
+until they are deleted from the `trusted_certs_dir`. Users are *VERY STRONGLY*
 encouraged to verify the authenticity of the certificates downloaded
 with `knife fetch` by some trustworthy means.
 
@@ -64,3 +64,15 @@ Examples:
   `knife ssl fetch -c /etc/chef/client.rb`
 * Fetch the certificates from an arbitrary server:
   `knife ssl fetch https://www.getchef.com`
+
+### OpenSUSE and SUSE differentiation
+
+With the recent change in OHAI to differentiate between SUSE (or SLES - SUSE Enterprise Linux Server) and OpenSUSE we need to update our docs to reflect following (quoting btm):
+
+* Platform SUSE should be changed to OpenSUSE everywhere that it previously meant OpenSUSE but said SUSE.
+* Keeping SLES as platform SUSE is still a bit confusing, but that's the least horrible path we chose.
+* It's all still very confusing. :)
+
+This page is an example but we probably want to search for `suse` in our doc repo and see if there is anywhere else.
+
+http://docs.opscode.com/dsl_recipe_method_platform_family.html
