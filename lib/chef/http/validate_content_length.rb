@@ -61,6 +61,7 @@ class Chef
         else
           validate(http_response, @content_length_counter.content_length)
         end
+        @content_length_counter = nil  # XXX: quickfix to CHEF-5100
         return [http_response, rest_request, return_value]
       end
 
