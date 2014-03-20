@@ -28,6 +28,7 @@ describe Chef::Knife::ClientBulkDelete do
     k.config = option_args
     k.ui.stub(:stdout).and_return(stdout_io)
     k.ui.stub(:confirm).and_return(knife_confirm)
+    k.ui.stub(:confirm_without_exit).and_return(knife_confirm)
     k
   }
 
@@ -132,7 +133,8 @@ describe Chef::Knife::ClientBulkDelete do
         end
 
         it "should confirm twice" do
-          knife.ui.should_receive(:confirm).twice
+          knife.ui.should_receive(:confirm).once
+          knife.ui.should_receive(:confirm_without_exit).once
           knife.run
         end
 
