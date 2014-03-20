@@ -101,7 +101,7 @@ Along with this refactor, #insert_line_if_no_match can now manipulate a file mul
 
 #### DeepMerge sub-hash precedence bugfix ([CHEF-4918](https://tickets.opscode.com/browse/CHEF-4918))
 
-We discovered a bug where Chef incorrectly merged override attribute sub-hashes that were at least three levels deep as normal attributes. 
+We discovered a bug where Chef incorrectly merged override attribute sub-hashes that were at least three levels deep as normal attributes.
 This has been corrected, and is not expected to cause any behavior change
 If you're an advanced user of attribute precedence, you may find some attributes were saved to your node object that you hadn't expected.
 
@@ -119,5 +119,15 @@ After spending 3 months in the RC stage, OHAI 7 is now included in Chef Client 1
 For more information about the changes in OHAI 7 please see our previous blog post [here](http://www.getchef.com/blog/2014/01/20/ohai-7-0-release-candidate/).
 
 # Chef Client Breaking Changes:
+
+#### OpenSuse and Suse Differentiation
+
+The Ohai version currently included in Chef reports both SUSE and OpenSUSE platforms as "suse" and the way to differentiate between these two platforms has been to use the version numbers. But since SUSE version numbers have caught up with OpenSUSE, it's not possible to differentiate between these platforms anymore.
+
+This issue is being resolved in Ohai 7 that is included in the current release of Chef Client by reporting these two platforms separately. This resolves the overall problem however it's a breaking change in the sense that OpenSUSE platforms will be reported as "opensuse" as the platform.
+
+Normally Chef would require a major version bump for this change but since the original scenario is currently broken we've decided to include this change without a major version bump in Chef.
+
+If you need to differentiate between OpenSUSE and SUSE in your cookbooks, please make sure the differentiation logic is updated to use the new :platform attribute values rather than the :platform_version in your cookbooks before upgrading to this version.
 
 None.

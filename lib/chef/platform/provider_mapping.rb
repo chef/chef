@@ -180,6 +180,7 @@ class Chef
               :package => Chef::Provider::Package::Zypper,
               :group => Chef::Provider::Group::Suse
             },
+            # Only OpenSuSE 12.3+ should use the Usermod group provider:
             ">= 12.3" => {
               :group => Chef::Provider::Group::Usermod
             }
@@ -190,19 +191,6 @@ class Chef
               :cron => Chef::Provider::Cron,
               :package => Chef::Provider::Package::Zypper,
               :group => Chef::Provider::Group::Suse
-            },
-            ###############################################
-            # TODO: Remove this after ohai update is released.
-            # Only OpenSuSE 12.3+ should use the Usermod group provider:
-            # Ohai before OHAI-339 is applied reports both OpenSuSE and SuSE
-            # Enterprise as "suse", Ohai after OHAI-339 will report OpenSuSE as
-            # "opensuse".
-            #
-            # In order to support OpenSuSE both before and after the Ohai
-            # change, I'm leaving this here. It needs to get removed before
-            # SuSE enterprise 12.3 ships.
-            ">= 12.3" => {
-              :group => Chef::Provider::Group::Usermod
             }
           },
           :oracle  => {
