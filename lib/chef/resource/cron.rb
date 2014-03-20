@@ -121,13 +121,19 @@ class Chef
           converted_arg = arg
         end
         begin
-          if integerize(arg) > 7 then raise RangeError end
+          error_message = "You provided '#{arg}' as a weekday, acceptable values are "
+          error_message << Provider::Cron::WEEKDAY_SYMBOLS.map {|sym| ":#{sym.to_s}"}.join(', ')
+          error_message << " and a string in crontab format"
+          if (arg.is_a?(Symbol) && !Provider::Cron::WEEKDAY_SYMBOLS.include?(arg)) ||
+            (!arg.is_a?(Symbol) && integerize(arg) > 7)
+            raise RangeError, error_message
+          end
         rescue ArgumentError
         end
         set_or_return(
           :weekday,
           converted_arg,
-          :kind_of => String
+          :kind_of => [String, Symbol]
         )
       end
 
