@@ -49,7 +49,7 @@ class Chef
         ui.msg ""
 
         unless config[:yes]
-          ui.confirm("Do you really want to delete these cookbooks? (Y/N) ", false)
+          ui.confirm("Do you really want to delete these cookbooks")
 
           if config[:purge]
             ui.msg("Files that are common to multiple cookbooks are shared, so purging the files may break other cookbooks.")
