@@ -125,8 +125,15 @@ class Chef
       option :first_boot_attributes,
         :short => "-j JSON_ATTRIBS",
         :long => "--json-attributes",
-        :description => "A JSON string to be added to the first run of chef-client",
+        :description => "A JSON string to be added to the first run of chef-client. Takes precedence over -J.",
         :proc => lambda { |o| JSON.parse(o) },
+        :default => {}
+
+      option :first_boot_file,
+        :short => "-J JSON_FILE",
+        :long => "--json-file",
+        :description => "A JSON file to be added to the first run of chef-client. Is overridden by -j.",
+        :proc => lambda { |o| JSON.parse(File.read(o)) },
         :default => {}
 
       option :host_key_verify,
