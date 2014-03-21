@@ -72,7 +72,8 @@ class Chef
       option :depends,
         :short => "-d",
         :long => "--include-dependencies",
-        :description => "Also upload cookbook dependencies"
+        :description => "Also upload cookbook dependencies",
+        :boolean => true
 
       def run
         # Sanity check before we load anything from the server
@@ -238,7 +239,7 @@ WARNING
         cookbooks.each do |cb|
           ui.info("Uploading #{cb.name.to_s.ljust(justify_width + 10)} [#{cb.version}]")
           check_for_broken_links!(cb)
-          check_for_dependencies!(cb)
+          check_for_dependencies!(cb) if config[:depends]
         end
         Chef::CookbookUploader.new(cookbooks, config[:cookbook_path], :force => config[:force], :concurrency => config[:concurrency]).upload_cookbooks
       rescue Chef::Exceptions::CookbookFrozen => e
