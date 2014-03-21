@@ -311,10 +311,6 @@ class Chef
     # === Returns
     # rest<Chef::REST>:: returns Chef::REST connection object
     def register(client_name=node_name, config=Chef::Config)
-      if config[:ssl_verify_mode] == :verify_none && !config[:verify_api_cert]
-        Chef::Log.warn "SSL validation of Chef API Endpoint is disabled, " \
-                       "set verify_api_cert to true or ssl_verify_mode to :verify_peer to enable."
-      end
       if !config[:client_key]
         @events.skipping_registration(client_name, config)
         Chef::Log.debug("Client key is unspecified - skipping registration")
@@ -405,6 +401,9 @@ class Chef
       # don't add code that may fail before entering this section to be sure to release lock
       begin
         runlock.save_pid
+
+        check_ssl_config
+
         request_id = Chef::RequestID.instance.request_id
         run_context = nil
         @events.run_start(Chef::VERSION)
@@ -491,6 +490,37 @@ class Chef
       require 'chef/win32/security'
 
       Chef::ReservedNames::Win32::Security.has_admin_privileges?
+    end
+
+    def check_ssl_config
+      if Chef::Config[:ssl_verify_mode] == :verify_none and !Chef::Config[:verify_api_cert]
+        Chef::Log.warn(<<-WARN)
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+SSL validation of HTTPS requests is disabled. HTTPS connections are still
+encrypted, but chef is not able to detect forged replies or man in the middle
+attacks.
+
+To fix this issue add an entry like this to your configuration file:
+
+```
+  # Verify all HTTPS connections (recommended)
+  ssl_verify_mode :verify_peer
+
+  # OR, Verify only connections to chef-server
+  verify_api_cert true
+```
+
+To check your SSL configuration, or troubleshoot errors, you can use the
+`knife ssl check` command like so:
+
+```
+  knife ssl check -c #{Chef::Config.config_file}
+```
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+WARN
+      end
     end
 
   end
