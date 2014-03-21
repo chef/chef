@@ -72,6 +72,10 @@ class Chef
       @middlewares << @decompressor
       @middlewares << @authenticator
       @middlewares << @request_id
+
+      # ValidateContentLength should come after Decompressor
+      # because the order of middlewares is reversed when handling
+      # responses.
       @middlewares << ValidateContentLength.new(options)
 
     end

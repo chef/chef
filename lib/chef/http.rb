@@ -210,21 +210,18 @@ class Chef
 
     def apply_request_middleware(method, url, headers, data)
       middlewares.inject([method, url, headers, data]) do |req_data, middleware|
-        Chef::Log.debug "calling handle_request for the #{middleware.class} middleware"
         middleware.handle_request(*req_data)
       end
     end
 
     def apply_response_middleware(response, rest_request, return_value)
       middlewares.reverse.inject([response, rest_request, return_value]) do |res_data, middleware|
-        Chef::Log.debug "calling handle_response for the #{middleware.class} middleware"
         middleware.handle_response(*res_data)
       end
     end
 
     def apply_stream_complete_middleware(response, rest_request, return_value)
       middlewares.reverse.inject([response, rest_request, return_value]) do |res_data, middleware|
-        Chef::Log.debug "calling handle_stream_complete for the #{middleware.class} middleware"
         middleware.handle_stream_complete(*res_data)
       end
     end
@@ -396,4 +393,3 @@ class Chef
 
   end
 end
-

@@ -26,7 +26,6 @@ class Chef
     class Decompressor
       class NoopInflater
         def inflate(chunk)
-          Chef::Log.debug "decompressing compressed chunk"
           chunk
         end
         alias :handle_chunk :inflate
@@ -138,5 +137,3 @@ class Chef
     end
   end
 end
-
-
