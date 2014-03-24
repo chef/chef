@@ -62,6 +62,15 @@ knife cannot verify that the certificates haven't been tampered with, so
 you should verify their content after downloading.
 
 
+#### Unsecure SSL Verification Mode Now Triggers a Warning
+
+When `ssl_verify_mode` is set to `:verify_none`, Chef will print a
+warning. Use `knife ssl check` to test SSL connectivity and then add
+`ssl_verify_mode :verify_peer` to your configuration file to fix the
+warning. Though `:verify_none` is currently the default, this will be
+changed in a future release, so users are encouraged to be proactive in
+testing and updating their SSL configuration.
+
 #### Chef Solo Missing Dependency Warning ([CHEF-4367](https://tickets.opscode.com/browse/CHEF-4367))
 
 Chef 11.0 introduced ordered evaluation of non-recipe files in
