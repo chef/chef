@@ -82,3 +82,37 @@ http://docs.opscode.com/dsl_recipe_method_platform_family.html
 The weekday attribute now accepts the weekday as a symbol, e.g. :monday or :thursday.
 
 The new time attribute takes special time values specified by cron as a symbol, such as :reboot or :monthly.
+
+### SSL Verification Warnings
+
+Chef 11.12 emits verbose warnings when configured to not verify SSL
+certificates. Though not verifying certificates is currently the default
+setting, this is unsecure and a future release of Chef will change the
+default setting so that SSL certificates are verified.
+
+Users are encouraged to resolve these warnings by adding the following
+to their configuration files (client.rb or solo.rb):
+
+`ssl_verify_mode :verify_peer`
+
+This setting will check that the certificate presented by HTTPS servers
+is signed by a trusted authority. By default, the on-premises Enterprise
+Chef and Open Source Chef server use a self-signed certificate that
+chef-client will not be able to verify, which will result in SSL errors
+when connecting to the server. To check SSL connectivity with the
+server, users can use the `knife ssl check` command. If the server is
+configured to use an untrusted self-signed certificate, users can
+configure chef-client to trust the remote server by copying the server's
+certificate to the `trusted_certs_dir`. The `knife ssl fetch` command
+can be used to automate this process; however, `knife` is not able to
+determine whether certificates downloaded with `knife ssl fetch` have
+been tampered with during the download, so users should verify the
+authenticity of any certificates downloaded this way.
+
+If a user absolutely cannot enable certificate verification and wishes
+to suppress SSL warnings, they can use HTTP instead of HTTPS as a
+workaround. This is highly discouraged. If some behavior of Chef
+prevents a user from enabling SSL certificate verification, they are
+encouraged to file a bug report.
+
+
