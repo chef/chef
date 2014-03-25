@@ -22,14 +22,40 @@ require 'tempfile'
 require 'chef/api_client/registration'
 
 describe Chef::ApiClient::Registration do
+
   let(:key_location) do
     make_tmpname("client-registration-key")
   end
 
-  let(:registration) { Chef::ApiClient::Registration.new("silent-bob", key_location) }
+  let(:client_name) { "silent-bob" }
 
-  let :private_key_data do
+  subject(:registration) { Chef::ApiClient::Registration.new(client_name, key_location) }
+
+  let(:private_key_data) do
     File.open(Chef::Config[:validation_key], "r") {|f| f.read.chomp }
+  end
+
+  let(:http_mock) { double("Chef::REST mock") }
+
+  let(:expected_post_data) do
+    { :name => client_name, :admin => false }
+  end
+
+  let(:expected_put_data) do
+    { :name => client_name, :admin => false, :private_key => true }
+  end
+
+  let(:server_v10_response) do
+    {"uri" => "https://chef.local/clients/#{client_name}",
+     "private_key" => "--begin rsa key etc--"}
+  end
+
+  # Server v11 includes `json_class` on all replies
+  let(:server_v11_response) do
+    response = Chef::ApiClient.new
+    response.name(client_name)
+    response.private_key("--begin rsa key etc--")
+    response
   end
 
   before do
@@ -39,8 +65,6 @@ describe Chef::ApiClient::Registration do
 
   after do
     File.unlink(key_location) if File.exist?(key_location)
-    Chef::Config[:validation_client_name] = nil
-    Chef::Config[:validation_key] = nil
   end
 
   it "has an HTTP client configured with validator credentials" do
@@ -50,52 +74,43 @@ describe Chef::ApiClient::Registration do
   end
 
   describe "when creating/updating the client on the server" do
-    let(:http_mock) { double("Chef::REST mock") }
-
     before do
       registration.stub(:http_api).and_return(http_mock)
     end
 
     it "creates a new ApiClient on the server using the validator identity" do
-      response = {"uri" => "https://chef.local/clients/silent-bob",
-                  "private_key" => "--begin rsa key etc--"}
       http_mock.should_receive(:post).
-        with("clients", :name => 'silent-bob', :admin => false).
-        and_return(response)
-      registration.create_or_update.should == response
+        with("clients", expected_post_data).
+        and_return(server_v10_response)
+      registration.create_or_update.should == server_v10_response
       registration.private_key.should == "--begin rsa key etc--"
     end
 
     context "and the client already exists on a Chef 10 server" do
       it "requests a new key from the server and saves it" do
-        response = {"name" => "silent-bob", "private_key" => "--begin rsa key etc--" }
-
         response_409 = Net::HTTPConflict.new("1.1", "409", "Conflict")
         exception_409 = Net::HTTPServerException.new("409 conflict", response_409)
 
-        http_mock.should_receive(:post).and_raise(exception_409)
+        http_mock.should_receive(:post).with("clients", expected_post_data).
+          and_raise(exception_409)
         http_mock.should_receive(:put).
-          with("clients/silent-bob", :name => 'silent-bob', :admin => false, :private_key => true).
-          and_return(response)
-        registration.create_or_update.should == response
+          with("clients/#{client_name}", expected_put_data).
+          and_return(server_v10_response)
+        registration.create_or_update.should == server_v10_response
         registration.private_key.should == "--begin rsa key etc--"
       end
     end
 
     context "and the client already exists on a Chef 11 server" do
       it "requests a new key from the server and saves it" do
-        response = Chef::ApiClient.new
-        response.name("silent-bob")
-        response.private_key("--begin rsa key etc--")
-
         response_409 = Net::HTTPConflict.new("1.1", "409", "Conflict")
         exception_409 = Net::HTTPServerException.new("409 conflict", response_409)
 
         http_mock.should_receive(:post).and_raise(exception_409)
         http_mock.should_receive(:put).
-          with("clients/silent-bob", :name => 'silent-bob', :admin => false, :private_key => true).
-          and_return(response)
-        registration.create_or_update.should == response
+          with("clients/#{client_name}", expected_put_data).
+          and_return(server_v11_response)
+        registration.create_or_update.should == server_v11_response
         registration.private_key.should == "--begin rsa key etc--"
       end
     end
@@ -125,16 +140,12 @@ describe Chef::ApiClient::Registration do
 
   describe "when registering a client" do
 
-    let(:http_mock) { double("Chef::REST mock") }
-
     before do
       registration.stub(:http_api).and_return(http_mock)
     end
 
     it "creates the client on the server and writes the key" do
-      response = {"uri" => "http://chef.local/clients/silent-bob",
-                  "private_key" => "--begin rsa key etc--" }
-      http_mock.should_receive(:post).ordered.and_return(response)
+      http_mock.should_receive(:post).ordered.and_return(server_v10_response)
       registration.run
       IO.read(key_location).should == "--begin rsa key etc--"
     end
@@ -149,9 +160,7 @@ describe Chef::ApiClient::Registration do
       http_mock.should_receive(:post).ordered.and_raise(exception_500) # 4
       http_mock.should_receive(:post).ordered.and_raise(exception_500) # 5
 
-      response = {"uri" => "http://chef.local/clients/silent-bob",
-                  "private_key" => "--begin rsa key etc--" }
-      http_mock.should_receive(:post).ordered.and_return(response)
+      http_mock.should_receive(:post).ordered.and_return(server_v10_response)
       registration.run
       IO.read(key_location).should == "--begin rsa key etc--"
     end
