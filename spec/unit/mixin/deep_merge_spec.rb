@@ -284,6 +284,10 @@ describe Chef::Mixin::DeepMerge do
       ret.should == {"property" => ["1","2","3","4","5","6"]}
     end
 
+    it "should not error merging un-dupable objects" do
+      @dm.deep_merge(nil, 4)
+    end
+
   end
 
   describe "role_merge" do

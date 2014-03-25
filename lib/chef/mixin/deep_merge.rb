@@ -168,7 +168,7 @@ class Chef
       end
 
       def deep_merge(source, dest)
-        deep_merge!(source.dup, dest.dup)
+        deep_merge!(safe_dup(source), safe_dup(dest))
       end
 
     end
