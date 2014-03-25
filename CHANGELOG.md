@@ -54,6 +54,7 @@
 * Cron resource accepts a weekday attribute as a symbol. (CHEF-4848)
 * Cron resource accepts special strings, e.g. @reboot (CHEF-2816)
 * Call WIN32OLE.ole_initialize before using WMI (CHEF-4888)
+* Fix TypeError when calling dup on un-dupable objects in DeepMerge
 
 ## Last Release: 11.10.0 (02/06/2014)
 
