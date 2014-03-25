@@ -354,5 +354,11 @@ describe Chef::Mixin::DeepMerge do
       merge_ee_hash.should == {"top_level_a" => {"1_deep_a" => { "2_deep_a" => { "3_deep_a" => "foo" }}}}
       merge_with_hash.should == {"top_level_a" => {"1_deep_a" => { "2_deep_a" => { "3_deep_b" => "bar" }}}}
     end
+
+    it "does not error merging un-dupable items" do
+      merge_ee_hash = {"top_level_a" => 1, "top_level_b" => false}
+      merge_with_hash = {"top_level_a" => 2, "top_level_b" => true }
+      @dm.hash_only_merge(merge_ee_hash, merge_with_hash)
+    end
   end
 end
