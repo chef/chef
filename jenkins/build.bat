@@ -26,7 +26,12 @@ IF NOT %ERRORLEVEL% == 0 (
 rem # install omnibus cookbook and dependencies
 call berks install --path=vendor/cookbooks
 
-call chef-solo -c .\jenkins\solo.rb -j .\jenkins\dna-windows.json -l debug || GOTO :error
+rem # TEMPORARY: Temporarily disable chef-solo runs.
+rem # Can be reverted when https://github.com/opscode-cookbooks/omnibus/pull/12
+rem # is merged and released.
+rem # Note that currently this functionality is not needed since we are far away
+rem # from rebuilding slaves using cookbooks in ci.opscode.us.
+rem # call chef-solo -c .\jenkins\solo.rb -j .\jenkins\dna-windows.json -l debug || GOTO :error
 
 call copy /Y omnibus.rb.example.windows omnibus.rb || GOTO :error
 
