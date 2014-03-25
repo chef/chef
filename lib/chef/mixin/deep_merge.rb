@@ -111,7 +111,13 @@ class Chef
       end # deep_merge!
 
       def hash_only_merge(merge_onto, merge_with)
-        hash_only_merge!(merge_onto.dup, merge_with.dup)
+        hash_only_merge!(safe_dup(merge_onto), safe_dup(merge_with))
+      end
+
+      def safe_dup(thing)
+        thing.dup
+      rescue TypeError
+        thing
       end
 
       # Deep merge without Array merge.
@@ -162,7 +168,7 @@ class Chef
       end
 
       def deep_merge(source, dest)
-        deep_merge!(source.dup, dest.dup)
+        deep_merge!(safe_dup(source), safe_dup(dest))
       end
 
     end
