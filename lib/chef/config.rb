@@ -432,6 +432,17 @@ class Chef
     default(:validation_key) { chef_zero.enabled ? nil : platform_specific_path("/etc/chef/validation.pem") }
     default :validation_client_name, "chef-validator"
 
+    # When creating a new client via the validation_client account, Chef 11
+    # servers allow the client to generate a key pair locally and sent the
+    # public key to the server. This is more secure and helps offload work from
+    # the server, enhancing scalability. If enabled and the remote server
+    # implements only the Chef 10 API, client registration will not work
+    # properly.
+    #
+    # The default value is `false` (Server generates client keys). Set to
+    # `true` to enable client-side key generation.
+    default(:local_key_generation) { false }
+
     # Zypper package provider gpg checks. Set to true to enable package
     # gpg signature checking. This will be default in the
     # future. Setting to false disables the warnings.

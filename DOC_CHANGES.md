@@ -115,4 +115,28 @@ workaround. This is highly discouraged. If some behavior of Chef
 prevents a user from enabling SSL certificate verification, they are
 encouraged to file a bug report.
 
+### New Configuration Option: `local_key_generation`
+
+Chef 11.x servers support client-side generation of keys when creating
+new clients. Generating the keys on the client provides two benefits: 1)
+the private key never travels over the network, which improves security;
+2) the CPU load imposed by key creation is moved to the node and
+distributed, which allows the server to handle more concurrent client
+registrations.
+
+For compatibility reasons, this feature is opt-in, but will likely be
+the default or even only behavior in Chef 12.
+
+To enable it, add this to client.rb before running chef-client on a node
+for the first time:
+
+```
+local_key_generation true
+```
+
+The default value of this setting is `false`
+
+*NOTE:* Chef servers that implement the 10.x API do not support this
+feature. Enabling this on a client that connects to a 10.X API server
+will cause client registration to silently fail. Don't do it.
 
