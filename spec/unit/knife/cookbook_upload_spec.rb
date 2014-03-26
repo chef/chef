@@ -101,6 +101,30 @@ describe Chef::Knife::CookbookUpload do
       end
     end
 
+    context "when uploading a cookbook that uses deprecated overlays" do
+
+      before do
+        cookbook_loader.stub(:merged_cookbooks).and_return(['test_cookbook'])
+        cookbook_loader.stub(:merged_cookbook_paths).
+          and_return({'test_cookbook' => %w{/path/one/test_cookbook /path/two/test_cookbook}})
+      end
+
+      it "emits a warning" do
+        knife.run
+        expected_message=<<-E
+WARNING: The cookbooks: test_cookbook exist in multiple places in your cookbook_path.
+A composite version of these cookbooks has been compiled for uploading.
+
+IMPORTANT: In a future version of Chef, this behavior will be removed and you will no longer
+be able to have the same version of a cookbook in multiple places in your cookbook_path.
+WARNING: The affected cookbooks are located:
+test_cookbook:
+  /path/one/test_cookbook
+  /path/two/test_cookbook
+E
+        output.string.should include(expected_message)
+      end
+    end
 
     describe 'when specifying a cookbook name among many' do
       let(:name_args) { ['test_cookbook1'] }
