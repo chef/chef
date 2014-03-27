@@ -239,6 +239,9 @@ class Chef
 
     # Save this client via the REST API, returns a hash including the private key
     def save(new_key=false, validation=false)
+      # Implement CHEF-4373 with minimal churn to existing code:
+      return register_with_self_generated_key if new_key && validation && Chef::Config.local_key_generation
+
       if validation
         r = Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
       else
@@ -255,6 +258,25 @@ class Chef
           raise e
         end
       end
+    end
+
+    def register_with_self_generated_key
+      r = Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
+      pkey = OpenSSL::PKey::RSA.generate(2048)
+      client_data = {:name => name, :admin => false , :public_key => pkey.public_key.to_pem}
+      # First, try and create a new registration
+      r = begin
+        r.post_rest("clients", client_data)
+      rescue Net::HTTPServerException => e
+        # If that fails, go ahead and try and update it
+        if e.response.code == "409"
+          r.put_rest("clients/#{name}", client_data)
+        else
+          raise e
+        end
+      end
+      private_key(pkey.to_pem)
+      self
     end
 
     def reregister

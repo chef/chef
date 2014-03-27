@@ -251,6 +251,64 @@ describe Chef::ApiClient do
       end
 
     end
+
+    context "and client side key generation is enabled" do
+
+      let(:response) { {"uri"=> "https://example.com/clients/selfgenkeytest-1395958070", "public_key" => "rsa-key-data"} }
+      let(:pkey_in) { IO.read(File.join(CHEF_SPEC_DATA, "ssl/private_key.pem")) }
+
+      let(:generated_key) { OpenSSL::PKey::RSA.new(pkey_in) }
+      let(:generated_public_key) { generated_key.public_key }
+
+      before do
+        @client.name("deadsexy")
+        OpenSSL::PKey::RSA.stub(:generate).and_return(generated_key)
+        Chef::Config.stub(:local_key_generation).and_return true
+      end
+
+      context "and the client doesn't exist" do
+        let(:response) { {"uri"=> "https://example.com/clients/selfgenkeytest-1395958070", "public_key" => "rsa-key-data"} }
+        let(:pkey_in) { IO.read(File.join(CHEF_SPEC_DATA, "ssl/private_key.pem")) }
+
+        let(:generated_key) { OpenSSL::PKey::RSA.new(pkey_in) }
+        let(:generated_public_key) { generated_key.public_key }
+
+        before do
+          @http_client.should_receive(:post_rest).
+            with("clients", :name => "deadsexy", :admin => false, :public_key => generated_public_key.to_pem).
+            and_return(response)
+        end
+
+        it "creates the client with self generated key" do
+          @client.save(true, true)
+          @client.private_key.should == generated_key.to_pem
+        end
+
+      end
+
+      context "and the client already exists" do
+        before do
+          http_conflict_response = Net::HTTPConflict.new("409 blah blah", "409", "409")
+          http_conflict_error = Net::HTTPServerException.new("409 conflict", http_conflict_response)
+
+          @http_client.should_receive(:post_rest).
+            with("clients", :name => "deadsexy", :admin => false, :public_key => generated_public_key.to_pem).
+            and_raise(http_conflict_error)
+
+          @http_client.should_receive(:put_rest).
+            with("clients/deadsexy", :name => "deadsexy", :admin => false, :public_key => generated_public_key.to_pem).
+            and_return(response)
+        end
+
+        it "creates the client with self generated key" do
+          @client.save(true, true)
+          @client.private_key.should == generated_key.to_pem
+        end
+
+      end
+
+    end
+
   end
 end
 
