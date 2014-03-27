@@ -93,6 +93,7 @@ class Chef
         end
 
         assert_environment_valid!
+        warn_about_cookbook_shadowing
         version_constraints_to_update = {}
         upload_failures = 0
         upload_ok = 0
@@ -138,6 +139,7 @@ class Chef
               upload_failures += 1
             end
           end
+
 
           upload_failures += @name_args.length - @cookbooks_to_upload.length
 
@@ -199,6 +201,10 @@ class Chef
       end
 
       def warn_about_cookbook_shadowing
+        # because cookbooks are lazy-loaded, we have to force the loader
+        # to load the cookbooks the user intends to upload here:
+        cookbooks_to_upload
+        
         unless cookbook_repo.merged_cookbooks.empty?
           ui.warn "* " * 40
           ui.warn(<<-WARNING)
