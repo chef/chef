@@ -58,7 +58,7 @@
 * Add optional client-side generation of client keys during registration (CHEF-4373)
 * Restore warning for the overlay feature in `knife cookbook upload`,
   which was accidentally removed in 11.0.0.
-
+* Don't save the run_list during `node.save` when running with override run list. (CHEF-4443)
 ## Last Release: 11.10.0 (02/06/2014)
 
 http://docs.opscode.com/release/11-10/release_notes.html
