@@ -33,7 +33,8 @@ class Chef
         @interpreter = nil
         @flags = nil
         @guard_inherited_attributes = []
-        append_guard_inherited_attributes(
+
+        set_guard_inherited_attributes(
           [
            :cwd,
            :environment,
@@ -66,6 +67,16 @@ class Chef
           arg,
           :kind_of => [ String ]
         )
+      end
+
+      protected
+
+      def set_guard_inherited_attributes(inherited_attributes)
+        @guard_inherited_attributes.concat(inherited_attributes).uniq
+      end
+
+      def guard_inherited_attributes
+        @guard_inherited_attributes
       end
 
     end

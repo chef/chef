@@ -125,12 +125,6 @@ class Chef
         )
       end
 
-      protected
-
-      def append_guard_inherited_attributes(inherited_attributes)
-        @guard_inherited_attributes.concat(inherited_attributes)
-      end
-
     end
   end
 end

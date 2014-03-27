@@ -226,7 +226,6 @@ F
     attr_reader :resource_name
     attr_reader :not_if_args
     attr_reader :only_if_args
-    attr_reader :guard_inherited_attributes
 
     attr_reader :elapsed_time
 

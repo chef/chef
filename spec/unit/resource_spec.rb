@@ -526,6 +526,28 @@ describe Chef::Resource do
       snitch_var2.should be_false
     end
 
+    describe "guard_interpreter attribute" do
+      let(:resource) { @resource }
+
+      it "should be set to :default by default" do
+        resource.guard_interpreter.should == :default
+      end
+
+      it "should raise Chef::Exceptions::ValidationFailed on an attempt to set the guard_interpreter attribute to something other than a Symbol" do
+        begin
+          resource.guard_interpreter('command_dot_com')
+        rescue Chef::Exceptions::ValidationFailed
+        end
+      end
+
+      it "should not raise an exception when setting the guard interpreter attribute to a Symbol" do
+        begin
+          resource.guard_interpreter(:command_dot_com)
+        rescue Chef::Exceptions::ValidationFailed
+        end
+      end
+    end
+
   end
 
   describe "should_skip?" do

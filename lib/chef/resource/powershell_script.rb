@@ -23,7 +23,7 @@ class Chef
 
       def initialize(name, run_context=nil)
         super(name, run_context, :powershell_script, "powershell.exe")
-        append_guard_inherited_attributes([:architecture])
+        set_guard_inherited_attributes([:architecture])
         @convert_boolean_return = nil
       end
 

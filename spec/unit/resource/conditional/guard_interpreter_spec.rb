@@ -1,6 +1,6 @@
 #
-# Author:: Adam Edwards (<adamed@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Adam Edwards (<adamed@getchef.com>)
+# Copyright:: Copyright (c) 2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,7 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::PowershellScript do
-
+describe Chef::Resource::Conditional::GuardInterpreter do
   before(:each) do
     node = Chef::Node.new
 
@@ -28,63 +27,34 @@ describe Chef::Resource::PowershellScript do
 
     run_context = Chef::RunContext.new(node, nil, nil)
 
-    @resource = Chef::Resource::PowershellScript.new("powershell_unit_test", run_context)
-
+    @resource = Chef::Resource.new("powershell_unit_test", run_context)
+    @resource.stub(:run_action)
+    @resource.stub(:updated).and_return(true)
   end
 
-  it "should create a new Chef::Resource::PowershellScript" do
-    @resource.should be_a_kind_of(Chef::Resource::PowershellScript)
-  end
-
-  context "when using guards" do
+  describe "when evaluating a guard resource" do
     let(:resource) { @resource }
-    before(:each) do
-      # allow_any_instance_of(Chef::Resource::Conditional::GuardInterpreter).to receive(:evaluate_action).and_return(false)
-      resource.stub(:run_action)
-      resource.stub(:updated).and_return(true)
-    end
 
     it "should allow guard interpreter to be set to Chef::Resource::Script" do
       resource.guard_interpreter(:script)
       allow_any_instance_of(Chef::Resource::Conditional::GuardInterpreter).to receive(:evaluate_action).and_return(false)
       resource.only_if("echo hi")
     end
-
-    it "should allow guard interpreter to be set to Chef::Resource::Bash derived from Chef::Resource::Script" do
-      resource.guard_interpreter(:bash)
-      allow_any_instance_of(Chef::Resource::Conditional::GuardInterpreter).to receive(:evaluate_action).and_return(false)
-      resource.only_if("echo hi")
-    end
-
+    
     it "should allow guard interpreter to be set to Chef::Resource::PowershellScript derived indirectly from Chef::Resource::Script" do
       resource.guard_interpreter(:powershell_script)
       allow_any_instance_of(Chef::Resource::Conditional::GuardInterpreter).to receive(:evaluate_action).and_return(false)
       resource.only_if("echo hi")
     end
-
-    it "should raise an exception on an attempt to set the guard_interpreter attribute to something other than a Symbol" do
-      begin
-        resource.guard_interpreter('script')
-      rescue Chef::Exceptions::ValidationFailed
-      end
-    end
-
+    
     it "should raise an exception if guard_interpreter is set to a resource not derived from Chef::Resource::Script" do
       resource.guard_interpreter(:file)
 
-      begin
+      begin    
         resource.only_if("echo hi").should raise_error ArgumentError
       rescue ArgumentError
       end
     end
   end
-
-  context "as a script running in Windows-based scripting language" do
-    let(:resource_instance) { @resource }
-    let(:resource_instance_name ) { @resource.command }
-    let(:resource_name) { :powershell_script }
-    let(:interpreter_file_name) { 'powershell.exe' }
-
-    it_should_behave_like "a Windows script resource"
-  end
 end
+

@@ -30,7 +30,12 @@ class Chef
         empty_events = Chef::EventDispatch::Dispatcher.new
         anonymous_run_context = Chef::RunContext.new(parent_resource.node, {}, empty_events)
 
-        @resource = resource_class.new('anonymous', anonymous_run_context)
+        @resource = resource_class.new('Guard resource', anonymous_run_context)
+
+        if ! @resource.kind_of?(Chef::Resource::Script)
+          raise ArgumentError, "Specified guard interpreter class #{resource_class} must be a kind of Chef::Resource::Script resource"
+        end
+
         @handled_exceptions = handled_exceptions ? handled_exceptions : []
         merge_inherited_attributes(parent_resource)
         @source_line = source_line if source_line
@@ -62,7 +67,7 @@ class Chef
 
       def get_resource_class(parent_resource, resource_symbol)
         if parent_resource.nil? || parent_resource.node.nil?
-          raise ArgumentError, "Node for anonymous resource must not be nil"
+          raise ArgumentError, "Node for guard resource parent must not be nil"
         end
         Chef::Resource.resource_for_node(resource_symbol, parent_resource.node)
       end
@@ -76,7 +81,11 @@ class Chef
       end
 
       def merge_inherited_attributes(parent_resource)
-        inherited_attributes = parent_resource.guard_inherited_attributes
+        inherited_attributes = []
+
+        if parent_resource.respond_to?(:guard_inherited_attributes)
+          inherited_attributes = parent_resource.send(:guard_inherited_attributes)
+        end
         
         if inherited_attributes
           inherited_attributes.each do |attribute|
