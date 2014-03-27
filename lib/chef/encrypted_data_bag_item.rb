@@ -26,7 +26,7 @@ require 'open-uri'
 # all values, except for the value associated with the id key, have
 # been encrypted.
 #
-# EncrypedDataBagItem can be used in recipes to decrypt data bag item
+# EncryptedDataBagItem can be used in recipes to decrypt data bag item
 # members.
 #
 # Data bag item values are assumed to have been encrypted using the
