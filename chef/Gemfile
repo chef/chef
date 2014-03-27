@@ -10,7 +10,6 @@ group(:docgen) do
 end
 
 group(:development, :test) do
-  gem 'rack'
 
   gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(darwin|freebsd)/)
 #  gem 'awesome_print'
