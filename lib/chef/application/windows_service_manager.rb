@@ -112,6 +112,9 @@ class Chef
                                  :service_name     => @service_name,
                                  :display_name     => @service_display_name,
                                  :description      => @service_description,
+                                 # Prior to 0.8.5, win32-service creates interactive services by default,
+                                 # and we don't want that, so we need to override the service type.
+                                 :service_type     => ::Win32::Service::SERVICE_WIN32_OWN_PROCESS,
                                  :start_type       => ::Win32::Service::SERVICE_AUTO_START,
                                  :binary_path_name => cmd
                                  )

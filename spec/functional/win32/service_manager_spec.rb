@@ -148,6 +148,12 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
         service_manager.run(["-a", "install"])
       end
 
+      it "should have an own-process, non-interactive type" do
+        status = ::Win32::Service.status("spec-service")
+        status[:service_type].should == "own process"
+        status[:interactive].should be_false
+      end
+
       it "install => should say service already exists" do
           service_manager.run(["-a", "install"])
           @service_manager_output.grep(/already exists/).length.should > 0
