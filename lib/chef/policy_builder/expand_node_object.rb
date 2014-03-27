@@ -40,7 +40,6 @@ class Chef
       attr_reader :ohai_data
       attr_reader :json_attribs
       attr_reader :override_runlist
-      attr_reader :original_runlist
       attr_reader :run_context
       attr_reader :run_list_expansion
 
@@ -52,7 +51,6 @@ class Chef
         @events = events
 
         @node = nil
-        @original_runlist = nil
         @run_list_expansion = nil
       end
 
@@ -190,7 +188,7 @@ class Chef
       # override_runlist was provided. Chef::Client uses this to decide whether
       # to do the final node save at the end of the run or not.
       def temporary_policy?
-        !!@original_runlist
+        !node.override_runlist.empty?
       end
 
       ########################################
@@ -200,10 +198,9 @@ class Chef
       def setup_run_list_override
         runlist_override_sanity_check!
         unless(override_runlist.empty?)
-          @original_runlist = node.run_list.run_list_items.dup
-          node.run_list(*override_runlist)
+          node.override_runlist(*override_runlist)
           Chef::Log.warn "Run List override has been provided."
-          Chef::Log.warn "Original Run List: [#{original_runlist.join(', ')}]"
+          Chef::Log.warn "Original Run List: [#{node.primary_runlist}]"
           Chef::Log.warn "Overridden Run List: [#{node.run_list}]"
         end
       end

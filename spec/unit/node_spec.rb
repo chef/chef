@@ -724,6 +724,15 @@ describe Chef::Node do
       json.should =~ /\"run_list\":\[\"role\[Cthulu\]\",\"role\[Hastur\]\"\]/
     end
 
+    it "should serialize the correct run list", :json => true do
+      node.run_list << "role[marxist]"
+      node.run_list << "role[leninist]"
+      node.override_runlist << "role[stalinist]"
+      node.run_list.should be_include("role[stalinist]")
+      json = Chef::JSONCompat.to_json(node)
+      json.should =~ /\"run_list\":\[\"role\[marxist\]\",\"role\[leninist\]\"\]/
+    end
+
     it "merges the override components into a combined override object" do
       node.attributes.role_override["role override"] = "role override"
       node.attributes.env_override["env override"] = "env override"
