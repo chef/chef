@@ -36,8 +36,8 @@ class Chef
         # Fetches the file at uri, returning a Tempfile-like File handle
         def fetch
           tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
-          Chef::Log.debug("#{new_resource} staging #{uri.path} to #{tempfile.path}")
-          FileUtils.cp(uri.path, tempfile.path)
+          Chef::Log.debug("#{new_resource} staging #{uri.path.gsub(/^\/([a-zA-Z]:)/,'\1')} to #{tempfile.path}")
+          FileUtils.cp(uri.path.gsub(/^\/([a-zA-Z]:)/,'\1'), tempfile.path)
           tempfile.close if tempfile
           tempfile
         end
