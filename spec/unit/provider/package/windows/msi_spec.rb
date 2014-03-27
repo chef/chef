@@ -18,7 +18,7 @@
 
 require 'spec_helper'
 
-describe Chef::Provider::Package::Windows::MSI do
+describe Chef::Provider::Package::Windows::MSI, :windows_only do
   let(:node) { double('Chef::Node') }
   let(:events) { double('Chef::Events').as_null_object }  # mock all the methods
   let(:run_context) { double('Chef::RunContext', :node => node, :events => events) }

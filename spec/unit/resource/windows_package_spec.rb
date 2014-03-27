@@ -18,7 +18,7 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::WindowsPackage, "initialize" do
+describe Chef::Resource::WindowsPackage, "initialize", :windows_only do
 
   let(:resource) { Chef::Resource::WindowsPackage.new("solitaire.msi") }
 

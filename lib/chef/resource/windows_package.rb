@@ -18,7 +18,7 @@
 
 require 'chef/resource/package'
 require 'chef/provider/package/windows'
-require 'chef/win32/error'
+require 'chef/win32/error' if RUBY_PLATFORM =~ /mswin|mingw|windows/
 
 class Chef
   class Resource
