@@ -59,6 +59,8 @@
 * Restore warning for the overlay feature in `knife cookbook upload`,
   which was accidentally removed in 11.0.0.
 * Don't save the run_list during `node.save` when running with override run list. (CHEF-4443)
+* Enable Content-Length validation for Chef::HTTP::Simple and fix issues around it. (CHEF-5041, CHEF-5100)
+
 ## Last Release: 11.10.0 (02/06/2014)
 
 http://docs.opscode.com/release/11-10/release_notes.html

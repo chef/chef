@@ -76,6 +76,16 @@ describe Chef::REST do
     Chef::Log.init(log_stringio)
   end
 
+  it "should have content length validation middleware after compressor middleware" do
+    middlewares = rest.instance_variable_get(:@middlewares)
+    content_length = middlewares.find_index { |e| e.is_a? Chef::HTTP::ValidateContentLength }
+    decompressor = middlewares.find_index { |e| e.is_a? Chef::HTTP::Decompressor }
+
+    content_length.should_not be_nil
+    decompressor.should_not be_nil
+    (decompressor < content_length).should be_true
+  end
+
   it "should allow the options hash to be frozen" do
     options = {}.freeze
     # should not raise any exception
