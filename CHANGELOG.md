@@ -56,6 +56,8 @@
 * Call WIN32OLE.ole_initialize before using WMI (CHEF-4888)
 * Fix TypeError when calling dup on un-dupable objects in DeepMerge
 * Add optional client-side generation of client keys during registration (CHEF-4373)
+* Restore warning for the overlay feature in `knife cookbook upload`,
+  which was accidentally removed in 11.0.0.
 
 ## Last Release: 11.10.0 (02/06/2014)
 
