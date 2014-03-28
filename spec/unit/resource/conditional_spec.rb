@@ -24,12 +24,13 @@ describe Chef::Resource::Conditional do
     Mixlib::ShellOut.any_instance.stub(:run_command).and_return(nil)
     @status = OpenStruct.new(:success? => true)
     Mixlib::ShellOut.any_instance.stub(:status).and_return(@status)
+    @parent_resource = Chef::Resource.new(nil, Chef::Node.new)
   end
 
   describe "when created as an `only_if`" do
     describe "after running a successful command" do
       before do
-        @conditional = Chef::Resource::Conditional.only_if("true")
+        @conditional = Chef::Resource::Conditional.only_if(@parent_resource, "true")
       end
 
       it "indicates that resource convergence should continue" do
@@ -40,7 +41,7 @@ describe Chef::Resource::Conditional do
     describe "after running a negative/false command" do
       before do
         @status.send("success?=", false)
-        @conditional = Chef::Resource::Conditional.only_if("false")
+        @conditional = Chef::Resource::Conditional.only_if(@parent_resource, "false")
       end
 
       it "indicates that resource convergence should not continue" do
@@ -50,7 +51,7 @@ describe Chef::Resource::Conditional do
 
     describe 'after running a command which timed out' do
       before do
-        @conditional = Chef::Resource::Conditional.only_if("false")
+        @conditional = Chef::Resource::Conditional.only_if(@parent_resource, "false")
         @conditional.stub(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
       end
 
@@ -66,7 +67,7 @@ describe Chef::Resource::Conditional do
 
     describe "after running a block that returns a truthy value" do
       before do
-        @conditional = Chef::Resource::Conditional.only_if { Object.new }
+        @conditional = Chef::Resource::Conditional.only_if(@parent_resource) { Object.new }
       end
 
       it "indicates that resource convergence should continue" do
@@ -76,7 +77,7 @@ describe Chef::Resource::Conditional do
 
     describe "after running a block that returns a falsey value" do
       before do
-        @conditional = Chef::Resource::Conditional.only_if { nil }
+        @conditional = Chef::Resource::Conditional.only_if(@parent_resource) { nil }
       end
 
       it "indicates that resource convergence should not continue" do
@@ -88,7 +89,7 @@ describe Chef::Resource::Conditional do
   describe "when created as a `not_if`" do
     describe "after running a successful/true command" do
       before do
-        @conditional = Chef::Resource::Conditional.not_if("true")
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource, "true")
       end
 
       it "indicates that resource convergence should not continue" do
@@ -99,7 +100,7 @@ describe Chef::Resource::Conditional do
     describe "after running a failed/false command" do
       before do
         @status.send("success?=", false)
-        @conditional = Chef::Resource::Conditional.not_if("false")
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource, "false")
       end
 
       it "indicates that resource convergence should continue" do
@@ -109,7 +110,7 @@ describe Chef::Resource::Conditional do
 
     describe 'after running a command which timed out' do
       before do
-        @conditional = Chef::Resource::Conditional.not_if("false")
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource,  "false")
         @conditional.stub(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
       end
 
@@ -125,7 +126,7 @@ describe Chef::Resource::Conditional do
 
     describe "after running a block that returns a truthy value" do
       before do
-        @conditional = Chef::Resource::Conditional.not_if { Object.new }
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource) { Object.new }
       end
 
       it "indicates that resource convergence should not continue" do
@@ -135,7 +136,7 @@ describe Chef::Resource::Conditional do
 
     describe "after running a block that returns a falsey value" do
       before do
-        @conditional = Chef::Resource::Conditional.not_if { nil }
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource) { nil }
       end
 
       it "indicates that resource convergence should continue" do

@@ -533,11 +533,17 @@ describe Chef::Resource do
         resource.guard_interpreter.should == :default
       end
 
+      it "if set to :default should return :default when read" do
+        resource.guard_interpreter(:default)
+        resource.guard_interpreter.should == :default
+      end
+
       it "should raise Chef::Exceptions::ValidationFailed on an attempt to set the guard_interpreter attribute to something other than a Symbol" do
         expect { resource.guard_interpreter('command_dot_com') }.to raise_error(Chef::Exceptions::ValidationFailed)
       end
 
       it "should not raise an exception when setting the guard interpreter attribute to a Symbol" do
+        Chef::GuardInterpreter.stub(:new).and_return(nil)
         expect { resource.guard_interpreter(:command_dot_com) }.not_to raise_error
       end
     end

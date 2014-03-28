@@ -45,19 +45,19 @@ describe Chef::Resource::PowershellScript do
 
     it "should allow guard interpreter to be set to Chef::Resource::Script" do
       resource.guard_interpreter(:script)
-      allow_any_instance_of(Chef::Resource::Conditional::GuardInterpreter).to receive(:evaluate_action).and_return(false)
+      allow_any_instance_of(Chef::GuardInterpreter).to receive(:evaluate_action).and_return(false)
       resource.only_if("echo hi")
     end
 
     it "should allow guard interpreter to be set to Chef::Resource::Bash derived from Chef::Resource::Script" do
       resource.guard_interpreter(:bash)
-      allow_any_instance_of(Chef::Resource::Conditional::GuardInterpreter).to receive(:evaluate_action).and_return(false)
+      allow_any_instance_of(Chef::GuardInterpreter).to receive(:evaluate_action).and_return(false)
       resource.only_if("echo hi")
     end
 
     it "should allow guard interpreter to be set to Chef::Resource::PowershellScript derived indirectly from Chef::Resource::Script" do
       resource.guard_interpreter(:powershell_script)
-      allow_any_instance_of(Chef::Resource::Conditional::GuardInterpreter).to receive(:evaluate_action).and_return(false)
+      allow_any_instance_of(Chef::GuardInterpreter).to receive(:evaluate_action).and_return(false)
       resource.only_if("echo hi")
     end
   end

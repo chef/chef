@@ -16,13 +16,35 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require 'chef/resource/conditional/default_guard_interpreter'
 
 class Chef
-  class Resource::Conditional
-    class GuardInterpreter
+    class GuardInterpreter < DefaultGuardInterpreter
+
+      def self.translate_command_block(parent_resource, command, opts, &block)
+        evaluator = parent_resource.guard_interpreter == :default ?
+          DefaultGuardInterpreter.new :
+          new(parent_resource.guard_interpreter, parent_resource)
+
+        evaluator.translate_command_block(command, opts, &block)
+      end
+
+      def translate_command_block(command, opts, &block)
+        merge_inherited_attributes
+        if command && ! block_given?
+          block_attributes = opts.merge({:code => command})
+          translated_block = to_block(block_attributes)
+          [nil, translated_block]
+        else
+          super
+        end
+      end
+
+      protected
 
       def initialize(resource_symbol, parent_resource)
+        @parent_resource = parent_resource
+
         resource_class = get_resource_class(parent_resource, resource_symbol)
 
         raise ArgumentError, "Specified guard_interpreter resource #{resource_symbol.to_s} unknown for this platform" if resource_class.nil?
@@ -35,8 +57,6 @@ class Chef
         if ! @resource.kind_of?(Chef::Resource::Script)
           raise ArgumentError, "Specified guard interpreter class #{resource_class} must be a kind of Chef::Resource::Script resource"
         end
-
-        merge_inherited_attributes(parent_resource)
       end
 
       def evaluate_action(action=nil, &block)
@@ -78,17 +98,17 @@ class Chef
         end
       end
 
-      def merge_inherited_attributes(parent_resource)
+      def merge_inherited_attributes
         inherited_attributes = []
 
-        if parent_resource.respond_to?(:guard_inherited_attributes)
-          inherited_attributes = parent_resource.send(:guard_inherited_attributes)
+        if @parent_resource.respond_to?(:guard_inherited_attributes)
+          inherited_attributes = @parent_resource.send(:guard_inherited_attributes)
         end
         
         if inherited_attributes
           inherited_attributes.each do |attribute|
-            if parent_resource.respond_to?(attribute) && @resource.respond_to?(attribute)
-              parent_value = parent_resource.send(attribute)
+            if @parent_resource.respond_to?(attribute) && @resource.respond_to?(attribute)
+              parent_value = @parent_resource.send(attribute)
               child_value = @resource.send(attribute)
               if parent_value || child_value
                 @resource.send(attribute, parent_value)
@@ -98,5 +118,4 @@ class Chef
         end
       end
     end
-  end
 end

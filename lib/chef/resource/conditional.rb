@@ -17,6 +17,7 @@
 #
 
 require 'chef/mixin/shell_out'
+require 'chef/resource/conditional/guard_interpreter'
 
 class Chef
   class Resource
@@ -29,12 +30,14 @@ class Chef
         private :new
       end
 
-      def self.not_if(command=nil, command_opts={}, &block)
-        new(:not_if, command, command_opts, &block)
+      def self.not_if(parent_resource, command=nil, command_opts={}, &block)
+        translated_command, translated_block = Chef::GuardInterpreter.translate_command_block(parent_resource, command, command_opts, &block)
+        new(:not_if, translated_command, command_opts, &translated_block)
       end
 
-      def self.only_if(command=nil, command_opts={}, &block)
-        new(:only_if, command, command_opts, &block)
+      def self.only_if(parent_resource, command=nil, command_opts={}, &block)
+        translated_command, translated_block = Chef::GuardInterpreter.translate_command_block(parent_resource, command, command_opts, &block)
+        new(:only_if, translated_command, command_opts, &translated_block)
       end
 
       attr_reader :positivity

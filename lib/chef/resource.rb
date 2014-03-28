@@ -23,9 +23,9 @@ require 'chef/dsl/data_query'
 require 'chef/dsl/registry_helper'
 require 'chef/dsl/reboot_pending'
 require 'chef/mixin/convert_to_class_name'
+require 'chef/resource/conditional/guard_interpreter'
 require 'chef/resource/conditional'
 require 'chef/resource/conditional_action_not_nothing'
-require 'chef/resource/conditional/guard_interpreter'
 require 'chef/resource_collection'
 require 'chef/resource_platform_map'
 require 'chef/node'
@@ -249,8 +249,8 @@ F
       @retry_delay = 2
       @not_if = []
       @only_if = []
-      @guard_interpreter = :default
       @source_line = nil
+      @guard_interpreter = :default
       @elapsed_time = 0
 
       @node = run_context ? deprecated_ivar(run_context.node, :node, :warn) : nil
@@ -561,9 +561,8 @@ F
     # * evaluates to true if the block is true, or if the command returns 0
     # * evaluates to false if the block is false, or if the command returns a non-zero exit code.
     def only_if(command=nil, opts={}, &block)
-      translated_command, translated_block = translate_command_block(command, opts, &block)
       if command || block_given?
-        @only_if << Conditional.only_if(translated_command, opts, &translated_block)
+        @only_if << Conditional.only_if(self, command, opts, &block)
       end
       @only_if
     end
@@ -583,9 +582,8 @@ F
     # * evaluates to true if the block is false, or if the command returns a non-zero exit status.
     # * evaluates to false if the block is true, or if the command returns a 0 exit status.
     def not_if(command=nil, opts={}, &block)
-      translated_command, translated_block = translate_command_block(command, opts, &block)
       if command || block_given?
-        @not_if << Conditional.not_if(translated_command, opts, &translated_block)
+        @not_if << Conditional.not_if(self, command, opts, &block)
       end
       @not_if
     end
@@ -831,19 +829,5 @@ F
         end
       end
     end
-
-    def translate_command_block(command, opts, &block)
-      guard_resource = guard_interpreter
-      guard_resource = nil if guard_interpreter == :default
-      if guard_resource && command && ! block_given?
-        evaluator = Conditional::GuardInterpreter.new(guard_resource, self)
-        block_attributes = opts.merge({:code => command})
-        translated_block = evaluator.to_block(block_attributes)
-        [nil, translated_block]
-      else
-        [command, block]
-      end
-    end
-
   end
 end
