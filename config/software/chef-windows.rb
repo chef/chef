@@ -18,6 +18,7 @@
 name "chef-windows"
 
 dependency "ruby-windows" #includes rubygems
+dependency "libyaml-windows"
 dependency "ruby-windows-devkit"
 dependency "bundler"
 dependency "cacerts"
@@ -85,8 +86,12 @@ build do
     end
   end
 
-  # symlink required unix tools
-  # we need tar for 'knife cookbook site install' to function correctly
+  # Normally we would symlink the required unix tools.
+  # However with the introduction of git-cache to speed up omnibus builds,
+  # we can't do that anymore since git on windows doesn't support symlinks.
+  # https://groups.google.com/forum/#!topic/msysgit/arTTH5GmHRk
+  # Therefore we copy the tools to the necessary places.
+  # We need tar for 'knife cookbook site install' to function correctly
   {"tar.exe" => "bsdtar.exe",
     "libarchive-2.dll" => "libarchive-2.dll",
     "libexpat-1.dll" => "libexpat-1.dll",
@@ -94,7 +99,9 @@ build do
     "libbz2-2.dll" => "libbz2-2.dll",
     "libz-1.dll" => "libz-1.dll"
   }.each do |target, to|
-    command "mklink #{File.expand_path(File.join(install_dir, "bin", target)).gsub(/\//, "\\")} #{File.expand_path(File.join(install_dir, "embedded", "mingw", "bin", to)).gsub(/\//, "\\")}"
+    source = File.expand_path(File.join(install_dir, "embedded", "mingw", "bin", to)).gsub(/\//, "\\")
+    target = File.expand_path(File.join(install_dir, "bin", target)).gsub(/\//, "\\")
+    command "cp #{source}  #{target}"
   end
 
   rake "gem"

@@ -25,7 +25,7 @@
 # of rubyinstaller.org
 #
 name "libyaml-windows"
-version "0.1.5"
+default_version "0.1.5"
 
 dependency "ruby-windows"
 

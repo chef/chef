@@ -21,7 +21,7 @@ homepage "http://www.opscode.com"
 
 replaces        "chef-full"
 install_path    "/opt/chef"
-build_version   Omnibus::BuildVersion.full
+build_version   Omnibus::BuildVersion.new.git_describe
 build_iteration 4
 mac_pkg_identifier "com.getchef.pkg.chef"
 

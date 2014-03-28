@@ -24,7 +24,7 @@ homepage "http://www.opscode.com"
 
 replaces        "angrychef"
 install_path    "/opt/angrychef"
-build_version   Omnibus::BuildVersion.full
+build_version   Omnibus::BuildVersion.new.git_describe
 build_iteration 4
 
 dependency "preparation"

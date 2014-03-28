@@ -23,13 +23,10 @@ homepage "http://www.opscode.com"
 #       Native gems will use gcc which will barf on files with spaces,
 #       which is only fixable if everyone in the world fixes their Makefiles
 install_path    "c:\\opscode\\chef"
-build_version   Omnibus::BuildVersion.full
+build_version   Omnibus::BuildVersion.new.git_describe
 build_iteration 4
 package_name    "chef-client"
 
 dependency "preparation"
-dependency "ruby-windows"
-dependency "libyaml-windows"
-dependency "ruby-windows-devkit"
 dependency "chef-windows"
 dependency "chef-client-msi"
