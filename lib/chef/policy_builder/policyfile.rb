@@ -82,7 +82,7 @@ class Chef
           raise UnsupportedFeature, "Policyfile does not support setting the run_list in json data at this time"
         end
 
-        if Chef::Config[:environment] && !Chef::Config[:environment].chop.empty?
+        if Chef::Config[:environment] && !Chef::Config[:environment].chomp.empty?
           raise UnsupportedFeature, "Policyfile does not work with Chef Environments"
         end
       end

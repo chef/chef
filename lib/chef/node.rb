@@ -498,7 +498,7 @@ class Chef
     def self.build(node_name)
       node = new
       node.name(node_name)
-      node.chef_environment(Chef::Config[:environment]) unless Chef::Config[:environment].nil? || Chef::Config[:environment].chop.empty?
+      node.chef_environment(Chef::Config[:environment]) unless Chef::Config[:environment].nil? || Chef::Config[:environment].chomp.empty?
       node
     end
 
