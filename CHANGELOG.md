@@ -62,6 +62,7 @@
 * Enable Content-Length validation for Chef::HTTP::Simple and fix issues around it. (CHEF-5041, CHEF-5100)
 * Windows MSI Package Provider (CHEF-5087)
 * Fix mount resource when device is a relative symlink (CHEF-4957)
+* Increase bootstrap log_level when knife -V -V is set (CHEF-3610)
 
 ## Last Release: 11.10.0 (02/06/2014)
 

@@ -133,6 +133,10 @@ If you're an advanced user of attribute precedence, you may find some attributes
 The weekday attribute now accepts the weekday as a symbol, e.g. :monday or :thursday.
 There is a new attribute named ```time``` that takes special cron time values as a symbol, such as :reboot or :monthly.
 
+#### knife bootstrap log_level
+
+Running ```knife bootstrap -V -V``` will run the initial chef-client with a log level of debug.
+
 #### Miscellaneous
 
 * The subversion resource will now mask plaintext passwords in error output.

@@ -35,3 +35,4 @@ Example Contribution:
 * **ryotarai**: Add support to the Cron resource for weekday passed as a symbol.
 * **thommay **: Made sure that `node.save` doesn't save the run_list when chef is running with override-run-list.
 * **Maxime Caumartin**: Fix mount resource when device is a relative symlink.
+* **jessehu**: Increase bootstrap log_level when knife -V -V is set
