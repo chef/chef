@@ -32,12 +32,18 @@ class Chef
           @new_resource = new_resource
           @uri = uri
         end
+        
+        # CHEF-4472: Remove the leading slash from windows paths that we receive from a file:// URI
+        def fix_windows_path(path) 
+          path.gsub(/^\/([a-zA-Z]:)/,'\1')  
+        end
 
         # Fetches the file at uri, returning a Tempfile-like File handle
         def fetch
+          Chef::Platform.windows? ? source_path = fix_windows_path(uri.path) : source_path = uri.path
           tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
           Chef::Log.debug("#{new_resource} staging #{uri.path} to #{tempfile.path}")
-          FileUtils.cp(uri.path, tempfile.path)
+          FileUtils.cp(source_path, tempfile.path)
           tempfile.close if tempfile
           tempfile
         end
