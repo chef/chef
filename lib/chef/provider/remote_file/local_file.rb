@@ -40,7 +40,7 @@ class Chef
 
         # Fetches the file at uri, returning a Tempfile-like File handle
         def fetch
-          Chef::Platform.windows? ? source_path = fix_windows_path(uri.path) : source_path = uri.path
+          Chef::Platform.windows? ? source_path = fix_windows_path(source_path) : source_path = uri.path
           tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
           Chef::Log.debug("#{new_resource} staging #{uri.path} to #{tempfile.path}")
           FileUtils.cp(source_path, tempfile.path)
