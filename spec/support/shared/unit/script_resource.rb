@@ -66,14 +66,14 @@ shared_examples_for "a script resource" do
     it "when guard_interpreter is set to the default value, the guard command string should be evaluated by command execution and not through a resource" do
       Chef::Resource::Conditional.any_instance.should_not_receive(:evaluate_block)
       Chef::Resource::Conditional.any_instance.should_receive(:evaluate_command).and_return(true)
-      Chef::GuardInterpreter.any_instance.should_not_receive(:evaluate_action)
+      Chef::GuardInterpreter::ResourceGuardInterpreter.any_instance.should_not_receive(:evaluate_action)
       resource.only_if 'echo hi'
       resource.should_skip?(:run).should == nil
     end
 
     it "when a valid guard_interpreter resource is specified, a block should be used to evaluate the guard" do
       Chef::Resource::Conditional.any_instance.should_not_receive(:evaluate_command)
-      Chef::GuardInterpreter.any_instance.should_receive(:evaluate_action).and_return(true)
+      Chef::GuardInterpreter::ResourceGuardInterpreter.any_instance.should_receive(:evaluate_action).and_return(true)
       resource.guard_interpreter :script
       resource.only_if 'echo hi'
       resource.should_skip?(:run).should == nil

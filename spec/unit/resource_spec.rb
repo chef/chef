@@ -543,7 +543,7 @@ describe Chef::Resource do
       end
 
       it "should not raise an exception when setting the guard interpreter attribute to a Symbol" do
-        Chef::GuardInterpreter.stub(:new).and_return(nil)
+        Chef::GuardInterpreter::ResourceGuardInterpreter.stub(:new).and_return(nil)
         expect { resource.guard_interpreter(:command_dot_com) }.not_to raise_error
       end
     end

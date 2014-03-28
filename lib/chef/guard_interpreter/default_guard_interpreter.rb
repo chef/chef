@@ -17,18 +17,20 @@
 #
 
 class Chef
-  class DefaultGuardInterpreter
+  class GuardInterpreter
+    class DefaultGuardInterpreter
 
-    protected
-    def initialize
-    end
+      protected
 
-    public
-    
-    def translate_command_block(command, opts, &block)
-      [command, block]
+      def initialize
+      end
+
+      public
+
+      def translate_command_block(command, opts, &block)
+        [command, block]
+      end
     end
-    
   end
 end
       

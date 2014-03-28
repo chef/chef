@@ -17,7 +17,7 @@
 #
 
 require 'chef/mixin/shell_out'
-require 'chef/resource/conditional/guard_interpreter'
+require 'chef/guard_interpreter/resource_guard_interpreter'
 
 class Chef
   class Resource
@@ -31,12 +31,12 @@ class Chef
       end
 
       def self.not_if(parent_resource, command=nil, command_opts={}, &block)
-        translated_command, translated_block = Chef::GuardInterpreter.translate_command_block(parent_resource, command, command_opts, &block)
+        translated_command, translated_block = translate_command_block(parent_resource, command, command_opts, &block)
         new(:not_if, translated_command, command_opts, &translated_block)
       end
 
       def self.only_if(parent_resource, command=nil, command_opts={}, &block)
-        translated_command, translated_block = Chef::GuardInterpreter.translate_command_block(parent_resource, command, command_opts, &block)
+        translated_command, translated_block = translate_command_block(parent_resource, command, command_opts, &block)
         new(:only_if, translated_command, command_opts, &translated_block)
       end
 
@@ -101,6 +101,18 @@ class Chef
         else
           "#{@positivity} { #code block }"
         end
+      end
+
+      def self.translate_command_block(parent_resource, command, opts, &block)
+        guard_interpreter = nil
+
+        if parent_resource.guard_interpreter == :default
+          guard_interpreter = Chef::GuardInterpreter::DefaultGuardInterpreter.new
+        else
+          guard_interpreter = Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource.guard_interpreter, parent_resource)
+        end
+
+        guard_interpreter.translate_command_block(command, opts, &block)
       end
 
     end

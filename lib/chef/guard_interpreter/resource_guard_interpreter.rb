@@ -16,18 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/resource/conditional/default_guard_interpreter'
+require 'chef/guard_interpreter/default_guard_interpreter'
 
 class Chef
-    class GuardInterpreter < DefaultGuardInterpreter
-
-      def self.translate_command_block(parent_resource, command, opts, &block)
-        evaluator = parent_resource.guard_interpreter == :default ?
-          DefaultGuardInterpreter.new :
-          new(parent_resource.guard_interpreter, parent_resource)
-
-        evaluator.translate_command_block(command, opts, &block)
-      end
+  class GuardInterpreter
+    class ResourceGuardInterpreter < DefaultGuardInterpreter
 
       def translate_command_block(command, opts, &block)
         merge_inherited_attributes
@@ -39,8 +32,6 @@ class Chef
           super
         end
       end
-
-      protected
 
       def initialize(resource_symbol, parent_resource)
         @parent_resource = parent_resource
@@ -58,6 +49,8 @@ class Chef
           raise ArgumentError, "Specified guard interpreter class #{resource_class} must be a kind of Chef::Resource::Script resource"
         end
       end
+
+      protected
 
       def evaluate_action(action=nil, &block)
         @resource.instance_eval(&block)
@@ -80,8 +73,6 @@ class Chef
           evaluate_action(action, &resource_block)
         end
       end
-
-      private
 
       def get_resource_class(parent_resource, resource_symbol)
         if parent_resource.nil? || parent_resource.node.nil?
@@ -118,4 +109,5 @@ class Chef
         end
       end
     end
+  end
 end
