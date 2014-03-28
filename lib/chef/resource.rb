@@ -836,7 +836,7 @@ F
       guard_resource = guard_interpreter
       guard_resource = nil if guard_interpreter == :default
       if guard_resource && command && ! block_given?
-        evaluator = Conditional::GuardInterpreter.new(guard_resource, self, [Mixlib::ShellOut::ShellCommandFailed])
+        evaluator = Conditional::GuardInterpreter.new(guard_resource, self)
         block_attributes = opts.merge({:code => command})
         translated_block = evaluator.to_block(block_attributes)
         [nil, translated_block]

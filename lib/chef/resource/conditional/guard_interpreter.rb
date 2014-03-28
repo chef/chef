@@ -22,10 +22,10 @@ class Chef
   class Resource::Conditional
     class GuardInterpreter
 
-      def initialize(resource_symbol, parent_resource, handled_exceptions, source_line=nil)
+      def initialize(resource_symbol, parent_resource)
         resource_class = get_resource_class(parent_resource, resource_symbol)
 
-        raise ArgumentError, "Specified resource #{resource_symbol.to_s} unknown for this platform" if resource_class.nil?
+        raise ArgumentError, "Specified guard_interpreter resource #{resource_symbol.to_s} unknown for this platform" if resource_class.nil?
 
         empty_events = Chef::EventDispatch::Dispatcher.new
         anonymous_run_context = Chef::RunContext.new(parent_resource.node, {}, empty_events)
@@ -36,9 +36,7 @@ class Chef
           raise ArgumentError, "Specified guard interpreter class #{resource_class} must be a kind of Chef::Resource::Script resource"
         end
 
-        @handled_exceptions = handled_exceptions ? handled_exceptions : []
         merge_inherited_attributes(parent_resource)
-        @source_line = source_line if source_line
       end
 
       def evaluate_action(action=nil, &block)
@@ -49,7 +47,7 @@ class Chef
         begin
           @resource.run_action(run_action)
           resource_updated = @resource.updated
-        rescue *@handled_exceptions
+        rescue Mixlib::ShellOut::ShellCommandFailed
           resource_updated = nil
         end
 
