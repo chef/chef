@@ -244,7 +244,7 @@ class Chef
             # So given a symlink like this:
             # /dev/mapper/vgroot-tmp.vol -> /dev/dm-9
             # First it will try to match "/dev/mapper/vgroot-tmp.vol". If there is no match it will try matching for "/dev/dm-9".
-            "(?:#{Regexp.escape(device_real)}|#{Regexp.escape(::File.readlink(device_real))})"
+            "(?:#{Regexp.escape(device_real)}|#{Regexp.escape(::File.expand_path(::File.readlink(device_real),::File.dirname(device_real)))})"
           else
             Regexp.escape(device_real)
           end

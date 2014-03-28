@@ -141,6 +141,17 @@ describe Chef::Provider::Mount::Mount do
       @provider.current_resource.mounted.should be_true
     end
 
+     it "should set mounted true if the symlink target of the device is relative and is found in the mounts list - CHEF-4957" do
+      target = "xsdz1"
+
+      ::File.stub(:symlink?).with("#{@new_resource.device}").and_return(true)
+      ::File.stub(:readlink).with("#{@new_resource.device}").and_return(target)
+
+      @provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => "/dev/xsdz1 on /tmp/foo type ext3 (rw)\n"))
+      @provider.load_current_resource()
+      @provider.current_resource.mounted.should be_true
+    end
+
     it "should set mounted true if the mount point is found last in the mounts list" do
       mount = "/dev/sdy1 on #{@new_resource.mount_point} type ext3 (rw)\n"
       mount << "#{@new_resource.device} on #{@new_resource.mount_point} type ext3 (rw)\n"
@@ -187,6 +198,20 @@ describe Chef::Provider::Mount::Mount do
 
     it "should set enabled to true if the symlink target is in fstab" do
       target = "/dev/mapper/target"
+
+      ::File.stub(:symlink?).with("#{@new_resource.device}").and_return(true)
+      ::File.stub(:readlink).with("#{@new_resource.device}").and_return(target)
+
+      fstab = "/dev/sdz1  /tmp/foo ext3  defaults  1 2\n"
+
+      ::File.stub(:foreach).with("/etc/fstab").and_yield fstab
+
+      @provider.load_current_resource
+      @provider.current_resource.enabled.should be_true
+    end
+
+    it "should set enabled to true if the symlink target is relative and is in fstab - CHEF-4957" do
+      target = "xsdz1"
 
       ::File.stub(:symlink?).with("#{@new_resource.device}").and_return(true)
       ::File.stub(:readlink).with("#{@new_resource.device}").and_return(target)
