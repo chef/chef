@@ -49,11 +49,7 @@ describe Chef::Resource::Conditional::GuardInterpreter do
     
     it "should raise an exception if guard_interpreter is set to a resource not derived from Chef::Resource::Script" do
       resource.guard_interpreter(:file)
-
-      begin    
-        resource.only_if("echo hi").should raise_error ArgumentError
-      rescue ArgumentError
-      end
+      expect { resource.only_if("echo hi") }.to raise_error ArgumentError
     end
   end
 end

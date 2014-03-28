@@ -534,17 +534,11 @@ describe Chef::Resource do
       end
 
       it "should raise Chef::Exceptions::ValidationFailed on an attempt to set the guard_interpreter attribute to something other than a Symbol" do
-        begin
-          resource.guard_interpreter('command_dot_com')
-        rescue Chef::Exceptions::ValidationFailed
-        end
+        expect { resource.guard_interpreter('command_dot_com') }.to raise_error(Chef::Exceptions::ValidationFailed)
       end
 
       it "should not raise an exception when setting the guard interpreter attribute to a Symbol" do
-        begin
-          resource.guard_interpreter(:command_dot_com)
-        rescue Chef::Exceptions::ValidationFailed
-        end
+        expect { resource.guard_interpreter(:command_dot_com) }.not_to raise_error
       end
     end
 
