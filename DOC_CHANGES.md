@@ -30,6 +30,10 @@ Option similar to `-o` which sets or changes the run_list of a node permanently.
 
 Running ```knife bootstrap -V -V``` will run the initial chef-client with a log level of debug.
 
+### knife cookbook test
+
+```knife cookbook test``` respects chefignore files when selecting which files to test.
+
 ### OHAI 7 Upgrade
 Unless there are major issues, 11.12.0 will include OHAI 7. We already have ohai 7 docs in place. We probably need to add some notes to ohai 6 notes that one should now use the newer version when possible.
 

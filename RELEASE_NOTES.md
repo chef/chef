@@ -137,6 +137,10 @@ There is a new attribute named ```time``` that takes special cron time values as
 
 Running ```knife bootstrap -V -V``` will run the initial chef-client with a log level of debug.
 
+#### knife cookbook test
+
+Knife cookbook test now respects [chefignore files](http://docs.opscode.com/essentials_repository.html#chefignore-files), allowing you to exclude unrelated ruby code such as unit tests.
+
 #### Miscellaneous
 
 * The subversion resource will now mask plaintext passwords in error output.
