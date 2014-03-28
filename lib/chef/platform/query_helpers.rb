@@ -38,9 +38,11 @@ class Chef
         WIN32OLE.ole_initialize
 
         host = WMI::Win32_OperatingSystem.find(:first)
-        (host.version && host.version.start_with?("5.2"))
+        is_server_2003 = (host.version && host.version.start_with?("5.2"))
 
         WIN32OLE.ole_uninitialize
+
+        is_server_2003
       end
     end
 
