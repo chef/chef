@@ -24,7 +24,7 @@ class Chef
       def initialize(name, run_context=nil)
         super(name, run_context, :powershell_script, "powershell.exe")
         set_guard_inherited_attributes([:architecture])
-        @convert_boolean_return = nil
+        @convert_boolean_return = false
       end
 
       def convert_boolean_return(arg=nil)
