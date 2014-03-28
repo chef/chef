@@ -206,7 +206,9 @@ class Chef
         begin
           knife_ssh.run
         rescue Net::SSH::AuthenticationFailed
-          unless config[:ssh_password]
+          if config[:ssh_password]
+            raise
+          else
             ui.info("Failed to authenticate #{config[:ssh_user]} - trying password auth")
             knife_ssh_with_password_auth.run
           end
