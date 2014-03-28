@@ -61,6 +61,7 @@
 * Don't save the run_list during `node.save` when running with override run list. (CHEF-4443)
 * Enable Content-Length validation for Chef::HTTP::Simple and fix issues around it. (CHEF-5041, CHEF-5100)
 * Windows MSI Package Provider (CHEF-5087)
+* Fix mount resource when device is a relative symlink (CHEF-4957)
 
 ## Last Release: 11.10.0 (02/06/2014)
 
