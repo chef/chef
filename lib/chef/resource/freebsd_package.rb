@@ -46,7 +46,7 @@ class Chef
       private
 
       def assign_provider
-        @provider = if source.to_s =~ /^ports$/i
+        @provider = if @source.to_s =~ /^ports$/i
                       Chef::Provider::Package::Freebsd::Port
                     elsif ships_with_pkgng? || supports_pkgng?
                       Chef::Provider::Package::Freebsd::Pkgng
