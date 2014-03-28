@@ -89,6 +89,20 @@ recipe which is not a dependency of any cookbook specified in the run
 list will now log a warning with a message describing the problem and
 solution. In the future, this warning will become an error.
 
+#### Windows MSI Package Provider
+
+The first windows package provider has been added to core Chef. It supports Windows Installer (MSI) files only,
+and maintains idempotency by using the ProductCode from inside the MSI to determine if the products installation state.
+
+```
+package "install 7zip" do
+  action :install
+  source 'c:\downloads\7zip.msi'
+end
+```
+
+You can continue to use the windows_package LWRP from the windows cookbook alongside this provider.
+
 #### reboot_pending?  
 
 We have added a ```reboot_pending?``` method to the recipe DSL. This method returns true or false if the operating system
