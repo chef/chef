@@ -37,3 +37,4 @@ Example Contribution:
 * **Maxime Caumartin**: Fix mount resource when device is a relative symlink.
 * **jessehu**: Increase bootstrap log_level when knife -V -V is set
 * **mveitas**: knife cookbook test honors chefignore
+* **zuazo**: Fix ImmutableMash and ImmutableArray to_hash and to_a methods

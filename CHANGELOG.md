@@ -64,7 +64,7 @@
 * Fix mount resource when device is a relative symlink (CHEF-4957)
 * Increase bootstrap log_level when knife -V -V is set (CHEF-3610)
 * Knife cookbook test should honor chefignore (CHEF-4203)
-
+* Fix ImmutableMash and ImmutableArray to_hash and to_a methods (CHEF-5132)
 
 ## Last Release: 11.10.0 (02/06/2014)
 
