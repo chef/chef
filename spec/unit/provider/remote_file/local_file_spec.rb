@@ -25,6 +25,29 @@ describe Chef::Provider::RemoteFile::LocalFile do
   let(:new_resource) { Chef::Resource::RemoteFile.new("local file backend test (new_resource)") }
   let(:current_resource) { Chef::Resource::RemoteFile.new("local file backend test (current_resource)") }
   subject(:fetcher) { Chef::Provider::RemoteFile::LocalFile.new(uri, new_resource, current_resource) }
+  
+  context "when parsing source path" do
+    describe "when given local unix path" do
+      let(:uri) { URI.parse("file:///nyan_cat.png") }
+      it "returns a correct unix path" do
+        fetcher.fix_windows_path(uri.path).should == "/nyan_cat.png"
+      end
+    end
+
+    describe "when given local windows path" do
+      let(:uri) { URI.parse("file:///z:/windows/path/file.txt") }
+      it "returns a valid windows local path" do
+        fetcher.fix_windows_path(uri.path).should == "z:/windows/path/file.txt"
+      end
+    end
+
+    describe "when given unc windows path" do
+      let(:uri) { URI.parse("file:////server/share/windows/path/file.txt") }
+      it "returns a valid windows unc path" do
+        fetcher.fix_windows_path(uri.path).should == "//server/share/windows/path/file.txt"
+      end
+    end
+  end
 
   context "when first created" do
 
