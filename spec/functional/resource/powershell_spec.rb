@@ -321,6 +321,20 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       resource.should_skip?(:run).should be_false
     end
 
+    it "inherits cwd from the parent resource for only_if" do
+      custom_cwd = "#{ENV['SystemRoot']}\\system32\\drivers\\etc"
+      resource.cwd custom_cwd
+      resource.only_if  "exit ! [int32]($pwd.path -eq '#{custom_cwd}')"
+      resource.should_skip?(:run).should be_false
+    end
+
+    it "inherits cwd from the parent resource for not_if" do
+      custom_cwd = "#{ENV['SystemRoot']}\\system32\\drivers\\etc"
+      resource.cwd custom_cwd
+      resource.not_if  "exit ! [int32]($pwd.path -eq '#{custom_cwd}')"
+      resource.should_skip?(:run).should be_true
+    end
+
     it "evaluates a 64-bit resource with a 64-bit guard and interprets boolean false as zero status code", :windows64_only do
       resource.architecture :x86_64
       resource.only_if  "exit [int32]($env:PROCESSOR_ARCHITECTURE -ne 'AMD64')"
@@ -330,7 +344,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     it "evaluates a 64-bit resource with a 64-bit guard and interprets boolean true as nonzero status code", :windows64_only do
       resource.architecture :x86_64
       resource.only_if  "exit [int32]($env:PROCESSOR_ARCHITECTURE -eq 'AMD64')"
-    resource.should_skip?(:run).should be_true
+      resource.should_skip?(:run).should be_true
     end
 
     it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code" do
@@ -342,6 +356,57 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code" do
       resource.architecture :i386
       resource.only_if  "exit [int32]($env:PROCESSOR_ARCHITECTURE -eq 'X86')"
+      resource.should_skip?(:run).should be_true
+    end
+
+    it "evaluates a simple boolean false as nonzero status code when convert_boolean_return is true for only_if" do
+      resource.only_if  "$false"
+      resource.should_skip?(:run).should be_true
+    end
+
+    it "evaluates a simple boolean true as nonzero status code when convert_boolean_return is true for not_if" do
+      resource.convert_boolean_return true
+      resource.not_if  "$false"
+      resource.should_skip?(:run).should be_false
+    end
+
+    it "evaluates a simple boolean true as 0 status code when convert_boolean_return is true for only_if" do
+      resource.convert_boolean_return true
+      resource.only_if  "$true"
+      resource.should_skip?(:run).should be_false
+    end
+
+    it "evaluates a simple boolean true as 0 status code when convert_boolean_return is true for not_if" do
+      resource.convert_boolean_return true
+      resource.not_if  "$true"
+      resource.should_skip?(:run).should be_true
+    end
+
+    it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code using convert_boolean_return for only_if" do
+      resource.convert_boolean_return true
+      resource.architecture :i386
+      resource.only_if  "$env:PROCESSOR_ARCHITECTURE -eq 'X86'"
+      resource.should_skip?(:run).should be_false
+    end
+
+    it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code using convert_boolean_return for not_if" do
+      resource.convert_boolean_return true
+      resource.architecture :i386
+      resource.not_if  "$env:PROCESSOR_ARCHITECTURE -ne 'X86'"
+      resource.should_skip?(:run).should be_false
+    end
+
+    it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code using convert_boolean_return for only_if" do
+      resource.convert_boolean_return true
+      resource.architecture :i386
+      resource.only_if  "$env:PROCESSOR_ARCHITECTURE -ne 'X86'"
+      resource.should_skip?(:run).should be_true
+    end
+
+    it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code using convert_boolean_return for not_if" do
+      resource.convert_boolean_return true
+      resource.architecture :i386
+      resource.not_if  "$env:PROCESSOR_ARCHITECTURE -eq 'X86'"
       resource.should_skip?(:run).should be_true
     end
   end

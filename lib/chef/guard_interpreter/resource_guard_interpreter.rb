@@ -92,11 +92,11 @@ class Chef
       def merge_inherited_attributes
         inherited_attributes = []
 
-        if @parent_resource.respond_to?(:guard_inherited_attributes)
-          inherited_attributes = @parent_resource.send(:guard_inherited_attributes)
+        if @parent_resource.class.respond_to?(:guard_inherited_attributes)
+          inherited_attributes = @parent_resource.class.send(:guard_inherited_attributes)
         end
-        
-        if inherited_attributes
+
+        if inherited_attributes && !inherited_attributes.empty?
           inherited_attributes.each do |attribute|
             if @parent_resource.respond_to?(attribute) && @resource.respond_to?(attribute)
               parent_value = @parent_resource.send(attribute)

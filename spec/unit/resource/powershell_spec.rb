@@ -36,11 +36,29 @@ describe Chef::Resource::PowershellScript do
     @resource.should be_a_kind_of(Chef::Resource::PowershellScript)
   end
 
+  it "should set convert_boolean_return to false by default" do
+    @resource.convert_boolean_return.should == false
+  end
+
+  it "should return the value for convert_boolean_return that was set" do
+    @resource.convert_boolean_return true
+    @resource.convert_boolean_return.should == true
+    @resource.convert_boolean_return false
+    @resource.convert_boolean_return.should == false
+  end
+
   context "when using guards" do
     let(:resource) { @resource }
     before(:each) do
       resource.stub(:run_action)
       resource.stub(:updated).and_return(true)
+    end
+
+    it "inherits exactly the :cwd, :environment, :group, :path, :user, :umask, and :architecture attributes from a parent resource class" do
+      inherited_difference = Chef::Resource::PowershellScript.guard_inherited_attributes -
+        [:cwd, :environment, :group, :path, :user, :umask, :architecture ]
+
+      inherited_difference.should == []
     end
 
     it "should allow guard interpreter to be set to Chef::Resource::Script" do

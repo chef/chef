@@ -32,17 +32,6 @@ class Chef
         @code = nil
         @interpreter = nil
         @flags = nil
-        @guard_inherited_attributes = []
-
-        set_guard_inherited_attributes(
-          [
-           :cwd,
-           :environment,
-           :group,
-           :path,
-           :user,
-           :umask
-          ])
       end
 
       def code(arg=nil)
@@ -69,15 +58,31 @@ class Chef
         )
       end
 
-      protected
-
-      def set_guard_inherited_attributes(inherited_attributes)
-        @guard_inherited_attributes.concat(inherited_attributes).uniq
+      def self.add_guard_inherited_attributes(*inherited_attributes)
+        @class_inherited_attributes ||= []
+        @class_inherited_attributes = inherited_attributes if inherited_attributes
       end
 
-      def guard_inherited_attributes
-        @guard_inherited_attributes
+      def self.guard_inherited_attributes(*inherited_attributes)
+        # Similar to patterns elsewhere, return attributes from this
+        # class and superclasses as a form of inheritance
+        ancestor_attributes = []
+
+        if superclass.respond_to?(:guard_inherited_attributes)
+          ancestor_attributes = superclass.guard_inherited_attributes
+        end
+
+        ancestor_attributes.concat(@class_inherited_attributes ? @class_inherited_attributes : []).uniq
       end
+
+      add_guard_inherited_attributes(
+       :cwd,
+       :environment,
+       :group,
+       :path,
+       :user,
+       :umask
+       )
 
     end
   end

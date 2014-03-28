@@ -63,6 +63,13 @@ shared_examples_for "a script resource" do
       resource.code 'echo hi'
     end
 
+    it "inherits exactly the :cwd, :environment, :group, :path, :user, and :umask attributes from a parent resource class" do
+      inherited_difference = Chef::Resource::Script.guard_inherited_attributes -
+        [:cwd, :environment, :group, :path, :user, :umask ]
+
+      inherited_difference.should == []
+    end
+
     it "when guard_interpreter is set to the default value, the guard command string should be evaluated by command execution and not through a resource" do
       Chef::Resource::Conditional.any_instance.should_not_receive(:evaluate_block)
       Chef::Resource::Conditional.any_instance.should_receive(:evaluate_command).and_return(true)
