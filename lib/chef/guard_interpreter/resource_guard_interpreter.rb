@@ -25,19 +25,7 @@ class Chef
       def initialize(parent_resource, command, opts, &block)
         super(command, opts)
         @parent_resource = parent_resource
-
-        resource_class = get_resource_class(parent_resource)
-
-        raise ArgumentError, "Specified guard_interpreter resource #{parent_resource.guard_interpreter.to_s} unknown for this platform" if resource_class.nil?
-
-        empty_events = Chef::EventDispatch::Dispatcher.new
-        anonymous_run_context = Chef::RunContext.new(parent_resource.node, {}, empty_events)
-
-        @resource = resource_class.new('Guard resource', anonymous_run_context)
-
-        if ! @resource.kind_of?(Chef::Resource::Script)
-          raise ArgumentError, "Specified guard interpreter class #{resource_class} must be a kind of Chef::Resource::Script resource"
-        end
+        @resource = get_interpreter_resource(parent_resource)
       end
 
       def evaluate
@@ -80,11 +68,26 @@ class Chef
         resource_updated
       end
 
-      def get_resource_class(parent_resource)
+      def get_interpreter_resource(parent_resource)
         if parent_resource.nil? || parent_resource.node.nil?
           raise ArgumentError, "Node for guard resource parent must not be nil"
         end
-        Chef::Resource.resource_for_node(parent_resource.guard_interpreter, parent_resource.node)
+
+        resource_class = Chef::Resource.resource_for_node(parent_resource.guard_interpreter, parent_resource.node)
+
+        if resource_class.nil?
+          raise ArgumentError, "Specified guard_interpreter resource #{parent_resource.guard_interpreter.to_s} unknown for this platform"
+        end
+
+        empty_events = Chef::EventDispatch::Dispatcher.new
+        anonymous_run_context = Chef::RunContext.new(parent_resource.node, {}, empty_events)
+        interpreter_resource = resource_class.new('Guard resource', anonymous_run_context)
+
+        if ! interpreter_resource.kind_of?(Chef::Resource::Script)
+          raise ArgumentError, "Specified guard interpreter class #{resource_class} must be a kind of Chef::Resource::Script resource"
+        end
+
+        interpreter_resource
       end
 
       def block_from_attributes(attributes)
