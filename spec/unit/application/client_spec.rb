@@ -137,7 +137,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
     end
   end
 
-  it "should exit gracefully when sent SIGTERM" do
+  it "should exit gracefully when sent SIGTERM", :volatile_on_solaris do
     pid = fork do
       @app.run_application
     end

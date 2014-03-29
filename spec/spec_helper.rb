@@ -98,6 +98,7 @@ RSpec.configure do |config|
 
   # Tests that randomly fail, but may have value.
   config.filter_run_excluding :volatile => true
+  config.filter_run_excluding :volatile_on_solaris => true if solaris?
 
   # Add jruby filters here
   config.filter_run_excluding :windows_only => true unless windows?
