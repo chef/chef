@@ -58,9 +58,8 @@ class Chef
         )
       end
 
-      def self.add_guard_inherited_attributes(*inherited_attributes)
-        @class_inherited_attributes ||= []
-        @class_inherited_attributes = inherited_attributes if inherited_attributes
+      def self.set_guard_inherited_attributes(*inherited_attributes)
+        @class_inherited_attributes = inherited_attributes
       end
 
       def self.guard_inherited_attributes(*inherited_attributes)
@@ -75,7 +74,7 @@ class Chef
         ancestor_attributes.concat(@class_inherited_attributes ? @class_inherited_attributes : []).uniq
       end
 
-      add_guard_inherited_attributes(
+      set_guard_inherited_attributes(
        :cwd,
        :environment,
        :group,
