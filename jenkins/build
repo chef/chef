@@ -79,16 +79,16 @@ if [ "x$os" != "xAIX" ]; then
     dna=`pwd`/jenkins/dna.json
   fi
   # Omnibus build server prep tasks, including build ruby
-  # TEMPORARY: Temporarily disable chef-solo runs. 
-  # Can be reverted when https://github.com/opscode-cookbooks/omnibus/pull/12 
+  # TEMPORARY: Temporarily disable chef-solo runs.
+  # Can be reverted when https://github.com/opscode-cookbooks/omnibus/pull/12
   # is merged and released.
-  # Note that currently this functionality is not needed since we are far away 
+  # Note that currently this functionality is not needed since we are far away
   # from rebuilding slaves using cookbooks in ci.opscode.us.
   # sudo -i env PATH=$PATH chef-solo -c `pwd`/jenkins/solo.rb -j $dna -l debug
   # END of temporary change.
   # Fix root-owned perms left over from running chef-solo (cache turds, etc)
   set +e
-  sudo chown -R jenkins-node `pwd` || sudo chown -R jenkins `pwd` 
+  sudo chown -R jenkins-node `pwd` || sudo chown -R jenkins `pwd`
   set -e
 fi
 
@@ -122,6 +122,9 @@ sudo chown -R jenkins-node "/var/cache/omnibus" || sudo chown -R jenkins "/var/c
 
 # copy config into place
 cp omnibus.rb.example omnibus.rb
+# Temporarily disable dmg building in chef-client pipelines until dmg
+# is supported in omnitruck.
+echo "build_dmg false" >> omnibus.rb
 
 # Aaand.. new ruby
 PATH=/usr/local/bin:$PATH

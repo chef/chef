@@ -16,7 +16,7 @@
 #
 
 name "ruby-windows-devkit"
-version "4.5.2-20111229-1559"
+default_version "4.5.2-20111229-1559"
 
 dependency "ruby-windows"
 
