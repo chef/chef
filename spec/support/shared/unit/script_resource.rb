@@ -79,7 +79,7 @@ shared_examples_for "a script resource" do
     end
 
     it "when a valid guard_interpreter resource is specified, a block should be used to evaluate the guard" do
-      Chef::Resource::Conditional.any_instance.should_not_receive(:evaluate_command)
+      Chef::GuardInterpreter::DefaultGuardInterpreter.any_instance.should_not_receive(:evaluate)
       Chef::GuardInterpreter::ResourceGuardInterpreter.any_instance.should_receive(:evaluate_action).and_return(true)
       resource.guard_interpreter :script
       resource.only_if 'echo hi'

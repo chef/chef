@@ -19,16 +19,22 @@
 class Chef
   class GuardInterpreter
     class DefaultGuardInterpreter
+      include Chef::Mixin::ShellOut
 
       protected
 
-      def initialize
+      def initialize(command, opts)
+        @command = command
+        @command_opts = opts
       end
 
       public
 
-      def translate_command_block(command, opts, &block)
-        [command, block]
+      def evaluate
+        shell_out(@command, @command_opts).status.success?
+      rescue Chef::Exceptions::CommandTimeout
+        Chef::Log.warn "Command '#{@command}' timed out"
+        false
       end
     end
   end

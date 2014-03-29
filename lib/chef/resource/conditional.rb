@@ -31,13 +31,11 @@ class Chef
       end
 
       def self.not_if(parent_resource, command=nil, command_opts={}, &block)
-        translated_command, translated_block = translate_command_block(parent_resource, command, command_opts, &block)
-        new(:not_if, translated_command, command_opts, &translated_block)
+        new(:not_if, parent_resource, command, command_opts, &block)
       end
 
       def self.only_if(parent_resource, command=nil, command_opts={}, &block)
-        translated_command, translated_block = translate_command_block(parent_resource, command, command_opts, &block)
-        new(:only_if, translated_command, command_opts, &translated_block)
+        new(:only_if, parent_resource, command, command_opts, &block)
       end
 
       attr_reader :positivity
@@ -45,14 +43,16 @@ class Chef
       attr_reader :command_opts
       attr_reader :block
 
-      def initialize(positivity, command=nil, command_opts={}, &block)
+      def initialize(positivity, parent_resource, command=nil, command_opts={}, &block)
         @positivity = positivity
         case command
         when String
+          @guard_interpreter = new_guard_interpreter(parent_resource, command, command_opts, &block)
           @command, @command_opts = command, command_opts
           @block = nil
         when nil
           raise ArgumentError, "only_if/not_if requires either a command or a block" unless block_given?
+          @guard_interpreter = nil
           @command, @command_opts = nil, nil
           @block = block
         else
@@ -72,11 +72,11 @@ class Chef
       end
 
       def evaluate
-        @command ? evaluate_command : evaluate_block
+        @guard_interpreter ? evaluate_command : evaluate_block
       end
 
       def evaluate_command
-        shell_out(@command, @command_opts).status.success?
+        @guard_interpreter.evaluate
       rescue Chef::Exceptions::CommandTimeout
         Chef::Log.warn "Command '#{@command}' timed out"
         false
@@ -103,16 +103,14 @@ class Chef
         end
       end
 
-      def self.translate_command_block(parent_resource, command, opts, &block)
-        guard_interpreter = nil
+      private
 
+      def new_guard_interpreter(parent_resource, command, opts)
         if parent_resource.guard_interpreter == :default
-          guard_interpreter = Chef::GuardInterpreter::DefaultGuardInterpreter.new
+          guard_interpreter = Chef::GuardInterpreter::DefaultGuardInterpreter.new(command, opts)
         else
-          guard_interpreter = Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource.guard_interpreter, parent_resource)
+          guard_interpreter = Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, command, opts)
         end
-
-        guard_interpreter.translate_command_block(command, opts, &block)
       end
 
     end

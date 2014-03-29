@@ -52,7 +52,7 @@ describe Chef::Resource::Conditional do
     describe 'after running a command which timed out' do
       before do
         @conditional = Chef::Resource::Conditional.only_if(@parent_resource, "false")
-        @conditional.stub(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
+        Chef::GuardInterpreter::DefaultGuardInterpreter.any_instance.stub(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
       end
 
       it 'indicates that resource convergence should not continue' do
@@ -111,7 +111,7 @@ describe Chef::Resource::Conditional do
     describe 'after running a command which timed out' do
       before do
         @conditional = Chef::Resource::Conditional.not_if(@parent_resource,  "false")
-        @conditional.stub(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
+        Chef::GuardInterpreter::DefaultGuardInterpreter.any_instance.stub(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
       end
 
       it 'indicates that resource convergence should continue' do
