@@ -24,8 +24,19 @@ class Chef
 
       def translate_command_block(command, opts, &block)
         merge_inherited_attributes
+
         if command && ! block_given?
           block_attributes = opts.merge({:code => command})
+
+          # Handles cases like powershell_script where default
+          # attributes are different when used in a guard vs. not. For
+          # powershell_script in particular, this will go away when
+          # the one attribue that causes this changes its default to be
+          # the same after some period to prepare for deprecation
+          if @resource.class.respond_to?(:get_default_attributes)
+            block_attributes = @resource.class.send(:get_default_attributes, opts).merge(block_attributes)
+          end
+
           translated_block = to_block(block_attributes)
           [nil, translated_block]
         else

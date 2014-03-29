@@ -78,6 +78,46 @@ describe Chef::Resource::PowershellScript do
       allow_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).to receive(:evaluate_action).and_return(false)
       resource.only_if("echo hi")
     end
+
+    it "should enable convert_boolean_return by default for guards in the context of powershell_script when no guard params are specified" do
+      allow_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).to receive(:evaluate_action).and_return(true)
+      allow_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).to receive(:to_block).with(
+        {:convert_boolean_return => true, :code => "$true"}).and_return(Proc.new {})
+      resource.only_if("$true")
+    end
+
+    it "should enable convert_boolean_return by default for guards in non-Chef::Resource::Script derived resources when no guard params are specified" do
+      node = Chef::Node.new
+      run_context = Chef::RunContext.new(node, nil, nil)
+      file_resource = Chef::Resource::File.new('idontexist', run_context)
+      file_resource.guard_interpreter :powershell_script
+
+      allow_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).to receive(:to_block).with(
+        {:convert_boolean_return => true, :code => "$true"}).and_return(Proc.new {})
+      resource.only_if("$true")
+    end
+
+    it "should enable convert_boolean_return by default for guards in the context of powershell_script when guard params are specified" do
+      guard_parameters = {:cwd => '/etc/chef', :architecture => :x86_64}
+      allow_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).to receive(:to_block).with(
+        {:convert_boolean_return => true, :code => "$true"}.merge(guard_parameters)).and_return(Proc.new {})
+      resource.only_if("$true", guard_parameters)
+    end
+
+    it "should pass convert_boolean_return as true if it was specified as true in a guard parameter" do
+      guard_parameters = {:cwd => '/etc/chef', :convert_boolean_return => true, :architecture => :x86_64}
+      allow_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).to receive(:to_block).with(
+        {:convert_boolean_return => true, :code => "$true"}.merge(guard_parameters)).and_return(Proc.new {})
+      resource.only_if("$true", guard_parameters)
+    end
+
+    it "should pass convert_boolean_return as false if it was specified as true in a guard parameter" do
+      other_guard_parameters = {:cwd => '/etc/chef', :architecture => :x86_64}
+      parameters_with_boolean_disabled = other_guard_parameters.merge({:convert_boolean_return => false, :code => "$true"})
+      allow_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).to receive(:to_block).with(
+        parameters_with_boolean_disabled).and_return(Proc.new {})
+      resource.only_if("$true", parameters_with_boolean_disabled)
+    end
   end
 
   context "as a script running in Windows-based scripting language" do

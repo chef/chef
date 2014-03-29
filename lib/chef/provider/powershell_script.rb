@@ -42,7 +42,7 @@ class Chef
                         "\n" +
                         code.to_s +
                         EXIT_STATUS_NORMALIZATION_SCRIPT )
-        convert_boolean_return = @new_resource.convert_boolean_return.nil? ? false : @new_resource.convert_boolean_return
+        convert_boolean_return = @new_resource.convert_boolean_return
         @code = <<EOH
 new-variable -name interpolatedexitcode -visibility private -value #{convert_boolean_return}
 new-variable -name chefscriptresult -visibility private
