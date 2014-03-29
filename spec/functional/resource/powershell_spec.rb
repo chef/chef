@@ -111,6 +111,32 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       resource.run_action(:run)
     end
 
+    it "returns 0 for $false as the last line of the script when convert_boolean_return is false" do
+      resource.code "$false"
+      resource.returns(0)
+      resource.run_action(:run)
+    end
+
+    it "returns 0 for $true as the last line of the script when convert_boolean_return is false" do
+      resource.code "$true"
+      resource.returns(0)
+      resource.run_action(:run)
+    end
+
+    it "returns 1 for $false as the last line of the script when convert_boolean_return is true" do
+      resource.convert_boolean_return true
+      resource.code "$false"
+      resource.returns(1)
+      resource.run_action(:run)
+    end
+
+    it "returns 0 for $true as the last line of the script when convert_boolean_return is true" do
+      resource.convert_boolean_return true
+      resource.code "$true"
+      resource.returns(0)
+      resource.run_action(:run)
+    end
+
     it "executes a script with a 64-bit process on a 64-bit OS, otherwise a 32-bit process" do
       resource.code(processor_architecture_script_content + " | out-file -encoding ASCII #{script_output_path}")
       resource.returns(0)
@@ -360,11 +386,12 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     end
 
     it "evaluates a simple boolean false as nonzero status code when convert_boolean_return is true for only_if" do
+      resource.convert_boolean_return true
       resource.only_if  "$false"
       resource.should_skip?(:run).should be_true
     end
 
-    it "evaluates a simple boolean true as nonzero status code when convert_boolean_return is true for not_if" do
+    it "evaluates a simple boolean false as nonzero status code when convert_boolean_return is true for not_if" do
       resource.convert_boolean_return true
       resource.not_if  "$false"
       resource.should_skip?(:run).should be_false
