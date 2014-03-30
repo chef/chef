@@ -111,7 +111,7 @@ class Mash < Hash
   #
   # @return [Mash] The updated mash.
   def update(other_hash)
-    other_hash.each_pair { |key, value| self[key] = value }
+    other_hash.each_pair { |key, value| regular_writer(convert_key(key), convert_value(value)) }
     self
   end
 

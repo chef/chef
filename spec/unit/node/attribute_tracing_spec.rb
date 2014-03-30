@@ -327,5 +327,7 @@ describe "Chef::Node::Attribute Tracing" do
   end
 
   # TODO: add actions? eg set, clear (eg override to [] or {}), append, arrayclobber, hashclobber?
+  # TODO: test delete
+  # TODO: consider writing low-level testing for VividMash mutators
 
 end

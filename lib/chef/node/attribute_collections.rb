@@ -116,8 +116,6 @@ class Chef
         :delete,
         :delete_if,
         :keep_if,
-        :merge!,
-        :update,
         :reject!,
         :replace,
         :select!,
@@ -135,6 +133,21 @@ class Chef
           end
         METHOD_DEFN
       end
+
+
+      # @param other_hash<Hash>
+      #   A hash to update values in the VividMash with. The keys and the values will be
+      #   converted to VividMash format.
+      #
+      # @return [VividMash] The updated VividMash.
+      def update(other_hash)
+        # Rely on []= to handle autovivification, conversion and tracing.
+        other_hash.each_pair { |key, value| self[key] = value }
+        self
+      end
+
+      alias_method :merge!, :update
+
 
       def initialize(root, data={}, parent=nil, component=nil)
         @root = root
