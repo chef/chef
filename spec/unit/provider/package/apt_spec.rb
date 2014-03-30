@@ -181,6 +181,7 @@ SHOWPKG_STDOUT
       it "should run apt-get install with the package name and version" do
         @provider.should_receive(:shell_out!).
           with("apt-get -q -y install irssi=0.8.12-7",
+               :timeout => 21600,
                :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil})
         @provider.install_package("irssi", "0.8.12-7")
       end
@@ -188,6 +189,7 @@ SHOWPKG_STDOUT
       it "should run apt-get install with the package name and version and options if specified" do
         @provider.should_receive(:shell_out!).
           with("apt-get -q -y --force-yes install irssi=0.8.12-7",
+               :timeout => 21600,
                :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
         @new_resource.options("--force-yes")
         @provider.install_package("irssi", "0.8.12-7")
@@ -202,6 +204,7 @@ SHOWPKG_STDOUT
 
         @provider.should_receive(:shell_out!).
           with("apt-get -q -y -o APT::Default-Release=lenny-backports install irssi=0.8.12-7",
+               :timeout => 21600,
                 :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
 
         @provider.install_package("irssi", "0.8.12-7")
@@ -221,6 +224,7 @@ SHOWPKG_STDOUT
       it "should run apt-get remove with the package name" do
         @provider.should_receive(:shell_out!).
           with("apt-get -q -y remove irssi",
+               :timeout => 21600,
                :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil})
         @provider.remove_package("irssi", "0.8.12-7")
       end
@@ -228,6 +232,7 @@ SHOWPKG_STDOUT
       it "should run apt-get remove with the package name and options if specified" do
         @provider.should_receive(:shell_out!).
           with("apt-get -q -y --force-yes remove irssi",
+               :timeout => 21600,
                :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
         @new_resource.options("--force-yes")
 
@@ -240,6 +245,7 @@ SHOWPKG_STDOUT
       it "should run apt-get purge with the package name" do
         @provider.should_receive(:shell_out!).
           with("apt-get -q -y purge irssi",
+               :timeout => 21600,
                :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
         @provider.purge_package("irssi", "0.8.12-7")
       end
@@ -247,6 +253,7 @@ SHOWPKG_STDOUT
       it "should run apt-get purge with the package name and options if specified" do
         @provider.should_receive(:shell_out!).
           with("apt-get -q -y --force-yes purge irssi",
+               :timeout => 21600,
           :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
         @new_resource.options("--force-yes")
 
@@ -265,7 +272,8 @@ SHOWPKG_STDOUT
 
         @provider.should_receive(:shell_out!).
           with("debconf-set-selections /tmp/irssi-0.8.12-7.seed",
-          :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil})
+               :timeout => 21600,
+               :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil})
 
         @provider.preseed_package(file)
       end
@@ -273,7 +281,8 @@ SHOWPKG_STDOUT
       it "should run debconf-set-selections on the preseed file if it has changed" do
         @provider.should_receive(:shell_out!).
           with("debconf-set-selections /tmp/irssi-0.8.12-7.seed",
-          :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil})
+               :timeout => 21600,
+               :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil})
         file = @provider.get_preseed_file("irssi", "0.8.12-7")
         @provider.preseed_package(file)
       end
@@ -292,7 +301,8 @@ SHOWPKG_STDOUT
       it "should run dpkg-reconfigure package" do
         @provider.should_receive(:shell_out!).
           with("dpkg-reconfigure irssi",
-          :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
+               :timeout => 21600,
+               :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
         @provider.reconfig_package("irssi", "0.8.12-7")
       end
     end
@@ -302,6 +312,7 @@ SHOWPKG_STDOUT
           @provider.is_virtual_package = true
           @provider.should_receive(:shell_out!).
             with("apt-get -q -y install libmysqlclient-dev",
+                 :timeout => 21600,
                  :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
           @provider.install_package("libmysqlclient-dev", "not_a_real_version")
       end
