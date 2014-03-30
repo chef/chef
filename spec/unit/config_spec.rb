@@ -157,29 +157,6 @@ describe Chef::Config do
 
   end
 
-  describe "config attribute writer: log_method=" do
-    describe "when given an object that responds to sync= e.g. IO" do
-      it "should configure itself to use the IO as log_location" do
-        Chef::Config.log_location = STDOUT
-        Chef::Config.log_location.should == STDOUT
-      end
-    end
-
-    describe "when given an object that is stringable (to_str)" do
-      before do
-        @mockfile = mock("File", :path => "/var/log/chef/client.log", :sync= => true)
-        File.should_receive(:new).
-          with("/var/log/chef/client.log", "a").
-          and_return(@mockfile)
-      end
-
-      it "should configure itself to use a File object based upon the String" do
-        Chef::Config.log_location = "/var/log/chef/client.log"
-        Chef::Config.log_location.path.should == "/var/log/chef/client.log"
-      end
-    end
-  end
-
   describe "class method: plaform_specific_path" do
     it "should return given path on non-windows systems" do
       platform_mock :unix do
