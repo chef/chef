@@ -92,7 +92,7 @@ E
 
   before(:all) do
     @ohai = Ohai::System.new
-    @ohai.require_plugin("os")
+    @ohai.all_plugins("os")
   end
 
   context "working with pathes with special characters" do

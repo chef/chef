@@ -77,13 +77,15 @@ class Chef
       @events = events
 
       @node.run_context = self
+
+      @cookbook_compiler = nil
     end
 
     # Triggers the compile phase of the chef run. Implemented by
     # Chef::RunContext::CookbookCompiler
     def load(run_list_expansion)
-      compiler = CookbookCompiler.new(self, run_list_expansion, events)
-      compiler.compile
+      @cookbook_compiler = CookbookCompiler.new(self, run_list_expansion, events)
+      @cookbook_compiler.compile
     end
 
     # Adds an immediate notification to the
@@ -141,6 +143,18 @@ class Chef
       Chef::Log.debug("Loading Recipe #{recipe_name} via include_recipe")
 
       cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
+
+      if unreachable_cookbook?(cookbook_name) # CHEF-4367
+        Chef::Log.warn(<<-ERROR_MESSAGE)
+MissingCookbookDependency:
+Recipe `#{recipe_name}` is not in the run_list, and cookbook '#{cookbook_name}'
+is not a dependency of any cookbook in the run_list.  To load this recipe,
+first add a dependency on cookbook '#{cookbook_name}' in the cookbook you're
+including it from in that cookbook's metadata.
+ERROR_MESSAGE
+      end
+
+
       if loaded_fully_qualified_recipe?(cookbook_name, recipe_short_name)
         Chef::Log.debug("I am not loading #{recipe_name}, because I have already seen it.")
         false
@@ -228,6 +242,12 @@ class Chef
       cookbook.has_cookbook_file_for_node?(node, cb_file_name)
     end
 
+    # Delegates to CookbookCompiler#unreachable_cookbook?
+    # Used to raise an error when attempting to load a recipe belonging to a
+    # cookbook that is not in the dependency graph. See also: CHEF-4367
+    def unreachable_cookbook?(cookbook_name)
+      @cookbook_compiler.unreachable_cookbook?(cookbook_name)
+    end
 
     private
 

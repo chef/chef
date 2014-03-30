@@ -36,6 +36,7 @@ require 'chef/http/validate_content_length'
 require 'chef/config'
 require 'chef/exceptions'
 require 'chef/platform/query_helpers'
+require 'chef/http/remote_request_id'
 
 class Chef
   # == Chef::REST
@@ -56,19 +57,27 @@ class Chef
     # http://localhost:4000, a call to +get_rest+ with 'nodes' will make an
     # HTTP GET request to http://localhost:4000/nodes
     def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key], options={})
+      options = options.dup
       options[:client_name] = client_name
       options[:signing_key_filename] = signing_key_filename
       super(url, options)
 
       @decompressor = Decompressor.new(options)
       @authenticator = Authenticator.new(options)
+      @request_id = RemoteRequestID.new(options)
 
-      @middlewares << ValidateContentLength.new(options)
       @middlewares << JSONInput.new(options)
       @middlewares << JSONToModelOutput.new(options)
       @middlewares << CookieManager.new(options)
       @middlewares << @decompressor
       @middlewares << @authenticator
+      @middlewares << @request_id
+
+      # ValidateContentLength should come after Decompressor
+      # because the order of middlewares is reversed when handling
+      # responses.
+      @middlewares << ValidateContentLength.new(options)
+
     end
 
     def signing_key_filename
@@ -132,7 +141,7 @@ class Chef
     def raw_http_request(method, path, headers, data)
       url = create_url(path)
       method, url, headers, data = @authenticator.handle_request(method, url, headers, data)
-
+      method, url, headers, data = @request_id.handle_request(method, url, headers, data)
       response, rest_request, return_value = send_http_request(method, url, headers, data)
       response.error! unless success_response?(response)
       return_value

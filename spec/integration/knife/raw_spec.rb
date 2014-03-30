@@ -22,6 +22,7 @@ require 'chef/knife/show'
 describe 'knife raw' do
   extend IntegrationSupport
   include KnifeSupport
+  include AppServerSupport
 
   when_the_chef_server "has one of each thing" do
     client 'x', '{}'
@@ -55,7 +56,7 @@ EOM
     end
 
     it 'knife raw /blarghle returns 404' do
-      knife('raw /blarghle').should_fail(/ERROR: Server responded with error 404 "Not Found"/)
+      knife('raw /blarghle').should_fail(/ERROR: Server responded with error 404 "Not Found\s*"/)
     end
 
     it 'knife raw -m DELETE /roles/x succeeds', :pending => (RUBY_VERSION < "1.9") do
@@ -165,19 +166,16 @@ EOM
 
     context 'When a server returns raw json' do
       before :each do
-        @real_chef_server_url = Chef::Config.chef_server_url
         Chef::Config.chef_server_url = "http://127.0.0.1:9018"
         app = lambda do |env|
           [200, {'Content-Type' => 'application/json' }, ['{ "x": "y", "a": "b" }'] ]
         end
-        @raw_server = Puma::Server.new(app, Puma::Events.new(STDERR, STDOUT))
-        @raw_server.add_tcp_listener("127.0.0.1", 9018)
-        @raw_server.run
+        @raw_server, @raw_server_thread = start_app_server(app, 9018)
       end
 
       after :each do
-        Chef::Config.chef_server_url = @real_chef_server_url
-        @raw_server.stop(true)
+        @raw_server.shutdown if @raw_server
+        @raw_server_thread.kill if @raw_server_thread
       end
 
       it 'knife raw /blah returns the prettified json', :pending => (RUBY_VERSION < "1.9") do
@@ -198,19 +196,16 @@ EOM
 
     context 'When a server returns text' do
       before :each do
-        @real_chef_server_url = Chef::Config.chef_server_url
         Chef::Config.chef_server_url = "http://127.0.0.1:9018"
         app = lambda do |env|
           [200, {'Content-Type' => 'text' }, ['{ "x": "y", "a": "b" }'] ]
         end
-        @raw_server = Puma::Server.new(app, Puma::Events.new(STDERR, STDOUT))
-        @raw_server.add_tcp_listener("127.0.0.1", 9018)
-        @raw_server.run
+        @raw_server, @raw_server_thread = start_app_server(app, 9018)
       end
 
       after :each do
-        Chef::Config.chef_server_url = @real_chef_server_url
-        @raw_server.stop(true)
+        @raw_server.shutdown if @raw_server
+        @raw_server_thread.kill if @raw_server_thread
       end
 
       it 'knife raw /blah returns the raw text' do

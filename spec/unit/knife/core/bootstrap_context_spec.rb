@@ -41,19 +41,29 @@ describe Chef::Knife::Core::BootstrapContext do
     bootstrap_context.start_chef.should eq "chef-client -j /etc/chef/first-boot.json -E _default"
   end
 
+  describe "when in verbosity mode" do
+    let(:config) { {:verbosity => 2} }
+    it "adds '-l debug' when verbosity is >= 2" do
+      bootstrap_context.start_chef.should eq "chef-client -j /etc/chef/first-boot.json -l debug -E _default"
+    end
+  end
+
   it "reads the validation key" do
     bootstrap_context.validation_key.should eq IO.read(File.join(CHEF_SPEC_DATA, 'ssl', 'private_key.pem'))
   end
 
   it "generates the config file data" do
     expected=<<-EXPECTED
-log_level        :auto
 log_location     STDOUT
 chef_server_url  "http://chef.example.com:4444"
 validation_client_name "chef-validator-testing"
 # Using default node name (fqdn)
 EXPECTED
     bootstrap_context.config_content.should eq expected
+  end
+
+  it "does not set a default log_level" do
+    expect(bootstrap_context.config_content).not_to match(/log_level/)
   end
 
   describe "alternate chef-client path" do

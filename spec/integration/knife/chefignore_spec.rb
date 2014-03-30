@@ -38,14 +38,13 @@ describe 'chefignore tests' do
       file 'data_bags/bag1/chefignore', chefignore
       file 'cookbooks/cookbook1/chefignore', chefignore
 
-      it 'nothing is ignored' do
+      it 'matching files and directories get ignored' do
         # NOTE: many of the "chefignore" files should probably not show up
         # themselves, but we have other tests that talk about that
         knife('list --local -Rfp /').should_succeed <<EOM
 /cookbooks/
 /cookbooks/cookbook1/
 /cookbooks/cookbook1/chefignore
-/cookbooks/cookbook1/x.json
 /data_bags/
 /data_bags/bag1/
 /data_bags/bag1/x.json

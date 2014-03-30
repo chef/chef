@@ -393,4 +393,3 @@ class Chef
 
   end
 end
-

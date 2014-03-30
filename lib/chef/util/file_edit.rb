@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'chef/util/editor'
 require 'fileutils'
-require 'tempfile'
 
 class Chef
   class Util
@@ -24,108 +24,76 @@ class Chef
 
       private
 
-      attr_accessor :original_pathname, :contents, :file_edited
+      attr_reader :editor, :original_pathname
 
       public
 
       def initialize(filepath)
+        raise ArgumentError, "File '#{filepath}' does not exist" unless File.exist?(filepath)
+        @editor = Editor.new(File.open(filepath, &:readlines))
         @original_pathname = filepath
         @file_edited = false
+      end
 
-        raise ArgumentError, "File doesn't exist" unless File.exist? @original_pathname
-        @contents = File.open(@original_pathname) { |f| f.readlines }
+      # return if file has been edited
+      def file_edited?
+        @file_edited
       end
 
       #search the file line by line and match each line with the given regex
       #if matched, replace the whole line with newline.
       def search_file_replace_line(regex, newline)
-        search_match(regex, newline, 'r', 1)
+        @changes = (editor.replace_lines(regex, newline) > 0) || @changes
       end
 
       #search the file line by line and match each line with the given regex
       #if matched, replace the match (all occurances)  with the replace parameter
       def search_file_replace(regex, replace)
-        search_match(regex, replace, 'r', 2)
+        @changes = (editor.replace(regex, replace) > 0) || @changes
       end
 
       #search the file line by line and match each line with the given regex
       #if matched, delete the line
       def search_file_delete_line(regex)
-        search_match(regex, " ", 'd', 1)
+        @changes = (editor.remove_lines(regex) > 0) || @changes
       end
 
       #search the file line by line and match each line with the given regex
       #if matched, delete the match (all occurances) from the line
       def search_file_delete(regex)
-        search_match(regex, " ", 'd', 2)
+        search_file_replace(regex, '')
       end
 
       #search the file line by line and match each line with the given regex
       #if matched, insert newline after each matching line
       def insert_line_after_match(regex, newline)
-        search_match(regex, newline, 'i', 1)
+        @changes = (editor.append_line_after(regex, newline) > 0) || @changes
       end
 
       #search the file line by line and match each line with the given regex
       #if not matched, insert newline at the end of the file
       def insert_line_if_no_match(regex, newline)
-        search_match(regex, newline, 'i', 2)
+        @changes = (editor.append_line_if_missing(regex, newline) > 0) || @changes
+      end
+
+      def unwritten_changes?
+        !!@changes
       end
 
       #Make a copy of old_file and write new file out (only if file changed)
       def write_file
-
-        # file_edited is false when there was no match in the whole file and thus no contents have changed.
-        if file_edited
+        if @changes
           backup_pathname = original_pathname + ".old"
           FileUtils.cp(original_pathname, backup_pathname, :preserve => true)
           File.open(original_pathname, "w") do |newfile|
-            contents.each do |line|
+            editor.lines.each do |line|
               newfile.puts(line)
             end
             newfile.flush
           end
+          @file_edited = true
         end
-        self.file_edited = false
-      end
-
-      private
-
-      #helper method to do the match, replace, delete, and insert operations
-      #command is the switch of delete, replace, and insert ('d', 'r', 'i')
-      #method is to control operation on whole line or only the match (1 for line, 2 for match)
-      def search_match(regex, replace, command, method)
-
-        #convert regex to a Regexp object (if not already is one) and store it in exp.
-        exp = Regexp.new(regex)
-
-        #loop through contents and do the appropriate operation depending on 'command' and 'method'
-        new_contents = []
-
-        contents.each do |line|
-          if line.match(exp)
-            self.file_edited = true
-            case
-            when command == 'r'
-              new_contents << ((method == 1) ? replace : line.gsub!(exp, replace))
-            when command == 'd'
-              if method == 2
-                new_contents << line.gsub!(exp, "")
-              end
-            when command == 'i'
-              new_contents << line
-              new_contents << replace unless method == 2
-            end
-          else
-            new_contents << line
-          end
-        end
-        if command == 'i' && method == 2 && ! file_edited
-          new_contents << replace
-          self.file_edited = true
-        end
-
-        self.contents = new_contents
+        @changes = false
       end
     end
   end

@@ -33,9 +33,7 @@ class Chef
 
       def shell_out(*command_args)
         cmd = Mixlib::ShellOut.new(*run_command_compatible_options(command_args))
-        if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.debug?
-          cmd.live_stream = STDOUT
-        end
+        cmd.live_stream = io_for_live_stream
         cmd.run_command
         cmd
       end
@@ -72,6 +70,14 @@ class Chef
 
       def deprecate_option(old_option, new_option)
         Chef::Log.logger.warn "DEPRECATION: Chef::Mixin::ShellOut option :#{old_option} is deprecated. Use :#{new_option}"
+      end
+
+      def io_for_live_stream
+        if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.debug?
+          STDOUT
+        else
+          nil
+        end
       end
     end
   end

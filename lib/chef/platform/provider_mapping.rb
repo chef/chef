@@ -180,6 +180,7 @@ class Chef
               :package => Chef::Provider::Package::Zypper,
               :group => Chef::Provider::Group::Suse
             },
+            # Only OpenSuSE 12.3+ should use the Usermod group provider:
             ">= 12.3" => {
               :group => Chef::Provider::Group::Usermod
             }
@@ -190,19 +191,6 @@ class Chef
               :cron => Chef::Provider::Cron,
               :package => Chef::Provider::Package::Zypper,
               :group => Chef::Provider::Group::Suse
-            },
-            ###############################################
-            # TODO: Remove this after ohai update is released.
-            # Only OpenSuSE 12.3+ should use the Usermod group provider:
-            # Ohai before OHAI-339 is applied reports both OpenSuSE and SuSE
-            # Enterprise as "suse", Ohai after OHAI-339 will report OpenSuSE as
-            # "opensuse".
-            #
-            # In order to support OpenSuSE both before and after the Ohai
-            # change, I'm leaving this here. It needs to get removed before
-            # SuSE enterprise 12.3 ships.
-            ">= 12.3" => {
-              :group => Chef::Provider::Group::Usermod
             }
           },
           :oracle  => {
@@ -222,6 +210,15 @@ class Chef
               :ifconfig => Chef::Provider::Ifconfig::Redhat
             }
           },
+          :ibm_powerkvm   => {
+            :default => {
+              :service => Chef::Provider::Service::Redhat,
+              :cron => Chef::Provider::Cron,
+              :package => Chef::Provider::Package::Yum,
+              :mdadm => Chef::Provider::Mdadm,
+              :ifconfig => Chef::Provider::Ifconfig::Redhat
+            }
+          },
           :gentoo   => {
             :default => {
               :package => Chef::Provider::Package::Portage,
@@ -233,7 +230,7 @@ class Chef
           :arch   => {
             :default => {
               :package => Chef::Provider::Package::Pacman,
-              :service => Chef::Provider::Service::Arch,
+              :service => Chef::Provider::Service::Systemd,
               :cron => Chef::Provider::Cron,
               :mdadm => Chef::Provider::Mdadm
             }
@@ -244,7 +241,9 @@ class Chef
               :service => Chef::Provider::Service::Windows,
               :user => Chef::Provider::User::Windows,
               :group => Chef::Provider::Group::Windows,
-              :mount => Chef::Provider::Mount::Windows
+              :mount => Chef::Provider::Mount::Windows,
+              :batch => Chef::Provider::Batch,
+              :powershell_script => Chef::Provider::PowershellScript
             }
           },
           :mingw32 => {
@@ -253,7 +252,9 @@ class Chef
               :service => Chef::Provider::Service::Windows,
               :user => Chef::Provider::User::Windows,
               :group => Chef::Provider::Group::Windows,
-              :mount => Chef::Provider::Mount::Windows
+              :mount => Chef::Provider::Mount::Windows,
+              :batch => Chef::Provider::Batch,
+              :powershell_script => Chef::Provider::PowershellScript
             }
           },
           :windows => {
@@ -262,7 +263,9 @@ class Chef
               :service => Chef::Provider::Service::Windows,
               :user => Chef::Provider::User::Windows,
               :group => Chef::Provider::Group::Windows,
-              :mount => Chef::Provider::Mount::Windows
+              :mount => Chef::Provider::Mount::Windows,
+              :batch => Chef::Provider::Batch,
+              :powershell_script => Chef::Provider::PowershellScript
             }
           },
           :solaris  => {},
@@ -307,7 +310,7 @@ class Chef
               :group => Chef::Provider::Group::Usermod,
               :user => Chef::Provider::User::Solaris,
             },
-            ">= 5.9" => {
+            "< 5.11" => {
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::Solaris,
               :cron => Chef::Provider::Cron::Solaris,

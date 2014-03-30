@@ -26,7 +26,7 @@ require 'open-uri'
 # all values, except for the value associated with the id key, have
 # been encrypted.
 #
-# EncrypedDataBagItem can be used in recipes to decrypt data bag item
+# EncryptedDataBagItem can be used in recipes to decrypt data bag item
 # members.
 #
 # Data bag item values are assumed to have been encrypted using the
@@ -49,6 +49,22 @@ require 'open-uri'
 class Chef::EncryptedDataBagItem
   ALGORITHM = 'aes-256-cbc'
 
+  #
+  # === Synopsis
+  #
+  #   EncryptedDataBagItem.new(hash, secret)
+  #
+  # === Args
+  #
+  # +enc_hash+::
+  #   The encrypted hash to be decrypted
+  # +secret+::
+  #   The raw secret key
+  #
+  # === Description
+  #
+  # Create a new encrypted data bag item for reading (decryption)
+  #
   def initialize(enc_hash, secret)
     @enc_hash = enc_hash
     @secret = secret
@@ -82,6 +98,26 @@ class Chef::EncryptedDataBagItem
     end
   end
 
+  #
+  # === Synopsis
+  #
+  #   EncryptedDataBagItem.load(data_bag, name, secret = nil)
+  #
+  # === Args
+  #
+  # +data_bag+::
+  #   The name of the data bag to fetch
+  # +name+::
+  #   The name of the data bag item to fetch
+  # +secret+::
+  #   The raw secret key. If the +secret+ is nil, the value of the file at
+  #   +Chef::Config[:encrypted_data_bag_secret]+ is loaded. See +load_secret+
+  #   for more information.
+  #
+  # === Description
+  #
+  # Loads and decrypts the data bag item with the given name.
+  #
   def self.load(data_bag, name, secret = nil)
     raw_hash = Chef::DataBagItem.load(data_bag, name)
     secret = secret || self.load_secret

@@ -22,6 +22,7 @@ module KnifeSpecs
 end
 
 require 'spec_helper'
+require 'uri'
 
 describe Chef::Knife do
   before(:each) do
@@ -139,6 +140,60 @@ describe Chef::Knife do
       Chef::Knife.subcommand_class_from(%w{cookbook site vendor --help foo bar baz}).should == :CookbookSiteVendor
     end
 
+  end
+
+  describe "the headers include X-Remote-Request-Id" do
+
+    let(:headers) {{"Accept"=>"application/json",
+                    "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
+                    'X-Chef-Version' => Chef::VERSION,
+                    "Host"=>"api.opscode.piab:443",
+                    "X-REMOTE-REQUEST-ID"=>request_id}}
+
+    let(:request_id) {"1234"}
+
+    let(:request_mock) { {} }
+
+    let(:rest) do
+      Net::HTTP.stub(:new).and_return(http_client)
+      Chef::RequestID.instance.stub(:request_id).and_return(request_id)
+      Chef::Config.stub(:chef_server_url).and_return("https://api.opscode.piab")
+      command = Chef::Knife.run(%w{test yourself})
+      rest = command.noauth_rest
+      rest
+    end
+
+    let!(:http_client) do
+      http_client = Net::HTTP.new(url.host, url.port)
+      http_client.stub(:request).and_yield(http_response).and_return(http_response)
+      http_client
+    end
+
+    let(:url) { URI.parse("https://api.opscode.piab") }
+
+    let(:http_response) do
+      http_response = Net::HTTPSuccess.new("1.1", "200", "successful rest req")
+      http_response.stub(:read_body)
+      http_response.stub(:body).and_return(body)
+      http_response["Content-Length"] = body.bytesize.to_s
+      http_response
+    end
+
+    let(:body) { "ninja" }
+
+    before(:each) do
+      Chef::Config[:chef_server_url] = "https://api.opscode.piab"
+      if KnifeSpecs.const_defined?(:TestYourself)
+        KnifeSpecs.send :remove_const, :TestYourself
+      end
+      Kernel.load(File.join(CHEF_SPEC_DATA, 'knife_subcommand', 'test_yourself.rb'))
+      Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.kind_of?(Class) }
+    end
+
+    it "confirms that the headers include X-Remote-Request-Id" do
+      Net::HTTP::Get.should_receive(:new).with("/monkey", headers).and_return(request_mock)
+      rest.get_rest("monkey")
+    end
   end
 
   describe "when running a command" do

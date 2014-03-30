@@ -54,6 +54,32 @@ describe Chef::Node::ImmutableMash do
     @immutable_mash[:top_level_4][:level2].should be_a(Chef::Node::ImmutableMash)
   end
 
+  describe "to_hash" do
+    before do
+      @copy = @immutable_mash.to_hash
+    end
+
+    it "converts an immutable mash to a new mutable hash" do
+      @copy.should be_instance_of(Hash)
+    end
+
+    it "converts an immutable nested mash to a new mutable hash" do
+      @copy['top_level_4']['level2'].should be_instance_of(Hash)
+    end
+
+    it "converts an immutable nested array to a new mutable array" do
+      @copy['top_level_2'].should be_instance_of(Array)
+    end
+
+    it "should create a mash with the same content" do
+      @copy.should == @immutable_mash
+    end
+
+    it 'should allow mutation' do
+      lambda { @copy['m'] = 'm' }.should_not raise_error(Chef::Exceptions::ImmutableAttributeModification)
+    end
+
+  end
 
   [
     :[]=,
@@ -86,7 +112,9 @@ end
 describe Chef::Node::ImmutableArray do
 
   before do
-    @immutable_array = Chef::Node::ImmutableArray.new(%w[foo bar baz])
+    @immutable_array = Chef::Node::ImmutableArray.new(%w[foo bar baz] + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ])
+    immutable_mash = Chef::Node::ImmutableMash.new({:m => 'm'})
+    @immutable_nested_array = Chef::Node::ImmutableArray.new(["level1",@immutable_array, immutable_mash])
   end
 
   ##
@@ -130,10 +158,41 @@ describe Chef::Node::ImmutableArray do
     end
   end
 
+  it "can be duped even if some elements can't" do
+    @immutable_array.dup
+  end
+
   it "returns a mutable version of itself when duped" do
     mutable = @immutable_array.dup
     mutable[0] = :value
     mutable[0].should == :value
   end
+
+  describe "to_a" do
+    before do
+      @copy = @immutable_nested_array.to_a
+    end
+
+    it "converts an immutable array to a new mutable array" do
+      @copy.should be_instance_of(Array)
+    end
+
+    it "converts an immutable nested array to a new mutable array" do
+      @copy[1].should be_instance_of(Array)
+    end
+
+    it "converts an immutable nested mash to a new mutable hash" do
+      @copy[2].should be_instance_of(Hash)
+    end
+
+    it "should create an array with the same content" do
+      @copy.should == @immutable_nested_array
+    end
+
+    it 'should allow mutation' do
+      lambda { @copy << 'm' }.should_not raise_error(Chef::Exceptions::ImmutableAttributeModification)
+    end
+  end
+
 end
 

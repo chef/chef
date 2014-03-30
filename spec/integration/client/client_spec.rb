@@ -215,5 +215,19 @@ EOM
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", :cwd => chef_dir)
       result.error!
     end
+
+    it "should complete with success when setting the run list with -r" do
+      file 'config/client.rb', <<EOM
+chef_server_url 'http://omg.com/blah'
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -r 'x::default' -z", :cwd => chef_dir)
+      result.stdout.should_not include("Overridden Run List")
+      result.stdout.should include("Run List is [recipe[x::default]]")
+      #puts result.stdout
+      result.error!
+    end
+
   end
 end

@@ -344,7 +344,7 @@ describe Chef::Resource do
       expected_keys = [ :allowed_actions, :params, :provider, :updated,
         :updated_by_last_action, :before, :supports,
         :noop, :ignore_failure, :name, :source_line,
-        :action, :retries, :retry_delay, :elapsed_time]
+        :action, :retries, :retry_delay, :elapsed_time, :guard_interpreter]
       (hash.keys - expected_keys).should == []
       (expected_keys - hash.keys).should == []
       hash[:name].should eql("funk")
@@ -524,6 +524,28 @@ describe Chef::Resource do
       @resource.run_action(:purr)
       snitch_var1.should be_nil
       snitch_var2.should be_false
+    end
+
+    describe "guard_interpreter attribute" do
+      let(:resource) { @resource }
+
+      it "should be set to :default by default" do
+        resource.guard_interpreter.should == :default
+      end
+
+      it "if set to :default should return :default when read" do
+        resource.guard_interpreter(:default)
+        resource.guard_interpreter.should == :default
+      end
+
+      it "should raise Chef::Exceptions::ValidationFailed on an attempt to set the guard_interpreter attribute to something other than a Symbol" do
+        expect { resource.guard_interpreter('command_dot_com') }.to raise_error(Chef::Exceptions::ValidationFailed)
+      end
+
+      it "should not raise an exception when setting the guard interpreter attribute to a Symbol" do
+        Chef::GuardInterpreter::ResourceGuardInterpreter.stub(:new).and_return(nil)
+        expect { resource.guard_interpreter(:command_dot_com) }.not_to raise_error
+      end
     end
 
   end

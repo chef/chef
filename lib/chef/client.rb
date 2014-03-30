@@ -44,6 +44,7 @@ require 'chef/version'
 require 'chef/resource_reporter'
 require 'chef/run_lock'
 require 'chef/policy_builder'
+require 'chef/request_id'
 require 'ohai'
 require 'rbconfig'
 
@@ -53,6 +54,16 @@ class Chef
   # syncs cookbooks if necessary, and triggers convergence.
   class Client
     include Chef::Mixin::PathSanity
+
+    # IO stream that will be used as 'STDOUT' for formatters. Formatters are
+    # configured during `initialize`, so this provides a convenience for
+    # setting alternative IO stream during tests.
+    STDOUT_FD = STDOUT
+
+    # IO stream that will be used as 'STDERR' for formatters. Formatters are
+    # configured during `initialize`, so this provides a convenience for
+    # setting alternative IO stream during tests.
+    STDERR_FD = STDERR
 
     # Clears all notifications for client run status events.
     # Primarily for testing purposes.
@@ -128,15 +139,13 @@ class Chef
     attr_accessor :rest
     attr_accessor :runner
 
-    #--
-    # TODO: timh/cw: 5-19-2010: json_attribs should be moved to RunContext?
     attr_reader :json_attribs
     attr_reader :run_status
     attr_reader :events
 
     # Creates a new Chef::Client.
     def initialize(json_attribs=nil, args={})
-      @json_attribs = json_attribs
+      @json_attribs = json_attribs || {}
       @node = nil
       @run_status = nil
       @runner = nil
@@ -148,12 +157,16 @@ class Chef
       @events = EventDispatch::Dispatcher.new(*event_handlers)
       @override_runlist = args.delete(:override_runlist)
       @specific_recipes = args.delete(:specific_recipes)
+
+      if new_runlist = args.delete(:runlist)
+        @json_attribs["run_list"] = new_runlist
+      end
     end
 
     def configure_formatters
       formatters_for_run.map do |formatter_name, output_path|
         if output_path.nil?
-          Chef::Formatters.new(formatter_name, STDOUT, STDERR)
+          Chef::Formatters.new(formatter_name, STDOUT_FD, STDERR_FD)
         else
           io = File.open(output_path, "a+")
           io.sync = true
@@ -280,13 +293,10 @@ class Chef
     end
 
     def node_name
-      name = Chef::Config[:node_name] || ohai[:fqdn] || ohai[:hostname]
+      name = Chef::Config[:node_name] || ohai[:fqdn] || ohai[:machinename] || ohai[:hostname]
       Chef::Config[:node_name] = name
 
-      unless name
-        msg = "Unable to determine node name: configure node_name or configure the system's hostname and fqdn"
-        raise Chef::Exceptions::CannotDetermineNodeName, msg
-      end
+      raise Chef::Exceptions::CannotDetermineNodeName unless name
 
       # node names > 90 bytes only work with authentication protocol >= 1.1
       # see discussion in config.rb.
@@ -391,10 +401,15 @@ class Chef
       # don't add code that may fail before entering this section to be sure to release lock
       begin
         runlock.save_pid
+
+        check_ssl_config
+
+        request_id = Chef::RequestID.instance.request_id
         run_context = nil
         @events.run_start(Chef::VERSION)
         Chef::Log.info("*** Chef #{Chef::VERSION} ***")
         Chef::Log.info "Chef-client pid: #{Process.pid}"
+        Chef::Log.debug("Chef-client request_id: #{request_id}")
         enforce_path_sanity
         run_ohai
         @events.ohai_completed(node)
@@ -404,6 +419,7 @@ class Chef
 
         build_node
 
+        run_status.run_id = request_id
         run_status.start_clock
         Chef::Log.info("Starting Chef Run for #{node.name}")
         run_started
@@ -434,6 +450,8 @@ class Chef
         @events.run_failed(e)
         raise
       ensure
+        Chef::RequestID.instance.reset_request_id
+        request_id = nil
         @run_status = nil
         run_context = nil
         runlock.release
@@ -472,6 +490,37 @@ class Chef
       require 'chef/win32/security'
 
       Chef::ReservedNames::Win32::Security.has_admin_privileges?
+    end
+
+    def check_ssl_config
+      if Chef::Config[:ssl_verify_mode] == :verify_none and !Chef::Config[:verify_api_cert]
+        Chef::Log.warn(<<-WARN)
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+SSL validation of HTTPS requests is disabled. HTTPS connections are still
+encrypted, but chef is not able to detect forged replies or man in the middle
+attacks.
+
+To fix this issue add an entry like this to your configuration file:
+
+```
+  # Verify all HTTPS connections (recommended)
+  ssl_verify_mode :verify_peer
+
+  # OR, Verify only connections to chef-server
+  verify_api_cert true
+```
+
+To check your SSL configuration, or troubleshoot errors, you can use the
+`knife ssl check` command like so:
+
+```
+  knife ssl check -c #{Chef::Config.config_file}
+```
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+WARN
+      end
     end
 
   end

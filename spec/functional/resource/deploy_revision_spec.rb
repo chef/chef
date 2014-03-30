@@ -45,7 +45,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
 
   before(:all) do
     @ohai = Ohai::System.new
-    @ohai.require_plugin("os")
+    @ohai.all_plugins("os")
   end
 
   let(:node) do
@@ -78,6 +78,9 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
   # This is the third version
   let(:previous_rev) { "6d19a6dbecc8e37f5b2277345885c0c783eb8fb1" }
 
+  # This is the second version
+  let(:second_rev) { "0827e1b0e5043608ac0a824da5c558e252154ad0" }
+
   # This is the sixth version, it is on the "with-deploy-scripts" branch
   let(:rev_with_in_repo_callbacks) { "2404d015882659754bdb93ad6e4b4d3d02691a82" }
 
@@ -100,6 +103,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
 
   let(:basic_deploy_resource) do
     Chef::Resource::DeployRevision.new(deploy_directory, run_context).tap do |r|
+      r.name "deploy-revision-unit-test"
       r.repo git_bundle_repo
       r.symlink_before_migrate({})
       r.symlinks({})
@@ -124,6 +128,34 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
     basic_deploy_resource.dup.tap do |r|
       r.revision(latest_rev)
       r.restart_command shell_restart_command(:deploy_to_latest_rev_again)
+    end
+  end
+
+  let(:deploy_to_previous_rev_again) do
+    basic_deploy_resource.dup.tap do |r|
+      r.revision(previous_rev)
+      r.restart_command shell_restart_command(:deploy_to_previous_rev_again)
+    end
+  end
+
+  let(:deploy_to_second_rev) do
+    basic_deploy_resource.dup.tap do |r|
+      r.revision(second_rev)
+      r.restart_command shell_restart_command(:deploy_to_second_rev)
+    end
+  end
+
+  let(:deploy_to_second_rev_again) do
+    basic_deploy_resource.dup.tap do |r|
+      r.revision(second_rev)
+      r.restart_command shell_restart_command(:deploy_to_second_rev_again)
+    end
+  end
+
+  let(:deploy_to_second_rev_again_again) do
+    basic_deploy_resource.dup.tap do |r|
+      r.revision(second_rev)
+      r.restart_command shell_restart_command(:deploy_to_second_rev_again_again)
     end
   end
 
@@ -304,6 +336,165 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       it "deploys the right code" do
         IO.read(rel_path("current/app/app.rb")).should include("this is the fourth version of the app")
       end
+    end
+
+    describe "back to a previously deployed revision where resource rev == latest revision (explicit rollback)" do
+      before do
+        deploy_to_previous_rev.run_action(:deploy)
+        @previous_rev_all_releases = deploy_to_previous_rev.provider_for_action(:deploy).all_releases
+        deploy_to_latest_rev.run_action(:deploy)
+        @latest_rev_all_releases = deploy_to_latest_rev.provider_for_action(:deploy).all_releases
+        deploy_to_latest_rev_again.run_action(:rollback)
+        @previous_rev_again_all_releases = deploy_to_latest_rev_again.provider_for_action(:deploy).all_releases
+      end
+
+      the_app_is_deployed_at_revision(:previous_rev)
+
+      it "restarts the application after rolling back" do
+        actual_operations_order.should == %w[deploy_to_previous_rev deploy_to_latest_rev deploy_to_latest_rev_again]
+      end
+
+      it "is marked updated" do
+        deploy_to_latest_rev_again.should be_updated_by_last_action
+      end
+
+      it "deploys the right code" do
+        IO.read(rel_path("current/app/app.rb")).should include("this is the third version of the app")
+      end
+
+      it "all_releases after first deploy should have one entry" do
+        @previous_rev_all_releases.length.should == 1
+      end
+
+      it "all_releases after second deploy should have two entries" do
+        @latest_rev_all_releases.length.should == 2
+      end
+
+      it "all_releases after rollback should have one entry" do
+        @previous_rev_again_all_releases.length.should == 1
+      end
+
+      it "all_releases after rollback should be the same as after the first deploy" do
+        @previous_rev_again_all_releases.should == @previous_rev_all_releases
+      end
+
+    end
+
+    describe "back to a previously deployed revision where resource rev == previous revision (explicit rollback)" do
+      before do
+        deploy_to_previous_rev.run_action(:deploy)
+        @previous_rev_all_releases = deploy_to_previous_rev.provider_for_action(:deploy).all_releases
+        deploy_to_latest_rev.run_action(:deploy)
+        @latest_rev_all_releases = deploy_to_latest_rev.provider_for_action(:deploy).all_releases
+        deploy_to_previous_rev_again.run_action(:rollback)
+        # FIXME: only difference with previous test is using latest_rev_again insetad of previous_rev_again
+        @previous_rev_again_all_releases = deploy_to_latest_rev_again.provider_for_action(:deploy).all_releases
+      end
+
+      the_app_is_deployed_at_revision(:previous_rev)
+
+      it "restarts the application after rolling back" do
+        actual_operations_order.should == %w[deploy_to_previous_rev deploy_to_latest_rev deploy_to_previous_rev_again]
+      end
+
+      it "is marked updated" do
+        deploy_to_previous_rev_again.should be_updated_by_last_action
+      end
+
+      it "deploys the right code" do
+        IO.read(rel_path("current/app/app.rb")).should include("this is the third version of the app")
+      end
+
+      it "all_releases after first deploy should have one entry" do
+        @previous_rev_all_releases.length.should == 1
+      end
+
+      it "all_releases after second deploy should have two entries" do
+        @latest_rev_all_releases.length.should == 2
+      end
+
+      it "all_releases after rollback should have one entry" do
+        @previous_rev_again_all_releases.length.should == 1
+      end
+
+      it "all_releases after rollback should be the same as after the first deploy" do
+        @previous_rev_again_all_releases.should == @previous_rev_all_releases
+      end
+    end
+
+    describe "back to a previously deployed revision where resource rev == latest revision (explicit rollback)" do
+      before do
+        deploy_to_second_rev.run_action(:deploy)
+        @first_deploy_all_releases = deploy_to_second_rev.provider_for_action(:deploy).all_releases
+        deploy_to_previous_rev.run_action(:deploy)
+        @second_deploy_all_releases = deploy_to_previous_rev.provider_for_action(:deploy).all_releases
+        deploy_to_previous_rev_again.run_action(:rollback)
+        @third_deploy_all_releases = deploy_to_previous_rev_again.provider_for_action(:deploy).all_releases
+        deploy_to_latest_rev.run_action(:deploy)
+        @fourth_deploy_all_releases = deploy_to_latest_rev.provider_for_action(:deploy).all_releases
+        deploy_to_latest_rev_again.run_action(:rollback)
+        @fifth_deploy_all_releases = deploy_to_latest_rev_again.provider_for_action(:deploy).all_releases
+      end
+
+      the_app_is_deployed_at_revision(:second_rev)
+
+      it "restarts the application after rolling back" do
+        actual_operations_order.should == %w[deploy_to_second_rev deploy_to_previous_rev deploy_to_previous_rev_again deploy_to_latest_rev deploy_to_latest_rev_again]
+      end
+
+      it "is marked updated" do
+        deploy_to_latest_rev_again.should be_updated_by_last_action
+      end
+
+      it "deploys the right code" do
+        IO.read(rel_path("current/app/app.rb")).should include("this is the second version of the app")
+      end
+
+      it "all_releases after rollback should have one entry" do
+        @fifth_deploy_all_releases.length.should == 1
+      end
+
+      it "all_releases after rollback should be the same as after the first deploy" do
+        @fifth_deploy_all_releases.should == @first_deploy_all_releases
+      end
+    end
+
+    describe "back to a previously deployed revision where resource rev == latest revision (explicit rollback)" do
+      before do
+        deploy_to_second_rev.run_action(:deploy)
+        @first_deploy_all_releases = deploy_to_second_rev.provider_for_action(:deploy).all_releases
+        deploy_to_previous_rev.run_action(:deploy)
+        @second_deploy_all_releases = deploy_to_previous_rev.provider_for_action(:deploy).all_releases
+        deploy_to_second_rev_again.run_action(:rollback)
+        @third_deploy_all_releases = deploy_to_second_rev_again.provider_for_action(:deploy).all_releases
+        deploy_to_latest_rev.run_action(:deploy)
+        @fourth_deploy_all_releases = deploy_to_latest_rev.provider_for_action(:deploy).all_releases
+        deploy_to_second_rev_again_again.run_action(:rollback)
+        @fifth_deploy_all_releases = deploy_to_second_rev_again_again.provider_for_action(:deploy).all_releases
+      end
+
+      the_app_is_deployed_at_revision(:second_rev)
+
+      it "restarts the application after rolling back" do
+        actual_operations_order.should == %w[deploy_to_second_rev deploy_to_previous_rev deploy_to_second_rev_again deploy_to_latest_rev deploy_to_second_rev_again_again]
+      end
+
+      it "is marked updated" do
+        deploy_to_second_rev_again_again.should be_updated_by_last_action
+      end
+
+      it "deploys the right code" do
+        IO.read(rel_path("current/app/app.rb")).should include("this is the second version of the app")
+      end
+
+      it "all_releases after rollback should have one entry" do
+        @fifth_deploy_all_releases.length.should == 1
+      end
+
+      it "all_releases after rollback should be the same as after the first deploy" do
+        @fifth_deploy_all_releases.should == @first_deploy_all_releases
+      end
+
     end
 
     # CHEF-3435

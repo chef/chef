@@ -339,6 +339,7 @@ describe Chef::Recipe do
   describe "include_recipe" do
     it "should evaluate another recipe with include_recipe" do
       node.should_receive(:loaded_recipe).with(:openldap, "gigantor")
+      run_context.stub(:unreachable_cookbook?).with(:openldap).and_return(false)
       run_context.include_recipe "openldap::gigantor"
       res = run_context.resource_collection.resources(:cat => "blanket")
       res.name.should eql("blanket")
@@ -347,6 +348,7 @@ describe Chef::Recipe do
 
     it "should load the default recipe for a cookbook if include_recipe is called without a ::" do
       node.should_receive(:loaded_recipe).with(:openldap, "default")
+      run_context.stub(:unreachable_cookbook?).with(:openldap).and_return(false)
       run_context.include_recipe "openldap"
       res = run_context.resource_collection.resources(:cat => "blanket")
       res.name.should eql("blanket")
@@ -355,12 +357,14 @@ describe Chef::Recipe do
 
     it "should store that it has seen a recipe in the run_context" do
       node.should_receive(:loaded_recipe).with(:openldap, "default")
+      run_context.stub(:unreachable_cookbook?).with(:openldap).and_return(false)
       run_context.include_recipe "openldap"
       run_context.loaded_recipe?("openldap").should be_true
     end
 
     it "should not include the same recipe twice" do
       node.should_receive(:loaded_recipe).with(:openldap, "default").exactly(:once)
+      run_context.stub(:unreachable_cookbook?).with(:openldap).and_return(false)
       cookbook_collection[:openldap].should_receive(:load_recipe).with("default", run_context)
       recipe.include_recipe "openldap"
       cookbook_collection[:openldap].should_not_receive(:load_recipe).with("default", run_context)

@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'set'
 require 'chef/log'
 require 'chef/recipe'
 require 'chef/resource/lwrp_base'
@@ -147,6 +148,17 @@ class Chef
           end
         end
         @events.recipe_load_complete
+      end
+
+      # Whether or not a cookbook is reachable from the set of cookbook given
+      # by the run_list plus those cookbooks' dependencies.
+      def unreachable_cookbook?(cookbook_name)
+        !reachable_cookbooks.include?(cookbook_name)
+      end
+
+      # All cookbooks in the dependency graph, returned as a Set.
+      def reachable_cookbooks
+        @reachable_cookbooks ||= Set.new(cookbook_order)
       end
 
       private

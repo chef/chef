@@ -92,7 +92,7 @@ class Chef
     # === Returns
     # true:: Always returns true
     def sync_cookbooks
-      Chef::Log.info("Loading cookbooks [#{cookbook_names.sort.join(', ')}]")
+      Chef::Log.info("Loading cookbooks [#{cookbooks.map {|ckbk| ckbk.name + '@' + ckbk.version}.join(', ')}]")
       Chef::Log.debug("Cookbooks detail: #{cookbooks.inspect}")
 
       clear_obsoleted_cookbooks
@@ -136,7 +136,7 @@ class Chef
     # valid_cache_entries<Hash>:: Out-param; Added to this hash are the files that
     # were referred to by this cookbook
     def sync_cookbook(cookbook)
-      Chef::Log.debug("Synchronizing cookbook #{cookbook.name}")
+      Chef::Log.debug("Synchronizing cookbook #{cookbook.name} #{cookbook.version}")
 
       # files and templates are lazily loaded, and will be done later.
 

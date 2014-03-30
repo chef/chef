@@ -85,8 +85,31 @@ class Chef
         METHOD_DEFN
       end
 
+      # For elements like Fixnums, true, nil...
+      def safe_dup(e)
+        e.dup
+      rescue TypeError
+        e
+      end
+
       def dup
-        Array.new(map {|e| e.dup })
+        Array.new(map {|e| safe_dup(e)})
+      end
+
+      def to_a
+        a = Array.new
+        each do |v|
+          a <<
+            case v
+            when ImmutableArray
+              v.to_a
+            when ImmutableMash
+              v.to_hash
+            else
+              v
+            end
+        end
+        a
       end
 
     end
@@ -178,6 +201,22 @@ class Chef
 
       def dup
         Mash.new(self)
+      end
+
+      def to_hash
+        h = Hash.new
+        each_pair do |k, v|
+          h[k] =
+            case v
+            when ImmutableMash
+              v.to_hash
+            when ImmutableArray
+              v.to_a
+            else
+              v
+            end
+        end
+        h
       end
 
     end

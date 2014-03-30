@@ -205,24 +205,61 @@ class Chef
         output(format_for_display(object)) if config[:print_after]
       end
 
-      def confirm(question, append_instructions=true)
+      def confirmation_instructions(default_choice)
+        case default_choice
+        when true
+          '? (Y/n)'
+        when false
+          '? (y/N)'
+        else
+          '? (Y/N)'
+        end
+      end
+
+      # See confirm method for argument information
+      def confirm_without_exit(question, append_instructions=true, default_choice=nil)
         return true if config[:yes]
 
         stdout.print question
-        stdout.print "? (Y/N) " if append_instructions
+        stdout.print confirmation_instructions(default_choice) if append_instructions
+
         answer = stdin.readline
         answer.chomp!
+
         case answer
         when "Y", "y"
           true
         when "N", "n"
           self.msg("You said no, so I'm done here.")
-          exit 3
+          false
+        when ""
+          unless default_choice.nil?
+            default_choice
+          else
+            self.msg("I have no idea what to do with '#{answer}'")
+            self.msg("Just say Y or N, please.")
+            confirm_without_exit(question, append_instructions, default_choice)
+          end
         else
-          self.msg("I have no idea what to do with #{answer}")
+          self.msg("I have no idea what to do with '#{answer}'")
           self.msg("Just say Y or N, please.")
-          confirm(question)
+          confirm_without_exit(question, append_instructions, default_choice)
         end
+      end
+
+      #
+      # Not the ideal signature for a function but we need to stick with this
+      # for now until we get a chance to break our API in Chef 12.
+      #
+      # question => Question to print  before asking for confirmation
+      # append_instructions => Should print '? (Y/N)' as instructions
+      # default_choice => Set to true for 'Y', and false for 'N' as default answer
+      #
+      def confirm(question, append_instructions=true, default_choice=nil)
+        unless confirm_without_exit(question, append_instructions, default_choice)
+          exit 3
+        end
+        true
       end
 
     end

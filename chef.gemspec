@@ -16,8 +16,8 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-cli", "~> 1.4"
   s.add_dependency "mixlib-log", "~> 1.3"
   s.add_dependency "mixlib-authentication", "~> 1.3"
-  s.add_dependency "mixlib-shellout", "~> 1.3"
-  s.add_dependency "ohai", "~> 6.0"
+  s.add_dependency "mixlib-shellout", "= 1.4.0.rc.0"
+  s.add_dependency "ohai", "= 7.0.0.rc.1"
 
   s.add_dependency "rest-client", ">= 1.0.4", "< 1.7.0"
   # rest-client has an unbounded dependency on mime-types.
@@ -36,12 +36,15 @@ Gem::Specification.new do |s|
   s.add_dependency "erubis", "~> 2.7"
   s.add_dependency "diff-lcs", "~> 1.2", ">= 1.2.4"
 
-  s.add_dependency "chef-zero", "~> 1.7", ">= 1.7.2"
-  s.add_dependency "puma", "~> 1.6"
+  # There's a bug with Chef Zero and IPV6 prior to version 2.0.2
+  s.add_dependency "chef-zero", "~> 2.0", ">= 2.0.2"
 
   s.add_dependency "pry", "~> 0.9"
 
-  %w(rake rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
+  # Rake 10.2 drops Ruby 1.8 support
+  s.add_development_dependency("rake", "~> 10.1.0")
+
+  %w( rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
   %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 2.14.0" }
 
   s.bindir       = "bin"

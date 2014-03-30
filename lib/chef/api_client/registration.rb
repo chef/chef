@@ -30,14 +30,13 @@ class Chef
     # a new client/node identity by borrowing the validator client identity
     # when creating a new client.
     class Registration
-      attr_reader :private_key
       attr_reader :destination
       attr_reader :name
 
       def initialize(name, destination)
         @name = name
         @destination = destination
-        @private_key = nil
+        @server_generated_private_key = nil
       end
 
       # Runs the client registration process, including creating the client on
@@ -90,27 +89,65 @@ class Chef
       end
 
       def create
-        response = http_api.post("clients", :name => name, :admin => false)
-        @private_key = response["private_key"]
+        response = http_api.post("clients", post_data)
+        @server_generated_private_key = response["private_key"]
         response
       end
 
       def update
-        response = http_api.put("clients/#{name}", :name => name,
-                                                     :admin => false,
-                                                     :private_key => true)
+        response = http_api.put("clients/#{name}", put_data)
         if response.respond_to?(:private_key) # Chef 11
-          @private_key = response.private_key
+          @server_generated_private_key = response.private_key
         else # Chef 10
-          @private_key = response["private_key"]
+          @server_generated_private_key = response["private_key"]
         end
         response
       end
+
+      def put_data
+        base_put_data = { :name => name, :admin => false }
+        if self_generate_keys?
+          base_put_data[:public_key] = generated_public_key
+        else
+          base_put_data[:private_key] = true
+        end
+        base_put_data
+      end
+
+      def post_data
+        post_data = { :name => name, :admin => false }
+        post_data[:public_key] = generated_public_key if self_generate_keys?
+        post_data
+      end
+
 
       def http_api
         @http_api_as_validator ||= Chef::REST.new(Chef::Config[:chef_server_url],
                                                   Chef::Config[:validation_client_name],
                                                   Chef::Config[:validation_key])
+      end
+
+      # Whether or not to generate keys locally and post the public key to the
+      # server. Delegates to `Chef::Config.local_key_generation`. Servers
+      # before 11.0 do not support this feature.
+      def self_generate_keys?
+        Chef::Config.local_key_generation
+      end
+
+      def private_key
+        if self_generate_keys?
+          generated_private_key.to_pem
+        else
+          @server_generated_private_key
+        end
+      end
+
+      def generated_private_key
+        @generated_key ||= OpenSSL::PKey::RSA.generate(2048)
+      end
+
+      def generated_public_key
+        generated_private_key.public_key.to_pem
       end
 
       def file_flags

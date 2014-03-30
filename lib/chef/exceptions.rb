@@ -50,7 +50,13 @@ class Chef
     class Override < RuntimeError; end
     class UnsupportedAction < RuntimeError; end
     class MissingLibrary < RuntimeError; end
-    class CannotDetermineNodeName < RuntimeError; end
+
+    class CannotDetermineNodeName < RuntimeError
+      def initialize
+        super "Unable to determine node name: configure node_name or configure the system's hostname and fqdn"
+      end
+    end
+
     class User < RuntimeError; end
     class Group < RuntimeError; end
     class Link < RuntimeError; end
@@ -70,6 +76,7 @@ class Chef
     class CookbookNotFoundInRepo < ArgumentError; end
     class RecipeNotFound < ArgumentError; end
     class AttributeNotFound < RuntimeError; end
+    class MissingCookbookDependency < StandardError; end # CHEF-5120
     class InvalidCommandOption < RuntimeError; end
     class CommandTimeout < RuntimeError; end
     class RequestedUIDUnavailable < RuntimeError; end
@@ -309,5 +316,10 @@ class Chef
       end
     end
 
+    class UnsupportedPlatform < RuntimeError
+      def initialize(platform)
+        super "This functionality is not supported on platform #{platform}."
+      end
+    end
   end
 end

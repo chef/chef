@@ -244,7 +244,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
 
       it "sets the override run_list on the node" do
         expect(node.run_list).to eq([override_runlist])
-        expect(policy_builder.original_runlist).to eq(primary_runlist)
+        expect(node.primary_runlist).to eq(primary_runlist)
       end
 
       it "reports that a temporary policy is being used" do

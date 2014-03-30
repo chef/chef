@@ -406,61 +406,132 @@ EOM
   end
 
   describe "confirm" do
-    before(:each) do
-      @question = "monkeys rule"
-      @stdout = StringIO.new
-      @ui.stub(:stdout).and_return(@stdout)
-      @ui.stdin.stub(:readline).and_return("y")
+    let(:stdout) {StringIO.new}
+    let(:output) {stdout.string}
+
+    let(:question) { "monkeys rule" }
+    let(:answer) { 'y' }
+
+    let(:default_choice) { nil }
+    let(:append_instructions) { true }
+
+    def run_confirm
+      @ui.stub(:stdout).and_return(stdout)
+      @ui.stdin.stub(:readline).and_return(answer)
+      @ui.confirm(question, append_instructions, default_choice)
     end
 
-    it "should return true if you answer Y" do
-      @ui.stdin.stub(:readline).and_return("Y")
-      @ui.confirm(@question).should == true
+    def run_confirm_without_exit
+      @ui.stub(:stdout).and_return(stdout)
+      @ui.stdin.stub(:readline).and_return(answer)
+      @ui.confirm_without_exit(question, append_instructions, default_choice)
     end
 
-    it "should return true if you answer y" do
-      @ui.stdin.stub(:readline).and_return("y")
-      @ui.confirm(@question).should == true
+    shared_examples_for "confirm with positive answer" do
+      it "confirm should return true" do
+        run_confirm.should be_true
+      end
+
+      it "confirm_without_exit should return true" do
+        run_confirm_without_exit.should be_true
+      end
     end
 
-    it "should exit 3 if you answer N" do
-      @ui.stdin.stub(:readline).and_return("N")
-      lambda {
-        @ui.confirm(@question)
-      }.should raise_error(SystemExit) { |e| e.status.should == 3 }
+    shared_examples_for "confirm with negative answer" do
+      it "confirm should exit 3" do
+        lambda {
+          run_confirm
+        }.should raise_error(SystemExit) { |e| e.status.should == 3 }
+      end
+
+      it "confirm_without_exit should return false" do
+        run_confirm_without_exit.should be_false
+      end
     end
 
-    it "should exit 3 if you answer n" do
-      @ui.stdin.stub(:readline).and_return("n")
-      lambda {
-        @ui.confirm(@question)
-      }.should raise_error(SystemExit) { |e| e.status.should == 3 }
+    describe "with default choice set to true" do
+      let(:default_choice) { true }
+
+      it "should show 'Y/n' in the instructions" do
+        run_confirm
+        output.should include("Y/n")
+      end
+
+      describe "with empty answer" do
+        let(:answer) { "" }
+
+        it_behaves_like "confirm with positive answer"
+      end
+
+      describe "with answer N " do
+        let(:answer) { "N" }
+
+        it_behaves_like "confirm with negative answer"
+      end
+    end
+
+    describe "with default choice set to false" do
+      let(:default_choice) { false }
+
+      it "should show 'y/N' in the instructions" do
+        run_confirm
+        output.should include("y/N")
+      end
+
+      describe "with empty answer" do
+        let(:answer) { "" }
+
+        it_behaves_like "confirm with negative answer"
+      end
+
+      describe "with answer N " do
+        let(:answer) { "Y" }
+
+        it_behaves_like "confirm with positive answer"
+      end
+    end
+
+    ["Y", "y"].each do |answer|
+      describe "with answer #{answer}" do
+        let(:answer) { answer }
+
+        it_behaves_like "confirm with positive answer"
+      end
+    end
+
+    ["N", "n"].each do |answer|
+      describe "with answer #{answer}" do
+        let(:answer) { answer }
+
+        it_behaves_like "confirm with negative answer"
+      end
     end
 
     describe "with --y or --yes passed" do
       it "should return true" do
         @ui.config[:yes] = true
-        @ui.confirm(@question).should == true
+        run_confirm.should be_true
+        output.should eq("")
       end
     end
-
-    describe "when asking for free-form user input" do
-      it "asks a question and returns the answer provided by the user" do
-        out = StringIO.new
-        @ui.stub(:stdout).and_return(out)
-        @ui.stub(:stdin).and_return(StringIO.new("http://mychefserver.example.com\n"))
-        @ui.ask_question("your chef server URL?").should == "http://mychefserver.example.com"
-        out.string.should == "your chef server URL?"
-      end
-
-      it "suggests a default setting and returns the default when the user's response only contains whitespace" do
-        out = StringIO.new
-        @ui.stub(:stdout).and_return(out)
-        @ui.stub(:stdin).and_return(StringIO.new(" \n"))
-        @ui.ask_question("your chef server URL? ", :default => 'http://localhost:4000').should == "http://localhost:4000"
-        out.string.should == "your chef server URL? [http://localhost:4000] "
-      end
-    end
-
   end
+
+  describe "when asking for free-form user input" do
+    it "asks a question and returns the answer provided by the user" do
+      out = StringIO.new
+      @ui.stub(:stdout).and_return(out)
+      @ui.stub(:stdin).and_return(StringIO.new("http://mychefserver.example.com\n"))
+      @ui.ask_question("your chef server URL?").should == "http://mychefserver.example.com"
+      out.string.should == "your chef server URL?"
+    end
+
+    it "suggests a default setting and returns the default when the user's response only contains whitespace" do
+      out = StringIO.new
+      @ui.stub(:stdout).and_return(out)
+      @ui.stub(:stdin).and_return(StringIO.new(" \n"))
+      @ui.ask_question("your chef server URL? ", :default => 'http://localhost:4000').should == "http://localhost:4000"
+      out.string.should == "your chef server URL? [http://localhost:4000] "
+    end
+  end
+
 end

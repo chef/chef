@@ -23,8 +23,7 @@ shared_context Chef::Resource::WindowsScript do
   before(:all) do
 
     ohai_reader = Ohai::System.new
-    ohai_reader.require_plugin("os")
-    ohai_reader.require_plugin("windows::platform")
+    ohai_reader.all_plugins("platform")
 
     new_node = Chef::Node.new
     new_node.consume_external_attrs(ohai_reader.data,{})
@@ -39,7 +38,7 @@ shared_context Chef::Resource::WindowsScript do
   end
 
   before(:each) do
-k    File.delete(script_output_path) if File.exists?(script_output_path)
+    File.delete(script_output_path) if File.exists?(script_output_path)
   end
 
   after(:each) do

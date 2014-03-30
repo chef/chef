@@ -22,7 +22,7 @@ if Chef::Platform.windows?
   require 'ruby-wmi'
 end
 
-describe "Chef::ReservedNames::Win32::Version", :windows_only do
+describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on_win2k3 do
   before do
 
     host = WMI::Win32_OperatingSystem.find(:first)
@@ -57,7 +57,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
       end
     end
   end
-  
+
   context "Win32 version object" do
     it "should have have one method for each marketing version" do
       versions = 0
@@ -88,7 +88,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
       for_each_windows_version { |method_name| @version.send(method_name.to_sym) }
     end
   end
-  
+
   context "Windows Operating System version" do
     it "should match the version from WMI" do
       @current_os_version.should include(@version.marketing_name)

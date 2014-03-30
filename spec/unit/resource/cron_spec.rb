@@ -143,8 +143,13 @@ describe Chef::Resource::Cron do
     lambda { @resource.month "13" }.should raise_error(RangeError)
   end
 
-  it "should reject any weekday over 7" do
-    lambda { @resource.weekday "8" }.should raise_error(RangeError)
+  describe "weekday" do
+    it "should reject any weekday over 7" do
+      lambda { @resource.weekday "8" }.should raise_error(RangeError)
+    end
+    it "should reject any symbols which don't represent day of week" do
+      lambda { @resource.weekday :foo }.should raise_error(RangeError)
+    end
   end
 
   it "should convert integer schedule values to a string" do

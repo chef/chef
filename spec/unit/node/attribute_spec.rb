@@ -488,6 +488,13 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "dup" do
+    it "array can be duped even if some elements can't" do
+      @attributes.default[:foo] = %w[foo bar baz] + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ]
+      @attributes.default[:foo].dup
+    end
+  end
+
   describe "has_key?" do
     it "should return true if an attribute exists" do
       @attributes.has_key?("music").should == true

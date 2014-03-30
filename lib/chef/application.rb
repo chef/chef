@@ -208,7 +208,8 @@ class Chef::Application
     @chef_client = Chef::Client.new(
       @chef_client_json,
       :override_runlist => config[:override_runlist],
-      :specific_recipes => specific_recipes
+      :specific_recipes => specific_recipes,
+      :runlist => config[:runlist]
     )
     @chef_client_json = nil
 

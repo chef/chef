@@ -59,17 +59,38 @@ describe Chef::REST do
 
   let(:log_stringio) { StringIO.new }
 
+  let(:request_id) {"1234"}
+
   let(:rest) do
     Chef::REST::CookieJar.stub(:instance).and_return({})
+    Chef::RequestID.instance.stub(:request_id).and_return(request_id)
     rest = Chef::REST.new(base_url, nil, nil)
     Chef::REST::CookieJar.instance.clear
     rest
   end
 
+  let(:standard_read_headers) {{"Accept"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "X-REMOTE-REQUEST-ID"=>request_id}}
+  let(:standard_write_headers) {{"Accept"=>"application/json", "Content-Type"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "X-REMOTE-REQUEST-ID"=>request_id}}
+
   before(:each) do
     Chef::Log.init(log_stringio)
   end
 
+  it "should have content length validation middleware after compressor middleware" do
+    middlewares = rest.instance_variable_get(:@middlewares)
+    content_length = middlewares.find_index { |e| e.is_a? Chef::HTTP::ValidateContentLength }
+    decompressor = middlewares.find_index { |e| e.is_a? Chef::HTTP::Decompressor }
+
+    content_length.should_not be_nil
+    decompressor.should_not be_nil
+    (decompressor < content_length).should be_true
+  end
+
+  it "should allow the options hash to be frozen" do
+    options = {}.freeze
+    # should not raise any exception
+    Chef::REST.new(base_url, nil, nil, options)
+  end
 
   describe "calling an HTTP verb on a path or absolute URL" do
     it "adds a relative URL to the base url it was initialized with" do
@@ -82,7 +103,7 @@ describe Chef::REST do
 
     it "makes a :GET request with the composed url object" do
       rest.should_receive(:send_http_request).
-        with(:GET, monkey_uri, STANDARD_READ_HEADERS, false).
+        with(:GET, monkey_uri, standard_read_headers, false).
         and_return([1,2,3])
       rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
       rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
@@ -94,12 +115,9 @@ describe Chef::REST do
       rest.get_rest("monkey", true)
     end
 
-    STANDARD_READ_HEADERS = {"Accept"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3"}
-    STANDARD_WRITE_HEADERS = {"Accept"=>"application/json", "Content-Type"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3"}
-
     it "makes a :DELETE request with the composed url object" do
       rest.should_receive(:send_http_request).
-        with(:DELETE, monkey_uri, STANDARD_READ_HEADERS, false).
+        with(:DELETE, monkey_uri, standard_read_headers, false).
         and_return([1,2,3])
       rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
       rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
@@ -108,7 +126,7 @@ describe Chef::REST do
 
     it "makes a :POST request with the composed url object and data" do
       rest.should_receive(:send_http_request).
-        with(:POST, monkey_uri, STANDARD_WRITE_HEADERS, "\"data\"").
+        with(:POST, monkey_uri, standard_write_headers, "\"data\"").
         and_return([1,2,3])
       rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
       rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
@@ -117,7 +135,7 @@ describe Chef::REST do
 
     it "makes a :PUT request with the composed url object and data" do
       rest.should_receive(:send_http_request).
-        with(:PUT, monkey_uri, STANDARD_WRITE_HEADERS, "\"data\"").
+        with(:PUT, monkey_uri, standard_write_headers, "\"data\"").
         and_return([1,2,3])
       rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
       rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
@@ -142,27 +160,27 @@ describe Chef::REST do
     it 'calls the authn middleware' do
       data = "\"secure data\""
 
-      auth_headers = STANDARD_WRITE_HEADERS.merge({"auth_done"=>"yep"})
+      auth_headers = standard_write_headers.merge({"auth_done"=>"yep"})
 
       rest.authenticator.should_receive(:handle_request).
-        with(:POST, monkey_uri, STANDARD_WRITE_HEADERS, data).
+        with(:POST, monkey_uri, standard_write_headers, data).
         and_return([:POST, monkey_uri, auth_headers, data])
       rest.should_receive(:send_http_request).
         with(:POST, monkey_uri, auth_headers, data).
         and_return([1,2,3])
       rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
-      rest.raw_http_request(:POST, monkey_uri, STANDARD_WRITE_HEADERS, data)
+      rest.raw_http_request(:POST, monkey_uri, standard_write_headers, data)
     end
 
     it 'sets correct authn headers' do
       data = "\"secure data\""
-      method, uri, auth_headers, d = rest.authenticator.handle_request(:POST, monkey_uri, STANDARD_WRITE_HEADERS, data)
+      method, uri, auth_headers, d = rest.authenticator.handle_request(:POST, monkey_uri, standard_write_headers, data)
 
       rest.should_receive(:send_http_request).
         with(:POST, monkey_uri, auth_headers, data).
         and_return([1,2,3])
       rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
-      rest.raw_http_request(:POST, monkey_uri, STANDARD_WRITE_HEADERS, data)
+      rest.raw_http_request(:POST, monkey_uri, standard_write_headers, data)
     end
   end
 
@@ -244,6 +262,7 @@ describe Chef::REST do
     let(:rest) do
       Net::HTTP.stub(:new).and_return(http_client)
       Chef::REST::CookieJar.stub(:instance).and_return({})
+      Chef::RequestID.instance.stub(:request_id).and_return(request_id)
       rest = Chef::REST.new(base_url, nil, nil)
       Chef::REST::CookieJar.instance.clear
       rest
@@ -254,6 +273,7 @@ describe Chef::REST do
         'Accept' => 'application/json',
         'X-Chef-Version' => Chef::VERSION,
         'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
+        'X-REMOTE-REQUEST-ID' => request_id
       }
     end
 
@@ -275,6 +295,7 @@ describe Chef::REST do
           'X-Chef-Version' => Chef::VERSION,
           'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
           'Host' => host_header,
+          'X-REMOTE-REQUEST-ID' => request_id
         }
       end
 
@@ -283,6 +304,11 @@ describe Chef::REST do
       end
 
       it "should always include the X-Chef-Version header" do
+        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", base_headers).and_return(request_mock)
+        rest.request(:GET, url, {})
+      end
+
+      it "should always include the X-Remote-Request-Id header" do
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar", base_headers).and_return(request_mock)
         rest.request(:GET, url, {})
       end
@@ -342,6 +368,7 @@ describe Chef::REST do
         let(:rest) do
           Net::HTTP.stub(:new).and_return(http_client)
           Chef::REST::CookieJar.instance["#{url.host}:#{url.port}"] = "cookie monster"
+          Chef::RequestID.instance.stub(:request_id).and_return(request_id)
           rest = Chef::REST.new(base_url, nil, nil)
           rest
         end
@@ -542,7 +569,20 @@ describe Chef::REST do
         expected_headers = {'Accept' => "*/*",
                             'X-Chef-Version' => Chef::VERSION,
                             'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
-                            'Host' => host_header}
+                            'Host' => host_header,
+                            'X-REMOTE-REQUEST-ID'=> request_id
+                            }
+        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(request_mock)
+        rest.streaming_request(url, {})
+      end
+
+      it "build a new HTTP GET request with the X-Remote-Request-Id header" do
+        expected_headers = {'Accept' => "*/*",
+                            'X-Chef-Version' => Chef::VERSION,
+                            'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
+                            'Host' => host_header,
+                            'X-REMOTE-REQUEST-ID'=> request_id
+                            }
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(request_mock)
         rest.streaming_request(url, {})
       end

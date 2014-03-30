@@ -162,9 +162,7 @@ class Chef
       if response.kind_of?(Chef::ApiClient)
         response
       else
-        client = Chef::ApiClient.new
-        client.name(response['clientname'])
-        client
+        json_create(response)
       end
     end
 

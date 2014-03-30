@@ -124,12 +124,21 @@ describe Chef::Knife::Bootstrap do
   end
 
   describe "specifying no_proxy with various entries" do
-    subject(:knife) { described_class.new }
-    let(:options){ ["--bootstrap-no-proxy", setting] }
+    subject(:knife) do
+      k = described_class.new
+      k.instance_variable_set("@template_file", template_file)
+      k.parse_options(options)
+      k.merge_configs
+      k
+    end
+
+    # Include a data bag secret in the options to prevent Bootstrap from
+    # attempting to access /etc/chef/encrypted_data_bag_secret, which
+    # can fail when the file exists but can't be accessed by the user
+    # running the tests.
+    let(:options){ ["--bootstrap-no-proxy", setting, "-s", "foo"] }
     let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "no_proxy.erb")) }
     let(:rendered_template) do
-      knife.instance_variable_set("@template_file", template_file)
-      knife.parse_options(options)
       template_string = knife.read_template
       knife.render_template(template_string)
     end

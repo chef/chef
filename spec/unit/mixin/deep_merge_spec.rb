@@ -284,6 +284,10 @@ describe Chef::Mixin::DeepMerge do
       ret.should == {"property" => ["1","2","3","4","5","6"]}
     end
 
+    it "should not error merging un-dupable objects" do
+      @dm.deep_merge(nil, 4)
+    end
+
   end
 
   describe "role_merge" do
@@ -347,5 +351,18 @@ describe Chef::Mixin::DeepMerge do
       merged_result["top_level_a"]["1_deep_b"].should == %w[B B B]
     end
 
+    it "does not mutate deeply-nested original hashes by default" do
+      merge_ee_hash =   {"top_level_a" => {"1_deep_a" => { "2_deep_a" => { "3_deep_a" => "foo" }}}}
+      merge_with_hash = {"top_level_a" => {"1_deep_a" => { "2_deep_a" => { "3_deep_b" => "bar" }}}}
+      @dm.hash_only_merge(merge_ee_hash, merge_with_hash)
+      merge_ee_hash.should == {"top_level_a" => {"1_deep_a" => { "2_deep_a" => { "3_deep_a" => "foo" }}}}
+      merge_with_hash.should == {"top_level_a" => {"1_deep_a" => { "2_deep_a" => { "3_deep_b" => "bar" }}}}
+    end
+
+    it "does not error merging un-dupable items" do
+      merge_ee_hash = {"top_level_a" => 1, "top_level_b" => false}
+      merge_with_hash = {"top_level_a" => 2, "top_level_b" => true }
+      @dm.hash_only_merge(merge_ee_hash, merge_with_hash)
+    end
   end
 end

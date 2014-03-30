@@ -32,6 +32,10 @@ class Chef
         allowed_actions << :force_export
       end
 
+      # Override exception to strip password if any, so it won't appear in logs and different Chef notifications
+      def custom_exception_message(e)
+        "#{self} (#{defined_at}) had an error: #{e.class.name}: #{svn_password ? e.message.gsub(svn_password, "[hidden_password]") : e.message}"
+      end
     end
   end
 end
