@@ -23,6 +23,7 @@ require 'chef/dsl/data_query'
 require 'chef/dsl/registry_helper'
 require 'chef/dsl/reboot_pending'
 require 'chef/mixin/convert_to_class_name'
+require 'chef//guard_interpreter/resource_guard_interpreter'
 require 'chef/resource/conditional'
 require 'chef/resource/conditional_action_not_nothing'
 require 'chef/resource_collection'
@@ -249,6 +250,7 @@ F
       @not_if = []
       @only_if = []
       @source_line = nil
+      @guard_interpreter = :default
       @elapsed_time = 0
 
       @node = run_context ? deprecated_ivar(run_context.node, :node, :warn) : nil
@@ -399,6 +401,14 @@ F
 
     def epic_fail(arg=nil)
       ignore_failure(arg)
+    end
+
+    def guard_interpreter(arg=nil)
+      set_or_return(
+        :guard_interpreter,
+        arg,
+        :kind_of => Symbol
+      )
     end
 
     # Sets up a notification from this resource to the resource specified by +resource_spec+.
@@ -552,7 +562,7 @@ F
     # * evaluates to false if the block is false, or if the command returns a non-zero exit code.
     def only_if(command=nil, opts={}, &block)
       if command || block_given?
-        @only_if << Conditional.only_if(command, opts, &block)
+        @only_if << Conditional.only_if(self, command, opts, &block)
       end
       @only_if
     end
@@ -573,7 +583,7 @@ F
     # * evaluates to false if the block is true, or if the command returns a 0 exit status.
     def not_if(command=nil, opts={}, &block)
       if command || block_given?
-        @not_if << Conditional.not_if(command, opts, &block)
+        @not_if << Conditional.not_if(self, command, opts, &block)
       end
       @not_if
     end
@@ -819,6 +829,5 @@ F
         end
       end
     end
-
   end
 end

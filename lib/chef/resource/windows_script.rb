@@ -52,11 +52,6 @@ class Chef
           "cannot execute script with requested architecture '#{desired_architecture.to_s}' on a system with architecture '#{node_windows_architecture(node)}'"
         end
       end
-
-      def node
-        run_context && run_context.node
-      end
-
     end
   end
 end

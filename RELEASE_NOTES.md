@@ -133,6 +133,32 @@ If you're an advanced user of attribute precedence, you may find some attributes
 The weekday attribute now accepts the weekday as a symbol, e.g. :monday or :thursday.
 There is a new attribute named ```time``` that takes special cron time values as a symbol, such as :reboot or :monthly.
 
+#### `guard_interpreter` attribute
+
+All Chef resources now support the `guard_interpreter` attribute, which
+enables you to use a Chef `script` such as `bash`, `powershell_script`,
+`perl`, etc., to evaluate the string command passed to a
+guard (i.e. `not_if` or `only_if` attribute). This addresses the related ticket
+[CHEF-4553](https://tickets.opscode.com/browse/CHEF-4453) which is concerned
+with the usability of the `powershell_script` resource, but also benefits
+users of resources like `python`, `bash`, etc:
+
+    # See CHEF-4553 -- let powershell_script execute the guard
+    powershell_script 'make_logshare' do
+      guard_interpreter :powershell_script
+      code 'new-smbshare logshare $env:systemdrive\\logs'
+      not_if 'get-smbshare logshare'
+    end
+
+#### `convert_boolean_return` attribute for `powershell_script`
+
+When set to `true`, the `convert_boolean_return` attribute will allow any script executed by
+`powershell_script` that exits with a PowerShell boolean data type to convert
+PowerShell boolean `$true` to exit status 0 and `$false` to exit status 1.
+
+The new attribute defaults to `false` except when the `powershell_script` resource is executing script passed to a guard attribute
+via the `guard_interpreter` attribute in which case it is `true` by default.
+
 #### knife bootstrap log_level
 
 Running ```knife bootstrap -V -V``` will run the initial chef-client with a log level of debug.

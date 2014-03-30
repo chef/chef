@@ -48,5 +48,43 @@ shared_examples_for "a script resource" do
     @resource.flags.should eql("-f")
   end
 
+  describe "when executing guards" do
+    let(:resource) { @resource }
+
+    before(:each) do
+      node = Chef::Node.new
+
+      node.automatic[:platform] = "debian"
+      node.automatic[:platform_version] = "6.0"
+
+      events = Chef::EventDispatch::Dispatcher.new
+      run_context = Chef::RunContext.new(node, {}, events)
+      resource.run_context = run_context
+      resource.code 'echo hi'
+    end
+
+    it "inherits exactly the :cwd, :environment, :group, :path, :user, and :umask attributes from a parent resource class" do
+      inherited_difference = Chef::Resource::Script.guard_inherited_attributes -
+        [:cwd, :environment, :group, :path, :user, :umask ]
+
+      inherited_difference.should == []
+    end
+
+    it "when guard_interpreter is set to the default value, the guard command string should be evaluated by command execution and not through a resource" do
+      Chef::Resource::Conditional.any_instance.should_not_receive(:evaluate_block)
+      Chef::Resource::Conditional.any_instance.should_receive(:evaluate_command).and_return(true)
+      Chef::GuardInterpreter::ResourceGuardInterpreter.any_instance.should_not_receive(:evaluate_action)
+      resource.only_if 'echo hi'
+      resource.should_skip?(:run).should == nil
+    end
+
+    it "when a valid guard_interpreter resource is specified, a block should be used to evaluate the guard" do
+      Chef::GuardInterpreter::DefaultGuardInterpreter.any_instance.should_not_receive(:evaluate)
+      Chef::GuardInterpreter::ResourceGuardInterpreter.any_instance.should_receive(:evaluate_action).and_return(true)
+      resource.guard_interpreter :script
+      resource.only_if 'echo hi'
+      resource.should_skip?(:run).should == nil
+    end
+  end
 end
 

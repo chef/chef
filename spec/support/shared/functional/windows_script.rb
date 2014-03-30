@@ -38,7 +38,7 @@ shared_context Chef::Resource::WindowsScript do
   end
 
   before(:each) do
-k    File.delete(script_output_path) if File.exists?(script_output_path)
+    File.delete(script_output_path) if File.exists?(script_output_path)
   end
 
   after(:each) do
