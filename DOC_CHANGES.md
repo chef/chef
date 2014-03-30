@@ -179,12 +179,14 @@ end
 * returns - Return codes that signal a successful installation. Defaults to 0.
 
 ### New resource attribute: `guard_interpreter`
-Resources have a new attribute, `guard_interpreter`, which specifies a
-Chef script resource's that should be used to evaluate a
-string passed to a guard. Any attributes for that resource may be specified in
+All resources have a new attribute, `guard_interpreter`, which specifies a
+Chef script resource that should be used to evaluate a string command
+passed to a guard. Any attributes of the evaluating resource may be specified in
 the options that normally follow the guard's command string argument. For example:
 
-    # Use a guard command that is valid for bash but not for csh
+    # Tell Chef to use bash to interpret the guard string.
+    # Then we can use a guard command that is valid for bash
+    # but not for csh for instance
     bash 'backupsettings' do
       guard_interpreter :bash
       code 'cp ~/appsettings.json ~/backup/appsettings.json'
@@ -198,32 +200,32 @@ The argument for `guard_interpreter` may be set to any of the following values:
   the guard command argument, it is simply executed by the default shell as in
   previous releases of Chef.
 
-By default, guard_interpreter is set to `:default` in this release.
+By default, `guard_interpreter` is set to `:default` in this release.
 
 #### Attribute inheritance with `guard_interpreter`
 
-When `guard_interpreter` is used, the resource that evaluates the command will
+When `guard_interpreter` is not set to `:default`, the resource that evaluates the command will
 also inherit certain attribute values from the resource that contains the
 guard.
 
 Inherited attributes for all `script` resources are:
 
-* :cwd
-* :environment
-* :group
-* :path
-* :user
-* :umask
+* `:cwd`
+* `:environment`
+* `:group`
+* `:path`
+* `:user`
+* `:umask`
 
 For the `powershell_script` resource, the following attribute is inherited:
-* :architecture
+* `:architecture`
 
 Inherited attributes may be overridden by specifying the same attribute as an
 argument to the guard itself.
 
 #### Guard inheritance example
 
-In the following example, the :environment hash only needs to be set once
+In the following example, the `:environment` hash only needs to be set once
 since the `bash` resource that execute the guard will inherit the same value:
 
     script "javatooling" do
@@ -248,7 +250,7 @@ following two fragments will run successfully without error:
       code '$true'
     end
 
-When `convert_boolean_return` is set to `true`, the "true" case above will
+But when `convert_boolean_return` is set to `true`, the "true" case above will
 still succeed, but the false case will raise an exception:
 
     # Raises an exception
