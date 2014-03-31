@@ -131,23 +131,27 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should set mounted true if the symlink target of the device is found in the mounts list" do
-      target = "/dev/mapper/target"
+      # expand the target path to correct specs on Windows
+      target = ::File.expand_path('/dev/mapper/target')
 
       ::File.stub(:symlink?).with("#{@new_resource.device}").and_return(true)
       ::File.stub(:readlink).with("#{@new_resource.device}").and_return(target)
 
-      @provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => "/dev/mapper/target on /tmp/foo type ext3 (rw)\n"))
+      @provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => "#{target} on /tmp/foo type ext3 (rw)\n"))
       @provider.load_current_resource()
       @provider.current_resource.mounted.should be_true
     end
 
-     it "should set mounted true if the symlink target of the device is relative and is found in the mounts list - CHEF-4957" do
+    it "should set mounted true if the symlink target of the device is relative and is found in the mounts list - CHEF-4957" do
       target = "xsdz1"
+
+      # expand the target path to correct specs on Windows
+      absolute_target = ::File.expand_path("/dev/xsdz1")
 
       ::File.stub(:symlink?).with("#{@new_resource.device}").and_return(true)
       ::File.stub(:readlink).with("#{@new_resource.device}").and_return(target)
 
-      @provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => "/dev/xsdz1 on /tmp/foo type ext3 (rw)\n"))
+      @provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => "#{absolute_target} on /tmp/foo type ext3 (rw)\n"))
       @provider.load_current_resource()
       @provider.current_resource.mounted.should be_true
     end
@@ -250,6 +254,7 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should not mangle the mount options if the device in fstab is a symlink" do
+      # expand the target path to correct specs on Windows
       target = "/dev/mapper/target"
       options = "rw,noexec,noauto"
 
@@ -263,7 +268,7 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should not mangle the mount options if the symlink target is in fstab" do
-      target = "/dev/mapper/target"
+      target = ::File.expand_path("/dev/mapper/target")
       options = "rw,noexec,noauto"
 
       ::File.stub(:symlink?).with(@new_resource.device).and_return(true)
