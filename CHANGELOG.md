@@ -66,6 +66,7 @@
 * Knife cookbook test should honor chefignore (CHEF-4203)
 * Fix ImmutableMash and ImmutableArray to_hash and to_a methods (CHEF-5132)
 * guard_interpreter attribute: use powershell\_script, other script resources in guards (CHEF-4553)
+* Fix for CHEF-5169: add require for chef/config_fetcher
 
 ## Last Release: 11.10.0 (02/06/2014)
 
