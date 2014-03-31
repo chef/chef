@@ -46,6 +46,9 @@ describe Chef::Resource::Link do
   end
 
   let(:to) do
+    absolute_to
+  end
+  let(:absolute_to) do
     File.join(test_file_dir, make_tmpname("to_spec"))
   end
   let(:target_file) do
@@ -181,6 +184,9 @@ describe Chef::Resource::Link do
         it 'links to the target file' do
           symlink?(target_file).should be_true
           readlink(target_file).should == canonicalize(to)
+          if File.file?(absolute_to) and not symlink?(absolute_to)
+            IO.read(target_file).should == IO.read(absolute_to)
+          end
         end
         it 'marks the resource updated' do
           resource.should be_updated
@@ -202,6 +208,9 @@ describe Chef::Resource::Link do
         it 'leaves the file linked' do
           symlink?(target_file).should be_true
           readlink(target_file).should == canonicalize(to)
+          if File.file?(absolute_to) and not symlink?(absolute_to)
+            IO.read(target_file).should == IO.read(absolute_to)
+          end
         end
         it 'does not mark the resource updated' do
           resource.should_not be_updated
@@ -415,15 +424,19 @@ describe Chef::Resource::Link do
         include_context 'delete is noop'
       end
 
-      {
-        '../' => 'with a relative link destination',
-        '' => 'with a bare filename for the link destination'
-      }.each do |prefix, desc|
+      [
+        [ '../', 'subdir', 'with a relative link destination' ],
+        [ '', '', 'with a bare filename for the link destination' ],
+      ].each do |prefix, offset, desc|
         context desc do
+          let(:target_file) { File.join(test_file_dir, offset, make_tmpname("from_spec")) }
           let(:to) { "#{prefix}#{File.basename(absolute_to)}" }
-          let(:absolute_to) { File.join(test_file_dir, make_tmpname("to_spec")) }
           before(:each) do
             resource.to(to)
+            FileUtils::mkdir_p(File.dirname(target_file))
+            File.open(absolute_to, "w") do |file|
+              file.write('yeah')
+            end
           end
           context 'when the link does not yet exist' do
             include_context 'create symbolic link succeeds'

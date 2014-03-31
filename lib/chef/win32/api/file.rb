@@ -458,8 +458,8 @@ BOOL WINAPI DeviceIoControl(
         # UTF-16LE encodes it.  Used to prepare paths
         # to be passed to the *W vesion of WinAPI File
         # functions
-        def encode_path(path)
-          (path_prepender << path.gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)).to_wstring
+        def encode_path(path, raw=false)
+          ((raw ? "" : path_prepender) << path.gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)).to_wstring
         end
 
         def path_prepender
