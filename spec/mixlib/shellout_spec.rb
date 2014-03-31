@@ -846,7 +846,7 @@ describe Mixlib::ShellOut do
       context "when the child process dies immediately" do
         let(:cmd) { [ 'exit' ] }
 
-        it "handles ESRCH from getpgid of a zombie" do
+        it "handles ESRCH from getpgid of a zombie", :unix_only do
           Process.stub(:setsid) { exit!(4) }
 
           # there is a small race condition here if the child doesn't get
