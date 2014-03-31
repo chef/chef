@@ -63,7 +63,7 @@ module Mixlib
         # CHEF-3390: Marshall.load on Ruby < 1.8.7p369 also has a GC bug related
         # to Marshall.load, so try disabling GC first.
         propagate_pre_exec_failure
-        @child_pgid = -Process.getpgid(@child_pid)
+        get_child_pgid
 
         @result = nil
         @execution_time = 0
@@ -107,6 +107,18 @@ module Mixlib
 
       private
 
+      def get_child_pgid
+        # The behavior of Process.getpgid (see also getpgid(2) ) when the
+        # argument is the pid of a zombie isn't well specified. On Linux it
+        # works, on OS X it returns ESRCH (which ruby turns into Errno::ESRCH).
+        #
+        # If the child dies very quickly, @child_pid may be a zombie, so handle
+        # ESRCH here.
+        @child_pgid = -Process.getpgid(@child_pid)
+      rescue Errno::ESRCH
+        @child_pgid = nil
+      end
+
       def set_user
         if user
           Process.euid = uid
@@ -137,6 +149,10 @@ module Mixlib
 
       # Process group id of the child. Returned as a negative value so you can
       # put it directly in arguments to kill, wait, etc.
+      #
+      # This may be nil if the child dies before the parent can query the
+      # system for its pgid (on some systems it is an error to get the pgid of
+      # a zombie).
       def child_pgid
         @child_pgid
       end

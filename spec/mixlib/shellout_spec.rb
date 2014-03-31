@@ -843,6 +843,25 @@ describe Mixlib::ShellOut do
         end
       end
 
+      context "when the child process dies immediately" do
+        let(:cmd) { [ 'exit' ] }
+
+        it "handles ESRCH from getpgid of a zombie" do
+          Process.stub(:setsid) { exit!(4) }
+
+          # there is a small race condition here if the child doesn't get
+          # scheduled and call exit! before the parent can call getpgid, so run
+          # this a few times to make sure we've created the reproduction case
+          # correctly.
+          5.times do
+            s = Mixlib::ShellOut.new(cmd)
+            s.run_command # should not raise Errno::ESRCH
+          end
+
+        end
+
+      end
+
       context 'with subprocess that takes longer than timeout' do
         def ruby_wo_shell(code)
           parts = %w[ruby]
