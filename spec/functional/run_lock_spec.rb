@@ -276,6 +276,7 @@ E
       end
 
       wait_on_lock
+      sleep 0.5 # Possible race condition on Solaris which pid is observed as 0
       File.read(lockfile).should == p1.to_s
 
       Process.waitpid2(p1)
@@ -283,4 +284,3 @@ E
 
   end
 end
-
