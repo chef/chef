@@ -19,6 +19,7 @@
 require 'pp'
 require 'socket'
 require 'chef/config'
+require 'chef/config_fetcher'
 require 'chef/exceptions'
 require 'chef/log'
 require 'chef/platform'
