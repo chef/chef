@@ -50,7 +50,6 @@
 * Knife::UI#confirm now has a default_choice option. (CHEF-5057)
 * Add knife 'ssl check' and 'ssl fetch' commands for debugging SSL errors. (CHEF-4711)
 * Usermod group provider is only used on OpenSuse. (OHAI-339)
-* Add knife 'ssl check' and 'ssl fetch' commands for debugging SSL errors (CHEF-4711)
 * Cron resource accepts a weekday attribute as a symbol. (CHEF-4848)
 * Cron resource accepts special strings, e.g. @reboot (CHEF-2816)
 * Call WIN32OLE.ole_initialize before using WMI (CHEF-4888)
