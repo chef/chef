@@ -38,3 +38,4 @@ Example Contribution:
 * **jessehu**: Increase bootstrap log_level when knife -V -V is set
 * **mveitas**: knife cookbook test honors chefignore
 * **zuazo**: Fix ImmutableMash and ImmutableArray to_hash and to_a methods
+* **jaymzh**: SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)

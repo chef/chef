@@ -192,4 +192,9 @@ Normally Chef would require a major version bump for this change but since the o
 
 If you need to differentiate between OpenSUSE and SUSE in your cookbooks, please make sure the differentiation logic is updated to use the new :platform attribute values rather than the :platform_version in your cookbooks before upgrading to this version.
 
-None.
+#### Signal Regression Fix
+
+CHEF-1761 introduced a regression for signal handling when not in daemon mode
+(see CHEF-5172). Chef will now, once again, exit immediately on SIGTERM if it
+is not in daemon mode, otherwise it will complete it's current run before
+existing.
