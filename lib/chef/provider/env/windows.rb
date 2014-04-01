@@ -35,6 +35,7 @@ class Chef
           end
           obj.variablevalue = @new_resource.value
           obj.put_
+          ENV[@new_resource.key_name] = @new_resource.value
           broadcast_env_change
         end
 
@@ -42,6 +43,7 @@ class Chef
           obj = env_obj(@new_resource.key_name)
           if obj
             obj.delete_
+            ENV.delete(@new_resource.key_name)
             broadcast_env_change
           end
         end
