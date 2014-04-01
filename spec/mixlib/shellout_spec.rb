@@ -344,7 +344,9 @@ describe Mixlib::ShellOut do
       let(:options) { { :cwd => cwd } }
 
       context 'when running under Unix', :unix_only do
-        let(:cwd) { '/bin' }
+        # Use /bin for tests only if it is not a symlink. Some
+        # distributions (e.g. Fedora) symlink it to /usr/bin
+        let(:cwd) { File.symlink?('/bin') ? '/tmp' : '/bin' }
         let(:cmd) { 'pwd' }
 
         it "should chdir to the working directory" do
