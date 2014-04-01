@@ -4,6 +4,7 @@
 
 * Service Provider for MacOSX now supports `enable` and `disable`
 * Chef now gracefully handles corrupted cache files.
+* SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
 
 ## Last Release: 10.30.4 (02/18/2014)
 

@@ -8,3 +8,4 @@ Example Contribution:
 
 * **jaymzh**: Service Provider for MacOSX now supports `enable` and `disable`
 * **jaymzh**: Chef now gracefully handles corrupted cache files.
+* **jaymzh**: SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)

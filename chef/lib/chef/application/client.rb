@@ -256,10 +256,13 @@ class Chef::Application::Client < Chef::Application
         SELF_PIPE[1].putc('.') # wakeup master process from select
       end
 
-      trap("TERM") do
-        Chef::Log.info("SIGTERM received, exiting gracefully")
-        @exit_gracefully = true
-        SELF_PIPE[1].putc('.')
+      # see CHEF-5172
+      if Chef::Config[:daemonize] || Chef::Config[:interval]
+        trap("TERM") do
+          Chef::Log.info("SIGTERM received, exiting gracefully")
+          @exit_gracefully = true
+          SELF_PIPE[1].putc('.')
+        end
       end
     end
 
