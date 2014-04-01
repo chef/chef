@@ -495,7 +495,6 @@ describe Chef::Client do
 
       test_env = Chef::Environment.new
       test_env.name("A")
-      puts test_env.name
 
       mock_chef_rest = double("Chef::REST")
       mock_chef_rest.should_receive(:get_rest).with("environments/A").and_return(test_env)
