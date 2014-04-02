@@ -122,9 +122,6 @@ sudo chown -R jenkins-node "/var/cache/omnibus" || sudo chown -R jenkins "/var/c
 
 # copy config into place
 cp omnibus.rb.example omnibus.rb
-# Temporarily disable dmg building in chef-client pipelines until dmg
-# is supported in omnitruck.
-echo "build_dmg false" >> omnibus.rb
 
 # Aaand.. new ruby
 PATH=/usr/local/bin:$PATH
