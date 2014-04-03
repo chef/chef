@@ -28,6 +28,3 @@ mac_pkg_identifier "com.getchef.pkg.chef"
 dependency "preparation"
 dependency "chef"
 dependency "version-manifest"
-
-# Turn off dmg creation until it's enabled in our slaves.
-Omnibus.config[:build_dmg] = false

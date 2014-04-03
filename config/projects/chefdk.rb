@@ -39,6 +39,3 @@ override :zlib,      version: "1.2.8"
 dependency "preparation"
 dependency "chefdk"
 dependency "version-manifest"
-
-# Turn off pkg signing until the certificates are deployed in our slaves.
-Omnibus.config[:sign_pkg] = false

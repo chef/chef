@@ -121,7 +121,7 @@ sudo chown -R jenkins-node "/opt/${OMNIBUS_PROJECT_NAME}" || sudo chown -R jenki
 sudo chown -R jenkins-node "/var/cache/omnibus" || sudo chown -R jenkins "/var/cache/omnibus"
 
 # copy config into place
-cp omnibus.rb.example omnibus.rb
+cp omnibus.rb.chef omnibus.rb
 
 # Aaand.. new ruby
 PATH=/usr/local/bin:$PATH
