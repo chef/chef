@@ -198,3 +198,27 @@ CHEF-1761 introduced a regression for signal handling when not in daemon mode
 (see CHEF-5172). Chef will now, once again, exit immediately on SIGTERM if it
 is not in daemon mode, otherwise it will complete it's current run before
 existing.
+
+#### Disabling plugins with Ohai 7
+
+Ohai 7 is backwards compatible with Ohai 6 plugins. However the code to disable plugins have changed slightly.
+
+Previously the code to disable plugins:
+
+```
+Ohai::Config[:disabled_plugins] = ["passwd","dmi"]
+```
+
+should change to
+
+```
+Ohai::Config[:disabled_plugins] = [:Passwd,:Dmi]
+
+```
+
+if you want to disable custom Ohai 6 plugins in addition to Ohai 7 plugins you can do:
+
+```
+Ohai::Config[:disabled_plugins] = [:Passwd,:Dmi,"my_plugin"]
+
+```
