@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -14,7 +13,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -43,29 +42,31 @@
             
   <div class="section" id="chef-client">
 <h1>chef-client<a class="headerlink" href="#chef-client" title="Permalink to this headline">¶</a></h1>
-<p>A chef-client is an agent that runs locally on every node that is registered with the server. When a chef-client is run, it will perform all of the steps that are required to bring the node into the expected state, including:</p>
+<p>A chef-client is an agent that runs locally on every node that is registered with the Chef server. When a chef-client is run, it will perform all of the steps that are required to bring the node into the expected state, including:</p>
 <ul class="simple">
-<li>Registering and authenticating the node with the server</li>
+<li>Registering and authenticating the node with the Chef server</li>
 <li>Building the node object</li>
 <li>Synchronizing cookbooks</li>
 <li>Compiling the resource collection by loading each of the required cookbooks, including recipes, attributes, and all other dependencies</li>
 <li>Taking the appropriate and required actions to configure the node</li>
 <li>Looking for exceptions and notifications, handling each as required</li>
 </ul>
-<p>The chef-client executable can be run as a command-line tool.</p>
+<p>The chef-client executable is run as a command-line tool.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">A client.rb file is used to specify the configuration details for the chef-client. This file is the default configuration file and is loaded every time the chef-client executable is run. The chef-client executable can be run as a daemon. On UNIX- and Linux-based machines, the configuration file is located at: <tt class="docutils literal"><span class="pre">/etc/chef/client.rb</span></tt>. On Microsoft Windows machines, the configuration file is located at <tt class="docutils literal"><span class="pre">C:\chef\client.rb</span></tt>.</p>
+<p>A client.rb file is used to specify the configuration details for the chef-client. This file is the default configuration file and is loaded every time the chef-client executable is run. The chef-client executable can be run as a daemon.</p>
+<p class="last">On UNIX- and Linux-based machines, the configuration file is located at: <tt class="docutils literal"><span class="pre">/etc/chef/client.rb</span></tt>. On Microsoft Windows machines, the configuration file is located at <tt class="docutils literal"><span class="pre">C:\chef\client.rb</span></tt>. When a client.rb file is present in this directory, the settings contained within that file will override the default configuration settings.</p>
 </div>
 <div class="section" id="options">
 <h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <p>This command has the following syntax:</p>
-<div class="highlight-python"><pre>chef-client OPTION VALUE OPTION VALUE ...</pre>
+<div class="highlight-python"><div class="highlight"><pre>chef-client OPTION VALUE OPTION VALUE ...
+</pre></div>
 </div>
 <p>This command has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-A</span></tt>, <tt class="docutils literal"><span class="pre">--fatal-windows-admin-check</span></tt></dt>
-<dd>Indicates that a chef-client run should fail if the chef-client does not have administrator privileges in Microsoft Windows.</dd>
+<dd>Use to cause a chef-client run to fail when the chef-client does not have administrator privileges in Microsoft Windows.</dd>
 <dt><tt class="docutils literal"><span class="pre">--chef-zero-port</span> <span class="pre">PORT</span></tt></dt>
 <dd>The port on which chef-zero will listen.</dd>
 <dt><tt class="docutils literal"><span class="pre">-F</span> <span class="pre">FORMAT</span></tt>, <tt class="docutils literal"><span class="pre">--format</span> <span class="pre">FORMAT</span></tt></dt>
@@ -89,7 +90,7 @@
 <dt><tt class="docutils literal"><span class="pre">-k</span> <span class="pre">KEY_FILE</span></tt>, <tt class="docutils literal"><span class="pre">--client_key</span> <span class="pre">KEY_FILE</span></tt></dt>
 <dd>The location of the file which contains the client key. Default value: <tt class="docutils literal"><span class="pre">/etc/chef/client.pem</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-K</span> <span class="pre">KEY_FILE</span></tt>, <tt class="docutils literal"><span class="pre">--validation_key</span> <span class="pre">KEY_FILE</span></tt></dt>
-<dd>The location of the file which contains the key used when a chef-client is registered with a server. A validation key is signed using the <tt class="docutils literal"><span class="pre">validation_client_name</span></tt> for authentication. Default value: <tt class="docutils literal"><span class="pre">/etc/chef/validation.pem</span></tt>.</dd>
+<dd>The location of the file which contains the key used when a chef-client is registered with a Chef server. A validation key is signed using the <tt class="docutils literal"><span class="pre">validation_client_name</span></tt> for authentication. Default value: <tt class="docutils literal"><span class="pre">/etc/chef/validation.pem</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-l</span> <span class="pre">LEVEL</span></tt>, <tt class="docutils literal"><span class="pre">--log_level</span> <span class="pre">LEVEL</span></tt></dt>
 <dd>The level of logging that will be stored in a log file.</dd>
 <dt><tt class="docutils literal"><span class="pre">-L</span> <span class="pre">LOGLOCATION</span></tt>, <tt class="docutils literal"><span class="pre">--logfile</span> <span class="pre">c</span></tt></dt>
@@ -105,11 +106,11 @@
 <dt><tt class="docutils literal"><span class="pre">-P</span> <span class="pre">PID_FILE</span></tt>, <tt class="docutils literal"><span class="pre">--pid</span> <span class="pre">PID_FILE</span></tt></dt>
 <dd>The location in which a process identification number (pid) is saved. An executable, when started as a daemon, will write the pid to the specified file. Default value: <tt class="docutils literal"><span class="pre">/tmp/name-of-executable.pid</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-R</span></tt>, <tt class="docutils literal"><span class="pre">--enable-reporting</span></tt></dt>
-<dd>Indicates that data collection reporting is enabled during a chef-client run.</dd>
+<dd>Use to enable data collection reporting during a chef-client run.</dd>
 <dt><tt class="docutils literal"><span class="pre">-s</span> <span class="pre">SECONDS</span></tt>, <tt class="docutils literal"><span class="pre">--splay</span> <span class="pre">SECONDS</span></tt></dt>
 <dd>A number (in seconds) to add to the <tt class="docutils literal"><span class="pre">interval</span></tt> that is used to determine the frequency of chef-client runs. This number can help prevent server load when there are many clients running at the same time.</dd>
 <dt><tt class="docutils literal"><span class="pre">-S</span> <span class="pre">CHEF_SERVER_URL</span></tt>, <tt class="docutils literal"><span class="pre">--server</span> <span class="pre">CHEF_SERVER_URL</span></tt></dt>
-<dd>The URL for the server.</dd>
+<dd>The URL for the Chef server.</dd>
 <dt><tt class="docutils literal"><span class="pre">-u</span> <span class="pre">USER</span></tt>, <tt class="docutils literal"><span class="pre">--user</span> <span class="pre">USER</span></tt></dt>
 <dd>The user that owns a process. This is required when starting any executable as a daemon.</dd>
 <dt><tt class="docutils literal"><span class="pre">-v</span></tt>, <tt class="docutils literal"><span class="pre">--version</span></tt></dt>
@@ -117,7 +118,7 @@
 <dt><tt class="docutils literal"><span class="pre">-W</span></tt>, <tt class="docutils literal"><span class="pre">--why-run</span></tt></dt>
 <dd>Indicates that the executable will be run in why-run mode, which is a type of chef-client run that does everything except modify the system. Use why-run mode to understand why the chef-client makes the decisions that it makes and to learn more about the current and proposed state of the system.</dd>
 <dt><tt class="docutils literal"><span class="pre">-z</span></tt>, <tt class="docutils literal"><span class="pre">--local-mode</span></tt></dt>
-<dd>Indicates that the chef-client will be run in local mode, which allows all commands that work against the server to also work against the local chef-repo.</dd>
+<dd>Indicates that the chef-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef-repo.</dd>
 </dl>
 </div>
 <div class="section" id="run-with-elevated-privileges">
@@ -140,16 +141,12 @@
 <div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>su
 </pre></div>
 </div>
-</div></blockquote>
-</li>
-</ul>
 <p>and then:</p>
-<blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-client
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-client
 </pre></div>
 </div>
 </div></blockquote>
-<ul>
+</li>
 <li><p class="first">Use the sudo utility</p>
 <blockquote>
 <div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>sudo chef-client

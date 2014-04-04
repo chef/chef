@@ -1,4 +1,6 @@
-.TH "CHEF-SHELL" "1" "Chef 11.10.0" "" "chef-shell"
+.\" Man page generated from reStructuredText.
+.
+.TH "CHEF-SHELL" "1" "Chef 11.12.0" "" "chef-shell"
 .SH NAME
 chef-shell \- The man page for the chef-shell command line tool.
 .
@@ -28,15 +30,17 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.\" Man page generated from reStructuredText.
-.
 .sp
 chef\-shell is a recipe debugging tool that allows the use of breakpoints within recipes. chef\-shell runs as an Interactive Ruby (IRb) session. chef\-shell supports both recipe and attribute file syntax, as well as interactive debugging features.
-.IP Note
-chef\-shell is the new name for Shef as of Chef 11.x. chef\-shell is backwards compatible and aside from the name change, has the same set of functionality as with previous releases.
-.RE
 .sp
-The chef\-shell executable can be run as a command\-line tool.
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+chef\-shell is the new name for Shef as of Chef 11.x\&. chef\-shell is backwards compatible and aside from the name change, has the same set of functionality as with previous releases.
+.UNINDENT
+.UNINDENT
+.sp
+The chef\-shell executable is run as a command\-line tool.
 .SH MODES
 .sp
 chef\-shell is tool that allows Knife to be run using an Interactive Ruby (IRb) session. chef\-shell currently supports recipe and attribute file syntax, as well as interactive debugging features. chef\-shell has three run modes:
@@ -59,25 +63,29 @@ _
 T{
 Solo
 T}	T{
-chef\-shell acts as a chef\-solo client. It attempts to load the chef\-solo configuration file and JSON attributes. If the JSON attributes set a run list, it will be honored. Cookbooks will be loaded in the same way that chef\-solo loads them. chef\-solo mode is activated with the \fB\-s\fP or \fB\-\-solo\fP command line option, and JSON attributes are specified in the same way as for chef\-solo, with \fB\-j /path/to/chef\-solo.json\fP.
+chef\-shell acts as a chef\-solo client. It attempts to load the chef\-solo configuration file and JSON attributes. If the JSON attributes set a run list, it will be honored. Cookbooks will be loaded in the same way that chef\-solo loads them. chef\-solo mode is activated with the \fB\-s\fP or \fB\-\-solo\fP command line option, and JSON attributes are specified in the same way as for chef\-solo, with \fB\-j /path/to/chef\-solo.json\fP\&.
 T}
 _
 T{
 Client
 T}	T{
-chef\-shell acts as a chef\-client. During startup, it reads the chef\-client configuration file and contacts the server to get attributes and cookbooks. The run list will be set in the same way as normal chef\-client runs. chef\-client mode is activated with the \fB\-z\fP or \fB\-\-client\fP options. You can also specify the configuration file with \fB\-c CONFIG\fP and the server URL with \fB\-S SERVER_URL\fP.
+chef\-shell acts as a chef\-client\&. During startup, it reads the chef\-client configuration file and contacts the Chef server to get attributes and cookbooks. The run list will be set in the same way as normal chef\-client runs. chef\-client mode is activated with the \fB\-z\fP or \fB\-\-client\fP options. You can also specify the configuration file with \fB\-c CONFIG\fP and the server URL with \fB\-S SERVER_URL\fP\&.
 T}
 _
 .TE
 .SH OPTIONS
 .sp
 This command has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 chef\-shell OPTION VALUE OPTION VALUE ...
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 This command has the following options:
 .INDENT 0.0
@@ -101,10 +109,10 @@ The level of logging that will be stored in a log file.
 Indicates that chef\-shell will be run in chef\-solo mode.
 .TP
 .B \fB\-S CHEF_SERVER_URL\fP, \fB\-\-server CHEF_SERVER_URL\fP
-The URL for the server.
+The URL for the Chef server\&.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
-The version of the chef\-client.
+The version of the chef\-client\&.
 .TP
 .B \fB\-z\fP, \fB\-\-client\fP
 Indicates that chef\-shell will be run in chef\-client mode.

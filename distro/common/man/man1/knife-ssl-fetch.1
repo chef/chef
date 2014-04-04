@@ -1,8 +1,8 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-SSH" "1" "Chef 11.12.0" "" "knife ssh"
+.TH "KNIFE-SSL-FETCH" "1" "Chef 11.12.0" "" "knife ssl fetch"
 .SH NAME
-knife-ssh \- The man page for the knife ssh subcommand.
+knife-ssl-fetch \- The man page for the knife ssl fetch subcommand.
 .
 .nr rst2man-indent-level 0
 .
@@ -31,7 +31,14 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
 .sp
-The \fBknife ssh\fP subcommand is used to invoke SSH commands (in parallel) on a subset of nodes within an organization, based on the results of a search query.
+The \fBknife ssl fetch\fP subcommand is used to copy SSL certificates from an HTTPS server to the \fBtrusted_certs_dir\fP directory that is used by Knife and the chef\-client to store trusted SSL certificates. When these certificates match the hostname of the remote server, running \fBknife ssl fetch\fP is the only step required to verify a remote server that is accessed by either Knife or the chef\-client\&.
+.sp
+\fBWARNING:\fP
+.INDENT 0.0
+.INDENT 3.5
+It is the user\(aqs responsibility to verify the authenticity of every SSL certificate before downloading it to the \fBtrusted_certs_dir\fP directory. Knife will use any certificate in that directory as if it is a 100% trusted and authentic SSL certificate. Knife will not be able to determine if any certificate in this directory has been tampered with, is forged, malicious, or otherwise harmful. Therefore it is essential that users take the proper steps before downloading certificates into this directory.
+.UNINDENT
+.UNINDENT
 .sp
 \fBSyntax\fP
 .sp
@@ -145,135 +152,51 @@ Indicates that the chef\-client will be run in local mode, which allows all comm
 .sp
 \fBExamples\fP
 .sp
-To find the uptime of all of web servers running Ubuntu on the Amazon EC2 platform, enter:
+The following examples show how to use this Knife subcommand:
+.sp
+\fBFetch the SSL certificates used by Knife from the Chef server\fP
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-$ knife ssh "role:web" "uptime" \-x ubuntu \-a ec2.public_hostname
+$ knife ssl fetch
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
 .sp
-to return something like:
+\fBFetch the SSL certificates used by the chef\-client from the Chef server\fP
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-ec2\-174\-129\-127\-206.compute\-1.amazonaws.com  13:50:47 up 1 day, 23:26,  1 user,  load average: 0.25, 0.18, 0.11
-ec2\-67\-202\-63\-102.compute\-1.amazonaws.com    13:50:47 up 1 day, 23:33,  1 user,  load average: 0.12, 0.13, 0.10
-ec2\-184\-73\-9\-250.compute\-1.amazonaws.com     13:50:48 up 16:45,  1 user,  load average: 0.30, 0.22, 0.13
-ec2\-75\-101\-240\-230.compute\-1.amazonaws.com   13:50:48 up 1 day, 22:59,  1 user,  load average: 0.24, 0.17, 0.11
-ec2\-184\-73\-60\-141.compute\-1.amazonaws.com    13:50:48 up 1 day, 23:30,  1 user,  load average: 0.32, 0.17, 0.15
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-$ knife ssh \(aqname:*\(aq \(aqsudo chef\-client\(aq
+$ knife ssl fetch \-c /etc/chef/client.rb
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
 .sp
-To force a chef\-client run on all of the web servers running Ubuntu on the Amazon EC2 platform, enter:
+\fBFetch SSL certificates from a URL or URI\fP
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-$ knife ssh "role:web" "sudo chef\-client" \-x ubuntu \-a ec2.public_hostname
+$ knife ssl fetch URL_or_URI
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
 .sp
-to return something like:
+for example:
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-ec2\-67\-202\-63\-102.compute\-1.amazonaws.com   [Fri, 22 Oct 2010 14:18:37 +0000] INFO: Starting Chef Run (Version 0.9.10)
-ec2\-174\-129\-127\-206.compute\-1.amazonaws.com [Fri, 22 Oct 2010 14:18:37 +0000] INFO: Starting Chef Run (Version 0.9.10)
-ec2\-184\-73\-9\-250.compute\-1.amazonaws.com    [Fri, 22 Oct 2010 14:18:38 +0000] INFO: Starting Chef Run (Version 0.9.10)
-ec2\-75\-101\-240\-230.compute\-1.amazonaws.com  [Fri, 22 Oct 2010 14:18:38 +0000] INFO: Starting Chef Run (Version 0.9.10)
-ec2\-184\-73\-60\-141.compute\-1.amazonaws.com   [Fri, 22 Oct 2010 14:18:38 +0000] INFO: Starting Chef Run (Version 0.9.10)
-ec2\-174\-129\-127\-206.compute\-1.amazonaws.com [Fri, 22 Oct 2010 14:18:39 +0000] INFO: Chef Run complete in 1.419243 seconds
-ec2\-174\-129\-127\-206.compute\-1.amazonaws.com [Fri, 22 Oct 2010 14:18:39 +0000] INFO: cleaning the checksum cache
-ec2\-174\-129\-127\-206.compute\-1.amazonaws.com [Fri, 22 Oct 2010 14:18:39 +0000] INFO: Running report handlers
-ec2\-174\-129\-127\-206.compute\-1.amazonaws.com [Fri, 22 Oct 2010 14:18:39 +0000] INFO: Report handlers complete
-ec2\-67\-202\-63\-102.compute\-1.amazonaws.com   [Fri, 22 Oct 2010 14:18:39 +0000] INFO: Chef Run complete in 1.578265 seconds
-ec2\-67\-202\-63\-102.compute\-1.amazonaws.com   [Fri, 22 Oct 2010 14:18:39 +0000] INFO: cleaning the checksum cache
-ec2\-67\-202\-63\-102.compute\-1.amazonaws.com   [Fri, 22 Oct 2010 14:18:39 +0000] INFO: Running report handlers
-ec2\-67\-202\-63\-102.compute\-1.amazonaws.com   [Fri, 22 Oct 2010 14:18:39 +0000] INFO: Report handlers complete
-ec2\-184\-73\-9\-250.compute\-1.amazonaws.com    [Fri, 22 Oct 2010 14:18:40 +0000] INFO: Chef Run complete in 1.638884 seconds
-ec2\-184\-73\-9\-250.compute\-1.amazonaws.com    [Fri, 22 Oct 2010 14:18:40 +0000] INFO: cleaning the checksum cache
-ec2\-184\-73\-9\-250.compute\-1.amazonaws.com    [Fri, 22 Oct 2010 14:18:40 +0000] INFO: Running report handlers
-ec2\-184\-73\-9\-250.compute\-1.amazonaws.com    [Fri, 22 Oct 2010 14:18:40 +0000] INFO: Report handlers complete
-ec2\-75\-101\-240\-230.compute\-1.amazonaws.com  [Fri, 22 Oct 2010 14:18:40 +0000] INFO: Chef Run complete in 1.540257 seconds
-ec2\-75\-101\-240\-230.compute\-1.amazonaws.com  [Fri, 22 Oct 2010 14:18:40 +0000] INFO: cleaning the checksum cache
-ec2\-75\-101\-240\-230.compute\-1.amazonaws.com  [Fri, 22 Oct 2010 14:18:40 +0000] INFO: Running report handlers
-ec2\-75\-101\-240\-230.compute\-1.amazonaws.com  [Fri, 22 Oct 2010 14:18:40 +0000] INFO: Report handlers complete
-ec2\-184\-73\-60\-141.compute\-1.amazonaws.com   [Fri, 22 Oct 2010 14:18:40 +0000] INFO: Chef Run complete in 1.502489 seconds
-ec2\-184\-73\-60\-141.compute\-1.amazonaws.com   [Fri, 22 Oct 2010 14:18:40 +0000] INFO: cleaning the checksum cache
-ec2\-184\-73\-60\-141.compute\-1.amazonaws.com   [Fri, 22 Oct 2010 14:18:40 +0000] INFO: Running report handlers
-ec2\-184\-73\-60\-141.compute\-1.amazonaws.com   [Fri, 22 Oct 2010 14:18:40 +0000] INFO: Report handlers complete
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.sp
-To query for all nodes that have the "webserver" role and then use SSH to run the command "sudo chef\-client", enter:
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-$ knife ssh "role:webserver" "sudo chef\-client"
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-$ knife ssh name:* "sudo aptitude upgrade \-y"
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.sp
-To specify the shell type used on the nodes returned by a search query:
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-$ knife ssh roles:opscode\-omnitruck macterm
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.sp
-where \fBscreen\fP is one of the following values: \fBcssh\fP, \fBinteractive\fP, \fBmacterm\fP, \fBscreen\fP, or \fBtmux\fP\&. If the node does not have the shell type installed, Knife will return an error similar to the following:
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-you need the rb\-appscript gem to use knife ssh macterm.
-\(ga(sudo) gem    install rb\-appscript\(ga to install
-ERROR: LoadError: cannot load such file \-\- appscript
+$ knife ssl fetch https://www.getchef.com
 .ft P
 .fi
 .UNINDENT

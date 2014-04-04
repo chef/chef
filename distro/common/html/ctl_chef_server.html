@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -14,7 +13,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -43,18 +42,19 @@
             
   <div class="section" id="chef-server-ctl">
 <h1>chef-server-ctl<a class="headerlink" href="#chef-server-ctl" title="Permalink to this headline">¶</a></h1>
-<p>The open source server includes a command-line utility named chef-server-ctl, which is used to start and stop individual services, reconfigure the server, and tail server log files.</p>
+<p>The open source Chef server includes a command-line utility named chef-server-ctl, which is used to start and stop individual services, reconfigure the Chef server, and tail Chef server log files.</p>
 <div class="section" id="options">
 <h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <p>This command has the following syntax:</p>
-<div class="highlight-python"><pre>chef-server-ctl OPTION</pre>
+<div class="highlight-python"><div class="highlight"><pre>chef-server-ctl OPTION
+</pre></div>
 </div>
 <p>This command has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">help</span></tt></dt>
 <dd>Shows help for the command.</dd>
 <dt><tt class="docutils literal"><span class="pre">reconfigure</span></tt></dt>
-<dd>Use to reconfigure the server. This option will read from the <tt class="docutils literal"><span class="pre">/etc/chef-server/chef-server.rb</span></tt> file and apply that configuration to the server. Any time changes are made to the chef-server.rb file, the chef-server-ctl command should be run with this option.</dd>
+<dd>Use to reconfigure the Chef server. This option will read from the <tt class="docutils literal"><span class="pre">/etc/chef-server/chef-server.rb</span></tt> file and apply that configuration to the Chef server. Any time changes are made to the chef-server.rb file, the chef-server-ctl command should be run with this option.</dd>
 <dt><tt class="docutils literal"><span class="pre">restart</span> <span class="pre">[SERVICE_NAME]</span></tt></dt>
 <dd>Use to restart all enabled services or to restart a single service.</dd>
 <dt><tt class="docutils literal"><span class="pre">start</span> <span class="pre">[SERVICE_NAME]</span></tt></dt>
@@ -64,9 +64,9 @@
 <dt><tt class="docutils literal"><span class="pre">stop</span> <span class="pre">[SERVICE_NAME]</span></tt></dt>
 <dd>Use to stop all enabled services or to stop a single service.</dd>
 <dt><tt class="docutils literal"><span class="pre">tail</span> <span class="pre">[SERVICE_NAME]</span></tt></dt>
-<dd>Use to follow the server logs for all services or for a single service.</dd>
+<dd>Use to follow the Chef server logs for all services or for a single service.</dd>
 <dt><tt class="docutils literal"><span class="pre">test</span> <span class="pre">--all</span></tt></dt>
-<dd>Use to execute chef-pedant, an integration test suite for the server installation. By default, only a subset of the available test are run. Add the <tt class="docutils literal"><span class="pre">--all</span></tt> flag to run the full test suite.</dd>
+<dd>Use to execute chef-pedant, an integration test suite for the Chef server installation. By default, only a subset of the available test are run. Add the <tt class="docutils literal"><span class="pre">--all</span></tt> flag to run the full test suite.</dd>
 </dl>
 </div>
 <div class="section" id="examples">

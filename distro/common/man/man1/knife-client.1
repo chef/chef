@@ -1,4 +1,6 @@
-.TH "KNIFE-CLIENT" "1" "Chef 11.10.0" "" "knife client"
+.\" Man page generated from reStructuredText.
+.
+.TH "KNIFE-CLIENT" "1" "Chef 11.12.0" "" "knife client"
 .SH NAME
 knife-client \- The man page for the knife client subcommand.
 .
@@ -28,14 +30,16 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.\" Man page generated from reStructuredText.
-.
 .sp
-When a node runs the chef\-client for the first time, it generally does not yet have an API client identity, and so it cannot make authenticated requests to the server. This is where the validation client\-\-\-known as the chef\-validator\-\-\-comes in. When the chef\-client runs, it checks if it has a client key. If the client key does not exist, it then attempts to borrow the identity of the chef\-validator to register itself with the server. In order to register with the server, the private key for the chef\-validator needs to be copied to the host and placed in \fB/etc/chef/validation.pem\fP.
+Every request made by the chef\-client to the Chef server must be an authenticated request using the Chef Server API and a private key. When the chef\-client makes a request to the Chef server, the chef\-client authenticates each request using a private key located in \fB/etc/chef/client.pem\fP\&.
 .sp
-Once the chef\-client has registered itself with the server, it no longer uses the validation client for anything. It is recommended that you delete the private key for the chef\-validator from the host after the host has registered or use the \fBdelete_validation\fP recipe that can be found in the \fBchef\-client\fP cookbook (\fI\%https://github.com/opscode-cookbooks/chef-client\fP).
+However, during the first chef\-client run, this private key does not exist. Instead, the chef\-client will attempt to use the private key assigned to the chef\-validator, located in \fB/etc/chef/validation.pem\fP\&. (If, for any reason, the chef\-validator is unable to make an authenticated request to the Chef server, the initial chef\-client run will fail.)
 .sp
-The \fBknife client\fP subcommand is used to manage an API client list and their associated RSA public key\-pairs. This allows authentication requests to be made to the server by any entity that uses the Chef Server API, such as the chef\-client and Knife.
+During the initial chef\-client run, the chef\-client will register with the Chef server using the private key assigned to the chef\-validator, after which the chef\-client will obtain a \fBclient.pem\fP private key for all future authentication requests to the Chef server\&.
+.sp
+After the initial chef\-client run has completed successfully, the chef\-validator is no longer required and may be deleted from the node. Use the \fBdelete_validation\fP recipe found in the \fBchef\-client\fP cookbook (\fI\%https://github.com/opscode\-cookbooks/chef\-client\fP) to remove the chef\-validator\&.
+.sp
+The \fBknife client\fP subcommand is used to manage an API client list and their associated RSA public key\-pairs. This allows authentication requests to be made to the Chef server by any entity that uses the Chef Server API, such as the chef\-client and Knife\&.
 .SH COMMON OPTIONS
 .sp
 The following options may be used with any of the arguments available to the \fBknife client\fP subcommand:
@@ -60,13 +64,13 @@ The $EDITOR that is used for all interactive commands.
 The name of the environment. When this option is added to a command, the command will run only against the named environment.
 .TP
 .B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
-The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
+The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP\&.
 .TP
 .B \fB\-h\fP, \fB\-\-help\fP
 Shows help for the command.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the server.
+The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-[no\-]color\fP
 Indicates whether colored output will be used.
@@ -75,46 +79,50 @@ Indicates whether colored output will be used.
 Indicates that data will be shown after a destructive operation.
 .TP
 .B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
-The URL for the server.
+The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
+The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-V\fP, \fB\-\-verbose\fP
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
-The version of the chef\-client.
+The version of the chef\-client\&.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
 Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .SH BULK DELETE
 .sp
-The \fBbulk delete\fP argument is used to delete any API client that matches a pattern defined by a regular expression. The regular expression must be within quotes and not be surrounded by forward slashes (/).
+The \fBbulk delete\fP argument is used to delete any API client that matches a pattern defined by a regular expression. The regular expression must be within quotes and not be surrounded by forward slashes (\fB/\fP).
 .sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife client bulk delete REGEX
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
 This command does not have any specific options.
 .SH CREATE
 .sp
-The \fBcreate\fP argument is used to create a new API client. This process will generate an RSA key pair for the named API client. The public key will be stored on the server and the private key will be displayed on \fBSTDOUT\fP or written to a named file.
+The \fBcreate\fP argument is used to create a new API client\&. This process will generate an RSA key pair for the named API client\&. The public key will be stored on the Chef server and the private key will be displayed on \fBSTDOUT\fP or written to a named file.
 .INDENT 0.0
 .IP \(bu 2
-For the chef\-client, the private key should be copied to the system as \fB/etc/chef/client.pem\fP.
+For the chef\-client, the private key should be copied to the system as \fB/etc/chef/client.pem\fP\&.
 .IP \(bu 2
 For Knife, the private key is typically copied to \fB~/.chef/client_name.pem\fP and referenced in the knife.rb configuration file.
 .UNINDENT
@@ -122,12 +130,16 @@ For Knife, the private key is typically copied to \fB~/.chef/client_name.pem\fP 
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife client create CLIENT_NAME (options)
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -135,39 +147,54 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fB\-a\fP, \fB\-\-admin\fP
-Indicates that a client will be created as an admin client. This is required when users of the open source server need to access the Chef Server API as an administrator. This option only works when used with the open source server and will have no effect when used with Enterprise Chef.
+Indicates that a client will be created as an admin client. This is required when users of the open source Chef server need to access the Chef Server API as an administrator. This option only works when used with the open source Chef server and will have no effect when used with Enterprise Chef\&.
+.TP
+.B \fB\-f FILE_NAME\fP, \fB\-\-file FILE_NAME\fP
+Use to save a private key to the specified file name.
 .UNINDENT
 .sp
 \fBExamples\fP
 .sp
 To create a Chef Admin client with the name "exampleorg" and save its private key to a file, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife client create exampleorg \-a \-f "/etc/chef/client.pem"
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 When running the \fBcreate\fP argument on Enterprise Chef, be sure to omit the \fB\-a\fP option:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife client create exampleorg \-f "/etc/chef/client.pem"
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH DELETE
 .sp
-The \fBdelete\fP argument is used to delete a registered API client.
+The \fBdelete\fP argument is used to delete a registered API client\&.
 .sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife client delete CLIENT_NAME
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -176,27 +203,35 @@ This command does not have any specific options.
 \fBExamples\fP
 .sp
 To delete a client with the name "client_foo", enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife client delete client_foo
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 Type \fBY\fP to confirm a deletion.
 .SH EDIT
 .sp
-The \fBedit\fP argument is used to edit the details of a registered API client. When this argument is run, Knife will open $EDITOR to enable editing of the \fBadmin\fP attribute. (None of the other attributes should be changed using this argument.) When finished, Knife will update the server with those changes.
+The \fBedit\fP argument is used to edit the details of a registered API client\&. When this argument is run, Knife will open $EDITOR to enable editing of the \fBadmin\fP attribute. (None of the other attributes should be changed using this argument.) When finished, Knife will update the Chef server with those changes.
 .sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife client edit CLIENT_NAME
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -205,25 +240,33 @@ This command does not have any specific options.
 \fBExamples\fP
 .sp
 To edit a client with the name "exampleorg", enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife client edit exampleorg
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH LIST
 .sp
-The \fBlist\fP argument is used to view a list of registered API client.
+The \fBlist\fP argument is used to view a list of registered API client\&.
 .sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife client list (options)
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -236,15 +279,21 @@ Indicates that the corresponding URIs will be shown.
 .sp
 \fBExamples\fP
 .sp
-To verify the API client list for the server, enter:
+To verify the API client list for the Chef server, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife client list
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something similar to:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -253,31 +302,45 @@ i\-12345678
 rs\-123456
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To verify that an API client can authenticate to the
-server correctly, try getting a list of clients using \fB\-u\fP and \fB\-k\fP options to specify its name and private key:
+Chef server correctly, try getting a list of clients using \fB\-u\fP and \fB\-k\fP options to specify its name and private key:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife client list \-u ORGNAME \-k .chef/ORGNAME.pem
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH REREGISTER
 .sp
-The \fBreregister\fP argument is used to regenerate an RSA key pair for an API client. The public key will be stored on the server and the private key will be displayed on \fBSTDOUT\fP or written to a named file.
-.IP Note
-Running this argument will invalidate the previous RSA key pair, making it unusable during authentication to the server.
-.RE
+The \fBreregister\fP argument is used to regenerate an RSA key pair for an API client\&. The public key will be stored on the Chef server and the private key will be displayed on \fBSTDOUT\fP or written to a named file.
+.sp
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+Running this argument will invalidate the previous RSA key pair, making it unusable during authentication to the Chef server\&.
+.UNINDENT
+.UNINDENT
 .sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife client reregister CLIENT_NAME (options)
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -285,31 +348,39 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fB\-f FILE_NAME\fP, \fB\-\-file FILE_NAME\fP
-Indicates that the private key will be saved to a specified file name.
+Use to save a private key to the specified file name.
 .UNINDENT
 .sp
 \fBExamples\fP
 .sp
 To regenerate the RSA key pair for a client named "testclient" and save it to a file named "rsa_key", enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife client regenerate testclient \-f rsa_key
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH SHOW
 .sp
-The \fBshow\fP argument is used to show the details of an API client.
+The \fBshow\fP argument is used to show the details of an API client\&.
 .sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife client show CLIENT_NAME (options)
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -323,14 +394,20 @@ The attribute (or attributes) to show.
 \fBExamples\fP
 .sp
 To view a client named "testclient", enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife client show testclient
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something like:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -341,16 +418,22 @@ name:        testclient
 public_key:
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To view information in JSON format, use the \fB\-F\fP common option as part of the command like this:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife role show devops \-F json
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
-Other formats available include \fBtext\fP, \fByaml\fP, and \fBpp\fP.
+Other formats available include \fBtext\fP, \fByaml\fP, and \fBpp\fP\&.
 .SH AUTHOR
 Chef
 .\" Generated by docutils manpage writer.
