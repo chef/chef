@@ -130,7 +130,8 @@ class Chef
       def self.free_sid(sid)
         sid = sid.pointer if sid.respond_to?(:pointer)
         unless FreeSid(sid).null?
-          Chef::ReservedNames::Win32::Error.raise!
+          # If the function fails, it returns a pointer to the SID structure represented by the pSid parameter.
+          raise Chef::Exceptions::Win32APIError, "Unable to free SID"
         end
       end
 
@@ -145,14 +146,21 @@ class Chef
 
       def self.get_length_sid(sid)
         sid = sid.pointer if sid.respond_to?(:pointer)
+        unless is_valid_sid(sid)
+          raise Chef::Exceptions::Win32APIError, "Invalid SID passed to get_length_sid"
+        end
+        # If the SID structure is not valid, the return value is undefined.
         GetLengthSid(sid)
       end
 
       def self.get_named_security_info(path, type = :SE_FILE_OBJECT, info = OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION)
         security_descriptor = FFI::MemoryPointer.new :pointer
-        hr = GetNamedSecurityInfoW(path.to_wstring, type, info, nil, nil, nil, nil, security_descriptor)
-        if hr != ERROR_SUCCESS
-          Chef::ReservedNames::Win32::Error.raise!("get_named_security_info(#{path}, #{type}, #{info})")
+        status = GetNamedSecurityInfoW(path.to_wstring, type, info, nil, nil, nil, nil, security_descriptor)
+        if status != ERROR_SUCCESS
+          # Unlike many other functions, GetNamedSecurityInfo does not SetLastError()
+          msg = "get_named_security_info(#{path}, #{type}, #{info}): "
+          msg << Chef::ReservedNames::Win32::Error.format_message(status)
+          raise Chef::Exceptions::Win32APIError, msg
         end
 
         result_pointer = security_descriptor.read_pointer
@@ -415,9 +423,12 @@ class Chef
           security_information |= (args[:sacl_inherits] ? UNPROTECTED_SACL_SECURITY_INFORMATION : PROTECTED_SACL_SECURITY_INFORMATION)
         end
 
-        hr = SetNamedSecurityInfoW(path.to_wstring, type, security_information, owner, group, dacl, sacl)
-        if hr != ERROR_SUCCESS
-          Chef::ReservedNames::Win32::Error.raise!
+        status = SetNamedSecurityInfoW(path.to_wstring, type, security_information, owner, group, dacl, sacl)
+        if status != ERROR_SUCCESS
+          # Unlike many other functions, SetNamedSecurityInfo does not SetLastError()
+          msg = "set_named_security_info(#{path}, #{type}, #{security_information}): "
+          msg << Chef::ReservedNames::Win32::Error.format_message(status)
+          raise Chef::Exceptions::Win32APIError, msg
         end
       end
 
