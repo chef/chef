@@ -41,12 +41,24 @@ class Chef
       end
 
       def source(*args)
-        if not args.empty?
-          args = Array(args).flatten
-          validate_source(args)
-          @source = args
-        elsif self.instance_variable_defined?(:@source) == true
-          @source
+        arg = if args.empty?
+                nil
+              elsif args[0].is_a?(Chef::DelayedEvaluator) && args.count == 1
+                args[0]
+              elsif args.any? {|a| a.is_a?(Chef::DelayedEvaluator)} && args.count > 1
+                raise Exceptions::InvalidRemoteFileURI, "Only 1 DelayedEvaluator is allowed"
+              else
+                Array(args).flatten
+              end
+        ret = set_or_return(:source,
+                            arg,
+                            { :callbacks => {
+                                :validate_source => method(:validate_source)
+                              }})
+        if ret.is_a? String
+          Array(ret)
+        else
+          ret
         end
       end
 
@@ -107,6 +119,7 @@ class Chef
       private
 
       def validate_source(source)
+        source = Array(source).flatten
         raise ArgumentError, "#{resource_name} has an empty source" if source.empty?
         source.each do |src|
           unless absolute_uri?(src)
@@ -114,6 +127,7 @@ class Chef
               "#{src.inspect} is not a valid `source` parameter for #{resource_name}. `source` must be an absolute URI or an array of URIs."
           end
         end
+        true
       end
 
       def absolute_uri?(source)
