@@ -99,13 +99,13 @@ class Chef
           if @new_resource.link_type == :symbolic
             converge_by("create symlink at #{@new_resource.target_file} to #{@new_resource.to}") do
               file_class.symlink(canonicalize(@new_resource.to),@new_resource.target_file)
-              Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
+              Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.target_file} -> #{@new_resource.to}")
               Chef::Log.info("#{@new_resource} created")
             end
           elsif @new_resource.link_type == :hard
             converge_by("create hard link at #{@new_resource.target_file} to #{@new_resource.to}") do
               file_class.link(@new_resource.to, @new_resource.target_file)
-              Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
+              Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.target_file} -> #{@new_resource.to}")
               Chef::Log.info("#{@new_resource} created")
             end
           end
