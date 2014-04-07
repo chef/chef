@@ -71,7 +71,7 @@ class Chef
           location[:explanation] = 'Applying attributes from loading a role'
 
         elsif slh_looks_like_role_expansion_merge(stack)
-          # No role info can remain at this point; we're just merging in the completed expansion of all roles.
+          # No role-specific info can remain at this point; we're just merging in the completed expansion of all roles.
           location[:mechanism] = :'chef-client'
           location[:explanation] = "Having merged all role attributes into an 'expansion', the chef run is now importing the expansion into the node object."
           
@@ -79,6 +79,7 @@ class Chef
           # Expecting environment_name to be set by node.apply_expansion_attributes in the tracer_hint
           location[:mechanism] = :environment
           location[:explanation] = 'Applying attributes from loading an environment'
+          location[:server] = Chef::Config.chef_server_url
 
         elsif slh_looks_like_attribute_reset(stack)
           location[:mechanism] = :'chef-client'
@@ -87,8 +88,8 @@ class Chef
         elsif slh_looks_like_node_construction_from_http(stack)
           location[:mechanism] = :'node-record'
           location[:explanation] = 'setting attributes from the node record obtained from the server'
-          # TODO: add nodename
-          # TODO: add servername
+          location[:node_name] = Chef::Config.node_name
+          location[:server] = Chef::Config.chef_server_url
 
         elsif slh_looks_like_cli_load(stack)
           # This one needs to happen fairly late, because the matcher 

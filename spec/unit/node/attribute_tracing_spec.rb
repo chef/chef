@@ -276,15 +276,15 @@ describe "Chef::Node::Attribute Tracing" do
                          { 
                            :mechanism => :'node-record', 
                            :explanation => 'setting attributes from the node record obtained from the server',
-                           # :server => 'http://localhost:19090',  # TODO
-                           # :node_name => 'hostname.example.com', # TODO
+                           :server => 'http://localhost:19090',
+                           :node_name => 'hostname.example.com',
                          })
         include_examples("contains trace", [:attr_trace_all, :attr_trace_node], "/deep/deeper", :normal, 0,
                          { 
                            :mechanism => :'node-record', 
                            :explanation => 'setting attributes from the node record obtained from the server',
-                           # :server => 'http://localhost:19090',  # TODO
-                           # :node_name => 'hostname.example.com', # TODO
+                           :server => 'http://localhost:19090',
+                           :node_name => 'hostname.example.com',
                          })
       end
 
@@ -367,15 +367,15 @@ describe "Chef::Node::Attribute Tracing" do
                          { 
                            :mechanism => :environment,
                            :explanation => 'Applying attributes from loading an environment',
-                           # :server => 'http://localhost:19090',  # TODO
-                           # :environment_name => 'pure_land', # TODO
+                           :server => 'http://localhost:19090',
+                           :environment_name => 'pure_land',
                          })
         include_examples("contains trace", [:attr_trace_all, :attr_trace_env], "/env_override", :env_override, 0,
                          {
                            :mechanism => :environment, 
                            :explanation => 'Applying attributes from loading an environment',
-                           # :server => 'http://localhost:19090',  # TODO
-                           # :environment_name => 'pure_land', # TODO
+                           :server => 'http://localhost:19090',
+                           :environment_name => 'pure_land',
                          })
       end
 
