@@ -188,31 +188,21 @@ describe "Chef::Node::Attribute Tracing" do
       end
 
       context "when loading from cookbook attributes" do
-        before(:all) do          
-          # TODO refactor this
-          @cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", '..', "data", "cookbooks"))
-          cl = Chef::CookbookLoader.new(@cookbook_repo)
-          cl.load_cookbooks
-          @node = Chef::Node.new
-          @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new(cl), Chef::EventDispatch::Dispatcher.new)
-          @node.from_file(@run_context.resolve_attribute('openldap', 'default'))
-        end
-        
+        before(:all) do
+          @fixtures = {
+            'node' => { 'run_list' => [ 'recipe[bloodsmasher]' ] },
+            'cookbooks' => { 'bloodsmasher-0.2.0' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['bloodsmasher-0.2.0'] },
+          }
+          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+        end        
         include_examples "silent", [:attr_trace_none, :attr_trace_cookbook ]
       end
 
       context "when loading from a role" do
         before(:all) do
           @fixtures = {
-            'node' => {
-              'run_list' => [ "role[alpha]" ],
-            },
-            'roles' => {
-              'alpha' => {
-                'default' => { 'role_default' => 'role_default', },
-                'override' => { 'role_override' => 'role_override', },                                      
-              }
-            }
+            'node' => { 'run_list' => [ "role[alpha]" ], },
+            'roles' => { 'alpha' => AttributeTracingHelpers.canned_fixtures[:roles][:alpha] },
           }
           @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
@@ -277,45 +267,45 @@ describe "Chef::Node::Attribute Tracing" do
                            :mechanism => :'node-record', 
                            :explanation => 'setting attributes from the node record obtained from the server',
                            :server => 'http://localhost:19090',
-                           :node_name => 'hostname.example.com',
+                           :node_name => 'hostname.example.org',
                          })
         include_examples("contains trace", [:attr_trace_all, :attr_trace_node], "/deep/deeper", :normal, 0,
                          { 
                            :mechanism => :'node-record', 
                            :explanation => 'setting attributes from the node record obtained from the server',
                            :server => 'http://localhost:19090',
-                           :node_name => 'hostname.example.com',
+                           :node_name => 'hostname.example.org',
                          })
       end
 
       context "when loading from cookbook attributes" do
         before(:all) do          
           Chef::Config.trace_attributes = 'all'
-          # TODO refactor this
-          @cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", '..', "data", "cookbooks"))
-          cl = Chef::CookbookLoader.new(@cookbook_repo)
-          cl.load_cookbooks
-          @node = Chef::Node.new
-          @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new(cl), Chef::EventDispatch::Dispatcher.new)
-          @node.from_file(@run_context.resolve_attribute('openldap', 'default'))
+          @fixtures = {
+            'node' => { 'run_list' => [ 'recipe[bloodsmasher]' ] },
+            'cookbooks' => { 'bloodsmasher-0.2.0' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['bloodsmasher-0.2.0'] },
+          }
+          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
-        include_examples("contains trace", [:attr_trace_all, :attr_trace_cookbook], "/ldap_server", :default, 0, 
-                         { :cookbook => 'openldap', :line => 13, :file => 'openldap/attributes/default.rb' })
+
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_cookbook], "/goofin/on/elvis", :default, 0, 
+                         { 
+                           :mechanism => :'cookbook-attributes',
+                           :explanation => "An attribute was touched by a cookbook's attribute file",
+                           :cookbook => 'bloodsmasher', 
+                           # :version => '0.2.0', # TODO
+                           :line => 2, 
+                           :file => 'bloodsmasher/attributes/default.rb',
+                         })
+        
       end
 
       context "when loading from a role" do
         before(:all) do
           Chef::Config.trace_attributes = 'all'
           @fixtures = {
-            'node' => {
-              'run_list' => [ "role[alpha]" ],
-            },
-            'roles' => {
-              'alpha' => {
-                'default_attributes' => { 'role_default' => 'role_default', },
-                'override_attributes' => { 'role_override' => 'role_override', },
-              }
-            }
+            'node' => { 'run_list' => [ "role[alpha]" ], },
+            'roles' => { 'alpha' => AttributeTracingHelpers.canned_fixtures[:roles][:alpha] },
           }
           @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end

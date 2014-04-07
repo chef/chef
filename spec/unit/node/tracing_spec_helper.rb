@@ -2,9 +2,54 @@ require 'spec_helper'
 require 'chef/node'
 require 'chef/node/attribute'
 require 'chef_zero/server'
+require 'tmpdir'
 
 module AttributeTracingHelpers
+  FIXTURES = {
+    :roles => {
+      :alpha => {
+        'default_attributes' => { 'role_default' => 'role_default', },
+        'override_attributes' => { 'role_override' => 'role_override', },                                      
+      }
+    },
 
+    :cookbooks => {
+      'bloodsmasher-0.1.1' => {
+        'recipes' => { 'default.rb' => '# Time to smash blood!' },
+        'attributes' => {
+          'default.rb' => <<-EOT,
+# Andy, did you hear about this one?
+default[:goofin][:on][:elvis] = 'Hey, Baby!'
+EOT
+
+          'hideous.rb' => <<-EOT,
+
+
+
+
+override[:goofin][:on][:elvis] = 'No particular expertise in poultry managment is meant to be implied, here.'
+EOT
+        },
+      },
+      'bloodsmasher-0.2.0' => {
+        'recipes' => { 'default.rb' => '# Time to smash blood!' },
+        'attributes' => {
+          'default.rb' => <<-EOT,
+# Andy, did you hear about this one?
+default[:goofin][:on][:elvis] = 'Hey, Baby!'
+
+default[:are][:we][:having][:fun] \
+  = 'Probably'
+EOT
+        },
+      },
+    }
+  }
+
+  def AttributeTracingHelpers.canned_fixtures
+    return FIXTURES
+  end
+  
   def AttributeTracingHelpers.apply_fixture_defaults(fixtures)
     #.....
     # Provide defaults for laziness's sake
@@ -58,104 +103,118 @@ module AttributeTracingHelpers
     client_key.write(ChefZero::PRIVATE_KEY)
     client_key.close
 
-    old_config = {
-      :chef_server_url => Chef::Config.chef_server_url,
-      :node_name => Chef::Config.node_name,
-      :client_key => Chef::Config.client_key,
-    }
+    node = nil
+    Dir.mktmpdir do |tmpdir|
+      config_settings_to_restore = [
+                                    :chef_server_url,
+                                    :node_name, 
+                                    :client_key,
+                                    :lockfile,
+                                    :log_level,
+                                    :chef_repo_path,
+                                    :cache_path,
+                                   ]
+      orig_config = {}
+      config_settings_to_restore.each { |k| orig_config[k] = Chef::Config.send(k) }
+      orig_config[:ohai_disabled_plugins] = Ohai::Config[:disabled_plugins].dup
 
-    Chef::Config.chef_server_url = 'http://localhost:19090'
-    Chef::Config.node_name = fixtures['fqdn']
-    Chef::Config.client_key = client_key.path
-    Chef::Config.client_fork = false    # TODO reset
-    Chef::Config.lockfile = '/tmp/glahh' # TODO reset
-    Chef::Config.log_level = :debug  # DEBUG
-    Ohai::Config[:disabled_plugins] = [
-                                       :Azure,
-                                       :Blockdevice,
-                                       :C,
-                                       :Chef,
-                                       :Cloud,
-                                       :Command,
-                                       :Cpu,
-                                       :Dmi,
-                                       :Ec2,
-                                       :Erlang,
-                                       :Eucalyptus,
-                                       :Filesystem,
-                                       :Gce,
-                                       :Groovy,
-                                       #:Hostname,
-                                       :Ipscopes,
-                                       :Java,
-                                       :Kernel,
-                                       :Keys,
-                                       :Languages,
-                                       :Linode,
-                                       :Lsb,
-                                       :Lua,
-                                       :Memory,
-                                       :Mono,
-                                       :Network,
-                                       :Networkaddresses,
-                                       :Networklisteners,
-                                       :Networkroutes,
-                                       :Nodejs,
-                                       :Ohai,
-                                       :Ohaitime,
-                                       :Openstack,
-                                       :Os,
-                                       :Passwd,
-                                       :Perl,
-                                       :Php,
-                                       #:Platform,
-                                       :Ps,
-                                       :Python,
-                                       :Rackspace,
-                                       :Rootgroup,
-                                       :Ruby,
-                                       :Sshhostkey,
-                                       :Systemprofile,
-                                       :Uptime,
-                                       :Virtualization,
-                                       :Virtualizationinfo,
-                                       :Zpools,
-                                      ]
+      Chef::Config.chef_server_url = 'http://localhost:19090'
+      Chef::Config.node_name = fixtures['fqdn']
+      Chef::Config.client_key = client_key.path
+      Chef::Config.client_fork = false
+      Chef::Config.lockfile = tmpdir + '/client-lockfile'
+      Chef::Config.log_level = :debug
+      Chef::Config.chef_repo_path = tmpdir
+      Chef::Config.cache_path = tmpdir
+      
+      Ohai::Config[:disabled_plugins] = [
+                                         :Azure,
+                                         :Blockdevice,
+                                         :C,
+                                         :Chef,
+                                         :Cloud,
+                                         :Command,
+                                         :Cpu,
+                                         :Dmi,
+                                         :Ec2,
+                                         :Erlang,
+                                         :Eucalyptus,
+                                         :Filesystem,
+                                         :Gce,
+                                         :Groovy,
+                                         #:Hostname,
+                                         :Ipscopes,
+                                         :Java,
+                                         :Kernel,
+                                         :Keys,
+                                         :Languages,
+                                         :Linode,
+                                         :Lsb,
+                                         :Lua,
+                                         :Memory,
+                                         :Mono,
+                                         :Network,
+                                         :Networkaddresses,
+                                         :Networklisteners,
+                                         :Networkroutes,
+                                         :Nodejs,
+                                         :Ohai,
+                                         :Ohaitime,
+                                         :Openstack,
+                                         :Os,
+                                         :Passwd,
+                                         :Perl,
+                                         :Php,
+                                         #:Platform,
+                                         :Ps,
+                                         :Python,
+                                         :Rackspace,
+                                         :Rootgroup,
+                                         :Ruby,
+                                         :Sshhostkey,
+                                         :Systemprofile,
+                                         :Uptime,
+                                         :Virtualization,
+                                         :Virtualizationinfo,
+                                         :Zpools,
+                                        ]
+      begin
 
+        # Load any roles into chef-zero
+        if fixtures['roles'] 
+          server.load_data("roles" => fixtures['roles']) 
+        end
 
+        # Load any envs into chef-zero
+        if fixtures['environments'] 
+          server.load_data("environments" => fixtures['environments']) 
+        end
 
-    begin
+        # Load node into chef-zero
+        if fixtures['node'] 
+          server.load_data("nodes" => { fixtures['node']['name'] => fixtures['node'] }) 
+        end
 
-      # Load any roles into chef-zero
-      if fixtures['roles'] 
-        server.load_data("roles" => fixtures['roles']) 
-      end
+        # Load any referenced cookbooks into chef-zero
+        if fixtures['cookbooks'] 
+          server.load_data("cookbooks" => fixtures['cookbooks']) 
+        end
 
-      # Load any envs into chef-zero
-      if fixtures['environments'] 
-        server.load_data("environments" => fixtures['environments']) 
-      end
+        # Create a client object and do the run
+        run_client = Chef::Client.new
+        run_client.run
+        node = run_client.node
 
-      # Load node into chef-zero
-      if fixtures['node'] 
-        server.load_data("nodes" => { fixtures['node']['name'] => fixtures['node'] }) 
-      end
+      ensure
+        server.stop
 
-      # TODO Load any referenced cookbooks into chef-zero
+        # Reset config
+        Ohai::Config[:disabled_plugins] = orig_config[:ohai_disabled_plugins]
+        config_settings_to_restore.each { |k| Chef::Config.send((k.to_s + '=').to_sym, orig_config[k]) }
+        
+      end # Exception handling for chef-zero
 
-      # Create a client object and do the run
-      run_client = Chef::Client.new
-      run_client.run
-      node = run_client.node
-
-    ensure
-      server.stop
-
-      # Reset config
-      Chef::Config.chef_server_url = old_config[:chef_server_url]
-      Chef::Config.node_name = old_config[:node_name]
-      Chef::Config.client_key = old_config[:client_key]
-    end
+    end # tmpdir
 
     return node
 

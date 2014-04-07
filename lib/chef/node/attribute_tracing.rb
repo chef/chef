@@ -51,11 +51,12 @@ class Chef
         if false
           # Just for code layout
         elsif frame = slh_looks_like_cookbook(stack)          
-          location[:mechanism] = :cookbook
+          location[:mechanism] = ('cookbook-' + frame[:cookbook_part]).to_sym
+          location[:explanation] = "An attribute was touched by a cookbook's attribute file"
           location[:cookbook] = frame[:cookbook]
           location[:file] = frame[:cookbook] + '/' + frame[:path_within_cookbook]
           location[:line] = frame[:line].to_i
-          # TODO: determine cookbook version from run context
+          # TODO: determine cookbook version from run context?
 
         elsif slh_looks_like_ohai_bulk_load(stack)
           location[:mechanism] = :ohai
@@ -110,7 +111,7 @@ class Chef
 
       private
       def slh_looks_like_cookbook(stack)
-        stack.find { |f| f[:method] == 'from_file' }
+        stack.find { |f| f[:method] == 'from_file' && f[:cookbook] }
       end
 
       def slh_looks_like_attribute_reset(stack)
@@ -179,7 +180,6 @@ class Chef
             info[:method] = m[:method]
           end
 
-
           if info[:file]
             if m = info[:file].match(%r{/cookbooks/(?<cbname>[^/]+)/(?<cbpart>[^/]+)/(?<path>.+)})
               info[:cookbook] = m[:cbname]
@@ -190,8 +190,6 @@ class Chef
           info
         end
       end
-
-
     end
 
     class Attribute < Mash
