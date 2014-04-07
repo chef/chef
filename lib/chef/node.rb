@@ -383,9 +383,9 @@ class Chef
       attributes.env_override = loaded_environment.override_attributes
       Chef::Node::Attribute.tracer_hint = nil
 
+      attributes.append_trace_log(expansion.attributes.trace_log)
       attributes.role_default = expansion.default_attrs
       attributes.role_override = expansion.override_attrs
-      attributes.append_trace_log(expansion.attributes.trace_log)
     end
 
     # Transform the node to a Hash

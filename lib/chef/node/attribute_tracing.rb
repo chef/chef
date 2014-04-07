@@ -43,6 +43,11 @@ class Chef
         stack = pretty_callstack
         location = {}
 
+        # If there is a global hint, copy it in.
+        if Chef::Node::Attribute.tracer_hint
+          location.merge! Chef::Node::Attribute.tracer_hint
+        end
+
         if false
           # Just for code layout
         elsif frame = slh_looks_like_cookbook(stack)          
@@ -61,14 +66,19 @@ class Chef
           location[:explanation] = 'storing platform detection information from ohai'
 
         elsif slh_looks_like_role_load(stack)
+          # Expecting role_name to be set by RunListExpansion in the tracer_hint
           location[:mechanism] = :role
           location[:explanation] = 'Applying attributes from loading a role'
-          # TODO - determine role
 
+        elsif slh_looks_like_role_expansion_merge(stack)
+          # No role info can remain at this point; we're just merging in the completed expansion of all roles.
+          location[:mechanism] = :'chef-client'
+          location[:explanation] = "Having merged all role attributes into an 'expansion', the chef run is now importing the expansion into the node object."
+          
         elsif slh_looks_like_environment_load(stack)
+          # Expecting environment_name to be set by node.apply_expansion_attributes in the tracer_hint
           location[:mechanism] = :environment
           location[:explanation] = 'Applying attributes from loading an environment'
-          # TODO - determine environment (should be easy, there is only one)
 
         elsif slh_looks_like_attribute_reset(stack)
           location[:mechanism] = :'chef-client'
@@ -90,7 +100,7 @@ class Chef
         else
           location[:mechanism] = :unknown
           # binding.pry
-          location[:stack] = stack[3,8]
+          location[:stack] = stack[3,12]
 
         end
 
@@ -129,7 +139,13 @@ class Chef
       end
 
       def slh_looks_like_role_load(stack)
-        # Hueristic: a call to apply_expansion_attributes and component is role_default or role_override
+        # Hueristic: a call to apply_role_attributes and component is role-ish
+        ara_index = stack.find_index { |f| f[:method] == 'apply_role_attributes' }
+        ara_index && [:role_default, :role_override].include?(@component)
+      end
+
+      def slh_looks_like_role_expansion_merge(stack)
+        # Hueristic: a call to apply_expansion_attributes and component is role-ish
         aea_index = stack.find_index { |f| f[:method] == 'apply_expansion_attributes' }
         aea_index && [:role_default, :role_override].include?(@component)
       end
