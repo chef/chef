@@ -91,7 +91,7 @@ class Chef
 
     # == VividMash
     # VividMash is identical to a Mash, with a few exceptions:
-    # * It has a reference to the root Chef::Node::Attribute to which it
+    # * It has an optional reference to the root Chef::Node::Attribute to which it
     #   belongs, and will trigger cache invalidation on that object when
     #   mutated.
     # * It auto-vivifies, that is a reference to a missing element will result
@@ -128,7 +128,7 @@ class Chef
       MUTATOR_METHODS.each do |mutator|
         class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
           def #{mutator}(*args, &block)
-            root.reset_cache
+            root.reset_cache if root
             super
           end
         METHOD_DEFN
@@ -149,7 +149,7 @@ class Chef
       alias_method :merge!, :update
 
 
-      def initialize(root, data={}, parent=nil, component=nil)
+      def initialize(root=nil, data={}, parent=nil, component=nil)
         @root = root
         @parent = parent
         @component = component
@@ -168,12 +168,12 @@ class Chef
 
       def []=(key, value)
         if set_unless? && key?(key)
-          root.trace_attribute_ignored_unless(self, key, value)
+          root.trace_attribute_ignored_unless(self, key, value) if root
           self[key]          
         else
-          root.reset_cache          
+          root.reset_cache if root
           super
-          root.trace_attribute_change(self, key, value)
+          root.trace_attribute_change(self, key, value) if root
           value
         end
       end
@@ -199,7 +199,11 @@ class Chef
       end
 
       def set_unless?
-        @root.set_unless?
+        if root 
+            root.set_unless?
+        else
+          false
+        end
       end
 
       def convert_key(key)
