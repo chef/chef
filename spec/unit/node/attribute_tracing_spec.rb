@@ -1,7 +1,7 @@
 require 'spec_helper'
+require 'spec/unit/node/tracing_spec_helper'
 require 'chef/node'
 require 'chef/node/attribute'
-
 
 # Debug
 require 'pry'
@@ -37,23 +37,23 @@ describe "Chef::Node::Attribute Tracing" do
   #              Reusable Examples
   #================================================#
 
-  shared_examples "silent" do
+  shared_examples "silent" do |tags|
     # describe "the log output" do
     #   it "should not contain trace messages"
     # end
     describe "the node attribute trace object" do
-      it "should be empty" do
+      it "should be empty", :attr_trace, :attr_trace_none, *tags  do
         expect(@node.attributes.trace_log).to be_empty
       end
     end
   end
 
-  shared_examples "contains trace" do |path, component, location_checks|
+  shared_examples "contains trace" do |tags, path, component, location_checks|
     #describe "the log output" do
     #  it "should contain trace messages for #{path} at #{component}"
     #end
     describe "the node attribute trace object" do
-      it "should contain trace messages for #{path} at #{component}" do
+      it "should contain trace messages for #{path} at #{component}", :attr_trace, :attr_trace_hit, *tags do
         expect(@node.attributes.trace_log[path]).not_to be_nil
         entry = @node.attributes.trace_log[path].find {|t| t.component == component}
         expect(entry).not_to be_nil
@@ -65,11 +65,11 @@ describe "Chef::Node::Attribute Tracing" do
     end
   end
 
-  shared_examples "does not contain trace" do |path, level, origin_type|
+  shared_examples "does not contain trace" do |tags, path, level, origin_type|
     #describe "the log output" do
     #  it "should not contain trace messages for #{path} at #{level} from #{origin_type}"
     #end
-    describe "the node attribute trace object" do
+    describe "the node attribute trace object", :attr_trace, :attr_trace_miss, *tags  do
       it "should not contain trace messages for #{path} at #{level} from #{origin_type}"
     end
   end
@@ -79,7 +79,7 @@ describe "Chef::Node::Attribute Tracing" do
   #================================================#
   describe "the trace data structure accessor" do
     context "when the node is newly created" do
-      it "should be an empty hash" do
+      it "should be an empty hash", :attr_trace, :attr_trace_internals do
         expect(Chef::Node.new.attributes.trace_log).to be_a_kind_of(Hash)
         expect(Chef::Node.new.attributes.trace_log).to be_empty        
       end
@@ -93,19 +93,19 @@ describe "Chef::Node::Attribute Tracing" do
     before(:all) { @cna = Chef::Node::Attribute.new({},{},{},{}) }
 
     context "when setting a string value using default[:foo][:bar]" do
-      it "should not error" do
+      it "should not error", :attr_trace, :attr_trace_path_finder do
         expect { @cna.default[:foo][:bar] = 'baz' }.not_to raise_error
       end
-      it "should find the right path to default " do
+      it "should find the right path to default ", :attr_trace, :attr_trace_path_finder do
         path, comp = @cna.find_path_to_entry(@cna.default)
         expect(path).to eql '/'
       end
 
-      it "should find the right path to default[:foo] " do
+      it "should find the right path to default[:foo] ", :attr_trace, :attr_trace_path_finder do
         path, comp = @cna.find_path_to_entry(@cna.default[:foo])
         expect(path).to eql '/foo'
       end
-      it "should find the right path to default[:foo][:bar] " do
+      it "should find the right path to default[:foo][:bar] ", :attr_trace, :attr_trace_path_finder do
         # binding.pry
         path, comp = @cna.find_path_to_entry(@cna.default[:foo][:bar])
         expect(path).to eql '/foo/bar'
@@ -113,34 +113,34 @@ describe "Chef::Node::Attribute Tracing" do
     end
 
     context "when setting a string value using override[:foo][:bar]" do
-      it "should not error" do
+      it "should not error", :attr_trace, :attr_trace_path_finder do
         expect { @cna.override[:foo][:bar] = 'baz' }.not_to raise_error
       end
-      it "should find the right path to override " do
+      it "should find the right path to override ", :attr_trace, :attr_trace_path_finder do
         path, comp = @cna.find_path_to_entry(@cna.override)
         expect(path).to eql '/'
       end
 
-      it "should find the right path to override[:foo] " do
+      it "should find the right path to override[:foo] ", :attr_trace, :attr_trace_path_finder do
         path, comp = @cna.find_path_to_entry(@cna.override[:foo])
         expect(path).to eql '/foo'
       end
-      it "should find the right path to override[:foo][:bar] " do
+      it "should find the right path to override[:foo][:bar] ", :attr_trace, :attr_trace_path_finder do
         path, comp = @cna.find_path_to_entry(@cna.override[:foo][:bar])
         expect(path).to eql '/foo/bar'
       end
-      it "should find the right component" do
+      it "should find the right component", :attr_trace, :attr_trace_path_finder do
         path, comp = @cna.find_path_to_entry(@cna.override[:foo])
         expect(comp).to eql :override
       end
     end
 
     context "when clearing the entire component" do      
-      it "should not error" do
+      it "should not error", :attr_trace, :attr_trace_path_finder do
         expect { @cna.automatic = { :platform => 'wfw'} }.not_to raise_error
       end
 
-      it "should correctly detect new attributes set in clobber mode" do
+      it "should correctly detect new attributes set in clobber mode", :attr_trace, :attr_trace_path_finder do
         @cna.automatic = { :clobber => 'girl' }
         path, comp = @cna.find_path_to_entry(@cna.automatic[:clobber])
         expect(path).to eql '/clobber'
@@ -162,35 +162,73 @@ describe "Chef::Node::Attribute Tracing" do
           @node = Chef::Node.new()
           @node.consume_external_attrs(OHAI_TEST_ATTRS,{}) 
         end
-        include_examples "silent", @node
+        include_examples "silent", [:attr_trace_none, :attr_trace_ohai]
       end
       context "when loading from command-line json" do
         before(:all) do 
           @node = Chef::Node.new()
           @node.consume_external_attrs(OHAI_TEST_ATTRS,{}) 
         end
-        include_examples "silent", @node
+        include_examples "silent", [:attr_trace_none, :attr_trace_cli]
       end
+
       context "when loading from chef-server normal node attributes" do
-        #include_examples "silent"
+        before(:all) do
+          @fixtures = {
+            'node' => {
+              'default' => { 'node_default' => 'node_default', },
+              'normal' => { 'node_normal' => 'node_normal', },
+              'override' => { 'node_override' => 'node_override', },
+            }
+          }
+          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+        end
+        include_examples "silent", [:attr_trace_none, :attr_trace_node, :attr_trace_needs_chef_zero]
       end
+
       context "when loading from cookbook attributes" do
-        #include_examples "silent"
+        before(:all) do          
+          # TODO refactor this
+          @cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", '..', "data", "cookbooks"))
+          cl = Chef::CookbookLoader.new(@cookbook_repo)
+          cl.load_cookbooks
+          @node = Chef::Node.new
+          @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new(cl), Chef::EventDispatch::Dispatcher.new)
+          @node.from_file(@run_context.resolve_attribute('openldap', 'default'))
+        end
+        
+        include_examples "silent", [:attr_trace_none, :attr_trace_cookbook ]
       end
+
       context "when loading from a role" do
-        # TODO: test load from a role
-        #include_examples "silent"
+        before(:all) do
+          @fixtures = {
+            'node' => {
+              'run_list' => [ "role[alpha]" ],
+            },
+            'roles' => {
+              'alpha' => {
+                'default' => { 'role_default' => 'role_default', },
+                'override' => { 'role_override' => 'role_override', },                                      
+              }
+            }
+          }
+          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+        end
+        include_examples "silent", [:attr_trace_none, :attr_trace_role, :attr_trace_needs_chef_zero]
       end
+
       context "when loading from an environment" do
         # TODO: test load from an environment
         #include_examples "silent"
       end
+
       # TODO: test being set at compile-time in a recipe
       # TODO: test being set at converge-time in a recipe
     end
 
     context "when tracing mode is all" do
-      before do
+      before(:all) do
         Chef::Config.trace_attributes = 'all'
       end
 
@@ -200,8 +238,8 @@ describe "Chef::Node::Attribute Tracing" do
           @node = Chef::Node.new()
           @node.consume_external_attrs(OHAI_TEST_ATTRS,{})
         end
-        include_examples "contains trace", "/foo", :automatic, { :internal => 'ohai' }
-        include_examples "contains trace", "/deep/deeper", :automatic, { :internal => 'ohai' }
+        include_examples "contains trace", [:attr_trace_all, :attr_trace_ohai], "/foo", :automatic, { :mechanism => :ohai }
+        include_examples "contains trace", [:attr_trace_all, :attr_trace_ohai], "/deep/deeper", :automatic, { :mechanism => :ohai }
       end
 
       context "when loading from command-line json" do
@@ -209,19 +247,48 @@ describe "Chef::Node::Attribute Tracing" do
           Chef::Config.trace_attributes = 'all'
           @node = Chef::Node.new()
           @node.consume_external_attrs(OHAI_MIN_ATTRS,CLI_TEST_ATTRS)
+          # binding.pry
         end
-        include_examples "contains trace", "/foo", :normal, { :internal => 'command-line json' }
-        include_examples "contains trace", "/oryx", :normal, { :internal => 'command-line json' }
+        include_examples "contains trace", [:attr_trace_all, :attr_trace_cli], "/foo", :normal, { :mechanism => :'chef-client', :explanation => 'attributes loaded from command-line using -j json' }
+        include_examples "contains trace", [:attr_trace_all, :attr_trace_cli], "/oryx", :normal, { :mechanism => :'chef-client', :explanation => 'attributes loaded from command-line using -j json' }
       end
 
       context "when loading from chef-server normal node attributes" do
-        #include_examples "contains trace", "/foo", :normal, { :internal => 'chef server node attributes' }
-        #include_examples "contains trace", "/oryx", :normal, { :internal => 'chef server node attributes' }
+        before(:all) do
+          Chef::Config.trace_attributes = 'all'
+          @fixtures = {
+            'node' => {
+              'default' => { 'node_default' => 'node_default', },
+              'normal' => { 
+                'node_normal' => 'node_normal', 
+                'deep' => {
+                  'deeper' => 'yup',
+                }
+              },
+              'override' => { 'node_override' => 'node_override', },
+            }
+          }
+          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+        end
+
+        include_examples "contains trace", [:attr_trace_all, :attr_trace_node], "/node_normal", :normal, { 
+          :mechanism => :'node-record', 
+          :explanation => 'setting attributes from the node record obtained from the server',
+          # :server => 'http://localhost:19090',  # TODO
+          # :node_name => 'hostname.example.com', # TODO
+        }
+        include_examples "contains trace", [:attr_trace_all, :attr_trace_node], "/deep/deeper", :normal, { 
+          :mechanism => :'node-record', 
+          :explanation => 'setting attributes from the node record obtained from the server',
+          # :server => 'http://localhost:19090',  # TODO
+          # :node_name => 'hostname.example.com', # TODO
+        }
       end
 
       context "when loading from cookbook attributes" do
-        before(:all) do
+        before(:all) do          
           Chef::Config.trace_attributes = 'all'
+          # TODO refactor this
           @cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", '..', "data", "cookbooks"))
           cl = Chef::CookbookLoader.new(@cookbook_repo)
           cl.load_cookbooks
@@ -229,55 +296,102 @@ describe "Chef::Node::Attribute Tracing" do
           @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new(cl), Chef::EventDispatch::Dispatcher.new)
           @node.from_file(@run_context.resolve_attribute('openldap', 'default'))
         end
-        include_examples "contains trace", "/ldap_server", :default, { :cookbook => 'openldap', :line => 13, :file => 'openldap/attributes/default.rb' }
+        include_examples "contains trace", [:attr_trace_all, :attr_trace_cookbook], "/ldap_server", :default, { :cookbook => 'openldap', :line => 13, :file => 'openldap/attributes/default.rb' }
       end
 
       context "when loading from a role" do
-        #include_examples "contains trace", "/foo/bar", "default/role"
-        #include_examples "contains trace", "/oryx/crake", "default/role"
+        before(:all) do
+          Chef::Config.trace_attributes = 'all'
+          @fixtures = {
+            'node' => {
+              'run_list' => [ "role[alpha]" ],
+            },
+            'roles' => {
+              'alpha' => {
+                'default_attributes' => { 'role_default' => 'role_default', },
+                'override_attributes' => { 'role_override' => 'role_override', },
+              }
+            }
+          }
+          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+        end
+
+        # TODO - check for role name
+        include_examples "contains trace", [:attr_trace_all, :attr_trace_role], "/role_default", :role_default, { :mechanism => :'role', :explanation => 'Applying attributes from loading a role' }
+        include_examples "contains trace", [:attr_trace_all, :attr_trace_role], "/role_override", :role_override, { :mechanism => :'role', :explanation => 'Applying attributes from loading a role' }
       end
+
       context "when loading from an environment" do
-        #include_examples "contains trace", "/foo/bar", "default/environment"
-        #include_examples "contains trace", "/oryx/crake", "default/environment"
+        before(:all) do
+          Chef::Config.trace_attributes = 'all'
+          @fixtures = {
+            'environments' => {
+              'pure_land' => {
+                'name' => 'pure_land',
+                'default_attributes' => { 'env_default' => 'env_default', },
+                'override_attributes' => { 'env_override' => 'env_override', },
+              }              
+            },
+            'node' => {
+              'chef_environment' => 'pure_land',
+            }
+          }
+          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+        end
+
+        include_examples "contains trace", [:attr_trace_all, :attr_trace_env], "/env_default", :env_default, { 
+          :mechanism => :'environment',
+          :explanation => 'Applying attributes from loading an environment',
+          # :server => 'http://localhost:19090',  # TODO
+          # :environment_name => 'pure_land', # TODO
+
+        }
+        include_examples "contains trace", [:attr_trace_all, :attr_trace_env], "/env_override", :env_override, {
+          :mechanism => :'environment', 
+          :explanation => 'Applying attributes from loading an environment',
+          # :server => 'http://localhost:19090',  # TODO
+          # :environment_name => 'pure_land', # TODO
+        }
       end
-      # TODO: test being set at compile-time in a recipe
-      # TODO: test being set at converge-time in a recipe
+
+    #   # TODO: test being set at compile-time in a recipe
+    #   # TODO: test being set at converge-time in a recipe
 
     end
 
-    context "when tracing mode is an extant path /oryx/crake" do
-      before do
-        Chef::Config.trace_attributes = '/oryx/crake'
-      end
-      context "when loading from ohai" do
-        before(:all) { node = Chef::Node.new().consume_external_attrs(OHAI_TEST_ATTRS,{}) }
-        #include_examples "does not contain trace", "/foo/bar", "automatic/ohai"
-        #include_examples "contains trace", "/oryx/crake", "automatic/ohai"
-      end
-      context "when loading from command-line json" do
-        before(:all) { node = Chef::Node.new().consume_external_attrs(OHAI_MIN_ATTRS, CLI_TEST_ATTRS) }
-        #include_examples "does not contain trace", "/foo/bar", "normal/command-line-json"
-        #include_examples "contains trace", "/oryx/crake", "normal/command-line-json"
-      end
-      context "when loading from chef-server normal node attributes" do
-        #include_examples "does not contain trace", "/foo/bar", "normal/chef-server"
-        #include_examples "contains trace", "/oryx/crake", "normal/chef-server"      
-      end
-      context "when loading from cookbook attributes" do
-        #include_examples "does not contain trace", "/foo/bar", "default/cookbook"
-        #include_examples "contains trace", "/oryx/crake", "default/cookbook"
-      end
-      context "when loading from a role" do
-        #include_examples "does not contain trace", "/foo/bar", "default/role"
-        #include_examples "contains trace", "/oryx/crake", "default/role"
-      end
-      context "when loading from an environment" do
-        #include_examples "does not contain trace", "/foo/bar", "default/environment"
-        #include_examples "contains trace", "/oryx/crake", "default/environment"
-      end
-    end
-      # TODO: test being set at compile-time in a recipe
-      # TODO: test being set at converge-time in a recipe
+    # context "when tracing mode is an extant path /oryx/crake" do
+    #   before do
+    #     Chef::Config.trace_attributes = '/oryx/crake'
+    #   end
+    #   context "when loading from ohai" do
+    #     before(:all) { node = Chef::Node.new().consume_external_attrs(OHAI_TEST_ATTRS,{}) }
+    #     #include_examples "does not contain trace", "/foo/bar", "automatic/ohai"
+    #     #include_examples "contains trace", "/oryx/crake", "automatic/ohai"
+    #   end
+    #   context "when loading from command-line json" do
+    #     before(:all) { node = Chef::Node.new().consume_external_attrs(OHAI_MIN_ATTRS, CLI_TEST_ATTRS) }
+    #     #include_examples "does not contain trace", "/foo/bar", "normal/command-line-json"
+    #     #include_examples "contains trace", "/oryx/crake", "normal/command-line-json"
+    #   end
+    #   context "when loading from chef-server normal node attributes" do
+    #     #include_examples "does not contain trace", "/foo/bar", "normal/chef-server"
+    #     #include_examples "contains trace", "/oryx/crake", "normal/chef-server"      
+    #   end
+    #   context "when loading from cookbook attributes" do
+    #     #include_examples "does not contain trace", "/foo/bar", "default/cookbook"
+    #     #include_examples "contains trace", "/oryx/crake", "default/cookbook"
+    #   end
+    #   context "when loading from a role" do
+    #     #include_examples "does not contain trace", "/foo/bar", "default/role"
+    #     #include_examples "contains trace", "/oryx/crake", "default/role"
+    #   end
+    #   context "when loading from an environment" do
+    #     #include_examples "does not contain trace", "/foo/bar", "default/environment"
+    #     #include_examples "contains trace", "/oryx/crake", "default/environment"
+    #   end
+    # end
+    #   # TODO: test being set at compile-time in a recipe
+    #   # TODO: test being set at converge-time in a recipe
 
   end
 

@@ -30,9 +30,11 @@ class Chef
       attr_accessor :value
       attr_accessor :path
 
-      def initialize(a_component, an_action = :set, a_source_location = nil)
+      def initialize(a_component, an_action = :set, a_source_location = nil, a_path=nil, a_value=nil)
         @component  = a_component
         @action     = an_action 
+        @path       = a_path
+        @value    = a_value
         @source_location = a_source_location || source_location_heuristic
       end
 
@@ -41,25 +43,56 @@ class Chef
         stack = pretty_callstack
         location = {}
 
-        # binding.pry
-
-        # If we have a frame with from_file as the method....
-        if frame = slh_looks_like_cookbook(stack)          
+        if false
+          # Just for code layout
+        elsif frame = slh_looks_like_cookbook(stack)          
+          location[:mechanism] = :cookbook
           location[:cookbook] = frame[:cookbook]
           location[:file] = frame[:cookbook] + '/' + frame[:path_within_cookbook]
           location[:line] = frame[:line].to_i
           # TODO: determine cookbook version from run context
-        elsif slh_looks_like_cli_load(stack)
-          location[:internal] = 'command-line json'
-          # TODO: be uber-clever - inspect ARGV and report value of -j option
-        elsif slh_looks_like_node_load_from_server(stack)
-          location[:internal] = 'chef server node attrbutes'
-          # TODO: add chef server name
-          # TODO: add node name?
-        elsif slh_looks_like_ohai_injection(stack)
-          location[:internal] = 'ohai'
-        end
 
+        elsif slh_looks_like_ohai_bulk_load(stack)
+          location[:mechanism] = :ohai
+          location[:explanation] = 'storing discovered data from ohai plugins'
+
+        elsif slh_looks_like_ohai_platform_detection(stack)
+          location[:mechanism] = :ohai
+          location[:explanation] = 'storing platform detection information from ohai'
+
+        elsif slh_looks_like_role_load(stack)
+          location[:mechanism] = :role
+          location[:explanation] = 'Applying attributes from loading a role'
+          # TODO - determine role
+
+        elsif slh_looks_like_environment_load(stack)
+          location[:mechanism] = :environment
+          location[:explanation] = 'Applying attributes from loading an environment'
+          # TODO - determine environment (should be easy, there is only one)
+
+        elsif slh_looks_like_attribute_reset(stack)
+          location[:mechanism] = :'chef-client'
+          location[:explanation] = 'client resetting default and override attributes obtained from chef server prior to run'
+
+        elsif slh_looks_like_node_construction_from_http(stack)
+          location[:mechanism] = :'node-record'
+          location[:explanation] = 'setting attributes from the node record obtained from the server'
+          # TODO: add nodename
+          # TODO: add servername
+
+        elsif slh_looks_like_cli_load(stack)
+          # This one needs to happen fairly late, because the matcher 
+          # is rather vague; give more specific things a chance to match first.
+          location[:mechanism] = :'chef-client'
+          location[:explanation] = 'attributes loaded from command-line using -j json'
+          # TODO: be uber-clever - inspect ARGV and report value of -j option
+
+        else
+          location[:mechanism] = :unknown
+          # binding.pry
+          location[:stack] = stack[3,8]
+
+        end
 
         return location
       end
@@ -69,21 +102,51 @@ class Chef
         stack.find { |f| f[:method] == 'from_file' }
       end
 
+      def slh_looks_like_attribute_reset(stack)
+        reset_index = stack.find_index { |f| f[:method] == 'reset_defaults_and_attributes' }
+        return ! reset_index.nil?
+      end
+
       def slh_looks_like_cli_load(stack)
         # Heuristic: a call to consume attributes from consume_external_attrs
         consume_attributes_index = stack.find_index { |f| f[:method] == 'consume_attributes' }
         consume_attributes_index && stack[consume_attributes_index + 1][:method] == 'consume_external_attrs'
       end
 
-      def slh_looks_like_ohai_injection(stack)
+      def slh_looks_like_ohai_bulk_load(stack)
         # Heuristic: a call to automatic_attrs= from consume_external_attrs
         aa_index = stack.find_index { |f| f[:method] == 'automatic_attrs=' }
         aa_index && stack[aa_index + 1][:method] == 'consume_external_attrs'
       end
 
-      def slh_looks_like_node_load_from_server(stack)
-        # TODO
-        false
+      def slh_looks_like_ohai_platform_detection(stack)
+        # Heuristic: a call to automatic[]= from consume_external_attrs with path == platform or platform version
+        cae_index = stack.find_index { |f| f[:method] == 'consume_external_attrs' }        
+        match = cae_index && stack[cae_index - 1][:method] == '[]='
+        match &&= @component == :automatic
+        match &&= ['/platform', '/platform_family'].include?(@path)
+        match
+      end
+
+      def slh_looks_like_role_load(stack)
+        # Hueristic: a call to apply_expansion_attributes and component is role_default or role_override
+        aea_index = stack.find_index { |f| f[:method] == 'apply_expansion_attributes' }
+        aea_index && [:role_default, :role_override].include?(@component)
+      end
+
+      def slh_looks_like_environment_load(stack)
+        # Heuristic: a call to apply_expansion_attributes and component is env_default or env_override
+        aea_index = stack.find_index { |f| f[:method] == 'apply_expansion_attributes' }
+        aea_index && [:env_default, :env_override].include?(@component)
+      end
+
+      def slh_looks_like_node_construction_from_http(stack)
+        # Heuristic: see json_create in node.rb, and handle_response in http/json_output
+        match = true
+        jc_index = stack.find_index { |f| f[:method] == 'json_create' && f[:file].end_with?('chef/node.rb') }
+        match &&= jc_index && stack[jc_index, stack.length].find_index { |f| f[:method] == 'handle_response' && f[:file].end_with?('http/json_output.rb') }
+        return match
+
       end
 
       public
@@ -180,17 +243,17 @@ class Chef
           
         # Determine the attrpath location of the change
         path, component = find_path_to_entry_ascent(collection)
+        unless path.nil?
+          path += (path == '/' ? '' : '/') + key.to_s
+        end
 
-        entry = AttributeTraceEntry.new(component, :set)
-        entry.value = new_value
+        entry = AttributeTraceEntry.new(component, :set, nil, path, new_value)
 
         # Path might be nil, meaning that we have a collection whose root is us, but is not yet present in one of our component VividMash.  This can happen when a hash at least two levels deep is being directly assigned and boosted to being a VividMash.  In that case, the only think we can do is go ahead and trace the change, but postpone adding it to the log for a bit.
         if path.nil?
           @trace_queue.push entry
           # Nothing else we can do at this point - later pases may be able to resolve the path.
           return
-        else
-          entry.path = path + (path == '/' ? '' : '/') + key.to_s
         end
 
         flush_queue
@@ -204,7 +267,7 @@ class Chef
 
         if Chef::Config.trace_attributes == 'none' then return end
         
-        entry = AttributeTraceEntry.new(component, :clear)
+        entry = AttributeTraceEntry.new(component, :set, nil, '/', nil)
         entry.path = '/'
 
         flush_queue
@@ -229,9 +292,12 @@ class Chef
         child_action = entry.action == :clear ? :clear : :parent_clobber
 
         # Log a parent-clobber for all extant children of this key
-        @trace_log.keys.find_all { |p| p.start_with?(entry.path) && p != entry.path }.each do |child_path|
-          child_entry = AttributeTraceEntry.new(entry.component, child_action, entry.source_location)
-          child_entry.path = child_path
+        @trace_log.keys.find_all do |p| 
+          p.start_with?(entry.path) &&  # The path is a parent of this path....
+            p != entry.path &&          # and is not this path....
+              @trace_log[p].find { |ce| ce.component == entry.component }  # And at least one entry on this compoment exists for this path
+        end.each do |child_path|
+          child_entry = AttributeTraceEntry.new(entry.component, child_action, entry.source_location, child_path, nil)
           @trace_log[child_path].push child_entry 
         end
       end
