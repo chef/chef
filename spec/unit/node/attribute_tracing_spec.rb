@@ -251,20 +251,30 @@ describe "Chef::Node::Attribute Tracing" do
       context "when loading from command-line json" do
         before(:all) do 
           Chef::Config.trace_attributes = 'all'
+          # This is gross, but application/client and config_fetcher make this kind of hard to test
+          @old_argv = ARGV.dup()
+          ARGV.delete_if { |a| true }
+          ARGV.concat(['-j', 'dummy.json'])
+
           @node = Chef::Node.new()
-          @node.consume_external_attrs(OHAI_MIN_ATTRS,CLI_TEST_ATTRS)
+          @node.consume_external_attrs(OHAI_MIN_ATTRS,CLI_TEST_ATTRS)          
         end
+        after(:all) do 
+          ARGV.delete_if { |a| true }
+          ARGV.concat(@old_argv)
+        end
+          
         include_examples("contains trace", [:attr_trace_all, :attr_trace_cli], "/foo", :normal, 0, 
                          { 
-                           :mechanism => :'chef-client', 
+                           :mechanism => :'command-line-json', 
                            :explanation => 'attributes loaded from command-line using -j json',
-                           # TODO - test for -j option
+                           :json_file => 'dummy.json',
                          })
         include_examples("contains trace", [:attr_trace_all, :attr_trace_cli], "/oryx", :normal, 0,
                          { 
-                           :mechanism => :'chef-client', 
+                           :mechanism => :'command-line-json', 
                            :explanation => 'attributes loaded from command-line using -j json', 
-                           # TODO - test for -j option
+                           :json_file => 'dummy.json',
                          })
       end
 

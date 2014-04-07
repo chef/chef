@@ -95,9 +95,14 @@ class Chef
         elsif slh_looks_like_cli_load(stack)
           # This one needs to happen fairly late, because the matcher 
           # is rather vague; give more specific things a chance to match first.
-          location[:mechanism] = :'chef-client'
+          location[:mechanism] = :'command-line-json'
           location[:explanation] = 'attributes loaded from command-line using -j json'
-          # TODO: be uber-clever - inspect ARGV and report value of -j option
+
+          # MixLib::CLI now preserves ARGV.  In other news, it silently ignores all but the first -j .
+          dash_j = ARGV.find_index { |arg| ['-j', '--json'].include?(arg) }
+          if dash_j
+            location[:json_file] = ARGV[dash_j + 1]
+          end
 
         else
           location[:mechanism] = :unknown
