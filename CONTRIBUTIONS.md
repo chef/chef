@@ -9,3 +9,4 @@ Example Contribution:
 * **jaymzh**: Service Provider for MacOSX now supports `enable` and `disable`
 * **jaymzh**: Chef now gracefully handles corrupted cache files.
 * **jaymzh**: SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
+* **jaymzh**: bump up upper limit on json gem to 1.8.1 (CHEF-4632)
