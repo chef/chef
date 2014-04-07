@@ -378,11 +378,14 @@ class Chef
                              Chef::Environment.load(chef_environment)
                            end
 
+      Chef::Node::Attribute.tracer_hint = { environment_name: chef_environment }
       attributes.env_default = loaded_environment.default_attributes
       attributes.env_override = loaded_environment.override_attributes
+      Chef::Node::Attribute.tracer_hint = nil
 
-      attribute.role_default = expansion.default_attrs
+      attributes.role_default = expansion.default_attrs
       attributes.role_override = expansion.override_attrs
+      attributes.append_trace_log(expansion.attributes.trace_log)
     end
 
     # Transform the node to a Hash

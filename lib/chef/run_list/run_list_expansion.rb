@@ -35,9 +35,7 @@ class Chef
       # is called.
       attr_reader :recipes
 
-      attr_reader :default_attrs
-
-      attr_reader :override_attrs
+      attr_reader :attributes
 
       attr_reader :environment
 
@@ -61,13 +59,20 @@ class Chef
         @run_list_items = run_list_items.dup
         @source = source
 
-        @default_attrs = Mash.new
-        @override_attrs = Mash.new
+        @attributes = Chef::Node::Attribute.new({},{},{},{})
 
         @recipes = Chef::RunList::VersionedRecipeList.new
 
         @applied_roles = {}
         @run_list_trace = Hash.new {|h, key| h[key] = [] }
+      end
+
+      def default_attrs
+        attributes.role_default
+      end
+
+      def override_attrs
+        attributes.role_override
       end
 
       # Did we find any errors (expanding roles)?
@@ -96,8 +101,10 @@ class Chef
       end
 
       def apply_role_attributes(role)
-        @default_attrs = Chef::Mixin::DeepMerge.role_merge(@default_attrs, role.default_attributes)
-        @override_attrs = Chef::Mixin::DeepMerge.role_merge(@override_attrs, role.override_attributes)
+        Chef::Node::Attribute.tracer_hint = { :role_name => role.name }
+        attributes.merge_into_component(:@role_default, role.default_attributes)
+        attributes.merge_into_component(:@role_override, role.override_attributes)
+        Chef::Node::Attribute.tracer_hint = nil
       end
 
       def applied_role?(role_name)

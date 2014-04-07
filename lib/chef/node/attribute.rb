@@ -216,6 +216,19 @@ class Chef
          @trace_log = {}
        end
 
+       class << self
+         # This is really gross (effectively a global variable), but aside from
+         # doing some major surgery in the Mash, DeepMerge, and RunListExpansion
+         # classes, this is a practical way of passing along things like the name
+         # of the role being merged in.
+         #  Just prior to doing a merge against a component, set this to a hash 
+         # with hints about the provenance of the merge.  Keys should match that 
+         # of a TraceLogEntry - :mechanism, :explanation, any other details 
+         # specific to the merge.
+         #  You should clear this after a merge.
+         attr_accessor :tracer_hint
+       end
+
        # Debug what's going on with an attribute. +args+ is a path spec to the
        # attribute you're interested in. For example, to debug where the value
        # of `node[:network][:default_interface]` is coming from, use:
@@ -260,6 +273,13 @@ class Chef
 
        alias :reset :reset_cache
 
+       # Deeply merges a Hash, Mash, or VididMash into the given precedence level.
+       # Intended to make it easier to trace merges as role attributes are expanded.
+       def merge_into_component(component_ivar, new_data)
+         existing = instance_variable_get(component_ivar)
+         Chef::Mixin::DeepMerge.deep_merge!(new_data, existing)
+       end
+
        # Set the cookbook level default attribute component to +new_data+.
        def default=(new_data)
          reset
@@ -270,7 +290,9 @@ class Chef
        # Set the role level default attribute component to +new_data+
        def role_default=(new_data)
          reset
-         trace_attribute_clear(:role_default)
+         # Do not trace a clear here - this is only used by 
+         # node.apply_expansion_attributes, which appends the expansion's
+         # trace log.
          @role_default = VividMash.new(self, new_data, self, :role_default)
        end
 
@@ -307,7 +329,9 @@ class Chef
        # Set the role level override attribute component to +new_data+
        def role_override=(new_data)
          reset
-         trace_attribute_clear(:role_override)
+         # Do not trace a clear here - this is only used by 
+         # node.apply_expansion_attributes, which appends the expansion's
+         # trace log.
          @role_override = VividMash.new(self, new_data, self, :role_override)
        end
 
@@ -327,7 +351,7 @@ class Chef
        def automatic=(new_data)
          reset
          trace_attribute_clear(:automatic)
-         # TODO - use two-stage create trhoughout if needed
+         # TODO - use two-stage create throughout if needed
          @automatic = VividMash.new(self, {}, self, :automatic)
          @automatic.update(new_data)
          @automatic

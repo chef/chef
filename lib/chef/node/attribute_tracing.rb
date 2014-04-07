@@ -274,6 +274,15 @@ class Chef
         add_entry_to_trace_log(entry)
       end
 
+
+      def append_trace_log(other_trace_log)
+        other_trace_log.each do |path, incoming_entries|
+          @trace_log[path] ||= []
+          @trace_log[path] += incoming_entries
+        end
+      end
+
+
       private
 
       def trace_this_path?(attrpath)
