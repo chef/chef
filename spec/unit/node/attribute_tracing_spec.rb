@@ -208,14 +208,30 @@ describe "Chef::Node::Attribute Tracing" do
         include_examples "silent", [:attr_trace_none, :attr_trace_role, :attr_trace_needs_chef_zero]
       end
 
+
       context "when loading from an environment" do
-        # TODO: test load from an environment
-        #include_examples "silent"
+        before(:all) do
+          @fixtures = {
+            'environments' => { 'pure_land' => AttributeTracingHelpers.canned_fixtures[:environments][:pure_land] },
+            'node' => { 'chef_environment' => 'pure_land', }
+          }
+          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+        end
+        include_examples "silent", [:attr_trace_none, :attr_trace_env ]
       end
 
-      # TODO: test being set at compile-time in a recipe
-      # TODO: test being set at converge-time in a recipe
+      context "when being set by a cookbook recipe" do
+        before(:all) do          
+          @fixtures = {
+            'node' => { 'run_list' => [ 'recipe[burgers]' ] },
+            'cookbooks' => { 'burgers-0.1.7' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['burgers-0.1.7'] },
+          }
+          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+        end
+        include_examples "silent", [:attr_trace_none, :attr_trace_cookbook ]        
+      end
     end
+
 
     context "when tracing mode is all" do
       before(:all) do
@@ -237,10 +253,19 @@ describe "Chef::Node::Attribute Tracing" do
           Chef::Config.trace_attributes = 'all'
           @node = Chef::Node.new()
           @node.consume_external_attrs(OHAI_MIN_ATTRS,CLI_TEST_ATTRS)
-          # binding.pry
         end
-        include_examples "contains trace", [:attr_trace_all, :attr_trace_cli], "/foo", :normal, 0, { :mechanism => :'chef-client', :explanation => 'attributes loaded from command-line using -j json' }
-        include_examples "contains trace", [:attr_trace_all, :attr_trace_cli], "/oryx", :normal, 0, { :mechanism => :'chef-client', :explanation => 'attributes loaded from command-line using -j json' }
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_cli], "/foo", :normal, 0, 
+                         { 
+                           :mechanism => :'chef-client', 
+                           :explanation => 'attributes loaded from command-line using -j json',
+                           # TODO - test for -j option
+                         })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_cli], "/oryx", :normal, 0,
+                         { 
+                           :mechanism => :'chef-client', 
+                           :explanation => 'attributes loaded from command-line using -j json', 
+                           # TODO - test for -j option
+                         })
       end
 
       context "when loading from chef-server normal node attributes" do
@@ -292,7 +317,7 @@ describe "Chef::Node::Attribute Tracing" do
                            :mechanism => :'cookbook-attributes',
                            :explanation => "An attribute was touched by a cookbook's attribute file",
                            :cookbook => 'bloodsmasher', 
-                           # :version => '0.2.0', # TODO
+                           :cookbook_version => '0.2.0',
                            :line => 2, 
                            :file => 'bloodsmasher/attributes/default.rb',
                          })
@@ -338,16 +363,8 @@ describe "Chef::Node::Attribute Tracing" do
         before(:all) do
           Chef::Config.trace_attributes = 'all'
           @fixtures = {
-            'environments' => {
-              'pure_land' => {
-                'name' => 'pure_land',
-                'default_attributes' => { 'env_default' => 'env_default', },
-                'override_attributes' => { 'env_override' => 'env_override', },
-              }              
-            },
-            'node' => {
-              'chef_environment' => 'pure_land',
-            }
+            'environments' => { 'pure_land' => AttributeTracingHelpers.canned_fixtures[:environments][:pure_land] },
+            'node' => { 'chef_environment' => 'pure_land', }
           }
           @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
@@ -373,7 +390,7 @@ describe "Chef::Node::Attribute Tracing" do
           Chef::Config.trace_attributes = 'all'
           @fixtures = {
             'node' => { 'run_list' => [ 'recipe[burgers]' ] },
-            'cookbooks' => { 'burgers-0.1.0' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['burgers-0.1.0'] },
+            'cookbooks' => { 'burgers-0.1.7' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['burgers-0.1.7'] },
           }
           @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
@@ -383,7 +400,7 @@ describe "Chef::Node::Attribute Tracing" do
                            :mechanism => :'cookbook-recipe-compile-time',
                            :explanation => "An attribute was set in a cookbook recipe, outside of a resource.",
                            :cookbook => 'burgers', 
-                           # :version => '0.2.0', # TODO
+                           :cookbook_version => '0.1.7',
                            :line => 2, 
                            :file => 'burgers/recipes/default.rb',
                          })
@@ -392,7 +409,7 @@ describe "Chef::Node::Attribute Tracing" do
                            :mechanism => :'cookbook-recipe-converge-time',
                            :explanation => "An attribute was set in a cookbook recipe during convergence time (while a resource was being executed, probably a ruby_block).",
                            :cookbook => 'burgers', 
-                           # :version => '0.2.0', # TODO
+                           # :cookbook_version => '0.1.7', # Currently cannot detect cookbook version when the event occurs at converge time
                            :line => 6, 
                            :file => 'burgers/recipes/default.rb',
                          })
@@ -401,7 +418,7 @@ describe "Chef::Node::Attribute Tracing" do
                            :mechanism => :'cookbook-recipe-compile-time',
                            :explanation => "An attribute was set in a cookbook recipe, outside of a resource.",
                            :cookbook => 'burgers', 
-                           # :version => '0.2.0', # TODO
+                           :cookbook_version => '0.1.7',
                            :line => 2, 
                            :file => 'burgers/recipes/kansas.rb',
                          })
@@ -457,7 +474,7 @@ describe "Chef::Node::Attribute Tracing" do
         Chef::Config.trace_attributes = 'all'
         @fixtures = {
           'node' => { 'run_list' => [ 'recipe[burgers]' ] },
-          'cookbooks' => { 'burgers-0.1.0' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['burgers-0.1.0'] },
+          'cookbooks' => { 'burgers-0.1.7' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['burgers-0.1.7'] },
         }
         @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
       end

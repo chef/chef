@@ -13,6 +13,14 @@ module AttributeTracingHelpers
       }
     },
 
+    :environments => {
+      :pure_land => {
+        'name' => 'pure_land',
+        'default_attributes' => { 'env_default' => 'env_default', },
+        'override_attributes' => { 'env_override' => 'env_override', },        
+      }
+    },
+
     :cookbooks => {
       'bloodsmasher-0.1.1' => {
         'recipes' => { 'default.rb' => '# Time to smash blood!' },
@@ -30,6 +38,7 @@ EOT
 override[:goofin][:on][:elvis] = 'No particular expertise in poultry managment is meant to be implied, here.'
 EOT
         },
+        'metadata.rb' => 'version "0.1.1"',
       },
       'bloodsmasher-0.2.0' => {
         'recipes' => { 'default.rb' => '# Time to smash blood!' },
@@ -42,9 +51,11 @@ default[:are][:we][:having][:fun] \
   = 'Probably'
 EOT
         },
+        'metadata.rb' => 'version "0.2.0"',
       },
       # AttributeTracingHelpers.canned_fixtures[:cookbooks]['burgers-0.1.0'] },
-      'burgers-0.1.0' => {
+      'burgers-0.1.7' => {
+        'metadata.rb' => 'version "0.1.7"',
         'attributes' => {
           'default.rb' => <<-EOT,
 default['lim'] = 'tasty'

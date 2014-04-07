@@ -147,7 +147,7 @@ class Chef
         location[:cookbook] = nearest_frame[:cookbook]
         location[:file] = nearest_frame[:cookbook] + '/' + nearest_frame[:path_within_cookbook]
         location[:line] = nearest_frame[:line].to_i
-        # TODO: determine cookbook version from run context?
+
         return location
       end
 
