@@ -107,7 +107,6 @@ describe "Chef::Node::Attribute Tracing" do
         expect(path).to eql '/foo'
       end
       it "should find the right path to default[:foo][:bar] ", :attr_trace, :attr_trace_path_finder do
-        # binding.pry
         path, comp = @cna.find_path_to_entry(@cna.default[:foo][:bar])
         expect(path).to eql '/foo/bar'
       end
@@ -369,8 +368,46 @@ describe "Chef::Node::Attribute Tracing" do
                          })
       end
 
-    #   # TODO: test being set at compile-time in a recipe
-    #   # TODO: test being set at converge-time in a recipe
+      context "when being set by a cookbook recipe" do
+        before(:all) do          
+          Chef::Config.trace_attributes = 'all'
+          @fixtures = {
+            'node' => { 'run_list' => [ 'recipe[burgers]' ] },
+            'cookbooks' => { 'burgers-0.1.0' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['burgers-0.1.0'] },
+          }
+          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+        end
+
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_cookbook], "/ham/mustard", :normal, 0, 
+                         { 
+                           :mechanism => :'cookbook-recipe-compile-time',
+                           :explanation => "An attribute was set in a cookbook recipe, outside of a resource.",
+                           :cookbook => 'burgers', 
+                           # :version => '0.2.0', # TODO
+                           :line => 2, 
+                           :file => 'burgers/recipes/default.rb',
+                         })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_cookbook], "/ham/relish", :normal, 0, 
+                         { 
+                           :mechanism => :'cookbook-recipe-converge-time',
+                           :explanation => "An attribute was set in a cookbook recipe during convergence time (while a resource was being executed, probably a ruby_block).",
+                           :cookbook => 'burgers', 
+                           # :version => '0.2.0', # TODO
+                           :line => 6, 
+                           :file => 'burgers/recipes/default.rb',
+                         })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_cookbook], "/ham/cole_slaw", :normal, 0, 
+                         { 
+                           :mechanism => :'cookbook-recipe-compile-time',
+                           :explanation => "An attribute was set in a cookbook recipe, outside of a resource.",
+                           :cookbook => 'burgers', 
+                           # :version => '0.2.0', # TODO
+                           :line => 2, 
+                           :file => 'burgers/recipes/kansas.rb',
+                         })
+        
+      end
+
 
     end
 
@@ -411,23 +448,43 @@ describe "Chef::Node::Attribute Tracing" do
   end
 
   #================================================#
-  #       Tests: Source File Tracing
+  #       Tests: Nastier Interactions
   #================================================#
+  
+  describe "the more awkward moments" do
+    context "when a recipe reloads attributes" do
+      before(:all) do          
+        Chef::Config.trace_attributes = 'all'
+        @fixtures = {
+          'node' => { 'run_list' => [ 'recipe[burgers]' ] },
+          'cookbooks' => { 'burgers-0.1.0' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['burgers-0.1.0'] },
+        }
+        @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+      end
 
-  describe "the file tracing feature" do
-    context "when loading from cookbook attributes" do
-      #include_examples "contains cookbook trace", "/oryx/crake", "default", "atwood", "default.rb", "12"
-      #include_examples "contains cookbook trace", "/oryx/crake", "default", "atwood", "funnyname.rb", "1"
-    end
+      include_examples("contains trace", [:attr_trace_all, :attr_trace_nasty ], "/lim", :default, 0, 
+                       { 
+                         :mechanism => :'cookbook-attributes',
+                         :file => 'burgers/attributes/default.rb',
+                       })
+      include_examples("contains trace", [:attr_trace_all, :attr_trace_nasty ], "/lim", :default, 1, 
+                       { 
+                         :mechanism => :'cookbook-recipe-compile-time',
+                         :file => 'burgers/recipes/default.rb',
+                       })
+      include_examples("contains trace", [:attr_trace_all, :attr_trace_nasty ], "/lim", :default, 2, 
+                       { 
+                         :mechanism => :'cookbook-attributes-reload',
+                         :explanation => "An attribute was reloaded from a cookbook attribute file by a recipe",
+                         :line => 1,
+                         :file => 'burgers/attributes/default.rb',
+                         :reloaded_by_file => 'burgers/recipes/default.rb',
+                         :reloaded_by_line => 16,
+                       })
 
-    context "when loading from a role" do
-      #include_examples "contains role/env trace", "/oryx/crake", "default", "role", "author"
-    end
-
-    context "when loading from an environment" do
-      #include_examples "contains role/env trace", "/oryx/crake", "default", "environment", "postapocalyptic"
     end
   end
+
 
   describe "different-precedence handling, same file" do
     context "when loading from cookbook attributes" do

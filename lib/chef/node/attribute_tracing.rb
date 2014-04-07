@@ -50,13 +50,9 @@ class Chef
 
         if false
           # Just for code layout
-        elsif frame = slh_looks_like_cookbook(stack)          
-          location[:mechanism] = ('cookbook-' + frame[:cookbook_part]).to_sym
-          location[:explanation] = "An attribute was touched by a cookbook's attribute file"
-          location[:cookbook] = frame[:cookbook]
-          location[:file] = frame[:cookbook] + '/' + frame[:path_within_cookbook]
-          location[:line] = frame[:line].to_i
-          # TODO: determine cookbook version from run context?
+
+        elsif slh_looks_like_cookbook(stack)
+          location = interpret_cookbook_match(stack, location)
 
         elsif slh_looks_like_ohai_bulk_load(stack)
           location[:mechanism] = :ohai
@@ -75,7 +71,11 @@ class Chef
           # No role-specific info can remain at this point; we're just merging in the completed expansion of all roles.
           location[:mechanism] = :'chef-client'
           location[:explanation] = "Having merged all role attributes into an 'expansion', the chef run is now importing the expansion into the node object."
-          
+
+        elsif slh_looks_like_recipe_expansion_merge(stack)
+          location[:mechanism] = :'chef-client'
+          location[:explanation] = "Having expanded the runlist from the roles, the chef client is now setting the final role list and recipe list on the node object."
+                    
         elsif slh_looks_like_environment_load(stack)
           # Expecting environment_name to be set by node.apply_expansion_attributes in the tracer_hint
           location[:mechanism] = :environment
@@ -101,17 +101,58 @@ class Chef
 
         else
           location[:mechanism] = :unknown
-          # binding.pry
           location[:stack] = stack[3,12]
-
         end
 
         return location
       end
 
       private
+      def interpret_cookbook_match(stack, location)
+        cookbook_frame_indices = []
+        stack.each_with_index { |f,i| if f[:cookbook] then cookbook_frame_indices << i end }
+        
+        
+        nearest_frame = stack[cookbook_frame_indices[0]]
+        
+        if nearest_frame[:method] == 'from_file' && nearest_frame[:cookbook_part] == 'attributes'
+
+          # Check for a reload situation
+          if cookbook_frame_indices[1]
+            reloading_frame = stack[cookbook_frame_indices[1]]
+            if reloading_frame[:cookbook_part] == "recipes"
+              location[:mechanism] = :'cookbook-attributes-reload'
+              location[:explanation] = "An attribute was reloaded from a cookbook attribute file by a recipe"
+              location[:reloaded_by_line] = reloading_frame[:line].to_i
+              location[:reloaded_by_file] = reloading_frame[:cookbook] + '/'  + reloading_frame[:path_within_cookbook]              
+            end
+            # TODO - handle include_attributes?
+          else
+            # Typical case
+            location[:mechanism] = :'cookbook-attributes'
+            location[:explanation] = "An attribute was touched by a cookbook's attribute file"
+          end
+
+        elsif nearest_frame[:method] == 'from_file' && nearest_frame[:cookbook_part] == 'recipes'
+          location[:mechanism] = :'cookbook-recipe-compile-time'
+          location[:explanation] = "An attribute was set in a cookbook recipe, outside of a resource."
+        elsif nearest_frame[:method] == "block (2 levels) in from_file" && nearest_frame[:cookbook_part] == 'recipes'
+          location[:mechanism] = :'cookbook-recipe-converge-time'
+          location[:explanation] = "An attribute was set in a cookbook recipe during convergence time (while a resource was being executed, probably a ruby_block)."
+        else
+          location[:mechanism] = :'cookbook-other'
+          location[:explanation] = "An attribute was set in a cookbook, but I don't recognize the calling pattern."
+        end
+
+        location[:cookbook] = nearest_frame[:cookbook]
+        location[:file] = nearest_frame[:cookbook] + '/' + nearest_frame[:path_within_cookbook]
+        location[:line] = nearest_frame[:line].to_i
+        # TODO: determine cookbook version from run context?
+        return location
+      end
+
       def slh_looks_like_cookbook(stack)
-        stack.find { |f| f[:method] == 'from_file' && f[:cookbook] }
+        stack.find { |f| f[:cookbook] }
       end
 
       def slh_looks_like_attribute_reset(stack)
@@ -136,7 +177,7 @@ class Chef
         cae_index = stack.find_index { |f| f[:method] == 'consume_external_attrs' }        
         match = cae_index && stack[cae_index - 1][:method] == '[]='
         match &&= @component == :automatic
-        match &&= ['/platform', '/platform_family'].include?(@path)
+        match &&= ['/platform', '/platform_family', '/platform_version'].include?(@path)
         match
       end
 
@@ -150,6 +191,12 @@ class Chef
         # Hueristic: a call to apply_expansion_attributes and component is role-ish
         aea_index = stack.find_index { |f| f[:method] == 'apply_expansion_attributes' }
         aea_index && [:role_default, :role_override].include?(@component)
+      end
+
+      def slh_looks_like_recipe_expansion_merge(stack)
+        # Hueristic: a call to expand! and component is automatic
+        frame_index = stack.find_index { |f| f[:method] == 'expand!' }
+        frame_index && [:automatic].include?(@component)
       end
 
       def slh_looks_like_environment_load(stack)

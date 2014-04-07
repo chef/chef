@@ -43,6 +43,43 @@ default[:are][:we][:having][:fun] \
 EOT
         },
       },
+      # AttributeTracingHelpers.canned_fixtures[:cookbooks]['burgers-0.1.0'] },
+      'burgers-0.1.0' => {
+        'attributes' => {
+          'default.rb' => <<-EOT,
+default['lim'] = 'tasty'
+EOT
+        },
+        'recipes' => {
+          'default.rb' => <<-EOT,
+
+node.normal['ham']['mustard'] = true
+
+ruby_block "Set an attr at converge time" do
+  block do 
+    node.normal['ham']['relish'] = true
+  end
+end
+
+# Set lim burger to not be tasty (overwriting attributes)
+node.default['lim'] = 'yecchy'
+
+# Reload attributes 
+ruby_block 'Reload an attribute file at converge time' do
+  block do
+    node.from_file(run_context.resolve_attribute("burgers", "default"))
+  end
+end
+
+include_recipe('burgers::kansas')
+
+EOT
+          'kansas.rb' => <<-EOT,
+# In Kansas City, we put coleslaw on everything.
+node.normal['ham']['cole_slaw'] = true
+EOT
+        }
+      }    
     }
   }
 
@@ -62,6 +99,7 @@ EOT
     fixtures['roles'] ||= {}
     fixtures['roles'].each do |role_name, role_opts|
       fixtures['roles'][role_name] = {
+
         'json_class'=> "Chef::Role",
         'chef_type'=> "role",
         'run_list'=> [],
