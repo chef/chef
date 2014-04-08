@@ -797,7 +797,7 @@ describe Mixlib::ShellOut do
         end
       end
 
-      context "when running a command that doesn't exist" do
+      context "when running a command that doesn't exist", :unix_only do
 
         let(:cmd) { "/bin/this-is-not-a-real-command" }
 
@@ -864,7 +864,7 @@ describe Mixlib::ShellOut do
 
       end
 
-      context 'with subprocess that takes longer than timeout' do
+      context 'with subprocess that takes longer than timeout', :unix_only do
         def ruby_wo_shell(code)
           parts = %w[ruby]
           parts << "--disable-gems" if ruby_19?
