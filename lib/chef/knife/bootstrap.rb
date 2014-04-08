@@ -217,6 +217,8 @@ class Chef
         if Array(@name_args).first.nil?
           ui.error("Must pass an FQDN or ip to bootstrap")
           exit 1
+        elsif Array(@name_args).include?("windows")
+          ui.warn("Hostname containing 'windows' specified. Please install 'knife-windows' if you are attempting to bootstrap a Windows node via WinRM.")
         end
       end
 
