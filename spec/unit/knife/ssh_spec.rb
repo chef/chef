@@ -173,6 +173,7 @@ describe Chef::Knife::Ssh do
       Chef::Config[:knife][:ssh_attribute] = "config_file"
       @knife.config[:attribute] = "command_line"
       @knife.configure_attribute
+      @knife.config[:attribute].should == "command_line"
       @knife.config[:override_attribute].should == "command_line"
     end
   end

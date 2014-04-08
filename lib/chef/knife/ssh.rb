@@ -413,9 +413,7 @@ class Chef
         # We can tell here if fqdn was passed from the command line, rather than being the default, by checking config[:attribute]
         # However, after here, we cannot tell these things, so we must preserve config[:attribute]
         config[:override_attribute] = config[:attribute] || Chef::Config[:knife][:ssh_attribute]
-        config[:attribute] = (Chef::Config[:knife][:ssh_attribute] ||
-                              config[:attribute] ||
-                              "fqdn").strip
+        config[:attribute] = (config[:override_attribute] || "fqdn").strip
       end
 
       def cssh
