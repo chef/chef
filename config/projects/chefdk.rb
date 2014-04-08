@@ -16,6 +16,7 @@
 #
 
 name       "chefdk"
+friendly_name "Chef DK"
 maintainer "Opscode, Inc."
 homepage   "http://www.opscode.com"
 

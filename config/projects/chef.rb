@@ -16,6 +16,7 @@
 #
 
 name "chef"
+friendly_name "Chef Client"
 maintainer "Opscode, Inc."
 homepage "http://www.opscode.com"
 
@@ -24,6 +25,7 @@ install_path    "/opt/chef"
 build_version   Omnibus::BuildVersion.new.git_describe
 build_iteration 4
 mac_pkg_identifier "com.getchef.pkg.chef"
+resources_path File.join(files_path, name)
 
 dependency "preparation"
 dependency "chef"
