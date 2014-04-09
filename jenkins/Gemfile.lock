@@ -1,0 +1,10 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    mixlib-shellout (1.4.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  mixlib-shellout (~> 1.4)
