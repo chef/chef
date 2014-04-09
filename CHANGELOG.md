@@ -1,6 +1,10 @@
 # Chef Client Changelog
 
-## Unreleased
+## Unreleased: 11.12.2
+
+* Fix the order of middlewares in HTTP::Simple (CHEF-5198).
+
+## Last Release: 11.12.0 (4/8/2014)
 
 * Including a recipe from a cookbook not in the dependency graph logs
   a MissingCookbookDependency warning. Fixes CHEF-4367.
@@ -67,7 +71,3 @@
 * guard_interpreter attribute: use powershell\_script, other script resources in guards (CHEF-4553)
 * Fix for CHEF-5169: add require for chef/config_fetcher
 * SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
-
-## Last Release: 11.10.0 (02/06/2014)
-
-http://docs.opscode.com/release/11-10/release_notes.html

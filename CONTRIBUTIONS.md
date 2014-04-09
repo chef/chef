@@ -4,7 +4,7 @@ This file is reset every time a new release is done. The contents of this file a
 Example Contribution:
 * **kalistec**: Improved file resource greatly.
 -->
-# Chef Client Contributions:
+# Chef Client Contributions 11.12.0:
 
 * **jonlives**: Changed the order of recipe and cookbook name setting. Fixes CHEF-5052.
 * **jaymzh**: Added support for `enable` and `disable` to MacOSX service provider.

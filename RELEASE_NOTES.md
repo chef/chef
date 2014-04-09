@@ -6,7 +6,7 @@ Example Note:
 ## Example Heading
 Details about the thing that changed that needs to get included in the Release Notes in markdown.
 -->
-# Chef Client Release Notes:
+# Chef Client Release Notes 11.12.0:
 
 #### `knife ssl check` and `knife ssl fetch` Commands
 
