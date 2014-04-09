@@ -6,6 +6,7 @@
 * Chef now gracefully handles corrupted cache files.
 * SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
 * bump up upper limit on json gem to 1.8.1 (CHEF-4632)
+* pin sdoc to 0.3.0 due to solaris packaging issues.
 
 ## Last Release: 10.30.4 (02/18/2014)
 
