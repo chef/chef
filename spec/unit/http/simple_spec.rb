@@ -27,6 +27,6 @@ describe Chef::HTTP::Simple do
 
     content_length.should_not be_nil
     decompressor.should_not be_nil
-    (decompressor < content_length).should be_true
+    (decompressor > content_length).should be_true
   end
 end
