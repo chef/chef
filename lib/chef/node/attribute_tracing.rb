@@ -364,6 +364,7 @@ class Chef
         # Log a set event for each
         @trace_log[entry.path] ||= []
         @trace_log[entry.path].push entry
+        emit_log_message(entry)
 
         child_action = entry.action == :clear ? :clear : :parent_clobber
 
@@ -375,7 +376,20 @@ class Chef
         end.each do |child_path|
           child_entry = AttributeTraceEntry.new(entry.component, child_action, entry.source_location, child_path, nil)
           @trace_log[child_path].push child_entry 
+          emit_log_message(child_entry)
         end
+      end
+
+      def emit_log_message(entry)
+        msg = 'Attribute Trace:: '
+        msg += 'path:' + entry.path + ', '
+        msg += 'action:' + entry.action.to_s + ', '
+        msg += 'precedence:' + entry.component.to_s + ', '
+        msg += 'value:' + (entry.value.nil? ? '(nil)' : entry.value.to_s) + ', '
+        msg += 'mechanism:' + entry.source_location[:mechanism].to_s + ', '
+        details = entry.source_location[ entry.source_location.keys.sort.reject {|k| k == :mechanism } ]
+        msg += 'source_details: ' + details.to_s
+        Chef::Log.debug msg
       end
 
       def flush_queue

@@ -156,6 +156,7 @@ EOT
     client_key.close
 
     node = nil
+    log_buffer = nil
     Dir.mktmpdir do |tmpdir|
       config_settings_to_restore = [
                                     :chef_server_url,
@@ -169,6 +170,7 @@ EOT
       orig_config = {}
       config_settings_to_restore.each { |k| orig_config[k] = Chef::Config.send(k) }
       orig_config[:ohai_disabled_plugins] = Ohai::Config[:disabled_plugins].dup
+      orig_config[:logger] = Chef::Log.logger
 
       Chef::Config.chef_server_url = 'http://localhost:19090'
       Chef::Config.node_name = fixtures['fqdn']
@@ -178,6 +180,9 @@ EOT
       Chef::Config.log_level = :debug
       Chef::Config.chef_repo_path = tmpdir
       Chef::Config.cache_path = tmpdir
+
+      log_buffer = StringIO.new
+      Chef::Log.logger = Logger.new(log_buffer)
       
       Ohai::Config[:disabled_plugins] = [
                                          :Azure,
@@ -262,13 +267,14 @@ EOT
 
         # Reset config
         Ohai::Config[:disabled_plugins] = orig_config[:ohai_disabled_plugins]
+        Chef::Log.logger = orig_config[:logger]
         config_settings_to_restore.each { |k| Chef::Config.send((k.to_s + '=').to_sym, orig_config[k]) }
         
       end # Exception handling for chef-zero
 
     end # tmpdir
 
-    return node
+    return node, log_buffer
 
   end
 

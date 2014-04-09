@@ -38,9 +38,15 @@ describe "Chef::Node::Attribute Tracing" do
   #================================================#
 
   shared_examples "silent" do |tags|
-    # describe "the log output" do
-    #   it "should not contain trace messages"
-    # end
+    describe "the log output" do
+      it "should not contain any trace messages" do
+        if @log_buffer
+          traces = @log_buffer.string.split("\n").grep(/Attribute Trace/)
+          expect(traces).to be_empty
+        end
+      end
+    end
+
     describe "the node attribute trace object" do
       it "should be empty", :attr_trace, :attr_trace_none, *tags  do
         expect(@node.attributes.trace_log).to be_empty
@@ -49,11 +55,18 @@ describe "Chef::Node::Attribute Tracing" do
   end
 
   shared_examples "contains trace" do |tags, path, component, offset, location_checks|
-    #describe "the log output" do
-    #  it "should contain trace messages for #{path} at #{component}"
-    #end
+
+    describe "the log output" do      
+      it "should contain trace messages for #{path} at #{component}", :attr_trace, :attr_trace_hit, :attr_trace_messages, *tags do
+        if @log_buffer
+          traces = @log_buffer.string.split("\n").grep(/Attribute Trace/)
+          expect(traces.find_all { |t| t.include?('path:' + path) }.find_all { |t| t.include?('precedence:' + component.to_s) }).not_to be_empty
+        end
+      end
+    end
+
     describe "the node attribute trace object" do
-      it "should contain trace messages for #{path} at #{component}", :attr_trace, :attr_trace_hit, *tags do
+      it "should contain trace entry objects for #{path} at #{component}", :attr_trace, :attr_trace_hit, :attr_trace_objects, *tags do
         expect(@node.attributes.trace_log[path]).not_to be_nil
         entries = @node.attributes.trace_log[path].find_all {|t| t.component == component}
         expect(entries).not_to be_empty
@@ -67,11 +80,17 @@ describe "Chef::Node::Attribute Tracing" do
   end
 
   shared_examples "does not contain trace" do |tags, path|
-    #describe "the log output" do
-    #  it "should not contain trace messages for #{path}"
-    #end
+    describe "the log output" do
+      it "should not contain any trace messages at #{path}" do
+        if @log_buffer
+          traces = @log_buffer.string.split("\n").grep(/Attribute Trace/)
+          expect(traces.find_all { |t| t.include?('path:' + path) }).to be_empty
+        end
+      end
+    end
+
     describe "the node attribute trace object" do
-      it "should not contain trace messages for #{path}", :attr_trace, :attr_trace_miss, *tags  do
+      it "should not contain trace entry objects for #{path}", :attr_trace, :attr_trace_miss, *tags  do
         expect(@node.attributes.trace_log[path]).to be_nil
       end
     end
@@ -183,7 +202,7 @@ describe "Chef::Node::Attribute Tracing" do
               'override' => { 'node_override' => 'node_override', },
             }
           }
-          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+          (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
         include_examples "silent", [:attr_trace_none, :attr_trace_node, :attr_trace_needs_chef_zero]
       end
@@ -194,7 +213,7 @@ describe "Chef::Node::Attribute Tracing" do
             'node' => { 'run_list' => [ 'recipe[bloodsmasher]' ] },
             'cookbooks' => { 'bloodsmasher-0.2.0' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['bloodsmasher-0.2.0'] },
           }
-          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+          (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end        
         include_examples "silent", [:attr_trace_none, :attr_trace_cookbook ]
       end
@@ -205,7 +224,7 @@ describe "Chef::Node::Attribute Tracing" do
             'node' => { 'run_list' => [ "role[alpha]" ], },
             'roles' => { 'alpha' => AttributeTracingHelpers.canned_fixtures[:roles][:alpha] },
           }
-          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+          (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
         include_examples "silent", [:attr_trace_none, :attr_trace_role, :attr_trace_needs_chef_zero]
       end
@@ -217,7 +236,7 @@ describe "Chef::Node::Attribute Tracing" do
             'environments' => { 'pure_land' => AttributeTracingHelpers.canned_fixtures[:environments][:pure_land] },
             'node' => { 'chef_environment' => 'pure_land', }
           }
-          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+          (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
         include_examples "silent", [:attr_trace_none, :attr_trace_env ]
       end
@@ -228,7 +247,7 @@ describe "Chef::Node::Attribute Tracing" do
             'node' => { 'run_list' => [ 'recipe[burgers]' ] },
             'cookbooks' => { 'burgers-0.1.7' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['burgers-0.1.7'] },
           }
-          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+          (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
         include_examples "silent", [:attr_trace_none, :attr_trace_cookbook ]        
       end
@@ -292,7 +311,7 @@ describe "Chef::Node::Attribute Tracing" do
               'override' => { 'node_override' => 'node_override', },
             }
           }
-          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+          (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
 
         include_examples("contains trace", [:attr_trace_all, :attr_trace_node], "/node_normal", :normal, 0,
@@ -318,7 +337,7 @@ describe "Chef::Node::Attribute Tracing" do
             'node' => { 'run_list' => [ 'recipe[bloodsmasher]' ] },
             'cookbooks' => { 'bloodsmasher-0.2.0' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['bloodsmasher-0.2.0'] },
           }
-          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+          (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
 
         include_examples("contains trace", [:attr_trace_all, :attr_trace_cookbook], "/goofin/on/elvis", :default, 0, 
@@ -340,7 +359,7 @@ describe "Chef::Node::Attribute Tracing" do
             'node' => { 'run_list' => [ "role[alpha]" ], },
             'roles' => { 'alpha' => AttributeTracingHelpers.canned_fixtures[:roles][:alpha] },
           }
-          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+          (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
 
         include_examples("contains trace", [:attr_trace_all, :attr_trace_role], "/role_default", :role_default, 0,
@@ -375,7 +394,7 @@ describe "Chef::Node::Attribute Tracing" do
             'environments' => { 'pure_land' => AttributeTracingHelpers.canned_fixtures[:environments][:pure_land] },
             'node' => { 'chef_environment' => 'pure_land', }
           }
-          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+          (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
 
         include_examples("contains trace", [:attr_trace_all, :attr_trace_env], "/env_default", :env_default, 0,
@@ -401,7 +420,7 @@ describe "Chef::Node::Attribute Tracing" do
             'node' => { 'run_list' => [ 'recipe[burgers]' ] },
             'cookbooks' => { 'burgers-0.1.7' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['burgers-0.1.7'] },
           }
-          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+          (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
 
         include_examples("contains trace", [:attr_trace_all, :attr_trace_cookbook], "/ham/mustard", :normal, 0, 
@@ -482,7 +501,7 @@ describe "Chef::Node::Attribute Tracing" do
               },
             }
           }
-          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+          (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
 
         include_examples("contains trace", [:attr_trace_path, :attr_trace_node], "/oryx/crake", :normal, 0, { :mechanism => :'node-record' })
@@ -496,7 +515,7 @@ describe "Chef::Node::Attribute Tracing" do
             'node' => { 'run_list' => [ 'recipe[bloodsmasher]' ] },
             'cookbooks' => { 'bloodsmasher-0.2.0' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['bloodsmasher-0.2.0'] },
           }
-          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+          (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
 
         include_examples("contains trace", [:attr_trace_path, :attr_trace_cookbook], "/oryx/crake", :default, 0, { :mechanism => :'cookbook-attributes' })
@@ -510,7 +529,7 @@ describe "Chef::Node::Attribute Tracing" do
             'node' => { 'run_list' => [ "role[alpha]" ], },
             'roles' => { 'alpha' => AttributeTracingHelpers.canned_fixtures[:roles][:alpha] },
           }
-          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+          (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
 
         include_examples("contains trace", [:attr_trace_path, :attr_trace_role], "/oryx/crake", :role_default, 0, { :mechanism => :role })
@@ -525,7 +544,7 @@ describe "Chef::Node::Attribute Tracing" do
             'environments' => { 'pure_land' => AttributeTracingHelpers.canned_fixtures[:environments][:pure_land] },
             'node' => { 'chef_environment' => 'pure_land', }
           }
-          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+          (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
 
         include_examples("contains trace", [:attr_trace_path, :attr_trace_env], "/oryx/crake", :env_default, 0, { :mechanism => :environment })
@@ -539,7 +558,7 @@ describe "Chef::Node::Attribute Tracing" do
             'node' => { 'run_list' => [ 'recipe[burgers]' ] },
             'cookbooks' => { 'burgers-0.1.7' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['burgers-0.1.7'] },
           }
-          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+          (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
 
         include_examples("contains trace", [:attr_trace_path, :attr_trace_cookbook], "/oryx/crake", :normal, 0, { :mechanism => :'cookbook-recipe-compile-time' })
@@ -560,7 +579,7 @@ describe "Chef::Node::Attribute Tracing" do
           'node' => { 'run_list' => [ 'recipe[burgers]' ] },
           'cookbooks' => { 'burgers-0.1.7' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['burgers-0.1.7'] },
         }
-        @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+        (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
       end
 
       include_examples("contains trace", [:attr_trace_all, :attr_trace_nasty ], "/lim", :default, 0, 
