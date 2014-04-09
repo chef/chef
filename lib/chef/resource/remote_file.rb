@@ -40,16 +40,16 @@ class Chef
         @provider = Chef::Provider::RemoteFile
       end
 
+      # source can take any of the following as arguments
+      # - A single string argument
+      # - Multiple string arguments
+      # - An array or strings
+      # - A delayed evaluator that evaluates to a string
+      #   or array of strings
+      # All strings must be parsable as URIs.
+      # source returns an array of strings.
       def source(*args)
-        arg = if args.empty?
-                nil
-              elsif args[0].is_a?(Chef::DelayedEvaluator) && args.count == 1
-                args[0]
-              elsif args.any? {|a| a.is_a?(Chef::DelayedEvaluator)} && args.count > 1
-                raise Exceptions::InvalidRemoteFileURI, "Only 1 DelayedEvaluator is allowed"
-              else
-                Array(args).flatten
-              end
+        arg = parse_source_args(args)
         ret = set_or_return(:source,
                             arg,
                             { :callbacks => {
@@ -59,6 +59,18 @@ class Chef
           Array(ret)
         else
           ret
+        end
+      end
+
+      def parse_source_args(args)
+        if args.empty?
+          nil
+        elsif args[0].is_a?(Chef::DelayedEvaluator) && args.count == 1
+          args[0]
+        elsif args.any? {|a| a.is_a?(Chef::DelayedEvaluator)} && args.count > 1
+          raise Exceptions::InvalidRemoteFileURI, "Only 1 source argument allowed when using a lazy evaluator"
+        else
+          Array(args).flatten
         end
       end
 
