@@ -25,12 +25,12 @@ describe "Chef::Node::Attribute Tracing" do
     'foo' => 'bar',
     'deep' => { 'deeper' => 'still' },
     'bicycle' => 'ohai',
-    'oryx' => 'crake',
+    'oryx' => { 'crake' => 'snowman' },
   }
   CLI_TEST_ATTRS = {
     'foo' => 'bar',
     'bicycle' => 'command-line-json',
-    'oryx' => 'crake',
+    'oryx' => { 'crake' => 'snowman' },
   }
 
   #================================================#
@@ -66,12 +66,14 @@ describe "Chef::Node::Attribute Tracing" do
     end
   end
 
-  shared_examples "does not contain trace" do |tags, path, level, origin_type|
+  shared_examples "does not contain trace" do |tags, path|
     #describe "the log output" do
-    #  it "should not contain trace messages for #{path} at #{level} from #{origin_type}"
+    #  it "should not contain trace messages for #{path}"
     #end
-    describe "the node attribute trace object", :attr_trace, :attr_trace_miss, *tags  do
-      it "should not contain trace messages for #{path} at #{level} from #{origin_type}"
+    describe "the node attribute trace object" do
+      it "should not contain trace messages for #{path}", :attr_trace, :attr_trace_miss, *tags  do
+        expect(@node.attributes.trace_log[path]).to be_nil
+      end
     end
   end
 
@@ -234,9 +236,6 @@ describe "Chef::Node::Attribute Tracing" do
 
 
     context "when tracing mode is all" do
-      before(:all) do
-        Chef::Config.trace_attributes = 'all'
-      end
 
       context "when loading from ohai" do
         before(:all) do 
@@ -434,44 +433,119 @@ describe "Chef::Node::Attribute Tracing" do
                          })
         
       end
-
-
     end
 
-    # context "when tracing mode is an extant path /oryx/crake" do
-    #   before do
-    #     Chef::Config.trace_attributes = '/oryx/crake'
-    #   end
-    #   context "when loading from ohai" do
-    #     before(:all) { node = Chef::Node.new().consume_external_attrs(OHAI_TEST_ATTRS,{}) }
-    #     #include_examples "does not contain trace", "/foo/bar", "automatic/ohai"
-    #     #include_examples "contains trace", "/oryx/crake", "automatic/ohai"
-    #   end
-    #   context "when loading from command-line json" do
-    #     before(:all) { node = Chef::Node.new().consume_external_attrs(OHAI_MIN_ATTRS, CLI_TEST_ATTRS) }
-    #     #include_examples "does not contain trace", "/foo/bar", "normal/command-line-json"
-    #     #include_examples "contains trace", "/oryx/crake", "normal/command-line-json"
-    #   end
-    #   context "when loading from chef-server normal node attributes" do
-    #     #include_examples "does not contain trace", "/foo/bar", "normal/chef-server"
-    #     #include_examples "contains trace", "/oryx/crake", "normal/chef-server"      
-    #   end
-    #   context "when loading from cookbook attributes" do
-    #     #include_examples "does not contain trace", "/foo/bar", "default/cookbook"
-    #     #include_examples "contains trace", "/oryx/crake", "default/cookbook"
-    #   end
-    #   context "when loading from a role" do
-    #     #include_examples "does not contain trace", "/foo/bar", "default/role"
-    #     #include_examples "contains trace", "/oryx/crake", "default/role"
-    #   end
-    #   context "when loading from an environment" do
-    #     #include_examples "does not contain trace", "/foo/bar", "default/environment"
-    #     #include_examples "contains trace", "/oryx/crake", "default/environment"
-    #   end
-    # end
-    #   # TODO: test being set at compile-time in a recipe
-    #   # TODO: test being set at converge-time in a recipe
+    context "when tracing mode is an extant path /oryx/crake" do
+      context "when loading from ohai" do
+        before(:all) do 
+          Chef::Config.trace_attributes = '/oryx/crake'
+          @node = Chef::Node.new()
+          @node.consume_external_attrs(OHAI_TEST_ATTRS,{})
+        end
+        include_examples "contains trace", [:attr_trace_path, :attr_trace_ohai], "/oryx/crake", :automatic, 0, { :mechanism => :ohai }
+        include_examples "does not contain trace", [:attr_trace_path, :attr_trace_ohai], "/deep/deeper"
+      end
 
+      context "when loading from command-line json" do
+        before(:all) do 
+          Chef::Config.trace_attributes = '/oryx/crake'
+          # This is gross, but application/client and config_fetcher make this kind of hard to test
+          @old_argv = ARGV.dup()
+          ARGV.delete_if { |a| true }
+          ARGV.concat(['-j', 'dummy.json'])
+
+          @node = Chef::Node.new()
+          @node.consume_external_attrs(OHAI_MIN_ATTRS,CLI_TEST_ATTRS)
+        end
+        after(:all) do 
+          ARGV.delete_if { |a| true }
+          ARGV.concat(@old_argv)
+        end
+          
+        include_examples("contains trace", [:attr_trace_path, :attr_trace_cli], "/oryx/crake", :normal, 0, 
+                         { 
+                           :mechanism => :'command-line-json', 
+                         })
+
+        include_examples("does not contain trace", [:attr_trace_path, :attr_trace_cli], "/deep/deeper")
+      end
+
+      context "when loading from chef-server normal node attributes" do
+        before(:all) do
+          Chef::Config.trace_attributes = '/oryx/crake'
+          @fixtures = {
+            'node' => {
+              'normal' => { 
+                'node_normal' => 'node_normal', 
+                'deep' => { 'deeper' => 'yup', },
+                'oryx' => { 'crake' => 'snowman' },
+              },
+            }
+          }
+          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+        end
+
+        include_examples("contains trace", [:attr_trace_path, :attr_trace_node], "/oryx/crake", :normal, 0, { :mechanism => :'node-record' })
+        include_examples("does not contain trace", [:attr_trace_path, :attr_trace_node], "/deep/deeper")
+      end
+
+      context "when loading from cookbook attributes" do
+        before(:all) do          
+          Chef::Config.trace_attributes = '/oryx/crake'
+          @fixtures = {
+            'node' => { 'run_list' => [ 'recipe[bloodsmasher]' ] },
+            'cookbooks' => { 'bloodsmasher-0.2.0' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['bloodsmasher-0.2.0'] },
+          }
+          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+        end
+
+        include_examples("contains trace", [:attr_trace_path, :attr_trace_cookbook], "/oryx/crake", :default, 0, { :mechanism => :'cookbook-attributes' })
+        include_examples("does not contain trace", [:attr_trace_path, :attr_trace_cookbook], "/goofin/on/elvis")
+      end
+
+      context "when loading from a role" do
+        before(:all) do
+          Chef::Config.trace_attributes = '/oryx/crake'
+          @fixtures = {
+            'node' => { 'run_list' => [ "role[alpha]" ], },
+            'roles' => { 'alpha' => AttributeTracingHelpers.canned_fixtures[:roles][:alpha] },
+          }
+          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+        end
+
+        include_examples("contains trace", [:attr_trace_path, :attr_trace_role], "/oryx/crake", :role_default, 0, { :mechanism => :role })
+        include_examples("does not contain trace", [:attr_trace_path, :attr_trace_role], "/role_default")
+
+      end
+
+      context "when loading from an environment" do
+        before(:all) do
+          Chef::Config.trace_attributes = '/oryx/crake'
+          @fixtures = {
+            'environments' => { 'pure_land' => AttributeTracingHelpers.canned_fixtures[:environments][:pure_land] },
+            'node' => { 'chef_environment' => 'pure_land', }
+          }
+          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+        end
+
+        include_examples("contains trace", [:attr_trace_path, :attr_trace_env], "/oryx/crake", :env_default, 0, { :mechanism => :environment })
+        include_examples("does not contain trace", [:attr_trace_path, :attr_trace_env], "/env_override")
+      end
+
+      context "when being set by a cookbook recipe" do
+        before(:all) do          
+          Chef::Config.trace_attributes = '/oryx/crake'
+          @fixtures = {
+            'node' => { 'run_list' => [ 'recipe[burgers]' ] },
+            'cookbooks' => { 'burgers-0.1.7' => AttributeTracingHelpers.canned_fixtures[:cookbooks]['burgers-0.1.7'] },
+          }
+          @node = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
+        end
+
+        include_examples("contains trace", [:attr_trace_path, :attr_trace_cookbook], "/oryx/crake", :normal, 0, { :mechanism => :'cookbook-recipe-compile-time' })
+        include_examples("does not contain trace", [:attr_trace_path, :attr_trace_cookbook], "/ham/cole_slaw")
+      end
+    end
   end
 
   #================================================#

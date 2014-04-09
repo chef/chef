@@ -8,7 +8,7 @@ module AttributeTracingHelpers
   FIXTURES = {
     :roles => {
       :alpha => {
-        'default_attributes' => { 'role_default' => 'role_default', },
+        'default_attributes' => { 'role_default' => 'role_default', 'oryx' => {'crake' => 'snowman'} },
         'override_attributes' => { 'role_override' => 'role_override', },                                      
       }
     },
@@ -16,7 +16,7 @@ module AttributeTracingHelpers
     :environments => {
       :pure_land => {
         'name' => 'pure_land',
-        'default_attributes' => { 'env_default' => 'env_default', },
+        'default_attributes' => { 'env_default' => 'env_default', 'oryx' => {'crake' => 'snowman'} },
         'override_attributes' => { 'env_override' => 'env_override', },        
       }
     },
@@ -49,6 +49,7 @@ default[:goofin][:on][:elvis] = 'Hey, Baby!'
 
 default[:are][:we][:having][:fun] \
   = 'Probably'
+default[:oryx][:crake] = 'snowman'
 EOT
         },
         'metadata.rb' => 'version "0.2.0"',
@@ -83,6 +84,8 @@ ruby_block 'Reload an attribute file at converge time' do
 end
 
 include_recipe('burgers::kansas')
+
+node.normal[:oryx][:crake] = 'snowman'
 
 EOT
           'kansas.rb' => <<-EOT,
