@@ -3,6 +3,7 @@
 ## Unreleased: 11.12.2
 
 * Fix the order of middlewares in HTTP::Simple (CHEF-5198).
+* Wrap code in block context when syntax checking so `return` is valid (CHEF-5199).
 
 ## Last Release: 11.12.0 (4/8/2014)
 
