@@ -24,7 +24,7 @@ describe Chef::Cookbook::SyntaxCheck do
   let(:cookbook_path) { File.join(CHEF_SPEC_DATA, 'cookbooks', 'openldap') }
   let(:syntax_check) { Chef::Cookbook::SyntaxCheck.new(cookbook_path) }
 
-  let(:open_ldap_cookbook_files) {
+  let(:open_ldap_cookbook_files) do
     %w{ attributes/default.rb 
         attributes/smokey.rb
         definitions/client.rb
@@ -32,8 +32,9 @@ describe Chef::Cookbook::SyntaxCheck do
         metadata.rb
         recipes/default.rb
         recipes/gigantor.rb
-        recipes/one.rb }.map{ |f| File.join(cookbook_path, f) }
-}
+        recipes/one.rb
+        recipes/return.rb }.map{ |f| File.join(cookbook_path, f) }
+  end
 
   before do
     Chef::Log.logger = Logger.new(StringIO.new)
@@ -41,7 +42,7 @@ describe Chef::Cookbook::SyntaxCheck do
 
     @attr_files = %w{default.rb smokey.rb}.map { |f| File.join(cookbook_path, 'attributes', f) }
     @defn_files = %w{client.rb server.rb}.map { |f| File.join(cookbook_path, 'definitions', f)}
-    @recipes = %w{default.rb gigantor.rb one.rb}.map { |f| File.join(cookbook_path, 'recipes', f) }
+    @recipes = %w{default.rb gigantor.rb one.rb return.rb}.map { |f| File.join(cookbook_path, 'recipes', f) }
     @ruby_files = @attr_files + @defn_files + @recipes + [File.join(cookbook_path, "metadata.rb")]
     basenames = %w{ helpers_via_partial_test.erb
                     helper_test.erb
