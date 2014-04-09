@@ -247,7 +247,12 @@ class Chef
         tmp_stderr = $stderr = StringIO.new
         abs_path = File.expand_path(ruby_file)
         file_content = IO.read(abs_path)
-        RubyVM::InstructionSequence.new(file_content, ruby_file, abs_path, 0)
+        # We have to wrap this in a block so the user code evaluates in a
+        # similar context as what Chef does normally. Otherwise RubyVM
+        # will reject some common idioms, like using `return` to end evaluation
+        # of a recipe. See also CHEF-5199
+        wrapped_content = "Object.new.instance_eval do\n#{file_content}\nend\n"
+        RubyVM::InstructionSequence.new(wrapped_content, ruby_file, abs_path, 0)
         true
       rescue SyntaxError
         $stderr = old_stderr
