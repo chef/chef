@@ -50,7 +50,10 @@ class Chef
       end
 
       def handle_chunk(next_chunk)
-        @stream_handlers.inject(next_chunk) do |chunk, handler|
+        # stream handlers handle responses so must be applied in reverse order
+        # (same as #apply_stream_complete_middleware or #apply_response_midddleware)
+        @stream_handlers.reverse.inject(next_chunk) do |chunk, handler|
+          Chef::Log.debug("Chef::HTTP::StreamHandler calling #{handler.class}#handle_chunk")
           handler.handle_chunk(chunk)
         end
       end
@@ -210,18 +213,21 @@ class Chef
 
     def apply_request_middleware(method, url, headers, data)
       middlewares.inject([method, url, headers, data]) do |req_data, middleware|
+        Chef::Log.debug("Chef::HTTP calling #{middleware.class}#handle_request")
         middleware.handle_request(*req_data)
       end
     end
 
     def apply_response_middleware(response, rest_request, return_value)
       middlewares.reverse.inject([response, rest_request, return_value]) do |res_data, middleware|
+        Chef::Log.debug("Chef::HTTP calling #{middleware.class}#handle_response")
         middleware.handle_response(*res_data)
       end
     end
 
     def apply_stream_complete_middleware(response, rest_request, return_value)
       middlewares.reverse.inject([response, rest_request, return_value]) do |res_data, middleware|
+        Chef::Log.debug("Chef::HTTP calling #{middleware.class}#handle_stream_complete")
         middleware.handle_stream_complete(*res_data)
       end
     end
@@ -252,14 +258,6 @@ class Chef
           return_value = response.read_body
         end
         @last_response = response
-
-        Chef::Log.debug("---- HTTP Status and Header Data: ----")
-        Chef::Log.debug("HTTP #{response.http_version} #{response.code} #{response.msg}")
-
-        response.each do |header, value|
-          Chef::Log.debug("#{header}: #{value}")
-        end
-        Chef::Log.debug("---- End HTTP Status/Header Data ----")
 
         if response.kind_of?(Net::HTTPSuccess)
           [response, request, return_value]

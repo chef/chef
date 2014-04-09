@@ -61,7 +61,16 @@ class Chef
         base_headers.each do |name, value|
           Chef::Log.debug("#{name}: #{value}")
         end
+        Chef::Log.debug("---- End HTTP Request Header Data ----")
         http_client.request(http_request) do |response|
+          Chef::Log.debug("---- HTTP Status and Header Data: ----")
+          Chef::Log.debug("HTTP #{response.http_version} #{response.code} #{response.msg}")
+
+          response.each do |header, value|
+            Chef::Log.debug("#{header}: #{value}")
+          end
+          Chef::Log.debug("---- End HTTP Status/Header Data ----")
+
           yield response if block_given?
           # http_client.request may not have the return signature we want, so
           # force the issue:
