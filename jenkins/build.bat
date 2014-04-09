@@ -24,7 +24,8 @@ IF NOT %ERRORLEVEL% == 0 (
 )
 
 rem # install omnibus cookbook and dependencies
-call berks install --path=vendor/cookbooks
+rem # Disable berks install since we don't need it anymore
+rem # call berks install --path=vendor/cookbooks
 
 rem # TEMPORARY: Temporarily disable chef-solo runs.
 rem # Can be reverted when https://github.com/opscode-cookbooks/omnibus/pull/12
