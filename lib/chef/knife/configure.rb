@@ -153,6 +153,7 @@ EOH
 
       def guess_servername
         o = Ohai::System.new
+        o.load_plugins
         o.require_plugin 'os'
         o.require_plugin 'hostname'
         o[:fqdn] || 'localhost'
