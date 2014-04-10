@@ -171,7 +171,16 @@ class Chef
                 if ! upload_set.has_key?(cookbook_name)
                   upload_set[cookbook_name] = cookbook_repo[cookbook_name]
                   if config[:depends]
-                    upload_set[cookbook_name].metadata.dependencies.each { |dep, ver| @name_args << dep }
+                    # If including dependencies, add each dependency to the upload_set
+                    upload_set[cookbook_name].metadata.dependencies.each do |dep, ver|
+                      # TODO: Should check cookbook version here?
+                      if cookbook_repo[dep]
+                        Chef::Log.debug("config[:depends] is true, found dependency #{dep} in local repository, adding upload list")
+                        @name_args << dep
+                      else
+                        Chef::Log.debug("config[:depends] is true, dependency #{dep} not found in local repository, will check the server later")
+                      end
+                    end
                   end
                 end
               rescue Exceptions::CookbookNotFoundInRepo => e
