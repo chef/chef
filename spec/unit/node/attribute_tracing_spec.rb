@@ -3,11 +3,6 @@ require 'spec/unit/node/tracing_spec_helper'
 require 'chef/node'
 require 'chef/node/attribute'
 
-# Debug
-require 'pry'
-require 'pry-debugger'
-
-
 describe "Chef::Node::Attribute Tracing" do
 
   #================================================#
