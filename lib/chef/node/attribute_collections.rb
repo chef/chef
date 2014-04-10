@@ -20,7 +20,67 @@ class Chef
   class Node
 
     module TraceableCollection
-      
+
+      # Mash and AttrArray use #convert_value to mashify values on input.
+      # We override it here to convert hash or array values to VividMash or
+      # AttrArray for consistency and to ensure that the added parts of the
+      # attribute tree will have the correct cache invalidation behavior.
+
+      def convert_value(value)
+        case value
+        when VividMash
+          value
+        when AttrArray
+          value
+        when Hash
+          VividMash.new(root, value, self, component)
+        when Mash
+          VividMash.new(root, value, self, component)
+        when Array
+          AttrArray.new(root, value, self, component)
+        else
+          value
+        end
+      end
+
+      def find_path_to_entry_ascent
+
+        # If my parent is a CNA, I'm the root.
+        if parent.kind_of?(Chef::Node::Attribute) then return '/' end
+        
+        # Otherwise, I should be a child of my parent.
+        parent_path = parent.find_path_to_entry_ascent
+        my_key = parent.keys.find {|k| parent[k].equal?(self) }
+        if parent_path && my_key
+          parent_path + (parent_path == '/' ? '' : '/') + my_key.to_s
+        else
+          nil
+        end
+      end
+
+      def find_path_to_entry_descent(needle)
+        # Needle is a VividMash, AttrArray or some leaf type, that (we beleive) 
+        # is a descendant of this collection.  Find it, and report the path to it.
+
+        # I suppose it could be me.
+        return '/' if self.equal? needle
+
+        # Can't use self.each here - self may be an AttrArray.  We added a keys() to it, tho.
+        self.keys.each do |key|
+          child = self[key]
+          # Depth first
+          if child.equal? needle
+            return '/' + key
+          elsif child.respond_to?(:find_path_to_entry_descent)
+            deeper = child.find_path_to_entry_descent(needle)
+            if deeper
+              return '/' + key + deeper
+            end
+          end          
+        end
+        return nil
+      end
+
     end
       
 
@@ -29,7 +89,7 @@ class Chef
     # "root" (Chef::Node::Attribute) object, and will trigger a cache
     # invalidation on that object when mutated.
     # * To support attribute tracing, it tracks its parent and component (for use in path finding)
-    # * To support attribute tracing, methods are added to find child elements (in attribute_tracing.rb)
+    # * To support attribute tracing, methods are added to find child elements.
     class AttrArray < Array
       include TraceableCollection
 
@@ -128,69 +188,6 @@ class Chef
         (0..self.length-1).to_a.map { |i| i.to_s }
       end
 
-      # TODO: DRY this up wrt to VividMash
-      def convert_value(value)
-        case value
-        when VividMash
-          value
-        when AttrArray
-          value
-        when Hash
-          VividMash.new(root, value, self, component)
-        when Mash
-          VividMash.new(root, value, self, component)
-        when Array
-          AttrArray.new(root, value, self, component)
-        else
-          value
-        end
-      end
-
-
-
-      # TODO: de-dupe this method w/ VividMash if possible
-      def find_path_to_entry_descent(needle)
-        # Needle is a VividMash, AttrArray or some leaf type, that (we beleive) 
-        # is a descendant of this collection.  Find it, and report the path to it.
-
-        # I suppose it could be me.
-        return '/' if self.equal? needle
-
-        self.each_with_index do |child, idx|
-          # Depth first
-          if child.equal? needle
-            return '/' + idx.to_s
-          elsif child.respond_to?(:find_path_to_entry_descent)
-            # NOTE: AttrArray does not convert its elements to VividMashes or AttrArrays during creation or mutation!
-            # So, we can't do any deeper than looking at literals in an array.....
-            # so this block is unlikely to execute.  It's here in case that bug/misfeature ever changes behavior.
-            
-            deeper = child.find_path_to_entry_descent(needle)
-            if deeper
-              return '/' + idx.to_s + deeper
-            end
-
-          end          
-        end
-        return nil
-      end
-
-      # TODO: this may never work...
-      def find_path_to_entry_ascent
-        # If my parent is a CNA, I'm the root.
-        if parent.kind_of?(Chef::Node::Attribute) then return '/' end
-        
-        # Otherwise, I should be a child of my parent.
-        parent_path = parent.find_path_to_entry_ascent
-        my_key = parent.keys.find {|k| parent[k].equal?(self) }
-        if parent_path && my_key
-          parent_path + (parent_path == '/' ? '' : '/') + my_key.to_s
-        else
-          nil
-        end
-      end
-
-
     end
 
     # == VividMash
@@ -211,6 +208,8 @@ class Chef
     # * To support attribute tracing, methods are added to find child elements
     
     class VividMash < Mash
+      include TraceableCollection
+
       attr_reader :root
       attr_reader :parent
       attr_reader :component
@@ -316,65 +315,8 @@ class Chef
         super
       end
 
-      # Mash uses #convert_value to mashify values on input.
-      # We override it here to convert hash or array values to VividMash or
-      # AttrArray for consistency and to ensure that the added parts of the
-      # attribute tree will have the correct cache invalidation behavior.
-      def convert_value(value)
-        case value
-        when VividMash
-          value
-        when AttrArray
-          value
-        when Mash
-          VividMash.new(root, value, self, component)
-        when Hash
-          VividMash.new(root, value, self, component)
-        when Array
-          AttrArray.new(root, value, self, component)
-        else
-          value
-        end
-      end
-
       def dup
         Mash.new(self)
-      end
-
-      def find_path_to_entry_descent(needle)
-        # Needle is a VividMash, AttrArray or some leaf type, that (we beleive) 
-        # is a descendant of this collection.  Find it, and report the path to it.
-
-        # I suppose it could be me.
-        return '/' if self.equal? needle
-
-        self.each do |key, child|
-          # Depth first
-          if child.equal? needle
-            return '/' + key
-          elsif child.respond_to?(:find_path_to_entry_descent)
-            deeper = child.find_path_to_entry_descent(needle)
-            if deeper
-              return '/' + key + deeper
-            end
-          end          
-        end
-        return nil
-      end
-
-      def find_path_to_entry_ascent
-
-        # If my parent is a CNA, I'm the root.
-        if parent.kind_of?(Chef::Node::Attribute) then return '/' end
-        
-        # Otherwise, I should be a child of my parent.
-        parent_path = parent.find_path_to_entry_ascent
-        my_key = parent.keys.find {|k| parent[k].equal?(self) }
-        if parent_path && my_key
-          parent_path + (parent_path == '/' ? '' : '/') + my_key.to_s
-        else
-          nil
-        end
       end
 
     end
