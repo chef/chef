@@ -1,12 +1,5 @@
-class Mash
-  def update(other_hash)
-    other_hash.each_pair { |key, value| self[key] = value }
-    self
-  end
-end
 
 class Chef
-
   class Config
     default :trace_attributes, 'none'
 
