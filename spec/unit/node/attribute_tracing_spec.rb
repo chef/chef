@@ -68,13 +68,18 @@ describe "Chef::Node::Attribute Tracing" do
     end
 
     describe "the node attribute trace object" do
-      it "should contain trace entry objects for #{path} at #{component}", :attr_trace, :attr_trace_hit, :attr_trace_objects, *tags do
+      it "should contain trace entry objects for #{path}", :attr_trace, :attr_trace_hit, :attr_trace_objects, *tags do
         expect(@node.attributes.trace_log[path]).not_to be_nil
+      end
+      entry = nil
+      it "should contain trace entry objects for #{path} at #{component} at offset #{offset}", :attr_trace, :attr_trace_hit, :attr_trace_objects, *tags do
         entries = @node.attributes.trace_log[path].find_all {|t| t.component == component}
         expect(entries).not_to be_empty
         entry = entries[offset]
         expect(entry).not_to be_nil
-        location_checks.each do |key, value|
+      end      
+      location_checks.each do |key, value|
+        it "should have source_location detail '#{key}' equal to '#{value}'" do
           expect(entry.source_location[key]).to eql value
         end
       end
