@@ -252,11 +252,12 @@ class Chef
       end
 
       def find_path_to_entry_descent(container, component=nil)
-        # Container is a VividMash or a AttrArry, of which this object is the root.
-        # Component is the precedence level - search in that VividMash, if known
         # Search for the container, and return the path and component to get to it.  
 
-        # This is really stupid.
+        # Container is a VividMash or a AttrArry, of which this object is the root.
+        # Component is the precedence level - search in that VividMash, if known
+
+        # This is really stupid, and should be replaced with something smarter.
         components = component ? [ ('@' + component).to_sym ] : COMPONENTS
         components.each do |comp|
           starter_mash = instance_variable_get(comp)
@@ -280,11 +281,13 @@ class Chef
         entry = AttributeTraceEntry.new(component, :set_unless_ignore)
         entry.value = new_value
 
-        # Path might be nil, meaning that we have a collection whose root is us, but is not yet present in one of our component VividMash.  This can happen when a hash at least two levels deep is being directly assigned and boosted to being a VividMash.  In that case, the only think we can do is go ahead and trace the change, but postpone adding it to the log for a bit.
-        # TODO: does this happen in this case?
+        # Path might be nil, meaning that we have a collection whose root is us, but is not yet present 
+        # in one of our component VividMash.  This can happen when a hash at least two levels deep is 
+        # being directly assigned and boosted to being a VividMash.  In that case, the only thing 
+        # we can do is go ahead and trace the change, but postpone adding it to the log for a bit.
         if path.nil?
           @trace_queue.push entry
-          # Nothing else we can do at this point - later pases may be able to resolve the path.
+          # Nothing else we can do at this point - later passes may be able to resolve the path.
           return
         else
           entry.path = path + (path == '/' ? '' : '/') + key.to_s
@@ -308,19 +311,20 @@ class Chef
 
         entry = AttributeTraceEntry.new(component, :set, nil, path, new_value)
 
-        # Path might be nil, meaning that we have a collection whose root is us, but is not yet present in one of our component VividMash.  This can happen when a hash at least two levels deep is being directly assigned and boosted to being a VividMash.  In that case, the only think we can do is go ahead and trace the change, but postpone adding it to the log for a bit.
+        # Path might be nil, meaning that we have a collection whose root is us, but is not yet present 
+        # in one of our component VividMash.  This can happen when a hash at least two levels deep is 
+        # being directly assigned and boosted to being a VividMash.  In that case, the only thing 
+        # we can do is go ahead and trace the change, but postpone adding it to the log for a bit.
         if path.nil?
           @trace_queue.push entry
-          # Nothing else we can do at this point - later pases may be able to resolve the path.
+          # Nothing else we can do at this point - later passes may be able to resolve the path.
           return
         end
 
         flush_queue
         add_entry_to_trace_log(entry)
       end
-
-      
-
+     
       def trace_attribute_clear(component)
         # the entire component-level Mash is about to be nuked
 

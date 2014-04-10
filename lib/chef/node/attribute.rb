@@ -350,10 +350,7 @@ class Chef
        def automatic=(new_data)
          reset
          trace_attribute_clear(:automatic)
-         # TODO - use two-stage create throughout if needed
-         @automatic = VividMash.new(self, {}, self, :automatic)
-         @automatic.update(new_data)
-         @automatic
+         @automatic = VividMash.new(self, new_data, self, :automatic)
        end
 
        def merged_attributes
