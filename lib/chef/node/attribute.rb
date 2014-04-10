@@ -225,8 +225,15 @@ class Chef
          # with hints about the provenance of the merge.  Keys should match that 
          # of a TraceLogEntry - :mechanism, :explanation, any other details 
          # specific to the merge.
-         #  You should clear this after a merge.
+         #  You should use with_tracer_hint { ... } to ensure the hint gets cleared.
          attr_accessor :tracer_hint
+
+         def with_tracer_hint (hint)
+           @tracer_hint = hint
+           yield
+           @tracer_hint = nil
+         end
+
        end
 
        # Debug what's going on with an attribute. +args+ is a path spec to the

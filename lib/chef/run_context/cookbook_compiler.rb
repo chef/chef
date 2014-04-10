@@ -178,9 +178,9 @@ class Chef
       def load_attribute_file(cookbook_name, filename)
         Chef::Log.debug("Node #{node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
         attr_file_basename = ::File.basename(filename, ".rb")
-        Chef::Node::Attribute.tracer_hint = { :cookbook_version => cookbook_collection[cookbook_name].version }
-        node.include_attribute("#{cookbook_name}::#{attr_file_basename}")
-        Chef::Node::Attribute.tracer_hint = nil
+        Chef::Node::Attribute.with_tracer_hint({ :cookbook_version => cookbook_collection[cookbook_name].version }) do
+          node.include_attribute("#{cookbook_name}::#{attr_file_basename}")
+        end
       rescue Exception => e
         @events.attribute_file_load_failed(filename, e)
         raise

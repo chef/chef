@@ -101,10 +101,10 @@ class Chef
       end
 
       def apply_role_attributes(role)
-        Chef::Node::Attribute.tracer_hint = { :role_name => role.name }
-        attributes.merge_into_component(:@role_default, role.default_attributes)
-        attributes.merge_into_component(:@role_override, role.override_attributes)
-        Chef::Node::Attribute.tracer_hint = nil
+        Chef::Node::Attribute.with_tracer_hint({ :role_name => role.name }) do
+          attributes.merge_into_component(:@role_default, role.default_attributes)
+          attributes.merge_into_component(:@role_override, role.override_attributes)
+        end
       end
 
       def applied_role?(role_name)

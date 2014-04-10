@@ -234,9 +234,9 @@ class Chef
         raise Chef::Exceptions::RecipeNotFound, "could not find #{recipe_name} files for cookbook #{name}"
       end
 
-      Chef::Node::Attribute.tracer_hint = { :cookbook_version => version }
-      recipe.from_file(recipe_filename)
-      Chef::Node::Attribute.tracer_hint = nil
+      Chef::Node::Attribute.with_tracer_hint({ :cookbook_version => version }) do 
+        recipe.from_file(recipe_filename)
+      end
       recipe
     end
 
