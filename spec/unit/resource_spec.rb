@@ -344,7 +344,8 @@ describe Chef::Resource do
       expected_keys = [ :allowed_actions, :params, :provider, :updated,
         :updated_by_last_action, :before, :supports,
         :noop, :ignore_failure, :name, :source_line,
-        :action, :retries, :retry_delay, :elapsed_time, :guard_interpreter]
+        :action, :retries, :retry_delay, :elapsed_time, 
+        :guard_interpreter, :sensitive ]
       (hash.keys - expected_keys).should == []
       (expected_keys - hash.keys).should == []
       hash[:name].should eql("funk")
@@ -778,6 +779,40 @@ describe Chef::Resource do
         @resource.notifies(:run, @notified_resource, :immediately)
         @run_context.immediate_notification_collection.should have(1).notifications
       end
+    end
+
+  end
+
+  describe "resource sensitive attribute" do
+
+    before(:each) do
+       @resource_file = Chef::Resource::File.new("/nonexistent/CHEF-5098/file", @run_context)
+       @action = :create
+    end 
+
+    def compiled_resource_data(resource, action, err)
+      error_inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(resource, action, err)
+      description = Chef::Formatters::ErrorDescription.new("test")
+      error_inspector.add_explanation(description)
+      Chef::Log.info("descrtiption: #{description.inspect},error_inspector: #{error_inspector}")
+      description.sections[1]["Compiled Resource:"]
+    end
+
+    it "set to false by default" do
+      @resource.sensitive.should be_false
+    end
+
+    it "when set to false should show compiled resource for failed resource" do
+      expect { @resource_file.run_action(@action) }.to raise_error { |err|
+            compiled_resource_data(@resource_file, @action, err).should match 'path "/nonexistent/CHEF-5098/file"'
+          }
+    end
+
+    it "when set to true should show compiled resource for failed resource" do
+      @resource_file.sensitive true
+      expect { @resource_file.run_action(@action) }.to raise_error { |err|
+            compiled_resource_data(@resource_file, @action, err).should eql("suppressed sensitive resource output")
+          }
     end
 
   end

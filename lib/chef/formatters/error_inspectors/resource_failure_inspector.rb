@@ -25,6 +25,7 @@ class Chef
         attr_reader :resource
         attr_reader :action
         attr_reader :exception
+        attr_reader :sensitive
 
         def initialize(resource, action, exception)
           @resource = resource
@@ -40,7 +41,7 @@ class Chef
           end
 
           unless dynamic_resource?
-            error_description.section("Resource Declaration:", recipe_snippet)
+            error_description.section("Resource Declaration:", sensitive ? "suppressed sensitive resource output" : recipe_snippet)
           end
 
           error_description.section("Compiled Resource:", "#{resource.to_text}")
