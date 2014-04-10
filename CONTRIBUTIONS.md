@@ -7,3 +7,4 @@ Example Contribution:
 # Chef Client Contributions:
 
 * **jaymzh**: SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
+* **linkfanel**: chef-service-manager should run as a non-interactive service (CHEF-5150)
