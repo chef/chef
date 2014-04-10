@@ -26,11 +26,13 @@ describe "Chef::Node::Attribute Tracing" do
     'deep' => { 'deeper' => 'still' },
     'bicycle' => 'ohai',
     'oryx' => { 'crake' => 'snowman' },
+    'array' => [ 'thing1', 'thing2', {'thing3' => 'value'} ],
   }
   CLI_TEST_ATTRS = {
     'foo' => 'bar',
     'bicycle' => 'command-line-json',
     'oryx' => { 'crake' => 'snowman' },
+    'array' => [ 'thing1', 'thing2', {'thing3' => 'value'} ],
   }
 
   #================================================#
@@ -168,10 +170,86 @@ describe "Chef::Node::Attribute Tracing" do
       end
     end
 
+    context "when creating an array by a single assignment operation" do
+      it "should not error", :attr_trace, :attr_trace_path_finder, :attr_trace_array do
+        expect { @cna.default[:array] = [ 'thing1', 'thing2', { 'thing3' => 'value' } ] }.not_to raise_error
+      end
+
+      it "should find the right path to node[:array] ", :attr_trace, :attr_trace_path_finder, :attr_trace_array do
+        path, comp = @cna.find_path_to_entry(@cna.default[:array])
+        expect(path).to eql '/array'
+      end
+      it "should find the right path to node[:array][0] ", :attr_trace, :attr_trace_path_finder, :attr_trace_array do
+        path, comp = @cna.find_path_to_entry(@cna.default[:array][0])
+        expect(path).to eql '/array/0'
+      end
+
+      # NOTE: if we split out the array element upgrade issue into a separate ticket, this will fail without that patch
+      it "should find the path to node[:array][2][:thing3]", :attr_trace, :attr_trace_path_finder, :attr_trace_array do
+        path, comp = @cna.find_path_to_entry(@cna.default[:array][2][:thing3])
+        expect(path).to eql '/array/2/thing3'
+      end
+    end
+
+    context "when creating an array by repeated whole-array assignment" do
+      it "should not error", :attr_trace, :attr_trace_path_finder, :attr_trace_array do
+        expect do 
+          @cna.default[:array_clobber] = [ 'thing1' ]
+          @cna.default[:array_clobber] = [ 'thing2' ]
+          @cna.default[:array_clobber] = [ { 'thing3' => 'value' } ] 
+        end.not_to raise_error
+      end
+
+      it "should find the right path to node[:array] ", :attr_trace, :attr_trace_path_finder, :attr_trace_array do
+        path, comp = @cna.find_path_to_entry(@cna.default[:array_clobber])
+        expect(path).to eql '/array_clobber'
+      end
+      it "should find the right path to node[:array][0] ", :attr_trace, :attr_trace_path_finder, :attr_trace_array do
+        path, comp = @cna.find_path_to_entry(@cna.default[:array_clobber][0])
+        expect(path).to eql '/array_clobber/0'
+      end
+
+      # Note that this array construction method REPLACES the entire array - no merge, no append
+      # So we're looking for index 0, not index 2.
+      # NOTE: if we split out the array element upgrade issue into a separate ticket, this will fail without that patch
+      it "should find the path to node[:array][0][:thing3]", :attr_trace, :attr_trace_path_finder, :attr_trace_array do
+        path, comp = @cna.find_path_to_entry(@cna.default[:array_clobber][0][:thing3])
+        expect(path).to eql '/array_clobber/0/thing3'
+      end
+
+    end
+
+    context "when creating an array by repeated append" do
+      it "should not error", :attr_trace, :attr_trace_path_finder, :attr_trace_array do
+        expect do 
+          @cna.default[:array_app] = [ 'thing1' ]
+          @cna.default[:array_app] << 'thing2'
+          @cna.default[:array_app] << { 'thing3' => 'value' }
+        end.not_to raise_error
+      end
+
+      it "should find the right path to node[:array] ", :attr_trace, :attr_trace_path_finder, :attr_trace_array do
+        path, comp = @cna.find_path_to_entry(@cna.default[:array_app])
+        expect(path).to eql '/array_app'
+      end
+      it "should find the right path to node[:array][0] ", :attr_trace, :attr_trace_path_finder, :attr_trace_array do
+        path, comp = @cna.find_path_to_entry(@cna.default[:array_app][0])
+        expect(path).to eql '/array_app/0'
+      end
+
+      # Note that this array construction method APPENDS TO the array
+      # So we're looking for index 2, not index 0.
+      # NOTE: if we split out the array element upgrade issue into a separate ticket, this will fail without that patch
+      it "should find the path to node[:array][2][:thing3]", :attr_trace, :attr_trace_path_finder, :attr_trace_array do
+        path, comp = @cna.find_path_to_entry(@cna.default[:array_app][2][:thing3])
+        expect(path).to eql '/array_app/2/thing3'
+      end
+    end
+
   end
 
   #================================================#
-  #        Tests: Tracing Mode
+  #        Tests: Tracing Off
   #================================================#
   describe "the tracing mode" do
     context "when tracing mode is none" do
@@ -254,6 +332,10 @@ describe "Chef::Node::Attribute Tracing" do
     end
 
 
+    #================================================#
+    #       Tests: Tracing Everything
+    #================================================#
+
     context "when tracing mode is all" do
 
       context "when loading from ohai" do
@@ -264,6 +346,8 @@ describe "Chef::Node::Attribute Tracing" do
         end
         include_examples "contains trace", [:attr_trace_all, :attr_trace_ohai], "/foo", :automatic, 0, { :mechanism => :ohai }
         include_examples "contains trace", [:attr_trace_all, :attr_trace_ohai], "/deep/deeper", :automatic, 0, { :mechanism => :ohai }
+        include_examples "contains trace", [:attr_trace_all, :attr_trace_ohai, :attr_trace_array], "/array/0", :automatic, 0, { :mechanism => :ohai }
+        include_examples "contains trace", [:attr_trace_all, :attr_trace_ohai, :attr_trace_array], "/array/2/thing3", :automatic, 0, { :mechanism => :ohai }
       end
 
       context "when loading from command-line json" do
@@ -294,6 +378,8 @@ describe "Chef::Node::Attribute Tracing" do
                            :explanation => 'attributes loaded from command-line using -j json', 
                            :json_file => 'dummy.json',
                          })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_cli, :attr_trace_array], "/array/0", :normal, 0, {:mechanism => :'command-line-json'})
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_cli, :attr_trace_array], "/array/2/thing3", :normal, 0, {:mechanism => :'command-line-json'})
       end
 
       context "when loading from chef-server normal node attributes" do
@@ -306,7 +392,8 @@ describe "Chef::Node::Attribute Tracing" do
                 'node_normal' => 'node_normal', 
                 'deep' => {
                   'deeper' => 'yup',
-                }
+                }, 
+                'array' => [ 'thing1', 'thing2', {'thing3' => 'value'} ],                  
               },
               'override' => { 'node_override' => 'node_override', },
             }
@@ -328,6 +415,9 @@ describe "Chef::Node::Attribute Tracing" do
                            :server => 'http://localhost:19090',
                            :node_name => 'hostname.example.org',
                          })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_node, :attr_trace_array], "/array/0", :normal, 0, { :mechanism => :'node-record' })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_node, :attr_trace_array], "/array/2/thing3", :normal, 0, { :mechanism => :'node-record' })
+
       end
 
       context "when loading from cookbook attributes" do
@@ -349,6 +439,8 @@ describe "Chef::Node::Attribute Tracing" do
                            :line => 2, 
                            :file => 'bloodsmasher/attributes/default.rb',
                          })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_cookbook, :attr_trace_array], "/array/0", :default, 0, { :mechanism => :'cookbook-attributes' })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_cookbook, :attr_trace_array], "/array/2/thing3", :default, 0, { :mechanism => :'cookbook-attributes' })
         
       end
 
@@ -385,6 +477,11 @@ describe "Chef::Node::Attribute Tracing" do
                            :explanation => "Having merged all role attributes into an 'expansion', the chef run is now importing the expansion into the node object.",
                          })        
 
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_role, :attr_trace_array], "/array/0", :role_default, 0, { :mechanism => :role })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_role, :attr_trace_array], "/array/0", :role_default, -1, { :mechanism => :'chef-client' })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_role, :attr_trace_array], "/array/2/thing3", :role_default, 0, { :mechanism => :role })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_role, :attr_trace_array], "/array/2/thing3", :role_default, -1, { :mechanism => :'chef-client' })
+
       end
 
       context "when loading from an environment" do
@@ -411,6 +508,9 @@ describe "Chef::Node::Attribute Tracing" do
                            :server => 'http://localhost:19090',
                            :environment_name => 'pure_land',
                          })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_env, :attr_trace_array], "/array/0", :env_default, 0, { :mechanism => :environment })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_env, :attr_trace_array], "/array/2/thing3", :env_default, 0, { :mechanism => :environment })
+
       end
 
       context "when being set by a cookbook recipe" do
@@ -450,10 +550,16 @@ describe "Chef::Node::Attribute Tracing" do
                            :line => 2, 
                            :file => 'burgers/recipes/kansas.rb',
                          })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_cookbook, :attr_trace_array], "/array/0", :normal, 0, { :mechanism => :'cookbook-recipe-compile-time' })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_cookbook, :attr_trace_array], "/array/2/thing3", :normal, 0, { :mechanism => :'cookbook-recipe-compile-time' })
         
       end
     end
 
+    #================================================#
+    #       Tests: Tracing a Specific Path
+    #================================================#
+    
     context "when tracing mode is an extant path /oryx/crake" do
       context "when loading from ohai" do
         before(:all) do 
@@ -605,35 +711,9 @@ describe "Chef::Node::Attribute Tracing" do
     end
   end
 
-
-  describe "different-precedence handling, same file" do
-    context "when loading from cookbook attributes" do
-      #include_examples "contains cookbook trace", "/oryx/crake", "default", "cookbook", "atwood", "default.rb", "12"
-      #include_examples "contains cookbook trace", "/oryx/crake", "override", "cookbook", "atwood", "default.rb", "13"
-    end
-
-    context "when loading from a role" do
-      #include_examples "contains role/env trace", "/oryx/crake", "default", "role", "author"
-      #include_examples "contains role/env trace", "/oryx/crake", "override", "role", "author"
-    end
-
-    context "when loading from an environment" do
-      #include_examples "contains role/env trace", "/oryx/crake", "default", "environment", "postapocalyptic"
-      #include_examples "contains role/env trace", "/oryx/crake", "override", "environment", "postapocalyptic"
-    end
-  end
-
-  describe "mixed-precedence handling, different files" do
-    #include_examples "contains cookbook trace", "/oryx/crake", "default", "cookbook", "atwood", "default.rb", "12"
-    #include_examples "contains cookbook trace", "/oryx/crake", "override", "cookbook", "another", "default.rb", "2"
-    #include_examples "contains role/env trace", "/oryx/crake", "default", "role", "author"
-    #include_examples "contains role/env trace", "/oryx/crake", "override", "role", "poet"
-    #include_examples "contains role/env trace", "/oryx/crake", "default", "environment", "postapocalyptic"
-    #include_examples "contains role/env trace", "/oryx/crake", "override", "environment", "postapocalyptic"
-  end
-
   # TODO: add actions? eg set, clear (eg override to [] or {}), append, arrayclobber, hashclobber?
   # TODO: test delete
   # TODO: consider writing low-level testing for VividMash mutators
+  # TODO: consider writing low-level testing for AttrArray mutators
 
 end

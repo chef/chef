@@ -315,7 +315,6 @@ class Chef
          reset
          trace_attribute_clear(:normal)
          @normal = VividMash.new(self, new_data, self, :normal)
-         # binding.pry
          @normal
        end
 

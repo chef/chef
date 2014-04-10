@@ -266,7 +266,6 @@ class Chef
         # This is really stupid.
         components = component ? [ ('@' + component).to_sym ] : COMPONENTS
         components.each do |comp|
-          # binding.pry
           starter_mash = instance_variable_get(comp)
           path = starter_mash.find_path_to_entry_descent(container)
           if path 

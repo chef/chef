@@ -8,7 +8,7 @@ module AttributeTracingHelpers
   FIXTURES = {
     :roles => {
       :alpha => {
-        'default_attributes' => { 'role_default' => 'role_default', 'oryx' => {'crake' => 'snowman'} },
+        'default_attributes' => { 'role_default' => 'role_default', 'oryx' => {'crake' => 'snowman'}, 'array' => ['thing1', 'thing2', {'thing3' => 'value'} ] },
         'override_attributes' => { 'role_override' => 'role_override', },                                      
       }
     },
@@ -16,7 +16,7 @@ module AttributeTracingHelpers
     :environments => {
       :pure_land => {
         'name' => 'pure_land',
-        'default_attributes' => { 'env_default' => 'env_default', 'oryx' => {'crake' => 'snowman'} },
+        'default_attributes' => { 'env_default' => 'env_default', 'oryx' => {'crake' => 'snowman'}, 'array' => ['thing1', 'thing2', {'thing3' => 'value'} ] },
         'override_attributes' => { 'env_override' => 'env_override', },        
       }
     },
@@ -50,6 +50,15 @@ default[:goofin][:on][:elvis] = 'Hey, Baby!'
 default[:are][:we][:having][:fun] \
   = 'Probably'
 default[:oryx][:crake] = 'snowman'
+default[:array] = ['thing1', 'thing2', { 'thing3' => 'value'} ]
+default[:array_set] = ['thing1']
+default[:array_set] = ['thing2']
+default[:array_set] = [ { 'thing3' => 'value'} ]
+
+default[:array_app] = ['thing1']
+default[:array_app] << 'thing2'
+default[:array_app] << { 'thing3' => 'value'}
+
 EOT
         },
         'metadata.rb' => 'version "0.2.0"',
@@ -86,6 +95,15 @@ end
 include_recipe('burgers::kansas')
 
 node.normal[:oryx][:crake] = 'snowman'
+
+node.normal[:array] = ['thing1', 'thing2', { 'thing3' => 'value'} ]
+node.normal[:array_set] = ['thing1']
+node.normal[:array_set] = ['thing2']
+node.normal[:array_set] = [ { 'thing3' => 'value'} ]
+
+node.normal[:array_app] = ['thing1']
+node.normal[:array_app] << 'thing2'
+node.normal[:array_app] << { 'thing3' => 'value'}
 
 EOT
           'kansas.rb' => <<-EOT,
