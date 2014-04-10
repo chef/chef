@@ -403,20 +403,20 @@ describe "Chef::Node::Attribute Tracing" do
 
         include_examples("contains trace", [:attr_trace_all, :attr_trace_node], "/node_normal", :normal, 0,
                          { 
-                           :mechanism => :'node-record', 
+                           :mechanism => :node, 
                            :explanation => 'setting attributes from the node record obtained from the server',
                            :server => 'http://localhost:19090',
                            :node_name => 'hostname.example.org',
                          })
         include_examples("contains trace", [:attr_trace_all, :attr_trace_node], "/deep/deeper", :normal, 0,
                          { 
-                           :mechanism => :'node-record', 
+                           :mechanism => :node, 
                            :explanation => 'setting attributes from the node record obtained from the server',
                            :server => 'http://localhost:19090',
                            :node_name => 'hostname.example.org',
                          })
-        include_examples("contains trace", [:attr_trace_all, :attr_trace_node, :attr_trace_array], "/array/0", :normal, 0, { :mechanism => :'node-record' })
-        include_examples("contains trace", [:attr_trace_all, :attr_trace_node, :attr_trace_array], "/array/2/thing3", :normal, 0, { :mechanism => :'node-record' })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_node, :attr_trace_array], "/array/0", :normal, 0, { :mechanism => :node })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_node, :attr_trace_array], "/array/2/thing3", :normal, 0, { :mechanism => :node })
 
       end
 
@@ -462,7 +462,7 @@ describe "Chef::Node::Attribute Tracing" do
                          })        
         include_examples("contains trace", [:attr_trace_all, :attr_trace_role], "/role_default", :role_default, -1,
                          { 
-                           :mechanism => :'chef-client', 
+                           :mechanism => :'chef-internal', 
                            :explanation => "Having merged all role attributes into an 'expansion', the chef run is now importing the expansion into the node object.",
                          })        
         include_examples("contains trace", [:attr_trace_all, :attr_trace_role], "/role_override", :role_override, 0,
@@ -473,14 +473,14 @@ describe "Chef::Node::Attribute Tracing" do
                           })
         include_examples("contains trace", [:attr_trace_all, :attr_trace_role], "/role_override", :role_override, -1,
                          { 
-                           :mechanism => :'chef-client', 
+                           :mechanism => :'chef-internal', 
                            :explanation => "Having merged all role attributes into an 'expansion', the chef run is now importing the expansion into the node object.",
                          })        
 
         include_examples("contains trace", [:attr_trace_all, :attr_trace_role, :attr_trace_array], "/array/0", :role_default, 0, { :mechanism => :role })
-        include_examples("contains trace", [:attr_trace_all, :attr_trace_role, :attr_trace_array], "/array/0", :role_default, -1, { :mechanism => :'chef-client' })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_role, :attr_trace_array], "/array/0", :role_default, -1, { :mechanism => :'chef-internal' })
         include_examples("contains trace", [:attr_trace_all, :attr_trace_role, :attr_trace_array], "/array/2/thing3", :role_default, 0, { :mechanism => :role })
-        include_examples("contains trace", [:attr_trace_all, :attr_trace_role, :attr_trace_array], "/array/2/thing3", :role_default, -1, { :mechanism => :'chef-client' })
+        include_examples("contains trace", [:attr_trace_all, :attr_trace_role, :attr_trace_array], "/array/2/thing3", :role_default, -1, { :mechanism => :'chef-internal' })
 
       end
 
@@ -610,7 +610,7 @@ describe "Chef::Node::Attribute Tracing" do
           (@node, @log_buffer) = AttributeTracingHelpers.chef_zero_client_run(@fixtures)
         end
 
-        include_examples("contains trace", [:attr_trace_path, :attr_trace_node], "/oryx/crake", :normal, 0, { :mechanism => :'node-record' })
+        include_examples("contains trace", [:attr_trace_path, :attr_trace_node], "/oryx/crake", :normal, 0, { :mechanism => :node })
         include_examples("does not contain trace", [:attr_trace_path, :attr_trace_node], "/deep/deeper")
       end
 

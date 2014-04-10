@@ -62,11 +62,11 @@ class Chef
 
         elsif slh_looks_like_role_expansion_merge(stack)
           # No role-specific info can remain at this point; we're just merging in the completed expansion of all roles.
-          location[:mechanism] = :'chef-client'
+          location[:mechanism] = :'chef-internal'
           location[:explanation] = "Having merged all role attributes into an 'expansion', the chef run is now importing the expansion into the node object."
 
         elsif slh_looks_like_recipe_expansion_merge(stack)
-          location[:mechanism] = :'chef-client'
+          location[:mechanism] = :'chef-internal'
           location[:explanation] = "Having expanded the runlist from the roles, the chef client is now setting the final role list and recipe list on the node object."
                     
         elsif slh_looks_like_environment_load(stack)
@@ -76,11 +76,11 @@ class Chef
           location[:server] = Chef::Config.chef_server_url
 
         elsif slh_looks_like_attribute_reset(stack)
-          location[:mechanism] = :'chef-client'
+          location[:mechanism] = :'chef-internal'
           location[:explanation] = 'client resetting default and override attributes obtained from chef server prior to run'
 
         elsif slh_looks_like_node_construction_from_http(stack)
-          location[:mechanism] = :'node-record'
+          location[:mechanism] = :node
           location[:explanation] = 'setting attributes from the node record obtained from the server'
           location[:node_name] = Chef::Config.node_name
           location[:server] = Chef::Config.chef_server_url
