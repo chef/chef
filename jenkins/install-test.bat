@@ -55,6 +55,9 @@ rmdir /S /Q C:\opscode
 rem # remove the old installer, if it exists, ignore errors
 del /F /Q %TMP%\install.msi
 
+rem # sleep until omnitruck has updated itself
+powershell -command "start-sleep %SLEEP_TIME%"
+
 rem # download the new chef installer
 rem # right now we have one build, fake the platform resulution crap
 cscript /nologo wget.vbs /url:"http://%OMNITRUCK_BASE_URL%/chef/download?p=windows&pv=2008r2&m=x86_64&v=%INSTALL_CHEF_VERSION%" /path:%TMP%\install.msi
