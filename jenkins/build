@@ -71,7 +71,8 @@ if [ "x$os" != "xAIX" ]; then
   fi
 
   # install omnibus cookbook and dependencies
-  berks install --path=vendor/cookbooks
+  # Disable berks install since we don't need it anymore
+  # berks install --path=vendor/cookbooks
 
   if [ -f "/etc/release" ] && [ -n "`cat /etc/release | grep -i solaris`" ]; then
     dna=`pwd`/jenkins/dna-solaris2.json
