@@ -72,7 +72,8 @@ class Chef
       option :depends,
         :short => "-d",
         :long => "--include-dependencies",
-        :description => "Also upload cookbook dependencies"
+        :description => "Also upload cookbook dependencies",
+        :boolean => true
 
       def run
         # Sanity check before we load anything from the server
@@ -170,7 +171,16 @@ class Chef
                 if ! upload_set.has_key?(cookbook_name)
                   upload_set[cookbook_name] = cookbook_repo[cookbook_name]
                   if config[:depends]
-                    upload_set[cookbook_name].metadata.dependencies.each { |dep, ver| @name_args << dep }
+                    # If including dependencies, add each dependency to the upload_set
+                    upload_set[cookbook_name].metadata.dependencies.each do |dep, ver|
+                      # TODO: Should check cookbook version here?
+                      if cookbook_repo[dep]
+                        Chef::Log.debug("config[:depends] is true, found dependency #{dep} in local repository, adding upload list")
+                        @name_args << dep
+                      else
+                        Chef::Log.debug("config[:depends] is true, dependency #{dep} not found in local repository, will check the server later")
+                      end
+                    end
                   end
                 end
               rescue Exceptions::CookbookNotFoundInRepo => e
@@ -238,7 +248,7 @@ WARNING
         cookbooks.each do |cb|
           ui.info("Uploading #{cb.name.to_s.ljust(justify_width + 10)} [#{cb.version}]")
           check_for_broken_links!(cb)
-          check_for_dependencies!(cb)
+          check_for_dependencies!(cb) if config[:depends]
         end
         Chef::CookbookUploader.new(cookbooks, config[:cookbook_path], :force => config[:force], :concurrency => config[:concurrency]).upload_cookbooks
       rescue Chef::Exceptions::CookbookFrozen => e

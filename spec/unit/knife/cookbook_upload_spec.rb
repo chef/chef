@@ -190,49 +190,62 @@ E
       end
     end
 
-    describe 'when specifying a cookbook name with missing dependencies' do
+    describe 'config[:depends] is true' do
       let(:cookbook_dependency) { Chef::CookbookVersion.new('dependency') }
 
       before(:each) do
+        knife.config[:depends] = true
         cookbook.metadata.depends("dependency")
+          # These are the cookbooks we are asking knife to upload now
+          # This stub returns a CookbookVersion object by name, e.g. cookbook_loader['test_cookbook']
+          cookbook_loader.stub(:[])  do |ckbk|
+            { "test_cookbook" =>  cookbook}[ckbk]
+          end
+      end
+
+      it "does not add a cookbook to the upload_set if it is not in the repository" do
+        expect(knife.cookbooks_to_upload).not_to include("dependency")
+      end
+
+      it "adds a cookbook to the upload_set if it is in the cookbook repository" do
         cookbook_loader.stub(:[])  do |ckbk|
           { "test_cookbook" =>  cookbook,
-            "dependency" => cookbook_dependency}[ckbk]
+            "dependency" => cookbook_dependency }[ckbk]
         end
-        knife.stub(:cookbook_names).and_return(["cookbook_dependency", "test_cookbook"])
-        @stdout, @stderr, @stdin = StringIO.new, StringIO.new, StringIO.new
-        knife.ui = Chef::Knife::UI.new(@stdout, @stderr, @stdin, {})
+        expect(knife.cookbooks_to_upload).to include("dependency")
       end
 
-      it 'should exit and not upload the cookbook' do
-        cookbook_loader.should_receive(:[]).once.with('test_cookbook')
-        cookbook_loader.should_not_receive(:load_cookbooks)
-        cookbook_uploader.should_not_receive(:upload_cookbooks)
-        expect {knife.run}.to raise_error(SystemExit)
-      end
-
-      it 'should output a message for a single missing dependency' do
-        expect {knife.run}.to raise_error(SystemExit)
-        @stderr.string.should include('Cookbook test_cookbook depends on cookbooks which are not currently')
-        @stderr.string.should include('being uploaded and cannot be found on the server.')
-        @stderr.string.should include("The missing cookbook(s) are: 'dependency' version '>= 0.0.0'")
-      end
-
-      it 'should output a message for a multiple missing dependencies which are concatenated' do
-        cookbook_dependency2 = Chef::CookbookVersion.new('dependency2')
-        cookbook.metadata.depends("dependency2")
-        cookbook_loader.stub(:[])  do |ckbk|
-          { "test_cookbook" =>  cookbook,
-            "dependency" => cookbook_dependency,
-            "dependency2" => cookbook_dependency2}[ckbk]
+      describe 'specifying a cookbook name with missing dependencies' do
+  
+        before(:each) do
+          @stdout, @stderr, @stdin = StringIO.new, StringIO.new, StringIO.new
+          knife.ui = Chef::Knife::UI.new(@stdout, @stderr, @stdin, {})
         end
-        knife.stub(:cookbook_names).and_return(["dependency", "dependency2", "test_cookbook"])
-        expect {knife.run}.to raise_error(SystemExit)
-        @stderr.string.should include('Cookbook test_cookbook depends on cookbooks which are not currently')
-        @stderr.string.should include('being uploaded and cannot be found on the server.')
-        @stderr.string.should include("The missing cookbook(s) are:")
-        @stderr.string.should include("'dependency' version '>= 0.0.0'")
-        @stderr.string.should include("'dependency2' version '>= 0.0.0'")
+  
+        it 'should exit and not upload the cookbook' do
+          cookbook_loader.should_receive(:[]).once.with('test_cookbook')
+          cookbook_loader.should_not_receive(:load_cookbooks)
+          cookbook_uploader.should_not_receive(:upload_cookbooks)
+          expect {knife.run}.to raise_error(SystemExit)
+        end
+  
+        it 'should output a message for a single missing dependency' do
+          expect {knife.run}.to raise_error(SystemExit)
+          @stderr.string.should include('Cookbook test_cookbook depends on cookbooks which are not currently')
+          @stderr.string.should include('being uploaded and cannot be found on the server.')
+          @stderr.string.should include("The missing cookbook(s) are: 'dependency' version '>= 0.0.0'")
+        end
+  
+        it 'should output a message for a multiple missing dependencies which are concatenated' do
+          cookbook_dependency2 = Chef::CookbookVersion.new('dependency2')
+          cookbook.metadata.depends("dependency2")
+          expect {knife.run}.to raise_error(SystemExit)
+          @stderr.string.should include('Cookbook test_cookbook depends on cookbooks which are not currently')
+          @stderr.string.should include('being uploaded and cannot be found on the server.')
+          @stderr.string.should include("The missing cookbook(s) are:")
+          @stderr.string.should include("'dependency' version '>= 0.0.0'")
+          @stderr.string.should include("'dependency2' version '>= 0.0.0'")
+        end
       end
     end
 
