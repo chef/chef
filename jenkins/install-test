@@ -98,4 +98,8 @@ if [ ! -L "/usr/bin/ohai" ]; then
   exit 1
 fi
 
-chef-client --version
+# bundle bust and make sure we invoke chef-client from the installed artifact
+unset GEM_HOME
+unset GEM_PATH
+/opt/chef/bin/chef-client --version
+
