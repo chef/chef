@@ -39,7 +39,9 @@ class Chef
         # true:: Always return true
         def action_write
           Chef::Log.send(@new_resource.level, @new_resource.message)
-          @new_resource.updated_by_last_action(true)
+          if Chef::Config[:log_level] == @new_resource.level
+            @new_resource.updated_by_last_action(true)
+          end
         end
 
       end
@@ -49,6 +51,4 @@ class Chef
   end
 
 end
-
-
 

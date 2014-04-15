@@ -77,5 +77,13 @@ describe Chef::Provider::Log::ChefLog do
       Chef::Log.should_receive(:fatal).with(@log_str).and_return(true)
       @provider.action_write
   end
+  
+  it "should not update the resource if the message wouldn't have been written to the log" do
+      @new_resource = Chef::Resource::Log.new(@log_str)
+      @new_resource.level :fatal
+      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context)
+      @provider.action_write
+      @new_resource.updated.should be_false
+  end
 
 end
