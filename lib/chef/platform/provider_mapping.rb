@@ -357,6 +357,14 @@ class Chef
                 :package => Chef::Provider::Package::Aix
               }
             },
+            :exherbo => {
+              :default => {
+                :package => Chef::Provider::Package::Paludis,
+                :service => Chef::Provider::Service::Systemd,
+                :cron => Chef::Provider::Cron,
+                :mdadm => Chef::Provider::Mdadm
+              }
+            },
             :default => {
               :file => Chef::Provider::File,
               :directory => Chef::Provider::Directory,
