@@ -114,6 +114,10 @@ class Chef::Application::Knife < Chef::Application
     :description  => "Point knife commands at local repository instead of server",
     :boolean      => true
 
+  option :chef_zero_host,
+    :long         => "--chef-zero-host HOST",
+    :description  => "Host to start chef-zero on"
+
   option :chef_zero_port,
     :long         => "--chef-zero-port PORT",
     :description  => "Port to start chef-zero on"

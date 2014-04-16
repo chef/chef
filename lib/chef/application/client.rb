@@ -211,6 +211,10 @@ class Chef::Application::Client < Chef::Application
     :description  => "Point chef-client at local repository",
     :boolean      => true
 
+  option :chef_zero_host,
+    :long         => "--chef-zero-host HOST",
+    :description  => "Host to start chef-zero on"
+
   option :chef_zero_port,
     :long         => "--chef-zero-port PORT",
     :description  => "Port to start chef-zero on"
@@ -250,6 +254,7 @@ class Chef::Application::Client < Chef::Application
     if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
       Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
     end
+    Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
     Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
     if Chef::Config[:daemonize]
