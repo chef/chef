@@ -50,6 +50,15 @@ describe 'knife common options' do
         end
       end
 
+      context 'And chef_zero.host is 0.0.0.0' do
+        before(:each) { Chef::Config.chef_zero.host = '0.0.0.0' }
+ 
+        it 'knife raw /nodes/x should retrieve the role' do
+          knife('raw /nodes/x').should_succeed /"name": "x"/
+          Chef::Config.chef_server_url.should == 'http://0.0.0.0:8889'
+        end
+      end
+
       context 'and there is a private key' do
         file 'mykey.pem', <<EOM
 -----BEGIN RSA PRIVATE KEY-----
