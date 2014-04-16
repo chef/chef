@@ -6,6 +6,8 @@
 * Quote git resource rev\_pattern to prevent glob matching files (CHEF-4940)
 * chef-service-manager now runs as a non-interactive service (CHEF-5150)
 * Fix remote\_file support for file:// URI on windows (CHEF-4472)
+* Fix OS X service provider actions that don't require the service label
+  to work when there is no plist. (CHEF-5223)
 
 ## Last Release: 11.12.0 RC1 (03/31/2014)
 * SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
