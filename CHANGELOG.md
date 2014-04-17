@@ -1,11 +1,15 @@
 # Chef Client Changelog
 
-## Unreleased: 11.12.2
+## Unreleased 11.12.4 RC0 (4/22/2014)
+* Fix OS X service provider actions that don't require the service label
+  to work when there is no plist. (CHEF-5223)
+
+## Last Release: 11.12.2 (4/9/2014)
 
 * Fix the order of middlewares in HTTP::Simple (CHEF-5198).
 * Wrap code in block context when syntax checking so `return` is valid (CHEF-5199).
 
-## Last Release: 11.12.0 (4/8/2014)
+## Release: 11.12.0 (4/8/2014)
 
 * Including a recipe from a cookbook not in the dependency graph logs
   a MissingCookbookDependency warning. Fixes CHEF-4367.
