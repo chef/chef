@@ -437,6 +437,29 @@ class Chef
         exec(cssh_cmd)
       end
 
+      def pssh_command(command)
+        pssh_cmd = nil
+        begin
+          # Unix and Mac only
+          pssh_cmd = shell_out!("which pssh").stdout.strip
+        rescue Mixlib::ShellOut::ShellCommandFailed
+        end
+        raise Chef::Exceptions::Exec, "no command found for pssh" unless pssh_cmd
+
+        pssh_cmd << " -i"
+        session.servers_for.each do |server|
+          pssh_cmd << " -H #{server.user ? "#{server.user}@#{server.host}" : server.host}"
+        end
+
+        command = fixup_sudo(command)
+        command.force_encoding('binary') if command.respond_to?(:force_encoding)
+
+        pssh_cmd << " " << command
+        puts pssh_cmd
+        Chef::Log.debug("executing pssh with command: #{pssh_cmd}")
+        exec(pssh_cmd)
+      end
+
       def get_stripped_unfrozen_value(value)
         return nil if value.nil?
         value.strip
@@ -509,6 +532,8 @@ class Chef
           Chef::Log.warn("knife ssh csshx will be deprecated in a future release")
           Chef::Log.warn("please use knife ssh cssh instead")
           cssh
+        when "pssh"
+          pssh_command(@name_args[2..-1].join(" "))
         else
           ssh_command(@name_args[1..-1].join(" "))
         end
