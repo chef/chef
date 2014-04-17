@@ -81,6 +81,43 @@ XML
         let!(:current_resource) { Chef::Resource::Service.new(service_name) }
 
         describe "#load_current_resource" do
+
+          # CHEF-5223 "you can't glob for a file that hasn't been converged
+          # onto the node yet."
+          context "when the plist doesn't exist" do
+
+            def run_resource_setup_for_action(action)
+              new_resource.action(action)
+              provider.action = action
+              provider.load_current_resource
+              provider.define_resource_requirements
+              provider.process_resource_requirements
+            end
+
+            before do
+              Dir.stub(:glob).and_return([])
+              provider.stub(:shell_out!).
+                       with(/plutil -convert xml1 -o/).
+                       and_raise(Mixlib::ShellOut::ShellCommandFailed)
+            end
+
+            it "works for action :nothing" do
+              lambda { run_resource_setup_for_action(:nothing) }.should_not raise_error
+            end
+
+            it "works for action :start" do
+              lambda { run_resource_setup_for_action(:start) }.should_not raise_error
+            end
+
+            it "errors if action is :enable" do
+              lambda { run_resource_setup_for_action(:enable) }.should raise_error(Chef::Exceptions::Service)
+            end
+
+            it "errors if action is :disable" do
+              lambda { run_resource_setup_for_action(:disable) }.should raise_error(Chef::Exceptions::Service)
+            end
+          end
+
           context "when launchctl returns pid in service list" do
             let(:launchctl_stdout) { StringIO.new <<-SVC_LIST }
   12761 - 0x100114220.old.machinit.thing
