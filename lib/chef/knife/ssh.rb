@@ -455,7 +455,6 @@ class Chef
         command.force_encoding('binary') if command.respond_to?(:force_encoding)
 
         pssh_cmd << " " << command
-        puts pssh_cmd
         Chef::Log.debug("executing pssh with command: #{pssh_cmd}")
         exec(pssh_cmd)
       end
