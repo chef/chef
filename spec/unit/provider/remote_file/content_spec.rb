@@ -159,45 +159,68 @@ describe Chef::Provider::RemoteFile::Content do
   end
 
   describe "when there is an array of sources and the first fails" do
+    # https://github.com/opscode/chef/pull/1358#issuecomment-40853299
+    def create_exception(exception_class)
+      if [ Net::HTTPServerException, Net::HTTPFatalError ].include? exception_class
+        exception_class.new("message", {"something" => 1})
+      else
+        exception_class.new
+      end
+    end
 
     let(:source) { [ "http://opscode.com/seattle.txt", "http://opscode.com/nyc.txt" ] }
-    before do
-      new_resource.stub(:checksum).and_return(nil)
-      current_resource.stub(:checksum).and_return(nil)
-      @uri0 = double("URI0")
-      @uri1 = double("URI1")
-      URI.should_receive(:parse).with(new_resource.source[0]).and_return(@uri0)
-      URI.should_receive(:parse).with(new_resource.source[1]).and_return(@uri1)
-      @http_fetcher_throws_exception = double("Chef::Provider::RemoteFile::HTTP")
-      @http_fetcher_throws_exception.should_receive(:fetch).at_least(:once).and_raise(Errno::ECONNREFUSED)
-      Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri0, new_resource, current_resource).and_return(@http_fetcher_throws_exception)
-    end
 
-    describe "when the second url succeeds" do
-      before do
-        @tempfile = double("Tempfile")
-        mtime = Time.now
-        http_fetcher_works = double("Chef::Provider::RemoteFile::HTTP", :fetch => @tempfile)
-        Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri1, new_resource, current_resource).and_return(http_fetcher_works)
-      end
+    ### Test each exception we care about and make sure they all behave properly
+    [
+      SocketError,
+      Errno::ECONNREFUSED,
+      Errno::ENOENT,
+      Errno::EACCES,
+      Timeout::Error,
+      Net::HTTPServerException,
+      Net::HTTPFatalError,
+      Net::FTPError
+    ].each do |exception|
+      describe "with an exception of #{exception}" do
+        before do
+          new_resource.stub(:checksum).and_return(nil)
+          current_resource.stub(:checksum).and_return(nil)
+          @uri0 = double("URI0")
+          @uri1 = double("URI1")
+          URI.should_receive(:parse).with(new_resource.source[0]).and_return(@uri0)
+          URI.should_receive(:parse).with(new_resource.source[1]).and_return(@uri1)
+          @http_fetcher_throws_exception = double("Chef::Provider::RemoteFile::HTTP")
+          @http_fetcher_throws_exception.should_receive(:fetch).at_least(:once).and_raise(create_exception(exception))
+          Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri0, new_resource, current_resource).and_return(@http_fetcher_throws_exception)
+        end
 
-      it "should return a valid tempfile" do
-        content.tempfile.should == @tempfile
-      end
+        describe "the second url should succeed" do
+          before do
+            @tempfile = double("Tempfile")
+            mtime = Time.now
+            http_fetcher_works = double("Chef::Provider::RemoteFile::HTTP", :fetch => @tempfile)
+            Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri1, new_resource, current_resource).and_return(http_fetcher_works)
+          end
 
-      it "should not mutate the new_resource" do
-        content.tempfile
-        new_resource.source.length.should == 2
-      end
-    end
+          it "should return a valid tempfile" do
+            content.tempfile.should == @tempfile
+          end
 
-    describe "when both urls fail" do
-      before do
-        Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri1, new_resource, current_resource).and_return(@http_fetcher_throws_exception)
-      end
+          it "should not mutate the new_resource" do
+            content.tempfile
+            new_resource.source.length.should == 2
+          end
+        end
 
-      it "should propagate the error back to the caller" do
-        lambda { content.tempfile }.should raise_error(Errno::ECONNREFUSED)
+        describe "when both urls fail" do
+          before do
+            Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri1, new_resource, current_resource).and_return(@http_fetcher_throws_exception)
+          end
+
+          it "should propagate the error back to the caller" do
+            lambda { content.tempfile }.should raise_error(exception)
+          end
+        end
       end
     end
   end
@@ -227,4 +250,3 @@ describe Chef::Provider::RemoteFile::Content do
   end
 
 end
-
