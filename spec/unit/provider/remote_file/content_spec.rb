@@ -159,6 +159,7 @@ describe Chef::Provider::RemoteFile::Content do
   end
 
   describe "when there is an array of sources and the first fails" do
+
     # https://github.com/opscode/chef/pull/1358#issuecomment-40853299
     def create_exception(exception_class)
       if [ Net::HTTPServerException, Net::HTTPFatalError ].include? exception_class
