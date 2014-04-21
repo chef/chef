@@ -61,7 +61,6 @@ class Chef
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
             end
           end
-          @children = nil
           child
         end
 
