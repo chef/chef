@@ -203,10 +203,12 @@ class Chef
 
         elsif path[0] == 'cookbooks' && path.length == 2
           if Chef::Config.versioned_cookbooks
-            # list /cookbooks/name = filter /cookbooks/name-version down to name
-            entry.children.map { |child| split_name_version(child.name) }.
-                           select { |name, version| name == path[1] }.
-                           map { |name, version| version }.to_a
+            with_entry([ 'cookbooks' ]) do |entry|
+              # list /cookbooks/name = filter /cookbooks/name-version down to name
+              entry.children.map { |child| split_name_version(child.name) }.
+                             select { |name, version| name == path[1] }.
+                             map { |name, version| version }
+            end
           else
             # list /cookbooks/name = <single version>
             version = get_single_cookbook_version(path)
