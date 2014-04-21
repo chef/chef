@@ -21,6 +21,7 @@ require 'tiny_server'
 require 'support/shared/functional/http'
 
 describe Chef::Resource::RemoteFile do
+  include ChefHTTPShared
 
   let(:file_cache_path) { Dir.mktmpdir }
 
