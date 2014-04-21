@@ -21,6 +21,8 @@ require 'tiny_server'
 require 'support/shared/functional/http'
 
 describe Chef::HTTP::Simple do
+  include ChefHTTPShared
+
   let(:http_client) { described_class.new(source) }
   let(:http_client_disable_gzip) { described_class.new(source, { :disable_gzip => true } ) }
 

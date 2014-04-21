@@ -20,136 +20,139 @@
 # shared code for Chef::REST and Chef::HTTP::Simple and other Chef::HTTP wrappers
 #
 
-def nyan_uncompressed_filename
-  File.join(CHEF_SPEC_DATA, 'remote_file', 'nyan_cat.png')
-end
-
-def nyan_compressed_filename
-  File.join(CHEF_SPEC_DATA, 'remote_file', 'nyan_cat.png.gz')
-end
-
-def binread(file)
-  content = File.open(file, "rb") do |f|
-    f.read
+module ChefHTTPShared
+  def nyan_uncompressed_filename
+    File.join(CHEF_SPEC_DATA, 'remote_file', 'nyan_cat.png')
   end
-  content.force_encoding(Encoding::BINARY) if "".respond_to?(:force_encoding)
-  content
-end
 
-def start_tiny_server(server_opts={})
-  nyan_uncompressed_size = File::Stat.new(nyan_uncompressed_filename).size
-  nyan_compressed_size   = File::Stat.new(nyan_compressed_filename).size
+  def nyan_compressed_filename
+    File.join(CHEF_SPEC_DATA, 'remote_file', 'nyan_cat.png.gz')
+  end
 
-  @server = TinyServer::Manager.new(server_opts)
-  @server.start
-  @api = TinyServer::API.instance
-  @api.clear
-
-  #
-  # trivial endpoints
-  #
-
-  # just a normal file
-  # (expected_content should be uncompressed)
-  @api.get("/nyan_cat.png", 200) {
-    File.open(nyan_uncompressed_filename, "rb") do |f|
+  def binread(file)
+    content = File.open(file, "rb") do |f|
       f.read
     end
-  }
+    content.force_encoding(Encoding::BINARY) if "".respond_to?(:force_encoding)
+    content
+  end
 
-  # this ends in .gz, we do not uncompress it and drop it on the filesystem as a .gz file (the internet often lies)
-  # (expected_content should be compressed)
-  @api.get("/nyan_cat.png.gz", 200, nil, { 'Content-Type' => 'application/gzip', 'Content-Encoding' => 'gzip' } ) {
-    File.open(nyan_compressed_filename, "rb") do |f|
-      f.read
-    end
-  }
+  def start_tiny_server(server_opts={})
+    nyan_uncompressed_size = File::Stat.new(nyan_uncompressed_filename).size
+    nyan_compressed_size   = File::Stat.new(nyan_compressed_filename).size
 
-  # this is an uncompressed file that was compressed by some mod_gzip-ish webserver thingy, so we will expand it
-  # (expected_content should be uncompressed)
-  @api.get("/nyan_cat_compressed.png", 200, nil, { 'Content-Type' => 'application/gzip', 'Content-Encoding' => 'gzip' } ) {
-    File.open(nyan_compressed_filename, "rb") do |f|
-      f.read
-    end
-  }
+    @server = TinyServer::Manager.new(server_opts)
+    @server.start
+    @api = TinyServer::API.instance
+    @api.clear
 
-  #
-  # endpoints that set Content-Length correctly
-  #
+    #
+    # trivial endpoints
+    #
 
-  # (expected_content should be uncompressed)
-  @api.get("/nyan_cat_content_length.png", 200, nil,
-    {
-      'Content-Length'   => nyan_uncompressed_size.to_s,
+    # just a normal file
+    # (expected_content should be uncompressed)
+    @api.get("/nyan_cat.png", 200) {
+      File.open(nyan_uncompressed_filename, "rb") do |f|
+        f.read
+      end
     }
-  ) {
-    File.open(nyan_uncompressed_filename, "rb") do |f|
-      f.read
-    end
-  }
 
-  # (expected_content should be uncompressed)
-  @api.get("/nyan_cat_content_length_compressed.png", 200, nil,
-    {
-      'Content-Length'   => nyan_compressed_size.to_s,
-      'Content-Type'     => 'application/gzip',
-      'Content-Encoding' => 'gzip'
+    # this ends in .gz, we do not uncompress it and drop it on the filesystem as a .gz file (the internet often lies)
+    # (expected_content should be compressed)
+    @api.get("/nyan_cat.png.gz", 200, nil, { 'Content-Type' => 'application/gzip', 'Content-Encoding' => 'gzip' } ) {
+      File.open(nyan_compressed_filename, "rb") do |f|
+        f.read
+      end
     }
-  ) {
-    File.open(nyan_compressed_filename, "rb") do |f|
-      f.read
-    end
-  }
 
-  #
-  # endpoints that simulate truncated downloads (bad content-length header)
-  #
-
-  # (expected_content should be uncompressed)
-  @api.get("/nyan_cat_truncated.png", 200, nil,
-    {
-      'Content-Length'   => (nyan_uncompressed_size + 1).to_s,
+    # this is an uncompressed file that was compressed by some mod_gzip-ish webserver thingy, so we will expand it
+    # (expected_content should be uncompressed)
+    @api.get("/nyan_cat_compressed.png", 200, nil, { 'Content-Type' => 'application/gzip', 'Content-Encoding' => 'gzip' } ) {
+      File.open(nyan_compressed_filename, "rb") do |f|
+        f.read
+      end
     }
-  ) {
-    File.open(nyan_uncompressed_filename, "rb") do |f|
-      f.read
-    end
-  }
 
-  # (expected_content should be uncompressed)
-  @api.get("/nyan_cat_truncated_compressed.png", 200, nil,
-    {
-      'Content-Length'   => (nyan_compressed_size + 1).to_s,
-      'Content-Type'     => 'application/gzip',
-      'Content-Encoding' => 'gzip'
+    #
+    # endpoints that set Content-Length correctly
+    #
+
+    # (expected_content should be uncompressed)
+    @api.get("/nyan_cat_content_length.png", 200, nil,
+      {
+        'Content-Length'   => nyan_uncompressed_size.to_s,
+      }
+    ) {
+      File.open(nyan_uncompressed_filename, "rb") do |f|
+        f.read
+      end
     }
-  ) {
-    File.open(nyan_compressed_filename, "rb") do |f|
-      f.read
-    end
-  }
 
-  #
-  # in the presense of a transfer-encoding header, we must ignore the content-length (this bad content-length should work)
-  #
-
-  # (expected_content should be uncompressed)
-  @api.get("/nyan_cat_transfer_encoding.png", 200, nil,
-    {
-      'Content-Length'    => (nyan_uncompressed_size + 1).to_s,
-      'Transfer-Encoding' => 'anything',
+    # (expected_content should be uncompressed)
+    @api.get("/nyan_cat_content_length_compressed.png", 200, nil,
+      {
+        'Content-Length'   => nyan_compressed_size.to_s,
+        'Content-Type'     => 'application/gzip',
+        'Content-Encoding' => 'gzip'
+      }
+    ) {
+      File.open(nyan_compressed_filename, "rb") do |f|
+        f.read
+      end
     }
-  ) {
-    File.open(nyan_uncompressed_filename, "rb") do |f|
-      f.read
-    end
-  }
 
-end
+    #
+    # endpoints that simulate truncated downloads (bad content-length header)
+    #
 
-def stop_tiny_server
-  @server.stop
-  @server = @api = nil
+    # (expected_content should be uncompressed)
+    @api.get("/nyan_cat_truncated.png", 200, nil,
+      {
+        'Content-Length'   => (nyan_uncompressed_size + 1).to_s,
+      }
+    ) {
+      File.open(nyan_uncompressed_filename, "rb") do |f|
+        f.read
+      end
+    }
+
+    # (expected_content should be uncompressed)
+    @api.get("/nyan_cat_truncated_compressed.png", 200, nil,
+      {
+        'Content-Length'   => (nyan_compressed_size + 1).to_s,
+        'Content-Type'     => 'application/gzip',
+        'Content-Encoding' => 'gzip'
+      }
+    ) {
+      File.open(nyan_compressed_filename, "rb") do |f|
+        f.read
+      end
+    }
+
+    #
+    # in the presense of a transfer-encoding header, we must ignore the content-length (this bad content-length should work)
+    #
+
+    # (expected_content should be uncompressed)
+    @api.get("/nyan_cat_transfer_encoding.png", 200, nil,
+      {
+        'Content-Length'    => (nyan_uncompressed_size + 1).to_s,
+        'Transfer-Encoding' => 'anything',
+      }
+    ) {
+      File.open(nyan_uncompressed_filename, "rb") do |f|
+        f.read
+      end
+    }
+
+  end
+
+  def stop_tiny_server
+    @server.stop
+    @server = @api = nil
+  end
+
 end
 
 shared_examples_for "downloading all the things" do

@@ -21,6 +21,8 @@ require 'tiny_server'
 require 'support/shared/functional/http'
 
 describe Chef::REST do
+  include ChefHTTPShared
+
   let(:http_client) { described_class.new(source) }
   let(:http_client_disable_gzip) { described_class.new(source, Chef::Config[:node_name], Chef::Config[:client_key], { :disable_gzip => true } ) }
 
