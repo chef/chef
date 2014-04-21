@@ -18,8 +18,9 @@
 
 require 'chef/chef_fs/file_system/base_fs_dir'
 require 'chef/chef_fs/file_system/rest_list_dir'
-require 'chef/chef_fs/file_system/not_found_error'
+require 'chef/chef_fs/file_system/already_exists_error'
 require 'chef/chef_fs/file_system/must_delete_recursively_error'
+require 'chef/chef_fs/file_system/not_found_error'
 require 'chef/chef_fs/path_utils'
 require 'fileutils'
 
@@ -48,12 +49,16 @@ class Chef
 
         def create_child(child_name, file_contents=nil)
           child = make_child(child_name)
+          if child.exists?
+            raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
+          end
           if file_contents
             child.write(file_contents)
           else
             begin
               Dir.mkdir(child.file_path)
             rescue Errno::EEXIST
+              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
             end
           end
           @children = nil
@@ -73,6 +78,10 @@ class Chef
           else
             File.delete(file_path)
           end
+        end
+
+        def exists?
+          File.exists?(file_path)
         end
 
         def read

@@ -43,7 +43,11 @@ class Chef
           @memory_store.create_dir(path, name, *options)
         else
           with_dir(path) do |parent|
-            parent.create_child(chef_fs_filename(path + [name]), nil)
+            begin
+              parent.create_child(chef_fs_filename(path + [name]), nil)
+            rescue Chef::ChefFS::FileSystem::AlreadyExistsError => e
+              raise ChefZero::DataStore::DataAlreadyExistsError.new(to_zero_path(e.entry), e)
+            end
           end
         end
       end
@@ -61,7 +65,11 @@ class Chef
           end
 
           with_dir(path) do |parent|
-            parent.create_child(chef_fs_filename(path + [name]), data)
+            begin
+              parent.create_child(chef_fs_filename(path + [name]), data)
+            rescue Chef::ChefFS::FileSystem::AlreadyExistsError => e
+              raise ChefZero::DataStore::DataAlreadyExistsError.new(to_zero_path(e.entry), e)
+            end
           end
         end
       end
@@ -82,7 +90,13 @@ class Chef
           with_entry(path) do |entry|
             if path[0] == 'cookbooks' && path.length == 3
               # get /cookbooks/NAME/version
-              result = entry.chef_object.to_hash
+              result = nil
+              begin
+                result = entry.chef_object.to_hash
+              rescue Chef::ChefFS::FileSystem::NotFoundError => e
+                raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
+              end
+
               result.each_pair do |key, value|
                 if value.is_a?(Array)
                   value.each do |file|
@@ -102,7 +116,11 @@ class Chef
               JSON.pretty_generate(result)
 
             else
-              entry.read
+              begin
+                entry.read
+              rescue Chef::ChefFS::FileSystem::NotFoundError => e
+                raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
+              end
             end
           end
         end
@@ -121,7 +139,12 @@ class Chef
             write_cookbook(path, data, *options)
           else
             with_dir(path[0..-2]) do |parent|
-              parent.create_child(chef_fs_filename(path), data)
+              child = parent.child(chef_fs_filename(path))
+              if child.exists?
+                child.write(data)
+              else
+                parent.create_child(chef_fs_filename(path), data)
+              end
             end
           end
         end
@@ -132,10 +155,14 @@ class Chef
           @memory_store.delete(path)
         else
           with_entry(path) do |entry|
-            if path[0] == 'cookbooks' && path.length >= 3
-              entry.delete(true)
-            else
-              entry.delete(false)
+            begin
+              if path[0] == 'cookbooks' && path.length >= 3
+                entry.delete(true)
+              else
+                entry.delete(false)
+              end
+            rescue Chef::ChefFS::FileSystem::NotFoundError => e
+              raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
             end
           end
         end
@@ -146,7 +173,11 @@ class Chef
           @memory_store.delete_dir(path, *options)
         else
           with_entry(path) do |entry|
-            entry.delete(options.include?(:recursive))
+            begin
+              entry.delete(options.include?(:recursive))
+            rescue Chef::ChefFS::FileSystem::NotFoundError => e
+              raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
+            end
           end
         end
       end
@@ -186,12 +217,12 @@ class Chef
           with_entry(path) do |entry|
             begin
               entry.children.map { |c| zero_filename(c) }.sort
-            rescue Chef::ChefFS::FileSystem::NotFoundError
+            rescue Chef::ChefFS::FileSystem::NotFoundError => e
               # /cookbooks, /data, etc. never return 404
               if path_always_exists?(path)
                 []
               else
-                raise
+                raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
               end
             end
           end
