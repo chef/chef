@@ -46,7 +46,7 @@ class Chef
             loader.load_cookbooks
             return loader.cookbook_version
           rescue
-            Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{$!}")
+            Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{$!}\n#{$!.backtrace.join("\n")}")
           end
           nil
         end
