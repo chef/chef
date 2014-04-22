@@ -66,6 +66,8 @@ class Chef
           if is_dir
             # Only the given directories will be uploaded.
             return CookbookDir::COOKBOOK_SEGMENT_INFO.keys.include?(name.to_sym) && name != 'root_files'
+          elsif name == Chef::Cookbook::CookbookVersionLoader::UPLOADED_COOKBOOK_VERSION_FILE
+            return false
           end
           super(name, is_dir)
         end
@@ -79,6 +81,12 @@ class Chef
 
         def canonical_cookbook_name(entry_name)
           self.class.canonical_cookbook_name(entry_name)
+        end
+
+        def write_uploaded_cookbook_version(data)
+          File.open("#{file_path}/#{Chef::Cookbook::CookbookVersionLoader::UPLOADED_COOKBOOK_VERSION_FILE}", 'w') do |file|
+            file.write(data)
+          end
         end
 
         protected

@@ -279,11 +279,13 @@ class Chef
           end
         end
 
-        cookbook_fs.add_file("#{cookbook_path}/.uploaded-cookbook-version.json", data)
-
         # Use the copy/diff algorithm to copy it down so we don't destroy
         # chefignored data.  This is terribly un-thread-safe.
         Chef::ChefFS::FileSystem.copy_to(Chef::ChefFS::FilePattern.new("/#{cookbook_path}"), cookbook_fs, chef_fs, nil, {:purge => true})
+
+        # Create the .uploaded-cookbook-version.json
+        cookbook_entry = Chef::ChefFS::FileSystem.resolve_path(chef_fs, cookbook_path)
+        cookbook_entry.write_uploaded_cookbook_version(data)
       end
 
       def split_name_version(entry_name)

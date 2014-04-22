@@ -58,8 +58,8 @@ class Chef
         load_root_files
 
         remove_ignored_files
-        if File.exists?(File.join(@cookbook_path, ".uploaded-cookbook-version.json"))
-          @uploaded_cookbook_version_file = File.join(@cookbook_path, ".uploaded-cookbook-version.json")
+        if File.exists?(File.join(@cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE))
+          @uploaded_cookbook_version_file = File.join(@cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE)
         end
 
         if File.exists?(File.join(@cookbook_path, "metadata.rb"))
@@ -71,7 +71,7 @@ class Chef
         end
 
         # Set frozen based on .uploaded-cookbook-version.json
-        if File.exists?(@uploaded_cookbook_version_file)
+        if @uploaded_cookbook_version_file && File.exists?(@uploaded_cookbook_version_file)
           begin
             data = Chef::JSONCompat.from_json(IO.read(@uploaded_cookbook_version_file), :create_additions => false)
             @frozen = data['frozen?']
@@ -144,7 +144,7 @@ class Chef
       def load_root_files
         Dir.glob(File.join(@cookbook_path, '*'), File::FNM_DOTMATCH).each do |file|
           next if File.directory?(file)
-          next if File.basename(file) == '.uploaded-cookbook-version.json'
+          next if File.basename(file) == UPLOADED_COOKBOOK_VERSION_FILE
           @cookbook_settings[:root_filenames][file[@relative_path, 1]] = file
         end
       end
