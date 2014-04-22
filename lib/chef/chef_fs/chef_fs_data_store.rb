@@ -382,8 +382,10 @@ class Chef
       end
 
       def with_dir(path)
+        # Do not automatically create data bags
+        create = !(path[0] == 'data' && path.size >= 2)
         begin
-          yield get_dir(_to_chef_fs_path(path), true)
+          yield get_dir(_to_chef_fs_path(path), create)
         rescue Chef::ChefFS::FileSystem::NotFoundError => e
           raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
         end
