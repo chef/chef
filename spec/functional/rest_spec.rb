@@ -30,7 +30,7 @@ describe Chef::REST do
     it "successfully downloads a streaming request" do
       tempfile = http_client.streaming_request(source, {})
       tempfile.close
-      Digest::MD5.hexdigest(binread(tempfile.path)).should == Digest::MD5.hexdigest(expected_content)
+      expect(Digest::MD5.hexdigest(binread(tempfile.path))).to eq(Digest::MD5.hexdigest(expected_content))
     end
   end
 
@@ -50,7 +50,7 @@ describe Chef::REST do
     it "fails with a Net::HTTPServerException" do
       tempfile = http_client.streaming_request(source, {})
       tempfile.close
-      Digest::MD5.hexdigest(binread(tempfile.path)).should == Digest::MD5.hexdigest(expected_content)
+      expect(Digest::MD5.hexdigest(binread(tempfile.path))).to eq(Digest::MD5.hexdigest(expected_content))
       expect { http_client.streaming_request(source2, {}) }.to raise_error(Net::HTTPServerException)
     end
   end
