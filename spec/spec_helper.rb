@@ -82,6 +82,7 @@ require 'spec/support/platform_helpers'
 # Do not change the gsub.
 Dir["spec/support/**/*.rb"].
   reject { |f| f =~ %r{^spec/support/platforms} }.
+  reject { |f| f =~ %r{^spec/support/pedant} }.
   map { |f| f.gsub(%r{.rb$}, '') }.
   map { |f| f.gsub(%r[spec/], '')}.
   each { |f| require f }
