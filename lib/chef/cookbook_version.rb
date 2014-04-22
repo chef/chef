@@ -613,24 +613,44 @@ class Chef
           path = nil
           specificity = "default"
 
-          if segment == :root_files
-            matcher = segment_file.match(".+/#{Regexp.escape(name.to_s)}/(.+)")
-            file_name = matcher[1]
-            path = file_name
-          elsif segment == :templates || segment == :files
-            matcher = segment_file.match("/#{Regexp.escape(name.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+?)/(.+))")
-            unless matcher
-              Chef::Log.debug("Skipping file #{segment_file}, as it isn't in any of the proper directories (platform-version, platform or default)")
-              Chef::Log.debug("You probably need to move #{segment_file} into the 'default' sub-directory")
-              next
+          # Try the accurate method first: get the file path relative to root_dir.
+          # This happens to also support cookbook name != directory name.
+          if root_dir
+            pathname = Pathname.new(segment_file).relative_path_from(Pathname.new(root_dir))
+            # If the path is actually under root_dir ...
+            if pathname.each_filename.first != '..'
+              file_name = pathname.basename
+              if segment == :templates || segment == :files
+                specificity = pathname.each_filename.to_a[1]
+              else
+                specificity = 'default'
+              end
+              path = pathname.to_s
             end
-            path = matcher[1]
-            specificity = matcher[2]
-            file_name = matcher[3]
-          else
-            matcher = segment_file.match("/#{Regexp.escape(name.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+))")
-            path = matcher[1]
-            file_name = matcher[2]
+          end
+
+          # If we failed to calculate the path, use the older method with regexes and cookbook name.
+          # Unclear why this calculation exists, but for backcompat (until Chef 12)...
+          if !path
+            if segment == :root_files
+              matcher = segment_file.match(".+/#{Regexp.escape(name.to_s)}/(.+)")
+              file_name = matcher[1]
+              path = file_name
+            elsif segment == :templates || segment == :files
+              matcher = segment_file.match("/#{Regexp.escape(name.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+?)/(.+))")
+              unless matcher
+                Chef::Log.debug("Skipping file #{segment_file}, as it isn't in any of the proper directories (platform-version, platform or default)")
+                Chef::Log.debug("You probably need to move #{segment_file} into the 'default' sub-directory")
+                next
+              end
+              path = matcher[1]
+              specificity = matcher[2]
+              file_name = matcher[3]
+            else
+              matcher = segment_file.match("/#{Regexp.escape(name.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+))")
+              path = matcher[1]
+              file_name = matcher[2]
+            end
           end
 
           csum = self.class.checksum_cookbook_file(segment_file)
@@ -638,9 +658,9 @@ class Chef
           rs = Mash.new({
             :name => file_name,
             :path => path,
-            :checksum => csum
+            :checksum => csum,
+            :specificity => specificity
           })
-          rs[:specificity] = specificity
 
           manifest[segment] << rs
         end
