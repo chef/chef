@@ -203,12 +203,16 @@ class Chef
 
         elsif path[0] == 'cookbooks' && path.length == 2
           if Chef::Config.versioned_cookbooks
-            with_entry([ 'cookbooks' ]) do |entry|
+            result = with_entry([ 'cookbooks' ]) do |entry|
               # list /cookbooks/name = filter /cookbooks/name-version down to name
               entry.children.map { |child| split_name_version(child.name) }.
                              select { |name, version| name == path[1] }.
                              map { |name, version| version }
             end
+            if result == []
+              raise ChefZero::DataStore::DataNotFoundError.new(path)
+            end
+            result
           else
             # list /cookbooks/name = <single version>
             version = get_single_cookbook_version(path)
