@@ -146,6 +146,15 @@ module ChefHTTPShared
       end
     }
 
+    #
+    # 403 with a Content-Length
+    #
+    @api.get('/forbidden', 403, 'Forbidden',
+      {
+        'Content-Length' => 'Forbidden'.bytesize.to_s
+      }
+    )
+
   end
 
   def stop_tiny_server
@@ -214,6 +223,20 @@ shared_examples_for "downloading all the things" do
     let(:expected_content) { binread(nyan_uncompressed_filename) }
 
     it_behaves_like "downloads requests correctly"
+  end
+
+  describe "when downloading an endpoint that 403s" do
+    let(:source) { 'http://localhost:9000/forbidden' }
+
+    it_behaves_like "an endpoint that 403s"
+  end
+
+  describe "when downloading an endpoint that 403s" do
+    let(:source) { 'http://localhost:9000/nyan_cat_content_length_compressed.png' }
+    let(:expected_content) { binread(nyan_uncompressed_filename) }
+    let(:source2) { 'http://localhost:9000/forbidden' }
+
+    it_behaves_like "a 403 after a successful request when reusing the request object"
   end
 end
 

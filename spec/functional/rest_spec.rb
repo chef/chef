@@ -40,6 +40,21 @@ describe Chef::REST do
     end
   end
 
+  shared_examples_for "an endpoint that 403s" do
+    it "fails with a Net::HTTPServerException" do
+      expect { http_client.streaming_request(source, {}) }.to raise_error(Net::HTTPServerException)
+    end
+  end
+
+  shared_examples_for "a 403 after a successful request when reusing the request object" do
+    it "fails with a Net::HTTPServerException" do
+      tempfile = http_client.streaming_request(source, {})
+      tempfile.close
+      Digest::MD5.hexdigest(binread(tempfile.path)).should == Digest::MD5.hexdigest(expected_content)
+      expect { http_client.streaming_request(source2, {}) }.to raise_error(Net::HTTPServerException)
+    end
+  end
+
   before do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     Chef::Config[:client_key] = CHEF_SPEC_DATA + "/ssl/private_key.pem"

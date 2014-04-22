@@ -54,6 +54,30 @@ describe Chef::HTTP::Simple do
     end
   end
 
+  shared_examples_for "an endpoint that 403s" do
+    it "fails with a Net::HTTPServerException for a streaming request" do
+      expect { http_client.streaming_request(source) }.to raise_error(Net::HTTPServerException)
+    end
+
+    it "fails with a Net::HTTPServerException for a GET request" do
+      expect { http_client.get(source) }.to raise_error(Net::HTTPServerException)
+    end
+  end
+
+  shared_examples_for "a 403 after a successful request when reusing the request object" do
+    it "fails with a Net::HTTPServerException for a streaming request" do
+      tempfile = http_client.streaming_request(source)
+      tempfile.close
+      Digest::MD5.hexdigest(binread(tempfile.path)).should == Digest::MD5.hexdigest(expected_content)
+      expect { http_client.streaming_request(source2) }.to raise_error(Net::HTTPServerException)
+    end
+
+    it "fails with a Net::HTTPServerException for a GET request" do
+      Digest::MD5.hexdigest(http_client.get(source)).should == Digest::MD5.hexdigest(expected_content)
+      expect { http_client.get(source2) }.to raise_error(Net::HTTPServerException)
+    end
+  end
+
   it_behaves_like "downloading all the things"
 end
 
