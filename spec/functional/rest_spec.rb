@@ -30,13 +30,50 @@ describe Chef::REST do
     it "successfully downloads a streaming request" do
       tempfile = http_client.streaming_request(source, {})
       tempfile.close
-      Digest::MD5.hexdigest(binread(tempfile.path)).should == Digest::MD5.hexdigest(expected_content)
+      expect(Digest::MD5.hexdigest(binread(tempfile.path))).to eq(Digest::MD5.hexdigest(expected_content))
+    end
+
+    it "successfully downloads a GET request" do
+      tempfile = http_client.get(source, {})
+      tempfile.close
+      expect(Digest::MD5.hexdigest(binread(tempfile.path))).to eq(Digest::MD5.hexdigest(expected_content))
     end
   end
 
   shared_examples_for "validates content length and throws an exception" do
     it "fails validation on a streaming download" do
       expect { http_client.streaming_request(source, {}) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
+    end
+
+    it "fails validation on a GET request" do
+      expect { http_client.get(source, {}) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
+    end
+  end
+
+  shared_examples_for "an endpoint that 403s" do
+    it "fails with a Net::HTTPServerException on a streaming download" do
+      expect { http_client.streaming_request(source, {}) }.to raise_error(Net::HTTPServerException)
+    end
+
+    it "fails with a Net::HTTPServerException on a GET request" do
+      expect { http_client.get(source, {}) }.to raise_error(Net::HTTPServerException)
+    end
+  end
+
+  # see CHEF-5100
+  shared_examples_for "a 403 after a successful request when reusing the request object" do
+    it "fails with a Net::HTTPServerException on a streaming download" do
+      tempfile = http_client.streaming_request(source, {})
+      tempfile.close
+      expect(Digest::MD5.hexdigest(binread(tempfile.path))).to eq(Digest::MD5.hexdigest(expected_content))
+      expect { http_client.streaming_request(source2, {}) }.to raise_error(Net::HTTPServerException)
+    end
+
+    it "fails with a Net::HTTPServerException on a GET request" do
+      tempfile = http_client.get(source, {})
+      tempfile.close
+      expect(Digest::MD5.hexdigest(binread(tempfile.path))).to eq(Digest::MD5.hexdigest(expected_content))
+      expect { http_client.get(source2, {}) }.to raise_error(Net::HTTPServerException)
     end
   end
 
