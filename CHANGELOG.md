@@ -3,7 +3,9 @@
 ## Unreleased 11.12.4 RC0 (4/22/2014)
 * Fix OS X service provider actions that don't require the service label
   to work when there is no plist. (CHEF-5223)
-
+* CHEF-5211: 'knife configure --initial' fails to load 'os' and 'hostname'
+  ohai plugins properly
+  
 ## Last Release: 11.12.2 (4/9/2014)
 
 * Fix the order of middlewares in HTTP::Simple (CHEF-5198).
