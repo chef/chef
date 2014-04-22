@@ -19,7 +19,7 @@ matrix:
     - rvm: 2.1.0
     - rvm: 2.1.0
       gemfile: pedant.gemfile
-      script: bundle exec pedant
+      script: bundle exec rake pedant
 
 branches:
   only:
