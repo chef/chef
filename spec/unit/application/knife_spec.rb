@@ -36,6 +36,7 @@ describe Chef::Application::Knife do
   before(:each) do
     @knife = Chef::Application::Knife.new
     @knife.stub(:puts)
+    @knife.stub(:trap)
     Chef::Knife.stub(:list_commands)
   end
 

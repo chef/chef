@@ -24,6 +24,7 @@ describe Chef::Application do
     ARGV.clear
     Chef::Log.logger = Logger.new(StringIO.new)
     @app = Chef::Application.new
+    @app.stub(:trap)
     Dir.stub(:chdir).and_return(0)
     @app.stub(:reconfigure)
     Chef::Log.init(STDERR)

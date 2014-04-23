@@ -19,10 +19,13 @@ require 'spec_helper'
 
 describe Chef::Application::Client, "reconfigure" do
   before do
+    Kernel.stub(:trap).and_return(:ok)
+
     @original_argv = ARGV.dup
     ARGV.clear
 
     @app = Chef::Application::Client.new
+    @app.stub(:trap)
     @app.stub(:configure_opt_parser).and_return(true)
     @app.stub(:configure_chef).and_return(true)
     @app.stub(:configure_logging).and_return(true)
