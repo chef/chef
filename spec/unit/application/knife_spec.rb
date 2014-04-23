@@ -34,6 +34,9 @@ describe Chef::Application::Knife do
   end
 
   before(:each) do
+    # Prevent code from getting loaded on every test invocation.
+    Chef::Knife.stub(:load_commands)
+
     @knife = Chef::Application::Knife.new
     @knife.stub(:puts)
     @knife.stub(:trap)
