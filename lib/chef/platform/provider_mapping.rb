@@ -235,6 +235,14 @@ class Chef
               :mdadm => Chef::Provider::Mdadm
             }
           },
+          :exherbo   => {
+            :default => {
+              :package => Chef::Provider::Package::Paludis,
+              :service => Chef::Provider::Service::Systemd,
+              :cron => Chef::Provider::Cron,
+              :mdadm => Chef::Provider::Mdadm
+            }
+          },
           :mswin => {
             :default => {
               :env =>  Chef::Provider::Env::Windows,
