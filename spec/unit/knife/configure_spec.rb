@@ -28,6 +28,7 @@ describe Chef::Knife::Configure do
   let(:ohai) do
     o = {}
     o.stub(:require_plugin)
+    o.stub(:load_plugins)
     o[:fqdn] = fqdn
     o
   end

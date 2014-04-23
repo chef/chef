@@ -192,6 +192,14 @@ Normally Chef would require a major version bump for this change but since the o
 
 If you need to differentiate between OpenSUSE and SUSE in your cookbooks, please make sure the differentiation logic is updated to use the new :platform attribute values rather than the :platform_version in your cookbooks before upgrading to this version.
 
+#### CHEF-5223 OS X Service provider regression.
+
+This commit: https://github.com/opscode/chef/commit/024b1e3e4de523d3c1ebbb42883a2bef3f9f415c
+introduced a requirement that a service have a plist file for any
+action, but a service that is being created will not have a plist file
+yet. Chef now only requires that a service have a plist for the enable
+and disable actions.
+
 #### Signal Regression Fix
 
 CHEF-1761 introduced a regression for signal handling when not in daemon mode

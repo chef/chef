@@ -1,6 +1,6 @@
-#rc
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010-2011 Opscode, Inc.
+#
+# Author:: Bryan McLellan <btm@loftninjas.org>
+# Copyright:: Copyright (c) 2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,10 +14,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-class Chef
-  CHEF_ROOT = File.dirname(File.expand_path(File.dirname(__FILE__)))
-  VERSION = '11.12.4.rc.0'
+require 'spec_helper'
+
+require 'chef/knife/configure'
+require 'ohai'
+
+describe "knife configure" do
+  let (:ohai) do
+    o = Ohai::System.new
+    o.load_plugins
+    o.require_plugin 'os'
+    o.require_plugin 'hostname'
+    o
+  end
+
+  it "loads the fqdn from Ohai" do
+    knife_configure = Chef::Knife::Configure.new
+    expect(knife_configure.guess_servername).to eql(ohai[:fqdn])
+  end
 end
-
-# NOTE: the Chef::Version class is defined in version_class.rb
