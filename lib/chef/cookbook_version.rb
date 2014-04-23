@@ -617,11 +617,23 @@ class Chef
           # This happens to also support cookbook name != directory name.
           if root_dir
             pathname = Pathname.new(segment_file).relative_path_from(Pathname.new(root_dir))
+
+            # This insane dance brought to you by Ruby 1.8.7.
+            # Rather do specificity = pathname.each_filename.to_a?  Me too.
+            i = 0
+            parts = []
+            pathname.each_filename do |part|
+              parts << part
+              break if i == 1
+              i += 1
+            end
+
             # If the path is actually under root_dir ...
-            if pathname.each_filename.first != '..'
+            if parts[0] != '..'
+              # Grab the file name and specificity
               file_name = pathname.basename
               if segment == :templates || segment == :files
-                specificity = pathname.each_filename.to_a[1]
+                specificity = parts[1]
               else
                 specificity = 'default'
               end
