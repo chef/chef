@@ -21,7 +21,9 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Knife::CookbookSiteInstall do
   before(:each) do
     require 'chef/knife/core/cookbook_scm_repo'
+    @stdout = StringIO.new
     @knife = Chef::Knife::CookbookSiteInstall.new
+    @knife.ui.stub(:stdout).and_return(@stdout)
     @knife.config = {}
     if Chef::Platform.windows?
       @install_path = 'C:/tmp/chef'
