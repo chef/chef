@@ -52,7 +52,7 @@ describe Chef::Knife::CookbookSiteInstall do
     end
 
     #Stubs for CookbookSCMRepo
-    @repo = stub(:sanity_check => true, :reset_to_default_state => true,
+    @repo = double(:sanity_check => true, :reset_to_default_state => true,
                  :prepare_to_import => true, :finalize_updates_to => true,
                  :merge_updates_from => true)
     Chef::Knife::CookbookSCMRepo.stub(:new).and_return(@repo)

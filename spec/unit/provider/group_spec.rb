@@ -97,7 +97,7 @@ describe Chef::Provider::User do
     end
 
     it "should coerce an integer to a string for comparison" do
-      @current_resource.stub!(:gid).and_return("500")
+      @current_resource.stub(:gid).and_return("500")
       @provider.compare_group.should be_false
     end
 

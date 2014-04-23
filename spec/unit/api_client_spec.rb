@@ -197,11 +197,11 @@ describe Chef::ApiClient do
     end
 
     it "preserves the admin status" do
-      @client.admin.should be_a_kind_of(Chef::TrueClass)
+      @client.admin.should be_a_kind_of(TrueClass)
     end
 
     it "preserves the 'validator' status" do
-      @client.validator.should be_a_kind_of(Chef::TrueClass)
+      @client.validator.should be_a_kind_of(TrueClass)
     end
 
     it "includes the private key if present" do

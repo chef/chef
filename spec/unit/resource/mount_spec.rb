@@ -182,7 +182,6 @@ describe Chef::Resource::Mount do
 
     it "describes its state" do
       state = @resource.state
-      puts state
       state[:mount_point].should == "T:"
       state[:username].should == "Administrator"
       state[:password].should == "Jetstream123!"

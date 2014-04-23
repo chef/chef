@@ -41,8 +41,8 @@ describe Chef::Provider::Ohai do
         :newdata => "somevalue"
       }
     }
-    mock_ohai.stub!(:all_plugins).and_return(true)
-    mock_ohai.stub!(:data).and_return(mock_ohai[:data],
+    mock_ohai.stub(:all_plugins).and_return(true)
+    mock_ohai.stub(:data).and_return(mock_ohai[:data],
                                       mock_ohai[:data2])
     Ohai::System.stub(:new).and_return(mock_ohai)
     Chef::Platform.stub(:find_platform_and_version).and_return({ "platform" => @platform,
