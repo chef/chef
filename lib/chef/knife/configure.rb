@@ -156,7 +156,7 @@ EOH
         o.load_plugins
         o.require_plugin 'os'
         o.require_plugin 'hostname'
-        o[:fqdn] || 'localhost'
+        o[:fqdn] || o[:machinename] || o[:hostname] || 'localhost'
       end
 
       def config_file
