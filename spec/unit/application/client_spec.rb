@@ -134,6 +134,8 @@ describe Chef::Application::Client, "run_application", :unix_only do
     Chef::Config[:daemonize] = true
     @pipe = IO.pipe
     @app = Chef::Application::Client.new
+    # Default logger doesn't work correctly when logging from a trap handler.
+    @app.configure_logging
     Chef::Daemon.stub(:daemonize).and_return(true)
     @app.stub(:run_chef_client) do
       @pipe[1].puts 'started'
