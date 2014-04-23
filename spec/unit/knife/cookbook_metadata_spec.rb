@@ -51,9 +51,9 @@ describe Chef::Knife::CookbookMetadata do
     describe 'with -a or --all' do
       before(:each) do
         @knife.config[:all] = true
-        @foo = Chef::CookbookVersion.new('foo')
+        @foo = Chef::CookbookVersion.new('foo', '/tmp/blah')
         @foo.version = '1.0.0'
-        @bar = Chef::CookbookVersion.new('bar')
+        @bar = Chef::CookbookVersion.new('bar', '/tmp/blah')
         @bar.version = '2.0.0'
         @cookbook_loader = {
           "foo" => @foo,

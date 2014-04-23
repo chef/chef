@@ -44,12 +44,17 @@ class Chef
             end
 
             loader.load_cookbooks
-            return loader.cookbook_version
+            cb = loader.cookbook_version
+            if !cb
+              Chef::Log.error("Cookbook #{file_path} empty.")
+              raise "Cookbook #{file_path} empty."
+            end
+            cb
           rescue => e
             Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{e}")
             Chef::Log.error(e.backtrace.join("\n"))
+            raise
           end
-          nil
         end
 
         def children

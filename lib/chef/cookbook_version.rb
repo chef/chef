@@ -44,7 +44,7 @@ class Chef
 
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
 
-    attr_accessor :root_dir
+    attr_accessor :root_paths
     attr_accessor :definition_filenames
     attr_accessor :template_filenames
     attr_accessor :file_filenames
@@ -68,6 +68,11 @@ class Chef
     attr_reader :recipe_filenames_by_name
     attr_reader :attribute_filenames_by_short_filename
 
+    # The first root path is the primary cookbook dir, from which metadata is loaded
+    def root_dir
+      root_paths[0]
+    end
+
     # This is the one and only method that knows how cookbook files'
     # checksums are generated.
     def self.checksum_cookbook_file(filepath)
@@ -85,8 +90,9 @@ class Chef
     #
     # === Returns
     # object<Chef::CookbookVersion>:: Duh. :)
-    def initialize(name)
+    def initialize(name, *root_paths)
       @name = name
+      @root_paths = root_paths
       @frozen = false
       @attribute_filenames = Array.new
       @definition_filenames = Array.new
@@ -98,7 +104,6 @@ class Chef
       @resource_filenames = Array.new
       @provider_filenames = Array.new
       @metadata_filenames = Array.new
-      @root_dir = nil
       @root_filenames = Array.new
       @status = :ready
       @manifest = nil
@@ -483,11 +488,11 @@ class Chef
     end
 
     def metadata_json_file
-      File.join(root_dir, "metadata.json")
+      File.join(root_paths[0], "metadata.json")
     end
 
     def metadata_rb_file
-      File.join(root_dir, "metadata.rb")
+      File.join(root_paths[0], "metadata.rb")
     end
 
     def reload_metadata!
@@ -607,56 +612,17 @@ class Chef
       })
       checksums_to_on_disk_paths = {}
 
+      if !root_paths || root_paths.size == 0
+        Chef::Log.error("Cookbook #{name} does not have root_paths! Cannot generate manifest.")
+        raise "Cookbook #{name} does not have root_paths! Cannot generate manifest."
+      end
+
       COOKBOOK_SEGMENTS.each do |segment|
         segment_filenames(segment).each do |segment_file|
           next if File.directory?(segment_file)
 
-          file_name = nil
-          path = nil
-          specificity = "default"
-
-          # Try the accurate method first: get the file path relative to root_dir.
-          # This happens to also support cookbook name != directory name.
-          if root_dir
-            pathname = Pathname.new(segment_file).relative_path_from(Pathname.new(root_dir))
-            part_1, part_2 = pathname.each_filename.first(2)
-
-            # If the path is actually under root_dir ...
-            if part_1 != '..'
-              # Grab the file name and specificity
-              file_name = part_1
-              if segment == :templates || segment == :files
-                specificity = part_2
-              else
-                specificity = 'default'
-              end
-              path = pathname.to_s
-            end
-          end
-
-          # If we failed to calculate the path, use the older method with regexes and cookbook name.
-          # Unclear why this calculation exists, but for backcompat (until Chef 12)...
-          if !path
-            if segment == :root_files
-              matcher = segment_file.match(".+/#{Regexp.escape(name.to_s)}/(.+)")
-              file_name = matcher[1]
-              path = file_name
-            elsif segment == :templates || segment == :files
-              matcher = segment_file.match("/#{Regexp.escape(name.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+?)/(.+))")
-              unless matcher
-                Chef::Log.debug("Skipping file #{segment_file}, as it isn't in any of the proper directories (platform-version, platform or default)")
-                Chef::Log.debug("You probably need to move #{segment_file} into the 'default' sub-directory")
-                next
-              end
-              path = matcher[1]
-              specificity = matcher[2]
-              file_name = matcher[3]
-            else
-              matcher = segment_file.match("/#{Regexp.escape(name.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+))")
-              path = matcher[1]
-              file_name = matcher[2]
-            end
-          end
+          path, specificity = parse_segment_file_from_root_paths(segment, segment_file)
+          file_name = File.basename(path)
 
           csum = self.class.checksum_cookbook_file(segment_file)
           checksums_to_on_disk_paths[csum] = segment_file
@@ -679,6 +645,23 @@ class Chef
       @checksums = checksums_to_on_disk_paths
       @manifest = manifest
       @manifest_records_by_path = extract_manifest_records_by_path(manifest)
+    end
+
+    def parse_segment_file_from_root_paths(segment, segment_file)
+      root_paths.each do |root_path|
+        pathname = Pathname.new(segment_file).relative_path_from(Pathname.new(root_path))
+
+        parts = pathname.each_filename.take(2)
+        # Check if path is actually under root_path
+        next if parts[0] == '..'
+        if segment == :templates || segment == :files
+          return [ pathname.to_s, parts[1] ]
+        else
+          return [ pathname.to_s, 'default' ]
+        end
+      end
+      Chef::Log.error("Cookbook file #{segment_file} not under cookbook root paths #{root_paths.inspect}.")
+      raise "Cookbook file #{segment_file} not under cookbook root paths #{root_paths.inspect}."
     end
 
     def file_vendor

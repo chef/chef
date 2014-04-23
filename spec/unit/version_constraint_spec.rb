@@ -76,7 +76,7 @@ describe Chef::VersionConstraint do
         @vc.should include Chef::Version.new("1.4")
       end
       it "Chef::CookbookVersion" do
-        cv = Chef::CookbookVersion.new("alice")
+        cv = Chef::CookbookVersion.new("alice", '/tmp/blah.txt')
         cv.version = "1.4"
         @vc.should include cv
       end
