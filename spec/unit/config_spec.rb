@@ -284,14 +284,12 @@ describe Chef::Config do
   describe "Chef::Config[:user_home]" do
     it "should set when HOME is provided" do
       ENV['HOME'] = "/home/kitten"
-      load File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "lib", "chef", "config.rb"))
       Chef::Config[:user_home].should == "/home/kitten"
     end
 
     it "should be set when only USERPROFILE is provided" do
       ENV['HOME'], ENV['SYSTEMDRIVE'],  ENV['HOMEPATH'] = nil, nil, nil
       ENV['USERPROFILE'] = "/users/kitten"
-      load File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "lib", "chef", "config.rb"))
       Chef::Config[:user_home].should == "/users/kitten"
     end
 
@@ -310,10 +308,6 @@ describe Chef::Config do
 
     before do
       File.stub(:exist?).with(db_secret_default_path).and_return(secret_exists)
-      # ugh...the only way to properly test this since the conditional
-      # is evaluated at file load/require time.
-      $LOADED_FEATURES.delete_if{|f| f =~ /chef\/config\.rb/}
-      require 'chef/config'
     end
 
     context "#{db_secret_default_path} exists" do
