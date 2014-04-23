@@ -45,6 +45,13 @@ describe Chef::RunContext do
 
   describe "loading cookbooks for a run list" do
     before do
+
+      # Each invocation reloads LWRPs, which triggers constant redefinition
+      # warnings. In real usage this isn't an issue because of fork mode.
+      if Chef::Provider.const_defined?(:TestProvider)
+        Chef::Provider.send(:remove_const, :TestProvider)
+      end
+
       @node.run_list << "test" << "test::one" << "test::two"
       @node.should_receive(:loaded_recipe).with(:test, "default")
       @node.should_receive(:loaded_recipe).with(:test, "one")
