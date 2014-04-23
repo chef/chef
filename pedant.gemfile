@@ -1,0 +1,23 @@
+source "https://rubygems.org"
+gemspec :name => "chef"
+
+gem 'rest-client', :github => 'opscode/rest-client'
+gem 'chef-pedant', :github => 'opscode/chef-pedant', :ref => '4744d7f318b629ff60a0d22cf02296df36936397'
+gem 'chef-zero', :github => 'opscode/chef-zero', :ref => 'c0c95d690e1bb7c17c2d141b4937a36c2072d800'
+# TODO figure out how to grab this stuff from the main Gemfile
+gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
+
+group(:docgen) do
+  gem "yard"
+end
+
+group(:development, :test) do
+  gem "simplecov"
+  gem 'rack', "~> 1.5.1"
+
+  gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
+end
+
+# If you want to load debugging tools into the bundle exec sandbox,
+# add these additional dependencies into chef/Gemfile.local
+eval(IO.read(__FILE__ + '.local'), binding) if File.exists?(__FILE__ + '.local')

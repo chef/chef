@@ -188,6 +188,7 @@ EOM
   when_the_repository 'is empty' do
     context 'POST /TYPE/NAME' do
       file 'empty.json', { 'name' => 'z' }
+      file 'empty_x.json', { 'name' => 'x' }
       file 'empty_id.json', { 'id' => 'z' }
       file 'rolestuff.json', '{"description":"hi there","name":"x"}'
       file 'cookbooks_to_upload/z/metadata.rb', "version '1.0.0'"
@@ -211,6 +212,7 @@ EOM
       end
 
       it 'knife raw -z -i empty.json -m POST /data/x' do
+        knife("raw -z -i #{path_to('empty_x.json')} -m POST /data").should_succeed /uri/
         knife("raw -z -i #{path_to('empty_id.json')} -m POST /data/x").should_succeed /"z"/
         knife('list --local -Rfp /data_bags').should_succeed "/data_bags/x/\n/data_bags/x/z.json\n"
       end

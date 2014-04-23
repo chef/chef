@@ -11,11 +11,15 @@ before_install:
   - gem update --system 2.1.11
   - gem --version
 
-rvm:
-  - 1.8.7
-  - 1.9.3
-  - 2.0.0
-  - 2.1.0
+matrix:
+  include:
+    - rvm: 1.8.7
+    - rvm: 1.9.3
+    - rvm: 2.0.0
+    - rvm: 2.1.0
+    - rvm: 2.1.0
+      gemfile: pedant.gemfile
+      script: bundle exec rake pedant
 
 branches:
   only:

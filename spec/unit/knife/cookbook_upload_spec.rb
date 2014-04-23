@@ -23,7 +23,7 @@ require 'chef/cookbook_uploader'
 require 'timeout'
 
 describe Chef::Knife::CookbookUpload do
-  let(:cookbook) { Chef::CookbookVersion.new('test_cookbook') }
+  let(:cookbook) { Chef::CookbookVersion.new('test_cookbook', '/tmp/blah.txt') }
 
   let(:cookbooks_by_name) do
     {cookbook.name => cookbook}
@@ -39,7 +39,7 @@ describe Chef::Knife::CookbookUpload do
   let(:cookbook_uploader) { double(:upload_cookbooks => nil) }
 
   let(:output) { StringIO.new }
-  
+
   let(:name_args) { ['test_cookbook'] }
 
   let(:knife) do
@@ -58,7 +58,7 @@ describe Chef::Knife::CookbookUpload do
     it 'should upload cookbooks with predefined concurrency' do
       Chef::CookbookVersion.stub(:list_all_versions).and_return({})
       knife.config[:concurrency] = 3
-      test_cookbook = Chef::CookbookVersion.new('test_cookbook')
+      test_cookbook = Chef::CookbookVersion.new('test_cookbook', '/tmp/blah')
       cookbook_loader.stub(:each).and_yield("test_cookbook", test_cookbook)
       cookbook_loader.stub(:cookbook_names).and_return(["test_cookbook"])
       Chef::CookbookUploader.should_receive(:new).with( kind_of(Array),  kind_of(Array),
@@ -131,9 +131,9 @@ E
 
       let(:cookbooks_by_name) do
         {
-          'test_cookbook1' => Chef::CookbookVersion.new('test_cookbook1'),
-          'test_cookbook2' => Chef::CookbookVersion.new('test_cookbook2'),
-          'test_cookbook3' => Chef::CookbookVersion.new('test_cookbook3')
+          'test_cookbook1' => Chef::CookbookVersion.new('test_cookbook1', '/tmp/blah'),
+          'test_cookbook2' => Chef::CookbookVersion.new('test_cookbook2', '/tmp/blah'),
+          'test_cookbook3' => Chef::CookbookVersion.new('test_cookbook3', '/tmp/blah')
         }
       end
 
@@ -163,7 +163,7 @@ E
           "test_cookbook3" => test_cookbook3 }
       end
 
-      let(:test_cookbook1) { Chef::CookbookVersion.new('test_cookbook1') }
+      let(:test_cookbook1) { Chef::CookbookVersion.new('test_cookbook1', '/tmp/blah') }
 
       let(:test_cookbook2) do
         c = Chef::CookbookVersion.new('test_cookbook2')
@@ -191,7 +191,7 @@ E
     end
 
     describe 'when specifying a cookbook name with missing dependencies' do
-      let(:cookbook_dependency) { Chef::CookbookVersion.new('dependency') }
+      let(:cookbook_dependency) { Chef::CookbookVersion.new('dependency', '/tmp/blah') }
 
       before(:each) do
         cookbook.metadata.depends("dependency")
@@ -245,8 +245,8 @@ E
     describe 'with -a or --all' do
       before(:each) do
         knife.config[:all] = true
-        @test_cookbook1 = Chef::CookbookVersion.new('test_cookbook1')
-        @test_cookbook2 = Chef::CookbookVersion.new('test_cookbook2')
+        @test_cookbook1 = Chef::CookbookVersion.new('test_cookbook1', '/tmp/blah')
+        @test_cookbook2 = Chef::CookbookVersion.new('test_cookbook2', '/tmp/blah')
         cookbook_loader.stub(:each).and_yield("test_cookbook1", @test_cookbook1).and_yield("test_cookbook2", @test_cookbook2)
         cookbook_loader.stub(:cookbook_names).and_return(["test_cookbook1", "test_cookbook2"])
       end
