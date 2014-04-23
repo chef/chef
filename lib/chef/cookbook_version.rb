@@ -26,6 +26,8 @@ require 'chef/recipe'
 require 'chef/cookbook/file_vendor'
 require 'chef/cookbook/metadata'
 require 'chef/version_class'
+require 'pathname'
+require 'chef/monkey_patches/pathname'
 
 class Chef
 
@@ -617,23 +619,14 @@ class Chef
           # This happens to also support cookbook name != directory name.
           if root_dir
             pathname = Pathname.new(segment_file).relative_path_from(Pathname.new(root_dir))
-
-            # This insane dance brought to you by Ruby 1.8.7.
-            # Rather do specificity = pathname.each_filename.to_a?  Me too.
-            i = 0
-            parts = []
-            pathname.each_filename do |part|
-              parts << part
-              break if i == 1
-              i += 1
-            end
+            part_1, part_2 = pathname.each_filename.first(2)
 
             # If the path is actually under root_dir ...
-            if parts[0] != '..'
+            if part_1 != '..'
               # Grab the file name and specificity
-              file_name = pathname.basename
+              file_name = part_1
               if segment == :templates || segment == :files
-                specificity = parts[1]
+                specificity = part_2
               else
                 specificity = 'default'
               end

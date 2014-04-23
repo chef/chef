@@ -17,7 +17,7 @@ class Chef
                                       :resource_filenames,
                                       :provider_filenames]
 
-      UPLOADED_COOKBOOK_VERSION_FILE = ".uploaded-cookbook-version.json"
+      UPLOADED_COOKBOOK_VERSION_FILE = ".uploaded-cookbook-version.json".freeze
 
       attr_reader :cookbook_name
       attr_reader :cookbook_settings
