@@ -29,6 +29,9 @@ describe Chef::Knife do
     Chef::Log.logger = Logger.new(StringIO.new)
 
     Chef::Config[:node_name]  = "webmonkey.example.com"
+
+    # Prevent gratuitous code reloading:
+    Chef::Knife.stub(:load_commands)
     @knife = Chef::Knife.new
     @knife.ui.stub(:puts)
     @knife.ui.stub(:print)
