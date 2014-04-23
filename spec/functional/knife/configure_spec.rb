@@ -32,6 +32,7 @@ describe "knife configure" do
 
   it "loads the fqdn from Ohai" do
     knife_configure = Chef::Knife::Configure.new
-    expect(knife_configure.guess_servername).to eql(ohai[:fqdn])
+    hostname_guess = ohai[:fqdn] || ohai[:machinename] || ohai[:hostname] || 'localhost'
+    expect(knife_configure.guess_servername).to eql(hostname_guess)
   end
 end
