@@ -76,7 +76,7 @@ class Chef
             data = Chef::JSONCompat.from_json(IO.read(@uploaded_cookbook_version_file), :create_additions => false)
             @frozen = data['frozen?']
           rescue JSON::ParserError
-            Chef::Log.error("Couldn't parse cookbook metadata JSON for #@cookbook_name in " + file)
+            Chef::Log.error("Couldn't parse cookbook metadata JSON for #@cookbook_name in #{uploaded_cookbook_version_file}")
             raise
           end
         end

@@ -23,7 +23,7 @@ require 'chef/chef_fs/file_pattern'
 require 'chef/chef_fs/file_system'
 require 'chef/chef_fs/file_system/not_found_error'
 require 'chef/chef_fs/file_system/memory_root'
-
+require 'fileutils'
 class Chef
   module ChefFS
     class ChefFSDataStore
@@ -209,7 +209,7 @@ class Chef
                              select { |name, version| name == path[1] }.
                              map { |name, version| version }
             end
-            if result == []
+            if result.empty?
               raise ChefZero::DataStore::DataNotFoundError.new(path)
             end
             result
@@ -260,12 +260,13 @@ class Chef
       end
 
       def write_cookbook(path, data, *options)
-        # Create a little Chef::ChefFS memory filesystem with the data
         if Chef::Config.versioned_cookbooks
-          cookbook_path = "cookbooks/#{path[1]}-#{path[2]}"
+          cookbook_path = File.join('cookbooks', "#{path[1]}-#{path[2]}")
         else
-          cookbook_path = "cookbooks/#{path[1]}"
+          cookbook_path = File.join('cookbooks', path[1])
         end
+
+        # Create a little Chef::ChefFS memory filesystem with the data
         cookbook_fs = Chef::ChefFS::FileSystem::MemoryRoot.new('uploading')
         cookbook = JSON.parse(data, :create_additions => false)
         cookbook.each_pair do |key, value|
@@ -273,19 +274,22 @@ class Chef
             value.each do |file|
               if file.is_a?(Hash) && file.has_key?('checksum')
                 file_data = @memory_store.get(['file_store', 'checksums', file['checksum']])
-                cookbook_fs.add_file("#{cookbook_path}/#{file['path']}", file_data)
+                cookbook_fs.add_file(File.join(cookbook_path, file['path']), file_data)
               end
             end
           end
         end
 
-        # Use the copy/diff algorithm to copy it down so we don't destroy
-        # chefignored data.  This is terribly un-thread-safe.
-        Chef::ChefFS::FileSystem.copy_to(Chef::ChefFS::FilePattern.new("/#{cookbook_path}"), cookbook_fs, chef_fs, nil, {:purge => true})
-
         # Create the .uploaded-cookbook-version.json
-        cookbook_entry = Chef::ChefFS::FileSystem.resolve_path(chef_fs, cookbook_path)
-        cookbook_entry.write_uploaded_cookbook_version(data)
+        cookbooks = chef_fs.child('cookbooks')
+        if !cookbooks.exists?
+          cookbooks = chef_fs.create_child('cookbooks')
+        end
+        # We are calling a cookbooks-specific API, so get multiplexed_dirs out of the way if it is there
+        if cookbooks.respond_to?(:multiplexed_dirs)
+          cookbooks = cookbooks.write_dir
+        end
+        cookbooks.write_cookbook(cookbook_path, data, cookbook_fs)
       end
 
       def split_name_version(entry_name)

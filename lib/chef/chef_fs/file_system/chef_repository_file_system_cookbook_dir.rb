@@ -45,8 +45,9 @@ class Chef
 
             loader.load_cookbooks
             return loader.cookbook_version
-          rescue
-            Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{$!}\n#{$!.backtrace.join("\n")}")
+          rescue => e
+            Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{e}")
+            Chef::Log.error(e.backtrace.join("\n"))
           end
           nil
         end
@@ -83,10 +84,12 @@ class Chef
           self.class.canonical_cookbook_name(entry_name)
         end
 
-        def write_uploaded_cookbook_version(data)
-          File.open("#{file_path}/#{Chef::Cookbook::CookbookVersionLoader::UPLOADED_COOKBOOK_VERSION_FILE}", 'w') do |file|
-            file.write(data)
-          end
+        def uploaded_cookbook_version_path
+          File.join(file_path, Chef::Cookbook::CookbookVersionLoader::UPLOADED_COOKBOOK_VERSION_FILE)
+        end
+
+        def can_upload?
+          File.exists?(uploaded_cookbook_version_path) || children.size > 0
         end
 
         protected
