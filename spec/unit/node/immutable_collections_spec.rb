@@ -76,7 +76,7 @@ describe Chef::Node::ImmutableMash do
     end
 
     it 'should allow mutation' do
-      lambda { @copy['m'] = 'm' }.should_not raise_error(Chef::Exceptions::ImmutableAttributeModification)
+      lambda { @copy['m'] = 'm' }.should_not raise_error
     end
 
   end
@@ -97,7 +97,7 @@ describe Chef::Node::ImmutableMash do
     :shift
   ].each do |mutator|
     it "doesn't allow mutation via `#{mutator}'" do
-      lambda { @immutable_mash.send(mutator) }.should raise_error(Chef::Exceptions::ImmutableAttributeModification)
+      lambda { @immutable_mash.send(mutator) }.should raise_error
     end
   end
 
@@ -154,7 +154,7 @@ describe Chef::Node::ImmutableArray do
     :unshift
   ].each do |mutator|
     it "does not allow mutation via `#{mutator}" do
-      lambda { @immutable_array.send(mutator)}.should raise_error(Chef::Exceptions::ImmutableAttributeModification)
+      lambda { @immutable_array.send(mutator)}.should raise_error
     end
   end
 
@@ -190,7 +190,7 @@ describe Chef::Node::ImmutableArray do
     end
 
     it 'should allow mutation' do
-      lambda { @copy << 'm' }.should_not raise_error(Chef::Exceptions::ImmutableAttributeModification)
+      lambda { @copy << 'm' }.should_not raise_error
     end
   end
 

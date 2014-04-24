@@ -23,6 +23,12 @@ Chef::Knife::UserCreate.load_deps
 describe Chef::Knife::UserCreate do
   before(:each) do
     @knife = Chef::Knife::UserCreate.new
+
+    @stdout = StringIO.new
+    @stderr = StringIO.new
+    @knife.ui.stub(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stderr).and_return(@stderr)
+
     @knife.name_args = [ 'a_user' ]
     @knife.config[:user_password] = "foobar"
     @user = Chef::User.new
@@ -34,10 +40,6 @@ describe Chef::Knife::UserCreate do
     Chef::User.stub(:new).and_return(@user)
     Chef::User.stub(:from_hash).and_return(@user)
     @knife.stub(:edit_data).and_return(@user.to_hash)
-    @stdout = StringIO.new
-    @stderr = StringIO.new
-    @knife.ui.stub(:stdout).and_return(@stdout)
-    @knife.ui.stub(:stderr).and_return(@stderr)
   end
 
   it "creates a new user" do

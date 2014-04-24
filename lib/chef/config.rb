@@ -489,17 +489,21 @@ class Chef
       default :hints, {}
     end
 
-    # Those lists of regular expressions define what chef considers a
-    # valid user and group name
-    if RUBY_PLATFORM =~ /mswin|mingw|windows/
+    def self.set_defaults_for_windows
+      # Those lists of regular expressions define what chef considers a
+      # valid user and group name
       # From http://technet.microsoft.com/en-us/library/cc776019(WS.10).aspx
-
       principal_valid_regex_part = '[^"\/\\\\\[\]\:;|=,+*?<>]+'
       default :user_valid_regex, [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
       default :group_valid_regex, [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
 
       default :fatal_windows_admin_check, false
-    else
+    end
+
+    def self.set_defaults_for_nix
+      # Those lists of regular expressions define what chef considers a
+      # valid user and group name
+      #
       # user/group cannot start with '-', '+' or '~'
       # user/group cannot contain ':', ',' or non-space-whitespace or null byte
       # everything else is allowed (UTF-8, spaces, etc) and we delegate to your O/S useradd program to barf or not
@@ -508,9 +512,17 @@ class Chef
       default :group_valid_regex, [ /^[^-+~:,\t\r\n\f\0]+[^:,\t\r\n\f\0]*$/ ]
     end
 
+    # Those lists of regular expressions define what chef considers a
+    # valid user and group name
+    if on_windows?
+      set_defaults_for_windows
+    else
+      set_defaults_for_nix
+    end
+
     # returns a platform specific path to the user home dir
     windows_home_path = ENV['SYSTEMDRIVE'] + ENV['HOMEPATH'] if ENV['SYSTEMDRIVE'] && ENV['HOMEPATH']
-    default :user_home, (ENV['HOME'] || windows_home_path || ENV['USERPROFILE'])
+    default( :user_home ) { ENV['HOME'] || windows_home_path || ENV['USERPROFILE'] }
 
     # Enable file permission fixup for selinux. Fixup will be done
     # only if selinux is enabled in the system.

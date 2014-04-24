@@ -35,6 +35,26 @@ class Chef::Application
 
     @chef_client = nil
     @chef_client_json = nil
+
+    # Always switch to a readable directory. Keeps subsequent Dir.chdir() {}
+    # from failing due to permissions when launched as a less privileged user.
+  end
+
+  # Reconfigure the application. You'll want to override and super this method.
+  def reconfigure
+    configure_chef
+    configure_logging
+  end
+
+  # Get this party started
+  def run
+    setup_signal_handlers
+    reconfigure
+    setup_application
+    run_application
+  end
+
+  def setup_signal_handlers
     trap("INT") do
       Chef::Application.fatal!("SIGINT received, stopping", 2)
     end
@@ -49,23 +69,8 @@ class Chef::Application
         reconfigure
       end
     end
-
-    # Always switch to a readable directory. Keeps subsequent Dir.chdir() {}
-    # from failing due to permissions when launched as a less privileged user.
   end
 
-  # Reconfigure the application. You'll want to override and super this method.
-  def reconfigure
-    configure_chef
-    configure_logging
-  end
-
-  # Get this party started
-  def run
-    reconfigure
-    setup_application
-    run_application
-  end
 
   # Parse configuration (options and config file)
   def configure_chef

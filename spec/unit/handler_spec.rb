@@ -107,7 +107,6 @@ describe Chef::Handler do
       $report_ran = false
       def @handler.report
         $report_ran = true
-        puts "I'm AOK here."
       end
       lambda {@handler.run_report_safely(@run_status)}.should_not raise_error
       $report_ran.should be_true

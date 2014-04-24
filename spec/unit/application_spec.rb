@@ -24,6 +24,7 @@ describe Chef::Application do
     ARGV.clear
     Chef::Log.logger = Logger.new(StringIO.new)
     @app = Chef::Application.new
+    @app.stub(:trap)
     Dir.stub(:chdir).and_return(0)
     @app.stub(:reconfigure)
     Chef::Log.init(STDERR)
@@ -84,6 +85,9 @@ describe Chef::Application do
 
   describe "configure_chef" do
     before do
+      # Silence warnings when no config file exists
+      Chef::Log.stub(:warn)
+
       @app = Chef::Application.new
       #Chef::Config.stub(:merge!).and_return(true)
       @app.stub(:parse_options).and_return(true)
@@ -107,6 +111,9 @@ describe Chef::Application do
 
       before do
         @app.config[:config_file] = config_location
+
+        # force let binding to get evaluated or else we stub Pathname.new before we try to use it.
+        config_location_pathname
         Pathname.stub(:new).with(config_location).and_return(config_location_pathname)
         File.should_receive(:read).
           with(config_location).
