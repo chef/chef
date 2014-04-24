@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service'
+require 'chef/resource/service'
 require 'chef/provider/service/simple'
 require 'chef/mixin/command'
 

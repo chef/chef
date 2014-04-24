@@ -17,7 +17,6 @@
 #
 
 require 'chef/mixin/shell_out'
-require 'chef/provider/service'
 require 'chef/provider/service/simple'
 require 'chef/mixin/command'
 

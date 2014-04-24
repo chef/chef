@@ -22,6 +22,7 @@ require 'chef/mixin/convert_to_class_name'
 require 'chef/dsl/recipe'
 require 'chef/mixin/enforce_ownership_and_permissions'
 require 'chef/mixin/why_run'
+
 class Chef
   class Provider
     include Chef::DSL::Recipe
