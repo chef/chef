@@ -29,6 +29,7 @@ require 'chef/resource/conditional_action_not_nothing'
 require 'chef/resource_collection'
 require 'chef/resource_platform_map'
 require 'chef/node'
+require 'chef/platform'
 
 require 'chef/mixin/deprecation'
 
