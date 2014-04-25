@@ -32,15 +32,23 @@ class Chef
           @current_resource.version(nil)
 
           Chef::Log.debug("#{@new_resource} checking paludis for #{@new_resource.package_name}")
-          status = popen4("cave -L warning print-ids -m '*/#{@new_resource.package_name}::installed' -f '%v'") do |pid, stdin, stdout, stderr|
-            stdout.each do |version|
-              version.force_encoding(Encoding::UTF_8) if version.respond_to?(:force_encoding)
-              Chef::Log.debug("#{@new_resource} current version is #{version}")
-              @current_resource.version(version)
+          cave = Mixlib::ShellOut.new("cave -L warning print-ids -m '*/#{@new_resource.package_name}::installed' -f '%v'")
+          cave.run_command
+
+          if  Object.const_defined? :Encoding
+            if ( cave.encoding == Encoding::ASCII_8BIT &&
+                 cave.encoding != Encoding.default_external &&
+                 RUBY_VERSION.to_f < 2.0 )
+              cave = cave.force_encoding(Encoding.default_external)
             end
           end
 
-          unless status.exitstatus == 0 || status.exitstatus == 1
+          cave.each do |version|
+            Chef::Log.debug("#{@new_resource} current version is #{version}")
+            @current_resource.version(version)
+          end
+          
+          unless cave.exitstatus == 0 || cave.exitstatus == 1
             raise Chef::Exceptions::Package, "paludis failed - #{status.inspect}!"
           end
 
@@ -51,14 +59,22 @@ class Chef
         def candidate_version
           return @candidate_version if @candidate_version
 
-          status = popen4("cave -L warning print-ids -s install -m '*/#{@new_resource.package_name.split('/').last}' -s install -f '%v'") do |pid, stdin, stdout, stderr|
-            stdout.each do |version|
-              version.force_encoding(Encoding::UTF_8) if version.respond_to?(:force_encoding)
-              Chef::Log.debug("#{@new_resource} candidate version is #{version}")
-              @candidate_version = version
+          cave = Mixlib::ShellOut.new("cave -L warning print-ids -s install -m '*/#{@new_resource.package_name.split('/').last}' -s install -f '%v'")
+          cave.run_command
+
+          if  Object.const_defined? :Encoding
+            if ( cave.encoding == Encoding::ASCII_8BIT &&
+                 cave.encoding != Encoding.default_external &&
+                 RUBY_VERSION.to_f < 2.0 )
+              cave = cave.force_encoding(Encoding.default_external)
             end
           end
-  
+
+          cave.each do |version|
+            Chef::Log.debug("#{@new_resource} candidate version is #{version}")
+            @candidate_version = version
+          end
+          
           unless status.exitstatus == 0 || status.exitstatus == 1
             raise Chef::Exceptions::Package, "paludis failed - #{status.inspect}!"
           end
