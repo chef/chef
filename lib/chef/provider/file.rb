@@ -296,7 +296,7 @@ class Chef
       def do_unlink
         @file_unlinked = false
         if @new_resource.force_unlink
-          if !real_file?(@new_resource.path)
+          if !real_file?(@new_resource.path) && ::File.file?(@new_resource.path)
             # unlink things that aren't normal files
             description = "unlink #{file_type_string(@new_resource.path)} at #{@new_resource.path}"
             converge_by(description) do
