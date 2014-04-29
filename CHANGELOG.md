@@ -10,6 +10,9 @@
 * Fix remote\_file support for file:// URI on windows (CHEF-4472)
 * Fix OS X service provider actions that don't require the service label
   to work when there is no plist. (CHEF-5223)
+* User resource now only prints the name during why-run runs. (CHEF-5180)
+* Providers are now set correctly on CloudLinux. (CHEF-5182)
+* -E option now works with single lettered environments (CHEF-3075)
 
 ## Last Release: 11.12.0 RC1 (03/31/2014)
 * SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
