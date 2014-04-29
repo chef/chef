@@ -88,6 +88,39 @@ describe Chef::ResourceCollection do
     end
   end
 
+  describe "insert_at" do
+    it "should accept only Chef::Resources" do
+      lambda { @rc.insert_at(0, @resource, @resource) }.should_not raise_error
+      lambda { @rc.insert_at(0, "string") }.should raise_error
+      lambda { @rc.insert_at(0, @resource, "string") }.should raise_error
+    end
+
+    it "should toss an error if it receives a bad index" do
+      @rc.insert_at(10, @resource)
+    end
+
+    it "should insert resources at the beginning when asked" do
+      @rc.insert(Chef::Resource::ZenMaster.new('1'))
+      @rc.insert(Chef::Resource::ZenMaster.new('2'))
+      @rc.insert_at(0, Chef::Resource::ZenMaster.new('X'))
+      @rc.all_resources.map { |r| r.name }.should == [ 'X', '1', '2' ]
+    end
+
+    it "should insert resources in the middle when asked" do
+      @rc.insert(Chef::Resource::ZenMaster.new('1'))
+      @rc.insert(Chef::Resource::ZenMaster.new('2'))
+      @rc.insert_at(1, Chef::Resource::ZenMaster.new('X'))
+      @rc.all_resources.map { |r| r.name }.should == [ '1', 'X', '2' ]
+    end
+
+    it "should insert resources at the end when asked" do
+      @rc.insert(Chef::Resource::ZenMaster.new('1'))
+      @rc.insert(Chef::Resource::ZenMaster.new('2'))
+      @rc.insert_at(2, Chef::Resource::ZenMaster.new('X'))
+      @rc.all_resources.map { |r| r.name }.should == [ '1', '2', 'X' ]
+    end
+  end
+
   describe "each" do
     it "should allow you to iterate over every resource in the collection" do
       load_up_resources
