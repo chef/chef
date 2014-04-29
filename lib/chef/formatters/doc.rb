@@ -10,7 +10,6 @@ class Chef
 
       attr_reader :start_time, :end_time
       cli_name(:doc)
-      
 
       def initialize(out, err)
         super
@@ -112,7 +111,7 @@ class Chef
       # Called before cookbook sync starts
       def cookbook_sync_start(cookbook_count)
         puts_line "Synchronizing Cookbooks:"
-        indent_by(2)
+        indent
       end
 
       # Called when cookbook +cookbook_name+ has been sync'd
@@ -126,7 +125,7 @@ class Chef
 
       # Called after all cookbooks have been sync'd.
       def cookbook_sync_complete
-        indent_by(-2)
+        unindent
       end
 
       # Called when cookbook loading starts.
@@ -149,7 +148,7 @@ class Chef
 
       # Called when the converge phase is finished.
       def converge_complete
-        indent_by(-2) if @current_recipe
+        unindent if @current_recipe
       end
 
       # Called before action is executed on a resource.
@@ -161,14 +160,14 @@ class Chef
         end
 
         if resource_recipe != @current_recipe && !resource.enclosing_provider
-          indent_by(-2) if @current_recipe
+          unindent if @current_recipe
           puts_line "Recipe: #{resource_recipe}"
           @current_recipe = resource_recipe
-          indent_by(2)
+          indent
         end
         # TODO: info about notifies
         start_line "* #{resource} action #{action}"
-        indent_by(2)
+        indent
       end
 
       # Called when a resource fails, but will retry.
@@ -178,14 +177,14 @@ class Chef
       # Called when a resource fails and will not be retried.
       def resource_failed(resource, action, exception)
         super
-        indent_by(-2)
+        unindent
       end
 
       # Called when a resource action has been skipped b/c of a conditional
       def resource_skipped(resource, action, conditional)
         # TODO: more info about conditional
         puts " (skipped due to #{conditional.short_description})"
-        indent_by(-2)
+        unindent
       end
 
       # Called after #load_current_resource has run.
@@ -196,12 +195,12 @@ class Chef
       def resource_up_to_date(resource, action)
         @up_to_date_resources+= 1
         puts " (up to date)"
-        indent_by(-2)
+        unindent
       end
 
       def resource_bypassed(resource, action, provider)
         puts " (Skipped: whyrun not supported by provider #{provider.class.name})"
-        indent_by(-2)
+        unindent
       end
 
       def output_record(line)
@@ -231,7 +230,7 @@ class Chef
       # Called after a resource has been completely converged.
       def resource_updated(resource, action)
         @updated_resources += 1
-        indent_by(-2)
+        unindent
         puts "\n"
       end
 
@@ -245,7 +244,7 @@ class Chef
       def handlers_start(handler_count)
         puts ''
         puts "Running handlers:"
-        indent_by(2)
+        indent
       end
 
       # Called after an individual handler has run
@@ -255,7 +254,7 @@ class Chef
 
       # Called after all handlers have executed
       def handlers_completed
-        indent_by(-2)
+        unindent
         puts_line "Running handlers complete\n"
       end
 
@@ -275,6 +274,14 @@ class Chef
         [ message ].flatten.each do |line|
           start_line("* #{line}", color)
         end
+      end
+
+      def indent
+        indent_by(2)
+      end
+
+      def unindent
+        indent_by(-2)
       end
     end
   end
