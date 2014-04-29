@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-log", "~> 1.3"
   s.add_dependency "mixlib-authentication", "~> 1.3"
   s.add_dependency "mixlib-shellout", "~> 1.4"
-  s.add_dependency "ohai", "~> 7.0"
+  s.add_dependency "ohai", "= 7.0.4.rc.0"
 
   s.add_dependency "rest-client", ">= 1.0.4", "< 1.7.0"
   # rest-client has an unbounded dependency on mime-types.
