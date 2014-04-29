@@ -1,6 +1,7 @@
 # Chef Client Changelog
 
 ## Unreleased
+* Print nested LWRPs with indentation in doc formatter output
 * Make local mode stable enough to run chef-pedant
 * Catch HTTPServerException for 404 in remote_file retry (CHEF-5116)
 * Wrap code in block context when syntax checking so `return` is valid
