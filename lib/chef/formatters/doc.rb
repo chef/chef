@@ -240,6 +240,10 @@ class Chef
         puts_line("* Whyrun not supported for #{resource}, bypassing load.", :yellow)
       end
 
+      def stream_output(stream, output, options = {})
+        print(output, { :stream => stream }.merge(options))
+      end
+
       # Called before handlers run
       def handlers_start(handler_count)
         puts ''

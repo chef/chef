@@ -66,6 +66,7 @@ class Chef
       attr_reader :err
       attr_accessor :indent
       attr_reader :line_started
+      attr_accessor :sticky_tag
 
       def initialize(out, err)
         @out, @err = out, err
@@ -84,60 +85,84 @@ class Chef
       # but will not terminate the line (future print and puts statements
       # will start off where this print left off).
       def color(string, *colors)
-        if !@line_started
-          @out.print ' ' * indent
-          @line_started = true
-        end
-        if string[-1..-1] == "\n"
-          @line_started = false
-        end
-
-        if Chef::Config[:color]
-          @out.print highline.color(string, *colors)
-        else
-          @out.print string
-        end
+        print(string, :colors => colors)
       end
-
-      alias :print :color
 
       # Print a line.  This will continue from the last start_line or print,
       # or start a new line and indent if necessary.
       def puts(string, *colors)
-        if !@line_started
-          @out.print ' ' * indent
-        end
-
-        if Chef::Config[:color]
-          @out.puts highline.color(string, *colors)
-        else
-          @out.puts string
-        end
-        @line_started = false
+        print(string, :end_line => true, :colors => colors)
       end
 
       # Print an entire line from start to end.  This will terminate any existing
       # lines and cause indentation.
       def puts_line(string, *colors)
-        if @line_started
-          @out.puts ''
-          @line_started = false
-        end
-
-        puts(string, *colors)
+        print(string, :start_line => true, :end_line => true, :colors => colors)
       end
 
       # Print the start of a new line.  This will terminate any existing lines and
       # cause indentation but will not move to the next line yet (future 'print'
       # and 'puts' statements will stay on this line).
       def start_line(string, *colors)
-        if @line_started
-          @out.puts ''
-          @line_started = false
-        end
-        print(string, *colors)
+        print(string, :start_line => true, :colors => colors)
       end
 
+      # Print a line, with possible options.
+      def print(string, *colors)
+        if colors.size == 1 && colors[0].kind_of?(Hash)
+          options = colors[0]
+        else
+          options = { :colors => colors }
+        end
+
+        # If we aren't printing to the same stream, or if start_line is true,
+        # move to the next line.
+        if options[:start_line] || @stream != options[:stream]
+          if @line_started
+            @out.puts ''
+            @line_started = false
+          end
+          @stream = options[:stream]
+        end
+
+        # Split the output by line and indent each
+        printed_anything = false
+        string.lines.each do |line|
+          printed_anything = true
+          print_line_with_options(line, options)
+        end
+
+        if options[:end_line]
+          # If we're supposed to end the line, and the string did not end with
+          # \n, then we end the line.
+          if @line_started
+            @out.puts ''
+            @line_started = false
+          elsif !printed_anything
+            @out.puts ' ' * indent
+          end
+        end
+      end
+
+      private
+
+      def print_line_with_options(line, options)
+        # Start the line with indent if it is not started
+        if !@line_started
+          @out.print ' ' * indent
+          @line_started = true
+        end
+        # Note that the next line will need to be started
+        if line[-1..-1] == "\n"
+          @line_started = false
+        end
+
+        if Chef::Config[:color] && options[:colors]
+          @out.print highline.color(line, *options[:colors])
+        else
+          @out.print line
+        end
+      end
     end
 
 
@@ -175,12 +200,16 @@ class Chef
         @output.start_line(*args)
       end
 
+      def print_sticky(*args)
+        @output.print_sticky(*args)
+      end
+
       def indent_by(amount)
         @output.indent += amount
       end
 
       # Input: a Formatters::ErrorDescription object.
-      # Outputs error to SDOUT.
+      # Outputs error to STDOUT.
       def display_error(description)
         puts("")
         description.display(output)
@@ -303,4 +332,3 @@ class Chef
 
   end
 end
-
