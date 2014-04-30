@@ -67,11 +67,13 @@ class Chef
       attr_accessor :indent
       attr_reader :line_started
       attr_accessor :stream
+      attr_reader :semaphore
 
       def initialize(out, err)
         @out, @err = out, err
         @indent = 0
         @line_started = false
+        @semaphore = Mutex.new
       end
 
       def highline
@@ -111,31 +113,34 @@ class Chef
       def print(string, *colors)
         options = from_args(colors)
 
-        # If we aren't printing to the same stream, or if start_line is true,
-        # move to the next line.
-        if options[:start_line] || @stream != options[:stream]
-          if @line_started
-            @out.puts ''
-            @line_started = false
+        # Make sure each line stays a unit even with threads sending output
+        semaphore.synchronize do
+          # If we aren't printing to the same stream, or if start_line is true,
+          # move to the next line.
+          if options[:start_line] || @stream != options[:stream]
+            if @line_started
+              @out.puts ''
+              @line_started = false
+            end
+            @stream = options[:stream]
           end
-          @stream = options[:stream]
-        end
 
-        # Split the output by line and indent each
-        printed_anything = false
-        string.lines.each do |line|
-          printed_anything = true
-          print_line(line, options)
-        end
+          # Split the output by line and indent each
+          printed_anything = false
+          string.lines.each do |line|
+            printed_anything = true
+            print_line(line, options)
+          end
 
-        if options[:end_line]
-          # If we're supposed to end the line, and the string did not end with
-          # \n, then we end the line.
-          if @line_started
-            @out.puts ''
-            @line_started = false
-          elsif !printed_anything
-            @out.puts ' ' * indent
+          if options[:end_line]
+            # If we're supposed to end the line, and the string did not end with
+            # \n, then we end the line.
+            if @line_started
+              @out.puts ''
+              @line_started = false
+            elsif !printed_anything
+              @out.puts ' ' * indent
+            end
           end
         end
       end
