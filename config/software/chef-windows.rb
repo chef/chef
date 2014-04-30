@@ -90,48 +90,6 @@ build do
        "--no-rdoc --no-ri"].join(" ")
 
   # XXX: doing a normal bundle_bust here results in gems installed into the outer bundle...
-  command "bundle install", :env => { "PATH" => "#{install_dir}/embedded/bin;#{install_dir}/embedded/mingw/bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem", "BUNDLE_BIN_PATH" => "#{install_dir}/embedded/bin/bundle" , "BUNDLE_GEMFILE" => nil, "GEM_HOME" => "#{install_dir}/embedded/lib/ruby/gems/1.9.1", "GEM_PATH" => "#{install_dir}/embedded/lib/ruby/gems/1.9.1", "RUBYOPT" => nil }
+  command "bundle install", :env => { "PATH" => "#{install_dir}/embedded/bin;#{install_dir}/embedded/mingw/bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem", "BUNDLE_BIN_PATH" => "#{install_dir}/embedded/bin/bundle" , "BUNDLE_GEMFILE" => nil, "GEM_HOME" => "#{install_dir}/embedded/lib/ruby/gems/2.0.0", "GEM_PATH" => "#{install_dir}/embedded/lib/ruby/gems/2.0.0", "RUBYOPT" => nil }
 
-  # render batch files
-  #
-  # TODO:
-  #  I'd love to move this out to a top-level 'template' operation in omnibus, but it currently
-  #  requires pretty deep inspection of the Rubygems structure of the installed chef and ohai
-  #  gems
-  #
-  block do
-    require 'erb'
-    require 'rubygems/format'
-
-    batch_template = ERB.new <<EOBATCH
-@ECHO OFF
-IF NOT "%~f0" == "~f0" GOTO :WinNT
-@"%~dp0\\..\\embedded\\bin\\ruby.exe" "%~dp0/<%= @bin %>" %1 %2 %3 %4 %5 %6 %7 %8 %9
-GOTO :EOF
-:WinNT
-@"%~dp0\\..\\embedded\\bin\\ruby.exe" "%~dpn0" %*
-EOBATCH
-
-    gem_executables = []
-    %w{chef}.each do |gem|
-      puts "#{install_dir.gsub(/\\/, '/')}/embedded/**/cache/#{gem}*mingw32.gem"
-      require 'pp'
-      pp Dir["#{install_dir.gsub(/\\/, '/')}/embedded/**/cache/#{gem}*mingw32.gem"]
-      gem_file = Dir["#{install_dir.gsub(/\\/, '/')}/embedded/**/cache/#{gem}*mingw32.gem"].first
-      gem_executables << Gem::Format.from_file_by_path(gem_file).spec.executables
-    end
-
-    # XXX: need to fix ohai to use own gemspec as well and eliminate copypasta
-    %w{ohai}.each do |gem|
-      gem_file = Dir["#{install_dir.gsub(/\\/, '/')}/embedded/**/cache/#{gem}*.gem"].first
-      gem_executables << Gem::Format.from_file_by_path(gem_file).spec.executables
-    end
-
-    gem_executables.flatten.each do |bin|
-      @bin = bin
-      File.open("#{install_dir}/bin/#{@bin}.bat", "w") do |f|
-        f.puts batch_template.result(binding)
-      end
-    end
-  end
 end

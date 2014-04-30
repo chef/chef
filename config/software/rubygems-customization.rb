@@ -23,9 +23,9 @@ if platform == 'windows'
   dependency "ruby-windows"
 else
   dependency "ruby"
+  dependency "rubygems"
 end
 
-dependency "rubygems"
 
 
 #/opt/chefdk/embedded/bin/ruby -e 'puts Gem.dir'
@@ -39,20 +39,28 @@ dependency "rubygems"
 
 build do
 
+  sitelibdir_cmd = %Q{#{install_dir}/embedded/bin/ruby -rrbconfig -e "puts RbConfig::CONFIG['sitelibdir']"}
+  sitelibdir_cmd.gsub!('/', '\\') if platform == "windows"
+
   block do
     source_customization_file = File.join(project.files_path, "rubygems_customization", "operating_system.rb")
     embedded_ruby_site_dir = ""
     Bundler.with_clean_env do
-      embedded_ruby_site_dir = %x{/opt/chefdk/embedded/bin/ruby -rrbconfig -e "puts RbConfig::CONFIG['sitelibdir']"}.strip
+      embedded_ruby_site_dir = %x{#{sitelibdir_cmd}}.strip
     end
 
     raise "could not determine embedded ruby's site dir" if embedded_ruby_site_dir.empty?
+
+    if sysdrive = ENV['SYSTEMDRIVE']
+      match_drive = Regexp.new(Regexp.escape(sysdrive), Regexp::IGNORECASE)
+      embedded_ruby_site_dir.sub!(match_drive, '')
+    end
 
     destination_dir = File.join(embedded_ruby_site_dir, 'rubygems', 'defaults')
     destination = File.join(destination_dir, "operating_system.rb")
 
     FileUtils.mkdir_p destination_dir
-    command "cp #{source_customization_file} #{destination}"
+    FileUtils.cp source_customization_file, destination
   end
 end
 

@@ -48,3 +48,4 @@ dependency "chef-windows"
 dependency "chefdk"
 dependency "rubygems-customization"
 dependency "version-manifest"
+
