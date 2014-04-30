@@ -57,7 +57,7 @@ class Chef
     end
 
     # == Outputter
-    # Handles basic printing tasks like colorizing.
+    # Handles basic printing tasks like colorizing and indenting.
     # --
     # TODO: Duplicates functionality from knife, upfactor.
     class Outputter
@@ -66,7 +66,7 @@ class Chef
       attr_reader :err
       attr_accessor :indent
       attr_reader :line_started
-      attr_accessor :sticky_tag
+      attr_accessor :stream
 
       def initialize(out, err)
         @out, @err = out, err
@@ -85,35 +85,31 @@ class Chef
       # but will not terminate the line (future print and puts statements
       # will start off where this print left off).
       def color(string, *colors)
-        print(string, :colors => colors)
-      end
-
-      # Print a line.  This will continue from the last start_line or print,
-      # or start a new line and indent if necessary.
-      def puts(string, *colors)
-        print(string, :end_line => true, :colors => colors)
-      end
-
-      # Print an entire line from start to end.  This will terminate any existing
-      # lines and cause indentation.
-      def puts_line(string, *colors)
-        print(string, :start_line => true, :end_line => true, :colors => colors)
+        print(string, from_args(colors))
       end
 
       # Print the start of a new line.  This will terminate any existing lines and
       # cause indentation but will not move to the next line yet (future 'print'
       # and 'puts' statements will stay on this line).
       def start_line(string, *colors)
-        print(string, :start_line => true, :colors => colors)
+        print(string, from_args(colors, :start_line => true))
       end
 
-      # Print a line, with possible options.
+      # Print a line.  This will continue from the last start_line or print,
+      # or start a new line and indent if necessary.
+      def puts(string, *colors)
+        print(string, from_args(colors, :end_line => true))
+      end
+
+      # Print an entire line from start to end.  This will terminate any existing
+      # lines and cause indentation.
+      def puts_line(string, *colors)
+        print(string, from_args(colors, :start_line => true, :end_line => true))
+      end
+
+      # Print a string. Without any further options, this will
       def print(string, *colors)
-        if colors.size == 1 && colors[0].kind_of?(Hash)
-          options = colors[0]
-        else
-          options = { :colors => colors }
-        end
+        options = from_args(colors)
 
         # If we aren't printing to the same stream, or if start_line is true,
         # move to the next line.
@@ -129,7 +125,7 @@ class Chef
         printed_anything = false
         string.lines.each do |line|
           printed_anything = true
-          print_line_with_options(line, options)
+          print_line(line, options)
         end
 
         if options[:end_line]
@@ -146,7 +142,15 @@ class Chef
 
       private
 
-      def print_line_with_options(line, options)
+      def from_args(colors, merge_options = {})
+        if colors.size == 1 && colors[0].kind_of?(Hash)
+          merge_options.merge(colors[0])
+        else
+          merge_options.merge({ :colors => colors })
+        end
+      end
+
+      def print_line(line, options)
         # Start the line with indent if it is not started
         if !@line_started
           @out.print ' ' * indent
