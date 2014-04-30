@@ -520,6 +520,8 @@ class Chef
       set_defaults_for_nix
     end
 
+    # This provides a hook which rspec can stub so that we can avoid twiddling
+    # global state in tests.
     def self.env
       ENV
     end
