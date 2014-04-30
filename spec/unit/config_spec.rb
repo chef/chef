@@ -21,10 +21,6 @@ require 'spec_helper'
 require 'chef/exceptions'
 
 describe Chef::Config do
-  before(:all) do
-    @original_env = { 'HOME' => ENV['HOME'], 'SYSTEMDRIVE' => ENV['SYSTEMDRIVE'], 'HOMEPATH' => ENV['HOMEPATH'], 'USERPROFILE' => ENV['USERPROFILE'] }
-  end
-
   describe "config attribute writer: chef_server_url" do
     before do
       Chef::Config.chef_server_url = "https://junglist.gen.nz"
@@ -132,7 +128,7 @@ describe Chef::Config do
     it "should return a windows path on windows systems" do
       platform_mock :windows do
         path = "/etc/chef/cookbooks"
-        ENV.stub(:[]).with('SYSTEMDRIVE').and_return('C:')
+        Chef::Config.stub(:env).and_return({ 'SYSTEMDRIVE' => 'C:' })
         # match on a regex that looks for the base path with an optional
         # system drive at the beginning (c:)
         # system drive is not hardcoded b/c it can change and b/c it is not present on linux systems
@@ -283,20 +279,13 @@ describe Chef::Config do
 
   describe "Chef::Config[:user_home]" do
     it "should set when HOME is provided" do
-      ENV['HOME'] = "/home/kitten"
+      Chef::Config.stub(:env).and_return({ 'HOME' => "/home/kitten" })
       Chef::Config[:user_home].should == "/home/kitten"
     end
 
     it "should be set when only USERPROFILE is provided" do
-      ENV['HOME'], ENV['SYSTEMDRIVE'],  ENV['HOMEPATH'] = nil, nil, nil
-      ENV['USERPROFILE'] = "/users/kitten"
+      Chef::Config.stub(:env).and_return({ 'USERPROFILE' => "/users/kitten" })
       Chef::Config[:user_home].should == "/users/kitten"
-    end
-
-    after(:each) do
-      @original_env.each do |env_setting|
-        ENV[env_setting[0]] = env_setting[1]
-      end
     end
   end
 

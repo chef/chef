@@ -85,7 +85,7 @@ class Chef
     def self.platform_specific_path(path)
       if on_windows?
         # turns /etc/chef/client.rb into C:/chef/client.rb
-        system_drive = ENV['SYSTEMDRIVE'] ? ENV['SYSTEMDRIVE'] : ""
+        system_drive = env['SYSTEMDRIVE'] ? env['SYSTEMDRIVE'] : ""
         path = File.join(system_drive, path.split('/')[2..-1])
         # ensure all forward slashes are backslashes
         path.gsub!(File::SEPARATOR, (File::ALT_SEPARATOR || '\\'))
@@ -520,9 +520,18 @@ class Chef
       set_defaults_for_nix
     end
 
+    # This provides a hook which rspec can stub so that we can avoid twiddling
+    # global state in tests.
+    def self.env
+      ENV
+    end
+
+    def self.windows_home_path
+      windows_home_path = env['SYSTEMDRIVE'] + env['HOMEPATH'] if env['SYSTEMDRIVE'] && env['HOMEPATH']
+    end
+
     # returns a platform specific path to the user home dir
-    windows_home_path = ENV['SYSTEMDRIVE'] + ENV['HOMEPATH'] if ENV['SYSTEMDRIVE'] && ENV['HOMEPATH']
-    default( :user_home ) { ENV['HOME'] || windows_home_path || ENV['USERPROFILE'] }
+    default( :user_home ) { env['HOME'] || windows_home_path || env['USERPROFILE'] }
 
     # Enable file permission fixup for selinux. Fixup will be done
     # only if selinux is enabled in the system.
