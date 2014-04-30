@@ -115,14 +115,26 @@ class Chef
 
         # Make sure each line stays a unit even with threads sending output
         semaphore.synchronize do
-          # If we aren't printing to the same stream, or if start_line is true,
-          # move to the next line.
-          if options[:start_line] || @stream != options[:stream]
+          # If we aren't printing to the same stream, move to the next line
+          # and print the stream header (if any)
+          if @stream != options[:stream]
+            @stream = options[:stream]
+            if @line_started
+              @out.puts ''
+            end
+            if options[:name]
+              @out.print "#{(' ' * indent)}[#{options[:name]}] "
+            else
+              @out.print ' ' * indent
+            end
+            @line_started = true
+
+          # if start_line is true, move to the next line.
+          elsif options[:start_line]
             if @line_started
               @out.puts ''
               @line_started = false
             end
-            @stream = options[:stream]
           end
 
           # Split the output by line and indent each
@@ -139,7 +151,11 @@ class Chef
               @out.puts ''
               @line_started = false
             elsif !printed_anything
-              @out.puts ' ' * indent
+              if options[:name]
+                @out.puts ' ' * (indent + 3 + options[:name].size)
+              else
+                @out.puts ' ' * indent
+              end
             end
           end
         end
@@ -158,7 +174,11 @@ class Chef
       def print_line(line, options)
         # Start the line with indent if it is not started
         if !@line_started
-          @out.print ' ' * indent
+          if options[:name]
+            @out.print ' ' * (indent + 3 + options[:name].size)
+          else
+            @out.print ' ' * indent
+          end
           @line_started = true
         end
         # Note that the next line will need to be started
