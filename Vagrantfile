@@ -3,15 +3,15 @@
 
 require "vagrant"
 
-if Vagrant::VERSION < "1.2.1"
-  raise "The Omnibus Build Lab is only compatible with Vagrant 1.2.1+"
+if Vagrant::VERSION.to_f < 1.5
+  raise "The Omnibus Build Lab only supports Vagrant >= 1.5.0"
 end
 
 host_project_path = File.expand_path("..", __FILE__)
 guest_project_path = "/home/vagrant/#{File.basename(host_project_path)}"
 project_name = 'chef'
 host_name = "#{project_name}-omnibus-build-lab"
-bootstrap_chef_version = '11.6.2'
+bootstrap_chef_version = '11.12.4'
 
 Vagrant.configure('2') do |config|
 
@@ -27,6 +27,8 @@ Vagrant.configure('2') do |config|
   }.each_with_index do |platform, index|
 
     config.vm.define platform do |c|
+
+      chef_run_list = []
 
       case platform
 
@@ -53,7 +55,6 @@ Vagrant.configure('2') do |config|
       # FREEBSD-SPECIFIC CONFIG
       ####################################################################
       when /^freebsd/
-
         use_nfs = true
 
         # FreeBSD's mount_nfs does not like paths over 88 characters
@@ -90,6 +91,7 @@ Vagrant.configure('2') do |config|
           ]
         end
 
+        chef_run_list << 'recipe[apt::default]'
       end # case
 
       ####################################################################
@@ -106,9 +108,11 @@ Vagrant.configure('2') do |config|
       # config.vm.synced_folder File.expand_path('../../omnibus-ruby', __FILE__), '/home/vagrant/omnibus-ruby', :nfs => use_nfs
       # config.vm.synced_folder File.expand_path('../../omnibus-software', __FILE__), '/home/vagrant/omnibus-software', :nfs => use_nfs
 
+      chef_run_list << 'recipe[omnibus::default]'
+
       # prepare VM to be an Omnibus builder
       c.vm.provision :chef_solo do |chef|
-        chef.nfs = use_nfs
+        chef.synced_folder_type = "nfs" if use_nfs
         chef.json = {
           'omnibus' => {
             'build_user' => 'vagrant',
@@ -117,31 +121,26 @@ Vagrant.configure('2') do |config|
           }
         }
 
-        chef.run_list = [
-          'recipe[omnibus::default]'
-        ]
+        chef.run_list = chef_run_list
       end
 
       # We have to nuke any chef omnibus packages (used during provisioning) before
       # we build new chef omnibus packages!
-      c.vm.provision :shell, :inline => <<-REMOVE_OMNIBUS
-        if command -v dpkg &>/dev/null;
-        then
-          sudo dpkg -P #{project_name} || true
-        elseif command -v rpm &>/dev/null;
-          sudo rpm -ev #{project_name} || true
-        else
-          sudo rm -r /opt/#{project_name} || true
+      c.vm.provision :shell, :privileged => true,:inline => <<-REMOVE_OMNIBUS
+        if command -v dpkg &>/dev/null; then
+          dpkg -P #{project_name} || true
+        elif command -v rpm &>/dev/null; then
+          rpm -ev #{project_name} || true
         fi
+        rm -rf /opt/#{project_name} || true
       REMOVE_OMNIBUS
 
-      c.vm.provision :shell, :inline => <<-OMNIBUS_BUILD
+      c.vm.provision :shell, :privileged => false, :inline => <<-OMNIBUS_BUILD
         sudo mkdir -p /opt/#{project_name}
         sudo chown vagrant /opt/#{project_name}
-        export PATH=/usr/local/bin:$PATH
         cd #{guest_project_path}
-        sudo su vagrant -c "bundle install --path=/home/vagrant/.bundler"
-        sudo su vagrant -c "bundle exec omnibus build project #{project_name}"
+        bundle install --path=/home/vagrant/.bundler
+        bundle exec omnibus build project #{project_name}
       OMNIBUS_BUILD
 
     end # config.vm.define.platform
