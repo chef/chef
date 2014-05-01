@@ -35,6 +35,104 @@ describe Chef::RunLock do
     end
   end
 
+  describe "acquire" do
+    let(:lockfile) { "/tmp/chef-client-running.pid" }
+    subject(:runlock) { Chef::RunLock.new(lockfile) }
+
+    def stub_unblocked_run
+      runlock.stub(:test).and_return(true)
+    end
+
+    def stub_blocked_run(duration)
+      runlock.stub(:test).and_return(false)
+      runlock.stub(:wait) { sleep(duration) }
+      runlock.stub(:runpid).and_return(666) # errors read blocking pid
+    end
+
+    describe "when Chef::Config[:run_lock_timeout] is not set (set to default)" do
+      describe "and the lockfile is not locked by another client run" do
+        it "should not wait" do
+          stub_unblocked_run
+          Chef::RunLock.any_instance.should_not_receive(:wait)
+          runlock.acquire
+        end
+      end
+
+      describe "and the lockfile is locked by another client run" do
+        it "should wait for the lock to be released" do
+          stub_blocked_run(0.001)
+          runlock.should_receive(:wait)
+          runlock.acquire
+        end
+      end
+    end
+
+    describe "when Chef::Config[:run_lock_timeout] is set to 0" do
+      before(:each) do
+        @default_timeout = Chef::Config[:run_lock_timeout]
+        Chef::Config[:run_lock_timeout] = 0
+      end
+
+      after(:each) do
+        Chef::Config[:run_lock_timeout] = @default_timeout
+      end
+
+      describe "and the lockfile is not locked by another client run" do
+        it "should acquire the lock" do
+          stub_unblocked_run
+          runlock.should_not_receive(:wait)
+          runlock.acquire
+        end
+      end
+
+      describe "and the lockfile is locked by another client run" do
+        it "should raise Chef::Exceptions::RunLockTimeout" do
+          stub_blocked_run(0.001)
+          runlock.should_not_receive(:wait)
+          expect{ runlock.acquire }.to raise_error(Chef::Exceptions::RunLockTimeout)
+        end
+      end
+    end
+
+    describe "when Chef::Config[:run_lock_timeout] is set to >0" do
+      before(:each) do
+        @default_timeout = Chef::Config[:run_lock_timeout]
+        @timeout = 0.1
+        Chef::Config[:run_lock_timeout] = @timeout
+      end
+
+      after(:each) do
+        Chef::Config[:run_lock_timeout] = @default_timeout
+      end
+
+      describe "and the lockfile is not locked by another client run" do
+        it "should acquire the lock" do
+          stub_unblocked_run
+          runlock.should_not_receive(:wait)
+          runlock.acquire
+        end
+      end
+
+      describe "and the lockfile is locked by another client run" do
+        describe "and the lock is released before the timeout expires" do
+          it "should acquire the lock" do
+            stub_blocked_run(@timeout/2.0)
+            runlock.should_receive(:wait)
+            expect{ runlock.acquire }.not_to raise_error
+          end
+        end
+
+        describe "and the lock is not released before the timeout expires" do
+          it "should raise a RunLockTimeout exception" do
+            stub_blocked_run(2.0)
+            runlock.should_receive(:wait)
+            expect{ runlock.acquire }.to raise_error(Chef::Exceptions::RunLockTimeout)
+          end
+        end
+      end
+    end
+  end
+
   # See also: spec/functional/run_lock_spec
 
 end

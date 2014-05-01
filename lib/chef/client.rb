@@ -224,7 +224,12 @@ class Chef
         Chef::Log.debug "Forked instance successfully reaped (pid: #{pid})"
         true
       else
-        do_run
+        begin
+          do_run
+        rescue Exception => e
+          Chef::Log.error(e.to_s)
+          exit 1
+        end
       end
     end
 
@@ -496,7 +501,7 @@ class Chef
       if Chef::Config[:ssl_verify_mode] == :verify_none and !Chef::Config[:verify_api_cert]
         Chef::Log.warn(<<-WARN)
 
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 SSL validation of HTTPS requests is disabled. HTTPS connections are still
 encrypted, but chef is not able to detect forged replies or man in the middle
 attacks.
@@ -518,7 +523,7 @@ To check your SSL configuration, or troubleshoot errors, you can use the
   knife ssl check -c #{Chef::Config.config_file}
 ```
 
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 WARN
       end
     end
@@ -530,4 +535,3 @@ end
 require 'chef/cookbook_loader'
 require 'chef/cookbook_version'
 require 'chef/cookbook/synchronizer'
-
