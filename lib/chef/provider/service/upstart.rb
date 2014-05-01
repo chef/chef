@@ -43,7 +43,8 @@ class Chef
 
           run_context.node
 
-          @job = @new_resource.service_name
+          # dup so we can mutate @job
+          @job = @new_resource.service_name.dup
 
           if @new_resource.parameters
             @new_resource.parameters.each do |key, value|
