@@ -24,7 +24,7 @@ install_path    "/opt/chefdk"
 build_version   Omnibus::BuildVersion.new.semver
 build_iteration 1
 mac_pkg_identifier "com.getchef.pkg.chefdk"
-resources_path File.join(files_path, name)
+resources_path File.join(files_path, "chefdk")
 
 override :berkshelf, version: "master"
 override :bundler,   version: "1.5.2"
