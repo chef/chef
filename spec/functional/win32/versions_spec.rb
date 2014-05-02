@@ -19,13 +19,13 @@
 require 'spec_helper'
 if Chef::Platform.windows?
   require 'chef/win32/version'
-  require 'ruby-wmi'
 end
 
 describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on_win2k3 do
   before do
 
-    host = WMI::Win32_OperatingSystem.find(:first)
+    wmi = Chef::ReservedNames::Win32::WMI.new
+    host = wmi.first_of('Win32_OperatingSystem')
 
     # Use WMI to determine current OS version.
     # On Win2k8R2 and later, we can dynamically obtain marketing
@@ -44,7 +44,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on
       # The name from WMI is actually what we want in Win2k8R2+.
       # So this expectation sould continue to hold without modification
       # as new versions of Windows are released.
-      @current_os_version = host.caption
+      @current_os_version = host['caption']
     end
 
     @version = Chef::ReservedNames::Win32::Version.new
@@ -98,7 +98,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on
   def is_windows_server_2008?(wmi_host)
     is_win2k8 = false
 
-    os_version = wmi_host.send('Version')
+    os_version = wmi_host['version']
 
     # The operating system version is a string in the following form
     # that can be split into components based on the '.' delimiter:

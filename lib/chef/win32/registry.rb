@@ -20,7 +20,6 @@ require 'chef/reserved_names'
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require 'win32/registry'
-  require 'ruby-wmi'
   require 'win32/api'
 end
 
