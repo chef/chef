@@ -1,5 +1,5 @@
 # NOTE: this runs the omnibus cookbook, but doens't mount filesystems or
-# run omnibus yet use 'kichen converge' to setup the virt and install
+# run omnibus yet.  Use 'kichen converge' to setup the virt and install
 # omnibus cookbooks and then be able to login to it
 
 driver:
