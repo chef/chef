@@ -3,6 +3,7 @@
 vendor/bundle
 pkg/*
 .vagrant
+.kitchen
 bin/*
 files/chef-server-cookbooks/cache/
 omnibus.rb
