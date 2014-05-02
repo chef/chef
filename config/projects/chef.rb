@@ -23,7 +23,7 @@ homepage "http://www.getchef.com"
 replaces        "chef-full"
 install_path    "/opt/chef"
 build_version   Omnibus::BuildVersion.new.git_describe
-build_iteration 4
+build_iteration 1
 resources_path File.join(files_path, "chef")
 
 mac_pkg_identifier "com.getchef.pkg.chef"

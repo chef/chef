@@ -12,7 +12,7 @@ rmdir /S /Q C:\opscode
 FOR %%i IN (pkg\chef*.msi) DO SET omnibus_package=%%i
 SET omnibus_package=%WORKSPACE%\%BUILD_NUMBER%\%omnibus_package%
 
-call copy /Y %omnibus_package% %TMP%\install.msi || GOTO :error
+call copy /Y "%omnibus_package%" %TMP%\install.msi || GOTO :error
 
 call msiexec INSTALLLOCATION=C:\opscode /qb /i %TMP%\install.msi || GOTO :error
 

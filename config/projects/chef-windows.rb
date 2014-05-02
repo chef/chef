@@ -25,7 +25,7 @@ homepage "http://www.getchef.com"
 #       which is only fixable if everyone in the world fixes their Makefiles
 install_path    "c:\\opscode\\chef"
 build_version   Omnibus::BuildVersion.new.git_describe
-build_iteration 4
+build_iteration 1
 package_name    "chef-client"
 
 dependency "preparation"
