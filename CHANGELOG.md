@@ -3,7 +3,7 @@
 ## Unreleased
 * Print nested LWRPs with indentation in doc formatter output
 * Make local mode stable enough to run chef-pedant
-* Catch HTTPServerException for 404 in remote_file retry (CHEF-5116)
+* Catch HTTPServerException for 404 in remote\_file retry (CHEF-5116)
 * Wrap code in block context when syntax checking so `return` is valid
   (CHEF-5199)
 * Quote git resource rev\_pattern to prevent glob matching files (CHEF-4940)
@@ -15,6 +15,7 @@
 * Providers are now set correctly on CloudLinux. (CHEF-5182)
 * -E option now works with single lettered environments (CHEF-3075)
 * A node's environment can now be set with 'knife node environment set NODE ENVIRONMENT' (CHEF-1910)
+* remote\_file's source attribute does not support DelayedEvaluators (CHEF-5162)
 
 ## Last Release: 11.12.0 RC1 (03/31/2014)
 * SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
