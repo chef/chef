@@ -165,6 +165,10 @@ class Chef::Application::Solo < Chef::Application
     :long         => '--environment ENVIRONMENT',
     :description  => 'Set the Chef Environment on the node'
 
+  option :run_lock_timeout,
+    :long         => "--run-lock-timeout SECONDS",
+    :description  => "Set maximum duration to wait for another client run to finish, default is indefinitely."
+
   attr_reader :chef_client_json
 
   def initialize
