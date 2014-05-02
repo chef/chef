@@ -219,6 +219,10 @@ class Chef::Application::Client < Chef::Application
     :long         => "--config-file-jail PATH",
     :description  => "Directory under which config files are allowed to be loaded (no client.rb or knife.rb outside this path will be loaded)."
 
+  option :run_lock_timeout,
+    :long         => "--run-lock-timeout SECONDS",
+    :description  => "Set maximum duration to wait for another client run to finish, default is indefinitely."
+
   if Chef::Platform.windows?
     option :fatal_windows_admin_check,
       :short        => "-A",
