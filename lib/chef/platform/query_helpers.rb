@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'chef/win32/wmi'
+
 class Chef
   class Platform
 
@@ -30,15 +32,15 @@ class Chef
 
       def windows_server_2003?
         return false unless windows?
-        require 'ruby-wmi'
 
         # CHEF-4888: Work around ruby #2618, expected to be fixed in Ruby 2.1.0
         # https://github.com/ruby/ruby/commit/588504b20f5cc880ad51827b93e571e32446e5db
         # https://github.com/ruby/ruby/commit/27ed294c7134c0de582007af3c915a635a6506cd
         WIN32OLE.ole_initialize
 
-        host = WMI::Win32_OperatingSystem.find(:first)
-        is_server_2003 = (host.version && host.version.start_with?("5.2"))
+        wmi = Chef::ReservedNames::Win32::WMI.new
+        host = wmi.first_of('Win32_OperatingSystem')
+        is_server_2003 = (host['version'] && host['version'].start_with?("5.2"))
 
         WIN32OLE.ole_uninitialize
 
