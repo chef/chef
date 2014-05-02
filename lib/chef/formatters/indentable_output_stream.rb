@@ -72,53 +72,27 @@ class Chef
 
         # Make sure each line stays a unit even with threads sending output
         semaphore.synchronize do
-          # If we aren't printing to the same stream, move to the next line
-          # and print the stream header (if any)
-          if @current_stream != options[:stream]
-            @current_stream = options[:stream]
-            if @line_started
-              @out.puts ''
-            end
-            if options[:name]
-              @out.print "#{(' ' * indent)}[#{options[:name]}] "
-            else
-              @out.print ' ' * indent
-            end
-            @line_started = true
-
-          # if start_line is true, move to the next line.
-          elsif options[:start_line]
-            if @line_started
-              @out.puts ''
-              @line_started = false
-            end
+          if should_start_line?(options)
+            move_to_next_line
           end
 
-          # Split the output by line and indent each
-          printed_anything = false
-          string.lines.each do |line|
-            printed_anything = true
-            print_line(line, options)
-          end
+          print_string(string, options)
 
-          if options[:end_line]
-            # If we're supposed to end the line, and the string did not end with
-            # \n, then we end the line.
-            if @line_started
-              @out.puts ''
-              @line_started = false
-            elsif !printed_anything
-              if options[:name]
-                @out.puts ' ' * (indent + 3 + options[:name].size)
-              else
-                @out.puts ' ' * indent
-              end
-            end
+          if should_end_line?(options)
+            move_to_next_line
           end
         end
       end
 
       private
+
+      def should_start_line?(options)
+        options[:start_line] || @current_stream != options[:stream]
+      end
+
+      def should_end_line?(options)
+        options[:end_line] && @line_started
+      end
 
       def from_args(colors, merge_options = {})
         if colors.size == 1 && colors[0].kind_of?(Hash)
@@ -128,16 +102,21 @@ class Chef
         end
       end
 
-      def print_line(line, options)
-        # Start the line with indent if it is not started
-        if !@line_started
-          if options[:name]
-            @out.print ' ' * (indent + 3 + options[:name].size)
-          else
-            @out.print ' ' * indent
+      def print_string(string, options)
+        if string.empty?
+          if options[:end_line]
+            print_line('', options)
           end
-          @line_started = true
+        else
+          string.lines.each do |line|
+            print_line(line, options)
+          end
         end
+      end
+
+      def print_line(line, options)
+        indent_line(options)
+
         # Note that the next line will need to be started
         if line[-1..-1] == "\n"
           @line_started = false
@@ -147,6 +126,38 @@ class Chef
           @out.print highline.color(line, *options[:colors])
         else
           @out.print line
+        end
+      end
+
+      def move_to_next_line
+        if @line_started
+          @out.puts ''
+          @line_started = false
+        end
+      end
+
+      def indent_line(options)
+        if !@line_started
+
+          # Print indents.  If there is a stream name, either print it (if we're
+          # switching streams) or print enough blanks to match
+          # the indents.
+          if options[:name]
+            if @current_stream != options[:stream]
+              @out.print "#{(' ' * indent)}[#{options[:name]}] "
+            else
+              @out.print ' ' * (indent + 3 + options[:name].size)
+            end
+          else
+            # Otherwise, just print indents.
+            @out.print ' ' * indent
+          end
+
+          if @current_stream != options[:stream]
+            @current_stream = options[:stream]
+          end
+
+          @line_started = true
         end
       end
     end
