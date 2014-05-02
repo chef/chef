@@ -166,7 +166,7 @@ class Chef
           indent
         end
         # TODO: info about notifies
-        start_line "* #{resource} action #{action}"
+        start_line "* #{resource} action #{action}", :stream => resource
         indent
       end
 
@@ -183,7 +183,7 @@ class Chef
       # Called when a resource action has been skipped b/c of a conditional
       def resource_skipped(resource, action, conditional)
         # TODO: more info about conditional
-        puts " (skipped due to #{conditional.short_description})"
+        puts " (skipped due to #{conditional.short_description})", :stream => resource
         unindent
       end
 
@@ -194,12 +194,12 @@ class Chef
       # Called when a resource has no converge actions, e.g., it was already correct.
       def resource_up_to_date(resource, action)
         @up_to_date_resources+= 1
-        puts " (up to date)"
+        puts " (up to date)", :stream => resource
         unindent
       end
 
       def resource_bypassed(resource, action, provider)
-        puts " (Skipped: whyrun not supported by provider #{provider.class.name})"
+        puts " (Skipped: whyrun not supported by provider #{provider.class.name})", :stream => resource
         unindent
       end
 
@@ -238,6 +238,10 @@ class Chef
       # not supporting whyrun mode.
       def resource_current_state_load_bypassed(resource, action, current_resource)
         puts_line("* Whyrun not supported for #{resource}, bypassing load.", :yellow)
+      end
+
+      def stream_output(stream, output, options = {})
+        print(output, { :stream => stream }.merge(options))
       end
 
       # Called before handlers run

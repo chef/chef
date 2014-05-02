@@ -26,8 +26,8 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
     end
 
     @description = Chef::Formatters::ErrorDescription.new("Error Expanding RunList:")
-    @outputter = Chef::Formatters::Outputter.new(StringIO.new, STDERR)
-    #@outputter = Chef::Formatters::Outputter.new(STDOUT, STDERR)
+    @outputter = Chef::Formatters::IndentableOutputStream.new(StringIO.new, STDERR)
+    #@outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
   end
 
   describe "when explaining a missing role error" do
