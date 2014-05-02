@@ -18,18 +18,7 @@
 
 require 'spec_helper'
 
-class Dummy
-  attr_accessor :variablevalue
-  def put_
-    return
-  end
-  def delete_
-    return
-  end
-end
-
 describe Chef::Provider::Env::Windows, :windows_only do
-
   before do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
@@ -37,7 +26,7 @@ describe Chef::Provider::Env::Windows, :windows_only do
     @new_resource = Chef::Resource::Env.new("CHEF_WINDOWS_ENV_TEST")
     @new_resource.value("foo")
     @provider = Chef::Provider::Env::Windows.new(@new_resource, @run_context)
-    @provider.stub(:env_obj).and_return(Dummy.new)
+    @provider.stub(:env_obj).and_return(double('null object').as_null_object)
   end
 
   describe "action_create" do
