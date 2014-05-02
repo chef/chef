@@ -18,10 +18,10 @@
 
 require 'spec_helper'
 
-describe Chef::Knife::NodeEnvironment do
+describe Chef::Knife::NodeEnvironmentSet do
   before(:each) do
     Chef::Config[:node_name]  = "webmonkey.example.com"
-    @knife = Chef::Knife::NodeEnvironment.new
+    @knife = Chef::Knife::NodeEnvironmentSet.new
     @knife.name_args = [ "adam", "bar" ]
     @knife.stub(:output).and_return(true)
     @node = Chef::Node.new()
@@ -72,7 +72,7 @@ describe Chef::Knife::NodeEnvironment do
 
         begin ; @knife.run ; rescue SystemExit ; end
 
-        @stdout.string.should eq "USAGE: knife node environment NODE ENVIRONMENT\n"
+        @stdout.string.should eq "USAGE: knife node environment set NODE ENVIRONMENT\n"
         @stderr.string.should eq "FATAL: You must specify a node name and an environment.\n"
       end
     end
