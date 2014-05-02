@@ -38,8 +38,8 @@ end
 
 def windows_win2k3?
   return false unless windows?
-
   wmi = WmiLite::Wmi.new
+
   host = wmi.first_of('Win32_OperatingSystem')
   (host['version'] && host['version'].start_with?("5.2"))
 end
