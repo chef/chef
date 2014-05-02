@@ -6,3 +6,9 @@ Example Doc Change:
 Description of the required change.
 -->
 
+#### New knife command: knife node environment set
+You can now easily set the environment for an existing node without editing the node object:
+
+```
+knife node environment set NODE ENVIRONMENT
+```
