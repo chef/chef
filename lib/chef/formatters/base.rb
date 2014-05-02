@@ -21,6 +21,7 @@ require 'chef/event_dispatch/base'
 require 'chef/formatters/error_inspectors'
 require 'chef/formatters/error_descriptor'
 require 'chef/formatters/error_mapper'
+require 'chef/formatters/indentable_output_stream'
 
 class Chef
 
@@ -56,91 +57,6 @@ class Chef
       formatter_class.new(out, err)
     end
 
-    # == Outputter
-    # Handles basic printing tasks like colorizing.
-    # --
-    # TODO: Duplicates functionality from knife, upfactor.
-    class Outputter
-
-      attr_reader :out
-      attr_reader :err
-      attr_accessor :indent
-      attr_reader :line_started
-
-      def initialize(out, err)
-        @out, @err = out, err
-        @indent = 0
-        @line_started = false
-      end
-
-      def highline
-        @highline ||= begin
-          require 'highline'
-          HighLine.new
-        end
-      end
-
-      # Print text.  This will start a new line and indent if necessary
-      # but will not terminate the line (future print and puts statements
-      # will start off where this print left off).
-      def color(string, *colors)
-        if !@line_started
-          @out.print ' ' * indent
-          @line_started = true
-        end
-        if string[-1..-1] == "\n"
-          @line_started = false
-        end
-
-        if Chef::Config[:color]
-          @out.print highline.color(string, *colors)
-        else
-          @out.print string
-        end
-      end
-
-      alias :print :color
-
-      # Print a line.  This will continue from the last start_line or print,
-      # or start a new line and indent if necessary.
-      def puts(string, *colors)
-        if !@line_started
-          @out.print ' ' * indent
-        end
-
-        if Chef::Config[:color]
-          @out.puts highline.color(string, *colors)
-        else
-          @out.puts string
-        end
-        @line_started = false
-      end
-
-      # Print an entire line from start to end.  This will terminate any existing
-      # lines and cause indentation.
-      def puts_line(string, *colors)
-        if @line_started
-          @out.puts ''
-          @line_started = false
-        end
-
-        puts(string, *colors)
-      end
-
-      # Print the start of a new line.  This will terminate any existing lines and
-      # cause indentation but will not move to the next line yet (future 'print'
-      # and 'puts' statements will stay on this line).
-      def start_line(string, *colors)
-        if @line_started
-          @out.puts ''
-          @line_started = false
-        end
-        print(string, *colors)
-      end
-
-    end
-
-
     # == Formatters::Base
     # Base class that all formatters should inherit from.
     class Base < EventDispatch::Base
@@ -156,7 +72,7 @@ class Chef
       attr_reader :output
 
       def initialize(out, err)
-        @output = Outputter.new(out, err)
+        @output = IndentableOutputStream.new(out, err)
       end
 
       def puts(*args)
@@ -180,7 +96,7 @@ class Chef
       end
 
       # Input: a Formatters::ErrorDescription object.
-      # Outputs error to SDOUT.
+      # Outputs error to STDOUT.
       def display_error(description)
         puts("")
         description.display(output)
@@ -303,4 +219,3 @@ class Chef
 
   end
 end
-

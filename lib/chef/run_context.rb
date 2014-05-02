@@ -24,6 +24,7 @@ require 'chef/role'
 require 'chef/log'
 require 'chef/recipe'
 require 'chef/run_context/cookbook_compiler'
+require 'chef/event_dispatch/events_output_stream'
 
 class Chef
 
@@ -247,6 +248,27 @@ ERROR_MESSAGE
     # cookbook that is not in the dependency graph. See also: CHEF-4367
     def unreachable_cookbook?(cookbook_name)
       @cookbook_compiler.unreachable_cookbook?(cookbook_name)
+    end
+
+    # Open a stream object that can be printed into and will dispatch to events
+    #
+    # == Arguments
+    # options is a hash with these possible options:
+    # - name: a string that identifies the stream to the user. Preferably short.
+    #
+    # Pass a block and the stream will be yielded to it, and close on its own
+    # at the end of the block.
+    def open_stream(options = {})
+      stream = EventDispatch::EventsOutputStream.new(events, options)
+      if block_given?
+        begin
+          yield stream
+        ensure
+          stream.close
+        end
+      else
+        stream
+      end
     end
 
     private
