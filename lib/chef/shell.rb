@@ -111,6 +111,7 @@ module Shell
       conf.prompt_i       = "chef#{leader(m)} > "
       conf.prompt_n       = "chef#{leader(m)} ?> "
       conf.prompt_s       = "chef#{leader(m)}%l> "
+      conf.use_tracer     = false
     end
   end
 
