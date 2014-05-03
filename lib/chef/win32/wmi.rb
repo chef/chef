@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'win32ole'
 require 'chef/reserved_names'
 
 class Chef
@@ -45,7 +46,12 @@ class Chef
 
       def first_of(wmi_class)
         query_result = start_query("select * from #{wmi_class}")
-        wmi_result_to_snapshot(query_result.first)
+        first_result = nil
+        query_result.each do | record |
+          first_result = record
+          break
+        end
+        first_result.nil? ? nil : wmi_result_to_snapshot(first_result)
       end
 
       private
@@ -55,14 +61,14 @@ class Chef
       end
 
       def new_connection(namespace)
-        locator = WIN32OLE.new("WbemScripting.SWbemLocator")
+        locator = ::WIN32OLE.new("WbemScripting.SWbemLocator")
         locator.ConnectServer('.', namespace)
       end
 
       def wmi_result_to_hash(wmi_object)
         property_map = {}
         wmi_object.properties_.each do |property|
-          property_map[property.name.downcase] = wmi_object.send(property.name)
+          property_map[property.name.downcase] = wmi_object.invoke(property.name)
         end
 
         property_map[:wmi_object] = wmi_object
