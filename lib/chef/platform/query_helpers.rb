@@ -16,8 +16,6 @@
 # limitations under the License.
 #
 
-require 'chef/win32/wmi'
-
 class Chef
   class Platform
 
@@ -33,6 +31,8 @@ class Chef
       def windows_server_2003?
         return false unless windows?
         require 'wmi-lite/wmi'
+
+        require 'chef/win32/wmi'
 
         # CHEF-4888: Work around ruby #2618, expected to be fixed in Ruby 2.1.0
         # https://github.com/ruby/ruby/commit/588504b20f5cc880ad51827b93e571e32446e5db
