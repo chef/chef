@@ -105,7 +105,7 @@ describe Chef::Provider::Package::Rpm do
       end
 
       it "should install package if missing and set to upgrade" do
-        @current_resouce.version("emacs")
+        @current_resource.version("emacs")
         @provider.should_receive(:run_command_with_systems_locale).with({
           :command => "rpm  -U /tmp/emacs-21.4-20.el5.i386.rpm"
         })
