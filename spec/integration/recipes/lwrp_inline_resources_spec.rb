@@ -57,7 +57,8 @@ log_level :warn
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
-      result.stdout.should include(<<EOM)
+      actual = result.stdout.lines.map { |l| l.chomp }.join("\n")
+      expected = <<EOM
   * x_my_machine[me] action create
     * x_do_nothing[a] action create (up to date)
     * x_do_nothing[b] action create (up to date)
@@ -67,6 +68,8 @@ EOM
     * x_do_nothing[b] action create (up to date)
      (up to date)
 EOM
+      expected = expected.lines.map { |l| l.chomp }.join("\n")
+      actual.should include(expected)
       result.error!
     end
   end
