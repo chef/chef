@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/opscode/omnibus-ruby.git
-  revision: 53b57bc80edeb160a712b954ae06c0473578d5fe
+  revision: 3b548ffcdaaaf1b0624465522a71a8df30e86948
   branch: master
   specs:
     omnibus (3.0.0)
@@ -50,7 +50,7 @@ GEM
     ipaddress (0.8.0)
     json (1.8.1)
     mime-types (1.25.1)
-    mixlib-cli (1.4.0)
+    mixlib-cli (1.5.0)
     mixlib-config (2.1.0)
     mixlib-log (1.6.0)
     mixlib-shellout (1.4.0)
