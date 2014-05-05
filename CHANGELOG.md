@@ -26,6 +26,7 @@
 * knife now bootstraps node with the latest current version of chef-client. (CHEF-4911)
 * Add a threaded download queue for synchronizing cookbooks in parallel. (CHEF-4423)
 * Add config options for attribute whitelisting in node.save. (CHEF-3811)
+* Add helper to warn for broken [windows] paths. (CHEF-5322)
 
 ## Last Release: 11.12.0 RC1 (03/31/2014)
 * SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
