@@ -61,7 +61,7 @@ class Chef
 
         def install_package(name, version)
           pkg = "=#{name}-#{version}"
-          shell_out!("cave -L warning resolve -x #{expand_options(@new_resource.options)} #{pkg}")
+          shell_out!("cave -L warning resolve -x#{expand_options(@new_resource.options)} #{pkg}")
         end
 
         def upgrade_package(name, version)
@@ -75,7 +75,7 @@ class Chef
             pkg = "#{@new_resource.package_name}"
           end
 
-          shell_out!("cave -L warning uninstall -x #{expand_options(@new_resource.options)} #{pkg}")
+          shell_out!("cave -L warning uninstall -x#{expand_options(@new_resource.options)} #{pkg}")
         end
 
         def purge_package(name, version)
