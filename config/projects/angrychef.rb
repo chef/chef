@@ -19,8 +19,8 @@
 # without interfering with the regular build/test.
 
 name "angrychef"
-maintainer "Opscode, Inc."
-homepage "http://www.opscode.com"
+maintainer "Chef Software, Inc."
+homepage "http://www.getchef.com"
 
 replaces        "angrychef"
 install_path    "/opt/angrychef"
