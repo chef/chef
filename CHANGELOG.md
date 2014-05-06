@@ -14,6 +14,7 @@
 * User resource now only prints the name during why-run runs. (CHEF-5180)
 * Providers are now set correctly on CloudLinux. (CHEF-5182)
 * -E option now works with single lettered environments (CHEF-3075)
+* Set --run-lock-timeout to wait/bail if another client has the runlock (CHEF-5074)
 * A node's environment can now be set with 'knife node environment set NODE ENVIRONMENT' (CHEF-1910)
 * remote\_file's source attribute does not support DelayedEvaluators (CHEF-5162)
 

@@ -6,6 +6,15 @@ Example Doc Change:
 Description of the required change.
 -->
 
+### --run-lock-timeout for chef-client and chef-solo
+You can now add a timeout for the maximum time a client run waits on another client run to finish.
+The default is to wait indefinitely.
+Setting the run lock timeout to 0 causes the second client run to exit immediately:
+
+```
+chef-client --run-lock-timeout 0
+```
+
 #### New knife command: knife node environment set
 You can now easily set the environment for an existing node without editing the node object:
 
