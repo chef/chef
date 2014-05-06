@@ -15,34 +15,16 @@ provisioner:
 platforms:
   - name: ubuntu-10.04
     run_list: apt::default
-    driver_config:
-        box: opscode-ubuntu-10.04
-        box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-10.04_chef-provisionerless.box
   - name: ubuntu-12.04
     run_list: apt::default
-    driver_config:
-        box: opscode-ubuntu-12.04
-        box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-12.04_chef-provisionerless.box
   - name: ubuntu-12.10
     run_list: apt::default
-    driver_config:
-        box: opscode-ubuntu-12.10
-        box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-12.10_chef-provisionerless.box
   - name: ubuntu-13.04
     run_list: apt::default
-    driver_config:
-        box: opscode-ubuntu-13.04
-        box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-13.04_chef-provisionerless.box
   - name: ubuntu-13.10
     run_list: apt::default
-    driver_config:
-        box: opscode-ubuntu-13.10
-        box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-13.10_chef-provisionerless.box
   - name: ubuntu-14.04
     run_list: apt::default
-    driver_config:
-        box: opscode-ubuntu-14.04
-        box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box
 
 suites:
   - name: chefdk
