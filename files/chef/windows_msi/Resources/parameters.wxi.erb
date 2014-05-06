@@ -3,14 +3,9 @@
   <!--
     Versioning. These have to be changed for upgrades.
   -->
-  <?define MajorVersion="<%= msi_parameters[:major_version] %>" ?>
-  <?define MinorVersion="<%= msi_parameters[:minor_version] %>" ?>
-  <?define MicroVersion="<%= msi_parameters[:micro_version] %>" ?>
-  <?define BuildVersion="<%= msi_parameters[:build_version] %>" ?>
-  <!-- Full version number to display -->
-  <?define VersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.MicroVersion).$(var.BuildVersion)" ?>
-  <!-- Full version number minus BuildVersion..mainly for UI -->
-  <?define DisplayVersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.MicroVersion)" ?>
+  <?define VersionNumber="<%= @msi_version %>" ?>
+  <?define DisplayVersionNumber="<%= @msi_display_version %>" ?>
+
   <?define ChefGemPath="<%= msi_parameters[:chef_gem_path] %>" ?>
   <!--
     Upgrade code HAS to be the same for all updates.

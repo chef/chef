@@ -36,15 +36,6 @@ resources_path File.join(files_path, "chef")
 msi_parameters do
   msi_parameters = { }
 
-  # build_version looks something like this:
-  # dev builds => 11.14.0-alpha.1+20140501194641.git.94.561b564
-  # rel builds => 11.14.0.alpha.1 || 11.14.0
-  versions = build_version.split("-").first.split(".")
-  msi_parameters[:major_version] = versions[0]
-  msi_parameters[:minor_version] = versions[1]
-  msi_parameters[:micro_version] = versions[2]
-  msi_parameters[:build_version] = build_iteration
-
   # Find path in which chef gem is installed to.
   # Note that install_dir is something like: c:\\opscode\\chef
   chef_path_regex = "#{install_path.gsub(File::ALT_SEPARATOR, File::SEPARATOR)}/**/gems/chef-[0-9]*"
