@@ -46,6 +46,7 @@ class Chef
       @runlock_file = lockfile
       @runlock = nil
       @mutex = nil
+      @runpid = nil
     end
 
     # Acquire the system-wide lock. Will block indefinitely if another process
@@ -151,6 +152,7 @@ class Chef
     def reset
       @runlock = nil
       @mutex = nil
+      @runpid = nil
     end
 
     # Since flock mechanism doesn't exist on windows we are using
@@ -166,7 +168,7 @@ class Chef
     end
 
     def runpid
-      runlock.read.strip
+      @runpid ||= runlock.read.strip
     end
 
     def timeout_given?
@@ -178,8 +180,9 @@ class Chef
     end
 
     def exit_from_timeout
+      rp = runpid
       release # Just to be on the safe side...
-      raise Chef::Exceptions::RunLockTimeout.new(time_to_wait, runpid)
+      raise Chef::Exceptions::RunLockTimeout.new(time_to_wait, rp)
     end
   end
 end

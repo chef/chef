@@ -224,12 +224,7 @@ class Chef
         Chef::Log.debug "Forked instance successfully reaped (pid: #{pid})"
         true
       else
-        begin
-          do_run
-        rescue Exception => e
-          Chef::Log.error(e.to_s)
-          exit 1
-        end
+        do_run
       end
     end
 

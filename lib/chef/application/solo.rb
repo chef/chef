@@ -167,7 +167,8 @@ class Chef::Application::Solo < Chef::Application
 
   option :run_lock_timeout,
     :long         => "--run-lock-timeout SECONDS",
-    :description  => "Set maximum duration to wait for another client run to finish, default is indefinitely."
+    :description  => "Set maximum duration to wait for another client run to finish, default is indefinitely.",
+    :proc         => lambda { |s| s.to_i }
 
   attr_reader :chef_client_json
 
