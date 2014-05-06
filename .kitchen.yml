@@ -39,19 +39,15 @@ platforms:
     run_list: apt::default
 
 suites:
-  - name: chefdk
-    run_list:
-      - recipe[omnibus::default]
-    attributes:
-      omnibus:
-        build_user: vagrant
-        build_dir:  /home/vagrant/omnibus-chef
-        install_dir: /opt/chefdk
   - name: chef
-    run_list:
-      - recipe[omnibus::default]
     attributes:
       omnibus:
         build_user: vagrant
-        build_dir:  /home/vagrant/omnibus-chef
         install_dir: /opt/chef
+    run_list: omnibus::default
+  - name: chefdk
+    attributes:
+      omnibus:
+        build_user: vagrant
+        install_dir: /opt/chefdk
+    run_list: omnibus::default
