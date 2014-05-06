@@ -277,6 +277,20 @@ class Chef
       def resource_updated(resource, action)
       end
 
+      # A stream has opened.
+      def stream_opened(stream, options = {})
+      end
+
+      # A stream has closed.
+      def stream_closed(stream, options = {})
+      end
+
+      # A chunk of data from a stream.  The stream is managed by "stream," which
+      # can be any tag whatsoever.  Data in different "streams" may not be placed
+      # on the same line or even sent to the same console.
+      def stream_output(stream, output, options = {})
+      end
+
       # Called before handlers run
       def handlers_start(handler_count)
       end

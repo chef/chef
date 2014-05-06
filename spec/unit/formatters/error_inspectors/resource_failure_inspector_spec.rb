@@ -39,8 +39,8 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
   before do
     @description = Chef::Formatters::ErrorDescription.new("Error Converging Resource:")
     @stdout = StringIO.new
-    @outputter = Chef::Formatters::Outputter.new(@stdout, STDERR)
-    #@outputter = Chef::Formatters::Outputter.new(STDOUT, STDERR)
+    @outputter = Chef::Formatters::IndentableOutputStream.new(@stdout, STDERR)
+    #@outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
 
     Chef::Config.stub(:cookbook_path).and_return([ "/var/chef/cache" ])
   end

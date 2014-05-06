@@ -40,13 +40,37 @@ class Chef
         @provider = Chef::Provider::RemoteFile
       end
 
+      # source can take any of the following as arguments
+      # - A single string argument
+      # - Multiple string arguments
+      # - An array or strings
+      # - A delayed evaluator that evaluates to a string
+      #   or array of strings
+      # All strings must be parsable as URIs.
+      # source returns an array of strings.
       def source(*args)
-        if not args.empty?
-          args = Array(args).flatten
-          validate_source(args)
-          @source = args
-        elsif self.instance_variable_defined?(:@source) == true
-          @source
+        arg = parse_source_args(args)
+        ret = set_or_return(:source,
+                            arg,
+                            { :callbacks => {
+                                :validate_source => method(:validate_source)
+                              }})
+        if ret.is_a? String
+          Array(ret)
+        else
+          ret
+        end
+      end
+
+      def parse_source_args(args)
+        if args.empty?
+          nil
+        elsif args[0].is_a?(Chef::DelayedEvaluator) && args.count == 1
+          args[0]
+        elsif args.any? {|a| a.is_a?(Chef::DelayedEvaluator)} && args.count > 1
+          raise Exceptions::InvalidRemoteFileURI, "Only 1 source argument allowed when using a lazy evaluator"
+        else
+          Array(args).flatten
         end
       end
 
@@ -107,6 +131,7 @@ class Chef
       private
 
       def validate_source(source)
+        source = Array(source).flatten
         raise ArgumentError, "#{resource_name} has an empty source" if source.empty?
         source.each do |src|
           unless absolute_uri?(src)
@@ -114,6 +139,7 @@ class Chef
               "#{src.inspect} is not a valid `source` parameter for #{resource_name}. `source` must be an absolute URI or an array of URIs."
           end
         end
+        true
       end
 
       def absolute_uri?(source)

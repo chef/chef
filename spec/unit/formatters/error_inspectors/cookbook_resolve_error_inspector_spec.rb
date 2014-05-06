@@ -25,8 +25,8 @@ describe Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector do
 
     @description = Chef::Formatters::ErrorDescription.new("Error Resolving Cookbooks for Run List:")
     @outputter_output = StringIO.new
-    @outputter = Chef::Formatters::Outputter.new(@outputter_output, STDERR)
-    # @outputter = Chef::Formatters::Outputter.new(STDOUT, STDERR)
+    @outputter = Chef::Formatters::IndentableOutputStream.new(@outputter_output, STDERR)
+    # @outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
   end
 
   describe "when explaining a 403 error" do

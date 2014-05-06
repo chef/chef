@@ -12,3 +12,4 @@ Example Contribution:
 * **johntdyer**: Catch HTTPServerException for 404 in remote_file retry (CHEF-5116)
 * **Kasen**: Providers are now set correctly on CloudLinux. (CHEF-5182)
 * **viyh**: Made -E option to work with single lettered environments. (CHEF-3075)
+* **JimmyMcCrory**: Added a 'knife node environment set' command. (CHEF-1910)

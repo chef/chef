@@ -20,13 +20,13 @@ require 'chef/knife'
 
 class Chef
   class Knife
-    class NodeEnvironment < Knife
+    class NodeEnvironmentSet < Knife
 
       deps do
         require 'chef/node'
       end
 
-      banner "knife node environment NODE ENVIRONMENT"
+      banner "knife node environment set NODE ENVIRONMENT"
 
       def run
         if @name_args.size < 2

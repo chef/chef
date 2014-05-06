@@ -50,8 +50,18 @@ describe Chef::Resource::RemoteFile do
       @resource.source.should eql([ "http://opscode.com/" ])
     end
 
+    it "should accept a delayed evalutator (string) for the remote file source" do
+      @resource.source Chef::DelayedEvaluator.new {"http://opscode.com/"}
+      @resource.source.should eql([ "http://opscode.com/" ])
+    end
+
     it "should accept an array of URIs for the remote file source" do
       @resource.source([ "http://opscode.com/", "http://puppetlabs.com/" ])
+      @resource.source.should eql([ "http://opscode.com/", "http://puppetlabs.com/" ])
+    end
+
+    it "should accept a delated evaluator (array) for the remote file source" do
+      @resource.source Chef::DelayedEvaluator.new { [ "http://opscode.com/", "http://puppetlabs.com/" ] }
       @resource.source.should eql([ "http://opscode.com/", "http://puppetlabs.com/" ])
     end
 
@@ -60,8 +70,27 @@ describe Chef::Resource::RemoteFile do
       @resource.source.should eql([ "http://opscode.com/", "http://puppetlabs.com/" ])
     end
 
+    it "should only accept a single argument if a delayed evalutor is used" do
+      lambda {
+        @resource.source("http://opscode.com/", Chef::DelayedEvaluator.new {"http://opscode.com/"})
+      }.should raise_error(Chef::Exceptions::InvalidRemoteFileURI)
+    end
+
+    it "should only accept a single array item if a delayed evalutor is used" do
+      lambda {
+        @resource.source(["http://opscode.com/", Chef::DelayedEvaluator.new {"http://opscode.com/"}])
+      }.should raise_error(Chef::Exceptions::InvalidRemoteFileURI)
+    end
+
     it "does not accept a non-URI as the source" do
       lambda { @resource.source("not-a-uri") }.should raise_error(Chef::Exceptions::InvalidRemoteFileURI)
+    end
+
+    it "does not accept a non-URI as the source when read from a delayed evaluator" do
+      lambda {
+        @resource.source(Chef::DelayedEvaluator.new {"not-a-uri"})
+        @resource.source
+      }.should raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
 
     it "should raise an exception when source is an empty array" do

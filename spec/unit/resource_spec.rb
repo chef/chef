@@ -612,7 +612,7 @@ describe Chef::Resource do
     it "should print \"skipped due to action :nothing\" message for doc formatter when action is :nothing" do
       fdoc = Chef::Formatters.new(:doc, STDOUT, STDERR)
       @run_context.stub(:events).and_return(fdoc)
-      fdoc.should_receive(:puts).with(" (skipped due to action :nothing)")
+      fdoc.should_receive(:puts).with(" (skipped due to action :nothing)", anything())
       @resource.should_skip?(:nothing)
     end
 
