@@ -7,6 +7,8 @@ driver:
   customize:
     memory: 2048
     cpus: 4
+  synced_folders:
+    - ['.', '/home/vagrant/omnibus-chef', type: 'rsync']
 
 provisioner:
   name: chef_zero
