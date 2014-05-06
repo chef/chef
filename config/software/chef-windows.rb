@@ -29,36 +29,15 @@ source :git => "git://github.com/opscode/chef"
 
 relative_path "chef"
 
+always_build (self.project.name == "chef-windows")
+
 build do
-  #####################################################################
-  #
-  # nasty nasty nasty hack for setting artifact version
-  #
-  #####################################################################
-  #
-  # since omnibus-ruby is not architected to intentionally let the
-  # software definitions define the #build_version and
-  # #build_iteration of the package artifact, we're going to implement
-  # a temporary hack here that lets us do so. this type of use case
-  # will become a feature of omnibus-ruby in the future, but in order
-  # to get things shipped, we'll hack it up here.
-  #
-  # <3 Stephen
-  #
-  #####################################################################
+  # Nasty hack to set the artifact version until this gets fixed:
+  # https://github.com/opscode/omnibus-ruby/issues/134
   block do
     project = self.project
     if project.name == "chef-windows"
-      git_cmd = "git describe --tags"
-      src_dir = self.project_dir
-      shell = Mixlib::ShellOut.new(git_cmd,
-                                   :cwd => src_dir)
-      shell.run_command
-      shell.error!
-      build_version = shell.stdout.chomp
-
-      project.build_version   build_version
-      project.build_iteration ENV["CHEF_PACKAGE_ITERATION"].to_i || 1
+      project.build_version Omnibus::BuildVersion.new(self.project_dir).semver
     end
   end
 

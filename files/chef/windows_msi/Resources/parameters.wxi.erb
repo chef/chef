@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <!--
+    Versioning. These have to be changed for upgrades.
+  -->
+  <?define VersionNumber="<%= @msi_version %>" ?>
+  <?define DisplayVersionNumber="<%= @msi_display_version %>" ?>
+
+  <?define ChefGemPath="<%= msi_parameters[:chef_gem_path] %>" ?>
+  <!--
+    Upgrade code HAS to be the same for all updates.
+    Once you've chosen it don't change it.
+  -->
+  <?define UpgradeCode="<%= msi_parameters[:upgrade_code] %>" ?>
+
+</Include>
