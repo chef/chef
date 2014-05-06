@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/opscode/omnibus-ruby.git
-  revision: 3b548ffcdaaaf1b0624465522a71a8df30e86948
+  revision: 6b03bf6ab3dfbbff085e43736cc6f87e23b67f69
   branch: master
   specs:
     omnibus (3.0.0)
@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: 98b0838cf0085b41539c4b2bbf47f9c089b7604e
+  revision: a8fd96f37b3a1278e2cb85b9aafcc33c7a599b89
   branch: master
   specs:
     omnibus-software (0.0.1)
@@ -27,7 +27,7 @@ GEM
       cabin (> 0)
     backports (3.6.0)
     cabin (0.6.1)
-    chef-sugar (1.2.6)
+    chef-sugar (1.3.0)
     childprocess (0.5.3)
       ffi (~> 1.0, >= 1.0.11)
     clamp (0.6.3)
