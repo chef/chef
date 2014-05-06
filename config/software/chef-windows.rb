@@ -89,5 +89,9 @@ build do
        "-n #{install_dir}/bin",
        "--no-rdoc --no-ri"].join(" ")
 
-  bundle "install", :env => { "PATH" => "#{install_dir}/embedded/bin;#{install_dir}/embedded/mingw/bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem"}
+  # Depending on which shell is being used, the path environment variable can
+  # be "PATH" or "Path". If *both* are set, only one is honored.
+  path_key = ENV.keys.grep(/\Apath\Z/i).first
+
+  bundle "install", :env => { path_key => "#{install_dir}\\embedded\\bin;#{install_dir}\\embedded\\mingw\\bin;C:\\Windows\\system32;C:\\Windows;C:\\Windows\\System32\\Wbem"}
 end
