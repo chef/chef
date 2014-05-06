@@ -36,7 +36,7 @@ override :libxml2,   version: "2.9.1"
 override :libxslt,   version: "1.1.28"
 override :nokogiri,  version: "1.6.1"
 override :ruby,      version: "2.1.1"
-override :'ruby-windows', version: "2.0.0-p451", source: {md5: "37feadb0230e7f475a8591d1807ecfec"}
+override :'ruby-windows', version: "2.0.0-p451"
 override :rubygems,  version: "2.2.1"
 override :yajl,      version: "1.2.0"
 override :zlib,      version: "1.2.8"
