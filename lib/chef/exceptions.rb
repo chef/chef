@@ -321,5 +321,13 @@ class Chef
         super "This functionality is not supported on platform #{platform}."
       end
     end
+
+    # Raised when Chef::Config[:run_lock_timeout] is set and some other client run fails
+    # to release the run lock becure Chef::Config[:run_lock_timeout] seconds pass.
+    class RunLockTimeout < RuntimeError
+      def initialize(duration, blocking_pid)
+        super "Unable to acquire lock. Waited #{duration} seconds for #{blocking_pid} to release."
+      end
+    end
   end
 end

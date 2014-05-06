@@ -547,6 +547,11 @@ class Chef
     # the directory that files are going to reside.
     default :file_staging_uses_destdir, false
 
+    # Exit if another run is in progress and the chef-client is unable to
+    # get the lock before time expires. If nil, no timeout is enforced. (Exits
+    # immediately if 0.)
+    default :run_lock_timeout, nil
+
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with
     # omnibus. This is used to locate the cacert.pem file on windows.
