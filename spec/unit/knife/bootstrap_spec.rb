@@ -376,6 +376,12 @@ describe Chef::Knife::Bootstrap do
       @knife.run
     end
 
+    it "raises the exception if config[:ssh_password] is set and an authentication exception is raised" do
+      @knife.config[:ssh_password] = "password"
+      @knife_ssh.should_receive(:run).and_raise(Net::SSH::AuthenticationFailed)
+      lambda { @knife.run }.should raise_error(Net::SSH::AuthenticationFailed)
+    end
+
     context "Chef::Config[:encrypted_data_bag_secret] is set" do
       let(:secret_file) { File.join(CHEF_SPEC_DATA, 'bootstrap', 'encrypted_data_bag_secret') }
       before { Chef::Config[:encrypted_data_bag_secret] = secret_file }
