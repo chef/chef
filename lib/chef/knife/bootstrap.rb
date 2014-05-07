@@ -94,6 +94,10 @@ class Chef
         :description => "Do not proxy locations for the node being bootstrapped; this option is used internally by Opscode",
         :proc => Proc.new { |np| Chef::Config[:knife][:bootstrap_no_proxy] = np }
 
+      option :chef_no_peer_verify,
+        :long => "--chef-no-peer-verify",
+        :description => "Disables ssl peer verification in client configuration"
+
       option :distro,
         :short => "-d DISTRO",
         :long => "--distro DISTRO",
