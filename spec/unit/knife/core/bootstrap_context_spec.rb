@@ -102,6 +102,13 @@ EXPECTED
     end
   end
 
+  describe "when disabling SSL peer verification" do
+    let(:config){ {:chef_no_peer_verify => true }}
+    it "supplies --chef-no-peer-verify as a flag to indicate disabling peer verification"
+      bootstrap_context.config_content.should match(/ssl_verify_mode \:verify_none/)
+    end
+  end
+  
   describe "when installing an explicit version of chef" do
     let(:chef_config) do
       {
