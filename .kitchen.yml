@@ -7,57 +7,47 @@ driver:
   customize:
     memory: 2048
     cpus: 4
+  synced_folders:
+    - ['.', '/home/vagrant/omnibus-chef', type: 'rsync']
 
 provisioner:
   name: chef_zero
   require_chef_omnibus: true
 
 platforms:
+  - name: centos-5.10
+    run_list: yum-epel::default
+  - name: centos-6.5
+    run_list: yum-epel::default
+  - name: debian-7.2.0
+    run_list: apt::default
+  - name: debian-6.0.8
+    run_list: apt::default
+  - name: freebsd-9.2
+    run_list: freebsd::portsnap
   - name: ubuntu-10.04
     run_list: apt::default
-    driver_config:
-        box: opscode-ubuntu-10.04
-        box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-10.04_chef-provisionerless.box
   - name: ubuntu-12.04
     run_list: apt::default
-    driver_config:
-        box: opscode-ubuntu-12.04
-        box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-12.04_chef-provisionerless.box
   - name: ubuntu-12.10
     run_list: apt::default
-    driver_config:
-        box: opscode-ubuntu-12.10
-        box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-12.10_chef-provisionerless.box
   - name: ubuntu-13.04
     run_list: apt::default
-    driver_config:
-        box: opscode-ubuntu-13.04
-        box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-13.04_chef-provisionerless.box
   - name: ubuntu-13.10
     run_list: apt::default
-    driver_config:
-        box: opscode-ubuntu-13.10
-        box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-13.10_chef-provisionerless.box
   - name: ubuntu-14.04
     run_list: apt::default
-    driver_config:
-        box: opscode-ubuntu-14.04
-        box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box
 
 suites:
-  - name: chefdk
-    run_list:
-      - recipe[omnibus::default]
-    attributes:
-      omnibus:
-        build_user: vagrant
-        build_dir:  /home/vagrant/omnibus-chef
-        install_dir: /opt/chefdk
   - name: chef
-    run_list:
-      - recipe[omnibus::default]
     attributes:
       omnibus:
         build_user: vagrant
-        build_dir:  /home/vagrant/omnibus-chef
         install_dir: /opt/chef
+    run_list: omnibus::default
+  - name: chefdk
+    attributes:
+      omnibus:
+        build_user: vagrant
+        install_dir: /opt/chefdk
+    run_list: omnibus::default
