@@ -13,3 +13,4 @@ Example Contribution:
 * **Kasen**: Providers are now set correctly on CloudLinux. (CHEF-5182)
 * **viyh**: Made -E option to work with single lettered environments. (CHEF-3075)
 * **JimmyMcCrory**: Added a 'knife node environment set' command. (CHEF-1910)
+* **hongbin**: Made bootstrap report authentication exceptions. (CHEF-5161)
