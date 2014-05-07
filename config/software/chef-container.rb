@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2012-2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,6 @@
 #
 
 name "chef-container"
-maintainer "Opscode, Inc."
-homepage "http://www.opscode.com"
+default_version "0.1.0"
 
-install_path     "/opt/chef"
-build_version    Omnibus::BuildVersion.new.git_describe
-build_iteration  1
-package_name     "chef-container"
-resources_path   File.join(files_path, name)
-
-override :berkshelf, version: "master"
-
-dependency "preparation"
-dependency "chef"
 dependency "berkshelf"
-dependency "chef-init"
-dependency "version-manifest"

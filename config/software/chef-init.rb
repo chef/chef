@@ -83,9 +83,32 @@ build do
 
 PATH=#{install_dir}/bin:#{install_dir}/embedded/bin:/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin
 
-# If run_list was passed in via ENV VAR, then run chef-client -z
-exec env - PATH=$PATH \
-  chef-client -z -o $CHEF_RUN_LIST
+# Setup first run directory
+mkdir -p /etc/chef/first-run
+cd /etc/chef/first-run
+
+# If the user passes a Berksfile through ENV VAR
+if [ "$BERKSFILE" ]; then
+
+  # Create berkshelf directory
+  mkdir -p /etc/chef/first-run/.berkshelf
+  echo -e "$BERKSHELF_PATH"
+
+  echo -e "$BERKSFILE"
+
+  # Save the Berksfile
+  echo -e "$BERKSFILE" >> /etc/chef/first-run/Berksfile
+
+  # Vendor the cookbooks
+  exec env - PATH=$PATH BERKSHELF_PATH=/etc/chef/first-run/.berkshelf \
+    berks vendor /etc/chef/first-run/cookbooks 
+fi
+
+if [ "$CHEF_RUN_LIST" ]; then
+  # Execute chef-local-mode
+  exec env - PATH=$PATH \
+    chef-client -z -o $CHEF_RUN_LIST
+fi
 
 # Start the other services
 exec env - PATH=$PATH \
