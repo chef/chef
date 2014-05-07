@@ -51,3 +51,11 @@ suites:
         build_user: vagrant
         install_dir: /opt/chefdk
     run_list: omnibus::default
+  - name: chef-container
+    attributes:
+      omnibus:
+        build_user: vagrant
+        install_dir: /opt/chef
+    run_list: 
+      - omnibus::default
+      - docker::default
