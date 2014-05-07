@@ -37,14 +37,14 @@ class Chef
       def self.build_from_file(cookbook_name, filename, run_context)
         rname = filename_to_qualified_string(cookbook_name, filename)
 
-        # Add log entry if we override an existing light-weight resource.
+        # Add log entry if we override an existing lightweight resource.
         class_name = convert_to_class_name(rname)
         if Resource.strict_const_defined?(class_name)
           old_class = Resource.send(:remove_const, class_name)
           # CHEF-3432 -- Chef::Resource keeps a list of subclasses; need to
           # remove old ones from the list when replacing.
           resource_classes.delete(old_class)
-          Chef::Log.info("#{class_name} light-weight resource already initialized -- overriding!")
+          Chef::Log.info("#{class_name} lightweight resource already initialized -- overriding!")
         end
 
         resource_class = Class.new(self)
