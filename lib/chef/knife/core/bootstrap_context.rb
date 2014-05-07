@@ -66,9 +66,13 @@ log_location     STDOUT
 chef_server_url  "#{@chef_config[:chef_server_url]}"
 validation_client_name "#{@chef_config[:validation_client_name]}"
 CONFIG
-          if @config[:chef_no_peer_verify]
-            client_rb << %Q{ssl_verify_mode :verify_none\n}
+          if @config[:disable_api_cert_verification]
+            client_rb << %Q{verify_api_cert false\n}
           else
+            client_rb << %Q{verify_api_cert true\n}
+          end
+
+          if @config[:client_ssl_peer_verify]
             client_rb << %Q{ssl_verify_mode :verify_peer\n}
           end
 
