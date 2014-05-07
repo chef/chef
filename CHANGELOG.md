@@ -18,6 +18,7 @@
 * A node's environment can now be set with 'knife node environment set NODE ENVIRONMENT' (CHEF-1910)
 * remote\_file's source attribute does not support DelayedEvaluators (CHEF-5162)
 * `option` attribute of mount resource now supports lazy evaluation. (CHEF-5163)
+* `force_unlink` now only unlinks if the file already exists. (CHEF-5015)
 
 ## Last Release: 11.12.0 RC1 (03/31/2014)
 * SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
