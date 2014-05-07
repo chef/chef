@@ -81,16 +81,17 @@ class Chef
       end
 
       def options(arg=nil)
-        if arg.is_a?(String)
-          converted_arg = arg.gsub(/,/, ' ').split(/ /)
+        ret = set_or_return(
+                            :options,
+                            arg,
+                            :kind_of => [ Array, String ]
+                            )
+
+        if ret.is_a? String
+          ret.gsub(/,/, ' ').split(/ /)
         else
-          converted_arg = arg
+          ret
         end
-        set_or_return(
-          :options,
-          converted_arg,
-          :kind_of => [ Array ]
-        )
       end
 
       def dump(arg=nil)
@@ -162,4 +163,3 @@ class Chef
     end
   end
 end
-
