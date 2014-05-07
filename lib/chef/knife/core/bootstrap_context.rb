@@ -66,7 +66,7 @@ log_location     STDOUT
 chef_server_url  "#{@chef_config[:chef_server_url]}"
 validation_client_name "#{@chef_config[:validation_client_name]}"
 CONFIG
-          if @config[:disable_api_cert_verification]
+          if @config[:disable_api_cert_verify]
             client_rb << %Q{verify_api_cert false\n}
           else
             client_rb << %Q{verify_api_cert true\n}

@@ -103,8 +103,8 @@ EXPECTED
   end
 
   describe "when disabling SSL cert verification against Chef server" do
-    let(:config){ {:disable_api_cert_verification => true }}
-    it "supplies --disable-api-cert-verification as a flag to disable SSL cert verification against Chef"
+    let(:config){ {:disable_api_cert_verify => true }}
+    it "supplies --disable-api-cert-verify as a flag to disable SSL cert verification against Chef"
       bootstrap_context.config_content.should match(/verify_api_cert false/)
     end
   end
