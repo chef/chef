@@ -123,6 +123,15 @@ describe Chef::Runner do
     @runner.converge
   end
 
+  it "should add each executed resource to the executed_resource_collection" do
+    Chef::Platform.should_receive(:find_provider_for_node).once.and_return(Chef::Provider::SnakeOil)
+    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
+    provider.should_receive(:action_sell).once.and_return(true)
+    Chef::Provider::SnakeOil.should_receive(:new).once.and_return(provider)
+    @run_context.executed_resource_collection.should_receive('<<').once
+    @runner.converge
+  end
+
   it "should raise exceptions as thrown by a provider" do
     provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
     Chef::Provider::SnakeOil.stub(:new).once.and_return(provider)

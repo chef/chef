@@ -49,6 +49,11 @@ class Chef
     # recipes, which is triggered by #load. (See also: CookbookCompiler)
     attr_accessor :resource_collection
 
+    # A Chef::ResourceCollection that holds all resources that are actually
+    # executed during this run. This includes any embedded resources executed
+    # inside a LWRP that uses 'use_inline_resources'
+    attr_accessor :executed_resource_collection
+
     # A Hash containing the immediate notifications triggered by resources
     # during the converge phase of the chef run.
     attr_accessor :immediate_notification_collection
@@ -69,6 +74,7 @@ class Chef
       @node = node
       @cookbook_collection = cookbook_collection
       @resource_collection = Chef::ResourceCollection.new
+      @executed_resource_collection = Chef::ResourceCollection.new
       @immediate_notification_collection = Hash.new {|h,k| h[k] = []}
       @delayed_notification_collection = Hash.new {|h,k| h[k] = []}
       @definitions = Hash.new
