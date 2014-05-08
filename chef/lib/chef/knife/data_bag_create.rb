@@ -40,6 +40,11 @@ class Chef
       :long => "--secret-file SECRET_FILE",
       :description => "A file containing the secret key to use to encrypt data bag item values"
 
+      option :local_file,
+      :short => "-l",
+      :long => "--local-file",
+      :description => "Assume ITEM is a local file to read from"
+
       def read_secret
         if config[:secret]
           config[:secret]
@@ -56,6 +61,34 @@ class Chef
         config[:secret] || config[:secret_file]
       end
 
+      def local_create
+        path = File.expand_path(@data_bag_item_name)
+        if File.exists?(path)
+          ui.fatal("#{path} already exists")
+          exit 1
+        end
+
+        real_item_name = File.basename(@data_bag_item_name, '.json')
+        create_object({ "id" => real_item_name }, "data_bag_item[#{real_item_name}]") do |output|
+          item = Chef::DataBagItem.from_hash(
+                   if use_encryption
+                     Chef::EncryptedDataBagItem.encrypt_data_bag_item(output, read_secret)
+                   else
+                     output
+                   end)
+          item.data_bag(@data_bag_name)
+          # Unfortunately .to_hash on DBIs in Chef 10 doesn't clean
+          # out the extra metadata as well as on Chef 11, so we need
+          # to clean extra ourselves to ensure we can read this later.
+          data = item.to_hash
+          data.delete('chef_type')
+          data.delete('data_bag')
+          data.delete('data_bag_item')
+          File.write(path, data.to_json)
+          ui.info("Saved data_bag_item #{path}")
+        end
+      end
+
       def run
         @data_bag_name, @data_bag_item_name = @name_args
 
@@ -63,6 +96,11 @@ class Chef
           show_usage
           ui.fatal("You must specify a data bag name")
           exit 1
+        end
+
+        if options[:local_file]
+          local_create
+          return
         end
 
         # create the data bag

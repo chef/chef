@@ -3,6 +3,7 @@
 ## Unreleased
 
 * `options` attribute of mount resource now supports lazy evaluation. (CHEF-5163)
+* Knife now supports creating, editing, and showing cookbooks from local files 
 
 ## 10.32.2
 

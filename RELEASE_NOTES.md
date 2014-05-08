@@ -8,7 +8,6 @@ Details about the thing that changed that needs to get included in the Release N
 -->
 # Chef Client 10.x Release Notes:
 
-* Service Provider for MacOSX now supports `enable` and `disable`
-* SIGTERM will now terminate non-daemon mode Chef runs (CHEF-5172)
+* Knife now supports creating, editing, and showing cookbooks from local files 
 
 # Chef Client 10.x Breaking Changes:
