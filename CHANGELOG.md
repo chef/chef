@@ -20,6 +20,7 @@
 * `option` attribute of mount resource now supports lazy evaluation. (CHEF-5163)
 * `force_unlink` now only unlinks if the file already exists. (CHEF-5015)
 * bootstrap no reports authentication failures. (CHEF-5161)
+* `chef_gem` resource now uses omnibus gem binary. (CHEF-5092)
 * `freebsd_package` resource now uses the brand new "pkgng" package manager when available. (CHEF-4637)
 
 ## Last Release: 11.12.0 RC1 (03/31/2014)
