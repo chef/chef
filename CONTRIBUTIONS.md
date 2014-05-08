@@ -4,7 +4,11 @@ This file is reset every time a new release is done. The contents of this file a
 Example Contribution:
 * **kalistec**: Improved file resource greatly.
 -->
-# Chef Client 10.x Contributions:
+# Chef Client 10.34.0 Contributions:
+* 
+
+
+# Chef Client 10.32.2 Contributions:
 
 * **jaymzh**: Service Provider for MacOSX now supports `enable` and `disable`
 * **jaymzh**: Chef now gracefully handles corrupted cache files.

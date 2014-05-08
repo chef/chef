@@ -1,7 +1,10 @@
-before_install: sudo apt-get install -qq libgecode-dev
 rvm:
   - 1.8.7
   - 1.9.3
   - 2.0.0
+
 gemfile: chef/Gemfile
+
+bundler_args: --without server
+
 script: (cd chef && bundle exec rspec --format progress)
