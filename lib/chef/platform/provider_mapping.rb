@@ -57,7 +57,6 @@ class Chef
             :freebsd => {
               :default => {
                 :group   => Chef::Provider::Group::Pw,
-                :package => Chef::Provider::Package::Freebsd,
                 :service => Chef::Provider::Service::Freebsd,
                 :user    => Chef::Provider::User::Pw,
                 :cron    => Chef::Provider::Cron

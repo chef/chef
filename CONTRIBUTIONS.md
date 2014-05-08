@@ -14,3 +14,5 @@ Example Contribution:
 * **viyh**: Made -E option to work with single lettered environments. (CHEF-3075)
 * **JimmyMcCrory**: Added a 'knife node environment set' command. (CHEF-1910)
 * **hongbin**: Made bootstrap report authentication exceptions. (CHEF-5161)
+* **liseki**: Made `freebsd_package` resource use the brand new "pkgng" package
+  manager when available.(CHEF-4637)
