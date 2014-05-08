@@ -57,6 +57,7 @@ describe Chef::Knife::Core::BootstrapContext do
 log_location     STDOUT
 chef_server_url  "http://chef.example.com:4444"
 validation_client_name "chef-validator-testing"
+verify_api_cert true
 # Using default node name (fqdn)
 EXPECTED
     bootstrap_context.config_content.should eq expected
