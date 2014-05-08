@@ -154,6 +154,26 @@ class Chef
         :description => "A file containing the secret key to use to encrypt data bag item values",
         :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
 
+      option :bootstrap_url,
+        :long        => "--bootstrap-url URL",
+        :description => "URL to a custom installation script",
+        :proc        => Proc.new { |u| Chef::Config[:knife][:bootstrap_url] = u }
+
+      option :bootstrap_install_command,
+        :long        => "--bootstrap-install-command COMMANDS",
+        :description => "Custom command to install chef-client",
+        :proc        => Proc.new { |ic| Chef::Config[:knife][:bootstrap_install_command] = ic }
+
+      option :bootstrap_wget_options,
+        :long        => "--bootstrap-wget-options OPTIONS",
+        :description => "Add options to wget when installing chef-client",
+        :proc        => Proc.new { |wo| Chef::Config[:knife][:bootstrap_wget_options] = wo }
+
+      option :bootstrap_curl_options,
+        :long        => "--bootstrap-curl-options OPTIONS",
+        :description => "Add options to curl when install chef-client",
+        :proc        => Proc.new { |co| Chef::Config[:knife][:bootstrap_curl_options] = co }
+
       def find_template(template=nil)
         # Are we bootstrapping using an already shipped template?
         if config[:template_file]

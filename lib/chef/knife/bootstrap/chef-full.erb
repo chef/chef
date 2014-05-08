@@ -19,20 +19,23 @@ exists() {
   fi
 }
 
-install_sh="https://www.opscode.com/chef/install.sh"
-version_string="-v <%= chef_version %>"
-
-if ! exists /usr/bin/chef-client; then
-  echo "Installing Chef Client..."
-  if exists wget; then
-    bash <(wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %> ${install_sh} -O -) ${version_string}
-  elif exists curl; then
-    bash <(curl -L <%= "--proxy \"#{knife_config[:bootstrap_proxy]}\" " if knife_config[:bootstrap_proxy] %> ${install_sh}) ${version_string}
-  else
-    echo "Neither wget nor curl found. Please install one and try again." >&2
-    exit 1
+<% if knife_config[:bootstrap_install_command] %>
+  <%= knife_config[:bootstrap_install_command] %>
+<% else %>
+  install_sh="<%= knife_config[:bootstrap_url] ? knife_config[:bootstrap_url] : "https://www.opscode.com/chef/install.sh" %>"
+  version_string="-v <%= chef_version %>"
+  if ! exists /usr/bin/chef-client; then
+    echo "Installing Chef Client..."
+    if exists wget; then
+      bash <(wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %> <%= knife_config[:bootstrap_wget_options] %> ${install_sh} -O -) ${version_string}
+    elif exists curl; then
+      bash <(curl -L <%= "--proxy \"#{knife_config[:bootstrap_proxy]}\" " if knife_config[:bootstrap_proxy] %> <%= knife_config[:bootstrap_curl_options] %> ${install_sh}) ${version_string}
+    else
+      echo "Neither wget nor curl found. Please install one and try again." >&2
+      exit 1
+    fi
   fi
-fi
+<% end %>
 
 mkdir -p /etc/chef
 

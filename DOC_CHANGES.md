@@ -27,3 +27,9 @@ You can now easily set the environment for an existing node without editing the 
 ```
 knife node environment set NODE ENVIRONMENT
 ```
+### New configurable knife bootstrap options for chef-full template
+You can now modify the chef-full template with the following options in `knife bootstrap`:
+
+* `--bootstrap-install-sh URL` fetches and executes an installation bash script from the provided URL.
+* `--bootstrap-wget-options OPTIONS` and `--bootstrap-curl-options OPTIONS` allow arbitrary options to be added to wget and curl.
+* `--bootstrap-install-command COMMAND` can be used to execute a custom chef-client installation command sequence. Take note that this cannot be used in conjunction with the above options.
