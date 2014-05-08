@@ -51,4 +51,4 @@ Apache 2 Licensed. See LICENSE for full details.
 
 ## See Also
 * `Process.spawn` in Ruby 1.9
-* [https://github.com/rtomayko/posix-spawn](posix-spawn)
+* [https://github.com/rtomayko/posix-spawn](https://github.com/rtomayko/posix-spawn)
