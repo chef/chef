@@ -22,6 +22,7 @@
 * bootstrap no reports authentication failures. (CHEF-5161)
 * `chef_gem` resource now uses omnibus gem binary. (CHEF-5092)
 * `freebsd_package` resource now uses the brand new "pkgng" package manager when available. (CHEF-4637)
+* chef-full template gets knife options to override install script url, add wget/curl cli options, and custom install commands (CHEF-4697)
 
 ## Last Release: 11.12.0 RC1 (03/31/2014)
 * SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
