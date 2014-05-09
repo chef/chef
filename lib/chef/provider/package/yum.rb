@@ -1066,9 +1066,11 @@ class Chef
           @current_resource.package_name(@new_resource.package_name)
 
           if @new_resource.source
-            unless ::File.exists?(@new_resource.source)
-              raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
-            end
+            @new_resource.source.split(' ').each do |sourcefile|
+              unless ::File.exists?(@new_resource.source)
+                raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
+              end
+            end 
 
             Chef::Log.debug("#{@new_resource} checking rpm status")
             shell_out!("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}", :timeout => Chef::Config[:yum_timeout]).stdout.each_line do |line|
