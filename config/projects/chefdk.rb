@@ -21,8 +21,16 @@ maintainer "Chef Software, Inc."
 homepage   "http://www.getchef.com"
 
 install_path    "/opt/chefdk"
-build_version   Omnibus::BuildVersion.new.semver
+
 build_iteration 1
+build_version do
+  # Use chefdk to determine the build version
+  source :git, from_dependency: 'chefdk'
+
+  # Set a Rubygems style version
+  output_format :git_describe
+end
+
 mac_pkg_identifier "com.getchef.pkg.chefdk"
 resources_path File.join(files_path, "chefdk")
 

@@ -24,9 +24,21 @@ homepage "http://www.getchef.com"
 #       Native gems will use gcc which will barf on files with spaces,
 #       which is only fixable if everyone in the world fixes their Makefiles
 install_path    "c:\\opscode\\chef"
-build_version   Omnibus::BuildVersion.new.git_describe
+
 build_iteration 1
+build_version do
+  # Use chef to determine the build version
+  source :git, from_dependency: 'chef-windows'
+
+  # Set a Rubygems style version
+  output_format :git_describe
+end
+
 package_name    "chef-client"
+
+# You can pin the components to specific versions as below
+# override :"chef-windows", version: "11.12.4"
+# override :ohai, version: "7.0.4"
 
 dependency "preparation"
 dependency "chef-windows"

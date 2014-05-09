@@ -24,8 +24,15 @@ homepage "http://www.getchef.com"
 #       Native gems will use gcc which will barf on files with spaces,
 #       which is only fixable if everyone in the world fixes their Makefiles
 install_path    "c:\\opscode\\chefdk"
-build_version   Omnibus::BuildVersion.new.semver
+
 build_iteration 1
+build_version do
+  # Use chefdk to determine the build version
+  source :git, from_dependency: 'chefdk'
+
+  # Set a Rubygems style version
+  output_format :git_describe
+end
 
 package_name    "chef-dk"
 

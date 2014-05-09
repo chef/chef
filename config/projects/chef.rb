@@ -20,13 +20,23 @@ friendly_name "Chef Client"
 maintainer "Chef Software, Inc."
 homepage "http://www.getchef.com"
 
-replaces        "chef-full"
-install_path    "/opt/chef"
-build_version   Omnibus::BuildVersion.new.git_describe
 build_iteration 1
-resources_path File.join(files_path, "chef")
+build_version do
+  # Use chef to determine the build version
+  source :git, from_dependency: 'chef'
 
+  # Set a Rubygems style version
+  output_format :git_describe
+end
+
+install_path    "/opt/chef"
+
+resources_path File.join(files_path, "chef")
 mac_pkg_identifier "com.getchef.pkg.chef"
+
+# You can pin the components to specific versions as below
+# override :chef, version: "11.12.4"
+# override :ohai, version: "7.0.4"
 
 dependency "preparation"
 dependency "chef"
