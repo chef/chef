@@ -42,6 +42,11 @@ class Chef
         :description => "A file containing the secret key to use to encrypt data bag item values",
         :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
 
+      option :local_file,
+        :short => "-l",
+        :long => "--local-file",
+        :description => "Assume ITEM is a local file to read from"
+
       def read_secret
         if config[:secret]
           config[:secret]
@@ -67,6 +72,17 @@ class Chef
         end
       end
 
+      def local_load_item(path)
+        raw_item = JSON.parse(IO.read(path))
+        item = Chef::DataBagItem.from_hash(raw_item)
+        item.data_bag(@name_args[0])
+        if use_encryption
+          Chef::EncryptedDataBagItem.new(item, read_secret).to_hash
+        else
+          item
+        end
+      end
+
       def edit_item(item)
         output = edit_data(item)
         if use_encryption
@@ -76,12 +92,31 @@ class Chef
         end
       end
 
+      def local_edit(path)
+        item = local_load_item(path)
+        output = edit_item(item)
+        File.write(path, output.to_json)
+        stdout.puts("Saved data_bag_item #{path}")
+        ui.output(output) if config[:print_after]
+      end
+
       def run
         if @name_args.length != 2
           stdout.puts "You must supply the data bag and an item to edit!"
           stdout.puts opt_parser
           exit 1
         end
+
+        if config[:local_file]
+          path = File.expand_path(@name_args[1])
+          unless File.exists?(path)
+            stdout.puts "#{path} not found"
+            stdout.puts opt_parser
+            exit 1
+          end
+          return local_edit(path)
+        end
+
         item = load_item(@name_args[0], @name_args[1])
         output = edit_item(item)
         rest.put_rest("data/#{@name_args[0]}/#{@name_args[1]}", output)
@@ -91,6 +126,3 @@ class Chef
     end
   end
 end
-
-
-

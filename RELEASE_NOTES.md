@@ -22,3 +22,10 @@ CHEF-1761 introduced a regression for signal handling when not in daemon mode
 (see CHEF-5172). Chef will now, once again, exit immediately on SIGTERM if it
 is not in daemon mode, otherwise it will complete it's current run before
 existing.
+
+#### Knife local data bag support
+
+People already use a VCS as the source-of-truth for roles and cookbooks,
+but with encrypted databags it's not possible to do this. This enables
+creating, editing, and showing of databags (encrypted or otherwise) using
+local files.

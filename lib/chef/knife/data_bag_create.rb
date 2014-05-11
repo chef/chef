@@ -42,6 +42,11 @@ class Chef
         :description => "A file containing the secret key to use to encrypt data bag item values",
         :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
 
+      option :local_file,
+        :short => "-l",
+        :long => "--local-file",
+        :description => "Assume ITEM is a local file to read from"
+
       def read_secret
         if config[:secret]
           config[:secret]
@@ -58,22 +63,32 @@ class Chef
         config[:secret] || config[:secret_file]
       end
 
-      def run
-        @data_bag_name, @data_bag_item_name = @name_args
-
-        if @data_bag_name.nil?
-          show_usage
-          ui.fatal("You must specify a data bag name")
+      def local_create
+        path = File.expand_path(@data_bag_item_name)
+        if File.exists?(path)
+          ui.fatal("#{path} already exists")
           exit 1
         end
 
-        begin
-          Chef::DataBag.validate_name!(@data_bag_name)
-        rescue Chef::Exceptions::InvalidDataBagName => e
-          ui.fatal(e.message)
-          exit(1)
+        real_item_name = File.basename(@data_bag_item_name, '.json')
+        create_object({ "id" => real_item_name }, "data_bag_item[#{real_item_name}]") do |output|
+          item = Chef::DataBagItem.from_hash(
+                   if use_encryption
+                     Chef::EncryptedDataBagItem.encrypt_data_bag_item(output, read_secret)
+                   else
+                     output
+                   end)
+          item.data_bag(@data_bag_name)
+          File.open(path, 'w') do |fh|
+            # to hash drops all the internal metadata we'd need to write
+            # to the server, then we to_json it.
+            wf.write(item.to_hash.to_json)
+          end
+          ui.info("Saved data_bag_item #{path}")
         end
+      end
 
+      def remote_create
         # create the data bag
         begin
           rest.post_rest("data", { "name" => @data_bag_name })
@@ -95,6 +110,29 @@ class Chef
             item.data_bag(@data_bag_name)
             rest.post_rest("data/#{@data_bag_name}", item)
           end
+        end
+      end
+
+      def run
+        @data_bag_name, @data_bag_item_name = @name_args
+
+        if @data_bag_name.nil?
+          show_usage
+          ui.fatal("You must specify a data bag name")
+          exit 1
+        end
+
+        begin
+          Chef::DataBag.validate_name!(@data_bag_name)
+        rescue Chef::Exceptions::InvalidDataBagName => e
+          ui.fatal(e.message)
+          exit(1)
+        end
+
+        if config[:local_file]
+          local_create
+        else
+          remote_create
         end
       end
     end
