@@ -61,6 +61,31 @@ class Chef
         config[:secret] || config[:secret_file]
       end
 
+      def remote_create
+        # create the data bag
+        begin
+          rest.post_rest("data", { "name" => @data_bag_name })
+          ui.info("Created data_bag[#{@data_bag_name}]")
+        rescue Net::HTTPServerException => e
+          raise unless e.to_s =~ /^409/
+          ui.info("Data bag #{@data_bag_name} already exists")
+        end
+
+        # if an item is specified, create it, as well
+        if @data_bag_item_name
+          create_object({ "id" => @data_bag_item_name }, "data_bag_item[#{@data_bag_item_name}]") do |output|
+            item = Chef::DataBagItem.from_hash(
+                     if use_encryption
+                       Chef::EncryptedDataBagItem.encrypt_data_bag_item(output, read_secret)
+                     else
+                       output
+                     end)
+            item.data_bag(@data_bag_name)
+            rest.post_rest("data/#{@data_bag_name}", item)
+          end
+        end
+      end
+
       def local_create
         path = File.expand_path(@data_bag_item_name)
         if File.exists?(path)
@@ -84,7 +109,9 @@ class Chef
           data.delete('chef_type')
           data.delete('data_bag')
           data.delete('data_bag_item')
-          File.write(path, data.to_json)
+          File.open(path, 'w') do |fh|
+            fh.write(data.to_json)
+          end
           ui.info("Saved data_bag_item #{path}")
         end
       end
@@ -98,32 +125,10 @@ class Chef
           exit 1
         end
 
-        if options[:local_file]
+        if config[:local_file]
           local_create
-          return
-        end
-
-        # create the data bag
-        begin
-          rest.post_rest("data", { "name" => @data_bag_name })
-          ui.info("Created data_bag[#{@data_bag_name}]")
-        rescue Net::HTTPServerException => e
-          raise unless e.to_s =~ /^409/
-          ui.info("Data bag #{@data_bag_name} already exists")
-        end
-
-        # if an item is specified, create it, as well
-        if @data_bag_item_name
-          create_object({ "id" => @data_bag_item_name }, "data_bag_item[#{@data_bag_item_name}]") do |output|
-            item = Chef::DataBagItem.from_hash(
-                     if use_encryption
-                       Chef::EncryptedDataBagItem.encrypt_data_bag_item(output, read_secret)
-                     else
-                       output
-                     end)
-            item.data_bag(@data_bag_name)
-            rest.post_rest("data/#{@data_bag_name}", item)
-          end
+        else
+          remote_create
         end
       end
     end
