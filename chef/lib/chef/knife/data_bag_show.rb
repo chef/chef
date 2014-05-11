@@ -40,6 +40,11 @@ class Chef
       :long => "--secret-file SECRET_FILE",
       :description => "A file containing the secret key to use to decrypt data bag item values"
 
+      option :local_file,
+      :short => "-l",
+      :long => "--local-file",
+      :description => "Assume ITEM is a local file to read from"
+
       def read_secret
         if config[:secret]
           config[:secret]
@@ -56,16 +61,32 @@ class Chef
         config[:secret] || config[:secret_file]
       end
 
+      def local_load_item(path)
+        raw_item = JSON.parse(IO.read(path))
+        item = Chef::DataBagItem.from_hash(raw_item)
+        item.data_bag(@name_args[0])
+        if use_encryption
+          Chef::EncryptedDataBagItem.new(item, read_secret).to_hash
+        else
+          item
+        end
+      end
+
       def run
         display = case @name_args.length
         when 2
-          if use_encryption
-            raw = Chef::EncryptedDataBagItem.load(@name_args[0],
-                                                  @name_args[1],
-                                                  read_secret)
-            format_for_display(raw.to_hash)
+          if config[:local_file]
+            path = File.expand_path(@name_args[1])
+            format_for_display(local_load_item(path).to_hash)
           else
-            format_for_display(Chef::DataBagItem.load(@name_args[0], @name_args[1]).raw_data)
+            if use_encryption
+              raw = Chef::EncryptedDataBagItem.load(@name_args[0],
+                                                    @name_args[1],
+                                                    read_secret)
+              format_for_display(raw.to_hash)
+            else
+              format_for_display(Chef::DataBagItem.load(@name_args[0], @name_args[1]).raw_data)
+            end
           end
         when 1
           format_list_for_display(Chef::DataBag.load(@name_args[0]))

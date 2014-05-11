@@ -5,7 +5,7 @@ Example Contribution:
 * **kalistec**: Improved file resource greatly.
 -->
 # Chef Client 10.34.0 Contributions:
-* 
+* **jaymzh**: Knife now supports creating, editing, and showing cookbooks from local files 
 
 
 # Chef Client 10.32.2 Contributions:
