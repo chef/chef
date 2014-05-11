@@ -79,32 +79,16 @@ class Chef
                      output
                    end)
           item.data_bag(@data_bag_name)
-          File.write(path, item.to_hash.to_json)
+          File.open(path, 'w') do |fh|
+            # to hash drops all the internal metadata we'd need to write
+            # to the server, then we to_json it.
+            wf.write(item.to_hash.to_json)
+          end
           ui.info("Saved data_bag_item #{path}")
         end
       end
 
-      def run
-        @data_bag_name, @data_bag_item_name = @name_args
-
-        if @data_bag_name.nil?
-          show_usage
-          ui.fatal("You must specify a data bag name")
-          exit 1
-        end
-
-        begin
-          Chef::DataBag.validate_name!(@data_bag_name)
-        rescue Chef::Exceptions::InvalidDataBagName => e
-          ui.fatal(e.message)
-          exit(1)
-        end
-
-        if options[:local_file]
-          local_create
-          return
-        end
-
+      def remote_create
         # create the data bag
         begin
           rest.post_rest("data", { "name" => @data_bag_name })
@@ -126,6 +110,29 @@ class Chef
             item.data_bag(@data_bag_name)
             rest.post_rest("data/#{@data_bag_name}", item)
           end
+        end
+      end
+
+      def run
+        @data_bag_name, @data_bag_item_name = @name_args
+
+        if @data_bag_name.nil?
+          show_usage
+          ui.fatal("You must specify a data bag name")
+          exit 1
+        end
+
+        begin
+          Chef::DataBag.validate_name!(@data_bag_name)
+        rescue Chef::Exceptions::InvalidDataBagName => e
+          ui.fatal(e.message)
+          exit(1)
+        end
+
+        if config[:local_file]
+          local_create
+        else
+          remote_create
         end
       end
     end
