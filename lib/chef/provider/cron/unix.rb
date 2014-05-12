@@ -35,7 +35,7 @@ class Chef
             crontab = stdout.read
             cronerr = stderr.read
           end
-          if status.exitstatus != 0
+          if not status.success?
             raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}, stderr: #{cronerr.chomp}"
           end
           crontab
