@@ -814,22 +814,25 @@ describe Chef::Node do
     describe "save" do
       it "should update a node if it already exists" do
         node.name("monkey")
-        @rest.should_receive(:put_rest).with("nodes/monkey", node).and_return("foo")
+        node.stub(:data_for_save).and_return({})
+        @rest.should_receive(:put_rest).with("nodes/monkey", {}).and_return("foo")
         node.save
       end
 
       it "should not try and create if it can update" do
         node.name("monkey")
-        @rest.should_receive(:put_rest).with("nodes/monkey", node).and_return("foo")
+        node.stub(:data_for_save).and_return({})
+        @rest.should_receive(:put_rest).with("nodes/monkey", {}).and_return("foo")
         @rest.should_not_receive(:post_rest)
         node.save
       end
 
       it "should create if it cannot update" do
         node.name("monkey")
+        node.stub(:data_for_save).and_return({})
         exception = double("404 error", :code => "404")
         @rest.should_receive(:put_rest).and_raise(Net::HTTPServerException.new("foo", exception))
-        @rest.should_receive(:post_rest).with("nodes", node)
+        @rest.should_receive(:post_rest).with("nodes", {})
         node.save
       end
 
@@ -844,6 +847,73 @@ describe Chef::Node do
           node.name("monkey")
           @rest.should_not_receive(:put_rest)
           @rest.should_not_receive(:post_rest)
+          node.save
+        end
+      end
+
+      context "with whitelisted attributes configured" do
+        before do
+          @defaults = {}
+          ["automatic", "default", "normal", "override"].each do |level|
+            option_key = "#{level}_attribute_whitelist".to_sym
+            @defaults[level] = Chef::Config[option_key]
+          end
+        end
+
+        after do
+          @defaults.each do |level, setting|
+            option_key = "#{level}_attribute_whitelist".to_sym
+            Chef::Config[option_key] = setting
+          end
+        end
+
+        it "should only save whitelisted attributes (and subattributes)" do
+          Chef::Config[:automatic_attribute_whitelist] = {
+            "filesystem" => { "/dev/disk0s2" => true }
+          }
+
+          data = {
+            "automatic" => {
+              "filesystem" => {
+                "/dev/disk0s2"   => { "size" => "10mb" },
+                "map - autohome" => { "size" => "10mb" }
+              }
+            }
+          }
+
+          selected_data = {
+            "automatic" => {
+              "filesystem" => {
+                "/dev/disk0s2" => { "size" => "10mb" }
+              }
+            }
+          }
+
+          node.name("picky-monkey")
+          node.stub(:for_json).and_return(data)
+          @rest.should_receive(:put_rest).with("nodes/picky-monkey", selected_data).and_return("foo")
+          node.save
+        end
+
+        it "should not save any attributes if the whitelist is empty" do
+          Chef::Config[:automatic_attribute_whitelist] = {}
+
+          data = {
+            "automatic" => {
+              "filesystem" => {
+                "/dev/disk0s2"   => { "size" => "10mb" },
+                "map - autohome" => { "size" => "10mb" }
+              }
+            }
+          }
+
+          selected_data = {
+            "automatic" => {}
+          }
+
+          node.name("picky-monkey")
+          node.stub(:for_json).and_return(data)
+          @rest.should_receive(:put_rest).with("nodes/picky-monkey", selected_data).and_return("foo")
           node.save
         end
       end
