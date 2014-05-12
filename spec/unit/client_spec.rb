@@ -253,9 +253,11 @@ describe Chef::Client do
       end
 
       def stub_for_node_save
+        node.stub(:data_for_save).and_return(node.for_json)
+
         # --Client#save_updated_node
         Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_node_save)
-        http_node_save.should_receive(:put_rest).with("nodes/#{fqdn}", node).and_return(true)
+        http_node_save.should_receive(:put_rest).with("nodes/#{fqdn}", node.for_json).and_return(true)
       end
 
       def stub_for_run
@@ -614,4 +616,3 @@ describe Chef::Client do
 
   end
 end
-
