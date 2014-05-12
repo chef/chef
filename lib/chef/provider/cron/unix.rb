@@ -33,7 +33,7 @@ class Chef
           status = popen4("crontab -l #{@new_resource.user}") do |pid, stdin, stdout, stderr|
             crontab = stdout.read
           end
-          if status.exitstatus > 1
+          if not status.success?
             raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
           end
           crontab
