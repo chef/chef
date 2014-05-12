@@ -30,6 +30,7 @@ class Chef
         require 'chef/exceptions'
         require 'chef/search/query'
         require 'chef/mixin/shell_out'
+        require 'chef/mixin/command'
         require 'mixlib/shellout'
       end
 

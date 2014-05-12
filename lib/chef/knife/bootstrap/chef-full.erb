@@ -27,9 +27,9 @@ exists() {
   if ! exists /usr/bin/chef-client; then
     echo "Installing Chef Client..."
     if exists wget; then
-      bash <(wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %> <%= knife_config[:bootstrap_wget_options] %> ${install_sh} -O -) ${version_string}
+      bash <(wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %> <%= knife_config[:bootstrap_wget_options] %> ${install_sh} -O -) <%= latest_current_chef_version_string %>
     elif exists curl; then
-      bash <(curl -L <%= "--proxy \"#{knife_config[:bootstrap_proxy]}\" " if knife_config[:bootstrap_proxy] %> <%= knife_config[:bootstrap_curl_options] %> ${install_sh}) ${version_string}
+      bash <(curl -L <%= "--proxy \"#{knife_config[:bootstrap_proxy]}\" " if knife_config[:bootstrap_proxy] %> <%= knife_config[:bootstrap_curl_options] %> ${install_sh}) <%= latest_current_chef_version_string %>
     else
       echo "Neither wget nor curl found. Please install one and try again." >&2
       exit 1
