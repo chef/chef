@@ -552,6 +552,35 @@ class Chef
     # immediately if 0.)
     default :run_lock_timeout, nil
 
+    # A whitelisted map of attribute keys you want sent over the wire when node
+    # data is saved. We will only use the keys in this hash to whitelist attributes;
+    # if the value are anything than another hash, we will ignore them. (You can't
+    # magically morph into a blacklist with "false" as a value in the whitelist.)
+    #
+    # If your data looks like:
+    # { "filesystem" => {
+    #     "/dev/disk0s2" => {
+    #       "size" => "10mb"
+    #     },
+    #     "map - autohome' => {
+    #       "size" => "10mb"
+    #     }
+    #   }
+    # }
+    # And your whitelist looks like:
+    # { "filesystem" => {
+    #     "/dev/disk0s2" => true
+    #   }
+    # }
+    # The entire "map - autohome" subtree will be dropped.
+    #
+    # The default setting is nil, which collects all data. Setting to {} will not
+    # collect any data for save.
+    default :automatic_attribute_whitelist, nil
+    default :default_attribute_whitelist, nil
+    default :normal_attribute_whitelist, nil
+    default :override_attribute_whitelist, nil
+
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with
     # omnibus. This is used to locate the cacert.pem file on windows.
