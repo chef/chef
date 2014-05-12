@@ -24,8 +24,15 @@ homepage "http://www.getchef.com"
 
 replaces        "angrychef"
 install_path    "/opt/angrychef"
-build_version   Omnibus::BuildVersion.new.git_describe
+
 build_iteration 4
+build_version do
+  # Use chef to determine the build version
+  source :git, from_dependency: 'chef'
+
+  # Set a Rubygems style version
+  output_format :git_describe
+end
 
 dependency "preparation"
 dependency "chef"

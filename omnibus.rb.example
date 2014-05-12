@@ -1,3 +1,8 @@
+# TODO: Remove this file when opscode-ci starts using omnibus.rb
+# This file is currently being used in omnibus build pipelines only.
+# Once opscode-ci cookbook is updated to use omnibus.rb this file
+# should be removed.
+
 # s3_access_key "something"
 # s3_secret_key "something"
 
