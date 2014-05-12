@@ -41,7 +41,7 @@ class Chef
           end
 
           unless dynamic_resource?
-            error_description.section("Resource Declaration:", sensitive ? "suppressed sensitive resource output" : recipe_snippet)
+            error_description.section("Resource Declaration:", resource.sensitive ? "suppressed sensitive resource output" : recipe_snippet)
           end
 
           error_description.section("Compiled Resource:", "#{resource.to_text}")
