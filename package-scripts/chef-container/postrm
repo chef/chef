@@ -21,7 +21,7 @@ fi
 # Clean up binary symlinks if they exist
 # see: http://tickets.opscode.com/browse/CHEF-3022
 if [ ! -f /etc/redhat-release -o "x$1" = "x0" ]; then
-  rm -f $PREFIX/bin/chef-init
+  rm -f $PREFIX/bin/chef-container
   rm -f $PREFIX/bin/chef-client
   rm -f $PREFIX/bin/chef-solo
   rm -f $PREFIX/bin/chef-apply
