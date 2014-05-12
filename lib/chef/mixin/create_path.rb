@@ -45,8 +45,11 @@ class Chef
         file_path.each_index do |i|
           create_path = File.join(file_path[0, i + 1])
           unless File.directory?(create_path)
-            Chef::Log.debug("Creating directory #{create_path}")
-            Dir.mkdir(create_path)
+            begin
+              Chef::Log.debug("Creating directory #{create_path}")
+              Dir.mkdir(create_path)
+            rescue Errno::EEXIST
+            end
           end
         end
         File.expand_path(File.join(file_path))
