@@ -118,7 +118,6 @@ section:
 ```shell
 $ kitchen login ubuntu-12.04
 [vagrant@ubuntu...] $ cd omnbius-chef
-[vagrant@ubuntu...] $ cp omnibus.rb.example omnibus.rb # enables S3 caching
 [vagrant@ubuntu...] $ bundle install --binstubs
 [vagrant@ubuntu...] $ ...
 [vagrant@ubuntu...] $ bundle exec omnibus build project <PROJECT NAME>

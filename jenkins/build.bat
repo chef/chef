@@ -34,8 +34,6 @@ rem # Note that currently this functionality is not needed since we are far away
 rem # from rebuilding slaves using cookbooks in ci.opscode.us.
 rem # call chef-solo -c .\jenkins\solo.rb -j .\jenkins\dna-windows.json -l debug || GOTO :error
 
-call copy /Y omnibus.rb.example omnibus.rb || GOTO :error
-
 rem # we're guaranteed to have the correct ruby installed into C:\Ruby193 from chef-solo cookbooks
 rem # bundle install from here now too
 set PATH=C:\Ruby193\bin;%PATH%

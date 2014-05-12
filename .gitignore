@@ -6,7 +6,6 @@ pkg/*
 .kitchen
 bin/*
 files/chef-server-cookbooks/cache/
-omnibus.rb
 files/msi/ChefClient-Config.wxi
 cookbooks
 vendor/cookbooks
