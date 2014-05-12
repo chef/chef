@@ -30,11 +30,13 @@ class Chef
 
         def read_crontab
           crontab = nil
+          cronerr = nil
           status = popen4("crontab -l #{@new_resource.user}") do |pid, stdin, stdout, stderr|
             crontab = stdout.read
+            cronerr = stderr.read
           end
           if status.exitstatus != 0
-            raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
+            raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}, stderr: #{cronerr.chomp}"
           end
           crontab
         end
