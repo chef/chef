@@ -25,7 +25,6 @@ class Chef
         attr_reader :resource
         attr_reader :action
         attr_reader :exception
-        attr_reader :sensitive
 
         def initialize(resource, action, exception)
           @resource = resource
