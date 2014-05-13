@@ -142,7 +142,7 @@ class Chef
       end
 
       @events.cookbook_sync_start(cookbook_count)
-      queue.process(20)
+      queue.process(Chef::Config[:cookbook_sync_threads])
       update_cookbook_filenames
 
     rescue Exception => e

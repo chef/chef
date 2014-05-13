@@ -552,6 +552,9 @@ class Chef
     # immediately if 0.)
     default :run_lock_timeout, nil
 
+    # Number of worker threads for syncing cookbooks in parallel.
+    default :cookbook_sync_threads, 20
+
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with
     # omnibus. This is used to locate the cacert.pem file on windows.
