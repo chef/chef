@@ -33,3 +33,7 @@ You can now modify the chef-full template with the following options in `knife b
 * `--bootstrap-install-sh URL` fetches and executes an installation bash script from the provided URL.
 * `--bootstrap-wget-options OPTIONS` and `--bootstrap-curl-options OPTIONS` allow arbitrary options to be added to wget and curl.
 * `--bootstrap-install-command COMMAND` can be used to execute a custom chef-client installation command sequence. Take note that this cannot be used in conjunction with the above options.
+
+### Parallelize cookbook synchronization
+
+You can now synchronize your cookbooks faster by parallelizing the process. You can specify the number of helper threads in your config file with `cookbook_sync_threads NUM_THREADS`.

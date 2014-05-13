@@ -16,3 +16,4 @@ Example Contribution:
 * **hongbin**: Made bootstrap report authentication exceptions. (CHEF-5161)
 * **liseki**: Made `freebsd_package` resource use the brand new "pkgng" package
   manager when available.(CHEF-4637)
+* **benesch**: Implemented a threaded download queue for synchronizing cookbooks. (CHEF-4423)
