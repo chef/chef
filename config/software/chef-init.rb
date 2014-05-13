@@ -15,13 +15,13 @@
 # limitations under the License.
 #
 
-name "chef-container"
+name "chef-init"
 
 dependency "runit"
 
 build do
   block do
-    open("#{install_dir}/bin/chef-container", "w") do |file|
+    open("#{install_dir}/bin/chef-init", "w") do |file|
       file.print <<-EOH
 #!/bin/bash
 #
@@ -43,16 +43,46 @@ build do
 
 export PATH=#{install_dir}/bin:#{install_dir}/embedded/bin:/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin
 
-# If a chef command was passed in, run it!
-if [ "$CHEF_COMMAND" ]; then
-  eval $CHEF_COMMAND &
+
+run_chef=true
+exec_cmd="runsvdir -p #{install_dir}/service 'log: #{ "." * 395 }'"
+
+while [[ $# > 1 ]]
+for i in "$@"
+do
+  case $i in 
+    --onboot) 
+      run_chef=true
+      shift
+      ;;
+    --no-chef-onboot)
+      run_chef=false
+      shift
+      ;;
+    --with-exec=*)
+      exec_cmd="${i#*=}"
+      shift
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
+if [ "$run_chef" = true ]; then
+  if [ -f /chef/zero.rb ]; then
+    chef-client -z -c /chef/zero.rb -j /chef/first-boot.json
+  fi
+
+  if [ -f /chef/client.rb ]; then
+    chef-client -c /chef/client.rb -j /chef/first-boot.json
+  fi
 fi
 
-# Run runit
-exec env - PATH=$PATH runsvdir -P #{install_dir}/service 'log: #{ "." * 395}'
+eval "exec env - PATH=$PATH $exec_cmd"
       EOH
     end
   end
 
-  command "chmod 755 #{install_dir}/bin/chef-container"
+  command "chmod 755 #{install_dir}/bin/chef-init"
 end

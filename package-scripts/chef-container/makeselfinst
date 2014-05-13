@@ -77,7 +77,7 @@ if [ "" != "$validation_key" ]; then
   chmod 600 ${CONFIG_DIR}/validation.pem
 fi
 
-ln -sf $DEST_DIR/bin/chef-container $PREFIX/bin || error_exit "Cannot link chef-container to $PREFIX/bin"
+ln -sf $DEST_DIR/bin/chef-init $PREFIX/bin || error_exit "Cannot link chef-init to $PREFIX/bin"
 ln -sf $DEST_DIR/bin/chef-client $PREFIX/bin || error_exit "Cannot link chef-client to $PREFIX/bin"
 ln -sf $DEST_DIR/bin/chef-solo $PREFIX/bin || error_exit "Cannot link chef-solo to $PREFIX/bin"
 ln -sf $DEST_DIR/bin/chef-apply $PREFIX/bin || error_exit "Cannot link chef-apply to $PREFIX/bin"

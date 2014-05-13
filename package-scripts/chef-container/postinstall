@@ -64,7 +64,7 @@ if [ "" != "$validation_key" ]; then
   chmod 600 ${CONFIG_DIR}/validation.pem
 fi
 
-chef_binaries="chef-container chef-client chef-solo chef-apply chef-shell knife shef ohai"
+chef_binaries="chef-init chef-client chef-solo chef-apply chef-shell knife shef ohai"
 
 # rm -f before ln -sf is required for solaris 9
 for binary in $chef_binaries; do
