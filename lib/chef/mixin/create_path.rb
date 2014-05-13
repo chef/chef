@@ -46,6 +46,14 @@ class Chef
           create_path = File.join(file_path[0, i + 1])
           unless File.directory?(create_path)
             begin
+              # In multithreaded environments, the following interleaving raises
+              # an error here:
+              #
+              # thread1                                     thread2
+              # File.directory?(create_path) <- false
+              #                                             File.directory?(create_path) <- false
+              #                                             Dir.mkdir(create_path)
+              # Dir.mkdir(create_path) <- raises Errno::EEXIST
               Chef::Log.debug("Creating directory #{create_path}")
               Dir.mkdir(create_path)
             rescue Errno::EEXIST
