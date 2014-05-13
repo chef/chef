@@ -35,6 +35,7 @@ describe Chef::Knife::Bootstrap do
   end
 
   it "should return a name of default bootstrap template" do
+    raise "This is an error on purpose."
     @knife.find_template.should be_a_kind_of(String)
   end
 
