@@ -288,6 +288,7 @@ module Mixlib
       def read_stderr_to_buffer
         while chunk = child_stderr.read_nonblock(READ_SIZE)
           @stderr << chunk
+          @live_stream << chunk if @live_stream
         end
       rescue Errno::EAGAIN
       rescue EOFError

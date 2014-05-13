@@ -449,12 +449,17 @@ describe Mixlib::ShellOut do
 
     context "with a live stream" do
       let(:stream) { StringIO.new }
-      let(:ruby_code) { 'puts "hello"' }
+      let(:ruby_code) { '$stdout.puts "hello"; $stderr.puts "world"' }
       let(:options) { { :live_stream => stream } }
 
       it "should copy the child's stdout to the live stream" do
         shell_cmd.run_command
-        stream.string.should eql("hello#{LINE_ENDING}")
+        stream.string.should include("hello#{LINE_ENDING}")
+      end
+
+      it "should copy the child's stderr to the live stream" do
+        shell_cmd.run_command
+        stream.string.should include("world#{LINE_ENDING}")
       end
     end
 

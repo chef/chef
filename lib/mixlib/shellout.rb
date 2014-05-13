@@ -53,9 +53,9 @@ module Mixlib
     # to determine if the command was successful. Normally set via options to new
     attr_accessor :valid_exit_codes
 
-    # When live_stream is set, stdout of the subprocess will be copied to it as
-    # the subprocess is running. For example, if live_stream is set to STDOUT,
-    # the command's output will be echoed to STDOUT.
+    # When live_stream is set, stdout and stderr of the subprocess will be
+    # copied to it as the subprocess is running. For example, if live_stream is
+    # set to STDOUT, the command's output will be echoed to STDOUT.
     attr_accessor :live_stream
 
     # ShellOut will push data from :input down the stdin of the subprocss.
