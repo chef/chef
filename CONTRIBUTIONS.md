@@ -7,3 +7,4 @@ Example Contribution:
 # mixlib-shellout Contributions:
 
 * **carmstrong**: Added error? method to see if the command was successful.
+* **akshaykarle**: Added the functionality to reflect $stderr when using live_stream.
