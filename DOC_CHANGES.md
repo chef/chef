@@ -71,3 +71,5 @@ If your config file looks like `automatic_attribute_whitelist = {}`, then none o
 The default behavior is for the node to save all the attribute data. This can be ensured by setting your whitelist filter to `nil`.
 
 Note that only the keys in this has will be used. If the values are anything other than a hash, they are ignored. You cannot magically morph these config options into a blacklist by putting `false` as a value in the whitelist.
+
+We recommend only using `automatic_attribute_whitelist` to reduce the size of the system data being stored for nodes, and discourage the use of the other attribute whitelists except by advanced users. 
