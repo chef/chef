@@ -313,6 +313,7 @@ class Chef
 
     default :rest_timeout, 300
     default :yum_timeout, 900
+    default :yum_lock_timeout, 30
     default :solo,  false
     default :splay, nil
     default :why_run, false

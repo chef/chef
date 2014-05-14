@@ -43,9 +43,6 @@ from distutils import version
 
 YUM_PID_FILE='/var/run/yum.pid'
 
-# Seconds to wait for exclusive access to yum
-LOCK_TIMEOUT = 10
-
 YUM_VER = version.StrictVersion(yum.__version__)
 YUM_MAJOR = YUM_VER.version[0]
 
@@ -219,8 +216,8 @@ def yum_dump(options):
   # Wrap the collection and output of packages in yum's global lock to prevent
   # any inconsistencies.
   try:
-    # Spin up to LOCK_TIMEOUT
-    countdown = LOCK_TIMEOUT
+    # Spin up to --yum-lock-timeout option
+    countdown = options.yum_lock_timeout
     while True:
       try:
         yb.doLock(YUM_PID_FILE)
@@ -230,7 +227,7 @@ def yum_dump(options):
         countdown -= 1
         if countdown == 0:
            print >> sys.stderr, "yum-dump Locking Error! Couldn't obtain an " \
-             "exclusive yum lock in %d seconds. Giving up." % LOCK_TIMEOUT
+             "exclusive yum lock in %d seconds. Giving up." % options.yum_lock_timeout
            return 200
       else:
         break
@@ -281,6 +278,9 @@ def main():
   parser.add_option("--disablerepo",
                     action="callback",  callback=gather_repo_opts, type="string", dest="repo_control", default=[],
                     help="disable repositories by id or glob")
+  parser.add_option("--yum-lock-timeout",
+                    action="callback",  type="int", dest="yum_lock_timeout", default=30,
+                    help="Time in seconds to wait for yum process lock")
 
   (options, args) = parser.parse_args()
 

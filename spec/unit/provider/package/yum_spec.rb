@@ -1619,25 +1619,32 @@ EOF
 
     it "should run yum-dump.py using the system python when next_refresh is for :all" do
       @yc.reload
-      @yc.should_receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides$}, :timeout=>Chef::Config[:yum_timeout])
+      @yc.should_receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --yum-lock-timeout 30$}, :timeout=>Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
     it "should run yum-dump.py with the installed flag when next_refresh is for :installed" do
       @yc.reload_installed
-      @yc.should_receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --installed$}, :timeout=>Chef::Config[:yum_timeout])
+      @yc.should_receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --installed --yum-lock-timeout 30$}, :timeout=>Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
     it "should run yum-dump.py with the all-provides flag when next_refresh is for :provides" do
       @yc.reload_provides
-      @yc.should_receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --all-provides$}, :timeout=>Chef::Config[:yum_timeout])
+      @yc.should_receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --all-provides --yum-lock-timeout 30$}, :timeout=>Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
     it "should pass extra_repo_control args to yum-dump.py" do
       @yc.enable_extra_repo_control("--enablerepo=foo --disablerepo=bar")
-      @yc.should_receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --enablerepo=foo --disablerepo=bar$}, :timeout=>Chef::Config[:yum_timeout])
+      @yc.should_receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --enablerepo=foo --disablerepo=bar --yum-lock-timeout 30$}, :timeout=>Chef::Config[:yum_timeout])
+      @yc.refresh
+    end
+
+    it "should pass extra_repo_control args and configured yum lock timeout to yum-dump.py" do
+      Chef::Config[:yum_lock_timeout] = 999
+      @yc.enable_extra_repo_control("--enablerepo=foo --disablerepo=bar")
+      @yc.should_receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --enablerepo=foo --disablerepo=bar --yum-lock-timeout 999$}, :timeout=>Chef::Config[:yum_timeout])
       @yc.refresh
     end
 

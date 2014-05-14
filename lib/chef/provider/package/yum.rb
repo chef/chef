@@ -704,6 +704,8 @@ class Chef
               opts << " #{@extra_repo_control}"
             end
 
+            opts << " --yum-lock-timeout #{Chef::Config[:yum_lock_timeout]}"
+
             one_line = false
             error = nil
 
