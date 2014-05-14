@@ -140,9 +140,9 @@ fi
 bundle install --without docs
 
 if [ "$RELEASE_BUILD" = "true" ]; then
-  bundle exec omnibus build project $OMNIBUS_PROJECT_NAME --no-timestamp
+  bundle exec omnibus build $OMNIBUS_PROJECT_NAME --no-timestamp
 else
-  bundle exec omnibus build project $OMNIBUS_PROJECT_NAME
+  bundle exec omnibus build $OMNIBUS_PROJECT_NAME
 fi
 
 # Sign the package on some platforms:

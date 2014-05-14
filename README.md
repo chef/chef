@@ -21,7 +21,7 @@ $ bundle install --binstubs
 You create a platform-specific package using the `build project` command:
 
 ```shell
-$ bin/omnibus build project chef
+$ bin/omnibus build chef
 ```
 
 The platform/architecture type of the package created will match the platform
@@ -120,7 +120,7 @@ $ kitchen login ubuntu-12.04
 [vagrant@ubuntu...] $ cd omnbius-chef
 [vagrant@ubuntu...] $ bundle install --binstubs
 [vagrant@ubuntu...] $ ...
-[vagrant@ubuntu...] $ bundle exec omnibus build project <PROJECT NAME>
+[vagrant@ubuntu...] $ bundle exec omnibus build <PROJECT NAME>
 ```
 
 If you are building the Chef project you will need to purge the Chef package
