@@ -15,26 +15,13 @@
 # limitations under the License.
 #
 
-name "chef-container"
-maintainer "Chef Software, Inc"
-homepage "http://www.getchef.com"
+name "chef-container-gem"
+default_version "0.0.1"
 
-install_path     "/opt/chef"
-build_version do
-  # Use chef to determine the build version
-  source :git, from_dependency: 'chef'
+dependency "ruby"
+dependency "rubygems"
 
-  # Set a Rubygems style version
-  output_format :git_describe
+build do
+  gem "install chef-container -n #{install_dir}/embedded/bin --no-rdoc --no-ri -v #{version}"  
 end
-build_iteration  1
-package_name     "chef-container"
 
-override :chef, version: "11.12.4"
-override :runit, version: "2.1.1"
-override 'chef-container-gem', version: "0.0.2.pre.dev2"
-
-dependency "preparation"
-dependency "chef"
-dependency "chef-container-gem"
-dependency "version-manifest"
