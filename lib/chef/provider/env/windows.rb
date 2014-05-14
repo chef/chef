@@ -52,8 +52,6 @@ class Chef
 
         def find_env(environment_variables, key_name)
           environment_variables.find do | environment_variable |
-            puts "Class: #{environment_variable.class}"
-            puts "#{environment_variable.inspect.to_s}"
             environment_variable['name'].downcase == key_name
           end
         end
