@@ -122,7 +122,7 @@ class Chef
 
         WIN32OLE.ole_initialize
 
-        wmi = WmiInstance::Wmi.new
+        wmi = WmiLite::Wmi.new
         os_info = wmi.first_of('Win32_OperatingSystem')
         os_version = os_info['version']
 
