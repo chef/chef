@@ -18,7 +18,7 @@
 
 require 'chef/win32/api'
 require 'chef/win32/api/system'
-require 'chef/win32/wmi'
+require 'wmi-lite/wmi'
 
 class Chef
   module ReservedNames::Win32
@@ -122,7 +122,7 @@ class Chef
 
         WIN32OLE.ole_initialize
 
-        wmi = WMI.new
+        wmi = WmiInstance::Wmi.new
         os_info = wmi.first_of('Win32_OperatingSystem')
         os_version = os_info['version']
 

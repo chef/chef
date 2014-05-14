@@ -27,11 +27,11 @@ def windows?
   !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
 end
 
-require 'chef/win32/wmi' if windows?
+require 'wmi-lite/wmi' if windows?
 
 def windows_domain_joined?
   return false unless windows?
-  wmi = Chef::ReservedNames::Win32::WMI.new
+  wmi = WmiLite::Wmi.new
   computer_system = wmi.first_of('Win32_ComputerSystem')
   computer_system['partofdomain']
 end
@@ -39,7 +39,7 @@ end
 def windows_win2k3?
   return false unless windows?
 
-  wmi = Chef::ReservedNames::Win32::WMI.new
+  wmi = WmiLite::Wmi.new
   host = wmi.first_of('Win32_OperatingSystem')
   (host['version'] && host['version'].start_with?("5.2"))
 end
