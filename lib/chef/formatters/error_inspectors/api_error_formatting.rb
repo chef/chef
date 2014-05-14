@@ -88,20 +88,7 @@ E
       def format_rest_error
         Array(Chef::JSONCompat.from_json(exception.response.body)["error"]).join('; ')
       rescue Exception
-        # When we get 504 from the server, sometimes the response body is non-readable.
-        #
-        # Stack trace:
-        #
-        # NoMethodError: undefined method `closed?' for nil:NilClass
-        # .../lib/ruby/1.9.1/net/http.rb:2789:in `stream_check'
-        # .../lib/ruby/1.9.1/net/http.rb:2709:in `read_body'
-        # .../lib/ruby/1.9.1/net/http.rb:2736:in `body'
-        # .../lib/chef/formatters/error_inspectors/api_error_formatting.rb:91:in `rescue in format_rest_error'
-        begin
-          exception.response.body
-        rescue Exception
-          "Cannot fetch the contents of the response."
-        end
+        safe_format_rest_error
       end
 
       def username
@@ -118,6 +105,23 @@ E
 
       def clock_skew?
         exception.response.body =~ /synchronize the clock/i
+      end
+
+      def safe_format_rest_error
+        # When we get 504 from the server, sometimes the response body is non-readable.
+        #
+        # Stack trace:
+        #
+        # NoMethodError: undefined method `closed?' for nil:NilClass
+        # .../lib/ruby/1.9.1/net/http.rb:2789:in `stream_check'
+        # .../lib/ruby/1.9.1/net/http.rb:2709:in `read_body'
+        # .../lib/ruby/1.9.1/net/http.rb:2736:in `body'
+        # .../lib/chef/formatters/error_inspectors/api_error_formatting.rb:91:in `rescue in format_rest_error'
+        begin
+          exception.response.body
+        rescue Exception
+          "Cannot fetch the contents of the response."
+        end
       end
 
     end
