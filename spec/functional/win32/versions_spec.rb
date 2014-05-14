@@ -24,7 +24,7 @@ end
 describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on_win2k3 do
   before do
 
-    wmi = WmiInstance::Wmi.new
+    wmi = WmiLite::Wmi.new
     host = wmi.first_of('Win32_OperatingSystem')
 
     # Use WMI to determine current OS version.
