@@ -52,24 +52,23 @@ If your automatic attribute data looks like
     "map - autohome" => {
       "size" => "10mb"
     }
+  },
+  "network" => {
+    "interfaces" => {
+      "eth0" => {...},
+      "eth1" => {...},
+    }
   }
 }
 ````
 and your config file looks like
 ````
-automatic_attribute_whitelist =
-  {
-    "filesystem" => {
-      "/dev/disk0s2" => true
-    }
-  }
+automatic_attribute_whitelist = ["network/interfaces/eth0"]
 ````
-then the entire `map - autohome` subtree will not be saved by the node.
+then the entire `filesystem` and `eth1` subtrees will not be saved by the node. To save the `/dev/disk0s2` subtree, you must write `automatic_attribute_whitelist = [ ["filesystem", "/dev/disk0s2"] ]`.
 
-If your config file looks like `automatic_attribute_whitelist = {}`, then none of your automatic attribute data will be saved by the node.
+If your config file looks like `automatic_attribute_whitelist = []`, then none of your automatic attribute data will be saved by the node.
 
 The default behavior is for the node to save all the attribute data. This can be ensured by setting your whitelist filter to `nil`.
 
-Note that only the keys in this has will be used. If the values are anything other than a hash, they are ignored. You cannot magically morph these config options into a blacklist by putting `false` as a value in the whitelist.
-
-We recommend only using `automatic_attribute_whitelist` to reduce the size of the system data being stored for nodes, and discourage the use of the other attribute whitelists except by advanced users. 
+We recommend only using `automatic_attribute_whitelist` to reduce the size of the system data being stored for nodes, and discourage the use of the other attribute whitelists except by advanced users.

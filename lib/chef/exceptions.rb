@@ -329,5 +329,8 @@ class Chef
         super "Unable to acquire lock. Waited #{duration} seconds for #{blocking_pid} to release."
       end
     end
+
+    # Raise when a whitelisted attribute can't be found in the data.
+    class WhitelistAttributeNotFound < RuntimeError; end
   end
 end

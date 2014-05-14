@@ -852,41 +852,40 @@ describe Chef::Node do
       end
 
       context "with whitelisted attributes configured" do
-        before do
-          @defaults = {}
-          ["automatic", "default", "normal", "override"].each do |level|
-            option_key = "#{level}_attribute_whitelist".to_sym
-            @defaults[level] = Chef::Config[option_key]
-          end
-        end
-
-        after do
-          @defaults.each do |level, setting|
-            option_key = "#{level}_attribute_whitelist".to_sym
-            Chef::Config[option_key] = setting
-          end
-        end
-
         it "should only save whitelisted attributes (and subattributes)" do
-          Chef::Config[:automatic_attribute_whitelist] = {
-            "filesystem" => { "/dev/disk0s2" => true }
-          }
+          Chef::Config[:automatic_attribute_whitelist] = [
+            ["filesystem", "/dev/disk0s2"],
+            "network/interfaces/eth0"
+          ]
 
           data = {
             "automatic" => {
               "filesystem" => {
                 "/dev/disk0s2"   => { "size" => "10mb" },
                 "map - autohome" => { "size" => "10mb" }
+              },
+              "network" => {
+                "interfaces" => {
+                  "eth0" => {},
+                  "eth1" => {}
+                }
               }
-            }
+            },
+            "default" => {}, "normal" => {}, "override" => {}
           }
 
           selected_data = {
             "automatic" => {
               "filesystem" => {
                 "/dev/disk0s2" => { "size" => "10mb" }
+              },
+              "network" => {
+                "interfaces" => {
+                  "eth0" => {}
+                }
               }
-            }
+            },
+            "default" => {}, "normal" => {}, "override" => {}
           }
 
           node.name("picky-monkey")
@@ -896,7 +895,7 @@ describe Chef::Node do
         end
 
         it "should not save any attributes if the whitelist is empty" do
-          Chef::Config[:automatic_attribute_whitelist] = {}
+          Chef::Config[:automatic_attribute_whitelist] = []
 
           data = {
             "automatic" => {
@@ -904,11 +903,12 @@ describe Chef::Node do
                 "/dev/disk0s2"   => { "size" => "10mb" },
                 "map - autohome" => { "size" => "10mb" }
               }
-            }
+            },
+            "default" => {}, "normal" => {}, "override" => {}
           }
 
           selected_data = {
-            "automatic" => {}
+            "automatic" => {}, "default" => {}, "normal" => {}, "override" => {}
           }
 
           node.name("picky-monkey")
