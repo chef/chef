@@ -552,6 +552,12 @@ class Chef
     # immediately if 0.)
     default :run_lock_timeout, nil
 
+    # Number of worker threads for syncing cookbooks in parallel. Increasing
+    # this number can result in gateway errors from the server (namely 503 and 504).
+    # If you are seeing this behavior while using the default setting, reducing
+    # the number of threads will help.
+    default :cookbook_sync_threads, 10
+
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with
     # omnibus. This is used to locate the cacert.pem file on windows.

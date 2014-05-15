@@ -44,12 +44,28 @@ class Chef
 
         file_path.each_index do |i|
           create_path = File.join(file_path[0, i + 1])
-          unless File.directory?(create_path)
-            Chef::Log.debug("Creating directory #{create_path}")
-            Dir.mkdir(create_path)
-          end
+          create_dir(create_path) unless File.directory?(create_path)
         end
+
         File.expand_path(File.join(file_path))
+      end
+
+      private
+
+      def create_dir(path)
+        begin
+          # When doing multithreaded downloads into the file cache, the following
+          # interleaving raises an error here:
+          #
+          # thread1                                     thread2
+          # File.directory?(create_path) <- false
+          #                                             File.directory?(create_path) <- false
+          #                                             Dir.mkdir(create_path)
+          # Dir.mkdir(create_path) <- raises Errno::EEXIST
+          Chef::Log.debug("Creating directory #{path}")
+          Dir.mkdir(path)
+        rescue Errno::EEXIST
+        end
       end
 
     end

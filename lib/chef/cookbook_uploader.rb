@@ -7,28 +7,11 @@ require 'chef/digester'
 require 'chef/cookbook_version'
 require 'chef/cookbook/syntax_check'
 require 'chef/cookbook/file_system_file_vendor'
+require 'chef/util/threaded_job_queue'
 require 'chef/sandbox'
-require 'thread'
 
 class Chef
   class CookbookUploader
-
-    def self.work_queue
-      @work_queue ||= Queue.new
-    end
-
-    def self.setup_worker_threads(concurrency=10)
-      @worker_threads ||= begin
-        work_queue
-        (1..concurrency).map do
-          Thread.new do
-            loop do
-              work_queue.pop.call
-            end
-          end
-        end
-      end
-    end
 
     attr_reader :cookbooks
     attr_reader :path
@@ -61,8 +44,6 @@ class Chef
     end
 
     def upload_cookbooks
-      Thread.abort_on_exception = true
-
       # Syntax Check
       validate_cookbooks
       # generate checksums of cookbook files and create a sandbox
@@ -77,7 +58,7 @@ class Chef
 
       Chef::Log.info("Uploading files")
 
-      self.class.setup_worker_threads(concurrency)
+      queue = Chef::Util::ThreadedJobQueue.new
 
       checksums_to_upload = Set.new
 
@@ -86,15 +67,13 @@ class Chef
         if info['needs_upload'] == true
           checksums_to_upload << checksum
           Chef::Log.info("Uploading #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info['url']}")
-          self.class.work_queue << uploader_function_for(checksum_files[checksum], checksum, info['url'], checksums_to_upload)
+          queue << uploader_function_for(checksum_files[checksum], checksum, info['url'], checksums_to_upload)
         else
           Chef::Log.debug("#{checksum_files[checksum]} has not changed")
         end
       end
 
-      until checksums_to_upload.empty?
-        sleep 0.1
-      end
+      queue.process(@concurrency)
 
       sandbox_url = new_sandbox['uri']
       Chef::Log.debug("Committing sandbox")

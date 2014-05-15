@@ -169,14 +169,7 @@ class Chef
         next unless @manifest.has_key?(segment)
         filenames = @manifest[segment].map{|manifest_record| manifest_record['name']}
 
-        if segment == :recipes
-          self.recipe_filenames = filenames
-        elsif segment == :attributes
-          self.attribute_filenames = filenames
-        else
-          segment_filenames(segment).clear
-          filenames.each { |filename| segment_filenames(segment) << filename }
-        end
+        replace_segment_filenames(segment, filenames)
       end
     end
 
@@ -269,6 +262,17 @@ class Chef
         @template_filenames
       when :root_files
         @root_filenames
+      end
+    end
+
+    def replace_segment_filenames(segment, filenames)
+      case segment.to_sym
+      when :recipes
+        self.recipe_filenames = filenames
+      when :attributes
+        self.attribute_filenames = filenames
+      else
+        segment_filenames(segment).replace(filenames)
       end
     end
 
