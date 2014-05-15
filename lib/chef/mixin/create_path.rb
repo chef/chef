@@ -54,8 +54,8 @@ class Chef
 
       def create_dir(path)
         begin
-          # In multithreaded environments, the following interleaving raises
-          # an error here:
+          # When doing multithreaded downloads into the file cache, the following
+          # interleaving raises an error here:
           #
           # thread1                                     thread2
           # File.directory?(create_path) <- false
