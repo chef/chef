@@ -346,8 +346,8 @@ module Mixlib
 
       def reap_errant_child
         return if attempt_reap
-        @terminate_reason = "Command execeded allowed execution time, process terminated"
-        logger.error("Command execeded allowed execution time, sending TERM") if logger
+        @terminate_reason = "Command exceeded allowed execution time, process terminated"
+        logger.error("Command exceeded allowed execution time, sending TERM") if logger
         Process.kill(:TERM, child_pgid)
         sleep 3
         attempt_reap
