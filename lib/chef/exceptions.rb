@@ -330,7 +330,5 @@ class Chef
       end
     end
 
-    # Raise when a whitelisted attribute can't be found in the data.
-    class WhitelistAttributeNotFound < RuntimeError; end
   end
 end
