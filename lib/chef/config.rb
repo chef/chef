@@ -558,6 +558,15 @@ class Chef
     # the number of threads will help.
     default :cookbook_sync_threads, 10
 
+    # A whitelisted array of attributes you want sent over the wire when node
+    # data is saved.
+    # The default setting is nil, which collects all data. Setting to [] will not
+    # collect any data for save.
+    default :automatic_attribute_whitelist, nil
+    default :default_attribute_whitelist, nil
+    default :normal_attribute_whitelist, nil
+    default :override_attribute_whitelist, nil
+
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with
     # omnibus. This is used to locate the cacert.pem file on windows.

@@ -34,6 +34,7 @@ require 'chef/node/attribute'
 require 'chef/mash'
 require 'chef/json_compat'
 require 'chef/search/query'
+require 'chef/whitelist'
 
 class Chef
   class Node
@@ -520,18 +521,18 @@ class Chef
         if Chef::Config[:why_run]
           Chef::Log.warn("In whyrun mode, so NOT performing node save.")
         else
-          chef_server_rest.put_rest("nodes/#{name}", self)
+          chef_server_rest.put_rest("nodes/#{name}", data_for_save)
         end
       rescue Net::HTTPServerException => e
         raise e unless e.response.code == "404"
-        chef_server_rest.post_rest("nodes", self)
+        chef_server_rest.post_rest("nodes", data_for_save)
       end
       self
     end
 
     # Create the node via the REST API
     def create
-      chef_server_rest.post_rest("nodes", self)
+      chef_server_rest.post_rest("nodes", data_for_save)
       self
     end
 
@@ -541,6 +542,21 @@ class Chef
 
     def <=>(other_node)
       self.name <=> other_node.name
+    end
+
+    private
+
+    def data_for_save
+      data = for_json
+      ["automatic", "default", "normal", "override"].each do |level|
+        whitelist_config_option = "#{level}_attribute_whitelist".to_sym
+        whitelist = Chef::Config[whitelist_config_option]
+        unless whitelist.nil? # nil => save everything
+          Chef::Log.info("Whitelisting #{level} node attributes for save.")
+          data[level] = Chef::Whitelist.filter(data[level], whitelist)
+        end
+      end
+      data
     end
 
   end
