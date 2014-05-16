@@ -927,8 +927,8 @@ describe Mixlib::ShellOut do
               shell_cmd.stdout.should include("nanana cant hear you")
               shell_cmd.status.termsig.should == 9
 
-              log_output.string.should include("Command execeded allowed execution time, sending TERM")
-              log_output.string.should include("Command execeded allowed execution time, sending KILL")
+              log_output.string.should include("Command exceeded allowed execution time, sending TERM")
+              log_output.string.should include("Command exceeded allowed execution time, sending KILL")
             end
 
           end
@@ -1030,7 +1030,7 @@ describe Mixlib::ShellOut do
         let(:ruby_code) { "STDIN.close; sleep 0.5; STDOUT.puts :win" }
         let(:options) { { :input => "Random data #{rand(100000)}" } }
 
-        it 'should not hang or lose outupt' do
+        it 'should not hang or lose output' do
           stdout.should eql("win#{LINE_ENDING}")
         end
       end
@@ -1038,7 +1038,7 @@ describe Mixlib::ShellOut do
       context 'with subprocess that closes stdout and continues writing to stderr' do
         let(:ruby_code) { "STDOUT.close; sleep 0.5; STDERR.puts :win" }
 
-        it 'should not hang or lose outupt' do
+        it 'should not hang or lose output' do
           stderr.should eql("win#{LINE_ENDING}")
         end
       end
@@ -1046,7 +1046,7 @@ describe Mixlib::ShellOut do
       context 'with subprocess that closes stderr and continues writing to stdout' do
         let(:ruby_code) { "STDERR.close; sleep 0.5; STDOUT.puts :win" }
 
-        it 'should not hang or lose outupt' do
+        it 'should not hang or lose output' do
           stdout.should eql("win#{LINE_ENDING}")
         end
       end
