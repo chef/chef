@@ -351,7 +351,7 @@ module Mixlib
         Process.kill(:TERM, child_pgid)
         sleep 3
         attempt_reap
-        logger.error("Command execeded allowed execution time, sending KILL") if logger
+        logger.error("Command exceeded allowed execution time, sending KILL") if logger
         Process.kill(:KILL, child_pgid)
         reap
 
