@@ -1,3 +1,5 @@
+require 'thread'
+
 class Chef
   module ChefFS
     class Parallelizer
@@ -11,117 +13,193 @@ class Chef
         end
       end
 
-      def self.parallelize(enumerator, options = {}, &block)
+      def self.parallelizer
         @@parallelizer ||= Parallelizer.new(@@threads)
-        @@parallelizer.parallelize(enumerator, options, &block)
+      end
+
+      def self.parallelize(enumerator, options = {}, &block)
+        parallelizer.parallelize(enumerator, options, &block)
       end
 
       def initialize(threads)
-        @tasks_mutex = Mutex.new
-        @tasks = []
+        @tasks = Queue.new
         @threads = []
-        1.upto(threads) do
-          @threads << Thread.new { worker_loop }
+        1.upto(threads) do |i|
+          @threads << Thread.new(&method(:worker_loop))
         end
       end
 
-      def parallelize(enumerator, options = {}, &block)
-        task = ParallelizedResults.new(enumerator, options, &block)
-        @tasks_mutex.synchronize do
-          @tasks << task
-        end
-        task
+      def parallelize(enumerable, options = {}, &block)
+        ParallelEnumerable.new(@tasks, enumerable, options, &block)
       end
 
-      class ParallelizedResults
-        include Enumerable
-
-        def initialize(enumerator, options, &block)
-          @inputs = enumerator.to_a
-          @options = options
-          @block = block
-
-          @mutex = Mutex.new
-          @outputs = []
-          @status = []
+      def stop
+        @threads.each do |thread|
+          Thread.kill(thread)
         end
-
-        def each
-          next_index = 0
-          while true
-            # Report any results that already exist
-            while @status.length > next_index && ([:finished, :exception].include?(@status[next_index]))
-              if @status[next_index] == :finished
-                if @options[:flatten]
-                  @outputs[next_index].each do |entry|
-                    yield entry
-                  end
-                else
-                  yield @outputs[next_index]
-                end
-              else
-                raise @outputs[next_index]
-              end
-              next_index = next_index + 1
-            end
-
-            # Pick up a result and process it, if there is one.  This ensures we
-            # move forward even if there are *zero* worker threads available.
-            if !process_input
-              # Exit if we're done.
-              if next_index >= @status.length
-                break
-              else
-                # Ruby 1.8 threading sucks.  Wait till we process more things.
-                sleep(0.05)
-              end
-            end
-          end
-        end
-
-        def process_input
-          # Grab the next one to process
-          index, input = @mutex.synchronize do
-            index = @status.length
-            if index >= @inputs.length
-              return nil
-            end
-            input = @inputs[index]
-            @status[index] = :started
-            [ index, input ]
-          end
-
-          begin
-            @outputs[index] = @block.call(input)
-            @status[index] = :finished
-          rescue Exception
-            @outputs[index] = $!
-            @status[index] = :exception
-          end
-          index
-        end
+        @threads = []
       end
-
-      private
 
       def worker_loop
         while true
           begin
-            task = @tasks[0]
-            if task
-              if !task.process_input
-                @tasks_mutex.synchronize do
-                  @tasks.delete(task)
-                end
-              end
-            else
-              # Ruby 1.8 threading sucks.  Wait a bit to see if another task comes in.
-              sleep(0.05)
-            end
+            task = @tasks.pop
+            task.call
           rescue
             puts "ERROR #{$!}"
             puts $!.backtrace
           end
+        end
+      end
+
+      class ParallelEnumerable
+        include Enumerable
+
+        # options:
+        # :ordered [true|false] - whether the output should stay in the same order
+        #   as the input (even though it may not actually be processed in that
+        #   order). Default: true
+        # :main_thread_processing [true|false] - whether the main thread pulling
+        #   on each() is allowed to process inputs. Default: true
+        def initialize(parent_task_queue, enumerable, options, &block)
+          @task_queue = Queue.new
+          @parent_task_queue = parent_task_queue
+          @enumerable = enumerable
+          @options = options
+          @block = block
+          @unconsumed_output = Queue.new
+          @in_process = 0
+        end
+
+        def wait
+          each_with_input_unordered do |input, output, index|
+          end
+        end
+
+        def each_with_input_unordered
+          awaiting_output = 0
+
+          # Grab all the inputs, yielding any responses during enumeration
+          # in case the enumeration itself takes time
+          begin
+            @enumerable.each_with_index do |input, index|
+              awaiting_output += 1
+              @task_queue.push([ input, index ])
+              @parent_task_queue.push(method(:process_one))
+              while !@unconsumed_output.empty?
+                type, input, output, index = @unconsumed_output.pop
+                if type == :exception
+                  exception ||= output
+                else
+                  yield input, output, index
+                end
+                awaiting_output -= 1
+              end
+            end
+          rescue
+            # We still want to wait for the rest of the outputs to process
+            awaiting_output += 1
+            @unconsumed_output.push([:exception, nil, $!, nil])
+          end
+
+          while awaiting_output > 0
+            # yield thread to others (for 1.8.7)
+            if @unconsumed_output.empty?
+              sleep(0.01)
+            end
+
+            while !@unconsumed_output.empty?
+              type, input, output, index = @unconsumed_output.pop
+              if type == :exception
+                exception ||= output
+              else
+                yield input, output, index
+              end
+              awaiting_output -= 1
+            end
+
+            # If no one is working on our tasks and we're allowed to
+            # work on them in the main thread, process an input to
+            # move things forward.
+            if @in_process == 0 && !(@options[:main_thread_processing] == false)
+              process_one
+            end
+          end
+
+          if exception
+            raise exception
+          end
+        end
+
+        def each_with_input_ordered
+          next_to_yield = 0
+          unconsumed = {}
+          each_with_input_unordered do |input, output, index|
+            unconsumed[index] = [ input, output ]
+            while unconsumed[next_to_yield]
+              input_output = unconsumed.delete(next_to_yield)
+              yield input_output[0], input_output[1], next_to_yield
+              next_to_yield += 1
+            end
+          end
+        end
+
+        def each_with_input(&block)
+          if @options[:ordered] == false
+            each_with_input_unordered(&block)
+          else
+            each_with_input_ordered(&block)
+          end
+        end
+
+        def each_with_index
+          if @options[:ordered] == false
+            each_with_input_unordered do |input, output, index|
+              yield output, index
+            end
+          else
+            each_with_input_ordered do |input, output, index|
+              yield output, index
+            end
+          end
+        end
+
+        def each
+          if @options[:ordered] == false
+            each_with_input_unordered do |input, output, index|
+              yield output
+            end
+          else
+            each_with_input_ordered do |input, output, index|
+              yield output
+            end
+          end
+        end
+
+        private
+
+        def process_one
+          @in_process += 1
+          begin
+            begin
+              input, index = @task_queue.pop(true)
+              process_input(input, index)
+            rescue ThreadError
+            end
+          ensure
+            @in_process -= 1
+          end
+        end
+
+        def process_input(input, index)
+          begin
+            output = @block.call(input)
+            @unconsumed_output.push([ :result, input, output, index ])
+          rescue
+            @unconsumed_output.push([ :exception, input, $!, index ])
+          end
+
+          index
         end
       end
     end
