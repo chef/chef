@@ -22,8 +22,7 @@ name "angrychef"
 maintainer "Chef Software, Inc."
 homepage "http://www.getchef.com"
 
-replaces        "angrychef"
-install_path    "/opt/angrychef"
+install_path "/opt/angrychef"
 
 build_iteration 4
 build_version do
