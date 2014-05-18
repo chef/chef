@@ -9,6 +9,7 @@ class Chef
       def self.threads=(value)
         if @@threads != value
           @@threads = value
+          @@parallelizer.kill
           @@parallelizer = nil
         end
       end
@@ -17,8 +18,12 @@ class Chef
         @@parallelizer ||= Parallelizer.new(@@threads)
       end
 
-      def self.parallelize(enumerator, options = {}, &block)
-        parallelizer.parallelize(enumerator, options, &block)
+      def self.parallelize(enumerable, options = {}, &block)
+        parallelizer.parallelize(enumerable, options, &block)
+      end
+
+      def self.parallel_do(enumerable, options = {}, &block)
+        parallelizer.parallel_do(enumerable, options, &block)
       end
 
       def initialize(threads)
@@ -33,12 +38,18 @@ class Chef
         ParallelEnumerable.new(@tasks, enumerable, options, &block)
       end
 
-      def stop
+      def parallel_do(enumerable, options = {}, &block)
+        ParallelEnumerable.new(@tasks, enumerable, options.merge(:ordered => false), &block).wait
+      end
+
+      def kill
         @threads.each do |thread|
           Thread.kill(thread)
         end
         @threads = []
       end
+
+      private
 
       def worker_loop
         while true
@@ -61,6 +72,8 @@ class Chef
         #   order). Default: true
         # :main_thread_processing [true|false] - whether the main thread pulling
         #   on each() is allowed to process inputs. Default: true
+        #   NOTE: If you set this to false, parallelizer.kill will stop each()
+        #   in its tracks, so you need to know for sure that won't happen.
         def initialize(parent_task_queue, enumerable, options, &block)
           @task_queue = Queue.new
           @parent_task_queue = parent_task_queue
