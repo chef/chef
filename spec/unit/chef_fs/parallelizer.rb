@@ -101,6 +101,20 @@ describe Chef::ChefFS::Parallelizer do
         elapsed_time.should < 0.4
         processed.should == 3
       end
+
+      it "Exceptions with :stop_on_exception are raised after all processing is done" do
+        processed = 0
+        parallelized = parallelize([0.3,0.3,'x',0.3,0.3,0.3,0.3,0.3], :ordered => false, :stop_on_exception => true) do |x|
+          raise 'hi' if x == 'x'
+          sleep(x)
+          processed += 1
+          x
+        end
+        expect { parallelized.to_a }.to raise_error 'hi'
+        processed.should <= 5
+        processed.should >= 2
+      end
+
     end
 
     context "With :ordered => true (ordered output)" do
@@ -153,6 +167,19 @@ describe Chef::ChefFS::Parallelizer do
         elapsed_time.should > 0.25
         elapsed_time.should < 0.55
         processed.should == 3
+      end
+
+      it "Exceptions with :stop_on_exception are raised after all processing is done" do
+        processed = 0
+        parallelized = parallelize([0.3,0.3,'x',0.3,0.3,0.3,0.3,0.3], :stop_on_exception => true) do |x|
+          raise 'hi' if x == 'x'
+          sleep(x)
+          processed += 1
+          x
+        end
+        expect { parallelized.to_a }.to raise_error 'hi'
+        processed.should <= 5
+        processed.should >= 2
       end
     end
   end
