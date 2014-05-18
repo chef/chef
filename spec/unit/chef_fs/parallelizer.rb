@@ -105,14 +105,16 @@ describe Chef::ChefFS::Parallelizer do
       it "Exceptions with :stop_on_exception are raised after all processing is done" do
         processed = 0
         parallelized = parallelize([0.3,0.3,'x',0.3,0.3,0.3,0.3,0.3], :ordered => false, :stop_on_exception => true) do |x|
-          raise 'hi' if x == 'x'
+          if x == 'x'
+            sleep(0.1)
+            raise 'hi'
+          end
           sleep(x)
           processed += 1
           x
         end
         expect { parallelized.to_a }.to raise_error 'hi'
-        processed.should <= 5
-        processed.should >= 2
+        processed.should == 4
       end
 
     end
@@ -154,16 +156,22 @@ describe Chef::ChefFS::Parallelizer do
         elapsed_time.should < 0.7
       end
 
-      it "Exceptions in output are raised in the correct sequence but do NOT stop processing" do
+      it "Exceptions in output are raised in the correct sequence and running processes do NOT stop processing" do
         processed = 0
         enum = parallelize([0.2,0.1,'x',0.3]) do |x|
+          if x == 'x'
+            while processed < 3
+              sleep(0.05)
+            end
+            raise 'hi'
+          end
           sleep(x)
           processed += 1
           x
         end.enum_for(:each)
         enum.next.should == 0.2
         enum.next.should == 0.1
-        expect { enum.next }.to raise_error
+        expect { enum.next }.to raise_error 'hi'
         elapsed_time.should > 0.25
         elapsed_time.should < 0.55
         processed.should == 3
@@ -171,15 +179,17 @@ describe Chef::ChefFS::Parallelizer do
 
       it "Exceptions with :stop_on_exception are raised after all processing is done" do
         processed = 0
-        parallelized = parallelize([0.3,0.3,'x',0.3,0.3,0.3,0.3,0.3], :stop_on_exception => true) do |x|
-          raise 'hi' if x == 'x'
+        parallelized = parallelize([0.3,0.3,'x',0.3,0.3,0.3,0.3,0.3], :ordered => false, :stop_on_exception => true) do |x|
+          if x == 'x'
+            sleep(0.1)
+            raise 'hi'
+          end
           sleep(x)
           processed += 1
           x
         end
         expect { parallelized.to_a }.to raise_error 'hi'
-        processed.should <= 5
-        processed.should >= 2
+        processed.should == 4
       end
     end
   end
