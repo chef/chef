@@ -4,7 +4,7 @@ gemspec :name => "chef"
 gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
 
 gem 'ohai', :git => 'https://github.com/opscode/ohai.git', :branch => 'adamed/wmi-lite-testing'
-gem 'wmi-lite', :git => 'https://github.com/opscode/wmi-lite.git', :branch => 'adamed/tests'
+gem 'wmi-lite', :git => 'https://github.com/opscode/wmi-lite.git', :branch => 'master'
 
 group(:docgen) do
   gem "yard"
