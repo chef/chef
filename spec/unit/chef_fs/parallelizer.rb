@@ -2,21 +2,6 @@ require 'spec_helper'
 require 'chef/chef_fs/parallelizer'
 
 describe Chef::ChefFS::Parallelizer do
-  class EnumerableWithException
-    include Enumerable
-
-    def initialize(*results)
-      @results = results
-    end
-
-    def each
-      @results.each do |x|
-        yield x
-      end
-      raise 'hi'
-    end
-  end
-
   before :each do
     @start_time = Time.now
   end
@@ -68,37 +53,39 @@ describe Chef::ChefFS::Parallelizer do
         enum = parallelize([0.5,0.3,0.1], :ordered => false) do |val|
           sleep val
           val
-        end.enum_for(:each_with_index)
-        enum.next.should == [ 0.1, 2 ]
-        elapsed_time.should < 0.2
-        enum.next.should == [ 0.3, 1 ]
-        elapsed_time.should < 0.4
-        enum.next.should == [ 0.5, 0 ]
-        elapsed_time.should < 0.6
+        end
+        enum.map do |value|
+          elapsed_time.should < value+0.1
+          value
+        end.should == [ 0.1, 0.3, 0.5 ]
       end
 
       it "An exception in input is passed through but does NOT stop processing" do
-        enum = parallelize(EnumerableWithException.new(0.5,0.3,0.1), :ordered => false) { |x| sleep(x); x }.enum_for(:each)
-        enum.next.should == 0.1
-        enum.next.should == 0.3
-        enum.next.should == 0.5
-        expect { enum.next }.to raise_error 'hi'
+        input = TestEnumerable.new(0.5,0.3,0.1) do
+          raise 'hi'
+        end
+        enum = parallelize(input, :ordered => false) { |x| sleep(x); x }
+        results = []
+        expect { enum.each { |value| results << value } }.to raise_error 'hi'
+        results.should == [ 0.1, 0.3, 0.5 ]
         elapsed_time.should < 0.6
       end
 
       it "Exceptions in output are raised after all processing is done" do
         processed = 0
-        enum = parallelize([0.2,0.1,'x',0.3], :ordered => false) do |x|
-          sleep(x)
+        enum = parallelize([1,2,'x',3], :ordered => false) do |x|
+          if x == 'x'
+            sleep 0.1
+            raise 'hi'
+          end
+          sleep 0.2
           processed += 1
           x
-        end.enum_for(:each)
-        enum.next.should == 0.1
-        enum.next.should == 0.2
+        end
+        results = []
+        expect { enum.each { |value| results << value } }.to raise_error 'hi'
+        results.sort.should == [ 1, 2, 3 ]
         elapsed_time.should < 0.3
-        enum.next.should == 0.3
-        expect { enum.next }.to raise_error
-        elapsed_time.should < 0.4
         processed.should == 3
       end
 
@@ -116,7 +103,6 @@ describe Chef::ChefFS::Parallelizer do
         expect { parallelized.to_a }.to raise_error 'hi'
         processed.should == 4
       end
-
     end
 
     context "With :ordered => true (ordered output)" do
@@ -147,33 +133,31 @@ describe Chef::ChefFS::Parallelizer do
       end
 
       it "Exceptions in input are raised in the correct sequence but do NOT stop processing" do
-        enum = parallelize(EnumerableWithException.new(0.5,0.3,0.1)) { |x| sleep(x); x }.enum_for(:each)
-        enum.next.should == 0.5
-        elapsed_time.should < 0.7
-        enum.next.should == 0.3
-        enum.next.should == 0.1
-        expect { enum.next }.to raise_error 'hi'
-        elapsed_time.should < 0.7
+        input = TestEnumerable.new(0.5,0.3,0.1) do
+          raise 'hi'
+        end
+        results = []
+        enum = parallelize(input) { |x| sleep(x); x }
+        expect { enum.each { |value| results << value } }.to raise_error 'hi'
+        elapsed_time.should < 0.6
+        results.should == [ 0.5, 0.3, 0.1 ]
       end
 
       it "Exceptions in output are raised in the correct sequence and running processes do NOT stop processing" do
         processed = 0
-        enum = parallelize([0.2,0.1,'x',0.3]) do |x|
+        enum = parallelize([1,2,'x',3]) do |x|
           if x == 'x'
-            while processed < 3
-              sleep(0.05)
-            end
+            sleep(0.1)
             raise 'hi'
           end
-          sleep(x)
+          sleep(0.2)
           processed += 1
           x
-        end.enum_for(:each)
-        enum.next.should == 0.2
-        enum.next.should == 0.1
-        expect { enum.next }.to raise_error 'hi'
-        elapsed_time.should > 0.25
-        elapsed_time.should < 0.55
+        end
+        results = []
+        expect { enum.each { |value| results << value } }.to raise_error 'hi'
+        results.should == [ 1, 2 ]
+        elapsed_time.should < 0.3
         processed.should == 3
       end
 
@@ -193,28 +177,20 @@ describe Chef::ChefFS::Parallelizer do
       end
     end
 
-    class SlowEnumerable
-      def initialize(*values)
-        @values = values
-      end
-      include Enumerable
-      def each
-        @values.each do |value|
-          yield value
-          sleep 0.1
-        end
-      end
-    end
-
     it "When the input is slow, output still proceeds" do
-      enum = parallelize(SlowEnumerable.new(1,2,3)) { |x| x }.enum_for(:each)
-      enum.next.should == 1
-      elapsed_time.should < 0.2
-      enum.next.should == 2
-      elapsed_time.should < 0.3
-      enum.next.should == 3
-      elapsed_time.should < 0.4
-      expect { enum.next }.to raise_error StopIteration
+      input = TestEnumerable.new do |&block|
+        block.call(1)
+        sleep 0.1
+        block.call(2)
+        sleep 0.1
+        block.call(3)
+        sleep 0.1
+      end
+      enum = parallelize(input) { |x| x }
+      enum.map do |value|
+        elapsed_time.should < (value+1)*0.1
+        value
+      end.should == [ 1, 2, 3 ]
     end
   end
 
@@ -229,11 +205,14 @@ describe Chef::ChefFS::Parallelizer do
         started = false
         @occupying_job_finished = occupying_job_finished = [ false ]
         @thread = Thread.new do
-          parallelizer.parallelize([0], :main_thread_processing => false) do |x|
-            started = true
-            sleep(0.3)
-            occupying_job_finished[0] = true
-          end.wait
+          begin
+            parallelizer.parallelize([0], :main_thread_processing => false) do |x|
+              started = true
+              sleep(0.3)
+              occupying_job_finished[0] = true
+            end.wait
+          ensure
+          end
         end
         while !started
           sleep(0.01)
@@ -241,7 +220,9 @@ describe Chef::ChefFS::Parallelizer do
       end
 
       after :each do
-        Thread.kill(@thread)
+        if RUBY_VERSION.to_f > 1.8
+          Thread.kill(@thread)
+        end
       end
 
       it "parallelize with :main_thread_processing = true does not block" do
@@ -286,35 +267,10 @@ describe Chef::ChefFS::Parallelizer do
       end
     end
 
-    class InputMapper
-      include Enumerable
-
-      def initialize(*values, &block)
-        @values = values
-        @block = block
-        @num_processed = 0
-      end
-
-      attr_reader :num_processed
-
-      def each
-        @values.each do |value|
-          @num_processed += 1
-          yield value
-        end
-        if @block
-          @block.call do |value|
-            @num_processed += 1
-            yield value
-          end
-        end
-      end
-    end
-
     context "enumerable methods should run efficiently" do
       it ".count does not process anything" do
         outputs_processed = 0
-        input_mapper = InputMapper.new(1,2,3,4,5,6)
+        input_mapper = TestEnumerable.new(1,2,3,4,5,6)
         enum = parallelizer.parallelize(input_mapper) do |x|
           outputs_processed += 1
           sleep(0.05) # Just enough to yield and get other inputs in the queue
@@ -327,7 +283,7 @@ describe Chef::ChefFS::Parallelizer do
 
       it ".count with arguments works normally" do
         outputs_processed = 0
-        input_mapper = InputMapper.new(1,1,1,1,2,2,2,3,3,4)
+        input_mapper = TestEnumerable.new(1,1,1,1,2,2,2,3,3,4)
         enum = parallelizer.parallelize(input_mapper) do |x|
           outputs_processed += 1
           x
@@ -340,7 +296,7 @@ describe Chef::ChefFS::Parallelizer do
 
       it ".first does not enumerate anything other than the first result(s)" do
         outputs_processed = 0
-        input_mapper = InputMapper.new(1,2,3,4,5,6)
+        input_mapper = TestEnumerable.new(1,2,3,4,5,6)
         enum = parallelizer.parallelize(input_mapper) do |x|
           outputs_processed += 1
           sleep(0.05) # Just enough to yield and get other inputs in the queue
@@ -354,7 +310,7 @@ describe Chef::ChefFS::Parallelizer do
 
       it ".take does not enumerate anything other than the first result(s)" do
         outputs_processed = 0
-        input_mapper = InputMapper.new(1,2,3,4,5,6)
+        input_mapper = TestEnumerable.new(1,2,3,4,5,6)
         enum = parallelizer.parallelize(input_mapper) do |x|
           outputs_processed += 1
           sleep(0.05) # Just enough to yield and get other inputs in the queue
@@ -367,7 +323,7 @@ describe Chef::ChefFS::Parallelizer do
 
       it ".drop does not process anything other than the last result(s)" do
         outputs_processed = 0
-        input_mapper = InputMapper.new(1,2,3,4,5,6)
+        input_mapper = TestEnumerable.new(1,2,3,4,5,6)
         enum = parallelizer.parallelize(input_mapper) do |x|
           outputs_processed += 1
           sleep(0.05) # Just enough to yield and get other inputs in the queue
@@ -381,7 +337,7 @@ describe Chef::ChefFS::Parallelizer do
       if Enumerable.method_defined?(:lazy)
         it ".lazy.take does not enumerate anything other than the first result(s)" do
           outputs_processed = 0
-          input_mapper = InputMapper.new(1,2,3,4,5,6)
+          input_mapper = TestEnumerable.new(1,2,3,4,5,6)
           enum = parallelizer.parallelize(input_mapper) do |x|
             outputs_processed += 1
             sleep(0.05) # Just enough to yield and get other inputs in the queue
@@ -394,7 +350,7 @@ describe Chef::ChefFS::Parallelizer do
 
         it ".drop does not process anything other than the last result(s)" do
           outputs_processed = 0
-          input_mapper = InputMapper.new(1,2,3,4,5,6)
+          input_mapper = TestEnumerable.new(1,2,3,4,5,6)
           enum = parallelizer.parallelize(input_mapper) do |x|
             outputs_processed += 1
             sleep(0.05) # Just enough to yield and get other inputs in the queue
@@ -407,7 +363,7 @@ describe Chef::ChefFS::Parallelizer do
 
         it "lazy enumerable is actually lazy" do
           outputs_processed = 0
-          input_mapper = InputMapper.new(1,2,3,4,5,6)
+          input_mapper = TestEnumerable.new(1,2,3,4,5,6)
           enum = parallelizer.parallelize(input_mapper) do |x|
             outputs_processed += 1
             sleep(0.05) # Just enough to yield and get other inputs in the queue
@@ -425,7 +381,7 @@ describe Chef::ChefFS::Parallelizer do
     context "running enumerable multiple times should function correctly" do
       it ".map twice on the same parallel enumerable returns the correct results and re-processes the input" do
         outputs_processed = 0
-        input_mapper = InputMapper.new(1,2,3)
+        input_mapper = TestEnumerable.new(1,2,3)
         enum = parallelizer.parallelize(input_mapper) do |x|
           outputs_processed += 1
           x
@@ -438,7 +394,7 @@ describe Chef::ChefFS::Parallelizer do
 
       it ".first and then .map on the same parallel enumerable returns the correct results and re-processes the input" do
         outputs_processed = 0
-        input_mapper = InputMapper.new(1,2,3)
+        input_mapper = TestEnumerable.new(1,2,3)
         enum = parallelizer.parallelize(input_mapper) do |x|
           outputs_processed += 1
           x
@@ -496,6 +452,31 @@ describe Chef::ChefFS::Parallelizer do
       end
       threads.each { |thread| thread.join }
       outputs.each { |output| output.sort.should == 2.upto(501).to_a }
+    end
+  end
+
+  class TestEnumerable
+    include Enumerable
+
+    def initialize(*values, &block)
+      @values = values
+      @block = block
+      @num_processed = 0
+    end
+
+    attr_reader :num_processed
+
+    def each(&each_block)
+      @values.each do |value|
+        @num_processed += 1
+        each_block.call(value)
+      end
+      if @block
+        @block.call do |value|
+          @num_processed += 1
+          each_block.call(value)
+        end
+      end
     end
   end
 end

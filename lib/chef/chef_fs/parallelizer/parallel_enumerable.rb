@@ -24,7 +24,7 @@ class Chef
           @block = block
 
           @unconsumed_input = Queue.new
-          @in_process = 0
+          @in_process = {}
           @unconsumed_output = Queue.new
         end
 
@@ -191,7 +191,7 @@ class Chef
               # If no one is working on our tasks and we're allowed to
               # work on them in the main thread, process an input to
               # move things forward.
-              if @in_process == 0 && !(@options[:main_thread_processing] == false)
+              if @in_process.size == 0 && !(@options[:main_thread_processing] == false)
                 process_one
               end
             end
@@ -225,7 +225,7 @@ class Chef
 
         def stop
           @unconsumed_input.clear
-          while @in_process > 0
+          while @in_process.size > 0
             sleep(0.05)
           end
           @unconsumed_output.clear
@@ -244,11 +244,11 @@ class Chef
         # existing outputs to the user.
         #
         def finished?
-          @unconsumed_input.empty? && @in_process == 0 && @unconsumed_output.empty?
+          @unconsumed_input.empty? && @in_process.size == 0 && @unconsumed_output.empty?
         end
 
         def process_one
-          @in_process += 1
+          @in_process[Thread.current] = true
           begin
             begin
               input, index = @unconsumed_input.pop(true)
@@ -256,7 +256,7 @@ class Chef
             rescue ThreadError
             end
           ensure
-            @in_process -= 1
+            @in_process.delete(Thread.current)
           end
         end
 
@@ -264,7 +264,6 @@ class Chef
           begin
             output = @block.call(input)
             @unconsumed_output.push([ output, index, input, :result ])
-
           rescue
             if @options[:stop_on_exception]
               @unconsumed_input.clear
