@@ -140,7 +140,7 @@ Vagrant.configure('2') do |config|
         sudo chown vagrant /opt/#{project_name}
         cd #{guest_project_path}
         bundle install --path=/home/vagrant/.bundler
-        bundle exec omnibus build project #{project_name}
+        bundle exec omnibus build #{project_name}
       OMNIBUS_BUILD
 
     end # config.vm.define.platform
