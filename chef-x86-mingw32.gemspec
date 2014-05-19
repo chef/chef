@@ -13,6 +13,6 @@ gemspec.add_dependency "win32-mutex", "0.4.1"
 gemspec.add_dependency "win32-process", "0.7.3"
 gemspec.add_dependency "win32-service", "0.8.2"
 gemspec.add_dependency "win32-mmap", "0.4.0"
-gemspec.add_dependency "wmi-lite"
+gemspec.add_dependency "wmi-lite", "1.0.0.rc.1"
 
 gemspec
