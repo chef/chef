@@ -36,27 +36,8 @@ class Chef
         resize(num_threads)
       end
 
-      def resize(num_threads, wait = true, timeout = nil)
-        if num_threads < @threads.size
-          threads_to_stop = @threads[num_threads..@threads.size-1]
-          @threads = @threads[0..num_threads-1]
-          threads_to_stop.each do |thread|
-            @stop_thread[thread] = true
-          end
-
-          if wait
-            start_time = Time.now
-            threads_to_stop.each do |thread|
-              thread_timeout = timeout ? timeout - (Time.now - start_time) : nil
-              thread.join(thread_timeout)
-            end
-          end
-
-        else
-          @threads.size.upto(num_threads - 1) do |i|
-            @threads[i] = Thread.new(&method(:worker_loop))
-          end
-        end
+      def num_threads
+        @threads.size
       end
 
       def parallelize(enumerable, options = {}, &block)
@@ -71,9 +52,33 @@ class Chef
         resize(0, wait, timeout)
       end
 
+      def resize(to_threads, wait = true, timeout = nil)
+        if to_threads < num_threads
+          threads_to_stop = @threads[to_threads..num_threads-1]
+          @threads = @threads.slice(0, to_threads)
+          threads_to_stop.each do |thread|
+            @stop_thread[thread] = true
+          end
+
+          if wait
+            start_time = Time.now
+            threads_to_stop.each do |thread|
+              thread_timeout = timeout ? timeout - (Time.now - start_time) : nil
+              thread.join(thread_timeout)
+            end
+          end
+
+        else
+          num_threads.upto(to_threads - 1) do |i|
+            @threads[i] = Thread.new(&method(:worker_loop))
+          end
+        end
+      end
+
       def kill
         @threads.each do |thread|
           Thread.kill(thread)
+          @stop_thread.delete(thread)
         end
         @threads = []
       end

@@ -263,6 +263,7 @@ describe Chef::ChefFS::Parallelizer do
       it "resizing the Parallelizer to 0 waits for the job to stop" do
         elapsed_time.should < 0.2
         parallelizer.resize(0)
+        parallelizer.num_threads.should == 0
         elapsed_time.should > 0.25
         @occupying_job_finished.should == [ true ]
       end
@@ -270,6 +271,7 @@ describe Chef::ChefFS::Parallelizer do
       it "stopping the Parallelizer waits for the job to finish" do
         elapsed_time.should < 0.2
         parallelizer.stop
+        parallelizer.num_threads.should == 0
         elapsed_time.should > 0.25
         @occupying_job_finished.should == [ true ]
       end
@@ -277,10 +279,65 @@ describe Chef::ChefFS::Parallelizer do
       it "resizing the Parallelizer to 2 does not stop the job" do
         elapsed_time.should < 0.2
         parallelizer.resize(2)
+        parallelizer.num_threads.should == 2
         elapsed_time.should < 0.2
         sleep(0.3)
         @occupying_job_finished.should == [ true ]
       end
+    end
+
+    class InputMapper
+      include Enumerable
+
+      def initialize(*values)
+        @values = values
+        @num_processed = 0
+      end
+
+      attr_reader :num_processed
+
+      def each
+        @values.each do |value|
+          @num_processed += 1
+          yield value
+        end
+      end
+    end
+
+    it ".map twice on the same parallel enumerable returns the correct results and re-processes the input", :focus do
+      outputs_processed = 0
+      input_mapper = InputMapper.new(1,2,3)
+      enum = parallelizer.parallelize(input_mapper) do |x|
+        outputs_processed += 1
+        x
+      end
+      enum.map { |x| x }.should == [1,2,3]
+      enum.map { |x| x }.should == [1,2,3]
+      outputs_processed.should == 6
+      input_mapper.num_processed.should == 6
+    end
+
+    it ".first and then .map on the same parallel enumerable returns the correct results and re-processes the input", :focus do
+      outputs_processed = 0
+      input_mapper = InputMapper.new(1,2,3)
+      enum = parallelizer.parallelize(input_mapper) do |x|
+        outputs_processed += 1
+        x
+      end
+      enum.first.should == 1
+      enum.map { |x| x }.should == [1,2,3]
+      outputs_processed.should >= 4
+      input_mapper.num_processed.should >= 4
+    end
+
+    it "two simultaneous enumerations throws an exception", :focus do
+      enum = parallelizer.parallelize([1,2,3]) { |x| x }
+      a = enum.enum_for(:each)
+      a.next
+      expect do
+        b = enum.enum_for(:each)
+        b.next
+      end.to raise_error
     end
   end
 
