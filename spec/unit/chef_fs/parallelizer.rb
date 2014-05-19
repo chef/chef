@@ -192,6 +192,30 @@ describe Chef::ChefFS::Parallelizer do
         processed.should == 4
       end
     end
+
+    class SlowEnumerable
+      def initialize(*values)
+        @values = values
+      end
+      include Enumerable
+      def each
+        @values.each do |value|
+          yield value
+          sleep 0.1
+        end
+      end
+    end
+
+    it "When the input is slow, output still proceeds" do
+      enum = parallelize(SlowEnumerable.new(1,2,3)) { |x| x }.enum_for(:each)
+      enum.next.should == 1
+      elapsed_time.should < 0.2
+      enum.next.should == 2
+      elapsed_time.should < 0.3
+      enum.next.should == 3
+      elapsed_time.should < 0.4
+      expect { enum.next }.to raise_error StopIteration
+    end
   end
 
   context "With a Parallelizer with 1 thread" do

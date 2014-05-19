@@ -101,7 +101,7 @@ EOM
 /users/
 /users/user3.json
 EOM
-        end        
+        end
 
         context 'when cwd is at the top level' do
           cwd '.'
