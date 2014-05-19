@@ -1,5 +1,4 @@
 
-require 'chef/config'
 require 'chef/cookbook_version'
 require 'chef/cookbook/chefignore'
 require 'chef/cookbook/metadata'

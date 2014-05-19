@@ -20,9 +20,6 @@
 # limitations under the License.
 
 require 'chef/log'
-require 'chef/node'
-require 'chef/resource_definition_list'
-require 'chef/recipe'
 require 'chef/cookbook/file_vendor'
 require 'chef/cookbook/metadata'
 require 'chef/version_class'
