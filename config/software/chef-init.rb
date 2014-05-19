@@ -45,9 +45,8 @@ export PATH=#{install_dir}/bin:#{install_dir}/embedded/bin:/usr/local/bin:/usr/l
 
 
 run_chef=true
-exec_cmd="runsvdir -p #{install_dir}/service 'log: #{ "." * 395 }'"
+exec_cmd="runsvdir -P #{install_dir}/service 'log: #{ "." * 395 }'"
 
-while [[ $# > 1 ]]
 for i in "$@"
 do
   case $i in 

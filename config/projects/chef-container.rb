@@ -23,18 +23,15 @@ install_path     "/opt/chef"
 build_version do
   # Use chef to determine the build version
   source :git, from_dependency: 'chef'
-
-  # Set a Rubygems style version
-  output_format :git_describe
 end
 build_iteration  1
 package_name     "chef-container"
 
 override :chef, version: "11.12.4"
-override :runit, version: "2.1.1"
-override 'chef-container-gem', version: "0.0.2.pre.dev2"
+override :'chef-container-gem', version: "debug_05162014"
 
 dependency "preparation"
 dependency "chef"
+dependency "chef-init"
 dependency "chef-container-gem"
 dependency "version-manifest"

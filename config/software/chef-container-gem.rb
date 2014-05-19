@@ -16,12 +16,12 @@
 #
 
 name "chef-container-gem"
-default_version "0.0.1"
+default_version "0.1.0"
 
 dependency "ruby"
 dependency "rubygems"
 
 build do
-  gem "install chef-container -n #{install_dir}/embedded/bin --no-rdoc --no-ri -v #{version}"  
+  gem "install chef-container --no-rdoc --no-ri -v #{version}"  
 end
 
