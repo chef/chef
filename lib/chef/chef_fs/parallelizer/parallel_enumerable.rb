@@ -112,31 +112,33 @@ class Chef
           restricted_copy(@input_enumerable.take(n)).to_a
         end
 
-        class RestrictedLazy
-          def initialize(parallel_enumerable, actual_lazy)
-            @parallel_enumerable = parallel_enumerable
-            @actual_lazy = actual_lazy
+        if Enumerable.method_defined?(:lazy)
+          class RestrictedLazy
+            def initialize(parallel_enumerable, actual_lazy)
+              @parallel_enumerable = parallel_enumerable
+              @actual_lazy = actual_lazy
+            end
+
+            def drop(*args, &block)
+              input = @parallel_enumerable.input_enumerable.lazy.drop(*args, &block)
+              @parallel_enumerable.restricted_copy(input)
+            end
+
+            def take(*args, &block)
+              input = @parallel_enumerable.input_enumerable.lazy.take(*args, &block)
+              @parallel_enumerable.restricted_copy(input)
+            end
+
+            def method_missing(method, *args, &block)
+              @actual_lazy.send(:method, *args, &block)
+            end
           end
 
-          def drop(*args, &block)
-            input = @parallel_enumerable.input_enumerable.lazy.drop(*args, &block)
-            @parallel_enumerable.restricted_copy(input)
+          alias :original_lazy :lazy
+
+          def lazy
+            RestrictedLazy.new(self, original_lazy)
           end
-
-          def take(*args, &block)
-            input = @parallel_enumerable.input_enumerable.lazy.take(*args, &block)
-            @parallel_enumerable.restricted_copy(input)
-          end
-
-          def method_missing(method, *args, &block)
-            @actual_lazy.send(:method, *args, &block)
-          end
-        end
-
-        alias :original_lazy :lazy
-
-        def lazy
-          RestrictedLazy.new(self, original_lazy)
         end
 
         private

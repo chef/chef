@@ -361,9 +361,8 @@ describe Chef::ChefFS::Parallelizer do
           x
         end
         enum.take(2).should == [1,2]
-        enum.lazy.take(2).to_a.should == [1,2]
-        outputs_processed.should == 4
-        input_mapper.num_processed.should == 4
+        outputs_processed.should == 2
+        input_mapper.num_processed.should == 2
       end
 
       it ".drop does not process anything other than the last result(s)" do
@@ -375,24 +374,51 @@ describe Chef::ChefFS::Parallelizer do
           x
         end
         enum.drop(2).should == [3,4,5,6]
-        enum.lazy.drop(2).to_a.should == [3,4,5,6]
-        outputs_processed.should == 8
-        input_mapper.num_processed.should == 12
+        outputs_processed.should == 4
+        input_mapper.num_processed.should == 6
       end
 
-      it "lazy enumerable is actually lazy" do
-        outputs_processed = 0
-        input_mapper = InputMapper.new(1,2,3,4,5,6)
-        enum = parallelizer.parallelize(input_mapper) do |x|
-          outputs_processed += 1
-          sleep(0.05) # Just enough to yield and get other inputs in the queue
-          x
+      if Enumerable.method_defined?(:lazy)
+        it ".lazy.take does not enumerate anything other than the first result(s)" do
+          outputs_processed = 0
+          input_mapper = InputMapper.new(1,2,3,4,5,6)
+          enum = parallelizer.parallelize(input_mapper) do |x|
+            outputs_processed += 1
+            sleep(0.05) # Just enough to yield and get other inputs in the queue
+            x
+          end
+          enum.lazy.take(2).to_a.should == [1,2]
+          outputs_processed.should == 2
+          input_mapper.num_processed.should == 2
         end
-        enum.lazy.take(2)
-        enum.lazy.drop(2)
-        sleep(0.1)
-        outputs_processed.should == 0
-        input_mapper.num_processed.should == 0
+
+        it ".drop does not process anything other than the last result(s)" do
+          outputs_processed = 0
+          input_mapper = InputMapper.new(1,2,3,4,5,6)
+          enum = parallelizer.parallelize(input_mapper) do |x|
+            outputs_processed += 1
+            sleep(0.05) # Just enough to yield and get other inputs in the queue
+            x
+          end
+          enum.lazy.drop(2).to_a.should == [3,4,5,6]
+          outputs_processed.should == 4
+          input_mapper.num_processed.should == 6
+        end
+
+        it "lazy enumerable is actually lazy" do
+          outputs_processed = 0
+          input_mapper = InputMapper.new(1,2,3,4,5,6)
+          enum = parallelizer.parallelize(input_mapper) do |x|
+            outputs_processed += 1
+            sleep(0.05) # Just enough to yield and get other inputs in the queue
+            x
+          end
+          enum.lazy.take(2)
+          enum.lazy.drop(2)
+          sleep(0.1)
+          outputs_processed.should == 0
+          input_mapper.num_processed.should == 0
+        end
       end
     end
 
