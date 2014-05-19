@@ -340,6 +340,10 @@ EOM
   end
 
   context 'remote' do
+    before do
+      Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
+    end
+
     when_the_chef_server 'has a role with no run_list' do
       role 'starring', {}
       it 'knife deps reports no dependencies' do

@@ -142,7 +142,7 @@ class Chef
           end
         end
       else
-        platform_specific_path("/var/chef")
+        cache_path
       end
     end
 
@@ -240,8 +240,26 @@ class Chef
       if local_mode
         "#{config_dir}local-mode-cache"
       else
-        platform_specific_path("/var/chef")
+        primary_cache_root = platform_specific_path("/var")
+        primary_cache_path = platform_specific_path("/var/chef")
+        # Use /var/chef as the cache path only if that folder exists and we can read and write
+        # into it, or /var exists and we can read and write into it (we'll create /var/chef later).
+        # Otherwise, we'll create .chef.d under the user's home directory and use that as
+        # the cache path.
+        unless path_accessible?(primary_cache_path) || path_accessible?(primary_cache_root)
+          secondary_cache_path = File.join(user_home, '.chef.d')
+          secondary_cache_path.gsub!(File::SEPARATOR, platform_path_separator) # Safety, mainly for Windows...
+          Chef::Log.warn("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
+          secondary_cache_path
+        else
+          primary_cache_path
+        end
       end
+    end
+
+    # Returns true only if the path exists and is readable and writeable for the user.
+    def self.path_accessible?(path)
+      File.exists?(path) && File.readable?(path) && File.writable?(path)
     end
 
     # Where cookbook files are stored on the server (by content checksum)

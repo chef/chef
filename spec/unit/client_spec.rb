@@ -272,6 +272,7 @@ describe Chef::Client do
 
       before do
         Chef::Config[:client_fork] = enable_fork
+        Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
 
         stub_const("Chef::Client::STDOUT_FD", stdout)
         stub_const("Chef::Client::STDERR_FD", stderr)

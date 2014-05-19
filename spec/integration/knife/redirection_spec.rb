@@ -23,6 +23,10 @@ describe 'redirection' do
   include KnifeSupport
   include AppServerSupport
 
+  before do
+    Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
+  end
+
   when_the_chef_server 'has a role' do
     role 'x', {}
 

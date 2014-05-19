@@ -22,6 +22,10 @@ describe 'knife list' do
   extend IntegrationSupport
   include KnifeSupport
 
+  before do
+    Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
+  end
+
   when_the_chef_server "is empty" do
     it "knife list / returns all top level directories" do
       knife('list /').should_succeed <<EOM

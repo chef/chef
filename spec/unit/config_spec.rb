@@ -138,13 +138,70 @@ describe Chef::Config do
   end
 
   describe "default values" do
+    def primary_cache_path
+      if windows?
+        "#{Chef::Config.env['SYSTEMDRIVE']}\\chef"
+      else
+        "/var/chef"
+      end
+    end
+
+    def secondary_cache_path
+      if windows?
+        "#{Chef::Config.env['SYSTEMDRIVE']}\\#{Chef::Config.env['HOMEPATH']}\\.chef.d"
+      else
+        "#{Chef::Config.env['HOME']}/.chef.d"
+      end
+    end
+
+    before do
+      if windows?
+        Chef::Config.stub(:env).and_return({'SYSTEMDRIVE' => "C:", 'HOMEPATH' => "MyHome"})
+      else
+        Chef::Config.stub(:env).and_return({'HOME' => "/Users/me"})
+      end
+
+      Chef::Config.stub(:path_accessible?).and_return(false)
+    end
+
+    describe "Chef::Config[:cache_path]" do
+      context "when /var/chef exists and is accessible" do
+        it "defaults to /var/chef" do
+          Chef::Config.stub(:path_accessible?).and_return(true)
+          Chef::Config[:cache_path].should == primary_cache_path
+        end
+      end
+
+      context "when /var/chef does not exist and /var is accessible" do
+        it "defaults to /var/chef" do
+          File.stub(:exists?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(false)
+          Chef::Config.stub(:path_accessible?).with(Chef::Config.platform_specific_path("/var")).and_return(true)
+          Chef::Config[:cache_path].should == primary_cache_path
+        end
+      end
+
+      context "when /var/chef does not exist and /var is not accessible" do
+        it "defaults to $HOME/.chef.d" do
+          File.stub(:exists?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(false)
+          Chef::Config.stub(:path_accessible?).with(Chef::Config.platform_specific_path("/var")).and_return(false)
+          Chef::Config[:cache_path].should == secondary_cache_path
+        end
+      end
+
+      context "when /var/chef exists and is not accessible" do
+        it "defaults to $HOME/.chef.d" do
+          File.stub(:exists?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(true)
+          File.stub(:readable?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(true)
+          File.stub(:writable?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(false)
+
+          Chef::Config[:cache_path].should == secondary_cache_path
+        end
+      end
+    end
 
     it "Chef::Config[:file_backup_path] defaults to /var/chef/backup" do
-      backup_path = if windows?
-        "#{ENV['SYSTEMDRIVE']}\\chef\\backup"
-      else
-        "/var/chef/backup"
-      end
+      Chef::Config.stub(:cache_path).and_return(Chef::Config.platform_specific_path("/var/chef"))
+      backup_path = Chef::Config.platform_specific_path("#{Chef::Config.cache_path}/backup")
       Chef::Config[:file_backup_path].should == backup_path
     end
 
@@ -167,17 +224,15 @@ describe Chef::Config do
     end
 
     it "Chef::Config[:data_bag_path] defaults to /var/chef/data_bags" do
+      Chef::Config.stub(:cache_path).and_return(Chef::Config.platform_specific_path("/var/chef"))
       data_bag_path =
-        Chef::Config.platform_specific_path("/var/chef/data_bags")
+        Chef::Config.platform_specific_path("#{Chef::Config.cache_path}/data_bags")
       Chef::Config[:data_bag_path].should == data_bag_path
     end
 
     it "Chef::Config[:environment_path] defaults to /var/chef/environments" do
-      environment_path = if windows?
-        "C:\\chef\\environments"
-      else
-        "/var/chef/environments"
-      end
+      Chef::Config.stub(:cache_path).and_return(Chef::Config.platform_specific_path("/var/chef"))
+      environment_path = Chef::Config.platform_specific_path("#{Chef::Config.cache_path}/environments")
 
       Chef::Config[:environment_path].should == environment_path
     end

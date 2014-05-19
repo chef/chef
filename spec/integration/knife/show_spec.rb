@@ -22,6 +22,10 @@ describe 'knife show' do
   extend IntegrationSupport
   include KnifeSupport
 
+  before do
+    Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
+  end
+
   when_the_chef_server "has one of each thing" do
     client 'x', '{}'
     cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
