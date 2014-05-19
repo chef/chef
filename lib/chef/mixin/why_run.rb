@@ -37,6 +37,7 @@ class Chef
         def initialize(resource, run_context, action)
           @resource, @run_context = resource, run_context
           @actions = []
+          @updated = false
         end
 
         def events
@@ -48,15 +49,17 @@ class Chef
         # block/proc that implements the action.
         def add_action(descriptions, &block)
           @actions << [descriptions, block]
-          if !Chef::Config[:why_run]
-            block.call
-          end
+          @updated = Chef::Config[:why_run] || block.call != false || @updated
           events.resource_update_applied(@resource, @action, descriptions)
         end
 
         # True if there are no actions to execute.
         def empty?
           @actions.empty?
+        end
+
+        def updated?
+          @updated
         end
       end
 
