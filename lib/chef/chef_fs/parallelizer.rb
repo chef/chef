@@ -13,11 +13,8 @@ class Chef
       @@threads = 0
 
       def self.threads=(value)
-        if @@threads != value
-          @@threads = value
-          @@parallelizer.kill
-          @@parallelizer = nil
-        end
+        @@threads = value
+        @@parallelizer.resize(value) if @@parallelizer
       end
 
       def self.parallelizer
@@ -32,11 +29,33 @@ class Chef
         parallelizer.parallel_do(enumerable, options, &block)
       end
 
-      def initialize(threads)
+      def initialize(num_threads)
         @tasks = Queue.new
         @threads = []
-        1.upto(threads) do |i|
-          @threads << Thread.new(&method(:worker_loop))
+        @stop_thread = {}
+        resize(num_threads)
+      end
+
+      def resize(num_threads, wait = true, timeout = nil)
+        if num_threads < @threads.size
+          threads_to_stop = @threads[num_threads..@threads.size-1]
+          @threads = @threads[0..num_threads-1]
+          threads_to_stop.each do |thread|
+            @stop_thread[thread] = true
+          end
+
+          if wait
+            start_time = Time.now
+            threads_to_stop.each do |thread|
+              thread_timeout = timeout ? timeout - (Time.now - start_time) : nil
+              thread.join(thread_timeout)
+            end
+          end
+
+        else
+          @threads.size.upto(num_threads - 1) do |i|
+            @threads[i] = Thread.new(&method(:worker_loop))
+          end
         end
       end
 
@@ -46,6 +65,10 @@ class Chef
 
       def parallel_do(enumerable, options = {}, &block)
         ParallelEnumerable.new(@tasks, enumerable, options.merge(:ordered => false), &block).wait
+      end
+
+      def stop(wait = true, timeout = nil)
+        resize(0, wait, timeout)
       end
 
       def kill
@@ -58,7 +81,7 @@ class Chef
       private
 
       def worker_loop
-        while true
+        while !@stop_thread[Thread.current]
           begin
             task = @tasks.pop
             task.call
@@ -67,6 +90,7 @@ class Chef
             puts $!.backtrace
           end
         end
+        @stop_thread.delete(Thread.current)
       end
     end
   end

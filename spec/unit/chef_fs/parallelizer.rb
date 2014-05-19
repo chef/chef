@@ -227,10 +227,12 @@ describe Chef::ChefFS::Parallelizer do
       before :each do
         parallelizer
         started = false
+        @occupying_job_finished = occupying_job_finished = [ false ]
         @thread = Thread.new do
           parallelizer.parallelize([0], :main_thread_processing => false) do |x|
             started = true
             sleep(0.3)
+            occupying_job_finished[0] = true
           end.wait
         end
         while !started
@@ -256,6 +258,28 @@ describe Chef::ChefFS::Parallelizer do
           x+1
         end.to_a.should == [ 2 ]
         elapsed_time.should > 0.3
+      end
+
+      it "resizing the Parallelizer to 0 waits for the job to stop" do
+        elapsed_time.should < 0.2
+        parallelizer.resize(0)
+        elapsed_time.should > 0.25
+        @occupying_job_finished.should == [ true ]
+      end
+
+      it "stopping the Parallelizer waits for the job to finish" do
+        elapsed_time.should < 0.2
+        parallelizer.stop
+        elapsed_time.should > 0.25
+        @occupying_job_finished.should == [ true ]
+      end
+
+      it "resizing the Parallelizer to 2 does not stop the job" do
+        elapsed_time.should < 0.2
+        parallelizer.resize(2)
+        elapsed_time.should < 0.2
+        sleep(0.3)
+        @occupying_job_finished.should == [ true ]
       end
     end
   end
