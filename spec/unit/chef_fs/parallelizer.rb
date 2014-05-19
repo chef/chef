@@ -289,8 +289,9 @@ describe Chef::ChefFS::Parallelizer do
     class InputMapper
       include Enumerable
 
-      def initialize(*values)
+      def initialize(*values, &block)
         @values = values
+        @block = block
         @num_processed = 0
       end
 
@@ -301,43 +302,136 @@ describe Chef::ChefFS::Parallelizer do
           @num_processed += 1
           yield value
         end
+        if @block
+          @block.call do |value|
+            @num_processed += 1
+            yield value
+          end
+        end
       end
     end
 
-    it ".map twice on the same parallel enumerable returns the correct results and re-processes the input", :focus do
-      outputs_processed = 0
-      input_mapper = InputMapper.new(1,2,3)
-      enum = parallelizer.parallelize(input_mapper) do |x|
-        outputs_processed += 1
-        x
+    context "enumerable methods should run efficiently" do
+      it ".count does not process anything" do
+        outputs_processed = 0
+        input_mapper = InputMapper.new(1,2,3,4,5,6)
+        enum = parallelizer.parallelize(input_mapper) do |x|
+          outputs_processed += 1
+          sleep(0.05) # Just enough to yield and get other inputs in the queue
+          x
+        end
+        enum.count.should == 6
+        outputs_processed.should == 0
+        input_mapper.num_processed.should == 6
       end
-      enum.map { |x| x }.should == [1,2,3]
-      enum.map { |x| x }.should == [1,2,3]
-      outputs_processed.should == 6
-      input_mapper.num_processed.should == 6
+
+      it ".count with arguments works normally" do
+        outputs_processed = 0
+        input_mapper = InputMapper.new(1,1,1,1,2,2,2,3,3,4)
+        enum = parallelizer.parallelize(input_mapper) do |x|
+          outputs_processed += 1
+          x
+        end
+        enum.count { |x| x > 1 }.should == 6
+        enum.count(2).should == 3
+        outputs_processed.should == 20
+        input_mapper.num_processed.should == 20
+      end
+
+      it ".first does not enumerate anything other than the first result(s)" do
+        outputs_processed = 0
+        input_mapper = InputMapper.new(1,2,3,4,5,6)
+        enum = parallelizer.parallelize(input_mapper) do |x|
+          outputs_processed += 1
+          sleep(0.05) # Just enough to yield and get other inputs in the queue
+          x
+        end
+        enum.first.should == 1
+        enum.first(2).should == [1,2]
+        outputs_processed.should == 3
+        input_mapper.num_processed.should == 3
+      end
+
+      it ".take does not enumerate anything other than the first result(s)" do
+        outputs_processed = 0
+        input_mapper = InputMapper.new(1,2,3,4,5,6)
+        enum = parallelizer.parallelize(input_mapper) do |x|
+          outputs_processed += 1
+          sleep(0.05) # Just enough to yield and get other inputs in the queue
+          x
+        end
+        enum.take(2).should == [1,2]
+        enum.lazy.take(2).to_a.should == [1,2]
+        outputs_processed.should == 4
+        input_mapper.num_processed.should == 4
+      end
+
+      it ".drop does not process anything other than the last result(s)" do
+        outputs_processed = 0
+        input_mapper = InputMapper.new(1,2,3,4,5,6)
+        enum = parallelizer.parallelize(input_mapper) do |x|
+          outputs_processed += 1
+          sleep(0.05) # Just enough to yield and get other inputs in the queue
+          x
+        end
+        enum.drop(2).should == [3,4,5,6]
+        enum.lazy.drop(2).to_a.should == [3,4,5,6]
+        outputs_processed.should == 8
+        input_mapper.num_processed.should == 12
+      end
+
+      it "lazy enumerable is actually lazy" do
+        outputs_processed = 0
+        input_mapper = InputMapper.new(1,2,3,4,5,6)
+        enum = parallelizer.parallelize(input_mapper) do |x|
+          outputs_processed += 1
+          sleep(0.05) # Just enough to yield and get other inputs in the queue
+          x
+        end
+        enum.lazy.take(2)
+        enum.lazy.drop(2)
+        sleep(0.1)
+        outputs_processed.should == 0
+        input_mapper.num_processed.should == 0
+      end
     end
 
-    it ".first and then .map on the same parallel enumerable returns the correct results and re-processes the input", :focus do
-      outputs_processed = 0
-      input_mapper = InputMapper.new(1,2,3)
-      enum = parallelizer.parallelize(input_mapper) do |x|
-        outputs_processed += 1
-        x
+    context "running enumerable multiple times should function correctly" do
+      it ".map twice on the same parallel enumerable returns the correct results and re-processes the input" do
+        outputs_processed = 0
+        input_mapper = InputMapper.new(1,2,3)
+        enum = parallelizer.parallelize(input_mapper) do |x|
+          outputs_processed += 1
+          x
+        end
+        enum.map { |x| x }.should == [1,2,3]
+        enum.map { |x| x }.should == [1,2,3]
+        outputs_processed.should == 6
+        input_mapper.num_processed.should == 6
       end
-      enum.first.should == 1
-      enum.map { |x| x }.should == [1,2,3]
-      outputs_processed.should >= 4
-      input_mapper.num_processed.should >= 4
-    end
 
-    it "two simultaneous enumerations throws an exception", :focus do
-      enum = parallelizer.parallelize([1,2,3]) { |x| x }
-      a = enum.enum_for(:each)
-      a.next
-      expect do
-        b = enum.enum_for(:each)
-        b.next
-      end.to raise_error
+      it ".first and then .map on the same parallel enumerable returns the correct results and re-processes the input" do
+        outputs_processed = 0
+        input_mapper = InputMapper.new(1,2,3)
+        enum = parallelizer.parallelize(input_mapper) do |x|
+          outputs_processed += 1
+          x
+        end
+        enum.first.should == 1
+        enum.map { |x| x }.should == [1,2,3]
+        outputs_processed.should >= 4
+        input_mapper.num_processed.should >= 4
+      end
+
+      it "two simultaneous enumerations throws an exception" do
+        enum = parallelizer.parallelize([1,2,3]) { |x| x }
+        a = enum.enum_for(:each)
+        a.next
+        expect do
+          b = enum.enum_for(:each)
+          b.next
+        end.to raise_error
+      end
     end
   end
 

@@ -17,9 +17,9 @@ class Chef
         #   on each() is allowed to process inputs. Default: true
         #   NOTE: If you set this to false, parallelizer.kill will stop each()
         #   in its tracks, so you need to know for sure that won't happen.
-        def initialize(parent_task_queue, enumerable, options = {}, &block)
+        def initialize(parent_task_queue, input_enumerable, options = {}, &block)
           @parent_task_queue = parent_task_queue
-          @enumerable = enumerable
+          @input_enumerable = input_enumerable
           @options = options
           @block = block
 
@@ -27,6 +27,11 @@ class Chef
           @in_process = 0
           @unconsumed_output = Queue.new
         end
+
+        attr_reader :parent_task_queue
+        attr_reader :input_enumerable
+        attr_reader :options
+        attr_reader :block
 
         def each
           each_with_input do |output, index, input, type|
@@ -72,13 +77,67 @@ class Chef
           raise exception if exception
         end
 
+        # Enumerable methods
+        def restricted_copy(enumerable)
+          ParallelEnumerable.new(@parent_task_queue, enumerable, @options, &@block)
+        end
+
+        alias :original_count :count
+
+        def count(*args, &block)
+          if args.size == 0 && block.nil?
+            @input_enumerable.count
+          else
+            original_count(*args, &block)
+          end
+        end
+
+        def first(n=nil)
+          if n
+            restricted_copy(@input_enumerable.first(n)).to_a
+          else
+            first(1)[0]
+          end
+        end
+
+        def drop(n)
+          restricted_copy(@input_enumerable.drop(n)).to_a
+        end
+
         def flatten(levels = nil)
           FlattenEnumerable.new(self, levels)
         end
 
-        # TODO efficient implementation for
-        # count, first, drop, take, skip: run the method on the input enumerable
-        # and use that as our each
+        def take(n)
+          restricted_copy(@input_enumerable.take(n)).to_a
+        end
+
+        class RestrictedLazy
+          def initialize(parallel_enumerable, actual_lazy)
+            @parallel_enumerable = parallel_enumerable
+            @actual_lazy = actual_lazy
+          end
+
+          def drop(*args, &block)
+            input = @parallel_enumerable.input_enumerable.lazy.drop(*args, &block)
+            @parallel_enumerable.restricted_copy(input)
+          end
+
+          def take(*args, &block)
+            input = @parallel_enumerable.input_enumerable.lazy.take(*args, &block)
+            @parallel_enumerable.restricted_copy(input)
+          end
+
+          def method_missing(method, *args, &block)
+            @actual_lazy.send(:method, *args, &block)
+          end
+        end
+
+        alias :original_lazy :lazy
+
+        def lazy
+          RestrictedLazy.new(self, original_lazy)
+        end
 
         private
 
@@ -91,7 +150,7 @@ class Chef
             # Grab all the inputs, yielding any responses during enumeration
             # in case the enumeration itself takes time
             begin
-              @enumerable.each_with_index do |input, index|
+              @input_enumerable.each_with_index do |input, index|
                 @unconsumed_input.push([ input, index ])
                 @parent_task_queue.push(method(:process_one))
 
