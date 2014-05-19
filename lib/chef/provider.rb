@@ -136,7 +136,7 @@ class Chef
     end
 
     def resource_updated?
-      !converge_actions.empty? || @new_resource.updated_by_last_action?
+      converge_actions.updated? || @new_resource.updated_by_last_action?
     end
 
     def set_updated_status
