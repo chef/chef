@@ -1,12 +1,31 @@
 bash -c '
 <%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
 
-if [ ! -f /usr/bin/chef-client ]; then
+if [ ! -f /usr/bin/chef-client -a ! -f /usr/local/bin/chef-client ]; then
   aptitude update
-  aptitude install -y ruby ruby1.8-dev build-essential wget libruby1.8 rubygems
+  # Shamelessley stolen from leonard.io.  Thanks!
+  aptitude install -y ruby1.9.3 ruby1.9.1-dev build-essential wget rubygems
+  /usr/sbin/update-alternatives --set ruby /usr/bin/ruby1.9.1
+  /usr/sbin/update-alternatives --set gem /usr/bin/gem1.9.1
+  /usr/sbin/update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby1.9.1 400 \
+                                --slave   /usr/share/man/man1/ruby.1.gz ruby.1.gz \
+                                          /usr/share/man/man1/ruby1.9.1.1.gz \
+                                --slave   /usr/bin/ri ri /usr/bin/ri1.9.1 \
+                                --slave   /usr/bin/irb irb /usr/bin/irb1.9.1 \
+                                --slave   /usr/bin/rdoc rdoc /usr/bin/rdoc1.9.1
+
+  # choose your interpreter
+  # changes symlinks for /usr/bin/ruby , /usr/bin/gem
+  # /usr/bin/irb, /usr/bin/ri and man (1) ruby
+  /usr/sbin/update-alternatives --config --skip-auto ruby
+  /usr/sbin/update-alternatives --config --skip-auto gem
+  /usr/bin/gem update --no-rdoc --no-ri
+
+  # goodbye ruby 1.8
+  gem1.8 list | cut -d" " -f1 | xargs sudo gem1.8 uninstall -aIx
+  apt-get -q -y remove libruby1.8 ruby1.8 ruby1.8-dev rubygems1.8
 fi
 
-gem update --no-rdoc --no-ri
 gem install ohai --no-rdoc --no-ri --verbose
 gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string %>
 
