@@ -489,7 +489,10 @@ class Chef
       enforce_path_sanity
       Chef::Application.setup_server_connectivity
       begin
-        run
+        exit_status = run
+        if exit_status != 0
+          exit exit_status
+        end
       ensure
         Chef::Application.destroy_server_connectivity
       end
