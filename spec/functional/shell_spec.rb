@@ -118,5 +118,15 @@ describe Shell do
       output.should include("===fatal===")
       expect(exitstatus).to eq(0)
     end
+
+    it "sets the override_runlist from the command line" do
+      output, exitstatus = run_chef_shell_with("-o 'override::foo,override::bar'") do |out, keyboard|
+        show_recipes_code = %q[puts "#{node.recipes.inspect}"]
+        keyboard.puts(show_recipes_code)
+        read_until(out, show_recipes_code)
+      end
+      output.should include(%q{["override::foo", "override::bar"]})
+      expect(exitstatus).to eq(0)
+    end
   end
 end
