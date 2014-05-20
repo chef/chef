@@ -96,11 +96,17 @@ describe Chef::Mixin::Template, "render_template" do
       @template_context = Chef::Mixin::Template::TemplateContext.new({})
       @template_context[:node] = @node
       @template_context[:template_finder] = Chef::Provider::TemplateFinder.new(@run_context, @resource.cookbook_name, @node)
+      @template_context[:resource] = @resource
     end
 
     it "should provide a render method" do
       output = @template_context.render_template_from_string("before {<%= render('test.erb').strip -%>} after")
       output.should == "before {We could be diving for pearls!} after"
+    end
+
+    it "should provide access to the resource" do
+      output = @template_context.render_template_from_string("resource_name: <%= @resource.name %>")
+      output.should == "resource_name: #{@rendered_file_location}"
     end
 
     it "should render local files" do
