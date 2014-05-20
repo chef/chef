@@ -16,7 +16,7 @@
 #
 
 name "chef-container-gem"
-default_version "0.1.1"
+default_version "v0.1.2"
 
 source :git => "https://github.com/tduffield/chef-container"
 
