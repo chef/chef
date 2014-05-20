@@ -2,7 +2,7 @@ bash -c '
 <%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
 
 if [ ! -f /usr/bin/chef-client ]; then
-  pacman -Syy
+  pacman -Syyu --noconfirm
   pacman -S --noconfirm ruby ntp base-devel
   ntpdate -u pool.ntp.org
   gem install ohai --no-rdoc --no-ri --verbose
