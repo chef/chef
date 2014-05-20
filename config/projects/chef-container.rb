@@ -28,7 +28,6 @@ build_iteration  1
 package_name     "chef-container"
 
 override :chef, version: "11.12.4"
-override :'chef-container-gem', version: "debug_05162014"
 
 dependency "preparation"
 dependency "chef"

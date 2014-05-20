@@ -16,12 +16,18 @@
 #
 
 name "chef-container-gem"
-default_version "0.1.0"
+default_version "0.1.1"
+
+source :git => "https://github.com/tduffield/chef-container"
+
+relative_path "chef-container"
 
 dependency "ruby"
 dependency "rubygems"
 
 build do
-  gem "install chef-container --no-rdoc --no-ri -v #{version}"  
+  #gem "install chef-container --no-rdoc --no-ri -v #{version}"  
+  gem "build chef-container.gemspec"
+  gem "install chef-container*.gem --no-rdoc --no-ri"
 end
 

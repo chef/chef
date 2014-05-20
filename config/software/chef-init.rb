@@ -70,11 +70,11 @@ done
 
 if [ "$run_chef" = true ]; then
   if [ -f /chef/zero.rb ]; then
-    chef-client -z -c /chef/zero.rb -j /chef/first-boot.json
+    chef-client -z -c /chef/zero.rb -j /chef/first-boot.json &
   fi
 
-  if [ -f /chef/client.rb ]; then
-    chef-client -c /chef/client.rb -j /chef/first-boot.json
+  if [ -f /etc/chef/client.rb ]; then
+    chef-client -c /etc/chef/client.rb -j /etc/chef/first-boot.json &
   fi
 fi
 
