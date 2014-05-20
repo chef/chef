@@ -72,8 +72,8 @@ class Chef
 
             # Otherwise, go through all children and find any matches
             elsif entry.dir?
-              results = Parallelizer::parallelize(entry.children, :flatten => true) { |child| Chef::ChefFS::FileSystem.list(child, pattern) }
-              results.each(&block)
+              results = Parallelizer::parallelize(entry.children) { |child| Chef::ChefFS::FileSystem.list(child, pattern) }
+              results.flatten(1).each(&block)
             end
           end
         end
@@ -419,7 +419,7 @@ class Chef
       end
 
       def self.parallel_do(enum, options = {}, &block)
-        Chef::ChefFS::Parallelizer.parallelize(enum, options, &block).to_a
+        Chef::ChefFS::Parallelizer.parallel_do(enum, options, &block)
       end
     end
   end
