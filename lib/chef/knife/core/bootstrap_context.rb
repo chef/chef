@@ -81,6 +81,10 @@ CONFIG
             client_rb << %Q{no_proxy       "#{knife_config[:bootstrap_no_proxy]}"\n}
           end
 
+          if knife_config[:diff_disabled]
+            client_rb << %Q{diff_disabled       "#{knife_config[:diff_disabled]}"\n}
+          end
+
           if encrypted_data_bag_secret
             client_rb << %Q{encrypted_data_bag_secret "/etc/chef/encrypted_data_bag_secret"\n}
           end

@@ -160,6 +160,25 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
+  describe "should configure the client to suppress diff when specified" do
+    subject(:knife) { described_class.new }
+    let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "diff_disabled.erb")) }
+    let(:rendered_template) do
+      knife.instance_variable_set("@template_file", template_file)
+      knife.parse_options(options)
+      template_string = knife.read_template
+      knife.render_template(template_string)
+    end
+
+    context "via --diff-disabled" do
+      let(:options){ ["--diff-disabled"] }
+
+      it "renders the client.rb with a diff_disabled" do
+        rendered_template.should match(%r{.*diff_disabled\s*"true".*})
+      end
+    end
+  end
+
   describe "specifying the encrypted data bag secret key" do
     subject(:knife) { described_class.new }
     let(:secret) { "supersekret" }

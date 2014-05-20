@@ -94,6 +94,12 @@ class Chef
         :description => "Do not proxy locations for the node being bootstrapped; this option is used internally by Opscode",
         :proc => Proc.new { |np| Chef::Config[:knife][:bootstrap_no_proxy] = np }
 
+      option :diff_disabled,
+        :long => "--diff-disabled",
+        :description => "suppress file diffs for the node being bootstrapped",
+        :proc => Proc.new { |dd| Chef::Config[:knife][:diff_disabled] = dd },
+        :boolean => true
+
       option :distro,
         :short => "-d DISTRO",
         :long => "--distro DISTRO",
