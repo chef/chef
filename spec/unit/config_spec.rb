@@ -148,17 +148,17 @@ describe Chef::Config do
 
     def secondary_cache_path
       if windows?
-        "#{Chef::Config.env['SYSTEMDRIVE']}\\#{Chef::Config.env['HOMEPATH']}\\.chef.d"
+        "#{Chef::Config.env['SYSTEMDRIVE']}\\#{Chef::Config.env['HOMEPATH']}\\.chef"
       else
-        "#{Chef::Config.env['HOME']}/.chef.d"
+        "#{Chef::Config.env['HOME']}/.chef"
       end
     end
 
     before do
       if windows?
-        Chef::Config.stub(:env).and_return({'SYSTEMDRIVE' => "C:", 'HOMEPATH' => "MyHome"})
+        Chef::Config.stub(:env).and_return({'SYSTEMDRIVE' => "C:", 'HOMEPATH' => "KittenHome"})
       else
-        Chef::Config.stub(:env).and_return({'HOME' => "/Users/me"})
+        Chef::Config.stub(:env).and_return({'HOME' => "/Users/kitten"})
       end
 
       Chef::Config.stub(:path_accessible?).and_return(false)
@@ -181,7 +181,7 @@ describe Chef::Config do
       end
 
       context "when /var/chef does not exist and /var is not accessible" do
-        it "defaults to $HOME/.chef.d" do
+        it "defaults to $HOME/.chef" do
           File.stub(:exists?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(false)
           Chef::Config.stub(:path_accessible?).with(Chef::Config.platform_specific_path("/var")).and_return(false)
           Chef::Config[:cache_path].should == secondary_cache_path
@@ -189,7 +189,7 @@ describe Chef::Config do
       end
 
       context "when /var/chef exists and is not accessible" do
-        it "defaults to $HOME/.chef.d" do
+        it "defaults to $HOME/.chef" do
           File.stub(:exists?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(true)
           File.stub(:readable?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(true)
           File.stub(:writable?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(false)
