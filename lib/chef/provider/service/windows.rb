@@ -39,7 +39,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   PAUSE_PENDING = 'pause pending'
   PAUSED = 'paused'
   START_PENDING = 'start pending'
-  STOP_PENDING = 'stop pending'
+  STOP_PENDING  = 'stop pending'
 
   def whyrun_supported?
     false
@@ -57,11 +57,11 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   def start_service
     if Win32::Service.exists?(@new_resource.service_name)
-	  state = current_state
+      state = current_state
       if state == RUNNING
         Chef::Log.debug "#{@new_resource} already started - nothing to do"
-	  elsif state == START_PENDING
-		Chef::Log.debug "#{@new_resource} already sent start signal - waiting for start"
+      elsif state == START_PENDING
+        Chef::Log.debug "#{@new_resource} already sent start signal - waiting for start"
         spawn_command_thread do
           wait_for_state(RUNNING)
         end
@@ -76,8 +76,8 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
           end
         end
         @new_resource.updated_by_last_action(true)
-	  else 
-        raise Chef::Exceptions::Service, "Service #{@new_resource} can't be started from state [#{current_state}]"
+      else 
+        raise Chef::Exceptions::Service, "Service #{@new_resource} can't be started from state [#{state}]"
       end
     else
         Chef::Log.debug "#{@new_resource} does not exist - nothing to do"
@@ -86,7 +86,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   def stop_service
     if Win32::Service.exists?(@new_resource.service_name)
-	  state = current_state
+      state = current_state
       if state == RUNNING
         if @new_resource.stop_command
           Chef::Log.debug "#{@new_resource} stopping service using the given stop_command"
@@ -98,15 +98,15 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
           end
         end
         @new_resource.updated_by_last_action(true)
-	  elsif state == STOPPED
-		Chef::Log.debug "#{@new_resource} already stopped - nothing to do"
-	  elsif state == STOP_PENDING
-	    Chef::Log.debug "#{@new_resource} already sent stop signal - waiting for stop"
-	    spawn_command_thread do
-		  wait_for_state(STOPPED)
-	    end
+      elsif state == STOPPED
+        Chef::Log.debug "#{@new_resource} already stopped - nothing to do"
+      elsif state == STOP_PENDING
+        Chef::Log.debug "#{@new_resource} already sent stop signal - waiting for stop"
+        spawn_command_thread do
+          wait_for_state(STOPPED)
+        end
       else
-        raise Chef::Exceptions::Service, "Service #{@new_resource} can't be stopped from state [#{current_state}]"
+        raise Chef::Exceptions::Service, "Service #{@new_resource} can't be stopped from state [#{state}]"
       end
     else
       Chef::Log.debug "#{@new_resource} does not exist - nothing to do"
