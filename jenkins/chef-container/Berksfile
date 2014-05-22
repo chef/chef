@@ -1,8 +1,0 @@
-source "https://api.berkshelf.com"
-
-cookbook 'apt'
-<<<<<<< HEAD
-cookbook 'myface', path: '/Users/tomduffield/Development/Cookbooks/myface-cookbook'
-=======
-cookbook 'nginx'
->>>>>>> 2a4afac... Adding debug/testing tools for chef-container.
