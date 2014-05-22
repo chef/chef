@@ -49,56 +49,35 @@ class Chef
         protected
 
         def mount_fs
-          unless current_resource.mounted
-            mountable?
-            actual_options = unless new_resource.options.nil?
-                               new_resource.options(new_resource.options.delete("noauto"))
-                             end
-            command = "mount -F #{new_resource.fstype}"
-            command << " -o #{actual_options.join(',')}" unless actual_options.nil?  || actual_options.empty?
-            command << " #{device_real}"
-            command << " #{new_resource.mount_point}"
-            shell_out!(command)
-            Chef::Log.debug("#{new_resource} is mounted at #{new_resource.mount_point}")
-          else
-            Chef::Log.debug("#{new_resource} is already mounted at #{new_resource.mount_point}")
-          end
+          mountable?
+          actual_options = unless new_resource.options.nil?
+                             new_resource.options(new_resource.options.delete("noauto"))
+                           end
+          command = "mount -F #{new_resource.fstype}"
+          command << " -o #{actual_options.join(',')}" unless actual_options.nil?  || actual_options.empty?
+          command << " #{new_resource.device}"
+          command << " #{new_resource.mount_point}"
+          shell_out!(command)
+          true
         end
 
         def umount_fs
-          if current_resource.mounted
-            shell_out!("umount #{new_resource.mount_point}")
-            Chef::Log.debug("#{new_resource} is no longer mounted at #{new_resource.mount_point}")
-          else
-            Chef::Log.debug("#{new_resource} is not mounted at #{new_resource.mount_point}")
-          end
+          shell_out!("umount #{new_resource.mount_point}")
+          true
         end
 
         def remount_fs
-          if current_resource.mounted and new_resource.supports[:remount]
-            shell_out!("mount -o remount #{new_resource.mount_point}")
-            new_resource.updated_by_last_action(true)
-            Chef::Log.debug("#{new_resource} is remounted at #{new_resource.mount_point}")
-          elsif current_resource.mounted
-            umount_fs
-            sleep 1
-            mount_fs
-          else
-            Chef::Log.debug("#{new_resource} is not mounted at #{new_resource.mount_point} - nothing to do")
-          end
+          shell_out!("mount -o remount #{new_resource.mount_point}")
+          true
         end
 
         def enable_fs
-          if current_resource.enabled && mount_options_unchanged?
-            Chef::Log.debug("#{new_resource} is already enabled - nothing to do")
-            return nil
+          if !mount_options_unchanged?
+            # Options changed: disable first, then re-enable.
+            disable_fs if current_resource.enabled
           end
 
-          if current_resource.enabled
-            # The current options don't match what we have, so
-            # disable, then enable.
-            disable_fs
-          end
+          # FIXME: open a tempfile, write to it, close it, then rename it.
           ::File.open("/etc/vfstab", "a") do |fstab|
             auto = new_resource.options.nil? || ! new_resource.options.include?("noauto")
             actual_options = unless new_resource.options.nil?
@@ -111,25 +90,22 @@ class Chef
         end
 
         def disable_fs
-          if current_resource.enabled
-            contents = []
+          contents = []
 
-            found = false
-            ::File.readlines("/etc/vfstab").reverse_each do |line|
-              if !found && line =~ /^#{device_vfstab_regex}\s+[-\/\w]+\s+#{Regexp.escape(new_resource.mount_point)}/
-                found = true
-                Chef::Log.debug("#{new_resource} is removed from vfstab")
-                next
-              else
-                contents << line
-              end
+          # FIXME: open a tempfile, write to it, close it, then rename it.
+          found = false
+          ::File.readlines("/etc/vfstab").reverse_each do |line|
+            if !found && line =~ /^#{device_vfstab_regex}\s+[-\/\w]+\s+#{Regexp.escape(new_resource.mount_point)}/
+              found = true
+              Chef::Log.debug("#{new_resource} is removed from vfstab")
+              next
+            else
+              contents << line
             end
+          end
 
-            ::File.open("/etc/vfstab", "w") do |fstab|
-              contents.reverse_each { |line| fstab.puts line}
-            end
-          else
-            Chef::Log.debug("#{new_resource} is not enabled - nothing to do")
+          ::File.open("/etc/vfstab", "w") do |fstab|
+            contents.reverse_each { |line| fstab.puts line}
           end
         end
 
@@ -142,9 +118,10 @@ class Chef
 
         private
 
+        # FIXME: should be mountable! and probably should be in define_resource_requirements
         def mountable?
           # only check for existence of non-remote devices
-          if (device_should_exist? && !::File.exists?(device_real) )
+          if (device_should_exist? && !::File.exists?(new_resource.device) )
             raise Chef::Exceptions::Mount, "Device #{new_resource.device} does not exist"
           elsif( !::File.exists?(new_resource.mount_point) )
             raise Chef::Exceptions::Mount, "Mount point #{new_resource.mount_point} does not exist"
@@ -214,7 +191,7 @@ class Chef
         end
 
         def device_mount_regex
-          ::File.symlink?(device_real) ? "(?:#{Regexp.escape(device_real)})|(?:#{Regexp.escape(::File.readlink(device_real))})" : Regexp.escape(device_real)
+          ::File.symlink?(new_resource.device) ? "(?:#{Regexp.escape(new_resource.device)})|(?:#{Regexp.escape(::File.readlink(new_resource.device))})" : Regexp.escape(new_resource.device)
         end
 
         def device_vfstab_regex
