@@ -46,72 +46,7 @@ class Chef
           current_resource.enabled(enabled?)
         end
 
-        def mountable?
-          # only check for existence of non-remote devices
-          if (device_should_exist? && !::File.exists?(device_real) )
-            raise Chef::Exceptions::Mount, "Device #{new_resource.device} does not exist"
-          elsif( !::File.exists?(new_resource.mount_point) )
-            raise Chef::Exceptions::Mount, "Mount point #{new_resource.mount_point} does not exist"
-          end
-          return true
-        end
-
-        def enabled?
-          # Check to see if there is a entry in /etc/vfstab. Last entry for a volume wins.
-          enabled = false
-          ::File.foreach("/etc/vfstab") do |line|
-            case line
-            when /^[#\s]/
-              next
-              # solaris /etc/vfstab format:
-              # device         device          mount           FS      fsck    mount   mount
-              # to mount       to fsck         point           type    pass    at boot options
-            when /^#{device_vfstab_regex}\s+[-\/\w]+\s+#{Regexp.escape(new_resource.mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
-              enabled = true
-              current_resource.fstype($1)
-              # Store the 'mount at boot' column from vfstab as the 'noauto' option
-              # in current_resource.options (linux style)
-              no_auto_option = ($3 == "yes")
-              options = $4
-              if no_auto_option
-                if options.nil? || options.empty?
-                  options = "noauto"
-                else
-                  options += ",noauto"
-                end
-              end
-              current_resource.options(options)
-              if $2 == "-"
-                pass = 0
-              else
-                pass = $2.to_i
-              end
-              current_resource.pass(pass)
-              Chef::Log.debug("Found mount #{new_resource.device} to #{new_resource.mount_point} in /etc/vfstab")
-              next
-            when /^[-\/\w]+\s+[-\/\w]+\s+#{Regexp.escape(new_resource.mount_point)}\s+/
-              enabled = false
-              Chef::Log.debug("Found conflicting mount point #{new_resource.mount_point} in /etc/vfstab")
-            end
-          end
-          enabled
-        end
-
-        def mounted?
-          mounted = false
-          shell_out!("mount").stdout.each_line do |line|
-            # on solaris, 'mount' prints "<mount point> on <device> ...'
-            case line
-            when /^#{Regexp.escape(new_resource.mount_point)}\s+on\s+#{device_mount_regex}/
-              mounted = true
-              Chef::Log.debug("Special device #{new_resource.device} mounted as #{new_resource.mount_point}")
-            when /^#{Regexp.escape(new_resource.mount_point)}\son\s([\/\w])+\s+/
-              mounted = false
-              Chef::Log.debug("Special device #{$~[1]} mounted as #{new_resource.mount_point}")
-            end
-          end
-          mounted
-        end
+        protected
 
         def mount_fs
           unless current_resource.mounted
@@ -198,11 +133,85 @@ class Chef
           end
         end
 
-        def device_should_exist?
-          new_resource.device !~ /:/ && new_resource.device !~ /\/\// && new_resource.device != "tmpfs" && new_resource.fstype != 'fuse'
+        def mount_options_unchanged?
+          current_resource.fstype == new_resource.fstype and
+            current_resource.options == new_resource.options and
+            current_resource.dump == new_resource.dump and
+            current_resource.pass == new_resource.pass
         end
 
         private
+
+        def mountable?
+          # only check for existence of non-remote devices
+          if (device_should_exist? && !::File.exists?(device_real) )
+            raise Chef::Exceptions::Mount, "Device #{new_resource.device} does not exist"
+          elsif( !::File.exists?(new_resource.mount_point) )
+            raise Chef::Exceptions::Mount, "Mount point #{new_resource.mount_point} does not exist"
+          end
+          return true
+        end
+
+        def enabled?
+          # Check to see if there is a entry in /etc/vfstab. Last entry for a volume wins.
+          enabled = false
+          ::File.foreach("/etc/vfstab") do |line|
+            case line
+            when /^[#\s]/
+              next
+              # solaris /etc/vfstab format:
+              # device         device          mount           FS      fsck    mount   mount
+              # to mount       to fsck         point           type    pass    at boot options
+            when /^#{device_vfstab_regex}\s+[-\/\w]+\s+#{Regexp.escape(new_resource.mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
+              enabled = true
+              current_resource.fstype($1)
+              # Store the 'mount at boot' column from vfstab as the 'noauto' option
+              # in current_resource.options (linux style)
+              no_auto_option = ($3 == "yes")
+              options = $4
+              if no_auto_option
+                if options.nil? || options.empty?
+                  options = "noauto"
+                else
+                  options += ",noauto"
+                end
+              end
+              current_resource.options(options)
+              if $2 == "-"
+                pass = 0
+              else
+                pass = $2.to_i
+              end
+              current_resource.pass(pass)
+              Chef::Log.debug("Found mount #{new_resource.device} to #{new_resource.mount_point} in /etc/vfstab")
+              next
+            when /^[-\/\w]+\s+[-\/\w]+\s+#{Regexp.escape(new_resource.mount_point)}\s+/
+              enabled = false
+              Chef::Log.debug("Found conflicting mount point #{new_resource.mount_point} in /etc/vfstab")
+            end
+          end
+          enabled
+        end
+
+        def mounted?
+          mounted = false
+          shell_out!("mount").stdout.each_line do |line|
+            # on solaris, 'mount' prints "<mount point> on <device> ...'
+            case line
+            when /^#{Regexp.escape(new_resource.mount_point)}\s+on\s+#{device_mount_regex}/
+              mounted = true
+              Chef::Log.debug("Special device #{new_resource.device} mounted as #{new_resource.mount_point}")
+            when /^#{Regexp.escape(new_resource.mount_point)}\son\s([\/\w])+\s+/
+              mounted = false
+              Chef::Log.debug("Special device #{$~[1]} mounted as #{new_resource.mount_point}")
+            end
+          end
+          mounted
+        end
+
+        def device_should_exist?
+          new_resource.device !~ /:/ && new_resource.device !~ /\/\// && new_resource.device != "tmpfs" && new_resource.fstype != 'fuse'
+        end
 
         def device_mount_regex
           ::File.symlink?(device_real) ? "(?:#{Regexp.escape(device_real)})|(?:#{Regexp.escape(::File.readlink(device_real))})" : Regexp.escape(device_real)
@@ -210,13 +219,6 @@ class Chef
 
         def device_vfstab_regex
           device_mount_regex
-        end
-
-        def mount_options_unchanged?
-          current_resource.fstype == new_resource.fstype and
-            current_resource.options == new_resource.options and
-            current_resource.dump == new_resource.dump and
-            current_resource.pass == new_resource.pass
         end
 
       end
