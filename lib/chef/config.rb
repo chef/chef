@@ -244,7 +244,7 @@ class Chef
         primary_cache_path = platform_specific_path("/var/chef")
         # Use /var/chef as the cache path only if that folder exists and we can read and write
         # into it, or /var exists and we can read and write into it (we'll create /var/chef later).
-        # Otherwise, we'll create .chef.d under the user's home directory and use that as
+        # Otherwise, we'll create .chef under the user's home directory and use that as
         # the cache path.
         unless path_accessible?(primary_cache_path) || path_accessible?(primary_cache_root)
           secondary_cache_path = File.join(user_home, '.chef')
