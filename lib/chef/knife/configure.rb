@@ -23,6 +23,7 @@ class Chef
     class Configure < Knife
       attr_reader :chef_server, :new_client_name, :admin_client_name, :admin_client_key
       attr_reader :chef_repo, :new_client_key, :validation_client_name, :validation_key
+      attr_reader :log_location
 
       deps do
         require 'ohai'
@@ -76,7 +77,7 @@ class Chef
         ::File.open(config[:config_file], "w") do |f|
           f.puts <<-EOH
 log_level                :info
-log_location             STDOUT
+log_location             '#{log_location}'
 node_name                '#{new_client_name}'
 client_key               '#{new_client_key}'
 validation_client_name   '#{validation_client_name}'
@@ -145,6 +146,7 @@ EOH
         @validation_client_name = config[:validation_client_name] || ask_question("Please enter the validation clientname: ", :default => 'chef-validator')
         @validation_key         = config[:validation_key] || ask_question("Please enter the location of the validation key: ", :default => '/etc/chef-server/chef-validator.pem')
         @validation_key         = File.expand_path(@validation_key)
+        @log_location           = config[:log_location] || ask_question("Please enter the log location: ", :default => 'STDOUT')
         @chef_repo              = config[:repository] || ask_question("Please enter the path to a chef repository (or leave blank): ")
 
         @new_client_key = config[:client_key] || File.join(chef_config_path, "#{@new_client_name}.pem")
