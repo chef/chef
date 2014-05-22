@@ -57,18 +57,15 @@ class Chef
           command << " -o #{actual_options.join(',')}" unless actual_options.nil?  || actual_options.empty?
           command << " #{new_resource.device}"
           command << " #{new_resource.mount_point}"
-          shell_out!(command)
-          true
+          !!shell_out!(command)
         end
 
         def umount_fs
-          shell_out!("umount #{new_resource.mount_point}")
-          true
+          !!shell_out!("umount #{new_resource.mount_point}")
         end
 
         def remount_fs
-          shell_out!("mount -o remount #{new_resource.mount_point}")
-          true
+          !!shell_out!("mount -o remount #{new_resource.mount_point}")
         end
 
         def enable_fs
@@ -87,6 +84,7 @@ class Chef
             fstab.puts("#{new_resource.device}\t-\t#{new_resource.mount_point}\t#{new_resource.fstype}\t#{new_resource.pass == 0 ? "-" : new_resource.pass}\t#{ auto ? :yes : :no }\t #{(actual_options.nil? || actual_options.empty?) ? "-" : actual_options.join(',')}")
             Chef::Log.debug("#{new_resource} is enabled at #{new_resource.mount_point}")
           end
+          true
         end
 
         def disable_fs
@@ -107,6 +105,7 @@ class Chef
           ::File.open("/etc/vfstab", "w") do |fstab|
             contents.reverse_each { |line| fstab.puts line}
           end
+          true
         end
 
         def mount_options_unchanged?
@@ -126,7 +125,7 @@ class Chef
           elsif( !::File.exists?(new_resource.mount_point) )
             raise Chef::Exceptions::Mount, "Mount point #{new_resource.mount_point} does not exist"
           end
-          return true
+          true
         end
 
         def enabled?
