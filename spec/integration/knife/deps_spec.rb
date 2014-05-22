@@ -16,6 +16,7 @@
 # limitations under the License.
 
 require 'support/shared/integration/integration_helper'
+require 'support/shared/context/config'
 require 'chef/knife/deps'
 
 describe 'knife deps' do
@@ -340,10 +341,8 @@ EOM
   end
 
   context 'remote' do
-    before do
-      Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
-    end
-
+    include_context "default config options"
+    
     when_the_chef_server 'has a role with no run_list' do
       role 'starring', {}
       it 'knife deps reports no dependencies' do

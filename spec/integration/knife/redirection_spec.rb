@@ -16,6 +16,7 @@
 # limitations under the License.
 
 require 'support/shared/integration/integration_helper'
+require 'support/shared/context/config'
 require 'chef/knife/list'
 
 describe 'redirection' do
@@ -23,9 +24,7 @@ describe 'redirection' do
   include KnifeSupport
   include AppServerSupport
 
-  before do
-    Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
-  end
+  include_context "default config options"
 
   when_the_chef_server 'has a role' do
     role 'x', {}

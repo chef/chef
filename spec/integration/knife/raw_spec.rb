@@ -16,6 +16,7 @@
 # limitations under the License.
 
 require 'support/shared/integration/integration_helper'
+require 'support/shared/context/config'
 require 'chef/knife/raw'
 require 'chef/knife/show'
 
@@ -24,9 +25,7 @@ describe 'knife raw' do
   include KnifeSupport
   include AppServerSupport
 
-  before do
-    Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
-  end
+  include_context "default config options"
 
   when_the_chef_server "has one of each thing" do
     client 'x', '{}'

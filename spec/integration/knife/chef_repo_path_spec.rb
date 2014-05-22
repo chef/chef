@@ -16,6 +16,7 @@
 # limitations under the License.
 
 require 'support/shared/integration/integration_helper'
+require 'support/shared/context/config'
 require 'chef/knife/list'
 require 'chef/knife/show'
 
@@ -801,12 +802,13 @@ EOM
       end
 
       context 'when data_bag_path is set and nothing else' do
+        include_context "default config options"
+
         before :each do
           %w(client cookbook  environment node role user).each do |object_name|
             Chef::Config.delete("#{object_name}_path".to_sym)
           end
           Chef::Config.delete(:chef_repo_path)
-          Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
           Chef::Config.data_bag_path = File.join(@repository_dir, 'data_bags')
         end
 
