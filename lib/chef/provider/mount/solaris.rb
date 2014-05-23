@@ -1,11 +1,8 @@
-# Author:: Hugo Fichter
-# Based on previous work from Joshua Timberman
-# (See original header below)
-# License:: Apache License, Version 2.0
-
 #
-# Author:: Joshua Timberman (<joshua@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc
+# Author:: Hugo Fichter
+# Author:: Lamont Granquist (<lamont@getchef.com>)
+# Author:: Joshua Timberman (<joshua@getchef.com>)
+# Copyright:: Copyright (c) 2009-2014 Opscode, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,10 +43,23 @@ class Chef
           current_resource.enabled(enabled?)
         end
 
+        def define_resource_requirements do
+          requirements.assert(:mount, :remount) do |a|
+            a.assertion { !device_should_exist? || ::File.exists?(new_resource.device) }
+            a.failure_message(Chef::Exceptions::Mount, "Device #{new_resource.device} does not exist")
+            a.whyrun("Assuming device #{new_resource.device} would have been created")
+          end
+
+          requirements.assert(:mount, :remount) do |a|
+            a.assertion { ::File.exists?(new_resource.mount_point) }
+            a.failure_message(Chef::Exceptions::Mount, "Mount point #{new_resource.mount_point} does not exist")
+            a.whyrun("Assuming mount point #{new_resource.mount_point} would have been created")
+          end
+        end
+
         protected
 
         def mount_fs
-          mountable?
           actual_options = unless new_resource.options.nil?
                              new_resource.options(new_resource.options.delete("noauto"))
                            end
@@ -113,17 +123,6 @@ class Chef
         end
 
         private
-
-        # FIXME: should be mountable! and probably should be in define_resource_requirements
-        def mountable?
-          # only check for existence of non-remote devices
-          if (device_should_exist? && !::File.exists?(new_resource.device) )
-            raise Chef::Exceptions::Mount, "Device #{new_resource.device} does not exist"
-          elsif( !::File.exists?(new_resource.mount_point) )
-            raise Chef::Exceptions::Mount, "Mount point #{new_resource.mount_point} does not exist"
-          end
-          true
-        end
 
         def enabled?
           # Check to see if there is a entry in /etc/vfstab. Last entry for a volume wins.
