@@ -57,15 +57,15 @@ class Chef
           command << " -o #{actual_options.join(',')}" unless actual_options.nil?  || actual_options.empty?
           command << " #{new_resource.device}"
           command << " #{new_resource.mount_point}"
-          !!shell_out!(command)
+          shell_out!(command)
         end
 
         def umount_fs
-          !!shell_out!("umount #{new_resource.mount_point}")
+          shell_out!("umount #{new_resource.mount_point}")
         end
 
         def remount_fs
-          !!shell_out!("mount -o remount #{new_resource.mount_point}")
+          shell_out!("mount -o remount #{new_resource.mount_point}")
         end
 
         def enable_fs
@@ -84,7 +84,6 @@ class Chef
             fstab.puts("#{new_resource.device}\t-\t#{new_resource.mount_point}\t#{new_resource.fstype}\t#{new_resource.pass == 0 ? "-" : new_resource.pass}\t#{ auto ? :yes : :no }\t #{(actual_options.nil? || actual_options.empty?) ? "-" : actual_options.join(',')}")
             Chef::Log.debug("#{new_resource} is enabled at #{new_resource.mount_point}")
           end
-          true
         end
 
         def disable_fs
@@ -105,7 +104,6 @@ class Chef
           ::File.open("/etc/vfstab", "w") do |fstab|
             contents.reverse_each { |line| fstab.puts line}
           end
-          true
         end
 
         def mount_options_unchanged?
@@ -170,19 +168,17 @@ class Chef
         end
 
         def mounted?
-          mounted = false
           shell_out!("mount").stdout.each_line do |line|
             # on solaris, 'mount' prints "<mount point> on <device> ...'
             case line
             when /^#{Regexp.escape(new_resource.mount_point)}\s+on\s+#{device_mount_regex}/
-              mounted = true
-              Chef::Log.debug("Special device #{new_resource.device} mounted as #{new_resource.mount_point}")
+              Chef::Log.debug("Special device #{new_resource.device} is mounted as #{new_resource.mount_point}")
+              return true
             when /^#{Regexp.escape(new_resource.mount_point)}\son\s([\/\w])+\s+/
-              mounted = false
               Chef::Log.debug("Special device #{$~[1]} mounted as #{new_resource.mount_point}")
             end
           end
-          mounted
+          return false
         end
 
         def device_should_exist?
