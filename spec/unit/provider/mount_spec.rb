@@ -93,15 +93,18 @@ describe Chef::Provider::Mount do
       @new_resource.should_not be_updated_by_last_action
     end
   end
+
   describe "when the filesystem should be remounted and the resource does not support remounting" do
     before do
       @new_resource.supports[:remount] = false
+      @current_resource.stub(:mounted).and_return(true)
     end
 
-    it "should fail to remount the filesystem" do
-      @provider.should_not_receive(:remount_fs)
-      lambda {@provider.run_action(:remount)}.should raise_error(Chef::Exceptions::UnsupportedAction)
-      @new_resource.should_not be_updated_by_last_action
+    it "should try a umount/remount of the filesystem" do
+      @provider.should_receive(:umount_fs)
+      @provider.should_receive(:mount_fs)
+      @provider.run_action(:remount)
+      @new_resource.should be_updated_by_last_action
     end
 
   end

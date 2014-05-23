@@ -65,11 +65,15 @@ class Chef
               Chef::Log.info("#{@new_resource} remounted")
             end
           else
-            umount_fs
-            Chef::Log.info("#{@new_resource} unmounted")
-            sleep 1
-            mount_fs
-            Chef::Log.info("#{@new_resource} mounted")
+            converge_by("unmount #{@current_resource.device}") do
+              umount_fs
+              Chef::Log.info("#{@new_resource} unmounted")
+            end
+            sleep 3
+            converge_by("mount #{@current_resource.device}") do
+              mount_fs
+              Chef::Log.info("#{@new_resource} mounted")
+            end
           end
         else
           Chef::Log.debug("#{@new_resource} not mounted, nothing to remount")
