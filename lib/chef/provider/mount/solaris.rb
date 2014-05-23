@@ -39,11 +39,12 @@ class Chef
         end
 
         def load_current_resource
-          current_resource = Chef::Resource::Mount.new(new_resource.name)
+          self.current_resource = Chef::Resource::Mount.new(new_resource.name)
           current_resource.mount_point(new_resource.mount_point)
           current_resource.device(new_resource.device)
           current_resource.mounted(mounted?)
           current_resource.enabled(enabled?)
+          current_resource
         end
 
         protected
@@ -186,7 +187,7 @@ class Chef
         end
 
         def device_should_exist?
-          new_resource.device !~ /:/ && new_resource.device !~ /\/\// && new_resource.device != "tmpfs" && new_resource.fstype != 'fuse'
+          new_resource.device !~ /:/ && new_resource.device !~ /\/\// && new_resource.fstype != "tmpfs" && new_resource.fstype != 'fuse'
         end
 
         def device_mount_regex
