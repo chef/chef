@@ -73,8 +73,7 @@ class Chef
                            end
           command = "mount -F #{fstype}"
           command << " -o #{actual_options.join(',')}" unless actual_options.nil?  || actual_options.empty?
-          command << " #{device}"
-          command << " #{mount_point}"
+          command << " #{device} #{mount_point}"
           shell_out!(command)
         end
 
@@ -102,30 +101,31 @@ class Chef
           passstr = pass == 0 ? "-" : pass
           optstr = (actual_options.nil? || actual_options.empty?) ? "-" : actual_options.join(',')
 
-          tempfile = Tempfile.new("vfstab", "etc")
-          tempfile.write(IO.read("/etc/vfstab"))
-          tempfile.puts("#{device}\t-\t#{mount_point}\t#{fstype}\t#{passstr}\t#{autostr}\t#{optstr}")
-          tempfile.close
-          FileUtils.mv tempfile.path, "/etc/vfstab"
+          Tempfile.open("vfstab", "etc") do |f|
+            f.write(IO.read("/etc/vfstab"))
+            f.puts("#{device}\t-\t#{mount_point}\t#{fstype}\t#{passstr}\t#{autostr}\t#{optstr}")
+            f.close
+            FileUtils.mv f.path, "/etc/vfstab"
+          end
         end
 
         def disable_fs
           contents = []
 
-          # FIXME: open a tempfile, write to it, close it, then rename it.
           found = false
           ::File.readlines("/etc/vfstab").reverse_each do |line|
             if !found && line =~ /^#{device_vfstab_regex}\s+[-\/\w]+\s+#{Regexp.escape(mount_point)}/
               found = true
               Chef::Log.debug("#{new_resource} is removed from vfstab")
               next
-            else
-              contents << line
             end
+            contents << line
           end
 
-          ::File.open("/etc/vfstab", "w") do |fstab|
-            contents.reverse_each { |line| fstab.puts line}
+          Tempfile.open("vfstab", "etc") do |f|
+            f.write(contents.reverse)
+            f.close
+            FileUtils.mv f.path, "/etc/vfstab"
           end
         end
 
