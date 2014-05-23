@@ -111,7 +111,7 @@ class Chef
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not implement #mounted?"
       end
 
-      # should check new_resource against current_resource to see if mount options have changed, returns true/false
+      # should check new_resource against current_resource to see if mount options need updating, returns true/false
       def mount_options_unchanged?
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not implement #mount_options_unchanged?"
       end
