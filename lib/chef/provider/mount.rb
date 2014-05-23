@@ -38,10 +38,8 @@ class Chef
       def action_mount
         unless @current_resource.mounted
           converge_by("mount #{@current_resource.device} to #{@current_resource.mount_point}") do
-            status = mount_fs()
-            if status
-              Chef::Log.info("#{@new_resource} mounted")
-            end
+            mount_fs()
+            Chef::Log.info("#{@new_resource} mounted")
           end
         else
           Chef::Log.debug("#{@new_resource} is already mounted")
@@ -51,10 +49,8 @@ class Chef
       def action_umount
         if @current_resource.mounted
           converge_by("unmount #{@current_resource.device}") do
-            status = umount_fs()
-            if status
-              Chef::Log.info("#{@new_resource} unmounted")
-            end
+            umount_fs()
+            Chef::Log.info("#{@new_resource} unmounted")
           end
         else
           Chef::Log.debug("#{@new_resource} is already unmounted")
@@ -67,10 +63,8 @@ class Chef
         else
           if @current_resource.mounted
             converge_by("remount #{@current_resource.device}") do
-              status = remount_fs()
-              if status
-                Chef::Log.info("#{@new_resource} remounted")
-              end
+              remount_fs()
+              Chef::Log.info("#{@new_resource} remounted")
             end
           else
             Chef::Log.debug("#{@new_resource} not mounted, nothing to remount")
@@ -81,12 +75,8 @@ class Chef
       def action_enable
         unless @current_resource.enabled && mount_options_unchanged?
           converge_by("enable #{@current_resource.device}") do
-            status = enable_fs
-            if status
-              Chef::Log.info("#{@new_resource} enabled")
-            else
-              Chef::Log.debug("#{@new_resource} already enabled")
-            end
+            enable_fs
+            Chef::Log.info("#{@new_resource} enabled")
           end
         end
       end
@@ -94,14 +84,14 @@ class Chef
       def action_disable
         if @current_resource.enabled
           converge_by("disable #{@current_resource.device}") do
-            status = disable_fs
-            if status
-              Chef::Log.info("#{@new_resource} disabled")
-            else
-              Chef::Log.debug("#{@new_resource} already disabled")
-            end
+            disable_fs
+            Chef::Log.info("#{@new_resource} disabled")
           end
         end
+      end
+
+      def mount_options_unchanged?
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not implement #mount_options_unchnaged?"
       end
 
       def mount_fs
