@@ -38,7 +38,7 @@ class Chef
       def action_mount
         unless @current_resource.mounted
           converge_by("mount #{@current_resource.device} to #{@current_resource.mount_point}") do
-            mount_fs()
+            mount_fs
             Chef::Log.info("#{@new_resource} mounted")
           end
         else
@@ -49,7 +49,7 @@ class Chef
       def action_umount
         if @current_resource.mounted
           converge_by("unmount #{@current_resource.device}") do
-            umount_fs()
+            umount_fs
             Chef::Log.info("#{@new_resource} unmounted")
           end
         else
@@ -58,17 +58,21 @@ class Chef
       end
 
       def action_remount
-        unless @new_resource.supports[:remount]
-          raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :remount"
-        else
-          if @current_resource.mounted
+        if @current_resource.mounted
+          if @new_resource.supports[:remount]
             converge_by("remount #{@current_resource.device}") do
-              remount_fs()
+              remount_fs
               Chef::Log.info("#{@new_resource} remounted")
             end
           else
-            Chef::Log.debug("#{@new_resource} not mounted, nothing to remount")
+            umount_fs
+            Chef::Log.info("#{@new_resource} unmounted")
+            sleep 1
+            mount_fs
+            Chef::Log.info("#{@new_resource} mounted")
           end
+        else
+          Chef::Log.debug("#{@new_resource} not mounted, nothing to remount")
         end
       end
 
