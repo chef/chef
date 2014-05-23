@@ -102,7 +102,6 @@ class Chef
           passstr = pass == 0 ? "-" : pass
           optstr = (actual_options.nil? || actual_options.empty?) ? "-" : actual_options.join(',')
 
-          # FIXME: open a tempfile, write to it, close it, then rename it.
           tempfile = Tempfile.new("vfstab", "etc")
           tempfile.write(IO.read("/etc/vfstab"))
           tempfile.puts("#{device}\t-\t#{mount_point}\t#{fstype}\t#{passstr}\t#{autostr}\t#{optstr}")
