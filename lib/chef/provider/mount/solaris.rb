@@ -44,7 +44,6 @@ class Chef
           current_resource.device(new_resource.device)
           current_resource.mounted(mounted?)
           current_resource.enabled(enabled?)
-          current_resource
         end
 
         protected
