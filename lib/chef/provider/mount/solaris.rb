@@ -29,6 +29,8 @@ class Chef
         include Chef::Mixin::ShellOut
         extend Forwardable
 
+        VFSTAB = "/etc/vfstab".freeze
+
         def_delegator :@new_resource, :device, :device
         def_delegator :@new_resource, :dump, :dump
         def_delegator :@new_resource, :fstype, :fstype
@@ -102,10 +104,10 @@ class Chef
           optstr = (actual_options.nil? || actual_options.empty?) ? "-" : actual_options.join(',')
 
           Tempfile.open("vfstab", "etc") do |f|
-            f.write(IO.read("/etc/vfstab"))
+            f.write(IO.read(VFSTAB))
             f.puts("#{device}\t-\t#{mount_point}\t#{fstype}\t#{passstr}\t#{autostr}\t#{optstr}")
             f.close
-            FileUtils.mv f.path, "/etc/vfstab"
+            FileUtils.mv f.path, VFSTAB
           end
         end
 
@@ -113,7 +115,7 @@ class Chef
           contents = []
 
           found = false
-          ::File.readlines("/etc/vfstab").reverse_each do |line|
+          ::File.readlines(VFSTAB).reverse_each do |line|
             if !found && line =~ /^#{device_vfstab_regex}\s+[-\/\w]+\s+#{Regexp.escape(mount_point)}/
               found = true
               Chef::Log.debug("#{new_resource} is removed from vfstab")
@@ -125,7 +127,7 @@ class Chef
           Tempfile.open("vfstab", "etc") do |f|
             f.write(contents.reverse)
             f.close
-            FileUtils.mv f.path, "/etc/vfstab"
+            FileUtils.mv f.path, VFSTAB
           end
         end
 
@@ -141,7 +143,7 @@ class Chef
         def enabled?
           # Check to see if there is a entry in /etc/vfstab. Last entry for a volume wins.
           enabled = false
-          ::File.foreach("/etc/vfstab") do |line|
+          ::File.foreach(VFSTAB) do |line|
             case line
             when /^[#\s]/
               next
@@ -169,11 +171,11 @@ class Chef
                 pass = $2.to_i
               end
               current_resource.pass(pass)
-              Chef::Log.debug("Found mount #{device} to #{mount_point} in /etc/vfstab")
+              Chef::Log.debug("Found mount #{device} to #{mount_point} in #{VFSTAB}")
               next
             when /^[-\/\w]+\s+[-\/\w]+\s+#{Regexp.escape(mount_point)}\s+/
               enabled = false
-              Chef::Log.debug("Found conflicting mount point #{mount_point} in /etc/vfstab")
+              Chef::Log.debug("Found conflicting mount point #{mount_point} in #{VFSTAB}")
             end
           end
           enabled
