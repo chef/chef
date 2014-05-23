@@ -82,7 +82,6 @@ class Chef
                                new_resource.options
                              end
             fstab.puts("#{new_resource.device}\t-\t#{new_resource.mount_point}\t#{new_resource.fstype}\t#{new_resource.pass == 0 ? "-" : new_resource.pass}\t#{ auto ? :yes : :no }\t #{(actual_options.nil? || actual_options.empty?) ? "-" : actual_options.join(',')}")
-            Chef::Log.debug("#{new_resource} is enabled at #{new_resource.mount_point}")
           end
         end
 
@@ -175,7 +174,7 @@ class Chef
               Chef::Log.debug("Special device #{new_resource.device} is mounted as #{new_resource.mount_point}")
               return true
             when /^#{Regexp.escape(new_resource.mount_point)}\son\s([\/\w])+\s+/
-              Chef::Log.debug("Special device #{$~[1]} mounted as #{new_resource.mount_point}")
+              Chef::Log.debug("Special device #{$~[1]} is mounted as #{new_resource.mount_point}")
             end
           end
           return false
