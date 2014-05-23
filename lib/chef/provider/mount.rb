@@ -82,6 +82,8 @@ class Chef
             enable_fs
             Chef::Log.info("#{@new_resource} enabled")
           end
+        else
+          Chef::Log.debug("#{@new_resource} already enabled")
         end
       end
 
@@ -91,6 +93,8 @@ class Chef
             disable_fs
             Chef::Log.info("#{@new_resource} disabled")
           end
+        else
+          Chef::Log.debug("#{@new_resource} already disabled")
         end
       end
 
