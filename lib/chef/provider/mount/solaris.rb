@@ -28,6 +28,8 @@ class Chef
       class Solaris < Chef::Provider::Mount
         include Chef::Mixin::ShellOut
 
+        def_delegator :@new_resource, :device, :device
+
         def initialize(new_resource, run_context)
           if new_resource.device_type == :device
             Chef::Log.error("Mount resource can only be of of device_type ':device' on Solaris")
@@ -43,7 +45,7 @@ class Chef
           current_resource.enabled(enabled?)
         end
 
-        def define_resource_requirements do
+        def define_resource_requirements
           requirements.assert(:mount, :remount) do |a|
             a.assertion { !device_should_exist? || ::File.exists?(new_resource.device) }
             a.failure_message(Chef::Exceptions::Mount, "Device #{new_resource.device} does not exist")
@@ -84,14 +86,24 @@ class Chef
             disable_fs if current_resource.enabled
           end
 
+          auto = new_resource.options.nil? || ! new_resource.options.include?("noauto")
+          actual_options = unless new_resource.options.nil?
+                             new_resource.options.delete("noauto")
+                             new_resource.options
+                           end
+
+          autostr = auto ? 'yes' : 'no'
+          passstr = new_resource.pass == 0 ? "-" : new_resource.pass
+          optstr = actual_options.nil? || actual_options.empty?) ? "-" : actual_options.join(',')
+
           # FIXME: open a tempfile, write to it, close it, then rename it.
+          tempfile = Tempfile.new("vfstab", "etc")
+          tempfile.write(IO.read("/etc/vfstab"))
+          tempfile.puts("#{new_resource.device}\t-\t#{new_resource.mount_point}\t#{new_resource.fstype}\t#{passstr}\t#{autostr}\t#{optstr}")
+          tempfile.close
+          FileUtils.mv tempfile.path, "/etc/fstab"
+
           ::File.open("/etc/vfstab", "a") do |fstab|
-            auto = new_resource.options.nil? || ! new_resource.options.include?("noauto")
-            actual_options = unless new_resource.options.nil?
-                               new_resource.options.delete("noauto")
-                               new_resource.options
-                             end
-            fstab.puts("#{new_resource.device}\t-\t#{new_resource.mount_point}\t#{new_resource.fstype}\t#{new_resource.pass == 0 ? "-" : new_resource.pass}\t#{ auto ? :yes : :no }\t #{(actual_options.nil? || actual_options.empty?) ? "-" : actual_options.join(',')}")
           end
         end
 
