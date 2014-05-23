@@ -50,7 +50,11 @@ class Chef
           current_resource.mount_point(mount_point)
           current_resource.device(device)
           current_resource.mounted(mounted?)
-          current_resource.enabled(enabled?)
+          ( enabled, fstype, options, pass ) = read_vfstab_status
+          current_resource.enabled(enabled)
+          current_resource.enabled(fstype)
+          current_resource.enabled(options)
+          current_resource.enabled(pass)
         end
 
         def define_resource_requirements
@@ -140,9 +144,10 @@ class Chef
 
         private
 
-        def enabled?
+        def read_vfstab_status
           # Check to see if there is a entry in /etc/vfstab. Last entry for a volume wins.
           enabled = false
+          fstype = options = pass = nil
           ::File.foreach(VFSTAB) do |line|
             case line
             when /^[#\s]/
@@ -152,7 +157,7 @@ class Chef
               # to mount       to fsck         point           type    pass    at boot options
             when /^#{device_vfstab_regex}\s+[-\/\w]+\s+#{Regexp.escape(mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
               enabled = true
-              current_resource.fstype($1)
+              fstype = $1
               # Store the 'mount at boot' column from vfstab as the 'noauto' option
               # in current_resource.options (linux style)
               no_auto_option = ($3 == "yes")
@@ -164,21 +169,16 @@ class Chef
                   options += ",noauto"
                 end
               end
-              current_resource.options(options)
-              if $2 == "-"
-                pass = 0
-              else
-                pass = $2.to_i
-              end
-              current_resource.pass(pass)
+              pass = ( $2 == "-" ) ? 0 : $2.to_i
               Chef::Log.debug("Found mount #{device} to #{mount_point} in #{VFSTAB}")
               next
             when /^[-\/\w]+\s+[-\/\w]+\s+#{Regexp.escape(mount_point)}\s+/
+              # if we find a mountpoint on top of our mountpoint, then we are not enabled
               enabled = false
               Chef::Log.debug("Found conflicting mount point #{mount_point} in #{VFSTAB}")
             end
           end
-          enabled
+          [ enabled, fstype, options, pass ]
         end
 
         def mounted?
