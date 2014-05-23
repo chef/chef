@@ -106,10 +106,7 @@ class Chef
           tempfile.write(IO.read("/etc/vfstab"))
           tempfile.puts("#{device}\t-\t#{mount_point}\t#{fstype}\t#{passstr}\t#{autostr}\t#{optstr}")
           tempfile.close
-          FileUtils.mv tempfile.path, "/etc/fstab"
-
-          ::File.open("/etc/vfstab", "a") do |fstab|
-          end
+          FileUtils.mv tempfile.path, "/etc/vfstab"
         end
 
         def disable_fs
