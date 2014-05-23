@@ -114,6 +114,7 @@ describe Chef::Provider::Mount do
 
     it "should try a umount/remount of the filesystem" do
       expect(provider).to receive(:umount_fs)
+      expect(provider).to receive(:mounted?).and_return(true, false)
       expect(provider).to receive(:mount_fs)
       provider.run_action(:remount)
       expect(new_resource).to be_updated_by_last_action

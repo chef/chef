@@ -69,7 +69,7 @@ class Chef
               umount_fs
               Chef::Log.info("#{new_resource} unmounted")
             end
-            sleep 1 while mounted?
+            sleep 0.1 while mounted?
             converge_by("mount #{current_resource.device}") do
               mount_fs
               Chef::Log.info("#{new_resource} mounted")
