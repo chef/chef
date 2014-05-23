@@ -80,7 +80,7 @@ class Chef
 
       def action_enable
         unless @current_resource.enabled && mount_options_unchanged?
-          converge_by("remount #{@current_resource.device}") do
+          converge_by("enable #{@current_resource.device}") do
             status = enable_fs
             if status
               Chef::Log.info("#{@new_resource} enabled")
@@ -93,7 +93,7 @@ class Chef
 
       def action_disable
         if @current_resource.enabled
-          converge_by("remount #{@current_resource.device}") do
+          converge_by("disable #{@current_resource.device}") do
             status = disable_fs
             if status
               Chef::Log.info("#{@new_resource} disabled")
