@@ -117,8 +117,9 @@ class Chef
       end
 
       #
-      # NOTE: for the following methods, they will already have checked if the filesystem is enabled and/or mounted and
-      # will be called in converge_by blocks, so most defensive checking does not need to be done, just do the thing.
+      # NOTE: for the following methods, this superclass will already have checked if the filesystem is
+      # enabled and/or mounted and they will be called in converge_by blocks, so most defensive checking
+      # does not need to be done in the subclass implementation -- just do the thing.
       #
 
       # should implement mounting of the filesystem, raises if action does not succeed
