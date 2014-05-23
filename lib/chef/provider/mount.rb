@@ -26,7 +26,6 @@ class Chef
 
       include Chef::Mixin::Command
 
-
       def whyrun_supported?
         true
       end
