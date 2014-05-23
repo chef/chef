@@ -102,6 +102,10 @@ class Chef
         end
       end
 
+      #
+      # Abstract Methods to be implemented by subclasses
+      #
+
       # should actually check if the filesystem is mounted (not just return current_resource) and return true/false
       def mounted?
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not implement #mounted?"
@@ -113,7 +117,7 @@ class Chef
       end
 
       #
-      # NOTE: for the following functions, they will already have checked if the filesystem is enabled and/or mounted and
+      # NOTE: for the following methods, they will already have checked if the filesystem is enabled and/or mounted and
       # will be called in converge_by blocks, so most defensive checking does not need to be done, just do the thing.
       #
 
