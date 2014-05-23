@@ -54,21 +54,21 @@ mkdir -p jenkins/chef-solo/cache/remote_file
 PATH=/opt/ruby1.9/bin:/usr/local/bin:$PATH
 export PATH
 
-if not_exists chef-solo; then
-  sudo gem install chef --no-ri --no-rdoc
-fi
+# if not_exists chef-solo; then
+  # sudo gem install chef --no-ri --no-rdoc
+# fi
 
 # ensure bundler is installed
-if not_exists bundle; then
-  sudo gem install bundler --no-ri --no-rdoc
-fi
+# if not_exists bundle; then
+  # sudo gem install bundler --no-ri --no-rdoc
+# fi
 
 # TEMPORARY: can't install berks on AIX
 if [ "x$os" != "xAIX" ]; then
   # ensure berkshelf is installed
-  if not_exists berks; then
-    sudo gem install berkshelf --no-ri --no-rdoc
-  fi
+  # if not_exists berks; then
+    # sudo gem install berkshelf --no-ri --no-rdoc
+  # fi
 
   # install omnibus cookbook and dependencies
   # Disable berks install since we don't need it anymore
@@ -90,9 +90,9 @@ if [ "x$os" != "xAIX" ]; then
   # Fix root-owned perms left over from running chef-solo (cache turds, etc)
   set +e
   if [ "x$os" = "xAIX" ]; then
-    sudo chown -R root `pwd` 
+    sudo chown -R root `pwd`
   else
-    sudo chown -R jenkins-node `pwd` || sudo chown -R jenkins `pwd` 
+    sudo chown -R jenkins-node `pwd` || sudo chown -R jenkins `pwd`
   fi
   set -e
 fi
@@ -123,8 +123,8 @@ fi
 
 # always fix up permissions
 if [ "x$os" = "xAIX" ]; then
-   sudo chown -R root "/opt/${OMNIBUS_PROJECT_NAME}" 
-   sudo chown -R root "/var/cache/omnibus" 
+   sudo chown -R root "/opt/${OMNIBUS_PROJECT_NAME}"
+   sudo chown -R root "/var/cache/omnibus"
 else
   sudo chown -R jenkins-node "/opt/${OMNIBUS_PROJECT_NAME}" || sudo chown -R jenkins "/opt/${OMNIBUS_PROJECT_NAME}"
   sudo chown -R jenkins-node "/var/cache/omnibus" || sudo chown -R jenkins "/var/cache/omnibus"
