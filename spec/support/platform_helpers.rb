@@ -27,18 +27,21 @@ def windows?
   !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
 end
 
-require 'ruby-wmi' if windows?
+require 'chef/win32/wmi' if windows?
 
 def windows_domain_joined?
   return false unless windows?
-  WMI::Win32_ComputerSystem.find(:first).PartOfDomain
+  wmi = Chef::ReservedNames::Win32::WMI.new
+  computer_system = wmi.first_of('Win32_ComputerSystem')
+  computer_system['partofdomain']
 end
 
 def windows_win2k3?
   return false unless windows?
 
-  host = WMI::Win32_OperatingSystem.find(:first)
-  (host.version && host.version.start_with?("5.2"))
+  wmi = Chef::ReservedNames::Win32::WMI.new
+  host = wmi.first_of('Win32_OperatingSystem')
+  (host['version'] && host['version'].start_with?("5.2"))
 end
 
 def mac_osx_106?
