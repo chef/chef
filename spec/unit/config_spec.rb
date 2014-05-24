@@ -117,6 +117,42 @@ describe Chef::Config do
 
   end
 
+  describe "config attribute writer: trace_attributes=" do
+    describe "when given 'none'" do
+      it "sets the value to 'none'" do
+        Chef::Config.trace_attributes = 'none'
+        Chef::Config.trace_attributes.should == 'none'
+      end
+    end
+
+    describe "when given 'all'" do
+      it "sets the value to 'all'" do
+        Chef::Config.trace_attributes = 'all'
+        Chef::Config.trace_attributes.should == 'all'
+      end
+    end
+
+    describe "when given '/foo/bar'" do
+      it "sets the value to '/foo/bar'" do
+        Chef::Config.trace_attributes = '/foo/bar'
+        Chef::Config.trace_attributes.should == '/foo/bar'
+      end
+    end
+
+    describe "when given 'foo'" do
+      it "raises an exception" do
+        expect { Chef::Config.trace_attributes = 'foo' }.to raise_exception(Chef::Exceptions::ConfigurationError)
+      end
+    end
+
+    describe "when given 'foo/bar'" do
+      it "raises an exception" do
+        expect { Chef::Config.trace_attributes = 'foo/bar' }.to raise_exception(Chef::Exceptions::ConfigurationError)
+      end
+    end
+
+  end
+
   describe "class method: plaform_specific_path" do
     it "should return given path on non-windows systems" do
       platform_mock :unix do
@@ -138,6 +174,10 @@ describe Chef::Config do
   end
 
   describe "default values" do
+
+    it "Chef::Config[:trace_attributes] defaults to 'none'" do
+      Chef::Config[:trace_attributes].should == 'none'
+    end
 
     it "Chef::Config[:file_backup_path] defaults to /var/chef/backup" do
       backup_path = if windows?

@@ -181,7 +181,6 @@ class Chef
       attributes.override
     end
 
-
     def override_attrs
      attributes.override
     end
@@ -380,10 +379,13 @@ class Chef
                              Chef::Environment.load(chef_environment)
                            end
 
-      attributes.env_default = loaded_environment.default_attributes
-      attributes.env_override = loaded_environment.override_attributes
+      Chef::Node::Attribute.with_tracer_hint({ environment_name: chef_environment }) do 
+        attributes.env_default = loaded_environment.default_attributes
+        attributes.env_override = loaded_environment.override_attributes
+      end
 
-      attribute.role_default = expansion.default_attrs
+      attributes.append_trace_log(expansion.attributes.trace_log)
+      attributes.role_default = expansion.default_attrs
       attributes.role_override = expansion.override_attrs
     end
 
