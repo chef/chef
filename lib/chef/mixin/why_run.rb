@@ -48,6 +48,10 @@ class Chef
         # block/proc that implements the action.
         def add_action(descriptions, &block)
           @actions << [descriptions, block]
+
+          # run before notifications when whyrun is supported
+          @resource.run_before_notifications
+
           if !Chef::Config[:why_run]
             block.call
           end

@@ -92,6 +92,7 @@ class Chef
     class NoSuchResourceType < NameError; end
 
     class InvalidResourceSpecification < ArgumentError; end
+    class BeforeNotificationsWithoutWhyrunOrConditions < RuntimeError; end
     class SolrConnectionError < RuntimeError; end
     class IllegalChecksumRevert < RuntimeError; end
     class CookbookVersionNameMismatch < ArgumentError; end

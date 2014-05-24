@@ -121,8 +121,8 @@ F
 
     end
 
-    FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if, :@enclosing_provider]
-    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider]
+    FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if, :@should_skip, :@enclosing_provider]
+    HIDDEN_IVARS = FORBIDDEN_IVARS + [:@allowed_actions, :@resource_name, :@source_line, :@name, :@elapsed_time]
 
     include Chef::DSL::DataQuery
     include Chef::Mixin::ParamsValidate
@@ -237,7 +237,6 @@ F
       @name = name
       @run_context = run_context
       @noop = nil
-      @before = nil
       @params = Hash.new
       @provider = nil
       @allowed_actions = [ :nothing ]
@@ -253,6 +252,7 @@ F
       @source_line = nil
       @guard_interpreter = :default
       @elapsed_time = 0
+      @should_skip = nil
 
       @node = run_context ? deprecated_ivar(run_context.node, :node, :warn) : nil
     end
@@ -426,6 +426,10 @@ F
           notifies_delayed(action, resource)
         when 'immediate', 'immediately'
           notifies_immediately(action, resource)
+        when 'before'
+          notifies_before(action, resource)
+        when 'depends', 'before_once'
+          notifies_depends(action, resource)
         else
           raise ArgumentError,  "invalid timing: #{timing} for notifies(#{action}, #{resources.inspect}, #{timing}) resource #{self} "\
                                 "Valid timings are: :delayed, :immediate, :immediately"
@@ -435,10 +439,16 @@ F
       true
     end
 
-    # Iterates over all immediate and delayed notifications, calling
-    # resolve_resource_reference on each in turn, causing them to
-    # resolve lazy/forward references.
+    def depends(action, resource_spec)
+      notifies(action, resource_spec, :depends)
+    end
+
+    # Iterates over all immediate, delayed, before and depends notifications,
+    # calling resolve_resource_reference on each in turn, causing them
+    # to resolve lazy/forward references.
     def resolve_notification_references
+      run_context.depends_notifications(self).each { |n| n.resolve_resource_reference(run_context.resource_collection) }
+      run_context.before_notifications(self).each { |n| n.resolve_resource_reference(run_context.resource_collection) }
       run_context.immediate_notifications(self).each { |n| n.resolve_resource_reference(run_context.resource_collection) }
       run_context.delayed_notifications(self).each {|n| n.resolve_resource_reference(run_context.resource_collection) }
     end
@@ -451,12 +461,28 @@ F
       run_context.notifies_delayed(Notification.new(resource_spec, action, self))
     end
 
+    def notifies_before(action, resource_spec)
+      run_context.notifies_before(Notification.new(resource_spec, action, self))
+    end
+
+    def notifies_depends(action, resource_spec)
+      run_context.notifies_depends(Notification.new(resource_spec, action, self))
+    end
+
     def immediate_notifications
       run_context.immediate_notifications(self)
     end
 
     def delayed_notifications
       run_context.delayed_notifications(self)
+    end
+
+    def before_notifications
+      run_context.before_notifications(self)
+    end
+
+    def depends_notifications
+      run_context.depends_notifications(self)
     end
 
     def resources(*args)
@@ -614,6 +640,21 @@ F
       run_context.events
     end
 
+    def run_before(&block)
+      @run_before = block
+    end
+
+    def has_before_notifications?
+      !@run_before.nil?
+    end
+
+    def run_before_notifications
+      if has_before_notifications?
+        @run_before.call
+        @run_before = nil
+      end
+    end
+
     def run_action(action, notification_type=nil, notifying_resource=nil)
       # reset state in case of multiple actions on the same resource.
       @elapsed_time = 0
@@ -653,6 +694,7 @@ F
       ensure
         @elapsed_time = Time.now - start_time
         events.resource_completed(self)
+        @should_skip = nil
       end
     end
 
@@ -693,10 +735,11 @@ F
     #
     # Also skips conditional checking when the action is :nothing
     def should_skip?(action)
+      return @should_skip unless @should_skip.nil?
       conditional_action = ConditionalActionNotNothing.new(action)
 
       conditionals = [ conditional_action ] + only_if + not_if
-      conditionals.find do |conditional|
+      found = conditionals.find do |conditional|
         if conditional.continue?
           false
         else
@@ -705,6 +748,7 @@ F
           true
         end
       end
+      @should_skip = ! found.nil?
     end
 
     def updated_by_last_action(true_or_false)
