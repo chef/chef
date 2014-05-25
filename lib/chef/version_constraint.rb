@@ -24,7 +24,7 @@ class Chef
     PATTERN = /^(#{OPS.join('|')}) *([0-9].*)$/
     VERSION_CLASS = Chef::Version
 
-    attr_reader :op, :version
+    attr_reader :op, :version, :raw_version
 
     def initialize(constraint_spec=DEFAULT_CONSTRAINT)
       case constraint_spec
@@ -99,12 +99,13 @@ class Chef
       @missing_patch_level = false
       if str.index(" ").nil? && str =~ /^[0-9]/
         # try for lone version, implied '='
-        @version = self.class::VERSION_CLASS.new(str)
+        @raw_version = str
+        @version = self.class::VERSION_CLASS.new(@raw_version)
         @op = "="
       elsif PATTERN.match str
         @op = $1
-        raw_version = $2
-        @version = self.class::VERSION_CLASS.new(raw_version)
+        @raw_version = $2
+        @version = self.class::VERSION_CLASS.new(@raw_version)
         if raw_version.split('.').size <= 2
           @missing_patch_level = true
         end
