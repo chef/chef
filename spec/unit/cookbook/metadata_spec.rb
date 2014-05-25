@@ -140,7 +140,7 @@ describe Chef::Cookbook::Metadata do
   describe "adding a supported platform" do
     it "should support adding a supported platform with a single expression" do
       @meta.supports("ubuntu", ">= 8.04")
-      @meta.platforms["ubuntu"].should == '>= 8.4.0'
+      @meta.platforms["ubuntu"].should == '>= 8.04'
     end
   end
 
@@ -177,25 +177,47 @@ describe Chef::Cookbook::Metadata do
     end
   end
 
-  describe "describing dependencies (includes version transformation)" do
+  describe "describing dependencies" do
+
     dep_types = {
-      :depends     => [ :dependencies, "foo::bar", "> 0.2", "> 0.2.0" ],
-      :recommends  => [ :recommendations, "foo::bar", ">= 0.2", ">= 0.2.0" ],
-      :suggests    => [ :suggestions, "foo::bar", "> 0.2", "> 0.2.0" ],
-      :conflicts   => [ :conflicting, "foo::bar", "~> 0.2", "~> 0.2.0" ],
-      :provides    => [ :providing, "foo::bar", "<= 0.2", "<= 0.2.0" ],
-      :replaces    => [ :replacing, "foo::bar", "= 0.2.1", "= 0.2.1" ],
+      :depends     => [ :dependencies, "foo::bar", "> 0.2" ],
+      :recommends  => [ :recommendations, "foo::bar", ">= 0.2" ],
+      :suggests    => [ :suggestions, "foo::bar", "> 0.2" ],
+      :conflicts   => [ :conflicting, "foo::bar", "~> 0.2" ],
+      :provides    => [ :providing, "foo::bar", "<= 0.2" ],
+      :replaces    => [ :replacing, "foo::bar", "= 0.2.1" ],
     }
     dep_types.sort { |a,b| a.to_s <=> b.to_s }.each do |dep, dep_args|
       check_with = dep_args.shift
-      transformed_version = dep_args.pop
       describe dep do
         it "should be set-able via #{dep}" do
-          @meta.send(dep, *dep_args).should == transformed_version
+          @meta.send(dep, *dep_args).should == dep_args[1]
         end
         it "should be get-able via #{check_with}" do
           @meta.send(dep, *dep_args)
-          @meta.send(check_with).should == { dep_args[0] => transformed_version }
+          @meta.send(check_with).should == { dep_args[0] => dep_args[1] }
+        end
+      end
+    end
+
+    dep_types = {
+      :depends     => [ :dependencies, "foo::bar", ">0.2", "> 0.2" ],
+      :recommends  => [ :recommendations, "foo::bar", ">=0.2", ">= 0.2" ],
+      :suggests    => [ :suggestions, "foo::bar", ">0.2", "> 0.2" ],
+      :conflicts   => [ :conflicting, "foo::bar", "~>0.2", "~> 0.2" ],
+      :provides    => [ :providing, "foo::bar", "<=0.2", "<= 0.2" ],
+      :replaces    => [ :replacing, "foo::bar", "=0.2.1", "= 0.2.1" ],
+    }
+    dep_types.sort { |a,b| a.to_s <=> b.to_s }.each do |dep, dep_args|
+      check_with = dep_args.shift
+      normalized_version = dep_args.pop
+      describe dep do
+        it "should be set-able and normalized via #{dep}" do
+          @meta.send(dep, *dep_args).should == normalized_version
+        end
+        it "should be get-able and normalized via #{check_with}" do
+          @meta.send(dep, *dep_args)
+          @meta.send(check_with).should == { dep_args[0] => normalized_version }
         end
       end
     end
