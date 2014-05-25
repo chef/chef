@@ -164,10 +164,27 @@ describe Chef::Provider::User::Pw do
       @pid, @stdin, @stdout, @stderr = nil, nil, nil, nil
     end
 
-    it "should check for differences in password between the new and current resources" do
-      @current_resource.should_receive(:password)
-      @new_resource.should_receive(:password)
-      @provider.modify_password
+    describe "and the new password has not been specified" do
+      before(:each) do
+        @new_resource.stub(:password).and_return(nil)
+      end
+
+      it "logs an appropriate message" do
+        Chef::Log.should_receive(:debug).with("user[adam] no change needed to password")
+        @provider.modify_password
+      end
+    end
+
+    describe "and the new password has been specified" do
+      before(:each) do
+        @new_resource.stub(:password).and_return("abracadabra")
+      end
+
+      it "should check for differences in password between the new and current resources" do
+        @current_resource.should_receive(:password)
+        @new_resource.should_receive(:password)
+        @provider.modify_password
+      end
     end
 
     describe "and the passwords are identical" do
