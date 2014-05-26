@@ -15,7 +15,6 @@ class Chef
         :long => '--chef-zero-host IP',
         :description => 'Overrides the host upon which chef-zero listens. Default is 127.0.0.1.'
 
-
       def configure_chef
         super
         Chef::Config.local_mode = true
@@ -31,10 +30,14 @@ class Chef
       end
 
       def run
-        server = Chef::Application.chef_zero_server
-        puts "Serving files from:\n#{server.options[:data_store].chef_fs.fs_description}"
-        server.stop
-        server.start(true) # to print header
+        begin
+          server = Chef::Application.chef_zero_server
+          output "Serving files from:\n#{server.options[:data_store].chef_fs.fs_description}"
+          server.stop
+          server.start(stdout) # to print header
+        ensure
+          server.stop
+        end
       end
     end
   end
