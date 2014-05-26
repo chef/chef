@@ -189,11 +189,16 @@ class Chef::Application
       server_options[:data_store] = Chef::ChefFS::ChefFSDataStore.new(chef_fs)
       server_options[:log_level] = Chef::Log.level
       server_options[:port] = Chef::Config.chef_zero.port
+      server_options[:host] = Chef::Config.chef_zero.host
       Chef::Log.info("Starting chef-zero on port #{Chef::Config.chef_zero.port} with repository at #{server_options[:data_store].chef_fs.fs_description}")
       @chef_zero_server = ChefZero::Server.new(server_options)
       @chef_zero_server.start_background
       Chef::Config.chef_server_url = @chef_zero_server.url
     end
+  end
+
+  def self.chef_zero_server
+    @chef_zero_server
   end
 
   def self.destroy_server_connectivity
