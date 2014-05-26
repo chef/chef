@@ -37,7 +37,7 @@ Gem::Specification.new do |s|
   s.add_dependency "diff-lcs", "~> 1.2", ">= 1.2.4"
 
   # There's a bug with Chef Zero and IPV6 prior to version 2.0.2
-  s.add_dependency "chef-zero", "~> 2.0", ">= 2.0.2"
+  s.add_dependency "chef-zero", "~> 2.1"
 
   s.add_dependency "pry", "~> 0.9"
 
