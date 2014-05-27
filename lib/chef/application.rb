@@ -185,12 +185,13 @@ class Chef::Application
 
       chef_fs = Chef::ChefFS::Config.new.local_fs
       chef_fs.write_pretty_json = true
+      data_store = Chef::ChefFS::ChefFSDataStore.new(chef_fs)
       server_options = {}
-      server_options[:data_store] = Chef::ChefFS::ChefFSDataStore.new(chef_fs)
+      server_options[:data_store] = data_store
       server_options[:log_level] = Chef::Log.level
       server_options[:port] = Chef::Config.chef_zero.port
       server_options[:host] = Chef::Config.chef_zero.host
-      Chef::Log.info("Starting chef-zero on port #{Chef::Config.chef_zero.port} with repository at #{server_options[:data_store].chef_fs.fs_description}")
+      Chef::Log.info("Starting chef-zero on port #{Chef::Config.chef_zero.port} with repository at #{chef_fs.fs_description}")
       @chef_zero_server = ChefZero::Server.new(server_options)
       @chef_zero_server.start_background
       Chef::Config.chef_server_url = @chef_zero_server.url

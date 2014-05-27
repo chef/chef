@@ -22,7 +22,7 @@ require 'chef/knife/show'
 require 'chef/knife/raw'
 require 'chef/knife/cookbook_upload'
 
-describe 'knife raw -z' do
+describe 'ChefFSDataStore tests' do
   extend IntegrationSupport
   include KnifeSupport
 
@@ -105,7 +105,7 @@ EOM
         knife('show -z /clients/x.json').should_succeed /"x"/
       end
 
-      it 'knife show -z /cookbooks/x/metadata.rb works', :focus do
+      it 'knife show -z /cookbooks/x/metadata.rb works' do
         knife('show -z /cookbooks/x/metadata.rb').should_succeed "/cookbooks/x/metadata.rb:\nversion \"1.0.0\"\n"
       end
 
