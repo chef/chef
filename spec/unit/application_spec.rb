@@ -303,6 +303,12 @@ describe Chef::Application do
           @env['HTTP_PROXY'].should == "http://hostname:port"
         end
 
+        it "should percent encode the proxy, if necessary" do
+          Chef::Config[:http_proxy] = "http://needs\\some escaping:1234"
+          @app.configure_environment_variables
+          @env['HTTP_PROXY'].should == "http://needs%5Csome%20escaping:1234"
+        end
+
         describe "when Chef::Config[:http_proxy_user] is set" do
           before do
             Chef::Config[:http_proxy_user] = "username"
@@ -313,6 +319,12 @@ describe Chef::Application do
             @env['HTTP_PROXY'].should == "http://username@hostname:port"
           end
 
+          it "should percent encode the username, including @ and : characters" do
+            Chef::Config[:http_proxy_user] = "K:tty C@t"
+            @app.configure_environment_variables
+            @env['HTTP_PROXY'].should == "http://K%3Atty%20C%40t@hostname:port"
+          end
+
           describe "when Chef::Config[:http_proxy_pass] is set" do
             before do
               Chef::Config[:http_proxy_pass] = "password"
@@ -321,6 +333,12 @@ describe Chef::Application do
             it "should set ENV['HTTP_PROXY'] to http://username:password@hostname:port" do
               @app.configure_environment_variables
               @env['HTTP_PROXY'].should == "http://username:password@hostname:port"
+            end
+
+            it "should fully percent escape the password, including @ and : characters" do
+              Chef::Config[:http_proxy_pass] = ":P@ssword101"
+              @app.configure_environment_variables
+              @env['HTTP_PROXY'].should == "http://username:%3AP%40ssword101@hostname:port"
             end
           end
         end

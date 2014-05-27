@@ -282,13 +282,13 @@ class Chef::Application
   def configure_proxy(scheme)
     proxy = Chef::Config["#{scheme}_proxy"].split("#{scheme}://")
     proxy.shift if proxy[0].empty?
-    proxy = URI.escape(proxy[0])
+    proxy = URI.encode(proxy[0])
 
     full_proxy = "#{scheme}://"
     if Chef::Config["#{scheme}_proxy_user"]
-      full_proxy << encode_uri_full(Chef::Config["#{scheme}_proxy_user"])
+      full_proxy << encode_for_proxy(Chef::Config["#{scheme}_proxy_user"])
       if Chef::Config["#{scheme}_proxy_pass"]
-        full_proxy << ":#{encode_uri_full(Chef::Config["#{scheme}_proxy_pass"])}"
+        full_proxy << ":#{encode_for_proxy(Chef::Config["#{scheme}_proxy_pass"])}"
       end
       full_proxy << "@"
     end
@@ -297,11 +297,12 @@ class Chef::Application
     return full_proxy
   end
 
-  # URI doesn't encode/escape reserved characters from the percent encoding set.
-  # For strings such as proxy user and proxy password we need these reserved characters
-  # to be escaped, or else the fully proxy might not be interpreted correctly.
-  def encode_uri_full(uri_str)
-    URI.escape(uri_str, "!#$&'()*+,/:;=?@[]")
+  # URI doesn't encode/escape the reserved characters '@' and ':' which may exist
+  # in the proxy user/password.
+  def encode_for_proxy(uri_str)
+    # URI.escape(string, characters) will only escape the characters. So we first
+    # perform a standard URI escape, then escape other potentially offending characters.
+    URI.escape(URI.escape(uri_str), '@:')
   end
 
   # This is a hook for testing
