@@ -35,8 +35,8 @@ EOP
 <% end -%>
 
 cat > /etc/chef/client.rb <<'EOP'
-log_level        :info
-log_location     STDOUT
+log_level        "<%= @chef_config[:log_level] %>"
+log_location     "<%= @chef_config[:log_location] %>"
 chef_server_url  "<%= @chef_config[:chef_server_url] %>"
 validation_client_name "<%= @chef_config[:validation_client_name] %>"
 <% if @config[:chef_node_name] -%>
