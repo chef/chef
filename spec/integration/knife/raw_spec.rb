@@ -166,7 +166,7 @@ EOM
 
     context 'When a server returns raw json' do
       before :each do
-        Chef::Config.chef_server_url = "http://127.0.0.1:9018"
+        Chef::Config.chef_server_url = "http://localhost:9018"
         app = lambda do |env|
           [200, {'Content-Type' => 'application/json' }, ['{ "x": "y", "a": "b" }'] ]
         end
@@ -196,7 +196,7 @@ EOM
 
     context 'When a server returns text' do
       before :each do
-        Chef::Config.chef_server_url = "http://127.0.0.1:9018"
+        Chef::Config.chef_server_url = "http://localhost:9018"
         app = lambda do |env|
           [200, {'Content-Type' => 'text' }, ['{ "x": "y", "a": "b" }'] ]
         end

@@ -29,7 +29,7 @@ describe 'redirection' do
     context 'and another server redirects to it with 302' do
       before :each do
         real_chef_server_url = Chef::Config.chef_server_url
-        Chef::Config.chef_server_url = "http://127.0.0.1:9018"
+        Chef::Config.chef_server_url = "http://localhost:9018"
         app = lambda do |env|
           [302, {'Content-Type' => 'text','Location' => "#{real_chef_server_url}#{env['PATH_INFO']}" }, ['302 found'] ]
         end

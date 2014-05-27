@@ -38,7 +38,7 @@ describe 'knife serve' do
       end
       begin
         Chef::Config.log_level = :debug
-        Chef::Config.chef_server_url = 'http://127.0.0.1:8889'
+        Chef::Config.chef_server_url = 'http://localhost:8889'
         Chef::Config.node_name = nil
         Chef::Config.client_key = nil
         api = Chef::ServerAPI.new
