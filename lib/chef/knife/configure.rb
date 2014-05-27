@@ -154,8 +154,6 @@ EOH
         @validation_client_name = config[:validation_client_name] || ask_question("Please enter the validation clientname: ", :default => 'chef-validator')
         @validation_key         = config[:validation_key] || ask_question("Please enter the location of the validation key: ", :default => '/etc/chef-server/chef-validator.pem')
         @validation_key         = File.expand_path(@validation_key)
-        @log_level              = config[:log_level] || ask_question("Please enter the log level: ", :default => ':auto')
-        @log_location           = config[:log_location] || ask_question("Please enter the log location: ", :default => 'STDOUT')
         @chef_repo              = config[:repository] || ask_question("Please enter the path to a chef repository (or leave blank): ")
 
         @new_client_key = config[:client_key] || File.join(chef_config_path, "#{@new_client_name}.pem")
