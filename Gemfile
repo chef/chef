@@ -14,8 +14,6 @@ group(:development, :test) do
   gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
 end
 
-gem 'chef-zero', :path => '../chef-zero'
-
 # If you want to load debugging tools into the bundle exec sandbox,
 # add these additional dependencies into chef/Gemfile.local
 eval(IO.read(__FILE__ + '.local'), binding) if File.exists?(__FILE__ + '.local')
