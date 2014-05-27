@@ -38,7 +38,7 @@ describe Chef::Application do
       Chef::Config[:ftp_proxy] = nil
       Chef::Config[:no_proxy] = nil
 
-      @app.configure_environment_variables
+      @app.configure_proxy_environment_variables
     end
 
     it "saves built proxy to ENV which shell_out can use" do

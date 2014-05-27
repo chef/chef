@@ -39,7 +39,7 @@ describe Chef::Application do
       @app = Chef::Application.new
       @app.stub(:configure_chef).and_return(true)
       @app.stub(:configure_logging).and_return(true)
-      @app.stub(:configure_environment_variables).and_return(true)
+      @app.stub(:configure_proxy_environment_variables).and_return(true)
     end
 
     it "should configure chef" do
@@ -53,7 +53,7 @@ describe Chef::Application do
     end
 
     it "should configure environment variables" do
-      @app.should_receive(:configure_environment_variables).and_return(true)
+      @app.should_receive(:configure_proxy_environment_variables).and_return(true)
       @app.reconfigure
     end
   end
@@ -241,7 +241,7 @@ describe Chef::Application do
   end
 
   describe "when configuring environment variables" do
-    def configure_environment_variables_stubs
+    def configure_proxy_environment_variables_stubs
       @app.stub(:configure_http_proxy).and_return(true)
       @app.stub(:configure_https_proxy).and_return(true)
       @app.stub(:configure_ftp_proxy).and_return(true)
@@ -249,27 +249,27 @@ describe Chef::Application do
     end
 
     it "should configure ENV['HTTP_PROXY']" do
-      configure_environment_variables_stubs
+      configure_proxy_environment_variables_stubs
       @app.should_receive(:configure_http_proxy)
-      @app.configure_environment_variables
+      @app.configure_proxy_environment_variables
     end
 
     it "should configure ENV['HTTPS_PROXY']" do
-      configure_environment_variables_stubs
+      configure_proxy_environment_variables_stubs
       @app.should_receive(:configure_https_proxy)
-      @app.configure_environment_variables
+      @app.configure_proxy_environment_variables
     end
 
     it "should configure ENV['FTP_PROXY']" do
-      configure_environment_variables_stubs
+      configure_proxy_environment_variables_stubs
       @app.should_receive(:configure_ftp_proxy)
-      @app.configure_environment_variables
+      @app.configure_proxy_environment_variables
     end
 
     it "should configure ENV['NO_PROXY']" do
-      configure_environment_variables_stubs
+      configure_proxy_environment_variables_stubs
       @app.should_receive(:configure_no_proxy)
-      @app.configure_environment_variables
+      @app.configure_proxy_environment_variables
     end
 
     describe "when configuring ENV['HTTP_PROXY']" do
@@ -288,7 +288,7 @@ describe Chef::Application do
         end
 
         it "should not set ENV['HTTP_PROXY']" do
-          @app.configure_environment_variables
+          @app.configure_proxy_environment_variables
           @env.should == {}
         end
       end
@@ -299,13 +299,13 @@ describe Chef::Application do
         end
 
         it "should set ENV['HTTP_PROXY'] to http://hostname:port" do
-          @app.configure_environment_variables
+          @app.configure_proxy_environment_variables
           @env['HTTP_PROXY'].should == "http://hostname:port"
         end
 
         it "should percent encode the proxy, if necessary" do
           Chef::Config[:http_proxy] = "http://needs\\some escaping:1234"
-          @app.configure_environment_variables
+          @app.configure_proxy_environment_variables
           @env['HTTP_PROXY'].should == "http://needs%5Csome%20escaping:1234"
         end
 
@@ -315,13 +315,13 @@ describe Chef::Application do
           end
 
           it "should set ENV['HTTP_PROXY'] to http://username@hostname.port" do
-            @app.configure_environment_variables
+            @app.configure_proxy_environment_variables
             @env['HTTP_PROXY'].should == "http://username@hostname:port"
           end
 
           it "should percent encode the username, including @ and : characters" do
             Chef::Config[:http_proxy_user] = "K:tty C@t"
-            @app.configure_environment_variables
+            @app.configure_proxy_environment_variables
             @env['HTTP_PROXY'].should == "http://K%3Atty%20C%40t@hostname:port"
           end
 
@@ -331,13 +331,13 @@ describe Chef::Application do
             end
 
             it "should set ENV['HTTP_PROXY'] to http://username:password@hostname:port" do
-              @app.configure_environment_variables
+              @app.configure_proxy_environment_variables
               @env['HTTP_PROXY'].should == "http://username:password@hostname:port"
             end
 
             it "should fully percent escape the password, including @ and : characters" do
               Chef::Config[:http_proxy_pass] = ":P@ssword101"
-              @app.configure_environment_variables
+              @app.configure_proxy_environment_variables
               @env['HTTP_PROXY'].should == "http://username:%3AP%40ssword101@hostname:port"
             end
           end
@@ -350,7 +350,7 @@ describe Chef::Application do
           end
 
           it "should set ENV['HTTP_PROXY'] to http://hostname:port" do
-            @app.configure_environment_variables
+            @app.configure_proxy_environment_variables
             @env['HTTP_PROXY'].should == "http://hostname:port"
           end
         end

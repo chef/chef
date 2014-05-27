@@ -44,7 +44,7 @@ class Chef::Application
   def reconfigure
     configure_chef
     configure_logging
-    configure_environment_variables
+    configure_proxy_environment_variables
   end
 
   # Get this party started
@@ -166,8 +166,8 @@ class Chef::Application
     end
   end
 
-  # Configure and set any environment variables according to the config.
-  def configure_environment_variables
+  # Configure and set any proxy environment variables according to the config.
+  def configure_proxy_environment_variables
     configure_http_proxy
     configure_https_proxy
     configure_ftp_proxy
