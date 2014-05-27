@@ -44,6 +44,7 @@ class Chef::Application
   def reconfigure
     configure_chef
     configure_logging
+    configure_environment_variables
   end
 
   # Get this party started
@@ -165,6 +166,14 @@ class Chef::Application
     end
   end
 
+  # Configure and set any environment variables according to the config.
+  def configure_environment_variables
+    configure_http_proxy
+    configure_https_proxy
+    configure_ftp_proxy
+    configure_no_proxy
+  end
+
   # Called prior to starting the application, by the run method
   def setup_application
     raise Chef::Exceptions::Application, "#{self.to_s}: you must override setup_application"
@@ -240,6 +249,64 @@ class Chef::Application
     filtered_trace = error.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
     filtered_trace.each {|line| Chef::Log.fatal("  " + line )}
     Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", 2)
+  end
+
+  # Set ENV['HTTP_PROXY']
+  def configure_http_proxy
+    env['HTTP_PROXY'] = configure_proxy("http") if Chef::Config[:http_proxy]
+  end
+
+  # Set ENV['HTTPS_PROXY']
+  def configure_https_proxy
+    env['HTTPS_PROXY'] = configure_proxy("https") if Chef::Config[:https_proxy]
+  end
+
+  # Set ENV['FTP_PROXY']
+  def configure_ftp_proxy
+    env['FTP_PROXY'] = configure_proxy("ftp") if Chef::Config[:ftp_proxy]
+  end
+
+  # Set ENV['NO_PROXY']
+  def configure_no_proxy
+    env['NO_PROXY'] = Chef::Config[:no_proxy] if Chef::Config[:no_proxy]
+  end
+
+  # Builds a proxy according to http/https format. Examples:
+  #   http://username:password@hostname:port
+  #   https://username@hostname:port
+  #   ftp://hostname:port
+  # with, when scheme = "http",
+  #   hostname:port given via config[:http_proxy]
+  #   username given via config[:http_proxy_user]
+  #   password given via config[:http_proxy_pass]
+  def configure_proxy(scheme)
+    proxy = Chef::Config["#{scheme}_proxy"].split("#{scheme}://")
+    proxy.shift if proxy[0].empty?
+    proxy = URI.escape(proxy[0])
+
+    full_proxy = "#{scheme}://"
+    if Chef::Config["#{scheme}_proxy_user"]
+      full_proxy << encode_uri_full(Chef::Config["#{scheme}_proxy_user"])
+      if Chef::Config["#{scheme}_proxy_pass"]
+        full_proxy << ":#{encode_uri_full(Chef::Config["#{scheme}_proxy_pass"])}"
+      end
+      full_proxy << "@"
+    end
+
+    full_proxy << proxy
+    return full_proxy
+  end
+
+  # URI doesn't encode/escape reserved characters from the percent encoding set.
+  # For strings such as proxy user and proxy password we need these reserved characters
+  # to be escaped, or else the fully proxy might not be interpreted correctly.
+  def encode_uri_full(uri_str)
+    URI.escape(uri_str, "!#$&'()*+,/:;=?@[]")
+  end
+
+  # This is a hook for testing
+  def env
+    ENV
   end
 
   class << self

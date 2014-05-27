@@ -39,6 +39,7 @@ describe Chef::Application do
       @app = Chef::Application.new
       @app.stub(:configure_chef).and_return(true)
       @app.stub(:configure_logging).and_return(true)
+      @app.stub(:configure_environment_variables).and_return(true)
     end
 
     it "should configure chef" do
@@ -51,6 +52,10 @@ describe Chef::Application do
       @app.reconfigure
     end
 
+    it "should configure environment variables" do
+      @app.should_receive(:configure_environment_variables).and_return(true)
+      @app.reconfigure
+    end
   end
 
   describe Chef::Application do
@@ -232,6 +237,106 @@ describe Chef::Application do
       end
 
       it_behaves_like "log_level_is_auto"
+    end
+  end
+
+  describe "when configuring environment variables" do
+    def configure_environment_variables_stubs
+      @app.stub(:configure_http_proxy).and_return(true)
+      @app.stub(:configure_https_proxy).and_return(true)
+      @app.stub(:configure_ftp_proxy).and_return(true)
+      @app.stub(:configure_no_proxy).and_return(true)
+    end
+
+    it "should configure ENV['HTTP_PROXY']" do
+      configure_environment_variables_stubs
+      @app.should_receive(:configure_http_proxy)
+      @app.configure_environment_variables
+    end
+
+    it "should configure ENV['HTTPS_PROXY']" do
+      configure_environment_variables_stubs
+      @app.should_receive(:configure_https_proxy)
+      @app.configure_environment_variables
+    end
+
+    it "should configure ENV['FTP_PROXY']" do
+      configure_environment_variables_stubs
+      @app.should_receive(:configure_ftp_proxy)
+      @app.configure_environment_variables
+    end
+
+    it "should configure ENV['NO_PROXY']" do
+      configure_environment_variables_stubs
+      @app.should_receive(:configure_no_proxy)
+      @app.configure_environment_variables
+    end
+
+    describe "when configuring ENV['HTTP_PROXY']" do
+      before do
+        @env = {}
+        @app.stub(:env).and_return(@env)
+
+        @app.stub(:configure_https_proxy).and_return(true)
+        @app.stub(:configure_ftp_proxy).and_return(true)
+        @app.stub(:configure_no_proxy).and_return(true)
+      end
+
+      describe "when Chef::Config[:http_proxy] is not set" do
+        before do
+          Chef::Config[:http_proxy] = nil
+        end
+
+        it "should not set ENV['HTTP_PROXY']" do
+          @app.configure_environment_variables
+          @env.should == {}
+        end
+      end
+
+      describe "when Chef::Config[:http_proxy] is set" do
+        before do
+          Chef::Config[:http_proxy] = "http://hostname:port"
+        end
+
+        it "should set ENV['HTTP_PROXY'] to http://hostname:port" do
+          @app.configure_environment_variables
+          @env['HTTP_PROXY'].should == "http://hostname:port"
+        end
+
+        describe "when Chef::Config[:http_proxy_user] is set" do
+          before do
+            Chef::Config[:http_proxy_user] = "username"
+          end
+
+          it "should set ENV['HTTP_PROXY'] to http://username@hostname.port" do
+            @app.configure_environment_variables
+            @env['HTTP_PROXY'].should == "http://username@hostname:port"
+          end
+
+          describe "when Chef::Config[:http_proxy_pass] is set" do
+            before do
+              Chef::Config[:http_proxy_pass] = "password"
+            end
+
+            it "should set ENV['HTTP_PROXY'] to http://username:password@hostname:port" do
+              @app.configure_environment_variables
+              @env['HTTP_PROXY'].should == "http://username:password@hostname:port"
+            end
+          end
+        end
+
+        describe "when Chef::Config[:http_proxy_pass] is set (but not Chef::Config[:http_proxy_user])" do
+          before do
+            Chef::Config[:http_proxy_user] = nil
+            Chef::Config[:http_proxy_pass] = "password"
+          end
+
+          it "should set ENV['HTTP_PROXY'] to http://hostname:port" do
+            @app.configure_environment_variables
+            @env['HTTP_PROXY'].should == "http://hostname:port"
+          end
+        end
+      end
     end
   end
 
