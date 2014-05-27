@@ -151,9 +151,10 @@ class Chef
         response # OSC
       end
       if inflate
-        Hash[users.map do |name, url|
-          [name, Chef::User.load(name)]
-        end]
+        users.inject({}) do |user_map, (name, _url)|
+          user_map[name] = Chef::User.load(name)
+          user_map
+        end
       else
         users
       end
