@@ -485,6 +485,8 @@ class Chef
       default :identity_file, nil
       default :host_key_verify, nil
       default :forward_agent, nil
+      default :log_level, :auto
+      default :log_location, STDOUT
       default :sort_status_reverse, nil
       default :hints, {}
     end

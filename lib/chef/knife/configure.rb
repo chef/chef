@@ -23,7 +23,7 @@ class Chef
     class Configure < Knife
       attr_reader :chef_server, :new_client_name, :admin_client_name, :admin_client_key
       attr_reader :chef_repo, :new_client_key, :validation_client_name, :validation_key
-      attr_reader :log_location
+      attr_reader :log_level, :log_location
 
       deps do
         require 'ohai'
@@ -60,6 +60,14 @@ class Chef
         :long => "--validation-key PATH",
         :description => "The path to the validation key used by the client, typically a file named validation.pem"
 
+      option :log_level,
+        :long => "--log-level LEVEL",
+        :description => "The log level to used by the client, typically :auto"
+
+      option :log_location,
+        :long => "--log-location PATH",
+        :description => "The path to the log file to be used by the client, e.g., STDOUT or something in /var/path/to/log"
+
       def configure_chef
         # We are just faking out the system so that you can do this without a key specified
         Chef::Config[:node_name] = 'woot'
@@ -76,7 +84,7 @@ class Chef
 
         ::File.open(config[:config_file], "w") do |f|
           f.puts <<-EOH
-log_level                :info
+log_level                '#{log_level}'
 log_location             '#{log_location}'
 node_name                '#{new_client_name}'
 client_key               '#{new_client_key}'
@@ -146,6 +154,7 @@ EOH
         @validation_client_name = config[:validation_client_name] || ask_question("Please enter the validation clientname: ", :default => 'chef-validator')
         @validation_key         = config[:validation_key] || ask_question("Please enter the location of the validation key: ", :default => '/etc/chef-server/chef-validator.pem')
         @validation_key         = File.expand_path(@validation_key)
+        @log_level              = config[:log_level] || ask_question("Please enter the log level: ", :default => ':auto')
         @log_location           = config[:log_location] || ask_question("Please enter the log location: ", :default => 'STDOUT')
         @chef_repo              = config[:repository] || ask_question("Please enter the path to a chef repository (or leave blank): ")
 
