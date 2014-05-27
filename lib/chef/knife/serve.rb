@@ -5,7 +5,7 @@ class Chef
     class Serve < Knife
       option :repo_mode,
         :long => '--repo-mode MODE',
-        :description => "Specifies the local repository layout.  Values: static, everything, hosted_everything.  Default: everything/hosted_everything"
+        :description => "Specifies the local repository layout.  Values: static (only environments/roles/data_bags/cookbooks), everything (includes nodes/clients/users), hosted_everything (includes acls/groups/etc. for Enterprise/Hosted Chef).  Default: everything/hosted_everything"
 
       option :chef_repo_path,
         :long => '--chef-repo-path PATH',
