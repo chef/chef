@@ -69,7 +69,7 @@ class Chef
               umount_fs
               Chef::Log.info("#{new_resource} unmounted")
             end
-            sleep 0.1 while mounted?
+            wait_until_unmounted
             converge_by("mount #{current_resource.device}") do
               mount_fs
               Chef::Log.info("#{new_resource} mounted")
@@ -146,6 +146,17 @@ class Chef
       # should implement disabling of the filesystem (e.g. in /etc/fstab), raises if action does not succeed
       def disable_fs
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :disable"
+      end
+
+      private
+
+      def wait_until_unmounted(tries = 20)
+        while mounted?
+          if (tries -= 1) == 0
+            raise Chef::Exceptions::Mount, "Retries exceeded waiting for filesystem to unmount"
+          end
+          sleep 0.1
+        end
       end
     end
   end
