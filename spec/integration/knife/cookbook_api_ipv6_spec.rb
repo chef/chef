@@ -74,7 +74,7 @@ END_VALIDATION_PEM
 
         let(:knife_rb_content) do
           <<-END_CLIENT_RB
-chef_server_url "http://[::1]:8889"
+chef_server_url "http://[::1]:8900"
 syntax_check_cache_path '#{cache_path}'
 client_key '#{path_to('config/knifeuser.pem')}'
 node_name 'whoisthisis'
@@ -89,7 +89,7 @@ END_CLIENT_RB
 
         it "successfully uploads a cookbook" do
           shell_out!("knife cookbook upload apache2 #{knife_config_flag}", :cwd => chef_dir)
-          versions_list_json = Chef::HTTP::Simple.new("http://[::1]:8889").get("/cookbooks/apache2", "accept" => "application/json")
+          versions_list_json = Chef::HTTP::Simple.new("http://[::1]:8900").get("/cookbooks/apache2", "accept" => "application/json")
           versions_list = Chef::JSONCompat.from_json(versions_list_json)
           versions_list["apache2"]["versions"].should_not be_empty
         end
