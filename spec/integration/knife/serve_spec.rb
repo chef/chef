@@ -16,33 +16,41 @@
 # limitations under the License.
 
 require 'support/shared/integration/integration_helper'
-require 'chef/knife/list'
+require 'chef/knife/serve'
+require 'chef/server_api'
 
-describe 'redirection' do
+describe 'knife serve' do
   extend IntegrationSupport
   include KnifeSupport
   include AppServerSupport
 
-  when_the_chef_server 'has a role' do
-    role 'x', {}
+  when_the_repository 'also has one of each thing' do
+    file 'nodes/x.json', { 'foo' => 'bar' }
 
-    context 'and another server redirects to it with 302' do
-      before :each do
-        real_chef_server_url = Chef::Config.chef_server_url
-        Chef::Config.chef_server_url = "http://localhost:9018"
-        app = lambda do |env|
-          [302, {'Content-Type' => 'text','Location' => "#{real_chef_server_url}#{env['PATH_INFO']}" }, ['302 found'] ]
+    it 'knife serve serves up /nodes/x' do
+      exception = nil
+      t = Thread.new do
+        begin
+          knife('serve')
+        rescue
+          exception = $!
         end
-        @redirector_server, @redirector_server_thread = start_app_server(app, 9018)
       end
-
-      after :each do
-        @redirector_server.shutdown if @redirector_server
-        @redirector_thread.kill if @redirector_thread
-      end
-
-      it 'knife list /roles returns the role' do
-        knife('list /roles').should_succeed "/roles/x.json\n"
+      begin
+        Chef::Config.log_level = :debug
+        Chef::Config.chef_server_url = 'http://localhost:8889'
+        Chef::Config.node_name = nil
+        Chef::Config.client_key = nil
+        api = Chef::ServerAPI.new
+        api.get('nodes/x')['name'].should == 'x'
+      rescue
+        if exception
+          raise exception
+        else
+          raise
+        end
+      ensure
+        t.kill
       end
     end
   end

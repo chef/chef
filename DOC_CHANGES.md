@@ -6,6 +6,15 @@ Example Doc Change:
 Description of the required change.
 -->
 
+### New knife command: knife serve
+You can now run a persistent chef-zero against your local repository:
+
+```
+knife serve
+```
+
+knife serve takes --chef-zero-host=HOST, --chef-zero-port=PORT and --chef-repo-path=PATH variables. By default, it will do exactly the same thing as the local mode argument to knife and chef-client (-z), locating your chef-repo-path automatically and binding to port 8900.  It will print the URL it is bound to so that you can add it to your knife.rb files.
+
 ### --run-lock-timeout for chef-client and chef-solo
 You can now add a timeout for the maximum time a client run waits on another client run to finish.
 The default is to wait indefinitely.

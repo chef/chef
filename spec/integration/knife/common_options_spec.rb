@@ -37,16 +37,16 @@ describe 'knife common options' do
         Chef::Config.chef_zero.enabled = true
       end
 
-      it 'knife raw /nodes/x should retrieve the role' do
+      it 'knife raw /nodes/x should retrieve the node' do
         knife('raw /nodes/x').should_succeed /"name": "x"/
       end
 
       context 'And chef_zero.port is 9999' do
         before(:each) { Chef::Config.chef_zero.port = 9999 }
- 
-        it 'knife raw /nodes/x should retrieve the role' do
+
+        it 'knife raw /nodes/x should retrieve the node' do
           knife('raw /nodes/x').should_succeed /"name": "x"/
-          Chef::Config.chef_server_url.should == 'http://127.0.0.1:9999'
+          Chef::Config.chef_server_url.should == 'http://localhost:9999'
         end
       end
 
@@ -81,23 +81,23 @@ syHLXYFNy0OxMtH/bBAXBGNHd9gf5uOnqh0pYcbe/uRAxumC7Rl0cL509eURiA2T
 -----END RSA PRIVATE KEY-----
 EOM
 
-        it 'knife raw /nodes/x should retrieve the role' do
+        it 'knife raw /nodes/x should retrieve the node' do
           knife('raw /nodes/x').should_succeed /"name": "x"/
         end
       end
     end
 
-    it 'knife raw -z /nodes/x retrieves the role' do
+    it 'knife raw -z /nodes/x retrieves the node' do
       knife('raw -z /nodes/x').should_succeed /"name": "x"/
     end
 
-    it 'knife raw --local-mode /nodes/x retrieves the role' do
+    it 'knife raw --local-mode /nodes/x retrieves the node' do
       knife('raw --local-mode /nodes/x').should_succeed /"name": "x"/
     end
 
-    it 'knife raw -z --chef-zero-port=9999 /nodes/x retrieves the role' do
+    it 'knife raw -z --chef-zero-port=9999 /nodes/x retrieves the node' do
       knife('raw -z --chef-zero-port=9999 /nodes/x').should_succeed /"name": "x"/
-      Chef::Config.chef_server_url.should == 'http://127.0.0.1:9999'
+      Chef::Config.chef_server_url.should == 'http://localhost:9999'
     end
   end
 end

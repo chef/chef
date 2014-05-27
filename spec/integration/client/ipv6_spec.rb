@@ -62,7 +62,7 @@ END_VALIDATION_PEM
 
   let(:basic_config_file) do
     <<-END_CLIENT_RB
-chef_server_url "http://[::1]:8889"
+chef_server_url "http://[::1]:8900"
 validation_key '#{path_to('config/validator.pem')}'
 cache_path '#{cache_path}'
 client_key '#{cache_path}/client.pem'

@@ -25,6 +25,7 @@
   Implemented a threaded download queue for synchronizing cookbooks. (CHEF-4423)
 
 
+* Added "knife serve" to bring up local mode as a server
 * Print nested LWRPs with indentation in doc formatter output
 * Make local mode stable enough to run chef-pedant
 * Wrap code in block context when syntax checking so `return` is valid
