@@ -120,7 +120,14 @@ describe Chef::Provider::Mount do
       expect(new_resource).to be_updated_by_last_action
     end
 
+    it "should fail when it runs out of remounts" do
+      provider.unmount_retries = 1
+      expect(provider).to receive(:umount_fs)
+      expect(provider).to receive(:mounted?).and_return(true, true)
+      expect{ provider.run_action(:remount) }.to raise_error(Chef::Exceptions::Mount)
+    end
   end
+
   describe "when enabling the filesystem to be mounted" do
     it "should enable the mount if it isn't enable" do
       allow(current_resource).to receive(:enabled).and_return(false)

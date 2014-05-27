@@ -27,12 +27,19 @@ class Chef
 
       include Chef::Mixin::Command
 
+      attr_accessor :unmount_retries
+
       def whyrun_supported?
         true
       end
 
       def load_current_resource
         true
+      end
+
+      def initialize(new_resource, run_context)
+        super
+        self.unmount_retries = 20
       end
 
       def action_mount
@@ -69,7 +76,7 @@ class Chef
               umount_fs
               Chef::Log.info("#{new_resource} unmounted")
             end
-            wait_until_unmounted
+            wait_until_unmounted(unmount_retries)
             converge_by("mount #{current_resource.device}") do
               mount_fs
               Chef::Log.info("#{new_resource} mounted")
@@ -150,9 +157,9 @@ class Chef
 
       private
 
-      def wait_until_unmounted(tries = 20)
+      def wait_until_unmounted(tries)
         while mounted?
-          if (tries -= 1) == 0
+          if (tries -= 1) < 0
             raise Chef::Exceptions::Mount, "Retries exceeded waiting for filesystem to unmount"
           end
           sleep 0.1
