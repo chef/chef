@@ -248,30 +248,6 @@ describe Chef::Application do
       @app.stub(:configure_no_proxy).and_return(true)
     end
 
-    it "should configure ENV['HTTP_PROXY']" do
-      configure_proxy_environment_variables_stubs
-      @app.should_receive(:configure_http_proxy)
-      @app.configure_proxy_environment_variables
-    end
-
-    it "should configure ENV['HTTPS_PROXY']" do
-      configure_proxy_environment_variables_stubs
-      @app.should_receive(:configure_https_proxy)
-      @app.configure_proxy_environment_variables
-    end
-
-    it "should configure ENV['FTP_PROXY']" do
-      configure_proxy_environment_variables_stubs
-      @app.should_receive(:configure_ftp_proxy)
-      @app.configure_proxy_environment_variables
-    end
-
-    it "should configure ENV['NO_PROXY']" do
-      configure_proxy_environment_variables_stubs
-      @app.should_receive(:configure_no_proxy)
-      @app.configure_proxy_environment_variables
-    end
-
     describe "when configuring ENV['HTTP_PROXY']" do
       before do
         @env = {}
@@ -295,12 +271,12 @@ describe Chef::Application do
 
       describe "when Chef::Config[:http_proxy] is set" do
         before do
-          Chef::Config[:http_proxy] = "http://hostname:port"
+          Chef::Config[:http_proxy] = "http://proxy.example.org:8080"
         end
 
-        it "should set ENV['HTTP_PROXY'] to http://hostname:port" do
+        it "should set ENV['HTTP_PROXY'] to http://proxy.example.org:8080" do
           @app.configure_proxy_environment_variables
-          @env['HTTP_PROXY'].should == "http://hostname:port"
+          @env['HTTP_PROXY'].should == "http://proxy.example.org:8080"
         end
 
         it "should percent encode the proxy, if necessary" do
@@ -314,15 +290,15 @@ describe Chef::Application do
             Chef::Config[:http_proxy_user] = "username"
           end
 
-          it "should set ENV['HTTP_PROXY'] to http://username@hostname.port" do
+          it "should set ENV['HTTP_PROXY'] to http://username@proxy.example.org:8080" do
             @app.configure_proxy_environment_variables
-            @env['HTTP_PROXY'].should == "http://username@hostname:port"
+            @env['HTTP_PROXY'].should == "http://username@proxy.example.org:8080"
           end
 
           it "should percent encode the username, including @ and : characters" do
             Chef::Config[:http_proxy_user] = "K:tty C@t"
             @app.configure_proxy_environment_variables
-            @env['HTTP_PROXY'].should == "http://K%3Atty%20C%40t@hostname:port"
+            @env['HTTP_PROXY'].should == "http://K%3Atty%20C%40t@proxy.example.org:8080"
           end
 
           describe "when Chef::Config[:http_proxy_pass] is set" do
@@ -330,15 +306,15 @@ describe Chef::Application do
               Chef::Config[:http_proxy_pass] = "password"
             end
 
-            it "should set ENV['HTTP_PROXY'] to http://username:password@hostname:port" do
+            it "should set ENV['HTTP_PROXY'] to http://username:password@proxy.example.org:8080" do
               @app.configure_proxy_environment_variables
-              @env['HTTP_PROXY'].should == "http://username:password@hostname:port"
+              @env['HTTP_PROXY'].should == "http://username:password@proxy.example.org:8080"
             end
 
             it "should fully percent escape the password, including @ and : characters" do
               Chef::Config[:http_proxy_pass] = ":P@ssword101"
               @app.configure_proxy_environment_variables
-              @env['HTTP_PROXY'].should == "http://username:%3AP%40ssword101@hostname:port"
+              @env['HTTP_PROXY'].should == "http://username:%3AP%40ssword101@proxy.example.org:8080"
             end
           end
         end
@@ -349,9 +325,9 @@ describe Chef::Application do
             Chef::Config[:http_proxy_pass] = "password"
           end
 
-          it "should set ENV['HTTP_PROXY'] to http://hostname:port" do
+          it "should set ENV['HTTP_PROXY'] to http://proxy.example.org:8080" do
             @app.configure_proxy_environment_variables
-            @env['HTTP_PROXY'].should == "http://hostname:port"
+            @env['HTTP_PROXY'].should == "http://proxy.example.org:8080"
           end
         end
       end

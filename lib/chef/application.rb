@@ -253,17 +253,23 @@ class Chef::Application
 
   # Set ENV['HTTP_PROXY']
   def configure_http_proxy
-    env['HTTP_PROXY'] = configure_proxy("http") if Chef::Config[:http_proxy]
+    if http_proxy = Chef::Config[:http_proxy]
+      env['HTTP_PROXY'] = configure_proxy("http", http_proxy, Chef::Config[:http_proxy_user], Chef::Config[:http_proxy_pass])
+    end
   end
 
   # Set ENV['HTTPS_PROXY']
   def configure_https_proxy
-    env['HTTPS_PROXY'] = configure_proxy("https") if Chef::Config[:https_proxy]
+    if https_proxy = Chef::Config[:https_proxy]
+      env['HTTPS_PROXY'] = configure_proxy("https", https_proxy, Chef::Config[:https_proxy_user], Chef::Config[:https_proxy_pass])
+    end
   end
 
   # Set ENV['FTP_PROXY']
   def configure_ftp_proxy
-    env['FTP_PROXY'] = configure_proxy("ftp") if Chef::Config[:ftp_proxy]
+    if ftp_proxy = Chef::Config[:ftp_proxy]
+      env['FTP_PROXY'] = configure_proxy("ftp", ftp_proxy, Chef::Config[:ftp_proxy_user], Chef::Config[:ftp_proxy_pass])
+    end
   end
 
   # Set ENV['NO_PROXY']
@@ -271,38 +277,32 @@ class Chef::Application
     env['NO_PROXY'] = Chef::Config[:no_proxy] if Chef::Config[:no_proxy]
   end
 
-  # Builds a proxy according to http/https format. Examples:
+  #Builds a proxy uri. Examples:
   #   http://username:password@hostname:port
   #   https://username@hostname:port
   #   ftp://hostname:port
-  # with, when scheme = "http",
-  #   hostname:port given via config[:http_proxy]
-  #   username given via config[:http_proxy_user]
-  #   password given via config[:http_proxy_pass]
-  def configure_proxy(scheme)
-    proxy = Chef::Config["#{scheme}_proxy"].split("#{scheme}://")
-    proxy.shift if proxy[0].empty?
-    proxy = URI.encode(proxy[0])
-
-    full_proxy = "#{scheme}://"
-    if Chef::Config["#{scheme}_proxy_user"]
-      full_proxy << encode_for_proxy(Chef::Config["#{scheme}_proxy_user"])
-      if Chef::Config["#{scheme}_proxy_pass"]
-        full_proxy << ":#{encode_for_proxy(Chef::Config["#{scheme}_proxy_pass"])}"
+  # when
+  #   scheme = "http", "https", or "ftp"
+  #   hostport = hostname:port
+  #   user = username
+  #   pass = password
+  def configure_proxy(scheme, hostport, user, pass)
+    # URI.split returns the following parts:
+    # [scheme, userinfo, host, port, registry, path, opaque, query, fragment]
+    parts = URI.split(URI.encode(hostport))
+    parts[0] = scheme if parts[0].nil?
+    # URI::Generic.build requires an integer for the port, but URI::split gives
+    # returns a string for the port.
+    parts[3] = parts[3].to_i if parts[3]
+    if user
+      userinfo = URI.encode(URI.encode(user), '@:')
+      if pass
+        userinfo << ":#{URI.encode(URI.encode(pass), '@:')}"
       end
-      full_proxy << "@"
+      parts[1] = userinfo
     end
 
-    full_proxy << proxy
-    return full_proxy
-  end
-
-  # URI doesn't encode/escape the reserved characters '@' and ':' which may exist
-  # in the proxy user/password.
-  def encode_for_proxy(uri_str)
-    # URI.escape(string, characters) will only escape the characters. So we first
-    # perform a standard URI escape, then escape other potentially offending characters.
-    URI.escape(URI.escape(uri_str), '@:')
+    URI::Generic.build(parts).to_s
   end
 
   # This is a hook for testing
