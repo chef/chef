@@ -64,7 +64,6 @@ class Chef
             },
             :ubuntu   => {
               :default => {
-                :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Debian,
                 :cron => Chef::Provider::Cron,
                 :mdadm => Chef::Provider::Mdadm
@@ -75,7 +74,6 @@ class Chef
             },
             :gcel   => {
               :default => {
-                :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Debian,
                 :cron => Chef::Provider::Cron,
                 :mdadm => Chef::Provider::Mdadm
@@ -83,7 +81,6 @@ class Chef
             },
             :linaro   => {
               :default => {
-                :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Debian,
                 :cron => Chef::Provider::Cron,
                 :mdadm => Chef::Provider::Mdadm
@@ -91,7 +88,6 @@ class Chef
             },
             :raspbian   => {
               :default => {
-                :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Debian,
                 :cron => Chef::Provider::Cron,
                 :mdadm => Chef::Provider::Mdadm
@@ -99,7 +95,6 @@ class Chef
             },
             :linuxmint   => {
               :default => {
-                :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Upstart,
                 :cron => Chef::Provider::Cron,
                 :mdadm => Chef::Provider::Mdadm
@@ -107,7 +102,6 @@ class Chef
             },
             :debian => {
               :default => {
-                :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Debian,
                 :cron => Chef::Provider::Cron,
                 :mdadm => Chef::Provider::Mdadm
