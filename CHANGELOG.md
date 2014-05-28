@@ -42,6 +42,7 @@
 * chef-full template gets knife options to override install script url, add wget/curl cli options, and custom install commands (CHEF-4697)
 * knife now bootstraps node with the latest current version of chef-client. (CHEF-4911)
 * Add config options for attribute whitelisting in node.save. (CHEF-3811)
+* Add helper to warn for broken [windows] paths. (CHEF-5322)
 
 ## Release: 11.12.4 (04/30/2014)
 http://www.getchef.com/blog/2014/04/30/release-chef-client-11-12-4-ohai-7-0-4/
