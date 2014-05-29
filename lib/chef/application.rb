@@ -308,7 +308,10 @@ class Chef::Application
 
       return URI::Generic.build(parts).to_s
     rescue URI::Error => e
-      raise Chef::Exceptions::BadProxyURI, e.message
+      # URI::Error messages generally include the offending string. Including a message
+      # for which proxy config item has the issue should help deduce the issue when
+      # the URI::Error message is vague.
+      raise Chef::Exceptions::BadProxyURI, "Cannot configure #{scheme} proxy. Does not comply with URI scheme. #{e.message}"
     end
   end
 
