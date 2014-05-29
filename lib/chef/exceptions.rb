@@ -329,5 +329,7 @@ class Chef
         super "Unable to acquire lock. Waited #{duration} seconds for #{blocking_pid} to release."
       end
     end
+
+    class BadProxyURI < RuntimeError; end
   end
 end

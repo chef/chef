@@ -251,33 +251,36 @@ class Chef::Application
     Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", 2)
   end
 
-  # Set ENV['HTTP_PROXY']
+  # Set ENV['http_proxy']
   def configure_http_proxy
     if http_proxy = Chef::Config[:http_proxy]
-      env['HTTP_PROXY'] = configure_proxy("http", http_proxy, Chef::Config[:http_proxy_user], Chef::Config[:http_proxy_pass])
+      env['http_proxy'] = configure_proxy("http", http_proxy,
+        Chef::Config[:http_proxy_user], Chef::Config[:http_proxy_pass])
     end
   end
 
-  # Set ENV['HTTPS_PROXY']
+  # Set ENV['https_proxy']
   def configure_https_proxy
     if https_proxy = Chef::Config[:https_proxy]
-      env['HTTPS_PROXY'] = configure_proxy("https", https_proxy, Chef::Config[:https_proxy_user], Chef::Config[:https_proxy_pass])
+      env['https_proxy'] = configure_proxy("https", https_proxy,
+        Chef::Config[:https_proxy_user], Chef::Config[:https_proxy_pass])
     end
   end
 
-  # Set ENV['FTP_PROXY']
+  # Set ENV['ftp_proxy']
   def configure_ftp_proxy
     if ftp_proxy = Chef::Config[:ftp_proxy]
-      env['FTP_PROXY'] = configure_proxy("ftp", ftp_proxy, Chef::Config[:ftp_proxy_user], Chef::Config[:ftp_proxy_pass])
+      env['ftp_proxy'] = configure_proxy("ftp", ftp_proxy,
+        Chef::Config[:ftp_proxy_user], Chef::Config[:ftp_proxy_pass])
     end
   end
 
-  # Set ENV['NO_PROXY']
+  # Set ENV['no_proxy']
   def configure_no_proxy
-    env['NO_PROXY'] = Chef::Config[:no_proxy] if Chef::Config[:no_proxy]
+    env['no_proxy'] = Chef::Config[:no_proxy] if Chef::Config[:no_proxy]
   end
 
-  #Builds a proxy uri. Examples:
+  # Builds a proxy uri. Examples:
   #   http://username:password@hostname:port
   #   https://username@hostname:port
   #   ftp://hostname:port
@@ -286,23 +289,27 @@ class Chef::Application
   #   hostport = hostname:port
   #   user = username
   #   pass = password
-  def configure_proxy(scheme, hostport, user, pass)
-    # URI.split returns the following parts:
-    # [scheme, userinfo, host, port, registry, path, opaque, query, fragment]
-    parts = URI.split(URI.encode(hostport))
-    parts[0] = scheme if parts[0].nil?
-    # URI::Generic.build requires an integer for the port, but URI::split gives
-    # returns a string for the port.
-    parts[3] = parts[3].to_i if parts[3]
-    if user
-      userinfo = URI.encode(URI.encode(user), '@:')
-      if pass
-        userinfo << ":#{URI.encode(URI.encode(pass), '@:')}"
+  def configure_proxy(scheme, path, user, pass)
+    begin
+      path = "#{scheme}://#{path}" unless path.start_with?(scheme)
+      # URI.split returns the following parts:
+      # [scheme, userinfo, host, port, registry, path, opaque, query, fragment]
+      parts = URI.split(URI.encode(path))
+      # URI::Generic.build requires an integer for the port, but URI::split gives
+      # returns a string for the port.
+      parts[3] = parts[3].to_i if parts[3]
+      if user
+        userinfo = URI.encode(URI.encode(user), '@:')
+        if pass
+          userinfo << ":#{URI.encode(URI.encode(pass), '@:')}"
+        end
+        parts[1] = userinfo
       end
-      parts[1] = userinfo
-    end
 
-    URI::Generic.build(parts).to_s
+      return URI::Generic.build(parts).to_s
+    rescue URI::Error => e
+      raise Chef::Exceptions::BadProxyURI, e.message
+    end
   end
 
   # This is a hook for testing

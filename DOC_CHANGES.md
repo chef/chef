@@ -82,7 +82,7 @@ The default behavior is for the node to save all the attribute data. This can be
 
 We recommend only using `automatic_attribute_whitelist` to reduce the size of the system data being stored for nodes, and discourage the use of the other attribute whitelists except by advanced users.
 
-### Set PROXY environment variables if present in your config file.
+### Set proxy environment variables if present in your config file.
 
 If `:http_proxy`, `:https_proxy`, `:ftp_proxy`, or `:no_proxy` is found in your config file, we will configure your environment variables according to the variable form and configuration info given. If your config file looks like
 
@@ -92,4 +92,4 @@ http_proxy_user "myself"
 http_proxy_pass "Password1"
 ````
 
-then Chef will set `ENV[:HTTP_PROXY] = "http://myself:Password1@proxy.example.org:8080"`
+then Chef will set `ENV['http_proxy'] = "http://myself:Password1@proxy.example.org:8080"`

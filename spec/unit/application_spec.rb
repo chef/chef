@@ -121,8 +121,8 @@ describe Chef::Application do
         config_location_pathname
         Pathname.stub(:new).with(config_location).and_return(config_location_pathname)
         File.should_receive(:read).
-          with(config_location).
-          and_return(config_content)
+        with(config_location).
+        and_return(config_content)
       end
 
       it "should configure chef::config from a file" do
@@ -248,7 +248,74 @@ describe Chef::Application do
       @app.stub(:configure_no_proxy).and_return(true)
     end
 
-    describe "when configuring ENV['HTTP_PROXY']" do
+    shared_examples_for "setting ENV['http_proxy']" do
+      before do
+        Chef::Config[:http_proxy] = http_proxy
+      end
+
+      it "should set ENV['http_proxy']" do
+        @app.configure_proxy_environment_variables
+        @env['http_proxy'].should == "http://#{address}:#{port}"
+      end
+
+      describe "when Chef::Config[:http_proxy_user] is set" do
+        before do
+          Chef::Config[:http_proxy_user] = "username"
+        end
+
+        it "should set ENV['http_proxy'] with the username" do
+          @app.configure_proxy_environment_variables
+          @env['http_proxy'].should == "http://username@#{address}:#{port}"
+        end
+
+        context "when :http_proxy_user contains '@' and/or ':'" do
+          before do
+            Chef::Config[:http_proxy_user] = "my:usern@me"
+          end
+
+          it "should set ENV['http_proxy'] with the escaped username" do
+            @app.configure_proxy_environment_variables
+            @env['http_proxy'].should == "http://my%3Ausern%40me@#{address}:#{port}"
+          end
+        end
+
+        describe "when Chef::Config[:http_proxy_pass] is set" do
+          before do
+            Chef::Config[:http_proxy_pass] = "password"
+          end
+
+          it "should set ENV['http_proxy'] with the password" do
+            @app.configure_proxy_environment_variables
+            @env['http_proxy'].should == "http://username:password@#{address}:#{port}"
+          end
+
+          context "when :http_proxy_pass contains '@' and/or ':'" do
+            before do
+              Chef::Config[:http_proxy_pass] = ":P@ssword101"
+            end
+
+            it "should set ENV['http_proxy'] with the escaped password" do
+              @app.configure_proxy_environment_variables
+              @env['http_proxy'].should == "http://username:%3AP%40ssword101@#{address}:#{port}"
+            end
+          end
+        end
+      end
+
+      describe "when Chef::Config[:http_proxy_pass] is set (but not Chef::Config[:http_proxy_user])" do
+        before do
+          Chef::Config[:http_proxy_user] = nil
+          Chef::Config[:http_proxy_pass] = "password"
+        end
+
+        it "should set ENV['http_proxy']" do
+          @app.configure_proxy_environment_variables
+          @env['http_proxy'].should == "http://#{address}:#{port}"
+        end
+      end
+    end
+
+    describe "when configuring ENV['http_proxy']" do
       before do
         @env = {}
         @app.stub(:env).and_return(@env)
@@ -263,71 +330,62 @@ describe Chef::Application do
           Chef::Config[:http_proxy] = nil
         end
 
-        it "should not set ENV['HTTP_PROXY']" do
+        it "should not set ENV['http_proxy']" do
           @app.configure_proxy_environment_variables
           @env.should == {}
         end
       end
 
       describe "when Chef::Config[:http_proxy] is set" do
-        before do
-          Chef::Config[:http_proxy] = "http://proxy.example.org:8080"
+        context "when given an FQDN" do
+          let(:address) { "proxy.example.org" }
+          let(:port) { 8080 }
+          let(:http_proxy) { "http://#{address}:#{port}" }
+
+          it_should_behave_like "setting ENV['http_proxy']"
         end
 
-        it "should set ENV['HTTP_PROXY'] to http://proxy.example.org:8080" do
-          @app.configure_proxy_environment_variables
-          @env['HTTP_PROXY'].should == "http://proxy.example.org:8080"
+        context "when given an IP" do
+          let(:address) { "127.0.0.1" }
+          let(:port) { 22 }
+          let(:http_proxy) { "http://#{address}:#{port}" }
+
+          it_should_behave_like "setting ENV['http_proxy']"
         end
 
-        it "should percent encode the proxy, if necessary" do
-          Chef::Config[:http_proxy] = "http://needs\\some escaping:1234"
-          @app.configure_proxy_environment_variables
-          @env['HTTP_PROXY'].should == "http://needs%5Csome%20escaping:1234"
+        context "when given an IPv6" do
+          let(:address) { "[2001:db8::1]" }
+          let(:port) { 80 }
+          let(:http_proxy) { "http://#{address}:#{port}" }
+
+          it_should_behave_like "setting ENV['http_proxy']"
         end
 
-        describe "when Chef::Config[:http_proxy_user] is set" do
+        context "when given without including http://" do
+          let(:address) { "proxy.example.org" }
+          let(:port) { 8181 }
+          let(:http_proxy) { "#{address}:#{port}" }
+
+          it_should_behave_like "setting ENV['http_proxy']"
+        end
+
+        context "when given the full proxy in :http_proxy only" do
           before do
-            Chef::Config[:http_proxy_user] = "username"
-          end
-
-          it "should set ENV['HTTP_PROXY'] to http://username@proxy.example.org:8080" do
-            @app.configure_proxy_environment_variables
-            @env['HTTP_PROXY'].should == "http://username@proxy.example.org:8080"
-          end
-
-          it "should percent encode the username, including @ and : characters" do
-            Chef::Config[:http_proxy_user] = "K:tty C@t"
-            @app.configure_proxy_environment_variables
-            @env['HTTP_PROXY'].should == "http://K%3Atty%20C%40t@proxy.example.org:8080"
-          end
-
-          describe "when Chef::Config[:http_proxy_pass] is set" do
-            before do
-              Chef::Config[:http_proxy_pass] = "password"
-            end
-
-            it "should set ENV['HTTP_PROXY'] to http://username:password@proxy.example.org:8080" do
-              @app.configure_proxy_environment_variables
-              @env['HTTP_PROXY'].should == "http://username:password@proxy.example.org:8080"
-            end
-
-            it "should fully percent escape the password, including @ and : characters" do
-              Chef::Config[:http_proxy_pass] = ":P@ssword101"
-              @app.configure_proxy_environment_variables
-              @env['HTTP_PROXY'].should == "http://username:%3AP%40ssword101@proxy.example.org:8080"
-            end
-          end
-        end
-
-        describe "when Chef::Config[:http_proxy_pass] is set (but not Chef::Config[:http_proxy_user])" do
-          before do
+            Chef::Config[:http_proxy] = "http://username:password@proxy.example.org:2222"
             Chef::Config[:http_proxy_user] = nil
-            Chef::Config[:http_proxy_pass] = "password"
+            Chef::Config[:http_proxy_pass] = nil
           end
 
-          it "should set ENV['HTTP_PROXY'] to http://proxy.example.org:8080" do
+          it "should set ENV['http_proxy']" do
             @app.configure_proxy_environment_variables
-            @env['HTTP_PROXY'].should == "http://proxy.example.org:8080"
+            @env['http_proxy'].should == Chef::Config[:http_proxy]
+          end
+        end
+
+        context "when the config options aren't URI compliant" do
+          it "raises Chef::Exceptions::BadProxyURI" do
+            Chef::Config[:http_proxy] = "http://proxy.bad_example.org/:8080"
+            expect { @app.configure_proxy_environment_variables }.to raise_error(Chef::Exceptions::BadProxyURI)
           end
         end
       end
