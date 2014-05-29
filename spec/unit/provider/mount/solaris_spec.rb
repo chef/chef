@@ -26,11 +26,19 @@ describe Chef::Provider::Mount::Solaris do
 
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
 
+  let(:device_type) { :device }
+
+  let(:fstype) { "ufs" }
+
+  let(:device) { "/dev/dsk/c0t2d0s7" }
+
+  let(:mountpoint) { "/mnt/foo" }
+
   let(:new_resource) {
-    new_resource = Chef::Resource::Mount.new("/mnt/foo")
-    new_resource.device      "/dev/dsk/c0t0d0s0"
-    new_resource.device_type :device
-    new_resource.fstype      "ufs"
+    new_resource = Chef::Resource::Mount.new(mountpoint)
+    new_resource.device      device
+    new_resource.device_type device_type
+    new_resource.fstype      fstype
 
     new_resource.supports :remount => false
     new_resource
@@ -40,113 +48,218 @@ describe Chef::Provider::Mount::Solaris do
     Chef::Provider::Mount::Solaris.new(new_resource, run_context)
   }
 
+  let(:vfstab_file_contents) {
+    <<-EOF.gsub /^\s*/, ''
+    #device         device          mount           FS      fsck    mount   mount
+    #to mount       to fsck         point           type    pass    at boot options
+    #
+    fd      -       /dev/fd fd      -       no      -
+    /proc   -       /proc   proc    -       no      -
+    # swap
+    /dev/dsk/c0t0d0s1       -       -       swap    -       no      -
+    # root
+    /dev/dsk/c0t0d0s0       /dev/rdsk/c0t0d0s0      /       ufs     1       no      -
+    # tmpfs
+    swap    -       /tmp    tmpfs   -       yes     -
+    # nfs
+    cartman:/share2         -                       /cartman        nfs     -       yes     rw,soft
+    # ufs
+    /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
+    EOF
+  }
+
   let(:vfstab_file) {
-    Tempfile.new("rspec-vfstab")
+    t = Tempfile.new("rspec-vfstab")
+    t.write(vfstab_file_contents)
+    t.close
+    t
+  }
+
+  # TODO: test CIFS/SMB mount:
+  # //solarsystem/tmp on /mnt type smbfs read/write/setuid/devices/dev=5080000 on Tue Mar 29 11:40:18 2011
+
+  let(:mount_output) {
+    <<-EOF.gsub /^\s*/, ''
+    /dev/dsk/c0t0d0s0 on / type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200000 on Tue Jul 31 22:34:46 2012
+    /dev/dsk/c0t2d0s7 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
+    EOF
   }
 
   before do
     stub_const("Chef::Provider::Mount::Solaris::VFSTAB", vfstab_file.path )
+    provider.stub(:shell_out!).with("mount -v").and_return(OpenStruct.new(:stdout => mount_output))
+    File.stub(:symlink?).with(device).and_return(false)
+    File.stub(:exist?).with(device).and_return(true)
+    File.stub(:exist?).with(mountpoint).and_return(true)
+    expect(File).to_not receive(:exists?)
   end
 
   describe "#define_resource_requirements" do
-  end
-
-  describe "#load_current_resource" do
-    it "should create a current resource with the same mount point and device" do
-      provider.load_current_resource
-      provider.current_resource.name.should == '/mnt/foo'
-      provider.current_resource.mount_point.should == '/mnt/foo'
-      provider.current_resource.device.should == '/dev/dsk/c0t0d0s0'
+    before do
+      # we're not testing the actions so stub them all out
+      [:mount_fs, :umount_fs, :remount_fs, :enable_fs, :disable_fs].each {|m| provider.stub(m) }
     end
 
-    describe "when dealing with network mounts" do
-      { "nfs" => "nfsserver:/vol/path",
-        "cifs" => "//cifsserver/share" }.each do |type, fs_spec|
-        it "should detect network fs_spec (#{type})" do
-          new_resource.device fs_spec
-          provider.network_device?.should be_true
-        end
+    context "when the device_type is :label" do
+      let(:device_type) { :label }
 
-        it "should ignore trailing slash and set mounted to true for network mount (#{type})" do
-          new_resource.device fs_spec
-          provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => "#{fs_spec}/ on /tmp/foo type #{type} (rw)\n"))
-          provider.load_current_resource
-          provider.current_resource.mounted.should be_true
-        end
+      it "should raise an error" do
+        expect { provider.define_resource_requirements }.to raise_error(Chef::Exceptions::Mount)
       end
     end
 
-    it "should raise an error if the mount device does not exist" do
-      ::File.stub(:exists?).with("/dev/sdz1").and_return false
-      lambda { provider.load_current_resource();provider.mountable? }.should raise_error(Chef::Exceptions::Mount)
+    context "when the device_type is :uuid" do
+      let(:device_type) { :uuid }
+
+      it "should raise an error" do
+        expect { provider.define_resource_requirements }.to raise_error(Chef::Exceptions::Mount)
+      end
     end
 
-    it "should not call mountable? with load_current_resource - CHEF-1565" do
-      ::File.stub(:exists?).with("/dev/sdz1").and_return false
-      provider.should_receive(:mounted?).and_return(true)
-      provider.should_receive(:enabled?).and_return(true)
-      provider.should_not_receive(:mountable?)
-      provider.load_current_resource
+    it "run_action(:mount) should raise an error if the device does not exist" do
+      File.stub(:exist?).with(device).and_return(false)
+      expect { provider.run_action(:mount) }.to raise_error(Chef::Exceptions::Mount)
     end
 
-    it "should raise an error if the mount device (uuid) does not exist" do
-      new_resource.device_type :uuid
-      new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
-      status_findfs = double("Status", :exitstatus => 1)
-      stdout_findfs = double("STDOUT", :first => nil)
-      provider.should_receive(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,stdout_findfs,@stderr).and_return(status_findfs)
-      ::File.should_receive(:exists?).with("").and_return(false)
-      lambda { provider.load_current_resource();provider.mountable? }.should raise_error(Chef::Exceptions::Mount)
+    it "run_action(:remount) should raise an error if the device does not exist" do
+      File.stub(:exist?).with(device).and_return(false)
+      expect { provider.run_action(:remount) }.to raise_error(Chef::Exceptions::Mount)
     end
 
-    it "should raise an error if the mount point does not exist" do
-      ::File.stub(:exists?).with("/tmp/foo").and_return false
-      lambda { provider.load_current_resource();provider.mountable? }.should raise_error(Chef::Exceptions::Mount)
+    it "run_action(:mount) should raise an error if the mountpoint does not exist" do
+      File.stub(:exist?).with(mountpoint).and_return false
+      expect { provider.run_action(:mount) }.to raise_error(Chef::Exceptions::Mount)
     end
 
-    it "does not expect the device to exist for tmpfs" do
-      new_resource.fstype("tmpfs")
-      new_resource.device("whatever")
-      lambda { provider.load_current_resource();provider.mountable? }.should_not raise_error
+    it "run_action(:remount) should raise an error if the mountpoint does not exist" do
+      File.stub(:exist?).with(mountpoint).and_return false
+      expect { provider.run_action(:remount) }.to raise_error(Chef::Exceptions::Mount)
     end
 
-    it "does not expect the device to exist for Fuse filesystems" do
-      new_resource.fstype("fuse")
-      new_resource.device("nilfs#xxx")
-      lambda { provider.load_current_resource();provider.mountable? }.should_not raise_error
+    context "when the device is a tmpfs" do
+      let(:fstype) { "tmpfs" }
+      let(:device) { "swap" }
+
+      before do
+        expect(File).to_not receive(:exist?).with(device)
+      end
+
+      it "run_action(:mount) should not raise an error" do
+        expect { provider.run_action(:mount) }.to_not raise_error
+      end
+
+      it "run_action(:remount) should not raise an error" do
+        expect { provider.run_action(:remount) }.to_not raise_error
+      end
     end
 
-    it "does not expect the device to exist if it's none" do
-      new_resource.device("none")
-      lambda { provider.load_current_resource();provider.mountable? }.should_not raise_error
+  end
+
+  describe "#load_current_resource" do
+    context "when loading a normal UFS filesystem" do
+
+      before do
+        provider.load_current_resource
+      end
+
+      it "should create a current_resource of type Chef::Resource::Mount" do
+        expect(provider.current_resource).to be_a(Chef::Resource::Mount)
+      end
+
+      it "should set the name on the current_resource" do
+        provider.current_resource.name.should == mountpoint
+      end
+
+      it "should set the mount_point on the current_resource" do
+        provider.current_resource.mount_point.should == mountpoint
+      end
+
+      it "should set the device on the current_resource" do
+        provider.current_resource.device.should == device
+      end
+
+      it "should set the device_type on the current_resource" do
+        provider.current_resource.device_type.should == device_type
+      end
+
+      it "should set the mounted status on the current_resource" do
+        expect(provider.current_resource.mounted).to be_true
+      end
+
+      it "should set the enabled status on the current_resource" do
+        expect(provider.current_resource.enabled).to be_true
+      end
+
+      it "should set the fstype field on the current_resource" do
+        expect(provider.current_resource.fstype).to eql("ufs")
+      end
+
+      it "should set the options field on the current_resource" do
+        expect(provider.current_resource.options).to eql(["-", "noauto"])
+      end
+
+      it "should set the pass field on the current_resource" do
+        expect(provider.current_resource.pass).to eql(2)
+      end
+
+      #    describe "when dealing with network mounts" do
+      #      { "nfs" => "nfsserver:/vol/path",
+      #        "cifs" => "//cifsserver/share" }.each do |type, fs_spec|
+      #        it "should detect network fs_spec (#{type})" do
+      #          new_resource.device fs_spec
+      #          provider.network_device?.should be_true
+      #        end
+      #
+      #        it "should ignore trailing slash and set mounted to true for network mount (#{type})" do
+      #          new_resource.device fs_spec
+      #          provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => "#{fs_spec}/ on /tmp/foo type #{type} (rw)\n"))
+      #          provider.load_current_resource
+      #          provider.current_resource.mounted.should be_true
+      #        end
+      #      end
+      #    end
+
+      it "should not throw an exception when the device does not exist - CHEF-1565" do
+        File.stub(:exist?).with(device).and_return(false)
+        expect { provider.load_current_resource }.to_not raise_error(Chef::Exceptions::Mount)
+      end
+
+      it "should not throw an exception when the mount point does not exist" do
+        File.stub(:exist?).with(mountpoint).and_return false
+        expect { provider.load_current_resource }.to_not raise_error(Chef::Exceptions::Mount)
+      end
     end
 
-    it "should set mounted true if the mount point is found in the mounts list" do
-      provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => '/dev/sdz1 on /tmp/foo'))
-      provider.load_current_resource()
-      provider.current_resource.mounted.should be_true
-    end
+    context "when the device is symlink" do
 
-    it "should set mounted true if the symlink target of the device is found in the mounts list" do
-      # expand the target path to correct specs on Windows
-      target = ::File.expand_path('/dev/mapper/target')
+      let(:target) { "/dev/mapper/target" }
 
-      ::File.stub(:symlink?).with("#{new_resource.device}").and_return(true)
-      ::File.stub(:readlink).with("#{new_resource.device}").and_return(target)
+      let(:mount_output) {
+        <<-EOF.gsub /^\s*/, ''
+        #{target} on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
+        EOF
+      }
 
-      provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => "#{target} on /tmp/foo type ext3 (rw)\n"))
-      provider.load_current_resource()
-      provider.current_resource.mounted.should be_true
+      before do
+        File.should_receive(:symlink?).with(device).and_return(true)
+        File.should_receive(:readlink).with(device).and_return(target)
+
+        provider.load_current_resource()
+      end
+
+      it "should set mounted true if the symlink target of the device is found in the mounts list" do
+        expect(provider.current_resource.mounted).to be_true
+      end
     end
 
     it "should set mounted true if the symlink target of the device is relative and is found in the mounts list - CHEF-4957" do
       target = "xsdz1"
 
       # expand the target path to correct specs on Windows
-      absolute_target = ::File.expand_path("/dev/xsdz1")
+      absolute_target = File.expand_path("/dev/xsdz1")
 
-      ::File.stub(:symlink?).with("#{new_resource.device}").and_return(true)
-      ::File.stub(:readlink).with("#{new_resource.device}").and_return(target)
+      File.stub(:symlink?).with("#{new_resource.device}").and_return(true)
+      File.stub(:readlink).with("#{new_resource.device}").and_return(target)
 
       provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => "#{absolute_target} on /tmp/foo type ext3 (rw)\n"))
       provider.load_current_resource()
@@ -181,7 +294,7 @@ describe Chef::Provider::Mount::Solaris do
       fstab1 = "/dev/sdy1  /tmp/foo  ext3  defaults  1 2\n"
       fstab2 = "#{new_resource.device} #{new_resource.mount_point}  ext3  defaults  1 2\n"
 
-      ::File.stub(:foreach).with("/etc/fstab").and_yield(fstab1).and_yield(fstab2)
+      File.stub(:foreach).with("/etc/fstab").and_yield(fstab1).and_yield(fstab2)
 
       provider.load_current_resource
       provider.current_resource.enabled.should be_true
@@ -191,7 +304,7 @@ describe Chef::Provider::Mount::Solaris do
       fstab1 = "#{new_resource.device} #{new_resource.mount_point}  ext3  defaults  1 2\n"
       fstab2 = "/dev/sdy1  /tmp/foo/bar  ext3  defaults  1 2\n"
 
-      ::File.stub(:foreach).with("/etc/fstab").and_yield(fstab1).and_yield(fstab2)
+      File.stub(:foreach).with("/etc/fstab").and_yield(fstab1).and_yield(fstab2)
 
       provider.load_current_resource
       provider.current_resource.enabled.should be_true
@@ -200,12 +313,12 @@ describe Chef::Provider::Mount::Solaris do
     it "should set enabled to true if the symlink target is in fstab" do
       target = "/dev/mapper/target"
 
-      ::File.stub(:symlink?).with("#{new_resource.device}").and_return(true)
-      ::File.stub(:readlink).with("#{new_resource.device}").and_return(target)
+      File.stub(:symlink?).with("#{new_resource.device}").and_return(true)
+      File.stub(:readlink).with("#{new_resource.device}").and_return(target)
 
       fstab = "/dev/sdz1  /tmp/foo ext3  defaults  1 2\n"
 
-      ::File.stub(:foreach).with("/etc/fstab").and_yield fstab
+      File.stub(:foreach).with("/etc/fstab").and_yield fstab
 
       provider.load_current_resource
       provider.current_resource.enabled.should be_true
@@ -214,12 +327,12 @@ describe Chef::Provider::Mount::Solaris do
     it "should set enabled to true if the symlink target is relative and is in fstab - CHEF-4957" do
       target = "xsdz1"
 
-      ::File.stub(:symlink?).with("#{new_resource.device}").and_return(true)
-      ::File.stub(:readlink).with("#{new_resource.device}").and_return(target)
+      File.stub(:symlink?).with("#{new_resource.device}").and_return(true)
+      File.stub(:readlink).with("#{new_resource.device}").and_return(target)
 
       fstab = "/dev/sdz1  /tmp/foo ext3  defaults  1 2\n"
 
-      ::File.stub(:foreach).with("/etc/fstab").and_yield fstab
+      File.stub(:foreach).with("/etc/fstab").and_yield fstab
 
       provider.load_current_resource
       provider.current_resource.enabled.should be_true
@@ -227,7 +340,7 @@ describe Chef::Provider::Mount::Solaris do
 
     it "should set enabled to false if the mount point is not in fstab" do
       fstab = "/dev/sdy1  #{new_resource.mount_point}  ext3  defaults  1 2\n"
-      ::File.stub(:foreach).with("/etc/fstab").and_yield fstab
+      File.stub(:foreach).with("/etc/fstab").and_yield fstab
 
       provider.load_current_resource
       provider.current_resource.enabled.should be_false
@@ -235,7 +348,7 @@ describe Chef::Provider::Mount::Solaris do
 
     it "should ignore commented lines in fstab " do
        fstab = "\# #{new_resource.device}  #{new_resource.mount_point}  ext3  defaults  1 2\n"
-       ::File.stub(:foreach).with("/etc/fstab").and_yield fstab
+       File.stub(:foreach).with("/etc/fstab").and_yield fstab
 
        provider.load_current_resource
        provider.current_resource.enabled.should be_false
@@ -244,7 +357,7 @@ describe Chef::Provider::Mount::Solaris do
     it "should set enabled to false if the mount point is not last in fstab" do
       line_1 = "#{new_resource.device} #{new_resource.mount_point}  ext3  defaults  1 2\n"
       line_2 = "/dev/sdy1 #{new_resource.mount_point}  ext3  defaults  1 2\n"
-      ::File.stub(:foreach).with("/etc/fstab").and_yield(line_1).and_yield(line_2)
+      File.stub(:foreach).with("/etc/fstab").and_yield(line_1).and_yield(line_2)
 
       provider.load_current_resource
       provider.current_resource.enabled.should be_false
@@ -255,24 +368,24 @@ describe Chef::Provider::Mount::Solaris do
       target = "/dev/mapper/target"
       options = "rw,noexec,noauto"
 
-      ::File.stub(:symlink?).with(new_resource.device).and_return(true)
-      ::File.stub(:readlink).with(new_resource.device).and_return(target)
+      File.stub(:symlink?).with(new_resource.device).and_return(true)
+      File.stub(:readlink).with(new_resource.device).and_return(target)
 
       fstab = "#{new_resource.device} #{new_resource.mount_point} #{new_resource.fstype} #{options} 1 2\n"
-      ::File.stub(:foreach).with("/etc/fstab").and_yield fstab
+      File.stub(:foreach).with("/etc/fstab").and_yield fstab
       provider.load_current_resource
       provider.current_resource.options.should eq(options.split(','))
     end
 
     it "should not mangle the mount options if the symlink target is in fstab" do
-      target = ::File.expand_path("/dev/mapper/target")
+      target = File.expand_path("/dev/mapper/target")
       options = "rw,noexec,noauto"
 
-      ::File.stub(:symlink?).with(new_resource.device).and_return(true)
-      ::File.stub(:readlink).with(new_resource.device).and_return(target)
+      File.stub(:symlink?).with(new_resource.device).and_return(true)
+      File.stub(:readlink).with(new_resource.device).and_return(target)
 
       fstab = "#{target} #{new_resource.mount_point} #{new_resource.fstype} #{options} 1 2\n"
-      ::File.stub(:foreach).with("/etc/fstab").and_yield fstab
+      File.stub(:foreach).with("/etc/fstab").and_yield fstab
       provider.load_current_resource
       provider.current_resource.options.should eq(options.split(','))
     end
@@ -365,7 +478,7 @@ describe Chef::Provider::Mount::Solaris do
         @current_resource.enabled(false)
 
         @fstab = StringIO.new
-        ::File.stub(:open).with("/etc/fstab", "a").and_yield(@fstab)
+        File.stub(:open).with("/etc/fstab", "a").and_yield(@fstab)
         provider.enable_fs
         @fstab.string.should match(%r{^/dev/sdz1\s+/tmp/foo\s+ext3\s+defaults\s+0\s+2\s*$})
       end
@@ -376,7 +489,7 @@ describe Chef::Provider::Mount::Solaris do
         @current_resource.options(["defaults"])
         @current_resource.dump(0)
         @current_resource.pass(2)
-        ::File.should_not_receive(:open).with("/etc/fstab", "a")
+        File.should_not_receive(:open).with("/etc/fstab", "a")
 
         provider.enable_fs
       end
@@ -388,9 +501,9 @@ describe Chef::Provider::Mount::Solaris do
         @current_resource.dump(0)
         @current_resource.pass(2)
         @fstab = StringIO.new
-        ::File.stub(:readlines).and_return([])
-        ::File.should_receive(:open).once.with("/etc/fstab", "w").and_yield(@fstab)
-        ::File.should_receive(:open).once.with("/etc/fstab", "a").and_yield(@fstab)
+        File.stub(:readlines).and_return([])
+        File.should_receive(:open).once.with("/etc/fstab", "w").and_yield(@fstab)
+        File.should_receive(:open).once.with("/etc/fstab", "a").and_yield(@fstab)
 
         provider.enable_fs
       end
@@ -404,9 +517,9 @@ describe Chef::Provider::Mount::Solaris do
         this_mount = "/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n"
 
         @fstab_read = [this_mount, other_mount]
-        ::File.stub(:readlines).with("/etc/fstab").and_return(@fstab_read)
+        File.stub(:readlines).with("/etc/fstab").and_return(@fstab_read)
         @fstab_write = StringIO.new
-        ::File.stub(:open).with("/etc/fstab", "w").and_yield(@fstab_write)
+        File.stub(:open).with("/etc/fstab", "w").and_yield(@fstab_write)
 
         provider.disable_fs
         @fstab_write.string.should match(Regexp.escape(other_mount))
@@ -421,8 +534,8 @@ describe Chef::Provider::Mount::Solaris do
                       %q{#/dev/sdz1 /tmp/foo  ext3  defaults  1 2}]
         fstab_write = StringIO.new
 
-        ::File.stub(:readlines).with("/etc/fstab").and_return(fstab_read)
-        ::File.stub(:open).with("/etc/fstab", "w").and_yield(fstab_write)
+        File.stub(:readlines).with("/etc/fstab").and_return(fstab_read)
+        File.stub(:open).with("/etc/fstab", "w").and_yield(fstab_write)
 
         provider.disable_fs
         fstab_write.string.should match(%r{^/dev/sdy1 /tmp/foo  ext3  defaults  1 2$})
@@ -437,8 +550,8 @@ describe Chef::Provider::Mount::Solaris do
                       "/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n"]
 
         fstab_write = StringIO.new
-        ::File.stub(:readlines).with("/etc/fstab").and_return(fstab_read)
-        ::File.stub(:open).with("/etc/fstab", "w").and_yield(fstab_write)
+        File.stub(:readlines).with("/etc/fstab").and_return(fstab_read)
+        File.stub(:open).with("/etc/fstab", "w").and_yield(fstab_write)
 
         provider.disable_fs
         fstab_write.string.should == "/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n/dev/sdy1 /tmp/foo  ext3  defaults  1 2\n"
@@ -447,8 +560,8 @@ describe Chef::Provider::Mount::Solaris do
       it "should not disable if enabled is false" do
         @current_resource.stub(:enabled).and_return(false)
 
-        ::File.stub(:readlines).with("/etc/fstab").and_return([])
-        ::File.should_not_receive(:open).and_yield(@fstab)
+        File.stub(:readlines).with("/etc/fstab").and_return([])
+        File.should_not_receive(:open).and_yield(@fstab)
 
         provider.disable_fs
       end

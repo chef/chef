@@ -32,40 +32,39 @@ class Chef
         VFSTAB = "/etc/vfstab".freeze
 
         def_delegator :@new_resource, :device, :device
+        def_delegator :@new_resource, :device_type, :device_type
         def_delegator :@new_resource, :dump, :dump
         def_delegator :@new_resource, :fstype, :fstype
         def_delegator :@new_resource, :mount_point, :mount_point
         def_delegator :@new_resource, :options, :options
         def_delegator :@new_resource, :pass, :pass
 
-        def initialize(new_resource, run_context)
-          if new_resource.device_type == :device
-            Chef::Log.error("Mount resource can only be of of device_type ':device' on Solaris")
-          end
-          super
-        end
-
         def load_current_resource
           self.current_resource = Chef::Resource::Mount.new(new_resource.name)
           current_resource.mount_point(mount_point)
           current_resource.device(device)
+          current_resource.device_type(device_type)
           current_resource.mounted(mounted?)
           ( enabled, fstype, options, pass ) = read_vfstab_status
           current_resource.enabled(enabled)
-          current_resource.enabled(fstype)
-          current_resource.enabled(options)
-          current_resource.enabled(pass)
+          current_resource.fstype(fstype)
+          current_resource.options(options)
+          current_resource.pass(pass)
         end
 
         def define_resource_requirements
+          if device_type != :device
+            raise Chef::Exceptions::Mount, "Mount resource can only be of of device_type ':device' on Solaris"
+          end
+
           requirements.assert(:mount, :remount) do |a|
-            a.assertion { !device_should_exist? || ::File.exists?(device) }
+            a.assertion { !device_should_exist? || ::File.exist?(device) }
             a.failure_message(Chef::Exceptions::Mount, "Device #{device} does not exist")
             a.whyrun("Assuming device #{device} would have been created")
           end
 
           requirements.assert(:mount, :remount) do |a|
-            a.assertion { ::File.exists?(mount_point) }
+            a.assertion { ::File.exist?(mount_point) }
             a.failure_message(Chef::Exceptions::Mount, "Mount point #{mount_point} does not exist")
             a.whyrun("Assuming mount point #{mount_point} would have been created")
           end
@@ -158,11 +157,10 @@ class Chef
             when /^#{device_vfstab_regex}\s+[-\/\w]+\s+#{Regexp.escape(mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
               enabled = true
               fstype = $1
+              options = $4
               # Store the 'mount at boot' column from vfstab as the 'noauto' option
               # in current_resource.options (linux style)
-              no_auto_option = ($3 == "yes")
-              options = $4
-              if no_auto_option
+              if $3 == "yes"
                 if options.nil? || options.empty?
                   options = "noauto"
                 else
@@ -182,13 +180,17 @@ class Chef
         end
 
         def mounted?
-          shell_out!("mount").stdout.each_line do |line|
-            # on solaris, 'mount' prints "<mount point> on <device> ...'
+            puts "^#{device_mount_regex}\s+on\s+#{Regexp.escape(mount_point)}"
+          shell_out!("mount -v").stdout.each_line do |line|
+            # <device> on <mountpoint> type <fstype> <options> on <date>
+            # /dev/dsk/c1t0d0s0 on / type ufs read/write/setuid/devices/intr/largefiles/logging/xattr/onerror=panic/dev=700040 on Tue May  1 11:33:55 2012
+            puts line
             case line
-            when /^#{Regexp.escape(mount_point)}\s+on\s+#{device_mount_regex}/
+            when /^#{device_mount_regex}\s+on\s+#{Regexp.escape(mount_point)}/
+              puts "found"
               Chef::Log.debug("Special device #{device} is mounted as #{mount_point}")
               return true
-            when /^#{Regexp.escape(mount_point)}\son\s([\/\w])+\s+/
+            when /^#{Regexp.escape(mount_point)}\son\s([\/\w])+\s+/ # FIXME: reverse
               Chef::Log.debug("Special device #{$~[1]} is mounted as #{mount_point}")
             end
           end
@@ -196,11 +198,15 @@ class Chef
         end
 
         def device_should_exist?
-          device !~ /:/ && device !~ /\/\// && fstype != "tmpfs" && fstype != 'fuse'
+          !%w{tmpfs nfs ctfs proc mntfs objfs sharefs fd smbfs}.include?(fstype)
         end
 
         def device_mount_regex
-          ::File.symlink?(device) ? "(?:#{Regexp.escape(device)})|(?:#{Regexp.escape(::File.readlink(device))})" : Regexp.escape(device)
+          if ::File.symlink?(device)
+            "(#{Regexp.escape(device)}|#{Regexp.escape(::File.expand_path(::File.readlink(device),::File.dirname(device)))})"
+          else
+            Regexp.escape(device)
+          end
         end
 
         def device_vfstab_regex
