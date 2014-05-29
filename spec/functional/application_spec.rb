@@ -24,11 +24,15 @@ describe Chef::Application do
   before do
     @original_argv = ARGV.dup
     ARGV.clear
+    @original_env = ENV.to_hash
+    ENV.clear
     @app = Chef::Application.new
   end
 
   after do
     ARGV.replace(@original_argv)
+    ENV.clear
+    ENV.update(@original_env)
   end
 
   describe "when proxy options are set in config" do
