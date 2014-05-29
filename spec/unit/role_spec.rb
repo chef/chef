@@ -250,6 +250,11 @@ description "like Aliens, but furry"
 EOR
 
   describe "when loading from disk" do
+    before do
+      default_cache_path = windows? ? 'C:\chef' : '/var/chef'
+      Chef::Config.stub(:cache_path).and_return(default_cache_path)
+    end
+
     it "should return a Chef::Role object from JSON" do
       File.should_receive(:exists?).with(File.join(Chef::Config[:role_path], 'lolcat.json')).exactly(1).times.and_return(true)
       IO.should_receive(:read).with(File.join(Chef::Config[:role_path], 'lolcat.json')).and_return('{"name": "ceiling_cat", "json_class": "Chef::Role" }')
@@ -325,4 +330,3 @@ EOR
 
   end
 end
-

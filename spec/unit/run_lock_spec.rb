@@ -20,10 +20,12 @@ require 'chef/client'
 
 describe Chef::RunLock do
 
+  default_cache_path = windows? ? 'C:\chef' : '/var/chef'
   default_pid_location = windows? ? 'C:\chef\cache\chef-client-running.pid' : '/var/chef/cache/chef-client-running.pid'
 
   describe "when first created" do
     it "locates the lockfile in the file cache path by default" do
+      Chef::Config.stub(:cache_path).and_return(default_cache_path)
       run_lock = Chef::RunLock.new(Chef::Config.lockfile)
       run_lock.runlock_file.should == default_pid_location
     end

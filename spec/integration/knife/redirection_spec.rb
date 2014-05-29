@@ -16,12 +16,15 @@
 # limitations under the License.
 
 require 'support/shared/integration/integration_helper'
+require 'support/shared/context/config'
 require 'chef/knife/list'
 
 describe 'redirection' do
   extend IntegrationSupport
   include KnifeSupport
   include AppServerSupport
+
+  include_context "default config options"
 
   when_the_chef_server 'has a role' do
     role 'x', {}
