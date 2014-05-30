@@ -116,12 +116,16 @@ class Chef
             raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{path}' is invalid"
           end
 
-          data = Dir.glob(File.join(path, name.to_s, "*.json")).inject({}) do |bag, f|
+          Dir.glob(File.join(path, name.to_s, "*.json")).inject({}) do |bag, f|
             item = Chef::JSONCompat.from_json(IO.read(f))
-            bag[item["id"]] = item
-            bag
+
+            # Check if we have multiple items with similar names (ids) and raise if their content differs
+            if data_bag.has_key?(item["id"]) && data_bag[item["id"]] != item
+              raise Chef::Exceptions::DuplicateDataBagItem, "Data bag '#{name}' has items with the same name '#{item["id"]}' but different content."
+            else
+              data_bag[item["id"]] = item
+            end
           end
-          data_bag = data.merge(data_bag)
         end
         return data_bag
       else
