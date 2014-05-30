@@ -180,21 +180,20 @@ class Chef
         end
 
         def mounted?
-            puts "^#{device_mount_regex}\s+on\s+#{Regexp.escape(mount_point)}"
+          mounted = false
           shell_out!("mount -v").stdout.each_line do |line|
             # <device> on <mountpoint> type <fstype> <options> on <date>
             # /dev/dsk/c1t0d0s0 on / type ufs read/write/setuid/devices/intr/largefiles/logging/xattr/onerror=panic/dev=700040 on Tue May  1 11:33:55 2012
-            puts line
             case line
-            when /^#{device_mount_regex}\s+on\s+#{Regexp.escape(mount_point)}/
-              puts "found"
+            when /^#{device_mount_regex}\s+on\s+#{Regexp.escape(mount_point)}\s+/
               Chef::Log.debug("Special device #{device} is mounted as #{mount_point}")
-              return true
-            when /^#{Regexp.escape(mount_point)}\son\s([\/\w])+\s+/ # FIXME: reverse
-              Chef::Log.debug("Special device #{$~[1]} is mounted as #{mount_point}")
+              mounted = true
+            when /^([\/\w]+)\son\s#{Regexp.escape(mount_point)}\s+/
+              Chef::Log.debug("Special device #{$1} is mounted as #{mount_point}")
+              mounted = false
             end
           end
-          return false
+          mounted
         end
 
         def device_should_exist?
@@ -203,7 +202,7 @@ class Chef
 
         def device_mount_regex
           if ::File.symlink?(device)
-            "(#{Regexp.escape(device)}|#{Regexp.escape(::File.expand_path(::File.readlink(device),::File.dirname(device)))})"
+            "(?:#{Regexp.escape(device)}|#{Regexp.escape(::File.expand_path(::File.readlink(device),::File.dirname(device)))})"
           else
             Regexp.escape(device)
           end

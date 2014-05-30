@@ -221,12 +221,12 @@ describe Chef::Provider::Mount::Solaris do
 
       it "should not throw an exception when the device does not exist - CHEF-1565" do
         File.stub(:exist?).with(device).and_return(false)
-        expect { provider.load_current_resource }.to_not raise_error(Chef::Exceptions::Mount)
+        expect { provider.load_current_resource }.to_not raise_error
       end
 
       it "should not throw an exception when the mount point does not exist" do
         File.stub(:exist?).with(mountpoint).and_return false
-        expect { provider.load_current_resource }.to_not raise_error(Chef::Exceptions::Mount)
+        expect { provider.load_current_resource }.to_not raise_error
       end
     end
 
@@ -241,8 +241,8 @@ describe Chef::Provider::Mount::Solaris do
       }
 
       before do
-        File.should_receive(:symlink?).with(device).and_return(true)
-        File.should_receive(:readlink).with(device).and_return(target)
+        File.should_receive(:symlink?).with(device).at_least(:once).and_return(true)
+        File.should_receive(:readlink).with(device).at_least(:once).and_return(target)
 
         provider.load_current_resource()
       end
@@ -252,62 +252,158 @@ describe Chef::Provider::Mount::Solaris do
       end
     end
 
-    it "should set mounted true if the symlink target of the device is relative and is found in the mounts list - CHEF-4957" do
-      target = "xsdz1"
+    context "when the device is a relative symlink" do
+      let(:target) { "foo" }
 
-      # expand the target path to correct specs on Windows
-      absolute_target = File.expand_path("/dev/xsdz1")
+      let(:absolute_target) { File.expand_path(target, File.dirname(device)) }
 
-      File.stub(:symlink?).with("#{new_resource.device}").and_return(true)
-      File.stub(:readlink).with("#{new_resource.device}").and_return(target)
+      let(:mount_output) {
+        <<-EOF.gsub /^\s*/, ''
+        #{absolute_target} on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
+        EOF
+      }
 
-      provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => "#{absolute_target} on /tmp/foo type ext3 (rw)\n"))
-      provider.load_current_resource()
-      provider.current_resource.mounted.should be_true
+      before do
+        File.should_receive(:symlink?).with(device).at_least(:once).and_return(true)
+        File.should_receive(:readlink).with(device).at_least(:once).and_return(target)
+
+        provider.load_current_resource()
+      end
+
+      it "should set mounted true if the symlink target of the device is found in the mounts list" do
+        expect(provider.current_resource.mounted).to be_true
+      end
     end
 
-    it "should set mounted true if the mount point is found last in the mounts list" do
-      mount = "/dev/sdy1 on #{new_resource.mount_point} type ext3 (rw)\n"
-      mount << "#{new_resource.device} on #{new_resource.mount_point} type ext3 (rw)\n"
-
-      provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => mount))
-      provider.load_current_resource()
-      provider.current_resource.mounted.should be_true
+    context "when the matching mount point is last in the mounts list" do
+      let(:mount_output) {
+        <<-EOF.gsub /^\s*/, ''
+        /dev/dsk/c0t0d0s0 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200000 on Tue Jul 31 22:34:46 2012
+        /dev/dsk/c0t2d0s7 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
+        EOF
+      }
+      it "should set mounted true" do
+        provider.load_current_resource()
+        provider.current_resource.mounted.should be_true
+      end
     end
 
-    it "should set mounted false if the mount point is not last in the mounts list" do
-      mount = "#{new_resource.device} on #{new_resource.mount_point} type ext3 (rw)\n"
-      mount << "/dev/sdy1 on #{new_resource.mount_point} type ext3 (rw)\n"
-
-      provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => mount))
-      provider.load_current_resource()
-      provider.current_resource.mounted.should be_false
+    context "when the matching mount point is not last in the mounts list" do
+      let(:mount_output) {
+        <<-EOF.gsub /^\s*/, ''
+        /dev/dsk/c0t2d0s7 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
+        /dev/dsk/c0t0d0s0 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200000 on Tue Jul 31 22:34:46 2012
+        EOF
+      }
+      it "should set mounted false" do
+        provider.load_current_resource()
+        provider.current_resource.mounted.should be_false
+      end
     end
 
-    it "mounted should be false if the mount point is not found in the mounts list" do
-      provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => "/dev/sdy1 on /tmp/foo type ext3 (rw)\n"))
-      provider.load_current_resource()
-      provider.current_resource.mounted.should be_false
+    context "when the matching mount point is not in the mounts list (mountpoint wrong)" do
+      let(:mount_output) {
+        <<-EOF.gsub /^\s*/, ''
+        /dev/dsk/c0t2d0s7 on /mnt/foob type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
+        EOF
+      }
+      it "should set mounted false" do
+        provider.load_current_resource()
+        provider.current_resource.mounted.should be_false
+      end
     end
 
-    it "should set enabled to true if the mount point is last in fstab" do
-      fstab1 = "/dev/sdy1  /tmp/foo  ext3  defaults  1 2\n"
-      fstab2 = "#{new_resource.device} #{new_resource.mount_point}  ext3  defaults  1 2\n"
-
-      File.stub(:foreach).with("/etc/fstab").and_yield(fstab1).and_yield(fstab2)
-
-      provider.load_current_resource
-      provider.current_resource.enabled.should be_true
+    context "when the matching mount point is not in the mounts list (raw device wrong)" do
+      let(:mount_output) {
+        <<-EOF.gsub /^\s*/, ''
+        /dev/dsk/c0t2d0s72 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
+        EOF
+      }
+      it "should set mounted false" do
+        provider.load_current_resource()
+        provider.current_resource.mounted.should be_false
+      end
     end
 
-    it "should set enabled to true if the mount point is not last in fstab and mount_point is a substring of another mount" do
-      fstab1 = "#{new_resource.device} #{new_resource.mount_point}  ext3  defaults  1 2\n"
-      fstab2 = "/dev/sdy1  /tmp/foo/bar  ext3  defaults  1 2\n"
+    context "when the mount point is last in fstab" do
+      let(:vfstab_file_contents) {
+        <<-EOF.gsub /^\s*/, ''
+        /dev/dsk/c0t2d0s72       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
+        /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
+        EOF
+      }
 
-      File.stub(:foreach).with("/etc/fstab").and_yield(fstab1).and_yield(fstab2)
+      it "should set enabled to true" do
+        provider.load_current_resource
+        provider.current_resource.enabled.should be_true
+      end
+    end
 
-      provider.load_current_resource
-      provider.current_resource.enabled.should be_true
+    context "when the mount point is not last in fstab and is a substring of another mount" do
+      let(:vfstab_file_contents) {
+        <<-EOF.gsub /^\s*/, ''
+        /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
+        /dev/dsk/c0t2d0s72       /dev/rdsk/c0t2d0s7      /mnt/foo/bar            ufs     2       yes     -
+        EOF
+      }
+
+      it "should set enabled to true" do
+        provider.load_current_resource
+        provider.current_resource.enabled.should be_true
+      end
+    end
+
+    context "when the mount point is not last in fstab" do
+      let(:vfstab_file_contents) {
+        <<-EOF.gsub /^\s*/, ''
+        /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
+        /dev/dsk/c0t2d0s72       /dev/rdsk/c0t2d0s72      /mnt/foo            ufs     2       yes     -
+        EOF
+      }
+
+      it "should set enabled to false" do
+        provider.load_current_resource
+        provider.current_resource.enabled.should be_false
+      end
+    end
+
+    context "when the mount point is not in fstab, but the mountpoint is a substring of one that is" do
+      let(:vfstab_file_contents) {
+        <<-EOF.gsub /^\s*/, ''
+        /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foob            ufs     2       yes     -
+        EOF
+      }
+
+      it "should set enabled to false" do
+        provider.load_current_resource
+        provider.current_resource.enabled.should be_false
+      end
+    end
+
+    context "when the mount point is not in fstab, but the device is a substring of one that is" do
+      let(:vfstab_file_contents) {
+        <<-EOF.gsub /^\s*/, ''
+        /dev/dsk/c0t2d0s72       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
+        EOF
+      }
+
+      it "should set enabled to false" do
+        provider.load_current_resource
+        provider.current_resource.enabled.should be_false
+      end
+    end
+
+    context "when the mountpoint line is commented out" do
+      let(:vfstab_file_contents) {
+        <<-EOF.gsub /^\s*/, ''
+        #/dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
+        EOF
+      }
+
+      it "should set enabled to false" do
+        provider.load_current_resource
+        provider.current_resource.enabled.should be_false
+      end
     end
 
     it "should set enabled to true if the symlink target is in fstab" do
@@ -336,31 +432,6 @@ describe Chef::Provider::Mount::Solaris do
 
       provider.load_current_resource
       provider.current_resource.enabled.should be_true
-    end
-
-    it "should set enabled to false if the mount point is not in fstab" do
-      fstab = "/dev/sdy1  #{new_resource.mount_point}  ext3  defaults  1 2\n"
-      File.stub(:foreach).with("/etc/fstab").and_yield fstab
-
-      provider.load_current_resource
-      provider.current_resource.enabled.should be_false
-    end
-
-    it "should ignore commented lines in fstab " do
-       fstab = "\# #{new_resource.device}  #{new_resource.mount_point}  ext3  defaults  1 2\n"
-       File.stub(:foreach).with("/etc/fstab").and_yield fstab
-
-       provider.load_current_resource
-       provider.current_resource.enabled.should be_false
-     end
-
-    it "should set enabled to false if the mount point is not last in fstab" do
-      line_1 = "#{new_resource.device} #{new_resource.mount_point}  ext3  defaults  1 2\n"
-      line_2 = "/dev/sdy1 #{new_resource.mount_point}  ext3  defaults  1 2\n"
-      File.stub(:foreach).with("/etc/fstab").and_yield(line_1).and_yield(line_2)
-
-      provider.load_current_resource
-      provider.current_resource.enabled.should be_false
     end
 
     it "should not mangle the mount options if the device in fstab is a symlink" do
