@@ -14,11 +14,10 @@ GIT
 
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: c65ec5e56714f19ac0f8a1b34fd5826b12bf7b33
-  branch: master
+  revision: 7a2bce3db3312216ffe6f380df25760de95a048d
+  branch: workaround-git-in-git-cache-issue
   specs:
     omnibus-software (0.0.1)
-
 
 GEM
   remote: https://rubygems.org/
