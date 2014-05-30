@@ -15,7 +15,7 @@ GIT
 GIT
   remote: git://github.com/opscode/omnibus-software.git
   revision: 7a2bce3db3312216ffe6f380df25760de95a048d
-  branch: workaround-git-in-git-cache-issue
+  branch: master
   specs:
     omnibus-software (0.0.1)
 
