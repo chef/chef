@@ -2,7 +2,7 @@
 # Author:: Hugo Fichter
 # Author:: Lamont Granquist (<lamont@getchef.com>)
 # Author:: Joshua Timberman (<joshua@getchef.com>)
-# Copyright:: Copyright (c) 2009-2014 Opscode, Inc
+# Copyright:: Copyright (c) 2009-2014 Chef Software, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,12 +44,7 @@ class Chef
           current_resource.mount_point(mount_point)
           current_resource.device(device)
           current_resource.device_type(device_type)
-          current_resource.mounted(mounted?)
-          ( enabled, fstype, options, pass ) = read_vfstab_status
-          current_resource.enabled(enabled)
-          current_resource.fstype(fstype)
-          current_resource.options(options)
-          current_resource.pass(pass)
+          update_current_resource_state
         end
 
         def define_resource_requirements
@@ -70,14 +65,11 @@ class Chef
           end
         end
 
-        protected
-
         def mount_fs
-          actual_options = unless options.nil?
-                             options(options.delete("noauto"))
-                           end
+          actual_options = options || []
+          actual_options.delete("noauto")
           command = "mount -F #{fstype}"
-          command << " -o #{actual_options.join(',')}" unless actual_options.nil?  || actual_options.empty?
+          command << " -o #{actual_options.join(',')}" unless actual_options.empty?
           command << " #{device} #{mount_point}"
           shell_out!(command)
         end
@@ -87,12 +79,13 @@ class Chef
         end
 
         def remount_fs
+          # FIXME: what about options like "-o remount,logging" to enable logging on a UFS device?
           shell_out!("mount -o remount #{mount_point}")
         end
 
         def enable_fs
           if !mount_options_unchanged?
-            # Options changed: disable first, then re-enable.
+            # we are enabling because our options have changed, so disable first then re-enable.
             disable_fs if current_resource.enabled
           end
 
@@ -141,6 +134,36 @@ class Chef
             current_resource.pass == pass
         end
 
+        def update_current_resource_state
+          current_resource.mounted(mounted?)
+          ( enabled, fstype, options, pass ) = read_vfstab_status
+          current_resource.enabled(enabled)
+          current_resource.fstype(fstype)
+          current_resource.options(options)
+          current_resource.pass(pass)
+        end
+
+        def enabled?
+          read_vfstab_status[0]
+        end
+
+        def mounted?
+          mounted = false
+          shell_out!("mount -v").stdout.each_line do |line|
+            # <device> on <mountpoint> type <fstype> <options> on <date>
+            # /dev/dsk/c1t0d0s0 on / type ufs read/write/setuid/devices/intr/largefiles/logging/xattr/onerror=panic/dev=700040 on Tue May  1 11:33:55 2012
+            case line
+            when /^#{device_mount_regex}\s+on\s+#{Regexp.escape(mount_point)}\s+/
+              Chef::Log.debug("Special device #{device} is mounted as #{mount_point}")
+              mounted = true
+            when /^([\/\w]+)\son\s#{Regexp.escape(mount_point)}\s+/
+              Chef::Log.debug("Special device #{$1} is mounted as #{mount_point}")
+              mounted = false
+            end
+          end
+          mounted
+        end
+
         private
 
         def read_vfstab_status
@@ -177,23 +200,6 @@ class Chef
             end
           end
           [ enabled, fstype, options, pass ]
-        end
-
-        def mounted?
-          mounted = false
-          shell_out!("mount -v").stdout.each_line do |line|
-            # <device> on <mountpoint> type <fstype> <options> on <date>
-            # /dev/dsk/c1t0d0s0 on / type ufs read/write/setuid/devices/intr/largefiles/logging/xattr/onerror=panic/dev=700040 on Tue May  1 11:33:55 2012
-            case line
-            when /^#{device_mount_regex}\s+on\s+#{Regexp.escape(mount_point)}\s+/
-              Chef::Log.debug("Special device #{device} is mounted as #{mount_point}")
-              mounted = true
-            when /^([\/\w]+)\son\s#{Regexp.escape(mount_point)}\s+/
-              Chef::Log.debug("Special device #{$1} is mounted as #{mount_point}")
-              mounted = false
-            end
-          end
-          mounted
         end
 
         def device_should_exist?

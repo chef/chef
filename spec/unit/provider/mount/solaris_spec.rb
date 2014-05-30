@@ -1,6 +1,6 @@
 #
-# Author:: Joshua Timberman (<joshua@opscode.com>)
-# Copyright:: Copyright (c) 2008 OpsCode, Inc.
+# Author:: Lamont Granquist (<lamont@getchef.com>)
+# Copyright:: Copyright (c) 2008-2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -75,9 +75,6 @@ describe Chef::Provider::Mount::Solaris do
     t
   }
 
-  # TODO: test CIFS/SMB mount:
-  # //solarsystem/tmp on /mnt type smbfs read/write/setuid/devices/dev=5080000 on Tue Mar 29 11:40:18 2011
-
   let(:mount_output) {
     <<-EOF.gsub /^\s*/, ''
     /dev/dsk/c0t0d0s0 on / type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200000 on Tue Jul 31 22:34:46 2012
@@ -96,7 +93,7 @@ describe Chef::Provider::Mount::Solaris do
 
   describe "#define_resource_requirements" do
     before do
-      # we're not testing the actions so stub them all out
+      # we're not testing the actual actions so stub them all out
       [:mount_fs, :umount_fs, :remount_fs, :enable_fs, :disable_fs].each {|m| provider.stub(m) }
     end
 
@@ -136,20 +133,22 @@ describe Chef::Provider::Mount::Solaris do
       expect { provider.run_action(:remount) }.to raise_error(Chef::Exceptions::Mount)
     end
 
-    context "when the device is a tmpfs" do
-      let(:fstype) { "tmpfs" }
-      let(:device) { "swap" }
+    %w{tmpfs nfs ctfs proc mntfs objfs sharefs fd smbfs}.each do |ft|
+      context "when the device has a fstype of #{ft}" do
+        let(:fstype) { ft }
+        let(:device) { "something_that_is_not_a_file" }
 
-      before do
-        expect(File).to_not receive(:exist?).with(device)
-      end
+        before do
+          expect(File).to_not receive(:exist?).with(device)
+        end
 
-      it "run_action(:mount) should not raise an error" do
-        expect { provider.run_action(:mount) }.to_not raise_error
-      end
+        it "run_action(:mount) should not raise an error" do
+          expect { provider.run_action(:mount) }.to_not raise_error
+        end
 
-      it "run_action(:remount) should not raise an error" do
-        expect { provider.run_action(:remount) }.to_not raise_error
+        it "run_action(:remount) should not raise an error" do
+          expect { provider.run_action(:remount) }.to_not raise_error
+        end
       end
     end
 
@@ -202,23 +201,6 @@ describe Chef::Provider::Mount::Solaris do
         expect(provider.current_resource.pass).to eql(2)
       end
 
-      #    describe "when dealing with network mounts" do
-      #      { "nfs" => "nfsserver:/vol/path",
-      #        "cifs" => "//cifsserver/share" }.each do |type, fs_spec|
-      #        it "should detect network fs_spec (#{type})" do
-      #          new_resource.device fs_spec
-      #          provider.network_device?.should be_true
-      #        end
-      #
-      #        it "should ignore trailing slash and set mounted to true for network mount (#{type})" do
-      #          new_resource.device fs_spec
-      #          provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => "#{fs_spec}/ on /tmp/foo type #{type} (rw)\n"))
-      #          provider.load_current_resource
-      #          provider.current_resource.mounted.should be_true
-      #        end
-      #      end
-      #    end
-
       it "should not throw an exception when the device does not exist - CHEF-1565" do
         File.stub(:exist?).with(device).and_return(false)
         expect { provider.load_current_resource }.to_not raise_error
@@ -228,6 +210,85 @@ describe Chef::Provider::Mount::Solaris do
         File.stub(:exist?).with(mountpoint).and_return false
         expect { provider.load_current_resource }.to_not raise_error
       end
+    end
+
+    context "when the device is an smbfs mount" do
+      let(:mount_output) {
+        <<-EOF.gsub /^\s*/, ''
+        //solarsystem/tmp on /mnt type smbfs read/write/setuid/devices/dev=5080000 on Tue Mar 29 11:40:18 2011
+        EOF
+      }
+      let(:vfstab_file_contents) {
+        <<-EOF.gsub /^\s*/, ''
+        //WORKGROUP;username:password@host/share    -   /mountpoint smbfs   -   no  fileperms=0777,dirperms=0777
+        EOF
+      }
+
+      it "should work at some point in the future" do
+        pending "SMBFS mounts on solaris look like they will need some future code work and more investigation"
+      end
+    end
+
+    context "when the device is an NFS mount" do
+      let(:mount_output) {
+        <<-EOF.gsub /^\s*/, ''
+        cartman:/share2 on /cartman type nfs rsize=32768,wsize=32768,NFSv4,dev=4000004 on Tue Mar 29 11:40:18 2011
+        EOF
+      }
+
+      let(:vfstab_file_contents) {
+        <<-EOF.gsub /^\s*/, ''
+        cartman:/share2         -                       /cartman        nfs     -       yes     rw,soft
+        EOF
+      }
+
+      let(:fstype) { "nfs" }
+
+      let(:device) { "cartman:/share2" }
+
+      let(:mountpoint) { "/cartman" }
+
+      before do
+        provider.load_current_resource
+      end
+
+      it "should set the name on the current_resource" do
+        provider.current_resource.name.should == mountpoint
+      end
+
+      it "should set the mount_point on the current_resource" do
+        provider.current_resource.mount_point.should == mountpoint
+      end
+
+      it "should set the device on the current_resource" do
+        provider.current_resource.device.should == device
+      end
+
+      it "should set the device_type on the current_resource" do
+        provider.current_resource.device_type.should == device_type
+      end
+
+      it "should set the mounted status on the current_resource" do
+        expect(provider.current_resource.mounted).to be_true
+      end
+
+      it "should set the enabled status on the current_resource" do
+        expect(provider.current_resource.enabled).to be_true
+      end
+
+      it "should set the fstype field on the current_resource" do
+        expect(provider.current_resource.fstype).to eql("nfs")
+      end
+
+      it "should set the options field on the current_resource" do
+        expect(provider.current_resource.options).to eql(["rw", "soft", "noauto"])
+      end
+
+      it "should set the pass field on the current_resource" do
+        # is this correct or should it be nil?
+        expect(provider.current_resource.pass).to eql(0)
+      end
+
     end
 
     context "when the device is symlink" do
@@ -240,6 +301,12 @@ describe Chef::Provider::Mount::Solaris do
         EOF
       }
 
+      let(:vfstab_file_contents) {
+        <<-EOF.gsub /^\s*/, ''
+        #{target}       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
+        EOF
+      }
+
       before do
         File.should_receive(:symlink?).with(device).at_least(:once).and_return(true)
         File.should_receive(:readlink).with(device).at_least(:once).and_return(target)
@@ -249,6 +316,14 @@ describe Chef::Provider::Mount::Solaris do
 
       it "should set mounted true if the symlink target of the device is found in the mounts list" do
         expect(provider.current_resource.mounted).to be_true
+      end
+
+      it "should set enabled true if the symlink target of the device is found in the vfstab" do
+        expect(provider.current_resource.enabled).to be_true
+      end
+
+      it "should have the correct mount options" do
+        expect(provider.current_resource.options).to eql(["-", "noauto"])
       end
     end
 
@@ -263,6 +338,12 @@ describe Chef::Provider::Mount::Solaris do
         EOF
       }
 
+      let(:vfstab_file_contents) {
+        <<-EOF.gsub /^\s*/, ''
+        #{absolute_target}       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
+        EOF
+      }
+
       before do
         File.should_receive(:symlink?).with(device).at_least(:once).and_return(true)
         File.should_receive(:readlink).with(device).at_least(:once).and_return(target)
@@ -272,6 +353,14 @@ describe Chef::Provider::Mount::Solaris do
 
       it "should set mounted true if the symlink target of the device is found in the mounts list" do
         expect(provider.current_resource.mounted).to be_true
+      end
+
+      it "should set enabled true if the symlink target of the device is found in the vfstab" do
+        expect(provider.current_resource.enabled).to be_true
+      end
+
+      it "should have the correct mount options" do
+        expect(provider.current_resource.options).to eql(["-", "noauto"])
       end
     end
 
@@ -405,142 +494,41 @@ describe Chef::Provider::Mount::Solaris do
         provider.current_resource.enabled.should be_false
       end
     end
-
-    it "should set enabled to true if the symlink target is in fstab" do
-      target = "/dev/mapper/target"
-
-      File.stub(:symlink?).with("#{new_resource.device}").and_return(true)
-      File.stub(:readlink).with("#{new_resource.device}").and_return(target)
-
-      fstab = "/dev/sdz1  /tmp/foo ext3  defaults  1 2\n"
-
-      File.stub(:foreach).with("/etc/fstab").and_yield fstab
-
-      provider.load_current_resource
-      provider.current_resource.enabled.should be_true
-    end
-
-    it "should set enabled to true if the symlink target is relative and is in fstab - CHEF-4957" do
-      target = "xsdz1"
-
-      File.stub(:symlink?).with("#{new_resource.device}").and_return(true)
-      File.stub(:readlink).with("#{new_resource.device}").and_return(target)
-
-      fstab = "/dev/sdz1  /tmp/foo ext3  defaults  1 2\n"
-
-      File.stub(:foreach).with("/etc/fstab").and_yield fstab
-
-      provider.load_current_resource
-      provider.current_resource.enabled.should be_true
-    end
-
-    it "should not mangle the mount options if the device in fstab is a symlink" do
-      # expand the target path to correct specs on Windows
-      target = "/dev/mapper/target"
-      options = "rw,noexec,noauto"
-
-      File.stub(:symlink?).with(new_resource.device).and_return(true)
-      File.stub(:readlink).with(new_resource.device).and_return(target)
-
-      fstab = "#{new_resource.device} #{new_resource.mount_point} #{new_resource.fstype} #{options} 1 2\n"
-      File.stub(:foreach).with("/etc/fstab").and_yield fstab
-      provider.load_current_resource
-      provider.current_resource.options.should eq(options.split(','))
-    end
-
-    it "should not mangle the mount options if the symlink target is in fstab" do
-      target = File.expand_path("/dev/mapper/target")
-      options = "rw,noexec,noauto"
-
-      File.stub(:symlink?).with(new_resource.device).and_return(true)
-      File.stub(:readlink).with(new_resource.device).and_return(target)
-
-      fstab = "#{target} #{new_resource.mount_point} #{new_resource.fstype} #{options} 1 2\n"
-      File.stub(:foreach).with("/etc/fstab").and_yield fstab
-      provider.load_current_resource
-      provider.current_resource.options.should eq(options.split(','))
-    end
   end
 
   context "after the mount's state has been discovered" do
-    before do
-      @current_resource = Chef::Resource::Mount.new("/tmp/foo")
-      @current_resource.device       "/dev/sdz1"
-      @current_resource.device_type  :device
-      @current_resource.fstype       "ext3"
-
-      provider.current_resource = @current_resource
-    end
-
     describe "mount_fs" do
-      it "should mount the filesystem if it is not mounted" do
-        provider.should_receive(:shell_out!).with("mount -t ext3 -o defaults /dev/sdz1 /tmp/foo")
+      it "should mount the filesystem" do
+        provider.should_receive(:shell_out!).with("mount -F #{fstype} -o defaults #{device} #{mountpoint}")
         provider.mount_fs()
       end
 
       it "should mount the filesystem with options if options were passed" do
-        options = "rw,noexec,noauto"
-        new_resource.options(%w{rw noexec noauto})
-        provider.should_receive(:shell_out!).with("mount -t ext3 -o rw,noexec,noauto /dev/sdz1 /tmp/foo")
+        options = "logging,noatime,largefiles,nosuid,rw,quota"
+        new_resource.options(options.split(/,/))
+        provider.should_receive(:shell_out!).with("mount -F #{fstype} -o #{options} #{device} #{mountpoint}")
         provider.mount_fs()
       end
 
-      it "should mount the filesystem specified by uuid" do
-        new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
-        new_resource.device_type :uuid
-        @stdout_findfs = double("STDOUT", :first => "/dev/sdz1")
-        provider.stub(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,@stdout_findfs,@stderr).and_return(@status)
-        @stdout_mock = double('stdout mock')
-        @stdout_mock.stub(:each).and_yield("#{new_resource.device} on #{new_resource.mount_point}")
-        provider.should_receive(:shell_out!).with("mount -t #{new_resource.fstype} -o defaults -U #{new_resource.device} #{new_resource.mount_point}").and_return(@stdout_mock)
+      it "should delete the 'noauto' magic option" do
+        options = "rw,noauto"
+        new_resource.options(%w{rw noauto})
+        provider.should_receive(:shell_out!).with("mount -F #{fstype} -o rw #{device} #{mountpoint}")
         provider.mount_fs()
       end
-
-      it "should not mount the filesystem if it is mounted" do
-        @current_resource.stub(:mounted).and_return(true)
-        provider.should_not_receive(:shell_out!)
-        provider.mount_fs()
-      end
-
     end
 
     describe "umount_fs" do
       it "should umount the filesystem if it is mounted" do
-        @current_resource.mounted(true)
-        provider.should_receive(:shell_out!).with("umount /tmp/foo")
-        provider.umount_fs()
-      end
-
-      it "should not umount the filesystem if it is not mounted" do
-        @current_resource.mounted(false)
-        provider.should_not_receive(:shell_out!)
+        provider.should_receive(:shell_out!).with("umount #{mountpoint}")
         provider.umount_fs()
       end
     end
 
     describe "remount_fs" do
-      it "should use mount -o remount if remount is supported" do
-        new_resource.supports({:remount => true})
-        @current_resource.mounted(true)
+      it "should use mount -o remount" do
         provider.should_receive(:shell_out!).with("mount -o remount #{new_resource.mount_point}")
         provider.remount_fs
-      end
-
-      it "should umount and mount if remount is not supported" do
-        new_resource.supports({:remount => false})
-        @current_resource.mounted(true)
-        provider.should_receive(:umount_fs)
-        provider.should_receive(:sleep).with(1)
-        provider.should_receive(:mount_fs)
-        provider.remount_fs()
-      end
-
-      it "should not try to remount at all if mounted is false" do
-        @current_resource.mounted(false)
-        provider.should_not_receive(:shell_out!)
-        provider.should_not_receive(:umount_fs)
-        provider.should_not_receive(:mount_fs)
-        provider.remount_fs()
       end
     end
 
