@@ -17,7 +17,6 @@
 #
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require 'ruby-wmi'
   require 'Win32API'
 end
 
@@ -51,9 +50,17 @@ class Chef
           return obj ? obj.variablevalue : nil
         end
 
+        def find_env(environment_variables, key_name)
+          environment_variables.find do | environment_variable |
+            environment_variable['name'].downcase == key_name
+          end
+        end
+
         def env_obj(key_name)
-          WMI::Win32_Environment.find(:first,
-                                      :conditions => { :name => key_name })
+          wmi = WmiLite::Wmi.new
+          environment_variables = wmi.instances_of('Win32_Environment')
+          existing_variable = find_env(environment_variables, key_name)
+          existing_variable.nil? ? nil : existing_variable.wmi_ole_object
         end
 
         #see: http://msdn.microsoft.com/en-us/library/ms682653%28VS.85%29.aspx
