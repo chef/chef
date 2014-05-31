@@ -99,7 +99,8 @@ class Chef
           passstr = pass == 0 ? "-" : pass
           optstr = (actual_options.nil? || actual_options.empty?) ? "-" : actual_options.join(',')
 
-          Tempfile.open("vfstab", "etc") do |f|
+          # FIXME: permissions
+          etc_tempfile do |f|
             f.write(IO.read(VFSTAB))
             f.puts("#{device}\t-\t#{mount_point}\t#{fstype}\t#{passstr}\t#{autostr}\t#{optstr}")
             f.close
@@ -112,7 +113,7 @@ class Chef
 
           found = false
           ::File.readlines(VFSTAB).reverse_each do |line|
-            if !found && line =~ /^#{device_vfstab_regex}\s+[-\/\w]+\s+#{Regexp.escape(mount_point)}/
+            if !found && line =~ /^#{device_vfstab_regex}\s+\S+\s+#{Regexp.escape(mount_point)}/
               found = true
               Chef::Log.debug("#{new_resource} is removed from vfstab")
               next
@@ -120,11 +121,22 @@ class Chef
             contents << line
           end
 
-          Tempfile.open("vfstab", "etc") do |f|
-            f.write(contents.reverse)
-            f.close
-            FileUtils.mv f.path, VFSTAB
+          if found
+            # FIXME: permissions
+            etc_tempfile do |f|
+              f.write(contents.reverse.join(''))
+              f.close
+              FileUtils.mv f.path, VFSTAB
+            end
+          else
+            # this is likely some kind of internal error, since we should only call disable_fs when there
+            # the filesystem we want to disable is enabled.
+            Chef::Log.warn("#{new_resource} did not find the mountpoint to disable in the vfstab")
           end
+        end
+
+        def etc_tempfile
+          yield Tempfile.open("vfstab", "/etc")
         end
 
         def mount_options_unchanged?
