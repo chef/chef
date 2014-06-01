@@ -183,7 +183,7 @@ describe Chef::DataBag do
           file_dir_stub(path)
           item_with_different_content = "{\"id\": \"bar\", \"name\": \"Bob Bar\", \"path\": \"#{path}\"}"
           IO.should_receive(:read).with(File.join(path, 'foo/bar.json')).and_return(item_with_different_content)
-          if @paths.size == 1
+          if data_bag_path.is_a?(String)
             dir_glob_stub(path, [File.join(path, 'foo/bar.json'), File.join(path, 'foo/baz.json')])
             item_2_with_different_content = '{"id": "bar", "name": "John Baz"}'
             IO.should_receive(:read).with(File.join(path, 'foo/baz.json')).and_return(item_2_with_different_content)
