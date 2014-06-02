@@ -42,7 +42,6 @@ class Chef
         @action = :mount
         @supports = { :remount => false }
         @allowed_actions.push(:mount, :umount, :remount, :enable, :disable)
-        @allowed_actions.push(:mount, :umount, :remount, :enable, :disable)
         @username = nil
         @password = nil
         @domain = nil
