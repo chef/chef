@@ -42,6 +42,7 @@ class Chef
         @action = :mount
         @supports = { :remount => false }
         @allowed_actions.push(:mount, :umount, :remount, :enable, :disable)
+        @allowed_actions.push(:mount, :umount, :remount, :enable, :disable)
         @username = nil
         @password = nil
         @domain = nil
@@ -65,10 +66,15 @@ class Chef
 
       def device_type(arg=nil)
         real_arg = arg.kind_of?(String) ? arg.to_sym : arg
+        valid_devices = if RUBY_PLATFORM =~ /solaris/i
+                          [ :device ]
+                        else
+                          [ :device, :label, :uuid ]
+                        end
         set_or_return(
           :device_type,
           real_arg,
-          :equal_to => [ :device, :label, :uuid ]
+          :equal_to => valid_devices,
         )
       end
 
@@ -76,7 +82,7 @@ class Chef
         set_or_return(
           :fstype,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String ],
         )
       end
 

@@ -48,10 +48,6 @@ class Chef
         end
 
         def define_resource_requirements
-          if device_type != :device
-            raise Chef::Exceptions::Mount, "Mount resource can only be of device_type ':device' on Solaris"
-          end
-
           requirements.assert(:mount, :remount) do |a|
             a.assertion { !device_should_exist? || ::File.exist?(device) }
             a.failure_message(Chef::Exceptions::Mount, "Device #{device} does not exist")
