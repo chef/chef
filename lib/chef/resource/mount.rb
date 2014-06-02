@@ -73,7 +73,7 @@ class Chef
         set_or_return(
           :device_type,
           real_arg,
-          :equal_to => valid_devices,
+          :equal_to => valid_devices
         )
       end
 
