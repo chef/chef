@@ -81,7 +81,7 @@ class Chef
         set_or_return(
           :fstype,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 
