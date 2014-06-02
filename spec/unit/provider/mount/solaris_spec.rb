@@ -101,22 +101,6 @@ describe Chef::Provider::Mount::Solaris do
       [:mount_fs, :umount_fs, :remount_fs, :enable_fs, :disable_fs].each {|m| provider.stub(m) }
     end
 
-    context "when the device_type is :label" do
-      let(:device_type) { :label }
-
-      it "should raise an error" do
-        expect { provider.define_resource_requirements }.to raise_error(Chef::Exceptions::Mount)
-      end
-    end
-
-    context "when the device_type is :uuid" do
-      let(:device_type) { :uuid }
-
-      it "should raise an error" do
-        expect { provider.define_resource_requirements }.to raise_error(Chef::Exceptions::Mount)
-      end
-    end
-
     it "run_action(:mount) should raise an error if the device does not exist" do
       File.stub(:exist?).with(device).and_return(false)
       expect { provider.run_action(:mount) }.to raise_error(Chef::Exceptions::Mount)
