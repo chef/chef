@@ -89,6 +89,7 @@ describe Chef::Provider::Mount::Solaris do
     stub_const("Chef::Provider::Mount::Solaris::VFSTAB", vfstab_file.path )
     provider.stub(:shell_out!).with("mount -v").and_return(OpenStruct.new(:stdout => mount_output))
     File.stub(:symlink?).with(device).and_return(false)
+    File.stub(:exist?).and_call_original # Tempfile.open on ruby 1.8.7 calls File.exist?
     File.stub(:exist?).with(device).and_return(true)
     File.stub(:exist?).with(mountpoint).and_return(true)
     expect(File).to_not receive(:exists?)
