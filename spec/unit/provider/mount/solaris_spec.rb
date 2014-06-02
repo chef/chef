@@ -34,11 +34,14 @@ describe Chef::Provider::Mount::Solaris do
 
   let(:mountpoint) { "/mnt/foo" }
 
+  let(:options) { nil }
+
   let(:new_resource) {
     new_resource = Chef::Resource::Mount.new(mountpoint)
     new_resource.device      device
     new_resource.device_type device_type
     new_resource.fstype      fstype
+    new_resource.options     options
 
     new_resource.supports :remount => false
     new_resource
@@ -532,41 +535,53 @@ describe Chef::Provider::Mount::Solaris do
       end
     end
 
-#    describe "when enabling the fs" do
-#      it "should enable if enabled isn't true" do
-#        @current_resource.enabled(false)
-#
-#        @fstab = StringIO.new
-#        File.stub(:open).with("/etc/fstab", "a").and_yield(@fstab)
-#        provider.enable_fs
-#        @fstab.string.should match(%r{^/dev/sdz1\s+/tmp/foo\s+ext3\s+defaults\s+0\s+2\s*$})
-#      end
-#
-#      it "should not enable if enabled is true and resources match" do
-#        @current_resource.enabled(true)
-#        @current_resource.fstype("ext3")
-#        @current_resource.options(["defaults"])
-#        @current_resource.dump(0)
-#        @current_resource.pass(2)
-#        File.should_not_receive(:open).with("/etc/fstab", "a")
-#
-#        provider.enable_fs
-#      end
-#
-#      it "should enable if enabled is true and resources do not match" do
-#        @current_resource.enabled(true)
-#        @current_resource.fstype("auto")
-#        @current_resource.options(["defaults"])
-#        @current_resource.dump(0)
-#        @current_resource.pass(2)
-#        @fstab = StringIO.new
-#        File.stub(:readlines).and_return([])
-#        File.should_receive(:open).once.with("/etc/fstab", "w").and_yield(@fstab)
-#        File.should_receive(:open).once.with("/etc/fstab", "a").and_yield(@fstab)
-#
-#        provider.enable_fs
-#      end
-#    end
+    describe "when enabling the fs" do
+      context "in the typical case" do
+        let(:other_mount) { "/dev/dsk/c0t2d0s0       /dev/rdsk/c0t2d0s0      /            ufs     2       yes     -" }
+
+        let(:this_mount) { "/dev/dsk/c0t2d0s7\t-\t/mnt/foo\tufs\t2\tyes\tdefaults\n" }
+
+        let(:vfstab_file_contents) { [other_mount].join("\n") }
+
+        before do
+          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          provider.load_current_resource
+          provider.enable_fs
+        end
+
+        it "should leave the other mountpoint alone" do
+          IO.read(vfstab_file.path).should match(/^#{Regexp.escape(other_mount)}/)
+        end
+
+        it "should enable the mountpoint we care about" do
+          IO.read(vfstab_file.path).should match(/^#{Regexp.escape(this_mount)}/)
+        end
+      end
+
+      context "when the mount has options=noauto" do
+        let(:other_mount) { "/dev/dsk/c0t2d0s0       /dev/rdsk/c0t2d0s0      /            ufs     2       yes     -" }
+
+        let(:this_mount) { "/dev/dsk/c0t2d0s7\t-\t/mnt/foo\tufs\t2\tno\t-\n" }
+
+        let(:options) { [ "noauto" ] }
+
+        let(:vfstab_file_contents) { [other_mount].join("\n") }
+
+        before do
+          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          provider.load_current_resource
+          provider.enable_fs
+        end
+
+        it "should leave the other mountpoint alone" do
+          IO.read(vfstab_file.path).should match(/^#{Regexp.escape(other_mount)}/)
+        end
+
+        it "should enable the mountpoint we care about" do
+          IO.read(vfstab_file.path).should match(/^#{Regexp.escape(this_mount)}/)
+        end
+      end
+    end
 
     describe "when disabling the fs" do
       context "in the typical case" do

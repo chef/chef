@@ -86,6 +86,7 @@ class Chef
         def enable_fs
           if !mount_options_unchanged?
             # we are enabling because our options have changed, so disable first then re-enable.
+            # XXX: this should be refactored to be the responsibility of the caller
             disable_fs if current_resource.enabled
           end
 
@@ -99,13 +100,15 @@ class Chef
           passstr = pass == 0 ? "-" : pass
           optstr = (actual_options.nil? || actual_options.empty?) ? "-" : actual_options.join(',')
 
-          # FIXME: permissions
           etc_tempfile do |f|
-            f.write(IO.read(VFSTAB))
-            f.puts("#{device}\t-\t#{mount_point}\t#{fstype}\t#{passstr}\t#{autostr}\t#{optstr}")
+            f.write(IO.read(VFSTAB).chomp)
+            f.puts("\n#{device}\t-\t#{mount_point}\t#{fstype}\t#{passstr}\t#{autostr}\t#{optstr}")
             f.close
-            FileUtils.mv f.path, VFSTAB
+            # move, preserving modes of destination file
+            mover = Chef::FileContentManagement::Deploy.strategy(true)
+            mover.deploy(f.path, VFSTAB)
           end
+
         end
 
         def disable_fs
@@ -113,7 +116,7 @@ class Chef
 
           found = false
           ::File.readlines(VFSTAB).reverse_each do |line|
-            if !found && line =~ /^#{device_vfstab_regex}\s+\S+\s+#{Regexp.escape(mount_point)}/
+            if !found && line =~ /^#{device_regex}\s+\S+\s+#{Regexp.escape(mount_point)}/
               found = true
               Chef::Log.debug("#{new_resource} is removed from vfstab")
               next
@@ -122,11 +125,12 @@ class Chef
           end
 
           if found
-            # FIXME: permissions
             etc_tempfile do |f|
               f.write(contents.reverse.join(''))
               f.close
-              FileUtils.mv f.path, VFSTAB
+              # move, preserving modes of destination file
+              mover = Chef::FileContentManagement::Deploy.strategy(true)
+              mover.deploy(f.path, VFSTAB)
             end
           else
             # this is likely some kind of internal error, since we should only call disable_fs when there
@@ -165,7 +169,7 @@ class Chef
             # <device> on <mountpoint> type <fstype> <options> on <date>
             # /dev/dsk/c1t0d0s0 on / type ufs read/write/setuid/devices/intr/largefiles/logging/xattr/onerror=panic/dev=700040 on Tue May  1 11:33:55 2012
             case line
-            when /^#{device_mount_regex}\s+on\s+#{Regexp.escape(mount_point)}\s+/
+            when /^#{device_regex}\s+on\s+#{Regexp.escape(mount_point)}\s+/
               Chef::Log.debug("Special device #{device} is mounted as #{mount_point}")
               mounted = true
             when /^([\/\w]+)\son\s#{Regexp.escape(mount_point)}\s+/
@@ -189,7 +193,7 @@ class Chef
               # solaris /etc/vfstab format:
               # device         device          mount           FS      fsck    mount   mount
               # to mount       to fsck         point           type    pass    at boot options
-            when /^#{device_vfstab_regex}\s+[-\/\w]+\s+#{Regexp.escape(mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
+            when /^#{device_regex}\s+[-\/\w]+\s+#{Regexp.escape(mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
               enabled = true
               fstype = $1
               options = $4
@@ -218,16 +222,12 @@ class Chef
           !%w{tmpfs nfs ctfs proc mntfs objfs sharefs fd smbfs}.include?(fstype)
         end
 
-        def device_mount_regex
+        def device_regex
           if ::File.symlink?(device)
             "(?:#{Regexp.escape(device)}|#{Regexp.escape(::File.expand_path(::File.readlink(device),::File.dirname(device)))})"
           else
             Regexp.escape(device)
           end
-        end
-
-        def device_vfstab_regex
-          device_mount_regex
         end
 
       end
