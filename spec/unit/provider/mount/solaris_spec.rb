@@ -582,11 +582,11 @@ describe Chef::Provider::Mount::Solaris do
         end
 
         it "should leave the other mountpoint alone" do
-          IO.read(vfstab_file.path).should match(Regexp.escape(other_mount))
+          IO.read(vfstab_file.path).should match(/^#{Regexp.escape(other_mount)}/)
         end
 
         it "should disable the mountpoint we care about" do
-          IO.read(vfstab_file.path).should_not match(Regexp.escape(this_mount))
+          IO.read(vfstab_file.path).should_not match(/^#{Regexp.escape(this_mount)}/)
         end
       end
 
