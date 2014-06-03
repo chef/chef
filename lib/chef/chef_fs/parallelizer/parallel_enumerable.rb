@@ -195,13 +195,15 @@ class Chef
                 process_one
               end
             end
-          ensure
-            # If someone called "first" or something that exits the enumerator
-            # early, we want to make sure and throw away any extra results
-            # (gracefully) so that the next enumerator can start over.
+          rescue
+            # If we exited early, perhaps due to any? finding a result, we want
+            # to make sure and throw away any extra results (gracefully) so that
+            # the next enumerator can start over.
             if !finished?
               stop
             end
+            raise
+          ensure
             @each_running = false
           end
         end
