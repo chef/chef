@@ -46,6 +46,9 @@ class Chef
     # Determine the appropriate provider for the given resource, then
     # execute it.
     def run_action(resource, action, notification_type=nil, notifying_resource=nil)
+      # First add the resource to the executed resource collection
+      run_context.executed_resource_collection << resource
+
       resource.run_action(action, notification_type, notifying_resource)
 
       # Execute any immediate and queue up any delayed notifications

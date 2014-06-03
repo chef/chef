@@ -56,12 +56,19 @@ class Chef
           temp_run_context = @run_context.dup
           @run_context = temp_run_context
           @run_context.resource_collection = Chef::ResourceCollection.new
+          @run_context.executed_resource_collection = Chef::ResourceCollection.new
 
           return_value = instance_eval(&block)
           Chef::Runner.new(@run_context).converge
           return_value
         ensure
           @run_context = saved_run_context
+          # Make sure all resources converged here are saved back to the main run_context
+          temp_run_context.executed_resource_collection.each do |r|
+            @run_context.executed_resource_collection << r
+          end
+          # Check is any of the converged resources is updated and if so, set
+          # updated_by_last_action to true
           if temp_run_context.resource_collection.any? {|r| r.updated? }
             new_resource.updated_by_last_action(true)
           end

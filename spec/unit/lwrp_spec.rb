@@ -270,6 +270,11 @@ describe "LWRP" do
         @run_context.resource_collection.should be_empty
       end
 
+      it "adds interior resources to the exterior executed resource collection" do
+        @resource.run_action(:test)
+        @run_context.executed_resource_collection.should_not be_empty
+      end
+
       context "when interior resources are updated" do
         it "processes notifications within the LWRP provider's action" do
           @resource.run_action(:test)
