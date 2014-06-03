@@ -436,7 +436,7 @@ describe Chef::ResourceReporter do
         @backtrace = ["foo.rb:1 in `foo!'","bar.rb:2 in `bar!","'baz.rb:3 in `baz!'"]
         @node = Chef::Node.new
         @node.name("spitfire")
-        @exception = double("ArgumentError")
+        @exception = ArgumentError.new
         @exception.stub(:inspect).and_return("Net::HTTPServerException")
         @exception.stub(:message).and_return("Object not found")
         @exception.stub(:backtrace).and_return(@backtrace)
@@ -463,7 +463,7 @@ describe Chef::ResourceReporter do
 
       it "includes the error inspector output in the event data" do
         @report["data"]["exception"].should have_key("description")
-        @report["data"]["exception"]["description"].should include({"title"=>"Error expanding the run_list:", "sections"=>[{"Unexpected Error:" => "RSpec::Mocks::Mock: Object not found"}]})
+        @report["data"]["exception"]["description"].should include({"title"=>"Error expanding the run_list:", "sections"=>[{"Unexpected Error:" => "ArgumentError: Object not found"}]})
       end
 
     end
