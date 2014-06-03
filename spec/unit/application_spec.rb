@@ -121,8 +121,8 @@ describe Chef::Application do
         config_location_pathname
         Pathname.stub(:new).with(config_location).and_return(config_location_pathname)
         File.should_receive(:read).
-        with(config_location).
-        and_return(config_content)
+          with(config_location).
+          and_return(config_content)
       end
 
       it "should configure chef::config from a file" do
