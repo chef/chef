@@ -9,9 +9,9 @@ We utilize **Github Issues** for issue tracking and contributions. You can contr
 
 ## Contribution Process
 
-We have an easy 3 step process that utilizes **Github Issues**:
+We have a 3 step process that utilizes **Github Issues**:
 
-1. Spare two minutes to sign our
+1. Sign our
   [Contributor License Agreement (CLA)](https://secure.echosign.com/public/hostedForm?formid=PJIF5694K6L)
   or [Corporate CLA](https://secure.echosign.com/public/hostedForm?formid=PIE6C7AX856) online.
 2. Create a Github Pull Request.
@@ -43,8 +43,9 @@ Once you a pull request, the **Chef Engineering Team** or **Chef Core Committers
 
 1. 2 thumbs-ups are required from the **Chef Engineering Team** or **Chef Core Committers** for all merges.
 2. When ready, your pull request will be tagged with label `Ready For Merge`.
-3. **In at most 2 weeks** your patch will be merged into `master` including necessary documentation updates
-  and you will be included in `CHANGELOG.md`.
+3. Your patch will be merged into `master` including necessary documentation updates
+  and you will be included in `CHANGELOG.md`. Our goal is to have patches merged in 2 weeks
+  after they are marked to be merged.
 
 If you would like to learn about when your code will be available in a release of Chef, read more about
   [Chef Release Process](#release).
@@ -75,7 +76,36 @@ You can complete our CLA
 
 ### Chef Obvious Fix Policy
 
-**TODO: Include some information here.**
+Small contributions such as fixing spelling errors, where the content is small enough
+  to not be considered intellectual property, can be submitted by a contributor as a patch,
+  without a CLA.
+
+As a rule of thumb, changes are obvious fixes if they do not introduce any new functionality
+  or creative thinking. As long as the change does not affect functionality, some likely
+  examples include the following:
+
+* Spelling / grammar fixes
+* Typo correction, white space and formatting changes
+* Comment clean up
+* Bug fixes that change default return values or error codes stored in constants
+* Adding logging messages or debugging output
+* Changes to ‘metadata’ files like Gemfile, .gitignore, build scripts, etc.
+* Moving source files from one directory or package to another
+
+**Whenever you invoke the “obvious fix” rule, please say so in your commit message:**
+
+```
+------------------------------------------------------------------------
+commit 370adb3f82d55d912b0cf9c1d1e99b132a8ed3b5
+Author: danielsdeleo <dan@opscode.com>
+Date:   Wed Sep 18 11:44:40 2013 -0700
+
+  Fix typo in config file docs.
+
+  Obvious fix.
+
+------------------------------------------------------------------------
+```
 
 ## <a name="issues"></a> Chef Issue Tracking
 
