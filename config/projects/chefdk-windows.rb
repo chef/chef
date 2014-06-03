@@ -31,7 +31,7 @@ build_version do
   source :git, from_dependency: 'chefdk'
 
   # Set a Rubygems style version
-  output_format :git_describe
+  output_format :semver
 end
 
 package_name    "chef-dk"
