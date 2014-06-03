@@ -88,6 +88,7 @@ class Chef::Application::Apply < Chef::Application
     parse_options
     Chef::Config.merge!(config)
     configure_logging
+    configure_proxy_environment_variables
   end
 
   def read_recipe_file(file_name)

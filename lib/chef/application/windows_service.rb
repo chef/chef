@@ -211,6 +211,7 @@ class Chef
       def reconfigure(startup_parameters=[])
         configure_chef startup_parameters
         configure_logging
+        configure_proxy_environment_variables
 
         Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
         unless Chef::Config[:exception_handlers].any? {|h| Chef::Handler::ErrorReport === h}
