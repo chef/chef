@@ -363,8 +363,10 @@ class Chef
 
     # Whether or not to verify the SSL cert for HTTPS requests to the Chef
     # server API. If set to `true`, the server's cert will be validated
-    # regardless of the :ssl_verify_mode setting.
-    default :verify_api_cert, false
+    # regardless of the :ssl_verify_mode setting. This is set to `true` when
+    # running in local-mode.
+    # NOTE: This is a workaround until verify_peer is enabled by default.
+    default(:verify_api_cert) { Chef::Config.local_mode }
 
     # Path to the default CA bundle files.
     default :ssl_ca_path, nil

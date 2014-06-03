@@ -45,6 +45,7 @@
 * Use user's .chef as a fallback cache path if /var/chef is not accessible. (CHEF-5259)
 * Fixed Ruby 2.0 Windows compatibility issues around ruby-wmi gem by replacing it with wmi-lite gem.
 * Set proxy environment variables if preset in config. (CHEF-4712)
+* Automatically enable verify_api_cert when running chef-client in local-mode. (Chef Issues 1464)
 
 ## Release: 11.12.4 (04/30/2014)
 http://www.getchef.com/blog/2014/04/30/release-chef-client-11-12-4-ohai-7-0-4/
