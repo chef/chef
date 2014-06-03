@@ -4,8 +4,8 @@ We are glad you want to contribute to Chef!
 
 We utilize **Github Issues** for issue tracking and contributions. You can contribute in two ways:
 
-1. Report an issue or make a feature request [here](#issues)
-2. Contribute your code to Chef.
+1. Reporting an issue or making a feature request [here](#issues).
+2. Adding features or fixing bugs yourself and contributing your code to Chef.
 
 ## Contribution Process
 
@@ -15,14 +15,14 @@ We have an easy 3 step process that utilizes **Github Issues**:
   [Contributor License Agreement (CLA)](https://secure.echosign.com/public/hostedForm?formid=PJIF5694K6L)
   or [Corporate CLA](https://secure.echosign.com/public/hostedForm?formid=PIE6C7AX856) online.
 2. Create a Github Pull Request.
-3. Do [Code Review](#cr) with **Chef Engineering Team** or **Chef Core Committers** on the pull request.
+3. Do [Code Review](#cr) with the **Chef Engineering Team** or **Chef Core Committers** on the pull request.
 
 ### <a name="pulls"></a> Chef Pull Requests
 
-Chef is built to last. We thrive to ensure high quality throughout Chef Experience. In order to ensure
+Chef is built to last. We thrive to ensure high quality throughout Chef experience. In order to ensure
   this we require a couple of things for all pull requests to Chef:
 
-1. **Tests:** To ensure high quality code and future regressions we require all the
+1. **Tests:** To ensure high quality code and protect against future regressions, we require all the
   code in Chef to have at least unit test coverage.
 2. **Green Travis Run:** We use [Travis CI](https://travis-ci.org/) in order to run our tests
   continuously on all the pull requests. We require the Travis runs to succeed on every pull
@@ -34,14 +34,14 @@ In addition to this it would be nice to include the description of the problem y
 
 ### <a name="cr"></a> Chef Code Review Process
 
-Chef Code Review Process completely happens on Github. See
+The Chef Code Review Process happens on Github pull requests. See
   [this article](https://help.github.com/articles/using-pull-requests) if you're not
   familiar with Github Pull Requests.
 
-Once you a pull request, **Chef Engineering Team** or **Chef Core Committers** will review your code
+Once you a pull request, the **Chef Engineering Team** or **Chef Core Committers** will review your code
   and respond to you with any feedback they might have. The process at this point is as follows:
 
-1. 2 thumbs-ups are required from **Chef Engineering Team** or **Chef Core Committers** for all merges.
+1. 2 thumbs-ups are required from the **Chef Engineering Team** or **Chef Core Committers** for all merges.
 2. When ready, your pull request will be tagged with label `Ready For Merge`.
 3. **In at most 2 weeks** your patch will be merged into `master` including necessary documentation updates
   and you will be included in `CHANGELOG.md`.
@@ -79,15 +79,15 @@ You can complete our CLA
 
 ## <a name="issues"></a> Chef Issue Tracking
 
-Chef Issue Tracking is completely handled on Github Issues.
+Chef Issue Tracking is handled using Github Issues.
 
 If you are familiar with Chef and know the component that is causing you a problem or if you
   have a feature request on a specific component you can file an issue in the corresponding
   Github project. All of our Open Source Software can be found in our
   [Github organization](https://github.com/opscode/).
 
-Otherwise you can file your issue in [chef project](https://github.com/opscode/chef/issues)
-  and we will make sure it is propagated correctly.
+Otherwise you can file your issue in the [Chef project](https://github.com/opscode/chef/issues)
+  and we will make sure it gets filed against the appropriate project.
 
 In order to decrease the back and forth an issues and help us get to the bottom of them quickly
   we use below issue template. You can copy paste this code into the issue you are opening and
@@ -126,7 +126,7 @@ We also release our software as gems to [Rubygems](http://rubygems.org/) but we 
   recommend using Chef packages since they are the only combination of native libraries &
   gems required by Chef that we test throughly.
 
-Our version number closely follows [Semantic Versioning](http://semver.org/) standard. Our
+Our version numbering closely follows [Semantic Versioning](http://semver.org/) standard. Our
   standard version numbers look like X.Y.Z which mean:
 
 * X is a major release, which may not be fully compatible with prior major releases
@@ -138,15 +138,17 @@ We frequently make `alpha` and `beta` releases with version numbers that look li
   throughly as **Minor** or **Patch** releases.
 
 We do a `Minor` release approximately every 3 months and `Patch` releases on a when-needed
-  basis for regressions, significant bugs and security issues.
+  basis for regressions, significant bugs, and security issues.
 
 Announcements of releases are available on [Chef Blog](http://www.getchef.com/blog) when they are
   available.
+  
+  **TODO**: Can I sign up for a mailing list to get notification of releases?
 
 ## Chef Community
 
 Chef is made possible by a strong community of developers and system administrators. If you have
-  any questions or if you would like to get involved in Chef Community you can check out:
+  any questions or if you would like to get involved in the Chef Community you can check out:
 
 * [chef](http://lists.opscode.com/sympa/info/chef) and [chef-dev](http://lists.opscode.com/sympa/info/chef-dev) mailing lists
 * \#chef and \#chef-hacking IRC channels on irc.freenode.net
