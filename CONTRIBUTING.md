@@ -52,7 +52,7 @@ If you would like to learn about when your code will be available in a release o
   [Chef Release Process](#release).
 
 ### Contributor License Agreement (CLA)
-Licensing is very important to open source projects, it helps ensure the
+Licensing is very important to open source projects. It helps ensure the
   software continues to be available under the terms that the author desired.
 
 Chef uses [the Apache 2.0 license](https://github.com/opscode/chef/blob/master/LICENSE)
@@ -65,11 +65,11 @@ The license tells you what rights you have that are provided by the copyright ho
   most often when the contributor is doing work for a company.
 
 To make a good faith effort to ensure these criteria are met, Chef requires an Individual CLA
-  or a Corporate CLA for contributions. This agreement helps ensure you are aware of the 
+  or a Corporate CLA for contributions. This agreement helps ensure you are aware of the
   terms of the license you are contributing your copyrighted works under, which helps to
   prevent the inclusion of works in the projects that the contributor does not hold the rights
   to share.
-  
+
 It only takes a few minutes to complete a CLA, and you retain the copyright to your contribution.
 
 You can complete our
@@ -154,7 +154,7 @@ In order to decrease the back and forth an issues and help us get to the bottom 
 ## <a name="release"></a> Chef Release Cycles
 
 Our primary shipping vehicle is operating system specific packages that includes
-  all the requirements of Chef. We call these [Omnibus packages](https://github.com/opscode/omnibus-ruby)./cheffff
+  all the requirements of Chef. We call these [Omnibus packages](https://github.com/opscode/omnibus-ruby)
 
 We also release our software as gems to [Rubygems](http://rubygems.org/) but we strongly
   recommend using Chef packages since they are the only combination of native libraries &
@@ -176,7 +176,7 @@ We do a `Minor` release approximately every 3 months and `Patch` releases on a w
 
 Announcements of releases are available on [Chef Blog](http://www.getchef.com/blog) when they are
   available.
-  
+
   **TODO**: Can I sign up for a mailing list to get notification of releases?
 
 ## Chef Community
