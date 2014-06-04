@@ -21,6 +21,7 @@
 require 'chef/provider/mount'
 require 'chef/log'
 require 'chef/mixin/shell_out'
+require 'forwardable'
 
 class Chef
   class Provider
@@ -40,7 +41,7 @@ class Chef
         def_delegator :@new_resource, :pass, :pass
 
         def load_current_resource
-          self.current_resource = Chef::Resource::Mount.new(new_resource.name)
+          @current_resource = Chef::Resource::Mount.new(new_resource.name)
           current_resource.mount_point(mount_point)
           current_resource.device(device)
           current_resource.device_type(device_type)
