@@ -12,18 +12,19 @@ We utilize **Github Issues** for issue tracking and contributions. You can contr
 We have a 3 step process that utilizes **Github Issues**:
 
 1. Sign our
-  [Contributor License Agreement (CLA)](https://secure.echosign.com/public/hostedForm?formid=PJIF5694K6L)
-  or [Corporate CLA](https://secure.echosign.com/public/hostedForm?formid=PIE6C7AX856) online.
+  [Individual Contributor License Agreement (CLA)](https://secure.echosign.com/public/hostedForm?formid=PJIF5694K6L)
+  or [Corporate CLA](https://secure.echosign.com/public/hostedForm?formid=PIE6C7AX856) online once.
 2. Create a Github Pull Request.
 3. Do [Code Review](#cr) with the **Chef Engineering Team** or **Chef Core Committers** on the pull request.
 
 ### <a name="pulls"></a> Chef Pull Requests
 
-Chef is built to last. We thrive to ensure high quality throughout Chef experience. In order to ensure
-  this we require a couple of things for all pull requests to Chef:
+Chef is built to last. We strive to ensure high quality throughout the Chef experience. In order to ensure
+  this, we require a couple of things for all pull requests to Chef:
 
 1. **Tests:** To ensure high quality code and protect against future regressions, we require all the
-  code in Chef to have at least unit test coverage.
+  code in Chef to have at least unit test coverage. See the [spec/unit](https://github.com/opscode/chef/tree/master/spec/unit)
+  directory for the existing tests and use ```bundle exec rake spec``` to run them.
 2. **Green Travis Run:** We use [Travis CI](https://travis-ci.org/) in order to run our tests
   continuously on all the pull requests. We require the Travis runs to succeed on every pull
   request before being merged.
@@ -34,7 +35,7 @@ In addition to this it would be nice to include the description of the problem y
 
 ### <a name="cr"></a> Chef Code Review Process
 
-The Chef Code Review Process happens on Github pull requests. See
+The Chef Code Review process happens on Github pull requests. See
   [this article](https://help.github.com/articles/using-pull-requests) if you're not
   familiar with Github Pull Requests.
 
@@ -63,15 +64,18 @@ The license tells you what rights you have that are provided by the copyright ho
   licensing and agrees to them. Sometimes the copyright holder isn't the contributor,
   most often when the contributor is doing work for a company.
 
-To make a good faith effort to ensure these criteria are met, Chef requires a CLA
-  or a Corporate CLA for contributions. This is not related to copyrights and it
-  helps us avoid continually checking with our lawyers for your patches.
-
+To make a good faith effort to ensure these criteria are met, Chef requires an Individual CLA
+  or a Corporate CLA for contributions. This agreement helps ensure you are aware of the 
+  terms of the license you are contributing your copyrighted works under, which helps to
+  prevent the inclusion of works in the projects that the contributor does not hold the rights
+  to share.
+  
 It only takes a few minutes to complete a CLA, and you retain the copyright to your contribution.
 
-You can complete our CLA
-  [online](https://secure.echosign.com/public/hostedForm?formid=PJIF5694K6L).
-  If you're contributing on behalf of your employer, have your employer fill out our
+You can complete our
+  [Individual CLA](https://secure.echosign.com/public/hostedForm?formid=PJIF5694K6L) online.
+  If you're contributing on behalf of your employer and they retain the copyright for your works,
+  have your employer fill out our
   [Corporate CLA](https://secure.echosign.com/public/hostedForm?formid=PIE6C7AX856) instead.
 
 ### Chef Obvious Fix Policy
@@ -135,22 +139,22 @@ In order to decrease the back and forth an issues and help us get to the bottom 
 
 
 
-### Repro Steps:
+### Steps to Reproduce:
 [If you are filing an issue what are the things we need to do in order to repro your problem?]
 
 
 ### Expected Result:
-[What are you expecting to happen as the consequence of above repro steps?]
+[What are you expecting to happen as the consequence of above reproduction steps?]
 
 
 ### Actual Result:
-[What actually happens after the repro steps?]
+[What actually happens after the reproduction steps?]
 ```
 
 ## <a name="release"></a> Chef Release Cycles
 
 Our primary shipping vehicle is operating system specific packages that includes
-  all the requirements of Chef.
+  all the requirements of Chef. We call these [Omnibus packages](https://github.com/opscode/omnibus-ruby)./cheffff
 
 We also release our software as gems to [Rubygems](http://rubygems.org/) but we strongly
   recommend using Chef packages since they are the only combination of native libraries &
@@ -178,15 +182,15 @@ Announcements of releases are available on [Chef Blog](http://www.getchef.com/bl
 ## Chef Community
 
 Chef is made possible by a strong community of developers and system administrators. If you have
-  any questions or if you would like to get involved in the Chef Community you can check out:
+  any questions or if you would like to get involved in the Chef community you can check out:
 
 * [chef](http://lists.opscode.com/sympa/info/chef) and [chef-dev](http://lists.opscode.com/sympa/info/chef-dev) mailing lists
-* \#chef and \#chef-hacking IRC channels on irc.freenode.net
+* [\#chef](https://botbot.me/freenode/chef) and [\#chef-hacking](https://botbot.me/freenode/chef-hacking) IRC channels on irc.freenode.net
 
 Also here are some additional pointers to some awesome Chef content:
 
 **TODO**: Any blogs of community folks that we would like to put in here?
 
 * [Chef Docs](http://docs.opscode.com/)
-* [LearnChef](https://learnchef.opscode.com/)
+* [Learn Chef](https://learnchef.opscode.com/)
 * [Chef Inc](http://www.getchef.com/)
