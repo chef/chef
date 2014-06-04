@@ -51,7 +51,8 @@ describe Chef::Provider::Group::Usermod do
         "solaris" => "-a -G",
         "suse" => "-a -G",
         "opensuse" => "-a -G",
-        "smartos" => "-G"
+        "smartos" => "-G",
+        "omnios" => "-G"
       }
 
       before do
