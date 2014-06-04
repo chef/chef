@@ -103,6 +103,7 @@ require 'chef/provider/group/windows'
 
 require 'chef/provider/mount/mount'
 require 'chef/provider/mount/aix'
+require 'chef/provider/mount/solaris'
 require 'chef/provider/mount/windows'
 
 require 'chef/provider/deploy/revision'
