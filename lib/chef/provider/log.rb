@@ -44,8 +44,8 @@ class Chef
           Chef::Log.send(@new_resource.level, @new_resource.message)
 
           # resolve the integers for the current log levels
-          global_level = @@levels.index(Chef::Log.level)
-          resource_level = @@levels.index(@new_resource.level)
+          global_level = Mixlib::Log::LEVELS.fetch(Chef::Log.level)
+          resource_level = Mixlib::Log::LEVELS.fetch(@new_resource.level)
 
           # If the resource level is greater than or the same os the global
           # level, then it should have been written to the log.  Mark the
