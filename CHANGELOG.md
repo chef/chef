@@ -23,6 +23,14 @@
   manager when available.(CHEF-4637)
 * [**Nikhil Benesch**](https://github.com/benesch):
   Implemented a threaded download queue for synchronizing cookbooks. (CHEF-4423)
+* [**Chulki Lee**](https://github.com/chulkilee):
+  Raise an error when source is accidently passed to apt_package (CHEF-5113)
+* [**Cam Cope**](https://github.com/ccope):
+  Add an open_timeout when opening an http connection (CHEF-5152)
+* [**Sander van Harmelen**](https://github.com/svanharmelen):
+  Allow environment variables set on Windows to be used immediately (CHEF-5174)
+* [**Luke Amdor**](https://github.com/rubbish):
+  Add an option to configure the chef-zero port (CHEF-5228)
 
 * Cleaned up mount provider superclass
 * Added "knife serve" to bring up local mode as a server
