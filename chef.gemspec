@@ -40,10 +40,14 @@ Gem::Specification.new do |s|
 
   s.add_dependency "pry", "~> 0.9"
 
-  # Rake 10.2 drops Ruby 1.8 support
-  s.add_development_dependency("rake", "~> 10.1.0")
+  s.add_development_dependency "rack"
 
-  %w( rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
+  # Rake 10.2 drops Ruby 1.8 support
+  s.add_development_dependency "rake", "~> 10.1.0"
+
+  # rspec_junit_formatter 0.2.0 drops ruby 1.8.7 support
+  s.add_development_dependency "rspec_junit_formatter", "~> 0.1.0"
+
   %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 2.14.0" }
 
   s.bindir       = "bin"
