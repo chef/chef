@@ -60,6 +60,8 @@ class Chef
 
       HOST_LOWER = "host".freeze
 
+      HTTP_PORT = 80.freeze
+
       def self.user_agent=(ua)
         @user_agent = ua
       end
@@ -138,7 +140,12 @@ class Chef
         # No response compression unless we asked for it explicitly:
         @headers[HTTPRequest::ACCEPT_ENCODING] ||= "identity"
         @headers['X-Chef-Version'] = ::Chef::VERSION
-        @headers['Host'] = "#{uri_safe_host}:#{port}" unless @headers.keys.any? {|k| k.downcase.to_s == HOST_LOWER }
+
+        # Don't include port in Host header when it is the default HTTP port (80) - Fixes CHEF-5355
+        host = uri_safe_host.dup
+        host << ":#{port}" unless HTTP_PORT == port.to_i
+        @headers['Host'] = host unless @headers.keys.any? {|k| k.downcase.to_s == HOST_LOWER }
+
         @headers
       end
 
