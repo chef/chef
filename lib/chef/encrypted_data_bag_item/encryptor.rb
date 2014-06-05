@@ -40,6 +40,8 @@ class Chef::EncryptedDataBagItem
         Version1Encryptor.new(value, secret, iv)
       when 2
         Version2Encryptor.new(value, secret, iv)
+      when 3
+        Version3Encryptor.new(value, secret, iv)
       else
         raise UnsupportedEncryptedDataBagItemFormat,
           "Invalid encrypted data bag format version `#{format_version}'. Supported versions are '1', '2'"
@@ -132,11 +134,46 @@ class Chef::EncryptedDataBagItem
       # Generates an HMAC-SHA2-256 of the encrypted data (encrypt-then-mac)
       def hmac
         @hmac ||= begin
-          digest = OpenSSL::Digest::Digest.new("sha256")
+          digest = OpenSSL::Digest::Digest.new(HMAC_ALGORITHM)
           raw_hmac = OpenSSL::HMAC.digest(digest, key, encrypted_data)
           Base64.encode64(raw_hmac)
         end
       end
     end
+
+    class Version3Encryptor < Version2Encryptor
+
+      def initialize(plaintext_data, key, iv=nil)
+        @plaintext_data = plaintext_data
+
+        # split the hmac key form the key
+        @hmac_key, @key = key.unpack("Z#{key.length/2}Z*")
+      end
+
+      # Returns a wrapped and encrypted version of +plaintext_data+ suitable for
+      # using as the value in an encrypted data bag item.
+      def for_encrypted_item
+        super.merge({
+          'version' => 3
+        })
+      end
+
+      # Generates an HMAC-SHA2-256 of the encrypted data (encrypt-then-mac),
+      # including the IV and the cipher
+      def hmac
+        @hmac ||= begin
+          digest = OpenSSL::Digest::Digest.new(HMAC_ALGORITHM)
+          data_to_hmac = Yajl::Encoder.encode({
+            "encrypted_data" => encrypted_data,
+            "iv" => Base64.encode64(iv),
+            "cipher" => ALGORITHM
+          }.sort)
+          raw_hmac_key = Digest::SHA512.digest(@hmac_key)
+          raw_hmac = OpenSSL::HMAC.digest(digest, raw_hmac_key, data_to_hmac)
+          Base64.encode64(raw_hmac)
+        end
+      end
+    end
+
   end
 end

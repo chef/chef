@@ -48,6 +48,7 @@ require 'open-uri'
 #
 class Chef::EncryptedDataBagItem
   ALGORITHM = 'aes-256-cbc'
+  HMAC_ALGORITHM = 'sha256'
 
   #
   # === Synopsis
