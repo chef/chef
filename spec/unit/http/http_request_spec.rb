@@ -1,5 +1,5 @@
 #
-# Author:: Serdar Sutay (<serdar@opscode.com>)
+# Author:: Klaas Jan Wierenga (<k.j.wierenga@gmail.com>)
 # Copyright:: Copyright (c) 2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
