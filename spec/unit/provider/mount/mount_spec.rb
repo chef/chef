@@ -21,8 +21,6 @@ require 'ostruct'
 
 exclude_flag = ['solaris2'].include?(ohai[:platform])
 
-describe Chef::Resource::Mount, :requires_root, :external => include_flag do
-
 describe Chef::Provider::Mount::Mount do
   before(:each) do
     @node = Chef::Node.new
