@@ -17,6 +17,7 @@
 #
 require 'chef/provider/registry_key'
 require 'chef/resource'
+require 'chef/digester'
 
 class Chef
   class Resource
@@ -25,6 +26,8 @@ class Chef
       identity_attr :key
       state_attrs :values
 
+      attr_reader :unscrubbed_values
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :registry_key
@@ -32,7 +35,7 @@ class Chef
         @architecture = :machine
         @recursive = false
         @key = name
-        @values = []
+        @values, @unscrubbed_values = [], []
         @allowed_actions.push(:create, :create_if_missing, :delete, :delete_key)
       end
 
@@ -43,6 +46,7 @@ class Chef
           :kind_of => String
         )
       end
+
       def values(arg=nil)
         if not arg.nil?
           if arg.is_a?(Hash)
@@ -52,6 +56,7 @@ class Chef
           else
             raise ArgumentError, "Bad type for RegistryKey resource, use Hash or Array"
           end
+
           @values.each do |v|
             raise ArgumentError, "Missing name key in RegistryKey values hash" unless v.has_key?(:name)
             raise ArgumentError, "Missing type key in RegistryKey values hash" unless v.has_key?(:type)
@@ -62,10 +67,12 @@ class Chef
             raise ArgumentError, "Type of name => #{v[:name]} should be string" unless v[:name].is_a?(String)
             raise Argument Error "Type of type => #{v[:name]} should be symbol" unless v[:type].is_a?(Symbol)
           end
-        elsif self.instance_variable_defined?(:@values) == true
-          @values
+          @unscrubbed_values = @values
+        elsif self.instance_variable_defined?(:@values)
+          scrub_values(@values)
         end
       end
+
       def recursive(arg=nil)
         set_or_return(
           :recursive,
@@ -73,12 +80,35 @@ class Chef
           :kind_of => [TrueClass, FalseClass]
         )
       end
+
       def architecture(arg=nil)
         set_or_return(
           :architecture,
           arg,
           :kind_of => Symbol
         )
+      end
+
+      private
+
+      def scrub_values(values)
+        scrubbed = []
+        values.each do |value|
+          scrubbed_value = value.dup
+          if needs_checksum?(scrubbed_value)
+            data_io = StringIO.new(scrubbed_value[:data])
+            scrubbed_value[:data] = Chef::Digester.instance.generate_md5_checksum(data_io)
+          end
+          scrubbed << scrubbed_value
+        end
+        scrubbed
+      end
+
+      # Some data types may raise errors when sent as json. Returns true if this
+      # value's data may need to be converted to a checksum.
+      def needs_checksum?(value)
+        unsafe_types = [:binary, :dword, :dword_big_endian, :qword]
+        unsafe_types.include?(value[:type])
       end
 
     end
