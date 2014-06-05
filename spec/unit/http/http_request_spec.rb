@@ -38,4 +38,10 @@ describe Chef::HTTP::HTTPRequest do
     request.headers['Host'].should eql('dummy.com:8000')
   end
 
+  it "should pass on explicit Host header unchanged" do
+    request = Chef::HTTP::HTTPRequest.new(:GET, URI('http://dummy.com:8000'), '', { 'Host' => 'myhost.com:80' })
+
+    request.headers['Host'].should eql('myhost.com:80')
+  end
+
 end
