@@ -324,9 +324,8 @@ class Chef
     config_context :chef_zero do
       config_strict_mode true
       default(:enabled) { Chef::Config.local_mode }
-      default :host, '127.0.0.1'
-      default :port, 8889
       default :host, 'localhost'
+      default :port, 8889
     end
     default :chef_server_url,   "https://localhost:443"
 
