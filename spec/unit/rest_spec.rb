@@ -247,9 +247,9 @@ describe Chef::REST do
       http_response
     end
 
-    let(:host_header) { "one:80" }
+    let(:host_header) { "one" }
 
-    let(:url) { URI.parse("https://one:80/?foo=bar") }
+    let(:url) { URI.parse("http://one:80/?foo=bar") }
 
     let(:base_url) { "http://chef.example.com:4000" }
 
