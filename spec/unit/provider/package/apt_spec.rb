@@ -169,6 +169,11 @@ SHOWPKG_STDOUT
       @provider.load_current_resource
     end
 
+    it "raises an exception if a source is specified (CHEF-5113)" do
+      @new_resource.source "pluto"
+      @provider.define_resource_requirements
+      expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+    end
   end
 
   context "after loading the current resource" do
