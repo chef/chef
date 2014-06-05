@@ -101,10 +101,10 @@ class Chef
     configurable(:config_file)
 
     default(:config_dir) do
-      if local_mode
-        path_join(user_home, ".chef#{platform_path_separator}")
+      if config_file
+        ::File.dirname(config_file)
       else
-        config_file && ::File.dirname(config_file)
+        path_join(user_home, ".chef#{platform_path_separator}")
       end
     end
 
@@ -238,7 +238,7 @@ class Chef
     # this is under the user's home directory.
     default(:cache_path) do
       if local_mode
-        "#{config_dir}local-mode-cache"
+        path_join(config_dir, 'local-mode-cache')
       else
         primary_cache_root = platform_specific_path("/var")
         primary_cache_path = platform_specific_path("/var/chef")
@@ -384,7 +384,7 @@ class Chef
     # certificates in this directory will be added to whatever CA bundle ruby
     # is using. Use this to add self-signed certs for your Chef Server or local
     # HTTP file servers.
-    default(:trusted_certs_dir) { config_dir && path_join(config_dir, "trusted_certs") }
+    default(:trusted_certs_dir) { path_join(config_dir, "trusted_certs") }
 
     # Where should chef-solo download recipes from?
     default :recipe_url, nil

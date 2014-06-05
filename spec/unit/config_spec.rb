@@ -198,6 +198,32 @@ describe Chef::Config do
           Chef::Config[:cache_path].should == secondary_cache_path
         end
       end
+
+      context "when chef is running in local mode" do
+        before do
+          Chef::Config.local_mode = true
+        end
+
+        context "and config_dir is /a/b/c" do
+          before do
+            Chef::Config.config_dir '/a/b/c'
+          end
+
+          it "cache_path is /a/b/c/local-mode-cache" do
+            Chef::Config.cache_path.should == '/a/b/c/local-mode-cache'
+          end
+        end
+
+        context "and config_dir is /a/b/c/" do
+          before do
+            Chef::Config.config_dir '/a/b/c/'
+          end
+
+          it "cache_path is /a/b/c/local-mode-cache" do
+            Chef::Config.cache_path.should == '/a/b/c/local-mode-cache'
+          end
+        end
+      end
     end
 
     it "Chef::Config[:file_backup_path] defaults to /var/chef/backup" do
@@ -266,35 +292,56 @@ describe Chef::Config do
 
     describe "setting the config dir" do
 
-      before do
-        Chef::Config.stub(:on_windows?).and_return(false)
-        Chef::Config.config_file = "/etc/chef/client.rb"
-      end
+      context "when the config file is /etc/chef/client.rb" do
 
-      context "by default" do
-        it "is the parent dir of the config file" do
+        before do
+          Chef::Config.stub(:on_windows?).and_return(false)
+          Chef::Config.config_file = "/etc/chef/client.rb"
+        end
+
+        it "config_dir is /etc/chef" do
           Chef::Config.config_dir.should == "/etc/chef"
         end
+
+        context "and chef is running in local mode" do
+          before do
+            Chef::Config.local_mode = true
+          end
+
+          it "config_dir is /etc/chef" do
+            Chef::Config.config_dir.should == "/etc/chef"
+          end
+        end
+
+        context "when config_dir is set to /other/config/dir/" do
+          before do
+            Chef::Config.config_dir = "/other/config/dir/"
+          end
+
+          it "yields the explicit value" do
+            Chef::Config.config_dir.should == "/other/config/dir/"
+          end
+        end
+
       end
 
-      context "when chef is running in local mode" do
+      context "when the user's home dir is /home/charlie" do
         before do
-          Chef::Config.local_mode = true
           Chef::Config.user_home = "/home/charlie"
         end
 
-        it "is in the user's home dir" do
+        it "config_dir is /home/charlie/.chef" do
           Chef::Config.config_dir.should == "/home/charlie/.chef/"
         end
-      end
 
-      context "when explicitly set" do
-        before do
-          Chef::Config.config_dir = "/other/config/dir/"
-        end
+        context "and chef is running in local mode" do
+          before do
+            Chef::Config.local_mode = true
+          end
 
-        it "uses the explicit value" do
-          Chef::Config.config_dir.should == "/other/config/dir/"
+          it "config_dir is /home/charlie/.chef" do
+            Chef::Config.config_dir.should == "/home/charlie/.chef/"
+          end
         end
       end
 
