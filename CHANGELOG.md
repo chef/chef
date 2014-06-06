@@ -31,6 +31,8 @@
   Allow environment variables set on Windows to be used immediately (CHEF-5174)
 * [**Luke Amdor**](https://github.com/rubbish):
   Add an option to configure the chef-zero port (CHEF-5228)
+* [**Ricardo Signes**](https://github.com/rjbs):
+  Added support for the usermod provider on OmniOS
 
 * Cleaned up mount provider superclass
 * Added "knife serve" to bring up local mode as a server
