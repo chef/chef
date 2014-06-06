@@ -96,7 +96,7 @@ class Chef
         values.each do |value|
           scrubbed_value = value.dup
           if needs_checksum?(scrubbed_value)
-            data_io = StringIO.new(scrubbed_value[:data])
+            data_io = StringIO.new(scrubbed_value[:data].to_s)
             scrubbed_value[:data] = Chef::Digester.instance.generate_md5_checksum(data_io)
           end
           scrubbed << scrubbed_value
