@@ -19,19 +19,24 @@
 
 require 'chef/exceptions'
 require 'win32/api' if Chef::Platform.windows?
+require 'chef/win32/api/process' if Chef::Platform.windows?
+require 'chef/win32/api/error' if Chef::Platform.windows?
 
 class Chef
   module Mixin
     module WindowsArchitectureHelper
+
+      include Chef::ReservedNames::Win32::API::Process
+      include Chef::ReservedNames::Win32::API::Error
 
       def node_windows_architecture(node)
         node[:kernel][:machine].to_sym
       end
 
       def wow64_architecture_override_required?(node, desired_architecture)
-        is_i386_windows_process? &&
+        desired_architecture == :x86_64 &&
           node_windows_architecture(node) == :x86_64 &&
-          desired_architecture == :x86_64
+          is_i386_process_on_x86_64_windows?
       end
 
       def node_supports_windows_architecture?(node, desired_architecture)
@@ -51,8 +56,17 @@ class Chef
         end
       end
 
-      def is_i386_windows_process?
-        Chef::Platform.windows? && 'X86'.casecmp(ENV['PROCESSOR_ARCHITECTURE']) == 0
+      def is_i386_process_on_x86_64_windows?
+        is_64_bit_process_result = FFI::MemoryPointer.new(:int)
+
+        # The return value of IsWow64Process is nonzero value if the API call succeeds.
+        # The result data are returned in the last parameter, not the return value.
+        call_succeeded = IsWow64Process(GetCurrentProcess(), is_64_bit_process_result)
+
+        # The result is nonzero if IsWow64Process's calling process, in the case here
+        # this process, is running under WOW64, i.e. the result is nonzero if this
+        # process is 32-bit (aka :i386).
+        result = (call_succeeded != 0) && (is_64_bit_process_result.get_int(0) != 0)
       end
 
       def disable_wow64_file_redirection( node )
