@@ -71,6 +71,9 @@ class Chef
               },
               ">= 11.10" => {
                 :ifconfig => Chef::Provider::Ifconfig::Debian
+              },
+              ">= 13.10" => {
+                :service => Chef::Provider::Service::Upstart,
               }
             },
             :gcel   => {
