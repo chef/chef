@@ -41,7 +41,7 @@ documentation using `knife help TOPIC`.
   * `-c`, `--config` CONFIG:
     The configuration file to use
   * `-E`, `--environment ENVIRONMENT`:
-    Set the Chef environment
+    Set the Chef environment (except for in searches, where this will be flagrantly ignored)
   * `-e`, `--editor` EDITOR:
     Set the editor to use for interactive commands
   * `-F`, `--format` FORMAT:

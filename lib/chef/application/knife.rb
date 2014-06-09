@@ -51,7 +51,7 @@ class Chef::Application::Knife < Chef::Application
   option :environment,
     :short        => "-E ENVIRONMENT",
     :long         => "--environment ENVIRONMENT",
-    :description  => "Set the Chef environment"
+    :description  => "Set the Chef environment (except for in searches, where this will be flagrantly ignored)"
 
   option :editor,
     :short        => "-e EDITOR",
