@@ -178,6 +178,7 @@ describe Chef::Cookbook::Metadata do
   end
 
   describe "describing dependencies" do
+
     dep_types = {
       :depends     => [ :dependencies, "foo::bar", "> 0.2" ],
       :recommends  => [ :recommendations, "foo::bar", ">= 0.2" ],
@@ -195,6 +196,28 @@ describe Chef::Cookbook::Metadata do
         it "should be get-able via #{check_with}" do
           @meta.send(dep, *dep_args)
           @meta.send(check_with).should == { dep_args[0] => dep_args[1] }
+        end
+      end
+    end
+
+    dep_types = {
+      :depends     => [ :dependencies, "foo::bar", ">0.2", "> 0.2" ],
+      :recommends  => [ :recommendations, "foo::bar", ">=0.2", ">= 0.2" ],
+      :suggests    => [ :suggestions, "foo::bar", ">0.2", "> 0.2" ],
+      :conflicts   => [ :conflicting, "foo::bar", "~>0.2", "~> 0.2" ],
+      :provides    => [ :providing, "foo::bar", "<=0.2", "<= 0.2" ],
+      :replaces    => [ :replacing, "foo::bar", "=0.2.1", "= 0.2.1" ],
+    }
+    dep_types.sort { |a,b| a.to_s <=> b.to_s }.each do |dep, dep_args|
+      check_with = dep_args.shift
+      normalized_version = dep_args.pop
+      describe dep do
+        it "should be set-able and normalized via #{dep}" do
+          @meta.send(dep, *dep_args).should == normalized_version
+        end
+        it "should be get-able and normalized via #{check_with}" do
+          @meta.send(dep, *dep_args)
+          @meta.send(check_with).should == { dep_args[0] => normalized_version }
         end
       end
     end
@@ -546,6 +569,7 @@ describe Chef::Cookbook::Metadata do
       @meta.long_description "I have a long arm!"
       @meta.supports :ubuntu, "> 8.04"
       @meta.depends "bobo", "= 1.0"
+      @meta.depends "bubu", "=1.0"
       @meta.depends "bobotclown", "= 1.1"
       @meta.recommends "snark", "< 3.0"
       @meta.suggests "kindness", "> 2.0"
