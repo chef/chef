@@ -32,15 +32,6 @@ relative_path "chef"
 always_build (self.project.name == "chef-windows")
 
 build do
-  # Nasty hack to set the artifact version until this gets fixed:
-  # https://github.com/opscode/omnibus-ruby/issues/134
-  block do
-    project = self.project
-    if project.name == "chef-windows"
-      project.build_version Omnibus::BuildVersion.new(self.project_dir).semver
-    end
-  end
-
   # COMPAT HACK :( - Chef 11 finally has the core Chef code in the root of the
   # project repo. Since the Chef Client pipeline needs to build/test Chef 10.x
   # and 11 releases our software definition need to handle both cases
