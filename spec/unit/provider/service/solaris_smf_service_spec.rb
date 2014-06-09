@@ -38,7 +38,7 @@ describe Chef::Provider::Service::Solaris do
     @stdout_string = "state disabled"
     @stdout.stub(:gets).and_return(@stdout_string)
     @status = double("Status", :exitstatus => 0, :stdout => @stdout)
-    @provider.stub(:shell_out).and_return(@status)
+    @provider.stub(:shell_out!).and_return(@status)
   end
 
   it "should raise an error if /bin/svcs does not exist" do
@@ -54,44 +54,44 @@ describe Chef::Provider::Service::Solaris do
 
     describe "when discovering the current service state" do
       it "should create a current resource with the name of the new resource" do
-        @provider.stub(:shell_out).with("/bin/svcs -l chef").and_return(@status)
+        @provider.stub(:shell_out!).with("/bin/svcs -l chef").and_return(@status)
         Chef::Resource::Service.should_receive(:new).and_return(@current_resource)
         @provider.load_current_resource
       end
 
 
       it "should return the current resource" do
-        @provider.stub(:shell_out).with("/bin/svcs -l chef").and_return(@status)
+        @provider.stub(:shell_out!).with("/bin/svcs -l chef").and_return(@status)
         @provider.load_current_resource.should eql(@current_resource)
       end
 
       it "should call '/bin/svcs -l service_name'" do
-        @provider.should_receive(:shell_out).with("/bin/svcs -l chef").and_return(@status)
+        @provider.should_receive(:shell_out!).with("/bin/svcs -l chef", {:returns=>[0, 1]}).and_return(@status)
         @provider.load_current_resource
       end
 
       it "should mark service as not running" do
-        @provider.stub(:shell_out).and_return(@status)
+        @provider.stub(:shell_out!).and_return(@status)
         @current_resource.should_receive(:running).with(false)
         @provider.load_current_resource
       end
 
       it "should mark service as running" do
         @status = double("Status", :exitstatus => 0, :stdout => 'state online')
-        @provider.stub(:shell_out).and_return(@status)
+        @provider.stub(:shell_out!).and_return(@status)
         @current_resource.should_receive(:running).with(true)
         @provider.load_current_resource
       end
 
       it "should not mark service as maintenance" do
-        @provider.stub(:shell_out).and_return(@status)
+        @provider.stub(:shell_out!).and_return(@status)
         @provider.load_current_resource
         @provider.maintenance.should be_false
       end
 
       it "should mark service as maintenance" do
         @status = double("Status", :exitstatus => 0, :stdout => 'state maintenance')
-        @provider.stub(:shell_out).and_return(@status)
+        @provider.stub(:shell_out!).and_return(@status)
         @provider.load_current_resource
         @provider.maintenance.should be_true
       end
@@ -121,7 +121,7 @@ describe Chef::Provider::Service::Solaris do
 
       it "should call svcadm clear chef for start_service when state maintenance" do
         @status = double("Status", :exitstatus => 0, :stdout => 'state maintenance')
-        @provider.stub(:shell_out).and_return(@status)
+        @provider.stub(:shell_out!).and_return(@status)
         @provider.load_current_resource
         @new_resource.stub(:enable_command).and_return("#{@new_resource.enable_command}")
         @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm clear #{@current_resource.service_name}").and_return(@status)
@@ -173,13 +173,13 @@ describe Chef::Provider::Service::Solaris do
       end
 
       it "should be marked not running" do
-        @provider.should_receive(:shell_out).with("/bin/svcs -l chef").and_return(@status)
+        @provider.should_receive(:shell_out!).with("/bin/svcs -l chef", {:returns=>[0, 1]}).and_return(@status)
         @provider.service_status
         @current_resource.running.should be_false
       end
 
       it "should be marked not enabled" do
-        @provider.should_receive(:shell_out).with("/bin/svcs -l chef").and_return(@status)
+        @provider.should_receive(:shell_out!).with("/bin/svcs -l chef", {:returns=>[0, 1]}).and_return(@status)
         @provider.service_status
         @current_resource.enabled.should be_false
       end
