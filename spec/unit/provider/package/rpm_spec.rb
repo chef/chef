@@ -104,6 +104,14 @@ describe Chef::Provider::Package::Rpm do
         @provider.upgrade_package("emacs", "21.4-20.el5")
       end
 
+      it "should install package if missing and set to upgrade" do
+        @current_resource.version("emacs")
+        @provider.should_receive(:run_command_with_systems_locale).with({
+          :command => "rpm  -U /tmp/emacs-21.4-20.el5.i386.rpm"
+        })
+        @provider.upgrade_package("emacs", "21.4-20.el5")
+      end
+
       it "should install from a path when the package is a path and the source is nil" do
         @new_resource = Chef::Resource::Package.new("/tmp/emacs-21.4-20.el5.i386.rpm")
         @provider = Chef::Provider::Package::Rpm.new(@new_resource, @run_context)

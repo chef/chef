@@ -63,6 +63,7 @@ class Chef
                 when /([\w\d_.-]+)\s([\w\d_.-]+)/
                   @current_resource.package_name($1)
                   @new_resource.version($2)
+                  @candidate_version = $2
                 end
               end
             end
