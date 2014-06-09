@@ -125,6 +125,15 @@ describe Chef::Provider::RemoteFile::CacheControlData do
         cache_control_data.etag.should be_nil
         cache_control_data.mtime.should be_nil
       end
+
+      context "and it still is valid JSON" do
+        let(:cache_json_data) { '' }
+
+        it "returns empty cache control data" do
+          cache_control_data.etag.should be_nil
+          cache_control_data.mtime.should be_nil
+        end
+      end
     end
   end
 
