@@ -559,12 +559,12 @@ describe Chef::Resource do
       @resource.should_skip?(:purr).should be_false
     end
 
-    it "should return false when if_only is met" do
+    it "should return false when only_if is met" do
       @resource.only_if { true }
       @resource.should_skip?(:purr).should be_false
     end
 
-    it "should return true when if_only is not met" do
+    it "should return true when only_if is not met" do
       @resource.only_if { false }
       @resource.should_skip?(:purr).should be_true
     end
@@ -574,18 +574,18 @@ describe Chef::Resource do
       @resource.should_skip?(:purr).should be_true
     end
 
-    it "should return false when if_only is not met" do
+    it "should return false when not_if is not met" do
       @resource.not_if { false }
       @resource.should_skip?(:purr).should be_false
     end
 
-    it "should return true when if_only is met but also not_if is met" do
+    it "should return true when only_if is met but also not_if is met" do
       @resource.only_if { true }
       @resource.not_if { true }
       @resource.should_skip?(:purr).should be_true
     end
 
-    it "should return true when one of multiple if_only's is not met" do
+    it "should return true when one of multiple only_if's is not met" do
       @resource.only_if { true }
       @resource.only_if { false }
       @resource.only_if { true }
