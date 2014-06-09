@@ -25,6 +25,7 @@ class Chef
       def convert_to_class_name(str)
         str = str.dup
         str.gsub!(/[^A-Za-z0-9_]/,'_')
+        str.gsub!(/^(_+)?/,'')
         rname = nil
         regexp = %r{^(.+?)(_(.+))?$}
 
