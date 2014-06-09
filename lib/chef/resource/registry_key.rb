@@ -26,6 +26,35 @@ class Chef
       identity_attr :key
       state_attrs :values
 
+      # Some registry key data types may not be safely reported as json.
+      # Example (CHEF-5323):
+      #
+      # registry_key 'HKEY_CURRENT_USER\\ChefTest2014' do
+      #   values [{
+      #     :name => "ValueWithBadData",
+      #     :type => :binary,
+      #     :data => 255.chr * 1
+      #   }]
+      #   action :create
+      # end
+      #
+      # will raise Encoding::UndefinedConversionError: "\xFF" from ASCII-8BIT to UTF-8.
+      #
+      # To avoid sending data that cannot be nicely converted for json, we have
+      # the values method return "safe" data if the data type is "unsafe". Known "unsafe"
+      # data types are :binary, :dword, :dword-big-endian, and :qword. If other
+      # criteria generate data that cannot reliably be sent as json, add that criteria
+      # to the needs_checksum? method. When unsafe data is detected, the values method
+      # returns an md5 checksum of the listed data.
+      #
+      # :unscrubbed_values returns the values exactly as provided in the resource (i.e.,
+      # data is not checksummed, regardless of the data type/"unsafe" criteria).
+      #
+      # Future:
+      # If we have conflicts with other resources reporting json incompatible state, we
+      # may want to extend the state_attrs API with the ability to rename POST'd attrs.
+      #
+      # See lib/chef/resource_reporter.rb for more information.
       attr_reader :unscrubbed_values
 
       def initialize(name, run_context=nil)
