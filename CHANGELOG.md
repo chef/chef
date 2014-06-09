@@ -33,6 +33,32 @@
   Add an option to configure the chef-zero port (CHEF-5228)
 * [**Ricardo Signes**](https://github.com/rjbs):
   Added support for the usermod provider on OmniOS
+* [**Anand Suresh**](https://github.com/anandsuresh):
+  Only modify password when one has been specified. (CHEF-5327)
+* [**Stephan Renatus**](https://github.com/srenatus):
+  Add exception when JSON parsing fails. (CHEF-5309)
+* [**Xabier de Zuazo**](https://github.com/zuazo):
+  OK to exclude space in dependencies in metadata.rb. (CHEF-4298)
+* [**Łukasz Jagiełło**](https://github.com/ljagiello):
+  Allow cookbook names with leading underscores. (CHEF-4562)
+* [**Michael Bernstein**](https://github.com/mrb):
+  Add Code Climate badge to README.
+* [**Phil Sturgeon**](https://github.com/philsturgeon):
+  Documentation that -E is not respected by knife ssh [search]. (CHEF-4778)
+* [**kaustubh**](https://github.com/kaustubh-d):
+  Use 'guest' user on AIX for RSpec tests. (OC-9954)
+* [**Stephan Renatus**](https://github.com/srenatus):
+  Fix resource_spec.rb.
+* [**Isa Farnik**](https://github.com/curiositycasualty):
+  Add warning if host resembles winrm command and knife-windows is not present.
+* [**Sander van Harmelen**](https://github.com/svanharmelen):
+  Ensure URI compliant urls. (CHEF-5261)
+* [**Julian C. Dunn**](https://github.com/juliandunn):
+  Prevent tracing? from throwing an exception when first starting chef-shell.
+* [**Robby Dyer**](https://github.com/robbydyer):
+  Correctly detect when rpm_package does not exist in upgrade action. (CHEF-5273)
+* [**Joshua Timberman**](https://github.com/jtimberman):
+  Use Upstart provider on Ubuntu 13.10+. (CHEF-5276)
 
 * Cleaned up mount provider superclass
 * Added "knife serve" to bring up local mode as a server

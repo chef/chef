@@ -93,3 +93,6 @@ http_proxy_pass "Password1"
 ````
 
 then Chef will set `ENV['http_proxy'] = "http://myself:Password1@proxy.example.org:8080"`
+
+### -E is not respected by knife ssh [search]
+knife now includes a warning in the -E/--environment option that this setting is ignored by knife searches.
