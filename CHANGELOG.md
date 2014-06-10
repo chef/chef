@@ -53,13 +53,14 @@
   Add warning if host resembles winrm command and knife-windows is not present.
 * [**Sander van Harmelen**](https://github.com/svanharmelen):
   Ensure URI compliant urls. (CHEF-5261)
-* [**Julian C. Dunn**](https://github.com/juliandunn):
-  Prevent tracing? from throwing an exception when first starting chef-shell.
 * [**Robby Dyer**](https://github.com/robbydyer):
   Correctly detect when rpm_package does not exist in upgrade action. (CHEF-5273)
-* [**Joshua Timberman**](https://github.com/jtimberman):
-  Use Upstart provider on Ubuntu 13.10+. (CHEF-5276)
+* [**Sergey Sergeev**](https://github.com/zhirafovod):
+  Hide sensitive data output on chef-client error (CHEF-5098)
 
+* Log resource always triggers notifications (CHEF-4028)
+* Prevent tracing? from throwing an exception when first starting chef-shell.
+* Use Upstart provider on Ubuntu 13.10+. (CHEF-5276)
 * Cleaned up mount provider superclass
 * Added "knife serve" to bring up local mode as a server
 * Print nested LWRPs with indentation in doc formatter output
