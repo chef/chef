@@ -18,7 +18,7 @@
 
 require 'chef/provider/package'
 require 'chef/mixin/command'
-require 'chef/resource/package'
+require 'chef/resource/apt_package'
 require 'chef/mixin/shell_out'
 
 
@@ -31,7 +31,7 @@ class Chef
         attr_accessor :is_virtual_package
 
         def load_current_resource
-          @current_resource = Chef::Resource::Package.new(@new_resource.name)
+          @current_resource = Chef::Resource::AptPackage.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
           check_package_state(@new_resource.package_name)
           @current_resource
@@ -55,7 +55,7 @@ class Chef
           Chef::Log.debug("#{@new_resource} checking package status for #{package}")
           installed = false
 
-          shell_out!("apt-cache#{expand_options(default_release_options)} policy #{package}").stdout.each_line do |line|
+          shell_out!("apt-cache#{expand_options(default_release_options)} policy #{package}", :timeout => @new_resource.timeout).stdout.each_line do |line|
             case line
             when /^\s{2}Installed: (.+)$/
               installed_version = $1
@@ -72,7 +72,7 @@ class Chef
               if candidate_version == '(none)'
                 # This may not be an appropriate assumption, but it shouldn't break anything that already worked -- btm
                 @is_virtual_package = true
-                showpkg = shell_out!("apt-cache showpkg #{package}").stdout
+                showpkg = shell_out!("apt-cache showpkg #{package}", :timeout => @new_resource.timeout).stdout
                 providers = Hash.new
                 # Returns all lines after 'Reverse Provides:'
                 showpkg.rpartition(/Reverse Provides:\s*#{$/}/)[2].each_line do |line|
@@ -132,7 +132,7 @@ class Chef
         # interactive prompts. Command is run with default localization rather
         # than forcing locale to "C", so command output may not be stable.
         def run_noninteractive(command)
-          shell_out!(command, :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
+          shell_out!(command, :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil }, :timeout => @new_resource.timeout)
         end
 
       end

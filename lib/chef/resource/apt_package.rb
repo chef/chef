@@ -23,11 +23,22 @@ class Chef
   class Resource
     class AptPackage < Chef::Resource::Package
 
+      provides :package, :on_platforms => ["ubuntu", "gcel", "linaro", "raspbian", "linuxmint", "debian"]
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :apt_package
         @provider = Chef::Provider::Package::Apt
         @default_release = nil
+        @timeout = 900
+      end
+
+      def timeout(arg=nil)
+        set_or_return(
+          :timeout,
+          arg,
+          :kind_of => [String, Integer]
+        )
       end
 
       def default_release(arg=nil)
