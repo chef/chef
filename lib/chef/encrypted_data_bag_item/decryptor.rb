@@ -45,6 +45,8 @@ class Chef::EncryptedDataBagItem
       format_version = format_version_of(encrypted_value)
       assert_format_version_acceptable!(format_version)
       case format_version
+      when 3
+        Version3Decryptor.new(encrypted_value, key)
       when 2
         Version2Decryptor.new(encrypted_value, key)
       when 1
@@ -176,7 +178,7 @@ class Chef::EncryptedDataBagItem
       end
 
       def validate_hmac!
-        digest = OpenSSL::Digest::Digest.new("sha256")
+        digest = OpenSSL::Digest::Digest.new(HMAC_ALGORITHM)
         raw_hmac = OpenSSL::HMAC.digest(digest, key, @encrypted_data["encrypted_data"])
 
         if candidate_hmac_matches?(raw_hmac)
@@ -186,7 +188,7 @@ class Chef::EncryptedDataBagItem
         end
       end
 
-      private
+      protected
 
       def candidate_hmac_matches?(expected_hmac)
         return false unless @encrypted_data["hmac"]
@@ -197,5 +199,33 @@ class Chef::EncryptedDataBagItem
         valid == 0
       end
     end
+
+    class Version3Decryptor < Version2Decryptor
+
+      def initialize(encrypted_data, key)
+        @encrypted_data = encrypted_data
+
+        # split the hmac key form the key
+        @hmac_key, @key = key.unpack("Z#{key.length/2}Z*")
+      end
+
+      def validate_hmac!
+        digest = OpenSSL::Digest::Digest.new(HMAC_ALGORITHM)
+        data_to_hmac = Yajl::Encoder.encode({
+          "encrypted_data" => @encrypted_data["encrypted_data"],
+          "iv" => @encrypted_data["iv"],
+          "cipher" => @encrypted_data["cipher"]
+        }.sort)
+        raw_hmac_key = Digest::SHA512.digest(@hmac_key)
+        raw_hmac = OpenSSL::HMAC.digest(digest, raw_hmac_key, data_to_hmac)
+
+        if candidate_hmac_matches?(raw_hmac)
+          true
+        else
+          raise DecryptionFailure, "Error decrypting data bag value: invalid hmac. Most likely the provided key is incorrect"
+        end
+      end
+    end
+
   end
 end
