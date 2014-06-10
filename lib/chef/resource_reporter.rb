@@ -47,6 +47,16 @@ class Chef
         report
       end
 
+      # Future: Some resources store state information that does not convert nicely
+      # to json. We can't call a resource's state method here, since there are conflicts
+      # with some LWRPs, so we can't override a resource's state method to return
+      # json-friendly state data.
+      #
+      # The registry key resource returns json-friendly state data through its state
+      # attribute, and uses a read-only variable for fetching true state data. If
+      # we have conflicts with other resources reporting json incompatible state, we
+      # may want to extend the state_attrs API with the ability to rename POST'd
+      # attrs.
       def for_json
         as_hash = {}
         as_hash["type"]   = new_resource.class.dsl_name

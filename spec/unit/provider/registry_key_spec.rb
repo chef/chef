@@ -18,21 +18,14 @@
 
 require 'spec_helper'
 
-describe Chef::Provider::RegistryKey do
-
-  let(:testval1) { { :name => "one", :type => :string, :data => "1" } }
-  let(:testval1_wrong_type) { { :name => "one", :type => :multi_string, :data => "1" } }
-  let(:testval1_wrong_data) { { :name => "one", :type => :string, :data => "2" } }
-  let(:testval2) { { :name => "two", :type => :string, :data => "2" } }
-  let(:testkey1) { 'HKLM\Software\Opscode\Testing' }
-
+shared_examples_for "a registry key" do
   before(:each) do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::RegistryKey.new("windows is fun", @run_context)
-    @new_resource.key testkey1
+    @new_resource.key keyname
     @new_resource.values( testval1 )
     @new_resource.recursive false
 
@@ -49,8 +42,8 @@ describe Chef::Provider::RegistryKey do
   describe "executing load_current_resource" do
     describe "when the key exists" do
       before(:each) do
-        @double_registry.should_receive(:key_exists?).with(testkey1).and_return(true)
-        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval2 )
+        @double_registry.should_receive(:key_exists?).with(keyname).and_return(true)
+        @double_registry.should_receive(:get_values).with(keyname).and_return( testval2 )
         @provider.load_current_resource
       end
 
@@ -66,14 +59,14 @@ describe Chef::Provider::RegistryKey do
         @provider.current_resource.recursive.should == @new_resource.recursive
       end
 
-      it "should set the values of the current resource to the values it got from the registry" do
-        @provider.current_resource.values.should == [ testval2 ]
+      it "should set the unscrubbed values of the current resource to the values it got from the registry" do
+        @provider.current_resource.unscrubbed_values.should == [ testval2 ]
       end
     end
 
     describe "when the key does not exist" do
       before(:each) do
-        @double_registry.should_receive(:key_exists?).with(testkey1).and_return(false)
+        @double_registry.should_receive(:key_exists?).with(keyname).and_return(false)
         @provider.load_current_resource
       end
 
@@ -86,29 +79,29 @@ describe Chef::Provider::RegistryKey do
   describe "action_create" do
     context "when the key exists" do
       before(:each) do
-        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(true)
+        @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(true)
       end
       it "should do nothing if the key and the value both exist" do
-        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1 )
+        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1 )
         @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
         @provider.action_create
       end
       it "should create the value if the key exists but the value does not" do
-        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval2 )
-        @double_registry.should_receive(:set_value).with(testkey1, testval1)
+        @double_registry.should_receive(:get_values).with(keyname).and_return( testval2 )
+        @double_registry.should_receive(:set_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_create
       end
       it "should set the value if the key exists but the data does not match" do
-        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1_wrong_data )
-        @double_registry.should_receive(:set_value).with(testkey1, testval1)
+        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1_wrong_data )
+        @double_registry.should_receive(:set_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_create
       end
       it "should set the value if the key exists but the type does not match" do
-        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1_wrong_type )
-        @double_registry.should_receive(:set_value).with(testkey1, testval1)
+        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1_wrong_type )
+        @double_registry.should_receive(:set_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_create
       end
@@ -116,8 +109,8 @@ describe Chef::Provider::RegistryKey do
     context "when the key exists and the values in the new resource are empty" do
       it "when a value is in the key, it should do nothing" do
         @provider.new_resource.values([])
-        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(true)
-        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1 )
+        @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(true)
+        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1 )
         @double_registry.should_not_receive(:create_key)
         @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
@@ -125,8 +118,8 @@ describe Chef::Provider::RegistryKey do
       end
       it "when no value is in the key, it should do nothing" do
         @provider.new_resource.values([])
-        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(true)
-        @double_registry.should_receive(:get_values).with(testkey1).and_return( nil )
+        @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(true)
+        @double_registry.should_receive(:get_values).with(keyname).and_return( nil )
         @double_registry.should_not_receive(:create_key)
         @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
@@ -135,11 +128,11 @@ describe Chef::Provider::RegistryKey do
     end
     context "when the key does not exist" do
       before(:each) do
-        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(false)
+        @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(false)
       end
       it "should create the key and the value" do
-        @double_registry.should_receive(:create_key).with(testkey1, false)
-        @double_registry.should_receive(:set_value).with(testkey1, testval1)
+        @double_registry.should_receive(:create_key).with(keyname, false)
+        @double_registry.should_receive(:set_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_create
       end
@@ -147,8 +140,8 @@ describe Chef::Provider::RegistryKey do
     context "when the key does not exist and the values in the new resource are empty" do
       it "should create the key" do
         @new_resource.values([])
-        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(false)
-        @double_registry.should_receive(:create_key).with(testkey1, false)
+        @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(false)
+        @double_registry.should_receive(:create_key).with(keyname, false)
         @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
         @provider.action_create
@@ -159,28 +152,28 @@ describe Chef::Provider::RegistryKey do
   describe "action_create_if_missing" do
     context "when the key exists" do
       before(:each) do
-        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(true)
+        @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(true)
       end
       it "should do nothing if the key and the value both exist" do
-        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1 )
+        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1 )
         @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
         @provider.action_create_if_missing
       end
       it "should create the value if the key exists but the value does not" do
-        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval2 )
-        @double_registry.should_receive(:set_value).with(testkey1, testval1)
+        @double_registry.should_receive(:get_values).with(keyname).and_return( testval2 )
+        @double_registry.should_receive(:set_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_create_if_missing
       end
       it "should not set the value if the key exists but the data does not match" do
-        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1_wrong_data )
+        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1_wrong_data )
         @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
         @provider.action_create_if_missing
       end
       it "should not set the value if the key exists but the type does not match" do
-        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1_wrong_type )
+        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1_wrong_type )
         @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
         @provider.action_create_if_missing
@@ -188,11 +181,11 @@ describe Chef::Provider::RegistryKey do
     end
     context "when the key does not exist" do
       before(:each) do
-        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(false)
+        @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(false)
       end
       it "should create the key and the value" do
-        @double_registry.should_receive(:create_key).with(testkey1, false)
-        @double_registry.should_receive(:set_value).with(testkey1, testval1)
+        @double_registry.should_receive(:create_key).with(keyname, false)
+        @double_registry.should_receive(:set_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_create_if_missing
       end
@@ -202,28 +195,28 @@ describe Chef::Provider::RegistryKey do
   describe "action_delete" do
     context "when the key exists" do
       before(:each) do
-        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(true)
+        @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(true)
       end
       it "deletes the value when the value exists" do
-        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1 )
-        @double_registry.should_receive(:delete_value).with(testkey1, testval1)
+        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1 )
+        @double_registry.should_receive(:delete_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_delete
       end
       it "deletes the value when the value exists, but the type is wrong" do
-        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1_wrong_type )
-        @double_registry.should_receive(:delete_value).with(testkey1, testval1)
+        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1_wrong_type )
+        @double_registry.should_receive(:delete_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_delete
       end
       it "deletes the value when the value exists, but the data is wrong" do
-        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1_wrong_data )
-        @double_registry.should_receive(:delete_value).with(testkey1, testval1)
+        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1_wrong_data )
+        @double_registry.should_receive(:delete_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_delete
       end
       it "does not delete the value when the value does not exist" do
-        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval2 )
+        @double_registry.should_receive(:get_values).with(keyname).and_return( testval2 )
         @double_registry.should_not_receive(:delete_value)
         @provider.load_current_resource
         @provider.action_delete
@@ -231,7 +224,7 @@ describe Chef::Provider::RegistryKey do
     end
     context "when the key does not exist" do
       before(:each) do
-        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(false)
+        @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(false)
       end
       it "does nothing" do
         @double_registry.should_not_receive(:delete_value)
@@ -244,18 +237,18 @@ describe Chef::Provider::RegistryKey do
   describe "action_delete_key" do
     context "when the key exists" do
       before(:each) do
-        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(true)
+        @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(true)
       end
       it "deletes the key" do
-        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1 )
-        @double_registry.should_receive(:delete_key).with(testkey1, false)
+        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1 )
+        @double_registry.should_receive(:delete_key).with(keyname, false)
         @provider.load_current_resource
         @provider.action_delete_key
       end
     end
     context "when the key does not exist" do
       before(:each) do
-        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(false)
+        @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(false)
       end
       it "does nothing" do
         @double_registry.should_not_receive(:delete_key)
@@ -267,3 +260,24 @@ describe Chef::Provider::RegistryKey do
 
 end
 
+describe Chef::Provider::RegistryKey do
+  context "when the key data is safe" do
+    let(:keyname) { 'HKLM\Software\Opscode\Testing\Safe' }
+    let(:testval1) { { :name => "one", :type => :string, :data => "1" } }
+    let(:testval1_wrong_type) { { :name => "one", :type => :multi_string, :data => "1" } }
+    let(:testval1_wrong_data) { { :name => "one", :type => :string, :data => "2" } }
+    let(:testval2) { { :name => "two", :type => :string, :data => "2" } }
+
+    it_should_behave_like "a registry key"
+  end
+
+  context "when the key data is unsafe" do
+    let(:keyname) { 'HKLM\Software\Opscode\Testing\Unsafe' }
+    let(:testval1) { { :name => "one", :type => :binary, :data => 255.chr * 1 } }
+    let(:testval1_wrong_type) { { :name => "one", :type => :string, :data => 255.chr * 1 } }
+    let(:testval1_wrong_data) { { :name => "one", :type => :binary, :data => 254.chr * 1 } }
+    let(:testval2) { { :name => "two", :type => :binary, :data => 0.chr * 1 } }
+
+    it_should_behave_like "a registry key"
+  end
+end

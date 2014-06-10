@@ -54,7 +54,7 @@ class Chef
         if registry.key_exists?(@new_resource.key)
           @current_resource.values(registry.get_values(@new_resource.key))
         end
-        values_to_hash(@current_resource.values)
+        values_to_hash(@current_resource.unscrubbed_values)
         @current_resource
       end
 
@@ -99,7 +99,7 @@ class Chef
             registry.create_key(@new_resource.key, @new_resource.recursive)
           end
         end
-        @new_resource.values.each do |value|
+        @new_resource.unscrubbed_values.each do |value|
           if @name_hash.has_key?(value[:name])
             current_value = @name_hash[value[:name]]
             unless current_value[:type] == value[:type] && current_value[:data] == value[:data]
@@ -121,7 +121,7 @@ class Chef
             registry.create_key(@new_resource.key, @new_resource.recursive)
           end
         end
-        @new_resource.values.each do |value|
+        @new_resource.unscrubbed_values.each do |value|
           unless @name_hash.has_key?(value[:name])
             converge_by("create value #{value}") do
               registry.set_value(@new_resource.key, value)
@@ -132,7 +132,7 @@ class Chef
 
       def action_delete
         if registry.key_exists?(@new_resource.key)
-          @new_resource.values.each do |value|
+          @new_resource.unscrubbed_values.each do |value|
             if @name_hash.has_key?(value[:name])
               converge_by("delete value #{value}") do
                 registry.delete_value(@new_resource.key, value)
@@ -153,4 +153,3 @@ class Chef
     end
   end
 end
-
