@@ -44,7 +44,7 @@ class Chef::EncryptedDataBagItem
         Version3Encryptor.new(value, secret, iv)
       else
         raise UnsupportedEncryptedDataBagItemFormat,
-          "Invalid encrypted data bag format version `#{format_version}'. Supported versions are '1', '2'"
+          "Invalid encrypted data bag format version `#{format_version}'. Supported versions are '1', '2', '3'"
       end
     end
 
