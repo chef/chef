@@ -205,6 +205,8 @@ describe Chef::User do
         Chef::Config[:chef_server_url] = "http://www.example.com"
         @osc_response = { "admin" => "http://www.example.com/users/admin"}
         @ohc_response = [ { "user" => { "username" => "admin" }} ]
+        Chef::User.stub(:load).with("admin").and_return(@user)
+        @osc_inflated_response = { "admin" => @user }
       end
 
       it "lists all clients on an OSC server" do
@@ -212,11 +214,21 @@ describe Chef::User do
         Chef::User.list.should == @osc_response
       end
 
+      it "inflate all clients on an OSC server" do
+        @http_client.stub(:get_rest).with("users").and_return(@osc_response)
+        Chef::User.list(true).should == @osc_inflated_response
+      end
+
       it "lists all clients on an OHC/OPC server" do
         @http_client.stub(:get_rest).with("users").and_return(@ohc_response)
         # We expect that Chef::User.list will give a consistent response
         # so OHC API responses should be transformed to OSC-style output.
         Chef::User.list.should == @osc_response
+      end
+
+      it "inflate all clients on an OHC/OPC server" do
+        @http_client.stub(:get_rest).with("users").and_return(@ohc_response)
+        Chef::User.list(true).should == @osc_inflated_response
       end
     end
 
