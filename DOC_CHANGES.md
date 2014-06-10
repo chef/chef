@@ -96,3 +96,6 @@ then Chef will set `ENV['http_proxy'] = "http://myself:Password1@proxy.example.o
 
 ### -E is not respected by knife ssh [search]
 knife now includes a warning in the -E/--environment option that this setting is ignored by knife searches.
+
+### New configurable option :yum-lock-timeout
+You can now set the timeout for receiving the yum lock in `config.rb` by adding `yum-lock-timeout SECONDS` (default is 30 seconds).

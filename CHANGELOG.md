@@ -57,6 +57,14 @@
   Correctly detect when rpm_package does not exist in upgrade action. (CHEF-5273)
 * [**Sergey Sergeev**](https://github.com/zhirafovod):
   Hide sensitive data output on chef-client error (CHEF-5098)
+* [**Mark Vanderwiel**](https://github.com/kramvan1):
+  Add config option :yum-lock-timeout for yum-dump.py
+* [**Peter Fern**](https://github.com/pdf):
+  Convert APT package resource to use `provides :package`, add timeout parameter.
+* [**Xabier de Zuazo**](https://github.com/zuazo):
+  Fix Chef::User#list API error when inflate=true. (CHEF-5328)
+* [**Raphaël Valyi**](https://github.com/rvalyi):
+  Use git resource status checking to reduce shell_out system calls.
 
 * Log resource always triggers notifications (CHEF-4028)
 * Prevent tracing? from throwing an exception when first starting chef-shell.
