@@ -37,11 +37,4 @@ describe Chef::Provider::User::Useradd do
   }
 
   include_examples "a useradd-based user provider", supported_useradd_options
-
-  describe "manage_user" do
-    it "should not run the command if universal_options is an empty array" do
-      provider.stub!(:universal_options).and_return([])
-      expect(provider.manage_user).not_to receive(:compile_command)
-    end
-  end
 end
