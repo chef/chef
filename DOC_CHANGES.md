@@ -81,3 +81,13 @@ If your config file looks like `automatic_attribute_whitelist = []`, then none o
 The default behavior is for the node to save all the attribute data. This can be ensured by setting your whitelist filter to `nil`.
 
 We recommend only using `automatic_attribute_whitelist` to reduce the size of the system data being stored for nodes, and discourage the use of the other attribute whitelists except by advanced users.
+
+### Secret Keys for Encrypted Data Bags Version 3
+
+If you are thinking of using encrypted data bags version 3, it is recommended to double the size of the generated secret. Based on the previous documentation example, the command to use would be:
+
+```
+$ openssl rand -base64 1024 | tr -d '\r\n' > encrypted_data_bag_secret
+```
+
+Encrypted Data Bags version 3 uses two keys internally. To achieve this, the secret provided by the user is divided into two. One is used for the data and the other for the HMAC. In order to preserve the entropy level used to encrypt the data, it is advisable to double the size of the key. Keep in mind that this secrets are hashed before using them.
