@@ -48,20 +48,37 @@ describe Shell::ShellSession do
 end
 
 describe Shell::ClientSession do
-  it "builds the node's run_context with the proper environment" do
+  before do
+    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new('shell::override')] }
     @session = Shell::ClientSession.instance
     @node = Chef::Node.build("foo")
     @session.node = @node
-    @session.instance_variable_set(:@client, double(:sync_cookbooks => {}))
+    @client = double("Chef::Client.new",
+                     :run_ohai => true,
+                     :load_node => true,
+                     :build_node => true,
+                     :register => true,
+                     :sync_cookbooks => {})
+  end
+
+  it "builds the node's run_context with the proper environment" do
+    @session.instance_variable_set(:@client, @client)
     @expansion = Chef::RunList::RunListExpansion.new(@node.chef_environment, [])
 
     @node.run_list.should_receive(:expand).with(@node.chef_environment).and_return(@expansion)
     @session.rebuild_context
   end
+
+  it "passes the shell CLI args to the client" do
+    Chef::Client.should_receive(:new).with(nil, Chef::Config[:shell_config]).and_return(@client)
+    @session.send(:rebuild_node)
+  end
+
 end
 
 describe Shell::StandAloneSession do
   before do
+    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new('shell::override')] }
     @session = Shell::StandAloneSession.instance
     @node = @session.node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
@@ -97,10 +114,22 @@ describe Shell::StandAloneSession do
     @recipe.run_chef.should == :converged
   end
 
+  it "passes the shell CLI args to the client" do
+    @client = double("Chef::Client.new",
+                     :run_ohai => true,
+                     :load_node => true,
+                     :build_node => true,
+                     :register => true,
+                     :sync_cookbooks => {})
+    Chef::Client.should_receive(:new).with(nil, Chef::Config[:shell_config]).and_return(@client)
+    @session.send(:rebuild_node)
+  end
+
 end
 
 describe Shell::SoloSession do
   before do
+    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new('shell::override')] }
     Chef::Config[:shell_solo] = true
     @session = Shell::SoloSession.instance
     @node = Chef::Node.new
@@ -149,6 +178,17 @@ describe Shell::SoloSession do
     Chef::Runner.should_receive(:new).with(an_instance_of(Chef::RunContext)).and_return(chef_runner)
 
     @recipe.run_chef.should == :converged
+  end
+
+  it "passes the shell CLI args to the client" do
+    @client = double("Chef::Client.new",
+                     :run_ohai => true,
+                     :load_node => true,
+                     :build_node => true,
+                     :register => true,
+                     :sync_cookbooks => {})
+    Chef::Client.should_receive(:new).with(nil, Chef::Config[:shell_config]).and_return(@client)
+    @session.send(:rebuild_node)
   end
 
 end

@@ -53,6 +53,7 @@ module Shell
     IRB::ExtendCommandBundle.instance_variable_get(:@ALIASES).delete(irb_help)
 
     parse_opts
+    Chef::Config[:shell_config] = options.config
 
     # HACK: this duplicates the functions of IRB.start, but we have to do it
     # to get access to the main object before irb starts.
@@ -257,6 +258,12 @@ FOOTER
       :boolean      => true,
       :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
       :exit         => 0
+
+    option :override_runlist,
+      :short        => "-o RunlistItem,RunlistItem...",
+      :long         => "--override-runlist RunlistItem,RunlistItem...",
+      :description  => "Replace current run list with specified items",
+      :proc         => lambda { |items| items.split(',').map { |item| Chef::RunList::RunListItem.new(item) }}
 
     def self.print_help
       instance = new
