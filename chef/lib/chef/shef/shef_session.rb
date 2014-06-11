@@ -151,7 +151,7 @@ module Shef
 
     def rebuild_node
       Chef::Config[:solo] = true
-      @client = Chef::Client.new
+      @client = Chef::Client.new(nil, Chef::Config[:shell_config])
       @client.run_ohai
       @client.load_node
       @client.build_node
@@ -171,7 +171,7 @@ module Shef
       @run_status = Chef::RunStatus.new(@node, @events)
       Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, Chef::Config[:cookbook_path]) }
       cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(Chef::Config[:cookbook_path]))
-      @run_context = Chef::RunContext.new(node, cookbook_collection, @events) 
+      @run_context = Chef::RunContext.new(node, cookbook_collection, @events)
       @run_context.load(Chef::RunList::RunListExpansionFromDisk.new("_default", []))
       @run_status.run_context = run_context
     end
@@ -181,7 +181,7 @@ module Shef
     def rebuild_node
       # Tell the client we're chef solo so it won't try to contact the server
       Chef::Config[:solo] = true
-      @client = Chef::Client.new
+      @client = Chef::Client.new(nil, Chef::Config[:shell_config])
       @client.run_ohai
       @client.load_node
       @client.build_node
@@ -212,7 +212,7 @@ module Shef
     def rebuild_node
       # Make sure the client knows this is not chef solo
       Chef::Config[:solo] = false
-      @client = Chef::Client.new
+      @client = Chef::Client.new(nil, Chef::Config[:shell_config])
       @client.run_ohai
       @client.register
       @client.load_node
