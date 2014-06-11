@@ -82,7 +82,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
         raise Chef::Exceptions::Service, "Service #{@new_resource} can't be started from state [#{state}]"
       end
     else
-        Chef::Log.debug "#{@new_resource} does not exist - nothing to do"
+      Chef::Log.debug "#{@new_resource} does not exist - nothing to do"
     end
   end
 
@@ -178,12 +178,12 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   end
 
   def command_timeout
-	timeout   = @new_resource.timeout if @new_resource.timeout
-	timeout ||= TIMEOUT
-	Chef::Log.debug  "service command timeout [#{timeout}]"
+    timeout = @new_resource.timeout if @new_resource.timeout
+    timeout ||= TIMEOUT
+    Chef::Log.debug "service command timeout [#{timeout}]"
 
     Timeout.timeout(timeout) do
-	  yield
+      yield
     end
   end
 end

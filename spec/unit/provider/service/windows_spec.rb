@@ -161,7 +161,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       @provider.stop_service
       @new_resource.updated_by_last_action?.should be_false
     end
-	
+
     it "should raise an error if the service is paused" do
       Win32::Service.stub(:status).with(@new_resource.service_name).and_return(
         double("StatusStruct", :current_state => "paused"))
@@ -194,13 +194,14 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
     it "should pass custom timeout to the stop command if provided" do
       Win32::Service.stub!(:status).with(@new_resource.service_name).and_return(
         mock("StatusStruct", :current_state => "running"))
-	  @new_resource.timeout 1
+      @new_resource.timeout 1
       Win32::Service.should_receive(:stop).with(@new_resource.service_name)
-	  Timeout.timeout(2) do
-		expect { @provider.stop_service }.to raise_error(Timeout::Error)
-	  end
+      Timeout.timeout(2) do
+        expect { @provider.stop_service }.to raise_error(Timeout::Error)
+      end
       @new_resource.updated_by_last_action?.should be_false
     end
+
   end
 
   describe Chef::Provider::Service::Windows, "restart_service" do
