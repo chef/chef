@@ -49,8 +49,6 @@
   Use 'guest' user on AIX for RSpec tests. (OC-9954)
 * [**Stephan Renatus**](https://github.com/srenatus):
   Fix resource_spec.rb.
-* [**Isa Farnik**](https://github.com/curiositycasualty):
-  Add warning if host resembles winrm command and knife-windows is not present.
 * [**Sander van Harmelen**](https://github.com/svanharmelen):
   Ensure URI compliant urls. (CHEF-5261)
 * [**Robby Dyer**](https://github.com/robbydyer):
@@ -65,6 +63,10 @@
   Fix Chef::User#list API error when inflate=true. (CHEF-5328)
 * [**Raphaël Valyi**](https://github.com/rvalyi):
   Use git resource status checking to reduce shell_out system calls.
+* [**Eric Krupnik**](https://github.com/ekrupnik):
+  Added .project to git ignore list.
+* [**Ryan Cragun**](https://github.com/ryancragun):
+  Support override_runlist CLI option in shef/chef-shell. (CHEF-5314)
 
 * Log resource always triggers notifications (CHEF-4028)
 * Prevent tracing? from throwing an exception when first starting chef-shell.
@@ -93,6 +95,7 @@
 * Automatically enable verify_api_cert when running chef-client in local-mode. (Chef Issues 1464)
 * Add helper to warn for broken [windows] paths. (CHEF-5322)
 * Send md5 checksummed data for registry key if data type is binary, dword, or qword. (Chef-5323)
+* Add warning if host resembles winrm command and knife-windows is not present.
 
 ## Release: 11.12.4 (04/30/2014)
 http://www.getchef.com/blog/2014/04/30/release-chef-client-11-12-4-ohai-7-0-4/
