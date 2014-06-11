@@ -244,7 +244,11 @@ class Chef
                       when '', 'HEAD'
                         'HEAD'
                       else
-                        @new_resource.revision + '*'
+                        prefix = {
+                          :both => '',
+                          :branch => 'heads/',
+                          :tag => 'tags/'}[@new_resource.revision_type]
+                        prefix + @new_resource.revision + '*'
                       end
         command = git("ls-remote \"#{@new_resource.repository}\" \"#{rev_pattern}\"")
         @resolved_reference = shell_out!(command, run_options).stdout
