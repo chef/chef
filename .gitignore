@@ -23,6 +23,9 @@ binstubs/
 .ruby-version
 .ruby-gemset
 
+# IDE files
+.project
+
 # Documentation
 _site/*
 .yardoc/
