@@ -194,7 +194,7 @@ SHOWPKG_STDOUT
     it "raises an exception if a source is specified (CHEF-5113)" do
       @new_resource.source "pluto"
       @provider.define_resource_requirements
-      @provider.should_receive(:shell_out!).with("apt-cache policy irssi", {:timeout=>900}).and_return(@shell_out)
+      @provider.should_receive(:shell_out!).with("apt-cache policy irssi", {:timeout=>@timeout}).and_return(@shell_out)
       expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
     end
   end
