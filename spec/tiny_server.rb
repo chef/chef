@@ -152,7 +152,7 @@ module TinyServer
                       :available_routes => @routes, :request => env}
         # Uncomment me for glorious debugging
         # pp :not_found => debug_info
-        [404, {'Content-Type' => 'application/json'}, debug_info.to_json]
+        [404, {'Content-Type' => 'application/json'}, [ debug_info.to_json ]]
       end
     end
 
