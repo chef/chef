@@ -32,6 +32,7 @@ dependency "libffi" if debian?
 dependency "test-kitchen"
 dependency "appbundler"
 dependency "berkshelf"
+dependency "ohai"
 dependency "chef-vault"
 
 sep = File::PATH_SEPARATOR || ":"
@@ -88,7 +89,7 @@ build do
 
   block { FileUtils.mkdir_p("#{install_dir}/embedded/apps") }
 
-  appbundler_apps = %w[chef berkshelf test-kitchen chef-dk chef-vault]
+  appbundler_apps = %w[chef berkshelf test-kitchen chef-dk chef-vault ohai]
   appbundler_apps.each do |app_name|
     block { FileUtils.cp_r("#{source_dir}/#{app_name}", "#{install_dir}/embedded/apps/") }
     block { FileUtils.rm_rf("#{install_dir}/embedded/apps/#{app_name}/.git") }
