@@ -38,7 +38,7 @@ class Chef
         end
 
         def manage_user
-          if universal_options != ""
+          unless universal_options.empty?
             command = compile_command("usermod") do |u|
               u.concat(universal_options)
             end
