@@ -42,6 +42,12 @@ describe Chef::Resource::File do
     create_resource
   end
 
+  let(:resource_with_numeric_content) do
+    r = create_resource
+    r.content(123)
+    r
+  end
+
   let(:unmanaged_content) do
     "This is file content that is not managed by chef"
   end
@@ -70,6 +76,26 @@ describe Chef::Resource::File do
 
       it "is marked updated by last action" do
         resource_without_content.should be_updated_by_last_action
+      end
+    end
+  end
+
+  describe "When running action :create with numeric content" do
+    before do
+      resource_with_numeric_content.run_action(:create)
+    end
+
+    context "and the target file does not exist" do
+      it "creates the file" do
+        File.should exist(path)
+      end
+
+      it "is marked updated by last action" do
+        resource_with_numeric_content.should be_updated_by_last_action
+      end
+
+      it "contains the correct content" do
+        File.read(path).should == "123"
       end
     end
   end
