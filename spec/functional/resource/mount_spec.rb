@@ -164,7 +164,9 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
   end
 
   # don't run the remount tests on solaris2 (tmpfs does not support remount)
-  describe "when the filesystem should be remounted and the resource supports remounting", :external => ohai[:platform] == "solaris2" do
+  # Need to make sure the platforms we've already excluded are considered:
+  skip_remount = include_flag || (ohai[:platform] == "solaris2")
+  describe "when the filesystem should be remounted and the resource supports remounting", :external => skip_remount do
     it "should remount the filesystem if it is mounted" do
       new_resource.run_action(:mount)
       mount_should_exist(new_resource.mount_point, new_resource.device)
