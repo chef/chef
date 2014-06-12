@@ -8,8 +8,10 @@
 #
 # This workaround should be removed when that fix is released.
 before_install:
-  - gem update --system 2.1.11
-  - gem --version
+  - echo $PATH
+  - sudo gem install bundler
+  - sudo gem update --system 2.1.11
+  - sudo gem --version
 
 matrix:
   include:
@@ -19,7 +21,7 @@ matrix:
     - rvm: 2.1.1
     - rvm: 2.1.1
       gemfile: pedant.gemfile
-      script: bundle exec rake pedant
+      script: sudo bundle exec rake pedant
 
 branches:
   only:
@@ -27,7 +29,7 @@ branches:
     - 10-stable
     - 11-stable
 
-script: bundle exec rspec --color --format progress
+script: sudo bundle exec rspec --color --format progress
 
 notifications:
   on_success: change
