@@ -72,7 +72,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
           Chef::Log.debug "#{@new_resource} starting service using the given start_command"
           shell_out!(@new_resource.start_command)
         else
-          command_timeout do
+          spawn_command_thread do
             Win32::Service.start(@new_resource.service_name)
             wait_for_state(RUNNING)
           end
@@ -94,7 +94,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
           Chef::Log.debug "#{@new_resource} stopping service using the given stop_command"
           shell_out!(@new_resource.stop_command)
         else
-          command_timeout do
+          spawn_command_thread do
             Win32::Service.stop(@new_resource.service_name)
             wait_for_state(STOPPED)
           end
@@ -177,13 +177,15 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     sleep 1 until current_state == desired_state
   end
 
-  def command_timeout
-    timeout = @new_resource.timeout if @new_resource.timeout
-    timeout ||= TIMEOUT
-    Chef::Log.debug "service command timeout [#{timeout}]"
-
-    Timeout.timeout(timeout) do
+  def spawn_command_thread
+    worker = Thread.new do
       yield
+    end
+
+    resource_timeout = @new_resource.timeout if @new_resource.timeout
+    resource_timeout ||= TIMEOUT
+    Timeout.timeout(resource_timeout) do
+      worker.join
     end
   end
 end
