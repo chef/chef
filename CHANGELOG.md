@@ -67,6 +67,8 @@
   Added .project to git ignore list.
 * [**Ryan Cragun**](https://github.com/ryancragun):
   Support override_runlist CLI option in shef/chef-shell. (CHEF-5314)
+* [**Cam Cope**](https://github.com/ccope):
+  Fix updating user passwords on Solaris. (CHEF-5247)
 
 * Log resource always triggers notifications (CHEF-4028)
 * Prevent tracing? from throwing an exception when first starting chef-shell.
