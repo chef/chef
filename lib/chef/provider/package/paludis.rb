@@ -38,18 +38,20 @@ class Chef
           installed = false
           re = Regexp.new('(?<name>(.*))[[:blank:]](?<version>(.*))[[:blank:]](?<repository>(.*))$')
 
-          shell_out!("cave -L warning print-ids -m \"#{@new_resource.package_name}\" -f \"%c/%p %v %r\n\"").stdout.each_line do |line|
+          shell_out!("cave -L warning print-ids -m \"#{@new_resource.package_name.split('/').last}\" -f \"%c/%p %v %r\n\"").stdout.each_line do |line|
             res = re.match(line)
-            case res[:repository]
-            when 'accounts', 'installed-accounts'
-              next
-            when 'installed'
-              if res[:repository] == 'installed'
-                installed = true
-                @current_resource.version(res[:version])
-              else
-                @candidate_version = res[:version]
-                @current_resource.version(nil)              
+            unless res.nil?
+              case res[:repository]
+              when 'accounts', 'installed-accounts'
+                next
+              when 'installed'
+                if res[:repository] == 'installed'
+                  installed = true
+                  @current_resource.version(res[:version])
+                else
+                  @candidate_version = res[:version]
+                  @current_resource.version(nil)              
+                end
               end
             end
           end
@@ -58,7 +60,11 @@ class Chef
         end
 
         def install_package(name, version)
-          pkg = "=#{name}-#{version}"
+          if(version)
+            pkg = "=#{name}-#{version}"
+          else
+            pkg = "#{@new_resource.package_name}"
+          end
           shell_out!("cave -L warning resolve -x#{expand_options(@new_resource.options)} \"#{pkg}\"")
         end
 
