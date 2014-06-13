@@ -140,7 +140,7 @@ class Chef
 
         def load_data
           Chef::JSONCompat.from_json(load_json_data)
-        rescue Chef::Exceptions::FileNotFound, FFI_Yajl::ParseError
+        rescue Chef::Exceptions::FileNotFound, FFI_Yajl::ParseError, JSON::ParserError
           false
         end
 
