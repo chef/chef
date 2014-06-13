@@ -38,7 +38,7 @@ class Chef
           installed = false
           re = Regexp.new('(?<name>(.*))[[:blank:]](?<version>(.*))[[:blank:]](?<repository>(.*))$')
 
-          shell_out!("cave -L warning print-ids -m \"#{@new_resource.package_name.split('/').last}\" -f \"%c/%p %v %r\n\"").stdout.each_line do |line|
+          shell_out!("cave -L warning print-ids -m \"*/#{@new_resource.package_name.split('/').last}\" -f \"%c/%p %v %r\n\"").stdout.each_line do |line|
             res = re.match(line)
             unless res.nil?
               case res[:repository]
