@@ -39,6 +39,8 @@ class Chef
 
           shell_out!("cave -L warning print-ids -m \"#{package}\" -f \"%c/%p %v %r\n\"").stdout.each_line do |line|
             case line
+            when /accounts/
+              next
             when /(.*)\s+(.*)\s+(.*)\sinstalled/
               installed = true
               @current_resource.version($2)
