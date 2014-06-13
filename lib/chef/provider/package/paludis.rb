@@ -34,10 +34,10 @@ class Chef
 
           @current_resource.version(nil)
 
-          Chef::Log.debug("Checking package status for #{package}")
+          Chef::Log.debug("Checking package status for #{@new_resource.package_name}")
           installed = false
 
-          shell_out!("cave -L warning print-ids -m \"#{package}\" -f \"%c/%p %v %r\n\"").stdout.each_line do |line|
+          shell_out!("cave -L warning print-ids -m \"#{@new_resource.package_name}\" -f \"%c/%p %v %r\n\"").stdout.each_line do |line|
             case line
             when /accounts/
               next
