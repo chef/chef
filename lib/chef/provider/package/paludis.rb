@@ -45,13 +45,11 @@ class Chef
               when 'accounts', 'installed-accounts'
                 next
               when 'installed'
-                if res[:repository] == 'installed'
-                  installed = true
-                  @current_resource.version(res[:version])
-                else
-                  @candidate_version = res[:version]
-                  @current_resource.version(nil)              
-                end
+                installed = true
+                @current_resource.version(res[:version])
+              else
+                @candidate_version = res[:version]
+                @current_resource.version(nil)              
               end
             end
           end
