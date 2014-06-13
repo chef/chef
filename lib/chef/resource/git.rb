@@ -27,6 +27,7 @@ class Chef
         @resource_name = :git
         @provider = Chef::Provider::Git
         @additional_remotes = Hash[]
+        @revision_type = :both
       end
 
       def additional_remotes(arg=nil)
@@ -37,9 +38,16 @@ class Chef
         )
       end
 
+      def revision_type(arg=nil)
+        set_or_return(
+          :revision_type,
+          arg,
+          :kind_of => Symbol,
+          :default => :both
+      end
+
       alias :branch :revision
       alias :reference :revision
-
       alias :repo :repository
     end
   end
