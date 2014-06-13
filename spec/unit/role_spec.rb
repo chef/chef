@@ -261,7 +261,6 @@ EOR
 
     it "should return a Chef::Role object from a Ruby DSL" do
       Dir.should_receive(:glob).and_return(["#{Chef::Config[:role_path]}/memes", "#{Chef::Config[:role_path]}/memes/lolcat.rb"])
-      js_path = File.join(Chef::Config[:role_path], 'memes/lolcat.rb')
       rb_path = File.join(Chef::Config[:role_path], 'memes/lolcat.rb')
       File.should_receive(:exists?).with(rb_path).exactly(2).times.and_return(true)
       File.should_receive(:readable?).with(rb_path).exactly(1).times.and_return(true)
