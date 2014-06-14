@@ -26,8 +26,8 @@ describe Chef::Provider::Package::Paludis do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::Package.new("dev-scm/git")
-    @current_resource = Chef::Resource::Package.new("dev-scm/git")
+    @new_resource = Chef::Resource::Package.new("net/ntp")
+    @current_resource = Chef::Resource::Package.new("net/ntp")
     Chef::Resource::Package.stub(:new).and_return(@current_resource)
     @provider = Chef::Provider::Package::Paludis.new(@new_resource, @run_context)
 
@@ -64,6 +64,13 @@ PKG_STATUS
     end
 
     it "should set the installed version to nil on the current resource if package state is not installed" do
+      @stdout.replace(<<-INSTALLED)
+group/ntp 0 accounts
+group/ntp 0 installed-accounts
+net/ntp 4.2.6_p5-r2 arbor
+user/ntp 0 accounts
+user/ntp 0 installed-accounts
+INSTALLED
       @provider.should_receive(:shell_out!).and_return(@shell_out)
       @current_resource.should_receive(:version).with(nil).and_return(true)
       @provider.load_current_resource
