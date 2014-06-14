@@ -76,7 +76,7 @@ INSTALLED
       @provider.load_current_resource
     end
 
-    it "should set the installed version if package has one" do
+    it "should return new version if package is installed" do
       @stdout.replace(<<-INSTALLED)
 group/ntp 0 accounts
 group/ntp 0 installed-accounts
