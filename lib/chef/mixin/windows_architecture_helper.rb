@@ -26,8 +26,10 @@ class Chef
   module Mixin
     module WindowsArchitectureHelper
 
-      include Chef::ReservedNames::Win32::API::Process
-      include Chef::ReservedNames::Win32::API::Error
+      if Chef::Platform.windows?
+        include Chef::ReservedNames::Win32::API::Process
+        include Chef::ReservedNames::Win32::API::Error
+      end
 
       def node_windows_architecture(node)
         node[:kernel][:machine].to_sym
