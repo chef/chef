@@ -51,6 +51,8 @@ $chefscriptresult = {
 }.invokereturnasis()
 if ($interpolatedexitcode -and $chefscriptresult.gettype().name -eq 'boolean') { exit [int32](!$chefscriptresult) } else { exit 0 }
 EOH
+        Chef::Log.debug("powershell_script provider called with script code:\n\n#{code}\n")
+        Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{@code}\n")
       end
 
       public
