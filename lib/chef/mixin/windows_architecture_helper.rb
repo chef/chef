@@ -59,16 +59,20 @@ class Chef
       end
 
       def is_i386_process_on_x86_64_windows?
-        is_64_bit_process_result = FFI::MemoryPointer.new(:int)
+        if Chef::Platform.windows?
+          is_64_bit_process_result = FFI::MemoryPointer.new(:int)
 
-        # The return value of IsWow64Process is nonzero value if the API call succeeds.
-        # The result data are returned in the last parameter, not the return value.
-        call_succeeded = IsWow64Process(GetCurrentProcess(), is_64_bit_process_result)
+          # The return value of IsWow64Process is nonzero value if the API call succeeds.
+          # The result data are returned in the last parameter, not the return value.
+          call_succeeded = IsWow64Process(GetCurrentProcess(), is_64_bit_process_result)
 
-        # The result is nonzero if IsWow64Process's calling process, in the case here
-        # this process, is running under WOW64, i.e. the result is nonzero if this
-        # process is 32-bit (aka :i386).
-        result = (call_succeeded != 0) && (is_64_bit_process_result.get_int(0) != 0)
+          # The result is nonzero if IsWow64Process's calling process, in the case here
+          # this process, is running under WOW64, i.e. the result is nonzero if this
+          # process is 32-bit (aka :i386).
+          result = (call_succeeded != 0) && (is_64_bit_process_result.get_int(0) != 0)
+        else
+          false
+        end
       end
 
       def disable_wow64_file_redirection( node )
