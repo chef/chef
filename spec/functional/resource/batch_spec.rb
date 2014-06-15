@@ -21,17 +21,10 @@ require 'spec_helper'
 describe Chef::Resource::WindowsScript::Batch, :windows_only do
   include_context Chef::Resource::WindowsScript
 
-  let(:script_content) { "whoami" }
+  let(:output_command) { ' > ' }
 
-  let!(:resource) do
-    Chef::Resource::WindowsScript::Batch.new("Batch resource functional test", @run_context)
-  end
+  let (:architecture_command) { '@echo %PROCESSOR_ARCHITECTURE%' }
 
-  describe "when the run action is invoked on Windows" do
-    it "executes the script code" do
-      resource.code(script_content + " > #{script_output_path}")
-      resource.returns(0)
-      resource.run_action(:run)
-    end
-  end
+  it_behaves_like "a Windows script running on Windows"
+
 end

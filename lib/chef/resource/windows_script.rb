@@ -23,12 +23,15 @@ class Chef
   class Resource
     class WindowsScript < Chef::Resource::Script
 
+      set_guard_inherited_attributes(:architecture)
+
       protected
 
       def initialize(name, run_context, resource_name, interpreter_command)
         super(name, run_context)
         @interpreter = interpreter_command
         @resource_name = resource_name
+        guard_interpreter resource_name
       end
 
       include Chef::Mixin::WindowsArchitectureHelper

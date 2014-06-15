@@ -22,6 +22,12 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
   include_context Chef::Resource::WindowsScript
 
+  let (:architecture_command) { 'echo $env:PROCESSOR_ARCHITECTURE' }
+  let (:output_command) { ' | out-file -encoding ASCII ' }
+
+  it_behaves_like "a Windows script running on Windows"
+
+
   let(:successful_executable_script_content) { "#{ENV['SystemRoot']}\\system32\\attrib.exe $env:systemroot" }
   let(:failed_executable_script_content) { "#{ENV['SystemRoot']}\\system32\\attrib.exe /badargument" }
   let(:processor_architecture_script_content) { "echo $env:PROCESSOR_ARCHITECTURE" }
@@ -36,6 +42,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
   let(:arbitrary_nonzero_process_exit_code_content) { "exit #{arbitrary_nonzero_process_exit_code}" }
   let(:invalid_powershell_interpreter_flag) { "/thisflagisinvalid" }
   let(:valid_powershell_interpreter_flag) { "-Sta" }
+
   let!(:resource) do
     r = Chef::Resource::WindowsScript::PowershellScript.new("Powershell resource functional test", @run_context)
     r.code(successful_executable_script_content)

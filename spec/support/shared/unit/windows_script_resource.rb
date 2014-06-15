@@ -39,8 +39,24 @@ shared_examples_for "a Windows script resource" do
     @resource.should be_a_kind_of(Chef::Resource::WindowsScript)
   end
 
-  context "script" do
-    let(:script_resource) { resource_instance }
+  context "when evaluating guards" do
+    it "should default to using guard_interpreter attribute that is the same as the resource" do
+      @resource.guard_interpreter.should == @resource.resource_name
+    end
+
+    it "should use a resource to evaluate the guard when guard_interpreter is not specified" do
+      Chef::GuardInterpreter::ResourceGuardInterpreter.any_instance.should_receive(:evaluate_action).and_return(true)
+      Chef::GuardInterpreter::DefaultGuardInterpreter.any_instance.should_not_receive(:evaluate)
+      @resource.only_if 'echo hi'
+      @resource.should_skip?(:run).should == nil
+    end
+  end
+
+  context "script with a default guard interpreter" do
+    let(:script_resource) do
+      resource_instance.guard_interpreter :default
+      resource_instance
+    end
     it_should_behave_like "a script resource"
   end
 
