@@ -63,19 +63,6 @@ PKG_STATUS
       @provider.load_current_resource
     end
 
-    it "should set the installed version to nil on the current resource if package state is not installed" do
-      @stdout.replace(<<-INSTALLED)
-group/ntp 0 accounts
-group/ntp 0 installed-accounts
-net/ntp 4.2.6_p5-r2 arbor
-user/ntp 0 accounts
-user/ntp 0 installed-accounts
-INSTALLED
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
-      @current_resource.should_receive(:version).with(nil).and_return(true)
-      @provider.load_current_resource
-    end
-
     it "should return new version if package is installed" do
       @stdout.replace(<<-INSTALLED)
 group/ntp 0 accounts
