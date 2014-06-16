@@ -69,6 +69,10 @@
   Support override_runlist CLI option in shef/chef-shell. (CHEF-5314)
 * [**Cam Cope**](https://github.com/ccope):
   Fix updating user passwords on Solaris. (CHEF-5247)
+* [**Ben Somers**](https://github.com/bensomers):
+  Enable storage of roles in subdirectories for chef-solo. (CHEF-4193)
+* [**Robert Tarrall**](https://github.com/tarrall):
+  Fix Upstart provider with parameters. (CHEF-5265)
 
 * Log resource always triggers notifications (CHEF-4028)
 * Prevent tracing? from throwing an exception when first starting chef-shell.
