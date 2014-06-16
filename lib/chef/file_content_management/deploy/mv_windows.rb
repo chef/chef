@@ -60,7 +60,7 @@ class Chef
             # Catch and raise if the user is not elevated enough.
             # At this point we can't configure the file as expected so
             # we're failing action on the resource.
-            raise Chef::Exceptions::WindowsNotAdmin, "can not get the security information for '#{dst}' due to missing Administrator privilages."
+            raise Chef::Exceptions::WindowsNotAdmin, "can not get the security information for '#{dst}' due to missing Administrator privileges."
           end
 
           if dst_sd.dacl_present?
