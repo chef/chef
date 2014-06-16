@@ -177,8 +177,6 @@ We do a `Minor` release approximately every 3 months and `Patch` releases on a w
 Announcements of releases are available on [Chef Blog](http://www.getchef.com/blog) when they are
   available.
 
-  **TODO**: Can I sign up for a mailing list to get notification of releases?
-
 ## Chef Community
 
 Chef is made possible by a strong community of developers and system administrators. If you have
@@ -188,8 +186,6 @@ Chef is made possible by a strong community of developers and system administrat
 * [\#chef](https://botbot.me/freenode/chef) and [\#chef-hacking](https://botbot.me/freenode/chef-hacking) IRC channels on irc.freenode.net
 
 Also here are some additional pointers to some awesome Chef content:
-
-**TODO**: Any blogs of community folks that we would like to put in here?
 
 * [Chef Docs](http://docs.opscode.com/)
 * [Learn Chef](https://learnchef.opscode.com/)
