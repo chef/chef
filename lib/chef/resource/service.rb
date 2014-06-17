@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
 # Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,6 +44,8 @@ class Chef
         @init_command = nil
         @priority = nil
         @timeout = nil
+        @run_levels = nil
+        @action = "nothing"
         @supports = { :restart => false, :reload => false, :status => false }
       end
 
@@ -172,6 +174,13 @@ class Chef
           arg,
           :kind_of => [ Hash ]
         )
+      end
+
+      def run_levels(arg=nil)
+        set_or_return(
+          :run_levels,
+          arg,
+          :kind_of => [ Array ] )
       end
 
       def supports(args={})
