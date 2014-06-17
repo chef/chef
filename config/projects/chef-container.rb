@@ -21,13 +21,13 @@ homepage "http://www.getchef.com"
 
 install_path     "/opt/chef"
 build_version do
-  # Use chef to determine the build version
-  source :git, from_dependency: 'chef'
+  source :git, from_dependency: 'chef-init'
+  output_format :semver
 end
 build_iteration  1
 package_name     "chef-container"
 
-override :chef, version: "11.12.4"
+override :chef, version: "11.12.8"
 
 dependency "preparation"
 dependency "chef"
