@@ -43,6 +43,7 @@ class Chef
         @init_command = nil
         @priority = nil
         @timeout = nil
+        @run_levels = nil
         @action = "nothing"
         @supports = { :restart => false, :reload => false, :status => false }
         @allowed_actions.push(:enable, :disable, :start, :stop, :restart, :reload)
@@ -177,6 +178,13 @@ class Chef
           arg,
           :kind_of => [ Hash ]
         )
+      end
+
+      def run_levels(arg=nil)
+        set_or_return(
+          :run_levels,
+          arg,
+          :kind_of => [ Array ] )
       end
 
       def supports(args={})
