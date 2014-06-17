@@ -341,6 +341,11 @@ describe Chef::Config do
       Chef::Config.stub(:env).and_return({ 'USERPROFILE' => "/users/kitten" })
       Chef::Config[:user_home].should == "/users/kitten"
     end
+
+    it "falls back to the current working directory when HOME and USERPROFILE is not set" do
+      Chef::Config.stub(:env).and_return({})
+      Chef::Config[:user_home].should == Dir.pwd
+    end
   end
 
   describe "Chef::Config[:encrypted_data_bag_secret]" do
