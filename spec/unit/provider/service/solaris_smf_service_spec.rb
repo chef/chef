@@ -66,7 +66,7 @@ describe Chef::Provider::Service::Solaris do
       end
 
       it "should call '/bin/svcs -l service_name'" do
-        @provider.should_receive(:shell_out!).with("/bin/svcs -l chef").and_return(@status)
+        @provider.should_receive(:shell_out!).with("/bin/svcs -l chef", {:returns=>[0, 1]}).and_return(@status)
         @provider.load_current_resource
       end
 
@@ -145,7 +145,7 @@ describe Chef::Provider::Service::Solaris do
       end
 
       it "should call svcadm disable -s chef for stop_service" do
-        @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm disable -s chef")
+        @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm disable -s chef").and_return(@status)
         @provider.stop_service.should be_true
         @current_resource.enabled.should be_false
       end
@@ -161,6 +161,27 @@ describe Chef::Provider::Service::Solaris do
       it "should call svcadm refresh chef" do
         @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm refresh chef").and_return(@status)
         @provider.reload_service
+      end
+
+    end
+
+    describe "when the service doesn't exist" do
+      before(:each) do
+        @stdout_string = ""
+        @status = double("Status", :exitstatus => 1, :stdout => @stdout)
+        @provider.current_resource = @current_resource
+      end
+
+      it "should be marked not running" do
+        @provider.should_receive(:shell_out!).with("/bin/svcs -l chef", {:returns=>[0, 1]}).and_return(@status)
+        @provider.service_status
+        @current_resource.running.should be_false
+      end
+
+      it "should be marked not enabled" do
+        @provider.should_receive(:shell_out!).with("/bin/svcs -l chef", {:returns=>[0, 1]}).and_return(@status)
+        @provider.service_status
+        @current_resource.enabled.should be_false
       end
 
     end
