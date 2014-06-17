@@ -114,7 +114,7 @@ describe Chef::Util::Selinux do
   end
 
   describe "when restorecon binary exists on the system" do
-    let (:path) { "/path/to/awesome" }
+    let (:path) { "/path/to/awesome directory" }
 
     before do
       @restorecon_enabled_path = File.join("/sbin", "restorecon")
@@ -125,7 +125,7 @@ describe Chef::Util::Selinux do
     end
 
     it "should call restorecon non-recursive by default" do
-      restorecon_command = "#{@restorecon_enabled_path} -R #{path}"
+      restorecon_command = "#{@restorecon_enabled_path} -R \"#{path}\""
       @test_instance.should_receive(:shell_out!).twice.with(restorecon_command)
       @test_instance.restore_security_context(path)
       File.should_not_receive(:executable?)
@@ -133,7 +133,7 @@ describe Chef::Util::Selinux do
     end
 
     it "should call restorecon recursive when recursive is set" do
-      restorecon_command = "#{@restorecon_enabled_path} -R -r #{path}"
+      restorecon_command = "#{@restorecon_enabled_path} -R -r \"#{path}\""
       @test_instance.should_receive(:shell_out!).twice.with(restorecon_command)
       @test_instance.restore_security_context(path, true)
       File.should_not_receive(:executable?)
@@ -141,7 +141,7 @@ describe Chef::Util::Selinux do
     end
 
     it "should call restorecon non-recursive when recursive is not set" do
-      restorecon_command = "#{@restorecon_enabled_path} -R #{path}"
+      restorecon_command = "#{@restorecon_enabled_path} -R \"#{path}\""
       @test_instance.should_receive(:shell_out!).twice.with(restorecon_command)
       @test_instance.restore_security_context(path)
       File.should_not_receive(:executable?)
