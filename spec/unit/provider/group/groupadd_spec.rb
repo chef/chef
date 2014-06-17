@@ -151,22 +151,22 @@ describe Chef::Provider::Group::Groupadd do
 
   describe "load_current_resource" do
     before do
-      File.stub(:exists?).and_return(false)
+      #File.stub(:exist?).and_return(false)
       @provider.define_resource_requirements
     end
     it "should raise an error if the required binary /usr/sbin/groupadd doesn't exist" do
-      File.should_receive(:exists?).with("/usr/sbin/groupadd").and_return(false)
+      File.should_receive(:exist?).with("/usr/sbin/groupadd").and_return(false)
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Group)
     end
     it "should raise an error if the required binary /usr/sbin/groupmod doesn't exist" do
-      File.should_receive(:exists?).with("/usr/sbin/groupadd").and_return(true)
-      File.should_receive(:exists?).with("/usr/sbin/groupmod").and_return(false)
+      File.should_receive(:exist?).with("/usr/sbin/groupadd").and_return(true)
+      File.should_receive(:exist?).with("/usr/sbin/groupmod").and_return(false)
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Group)
     end
     it "should raise an error if the required binary /usr/sbin/groupdel doesn't exist" do
-      File.should_receive(:exists?).with("/usr/sbin/groupadd").and_return(true)
-      File.should_receive(:exists?).with("/usr/sbin/groupmod").and_return(true)
-      File.should_receive(:exists?).with("/usr/sbin/groupdel").and_return(false)
+      File.should_receive(:exist?).with("/usr/sbin/groupadd").and_return(true)
+      File.should_receive(:exist?).with("/usr/sbin/groupmod").and_return(true)
+      File.should_receive(:exist?).with("/usr/sbin/groupdel").and_return(false)
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Group)
     end
 

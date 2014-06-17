@@ -69,7 +69,7 @@ class Chef
 
           # Write out .uploaded-cookbook-version.json
           cookbook_file_path = File.join(file_path, cookbook_name)
-          if !File.exists?(cookbook_file_path)
+          if !File.exist?(cookbook_file_path)
             FileUtils.mkdir_p(cookbook_file_path)
           end
           uploaded_cookbook_version_path = File.join(cookbook_file_path, Chef::Cookbook::CookbookVersionLoader::UPLOADED_COOKBOOK_VERSION_FILE)

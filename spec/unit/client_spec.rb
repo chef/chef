@@ -203,7 +203,7 @@ describe Chef::Client do
         # --Client.register
         #   Make sure Client#register thinks the client key doesn't
         #   exist, so it tries to register and create one.
-        File.should_receive(:exists?).with(Chef::Config[:client_key]).exactly(1).times.and_return(api_client_exists?)
+        File.should_receive(:exist?).with(Chef::Config[:client_key]).exactly(1).times.and_return(api_client_exists?)
 
         unless api_client_exists?
           #   Client.register will register with the validation client name.

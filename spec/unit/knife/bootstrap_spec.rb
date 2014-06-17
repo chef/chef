@@ -45,7 +45,7 @@ describe Chef::Knife::Bootstrap do
   end
 
   it "should look for templates early in the run" do
-    File.stub(:exists?).and_return(true)
+    #File.stub(:exist?).and_return(true)
     @knife.name_args = ['shatner']
     @knife.stub(:read_template).and_return("")
     @knife.stub(:knife_ssh).and_return(true)
@@ -64,7 +64,7 @@ describe Chef::Knife::Bootstrap do
   it "should load the specified template from a Ruby gem" do
     @knife.config[:template_file] = false
     Gem.stub(:find_files).and_return(["/Users/schisamo/.rvm/gems/ruby-1.9.2-p180@chef-0.10/gems/knife-windows-0.5.4/lib/chef/knife/bootstrap/fake-bootstrap-template.erb"])
-    File.stub(:exists?).and_return(true)
+    File.stub(:exist?).and_return(true)
     IO.stub(:read).and_return('random content')
     @knife.config[:distro] = 'fake-bootstrap-template'
     lambda { @knife.find_template }.should_not raise_error

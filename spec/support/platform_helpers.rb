@@ -44,7 +44,7 @@ def windows_win2k3?
 end
 
 def mac_osx_106?
-  if File.exists? "/usr/bin/sw_vers"
+  if File.exist? "/usr/bin/sw_vers"
     result = shell_out("/usr/bin/sw_vers")
     result.stdout.each_line do |line|
       if line =~ /^ProductVersion:\s10.6.*$/
@@ -117,7 +117,7 @@ def selinux_enabled?
 end
 
 def suse?
-  File.exists?("/etc/SuSE-release")
+  File.exist?("/etc/SuSE-release")
 end
 
 def root?

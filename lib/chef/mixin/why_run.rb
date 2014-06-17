@@ -205,7 +205,7 @@ class Chef
           # step, we still want to keep going in whyrun mode.
           #
           # assert(:create, :create_if_missing) do |a|
-          #   a.assertion { File::exists?(@new_resource.source) }
+          #   a.assertion { File.exist?(@new_resource.source) }
           #   a.whyrun "Template source file does not exist, assuming it would have been created."
           #   a.block_action!
           # end

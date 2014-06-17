@@ -92,7 +92,7 @@ class Chef
 
         # TODO: This is the wrong place for this responsibility.
         if args.has_key?(:creates)
-          if File.exists?(args[:creates])
+          if File.exist?(args[:creates])
             Chef::Log.debug("Skipping #{args[:command]} - creates #{args[:creates]} exists.")
             return false
           end

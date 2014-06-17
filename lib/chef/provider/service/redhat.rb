@@ -40,7 +40,7 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             chkconfig_file = "/sbin/chkconfig"
-            a.assertion { ::File.exists? chkconfig_file  }
+            a.assertion { ::File.exist? chkconfig_file  }
             a.failure_message Chef::Exceptions::Service, "#{chkconfig_file} does not exist!"
           end
 
@@ -54,7 +54,7 @@ class Chef
         def load_current_resource
           super
 
-          if ::File.exists?("/sbin/chkconfig")
+          if ::File.exist?("/sbin/chkconfig")
             chkconfig = shell_out!("/sbin/chkconfig --list #{@current_resource.service_name}", :returns => [0,1])
             @current_resource.enabled(!!(chkconfig.stdout =~ CHKCONFIG_ON))
             @service_missing = !!(chkconfig.stderr =~ CHKCONFIG_MISSING)

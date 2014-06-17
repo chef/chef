@@ -57,10 +57,10 @@ describe Chef::Provider::Group::Usermod do
 
       before do
         @new_resource.stub(:members).and_return(["all", "your", "base"])
-        File.stub(:exists?).and_return(true)
       end
 
       it "should raise an error when setting the entire group directly" do
+        File.stub(:exist?).and_return(true)
         @provider.define_resource_requirements
         @provider.load_current_resource
         @provider.instance_variable_set("@group_exists", true)
@@ -69,6 +69,7 @@ describe Chef::Provider::Group::Usermod do
       end
 
       it "should raise an error when excluded_members are set" do
+        File.stub(:exist?).and_return(true)
         @provider.define_resource_requirements
         @provider.load_current_resource
         @provider.instance_variable_set("@group_exists", true)
@@ -96,19 +97,18 @@ describe Chef::Provider::Group::Usermod do
 
   describe "when loading the current resource" do
     before(:each) do
-      File.stub(:exists?).and_return(false)
       @provider.action = :create
       @provider.define_resource_requirements
     end
 
     it "should raise an error if the required binary /usr/sbin/usermod doesn't exist" do
-      File.stub(:exists?).and_return(true)
-      File.should_receive(:exists?).with("/usr/sbin/usermod").and_return(false)
+      File.stub(:exist?).and_return(true)
+      File.should_receive(:exist?).with("/usr/sbin/usermod").and_return(false)
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Group)
     end
 
     it "shouldn't raise an error if the required binaries exist" do
-      File.stub(:exists?).and_return(true)
+      File.stub(:exist?).and_return(true)
       lambda { @provider.process_resource_requirements }.should_not raise_error
     end
   end

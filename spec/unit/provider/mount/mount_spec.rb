@@ -34,8 +34,8 @@ describe Chef::Provider::Mount::Mount do
 
     @provider = Chef::Provider::Mount::Mount.new(@new_resource, @run_context)
 
-    ::File.stub(:exists?).with("/dev/sdz1").and_return true
-    ::File.stub(:exists?).with("/tmp/foo").and_return true
+    ::File.stub(:exist?).with("/dev/sdz1").and_return true
+    ::File.stub(:exist?).with("/tmp/foo").and_return true
     ::File.stub(:realpath).with("/dev/sdz1").and_return "/dev/sdz1"
     ::File.stub(:realpath).with("/tmp/foo").and_return "/tmp/foo"
   end
@@ -80,12 +80,12 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should raise an error if the mount device does not exist" do
-      ::File.stub(:exists?).with("/dev/sdz1").and_return false
+      ::File.stub(:exist?).with("/dev/sdz1").and_return false
       lambda { @provider.load_current_resource();@provider.mountable? }.should raise_error(Chef::Exceptions::Mount)
     end
 
     it "should not call mountable? with load_current_resource - CHEF-1565" do
-      ::File.stub(:exists?).with("/dev/sdz1").and_return false
+      ::File.stub(:exist?).with("/dev/sdz1").and_return false
       @provider.should_receive(:mounted?).and_return(true)
       @provider.should_receive(:enabled?).and_return(true)
       @provider.should_not_receive(:mountable?)
@@ -98,12 +98,12 @@ describe Chef::Provider::Mount::Mount do
       status_findfs = double("Status", :exitstatus => 1)
       stdout_findfs = double("STDOUT", :first => nil)
       @provider.should_receive(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,stdout_findfs,@stderr).and_return(status_findfs)
-      ::File.should_receive(:exists?).with("").and_return(false)
+      ::File.should_receive(:exist?).with("").and_return(false)
       lambda { @provider.load_current_resource();@provider.mountable? }.should raise_error(Chef::Exceptions::Mount)
     end
 
     it "should raise an error if the mount point does not exist" do
-      ::File.stub(:exists?).with("/tmp/foo").and_return false
+      ::File.stub(:exist?).with("/tmp/foo").and_return false
       lambda { @provider.load_current_resource();@provider.mountable? }.should raise_error(Chef::Exceptions::Mount)
     end
 

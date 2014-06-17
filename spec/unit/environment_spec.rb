@@ -398,8 +398,8 @@ describe Chef::Environment do
 
       it "should get the environment from the environment_path" do
         File.should_receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
-        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
-        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).exactly(2).times.and_return(true)
+        File.should_receive(:exist?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
+        File.should_receive(:exist?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).exactly(2).times.and_return(true)
         File.should_receive(:readable?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(true)
         role_dsl="name \"foo\"\ndescription \"desc\"\n"
         IO.should_receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(role_dsl)
@@ -408,7 +408,7 @@ describe Chef::Environment do
 
       it "should return a Chef::Environment object from JSON" do
         File.should_receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
-        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(true)
+        File.should_receive(:exist?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(true)
         environment_hash = {
           "name" => "foo",
           "default_attributes" => {
@@ -431,8 +431,8 @@ describe Chef::Environment do
 
       it "should return a Chef::Environment object from Ruby DSL" do
         File.should_receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
-        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
-        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).exactly(2).times.and_return(true)
+        File.should_receive(:exist?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
+        File.should_receive(:exist?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).exactly(2).times.and_return(true)
         File.should_receive(:readable?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(true)
         role_dsl="name \"foo\"\ndescription \"desc\"\n"
         IO.should_receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(role_dsl)
@@ -453,8 +453,8 @@ describe Chef::Environment do
 
       it 'should raise an error if the file does not exist' do
         File.should_receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
-        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
-        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(false)
+        File.should_receive(:exist?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
+        File.should_receive(:exist?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(false)
 
         lambda {
           Chef::Environment.load('foo')

@@ -74,7 +74,7 @@ class Chef
         # Let children resources override constructing the @current_resource
         @current_resource ||= Chef::Resource::File.new(@new_resource.name)
         @current_resource.path(@new_resource.path)
-        if ::File.exists?(@current_resource.path) && ::File.file?(::File.realpath(@current_resource.path))
+        if ::File.exist?(@current_resource.path) && ::File.file?(::File.realpath(@current_resource.path))
           if managing_content?
             Chef::Log.debug("#{@new_resource} checksumming file at #{@new_resource.path}.")
             @current_resource.checksum(checksum(@current_resource.path))
@@ -96,7 +96,7 @@ class Chef
         end
 
         # Make sure the file is deletable if it exists, otherwise fail.
-        if ::File.exists?(@new_resource.path)
+        if ::File.exist?(@new_resource.path)
           requirements.assert(:delete) do |a|
             a.assertion { ::File.writable?(@new_resource.path) }
             a.failure_message(Chef::Exceptions::InsufficientPermissions,"File #{@new_resource.path} exists but is not writable so it cannot be deleted")
@@ -125,7 +125,7 @@ class Chef
       end
 
       def action_create_if_missing
-        if ::File.exists?(@new_resource.path)
+        if ::File.exist?(@new_resource.path)
           Chef::Log.debug("#{@new_resource} exists at #{@new_resource.path} taking no action.")
         else
           action_create
@@ -133,7 +133,7 @@ class Chef
       end
 
       def action_delete
-        if ::File.exists?(@new_resource.path)
+        if ::File.exist?(@new_resource.path)
           converge_by("delete file #{@new_resource.path}") do
             do_backup unless file_class.symlink?(@new_resource.path)
             ::File.delete(@new_resource.path)
@@ -314,7 +314,7 @@ class Chef
 
       def do_create_file
         @file_created = false
-        if !::File.exists?(@new_resource.path) || file_unlinked?
+        if !::File.exist?(@new_resource.path) || file_unlinked?
           converge_by("create new file #{@new_resource.path}") do
             deployment_strategy.create(@new_resource.path)
             Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
@@ -349,7 +349,7 @@ class Chef
         # a nil tempfile is okay, means the resource has no content or no new content
         return if tempfile.nil?
         # but a tempfile that has no path or doesn't exist should not happen
-        if tempfile.path.nil? || !::File.exists?(tempfile.path)
+        if tempfile.path.nil? || !::File.exist?(tempfile.path)
           raise "chef-client is confused, trying to deploy a file that has no path or does not exist..."
         end
 

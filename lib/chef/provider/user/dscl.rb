@@ -147,7 +147,7 @@ class Chef
 
         def load_current_resource
           super
-          raise Chef::Exceptions::User, "Could not find binary /usr/bin/dscl for #{@new_resource}" unless ::File.exists?("/usr/bin/dscl")
+          raise Chef::Exceptions::User, "Could not find binary /usr/bin/dscl for #{@new_resource}" unless ::File.exist?("/usr/bin/dscl")
         end
 
         def create_user
@@ -191,7 +191,7 @@ class Chef
         end
 
         def dscl_set_shell
-          if @new_resource.password || ::File.exists?("#{@new_resource.shell}")
+          if @new_resource.password || ::File.exist?("#{@new_resource.shell}")
             safe_dscl("create /Users/#{@new_resource.username} UserShell '#{@new_resource.shell}'")
           else
             safe_dscl("create /Users/#{@new_resource.username} UserShell '/usr/bin/false'")
@@ -259,7 +259,7 @@ class Chef
 
         def ditto_home
           skel = "/System/Library/User Template/English.lproj"
-          raise(Chef::Exceptions::User,"can't find skel at: #{skel}") unless ::File.exists?(skel)
+          raise(Chef::Exceptions::User,"can't find skel at: #{skel}") unless ::File.exist?(skel)
           shell_out! "ditto '#{skel}' '#{@new_resource.home}'"
           ::FileUtils.chown_R(@new_resource.username,@new_resource.gid.to_s,@new_resource.home)
         end

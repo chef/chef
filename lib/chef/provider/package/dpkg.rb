@@ -54,7 +54,7 @@ class Chef
           @new_resource.version(nil)
 
           if @new_resource.source
-            @source_exists = ::File.exists?(@new_resource.source)
+            @source_exists = ::File.exist?(@new_resource.source)
             if @source_exists
               # Get information from the package if supplied
               Chef::Log.debug("#{@new_resource} checking dpkg status")

@@ -54,9 +54,9 @@ describe Chef::Resource::Link do
 
   after(:each) do
     begin
-      cleanup_link(to) if File.exists?(to)
-      cleanup_link(target_file) if File.exists?(target_file)
-      cleanup_link(CHEF_SPEC_BACKUP_PATH) if File.exists?(CHEF_SPEC_BACKUP_PATH)
+      cleanup_link(to) if File.exist?(to)
+      cleanup_link(target_file) if File.exist?(target_file)
+      cleanup_link(CHEF_SPEC_BACKUP_PATH) if File.exist?(CHEF_SPEC_BACKUP_PATH)
     rescue
       puts "Could not remove a file: #{$!}"
     end
@@ -220,7 +220,7 @@ describe Chef::Resource::Link do
           resource.run_action(:create)
         end
         it 'preserves the hard link' do
-          File.exists?(target_file).should be_true
+          File.exist?(target_file).should be_true
           symlink?(target_file).should be_false
           # Writing to one hardlinked file should cause both
           # to have the new value.
@@ -245,7 +245,7 @@ describe Chef::Resource::Link do
           resource.run_action(:create)
         end
         it 'links to the target file' do
-          File.exists?(target_file).should be_true
+          File.exist?(target_file).should be_true
           symlink?(target_file).should be_false
           # Writing to one hardlinked file should cause both
           # to have the new value.
@@ -285,7 +285,7 @@ describe Chef::Resource::Link do
             include_context 'delete succeeds'
             it 'the :delete action does not delete the target file' do
               resource.run_action(:delete)
-              File.exists?(to).should be_true
+              File.exist?(to).should be_true
             end
           end
           context 'pointing somewhere else' do
@@ -303,7 +303,7 @@ describe Chef::Resource::Link do
             include_context 'delete succeeds'
             it 'the :delete action does not delete the target file' do
               resource.run_action(:delete)
-              File.exists?(to).should be_true
+              File.exist?(to).should be_true
             end
           end
           context 'pointing nowhere' do
@@ -320,7 +320,7 @@ describe Chef::Resource::Link do
         context 'and the link already exists and is a hard link to the file' do
           before(:each) do
             link(to, target_file)
-            File.exists?(target_file).should be_true
+            File.exist?(target_file).should be_true
             symlink?(target_file).should be_false
           end
           include_context 'create symbolic link succeeds'
@@ -478,14 +478,14 @@ describe Chef::Resource::Link do
         context 'and the link already exists and is a hard link to the file' do
           before(:each) do
             link(to, target_file)
-            File.exists?(target_file).should be_true
+            File.exist?(target_file).should be_true
             symlink?(target_file).should be_false
           end
           include_context 'create hard link is noop'
           include_context 'delete succeeds'
           it 'the :delete action does not delete the target file' do
             resource.run_action(:delete)
-            File.exists?(to).should be_true
+            File.exist?(to).should be_true
           end
         end
         context "and the link already exists and is a file" do
@@ -552,7 +552,7 @@ describe Chef::Resource::Link do
           context 'and the link does not yet exist' do
             it 'links to the target file' do
               resource.run_action(:create)
-              File.exists?(target_file).should be_true
+              File.exist?(target_file).should be_true
               # OS X gets angry about this sort of link.  Bug in OS X, IMO.
               pending('OS X/FreeBSD/AIX symlink? and readlink working on hard links to symlinks', :if => (os_x? or freebsd? or aix?)) do
                 symlink?(target_file).should be_true
@@ -575,9 +575,9 @@ describe Chef::Resource::Link do
                 resource.run_action(:create)
                 # Windows and Unix have different definitions of exists? here, and that's OK.
                 if windows?
-                  File.exists?(target_file).should be_true
+                  File.exist?(target_file).should be_true
                 else
-                  File.exists?(target_file).should be_false
+                  File.exist?(target_file).should be_false
                 end
                 symlink?(target_file).should be_true
                 readlink(target_file).should == canonicalize(@other_target)

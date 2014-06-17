@@ -126,7 +126,7 @@ EOH
         config[:config_file] ||= ask_question("Where should I put the config file? ", :default => "#{Chef::Config[:user_home]}/.chef/knife.rb")
         # have to use expand path to expand the tilde character to the user's home
         config[:config_file] = File.expand_path(config[:config_file])
-        if File.exists?(config[:config_file])
+        if File.exist?(config[:config_file])
           confirm("Overwrite #{config[:config_file]}")
         end
       end

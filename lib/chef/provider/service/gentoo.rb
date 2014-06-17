@@ -31,7 +31,7 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
     @current_resource.enabled(
       Dir.glob("/etc/runlevels/**/#{@current_resource.service_name}").any? do |file|
         @found_script = true
-        exists = ::File.exists? file
+        exists = ::File.exist? file
         readable = ::File.readable? file
         Chef::Log.debug "#{@new_resource} exists: #{exists}, readable: #{readable}"
         exists and readable
@@ -44,7 +44,7 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
 
   def define_resource_requirements
     requirements.assert(:all_actions) do |a|
-      a.assertion { ::File.exists?("/sbin/rc-update") }
+      a.assertion { ::File.exist?("/sbin/rc-update") }
       a.failure_message Chef::Exceptions::Service, "/sbin/rc-update does not exist"
       # no whyrun recovery -t his is a core component whose presence is
       # unlikely to be affected by what we do in the course of a chef run

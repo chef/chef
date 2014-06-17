@@ -36,7 +36,7 @@ describe Chef::Provider::Service::Debian do
 
   describe "load_current_resource" do
     it "ensures /usr/sbin/update-rc.d is available" do
-      File.should_receive(:exists?).with("/usr/sbin/update-rc.d") .and_return(false)
+      File.should_receive(:exist?).with("/usr/sbin/update-rc.d") .and_return(false)
 
       @provider.define_resource_requirements
       lambda {

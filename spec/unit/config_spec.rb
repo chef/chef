@@ -175,7 +175,7 @@ describe Chef::Config do
 
       context "when /var/chef does not exist and /var is accessible" do
         it "defaults to /var/chef" do
-          File.stub(:exists?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(false)
+          File.stub(:exist?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(false)
           Chef::Config.stub(:path_accessible?).with(Chef::Config.platform_specific_path("/var")).and_return(true)
           Chef::Config[:cache_path].should == primary_cache_path
         end
@@ -183,7 +183,7 @@ describe Chef::Config do
 
       context "when /var/chef does not exist and /var is not accessible" do
         it "defaults to $HOME/.chef" do
-          File.stub(:exists?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(false)
+          File.stub(:exist?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(false)
           Chef::Config.stub(:path_accessible?).with(Chef::Config.platform_specific_path("/var")).and_return(false)
           Chef::Config[:cache_path].should == secondary_cache_path
         end
@@ -191,7 +191,7 @@ describe Chef::Config do
 
       context "when /var/chef exists and is not accessible" do
         it "defaults to $HOME/.chef" do
-          File.stub(:exists?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(true)
+          File.stub(:exist?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(true)
           File.stub(:readable?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(true)
           File.stub(:writable?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(false)
 

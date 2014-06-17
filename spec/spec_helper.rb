@@ -72,7 +72,7 @@ require 'chef/config'
 
 # If you want to load anything into the testing environment
 # without versioning it, add it to spec/support/local_gems.rb
-require 'spec/support/local_gems.rb' if File.exists?(File.join(File.dirname(__FILE__), 'support', 'local_gems.rb'))
+require 'spec/support/local_gems.rb' if File.exist?(File.join(File.dirname(__FILE__), 'support', 'local_gems.rb'))
 
 # Explicitly require spec helpers that need to load first
 require 'spec/support/platform_helpers'

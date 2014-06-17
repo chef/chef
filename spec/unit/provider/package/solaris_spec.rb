@@ -27,7 +27,7 @@ describe Chef::Provider::Package::Solaris do
     @new_resource.source("/tmp/bash.pkg")
 
     @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context)
-    ::File.stub(:exists?).and_return(true)
+    ::File.stub(:exist?).and_return(true)
   end
 
   describe "assessing the current package status" do
@@ -63,7 +63,7 @@ PKGINFO
 
     it "should raise an exception if a source is supplied but not found" do
       @provider.stub(:popen4).and_return(@status)
-      ::File.stub(:exists?).and_return(false)
+      ::File.stub(:exist?).and_return(false)
       @provider.define_resource_requirements
       @provider.load_current_resource
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Package)

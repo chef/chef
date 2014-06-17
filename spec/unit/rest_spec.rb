@@ -649,7 +649,7 @@ describe Chef::REST do
         expect(path).not_to be_nil
         tempfile.stub(:write).and_raise(IOError)
         rest.fetch("cookbooks/a_cookbook") {|tmpfile| "shouldn't get here"}
-        expect(File.exists?(path)).to be_false
+        expect(File.exist?(path)).to be_false
       end
 
       it "closes and unlinks the tempfile when the response is a redirect" do

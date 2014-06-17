@@ -34,9 +34,9 @@ class Chef
           @rcd_script_found = true
           @enabled_state_found = false
           # Determine if we're talking about /etc/rc.d or /usr/local/etc/rc.d
-          if ::File.exists?("/etc/rc.d/#{current_resource.service_name}")
+          if ::File.exist?("/etc/rc.d/#{current_resource.service_name}")
             @init_command = "/etc/rc.d/#{current_resource.service_name}"
-          elsif ::File.exists?("/usr/local/etc/rc.d/#{current_resource.service_name}")
+          elsif ::File.exist?("/usr/local/etc/rc.d/#{current_resource.service_name}")
             @init_command = "/usr/local/etc/rc.d/#{current_resource.service_name}"
           else
             @rcd_script_found = false
@@ -47,7 +47,7 @@ class Chef
           # Default to disabled if the service doesn't currently exist
           # at all
           var_name = service_enable_variable_name
-          if ::File.exists?("/etc/rc.conf") && var_name
+          if ::File.exist?("/etc/rc.conf") && var_name
             read_rc_conf.each do |line|
               case line
               when /#{Regexp.escape(var_name)}="(\w+)"/

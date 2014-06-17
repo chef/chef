@@ -189,7 +189,7 @@ class Chef
 
         template = Array(bootstrap_files).find do |bootstrap_template|
           Chef::Log.debug("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
-          File.exists?(bootstrap_template)
+          File.exist?(bootstrap_template)
         end
 
         unless template

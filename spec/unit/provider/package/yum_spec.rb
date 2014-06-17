@@ -352,7 +352,7 @@ describe Chef::Provider::Package::Yum do
 
     it "should run yum localinstall if given a path to an rpm as the package" do
       @new_resource = Chef::Resource::Package.new("/tmp/emacs-21.4-20.el5.i386.rpm")
-      ::File.stub(:exists?).and_return(true)
+      ::File.stub(:exist?).and_return(true)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
       @new_resource.source.should == "/tmp/emacs-21.4-20.el5.i386.rpm"
       @provider.should_receive(:yum_command).with(

@@ -47,7 +47,7 @@ class Chef
           @new_resource.version(nil)
 
           if @new_resource.source
-            @package_source_found = ::File.exists?(@new_resource.source)
+            @package_source_found = ::File.exist?(@new_resource.source)
             if @package_source_found
               Chef::Log.debug("#{@new_resource} checking pkg status")
               status = popen4("installp -L -d #{@new_resource.source}") do |pid, stdin, stdout, stderr|

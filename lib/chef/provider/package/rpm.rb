@@ -51,7 +51,7 @@ class Chef
           @new_resource.version(nil)
 
           if @new_resource.source
-            unless ::File.exists?(@new_resource.source)
+            unless ::File.exist?(@new_resource.source)
               @package_source_exists = false
               return
             end

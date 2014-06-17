@@ -410,7 +410,7 @@ class Chef
         def find_gem_by_path
           Chef::Log.debug("#{@new_resource} searching for 'gem' binary in path: #{ENV['PATH']}")
           separator = ::File::ALT_SEPARATOR ? ::File::ALT_SEPARATOR : ::File::SEPARATOR
-          path_to_first_gem = ENV['PATH'].split(::File::PATH_SEPARATOR).select { |path| ::File.exists?(path + separator + "gem") }.first
+          path_to_first_gem = ENV['PATH'].split(::File::PATH_SEPARATOR).select { |path| ::File.exist?(path + separator + "gem") }.first
           raise Chef::Exceptions::FileNotFound, "Unable to find 'gem' binary in path: #{ENV['PATH']}" if path_to_first_gem.nil?
           path_to_first_gem + separator + "gem"
         end

@@ -1068,7 +1068,7 @@ class Chef
           @current_resource.package_name(@new_resource.package_name)
 
           if @new_resource.source
-            unless ::File.exists?(@new_resource.source)
+            unless ::File.exist?(@new_resource.source)
               raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
             end
 

@@ -70,7 +70,7 @@ class Chef
       def self.symlink?(file_name)
         is_symlink = false
         path = encode_path(file_name)
-        if ::File.exists?(file_name)
+        if ::File.exist?(file_name)
           if ((GetFileAttributesW(path) & FILE_ATTRIBUTE_REPARSE_POINT) > 0)
             file_search_handle(file_name) do |handle, find_data|
               if find_data[:dw_reserved_0] == IO_REPARSE_TAG_SYMLINK
@@ -88,7 +88,7 @@ class Chef
       # will raise a NotImplementedError, as per MRI.
       #
       def self.readlink(link_name)
-        raise Errno::ENOENT, link_name unless ::File.exists?(link_name)
+        raise Errno::ENOENT, link_name unless ::File.exist?(link_name)
         symlink_file_handle(link_name) do |handle|
           # Go to DeviceIoControl to get the symlink information
           # http://msdn.microsoft.com/en-us/library/windows/desktop/aa364571(v=vs.85).aspx

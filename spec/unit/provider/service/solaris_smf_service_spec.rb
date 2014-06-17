@@ -42,14 +42,14 @@ describe Chef::Provider::Service::Solaris do
   end
 
   it "should raise an error if /bin/svcs does not exist" do
-    File.should_receive(:exists?).with("/bin/svcs").and_return(false)
+    File.should_receive(:exist?).with("/bin/svcs").and_return(false)
     lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
   end
 
   describe "on a host with /bin/svcs" do
 
     before do
-      File.stub(:exists?).with('/bin/svcs').and_return(true)
+      File.stub(:exist?).with('/bin/svcs').and_return(true)
     end
 
     describe "when discovering the current service state" do

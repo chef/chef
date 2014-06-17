@@ -114,7 +114,7 @@ class Chef
       end
 
       def should_update_dacl?
-        return true unless ::File.exists?(file)
+        return true unless ::File.exist?(file)
         dacl = target_dacl
         existing_dacl = existing_descriptor.dacl
         inherits = target_inherits
@@ -147,7 +147,7 @@ class Chef
       end
 
       def should_update_group?
-        return true unless ::File.exists?(file)
+        return true unless ::File.exist?(file)
         (group = target_group) && (group != existing_descriptor.group)
       end
 
@@ -166,7 +166,7 @@ class Chef
       end
 
       def should_update_owner?
-        return true unless ::File.exists?(file)
+        return true unless ::File.exist?(file)
         (owner = target_owner) && (owner != existing_descriptor.owner)
       end
 

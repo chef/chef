@@ -1030,8 +1030,8 @@ shared_context Chef::Resource::File  do
   end
 
   after(:each) do
-    FileUtils.rm_r(path) if File.exists?(path)
-    FileUtils.rm_r(CHEF_SPEC_BACKUP_PATH) if File.exists?(CHEF_SPEC_BACKUP_PATH)
+    FileUtils.rm_r(path) if File.exist?(path)
+    FileUtils.rm_r(CHEF_SPEC_BACKUP_PATH) if File.exist?(CHEF_SPEC_BACKUP_PATH)
   end
 
   after do

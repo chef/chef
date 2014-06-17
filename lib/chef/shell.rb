@@ -288,7 +288,7 @@ FOOTER
       config[:config_file] = config_file_for_shell_mode(environment)
       config_msg = config[:config_file] || "none (standalone session)"
       puts "loading configuration: #{config_msg}"
-      Chef::Config.from_file(config[:config_file]) if !config[:config_file].nil? && File.exists?(config[:config_file]) && File.readable?(config[:config_file])
+      Chef::Config.from_file(config[:config_file]) if !config[:config_file].nil? && File.exist?(config[:config_file]) && File.readable?(config[:config_file])
       Chef::Config.merge!(config)
     end
 

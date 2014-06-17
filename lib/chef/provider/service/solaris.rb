@@ -39,7 +39,7 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
-          unless ::File.exists? "/bin/svcs"
+          unless ::File.exist? "/bin/svcs"
             raise Chef::Exceptions::Service, "/bin/svcs does not exist!"
           end
           @status = service_status.enabled

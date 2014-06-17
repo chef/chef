@@ -76,7 +76,7 @@ describe Chef::Knife::CookbookDownload do
       it 'should determine which version if one was not explicitly specified'do
         @cookbook_mock.stub(:manifest).and_return({})
         @knife.should_receive(:determine_version).and_return('1.0.0')
-        File.should_receive(:exists?).with('/var/tmp/chef/foobar-1.0.0').and_return(false)
+        File.should_receive(:exist?).with('/var/tmp/chef/foobar-1.0.0').and_return(false)
         Chef::CookbookVersion.stub(:COOKBOOK_SEGEMENTS).and_return([])
         @knife.run
       end
@@ -93,7 +93,7 @@ describe Chef::Knife::CookbookDownload do
         end
 
         it 'should print an error and exit if the cookbook download directory already exists' do
-          File.should_receive(:exists?).with('/var/tmp/chef/foobar-1.0.0').and_return(true)
+          File.should_receive(:exist?).with('/var/tmp/chef/foobar-1.0.0').and_return(true)
           @knife.ui.should_receive(:fatal).with(/\/var\/tmp\/chef\/foobar-1\.0\.0 exists/i)
           lambda { @knife.run }.should raise_error(SystemExit)
         end
@@ -118,7 +118,7 @@ describe Chef::Knife::CookbookDownload do
           end
 
           it "should download the cookbook when the cookbook download directory doesn't exist" do
-            File.should_receive(:exists?).with('/var/tmp/chef/foobar-1.0.0').and_return(false)
+            File.should_receive(:exist?).with('/var/tmp/chef/foobar-1.0.0').and_return(false)
             @knife.run
             ['attributes', 'recipes', 'templates'].each do |segment|
               @stdout.string.should match /downloading #{segment}/im
@@ -130,7 +130,7 @@ describe Chef::Knife::CookbookDownload do
           describe 'with -f or --force' do
             it 'should remove the existing the cookbook download directory if it exists' do
               @knife.config[:force] = true
-              File.should_receive(:exists?).with('/var/tmp/chef/foobar-1.0.0').and_return(true)
+              File.should_receive(:exist?).with('/var/tmp/chef/foobar-1.0.0').and_return(true)
               FileUtils.should_receive(:rm_rf).with('/var/tmp/chef/foobar-1.0.0')
               @knife.run
             end

@@ -35,7 +35,7 @@ describe Chef::Provider::Package::Dpkg do
     @pid = double("PID")
     @provider.stub(:popen4).and_return(@status)
 
-    ::File.stub(:exists?).and_return(true)
+    ::File.stub(:exist?).and_return(true)
   end
 
   describe "when loading the current resource state" do
@@ -48,7 +48,7 @@ describe Chef::Provider::Package::Dpkg do
     it "should raise an exception if a source is supplied but not found" do
       @provider.load_current_resource
       @provider.define_resource_requirements
-      ::File.stub(:exists?).and_return(false)
+      ::File.stub(:exist?).and_return(false)
       lambda { @provider.run_action(:install) }.should raise_error(Chef::Exceptions::Package)
     end
 

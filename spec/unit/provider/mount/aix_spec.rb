@@ -60,8 +60,8 @@ ENABLED
 
     @provider = Chef::Provider::Mount::Aix.new(@new_resource, @run_context)
 
-    ::File.stub(:exists?).with("/dev/sdz1").and_return true
-    ::File.stub(:exists?).with("/tmp/foo").and_return true
+    ::File.stub(:exist?).with("/dev/sdz1").and_return true
+    ::File.stub(:exist?).with("/tmp/foo").and_return true
   end
 
   def stub_mounted(provider, mounted_output)

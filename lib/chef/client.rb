@@ -314,7 +314,7 @@ class Chef
       if !config[:client_key]
         @events.skipping_registration(client_name, config)
         Chef::Log.debug("Client key is unspecified - skipping registration")
-      elsif File.exists?(config[:client_key])
+      elsif File.exist?(config[:client_key])
         @events.skipping_registration(client_name, config)
         Chef::Log.debug("Client key #{config[:client_key]} is present - skipping registration")
       else
@@ -461,7 +461,7 @@ class Chef
     end
 
     def empty_directory?(path)
-      !File.exists?(path) || (Dir.entries(path).size <= 2)
+      !File.exist?(path) || (Dir.entries(path).size <= 2)
     end
 
     def is_last_element?(index, object)

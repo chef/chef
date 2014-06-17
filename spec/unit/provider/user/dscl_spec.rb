@@ -156,8 +156,9 @@ describe Chef::Provider::User::Dscl do
       current_home_files = [current_home + '/my-dot-emacs', current_home + '/my-dot-vim']
       @current_resource.home(current_home)
       @new_resource.gid(23)
-      ::File.stub(:exists?).with('/old/home/toor').and_return(true)
-      ::File.stub(:exists?).with('/Users/toor').and_return(true)
+      ::File.stub(:exist?).with('/old/home/toor').and_return(true)
+      ::File.stub(:exist?).with('/Users/toor').and_return(true)
+      ::File.stub(:exist?).with(current_home).and_return(true)
 
       FileUtils.should_receive(:mkdir_p).with('/Users/toor').and_return(true)
       FileUtils.should_receive(:rmdir).with(current_home)
@@ -170,12 +171,12 @@ describe Chef::Provider::User::Dscl do
     end
 
     it "should raise an exception when the systems user template dir (skel) cannot be found" do
-      ::File.stub(:exists?).and_return(false,false,false)
+      #::File.stub(:exist?).and_return(false,false,false)
       lambda { @provider.modify_home }.should raise_error(Chef::Exceptions::User)
     end
 
     it "should run ditto to copy any missing files from skel to the new home dir" do
-      ::File.should_receive(:exists?).with("/System/Library/User\ Template/English.lproj").and_return(true)
+      ::File.should_receive(:exist?).with("/System/Library/User\ Template/English.lproj").and_return(true)
       FileUtils.should_receive(:chown_R).with('toor', '', '/Users/toor')
       @provider.should_receive(:shell_out!).with("ditto '/System/Library/User Template/English.lproj' '/Users/toor'")
       @provider.ditto_home
@@ -319,12 +320,12 @@ describe Chef::Provider::User::Dscl do
 
   describe "load_current_resource" do
     it "should raise an error if the required binary /usr/bin/dscl doesn't exist" do
-      ::File.should_receive(:exists?).with("/usr/bin/dscl").and_return(false)
+      ::File.should_receive(:exist?).with("/usr/bin/dscl").and_return(false)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::User)
     end
 
     it "shouldn't raise an error if /usr/bin/dscl exists" do
-      ::File.stub(:exists?).and_return(true)
+      ::File.stub(:exist?).with('/usr/bin/dscl').and_return(true)
       lambda { @provider.load_current_resource }.should_not raise_error
     end
   end
