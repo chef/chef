@@ -74,6 +74,7 @@
 * [**Robert Tarrall**](https://github.com/tarrall):
   Fix Upstart provider with parameters. (CHEF-5265)
 
+* Windows batch resource run action fails: " TypeError: can't convert nil into String" (CHEF-5287)
 * Log resource always triggers notifications (CHEF-4028)
 * Prevent tracing? from throwing an exception when first starting chef-shell.
 * Use Upstart provider on Ubuntu 13.10+. (CHEF-5276)
