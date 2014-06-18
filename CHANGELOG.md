@@ -79,6 +79,8 @@
   Allow for undefined solaris services in the service resource. (CHEF-5347)
 * [**Allan Espinosa**](https://github.com/aespinosa):
   Properly knife bootstrap on ArchLinux. (CHEF-5366)
+* [**Matt Hoyle**](https://github.com/deployable):
+  Made windows service resource to handle transitory states. (CHEF-5319, CHEF-4791)
 
 * Update rpm provider checking regex to allow for special characters (CHEF-4893)
 * Allow for spaces in selinux controlled directories (CHEF-5095)
