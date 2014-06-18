@@ -92,7 +92,38 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       @provider.start_service
       @new_resource.updated_by_last_action?.should be_false
     end
+	
+    it "should raise an error if the service is paused" do
+      Win32::Service.stub(:status).with(@new_resource.service_name).and_return(
+        double("StatusStruct", :current_state => "paused"))
+      @provider.load_current_resource
+      Win32::Service.should_not_receive(:start).with(@new_resource.service_name)
+      expect { @provider.start_service }.to raise_error( Chef::Exceptions::Service )
+      @new_resource.updated_by_last_action?.should be_false
+    end
+
+    it "should wait and continue if the service is in start_pending" do
+      Win32::Service.stub(:status).with(@new_resource.service_name).and_return(
+        double("StatusStruct", :current_state => "start pending"),
+        double("StatusStruct", :current_state => "start pending"),
+        double("StatusStruct", :current_state => "running"))
+      @provider.load_current_resource
+      Win32::Service.should_not_receive(:start).with(@new_resource.service_name)
+      @provider.start_service
+      @new_resource.updated_by_last_action?.should be_false
+    end
+	
+    it "should fail if the service is in stop_pending" do
+      Win32::Service.stub(:status).with(@new_resource.service_name).and_return(
+        double("StatusStruct", :current_state => "stop pending"))
+      @provider.load_current_resource
+      Win32::Service.should_not_receive(:start).with(@new_resource.service_name)
+      expect { @provider.start_service }.to raise_error( Chef::Exceptions::Service )
+      @new_resource.updated_by_last_action?.should be_false
+    end
+
   end
+
 
   describe Chef::Provider::Service::Windows, "stop_service" do
 
@@ -130,6 +161,36 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       @provider.stop_service
       @new_resource.updated_by_last_action?.should be_false
     end
+	
+    it "should raise an error if the service is paused" do
+      Win32::Service.stub(:status).with(@new_resource.service_name).and_return(
+        double("StatusStruct", :current_state => "paused"))
+      @provider.load_current_resource
+      Win32::Service.should_not_receive(:start).with(@new_resource.service_name)
+      expect { @provider.stop_service }.to raise_error( Chef::Exceptions::Service )
+      @new_resource.updated_by_last_action?.should be_false
+    end
+	
+    it "should wait and continue if the service is in stop_pending" do
+      Win32::Service.stub(:status).with(@new_resource.service_name).and_return(
+        double("StatusStruct", :current_state => "stop pending"),
+        double("StatusStruct", :current_state => "stop pending"),
+        double("StatusStruct", :current_state => "stopped"))
+      @provider.load_current_resource
+      Win32::Service.should_not_receive(:stop).with(@new_resource.service_name)
+      @provider.stop_service
+      @new_resource.updated_by_last_action?.should be_false
+    end
+
+    it "should fail if the service is in start_pending" do
+      Win32::Service.stub(:status).with(@new_resource.service_name).and_return(
+        double("StatusStruct", :current_state => "start pending"))
+      @provider.load_current_resource
+      Win32::Service.should_not_receive(:stop).with(@new_resource.service_name)
+      expect { @provider.stop_service }.to raise_error( Chef::Exceptions::Service )
+      @new_resource.updated_by_last_action?.should be_false
+    end
+
   end
 
   describe Chef::Provider::Service::Windows, "restart_service" do
