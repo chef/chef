@@ -552,8 +552,8 @@ class Chef
       windows_home_path = env['SYSTEMDRIVE'] + env['HOMEPATH'] if env['SYSTEMDRIVE'] && env['HOMEPATH']
     end
 
-    # returns a platform specific path to the user home dir
-    default( :user_home ) { env['HOME'] || windows_home_path || env['USERPROFILE'] }
+    # returns a platform specific path to the user home dir if set, otherwise default to current directory.
+    default( :user_home ) { env['HOME'] || windows_home_path || env['USERPROFILE'] || Dir.pwd }
 
     # Enable file permission fixup for selinux. Fixup will be done
     # only if selinux is enabled in the system.
