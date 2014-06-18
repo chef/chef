@@ -80,6 +80,8 @@
 * [**Allan Espinosa**](https://github.com/aespinosa):
   Properly knife bootstrap on ArchLinux. (CHEF-5366)
 
+* Update rpm provider checking regex to allow for special characters (CHEF-4893)
+* Allow for spaces in selinux controlled directories (CHEF-5095)
 * Log resource always triggers notifications (CHEF-4028)
 * Prevent tracing? from throwing an exception when first starting chef-shell.
 * Use Upstart provider on Ubuntu 13.10+. (CHEF-5276)
