@@ -73,6 +73,12 @@
   Enable storage of roles in subdirectories for chef-solo. (CHEF-4193)
 * [**Robert Tarrall**](https://github.com/tarrall):
   Fix Upstart provider with parameters. (CHEF-5265)
+* [**Klaas Jan Wierenga**](https://github.com/kjwierenga):
+  Don't pass on default HTTP port(80) in Host header. (CHEF-5355)
+* [**MarkGibbons**](https://github.com/MarkGibbons):
+  Allow for undefined solaris services in the service resource. (CHEF-5347)
+* [**Allan Espinosa**](https://github.com/aespinosa):
+  Properly knife bootstrap on ArchLinux. (CHEF-5366)
 
 * Log resource always triggers notifications (CHEF-4028)
 * Prevent tracing? from throwing an exception when first starting chef-shell.
