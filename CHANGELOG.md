@@ -81,6 +81,8 @@
   Properly knife bootstrap on ArchLinux. (CHEF-5366)
 * [**Matt Hoyle**](https://github.com/deployable):
   Made windows service resource to handle transitory states. (CHEF-5319, CHEF-4791)
+* [**Brett cave**](https://github.com/brettcave):
+  Add Dir.pwd as fallback for default user_home if home directory is not set. (CHEF-5365)
 
 * Update rpm provider checking regex to allow for special characters (CHEF-4893)
 * Allow for spaces in selinux controlled directories (CHEF-5095)
