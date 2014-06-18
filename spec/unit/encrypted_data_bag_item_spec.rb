@@ -92,6 +92,34 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
     end
   end
 
+  describe "when using version 3 format" do
+
+    before do
+      Chef::Config[:data_bag_encrypt_version] = 3
+    end
+
+    it "creates a version 3 encryptor" do
+      encryptor.should be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor)
+    end
+
+    it "generates different authentication tags" do
+      encryptor3 = Chef::EncryptedDataBagItem::Encryptor.new(plaintext_data, key)
+      encryptor.for_encrypted_item # required to generate the auth_tag
+      encryptor3.for_encrypted_item
+      encryptor.auth_tag.should_not eq(encryptor3.auth_tag)
+    end
+
+    it "includes the auth_tag in the envelope" do
+      final_data = encryptor.for_encrypted_item
+      final_data["auth_tag"].should eq(Base64::encode64(encryptor.auth_tag))
+    end
+
+    it "throws an error if auth tag is read before encrypting the data" do
+      lambda { encryptor.auth_tag }.should raise_error(Chef::EncryptedDataBagItem::EncryptionFailure)
+    end
+
+  end
+
 end
 
 describe Chef::EncryptedDataBagItem::Decryptor do
@@ -100,6 +128,33 @@ describe Chef::EncryptedDataBagItem::Decryptor do
   let(:plaintext_data) { {"foo" => "bar"} }
   let(:encryption_key) { "passwd" }
   let(:decryption_key) { encryption_key }
+
+  context "when decrypting a version 3 (JSON+aes-256-gcm+random iv+auth tag) encrypted value" do
+    let(:encrypted_value) do
+      Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor.new(plaintext_data, encryption_key).for_encrypted_item
+    end
+
+    let(:bogus_auth_tag) { "bogus_auth_tag" }
+
+    it "decrypts the encrypted value" do
+      decryptor.decrypted_data.should eq({"json_wrapper" => plaintext_data}.to_json)
+    end
+
+    it "unwraps the encrypted data and returns it" do
+      decryptor.for_decrypted_item.should eq plaintext_data
+    end
+
+    it "rejects the data if the authentication tag is wrong" do
+      encrypted_value["auth_tag"] = bogus_auth_tag
+      lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+    end
+
+    it "rejects the data if the authentication tag is missing" do
+      encrypted_value.delete("auth_tag")
+      lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+    end
+
+  end
 
   context "when decrypting a version 2 (JSON+aes-256-cbc+hmac-sha256+random iv) encrypted value" do
     let(:encrypted_value) do
