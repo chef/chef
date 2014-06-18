@@ -508,7 +508,6 @@ describe Chef::Provider::Package::Rubygems do
 
       # this catches 'gem_package "foo"' when "./foo" is a file in the cwd, and instead of installing './foo' it fetches the remote gem
       it "installs the gem via the gems api, when the package has no file separator characters in it, but a matching file exists in cwd" do
-        #::File.stub(:exist?).and_return(true)
         @new_resource.package_name('rspec-core')
         @provider.gem_env.should_receive(:install).with(@gem_dep, :sources => nil)
         @provider.action_install.should be_true

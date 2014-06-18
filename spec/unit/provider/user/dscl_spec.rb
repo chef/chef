@@ -171,7 +171,6 @@ describe Chef::Provider::User::Dscl do
     end
 
     it "should raise an exception when the systems user template dir (skel) cannot be found" do
-      #::File.stub(:exist?).and_return(false,false,false)
       lambda { @provider.modify_home }.should raise_error(Chef::Exceptions::User)
     end
 

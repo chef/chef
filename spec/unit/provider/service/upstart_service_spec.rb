@@ -73,9 +73,6 @@ describe Chef::Provider::Service::Upstart do
       @stdout = StringIO.new
       @stderr = StringIO.new
       @pid = double("PID")
-
-      #::File.stub(:exist?).and_return(true)
-      #::File.stub(:open).and_return(true)
     end
 
     it "should create a current resource with the name of the new resource" do
@@ -156,7 +153,6 @@ describe Chef::Provider::Service::Upstart do
     end
 
     it "should assume disable when no job configuration file is found" do
-      #::File.stub(:exist?).and_return(false)
       @current_resource.should_receive(:running).with(false)
       @provider.load_current_resource
     end

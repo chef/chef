@@ -136,7 +136,6 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
 
       context "when the recipe file does not exist" do
         before do
-          #File.stub(:exist?).and_return(false)
           IO.stub(:readlines).and_raise(Errno::ENOENT)
         end
 

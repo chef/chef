@@ -151,7 +151,6 @@ describe Chef::Provider::Group::Groupadd do
 
   describe "load_current_resource" do
     before do
-      #File.stub(:exist?).and_return(false)
       @provider.define_resource_requirements
     end
     it "should raise an error if the required binary /usr/sbin/groupadd doesn't exist" do

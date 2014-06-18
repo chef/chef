@@ -45,7 +45,6 @@ describe Chef::Knife::Bootstrap do
   end
 
   it "should look for templates early in the run" do
-    #File.stub(:exist?).and_return(true)
     @knife.name_args = ['shatner']
     @knife.stub(:read_template).and_return("")
     @knife.stub(:knife_ssh).and_return(true)
