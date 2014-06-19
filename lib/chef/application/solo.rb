@@ -200,6 +200,8 @@ class Chef::Application::Solo < Chef::Application
       Chef::Mixin::Command.run_command(:command => "tar zxvf #{path} -C #{recipes_path}")
     end
 
+    # json_attribs shuld be fetched after recipe_url tarball is unpacked.
+    # Otherwise it may fail if points to local file from tarball.
     if Chef::Config[:json_attribs]
       config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
       @chef_client_json = config_fetcher.fetch_json
