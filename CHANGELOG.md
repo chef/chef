@@ -85,6 +85,8 @@
   Add Dir.pwd as fallback for default user_home if home directory is not set. (CHEF-5365)
 * [**Caleb Tennis**](https://github.com/ctennis):
   Add support for automatically using the Systemd service provider when available. (CHEF-3637)
+* [**Matt Hoyle**](https://github.com/deployable):
+  Add timeout for Chef::Provider::Service::Windows. (CHEF-1165)
 
 
 * Update rpm provider checking regex to allow for special characters (CHEF-4893)
