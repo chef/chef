@@ -32,5 +32,5 @@ build do
   bundle "install"
   rake "build"
   gem ["install pkg/chef-init*.gem -n #{install_dir}/bin",
-    "--no-rdoc --no-ri"].join(" "), :env => {path_key => path_with_embedded}
+    "--no-rdoc --no-ri"].join(" "), :env => {path_key => "#{install_dir}/embedded/bin:#{ENV['PATH']}"}
 end
