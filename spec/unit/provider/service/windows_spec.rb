@@ -92,7 +92,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       @provider.start_service
       @new_resource.updated_by_last_action?.should be_false
     end
-	
+
     it "should raise an error if the service is paused" do
       Win32::Service.stub(:status).with(@new_resource.service_name).and_return(
         double("StatusStruct", :current_state => "paused"))
@@ -112,7 +112,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       @provider.start_service
       @new_resource.updated_by_last_action?.should be_false
     end
-	
+
     it "should fail if the service is in stop_pending" do
       Win32::Service.stub(:status).with(@new_resource.service_name).and_return(
         double("StatusStruct", :current_state => "stop pending"))
@@ -161,7 +161,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       @provider.stop_service
       @new_resource.updated_by_last_action?.should be_false
     end
-	
+
     it "should raise an error if the service is paused" do
       Win32::Service.stub(:status).with(@new_resource.service_name).and_return(
         double("StatusStruct", :current_state => "paused"))
@@ -170,7 +170,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       expect { @provider.stop_service }.to raise_error( Chef::Exceptions::Service )
       @new_resource.updated_by_last_action?.should be_false
     end
-	
+
     it "should wait and continue if the service is in stop_pending" do
       Win32::Service.stub(:status).with(@new_resource.service_name).and_return(
         double("StatusStruct", :current_state => "stop pending"),
@@ -188,6 +188,17 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       @provider.load_current_resource
       Win32::Service.should_not_receive(:stop).with(@new_resource.service_name)
       expect { @provider.stop_service }.to raise_error( Chef::Exceptions::Service )
+      @new_resource.updated_by_last_action?.should be_false
+    end
+
+    it "should pass custom timeout to the stop command if provided" do
+      Win32::Service.stub!(:status).with(@new_resource.service_name).and_return(
+        mock("StatusStruct", :current_state => "running"))
+      @new_resource.timeout 1
+      Win32::Service.should_receive(:stop).with(@new_resource.service_name)
+      Timeout.timeout(2) do
+        expect { @provider.stop_service }.to raise_error(Timeout::Error)
+      end
       @new_resource.updated_by_last_action?.should be_false
     end
 

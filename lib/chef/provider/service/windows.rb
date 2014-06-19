@@ -41,6 +41,8 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   START_PENDING = 'start pending'
   STOP_PENDING  = 'stop pending'
 
+  TIMEOUT  = 60
+
   def whyrun_supported?
     false
   end
@@ -76,11 +78,11 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
           end
         end
         @new_resource.updated_by_last_action(true)
-      else 
+      else
         raise Chef::Exceptions::Service, "Service #{@new_resource} can't be started from state [#{state}]"
       end
     else
-        Chef::Log.debug "#{@new_resource} does not exist - nothing to do"
+      Chef::Log.debug "#{@new_resource} does not exist - nothing to do"
     end
   end
 
@@ -175,12 +177,14 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     sleep 1 until current_state == desired_state
   end
 
-  # There ain't no party like a thread party...
   def spawn_command_thread
     worker = Thread.new do
       yield
     end
-    Timeout.timeout(60) do
+
+    resource_timeout = @new_resource.timeout if @new_resource.timeout
+    resource_timeout ||= TIMEOUT
+    Timeout.timeout(resource_timeout) do
       worker.join
     end
   end

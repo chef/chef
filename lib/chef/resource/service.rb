@@ -42,6 +42,7 @@ class Chef
         @reload_command = nil
         @init_command = nil
         @priority = nil
+        @timeout = nil
         @action = "nothing"
         @supports = { :restart => false, :reload => false, :status => false }
         @allowed_actions.push(:enable, :disable, :start, :stop, :restart, :reload)
@@ -154,16 +155,28 @@ class Chef
       #   similar for other runlevels
       #
       def priority(arg=nil)
-        set_or_return(:priority,
-                      arg,
-                      :kind_of => [ Integer, String, Hash ])
+        set_or_return(
+          :priority,
+          arg,
+          :kind_of => [ Integer, String, Hash ]
+        )
+      end
+
+      # timeout only applies to the windows service manager
+      def timeout(arg=nil)
+        set_or_return(
+          :timeout,
+          arg,
+          :kind_of => Integer
+        )
       end
 
       def parameters(arg=nil)
         set_or_return(
           :parameters,
           arg,
-          :kind_of => [ Hash ] )
+          :kind_of => [ Hash ]
+        )
       end
 
       def supports(args={})
