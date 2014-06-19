@@ -16,15 +16,13 @@
 # limitations under the License.
 #
 
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require 'chef/win32/api/system'
-end
+require 'chef/win32/api/system' if RUBY_PLATFORM =~ /mswin|mingw32|windows/
 
 class Chef
   class Provider
     class Env
       class Windows < Chef::Provider::Env
-        include Chef::ReservedNames::Win32::API::System
+        include Chef::ReservedNames::Win32::API::System if RUBY_PLATFORM =~ /mswin|mingw32|windows/
 
         def create_env
           obj = env_obj(@new_resource.key_name)
