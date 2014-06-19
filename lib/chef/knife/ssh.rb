@@ -431,6 +431,11 @@ class Chef
         end
         raise Chef::Exceptions::Exec, "no command found for cssh" unless cssh_cmd
 
+        # pass in the consolidated itentity file option to cssh(X)
+        if config[:identity_file]
+          cssh_cmd << " --ssh_args '-i #{File.expand_path(config[:identity_file])}'"
+        end
+
         session.servers_for.each do |server|
           cssh_cmd << " #{server.user ? "#{server.user}@#{server.host}" : server.host}"
         end
