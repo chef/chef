@@ -254,6 +254,16 @@ describe Chef::Platform do
 
     end
 
+    it "does not overwrite the platform map when using :default platform" do
+      Chef::Platform.set(
+        :resource => :file,
+        :platform => :default,
+        :provider => "new school"
+      )
+      Chef::Platform.platforms[:default][:file].should eql("new school")
+      Chef::Platform.platforms[:default][:cat].should eql("nice")
+    end
+
   end
 
   context "while testing the configured platform data" do
