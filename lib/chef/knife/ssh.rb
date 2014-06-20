@@ -170,12 +170,13 @@ class Chef
           # if a command line attribute was not passed, and we have a
           # cloud public_hostname, use that.  see #configure_attribute
           # for the source of config[:attribute] and
-          # config[:override_attribute]
-          if config[:override_attribute]
-            host = extract_nested_value(item, config[:override_attribute])
+          # config[:attribute_from_cli]
+          if config[:attribute_from_cli]
+            host = extract_nested_value(item, config[:attribute_from_cli])
           elsif item[:cloud] && item[:cloud][:public_hostname]
             host = item[:cloud][:public_hostname]
           else
+            # ssh attribute from a configuration file or the default will land here
             host = extract_nested_value(item, config[:attribute])
           end
           # next if we couldn't find the specified attribute in the
@@ -413,8 +414,8 @@ class Chef
         # Thus we can differentiate between a config file value and a command line override at this point by checking config[:attribute]
         # We can tell here if fqdn was passed from the command line, rather than being the default, by checking config[:attribute]
         # However, after here, we cannot tell these things, so we must preserve config[:attribute]
-        config[:override_attribute] = config[:attribute] || Chef::Config[:knife][:ssh_attribute]
-        config[:attribute] = (config[:override_attribute] || "fqdn").strip
+        config[:attribute_from_cli] = config[:attribute]
+        config[:attribute] = (config[:attribute_from_cli] || Chef::Config[:knife][:ssh_attribute] || "fqdn").strip
       end
 
       def cssh
