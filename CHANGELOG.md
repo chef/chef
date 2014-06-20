@@ -87,7 +87,8 @@
   Add support for automatically using the Systemd service provider when available. (CHEF-3637)
 * [**Matt Hoyle**](https://github.com/deployable):
   Add timeout for Chef::Provider::Service::Windows. (CHEF-1165)
-
+* [**Jesse Hu**](https://github.com/jessehu):
+  knife[:attribute] in knife.rb should not override --attribute (CHEF-5158)
 
 * Update rpm provider checking regex to allow for special characters (CHEF-4893)
 * Allow for spaces in selinux controlled directories (CHEF-5095)
