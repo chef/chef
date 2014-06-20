@@ -208,11 +208,10 @@ class Chef
     end
 
     def url_for_checksum(checksum)
-      Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
+      COOKBOOK_SEGMENTS.each do |segment|
         f = manifest[segment].find {|c| c["checksum"] == checksum }
-        break if f
+        return f["url"] if f
       end
-      f["url"]
     end
 
     def recipe_filenames=(*filenames)
