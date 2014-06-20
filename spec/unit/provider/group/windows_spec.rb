@@ -27,7 +27,7 @@ class Chef
   end
 end
 
-describe Chef::Provider::Group::Windows do
+describe Chef::Provider::Group::Windows, :windows_only do
   before do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
@@ -86,7 +86,7 @@ describe Chef::Provider::Group::Windows do
   end
 end
 
-describe Chef::Provider::Group::Windows, "NetGroup" do
+describe Chef::Provider::Group::Windows, "NetGroup", :windows_only do
   before do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
