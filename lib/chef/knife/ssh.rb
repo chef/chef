@@ -172,11 +172,14 @@ class Chef
           # for the source of config[:attribute] and
           # config[:attribute_from_cli]
           if config[:attribute_from_cli]
+            Chef::Log.debug("Using node attribute '#{config[:attribute_from_cli]}' from the command line as the ssh target")
             host = extract_nested_value(item, config[:attribute_from_cli])
           elsif item[:cloud] && item[:cloud][:public_hostname]
+            Chef::Log.debug("Using node attribute 'cloud[:public_hostname]' automatically as the ssh target")
             host = item[:cloud][:public_hostname]
           else
             # ssh attribute from a configuration file or the default will land here
+            Chef::Log.debug("Using node attribute '#{config[:attribute]}' as the ssh target")
             host = extract_nested_value(item, config[:attribute])
           end
           # next if we couldn't find the specified attribute in the
