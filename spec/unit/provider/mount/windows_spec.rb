@@ -32,7 +32,7 @@ end
 GUID = "\\\\?\\Volume{578e72b5-6e70-11df-b5c5-000c29d4a7d9}\\"
 REMOTE = "\\\\server-name\\path"
 
-describe Chef::Provider::Mount::Windows do
+describe Chef::Provider::Mount::Windows, :windows_only do
   before(:each) do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new

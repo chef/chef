@@ -27,7 +27,7 @@ class Chef
   end
 end
 
-describe Chef::Provider::User::Windows do
+describe Chef::Provider::User::Windows, :windows_only do
   before(:each) do
     @node = Chef::Node.new
     @new_resource = Chef::Resource::User.new("monkey")
