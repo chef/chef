@@ -35,19 +35,19 @@ class Chef
 
           Chef::Log.debug("Checking package status for #{@new_resource.package_name}")
           installed = false
-          re = Regexp.new('(?<name>(.*))[[:blank:]](?<version>(.*))[[:blank:]](?<repository>(.*))$')
+          re = Regexp.new('(.*)[[:blank:]](.*)[[:blank:]](.*)$')
 
           shell_out!("cave -L warning print-ids -m \"*/#{@new_resource.package_name.split('/').last}\" -f \"%c/%p %v %r\n\"").stdout.each_line do |line|
             res = re.match(line)
             unless res.nil?
-              case res[:repository]
+              case res[3]
               when 'accounts', 'installed-accounts'
                 next
               when 'installed'
                 installed = true
-                @current_resource.version(res[:version])
+                @current_resource.version(res[2])
               else
-                @candidate_version = res[:version]
+                @candidate_version = res[2]
                 @current_resource.version(nil)              
               end
             end
