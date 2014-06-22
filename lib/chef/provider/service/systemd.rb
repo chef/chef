@@ -93,7 +93,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     if @new_resource.reload_command
       super
     else
-      run_command_with_systems_locale(:command => "/bin/systemctl reload #{@new_resource.service_name}")
+      run_command_with_systems_locale(:command => "/bin/systemctl reload-or-restart #{@new_resource.service_name}")
     end
   end
 
