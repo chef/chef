@@ -22,6 +22,7 @@ require 'openssl'
 require 'yajl'
 require 'chef/encrypted_data_bag_item'
 require 'chef/encrypted_data_bag_item/unsupported_encrypted_data_bag_item_format'
+require 'chef/encrypted_data_bag_item/encryption_failure'
 
 class Chef::EncryptedDataBagItem
 
@@ -40,9 +41,11 @@ class Chef::EncryptedDataBagItem
         Version1Encryptor.new(value, secret, iv)
       when 2
         Version2Encryptor.new(value, secret, iv)
+      when 3
+        Version3Encryptor.new(value, secret, iv)
       else
         raise UnsupportedEncryptedDataBagItemFormat,
-          "Invalid encrypted data bag format version `#{format_version}'. Supported versions are '1', '2'"
+          "Invalid encrypted data bag format version `#{format_version}'. Supported versions are '1', '2', '3'"
       end
     end
 
@@ -65,6 +68,11 @@ class Chef::EncryptedDataBagItem
         @iv = iv && Base64.decode64(iv)
       end
 
+      # Returns the used encryption algorithm
+      def algorithm
+        ALGORITHM
+      end
+
       # Returns a wrapped and encrypted version of +plaintext_data+ suitable for
       # using as the value in an encrypted data bag item.
       def for_encrypted_item
@@ -72,7 +80,7 @@ class Chef::EncryptedDataBagItem
           "encrypted_data" => encrypted_data,
           "iv" => Base64.encode64(iv),
           "version" => 1,
-          "cipher" => ALGORITHM
+          "cipher" => algorithm
         }
       end
 
@@ -88,11 +96,12 @@ class Chef::EncryptedDataBagItem
       # it for the specified iv and encryption key.
       def openssl_encryptor
         @openssl_encryptor ||= begin
-          encryptor = OpenSSL::Cipher::Cipher.new(ALGORITHM)
+          encryptor = OpenSSL::Cipher::Cipher.new(algorithm)
           encryptor.encrypt
+          # We must set key before iv: https://bugs.ruby-lang.org/issues/8221
+          encryptor.key = Digest::SHA256.digest(key)
           @iv ||= encryptor.random_iv
           encryptor.iv = @iv
-          encryptor.key = Digest::SHA256.digest(key)
           encryptor
         end
       end
@@ -125,7 +134,7 @@ class Chef::EncryptedDataBagItem
           "hmac" => hmac,
           "iv" => Base64.encode64(iv),
           "version" => 2,
-          "cipher" => ALGORITHM
+          "cipher" => algorithm
         }
       end
 
@@ -138,5 +147,62 @@ class Chef::EncryptedDataBagItem
         end
       end
     end
+
+    class Version3Encryptor < Version1Encryptor
+
+      def initialize(plaintext_data, key, iv=nil)
+        super
+        @auth_tag = nil
+      end
+
+      # Returns a wrapped and encrypted version of +plaintext_data+ suitable for
+      # using as the value in an encrypted data bag item.
+      def for_encrypted_item
+        {
+          "encrypted_data" => encrypted_data,
+          "iv" => Base64.encode64(iv),
+          "auth_tag" => Base64.encode64(auth_tag),
+          "version" => 3,
+          "cipher" => algorithm
+        }
+      end
+
+      # Returns the used encryption algorithm
+      def algorithm
+        AEAD_ALGORITHM
+      end
+
+      # Returns a wrapped and encrypted version of +plaintext_data+ suitable for
+      # Returns the auth_tag.
+      def auth_tag
+        # Generated auth_tag comes from OpenSSL::Cipher::Cipher#auth_tag
+        # This must be generated after the data is encrypted
+        if @auth_tag.nil?
+          raise EncryptionFailure, "Internal Error: GCM authentication tag read before encryption"
+        end
+        @auth_tag
+      end
+
+      # Generates (and memoizes) an OpenSSL::Cipher::Cipher object and configures
+      # it for the specified iv and encryption key using AEAD
+      def openssl_encryptor
+        @openssl_encryptor ||= begin
+          encryptor = super
+          encryptor.auth_data = ''
+          encryptor
+        end
+      end
+
+      # Encrypts, Base64 encodes +serialized_data+ and gets the authentication tag
+      def encrypted_data
+        @encrypted_data ||= begin
+          enc_data_b64 = super
+          @auth_tag = openssl_encryptor.auth_tag
+          enc_data_b64
+        end
+      end
+
+    end
+
   end
 end

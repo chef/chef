@@ -45,6 +45,8 @@ class Chef::EncryptedDataBagItem
       format_version = format_version_of(encrypted_value)
       assert_format_version_acceptable!(format_version)
       case format_version
+      when 3
+        Version3Decryptor.new(encrypted_value, key)
       when 2
         Version2Decryptor.new(encrypted_value, key)
       when 1
@@ -83,6 +85,11 @@ class Chef::EncryptedDataBagItem
         @key = key
       end
 
+      # Returns the used decryption algorithm
+      def algorithm
+        ALGORITHM
+      end
+
       def for_decrypted_item
         YAML.load(decrypted_data)
       end
@@ -102,7 +109,7 @@ class Chef::EncryptedDataBagItem
 
       def openssl_decryptor
         @openssl_decryptor ||= begin
-          d = OpenSSL::Cipher::Cipher.new(ALGORITHM)
+          d = OpenSSL::Cipher::Cipher.new(algorithm)
           d.decrypt
           d.pkcs5_keyivgen(key)
           d
@@ -110,7 +117,7 @@ class Chef::EncryptedDataBagItem
       end
     end
 
-    class Version1Decryptor
+    class Version1Decryptor < Version0Decryptor
 
       attr_reader :encrypted_data
       attr_reader :key
@@ -149,8 +156,9 @@ class Chef::EncryptedDataBagItem
       def openssl_decryptor
         @openssl_decryptor ||= begin
           assert_valid_cipher!
-          d = OpenSSL::Cipher::Cipher.new(ALGORITHM)
+          d = OpenSSL::Cipher::Cipher.new(algorithm)
           d.decrypt
+          # We must set key before iv: https://bugs.ruby-lang.org/issues/8221
           d.key = Digest::SHA256.digest(key)
           d.iv = iv
           d
@@ -159,11 +167,11 @@ class Chef::EncryptedDataBagItem
 
       def assert_valid_cipher!
         # In the future, chef may support configurable ciphers. For now, only
-        # aes-256-cbc is supported.
+        # aes-256-cbc and aes-256-gcm are supported.
         requested_cipher = @encrypted_data["cipher"]
-        unless requested_cipher == ALGORITHM
+        unless requested_cipher == algorithm
           raise UnsupportedCipher,
-            "Cipher '#{requested_cipher}' is not supported by this version of Chef. Available ciphers: ['#{ALGORITHM}']"
+            "Cipher '#{requested_cipher}' is not supported by this version of Chef. Available ciphers: ['#{ALGORITHM}', '#{AEAD_ALGORITHM}']"
         end
       end
     end
@@ -197,5 +205,32 @@ class Chef::EncryptedDataBagItem
         valid == 0
       end
     end
+
+    class Version3Decryptor < Version1Decryptor
+
+      # Returns the used decryption algorithm
+      def algorithm
+        AEAD_ALGORITHM
+      end
+
+      def auth_tag
+        auth_tag_b64 = @encrypted_data["auth_tag"]
+        if auth_tag_b64.nil?
+          raise DecryptionFailure, "Error decrypting data bag value: invalid authentication tag. Most likely the data is corrupted"
+        end
+        Base64.decode64(auth_tag_b64)
+      end
+
+      def openssl_decryptor
+        @openssl_decryptor ||= begin
+          d = super
+          d.auth_tag = auth_tag
+          d.auth_data = ''
+          d
+        end
+      end
+
+    end
+
   end
 end
