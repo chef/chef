@@ -19,7 +19,7 @@ name "chef"
 
 dependency "ruby"
 dependency "rubygems"
-dependency "yajl"
+dependency "libffi"
 dependency "bundler"
 
 default_version "master"
