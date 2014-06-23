@@ -47,13 +47,9 @@ class Chef
     # Modifies @current_resource, setting the current access control state.
     def set_all!
       if ::File.exist?(new_resource.path)
-        if new_resource.is_a?(::Chef::Resource::Link)
-          if current_resource.link_type == :symbolic
-            set_all
-          else
-            set_all unless ::File.exist?(current_resource.path)
-          end
-        else
+        if !new_resource.is_a?(::Chef::Resource::Link)
+          set_all
+        elsif current_resource.link_type == :symbolic
           set_all
         end
       else
