@@ -35,42 +35,33 @@ dependency "berkshelf"
 dependency "ohai"
 dependency "chef-vault"
 
-sep = File::PATH_SEPARATOR || ":"
-path = "#{install_dir}/embedded/bin#{sep}#{ENV['PATH']}"
-
 build do
-  path_key = ENV.keys.grep(/\Apath\Z/i).first
-
   env = {
     # rubocop pulls in nokogiri 1.5.11, so needs PKG_CONFIG_PATH and
     # NOKOGIRI_USE_SYSTEM_LIBRARIES until rubocop stops doing that
     "PKG_CONFIG_PATH" => "#{install_dir}/embedded/lib/pkgconfig",
     "NOKOGIRI_USE_SYSTEM_LIBRARIES" => "true",
-    path_key => path
   }
-
+  env = with_embedded_path(env)
 
   def appbuilder(app_path, bin_path)
-    path_key = ENV.keys.grep(/\Apath\Z/i).first
-    path = path_with_embedded
-
     gemfile = File.join(app_path, "Gemfile.lock")
-    command("#{install_dir}/embedded/bin/appbundler #{app_path} #{bin_path}",
-            :env => {
+    env = {
       'RUBYOPT'         => nil,
       'BUNDLE_BIN_PATH' => nil,
       'BUNDLE_GEMFILE'  => gemfile,
       'GEM_PATH'        => nil,
       'GEM_HOME'        => nil,
-      path_key          => path
-    })
+    }
+    env = with_embedded_path(env)
+    command("#{install_dir}/embedded/bin/appbundler #{app_path} #{bin_path}", :env => env)
   end
 
-  bundle "install", :env => {path_key => path}
-  rake "build", :env => env.merge({path_key => path})
+  bundle "install", :env => env
+  rake "build", :env => env
 
   gem ["install pkg/chef-dk*.gem",
-      "--no-rdoc --no-ri"].join(" "), :env => env.merge({path_key => path})
+      "--no-rdoc --no-ri"].join(" "), :env => env
 
   auxiliary_gems = []
 
