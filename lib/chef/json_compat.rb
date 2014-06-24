@@ -40,8 +40,6 @@ class Chef
 
     class <<self
 
-      # opts_add_max_nesting() removed -- libyajl does not have a configurable max nesting depth
-
       # Just call the JSON gem's parse method with a modified :max_nesting field
       def from_json(source, opts = {})
         obj = ::FFI_Yajl::Parser.parse(source)
