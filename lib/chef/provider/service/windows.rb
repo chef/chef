@@ -52,7 +52,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     @current_resource.service_name(@new_resource.service_name)
     @current_resource.running(current_state == RUNNING)
     Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
-    @current_resource.enabled(start_type == AUTO_START)
+    @current_resource.enabled(start_type != DISABLED)
     Chef::Log.debug "#{@new_resource} enabled: #{@current_resource.enabled}"
     @current_resource
   end
@@ -148,7 +148,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   def disable_service
     if Win32::Service.exists?(@new_resource.service_name)
-      if start_type == AUTO_START
+      if start_type != DISABLED
         Win32::Service.configure(
           :service_name => @new_resource.service_name,
           :start_type => Win32::Service::DISABLED
