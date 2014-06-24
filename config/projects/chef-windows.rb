@@ -36,13 +36,10 @@ end
 
 package_name    "chef-client"
 
-override :chef,   version: "lcg/ffi-yajl-gem"
-override :ohai,   version: "lcg/ffi-yajl-gem"
 override :rubygems, version: "1.8.29"
 
 dependency "preparation"
 dependency "ffi-yajl"
-dependency "ohai"
 dependency "chef-windows"
 
 resources_path File.join(files_path, "chef")

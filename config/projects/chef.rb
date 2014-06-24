@@ -34,12 +34,9 @@ install_path    "/opt/chef"
 resources_path File.join(files_path, "chef")
 mac_pkg_identifier "com.getchef.pkg.chef"
 
-override :chef,   version: "lcg/ffi-yajl-gem"
-override :ohai,   version: "lcg/ffi-yajl-gem"
 override :rubygems, version: "1.8.29"
 
 dependency "preparation"
 dependency "ffi-yajl"
-dependency "ohai"
 dependency "chef"
 dependency "version-manifest"
