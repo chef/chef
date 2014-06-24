@@ -377,6 +377,12 @@ describe Chef::Resource::Link do
           include_context 'create symbolic link succeeds'
           include_context 'delete is noop'
         end
+        context 'and the link already exists and points to a directory' do
+          before(:each) do
+            Dir.mkdir(target_file)
+          end
+          include_context 'create symbolic link succeeds'
+        end
       end
       context "when the link destination is a symbolic link" do
         context 'to a file that exists' do
