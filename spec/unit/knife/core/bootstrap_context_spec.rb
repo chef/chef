@@ -57,6 +57,7 @@ describe Chef::Knife::Core::BootstrapContext do
 log_location     STDOUT
 chef_server_url  "http://chef.example.com:4444"
 validation_client_name "chef-validator-testing"
+verify_api_cert true
 # Using default node name (fqdn)
 EXPECTED
     bootstrap_context.config_content.should eq expected
@@ -102,6 +103,20 @@ EXPECTED
     end
   end
 
+  describe "when disabling SSL cert verification against Chef server" do
+    let(:config){ {:disable_api_cert_verify => true }}
+    it "supplies --disable-api-cert-verify as a flag to disable SSL cert verification against Chef" do
+      bootstrap_context.config_content.should match(/verify_api_cert false/)
+    end
+  end
+
+  describe "when enabling SSL peer verification" do
+    let(:config){ {:client_ssl_peer_verify => true }}
+    it "supplies --client-ssl-peer-verify as a flag to indicate enabling peer verification for the client" do
+      bootstrap_context.config_content.should match(/ssl_verify_mode \:verify_peer/)
+    end
+  end
+  
   describe "when installing an explicit version of chef" do
     let(:chef_config) do
       {
