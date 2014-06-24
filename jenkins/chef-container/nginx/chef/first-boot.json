@@ -1,1 +1,8 @@
-{"run_list":["recipe[apt]","recipe[nginx]","recipe[chef-container]"]}
+{
+  "run_list":["recipe[apt]","recipe[nginx]"],
+  "container_service": {
+    "nginx": {
+      "command": "/usr/sbin/nginx -c /etc/nginx/nginx.conf"
+    }
+  }
+}

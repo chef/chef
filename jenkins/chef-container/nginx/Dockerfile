@@ -1,4 +1,4 @@
-FROM chef/centos_6.4
+FROM chef/ubuntu_12.04
 ADD chef/ /etc/chef/
 RUN chef-init --bootstrap
 ENTRYPOINT ["chef-init"]

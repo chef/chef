@@ -2,4 +2,3 @@ source "https://api.berkshelf.com"
 
 cookbook "apt"
 cookbook "nginx"
-cookbook "chef-container", path: "#{ENV["HOME"]}/Development/Cookbooks/chef-container-cookbook"
