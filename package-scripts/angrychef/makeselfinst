@@ -12,7 +12,7 @@
 
 PROGNAME=`basename $0`
 INSTALLER_DIR=`dirname $0`
-DEST_DIR=/opt/chef
+DEST_DIR=/opt/angrychef
 CONFIG_DIR=/etc/chef
 USAGE="usage: $0 [-v validation_key] ([-o organization] || [-u url])"
 
