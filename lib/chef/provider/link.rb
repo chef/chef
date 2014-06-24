@@ -92,8 +92,17 @@ class Chef
         if @current_resource.to != canonicalize(@new_resource.to) ||
            @current_resource.link_type != @new_resource.link_type
           if @current_resource.to # nil if target_file does not exist
-            converge_by("unlink existing file at #{@new_resource.target_file}") do
-              ::File.unlink(@new_resource.target_file)
+            if ::File.directory?(@new_resource.to) &&
+               ::File.directory?(@current_resource.target_file)
+              converge_by("unlink existing dir at #{@new_resource.target_file}") do
+                ::Dir.unlink(@new_resource.target_file)
+              end
+            else
+                # This will fail when current is a directory and new is a file,
+                # which is desired behavior
+              converge_by("unlink existing file at #{@new_resource.target_file}") do
+                ::File.unlink(@new_resource.target_file)
+              end
             end
           end
           if @new_resource.link_type == :symbolic
