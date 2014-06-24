@@ -112,13 +112,21 @@ if [ "x$os" = "xAIX" ]; then
   fi
 fi
 
+# clean up our target directory
+sudo rm -rf "/opt/${OMNIBUS_PROJECT_NAME}" || true
+sudo mkdir -p "/opt/${OMNIBUS_PROJECT_NAME}"
+# and any old package cruft from prior builds
+sudo rm -f pkg/* || true
+
 if [ "$CLEAN" = "true" ]; then
-  sudo rm -rf "/opt/${OMNIBUS_PROJECT_NAME}" || true
-  sudo mkdir -p "/opt/${OMNIBUS_PROJECT_NAME}"
+  # nuke everything, including the git cache
+  sudo rm -rf /var/cache/omnibus/* || true
+else
+  # we need to nuke these from old builds in order to reliably use
+  # the git caching
   sudo rm -rf /var/cache/omnibus/pkg/* || true
   sudo rm -rf /var/cache/omnibus/src/* || true
   sudo rm -f /var/cache/omnibus/build/*/*.manifest || true
-  sudo rm -f pkg/* || true
 fi
 
 # always fix up permissions

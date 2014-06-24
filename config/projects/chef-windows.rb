@@ -36,11 +36,10 @@ end
 
 package_name    "chef-client"
 
-# You can pin the components to specific versions as below
-# override :"chef-windows", version: "11.12.4"
-# override :ohai, version: "7.0.4"
+override :rubygems, version: "1.8.29"
 
 dependency "preparation"
+dependency "ffi-yajl"
 dependency "chef-windows"
 
 resources_path File.join(files_path, "chef")

@@ -34,10 +34,9 @@ install_path    "/opt/chef"
 resources_path File.join(files_path, "chef")
 mac_pkg_identifier "com.getchef.pkg.chef"
 
-# You can pin the components to specific versions as below
-# override :chef, version: "11.12.4"
-# override :ohai, version: "7.0.4"
+override :rubygems, version: "1.8.29"
 
 dependency "preparation"
+dependency "ffi-yajl"
 dependency "chef"
 dependency "version-manifest"
