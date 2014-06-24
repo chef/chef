@@ -55,6 +55,7 @@ class Chef
       end
 
       def content(arg=nil)
+        arg = arg.to_s unless arg.nil?
         set_or_return(
           :content,
           arg,
