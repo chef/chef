@@ -199,7 +199,7 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       it "truncates the file cache path to 102 characters" do
         normalized_cache_path = cache_control_data.send('sanitized_cache_file_basename')
 
-        Chef::FileCache.should_receive(:store).with("remote_file/" + normalized_cache_path, cache_control_data.json_data)              
+        Chef::FileCache.should_receive(:store).with("remote_file/" + normalized_cache_path, cache_control_data.json_data)
 
         cache_control_data.save
 
