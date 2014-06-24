@@ -19,7 +19,9 @@
 require 'spec_helper'
 require 'ostruct'
 
-describe Chef::Provider::Mount::Solaris do
+# Do not run these tests on windows because some path handling
+# code is not implemented to handle windows paths.
+describe Chef::Provider::Mount::Solaris, :unix_only do
   let(:node) { Chef::Node.new }
 
   let(:events) { Chef::EventDispatch::Dispatcher.new }

@@ -47,7 +47,7 @@ class Chef
       end
 
       def self.get_last_error
-        GetLastError()
+        FFI::LastError.error
       end
 
       # Raises the last error.  This should only be called by
