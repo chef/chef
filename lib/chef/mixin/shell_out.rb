@@ -45,13 +45,31 @@ class Chef
       end
 
       def shell_out_with_systems_locale(*command_args)
-        if command_args.last.is_a?(Hash)
-          command_args.last[:environment] ||= {}
-          command_args.last[:environment]['LC_ALL'] ||= ENV['LC_ALL']
-          shell_out(*command_args)
-        else
-          shell_out(*command_args, :environment => {'LC_ALL' => ENV['LC_ALL']})
+        args = command_args.dup
+        unless ENV['LC_ALL'].nil?
+          if args.last.is_a?(Hash)
+            options = args.last
+            # Get the environment option and set environment['LC_ALL'] if not
+            # present.
+            if options.has_key?(:environment)
+              options_env = options[:environment]
+            elsif options.has_key?(:env)
+              options_env = options[:env]
+            else
+              options[:environment] = {}
+              options_env = options[:environment]
+            end
+
+            unless options_env.nil? || options_env.has_key?('LC_ALL')
+              options_env['LC_ALL'] = ENV['LC_ALL']
+            end
+          else
+            # Add the environment option
+            args << { :environment => { 'LC_ALL' => ENV['LC_ALL'] } }
+          end
         end
+
+        shell_out(*args)
       end
 
       DEPRECATED_OPTIONS =
