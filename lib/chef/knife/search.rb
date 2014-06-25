@@ -25,6 +25,7 @@ class Chef
 
       include Knife::Core::MultiAttributeReturnOption
 
+      puts "GJGKDLGJKDLSJFKDLSFDJSFDS"
       deps do
         require 'chef/node'
         require 'chef/environment'
