@@ -104,6 +104,64 @@ describe Chef::Mixin::ShellOut do
 
       should_emit_deprecation_warning_about :command_log_prepend, :log_tag
     end
+  end
 
+  describe "#shell_out_with_systems_locale" do
+    let(:shell_out) { Chef::Mixin::ShellOut }
+
+    describe "when the last argument is a Hash" do
+      let(:cmd) { "echo '#{rand(1000)}'" }
+
+      describe "and environment is a key" do
+        let(:options) { { :environment => environment } }
+
+        describe "and 'LC_ALL' is an :environment key" do
+          let(:environment) { { 'LC_ALL' => 'C' } }
+
+          it "should not modify :environment['LC_ALL']" do
+            shell_out.should_receive(:shell_out).with(cmd, options).and_return(true)
+            shell_out.shell_out_with_systems_locale(cmd, options)
+          end
+        end
+
+        describe "and 'LC_ALL' is not an :environment key" do
+          let(:environment) { { 'USER' => 'morty' } }
+
+          it "should set :environment['LC_ALL'] => nil" do
+            shell_out.should_receive(:shell_out).with(
+              cmd,
+              { :environment => { 'USER'   => 'morty',
+                                  'LC_ALL' => ENV['LC_ALL'] } }
+            ).and_return(true)
+            shell_out.shell_out_with_systems_locale(cmd, options)
+          end
+        end
+      end
+
+      describe "and :environment is not a key" do
+        let(:options) { { :user => 'morty' } }
+
+        it "should add :environment => { 'LC_ALL' => nil }" do
+          shell_out.should_receive(:shell_out).with(
+            cmd,
+            { :user => 'morty',
+              :environment => { 'LC_ALL' => ENV['LC_ALL'] } }
+          ).and_return(true)
+          shell_out.shell_out_with_systems_locale(cmd, options)
+        end
+      end
+    end
+
+    describe "when the last argument is not a Hash" do
+      let(:cmd) { "echo '#{rand(1000)}'" }
+
+      it "should add :environment => {'LC_ALL' => nil} to the command args" do
+        shell_out.should_receive(:shell_out).with(
+          cmd,
+          { :environment => { 'LC_ALL' => ENV['LC_ALL'] } }
+        ).and_return(true)
+        shell_out.shell_out_with_systems_locale(cmd)
+      end
+    end
   end
 end

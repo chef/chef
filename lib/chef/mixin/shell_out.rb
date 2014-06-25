@@ -46,11 +46,11 @@ class Chef
 
       def shell_out_with_systems_locale(*command_args)
         if command_args.last.is_a?(Hash)
-          command_args[:environment] ||= {}
-          command_args[:environment]['LC_ALL'] ||= nil
+          command_args.last[:environment] ||= {}
+          command_args.last[:environment]['LC_ALL'] ||= ENV['LC_ALL']
           shell_out(*command_args)
         else
-          shell_out(*command_args, :environment => {'LC_ALL' => nil})
+          shell_out(*command_args, :environment => {'LC_ALL' => ENV['LC_ALL']})
         end
       end
 
