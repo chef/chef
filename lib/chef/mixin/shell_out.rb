@@ -32,7 +32,6 @@ class Chef
       # You can also call Mixlib::Shellout.new directly, but you lose all of the above functionality
 
       def shell_out(*command_args)
-        Chef::Log.logger.debug "executing commands: #{command_args}"
         cmd = Mixlib::ShellOut.new(*run_command_compatible_options(command_args))
         cmd.live_stream = io_for_live_stream
         cmd.run_command
@@ -49,12 +48,10 @@ class Chef
         if command_args.last.is_a?(Hash)
           command_args[:environment] ||= {}
           command_args[:environment]['LC_ALL'] ||= nil
-          cmd = shell_out(*command_args)
+          shell_out(*command_args)
         else
-          cmd = shell_out(*command_args, :environment => {'LC_ALL' => nil})
+          shell_out(*command_args, :environment => {'LC_ALL' => nil})
         end
-        Chef::Log.logger.debug "exitstatus #{cmd.exitstatus}, stdout #{cmd.stdout}, stderr #{cmd.stderr}"
-        cmd
       end
 
       DEPRECATED_OPTIONS =
