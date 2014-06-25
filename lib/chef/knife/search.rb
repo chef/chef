@@ -25,7 +25,6 @@ class Chef
 
       include Knife::Core::MultiAttributeReturnOption
 
-      puts "GJGKDLGJKDLSJFKDLSFDJSFDS"
       deps do
         require 'chef/node'
         require 'chef/environment'
@@ -72,6 +71,11 @@ class Chef
         :long => "--query QUERY",
         :description => "The search query; useful to protect queries starting with -"
 
+      option :filter_result,
+        :short => "-f FILTER",
+        :long => "--filter-result FILTER",
+        :description => "Only bring back specific elements of the matching objects"
+
       def run
         read_cli_args
         fuzzify_query
@@ -88,10 +92,19 @@ class Chef
         result_items = []
         result_count = 0
 
-        rows = config[:rows]
-        start = config[:start]
+        # rows = config[:rows]
+        # start = config[:start]
+        search_args = Hash.new
+        search_args[:sort] = config[:sort]
+        search_args[:start] = config[:start]
+        search_args[:rows] = config[:rows]
+        if config[:filter_result]
+          search_args[:filter_result] = create_result_filter(config[:filter_result])
+        end
+
         begin
-          q.search(@type, escaped_query, config[:sort], start, rows) do |item|
+          # TODO - fix formatting for filtered results
+          q.search(@type, escaped_query, search_args) do |item|
             formatted_item = format_for_display(item)
             # if formatted_item.respond_to?(:has_key?) && !formatted_item.has_key?('id')
             #   formatted_item['id'] = item.has_key?('id') ? item['id'] : item.name
@@ -148,6 +161,21 @@ class Chef
         if @query !~ /:/
           @query = "tags:*#{@query}* OR roles:*#{@query}* OR fqdn:*#{@query}* OR addresses:*#{@query}*"
         end
+      end
+
+      def create_result_filter(filter_string)
+        final_filter = Hash.new
+
+        # this probably needs review. I betcha there's a better way!!!
+        filter_string.gsub!(" ", "")
+        filters = filter_string.split(",")
+        filters.each do |f|
+          fsplit = f.split("=")
+          return_id = fsplit[0]
+          attr_path = fsplit[1].split(".")
+          final_filter[return_id.to_sym] = attr_path
+        end
+        return final_filter
       end
 
     end
