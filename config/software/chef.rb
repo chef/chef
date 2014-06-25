@@ -66,7 +66,7 @@ build do
   # change that switched the template syntax checking to native ruby code.
   # Not having (2) does not create symlinks for binaries under
   # #{install_dir}/bin which gets created by appbundler later on.
-  if project.name == "chef"
+  if %w(chef angrychef chef-container).include?(project.name)
     # install chef first so that ohai gets installed into /opt/chef/bin/ohai
     rake "gem", :env => env
 
