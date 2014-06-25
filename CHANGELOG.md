@@ -3,6 +3,7 @@
 ## Unreleased:
 * Add method shell_out_with_systems_locale to ShellOut.
 * Fix knife cookbook site share on windows (CHEF-4994)
+* Fix RPM package version detection (Issue 1554)
 
 ## Last Release: 11.14.0
 
