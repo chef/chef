@@ -26,7 +26,6 @@ Gem::Specification.new do |s|
   # it's the version I had when I tested.
   s.add_dependency "mime-types", "~> 1.16"
 
-  # The JSON gem reliably releases breaking changes as a patch release
   s.add_dependency "ffi-yajl"
   s.add_dependency "net-ssh", "~> 2.6"
   s.add_dependency "net-ssh-multi", "~> 1.1"
