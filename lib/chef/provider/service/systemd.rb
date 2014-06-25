@@ -29,11 +29,9 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     if @new_resource.status_command
       Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
 
-      begin
-        if shell_out_with_systems_locale(@new_resource.status_command).exitstatus == 0
-          @current_resource.running(true)
-        end
-      rescue Chef::Exceptions::Exec
+      unless shell_out_with_systems_locale(@new_resource.status_command).error?
+        @current_resource.running(true)
+      else
         @status_check_success = false
         @current_resource.running(false)
         @current_resource.enabled(false)
