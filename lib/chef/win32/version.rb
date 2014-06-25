@@ -23,6 +23,10 @@ require 'wmi-lite/wmi'
 class Chef
   module ReservedNames::Win32
     class Version
+      class << self
+        include Chef::ReservedNames::Win32::API::System
+      end
+
       include Chef::ReservedNames::Win32::API::Macros
       include Chef::ReservedNames::Win32::API::System
 
@@ -33,12 +37,12 @@ class Chef
       private
 
       def self.get_system_metrics(n_index)
-        Win32API.new('user32', 'GetSystemMetrics', 'I', 'I').call(n_index)
+        GetSystemMetrics(n_index)
       end
 
       def self.method_name_from_marketing_name(marketing_name)
         "#{marketing_name.gsub(/\s/, '_').gsub(/\./, '_').downcase}?"
-        # "#{marketing_name.gsub(/\s/, '_').gsub(//, '_').downcase}?"       
+        # "#{marketing_name.gsub(/\s/, '_').gsub(//, '_').downcase}?"
       end
 
       public
