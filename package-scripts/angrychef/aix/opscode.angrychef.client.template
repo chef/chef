@@ -1,0 +1,19 @@
+Package Name: angrychef
+Package VRMF: TBS
+Update: N
+Fileset
+  Fileset Name: angrychef
+  Fileset VRMF: TBS
+  Fileset Description: Opscode Angry Chef Client
+  USRLIBLPPFiles
+  Configuration Script: /opt/angrychef/bin/postinstall.sh
+  Unconfiguration Script: /opt/angrychef/bin/unpostinstall.sh
+  EOUSRLIBLPPFiles
+  Bosboot required: N
+  License agreement acceptance required: N
+  Include license files in this package: N
+  Requisites:
+  ROOT Part: N
+    ROOTFiles
+    EOROOTFiles
+  USRFiles
