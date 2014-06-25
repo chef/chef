@@ -114,6 +114,7 @@
 * Add helper to warn for broken [windows] paths. (CHEF-5322)
 * Send md5 checksummed data for registry key if data type is binary, dword, or qword. (Chef-5323)
 * Add warning if host resembles winrm command and knife-windows is not present.
+* Use FFI binders to attach :SendMessageTimeout to avoid DL deprecation warning. (ChefDK Issues 69)
 
 ## Release: 11.12.4 (04/30/2014)
 http://www.getchef.com/blog/2014/04/30/release-chef-client-11-12-4-ohai-7-0-4/
