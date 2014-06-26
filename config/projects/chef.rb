@@ -37,6 +37,5 @@ mac_pkg_identifier "com.getchef.pkg.chef"
 override :rubygems, version: "1.8.29"
 
 dependency "preparation"
-dependency "ffi-yajl"
 dependency "chef"
 dependency "version-manifest"

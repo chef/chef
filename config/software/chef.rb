@@ -20,6 +20,7 @@ name "chef"
 dependency "ruby"
 dependency "rubygems"
 dependency "libffi"
+dependency "ffi-yajl"
 dependency "bundler"
 
 default_version "master"
