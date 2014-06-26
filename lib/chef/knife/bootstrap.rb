@@ -67,6 +67,11 @@ class Chef
         :description => "The ssh gateway",
         :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key }
 
+      option :ssh_gateway_identity,
+        :long => "--ssh-gateway-identity SSH_GATEWAY_IDENTITY",
+        :description => "The SSH identity file used for gateway authentication",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway_identity] = key }
+
       option :forward_agent,
         :short => "-A",
         :long => "--forward-agent",
@@ -438,6 +443,7 @@ class Chef
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:ssh_port] = config[:ssh_port]
         ssh.config[:ssh_gateway] = config[:ssh_gateway]
+        ssh.config[:ssh_gateway_identity] = config[:ssh_gateway_identity]
         ssh.config[:forward_agent] = config[:forward_agent]
         ssh.config[:ssh_identity_file] = config[:ssh_identity_file] || config[:identity_file]
         ssh.config[:manual] = true
