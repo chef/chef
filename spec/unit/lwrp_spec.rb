@@ -133,6 +133,52 @@ describe "LWRP" do
       cls.node[:penguin_name].should eql("jackass")
     end
 
+    context "resource_name" do
+      let(:klass) { Class.new(Chef::Resource::LWRPBase) }
+
+      it "returns nil when the resource_name is not set" do
+        expect(klass.resource_name).to be_nil
+      end
+
+      it "allows to user to user the resource_name" do
+        expect {
+          klass.resource_name(:foo)
+        }.to_not raise_error
+      end
+
+      it "returns the set value for the resource" do
+        klass.resource_name(:foo)
+        expect(klass.resource_name).to eq(:foo)
+      end
+
+      context "when creating a new instance" do
+        it "raises an exception if resource_name is nil" do
+          expect {
+            klass.new('blah')
+          }.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
+        end
+      end
+
+      context "lazy default values" do
+        let(:klass) do
+          Class.new(Chef::Resource::LWRPBase) do
+            self.resource_name = :sample_resource
+            attribute :food,  default: lazy { 'BACON!'*3 }
+            attribute :drink, default: lazy { |r| "Drink after #{r.food}!"}
+          end
+        end
+
+        let(:instance) { klass.new('kitchen') }
+
+        it "evaluates the default value when requested" do
+          expect(instance.food).to eq('BACON!BACON!BACON!')
+        end
+
+        it "evaluates yields self to the block" do
+          expect(instance.drink).to eq('Drink after BACON!BACON!BACON!!')
+        end
+      end
+    end
   end
 
   describe "Lightweight Chef::Provider" do

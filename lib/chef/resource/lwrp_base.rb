@@ -119,6 +119,10 @@ class Chef
         run_context.node
       end
 
+      def self.lazy(&block)
+        DelayedEvaluator.new(&block)
+      end
+
       # Default initializer. Sets the default action and allowed actions.
       def initialize(name, run_context=nil)
         super(name, run_context)
