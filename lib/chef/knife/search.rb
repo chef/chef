@@ -92,8 +92,6 @@ class Chef
         result_items = []
         result_count = 0
 
-        # rows = config[:rows]
-        # start = config[:start]
         search_args = Hash.new
         search_args[:sort] = config[:sort]
         search_args[:start] = config[:start]
@@ -163,17 +161,24 @@ class Chef
         end
       end
 
+      # This method turns a set of key value pairs in a string into the appropriate data structure that the
+      # chef-server search api is expecting.
+      # expected input is in the form of:
+      # -f "return_var1=path.to.attribute, return_var2=shorter.path"
+      #
+      # a more concrete example might be:
+      # -f "env=chef_environment, ruby_platform=languages.ruby.platform"
+      #
+      # The end result is a hash where the key is a symbol in the hash (the return variable)
+      # and the path is an array with the path elements as strings (in order)
+      # See lib/chef/search/query.rb for more examples of this.
       def create_result_filter(filter_string)
         final_filter = Hash.new
-
-        # this probably needs review. I betcha there's a better way!!!
         filter_string.gsub!(" ", "")
         filters = filter_string.split(",")
         filters.each do |f|
-          fsplit = f.split("=")
-          return_id = fsplit[0]
-          attr_path = fsplit[1].split(".")
-          final_filter[return_id.to_sym] = attr_path
+          return_id, attr_path = f.split("=")
+          final_filter[return_id.to_sym] = attr_path.split(".")
         end
         return final_filter
       end

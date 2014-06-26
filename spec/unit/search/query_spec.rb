@@ -145,7 +145,7 @@ describe Chef::Search::Query do
     end
   end
 
-  # copypasta existing functionality for new searhc, because new search should at the very least do the same stuff!
+  # copypasta existing functionality for new search, because new search should at the very least do the same stuff!
   describe "new search" do
     before(:each) do
       @response = {
@@ -239,8 +239,10 @@ describe Chef::Search::Query do
       @rest.should_receive(:get_rest).with("search/node?q=platform:rhel&sort=id%20desc&start=2&rows=1000").and_return(@response)
       @query = Chef::Search::Query.new
       args = Hash.new
-      args[:sort] = "id desc"
-      args[:start] = 2
+      args = {
+        :sort => "id desc",
+        :start => 2
+      }
       @query.search(:node, "platform:rhel", args)
     end
 
@@ -248,9 +250,11 @@ describe Chef::Search::Query do
       @rest.should_receive(:get_rest).with("search/node?q=platform:rhel&sort=id%20desc&start=2&rows=40").and_return(@response)
       @query = Chef::Search::Query.new
       args = Hash.new
-      args[:sort] = "id desc"
-      args[:start] = 2
-      args[:rows] = 40
+      args = {
+        :sort => "id desc",
+        :start => 2,
+        :rows => 40
+      }
       @query.search(:node, "platform:rhel", args)
     end
 
@@ -271,9 +275,11 @@ describe Chef::Search::Query do
       @call_me = double("blocky")
       @response["rows"].each { |r| @call_me.should_receive(:do).with(r) }
       args = Hash.new
-      args[:sort] = nil
-      args[:start] = 0
-      args[:rows] = 1
+      args = {
+        :sort => nil,
+        :start => 0,
+        :rows => 1
+      }
       @query.search(:node, "*:*", args) { |r| @call_me.do(r) }
     end
   end
@@ -316,8 +322,10 @@ describe Chef::Search::Query do
 
     it "should allow you to filter search results" do
       filter_args = Hash.new
-      filter_args[:env] = ["chef_environment"]
-      filter_args[:ruby_plat] = ["languages", "ruby", "platform"]
+      filter_args = {
+        :env => [ "chef_environment" ],
+        :ruby_plat => [ "languages", "ruby", "platform" ]
+      }
       @rest.should_receive(:post_rest).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=1000", filter_args).and_return(@response)
       @query = Chef::Search::Query.new
       args = Hash.new
