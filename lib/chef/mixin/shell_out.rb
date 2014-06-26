@@ -44,29 +44,26 @@ class Chef
         cmd
       end
 
+      # environment['LC_ALL'] should be nil or what the user specified
       def shell_out_with_systems_locale(*command_args)
         args = command_args.dup
-        unless ENV['LC_ALL'].nil?
-          if args.last.is_a?(Hash)
-            options = args.last
-            # Get the environment option and set environment['LC_ALL'] if not
-            # present.
-            if options.has_key?(:environment)
-              options_env = options[:environment]
-            elsif options.has_key?(:env)
-              options_env = options[:env]
-            else
-              options[:environment] = {}
-              options_env = options[:environment]
-            end
-
-            unless options_env.nil? || options_env.has_key?('LC_ALL')
-              options_env['LC_ALL'] = ENV['LC_ALL']
-            end
+        if args.last.is_a?(Hash)
+          options = args.last
+          if options.has_key?(:environment)
+            options_env = options[:environment]
+          elsif options.has_key?(:env)
+            options_env = options[:env]
           else
-            # Add the environment option
-            args << { :environment => { 'LC_ALL' => ENV['LC_ALL'] } }
+            # No environment option provided, make one
+            options[:environment] = {}
+            options_env = options[:environment]
           end
+
+          unless options_env.has_key?('LC_ALL')
+            options_env['LC_ALL'] = nil
+          end
+        else
+          args << { :environment => { 'LC_ALL' => nil } }
         end
 
         shell_out(*args)

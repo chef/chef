@@ -121,128 +121,79 @@ describe Chef::Mixin::ShellOut do
     let(:cmd) { "echo '#{rand(1000)}'" }
 
     describe "when the last argument is a Hash" do
-      describe "when ENV['LC_ALL'] is nil" do
-        let(:options) { { :environment => { 'HOME' => '/Users/morty' },
-                          :user => 'morty' } }
+      describe "and environment is an option" do
+        it "should not change environment['LC_ALL'] when set to nil" do
+          options = { :environment => { 'LC_ALL' => nil } }
+          shell_out.should_receive(:shell_out).with(cmd, options).and_return(true)
+          shell_out.shell_out_with_systems_locale(cmd, options)
+        end
 
-        it "should not modify options" do
+        it "should not change environment['LC_ALL'] when set to non-nil" do
+          options = { :environment => { 'LC_ALL' => 'en_US.UTF-8' } }
+          shell_out.should_receive(:shell_out).with(cmd, options).and_return(true)
+          shell_out.shell_out_with_systems_locale(cmd, options)
+        end
+
+        it "should set environment['LC_ALL'] to nil when 'LC_ALL' not present" do
+          options = { :environment => { 'HOME' => '/Users/morty' } }
           shell_out.should_receive(:shell_out).with(
             cmd,
-            { :environment => { 'HOME' => '/Users/morty' },
-              :user => 'morty'
+            { :environment => {
+                'HOME' => '/Users/morty',
+                'LC_ALL' => nil }
             }
           ).and_return(true)
-
           shell_out.shell_out_with_systems_locale(cmd, options)
         end
       end
 
-      describe "when ENV['LC_ALL'] is not nil" do
-        before do
-          ENV['LC_ALL'] = 'C'
+      describe "and env is an option" do
+        it "should not change env when set to nil" do
+          options = { :env => { 'LC_ALL' => nil } }
+          shell_out.should_receive(:shell_out).with(cmd, options).and_return(true)
+          shell_out.shell_out_with_systems_locale(cmd, options)
         end
 
-        describe "when environment is present" do
-          let(:options) { { :environment => environment } }
-
-          describe "when environment is set to nil" do
-            let(:environment) { nil }
-
-            it "should not modify the environment option" do
-              shell_out.should_receive(:shell_out).with(
-                cmd,
-                { :environment => nil }
-              ).and_return(true)
-
-              shell_out.shell_out_with_systems_locale(cmd, options)
-            end
-          end
-
-          describe "when environment['LC_ALL'] is present" do
-            let(:environment) { { 'LC_ALL' => lc_all } }
-
-            describe "when set to nil" do
-              let(:lc_all) { nil }
-
-              it "should not be modified" do
-                shell_out.should_receive(:shell_out).with(
-                  cmd,
-                  { :environment => { 'LC_ALL' => nil } }
-                ).and_return(true)
-
-                shell_out.shell_out_with_systems_locale(cmd, options)
-              end
-            end
-
-            describe "when set to non-nil" do
-              let(:lc_all) { 'POSIX' }
-
-              it "should not be modified" do
-                shell_out.should_receive(:shell_out).with(
-                  cmd,
-                  { :environment => { 'LC_ALL' => 'POSIX' } }
-                ).and_return(true)
-
-                shell_out.shell_out_with_systems_locale(cmd, options)
-              end
-            end
-          end
-
-          describe "when environment['LC_ALL'] is not present" do
-            let(:environment) { { 'HOME' => '/Users/morty' } }
-
-            it "should set environment['LC_ALL'] to ENV['LC_ALL']" do
-              shell_out.should_receive(:shell_out).with(
-                cmd,
-                { :environment => {
-                  'LC_ALL' => ENV['LC_ALL'],
-                  'HOME' => '/Users/morty' }
-                }
-              ).and_return(true)
-
-              shell_out.shell_out_with_systems_locale(cmd, options)
-            end
-          end
+        it "should not change env when set to non-nil" do
+          options = { :env => { 'LC_ALL' => 'en_US.UTF-8'}}
+          shell_out.should_receive(:shell_out).with(cmd, options).and_return(true)
+          shell_out.shell_out_with_systems_locale(cmd, options)
         end
 
-        describe "when environment is not present" do
-          let(:options) { { :user => 'morty' } }
+        it "should set env['LC_ALL'] to nil when 'LC_ALL' not present" do
+          options = { :env => { 'HOME' => '/Users/morty' } }
+          shell_out.should_receive(:shell_out).with(
+            cmd,
+            { :env => {
+                'HOME' => '/Users/morty',
+                'LC_ALL' => nil }
+            }
+          ).and_return(true)
+          shell_out.shell_out_with_systems_locale(cmd, options)
+        end
+      end
 
-          it "should set environment['LC_ALL'] to ENV['LC_ALL']" do
-            shell_out.should_receive(:shell_out).with(
-              cmd,
-              { :user => 'morty',
-                :environment => { 'LC_ALL' => ENV['LC_ALL'] }
-              }
-            ).and_return(true)
-
-            shell_out.shell_out_with_systems_locale(cmd, options)
-          end
+      describe "and no env/environment option is present" do
+        it "should add environment option and set environment['LC_ALL'] to nil" do
+          options = { :user => 'morty' }
+          shell_out.should_receive(:shell_out).with(
+            cmd,
+            { :environment => { 'LC_ALL' => nil },
+              :user => 'morty'
+            }
+          ).and_return(true)
+          shell_out.shell_out_with_systems_locale(cmd, options)
         end
       end
     end
 
     describe "when the last argument is not a Hash" do
-      describe "when ENV['LC_ALL'] is nil" do
-        it "should not add options" do
-          shell_out.should_receive(:shell_out).with(cmd).and_return(true)
-          shell_out.shell_out_with_systems_locale(cmd)
-        end
-      end
-
-      describe "when ENV['LC_ALL'] is not nil" do
-        before do
-          ENV['LC_ALL'] = 'C'
-        end
-
-        it "should add the environment option with environment['LC_ALL']" do
-          shell_out.should_receive(:shell_out).with(
-            cmd,
-            { :environment => { 'LC_ALL' => ENV['LC_ALL'] } }
-          ).and_return(true)
-
-          shell_out.shell_out_with_systems_locale(cmd)
-        end
+      it "should add environment options and set environment['LC_ALL'] to nil" do
+        shell_out.should_receive(:shell_out).with(
+          cmd,
+          { :environment => { 'LC_ALL' => nil } }
+        ).and_return(true)
+        shell_out.shell_out_with_systems_locale(cmd)
       end
     end
   end
