@@ -36,6 +36,7 @@ class Chef
 
         @is_wow64 = wow64_architecture_override_required?(run_context.node, target_architecture)
 
+        # if the user wants to run the script 32 bit && we are on a 64bit windows system && we are running a 64bit ruby ==> fail
         if ( target_architecture == :i386 ) && node_windows_architecture(run_context.node) == :x86_64 && !is_i386_process_on_x86_64_windows?
           raise Chef::Exceptions::Win32ArchitectureIncorrect,
           "Support for the i386 architecture from a 64-bit Ruby runtime is not yet implemented"
