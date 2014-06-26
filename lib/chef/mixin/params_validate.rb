@@ -95,6 +95,13 @@ class Chef
             val = arg
           else
             val = validate({ symbol => arg }, { symbol => validation })[symbol]
+
+            # Handle the case where the "default" was a DelayedEvaluator. In
+            # this case, the block yields an optional parameter of +self+,
+            # which is the equivalent of "new_resource"
+            if val.is_a?(DelayedEvaluator)
+              val = val.call(self)
+            end
           end
           self.instance_variable_set(iv_symbol, val)
         end

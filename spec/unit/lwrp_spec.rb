@@ -158,6 +158,26 @@ describe "LWRP" do
           }.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
         end
       end
+
+      context "lazy default values" do
+        let(:klass) do
+          Class.new(Chef::Resource::LWRPBase) do
+            self.resource_name = :sample_resource
+            attribute :food,  default: lazy { 'BACON!'*3 }
+            attribute :drink, default: lazy { |r| "Drink after #{r.food}!"}
+          end
+        end
+
+        let(:instance) { klass.new('kitchen') }
+
+        it "evaluates the default value when requested" do
+          expect(instance.food).to eq('BACON!BACON!BACON!')
+        end
+
+        it "evaluates yields self to the block" do
+          expect(instance.drink).to eq('Drink after BACON!BACON!BACON!!')
+        end
+      end
     end
 
   end
