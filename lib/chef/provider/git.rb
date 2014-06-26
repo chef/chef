@@ -290,6 +290,7 @@ class Chef
         run_opts[:log_tag] = @new_resource.to_s
         run_opts[:timeout] = @new_resource.timeout if @new_resource.timeout
         run_opts[:environment] = env unless env.empty?
+        run_opts[:environment] = env.merge(@new_resource.environment)
         run_opts
 
       end
