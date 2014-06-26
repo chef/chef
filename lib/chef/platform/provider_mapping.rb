@@ -134,11 +134,14 @@ class Chef
             },
             :centos   => {
               :default => {
-                :service => Chef::Provider::Service::Redhat,
+                :service => Chef::Provider::Service::Systemd,
                 :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
                 :mdadm => Chef::Provider::Mdadm,
                 :ifconfig => Chef::Provider::Ifconfig::Redhat
+              },
+              "< 7" => {
+                :service => Chef::Provider::Service::Redhat
               }
             },
             :amazon   => {
