@@ -78,6 +78,10 @@ class Chef
         :long => "--identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
 
+      option :ssh_gateway_identity,
+        :long => "--ssh-gateway-identity IDENTITY_FILE",
+        :description => "The SSH identity file used for authentication on the gateway"
+
       option :chef_node_name,
         :short => "-N NAME",
         :long => "--node-name NAME",
@@ -365,6 +369,7 @@ class Chef
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:ssh_port] = config[:ssh_port]
         ssh.config[:ssh_gateway] = config[:ssh_gateway]
+        ssh.config[:ssh_gateway_identity] = config[:ssh_gateway_identity]
         ssh.config[:forward_agent] = config[:forward_agent]
         ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true

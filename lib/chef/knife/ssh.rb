@@ -98,6 +98,11 @@ class Chef
         :long => "--identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
 
+       option :gateway_identity_file,
+        :short => "-I IDENTITY_FILE",
+        :long => "--gateway-identity-file IDENTITY_FILE",
+        :description => "The SSH identity file used for authentication on the gateway"
+
       option :host_key_verify,
         :long => "--[no-]host-key-verify",
         :description => "Verify host key, enabled by default.",
@@ -132,15 +137,16 @@ class Chef
         if config[:ssh_gateway]
           gw_host, gw_user = config[:ssh_gateway].split('@').reverse
           gw_host, gw_port = gw_host.split(':')
-          gw_opts = gw_port ? { :port => gw_port } : {}
+          gw_port_opt = gw_port ? { :port => gw_port } : {}
+          gw_keys_opt = config[:gateway_identity_file] ? { :keys => config[:gateway_identity_file] } : {}
 
-          session.via(gw_host, gw_user || config[:ssh_user], gw_opts)
+          session.via(gw_host, gw_user || config[:ssh_user], gw_port_opt.merge(gw_keys_opt))
         end
       rescue Net::SSH::AuthenticationFailed
         user = gw_user || config[:ssh_user]
         prompt = "Enter the password for #{user}@#{gw_host}: "
-        gw_opts.merge!(:password => prompt_for_password(prompt))
-        session.via(gw_host, user, gw_opts)
+        gw_port_opt.merge!(:password => prompt_for_password(prompt))
+        session.via(gw_host, user, gw_port_opt)
       end
 
       def configure_session
