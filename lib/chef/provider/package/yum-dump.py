@@ -279,7 +279,7 @@ def main():
                     action="callback",  callback=gather_repo_opts, type="string", dest="repo_control", default=[],
                     help="disable repositories by id or glob")
   parser.add_option("--yum-lock-timeout",
-                    action="callback",  type="int", dest="yum_lock_timeout", default=30,
+                    action="store",  type="int", dest="yum_lock_timeout", default=30,
                     help="Time in seconds to wait for yum process lock")
 
   (options, args) = parser.parse_args()
