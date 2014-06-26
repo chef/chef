@@ -59,15 +59,17 @@ class Chef
         resource_class
       end
 
-      # Set the resource snake_case name. Should only be called via
-      # build_from_file.
-      def self.resource_name=(resource_name)
-        @resource_name = resource_name
+      # Set the resource name for this LWRP
+      def self.resource_name(arg = NULL_ARG)
+        if arg.equal?(NULL_ARG)
+          @resource_name
+        else
+          @resource_name = arg
+        end
       end
 
-      # Returns the resource snake_case name
-      def self.resource_name
-        @resource_name
+      class << self
+        alias_method :resource_name=, :resource_name
       end
 
       # Define an attribute on this resource, including optional validation
@@ -150,6 +152,13 @@ class Chef
       # Default initializer. Sets the default action and allowed actions.
       def initialize(name, run_context=nil)
         super(name, run_context)
+
+        # Raise an exception if the resource_name was not defined
+        if self.class.resource_name.nil?
+          raise Chef::Exceptions::InvalidResourceSpecification,
+            "You must specify `resource_name'!"
+        end
+
         @resource_name = self.class.resource_name.to_sym
         @action = self.class.default_action
         allowed_actions.push(self.class.actions).flatten!
