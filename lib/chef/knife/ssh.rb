@@ -125,6 +125,7 @@ class Chef
               throw :go, :retry
             else
               throw :go, :raise
+            end
           end
         end
 
