@@ -21,12 +21,14 @@
 # limitations under the License.
 #
 
+require 'tempfile'
 require 'net/https'
 require 'uri'
 require 'chef/http/basic_client'
 require 'chef/monkey_patches/string'
 require 'chef/monkey_patches/net_http'
 require 'chef/config'
+require 'chef/platform/query_helpers'
 require 'chef/exceptions'
 
 class Chef

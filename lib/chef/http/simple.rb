@@ -1,7 +1,8 @@
 require 'chef/http'
 require 'chef/http/authenticator'
 require 'chef/http/decompressor'
-
+require 'chef/http/cookie_manager'
+require 'chef/http/validate_content_length'
 
 class Chef
   class HTTP
