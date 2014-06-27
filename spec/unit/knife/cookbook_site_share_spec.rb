@@ -77,7 +77,7 @@ describe Chef::Knife::CookbookSiteShare do
 
     it 'should make a tarball of the cookbook' do
       Chef::Mixin::ShellOut.should_receive(:shell_out!) do |args|
-        args.should match /tar -czf/
+        args.to_s.should match /tar -czf/
       end
       @knife.run
     end
