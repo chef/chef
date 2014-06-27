@@ -99,7 +99,7 @@ class Chef
             response["rows"].each { |o| block.call(o) unless o.nil?}
             unless (response["start"] + response["rows"].length) >= response["total"]
               args[:start] = response["start"] + args[:rows]
-              search_new(type, query, args, &block)
+              do_search(type, query, args, &block)
             end
             true
           else
@@ -117,7 +117,7 @@ class Chef
           # argify things
           args = Hash.new
           args = { :sort => sort, :start => start, :rows => rows }
-          search_new(type, query, args, &block)
+          do_search(type, query, args, &block)
         end        
 
         # create the full rest url string
