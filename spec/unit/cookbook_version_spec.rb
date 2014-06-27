@@ -182,23 +182,28 @@ describe Chef::CookbookVersion do
 
         manifest["files"].should have(3).cookbook_file
 
-        cookbook_file = manifest["files"].first
-        cookbook_file["name"].should == "node-specific-file.tgz"
-        cookbook_file["path"].should == "files/host-sample.node/node-specific-file.tgz"
-        cookbook_file["checksum"].should match(MD5)
-        cookbook_file["specificity"].should == "host-sample.node"
+        manifest["files"].each do |cookbook_file|
+          if cookbook_file["name"] == "node-specific-file.tgz"
+            cookbook_file["name"].should == "node-specific-file.tgz"
+            cookbook_file["path"].should == "files/host-sample.node/node-specific-file.tgz"
+            cookbook_file["checksum"].should match(MD5)
+            cookbook_file["specificity"].should == "host-sample.node"
+          end
 
-        cookbook_file = manifest["files"].at(2)
-        cookbook_file["name"].should == "host-specific-file.tgz"
-        cookbook_file["path"].should == "files/host-sample.example.com/host-specific-file.tgz"
-        cookbook_file["checksum"].should match(MD5)
-        cookbook_file["specificity"].should == "host-sample.example.com"
+          if cookbook_file["name"] == "host-specific-file.tgz"
+            cookbook_file["name"].should == "host-specific-file.tgz"
+            cookbook_file["path"].should == "files/host-sample.example.com/host-specific-file.tgz"
+            cookbook_file["checksum"].should match(MD5)
+            cookbook_file["specificity"].should == "host-sample.example.com"
+          end
 
-        cookbook_file = manifest["files"].at(1)
-        cookbook_file["name"].should == "giant_blob.tgz"
-        cookbook_file["path"].should == "files/default/giant_blob.tgz"
-        cookbook_file["checksum"].should match(MD5)
-        cookbook_file["specificity"].should == "default"
+          if cookbook_file["name"] == "giant_blob.tgz"
+            cookbook_file["name"].should == "giant_blob.tgz"
+            cookbook_file["path"].should == "files/default/giant_blob.tgz"
+            cookbook_file["checksum"].should match(MD5)
+            cookbook_file["specificity"].should == "default"
+          end
+        end
 
         manifest["templates"].should have(1).template
 
@@ -368,23 +373,28 @@ describe Chef::CookbookVersion do
 
         manifest["files"].should have(3).cookbook_file
 
-        cookbook_file = manifest["files"].first
-        cookbook_file["name"].should == "node-specific-file.tgz"
-        cookbook_file["path"].should == "files/host-sample.node/node-specific-file.tgz"
-        cookbook_file["checksum"].should match(MD5)
-        cookbook_file["specificity"].should == "host-sample.node"
+        manifest["files"].each do |cookbook_file| 
+          if cookbook_file["name"] == "node-specific-file.tgz"
+            cookbook_file["name"].should == "node-specific-file.tgz"
+            cookbook_file["path"].should == "files/host-sample.node/node-specific-file.tgz"
+            cookbook_file["checksum"].should match(MD5)
+            cookbook_file["specificity"].should == "host-sample.node"
+          end
 
-        cookbook_file = manifest["files"].at(2)
-        cookbook_file["name"].should == "host-specific-file.tgz"
-        cookbook_file["path"].should == "files/host-sample.example.com/host-specific-file.tgz"
-        cookbook_file["checksum"].should match(MD5)
-        cookbook_file["specificity"].should == "host-sample.example.com"
+          if cookbook_file["name"] == "host-specific-file.tgz"
+            cookbook_file["name"].should == "host-specific-file.tgz"
+            cookbook_file["path"].should == "files/host-sample.example.com/host-specific-file.tgz"
+            cookbook_file["checksum"].should match(MD5)
+            cookbook_file["specificity"].should == "host-sample.example.com"
+          end
 
-        cookbook_file = manifest["files"].at(1)
-        cookbook_file["name"].should == "giant_blob.tgz"
-        cookbook_file["path"].should == "files/default/giant_blob.tgz"
-        cookbook_file["checksum"].should match(MD5)
-        cookbook_file["specificity"].should == "default"
+          if cookbook_file["name"] == "giant_blob.tgz"
+            cookbook_file["name"].should == "giant_blob.tgz"
+            cookbook_file["path"].should == "files/default/giant_blob.tgz"
+            cookbook_file["checksum"].should match(MD5)
+            cookbook_file["specificity"].should == "default"
+          end
+        end
 
         manifest["templates"].should have(1).template
 
