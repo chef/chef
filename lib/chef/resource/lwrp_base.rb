@@ -101,10 +101,10 @@ class Chef
       # Adds +action_names+ to the list of valid actions for this resource.
       def self.actions(*action_names)
         if action_names.empty?
-          @actions || from_superclass(:actions, []).dup
+          defined?(@actions) ? @actions : from_superclass(:actions, []).dup
         else
           # BC-compat way for checking if actions have already been defined
-          if @actions
+          if defined?(@actions)
             @actions.push(*action_names)
           else
             @actions = action_names
