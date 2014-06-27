@@ -144,18 +144,19 @@ class Chef
     end
 
     def self.list(inflate=false)
-      response = if inflate
-                   users = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest('users')
-                   users.map do |name|
-                     Chef::User.load(name)
-                   end
-                 else
-                   Chef::REST.new(Chef::Config[:chef_server_url]).get_rest('users')
-                 end
-      if response.is_a? Array
-        transform_ohc_list_response(response)
+      response = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest('users')
+      users = if response.is_a?(Array)
+        transform_ohc_list_response(response) # OHC/OPC
       else
-        response
+        response # OSC
+      end
+      if inflate
+        users.inject({}) do |user_map, (name, _url)|
+          user_map[name] = Chef::User.load(name)
+          user_map
+        end
+      else
+        users
       end
     end
 

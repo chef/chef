@@ -18,6 +18,7 @@
 
 require 'chef/resource/windows_package'
 require 'chef/provider/package'
+require 'chef/util/path_helper'
 
 class Chef
   class Provider
@@ -32,6 +33,8 @@ class Chef
 
         # load_current_resource is run in Chef::Provider#run_action when not in whyrun_mode?
         def load_current_resource
+          @new_resource.source(Chef::Util::PathHelper.validate_path(@new_resource.source))
+
           @current_resource = Chef::Resource::WindowsPackage.new(@new_resource.name)
           @current_resource.version(package_provider.installed_version)
           @new_resource.version(package_provider.package_version)

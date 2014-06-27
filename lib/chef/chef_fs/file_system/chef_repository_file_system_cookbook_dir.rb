@@ -44,11 +44,17 @@ class Chef
             end
 
             loader.load_cookbooks
-            return loader.cookbook_version
-          rescue
-            Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{$!}")
+            cb = loader.cookbook_version
+            if !cb
+              Chef::Log.error("Cookbook #{file_path} empty.")
+              raise "Cookbook #{file_path} empty."
+            end
+            cb
+          rescue => e
+            Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{e}")
+            Chef::Log.error(e.backtrace.join("\n"))
+            raise
           end
-          nil
         end
 
         def children
@@ -66,6 +72,8 @@ class Chef
           if is_dir
             # Only the given directories will be uploaded.
             return CookbookDir::COOKBOOK_SEGMENT_INFO.keys.include?(name.to_sym) && name != 'root_files'
+          elsif name == Chef::Cookbook::CookbookVersionLoader::UPLOADED_COOKBOOK_VERSION_FILE
+            return false
           end
           super(name, is_dir)
         end
@@ -79,6 +87,14 @@ class Chef
 
         def canonical_cookbook_name(entry_name)
           self.class.canonical_cookbook_name(entry_name)
+        end
+
+        def uploaded_cookbook_version_path
+          File.join(file_path, Chef::Cookbook::CookbookVersionLoader::UPLOADED_COOKBOOK_VERSION_FILE)
+        end
+
+        def can_upload?
+          File.exists?(uploaded_cookbook_version_path) || children.size > 0
         end
 
         protected

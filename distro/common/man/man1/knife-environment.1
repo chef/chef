@@ -1,4 +1,6 @@
-.TH "KNIFE-ENVIRONMENT" "1" "Chef 11.10.0" "" "knife environment"
+.\" Man page generated from reStructuredText.
+.
+.TH "KNIFE-ENVIRONMENT" "1" "Chef 11.12.0" "" "knife environment"
 .SH NAME
 knife-environment \- The man page for the knife environment subcommand.
 .
@@ -28,12 +30,10 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.\" Man page generated from reStructuredText.
-.
 .sp
-An environment is a way to map an organization\(aqs real\-life workflow to what can be configured and managed when using server. Every organization begins with a single environment called the \fB_default\fP environment, which cannot be modified (or deleted). Additional environments can be created to reflect each organization\(aqs patterns and workflow. For example, creating \fBproduction\fP, \fBstaging\fP, \fBtesting\fP, and \fBdevelopment\fP environments. Generally, an environment is also associated with one (or more) cookbook versions.
+An environment is a way to map an organization\(aqs real\-life workflow to what can be configured and managed when using Chef server\&. Every organization begins with a single environment called the \fB_default\fP environment, which cannot be modified (or deleted). Additional environments can be created to reflect each organization\(aqs patterns and workflow. For example, creating \fBproduction\fP, \fBstaging\fP, \fBtesting\fP, and \fBdevelopment\fP environments. Generally, an environment is also associated with one (or more) cookbook versions.
 .sp
-The \fBknife environment\fP subcommand is used to manage environments within a single organization on the server.
+The \fBknife environment\fP subcommand is used to manage environments within a single organization on the Chef server\&.
 .SH COMMON OPTIONS
 .sp
 The following options may be used with any of the arguments available to the \fBknife environment\fP subcommand:
@@ -58,13 +58,13 @@ The $EDITOR that is used for all interactive commands.
 The name of the environment. When this option is added to a command, the command will run only against the named environment.
 .TP
 .B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
-The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
+The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP\&.
 .TP
 .B \fB\-h\fP, \fB\-\-help\fP
 Shows help for the command.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the server.
+The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-[no\-]color\fP
 Indicates whether colored output will be used.
@@ -73,22 +73,22 @@ Indicates whether colored output will be used.
 Indicates that data will be shown after a destructive operation.
 .TP
 .B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
-The URL for the server.
+The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
+The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-V\fP, \fB\-\-verbose\fP
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
-The version of the chef\-client.
+The version of the chef\-client\&.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
 Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .SH COMPARE
 .sp
@@ -97,12 +97,16 @@ The \fBcompare\fP argument is used to compare the cookbook version constraints t
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment compare [ENVIRONMENT_NAME...] (options)
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -119,14 +123,20 @@ Use to show only matching versions.
 \fBExample\fP
 .sp
 To compare cookbook versions for a single environment:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment compare development
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something similar to:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -135,16 +145,24 @@ apache     2.3.1
 windows    4.1.2
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To compare cookbook versions for multiple environments:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment compare development staging
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something similar to:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -154,16 +172,24 @@ windows       4.1.2          1.0.0
 postgresql    1.0.0          1.0.0
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To compare all cookbook versions for all environments:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment compare \-\-all
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something similar to:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -197,19 +223,25 @@ chef_handler       latest   latest
 windows            1.0.0    4.1.2
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH CREATE
 .sp
-The \fBcreate\fP argument is used to add an environment object to the server. When this argument is run, Knife will open $EDITOR to enable editing of the \fBENVIRONMENT\fP description field (unless a description is specified as part of the command). When finished, Knife will add the environment to the server.
+The \fBcreate\fP argument is used to add an environment object to the Chef server\&. When this argument is run, Knife will open $EDITOR to enable editing of the \fBENVIRONMENT\fP description field (unless a description is specified as part of the command). When finished, Knife will add the environment to the Chef server\&.
 .sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment create ENVIRONMENT_NAME \-d DESCRIPTION
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -217,31 +249,39 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fB\-d DESCRIPTION\fP, \fB\-\-description DESCRIPTION\fP
-The description of the environment. This value will populate the description field for the environment on the server.
+The description of the environment. This value will populate the description field for the environment on the Chef server\&.
 .UNINDENT
 .sp
 \fBExamples\fP
 .sp
 To create an environment named "dev" with a description of "The development environment.":
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment create dev \-d "The development environment."
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH DELETE
 .sp
-The \fBdelete\fP argument is used to delete an environment from a server.
+The \fBdelete\fP argument is used to delete an environment from a Chef server\&.
 .sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment delete ENVIRONMENT_NAME
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -250,27 +290,35 @@ This command does not have any specific options.
 \fBExamples\fP
 .sp
 To delete an environment named "dev", enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment delete dev
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 Type \fBY\fP to confirm a deletion.
 .SH EDIT
 .sp
-The \fBedit\fP argument is used to edit the attributes of an environment. When this argument is run, Knife will open $EDITOR to enable editing of \fBENVIRONMENT\fP attributes. When finished, Knife will update the server with those changes.
+The \fBedit\fP argument is used to edit the attributes of an environment. When this argument is run, Knife will open $EDITOR to enable editing of \fBENVIRONMENT\fP attributes. When finished, Knife will update the Chef server with those changes.
 .sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment edit ENVIRONMENT_NAME
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -279,12 +327,16 @@ This command does not have any specific options.
 \fBExamples\fP
 .sp
 To edit an environment named "devops", enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment edit devops
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH FROM FILE
 .sp
 The \fBfrom file\fP argument is used to add or update an environment using a JSON or Ruby DSL description. It must be run with the \fBcreate\fP or \fBedit\fP arguments.
@@ -292,12 +344,16 @@ The \fBfrom file\fP argument is used to add or update an environment using a JSO
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment [create | edit] from file FILE (options)
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -311,33 +367,45 @@ Indicates that all environments found at the specified path will be uploaded.
 \fBExamples\fP
 .sp
 To add an environment using data contained in a JSON file:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment create devops from file "path to JSON file"
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 or:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment edit devops from file "path to JSON file"
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH LIST
 .sp
-The \fBlist\fP argument is used to list all of the environments that are currently available on the server.
+The \fBlist\fP argument is used to list all of the environments that are currently available on the Chef server\&.
 .sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment list \-w
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -351,12 +419,16 @@ Indicates that the corresponding URIs will be shown.
 \fBExamples\fP
 .sp
 To view a list of environments:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment list \-w
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH SHOW
 .sp
 The \fBshow\fP argument is used to display information about the specified environment.
@@ -364,12 +436,16 @@ The \fBshow\fP argument is used to display information about the specified envir
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment show ENVIRONMENT_NAME
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -378,14 +454,20 @@ This command does not have any specific options.
 \fBExamples\fP
 .sp
 To view information about the "dev" environment enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife environment show dev
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -404,16 +486,22 @@ override_attributes:
 \e\e
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To view information in JSON format, use the \fB\-F\fP common option as part of the command like this:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife role show devops \-F json
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
-Other formats available include \fBtext\fP, \fByaml\fP, and \fBpp\fP.
+Other formats available include \fBtext\fP, \fByaml\fP, and \fBpp\fP\&.
 .SH AUTHOR
 Chef
 .\" Generated by docutils manpage writer.

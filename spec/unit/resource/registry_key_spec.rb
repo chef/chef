@@ -89,6 +89,11 @@ describe Chef::Resource::RegistryKey, "values" do
     @resource.values.should eql([ { :name => 'poosh', :type => :string, :data => 'carmen' } ])
   end
 
+  it "should return checksummed data if the type is unsafe" do
+    @resource.values( { :name => 'poosh', :type => :binary, :data => 255.chr * 1 })
+    @resource.values.should eql([ { :name => 'poosh', :type => :binary, :data => "00594fd4f42ba43fc1ca0427a0576295" } ])
+  end
+
   it "should throw an exception if the name field is missing" do
     lambda { @resource.values [ { :type => :string, :data => 'carmen' } ] }.should raise_error(ArgumentError)
   end
@@ -167,5 +172,28 @@ describe Chef::Resource::RegistryKey, "architecture" do
 
   it "should not allow an integer" do
     lambda { @resource.architecture(100) }.should raise_error(ArgumentError)
+  end
+end
+
+describe Chef::Resource::RegistryKey, ":unscrubbed_values" do
+  before(:each) do
+    @resource = Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius')
+  end
+
+  it "should return unsafe data as-is" do
+    key_values = [ { :name => 'poosh', :type => :binary, :data => 255.chr * 1 } ]
+    @resource.values(key_values)
+    @resource.unscrubbed_values.should eql(key_values)
+  end
+end
+
+describe Chef::Resource::RegistryKey, "state" do
+  before(:each) do
+    @resource = Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius')
+  end
+
+  it "should return scrubbed values" do
+    @resource.values([ { :name => 'poosh', :type => :binary, :data => 255.chr * 1 } ])
+    @resource.state.should eql( { :values => [{ :name => 'poosh', :type => :binary, :data => "00594fd4f42ba43fc1ca0427a0576295" }] } )
   end
 end

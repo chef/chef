@@ -166,5 +166,35 @@ EXPECTED
       end
     end
   end
-end
 
+  describe "when a bootstrap_version is specified" do
+    let(:chef_config) do
+      {
+        :knife => {:bootstrap_version => "11.12.4" }
+      }
+    end
+
+    it "should send the full version to the installer" do
+      bootstrap_context.latest_current_chef_version_string.should eq("-v 11.12.4")
+    end
+  end
+
+  describe "when a pre-release bootstrap_version is specified" do
+    let(:chef_config) do
+      {
+        :knife => {:bootstrap_version => "11.12.4.rc.0" }
+      }
+    end
+
+    it "should send the full version to the installer and set the pre-release flag" do
+      bootstrap_context.latest_current_chef_version_string.should eq("-v 11.12.4.rc.0 -p")
+    end
+  end
+
+  describe "when a bootstrap_version is not specified" do
+    it "should send the latest current to the installer" do
+      # Intentionally hard coded in order not to replicate the logic.
+      bootstrap_context.latest_current_chef_version_string.should eq("-v 11")
+    end
+  end
+end

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -14,7 +13,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -43,7 +42,7 @@
             
   <div class="section" id="chef-solo">
 <h1>chef-solo<a class="headerlink" href="#chef-solo" title="Permalink to this headline">¶</a></h1>
-<p>chef-solo is an open source version of the chef-client that allows using cookbooks with nodes without requiring access to a server. chef-solo runs locally and requires that a cookbook (and any of its dependencies) be on the same physical disk as the node. chef-solo is a limited-functionality version of the chef-client and <strong>does not support</strong> the following:</p>
+<p>chef-solo is an open source version of the chef-client that allows using cookbooks with nodes without requiring access to a Chef server. chef-solo runs locally and requires that a cookbook (and any of its dependencies) be on the same physical disk as the node. chef-solo is a limited-functionality version of the chef-client and <strong>does not support</strong> the following:</p>
 <ul class="simple">
 <li>Node data storage</li>
 <li>Search indexes</li>
@@ -52,11 +51,12 @@
 <li>Authentication or authorization</li>
 <li>Persistent attributes</li>
 </ul>
-<p>The chef-solo executable can be run as a command-line tool.</p>
+<p>The chef-solo executable is run as a command-line tool.</p>
 <div class="section" id="options">
 <h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <p>This command has the following syntax:</p>
-<div class="highlight-python"><pre>chef-solo OPTION VALUE OPTION VALUE ...</pre>
+<div class="highlight-python"><div class="highlight"><pre>chef-solo OPTION VALUE OPTION VALUE ...
+</pre></div>
 </div>
 <p>This command has the following options:</p>
 <dl class="docutils">
@@ -114,17 +114,16 @@
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-solo -c ~/solo.rb -j ~/node.json -r http://www.example.com/chef-solo.tar.gz
 </pre></div>
 </div>
-<p>where <tt class="docutils literal"><span class="pre">-r</span></tt> uses the <strong>remote_file</strong> resource to retrieve the tar.gz archive into the <tt class="docutils literal"><span class="pre">file_cache_path</span></tt>, and then extract it to <tt class="docutils literal"><span class="pre">cookbooks_path</span></tt>.</p>
+<p>The tar.gz archived into the <tt class="docutils literal"><span class="pre">file_cache_path</span></tt>, and then extracted to <tt class="docutils literal"><span class="pre">cookbooks_path</span></tt>.</p>
 <p><strong>Use a directory</strong></p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-solo -c ~/solo.rb -j ~/node.json
 </pre></div>
 </div>
-<p>where the <tt class="docutils literal"><span class="pre">-r</span> <span class="pre">URL</span></tt> option is not used. chef-solo will look in the solo.rb file to determine the directory in which cookbooks are located.</p>
+<p>chef-solo will look in the solo.rb file to determine the directory in which cookbooks are located.</p>
 <p><strong>Use a URL for cookbook and JSON data</strong></p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>chef-solo -c ~/solo.rb -j http://www.example.com/node.json -r http://www.example.com/chef-solo.tar.gz
 </pre></div>
 </div>
-<p>where <tt class="docutils literal"><span class="pre">-r</span></tt> corresponds to <tt class="docutils literal"><span class="pre">recipe_url</span></tt> and <tt class="docutils literal"><span class="pre">-j</span></tt> corresponds to <tt class="docutils literal"><span class="pre">json_attribs</span></tt>, both of which are configuration options in solo.rb.</p>
 </div>
 </div>
 

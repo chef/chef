@@ -207,7 +207,10 @@ class Chef
       elsif path.nil? or path.empty?
         URI.parse(@url)
       else
-        URI.parse("#{@url}/#{path}")
+        # The regular expressions used here are to make sure '@url' does not have
+        # any trailing slashes and 'path' does not have any leading slashes. This
+        # way they are always joined correctly using just one slash.
+        URI.parse(@url.gsub(%r{/+$}, '') + '/' + path.gsub(%r{^/+}, ''))
       end
     end
 

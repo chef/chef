@@ -1,4 +1,6 @@
-.TH "KNIFE-STATUS" "1" "Chef 11.10.0" "" "knife status"
+.\" Man page generated from reStructuredText.
+.
+.TH "KNIFE-STATUS" "1" "Chef 11.12.0" "" "knife status"
 .SH NAME
 knife-status \- The man page for the knife status subcommand.
 .
@@ -28,20 +30,22 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.\" Man page generated from reStructuredText.
-.
 .sp
-The \fBknife status\fP subcommand is used to display a brief summary of the nodes on a server, including the time of the most recent successful chef\-client run.
+The \fBknife status\fP subcommand is used to display a brief summary of the nodes on a Chef server, including the time of the most recent successful chef\-client run.
 .sp
 \fBSyntax\fP
 .sp
-This argument has the following syntax:
+This subcommand has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife status (options)
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -70,7 +74,7 @@ The $EDITOR that is used for all interactive commands.
 The name of the environment. When this option is added to a command, the command will run only against the named environment.
 .TP
 .B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
-The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
+The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP\&.
 .TP
 .B \fB\-h\fP, \fB\-\-help\fP
 Shows help for the command.
@@ -79,13 +83,13 @@ Shows help for the command.
 Indicates that nodes on which a chef\-client run has occurred within the previous hour will be hidden.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the server.
+The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-print\-after\fP
 Indicates that data will be shown after a destructive operation.
 .TP
 .B \fBSEARCH_QUERY\fP
-The search query used to identify a a list of items on a server. This option uses the same syntax as the \fBsearch\fP sub\-command.
+The search query used to identify a a list of items on a Chef server\&. This option uses the same syntax as the \fBsearch\fP sub\-command.
 .TP
 .B \fB\-r RUN_LIST\fP, \fB\-\-run\-list RUN_LIST\fP
 A comma\-separated list of roles and/or recipes to be applied.
@@ -94,13 +98,13 @@ A comma\-separated list of roles and/or recipes to be applied.
 Indicates that the list will be sorted by last run time, descending.
 .TP
 .B \fB\-\-server\-url URL\fP
-The URL for the server.
+The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
+The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
-The version of the chef\-client.
+The version of the chef\-client\&.
 .TP
 .B \fB\-V\fP, \fB\-\-verbose\fP
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
@@ -109,20 +113,26 @@ Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .sp
 \fBExamples\fP
 .sp
 To include run lists in the status, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife status \-\-run\-list
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something like:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -134,16 +144,24 @@ to return something like:
 3 hours ago, i\-f65c969b, ubuntu 10.04, ec2\-184\-73\-60\-141.compute\-1.amazonaws.com, 184.73.60.141, role[web].
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To show the status for nodes on which the chef\-client did not run successfully within the past hour, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife status \-\-hide\-healthy
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something like:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -151,16 +169,24 @@ to return something like:
 1 hour ago, i\-a47823c9, ubuntu 10.04, ec2\-174\-129\-127\-206.compute\-1.amazonaws.com, 184.129.143.111, role[lb].
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To show the status of a subset of nodes that are returned by a specific query, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife status "role:web" \-\-run\-list
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something like:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -171,16 +197,24 @@ to return something like:
 3 hours ago, i\-f65c969b, ubuntu 10.04, ec2\-184\-73\-60\-141.compute\-1.amazonaws.com, 184.73.60.141, role[web].
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To view the status of all nodes in the organization, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife status
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something like:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -192,6 +226,8 @@ to return something like:
 3 hours ago, i\-f65c969b, ubuntu 10.04, ec2\-184\-73\-60\-141.compute\-1.amazonaws.com, 184.73.60.141
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH AUTHOR
 Chef
 .\" Generated by docutils manpage writer.

@@ -95,8 +95,7 @@ class Chef
 
       def action_sync
         if existing_git_clone?
-          current_rev = find_current_revision
-          Chef::Log.debug "#{@new_resource} current revision: #{current_rev} target revision: #{target_revision}"
+          Chef::Log.debug "#{@new_resource} current revision: #{@current_resource.revision} target revision: #{target_revision}"
           unless current_revision_matches_target_revision?
             fetch_updates
             enable_submodules
@@ -247,7 +246,7 @@ class Chef
                       else
                         @new_resource.revision + '*'
                       end
-        command = git("ls-remote \"#{@new_resource.repository}\"", rev_pattern)
+        command = git("ls-remote \"#{@new_resource.repository}\" \"#{rev_pattern}\"")
         @resolved_reference = shell_out!(command, run_options).stdout
         ref_lines = @resolved_reference.split("\n")
         refs = ref_lines.map { |line| line.split("\t") }

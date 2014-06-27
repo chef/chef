@@ -101,8 +101,33 @@ CONFIG
           @chef_config.key?(:knife) ? @chef_config[:knife] : {}
         end
 
+        #
+        # This function is used by older bootstrap templates other than chef-full
+        # and potentially by custom templates as well hence it's logic needs to be
+        # preserved for backwards compatibility reasons until we hit Chef 12.
         def chef_version
           knife_config[:bootstrap_version] || Chef::VERSION
+        end
+
+        #
+        # chef version string to fetch the latest current version from omnitruck
+        # If user is on X.Y.Z bootstrap will use the latest X release
+        # X here can be 10 or 11
+        def latest_current_chef_version_string
+          chef_version_string = if knife_config[:bootstrap_version]
+            knife_config[:bootstrap_version]
+          else
+            Chef::VERSION.split(".").first
+          end
+
+          installer_version_string = ["-v", chef_version_string]
+
+          # If bootstrapping a pre-release version add -p to the installer string
+          if chef_version_string.split(".").length > 3
+            installer_version_string << "-p"
+          end
+
+          installer_version_string.join(" ")
         end
 
         def first_boot
@@ -113,4 +138,3 @@ CONFIG
     end
   end
 end
-

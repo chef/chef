@@ -18,10 +18,15 @@
 
 require 'chef/win32/api'
 require 'chef/win32/api/system'
+require 'wmi-lite/wmi'
 
 class Chef
   module ReservedNames::Win32
     class Version
+      class << self
+        include Chef::ReservedNames::Win32::API::System
+      end
+
       include Chef::ReservedNames::Win32::API::Macros
       include Chef::ReservedNames::Win32::API::System
 
@@ -32,12 +37,12 @@ class Chef
       private
 
       def self.get_system_metrics(n_index)
-        Win32API.new('user32', 'GetSystemMetrics', 'I', 'I').call(n_index)
+        GetSystemMetrics(n_index)
       end
 
       def self.method_name_from_marketing_name(marketing_name)
         "#{marketing_name.gsub(/\s/, '_').gsub(/\./, '_').downcase}?"
-        # "#{marketing_name.gsub(/\s/, '_').gsub(//, '_').downcase}?"       
+        # "#{marketing_name.gsub(/\s/, '_').gsub(//, '_').downcase}?"
       end
 
       public
@@ -114,7 +119,6 @@ class Chef
         # version numbers on Windows Server 2012 R2 and Windows 8.1 --
         # WMI always returns the truth. See article at
         # http://msdn.microsoft.com/en-us/library/windows/desktop/ms724439(v=vs.85).aspx
-        require 'ruby-wmi'
 
         # CHEF-4888: Work around ruby #2618, expected to be fixed in Ruby 2.1.0
         # https://github.com/ruby/ruby/commit/588504b20f5cc880ad51827b93e571e32446e5db
@@ -122,8 +126,9 @@ class Chef
 
         WIN32OLE.ole_initialize
 
-        os_info = WMI::Win32_OperatingSystem.find(:first)
-        os_version = os_info.send('Version')
+        wmi = WmiLite::Wmi.new
+        os_info = wmi.first_of('Win32_OperatingSystem')
+        os_version = os_info['version']
 
         WIN32OLE.ole_uninitialize
 

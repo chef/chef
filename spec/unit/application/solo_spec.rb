@@ -19,10 +19,12 @@ require 'spec_helper'
 
 describe Chef::Application::Solo do
   before do
+    Kernel.stub(:trap).and_return(:ok)
     @app = Chef::Application::Solo.new
     @app.stub(:configure_opt_parser).and_return(true)
     @app.stub(:configure_chef).and_return(true)
     @app.stub(:configure_logging).and_return(true)
+    @app.stub(:trap)
     Chef::Config[:recipe_url] = false
     Chef::Config[:json_attribs] = false
     Chef::Config[:solo] = true

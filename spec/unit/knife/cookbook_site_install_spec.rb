@@ -21,7 +21,9 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Knife::CookbookSiteInstall do
   before(:each) do
     require 'chef/knife/core/cookbook_scm_repo'
+    @stdout = StringIO.new
     @knife = Chef::Knife::CookbookSiteInstall.new
+    @knife.ui.stub(:stdout).and_return(@stdout)
     @knife.config = {}
     if Chef::Platform.windows?
       @install_path = 'C:/tmp/chef'
@@ -52,7 +54,7 @@ describe Chef::Knife::CookbookSiteInstall do
     end
 
     #Stubs for CookbookSCMRepo
-    @repo = stub(:sanity_check => true, :reset_to_default_state => true,
+    @repo = double(:sanity_check => true, :reset_to_default_state => true,
                  :prepare_to_import => true, :finalize_updates_to => true,
                  :merge_updates_from => true)
     Chef::Knife::CookbookSCMRepo.stub(:new).and_return(@repo)

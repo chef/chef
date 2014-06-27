@@ -16,6 +16,7 @@
 # limitations under the License.
 
 require 'support/shared/integration/integration_helper'
+require 'support/shared/context/config'
 require 'chef/knife/raw'
 require 'chef/knife/show'
 
@@ -23,6 +24,8 @@ describe 'knife raw' do
   extend IntegrationSupport
   include KnifeSupport
   include AppServerSupport
+
+  include_context "default config options"
 
   when_the_chef_server "has one of each thing" do
     client 'x', '{}'
@@ -166,7 +169,7 @@ EOM
 
     context 'When a server returns raw json' do
       before :each do
-        Chef::Config.chef_server_url = "http://127.0.0.1:9018"
+        Chef::Config.chef_server_url = "http://localhost:9018"
         app = lambda do |env|
           [200, {'Content-Type' => 'application/json' }, ['{ "x": "y", "a": "b" }'] ]
         end
@@ -196,7 +199,7 @@ EOM
 
     context 'When a server returns text' do
       before :each do
-        Chef::Config.chef_server_url = "http://127.0.0.1:9018"
+        Chef::Config.chef_server_url = "http://localhost:9018"
         app = lambda do |env|
           [200, {'Content-Type' => 'text' }, ['{ "x": "y", "a": "b" }'] ]
         end

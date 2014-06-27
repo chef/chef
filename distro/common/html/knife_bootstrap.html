@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -14,7 +13,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -43,7 +42,7 @@
             
   <div class="section" id="knife-bootstrap">
 <h1>knife bootstrap<a class="headerlink" href="#knife-bootstrap" title="Permalink to this headline">¶</a></h1>
-<p>A bootstrap is a process that installs the chef-client on a target system so that it can run as a chef-client and communicate with a server.</p>
+<p>A bootstrap is a process that installs the chef-client on a target system so that it can run as a chef-client and communicate with a Chef server.</p>
 <p>The <strong>knife bootstrap</strong> subcommand is used to run a bootstrap operation that installs the chef-client on the target system. The bootstrap operation must specify the IP address or FQDN of the target system.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -51,7 +50,7 @@
 </div>
 <div class="section" id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
-<p>This argument has the following syntax:</p>
+<p>This subcommand has the following syntax:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife bootstrap FQDN_or_IP_ADDRESS <span class="o">(</span>options<span class="o">)</span>
 </pre></div>
 </div>
@@ -67,17 +66,22 @@
 <dt><tt class="docutils literal"><span class="pre">-A</span></tt>, <tt class="docutils literal"><span class="pre">--forward-agent</span></tt></dt>
 <dd>Indicates that SSH agent forwarding is enabled.</dd>
 <dt><tt class="docutils literal"><span class="pre">--bootstrap-no-proxy</span> <span class="pre">NO_PROXY_URL_or_IP</span></tt></dt>
-<dd>A URL or IP address that specifies a location that should not be proxied. Note: This option is used internally by Chef to help verify bootstrap operations during testing and should never be used during an actual bootstrap operation.</dd>
+<dd><p class="first">A URL or IP address that specifies a location that should not be proxied.</p>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This option is used internally by Chef to help verify bootstrap operations during testing and should never be used during an actual bootstrap operation.</p>
+</div>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--bootstrap-proxy</span> <span class="pre">PROXY_URL</span></tt></dt>
 <dd>The proxy server for the node that is the target of a bootstrap operation.</dd>
 <dt><tt class="docutils literal"><span class="pre">--bootstrap-version</span> <span class="pre">VERSION</span></tt></dt>
 <dd>The version of the chef-client to install.</dd>
 <dt><tt class="docutils literal"><span class="pre">-d</span> <span class="pre">DISTRO</span></tt>, <tt class="docutils literal"><span class="pre">--distro</span> <span class="pre">DISTRO</span></tt></dt>
-<dd><div class="first admonition warning">
+<dd><p class="first">The template file to be used during a bootstrap operation. The following distributions are supported: <tt class="docutils literal"><span class="pre">chef-full</span></tt> (the default bootstrap), <tt class="docutils literal"><span class="pre">centos5-gems</span></tt>, <tt class="docutils literal"><span class="pre">fedora13-gems</span></tt>, <tt class="docutils literal"><span class="pre">ubuntu10.04-gems</span></tt>, <tt class="docutils literal"><span class="pre">ubuntu10.04-apt</span></tt>, <tt class="docutils literal"><span class="pre">ubuntu12.04-gems</span></tt>, and the name of a custom bootstrap template file. When this option is used, Knife will search for the template file in the following order: the <tt class="docutils literal"><span class="pre">bootstrap/</span></tt> folder in the current working directory, the <tt class="docutils literal"><span class="pre">bootstrap/</span></tt> folder in the chef-repo, the <tt class="docutils literal"><span class="pre">bootstrap/</span></tt> folder in the <tt class="docutils literal"><span class="pre">~/.chef/</span></tt> directory, or a default bootstrap file. Do not use the <tt class="docutils literal"><span class="pre">--template-file</span></tt> option when <tt class="docutils literal"><span class="pre">--distro</span></tt> is specified.</p>
+<div class="last admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">The default bootstrap operation uses the omnibus installer, which means the default template file (<tt class="docutils literal"><span class="pre">chef-full</span></tt>) should work on all supported platforms. It is recommended to use custom bootstrap templates only when the omnibus installer cannot be used.</p>
+<p class="last">The default bootstrap operation uses the omnibus installer, which means the default template file (<tt class="docutils literal"><span class="pre">chef-full</span></tt>) should work on all supported platforms. It is recommended to use custom bootstrap templates only when the omnibus installer cannot be used. The <tt class="docutils literal"><span class="pre">.erb</span></tt> file extension is added automatically and should not be passed as part of the bootstrap command.</p>
 </div>
-<p class="last">The template file to be used during a bootstrap operation. The following distributions are supported: <tt class="docutils literal"><span class="pre">chef-full</span></tt> (the default bootstrap), <tt class="docutils literal"><span class="pre">centos5-gems</span></tt>, <tt class="docutils literal"><span class="pre">fedora13-gems</span></tt>, <tt class="docutils literal"><span class="pre">ubuntu10.04-gems</span></tt>, <tt class="docutils literal"><span class="pre">ubuntu10.04-apt</span></tt>, <tt class="docutils literal"><span class="pre">ubuntu12.04-gems</span></tt>, and the name of a custom bootstrap template file. When this option is used, Knife will search for the template file in the following order: the <tt class="docutils literal"><span class="pre">bootstrap/</span></tt> folder in the current working directory, the <tt class="docutils literal"><span class="pre">bootstrap/</span></tt> folder in the chef-repo, the <tt class="docutils literal"><span class="pre">bootstrap/</span></tt> folder in the <tt class="docutils literal"><span class="pre">~/.chef/</span></tt> directory, or a default bootstrap file. Do not use the <tt class="docutils literal"><span class="pre">--template-file</span></tt> option when <tt class="docutils literal"><span class="pre">--distro</span></tt> is specified.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">-G</span> <span class="pre">GATEWAY</span></tt>, <tt class="docutils literal"><span class="pre">--ssh-gateway</span> <span class="pre">GATEWAY</span></tt></dt>
 <dd>The SSH tunnel or gateway that is used to run a bootstrap action on a machine that is not accessible from the workstation.</dd>
@@ -142,7 +146,7 @@
 </div>
 <div class="section" id="debian-and-apt">
 <h3>Debian and Apt<a class="headerlink" href="#debian-and-apt" title="Permalink to this headline">¶</a></h3>
-<p>The following example shows how to use the <strong>knife bootstrap</strong> sub-command to create a client configuration file (/etc/chef/client.rb) that uses Hosted Chef as the server. The configuration file will look something like:</p>
+<p>The following example shows how to use the <strong>knife bootstrap</strong> sub-command to create a client configuration file (/etc/chef/client.rb) that uses Hosted Chef as the Chef server. The configuration file will look something like:</p>
 <div class="highlight-ruby"><div class="highlight"><pre><span class="n">log_level</span>        <span class="ss">:info</span>
 <span class="n">log_location</span>     <span class="no">STDOUT</span>
 <span class="n">chef_server_url</span>  <span class="s1">&#39;https://api.opscode.com/organizations/ORGNAME&#39;</span>

@@ -17,7 +17,6 @@
 #
 
 require 'chef/provider/service/init'
-require 'chef/mixin/command'
 
 class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
 

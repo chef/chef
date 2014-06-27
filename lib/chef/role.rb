@@ -231,21 +231,25 @@ class Chef
     end
 
     # Load a role from disk - prefers to load the JSON, but will happily load
-    # the raw rb files as well.
-    def self.from_disk(name, force=nil)
+    # the raw rb files as well. Can search within directories in the role_path.
+    def self.from_disk(name)
       paths = Array(Chef::Config[:role_path])
+      paths.each do |path|
+        roles_files = Dir.glob(File.join(path, "**", "**"))
+        js_files = roles_files.select { |file| file.match /#{name}\.json$/ }
+        rb_files = roles_files.select { |file| file.match /#{name}\.rb$/ }
+        if js_files.count > 1 or rb_files.count > 1
+          raise Chef::Exceptions::DuplicateRole, "Multiple roles of same type found named #{name}"
+        end
+        js_path, rb_path = js_files.first, rb_files.first
 
-      paths.each do |p|
-        js_file = File.join(p, "#{name}.json")
-        rb_file = File.join(p, "#{name}.rb")
-
-        if File.exists?(js_file) || force == "json"
+        if js_path && File.exists?(js_path)
           # from_json returns object.class => json_class in the JSON.
-          return Chef::JSONCompat.from_json(IO.read(js_file))
-        elsif File.exists?(rb_file) || force == "ruby"
+          return Chef::JSONCompat.from_json(IO.read(js_path))
+        elsif rb_path && File.exists?(rb_path)
           role = Chef::Role.new
           role.name(name)
-          role.from_file(rb_file)
+          role.from_file(rb_path)
           return role
         end
       end

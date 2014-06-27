@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
 require 'chef/resource_platform_map'
 require 'chef/mixin/convert_to_class_name'
 
@@ -151,6 +150,10 @@ class Chef
     end
   end
 end
+
+# We require this at the BOTTOM of this file to avoid circular requires (it is used
+# at runtime but not load time)
+require 'chef/resource'
 
 # **DEPRECATED**
 # This used to be part of chef/mixin/recipe_definition_dsl_core. Load the file to activate the deprecation code.

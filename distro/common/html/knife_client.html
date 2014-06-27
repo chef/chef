@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -14,7 +13,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -43,7 +42,7 @@
             
   <div class="section" id="knife-client">
 <h1>knife client<a class="headerlink" href="#knife-client" title="Permalink to this headline">¶</a></h1>
-<p>The <strong>knife client</strong> subcommand is used to manage an API client list and their associated RSA public key-pairs. This allows authentication requests to be made to the server by any entity that uses the Chef Server API, such as the chef-client and Knife.</p>
+<p>The <strong>knife client</strong> subcommand is used to manage an API client list and their associated RSA public key-pairs. This allows authentication requests to be made to the Chef server by any entity that uses the Chef Server API, such as the chef-client and Knife.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
@@ -69,7 +68,7 @@
 </div>
 <div class="section" id="create">
 <h2>create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">create</span></tt> argument is used to create a new API client. This process will generate an RSA key pair for the named API client. The public key will be stored on the server and the private key will be displayed on <tt class="docutils literal"><span class="pre">STDOUT</span></tt> or written to a named file.</p>
+<p>The <tt class="docutils literal"><span class="pre">create</span></tt> argument is used to create a new API client. This process will generate an RSA key pair for the named API client. The public key will be stored on the Chef server and the private key will be displayed on <tt class="docutils literal"><span class="pre">STDOUT</span></tt> or written to a named file.</p>
 <ul class="simple">
 <li>For the chef-client, the private key should be copied to the system as <tt class="docutils literal"><span class="pre">/etc/chef/client.pem</span></tt>.</li>
 <li>For Knife, the private key is typically copied to <tt class="docutils literal"><span class="pre">~/.chef/client_name.pem</span></tt> and referenced in the knife.rb configuration file.</li>
@@ -86,7 +85,7 @@
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-a</span></tt>, <tt class="docutils literal"><span class="pre">--admin</span></tt></dt>
-<dd>Indicates that a client will be created as an admin client. This is required when users of the open source server need to access the Chef Server API as an administrator. This option only works when used with the open source server and will have no effect when used with Enterprise Chef.</dd>
+<dd>Indicates that a client will be created as an admin client. This is required when users of the open source Chef server need to access the Chef Server API as an administrator. This option only works when used with the open source Chef server and will have no effect when used with Enterprise Chef.</dd>
 </dl>
 </div>
 <div class="section" id="id3">
@@ -131,7 +130,7 @@
 </div>
 <div class="section" id="edit">
 <h2>edit<a class="headerlink" href="#edit" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">edit</span></tt> argument is used to edit the details of a registered API client. When this argument is run, Knife will open $EDITOR to enable editing of the <tt class="docutils literal"><span class="pre">admin</span></tt> attribute. (None of the other attributes should be changed using this argument.) When finished, Knife will update the server with those changes.</p>
+<p>The <tt class="docutils literal"><span class="pre">edit</span></tt> argument is used to edit the details of a registered API client. When this argument is run, Knife will open $EDITOR to enable editing of the <tt class="docutils literal"><span class="pre">admin</span></tt> attribute. (None of the other attributes should be changed using this argument.) When finished, Knife will update the Chef server with those changes.</p>
 <div class="section" id="id7">
 <h3>Syntax<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -175,7 +174,7 @@
 <h3>Examples<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <p>The following examples show how to use this Knife subcommand:</p>
 <p><strong>View a list of clients</strong></p>
-<p>To verify the API client list for the server, enter:</p>
+<p>To verify the API client list for the Chef server, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife client list
 </pre></div>
 </div>
@@ -186,7 +185,7 @@ rs-123456
 </pre></div>
 </div>
 <p>To verify that an API client can authenticate to the
-server correctly, try getting a list of clients using <tt class="docutils literal"><span class="pre">-u</span></tt> and <tt class="docutils literal"><span class="pre">-k</span></tt> options to specify its name and private key:</p>
+Chef server correctly, try getting a list of clients using <tt class="docutils literal"><span class="pre">-u</span></tt> and <tt class="docutils literal"><span class="pre">-k</span></tt> options to specify its name and private key:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife client list -u ORGNAME -k .chef/ORGNAME.pem
 </pre></div>
 </div>
@@ -194,10 +193,10 @@ server correctly, try getting a list of clients using <tt class="docutils litera
 </div>
 <div class="section" id="reregister">
 <h2>reregister<a class="headerlink" href="#reregister" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">reregister</span></tt> argument is used to regenerate an RSA key pair for an API client. The public key will be stored on the server and the private key will be displayed on <tt class="docutils literal"><span class="pre">STDOUT</span></tt> or written to a named file.</p>
+<p>The <tt class="docutils literal"><span class="pre">reregister</span></tt> argument is used to regenerate an RSA key pair for an API client. The public key will be stored on the Chef server and the private key will be displayed on <tt class="docutils literal"><span class="pre">STDOUT</span></tt> or written to a named file.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Running this argument will invalidate the previous RSA key pair, making it unusable during authentication to the server.</p>
+<p class="last">Running this argument will invalidate the previous RSA key pair, making it unusable during authentication to the Chef server.</p>
 </div>
 <div class="section" id="id13">
 <h3>Syntax<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
@@ -211,7 +210,7 @@ server correctly, try getting a list of clients using <tt class="docutils litera
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-f</span> <span class="pre">FILE_NAME</span></tt>, <tt class="docutils literal"><span class="pre">--file</span> <span class="pre">FILE_NAME</span></tt></dt>
-<dd>Indicates that the private key will be saved to a specified file name.</dd>
+<dd>Use to save a private key to the specified file name.</dd>
 </dl>
 </div>
 <div class="section" id="id15">

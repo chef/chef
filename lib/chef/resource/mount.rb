@@ -65,10 +65,15 @@ class Chef
 
       def device_type(arg=nil)
         real_arg = arg.kind_of?(String) ? arg.to_sym : arg
+        valid_devices = if RUBY_PLATFORM =~ /solaris/i
+                          [ :device ]
+                        else
+                          [ :device, :label, :uuid ]
+                        end
         set_or_return(
           :device_type,
           real_arg,
-          :equal_to => [ :device, :label, :uuid ]
+          :equal_to => valid_devices
         )
       end
 
@@ -81,16 +86,17 @@ class Chef
       end
 
       def options(arg=nil)
-        if arg.is_a?(String)
-          converted_arg = arg.gsub(/,/, ' ').split(/ /)
+        ret = set_or_return(
+                            :options,
+                            arg,
+                            :kind_of => [ Array, String ]
+                            )
+
+        if ret.is_a? String
+          ret.gsub(/,/, ' ').split(/ /)
         else
-          converted_arg = arg
+          ret
         end
-        set_or_return(
-          :options,
-          converted_arg,
-          :kind_of => [ Array ]
-        )
       end
 
       def dump(arg=nil)
@@ -162,4 +168,3 @@ class Chef
     end
   end
 end
-

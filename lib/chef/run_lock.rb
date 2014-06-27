@@ -20,6 +20,9 @@ require 'fcntl'
 if Chef::Platform.windows?
   require 'chef/win32/mutex'
 end
+require 'chef/config'
+require 'chef/exceptions'
+require 'timeout'
 
 class Chef
 
@@ -43,10 +46,13 @@ class Chef
       @runlock_file = lockfile
       @runlock = nil
       @mutex = nil
+      @runpid = nil
     end
 
     # Acquire the system-wide lock. Will block indefinitely if another process
-    # already has the lock.
+    # already has the lock and Chef::Config[:run_lock_timeout] is
+    # not set. Otherwise will block for Chef::Config[:run_lock_timeout]
+    # seconds and exit if the lock is not acquired.
     #
     # Each call to acquire should have a corresponding call to #release.
     #
@@ -55,7 +61,23 @@ class Chef
     # Either acquire() or test() methods should be called in order to
     # get the ownership of run_lock.
     def acquire
-      wait unless test
+      if timeout_given?
+        begin
+          Timeout::timeout(time_to_wait) do
+            unless test
+              if time_to_wait > 0.0
+                wait
+              else
+                exit_from_timeout
+              end
+            end
+          end
+        rescue Timeout::Error => e
+          exit_from_timeout
+        end
+      else
+        wait unless test
+      end
     end
 
     #
@@ -92,7 +114,6 @@ class Chef
     # Waits until acquiring the system-wide lock.
     #
     def wait
-      runpid = runlock.read.strip.chomp
       Chef::Log.warn("Chef client #{runpid} is running, will wait for it to finish and then run.")
       if Chef::Platform.windows?
         mutex.wait
@@ -131,6 +152,7 @@ class Chef
     def reset
       @runlock = nil
       @mutex = nil
+      @runpid = nil
     end
 
     # Since flock mechanism doesn't exist on windows we are using
@@ -144,6 +166,23 @@ class Chef
       @mutex = Chef::ReservedNames::Win32::Mutex.new("Global\\#{runlock_file.gsub(/[\\]/, "/").downcase}")
       mutex.test
     end
+
+    def runpid
+      @runpid ||= runlock.read.strip
+    end
+
+    def timeout_given?
+      !time_to_wait.nil?
+    end
+
+    def time_to_wait
+      Chef::Config[:run_lock_timeout]
+    end
+
+    def exit_from_timeout
+      rp = runpid
+      release # Just to be on the safe side...
+      raise Chef::Exceptions::RunLockTimeout.new(time_to_wait, rp)
+    end
   end
 end
-

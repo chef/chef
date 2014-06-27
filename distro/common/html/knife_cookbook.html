@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -14,7 +13,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -55,7 +54,7 @@
 <li>Versions</li>
 <li>Metadata about recipes (including dependencies), version constraints, supported platforms, and so on</li>
 </ul>
-<p>The <strong>knife cookbook</strong> subcommand is used to interact with cookbooks that are located on the server or the local chef-repo.</p>
+<p>The <strong>knife cookbook</strong> subcommand is used to interact with cookbooks that are located on the Chef server or the local chef-repo.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
@@ -75,7 +74,7 @@
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-p</span></tt>, <tt class="docutils literal"><span class="pre">--purge</span></tt></dt>
-<dd>Indicates that a cookbook (or cookbook version) will be removed entirely from the server. This action should be used carefully because only one copy of any single file is stored on the server. Consequently, purging a cookbook will disable any other cookbook that references one or more files from a cookbook that has been purged.</dd>
+<dd>Indicates that a cookbook (or cookbook version) will be removed entirely from the Chef server. This action should be used carefully because only one copy of any single file is stored on the Chef server. Consequently, purging a cookbook will disable any other cookbook that references one or more files from a cookbook that has been purged.</dd>
 </dl>
 </div>
 <div class="section" id="examples">
@@ -106,7 +105,7 @@
 <li>cookbook/templates/default</li>
 </ul>
 </div></blockquote>
-<p>After the cookbook is created, it can be uploaded to the server using the <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">upload</span></tt> argument.</p>
+<p>After the cookbook is created, it can be uploaded to the Chef server using the <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">upload</span></tt> argument.</p>
 <div class="section" id="id1">
 <h3>Syntax<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -148,7 +147,7 @@
 </div>
 <div class="section" id="delete">
 <h2>delete<a class="headerlink" href="#delete" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">delete</span></tt> argument is used to delete a specified cookbook or cookbook version on the server (and not locally).</p>
+<p>The <tt class="docutils literal"><span class="pre">delete</span></tt> argument is used to delete a specified cookbook or cookbook version on the Chef server (and not locally).</p>
 <div class="section" id="id4">
 <h3>Syntax<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -165,7 +164,7 @@
 <dt><tt class="docutils literal"><span class="pre">COOKBOOK_VERSION</span></tt></dt>
 <dd>The version of a cookbook to be deleted. If a cookbook has only one version, this option does not need to be specified. If a cookbook has more than one version and this option is not specified, Knife will prompt for a version.</dd>
 <dt><tt class="docutils literal"><span class="pre">-p</span></tt>, <tt class="docutils literal"><span class="pre">--purge</span></tt></dt>
-<dd>Indicates that a cookbook (or cookbook version) will be removed entirely from the server. This action should be used carefully because only one copy of any single file is stored on the server. Consequently, purging a cookbook will disable any other cookbook that references one or more files from a cookbook that has been purged.</dd>
+<dd>Indicates that a cookbook (or cookbook version) will be removed entirely from the Chef server. This action should be used carefully because only one copy of any single file is stored on the Chef server. Consequently, purging a cookbook will disable any other cookbook that references one or more files from a cookbook that has been purged.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -184,7 +183,7 @@
 </div>
 <div class="section" id="download">
 <h2>download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">download</span></tt> argument is used to download a cookbook from the server to the current working directory.</p>
+<p>The <tt class="docutils literal"><span class="pre">download</span></tt> argument is used to download a cookbook from the Chef server to the current working directory.</p>
 <div class="section" id="id7">
 <h3>Syntax<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -216,7 +215,7 @@
 </div>
 <div class="section" id="list">
 <h2>list<a class="headerlink" href="#list" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">list</span></tt> argument is used to view a list of cookbooks that are currently available on the server. The list will contain only the most recent version for each cookbook by default.</p>
+<p>The <tt class="docutils literal"><span class="pre">list</span></tt> argument is used to view a list of cookbooks that are currently available on the Chef server. The list will contain only the most recent version for each cookbook by default.</p>
 <div class="section" id="id10">
 <h3>Syntax<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -411,10 +410,14 @@ url:          https://someurlhere.com
 </div>
 <div class="section" id="upload">
 <h2>upload<a class="headerlink" href="#upload" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">upload</span></tt> argument is used to upload one or more cookbooks (and any files that are associated with those cookbooks) from a local repository to the server. Only files that do not already exist on the server will be uploaded.</p>
+<p>The <tt class="docutils literal"><span class="pre">upload</span></tt> argument is used to upload one or more cookbooks (and any files that are associated with those cookbooks) from a local repository to the Chef server. Only files that do not already exist on the Chef server will be uploaded.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Use a chefignore file to prevent the upload of specific files and file types, such as temporary files or files placed in folders by version control systems. The chefignore file must be located in the root of the cookbook repository and must use rules similar to filename globbing (as defined by the Ruby <tt class="docutils literal"><span class="pre">File.fnmatch</span></tt> syntax).</p>
+<p class="last">Use a .chefignore file to prevent the upload of specific files and file types, such as temporary files or files placed in folders by version control systems. The .chefignore file must be located in the root of the cookbook repository and must use rules similar to filename globbing (as defined by the Ruby <tt class="docutils literal"><span class="pre">File.fnmatch</span></tt> syntax).</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Empty directories are not uploaded to the Chef server. To upload an empty directory, create a &#8220;dot&#8221; file&#8212;e.g. <tt class="docutils literal"><span class="pre">.keep</span></tt>&#8212;in that directory to ensure that the directory itself is not empty.</p>
 </div>
 <div class="section" id="id25">
 <h3>Syntax<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
@@ -429,8 +432,12 @@ url:          https://someurlhere.com
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-a</span></tt>, <tt class="docutils literal"><span class="pre">--all</span></tt></dt>
 <dd>Indicates that all cookbooks will be uploaded.</dd>
+<dt><tt class="docutils literal"><span class="pre">--concurrency</span></tt></dt>
+<dd>The number of allowed concurrent connections. Default: <tt class="docutils literal"><span class="pre">10</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-d</span></tt>, <tt class="docutils literal"><span class="pre">--include-dependencies</span></tt></dt>
 <dd>Indicates that when a cookbook has a dependency on one (or more) cookbooks, those cookbooks will also be uploaded.</dd>
+<dt><tt class="docutils literal"><span class="pre">-E</span> <span class="pre">ENVIRONMENT</span></tt>, <tt class="docutils literal"><span class="pre">--environment</span> <span class="pre">ENVIRONMENT</span></tt></dt>
+<dd>Use to set the environment version dependency to the cookbook version being uploaded.</dd>
 <dt><tt class="docutils literal"><span class="pre">--force</span></tt></dt>
 <dd>Indicates that a cookbook should be updated even if the <tt class="docutils literal"><span class="pre">--freeze</span></tt> flag has been set.</dd>
 <dt><tt class="docutils literal"><span class="pre">--freeze</span></tt></dt>

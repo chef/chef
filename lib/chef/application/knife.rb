@@ -51,7 +51,7 @@ class Chef::Application::Knife < Chef::Application
   option :environment,
     :short        => "-E ENVIRONMENT",
     :long         => "--environment ENVIRONMENT",
-    :description  => "Set the Chef environment"
+    :description  => "Set the Chef environment (except for in searches, where this will be flagrantly ignored)"
 
   option :editor,
     :short        => "-e EDITOR",
@@ -113,6 +113,10 @@ class Chef::Application::Knife < Chef::Application
     :long         => "--local-mode",
     :description  => "Point knife commands at local repository instead of server",
     :boolean      => true
+
+  option :chef_zero_host,
+    :long         => "--chef-zero-host HOST",
+    :description  => "Host to start chef-zero on"
 
   option :chef_zero_port,
     :long         => "--chef-zero-port PORT",

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -14,7 +13,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -43,8 +42,8 @@
             
   <div class="section" id="knife-cookbook-site">
 <h1>knife cookbook site<a class="headerlink" href="#knife-cookbook-site" title="Permalink to this headline">¶</a></h1>
-<p>The Cookbooks Site API is used to provide access to the cookbooks community hosted at <a class="reference external" href="https://cookbooks.opscode.com">https://cookbooks.opscode.com</a>. All of the cookbooks in the community are accessible through a REST API located at <a class="reference external" href="https://cookbooks.opscode.com/api/v1/">https://cookbooks.opscode.com/api/v1/</a> by using any of the supported endpoints. In most cases, using Knife and the <strong>knife cookbook site</strong> sub-command (and any of its arguments) is the recommended method of interacting with these cookbooks, but in some cases, using the REST API directly may make sense.</p>
-<p>The <strong>knife cookbook site</strong> subcommand is used to interact with cookbooks that are located at <a class="reference external" href="https://cookbooks.opscode.com">https://cookbooks.opscode.com</a>. A user account is required for any community actions that write data to this site. The following arguments do not require a user account: <tt class="docutils literal"><span class="pre">download</span></tt>, <tt class="docutils literal"><span class="pre">search</span></tt>, <tt class="docutils literal"><span class="pre">install</span></tt>, and <tt class="docutils literal"><span class="pre">list</span></tt>.</p>
+<p>The Cookbooks Site API is used to provide access to the cookbooks community hosted at <a class="reference external" href="http://community.opscode.com/">http://community.opscode.com/</a>. All of the cookbooks in the community are accessible through a REST API located at <a class="reference external" href="https://cookbooks.opscode.com/api/v1/cookbooks">https://cookbooks.opscode.com/api/v1/cookbooks</a> by using any of the supported endpoints. In most cases, using Knife and the <strong>knife cookbook site</strong> sub-command (and any of its arguments) is the recommended method of interacting with these cookbooks, but in some cases, using the REST API directly may make sense.</p>
+<p>The <strong>knife cookbook site</strong> subcommand is used to interact with cookbooks that are located at <a class="reference external" href="http://community.opscode.com/">http://community.opscode.com/</a>. A user account is required for any community actions that write data to this site. The following arguments do not require a user account: <tt class="docutils literal"><span class="pre">download</span></tt>, <tt class="docutils literal"><span class="pre">search</span></tt>, <tt class="docutils literal"><span class="pre">install</span></tt>, and <tt class="docutils literal"><span class="pre">list</span></tt>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
@@ -87,12 +86,12 @@ Cookbook saved: /Users/sdanna/opscodesupport/getting-started-0.3.0.tar.gz
 </div>
 <div class="section" id="install">
 <h2>install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">install</span></tt> argument is used to install a cookbook that has been downloaded from the community site to a local git repository . This action uses the git version control system in conjunction with the <a class="reference external" href="https://cookbooks.opscode.com">https://cookbooks.opscode.com</a> site to install community-contributed cookbooks to the local chef-repo. Using this argument does the following:</p>
+<p>The <tt class="docutils literal"><span class="pre">install</span></tt> argument is used to install a cookbook that has been downloaded from the community site to a local git repository . This action uses the git version control system in conjunction with the <a class="reference external" href="http://community.opscode.com/">http://community.opscode.com/</a> site to install community-contributed cookbooks to the local chef-repo. Using this argument does the following:</p>
 <blockquote>
 <div><ol class="arabic simple">
 <li>A new &#8220;pristine copy&#8221; branch is created in git for tracking the upstream.</li>
 <li>All existing versions of a cookbook are removed from the branch.</li>
-<li>The cookbook is downloaded from <a class="reference external" href="https://cookbooks.opscode.com">https://cookbooks.opscode.com</a> in the tar.gz format.</li>
+<li>The cookbook is downloaded from <a class="reference external" href="http://community.opscode.com/">http://community.opscode.com/</a> in the tar.gz format.</li>
 <li>The downloaded cookbook is untarred and its contents are committed to git and a tag is created.</li>
 <li>The &#8220;pristine copy&#8221; branch is merged into the master branch.</li>
 </ol>
@@ -164,7 +163,7 @@ Cookbook getting-started version 0.3.0 successfully installed
 </div>
 <div class="section" id="list">
 <h2>list<a class="headerlink" href="#list" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">list</span></tt> argument is used to view a list of cookbooks that are currently available at <a class="reference external" href="https://cookbooks.opscode.com">https://cookbooks.opscode.com</a>.</p>
+<p>The <tt class="docutils literal"><span class="pre">list</span></tt> argument is used to view a list of cookbooks that are currently available at <a class="reference external" href="http://community.opscode.com/">http://community.opscode.com/</a>.</p>
 <div class="section" id="id4">
 <h3>Syntax<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -184,12 +183,12 @@ Cookbook getting-started version 0.3.0 successfully installed
 <h3>Examples<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <p>The following examples show how to use this Knife subcommand:</p>
 <p><strong>View a list of cookbooks</strong></p>
-<p>To view a list of cookbooks at <a class="reference external" href="https://cookbooks.opscode.com">https://cookbooks.opscode.com</a> server, enter:</p>
+<p>To view a list of cookbooks at <a class="reference external" href="http://community.opscode.com/">http://community.opscode.com/</a> server, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife cookbook site list
 </pre></div>
 </div>
 <p>to return:</p>
-<div class="highlight-python"><pre>1password             homesick              rabbitmq
+<div class="highlight-python"><div class="highlight"><pre>1password             homesick              rabbitmq
 7-zip                 hostname              rabbitmq-management
 AmazonEC2Tag          hosts                 rabbitmq_chef
 R                     hosts-awareness       rackspaceknife
@@ -199,13 +198,14 @@ activemq              icinga                rails_enterprise
 ad                    id3lib                redis-package
 ad-likewise           iftop                 redis2
 ant                   iis                   redmine
-[...truncated...]</pre>
+[...truncated...]
+</pre></div>
 </div>
 </div>
 </div>
 <div class="section" id="search">
 <h2>search<a class="headerlink" href="#search" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">search</span></tt> argument is used to search for a cookbook at <a class="reference external" href="https://cookbooks.opscode.com">https://cookbooks.opscode.com</a>. A search query is used to return a list of cookbooks at <a class="reference external" href="https://cookbooks.opscode.com">https://cookbooks.opscode.com</a> and uses the same syntax as the <strong>knife search</strong> sub-command.</p>
+<p>The <tt class="docutils literal"><span class="pre">search</span></tt> argument is used to search for a cookbook at <a class="reference external" href="http://community.opscode.com/">http://community.opscode.com/</a>. A search query is used to return a list of cookbooks at <a class="reference external" href="http://community.opscode.com/">http://community.opscode.com/</a> and uses the same syntax as the <strong>knife search</strong> sub-command.</p>
 <div class="section" id="id7">
 <h3>Syntax<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -248,7 +248,7 @@ kickstart:
 </div>
 <div class="section" id="share">
 <h2>share<a class="headerlink" href="#share" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">share</span></tt> argument is used to add a cookbook to <a class="reference external" href="https://cookbooks.opscode.com">https://cookbooks.opscode.com</a>. This action will require a user account and a certificate for <a class="reference external" href="http://community.opscode.com">http://community.opscode.com</a>. By default, Knife will use the user name and API key that is identified in the configuration file used during the upload; otherwise these values must be specified on the command line or in an alternate configuration file. If a cookbook already exists on <a class="reference external" href="https://cookbooks.opscode.com">https://cookbooks.opscode.com</a>, then only an owner or maintainer of that cookbook can make updates.</p>
+<p>The <tt class="docutils literal"><span class="pre">share</span></tt> argument is used to add a cookbook to <a class="reference external" href="http://community.opscode.com/">http://community.opscode.com/</a>. This action will require a user account and a certificate for <a class="reference external" href="http://community.opscode.com">http://community.opscode.com</a>. By default, Knife will use the user name and API key that is identified in the configuration file used during the upload; otherwise these values must be specified on the command line or in an alternate configuration file. If a cookbook already exists on <a class="reference external" href="http://community.opscode.com/">http://community.opscode.com/</a>, then only an owner or maintainer of that cookbook can make updates.</p>
 <div class="section" id="id10">
 <h3>Syntax<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -278,7 +278,7 @@ kickstart:
 </div>
 <div class="section" id="show">
 <h2>show<a class="headerlink" href="#show" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">show</span></tt> argument is used to view information about a cookbook on <a class="reference external" href="https://cookbooks.opscode.com">https://cookbooks.opscode.com</a>.</p>
+<p>The <tt class="docutils literal"><span class="pre">show</span></tt> argument is used to view information about a cookbook on <a class="reference external" href="http://community.opscode.com/">http://community.opscode.com/</a>.</p>
 <div class="section" id="id13">
 <h3>Syntax<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -332,7 +332,7 @@ versions:
 </div>
 <div class="section" id="unshare">
 <h2>unshare<a class="headerlink" href="#unshare" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">unshare</span></tt> argument is used to stop the sharing of a cookbook at <a class="reference external" href="https://cookbooks.opscode.com">https://cookbooks.opscode.com</a>. Only the maintainer of a cookbook may perform this action.</p>
+<p>The <tt class="docutils literal"><span class="pre">unshare</span></tt> argument is used to stop the sharing of a cookbook at <a class="reference external" href="http://community.opscode.com/">http://community.opscode.com/</a>. Only the maintainer of a cookbook may perform this action.</p>
 <div class="section" id="id16">
 <h3>Syntax<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>

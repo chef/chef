@@ -21,7 +21,30 @@ require 'spec_helper'
 require 'chef/http'
 require 'chef/http/basic_client'
 
+class Chef::HTTP
+  public :create_url
+end
+
 describe Chef::HTTP do
+
+  describe "create_url" do
+
+    it 'should return a correctly formatted url 1/3 CHEF-5261' do
+      http = Chef::HTTP.new('http://www.getchef.com')
+      http.create_url('api/endpoint').should eql(URI.parse('http://www.getchef.com/api/endpoint'))
+    end
+
+    it 'should return a correctly formatted url 2/3 CHEF-5261' do
+      http = Chef::HTTP.new('http://www.getchef.com/')
+      http.create_url('/organization/org/api/endpoint/').should eql(URI.parse('http://www.getchef.com/organization/org/api/endpoint/'))
+    end
+
+    it 'should return a correctly formatted url 3/3 CHEF-5261' do
+      http = Chef::HTTP.new('http://www.getchef.com/organization/org///')
+      http.create_url('///api/endpoint?url=http://foo.bar').should eql(URI.parse('http://www.getchef.com/organization/org/api/endpoint?url=http://foo.bar'))
+    end
+
+  end # create_url
 
   describe "head" do
 

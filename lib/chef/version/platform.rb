@@ -31,6 +31,8 @@ class Chef
             [ $1.to_i, $2.to_i, 0 ]
           when /^(\d+)$/
             [ $1.to_i, 0, 0 ]
+          when /^(\d+).(\d+)-[a-z]+\d?(-p(\d+))?$/i   # Match FreeBSD
+            [ $1.to_i, $2.to_i, ($4 ? $4.to_i : 0)]
           else
             msg = "'#{str.to_s}' does not match 'x.y.z', 'x.y' or 'x'"
             raise Chef::Exceptions::InvalidPlatformVersion.new( msg )

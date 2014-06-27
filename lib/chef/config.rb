@@ -85,7 +85,7 @@ class Chef
     def self.platform_specific_path(path)
       if on_windows?
         # turns /etc/chef/client.rb into C:/chef/client.rb
-        system_drive = ENV['SYSTEMDRIVE'] ? ENV['SYSTEMDRIVE'] : ""
+        system_drive = env['SYSTEMDRIVE'] ? env['SYSTEMDRIVE'] : ""
         path = File.join(system_drive, path.split('/')[2..-1])
         # ensure all forward slashes are backslashes
         path.gsub!(File::SEPARATOR, (File::ALT_SEPARATOR || '\\'))
@@ -142,7 +142,7 @@ class Chef
           end
         end
       else
-        platform_specific_path("/var/chef")
+        cache_path
       end
     end
 
@@ -240,8 +240,26 @@ class Chef
       if local_mode
         "#{config_dir}local-mode-cache"
       else
-        platform_specific_path("/var/chef")
+        primary_cache_root = platform_specific_path("/var")
+        primary_cache_path = platform_specific_path("/var/chef")
+        # Use /var/chef as the cache path only if that folder exists and we can read and write
+        # into it, or /var exists and we can read and write into it (we'll create /var/chef later).
+        # Otherwise, we'll create .chef under the user's home directory and use that as
+        # the cache path.
+        unless path_accessible?(primary_cache_path) || path_accessible?(primary_cache_root)
+          secondary_cache_path = File.join(user_home, '.chef')
+          secondary_cache_path.gsub!(File::SEPARATOR, platform_path_separator) # Safety, mainly for Windows...
+          Chef::Log.info("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
+          secondary_cache_path
+        else
+          primary_cache_path
+        end
       end
+    end
+
+    # Returns true only if the path exists and is readable and writeable for the user.
+    def self.path_accessible?(path)
+      File.exists?(path) && File.readable?(path) && File.writable?(path)
     end
 
     # Where cookbook files are stored on the server (by content checksum)
@@ -306,12 +324,14 @@ class Chef
     config_context :chef_zero do
       config_strict_mode true
       default(:enabled) { Chef::Config.local_mode }
+      default :host, 'localhost'
       default :port, 8889
     end
     default :chef_server_url,   "https://localhost:443"
 
     default :rest_timeout, 300
     default :yum_timeout, 900
+    default :yum_lock_timeout, 30
     default :solo,  false
     default :splay, nil
     default :why_run, false
@@ -344,8 +364,10 @@ class Chef
 
     # Whether or not to verify the SSL cert for HTTPS requests to the Chef
     # server API. If set to `true`, the server's cert will be validated
-    # regardless of the :ssl_verify_mode setting.
-    default :verify_api_cert, false
+    # regardless of the :ssl_verify_mode setting. This is set to `true` when
+    # running in local-mode.
+    # NOTE: This is a workaround until verify_peer is enabled by default.
+    default(:verify_api_cert) { Chef::Config.local_mode }
 
     # Path to the default CA bundle files.
     default :ssl_ca_path, nil
@@ -489,17 +511,21 @@ class Chef
       default :hints, {}
     end
 
-    # Those lists of regular expressions define what chef considers a
-    # valid user and group name
-    if RUBY_PLATFORM =~ /mswin|mingw|windows/
+    def self.set_defaults_for_windows
+      # Those lists of regular expressions define what chef considers a
+      # valid user and group name
       # From http://technet.microsoft.com/en-us/library/cc776019(WS.10).aspx
-
       principal_valid_regex_part = '[^"\/\\\\\[\]\:;|=,+*?<>]+'
       default :user_valid_regex, [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
       default :group_valid_regex, [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
 
       default :fatal_windows_admin_check, false
-    else
+    end
+
+    def self.set_defaults_for_nix
+      # Those lists of regular expressions define what chef considers a
+      # valid user and group name
+      #
       # user/group cannot start with '-', '+' or '~'
       # user/group cannot contain ':', ',' or non-space-whitespace or null byte
       # everything else is allowed (UTF-8, spaces, etc) and we delegate to your O/S useradd program to barf or not
@@ -508,9 +534,26 @@ class Chef
       default :group_valid_regex, [ /^[^-+~:,\t\r\n\f\0]+[^:,\t\r\n\f\0]*$/ ]
     end
 
-    # returns a platform specific path to the user home dir
-    windows_home_path = ENV['SYSTEMDRIVE'] + ENV['HOMEPATH'] if ENV['SYSTEMDRIVE'] && ENV['HOMEPATH']
-    default :user_home, (ENV['HOME'] || windows_home_path || ENV['USERPROFILE'])
+    # Those lists of regular expressions define what chef considers a
+    # valid user and group name
+    if on_windows?
+      set_defaults_for_windows
+    else
+      set_defaults_for_nix
+    end
+
+    # This provides a hook which rspec can stub so that we can avoid twiddling
+    # global state in tests.
+    def self.env
+      ENV
+    end
+
+    def self.windows_home_path
+      windows_home_path = env['SYSTEMDRIVE'] + env['HOMEPATH'] if env['SYSTEMDRIVE'] && env['HOMEPATH']
+    end
+
+    # returns a platform specific path to the user home dir if set, otherwise default to current directory.
+    default( :user_home ) { env['HOME'] || windows_home_path || env['USERPROFILE'] || Dir.pwd }
 
     # Enable file permission fixup for selinux. Fixup will be done
     # only if selinux is enabled in the system.
@@ -525,6 +568,26 @@ class Chef
     # created under ENV['TMP'] otherwise tempfiles will be created in
     # the directory that files are going to reside.
     default :file_staging_uses_destdir, false
+
+    # Exit if another run is in progress and the chef-client is unable to
+    # get the lock before time expires. If nil, no timeout is enforced. (Exits
+    # immediately if 0.)
+    default :run_lock_timeout, nil
+
+    # Number of worker threads for syncing cookbooks in parallel. Increasing
+    # this number can result in gateway errors from the server (namely 503 and 504).
+    # If you are seeing this behavior while using the default setting, reducing
+    # the number of threads will help.
+    default :cookbook_sync_threads, 10
+
+    # A whitelisted array of attributes you want sent over the wire when node
+    # data is saved.
+    # The default setting is nil, which collects all data. Setting to [] will not
+    # collect any data for save.
+    default :automatic_attribute_whitelist, nil
+    default :default_attribute_whitelist, nil
+    default :normal_attribute_whitelist, nil
+    default :override_attribute_whitelist, nil
 
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with

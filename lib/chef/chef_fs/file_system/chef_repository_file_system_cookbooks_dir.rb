@@ -43,7 +43,7 @@ class Chef
                 map { |child_name| make_child(child_name) }.
                 select do |entry|
                   # empty cookbooks and cookbook directories are ignored
-                  if entry.children.size == 0
+                  if !entry.can_upload?
                     Chef::Log.warn("Cookbook '#{entry.name}' is empty or entirely chefignored at #{entry.path_for_printing}")
                     false
                   else
@@ -57,6 +57,25 @@ class Chef
 
         def can_have_child?(name, is_dir)
           is_dir && !name.start_with?('.')
+        end
+
+        def write_cookbook(cookbook_path, cookbook_version_json, from_fs)
+          cookbook_name = File.basename(cookbook_path)
+          child = make_child(cookbook_name)
+
+          # Use the copy/diff algorithm to copy it down so we don't destroy
+          # chefignored data.  This is terribly un-thread-safe.
+          Chef::ChefFS::FileSystem.copy_to(Chef::ChefFS::FilePattern.new("/#{cookbook_path}"), from_fs, child, nil, {:purge => true})
+
+          # Write out .uploaded-cookbook-version.json
+          cookbook_file_path = File.join(file_path, cookbook_name)
+          if !File.exists?(cookbook_file_path)
+            FileUtils.mkdir_p(cookbook_file_path)
+          end
+          uploaded_cookbook_version_path = File.join(cookbook_file_path, Chef::Cookbook::CookbookVersionLoader::UPLOADED_COOKBOOK_VERSION_FILE)
+          File.open(uploaded_cookbook_version_path, 'w') do |file|
+            file.write(cookbook_version_json)
+          end
         end
 
         protected

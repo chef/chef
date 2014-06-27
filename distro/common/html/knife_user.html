@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -14,7 +13,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -46,7 +45,7 @@
 <p>The <strong>knife user</strong> subcommand is used to manage the list of users and their associated RSA public key-pairs.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This subcommand ONLY works when run against the open source server and will not run against Enterprise Chef (including hosted Enterprise Chef), or Private Chef.</p>
+<p class="last">This subcommand ONLY works when run against the open source Chef server and will not run against Enterprise Chef (including hosted Enterprise Chef), or Private Chef.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -54,7 +53,7 @@
 </div>
 <div class="section" id="create">
 <h2>create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">create</span></tt> argument is used to create a user. This process will generate an RSA key pair for the named user. The public key will be stored on the server and the private key will be displayed on <tt class="docutils literal"><span class="pre">STDOUT</span></tt> or written to a named file.</p>
+<p>The <tt class="docutils literal"><span class="pre">create</span></tt> argument is used to create a user. This process will generate an RSA key pair for the named user. The public key will be stored on the Chef server and the private key will be displayed on <tt class="docutils literal"><span class="pre">STDOUT</span></tt> or written to a named file.</p>
 <ul class="simple">
 <li>For the user, the private key should be copied to the system as <tt class="docutils literal"><span class="pre">/etc/chef/client.pem</span></tt>.</li>
 <li>For Knife, the private key is typically copied to <tt class="docutils literal"><span class="pre">~/.chef/client_name.pem</span></tt> and referenced in the knife.rb configuration file.</li>
@@ -71,9 +70,9 @@
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-a</span></tt>, <tt class="docutils literal"><span class="pre">--admin</span></tt></dt>
-<dd>Indicates that a client will be created as an admin client. This is required when users of the open source server need to access the Chef Server API as an administrator. This option only works when used with the open source server and will have no effect when used with Enterprise Chef.</dd>
+<dd>Indicates that a client will be created as an admin client. This is required when users of the open source Chef server need to access the Chef Server API as an administrator. This option only works when used with the open source Chef server and will have no effect when used with Enterprise Chef.</dd>
 <dt><tt class="docutils literal"><span class="pre">-f</span> <span class="pre">FILE_NAME</span></tt>, <tt class="docutils literal"><span class="pre">--file</span> <span class="pre">FILE_NAME</span></tt></dt>
-<dd>Indicates that the private key will be saved to a specified file name.</dd>
+<dd>Use to save a private key to the specified file name.</dd>
 <dt><tt class="docutils literal"><span class="pre">-p</span> <span class="pre">PASSWORD</span></tt>, <tt class="docutils literal"><span class="pre">--password</span> <span class="pre">PASSWORD</span></tt></dt>
 <dd>The user password.</dd>
 <dt><tt class="docutils literal"><span class="pre">--user-key</span> <span class="pre">FILE_NAME</span></tt></dt>
@@ -114,7 +113,7 @@
 </div>
 <div class="section" id="edit">
 <h2>edit<a class="headerlink" href="#edit" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">edit</span></tt> argument is used to edit the details of a user. When this argument is run, Knife will open $EDITOR. When finished, Knife will update the server with those changes.</p>
+<p>The <tt class="docutils literal"><span class="pre">edit</span></tt> argument is used to edit the details of a user. When this argument is run, Knife will open $EDITOR. When finished, Knife will update the Chef server with those changes.</p>
 <div class="section" id="id4">
 <h3>Syntax<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -156,10 +155,10 @@
 </div>
 <div class="section" id="reregister">
 <h2>reregister<a class="headerlink" href="#reregister" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">reregister</span></tt> argument is used to regenerate an RSA key pair for a user. The public key will be stored on the server and the private key will be displayed on <tt class="docutils literal"><span class="pre">STDOUT</span></tt> or written to a named file.</p>
+<p>The <tt class="docutils literal"><span class="pre">reregister</span></tt> argument is used to regenerate an RSA key pair for a user. The public key will be stored on the Chef server and the private key will be displayed on <tt class="docutils literal"><span class="pre">STDOUT</span></tt> or written to a named file.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Running this argument will invalidate the previous RSA key pair, making it unusable during authentication to the server.</p>
+<p class="last">Running this argument will invalidate the previous RSA key pair, making it unusable during authentication to the Chef server.</p>
 </div>
 <div class="section" id="id10">
 <h3>Syntax<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
@@ -173,7 +172,7 @@
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-f</span> <span class="pre">FILE_NAME</span></tt>, <tt class="docutils literal"><span class="pre">--file</span> <span class="pre">FILE_NAME</span></tt></dt>
-<dd>Indicates that the private key will be saved to a specified file name.</dd>
+<dd>Use to save a private key to the specified file name.</dd>
 </dl>
 </div>
 <div class="section" id="id12">

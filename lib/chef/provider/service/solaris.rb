@@ -18,6 +18,7 @@
 
 require 'chef/mixin/shell_out'
 require 'chef/provider/service'
+require 'chef/resource/service'
 require 'chef/mixin/command'
 
 class Chef
@@ -68,7 +69,7 @@ class Chef
         end
 
         def service_status
-          status = shell_out!("#{@status_command} #{@current_resource.service_name}")
+          status = shell_out!("#{@status_command} #{@current_resource.service_name}", :returns => [0, 1])
           status.stdout.each_line do |line|
             case line
             when /state\s+online/

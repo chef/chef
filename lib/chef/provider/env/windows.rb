@@ -16,15 +16,13 @@
 # limitations under the License.
 #
 
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require 'ruby-wmi'
-  require 'Win32API'
-end
+require 'chef/win32/api/system' if RUBY_PLATFORM =~ /mswin|mingw32|windows/
 
 class Chef
   class Provider
     class Env
       class Windows < Chef::Provider::Env
+        include Chef::ReservedNames::Win32::API::System if RUBY_PLATFORM =~ /mswin|mingw32|windows/
 
         def create_env
           obj = env_obj(@new_resource.key_name)
@@ -35,6 +33,7 @@ class Chef
           end
           obj.variablevalue = @new_resource.value
           obj.put_
+          ENV[@new_resource.key_name] = @new_resource.value
           broadcast_env_change
         end
 
@@ -42,6 +41,7 @@ class Chef
           obj = env_obj(@new_resource.key_name)
           if obj
             obj.delete_
+            ENV.delete(@new_resource.key_name)
             broadcast_env_change
           end
         end
@@ -51,9 +51,17 @@ class Chef
           return obj ? obj.variablevalue : nil
         end
 
+        def find_env(environment_variables, key_name)
+          environment_variables.find do | environment_variable |
+            environment_variable['name'].downcase == key_name
+          end
+        end
+
         def env_obj(key_name)
-          WMI::Win32_Environment.find(:first,
-                                      :conditions => { :name => key_name })
+          wmi = WmiLite::Wmi.new
+          environment_variables = wmi.instances_of('Win32_Environment')
+          existing_variable = find_env(environment_variables, key_name)
+          existing_variable.nil? ? nil : existing_variable.wmi_ole_object
         end
 
         #see: http://msdn.microsoft.com/en-us/library/ms682653%28VS.85%29.aspx
@@ -64,10 +72,8 @@ class Chef
         SMTO_NOTIMEOUTIFNOTHUNG = 0x0008
 
         def broadcast_env_change
-          result = 0
           flags = SMTO_BLOCK | SMTO_ABORTIFHUNG | SMTO_NOTIMEOUTIFNOTHUNG
-          @send_message ||= Win32API.new('user32', 'SendMessageTimeout', 'LLLPLLP', 'L')
-          @send_message.call(HWND_BROADCAST, WM_SETTINGCHANGE, 0, 'Environment', flags, 5000, result)
+          SendMessageTimeoutA(HWND_BROADCAST, WM_SETTINGCHANGE, 0, FFI::MemoryPointer.from_string('Environment').address, flags, 5000, nil)
         end
       end
     end

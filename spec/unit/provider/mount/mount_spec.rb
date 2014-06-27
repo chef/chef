@@ -53,7 +53,7 @@ describe Chef::Provider::Mount::Mount do
       @provider.current_resource.device.should == '/dev/sdz1'
     end
 
-    it "should accecpt device_type :uuid" do
+    it "should accecpt device_type :uuid", :not_supported_on_solaris do
       @new_resource.device_type :uuid
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
       @stdout_findfs = double("STDOUT", :first => "/dev/sdz1")
@@ -92,7 +92,7 @@ describe Chef::Provider::Mount::Mount do
       @provider.load_current_resource
     end
 
-    it "should raise an error if the mount device (uuid) does not exist" do
+    it "should raise an error if the mount device (uuid) does not exist", :not_supported_on_solaris do
       @new_resource.device_type :uuid
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
       status_findfs = double("Status", :exitstatus => 1)
@@ -304,7 +304,7 @@ describe Chef::Provider::Mount::Mount do
         @provider.mount_fs()
       end
 
-      it "should mount the filesystem specified by uuid" do
+      it "should mount the filesystem specified by uuid", :not_supported_on_solaris do
         @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
         @new_resource.device_type :uuid
         @stdout_findfs = double("STDOUT", :first => "/dev/sdz1")

@@ -645,6 +645,58 @@ shared_examples_for "a configured file resource" do
     end
   end
 
+  context "when the target file does not exist" do
+    before(:each) do
+      FileUtils.rm_rf(path)
+    end
+
+    after(:each) do
+      FileUtils.rm_rf(path)
+    end
+
+    def symlink?(file_path)
+      if windows?
+        Chef::ReservedNames::Win32::File.symlink?(file_path)
+      else
+        File.symlink?(file_path)
+      end
+    end
+
+    def real_file?(file_path)
+      !symlink?(file_path) && File.file?(file_path)
+    end
+
+    describe "when force_unlink is set to true" do
+      it ":create updates the target" do
+        resource.force_unlink(true)
+        resource.run_action(:create)
+        real_file?(path).should be_true
+        binread(path).should == expected_content
+        resource.should be_updated_by_last_action
+      end
+    end
+
+    describe "when force_unlink is set to false" do
+      it ":create updates the target" do
+        resource.force_unlink(true)
+        resource.run_action(:create)
+        real_file?(path).should be_true
+        binread(path).should == expected_content
+        resource.should be_updated_by_last_action
+      end
+    end
+
+    describe "when force_unlink is not set (default)" do
+      it ":create updates the target" do
+        resource.force_unlink(true)
+        resource.run_action(:create)
+        real_file?(path).should be_true
+        binread(path).should == expected_content
+        resource.should be_updated_by_last_action
+      end
+    end
+  end
+
   context "when the target file is a directory" do
     before(:each) do
       FileUtils.mkdir_p(path)

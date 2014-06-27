@@ -24,7 +24,7 @@ describe Chef::Provider::Cron do
       @node = Chef::Node.new
       @events = Chef::EventDispatch::Dispatcher.new
       @run_context = Chef::RunContext.new(@node, {}, @events)
-      
+
       @new_resource = Chef::Resource::Cron.new("cronhole some stuff", @run_context)
       @new_resource.user "root"
       @new_resource.minute "30"
@@ -32,10 +32,10 @@ describe Chef::Provider::Cron do
       @new_resource.time :reboot
       @provider = Chef::Provider::Cron.new(@new_resource, @run_context)
     end
-    
+
     context "with a matching entry in the user's crontab" do
       before :each do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -46,7 +46,7 @@ describe Chef::Provider::Cron do
 # Another comment
 CRONTAB
       end
-      
+
       it "should set cron_exists" do
         @provider.load_current_resource
         @provider.cron_exists.should == true
@@ -60,7 +60,7 @@ CRONTAB
       end
 
       it "should pull env vars out" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
@@ -84,7 +84,7 @@ CRONTAB
       end
 
       it "should parse and load generic and standard environment variables from cron entry" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 # Chef Name: cronhole some stuff
 MAILTO=warn@example.com
 TEST=lol
@@ -98,7 +98,7 @@ CRONTAB
       end
 
       it "should not break with variables that match the cron resource internals" do
-        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+        @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 # Chef Name: cronhole some stuff
 MINUTE=40
 REBOOT=midnight
@@ -116,11 +116,11 @@ CRONTAB
         Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'")
         @provider.load_current_resource
       end
-      
+
       describe "action_create" do
         before :each do
-          @provider.stub!(:write_crontab)
-          @provider.stub!(:read_crontab).and_return(nil)
+          @provider.stub(:write_crontab)
+          @provider.stub(:read_crontab).and_return(nil)
         end
 
         context "when there is no existing crontab" do
@@ -128,7 +128,7 @@ CRONTAB
             @provider.cron_exists = false
             @provider.cron_empty = true
           end
-    
+
           it "should create a crontab with the entry" do
             @provider.should_receive(:write_crontab).with(<<-ENDCRON)
 # Chef Name: cronhole some stuff
@@ -140,12 +140,12 @@ CRONTAB
       end
     end
   end
-  
+
   before do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    
+
     @new_resource = Chef::Resource::Cron.new("cronhole some stuff", @run_context)
     @new_resource.user "root"
     @new_resource.minute "30"
@@ -417,7 +417,7 @@ CRONTAB
       @new_resource.send(:time, :reboot)
       @provider.cron_different?.should eql(true)
     end
-    
+
     it "should return true if environment doesn't match" do
       @new_resource.environment "FOO" => "something_else"
       @provider.cron_different?.should eql(true)

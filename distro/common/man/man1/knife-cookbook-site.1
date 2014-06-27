@@ -1,4 +1,6 @@
-.TH "KNIFE-COOKBOOK-SITE" "1" "Chef 11.10.0" "" "knife cookbook site"
+.\" Man page generated from reStructuredText.
+.
+.TH "KNIFE-COOKBOOK-SITE" "1" "Chef 11.12.0" "" "knife cookbook site"
 .SH NAME
 knife-cookbook-site \- The man page for the knife cookbook site subcommand.
 .
@@ -28,12 +30,10 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.\" Man page generated from reStructuredText.
-.
 .sp
-The Cookbooks Site API is used to provide access to the cookbooks community hosted at \fI\%https://cookbooks.opscode.com\fP. All of the cookbooks in the community are accessible through a REST API located at \fI\%https://cookbooks.opscode.com/api/v1/\fP by using any of the supported endpoints. In most cases, using Knife and the \fBknife cookbook site\fP sub\-command (and any of its arguments) is the recommended method of interacting with these cookbooks, but in some cases, using the REST API directly may make sense.
+The Cookbooks Site API is used to provide access to the cookbooks community hosted at \fI\%http://community.opscode.com/\fP\&. All of the cookbooks in the community are accessible through a REST API located at \fI\%https://cookbooks.opscode.com/api/v1/cookbooks\fP by using any of the supported endpoints. In most cases, using Knife and the \fBknife cookbook site\fP sub\-command (and any of its arguments) is the recommended method of interacting with these cookbooks, but in some cases, using the REST API directly may make sense.
 .sp
-The \fBknife cookbook site\fP subcommand is used to interact with cookbooks that are located at \fI\%https://cookbooks.opscode.com\fP. A user account is required for any community actions that write data to this site. The following arguments do not require a user account: \fBdownload\fP, \fBsearch\fP, \fBinstall\fP, and \fBlist\fP.
+The \fBknife cookbook site\fP subcommand is used to interact with cookbooks that are located at \fI\%http://community.opscode.com/\fP\&. A user account is required for any community actions that write data to this site. The following arguments do not require a user account: \fBdownload\fP, \fBsearch\fP, \fBinstall\fP, and \fBlist\fP\&.
 .SH COMMON OPTIONS
 .sp
 The following options may be used with any of the arguments available to the \fBknife cookbook site\fP subcommand:
@@ -58,13 +58,13 @@ The $EDITOR that is used for all interactive commands.
 The name of the environment. When this option is added to a command, the command will run only against the named environment.
 .TP
 .B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
-The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
+The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP\&.
 .TP
 .B \fB\-h\fP, \fB\-\-help\fP
 Shows help for the command.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the server.
+The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-[no\-]color\fP
 Indicates whether colored output will be used.
@@ -73,22 +73,22 @@ Indicates whether colored output will be used.
 Indicates that data will be shown after a destructive operation.
 .TP
 .B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
-The URL for the server.
+The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
+The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-V\fP, \fB\-\-verbose\fP
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
-The version of the chef\-client.
+The version of the chef\-client\&.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
 Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .SH DOWNLOAD
 .sp
@@ -97,12 +97,16 @@ The \fBdownload\fP argument is used to download a cookbook from the community we
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife cookbook site download COOKBOOK_NAME [COOKBOOK_VERSION] (options)
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -112,21 +116,30 @@ This argument has the following options:
 .B \fBCOOKBOOK_VERSION\fP
 The version of a cookbook to be downloaded. If a cookbook has only one version, this option does not need to be specified. If a cookbook has more than one version and this option is not specified, Knife will prompt for a version.
 .TP
-.B \fB\-f\fP, \fB\-\-force\fP
+.B \fB\-f FILE\fP, \fB\-\-file FILE\fP
+The file to which a cookbook download is written.
+.TP
+.B \fB\-\-force\fP
 Indicates that an existing directory will be overwritten.
 .UNINDENT
 .sp
 \fBExamples\fP
 .sp
 To download the cookbook "getting\-started", enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife cookbook site download getting\-started
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something like:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -135,9 +148,11 @@ Downloading getting\-started from the cookbooks site at version 0.3.0 to
 Cookbook saved: /Users/sdanna/opscodesupport/getting\-started\-0.3.0.tar.gz
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH INSTALL
 .sp
-The \fBinstall\fP argument is used to install a cookbook that has been downloaded from the community site to a local git repository . This action uses the git version control system in conjunction with the \fI\%https://cookbooks.opscode.com\fP site to install community\-contributed cookbooks to the local chef\-repo. Using this argument does the following:
+The \fBinstall\fP argument is used to install a cookbook that has been downloaded from the community site to a local git repository . This action uses the git version control system in conjunction with the \fI\%http://community.opscode.com/\fP site to install community\-contributed cookbooks to the local chef\-repo\&. Using this argument does the following:
 .INDENT 0.0
 .INDENT 3.5
 .INDENT 0.0
@@ -146,7 +161,7 @@ A new "pristine copy" branch is created in git for tracking the upstream.
 .IP 2. 3
 All existing versions of a cookbook are removed from the branch.
 .IP 3. 3
-The cookbook is downloaded from \fI\%https://cookbooks.opscode.com\fP in the tar.gz format.
+The cookbook is downloaded from \fI\%http://community.opscode.com/\fP in the tar.gz format.
 .IP 4. 3
 The downloaded cookbook is untarred and its contents are committed to git and a tag is created.
 .IP 5. 3
@@ -160,12 +175,16 @@ This process allows the upstream cookbook in the master branch to be modified wh
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife cookbook site install COOKBOOK_NAME [COOKBOOK_VERSION] (options)
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -191,14 +210,20 @@ The directory in which cookbook are created. This can be a colon\-separated path
 \fBExamples\fP
 .sp
 To install the cookbook "getting\-started", enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife cookbook site install getting\-started
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something like:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -232,19 +257,25 @@ Fast\-forward
 Cookbook getting\-started version 0.3.0 successfully installed
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH LIST
 .sp
-The \fBlist\fP argument is used to view a list of cookbooks that are currently available at \fI\%https://cookbooks.opscode.com\fP.
+The \fBlist\fP argument is used to view a list of cookbooks that are currently available at \fI\%http://community.opscode.com/\fP\&.
 .sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife cookbook site list
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -257,15 +288,21 @@ Indicates that the corresponding URIs will be shown.
 .sp
 \fBExamples\fP
 .sp
-To view a list of cookbooks at \fI\%https://cookbooks.opscode.com\fP server, enter:
+To view a list of cookbooks at \fI\%http://community.opscode.com/\fP server, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife cookbook site list
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -282,19 +319,25 @@ ant                   iis                   redmine
 [...truncated...]
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH SEARCH
 .sp
-The \fBsearch\fP argument is used to search for a cookbook at \fI\%https://cookbooks.opscode.com\fP. A search query is used to return a list of cookbooks at \fI\%https://cookbooks.opscode.com\fP and uses the same syntax as the \fBknife search\fP sub\-command.
+The \fBsearch\fP argument is used to search for a cookbook at \fI\%http://community.opscode.com/\fP\&. A search query is used to return a list of cookbooks at \fI\%http://community.opscode.com/\fP and uses the same syntax as the \fBknife search\fP sub\-command.
 .sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife cookbook site search SEARCH_QUERY (options)
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -303,14 +346,20 @@ This command does not have any specific options.
 \fBExamples\fP
 .sp
 To search for all of the cookbooks that can be used with Apache, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife cookbook site search apache*
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something like:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -332,19 +381,25 @@ kickstart:
 [...truncated...]
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH SHARE
 .sp
-The \fBshare\fP argument is used to add a cookbook to \fI\%https://cookbooks.opscode.com\fP. This action will require a user account and a certificate for \fI\%http://community.opscode.com\fP. By default, Knife will use the user name and API key that is identified in the configuration file used during the upload; otherwise these values must be specified on the command line or in an alternate configuration file. If a cookbook already exists on \fI\%https://cookbooks.opscode.com\fP, then only an owner or maintainer of that cookbook can make updates.
+The \fBshare\fP argument is used to add a cookbook to \fI\%http://community.opscode.com/\fP\&. This action will require a user account and a certificate for \fI\%http://community.opscode.com\fP\&. By default, Knife will use the user name and API key that is identified in the configuration file used during the upload; otherwise these values must be specified on the command line or in an alternate configuration file. If a cookbook already exists on \fI\%http://community.opscode.com/\fP, then only an owner or maintainer of that cookbook can make updates.
 .sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife cookbook site share COOKBOOK_NAME CATEGORY (options)
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -352,7 +407,7 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fBCATEGORY\fP
-The cookbook category: \fBDatabases\fP, \fBWeb Servers\fP, \fBProcess Management\fP, \fBMonitoring and Trending\fP, \fBProgramming Languages\fP, \fBPackage Management\fP, \fBApplications\fP, \fBNetworking\fP, \fBOperations Systems and Virtualization\fP, \fBUtilities\fP, or \fBOther\fP.
+The cookbook category: \fBDatabases\fP, \fBWeb Servers\fP, \fBProcess Management\fP, \fBMonitoring and Trending\fP, \fBProgramming Languages\fP, \fBPackage Management\fP, \fBApplications\fP, \fBNetworking\fP, \fBOperations Systems and Virtualization\fP, \fBUtilities\fP, or \fBOther\fP\&.
 .TP
 .B \fB\-o PATH:PATH\fP, \fB\-\-cookbook\-path PATH:PATH\fP
 The directory in which cookbook are created. This can be a colon\-separated path.
@@ -361,25 +416,33 @@ The directory in which cookbook are created. This can be a colon\-separated path
 \fBExamples\fP
 .sp
 To share a cookbook named "apache2":
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife cookbook site share "apache2" "Web Servers"
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH SHOW
 .sp
-The \fBshow\fP argument is used to view information about a cookbook on \fI\%https://cookbooks.opscode.com\fP.
+The \fBshow\fP argument is used to view information about a cookbook on \fI\%http://community.opscode.com/\fP\&.
 .sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife cookbook site show COOKBOOK_NAME [COOKBOOK_VERSION]
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -393,14 +456,20 @@ The version of a cookbook to be shown. If a cookbook has only one version, this 
 \fBExamples\fP
 .sp
 To show the details for a cookbook named "haproxy":
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife cookbook site show haproxy
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something like:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -423,29 +492,39 @@ versions:
    http://cookbooks.opscode.com/api/v1/cookbooks/haproxy/versions/0_7_0
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To view information in JSON format, use the \fB\-F\fP common option as part of the command like this:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife role show devops \-F json
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
-Other formats available include \fBtext\fP, \fByaml\fP, and \fBpp\fP.
+Other formats available include \fBtext\fP, \fByaml\fP, and \fBpp\fP\&.
 .SH UNSHARE
 .sp
-The \fBunshare\fP argument is used to stop the sharing of a cookbook at \fI\%https://cookbooks.opscode.com\fP. Only the maintainer of a cookbook may perform this action.
+The \fBunshare\fP argument is used to stop the sharing of a cookbook at \fI\%http://community.opscode.com/\fP\&. Only the maintainer of a cookbook may perform this action.
 .sp
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife cookbook site unshare COOKBOOK_NAME
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -454,12 +533,16 @@ This command does not have any specific options.
 \fBExamples\fP
 .sp
 To unshare a cookbook named "getting\-started", enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife cookbook site unshare getting\-started
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH AUTHOR
 Chef
 .\" Generated by docutils manpage writer.

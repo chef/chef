@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -14,7 +13,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -43,8 +42,8 @@
             
   <div class="section" id="knife-environment">
 <h1>knife environment<a class="headerlink" href="#knife-environment" title="Permalink to this headline">¶</a></h1>
-<p>An environment is a way to map an organization&#8217;s real-life workflow to what can be configured and managed when using server. Every organization begins with a single environment called the <tt class="docutils literal"><span class="pre">_default</span></tt> environment, which cannot be modified (or deleted). Additional environments can be created to reflect each organization&#8217;s patterns and workflow. For example, creating <tt class="docutils literal"><span class="pre">production</span></tt>, <tt class="docutils literal"><span class="pre">staging</span></tt>, <tt class="docutils literal"><span class="pre">testing</span></tt>, and <tt class="docutils literal"><span class="pre">development</span></tt> environments. Generally, an environment is also associated with one (or more) cookbook versions.</p>
-<p>The <strong>knife environment</strong> subcommand is used to manage environments within a single organization on the server.</p>
+<p>An environment is a way to map an organization&#8217;s real-life workflow to what can be configured and managed when using Chef server. Every organization begins with a single environment called the <tt class="docutils literal"><span class="pre">_default</span></tt> environment, which cannot be modified (or deleted). Additional environments can be created to reflect each organization&#8217;s patterns and workflow. For example, creating <tt class="docutils literal"><span class="pre">production</span></tt>, <tt class="docutils literal"><span class="pre">staging</span></tt>, <tt class="docutils literal"><span class="pre">testing</span></tt>, and <tt class="docutils literal"><span class="pre">development</span></tt> environments. Generally, an environment is also associated with one (or more) cookbook versions.</p>
+<p>The <strong>knife environment</strong> subcommand is used to manage environments within a single organization on the Chef server.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
@@ -125,7 +124,7 @@ windows            1.0.0    4.1.2
 </div>
 <div class="section" id="create">
 <h2>create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">create</span></tt> argument is used to add an environment object to the server. When this argument is run, Knife will open $EDITOR to enable editing of the <tt class="docutils literal"><span class="pre">ENVIRONMENT</span></tt> description field (unless a description is specified as part of the command). When finished, Knife will add the environment to the server.</p>
+<p>The <tt class="docutils literal"><span class="pre">create</span></tt> argument is used to add an environment object to the Chef server. When this argument is run, Knife will open $EDITOR to enable editing of the <tt class="docutils literal"><span class="pre">ENVIRONMENT</span></tt> description field (unless a description is specified as part of the command). When finished, Knife will add the environment to the Chef server.</p>
 <div class="section" id="syntax">
 <h3>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -138,7 +137,7 @@ windows            1.0.0    4.1.2
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-d</span> <span class="pre">DESCRIPTION</span></tt>, <tt class="docutils literal"><span class="pre">--description</span> <span class="pre">DESCRIPTION</span></tt></dt>
-<dd>The description of the environment. This value will populate the description field for the environment on the server.</dd>
+<dd>The description of the environment. This value will populate the description field for the environment on the Chef server.</dd>
 </dl>
 </div>
 <div class="section" id="examples">
@@ -153,7 +152,7 @@ windows            1.0.0    4.1.2
 </div>
 <div class="section" id="delete">
 <h2>delete<a class="headerlink" href="#delete" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">delete</span></tt> argument is used to delete an environment from a server.</p>
+<p>The <tt class="docutils literal"><span class="pre">delete</span></tt> argument is used to delete an environment from a Chef server.</p>
 <div class="section" id="id1">
 <h3>Syntax<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -178,7 +177,7 @@ windows            1.0.0    4.1.2
 </div>
 <div class="section" id="edit">
 <h2>edit<a class="headerlink" href="#edit" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">edit</span></tt> argument is used to edit the attributes of an environment. When this argument is run, Knife will open $EDITOR to enable editing of <tt class="docutils literal"><span class="pre">ENVIRONMENT</span></tt> attributes. When finished, Knife will update the server with those changes.</p>
+<p>The <tt class="docutils literal"><span class="pre">edit</span></tt> argument is used to edit the attributes of an environment. When this argument is run, Knife will open $EDITOR to enable editing of <tt class="docutils literal"><span class="pre">ENVIRONMENT</span></tt> attributes. When finished, Knife will update the Chef server with those changes.</p>
 <div class="section" id="id4">
 <h3>Syntax<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -234,7 +233,7 @@ windows            1.0.0    4.1.2
 </div>
 <div class="section" id="list">
 <h2>list<a class="headerlink" href="#list" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">list</span></tt> argument is used to list all of the environments that are currently available on the server.</p>
+<p>The <tt class="docutils literal"><span class="pre">list</span></tt> argument is used to list all of the environments that are currently available on the Chef server.</p>
 <div class="section" id="id10">
 <h3>Syntax<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>

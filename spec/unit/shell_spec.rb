@@ -72,7 +72,7 @@ describe Shell do
       conf.prompt_i.should      == "chef > "
       conf.prompt_n.should      == "chef ?> "
       conf.prompt_s.should      == "chef%l> "
-
+      conf.use_tracer.should    == false
     end
 
     it "has a prompt like ``chef:recipe > '' in recipe context" do

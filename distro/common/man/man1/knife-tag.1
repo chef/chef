@@ -1,4 +1,6 @@
-.TH "KNIFE-TAG" "1" "Chef 11.10.0" "" "knife tag"
+.\" Man page generated from reStructuredText.
+.
+.TH "KNIFE-TAG" "1" "Chef 11.12.0" "" "knife tag"
 .SH NAME
 knife-tag \- The man page for the knife tag subcommand.
 .
@@ -28,12 +30,10 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.\" Man page generated from reStructuredText.
-.
 .sp
 A tag is a custom description that is applied to a node. A tag, once applied, can be helpful when managing nodes using Knife or when building recipes by providing alternate methods of grouping similar types of information.
 .sp
-The \fBknife tag\fP subcommand is used to apply tags to nodes on a server.
+The \fBknife tag\fP subcommand is used to apply tags to nodes on a Chef server\&.
 .SH COMMON OPTIONS
 .sp
 The following options may be used with any of the arguments available to the \fBknife tag\fP subcommand:
@@ -58,13 +58,13 @@ The $EDITOR that is used for all interactive commands.
 The name of the environment. When this option is added to a command, the command will run only against the named environment.
 .TP
 .B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
-The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
+The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP\&.
 .TP
 .B \fB\-h\fP, \fB\-\-help\fP
 Shows help for the command.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the server.
+The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-[no\-]color\fP
 Indicates whether colored output will be used.
@@ -73,22 +73,22 @@ Indicates whether colored output will be used.
 Indicates that data will be shown after a destructive operation.
 .TP
 .B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
-The URL for the server.
+The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
+The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-V\fP, \fB\-\-verbose\fP
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
-The version of the chef\-client.
+The version of the chef\-client\&.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
 Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .SH CREATE
 .sp
@@ -97,12 +97,16 @@ The \fBcreate\fP argument is used to add one or more tags to a node.
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife tag create NODE_NAME [TAG...]
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -111,12 +115,16 @@ This command does not have any specific options.
 \fBExamples\fP
 .sp
 To create tags named "seattle", "portland", and "vancouver", enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife tag create node seattle portland vancouver
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH DELETE
 .sp
 The \fBdelete\fP argument is used to delete one or more tags from a node.
@@ -124,12 +132,16 @@ The \fBdelete\fP argument is used to delete one or more tags from a node.
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife tag delete NODE_NAME [TAG...]
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -138,12 +150,16 @@ This command does not have any specific options.
 \fBExamples\fP
 .sp
 To delete tags named "denver" and "phoenix", enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife tag delete node denver phoenix
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 Type \fBY\fP to confirm a deletion.
 .SH LIST
@@ -153,12 +169,16 @@ The \fBlist\fP argument is used to list all of the tags that have been applied t
 \fBSyntax\fP
 .sp
 This argument has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife tag list [NODE_NAME...]
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp

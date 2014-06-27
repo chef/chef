@@ -1,5 +1,4 @@
 
-require 'chef/config'
 require 'chef/cookbook_version'
 require 'chef/cookbook/chefignore'
 require 'chef/cookbook/metadata'
@@ -17,13 +16,19 @@ class Chef
                                       :resource_filenames,
                                       :provider_filenames]
 
+      UPLOADED_COOKBOOK_VERSION_FILE = ".uploaded-cookbook-version.json".freeze
 
       attr_reader :cookbook_name
       attr_reader :cookbook_settings
+      attr_reader :cookbook_paths
       attr_reader :metadata_filenames
+      attr_reader :frozen
+      attr_reader :uploaded_cookbook_version_file
 
       def initialize(path, chefignore=nil)
-        @cookbook_path = File.expand_path( path )
+        @cookbook_path = File.expand_path( path ) # cookbook_path from which this was loaded
+        # We keep a list of all cookbook paths that have been merged in
+        @cookbook_paths = [ @cookbook_path ]
         @cookbook_name = File.basename( path )
         @chefignore = chefignore
         @metadata = Hash.new
@@ -56,11 +61,20 @@ class Chef
 
         remove_ignored_files
 
+        if File.exists?(File.join(@cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE))
+          @uploaded_cookbook_version_file = File.join(@cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE)
+        end
+
         if File.exists?(File.join(@cookbook_path, "metadata.rb"))
           @metadata_filenames << File.join(@cookbook_path, "metadata.rb")
         elsif File.exists?(File.join(@cookbook_path, "metadata.json"))
           @metadata_filenames << File.join(@cookbook_path, "metadata.json")
+        elsif @uploaded_cookbook_version_file
+          @metadata_filenames << @uploaded_cookbook_version_file
         end
+
+        # Set frozen based on .uploaded-cookbook-version.json
+        set_frozen
 
         if empty?
           Chef::Log.warn "found a directory #{cookbook_name} in the cookbook path, but it contains no cookbook files. skipping."
@@ -71,8 +85,7 @@ class Chef
       def cookbook_version
         return nil if empty?
 
-        Chef::CookbookVersion.new(@cookbook_name.to_sym).tap do |c|
-          c.root_dir             = @cookbook_path
+        Chef::CookbookVersion.new(@cookbook_name.to_sym, *@cookbook_paths).tap do |c|
           c.attribute_filenames  = cookbook_settings[:attribute_filenames].values
           c.definition_filenames = cookbook_settings[:definition_filenames].values
           c.recipe_filenames     = cookbook_settings[:recipe_filenames].values
@@ -84,6 +97,7 @@ class Chef
           c.root_filenames       = cookbook_settings[:root_filenames].values
           c.metadata_filenames   = @metadata_filenames
           c.metadata             = metadata(c)
+          c.freeze_version if @frozen
         end
       end
 
@@ -94,6 +108,8 @@ class Chef
           case metadata_file
           when /\.rb$/
             apply_ruby_metadata(metadata_file)
+          when @uploaded_cookbook_version_file
+            apply_json_cookbook_version_metadata(metadata_file)
           when /\.json$/
             apply_json_metadata(metadata_file)
           else
@@ -104,7 +120,7 @@ class Chef
       end
 
       def empty?
-        @cookbook_settings.values.all? { |files_hash| files_hash.empty? }
+        @cookbook_settings.values.all? { |files_hash| files_hash.empty? } && @metadata_filenames.size == 0
       end
 
       def merge!(other_cookbook_loader)
@@ -113,6 +129,8 @@ class Chef
           file_list.merge!(other_cookbook_settings[file_type])
         end
         @metadata_filenames.concat(other_cookbook_loader.metadata_filenames)
+        @cookbook_paths += other_cookbook_loader.cookbook_paths
+        @frozen = true if other_cookbook_loader.frozen
       end
 
       def chefignore
@@ -122,6 +140,7 @@ class Chef
       def load_root_files
         Dir.glob(File.join(@cookbook_path, '*'), File::FNM_DOTMATCH).each do |file|
           next if File.directory?(file)
+          next if File.basename(file) == UPLOADED_COOKBOOK_VERSION_FILE
           @cookbook_settings[:root_filenames][file[@relative_path, 1]] = file
         end
       end
@@ -166,6 +185,27 @@ class Chef
         end
       end
 
+      def apply_json_cookbook_version_metadata(file)
+        begin
+          data = Chef::JSONCompat.from_json(IO.read(file), :create_additions => false)
+          @metadata.from_hash(data['metadata'])
+        rescue JSON::ParserError
+          Chef::Log.error("Couldn't parse cookbook metadata JSON for #@cookbook_name in " + file)
+          raise
+        end
+      end
+
+      def set_frozen
+        if uploaded_cookbook_version_file
+          begin
+            data = Chef::JSONCompat.from_json(IO.read(uploaded_cookbook_version_file), :create_additions => false)
+            @frozen = data['frozen?']
+          rescue JSON::ParserError
+            Chef::Log.error("Couldn't parse cookbook metadata JSON for #@cookbook_name in #{uploaded_cookbook_version_file}")
+            raise
+          end
+        end
+      end
     end
   end
 end

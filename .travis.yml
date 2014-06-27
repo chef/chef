@@ -11,11 +11,15 @@ before_install:
   - gem update --system 2.1.11
   - gem --version
 
-rvm:
-  - 1.8.7
-  - 1.9.3
-  - 2.0.0
-  - 2.1.0
+matrix:
+  include:
+    - rvm: 1.8.7-p374
+    - rvm: 1.9.3
+    - rvm: 2.0.0
+    - rvm: 2.1.1
+    - rvm: 2.1.1
+      gemfile: pedant.gemfile
+      script: bundle exec rake pedant
 
 branches:
   only:
@@ -24,3 +28,21 @@ branches:
     - 11-stable
 
 script: bundle exec rspec --color --format progress
+
+notifications:
+  on_success: change
+  on_failure: always
+  on_start: false
+  irc:
+    channels:
+      - "chat.freenode.net#chef-hacking"
+  webhooks:
+    urls:
+      # Gitter IM
+      - secure: "HmMKr/ysKVyKUJ24PRCHcA8QCmlFoukrYumY0GRLzvaFWO8PknHO1t/0RbrKRb2ed/hgkFd+RKNCYvSvcE8Ahr2vlMrBeGHGfVeOGkWtbhLgNqo1b50Ll9CqvTM8X2ZIq6hIWraanwoYRQu/8uGL29yH4lBi7DhpTkFwBMLulhQ="
+  hipchat:
+    rooms:
+      # Build Statuses
+      - secure: "G8MNo94L8bmWWwkH2/ViB2QaZnZHZscYM/mEjDbOGd15sqrruwckeARyBoUcRI7P1C6AFmS4IKCNVXa6KzX4Pbh51gQWM92zRpRTZpplwtXz53/1l8ajLFLLMLvEMTlBFAANUKEUFAQPY4dMa14V3Qc5oijfIncN61k4nZNTKpY="
+      # Open Source
+      - secure: "hmcex4PpG5dn8WvjndONO4xCUKOC5kPU/bUEGRrfVbe2YKJE7t0XXbNDC96W/xBgzgnJzvf1Er0zJKDrNf4qEDEWFoozdN00WLcqREgaLLS3Seto2FjR/BpBk5q+sCV0rwwEMms2P4Qk+VSnDCnm9EaeM55hOabqNuOrRzoZLBQ="

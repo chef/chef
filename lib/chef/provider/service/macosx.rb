@@ -16,8 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service'
 require 'rexml/document'
+require 'chef/resource/service'
+require 'chef/provider/service/simple'
 
 class Chef
   class Provider

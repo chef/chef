@@ -30,6 +30,7 @@ class Chef
         require 'chef/exceptions'
         require 'chef/search/query'
         require 'chef/mixin/shell_out'
+        require 'chef/mixin/command'
         require 'mixlib/shellout'
       end
 
@@ -169,12 +170,16 @@ class Chef
           # if a command line attribute was not passed, and we have a
           # cloud public_hostname, use that.  see #configure_attribute
           # for the source of config[:attribute] and
-          # config[:override_attribute]
-          if config[:override_attribute]
-            host = extract_nested_value(item, config[:override_attribute])
+          # config[:attribute_from_cli]
+          if config[:attribute_from_cli]
+            Chef::Log.debug("Using node attribute '#{config[:attribute_from_cli]}' from the command line as the ssh target")
+            host = extract_nested_value(item, config[:attribute_from_cli])
           elsif item[:cloud] && item[:cloud][:public_hostname]
+            Chef::Log.debug("Using node attribute 'cloud[:public_hostname]' automatically as the ssh target")
             host = item[:cloud][:public_hostname]
           else
+            # ssh attribute from a configuration file or the default will land here
+            Chef::Log.debug("Using node attribute '#{config[:attribute]}' as the ssh target")
             host = extract_nested_value(item, config[:attribute])
           end
           # next if we couldn't find the specified attribute in the
@@ -412,10 +417,8 @@ class Chef
         # Thus we can differentiate between a config file value and a command line override at this point by checking config[:attribute]
         # We can tell here if fqdn was passed from the command line, rather than being the default, by checking config[:attribute]
         # However, after here, we cannot tell these things, so we must preserve config[:attribute]
-        config[:override_attribute] = config[:attribute] || Chef::Config[:knife][:ssh_attribute]
-        config[:attribute] = (Chef::Config[:knife][:ssh_attribute] ||
-                              config[:attribute] ||
-                              "fqdn").strip
+        config[:attribute_from_cli] = config[:attribute]
+        config[:attribute] = (config[:attribute_from_cli] || Chef::Config[:knife][:ssh_attribute] || "fqdn").strip
       end
 
       def cssh
@@ -429,6 +432,11 @@ class Chef
           end
         end
         raise Chef::Exceptions::Exec, "no command found for cssh" unless cssh_cmd
+
+        # pass in the consolidated itentity file option to cssh(X)
+        if config[:identity_file]
+          cssh_cmd << " --ssh_args '-i #{File.expand_path(config[:identity_file])}'"
+        end
 
         session.servers_for.each do |server|
           cssh_cmd << " #{server.user ? "#{server.user}@#{server.host}" : server.host}"

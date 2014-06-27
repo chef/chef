@@ -30,7 +30,7 @@ describe Chef::Version::Platform do
   end
 
   describe "when creating valid Versions" do
-    good_versions = %w(1 1.2 1.2.3 1000.80.50000 0.300.25 001.02.00003)
+    good_versions = %w(1 1.2 1.2.3 1000.80.50000 0.300.25 001.02.00003 1.2-STABLE 10.0-BETA3 9.1-RELEASE-p3)
     good_versions.each do |v|
       it "should accept '#{v}'" do
         Chef::Version::Platform.new v

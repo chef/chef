@@ -1,4 +1,6 @@
-.TH "KNIFE-SSH" "1" "Chef 11.10.0" "" "knife ssh"
+.\" Man page generated from reStructuredText.
+.
+.TH "KNIFE-SSH" "1" "Chef 11.12.0" "" "knife ssh"
 .SH NAME
 knife-ssh \- The man page for the knife ssh subcommand.
 .
@@ -28,20 +30,22 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.\" Man page generated from reStructuredText.
-.
 .sp
 The \fBknife ssh\fP subcommand is used to invoke SSH commands (in parallel) on a subset of nodes within an organization, based on the results of a search query.
 .sp
 \fBSyntax\fP
 .sp
-This argument has the following syntax:
+This subcommand has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife ssh SEARCH_QUERY SSH_COMMAND (options)
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -79,7 +83,7 @@ The $EDITOR that is used for all interactive commands.
 The name of the environment. When this option is added to a command, the command will run only against the named environment.
 .TP
 .B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
-The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
+The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP\&.
 .TP
 .B \fB\-G GATEWAY\fP, \fB\-\-ssh\-gateway GATEWAY\fP
 The SSH tunnel or gateway that is used to run a bootstrap action on a machine that is not accessible from the workstation.
@@ -91,16 +95,16 @@ Shows help for the command.
 The SSH identity file used for authentication. Key\-based authentication is recommended.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the server.
+The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-m\fP, \fB\-\-manual\-list\fP
 Indicates that a search query is a space\-separated list of servers. If there is more than one item in the list, put quotes around the entire list. For example: \fB\-\-manual\-list "server01 server 02 server 03"\fP
 .TP
 .B \fB\-\-[no\-]host\-key\-verify\fP
-Use \fB\-\-no\-host\-key\-verify\fP to disable host key verification. Default setting: \fB\-\-host\-key\-verify\fP.
+Use \fB\-\-no\-host\-key\-verify\fP to disable host key verification. Default setting: \fB\-\-host\-key\-verify\fP\&.
 .TP
 .B \fBOTHER\fP
-The shell type. Possible values: \fBinteractive\fP, \fBscreen\fP, \fBtmux\fP, \fBmacterm\fP, or \fBcssh\fP. (\fBcsshx\fP is deprecated in favor of \fBcssh\fP.)
+The shell type. Possible values: \fBinteractive\fP, \fBscreen\fP, \fBtmux\fP, \fBmacterm\fP, or \fBcssh\fP\&. (\fBcsshx\fP is deprecated in favor of \fBcssh\fP\&.)
 .TP
 .B \fB\-p PORT\fP, \fB\-\-ssh\-port PORT\fP
 The SSH port.
@@ -112,19 +116,19 @@ The SSH password. This can be used to pass the password directly on the command 
 Indicates that data will be shown after a destructive operation.
 .TP
 .B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
-The URL for the server.
+The URL for the Chef server\&.
 .TP
 .B \fBSEARCH_QUERY\fP
-The search query used to return a list of servers to be accessed using SSH and the specified \fBSSH_COMMAND\fP. This option uses the same syntax as the search sub\-command.
+The search query used to return a list of servers to be accessed using SSH and the specified \fBSSH_COMMAND\fP\&. This option uses the same syntax as the search sub\-command.
 .TP
 .B \fBSSH_COMMAND\fP
 The command that will be run against the results of a search query.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
+The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
-The version of the chef\-client.
+The version of the chef\-client\&.
 .TP
 .B \fB\-V\fP, \fB\-\-verbose\fP
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
@@ -136,20 +140,26 @@ The SSH user name.
 Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .sp
 \fBExamples\fP
 .sp
 To find the uptime of all of web servers running Ubuntu on the Amazon EC2 platform, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife ssh "role:web" "uptime" \-x ubuntu \-a ec2.public_hostname
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something like:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -160,22 +170,34 @@ ec2\-75\-101\-240\-230.compute\-1.amazonaws.com   13:50:48 up 1 day, 22:59,  1 u
 ec2\-184\-73\-60\-141.compute\-1.amazonaws.com    13:50:48 up 1 day, 23:30,  1 user,  load average: 0.32, 0.17, 0.15
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife ssh \(aqname:*\(aq \(aqsudo chef\-client\(aq
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To force a chef\-client run on all of the web servers running Ubuntu on the Amazon EC2 platform, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife ssh "role:web" "sudo chef\-client" \-x ubuntu \-a ec2.public_hostname
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something like:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -206,30 +228,46 @@ ec2\-184\-73\-60\-141.compute\-1.amazonaws.com   [Fri, 22 Oct 2010 14:18:40 +000
 ec2\-184\-73\-60\-141.compute\-1.amazonaws.com   [Fri, 22 Oct 2010 14:18:40 +0000] INFO: Report handlers complete
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To query for all nodes that have the "webserver" role and then use SSH to run the command "sudo chef\-client", enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife ssh "role:webserver" "sudo chef\-client"
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife ssh name:* "sudo aptitude upgrade \-y"
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To specify the shell type used on the nodes returned by a search query:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife ssh roles:opscode\-omnitruck macterm
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
-where \fBscreen\fP is one of the following values: \fBcssh\fP, \fBinteractive\fP, \fBmacterm\fP, \fBscreen\fP, or \fBtmux\fP. If the node does not have the shell type installed, Knife will return an error similar to the following:
+where \fBscreen\fP is one of the following values: \fBcssh\fP, \fBinteractive\fP, \fBmacterm\fP, \fBscreen\fP, or \fBtmux\fP\&. If the node does not have the shell type installed, Knife will return an error similar to the following:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -238,6 +276,8 @@ you need the rb\-appscript gem to use knife ssh macterm.
 ERROR: LoadError: cannot load such file \-\- appscript
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH AUTHOR
 Chef
 .\" Generated by docutils manpage writer.

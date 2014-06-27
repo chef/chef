@@ -20,7 +20,7 @@ class Chef
       def run
         # Get the matches (recursively)
         error = false
-        entry_values = parallelize(pattern_args, :flatten => true) do |pattern|
+        entry_values = parallelize(pattern_args) do |pattern|
           parallelize(Chef::ChefFS::FileSystem.list(config[:local] ? local_fs : chef_fs, pattern)) do |entry|
             if entry.dir?
               ui.error "#{format_path(entry)}: is a directory" if pattern.exact_path
@@ -40,7 +40,7 @@ class Chef
               end
             end
           end
-        end
+        end.flatten(1)
         entry_values.each do |entry, value|
           if entry
             output "#{format_path(entry)}:"
@@ -54,4 +54,3 @@ class Chef
     end
   end
 end
-

@@ -52,7 +52,7 @@ describe Chef::Knife::Ssh do
       def self.should_return_specified_attributes
         it "returns an array of the attributes specified on the command line OR config file, if only one is set" do
           @knife.config[:attribute] = "ipaddress"
-          @knife.config[:override_attribute] = "ipaddress"
+          @knife.config[:attribute_from_cli] = "ipaddress"
           configure_query([@node_foo, @node_bar])
           @knife.should_receive(:session_from_list).with([['10.0.0.1', nil], ['10.0.0.2', nil]])
           @knife.configure_session
@@ -60,7 +60,7 @@ describe Chef::Knife::Ssh do
 
         it "returns an array of the attributes specified on the command line even when a config value is set" do
           @knife.config[:attribute] = "config_file" # this value will be the config file
-          @knife.config[:override_attribute] = "ipaddress" # this is the value of the command line via #configure_attribute
+          @knife.config[:attribute_from_cli] = "ipaddress" # this is the value of the command line via #configure_attribute
           configure_query([@node_foo, @node_bar])
           @knife.should_receive(:session_from_list).with([['10.0.0.1', nil], ['10.0.0.2', nil]])
           @knife.configure_session
@@ -155,25 +155,19 @@ describe Chef::Knife::Ssh do
       @knife.config[:attribute].should == "command_line"
     end
 
-    it "should set override_attribute to the value of attribute from the command line" do
+    it "should set attribute_from_cli to the value of attribute from the command line" do
       @knife.config[:attribute] = "command_line"
       @knife.configure_attribute
       @knife.config[:attribute].should == "command_line"
-      @knife.config[:override_attribute].should == "command_line"
+      @knife.config[:attribute_from_cli].should == "command_line"
     end
 
-    it "should set override_attribute to the value of attribute from the config file" do
-      Chef::Config[:knife][:ssh_attribute] = "config_file"
-      @knife.configure_attribute
-      @knife.config[:attribute].should == "config_file"
-      @knife.config[:override_attribute].should == "config_file"
-    end
-
-    it "should prefer the command line over the config file for the value of override_attribute" do
+    it "should prefer the command line over the config file for the value of attribute_from_cli" do
       Chef::Config[:knife][:ssh_attribute] = "config_file"
       @knife.config[:attribute] = "command_line"
       @knife.configure_attribute
-      @knife.config[:override_attribute].should == "command_line"
+      @knife.config[:attribute].should == "command_line"
+      @knife.config[:attribute_from_cli].should == "command_line"
     end
   end
 

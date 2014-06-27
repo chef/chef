@@ -16,9 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service'
 require 'chef/provider/service/init'
-require 'chef/mixin/command'
 
 class Chef
   class Provider

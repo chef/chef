@@ -29,6 +29,20 @@ describe Chef::Resource::Service do
     @resource.should be_a_kind_of(Chef::Resource)
     @resource.should be_a_kind_of(Chef::Resource::Service)
   end
+  
+  it "should not set a provider unless node[:init_package] is defined as systemd" do
+    @resource.provider.should == nil
+  end
+    
+  it "should set the provider to Chef::Provider::Service::Systemd if node[:init_package] is systemd" do
+    node = Chef::Node.new
+    node.set[:init_package] = "systemd"
+    cookbook_collection = Chef::CookbookCollection.new([])
+    events = Chef::EventDispatch::Dispatcher.new
+    run_context = Chef::RunContext.new(node, cookbook_collection, events)
+    @resource = Chef::Resource::Service.new("chef", run_context)
+    @resource.provider.should == Chef::Provider::Service::Systemd
+  end
 
   it "should set the service_name to the first argument to new" do
     @resource.service_name.should eql("chef")

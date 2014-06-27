@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -14,7 +13,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -43,11 +42,11 @@
             
   <div class="section" id="knife-search">
 <h1>knife search<a class="headerlink" href="#knife-search" title="Permalink to this headline">¶</a></h1>
-<p>Search indexes allow queries to be made for any type of data that is indexed by the server, including data bags (and data bag items), environments, nodes, and roles. A defined query syntax is used to support search patterns like exact, wildcard, range, and fuzzy. A search is a full-text query that can be done from several locations, including from within a recipe, by using the <tt class="docutils literal"><span class="pre">search</span></tt> subcommand in Knife, by using the search functionality in the Chef Manage, or by using the <tt class="docutils literal"><span class="pre">/search</span></tt> or <tt class="docutils literal"><span class="pre">/search/INDEX</span></tt> endpoints in the Chef Server API. The search engine is based on Apache Solr and is run from the server.</p>
-<p>The <strong>knife search</strong> subcommand is used run a search query for information that is indexed on a server.</p>
+<p>Search indexes allow queries to be made for any type of data that is indexed by the Chef server, including data bags (and data bag items), environments, nodes, and roles. A defined query syntax is used to support search patterns like exact, wildcard, range, and fuzzy. A search is a full-text query that can be done from several locations, including from within a recipe, by using the <tt class="docutils literal"><span class="pre">search</span></tt> subcommand in Knife, or by using the <tt class="docutils literal"><span class="pre">/search</span></tt> or <tt class="docutils literal"><span class="pre">/search/INDEX</span></tt> endpoints in the Chef Server API. The search engine is based on Apache Solr and is run from the Chef server.</p>
+<p>The <strong>knife search</strong> subcommand is used run a search query for information that is indexed on a Chef server.</p>
 <div class="section" id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
-<p>This argument has the following syntax:</p>
+<p>This subcommand has the following syntax:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife search INDEX SEARCH_QUERY
 </pre></div>
 </div>
@@ -70,7 +69,8 @@ win2k8-dev
 </pre></div>
 </div>
 <p>and is the same search as:</p>
-<div class="highlight-bash"><pre>$ knife search node '*:*" -i</pre>
+<div class="highlight-bash"><div class="highlight"><pre>$ knife search node &#39;*:*&quot; -i
+</pre></div>
 </div>
 <p>If the <tt class="docutils literal"><span class="pre">SEARCH_QUERY</span></tt> does not contain a colon character (<tt class="docutils literal"><span class="pre">:</span></tt>), then the default query pattern is <tt class="docutils literal"><span class="pre">tags:*#{&#64;query}*</span> <span class="pre">OR</span> <span class="pre">roles:*#{&#64;query}*</span> <span class="pre">OR</span> <span class="pre">fqdn:*#{&#64;query}*</span> <span class="pre">OR</span> <span class="pre">addresses:*#{&#64;query}*</span></tt>, which means the following two search queries are effectively the same:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife search ubuntu
@@ -110,7 +110,7 @@ win2k8-dev
 <dt><tt class="docutils literal"><span class="pre">-R</span> <span class="pre">INT</span></tt>, <tt class="docutils literal"><span class="pre">--rows</span> <span class="pre">INT</span></tt></dt>
 <dd>The number of rows to be returned.</dd>
 <dt><tt class="docutils literal"><span class="pre">SEARCH_QUERY</span></tt></dt>
-<dd>The search query used to identify a a list of items on a server. This option uses the same syntax as the <tt class="docutils literal"><span class="pre">search</span></tt> sub-command.</dd>
+<dd>The search query used to identify a a list of items on a Chef server. This option uses the same syntax as the <tt class="docutils literal"><span class="pre">search</span></tt> sub-command.</dd>
 </dl>
 </div>
 <div class="section" id="examples">

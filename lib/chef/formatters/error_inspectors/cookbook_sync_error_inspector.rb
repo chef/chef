@@ -65,7 +65,7 @@ class Chef
           when Net::HTTPNotFound
           when Net::HTTPInternalServerError
             describe_500_error(error_description)
-          when Net::HTTPBadGateway, Net::HTTPServiceUnavailable
+          when Net::HTTPBadGateway, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeOut
             describe_503_error(error_description)
           else
             describe_http_error(error_description)
@@ -76,5 +76,3 @@ class Chef
     end
   end
 end
-
-

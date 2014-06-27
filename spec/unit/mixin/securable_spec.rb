@@ -46,7 +46,6 @@ describe Chef::Mixin::Securable do
   describe "unix-specific behavior" do
     before(:each) do
       platform_mock :unix do
-        load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "config.rb")
         load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "mixin", "securable.rb")
         @securable = Object.new
         @securable.send(:extend, Chef::Mixin::Securable)
@@ -156,35 +155,34 @@ describe Chef::Mixin::Securable do
     end
 
     it "should accept a unix file mode in numeric form as a ruby-interpreted integer" do
-      lambda { @securable.mode 0 }.should_not raise_error
-      lambda { @securable.mode 0000 }.should_not raise_error
-      lambda { @securable.mode 444 }.should_not raise_error
-      lambda { @securable.mode 0444 }.should_not raise_error
-      lambda { @securable.mode 07777 }.should_not raise_error
+      lambda { @securable.mode(0) }.should_not raise_error
+      lambda { @securable.mode(0000) }.should_not raise_error
+      lambda { @securable.mode(444) }.should_not raise_error
+      lambda { @securable.mode(0444) }.should_not raise_error
+      lambda { @securable.mode(07777) }.should_not raise_error
 
-      lambda { @securable.mode 292 }.should_not raise_error
-      lambda { @securable.mode 4095 }.should_not raise_error
+      lambda { @securable.mode(292) }.should_not raise_error
+      lambda { @securable.mode(4095) }.should_not raise_error
 
-      lambda { @securable.mode 0111 }.should_not raise_error
-      lambda { @securable.mode 73 }.should_not raise_error
+      lambda { @securable.mode(0111) }.should_not raise_error
+      lambda { @securable.mode(73) }.should_not raise_error
 
-      lambda { @securable.mode -01 }.should raise_error(ArgumentError)
-      lambda { @securable.mode 010000 }.should raise_error(ArgumentError)
-      lambda { @securable.mode -1 }.should raise_error(ArgumentError)
-      lambda { @securable.mode 4096 }.should raise_error(ArgumentError)
+      lambda { @securable.mode(-01) }.should raise_error(ArgumentError)
+      lambda { @securable.mode(010000) }.should raise_error(ArgumentError)
+      lambda { @securable.mode(-1) }.should raise_error(ArgumentError)
+      lambda { @securable.mode(4096) }.should raise_error(ArgumentError)
     end
   end
 
   describe "windows-specific behavior" do
     before(:each) do
       platform_mock :windows do
-        load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "config.rb")
         load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "mixin", "securable.rb")
-        SECURABLE_CLASS = Class.new do
+        securable_class = Class.new do
           include Chef::Mixin::Securable
           include Chef::Mixin::ParamsValidate
         end
-        @securable = SECURABLE_CLASS.new
+        @securable = securable_class.new
       end
     end
 

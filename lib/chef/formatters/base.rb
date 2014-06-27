@@ -21,6 +21,7 @@ require 'chef/event_dispatch/base'
 require 'chef/formatters/error_inspectors'
 require 'chef/formatters/error_descriptor'
 require 'chef/formatters/error_mapper'
+require 'chef/formatters/indentable_output_stream'
 
 class Chef
 
@@ -56,47 +57,6 @@ class Chef
       formatter_class.new(out, err)
     end
 
-    # == Outputter
-    # Handles basic printing tasks like colorizing.
-    # --
-    # TODO: Duplicates functionality from knife, upfactor.
-    class Outputter
-
-      attr_reader :out
-      attr_reader :err
-
-      def initialize(out, err)
-        @out, @err = out, err
-      end
-
-      def highline
-        @highline ||= begin
-          require 'highline'
-          HighLine.new
-        end
-      end
-
-      def color(string, *colors)
-        if Chef::Config[:color]
-          @out.print highline.color(string, *colors)
-        else
-          @out.print string
-        end
-      end
-
-      alias :print :color
-
-      def puts(string, *colors)
-        if Chef::Config[:color]
-          @out.puts highline.color(string, *colors)
-        else
-          @out.puts string
-        end
-      end
-
-    end
-
-
     # == Formatters::Base
     # Base class that all formatters should inherit from.
     class Base < EventDispatch::Base
@@ -112,7 +72,7 @@ class Chef
       attr_reader :output
 
       def initialize(out, err)
-        @output = Outputter.new(out, err)
+        @output = IndentableOutputStream.new(out, err)
       end
 
       def puts(*args)
@@ -123,8 +83,20 @@ class Chef
         @output.print(*args)
       end
 
+      def puts_line(*args)
+        @output.puts_line(*args)
+      end
+
+      def start_line(*args)
+        @output.start_line(*args)
+      end
+
+      def indent_by(amount)
+        @output.indent += amount
+      end
+
       # Input: a Formatters::ErrorDescription object.
-      # Outputs error to SDOUT.
+      # Outputs error to STDOUT.
       def display_error(description)
         puts("")
         description.display(output)
@@ -237,7 +209,7 @@ class Chef
 
 
     # == NullFormatter
-    # Formatter that doesn't actually produce any ouput. You can use this to
+    # Formatter that doesn't actually produce any output. You can use this to
     # disable the use of output formatters.
     class NullFormatter < Base
 
@@ -247,4 +219,3 @@ class Chef
 
   end
 end
-
