@@ -89,6 +89,10 @@
   Add timeout for Chef::Provider::Service::Windows. (CHEF-1165)
 * [**Jesse Hu**](https://github.com/jessehu):
   knife[:attribute] in knife.rb should not override --attribute (CHEF-5158)
+* [**Vasiliy Tolstov**](https://github.com/vtolstov):
+  Added the initial exherbo linux support for Chef providers.
+
+
 
 * Update rpm provider checking regex to allow for special characters (CHEF-4893)
 * Allow for spaces in selinux controlled directories (CHEF-5095)
