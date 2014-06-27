@@ -185,9 +185,9 @@ describe Chef::CookbookVersion do
         manifest["files"].each do |cookbook_file|
           if cookbook_file["name"] == "node-specific-file.tgz"
             cookbook_file["name"].should == "node-specific-file.tgz"
-            cookbook_file["path"].should == "files/host-sample.node/node-specific-file.tgz"
+            cookbook_file["path"].should == "files/host-samplenode/node-specific-file.tgz"
             cookbook_file["checksum"].should match(MD5)
-            cookbook_file["specificity"].should == "host-sample.node"
+            cookbook_file["specificity"].should == "host-samplenode"
           end
 
           if cookbook_file["name"] == "host-specific-file.tgz"
@@ -251,9 +251,9 @@ describe Chef::CookbookVersion do
       describe "loads an existing cookbook_file with " do
         it "default specificity" do
           node = Chef::Node.new.tap do |n|
-            n.name("sample.node")
+            n.name("samplenode")
             n.automatic_attrs[:fqdn] = "sample.example.com"
-            n.automatic_attrs[:hostname] = "sample.node"
+            n.automatic_attrs[:hostname] = "samplenode"
             n.automatic_attrs[:platform] = "ubuntu"
             n.automatic_attrs[:platform_version] = "10.04"
           end
@@ -262,9 +262,9 @@ describe Chef::CookbookVersion do
  
         it "host specificity" do
           node = Chef::Node.new.tap do |n|
-            n.name("sample.node")
+            n.name("samplenode")
             n.automatic_attrs[:fqdn] = "sample.example.com"
-            n.automatic_attrs[:hostname] = "sample.node"
+            n.automatic_attrs[:hostname] = "samplenode"
             n.automatic_attrs[:platform] = "ubuntu"
             n.automatic_attrs[:platform_version] = "10.04"
           end
@@ -273,13 +273,13 @@ describe Chef::CookbookVersion do
  
         it "node specificity" do
           node = Chef::Node.new.tap do |n|
-            n.name("sample.node")
+            n.name("samplenode")
             n.automatic_attrs[:fqdn] = "sample.example.com"
-            n.automatic_attrs[:hostname] = "sample.node"
+            n.automatic_attrs[:hostname] = "samplenode"
             n.automatic_attrs[:platform] = "ubuntu"
             n.automatic_attrs[:platform_version] = "10.04"
           end
-          @cookbook_version.preferred_manifest_record(node, :files, "node-specific-file.tgz")["specificity"].should == "host-sample.node"
+          @cookbook_version.preferred_manifest_record(node, :files, "node-specific-file.tgz")["specificity"].should == "host-samplenode"
         end
       end
 
@@ -296,7 +296,7 @@ describe Chef::CookbookVersion do
       describe "raises an error when attempting to load a missing cookbook_file and" do
         before do
           node = Chef::Node.new.tap do |n|
-            n.name("sample.node")
+            n.name("samplenode")
             n.automatic_attrs[:fqdn] = "sample.example.com"
             n.automatic_attrs[:platform] = "ubuntu"
             n.automatic_attrs[:platform_version] = "10.04"
@@ -376,9 +376,9 @@ describe Chef::CookbookVersion do
         manifest["files"].each do |cookbook_file| 
           if cookbook_file["name"] == "node-specific-file.tgz"
             cookbook_file["name"].should == "node-specific-file.tgz"
-            cookbook_file["path"].should == "files/host-sample.node/node-specific-file.tgz"
+            cookbook_file["path"].should == "files/host-samplenode/node-specific-file.tgz"
             cookbook_file["checksum"].should match(MD5)
-            cookbook_file["specificity"].should == "host-sample.node"
+            cookbook_file["specificity"].should == "host-samplenode"
           end
 
           if cookbook_file["name"] == "host-specific-file.tgz"
