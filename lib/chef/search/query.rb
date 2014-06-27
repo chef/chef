@@ -63,7 +63,7 @@ class Chef
           args_hash[:sort] = args_hash.key?(:sort) ? args_hash[:sort] : 'X_CHEF_id_CHEF_X asc'
           args_hash[:start] = args_hash.key?(:start) ? args_hash[:start] : 0
           args_hash[:rows] = args_hash.key?(:rows) ? args_hash[:rows] : 1000
-          search_new(type, query, args_hash, &block)
+          do_search(type, query, args_hash, &block)
         else
           sort = args.length >= 1 ? args[0] : 'X_CHEF_id_CHEF_X asc'
           start = args.length >= 2 ? args[1] : 0
@@ -84,7 +84,7 @@ class Chef
         # new search api that allows for a cleaner implementation of things like return filters
         # (formerly known as 'partial search'). A passthrough to either the old style ("full search")
         # or the new 'filtered' search
-        def search_new(type, query="*:*", args=nil, &block)
+        def do_search(type, query="*:*", args=nil, &block)
           raise ArgumentError, "Type must be a string or a symbol!" unless (type.kind_of?(String) || type.kind_of?(Symbol))
 
           # if args is nil, we need to set some defaults, for backwards compatibility
@@ -112,6 +112,8 @@ class Chef
         def search_old(type, query="*:*", sort='X_CHEF_id_CHEF_X asc', start=0, rows=1000, &block)
           raise ArgumentError, "Type must be a string or a symbol!" unless (type.kind_of?(String) || type.kind_of?(Symbol))
 
+          # here we need to put a nice message saying "this is deprecated, use the argified version!"
+ 
           # argify things
           args = Hash.new
           args = { :sort => sort, :start => start, :rows => rows }
