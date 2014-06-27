@@ -119,7 +119,12 @@ class Chef
             $!.backtrace.each { |l| Chef::Log.debug(l) }
           when :raise
             #Net::SSH::Multi magic to force exception to be re-raised.
-            throw :go, :raise
+            @connection_attempts ||= 0
+            if @connection_attempts < 3
+              @connection_attempts += 1
+              throw :go, :retry
+            else
+              throw :go, :raise
           end
         end
 
