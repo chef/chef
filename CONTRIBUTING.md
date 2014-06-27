@@ -51,6 +51,16 @@ Once you a pull request, the **Chef Engineering Team** or **Chef Core Committers
 If you would like to learn about when your code will be available in a release of Chef, read more about
   [Chef Release Process](#release).
 
+### <a name="oh"></a> Office Hours
+
+We hold regular "office hours" on Google Hangouts On-The-Air that you can join to help review contributions,
+ask questions about contributing, or just hang out with Chef employees.  The regularly scheduled Chef hangouts occur on Mondays and Wednesdays at 3pm Eastern / Noon Pacific.
+
+The link to join the Hangout or watch it live is usually tweeted from [@ChefOfficeHours](https://twitter.com/ChefOfficeHours)
+or posted in the #chef IRC channel on irc.freenode.net when the hangout is about to start.
+
+You can watch the recordings of the old Code Review hangouts on the [opscodebtm](http://www.youtube.com/opscodebtm) youtube account.
+
 ### Contributor License Agreement (CLA)
 Licensing is very important to open source projects. It helps ensure the
   software continues to be available under the terms that the author desired.
