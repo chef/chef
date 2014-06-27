@@ -49,19 +49,9 @@ class Chef
         args = command_args.dup
         if args.last.is_a?(Hash)
           options = args.last
-          if options.has_key?(:environment)
-            options_env = options[:environment]
-          elsif options.has_key?(:env)
-            options_env = options[:env]
-          else
-            # No environment option provided, make one
-            options[:environment] = {}
-            options_env = options[:environment]
-          end
-
-          unless options_env.has_key?('LC_ALL')
-            options_env['LC_ALL'] = nil
-          end
+          env_key = options.has_key?(:env) ? :env : :environment
+          options[env_key] ||= {}
+          options[env_key]['LC_ALL'] ||= nil
         else
           args << { :environment => { 'LC_ALL' => nil } }
         end
