@@ -154,10 +154,13 @@ class Chef
             },
             :scientific => {
               :default => {
-                :service => Chef::Provider::Service::Redhat,
+                :service => Chef::Provider::Service::Systemd,
                 :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
                 :mdadm => Chef::Provider::Mdadm
+              },
+              "< 7" => {
+                :service => Chef::Provider::Service::Redhat
               }
             },
             :fedora   => {
@@ -194,10 +197,13 @@ class Chef
             },
             :oracle  => {
               :default => {
-                :service => Chef::Provider::Service::Redhat,
+                :service => Chef::Provider::Service::Systemd,
                 :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
                 :mdadm => Chef::Provider::Mdadm
+              },
+              "< 7" => {
+                :service => Chef::Provider::Service::Redhat
               }
             },
             :redhat   => {
