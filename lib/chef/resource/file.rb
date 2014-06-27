@@ -52,7 +52,6 @@ class Chef
         @force_unlink = false
         @manage_symlink_source = nil
         @diff = nil
-        @sensitive = false
       end
 
       def content(arg=nil)
@@ -114,14 +113,6 @@ class Chef
       def manage_symlink_source(arg=nil)
         set_or_return(
           :manage_symlink_source,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def sensitive(arg=nil)
-        set_or_return(
-          :sensitive,
           arg,
           :kind_of => [ TrueClass, FalseClass ]
         )

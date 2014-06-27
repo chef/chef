@@ -1,4 +1,6 @@
-.TH "KNIFE-SHOW" "1" "Chef 11.10.0" "" "knife show"
+.\" Man page generated from reStructuredText.
+.
+.TH "KNIFE-SHOW" "1" "Chef 11.12.0" "" "knife show"
 .SH NAME
 knife-show \- The man page for the knife show subcommand.
 .
@@ -28,20 +30,22 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.\" Man page generated from reStructuredText.
-.
 .sp
-The \fBknife show\fP subcommand is used to view the details of one (or more) objects on the server. This subcommand works similar to \fBknife cookbook show\fP, \fBknife data bag show\fP, \fBknife environment show\fP, \fBknife node show\fP, and \fBknife role show\fP, but with a single verb (and a single action).
+The \fBknife show\fP subcommand is used to view the details of one (or more) objects on the Chef server\&. This subcommand works similar to \fBknife cookbook show\fP, \fBknife data bag show\fP, \fBknife environment show\fP, \fBknife node show\fP, and \fBknife role show\fP, but with a single verb (and a single action).
 .sp
 \fBSyntax\fP
 .sp
-This argument has the following syntax:
+This subcommand has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife show [PATTERN...] (options)
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -55,7 +59,7 @@ The attribute (or attributes) to show.
 The configuration file to use.
 .TP
 .B \fB\-\-chef\-repo\-path PATH\fP
-The path to the chef\-repo. This setting will override the default path to the chef\-repo. Default: same as specified by \fBchef_repo_path\fP in config.rb.
+The path to the chef\-repo\&. This setting will override the default path to the chef\-repo\&. Default: same as specified by \fBchef_repo_path\fP in config.rb.
 .TP
 .B \fB\-\-chef\-zero\-port PORT\fP
 The port on which chef\-zero will listen.
@@ -64,7 +68,7 @@ The port on which chef\-zero will listen.
 Indicates whether colored output will be used.
 .TP
 .B \fB\-\-concurrency\fP
-The number of allowed concurrent connections. Default: \fB10\fP.
+The number of allowed concurrent connections. Default: \fB10\fP\&.
 .TP
 .B \fB\-d\fP, \fB\-\-disable\-editing\fP
 Indicates that $EDITOR will not be opened; data will be accepted as\-is.
@@ -79,13 +83,13 @@ The $EDITOR that is used for all interactive commands.
 The name of the environment. When this option is added to a command, the command will run only against the named environment.
 .TP
 .B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
-The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
+The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP\&.
 .TP
 .B \fB\-h\fP, \fB\-\-help\fP
 Shows help for the command.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the server.
+The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-local\fP
 Indicates that instead of remote files, local files will be shown.
@@ -94,16 +98,16 @@ Indicates that instead of remote files, local files will be shown.
 Indicates that data will be shown after a destructive operation.
 .TP
 .B \fB\-\-repo\-mode MODE\fP
-The layout of the local chef\-repo. Possible values: \fBstatic\fP, \fBeverything\fP, or \fBhosted_everything\fP. Use \fBstatic\fP for just roles, environments, cookbooks, and data bags. By default, \fBeverything\fP and \fBhosted_everything\fP are dynamically selected depending on the server type. Default: \fBeverything\fP / \fBhosted_everything\fP.
+The layout of the local chef\-repo\&. Possible values: \fBstatic\fP, \fBeverything\fP, or \fBhosted_everything\fP\&. Use \fBstatic\fP for just roles, environments, cookbooks, and data bags. By default, \fBeverything\fP and \fBhosted_everything\fP are dynamically selected depending on the server type. Default: \fBeverything\fP / \fBhosted_everything\fP\&.
 .TP
 .B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
-The URL for the server.
+The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
+The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
-The version of the chef\-client.
+The version of the chef\-client\&.
 .TP
 .B \fB\-V\fP, \fB\-\-verbose\fP
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
@@ -112,32 +116,44 @@ Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .sp
 \fBExamples\fP
 .sp
 To show all cookbooks in the \fBcookbooks/\fP directory:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife show cookbooks/
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 or, (if already in the \fBcookbooks/\fP directory in the local chef\-repo):
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife show
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife show roles/ environments/
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH AUTHOR
 Chef
 .\" Generated by docutils manpage writer.

@@ -19,7 +19,7 @@
 require 'base64'
 require 'digest/sha2'
 require 'openssl'
-require 'yajl'
+require 'ffi_yajl'
 require 'chef/encrypted_data_bag_item'
 require 'chef/encrypted_data_bag_item/unsupported_encrypted_data_bag_item_format'
 
@@ -111,7 +111,7 @@ class Chef::EncryptedDataBagItem
       # Strings) that do not produce valid JSON when serialized without the
       # wrapper.
       def serialized_data
-        Yajl::Encoder.encode(:json_wrapper => plaintext_data)
+        FFI_Yajl::Encoder.encode(:json_wrapper => plaintext_data)
       end
     end
 

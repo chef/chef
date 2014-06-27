@@ -29,6 +29,9 @@ describe Chef::Knife do
     Chef::Log.logger = Logger.new(StringIO.new)
 
     Chef::Config[:node_name]  = "webmonkey.example.com"
+
+    # Prevent gratuitous code reloading:
+    Chef::Knife.stub(:load_commands)
     @knife = Chef::Knife.new
     @knife.ui.stub(:puts)
     @knife.ui.stub(:print)
@@ -147,7 +150,7 @@ describe Chef::Knife do
     let(:headers) {{"Accept"=>"application/json",
                     "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
                     'X-Chef-Version' => Chef::VERSION,
-                    "Host"=>"api.opscode.piab:443",
+                    "Host"=>"api.opscode.piab",
                     "X-REMOTE-REQUEST-ID"=>request_id}}
 
     let(:request_id) {"1234"}

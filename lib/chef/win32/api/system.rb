@@ -186,6 +186,20 @@ int WINAPI GetSystemMetrics(
 =end
         safe_attach_function :GetSystemMetrics, [:int], :int
 
+=begin
+LRESULT WINAPI SendMessageTimeout(
+  _In_       HWND hWnd,
+  _In_       UINT Msg,
+  _In_       WPARAM wParam,
+  _In_       LPARAM lParam,
+  _In_       UINT fuFlags,
+  _In_       UINT uTimeout,
+  _Out_opt_  PDWORD_PTR lpdwResult
+);
+=end
+        safe_attach_function :SendMessageTimeoutW, [:HWND, :UINT, :WPARAM, :LPARAM, :UINT, :UINT, :PDWORD_PTR], :LRESULT
+        safe_attach_function :SendMessageTimeoutA, [:HWND, :UINT, :WPARAM, :LPARAM, :UINT, :UINT, :PDWORD_PTR], :LRESULT
+
       end
     end
   end

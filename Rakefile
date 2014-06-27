@@ -48,6 +48,10 @@ task :ship => :gem do
   end
 end
 
+task :pedant do
+  require File.expand_path('spec/support/pedant/run_pedant')
+end
+
 begin
   require 'yard'
   DOC_FILES = [ "README.rdoc", "LICENSE", "spec/tiny_server.rb", "lib/**/*.rb" ]
@@ -63,5 +67,3 @@ begin
 rescue LoadError
   puts "yard is not available. (sudo) gem install yard to generate yard documentation."
 end
-
-

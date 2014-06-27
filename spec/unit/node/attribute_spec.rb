@@ -890,6 +890,15 @@ describe Chef::Node::Attribute do
   end
 
   describe "index" do
+    # Hash#index is deprecated and triggers warnings.
+    def silence
+      old_verbose = $VERBOSE
+      $VERBOSE = nil
+      yield
+    ensure
+      $VERBOSE = old_verbose
+    end
+
     before do
       @attributes = Chef::Node::Attribute.new(
         {
@@ -914,13 +923,17 @@ describe Chef::Node::Attribute do
 
     describe "when the value is indexed" do
       it "should return the index" do
-        @attributes.index("six").should == "one"
+        silence do
+          @attributes.index("six").should == "one"
+        end
       end
     end
 
     describe "when the value is not indexed" do
       it "should return nil" do
-        @attributes.index("lolol").should == nil
+        silence do
+          @attributes.index("lolol").should == nil
+        end
       end
     end
 

@@ -72,8 +72,8 @@ class Chef
 
             # Otherwise, go through all children and find any matches
             elsif entry.dir?
-              results = Parallelizer::parallelize(entry.children, :flatten => true) { |child| Chef::ChefFS::FileSystem.list(child, pattern) }
-              results.each(&block)
+              results = Parallelizer::parallelize(entry.children) { |child| Chef::ChefFS::FileSystem.list(child, pattern) }
+              results.flatten(1).each(&block)
             end
           end
         end
@@ -285,8 +285,12 @@ class Chef
                 if options[:dry_run]
                   ui.output "Would delete #{dest_path}" if ui
                 else
-                  dest_entry.delete(true)
-                  ui.output "Deleted extra entry #{dest_path} (purge is on)" if ui
+                  begin
+                    dest_entry.delete(true)
+                    ui.output "Deleted extra entry #{dest_path} (purge is on)" if ui
+                  rescue Chef::ChefFS::FileSystem::NotFoundError
+                    ui.output "Entry #{dest_path} does not exist. Nothing to do. (purge is on)" if ui
+                  end
                 end
               else
                 ui.output ("Not deleting extra entry #{dest_path} (purge is off)") if ui
@@ -419,7 +423,7 @@ class Chef
       end
 
       def self.parallel_do(enum, options = {}, &block)
-        Chef::ChefFS::Parallelizer.parallelize(enum, options, &block).to_a
+        Chef::ChefFS::Parallelizer.parallel_do(enum, options, &block)
       end
     end
   end

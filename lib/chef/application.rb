@@ -35,6 +35,27 @@ class Chef::Application
 
     @chef_client = nil
     @chef_client_json = nil
+
+    # Always switch to a readable directory. Keeps subsequent Dir.chdir() {}
+    # from failing due to permissions when launched as a less privileged user.
+  end
+
+  # Reconfigure the application. You'll want to override and super this method.
+  def reconfigure
+    configure_chef
+    configure_logging
+    configure_proxy_environment_variables
+  end
+
+  # Get this party started
+  def run
+    setup_signal_handlers
+    reconfigure
+    setup_application
+    run_application
+  end
+
+  def setup_signal_handlers
     trap("INT") do
       Chef::Application.fatal!("SIGINT received, stopping", 2)
     end
@@ -49,23 +70,8 @@ class Chef::Application
         reconfigure
       end
     end
-
-    # Always switch to a readable directory. Keeps subsequent Dir.chdir() {}
-    # from failing due to permissions when launched as a less privileged user.
   end
 
-  # Reconfigure the application. You'll want to override and super this method.
-  def reconfigure
-    configure_chef
-    configure_logging
-  end
-
-  # Get this party started
-  def run
-    reconfigure
-    setup_application
-    run_application
-  end
 
   # Parse configuration (options and config file)
   def configure_chef
@@ -160,6 +166,14 @@ class Chef::Application
     end
   end
 
+  # Configure and set any proxy environment variables according to the config.
+  def configure_proxy_environment_variables
+    configure_http_proxy
+    configure_https_proxy
+    configure_ftp_proxy
+    configure_no_proxy
+  end
+
   # Called prior to starting the application, by the run method
   def setup_application
     raise Chef::Exceptions::Application, "#{self.to_s}: you must override setup_application"
@@ -180,15 +194,21 @@ class Chef::Application
 
       chef_fs = Chef::ChefFS::Config.new.local_fs
       chef_fs.write_pretty_json = true
+      data_store = Chef::ChefFS::ChefFSDataStore.new(chef_fs)
       server_options = {}
-      server_options[:data_store] = Chef::ChefFS::ChefFSDataStore.new(chef_fs)
+      server_options[:data_store] = data_store
       server_options[:log_level] = Chef::Log.level
+      server_options[:host] = Chef::Config.chef_zero.host
       server_options[:port] = Chef::Config.chef_zero.port
-      Chef::Log.info("Starting chef-zero on port #{Chef::Config.chef_zero.port} with repository at #{server_options[:data_store].chef_fs.fs_description}")
+      Chef::Log.info("Starting chef-zero on host #{Chef::Config.chef_zero.host}, port #{Chef::Config.chef_zero.port} with repository at #{chef_fs.fs_description}")
       @chef_zero_server = ChefZero::Server.new(server_options)
       @chef_zero_server.start_background
       Chef::Config.chef_server_url = @chef_zero_server.url
     end
+  end
+
+  def self.chef_zero_server
+    @chef_zero_server
   end
 
   def self.destroy_server_connectivity
@@ -229,6 +249,75 @@ class Chef::Application
     filtered_trace = error.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
     filtered_trace.each {|line| Chef::Log.fatal("  " + line )}
     Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", 2)
+  end
+
+  # Set ENV['http_proxy']
+  def configure_http_proxy
+    if http_proxy = Chef::Config[:http_proxy]
+      env['http_proxy'] = configure_proxy("http", http_proxy,
+        Chef::Config[:http_proxy_user], Chef::Config[:http_proxy_pass])
+    end
+  end
+
+  # Set ENV['https_proxy']
+  def configure_https_proxy
+    if https_proxy = Chef::Config[:https_proxy]
+      env['https_proxy'] = configure_proxy("https", https_proxy,
+        Chef::Config[:https_proxy_user], Chef::Config[:https_proxy_pass])
+    end
+  end
+
+  # Set ENV['ftp_proxy']
+  def configure_ftp_proxy
+    if ftp_proxy = Chef::Config[:ftp_proxy]
+      env['ftp_proxy'] = configure_proxy("ftp", ftp_proxy,
+        Chef::Config[:ftp_proxy_user], Chef::Config[:ftp_proxy_pass])
+    end
+  end
+
+  # Set ENV['no_proxy']
+  def configure_no_proxy
+    env['no_proxy'] = Chef::Config[:no_proxy] if Chef::Config[:no_proxy]
+  end
+
+  # Builds a proxy uri. Examples:
+  #   http://username:password@hostname:port
+  #   https://username@hostname:port
+  #   ftp://hostname:port
+  # when
+  #   scheme = "http", "https", or "ftp"
+  #   hostport = hostname:port
+  #   user = username
+  #   pass = password
+  def configure_proxy(scheme, path, user, pass)
+    begin
+      path = "#{scheme}://#{path}" unless path.start_with?(scheme)
+      # URI.split returns the following parts:
+      # [scheme, userinfo, host, port, registry, path, opaque, query, fragment]
+      parts = URI.split(URI.encode(path))
+      # URI::Generic.build requires an integer for the port, but URI::split gives
+      # returns a string for the port.
+      parts[3] = parts[3].to_i if parts[3]
+      if user
+        userinfo = URI.encode(URI.encode(user), '@:')
+        if pass
+          userinfo << ":#{URI.encode(URI.encode(pass), '@:')}"
+        end
+        parts[1] = userinfo
+      end
+
+      return URI::Generic.build(parts).to_s
+    rescue URI::Error => e
+      # URI::Error messages generally include the offending string. Including a message
+      # for which proxy config item has the issue should help deduce the issue when
+      # the URI::Error message is vague.
+      raise Chef::Exceptions::BadProxyURI, "Cannot configure #{scheme} proxy. Does not comply with URI scheme. #{e.message}"
+    end
+  end
+
+  # This is a hook for testing
+  def env
+    ENV
   end
 
   class << self

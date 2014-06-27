@@ -211,6 +211,10 @@ class Chef::Application::Client < Chef::Application
     :description  => "Point chef-client at local repository",
     :boolean      => true
 
+  option :chef_zero_host,
+    :long         => "--chef-zero-host HOST",
+    :description  => "Host to start chef-zero on"
+
   option :chef_zero_port,
     :long         => "--chef-zero-port PORT",
     :description  => "Port to start chef-zero on"
@@ -218,6 +222,11 @@ class Chef::Application::Client < Chef::Application
   option :config_file_jail,
     :long         => "--config-file-jail PATH",
     :description  => "Directory under which config files are allowed to be loaded (no client.rb or knife.rb outside this path will be loaded)."
+
+  option :run_lock_timeout,
+    :long         => "--run-lock-timeout SECONDS",
+    :description  => "Set maximum duration to wait for another client run to finish, default is indefinitely.",
+    :proc         => lambda { |s| s.to_i }
 
   if Chef::Platform.windows?
     option :fatal_windows_admin_check,
@@ -245,6 +254,7 @@ class Chef::Application::Client < Chef::Application
     if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
       Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
     end
+    Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
     Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
     if Chef::Config[:daemonize]

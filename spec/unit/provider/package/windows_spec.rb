@@ -27,6 +27,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
 
   describe "load_current_resource" do
     before(:each) do
+      Chef::Util::PathHelper.stub(:validate_path)
       provider.stub(:package_provider).and_return(double('package_provider',
           :installed_version => "1.0", :package_version => "2.0"))
     end
@@ -45,6 +46,11 @@ describe Chef::Provider::Package::Windows, :windows_only do
     it "sets the version to be installed" do
       provider.load_current_resource
       expect(provider.new_resource.version).to eql("2.0")
+    end
+
+    it "checks that the source path is valid" do
+      expect(Chef::Util::PathHelper).to receive(:validate_path)
+      provider.load_current_resource
     end
   end
 

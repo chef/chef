@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -14,7 +13,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -48,7 +47,7 @@
 <dt><tt class="docutils literal"><span class="pre">--chef-zero-port</span> <span class="pre">PORT</span></tt></dt>
 <dd>The port on which chef-zero will listen.</dd>
 <dt><tt class="docutils literal"><span class="pre">-c</span> <span class="pre">CONFIG_FILE</span></tt>, <tt class="docutils literal"><span class="pre">--config</span> <span class="pre">CONFIG_FILE</span></tt></dt>
-<dd>The configuration file to use. For example, when Knife is run from a node that is configured to be managed by the server, this option is used to allow Knife to use the same credentials as the chef-client when communicating with the server.</dd>
+<dd>The configuration file to use. For example, when Knife is run from a node that is configured to be managed by the Chef server, this option is used to allow Knife to use the same credentials as the chef-client when communicating with the Chef server.</dd>
 <dt><tt class="docutils literal"><span class="pre">-d</span></tt>, <tt class="docutils literal"><span class="pre">--disable-editing</span></tt></dt>
 <dd>Indicates that $EDITOR will not be opened; data will be accepted as-is.</dd>
 <dt><tt class="docutils literal"><span class="pre">--defaults</span></tt></dt>
@@ -62,15 +61,15 @@
 <dt><tt class="docutils literal"><span class="pre">-h</span></tt>, <tt class="docutils literal"><span class="pre">--help</span></tt></dt>
 <dd>Shows help for the command.</dd>
 <dt><tt class="docutils literal"><span class="pre">-k</span> <span class="pre">KEY</span></tt>, <tt class="docutils literal"><span class="pre">--key</span> <span class="pre">KEY</span></tt></dt>
-<dd>The private key that Knife will use to sign requests made by the API client to the server.</dd>
+<dd>The private key that Knife will use to sign requests made by the API client to the Chef server.</dd>
 <dt><tt class="docutils literal"><span class="pre">--[no-]color</span></tt></dt>
 <dd>Indicates whether colored output will be used.</dd>
 <dt><tt class="docutils literal"><span class="pre">--print-after</span></tt></dt>
 <dd>Indicates that data will be shown after a destructive operation.</dd>
 <dt><tt class="docutils literal"><span class="pre">-s</span> <span class="pre">URL</span></tt>, <tt class="docutils literal"><span class="pre">--server-url</span> <span class="pre">URL</span></tt></dt>
-<dd>The URL for the server.</dd>
+<dd>The URL for the Chef server.</dd>
 <dt><tt class="docutils literal"><span class="pre">-u</span> <span class="pre">USER</span></tt>, <tt class="docutils literal"><span class="pre">--user</span> <span class="pre">USER</span></tt></dt>
-<dd>The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.</dd>
+<dd>The user name used by Knife to sign requests made by the API client to the Chef server. Authentication will fail if the user name does not match the private key.</dd>
 <dt><tt class="docutils literal"><span class="pre">-V</span></tt>, <tt class="docutils literal"><span class="pre">--verbose</span></tt></dt>
 <dd>Set for more verbose outputs. Use <tt class="docutils literal"><span class="pre">-VV</span></tt> for maximum verbosity.</dd>
 <dt><tt class="docutils literal"><span class="pre">-v</span></tt>, <tt class="docutils literal"><span class="pre">--version</span></tt></dt>
@@ -78,7 +77,7 @@
 <dt><tt class="docutils literal"><span class="pre">-y</span></tt>, <tt class="docutils literal"><span class="pre">--yes</span></tt></dt>
 <dd>Indicates that the response to all confirmation prompts will be &#8220;Yes&#8221; (and that Knife will not ask for confirmation).</dd>
 <dt><tt class="docutils literal"><span class="pre">-z</span></tt>, <tt class="docutils literal"><span class="pre">--local-mode</span></tt></dt>
-<dd>Indicates that the chef-client will be run in local mode, which allows all commands that work against the server to also work against the local chef-repo.</dd>
+<dd>Indicates that the chef-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef-repo.</dd>
 </dl>
 </div>
 

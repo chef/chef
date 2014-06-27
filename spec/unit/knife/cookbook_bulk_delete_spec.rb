@@ -27,7 +27,9 @@ describe Chef::Knife::CookbookBulkDelete do
     @knife.config = {:print_after => nil}
     @knife.name_args = ["."]
     @stdout = StringIO.new
+    @stderr = StringIO.new
     @knife.ui.stub(:stdout).and_return(@stdout)
+    @knife.ui.stub(:stderr).and_return(@stderr)
     @knife.ui.stub(:confirm).and_return(true)
     @cookbooks = Hash.new
     %w{cheezburger pizza lasagna}.each do |cookbook_name|

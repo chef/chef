@@ -1,4 +1,6 @@
-.TH "KNIFE-INDEX-REBUILD" "1" "Chef 11.10.0" "" "knife index rebuild"
+.\" Man page generated from reStructuredText.
+.
+.TH "KNIFE-INDEX-REBUILD" "1" "Chef 11.12.0" "" "knife index rebuild"
 .SH NAME
 knife-index-rebuild \- The man page for the knife index rebuild subcommand.
 .
@@ -28,23 +30,29 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.\" Man page generated from reStructuredText.
-.
 .sp
-The \fBknife index rebuild\fP subcommand is used to rebuild the search indexes for the open source server. This operation is destructive and may take some time.
-.IP Note
-This subcommand ONLY works when run against the open source server version 10.x. This subcommand will NOT run against open source server 11, Enterprise Chef (including hosted Enterprise Chef), or Private Chef.
-.RE
+The \fBknife index rebuild\fP subcommand is used to rebuild the search indexes for the open source Chef server\&. This operation is destructive and may take some time.
+.sp
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+This subcommand ONLY works when run against the open source Chef server version 10.x. This subcommand will NOT run against open source Chef server 11, Enterprise Chef (including hosted Enterprise Chef), or Private Chef\&.
+.UNINDENT
+.UNINDENT
 .sp
 \fBSyntax\fP
 .sp
-This argument has the following syntax:
+This subcommand has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife index rebuild
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp

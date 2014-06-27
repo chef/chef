@@ -206,6 +206,17 @@ EOM
       result.error!
     end
 
+    it "should not print SSL warnings when running in local-mode" do
+      file 'config/client.rb', <<EOM
+chef_server_url 'http://omg.com/blah'
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --local-mode", :cwd => chef_dir)
+      result.stdout.should_not include("SSL validation of HTTPS requests is disabled.")
+      result.error!
+    end
+
     it "should complete with success when passed -z and --chef-zero-port" do
       file 'config/client.rb', <<EOM
 chef_server_url 'http://omg.com/blah'

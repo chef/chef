@@ -1,4 +1,6 @@
-.TH "KNIFE-DIFF" "1" "Chef 11.10.0" "" "knife diff"
+.\" Man page generated from reStructuredText.
+.
+.TH "KNIFE-DIFF" "1" "Chef 11.12.0" "" "knife diff"
 .SH NAME
 knife-diff \- The man page for the knife diff subcommand.
 .
@@ -28,20 +30,22 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.\" Man page generated from reStructuredText.
-.
 .sp
-The \fBknife diff\fP subcommand is used to compare the differences between files and directories on the server and in the chef\-repo. For example, to compare files on the server prior to an uploading or downloading files using the \fBknife download\fP and \fBknife upload\fP subcommands, or to ensure that certain files in multiple production environments are the same. This subcommand is similar to the \fBgit diff\fP command that can be used to diff what is in the chef\-repo with what is synced to a git repository.
+The \fBknife diff\fP subcommand is used to compare the differences between files and directories on the Chef server and in the chef\-repo\&. For example, to compare files on the Chef server prior to an uploading or downloading files using the \fBknife download\fP and \fBknife upload\fP subcommands, or to ensure that certain files in multiple production environments are the same. This subcommand is similar to the \fBgit diff\fP command that can be used to diff what is in the chef\-repo with what is synced to a git repository.
 .sp
 \fBSyntax\fP
 .sp
-This argument has the following syntax:
+This subcommand has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife diff [PATTERN...] (options)
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -52,7 +56,7 @@ This subcommand has the following options:
 The configuration file to use.
 .TP
 .B \fB\-\-chef\-repo\-path PATH\fP
-The path to the chef\-repo. This setting will override the default path to the chef\-repo. Default: same as specified by \fBchef_repo_path\fP in config.rb.
+The path to the chef\-repo\&. This setting will override the default path to the chef\-repo\&. Default: same as specified by \fBchef_repo_path\fP in config.rb.
 .TP
 .B \fB\-\-chef\-zero\-port PORT\fP
 The port on which chef\-zero will listen.
@@ -64,7 +68,7 @@ Indicates whether colored output will be used.
 The version of a cookbook to be downloaded.
 .TP
 .B \fB\-\-concurrency\fP
-The number of allowed concurrent connections. Default: \fB10\fP.
+The number of allowed concurrent connections. Default: \fB10\fP\&.
 .TP
 .B \fB\-d\fP, \fB\-\-disable\-editing\fP
 Indicates that $EDITOR will not be opened; data will be accepted as\-is.
@@ -73,7 +77,7 @@ Indicates that $EDITOR will not be opened; data will be accepted as\-is.
 Indicates that Knife will use the default value, instead of asking a user to provide one.
 .TP
 .B \fB\-\-diff\-filter=[(A|D|M|T)...[*]]\fP
-Indicates that files will be selected that have been added (\fBA\fP), deleted (\fBD\fP), modified (\fBM\fP), and/or have had their type changed (\fBT\fP). Any combination of filter characters may be used, including no filter characters. Use \fB*\fP to select all paths if a file matches other criteria in the comparison. Default value: \fBnil\fP.
+Indicates that files will be selected that have been added (\fBA\fP), deleted (\fBD\fP), modified (\fBM\fP), and/or have had their type changed (\fBT\fP). Any combination of filter characters may be used, including no filter characters. Use \fB*\fP to select all paths if a file matches other criteria in the comparison. Default value: \fBnil\fP\&.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -82,13 +86,13 @@ The $EDITOR that is used for all interactive commands.
 The name of the environment. When this option is added to a command, the command will run only against the named environment.
 .TP
 .B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
-The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
+The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP\&.
 .TP
 .B \fB\-h\fP, \fB\-\-help\fP
 Shows help for the command.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the server.
+The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-name\-only\fP
 Indicates that only the names of modified files will be shown.
@@ -97,22 +101,22 @@ Indicates that only the names of modified files will be shown.
 Indicates that only the names of files with a status of \fBAdded\fP, \fBDeleted\fP, \fBModified\fP, or \fBType Changed\fP will be shown.
 .TP
 .B \fB\-\-no\-recurse\fP
-Use \fB\-\-no\-recurse\fP to disable listing a directory recursively. Default: \fB\-\-recurse\fP.
+Use \fB\-\-no\-recurse\fP to disable listing a directory recursively. Default: \fB\-\-recurse\fP\&.
 .TP
 .B \fB\-\-print\-after\fP
 Indicates that data will be shown after a destructive operation.
 .TP
 .B \fB\-\-repo\-mode MODE\fP
-The layout of the local chef\-repo. Possible values: \fBstatic\fP, \fBeverything\fP, or \fBhosted_everything\fP. Use \fBstatic\fP for just roles, environments, cookbooks, and data bags. By default, \fBeverything\fP and \fBhosted_everything\fP are dynamically selected depending on the server type. Default: \fBeverything\fP / \fBhosted_everything\fP.
+The layout of the local chef\-repo\&. Possible values: \fBstatic\fP, \fBeverything\fP, or \fBhosted_everything\fP\&. Use \fBstatic\fP for just roles, environments, cookbooks, and data bags. By default, \fBeverything\fP and \fBhosted_everything\fP are dynamically selected depending on the server type. Default: \fBeverything\fP / \fBhosted_everything\fP\&.
 .TP
 .B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
-The URL for the server.
+The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
+The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
-The version of the chef\-client.
+The version of the chef\-client\&.
 .TP
 .B \fB\-V\fP, \fB\-\-verbose\fP
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
@@ -121,7 +125,7 @@ Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .sp
 \fBknife.rb File Settings\fP
@@ -163,30 +167,44 @@ Use to add the \fB\-\-repo\-mode\fP option.
 \fBExamples\fP
 .sp
 To compare the "base.json" role to a "webserver.json" role, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife diff roles/base.json roles/webserver.json
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
-To compare the differences between the local chef\-repo and the files that are on the server, enter:
+To compare the differences between the local chef\-repo and the files that are on the Chef server, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife diff
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To diff a node named \fBnode\-lb\fP and then only return files that have been added, deleted, modified, or changed, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife diff \-\-name\-status node\-lb
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something like:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -200,6 +218,8 @@ node\-lb/.gitignore
 node\-lb/Rakefile
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH AUTHOR
 Chef
 .\" Generated by docutils manpage writer.

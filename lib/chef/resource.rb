@@ -29,6 +29,7 @@ require 'chef/resource/conditional_action_not_nothing'
 require 'chef/resource_collection'
 require 'chef/resource_platform_map'
 require 'chef/node'
+require 'chef/platform'
 
 require 'chef/mixin/deprecation'
 
@@ -252,6 +253,7 @@ F
       @source_line = nil
       @guard_interpreter = :default
       @elapsed_time = 0
+      @sensitive = false
 
       @node = run_context ? deprecated_ivar(run_context.node, :node, :warn) : nil
     end
@@ -399,6 +401,14 @@ F
       )
     end
 
+    def sensitive(arg=nil)
+      set_or_return(
+        :sensitive,
+        arg,
+        :kind_of => [ TrueClass, FalseClass ]
+      )
+    end
+
     def epic_fail(arg=nil)
       ignore_failure(arg)
     end
@@ -493,6 +503,7 @@ F
     end
 
     def to_text
+      return "suppressed sensitive resource output" if sensitive
       ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
       text = "# Declared in #{@source_line}\n\n"
       text << self.class.dsl_name + "(\"#{name}\") do\n"

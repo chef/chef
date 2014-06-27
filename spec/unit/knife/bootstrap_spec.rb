@@ -94,8 +94,8 @@ describe Chef::Knife::Bootstrap do
     @knife.instance_variable_set("@template_file", @knife.config[:template_file])
     template_string = @knife.read_template
     @knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
-    expected_hash = Yajl::Parser.new.parse('{"foo":{"bar":"baz"},"run_list":[]}')
-    actual_hash = Yajl::Parser.new.parse(@knife.render_template(template_string))
+    expected_hash = FFI_Yajl::Parser.new.parse('{"foo":{"bar":"baz"},"run_list":[]}')
+    actual_hash = FFI_Yajl::Parser.new.parse(@knife.render_template(template_string))
     actual_hash.should == expected_hash
   end
 
@@ -374,6 +374,12 @@ describe Chef::Knife::Bootstrap do
       @knife.stub(:knife_ssh_with_password_auth).and_return(@fallback_knife_ssh)
       @fallback_knife_ssh.should_receive(:run)
       @knife.run
+    end
+
+    it "raises the exception if config[:ssh_password] is set and an authentication exception is raised" do
+      @knife.config[:ssh_password] = "password"
+      @knife_ssh.should_receive(:run).and_raise(Net::SSH::AuthenticationFailed)
+      lambda { @knife.run }.should raise_error(Net::SSH::AuthenticationFailed)
     end
 
     context "Chef::Config[:encrypted_data_bag_secret] is set" do

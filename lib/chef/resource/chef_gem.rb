@@ -28,6 +28,7 @@ class Chef
       def initialize(name, run_context=nil)
         super
         @resource_name = :chef_gem
+        @gem_binary = RbConfig::CONFIG['bindir'] + "/gem"
         @provider = Chef::Provider::Package::Rubygems
       end
 
@@ -37,7 +38,7 @@ class Chef
           raise ArgumentError, "The chef_gem resource is restricted to the current gem environment, use gem_package to install to other environments."
         end
 
-        nil
+        @gem_binary
       end
 
       def after_created

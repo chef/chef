@@ -262,7 +262,7 @@ class Chef
         system_name = system_name.to_wstring if system_name
         if LookupAccountNameW(system_name, name.to_wstring, nil, sid_size, nil, referenced_domain_name_size, nil)
           raise "Expected ERROR_INSUFFICIENT_BUFFER from LookupAccountName, and got no error!"
-        elsif Chef::ReservedNames::Win32::Error.get_last_error != ERROR_INSUFFICIENT_BUFFER
+        elsif FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
           Chef::ReservedNames::Win32::Error.raise!
         end
 
@@ -284,7 +284,7 @@ class Chef
         system_name = system_name.to_wstring if system_name
         if LookupAccountSidW(system_name, sid, nil, name_size, nil, referenced_domain_name_size, nil)
           raise "Expected ERROR_INSUFFICIENT_BUFFER from LookupAccountSid, and got no error!"
-        elsif Chef::ReservedNames::Win32::Error::get_last_error != ERROR_INSUFFICIENT_BUFFER
+        elsif FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
           Chef::ReservedNames::Win32::Error.raise!
         end
 
@@ -303,7 +303,7 @@ class Chef
         name_size = FFI::Buffer.new(:long).write_long(0)
         if LookupPrivilegeNameW(system_name, luid, nil, name_size)
           raise "Expected ERROR_INSUFFICIENT_BUFFER from LookupPrivilegeName, and got no error!"
-        elsif Chef::ReservedNames::Win32::Error.get_last_error != ERROR_INSUFFICIENT_BUFFER
+        elsif FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
           Chef::ReservedNames::Win32::Error.raise!
         end
 
@@ -321,7 +321,7 @@ class Chef
         language_id = FFI::Buffer.new(:long)
         if LookupPrivilegeDisplayNameW(system_name, name.to_wstring, nil, display_name_size, language_id)
           raise "Expected ERROR_INSUFFICIENT_BUFFER from LookupPrivilegeDisplayName, and got no error!"
-        elsif Chef::ReservedNames::Win32::Error.get_last_error != ERROR_INSUFFICIENT_BUFFER
+        elsif FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
           Chef::ReservedNames::Win32::Error.raise!
         end
 
@@ -353,7 +353,7 @@ class Chef
         group_size = FFI::Buffer.new(:long).write_long(0)
         if MakeAbsoluteSD(security_descriptor, nil, absolute_sd_size, nil, dacl_size, nil, sacl_size, nil, owner_size, nil, group_size)
           raise "Expected ERROR_INSUFFICIENT_BUFFER from MakeAbsoluteSD, and got no error!"
-        elsif Chef::ReservedNames::Win32::Error.get_last_error != ERROR_INSUFFICIENT_BUFFER
+        elsif FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
           Chef::ReservedNames::Win32::Error.raise!
         end
 

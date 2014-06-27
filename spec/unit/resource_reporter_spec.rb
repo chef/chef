@@ -39,7 +39,8 @@ describe Chef::ResourceReporter do
     @rest_client.stub(:post_rest).and_return(true)
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
     @new_resource      = Chef::Resource::File.new("/tmp/a-file.txt")
-    @new_resource.cookbook_name = "monkey"
+    @cookbook_name = "monkey"
+    @new_resource.cookbook_name = @cookbook_name
     @cookbook_version = double("Cookbook::Version", :version => "1.2.3")
     @new_resource.stub(:cookbook_version).and_return(@cookbook_version)
     @current_resource  = Chef::Resource::File.new("/tmp/a-file.txt")
@@ -316,8 +317,7 @@ describe Chef::ResourceReporter do
       end
     end
 
-
-    context "for a successful client run" do
+    shared_examples_for "a successful client run" do
       before do
         # TODO: add inputs to generate expected output.
 
@@ -349,10 +349,10 @@ describe Chef::ResourceReporter do
         #    "status" : "success"
         #    "data" : ""
         # }
-        @resource_reporter.resource_action_start(@new_resource, :create)
-        @resource_reporter.resource_current_state_loaded(@new_resource, :create, @current_resource)
-        @resource_reporter.resource_updated(@new_resource, :create)
-        @resource_reporter.resource_completed(@new_resource)
+        @resource_reporter.resource_action_start(new_resource, :create)
+        @resource_reporter.resource_current_state_loaded(new_resource, :create, current_resource)
+        @resource_reporter.resource_updated(new_resource, :create)
+        @resource_reporter.resource_completed(new_resource)
         @run_status.stop_clock
         @report = @resource_reporter.prepare_run_data
         @first_update_report = @report["resources"].first
@@ -371,19 +371,19 @@ describe Chef::ResourceReporter do
       end
 
       it "includes an updated resource's initial state" do
-        @first_update_report["before"].should == @current_resource.state
+        @first_update_report["before"].should == current_resource.state
       end
 
       it "includes an updated resource's final state" do
-        @first_update_report["after"].should == @new_resource.state
+        @first_update_report["after"].should == new_resource.state
       end
 
       it "includes the resource's name" do
-        @first_update_report["name"].should == @new_resource.name
+        @first_update_report["name"].should == new_resource.name
       end
 
       it "includes the resource's id attribute" do
-        @first_update_report["id"].should == @new_resource.identity
+        @first_update_report["id"].should == new_resource.identity
       end
 
       it "includes the elapsed time for the resource to converge" do
@@ -400,7 +400,7 @@ describe Chef::ResourceReporter do
 
       it "includes the cookbook name of the resource" do
         @first_update_report.should have_key("cookbook_name")
-        @first_update_report["cookbook_name"].should == "monkey"
+        @first_update_report["cookbook_name"].should == @cookbook_name
       end
 
       it "includes the cookbook version of the resource" do
@@ -430,13 +430,38 @@ describe Chef::ResourceReporter do
 
     end
 
+    context "when the resource is a File" do
+      let(:new_resource) { @new_resource }
+      let(:current_resource) { @current_resource }
+
+      it_should_behave_like "a successful client run"
+    end
+
+    context "when the resource is a RegistryKey with binary data" do
+      let(:new_resource) do
+        resource = Chef::Resource::RegistryKey.new('Wubba\Lubba\Dub\Dubs')
+        resource.values([ { :name => 'rick', :type => :binary, :data => 255.chr * 1 } ])
+        resource.stub(:cookbook_name).and_return(@cookbook_name)
+        resource.stub(:cookbook_version).and_return(@cookbook_version)
+        resource
+      end
+
+      let(:current_resource) do
+        resource = Chef::Resource::RegistryKey.new('Wubba\Lubba\Dub\Dubs')
+        resource.values([ { :name => 'rick', :type => :binary, :data => 255.chr * 1 } ])
+        resource
+      end
+
+      it_should_behave_like "a successful client run"
+    end
+
     context "for an unsuccessful run" do
 
       before do
         @backtrace = ["foo.rb:1 in `foo!'","bar.rb:2 in `bar!","'baz.rb:3 in `baz!'"]
         @node = Chef::Node.new
         @node.name("spitfire")
-        @exception = double("ArgumentError")
+        @exception = ArgumentError.new
         @exception.stub(:inspect).and_return("Net::HTTPServerException")
         @exception.stub(:message).and_return("Object not found")
         @exception.stub(:backtrace).and_return(@backtrace)
@@ -463,7 +488,7 @@ describe Chef::ResourceReporter do
 
       it "includes the error inspector output in the event data" do
         @report["data"]["exception"].should have_key("description")
-        @report["data"]["exception"]["description"].should include({"title"=>"Error expanding the run_list:", "sections"=>[{"Unexpected Error:" => "RSpec::Mocks::Mock: Object not found"}]})
+        @report["data"]["exception"]["description"].should include({"title"=>"Error expanding the run_list:", "sections"=>[{"Unexpected Error:" => "ArgumentError: Object not found"}]})
       end
 
     end

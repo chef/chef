@@ -19,10 +19,13 @@ require 'spec_helper'
 
 describe Chef::Application::Client, "reconfigure" do
   before do
+    Kernel.stub(:trap).and_return(:ok)
+
     @original_argv = ARGV.dup
     ARGV.clear
 
     @app = Chef::Application::Client.new
+    @app.stub(:trap)
     @app.stub(:configure_opt_parser).and_return(true)
     @app.stub(:configure_chef).and_return(true)
     @app.stub(:configure_logging).and_return(true)
@@ -131,6 +134,8 @@ describe Chef::Application::Client, "run_application", :unix_only do
     Chef::Config[:daemonize] = true
     @pipe = IO.pipe
     @app = Chef::Application::Client.new
+    # Default logger doesn't work correctly when logging from a trap handler.
+    @app.configure_logging
     Chef::Daemon.stub(:daemonize).and_return(true)
     @app.stub(:run_chef_client) do
       @pipe[1].puts 'started'
@@ -139,7 +144,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
     end
   end
 
-  it "should exit gracefully when sent SIGTERM" do
+  it "should exit gracefully when sent SIGTERM", :volatile_on_solaris do
     pid = fork do
       @app.run_application
     end

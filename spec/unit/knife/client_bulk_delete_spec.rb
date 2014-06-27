@@ -21,12 +21,15 @@ require 'spec_helper'
 describe Chef::Knife::ClientBulkDelete do
   let(:stdout_io) { StringIO.new }
   let(:stdout) {stdout_io.string}
+  let(:stderr_io) { StringIO.new }
+  let(:stderr) { stderr_io.string }
 
   let(:knife) {
     k = Chef::Knife::ClientBulkDelete.new
     k.name_args = name_args
     k.config = option_args
     k.ui.stub(:stdout).and_return(stdout_io)
+    k.ui.stub(:stderr).and_return(stderr_io)
     k.ui.stub(:confirm).and_return(knife_confirm)
     k.ui.stub(:confirm_without_exit).and_return(knife_confirm)
     k

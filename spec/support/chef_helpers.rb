@@ -20,10 +20,10 @@ Chef::Config[:log_level] = :fatal
 Chef::Config[:persistent_queue] = false
 Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
 
+Chef::Log.init(StringIO.new)
 Chef::Log.level(Chef::Config.log_level)
 Chef::Config.solo(false)
 
-Chef::Log.logger = Logger.new(StringIO.new)
 
 def sha256_checksum(path)
   Digest::SHA256.hexdigest(File.read(path))

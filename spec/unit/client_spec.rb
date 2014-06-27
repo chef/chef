@@ -253,9 +253,11 @@ describe Chef::Client do
       end
 
       def stub_for_node_save
+        node.stub(:data_for_save).and_return(node.for_json)
+
         # --Client#save_updated_node
         Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_node_save)
-        http_node_save.should_receive(:put_rest).with("nodes/#{fqdn}", node).and_return(true)
+        http_node_save.should_receive(:put_rest).with("nodes/#{fqdn}", node.for_json).and_return(true)
       end
 
       def stub_for_run
@@ -270,6 +272,7 @@ describe Chef::Client do
 
       before do
         Chef::Config[:client_fork] = enable_fork
+        Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
 
         stub_const("Chef::Client::STDOUT_FD", stdout)
         stub_const("Chef::Client::STDERR_FD", stderr)
@@ -488,6 +491,22 @@ describe Chef::Client do
       node[:recipes].length.should == 1
       node[:recipes].should include("cookbook1")
     end
+
+    it "should set the environment from the specified configuration value" do
+      node.chef_environment.should == "_default"
+      Chef::Config[:environment] = "A"
+
+      test_env = Chef::Environment.new
+      test_env.name("A")
+
+      mock_chef_rest = double("Chef::REST")
+      mock_chef_rest.should_receive(:get_rest).with("environments/A").and_return(test_env)
+      Chef::REST.should_receive(:new).and_return(mock_chef_rest)
+      client.policy_builder.stub(:node).and_return(node)
+      client.build_node.should == node
+
+      node.chef_environment.should == "A"
+    end
   end
 
   describe "windows_admin_check" do
@@ -598,4 +617,3 @@ describe Chef::Client do
 
   end
 end
-

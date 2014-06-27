@@ -54,8 +54,8 @@ describe TinyServer::API do
     response = @api.call("REQUEST_METHOD" => "GET", "REQUEST_URI" => '/no_such_thing')
     response[0].should == 404
     response[1].should == {'Content-Type' => 'application/json'}
-    response[2].should be_a_kind_of(String)
-    response_obj = Chef::JSONCompat.from_json(response[2])
+    response[2].should be_a_kind_of(Array)
+    response_obj = Chef::JSONCompat.from_json(response[2].first)
     response_obj["message"].should == "no data matches the request for /no_such_thing"
     response_obj["available_routes"].should == {"GET"=>[], "PUT"=>[], "POST"=>[], "DELETE"=>[]}
     response_obj["request"].should == {"REQUEST_METHOD"=>"GET", "REQUEST_URI"=>"/no_such_thing"}

@@ -344,7 +344,8 @@ describe Chef::Resource do
       expected_keys = [ :allowed_actions, :params, :provider, :updated,
         :updated_by_last_action, :before, :supports,
         :noop, :ignore_failure, :name, :source_line,
-        :action, :retries, :retry_delay, :elapsed_time, :guard_interpreter]
+        :action, :retries, :retry_delay, :elapsed_time, 
+        :guard_interpreter, :sensitive ]
       (hash.keys - expected_keys).should == []
       (expected_keys - hash.keys).should == []
       hash[:name].should eql("funk")
@@ -559,12 +560,12 @@ describe Chef::Resource do
       @resource.should_skip?(:purr).should be_false
     end
 
-    it "should return false when if_only is met" do
+    it "should return false when only_if is met" do
       @resource.only_if { true }
       @resource.should_skip?(:purr).should be_false
     end
 
-    it "should return true when if_only is not met" do
+    it "should return true when only_if is not met" do
       @resource.only_if { false }
       @resource.should_skip?(:purr).should be_true
     end
@@ -574,18 +575,18 @@ describe Chef::Resource do
       @resource.should_skip?(:purr).should be_true
     end
 
-    it "should return false when if_only is not met" do
+    it "should return false when not_if is not met" do
       @resource.not_if { false }
       @resource.should_skip?(:purr).should be_false
     end
 
-    it "should return true when if_only is met but also not_if is met" do
+    it "should return true when only_if is met but also not_if is met" do
       @resource.only_if { true }
       @resource.not_if { true }
       @resource.should_skip?(:purr).should be_true
     end
 
-    it "should return true when one of multiple if_only's is not met" do
+    it "should return true when one of multiple only_if's is not met" do
       @resource.only_if { true }
       @resource.only_if { false }
       @resource.only_if { true }
@@ -612,7 +613,7 @@ describe Chef::Resource do
     it "should print \"skipped due to action :nothing\" message for doc formatter when action is :nothing" do
       fdoc = Chef::Formatters.new(:doc, STDOUT, STDERR)
       @run_context.stub(:events).and_return(fdoc)
-      fdoc.should_receive(:puts).with(" (skipped due to action :nothing)")
+      fdoc.should_receive(:puts).with(" (skipped due to action :nothing)", anything())
       @resource.should_skip?(:nothing)
     end
 
@@ -778,6 +779,40 @@ describe Chef::Resource do
         @resource.notifies(:run, @notified_resource, :immediately)
         @run_context.immediate_notification_collection.should have(1).notifications
       end
+    end
+
+  end
+
+  describe "resource sensitive attribute" do
+
+    before(:each) do
+       @resource_file = Chef::Resource::File.new("/nonexistent/CHEF-5098/file", @run_context)
+       @action = :create
+    end 
+
+    def compiled_resource_data(resource, action, err)
+      error_inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(resource, action, err)
+      description = Chef::Formatters::ErrorDescription.new("test")
+      error_inspector.add_explanation(description)
+      Chef::Log.info("descrtiption: #{description.inspect},error_inspector: #{error_inspector}")
+      description.sections[1]["Compiled Resource:"]
+    end
+
+    it "set to false by default" do
+      @resource.sensitive.should be_false
+    end
+
+    it "when set to false should show compiled resource for failed resource" do
+      expect { @resource_file.run_action(@action) }.to raise_error { |err|
+            compiled_resource_data(@resource_file, @action, err).should match 'path "/nonexistent/CHEF-5098/file"'
+          }
+    end
+
+    it "when set to true should show compiled resource for failed resource" do
+      @resource_file.sensitive true
+      expect { @resource_file.run_action(@action) }.to raise_error { |err|
+            compiled_resource_data(@resource_file, @action, err).should eql("suppressed sensitive resource output")
+          }
     end
 
   end

@@ -21,10 +21,6 @@ require 'spec_helper'
 require 'chef/exceptions'
 
 describe Chef::Config do
-  before(:all) do
-    @original_env = { 'HOME' => ENV['HOME'], 'SYSTEMDRIVE' => ENV['SYSTEMDRIVE'], 'HOMEPATH' => ENV['HOMEPATH'], 'USERPROFILE' => ENV['USERPROFILE'] }
-  end
-
   describe "config attribute writer: chef_server_url" do
     before do
       Chef::Config.chef_server_url = "https://junglist.gen.nz"
@@ -132,7 +128,7 @@ describe Chef::Config do
     it "should return a windows path on windows systems" do
       platform_mock :windows do
         path = "/etc/chef/cookbooks"
-        ENV.stub(:[]).with('SYSTEMDRIVE').and_return('C:')
+        Chef::Config.stub(:env).and_return({ 'SYSTEMDRIVE' => 'C:' })
         # match on a regex that looks for the base path with an optional
         # system drive at the beginning (c:)
         # system drive is not hardcoded b/c it can change and b/c it is not present on linux systems
@@ -142,13 +138,71 @@ describe Chef::Config do
   end
 
   describe "default values" do
+    def primary_cache_path
+      if windows?
+        "#{Chef::Config.env['SYSTEMDRIVE']}\\chef"
+      else
+        "/var/chef"
+      end
+    end
+
+    def secondary_cache_path
+      if windows?
+        "#{Chef::Config[:user_home]}\\.chef"
+      else
+        "#{Chef::Config[:user_home]}/.chef"
+      end
+    end
+
+    before do
+      if windows?
+        Chef::Config.stub(:env).and_return({ 'SYSTEMDRIVE' => 'C:' })
+        Chef::Config[:user_home] = 'C:\Users\charlie'
+      else
+        Chef::Config[:user_home] = '/Users/charlie'
+      end
+
+      Chef::Config.stub(:path_accessible?).and_return(false)
+    end
+
+    describe "Chef::Config[:cache_path]" do
+      context "when /var/chef exists and is accessible" do
+        it "defaults to /var/chef" do
+          Chef::Config.stub(:path_accessible?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(true)
+          Chef::Config[:cache_path].should == primary_cache_path
+        end
+      end
+
+      context "when /var/chef does not exist and /var is accessible" do
+        it "defaults to /var/chef" do
+          File.stub(:exists?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(false)
+          Chef::Config.stub(:path_accessible?).with(Chef::Config.platform_specific_path("/var")).and_return(true)
+          Chef::Config[:cache_path].should == primary_cache_path
+        end
+      end
+
+      context "when /var/chef does not exist and /var is not accessible" do
+        it "defaults to $HOME/.chef" do
+          File.stub(:exists?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(false)
+          Chef::Config.stub(:path_accessible?).with(Chef::Config.platform_specific_path("/var")).and_return(false)
+          Chef::Config[:cache_path].should == secondary_cache_path
+        end
+      end
+
+      context "when /var/chef exists and is not accessible" do
+        it "defaults to $HOME/.chef" do
+          File.stub(:exists?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(true)
+          File.stub(:readable?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(true)
+          File.stub(:writable?).with(Chef::Config.platform_specific_path("/var/chef")).and_return(false)
+
+          Chef::Config[:cache_path].should == secondary_cache_path
+        end
+      end
+    end
 
     it "Chef::Config[:file_backup_path] defaults to /var/chef/backup" do
-      backup_path = if windows?
-        "#{ENV['SYSTEMDRIVE']}\\chef\\backup"
-      else
-        "/var/chef/backup"
-      end
+      Chef::Config.stub(:cache_path).and_return(primary_cache_path)
+      backup_path = windows? ? "#{primary_cache_path}\\backup" : "#{primary_cache_path}/backup"
       Chef::Config[:file_backup_path].should == backup_path
     end
 
@@ -171,18 +225,14 @@ describe Chef::Config do
     end
 
     it "Chef::Config[:data_bag_path] defaults to /var/chef/data_bags" do
-      data_bag_path =
-        Chef::Config.platform_specific_path("/var/chef/data_bags")
+      Chef::Config.stub(:cache_path).and_return(primary_cache_path)
+      data_bag_path = windows? ? "#{primary_cache_path}\\data_bags" : "#{primary_cache_path}/data_bags"
       Chef::Config[:data_bag_path].should == data_bag_path
     end
 
     it "Chef::Config[:environment_path] defaults to /var/chef/environments" do
-      environment_path = if windows?
-        "C:\\chef\\environments"
-      else
-        "/var/chef/environments"
-      end
-
+      Chef::Config.stub(:cache_path).and_return(primary_cache_path)
+      environment_path = windows? ? "#{primary_cache_path}\\environments" : "#{primary_cache_path}/environments"
       Chef::Config[:environment_path].should == environment_path
     end
 
@@ -283,22 +333,18 @@ describe Chef::Config do
 
   describe "Chef::Config[:user_home]" do
     it "should set when HOME is provided" do
-      ENV['HOME'] = "/home/kitten"
-      load File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "lib", "chef", "config.rb"))
+      Chef::Config.stub(:env).and_return({ 'HOME' => "/home/kitten" })
       Chef::Config[:user_home].should == "/home/kitten"
     end
 
     it "should be set when only USERPROFILE is provided" do
-      ENV['HOME'], ENV['SYSTEMDRIVE'],  ENV['HOMEPATH'] = nil, nil, nil
-      ENV['USERPROFILE'] = "/users/kitten"
-      load File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "lib", "chef", "config.rb"))
+      Chef::Config.stub(:env).and_return({ 'USERPROFILE' => "/users/kitten" })
       Chef::Config[:user_home].should == "/users/kitten"
     end
 
-    after(:each) do
-      @original_env.each do |env_setting|
-        ENV[env_setting[0]] = env_setting[1]
-      end
+    it "falls back to the current working directory when HOME and USERPROFILE is not set" do
+      Chef::Config.stub(:env).and_return({})
+      Chef::Config[:user_home].should == Dir.pwd
     end
   end
 
@@ -310,10 +356,6 @@ describe Chef::Config do
 
     before do
       File.stub(:exist?).with(db_secret_default_path).and_return(secret_exists)
-      # ugh...the only way to properly test this since the conditional
-      # is evaluated at file load/require time.
-      $LOADED_FEATURES.delete_if{|f| f =~ /chef\/config\.rb/}
-      require 'chef/config'
     end
 
     context "#{db_secret_default_path} exists" do

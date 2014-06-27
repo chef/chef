@@ -20,8 +20,13 @@ require 'spec_helper'
 
 describe Chef::Knife::UserEdit do
   before(:each) do
+    @stderr = StringIO.new
+    @stdout = StringIO.new
+
     Chef::Knife::UserEdit.load_deps
     @knife = Chef::Knife::UserEdit.new
+    @knife.ui.stub(:stderr).and_return(@stderr)
+    @knife.ui.stub(:stdout).and_return(@stdout)
     @knife.name_args = [ 'my_user' ]
     @knife.config[:disable_editing] = true
   end

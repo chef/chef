@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service'
+require 'chef/resource/service'
 require 'chef/provider/service/simple'
 require 'chef/mixin/command'
 require 'chef/util/file_edit'
@@ -43,7 +43,8 @@ class Chef
 
           run_context.node
 
-          @job = @new_resource.service_name
+          # dup so we can mutate @job
+          @job = @new_resource.service_name.dup
 
           if @new_resource.parameters
             @new_resource.parameters.each do |key, value|

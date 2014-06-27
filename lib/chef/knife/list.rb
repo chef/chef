@@ -43,21 +43,23 @@ class Chef
       def run
         patterns = name_args.length == 0 ? [""] : name_args
 
-        # Get the matches (recursively)
-        all_results = parallelize(pattern_args_from(patterns), :flatten => true) do |pattern|
-          pattern_results = Chef::ChefFS::FileSystem.list(config[:local] ? local_fs : chef_fs, pattern)
+        # Get the top-level matches
+        args = pattern_args_from(patterns)
+        all_results = parallelize(pattern_args_from(patterns)) do |pattern|
+          pattern_results = Chef::ChefFS::FileSystem.list(config[:local] ? local_fs : chef_fs, pattern).to_a
           if pattern_results.first && !pattern_results.first.exists? && pattern.exact_path
             ui.error "#{format_path(pattern_results.first)}: No such file or directory"
             self.exit_code = 1
           end
           pattern_results
-        end
+        end.flatten(1).to_a
 
         # Process directories
         if !config[:bare_directories]
-          dir_results = parallelize(all_results.select { |result| result.dir? }, :flatten => true) do |result|
+          dir_results = parallelize(all_results.select { |result| result.dir? }) do |result|
             add_dir_result(result)
-          end.to_a
+          end.flatten(1)
+
         else
           dir_results = []
         end
@@ -109,7 +111,7 @@ class Chef
         result = [ [ result, children ] ]
         if config[:recursive]
           child_dirs = children.select { |child| child.dir? }
-          result += parallelize(child_dirs, :flatten => true) { |child| add_dir_result(child) }.to_a
+          result += parallelize(child_dirs) { |child| add_dir_result(child) }.flatten(1).to_a
         end
         result
       end
@@ -152,4 +154,3 @@ class Chef
     end
   end
 end
-

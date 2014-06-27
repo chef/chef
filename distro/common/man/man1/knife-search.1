@@ -1,4 +1,6 @@
-.TH "KNIFE-SEARCH" "1" "Chef 11.10.0" "" "knife search"
+.\" Man page generated from reStructuredText.
+.
+.TH "KNIFE-SEARCH" "1" "Chef 11.12.0" "" "knife search"
 .SH NAME
 knife-search \- The man page for the knife search subcommand.
 .
@@ -28,34 +30,42 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.\" Man page generated from reStructuredText.
-.
 .sp
-Search indexes allow queries to be made for any type of data that is indexed by the server, including data bags (and data bag items), environments, nodes, and roles. A defined query syntax is used to support search patterns like exact, wildcard, range, and fuzzy. A search is a full\-text query that can be done from several locations, including from within a recipe, by using the \fBsearch\fP subcommand in Knife, by using the search functionality in the Chef Manage, or by using the \fB/search\fP or \fB/search/INDEX\fP endpoints in the Chef Server API. The search engine is based on Apache Solr and is run from the server.
+Search indexes allow queries to be made for any type of data that is indexed by the Chef server, including data bags (and data bag items), environments, nodes, and roles. A defined query syntax is used to support search patterns like exact, wildcard, range, and fuzzy. A search is a full\-text query that can be done from several locations, including from within a recipe, by using the \fBsearch\fP subcommand in Knife, or by using the \fB/search\fP or \fB/search/INDEX\fP endpoints in the Chef Server API\&. The search engine is based on Apache Solr and is run from the Chef server\&.
 .sp
-The \fBknife search\fP subcommand is used run a search query for information that is indexed on a server.
+The \fBknife search\fP subcommand is used run a search query for information that is indexed on a Chef server\&.
 .sp
 \fBSyntax\fP
 .sp
-This argument has the following syntax:
+This subcommand has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife search INDEX SEARCH_QUERY
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 where \fBINDEX\fP is one of \fBclient\fP, \fBenvironment\fP, \fBnode\fP, \fBrole\fP, or the name of a data bag and \fBSEARCH_QUERY\fP is the search query syntax for the query that will be executed.
 .sp
-\fBINDEX\fP is implied if omitted, and will default to \fBnode\fP. For example:
+\fBINDEX\fP is implied if omitted, and will default to \fBnode\fP\&. For example:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife search \(aq*:*\(aq \-i
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 will return something similar to:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -71,30 +81,44 @@ ohai\-test
 win2k8\-dev
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 and is the same search as:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife search node \(aq*:*" \-i
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 If the \fBSEARCH_QUERY\fP does not contain a colon character (\fB:\fP), then the default query pattern is \fBtags:*#{@query}* OR roles:*#{@query}* OR fqdn:*#{@query}* OR addresses:*#{@query}*\fP, which means the following two search queries are effectively the same:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife search ubuntu
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 or:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife search node "tags:*ubuntu* OR roles:*ubuntu* OR fqdn:*ubuntu* (etc.)"
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -129,7 +153,7 @@ The $EDITOR that is used for all interactive commands.
 The name of the environment. When this option is added to a command, the command will run only against the named environment.
 .TP
 .B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
-The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
+The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP\&.
 .TP
 .B \fB\-h\fP, \fB\-\-help\fP
 Shows help for the command.
@@ -138,10 +162,10 @@ Shows help for the command.
 Indicates that only matching object IDs will be shown.
 .TP
 .B \fBINDEX\fP
-The name of the index to be queried: \fBclient\fP, \fBenvironment\fP, \fBnode\fP, \fBrole\fP, or \fBDATA_BAG_NAME\fP. Default index: \fBnode\fP.
+The name of the index to be queried: \fBclient\fP, \fBenvironment\fP, \fBnode\fP, \fBrole\fP, or \fBDATA_BAG_NAME\fP\&. Default index: \fBnode\fP\&.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the server.
+The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-l\fP, \fB\-\-long\fP
 Display long output when searching nodes while using the default summary format.
@@ -165,16 +189,16 @@ Indicates that only the run\-list will be shown.
 The number of rows to be returned.
 .TP
 .B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
-The URL for the server.
+The URL for the Chef server\&.
 .TP
 .B \fBSEARCH_QUERY\fP
-The search query used to identify a a list of items on a server. This option uses the same syntax as the \fBsearch\fP sub\-command.
+The search query used to identify a a list of items on a Chef server\&. This option uses the same syntax as the \fBsearch\fP sub\-command.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
+The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
-The version of the chef\-client.
+The version of the chef\-client\&.
 .TP
 .B \fB\-V\fP, \fB\-\-verbose\fP
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
@@ -183,20 +207,26 @@ Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .sp
 \fBExamples\fP
 .sp
 To search for the IDs of all nodes running on the Amazon EC2 platform, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife search node \(aqec2:*\(aq \-i
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something like:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -211,16 +241,24 @@ ip\-0A58E134.ec2.internal
 ip\-0A7CFFD5.ec2.internal
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To search for the instance type (flavor) of all nodes running on the Amazon EC2 platform, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife search node \(aqec2:*\(aq \-a ec2.instance_type
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something like:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -239,56 +277,82 @@ ec2.instance_type:  m1.large
 id:                 ip\-0A7CFFD5.ec2.internal
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To search for all nodes running Ubuntu, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife search node \(aqplatform:ubuntu\(aq
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To search for all nodes running CentOS in the production environment, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife search node \(aqchef_environment:production AND platform:centos\(aq
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To find a nested attribute, use a pattern similar to the following:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife search node <query_to_run> \-a <main_attribute>.<nested_attribute>
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To build a search query to use more than one attribute, use an underscore (\fB_\fP) to separate each attribute. For example, the following query will search for all nodes running a specific version of Ruby:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife search node "languages_ruby_version:1.9.3"
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To build a search query that can find a nested attribute:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife search node name:<node_name> \-a kernel.machine
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To test a search query that will be used in a \fBknife ssh\fP command:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife search node "role:web NOT name:web03"
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
-where the query in the previous example will search all servers that have the \fBweb\fP role, but not on the server named \fBweb03\fP.
+where the query in the previous example will search all servers that have the \fBweb\fP role, but not on the server named \fBweb03\fP\&.
 .SH AUTHOR
 Chef
 .\" Generated by docutils manpage writer.

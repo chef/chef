@@ -84,7 +84,7 @@ class Chef
               f.print(user.private_key)
             end
           else
-            puts user.private_key
+            ui.msg user.private_key
           end
         end
       end

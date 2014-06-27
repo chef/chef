@@ -21,7 +21,7 @@ require 'chef/mixin/shell_out'
 require 'tmpdir'
 
 # run this test only for following platforms.
-include_flag = !(['ubuntu', 'centos', 'aix'].include?(ohai[:platform]))
+include_flag = !(['ubuntu', 'centos', 'aix', 'solaris2'].include?(ohai[:platform]))
 
 describe Chef::Resource::Mount, :requires_root, :external => include_flag do
 
@@ -52,6 +52,9 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
       end
       fstype = "tmpfs"
       shell_out!("mkfs -q #{device} 512")
+    when "solaris2"
+      device = "swap"
+      fstype = "tmpfs"
     else
     end
     [device, fstype]
@@ -71,11 +74,10 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
   end
 
   # platform specific validations.
-  def mount_should_exists(mount_point, device, fstype = nil, options = nil)
+  def mount_should_exist(mount_point, device, fstype = nil, options = nil)
     validation_cmd = "mount | grep #{mount_point} | grep #{device} "
     validation_cmd << " | grep #{fstype} " unless fstype.nil?
     validation_cmd << " | grep #{options.join(',')} " unless options.nil? || options.empty?
-    puts "validation_cmd = #{validation_cmd}"
     expect(shell_out(validation_cmd).exitstatus).to eq(0)
   end
 
@@ -87,6 +89,8 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
     case ohai[:platform]
     when 'aix'
       mount_config = "/etc/filesystems"
+    when 'solaris2'
+      mount_config = "/etc/vfstab"
     else
       mount_config = "/etc/fstab"
     end
@@ -119,7 +123,7 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
     provider
   end
 
-  def current_resource
+  let(:current_resource) do
     provider.load_current_resource
     provider.current_resource
   end
@@ -138,7 +142,6 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
         end
       end
     end
-
   end
 
   after(:all) do
@@ -156,28 +159,30 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
       current_resource.mounted.should be_false
       new_resource.run_action(:mount)
       new_resource.should be_updated
-      mount_should_exists(new_resource.mount_point, new_resource.device)
+      mount_should_exist(new_resource.mount_point, new_resource.device)
     end
-
   end
 
-  describe "when the filesystem should be remounted and the resource supports remounting" do
+  # don't run the remount tests on solaris2 (tmpfs does not support remount)
+  # Need to make sure the platforms we've already excluded are considered:
+  skip_remount = include_flag || (ohai[:platform] == "solaris2")
+  describe "when the filesystem should be remounted and the resource supports remounting", :external => skip_remount do
     it "should remount the filesystem if it is mounted" do
       new_resource.run_action(:mount)
-      mount_should_exists(new_resource.mount_point, new_resource.device)
+      mount_should_exist(new_resource.mount_point, new_resource.device)
 
       new_resource.supports[:remount] = true
       new_resource.options "rw,log=NULL" if ohai[:platform] == 'aix'
       new_resource.run_action(:remount)
 
-      mount_should_exists(new_resource.mount_point, new_resource.device, nil, (ohai[:platform] == 'aix') ? new_resource.options : nil)
+      mount_should_exist(new_resource.mount_point, new_resource.device, nil, (ohai[:platform] == 'aix') ? new_resource.options : nil)
     end
   end
 
   describe "when the target state is a unmounted filesystem" do
     it "should umount the filesystem if it is mounted" do
       new_resource.run_action(:mount)
-      mount_should_exists(new_resource.mount_point, new_resource.device)
+      mount_should_exist(new_resource.mount_point, new_resource.device)
 
       new_resource.run_action(:umount)
       mount_should_not_exists(new_resource.mount_point)

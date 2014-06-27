@@ -88,6 +88,13 @@ describe Chef::Provider::Service::Upstart do
       @provider.load_current_resource
     end
 
+    it "should not change the service name when parameters are specified" do
+      @new_resource.parameters({ "OSD_ID" => "2" })
+      @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context)
+      @provider.current_resource = @current_resource
+      @new_resource.service_name.should == @current_resource.service_name
+    end
+
     it "should run '/sbin/status rsyslog'" do
       @provider.should_receive(:popen4).with("/sbin/status rsyslog").and_return(@status)
       @provider.load_current_resource

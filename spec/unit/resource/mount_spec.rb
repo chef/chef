@@ -82,6 +82,17 @@ describe Chef::Resource::Mount do
     @resource.options.should be_a_kind_of(Array)
   end
 
+  it "should allow options to be sent as a delayed evaluator" do
+    @resource.options Chef::DelayedEvaluator.new {["rw", "noexec"]}
+    @resource.options.should eql(["rw", "noexec"])
+  end
+
+  it "should allow options to be sent as a delayed evaluator, and convert to array" do
+    @resource.options Chef::DelayedEvaluator.new {"rw,noexec"}
+    @resource.options.should be_a_kind_of(Array)
+    @resource.options.should eql(["rw", "noexec"])
+  end
+
   it "should accept true for mounted" do
     @resource.mounted(true)
     @resource.mounted.should eql(true)
@@ -182,7 +193,6 @@ describe Chef::Resource::Mount do
 
     it "describes its state" do
       state = @resource.state
-      puts state
       state[:mount_point].should == "T:"
       state[:username].should == "Administrator"
       state[:password].should == "Jetstream123!"

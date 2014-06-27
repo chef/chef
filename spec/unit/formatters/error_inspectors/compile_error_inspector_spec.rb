@@ -42,8 +42,8 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
     @description = Chef::Formatters::ErrorDescription.new("Error Evaluating File:")
     @exception = NoMethodError.new("undefined method `this_is_not_a_valid_method' for Chef::Resource::File")
 
-    @outputter = Chef::Formatters::Outputter.new(StringIO.new, STDERR)
-    #@outputter = Chef::Formatters::Outputter.new(STDOUT, STDERR)
+    @outputter = Chef::Formatters::IndentableOutputStream.new(StringIO.new, STDERR)
+    #@outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
   end
 
   describe "when scrubbing backtraces" do

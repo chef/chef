@@ -93,7 +93,7 @@ describe Chef::Provider::Git do
       @resource.revision "v1.0"
       @stdout = ("d03c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n" +
                  "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/v1.0\n")
-      @provider.should_receive(:shell_out!).with(@git_ls_remote + "v1.0*", {:log_tag=>"git[web2.0 app]"}).and_return(double("ShellOut result", :stdout => @stdout))
+      @provider.should_receive(:shell_out!).with(@git_ls_remote + "\"v1.0*\"", {:log_tag=>"git[web2.0 app]"}).and_return(double("ShellOut result", :stdout => @stdout))
       @provider.target_revision.should eql("503c22a5e41f5ae3193460cca044ed1435029f53")
     end
 
@@ -102,7 +102,7 @@ describe Chef::Provider::Git do
       @stdout = ("d03c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n" +
                  "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/v1.0\n" +
                  "663c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/v1.0^{}\n")
-      @provider.should_receive(:shell_out!).with(@git_ls_remote + "v1.0*", {:log_tag=>"git[web2.0 app]"}).and_return(double("ShellOut result", :stdout => @stdout))
+      @provider.should_receive(:shell_out!).with(@git_ls_remote + "\"v1.0*\"", {:log_tag=>"git[web2.0 app]"}).and_return(double("ShellOut result", :stdout => @stdout))
       @provider.target_revision.should eql("663c22a5e41f5ae3193460cca044ed1435029f53")
     end
 
@@ -131,7 +131,7 @@ describe Chef::Provider::Git do
     it "does not raise an error when the revision is valid and assertions are run." do
       @resource.revision "0.8-alpha"
       @stdout = "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n"
-      @provider.should_receive(:shell_out!).with(@git_ls_remote + "0.8-alpha*", {:log_tag=>"git[web2.0 app]"}).and_return(double("ShellOut result", :stdout => @stdout))
+      @provider.should_receive(:shell_out!).with(@git_ls_remote + "\"0.8-alpha*\"", {:log_tag=>"git[web2.0 app]"}).and_return(double("ShellOut result", :stdout => @stdout))
       @provider.action = :checkout
       ::File.stub(:directory?).with("/my/deploy").and_return(true)
       @provider.define_resource_requirements
@@ -156,7 +156,7 @@ b7d19519a1c15f1c1a324e2683bd728b6198ce5a\trefs/tags/0.7.8^{}
 ebc1b392fe7e8f0fbabc305c299b4d365d2b4d9b\trefs/tags/chef-server-package
 SHAS
       @resource.revision ''
-      @provider.should_receive(:shell_out!).with(@git_ls_remote + "HEAD", {:log_tag=>"git[web2.0 app]"}).and_return(double("ShellOut result", :stdout => @stdout))
+      @provider.should_receive(:shell_out!).with(@git_ls_remote + "\"HEAD\"", {:log_tag=>"git[web2.0 app]"}).and_return(double("ShellOut result", :stdout => @stdout))
       @provider.target_revision.should eql("28af684d8460ba4793eda3e7ac238c864a5d029a")
     end
   end
@@ -459,7 +459,7 @@ SHAS
   it "syncs the code by updating the source when the repo has already been checked out" do
     ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
     ::File.stub(:directory?).with("/my/deploy").and_return(true)
-    @provider.should_receive(:find_current_revision).exactly(2).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
+    @provider.should_receive(:find_current_revision).exactly(1).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
     @provider.should_not_receive(:fetch_updates)
     @provider.should_receive(:add_remotes)
     @provider.run_action(:sync)
@@ -470,7 +470,7 @@ SHAS
     ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
     ::File.stub(:directory?).with("/my/deploy").and_return(true)
     # invoked twice - first time from load_current_resource
-    @provider.should_receive(:find_current_revision).exactly(2).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
+    @provider.should_receive(:find_current_revision).exactly(1).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
     @provider.stub(:target_revision).and_return('28af684d8460ba4793eda3e7ac238c864a5d029a')
     @provider.should_receive(:fetch_updates)
     @provider.should_receive(:enable_submodules)

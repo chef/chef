@@ -1,4 +1,6 @@
-.TH "KNIFE-EXEC" "1" "Chef 11.10.0" "" "knife exec"
+.\" Man page generated from reStructuredText.
+.
+.TH "KNIFE-EXEC" "1" "Chef 11.12.0" "" "knife exec"
 .SH NAME
 knife-exec \- The man page for the knife exec subcommand.
 .
@@ -28,14 +30,12 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.\" Man page generated from reStructuredText.
-.
 .sp
-The \fBknife exec\fP subcommand uses the Knife configuration file to execute Ruby scripts in the context of a fully configured chef\-client. This subcommand is most often used to run scripts that will only access server one time (or otherwise very infrequently). Use this subcommand any time that an operation does not warrant full usage of the Knife subcommand library.
+The \fBknife exec\fP subcommand uses the Knife configuration file to execute Ruby scripts in the context of a fully configured chef\-client\&. This subcommand is most often used to run scripts that will only access Chef server one time (or otherwise very infrequently). Use this subcommand any time that an operation does not warrant full usage of the Knife subcommand library.
 .sp
 \fBAuthenticated API Requests\fP
 .sp
-The \fBknife exec\fP subcommand can be used to make authenticated API requests to the server using the following methods:
+The \fBknife exec\fP subcommand can be used to make authenticated API requests to the Chef server using the following methods:
 .TS
 center;
 |l|l|.
@@ -49,36 +49,40 @@ _
 T{
 \fBapi.delete\fP
 T}	T{
-Use to delete an object from the server.
+Use to delete an object from the Chef server\&.
 T}
 _
 T{
 \fBapi.get\fP
 T}	T{
-Use to get the details of an object on the server.
+Use to get the details of an object on the Chef server\&.
 T}
 _
 T{
 \fBapi.post\fP
 T}	T{
-Use to add an object to the server.
+Use to add an object to the Chef server\&.
 T}
 _
 T{
 \fBapi.put\fP
 T}	T{
-Use to update an object on the server.
+Use to update an object on the Chef server\&.
 T}
 _
 .TE
 .sp
-These methods are used with the \fB\-E\fP option, which executes that string locally on the workstation using chef\-shell. These methods have the following syntax:
+These methods are used with the \fB\-E\fP option, which executes that string locally on the workstation using chef\-shell\&. These methods have the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife exec \-E \(aqapi.method(/endpoint)\(aq
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 where:
 .INDENT 0.0
@@ -89,24 +93,34 @@ where:
 .UNINDENT
 .sp
 For example, to get the data for a node named "Example_Node":
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife exec \-E \(aqputs api.get("/nodes/Example_Node")\(aq
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 and to ensure that the output is visible in the console, add the \fBputs\fP in front of the API authorization request:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife exec \-E \(aqputs api.get("/nodes/Example_Node")\(aq
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
-where \fBputs\fP is the shorter version of the \fB$stdout.puts\fP predefined variable in Ruby.
+where \fBputs\fP is the shorter version of the \fB$stdout.puts\fP predefined variable in Ruby\&.
 .sp
 The following example shows how to add a client named "IBM305RAMAC" and the \fB/clients\fP endpoint, and then return the private key for that user in the console:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -119,16 +133,22 @@ $ client_desc = {
   puts new_client["private_key"]
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBSyntax\fP
 .sp
-This argument has the following syntax:
+This subcommand has the following syntax:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife exec SCRIPT (options)
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 \fBOptions\fP
 .sp
@@ -160,13 +180,13 @@ The $EDITOR that is used for all interactive commands.
 The name of the environment. When this option is added to a command, the command will run only against the named environment.
 .TP
 .B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
-The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP.
+The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP\&.
 .TP
 .B \fB\-h\fP, \fB\-\-help\fP
 Shows help for the command.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the server.
+The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-p PATH:PATH\fP, \fB\-\-script\-path PATH:PATH\fP
 A colon\-separated path at which Ruby scripts are located.
@@ -175,13 +195,13 @@ A colon\-separated path at which Ruby scripts are located.
 Indicates that data will be shown after a destructive operation.
 .TP
 .B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
-The URL for the server.
+The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the server. Authentication will fail if the user name does not match the private key.
+The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
-The version of the chef\-client.
+The version of the chef\-client\&.
 .TP
 .B \fB\-V\fP, \fB\-\-verbose\fP
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
@@ -190,28 +210,38 @@ Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the server to also work against the local chef\-repo.
+Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .sp
 \fBExamples\fP
 .sp
 There are three ways to use \fBknife exec\fP to run Ruby script files. For example:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife exec /path/to/script_file
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 Or:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife exec \-E \(aqRUBY CODE\(aq
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 Or:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -220,8 +250,12 @@ RUBY CODE
 ^D
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To check the status of Knife using a Ruby script named "status.rb" (which looks like):
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -234,32 +268,48 @@ nodes.all do |n|
 end
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 and is located in a directory named "scripts", enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife exec scripts/status.rb
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To show the available free memory for all nodes, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife exec \-E \(aqnodes.all {|n| puts "#{n.name} has #{n.memory.total} free memory"}\(aq
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To list all of the available search indexes, enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 $ knife exec \-E \(aqputs api.get("search").keys\(aq
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 To query a node for multiple attributes using a Ruby script named \fBsearch_attributes.rb\fP (which looks like):
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -278,16 +328,24 @@ puts results
 exit 0
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 enter:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
 % knife exec scripts/search_attributes.rb "hostname:test_system" ipaddress,fqdn
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .sp
 to return something like:
+.INDENT 0.0
+.INDENT 3.5
 .sp
 .nf
 .ft C
@@ -296,6 +354,8 @@ Your attributes: ipaddress fqdn
 {"test_system.example.com"=>{"ipaddress"=>"10.1.1.200", "fqdn"=>"test_system.example.com"}}
 .ft P
 .fi
+.UNINDENT
+.UNINDENT
 .SH AUTHOR
 Chef
 .\" Generated by docutils manpage writer.

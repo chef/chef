@@ -93,7 +93,7 @@ class Chef
         end
 
         def modify_password
-          if @current_resource.password != @new_resource.password
+          if (not @new_resource.password.nil?) && (@current_resource.password != @new_resource.password)
             Chef::Log.debug("#{new_resource} updating password")
             command = "pw usermod #{@new_resource.username} -H 0"
             status = popen4(command, :waitlast => true) do |pid, stdin, stdout, stderr|
