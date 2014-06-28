@@ -40,7 +40,7 @@ class Chef
         @allowed_actions.push(:checkout, :export, :sync, :diff, :log)
         @action = [:sync]
         @checkout_branch = "deploy"
-        @environment = {}
+        @environment = nil
       end
 
       def destination(arg=nil)
