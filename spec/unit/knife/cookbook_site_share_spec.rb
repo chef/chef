@@ -75,11 +75,20 @@ describe Chef::Knife::CookbookSiteShare do
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 
-    it 'should make a tarball of the cookbook' do
-      Chef::Mixin::Command.should_receive(:run_command) { |args|
-        args[:command].should match /tar -czf/
-      }
-      @knife.run
+    if File.exists?('/usr/bin/gnutar') || File.exists?('/bin/gnutar')
+      it 'should use gnutar to make a tarball of the cookbook' do
+        Chef::Mixin::Command.should_receive(:run_command) { |args|
+          args[:command].should match /gnutar -czf/
+        }
+        @knife.run
+      end
+    else
+      it 'should make a tarball of the cookbook' do
+        Chef::Mixin::Command.should_receive(:run_command) { |args|
+          args[:command].should match /tar -czf/
+        }
+        @knife.run
+      end
     end
 
     it 'should exit and log to error when the tarball creation fails' do
