@@ -147,6 +147,10 @@ describe Chef::Resource::Scm do
     @resource.ssh_wrapper.should be_nil
   end
 
+  it "defaults to nil for the environment" do
+    @resource.environment.should be_nil
+  end
+
   describe "when it has a timeout attribute" do
     let(:ten_seconds) { 10 }
     before { @resource.timeout(ten_seconds) }
@@ -179,4 +183,11 @@ describe Chef::Resource::Scm do
     end
   end
 
+  describe "when it has a environment attribute" do
+    let(:test_environment) { {'CHEF_ENV' => '/tmp' } }
+    before { @resource.environment(test_environment) }
+    it "stores this environment" do
+      @resource.environment.should == test_environment
+    end
+  end
 end

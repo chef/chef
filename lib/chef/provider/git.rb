@@ -289,6 +289,7 @@ class Chef
         env['GIT_SSH'] = @new_resource.ssh_wrapper if @new_resource.ssh_wrapper
         run_opts[:log_tag] = @new_resource.to_s
         run_opts[:timeout] = @new_resource.timeout if @new_resource.timeout
+        @new_resource.environment.delete('HOME') if @new_resource.environment
         run_opts[:environment] = @new_resource.environment ? env.merge(@new_resource.environment) : env
         run_opts
 
