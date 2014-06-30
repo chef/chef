@@ -70,10 +70,12 @@ class Chef
               },
               ">= 11.10" => {
                 :ifconfig => Chef::Provider::Ifconfig::Debian
-              },
-              ">= 13.10" => {
-                :service => Chef::Provider::Service::Upstart,
               }
+              # Chef::Provider::Service::Upstart is a candidate to be used in
+              # ubuntu versions >= 13.10 but it currently requires all the
+              # services to have an entry under /etc/init. We need to update it
+              # to use the service ctl apis in order to migrate to using it on
+              # ubuntu >= 13.10.
             },
             :gcel   => {
               :default => {
