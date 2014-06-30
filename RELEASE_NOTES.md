@@ -1,5 +1,30 @@
 # Chef Client Release Notes 11.14.0:
 
+## Known Issues
+
+### Some Ubuntu 13.10+ services will require a provider
+
+The Upstart "compatibility interface" for /etc/init.d/ is no longer used as of
+Ubuntu 13.10 (Saucy). The default service provider in Chef for Ubuntu uses the sysvinit
+scripts located in /etc/init.d, but some of these init scripts will now exit with a failure when
+sent a start command and exit with success but do nothing for a stop command.
+
+The "ssh" and "rsyslog" services are currently known to exhibit this behavior. A Chef service resource
+that manages these services, on these versions of Ubuntu, must be passed the provider attribute
+to manually specify the Upstart provider, e.g.:
+
+```
+service "ssh" do
+  provider Chef::Provider::Service::Upstart if platform?("ubuntu") && node["platform_version"].to_f >= 13.10
+  action :start
+end
+```
+
+Fix status: [Github Issue #1587](https://github.com/opscode/chef/issues/1587)
+Original bug: [JIRA CHEF-5276](https://tickets.opscode.com/browse/CHEF-5276)
+
+## Bug Fixes and New Features
+
 ### CHEF-5223 OS X Service provider regression.
 
 This commit: https://github.com/opscode/chef/commit/024b1e3e4de523d3c1ebbb42883a2bef3f9f415c
@@ -14,15 +39,6 @@ CHEF-1761 introduced a regression for signal handling when not in daemon mode
 (see CHEF-5172). Chef will now, once again, exit immediately on SIGTERM if it
 is not in daemon mode, otherwise it will complete it's current run before
 existing.
-
-### Ubuntu 13.10+ uses Upstart service provider.
-
-The "compatibility interface" for /etc/init.d/ is no longer used at least as of
-13.10 (per the Ubuntu wiki page). The default service provider in Chef for Ubuntu
-is C:\:\P::S::Debian, which uses /etc/init.d/service_name with the start, stop,
-etc commands to manage the script. If you are able to use the init provider just
-fine, you will need to manually override the provider back to Debian.
-
 
 ### New knife command: knife serve
 You can now run a persistent chef-zero against your local repository:
