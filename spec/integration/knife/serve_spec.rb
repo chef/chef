@@ -31,7 +31,7 @@ describe 'knife serve' do
       exception = nil
       t = Thread.new do
         begin
-          knife('serve')
+          knife('serve --chef-zero-port=8889')
         rescue
           exception = $!
         end
