@@ -217,7 +217,7 @@ class Chef::Application::Client < Chef::Application
 
   option :chef_zero_port,
     :long         => "--chef-zero-port PORT",
-    :description  => "Port to start chef-zero on"
+    :description  => "Port (or port range) to start chef-zero on.  Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works."
 
   option :config_file_jail,
     :long         => "--config-file-jail PATH",

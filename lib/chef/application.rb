@@ -199,10 +199,11 @@ class Chef::Application
       server_options[:data_store] = data_store
       server_options[:log_level] = Chef::Log.level
       server_options[:host] = Chef::Config.chef_zero.host
-      server_options[:port] = Chef::Config.chef_zero.port
+      server_options[:port] = Chef::Application.parse_port(Chef::Config.chef_zero.port)
       Chef::Log.info("Starting chef-zero on host #{Chef::Config.chef_zero.host}, port #{Chef::Config.chef_zero.port} with repository at #{chef_fs.fs_description}")
       @chef_zero_server = ChefZero::Server.new(server_options)
       @chef_zero_server.start_background
+      Chef::Log.info("chef-zero started at #{@chef_zero_server.url}")
       Chef::Config.chef_server_url = @chef_zero_server.url
     end
   end
@@ -238,6 +239,28 @@ class Chef::Application
     @chef_client = nil
 
     Chef::Application.destroy_server_connectivity
+  end
+
+  def self.parse_port(port)
+    if port.is_a?(String)
+      parts = port.split(',')
+      if parts.size == 1
+        a,b = parts[0].split('-',2)
+        if b
+          a.to_i.upto(b.to_i)
+        else
+          [ a.to_i ]
+        end
+      else
+        array = []
+        parts.each do |part|
+          array += parse_port(part).to_a
+        end
+        array
+      end
+    else
+      port
+    end
   end
 
   private

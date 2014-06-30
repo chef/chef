@@ -52,10 +52,9 @@ describe 'knife common options' do
 
       context 'And chef_zero.host is 0.0.0.0' do
         before(:each) { Chef::Config.chef_zero.host = '0.0.0.0' }
- 
+
         it 'knife raw /nodes/x should retrieve the role' do
           knife('raw /nodes/x').should_succeed /"name": "x"/
-          Chef::Config.chef_server_url.should == 'http://0.0.0.0:8889'
         end
       end
 
@@ -102,6 +101,54 @@ EOM
 
     it 'knife raw --local-mode /nodes/x retrieves the node' do
       knife('raw --local-mode /nodes/x').should_succeed /"name": "x"/
+    end
+
+    it 'knife raw -z --chef-zero-port=9999 /nodes/x retrieves the node' do
+      knife('raw -z --chef-zero-port=9999 /nodes/x').should_succeed /"name": "x"/
+      Chef::Config.chef_server_url.should == 'http://localhost:9999'
+    end
+
+    context 'when the default port (8889) is already bound' do
+      before :each do
+        begin
+          @server = ChefZero::Server.new(:host => 'localhost', :port => 8889)
+          @server.start_background
+        rescue Errno::EADDRINUSE
+          # OK.  Don't care who has it in use, as long as *someone* does.
+        end
+      end
+      after :each do
+        @server.stop if @server
+      end
+
+      it 'knife raw -z /nodes/x retrieves the node' do
+        knife('raw -z /nodes/x').should_succeed /"name": "x"/
+        expect(URI(Chef::Config.chef_server_url).port).to be > 8889
+      end
+    end
+
+    context 'when port 9999 is already bound' do
+      before :each do
+        begin
+          @server = ChefZero::Server.new(:host => 'localhost', :port => 9999)
+          @server.start_background
+        rescue Errno::EADDRINUSE
+          # OK.  Don't care who has it in use, as long as *someone* does.
+        end
+      end
+      after :each do
+        @server.stop if @server
+      end
+
+      it 'knife raw -z --chef-zero-port=9999-20000 /nodes/x' do
+        knife('raw -z --chef-zero-port=9999-20000 /nodes/x').should_succeed /"name": "x"/
+        expect(URI(Chef::Config.chef_server_url).port).to be > 9999
+      end
+
+      it 'knife raw -z --chef-zero-port=9999-9999,19423' do
+        knife('raw -z --chef-zero-port=9999-9999,19423 /nodes/x').should_succeed /"name": "x"/
+        expect(URI(Chef::Config.chef_server_url).port).to be == 19423
+      end
     end
 
     it 'knife raw -z --chef-zero-port=9999 /nodes/x retrieves the node' do
