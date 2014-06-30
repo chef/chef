@@ -5,12 +5,5 @@
       "12.04",
       "x86_64"
     ]
-  ],
-  "architecture=x86_64,platform=ubuntu-13.10,project=chef-container,role=builder": [
-    [
-      "ubuntu",
-      "13.10",
-      "x86_64"
-    ]
   ]
 }
