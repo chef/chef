@@ -19,7 +19,6 @@ name "chef-container"
 maintainer "Chef Software, Inc"
 homepage "http://www.getchef.com"
 
-install_path     "/opt/chef"
 build_version do
   source :git, from_dependency: 'chef'
   output_format :semver
@@ -28,6 +27,11 @@ build_iteration  2
 package_name     "chef-container"
 
 override :chef, version: "11.12.8"
+
+install_path     "/opt/chef"
+
+resources_path File.join(files_path, "chef")
+mac_pkg_identifier "com.getchef.pkg.chef-container"
 
 dependency "preparation"
 dependency "chef"
