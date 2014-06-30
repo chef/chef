@@ -1,5 +1,8 @@
 # Chef Client Changelog
 
+## Unreleased:
+* Fix knife cookbook site share on windows (CHEF-4994)
+
 ## Last Release: 11.14.0
 
 * [**Phil Dibowitz**](https://github.com/jaymzh):
