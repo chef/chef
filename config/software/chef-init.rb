@@ -25,12 +25,12 @@ relative_path "chef-init"
 dependency "runit"
 dependency "chef"
 
-build do
-  # determine correct path variable, can be "Path" on windows
-  path_key = ENV.keys.grep(/\Apath\Z/i).first
+env = with_embedded_path()
+env = with_standard_compiler_flags(env)
 
+build do
   bundle "install"
   rake "build"
   gem ["install pkg/chef-init*.gem -n #{install_dir}/bin",
-    "--no-rdoc --no-ri"].join(" "), :env => {path_key => "#{install_dir}/embedded/bin:#{ENV['PATH']}"}
+    "--no-rdoc --no-ri"].join(" "), :env => env
 end
