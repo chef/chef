@@ -1,6 +1,7 @@
 # Chef Client Changelog
 
 ## Unreleased:
+* Add method shell_out_with_systems_locale to ShellOut.
 
 ## Last Release: 11.14.0
 

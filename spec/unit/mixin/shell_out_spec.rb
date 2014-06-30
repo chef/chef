@@ -104,6 +104,98 @@ describe Chef::Mixin::ShellOut do
 
       should_emit_deprecation_warning_about :command_log_prepend, :log_tag
     end
-
   end
+
+  describe "#shell_out_with_systems_locale" do
+    before(:each) do
+      @original_env = ENV.to_hash
+      ENV.clear
+    end
+
+    after(:each) do
+      ENV.clear
+      ENV.update(@original_env)
+    end
+
+    let(:shell_out) { Chef::Mixin::ShellOut }
+    let(:cmd) { "echo '#{rand(1000)}'" }
+
+    describe "when the last argument is a Hash" do
+      describe "and environment is an option" do
+        it "should not change environment['LC_ALL'] when set to nil" do
+          options = { :environment => { 'LC_ALL' => nil } }
+          shell_out.should_receive(:shell_out).with(cmd, options).and_return(true)
+          shell_out.shell_out_with_systems_locale(cmd, options)
+        end
+
+        it "should not change environment['LC_ALL'] when set to non-nil" do
+          options = { :environment => { 'LC_ALL' => 'en_US.UTF-8' } }
+          shell_out.should_receive(:shell_out).with(cmd, options).and_return(true)
+          shell_out.shell_out_with_systems_locale(cmd, options)
+        end
+
+        it "should set environment['LC_ALL'] to nil when 'LC_ALL' not present" do
+          options = { :environment => { 'HOME' => '/Users/morty' } }
+          shell_out.should_receive(:shell_out).with(
+            cmd,
+            { :environment => {
+                'HOME' => '/Users/morty',
+                'LC_ALL' => nil }
+            }
+          ).and_return(true)
+          shell_out.shell_out_with_systems_locale(cmd, options)
+        end
+      end
+
+      describe "and env is an option" do
+        it "should not change env when set to nil" do
+          options = { :env => { 'LC_ALL' => nil } }
+          shell_out.should_receive(:shell_out).with(cmd, options).and_return(true)
+          shell_out.shell_out_with_systems_locale(cmd, options)
+        end
+
+        it "should not change env when set to non-nil" do
+          options = { :env => { 'LC_ALL' => 'en_US.UTF-8'}}
+          shell_out.should_receive(:shell_out).with(cmd, options).and_return(true)
+          shell_out.shell_out_with_systems_locale(cmd, options)
+        end
+
+        it "should set env['LC_ALL'] to nil when 'LC_ALL' not present" do
+          options = { :env => { 'HOME' => '/Users/morty' } }
+          shell_out.should_receive(:shell_out).with(
+            cmd,
+            { :env => {
+                'HOME' => '/Users/morty',
+                'LC_ALL' => nil }
+            }
+          ).and_return(true)
+          shell_out.shell_out_with_systems_locale(cmd, options)
+        end
+      end
+
+      describe "and no env/environment option is present" do
+        it "should add environment option and set environment['LC_ALL'] to nil" do
+          options = { :user => 'morty' }
+          shell_out.should_receive(:shell_out).with(
+            cmd,
+            { :environment => { 'LC_ALL' => nil },
+              :user => 'morty'
+            }
+          ).and_return(true)
+          shell_out.shell_out_with_systems_locale(cmd, options)
+        end
+      end
+    end
+
+    describe "when the last argument is not a Hash" do
+      it "should add environment options and set environment['LC_ALL'] to nil" do
+        shell_out.should_receive(:shell_out).with(
+          cmd,
+          { :environment => { 'LC_ALL' => nil } }
+        ).and_return(true)
+        shell_out.shell_out_with_systems_locale(cmd)
+      end
+    end
+  end
+
 end

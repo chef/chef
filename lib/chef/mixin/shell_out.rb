@@ -44,6 +44,21 @@ class Chef
         cmd
       end
 
+      # environment['LC_ALL'] should be nil or what the user specified
+      def shell_out_with_systems_locale(*command_args)
+        args = command_args.dup
+        if args.last.is_a?(Hash)
+          options = args.last
+          env_key = options.has_key?(:env) ? :env : :environment
+          options[env_key] ||= {}
+          options[env_key]['LC_ALL'] ||= nil
+        else
+          args << { :environment => { 'LC_ALL' => nil } }
+        end
+
+        shell_out(*args)
+      end
+
       DEPRECATED_OPTIONS =
         [ [:command_log_level,   :log_level],
           [:command_log_prepend, :log_tag] ]
