@@ -169,15 +169,15 @@ describe Chef::Search::Query do
     end
 
     it "should allow a custom query with partial search keys" do
-      @rest.should_receive(:post_rest).with("search/foo?q=gorilla:dundee&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=1000", {name: ['name']}).and_return(@response)
+      @rest.should_receive(:post_rest).with("search/foo?q=gorilla:dundee&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=1000", {:name => ['name']}).and_return(@response)
       @query = Chef::Search::Query.new
-      @query.partial_search(:foo, "gorilla:dundee",keys: {name: ['name']})
+      @query.partial_search(:foo, "gorilla:dundee",{ :keys => {:name => ['name']}})
     end
 
     it "should perform normal search if no search keys are passed" do
       @rest.should_receive(:get_rest).with("search/foo?q=gorilla:dundee&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=1000").and_return(@response)
       @query = Chef::Search::Query.new
-      @query.partial_search(:foo, "gorilla:dundee",foo: {bar: ['bazz']})
+      @query.partial_search(:foo, "gorilla:dundee",{:foo => {:bar => ['bazz']}})
     end
 
     it "should do the iteration for the end user " do
@@ -185,6 +185,12 @@ describe Chef::Search::Query do
       rows.should_not equal(@response["rows"])
       start.should equal(@response["start"])
       total.should equal(@response["total"])
+    end
+
+    it "should let you set args in hash style" do
+      @rest.should_receive(:get_rest).with("search/foo?q=gorilla:dundee&sort=id%20desc&start=2&rows=1000").and_return(@response)
+      @query = Chef::Search::Query.new
+      @query.partial_search(:foo, "gorilla:dundee", { :sort => "id desc", :start => 2})
     end
 
   end
