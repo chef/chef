@@ -29,8 +29,8 @@ env = with_embedded_path()
 env = with_standard_compiler_flags(env)
 
 build do
-  bundle "install"
-  rake "build"
+  bundle "install", :env => env
+  rake "build", :env => env
   gem ["install pkg/chef-init*.gem -n #{install_dir}/bin",
     "--no-rdoc --no-ri"].join(" "), :env => env
 end
