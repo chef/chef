@@ -115,11 +115,12 @@ class Chef
           _partial_search(type, query, args_hash, &block)
         # Otherwise, do the iteration for the end user
         else
-          results = Array.new
-          _partial_search(type, query, args_hash) do |o|
+         results = Array.new
+         rows, start, total  =  _partial_search(type, query, args_hash)
+         rows.each do |o|
             results << o
           end
-          results
+          [ results, start, total]
         end
       end
 
@@ -138,6 +139,7 @@ class Chef
         start = args.include?(:start) ? args[:start] : 0
         rows = args.include?(:rows) ? args[:rows] : 1000
         query_string = "search/#{type}?q=#{escape(query)}&sort=#{escape(sort)}&start=#{escape(start)}&rows=#{escape(rows)}"
+
         if args[:keys]
           response = @rest.post_rest(query_string, args[:keys])
           response_rows = response['rows'].map { |row| row['data'] }
@@ -145,6 +147,7 @@ class Chef
           response = @rest.get_rest(query_string)
           response_rows = response['rows']
         end
+
         if block
           response_rows.each { |o| block.call(o) unless o.nil?}
           unless (response["start"] + response_rows.length) >= response["total"]
@@ -155,7 +158,7 @@ class Chef
               :start => nstart,
               :rows => rows
             }
-            search(type, query, args_hash, &block)  
+            search(type, query, args_hash, &block)
           end
           true
         else
