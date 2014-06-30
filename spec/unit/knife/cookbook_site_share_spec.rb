@@ -39,7 +39,7 @@ describe Chef::Knife::CookbookSiteShare do
     @cookbook_uploader.stub(:validate_cookbooks).and_return(true)
     Chef::CookbookSiteStreamingUploader.stub(:create_build_dir).and_return(Dir.mktmpdir)
 
-    Chef::Mixin::Command.stub(:run_command).and_return(true)
+    @knife.stub(:shell_out!).and_return(true)
     @stdout = StringIO.new
     @knife.ui.stub(:stdout).and_return(@stdout)
   end
@@ -76,14 +76,14 @@ describe Chef::Knife::CookbookSiteShare do
     end
 
     it 'should make a tarball of the cookbook' do
-      Chef::Mixin::Command.should_receive(:run_command) { |args|
-        args[:command].should match /tar -czf/
-      }
+      @knife.should_receive(:shell_out!) do |args|
+        args.to_s.should match /tar -czf/
+      end
       @knife.run
     end
 
     it 'should exit and log to error when the tarball creation fails' do
-      Chef::Mixin::Command.stub(:run_command).and_raise(Chef::Exceptions::Exec)
+      @knife.stub(:shell_out!).and_raise(Chef::Exceptions::Exec)
       @knife.ui.should_receive(:error)
       lambda { @knife.run }.should raise_error(SystemExit)
     end

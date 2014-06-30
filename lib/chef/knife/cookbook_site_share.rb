@@ -17,10 +17,13 @@
 #
 
 require 'chef/knife'
+require 'chef/mixin/shell_out'
 
 class Chef
   class Knife
     class CookbookSiteShare < Knife
+
+      include Chef::Mixin::ShellOut
 
       deps do
         require 'chef/cookbook_loader'
@@ -56,7 +59,7 @@ class Chef
           begin
             Chef::Log.debug("Temp cookbook directory is #{tmp_cookbook_dir.inspect}")
             ui.info("Making tarball #{cookbook_name}.tgz")
-            Chef::Mixin::Command.run_command(:command => "tar -czf #{cookbook_name}.tgz #{cookbook_name}", :cwd => tmp_cookbook_dir)
+            shell_out!("tar -czf #{cookbook_name}.tgz #{cookbook_name}", :cwd => tmp_cookbook_dir)
           rescue => e
             ui.error("Error making tarball #{cookbook_name}.tgz: #{e.message}. Increase log verbosity (-VV) for more information.")
             Chef::Log.debug("\n#{e.backtrace.join("\n")}")
