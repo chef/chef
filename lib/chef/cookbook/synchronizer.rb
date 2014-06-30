@@ -68,6 +68,8 @@ class Chef
       @eager_segments.freeze
 
       @cookbooks_by_name, @events = cookbooks_by_name, events
+
+      @cookbook_full_file_paths = {}
     end
 
     def cache
@@ -136,14 +138,20 @@ class Chef
 
       files.each do |file|
         queue << lambda do |lock|
-          sync_file(file)
-          lock.synchronize { mark_file_synced(file) }
+          full_file_path = sync_file(file)
+
+          lock.synchronize {
+            # Save the full_path of the downloaded file to be restored in the manifest later
+            save_full_file_path(file, full_file_path)
+            mark_file_synced(file)
+          }
         end
       end
 
       @events.cookbook_sync_start(cookbook_count)
       queue.process(Chef::Config[:cookbook_sync_threads])
-      update_cookbook_filenames
+      # Update the full file paths in the manifest
+      update_cookbook_filenames()
 
     rescue Exception => e
       @events.cookbook_sync_failed(cookbooks, e)
@@ -151,6 +159,14 @@ class Chef
     else
       @events.cookbook_sync_complete
       true
+    end
+
+    # Saves the full_path to the file of the cookbook to be updated
+    # in the manifest later
+    def save_full_file_path(file, full_path)
+      @cookbook_full_file_paths[file.cookbook] ||= { }
+      @cookbook_full_file_paths[file.cookbook][file.segment] ||= [ ]
+      @cookbook_full_file_paths[file.cookbook][file.segment] << full_path
     end
 
     # Iterates over cached cookbooks' files, removing files belonging to
@@ -170,14 +186,9 @@ class Chef
     end
 
     def update_cookbook_filenames
-      files_by_cookbook.each do |cookbook, cookbook_files|
-        files_by_segment = cookbook_files.group_by { |file| file.segment }
-        @eager_segments.each do |segment|
-          segment_files = files_by_segment[segment]
-          next unless segment_files
-
-          filenames = segment_files.map { |file| file.manifest_record['path'] }
-          cookbook.replace_segment_filenames(segment, filenames)
+      @cookbook_full_file_paths.each do |cookbook, file_segments|
+        file_segments.each do |segment, full_paths|
+          cookbook.replace_segment_filenames(segment, full_paths)
         end
       end
     end
@@ -204,8 +215,8 @@ class Chef
         Chef::Log.debug("Not storing #{cache_filename}, as the cache is up to date.")
       end
 
-      # Update the manifest with the full path to the cached file
-      file.manifest_record['path'] = cache.load(cache_filename, false)
+      # Load the file in the cache and return the full file path to the loaded file
+      cache.load(cache_filename, false)
     end
 
     def cached_copy_up_to_date?(local_path, expected_checksum)
