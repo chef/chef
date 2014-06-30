@@ -115,12 +115,7 @@ class Chef
           _partial_search(type, query, args_hash, &block)
         # Otherwise, do the iteration for the end user
         else
-         results = Array.new
-         rows, start, total  =  _partial_search(type, query, args_hash)
-         rows.each do |o|
-            results << o
-          end
-          [ results, start, total]
+         _partial_search(type, query, args_hash)
         end
       end
 
