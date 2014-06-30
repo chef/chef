@@ -304,12 +304,7 @@ class Chef
       else
         if segment == :files || segment == :templates
           error_message = "Cookbook '#{name}' (#{version}) does not contain a file at any of these locations:\n"
-          error_locations = [
-            "  #{segment}/#{node[:platform]}-#{node[:platform_version]}/#{filename}",
-            "  #{segment}/#{node[:platform]}/#{filename}",
-            "  #{segment}/default/#{filename}",
-          ]
-          error_message << error_locations.join("\n")
+          error_message << preferences_for_path(node,segment,filename).join("\n")
           existing_files = segment_filenames(segment)
           # Show the files that the cookbook does have. If the user made a typo,
           # hopefully they'll see it here.
@@ -424,6 +419,7 @@ class Chef
         end
 
         fqdn = node[:fqdn]
+        hostname = node[:hostname]
 
         # Break version into components, eg: "5.7.1" => [ "5.7.1", "5.7", "5" ]
         search_versions = []
@@ -435,7 +431,8 @@ class Chef
         end
 
         # Most specific to least specific places to find the path
-        search_path = [ File.join(segment.to_s, "host-#{fqdn}", path) ]
+        search_path = [ File.join(segment.to_s, "host-#{fqdn}", path),
+                        File.join(segment.to_s, "host-#{hostname}", path) ]
         search_versions.each do |v|
           search_path << File.join(segment.to_s, "#{platform}-#{v}", path)
         end
