@@ -99,3 +99,7 @@ knife now includes a warning in the -E/--environment option that this setting is
 
 ### New configurable option :yum-lock-timeout
 You can now set the timeout for receiving the yum lock in `config.rb` by adding `yum-lock-timeout SECONDS` (default is 30 seconds).
+
+### Encrypted Data Bags Version 3
+
+Encrypted Data Bag version 3 uses [GCM](http://en.wikipedia.org/wiki/Galois/Counter_Mode) internally. Ruby 2 and OpenSSL version 1.0.1 or higher are required to use it.

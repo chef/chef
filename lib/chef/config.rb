@@ -433,7 +433,7 @@ class Chef
     # To maintain compatibility, versions other than 1 must be opt-in.
     #
     # Set this to `2` if you have chef-client 11.6.0+ in your infrastructure.
-    # Set this to `3` if you have chef-client 11.?.0+ and OpenSSL >= 1.0.1 in your infrastructure. (TODO)
+    # Set this to `3` if you have chef-client 11.?.0+, ruby 2 and OpenSSL >= 1.0.1 in your infrastructure. (TODO)
     default :data_bag_encrypt_version, 1
 
     # When reading data bag items, any supported version is accepted. However,
