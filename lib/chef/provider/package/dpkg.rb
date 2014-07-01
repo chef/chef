@@ -101,14 +101,14 @@ class Chef
         def install_package(name, version)
           Chef::Log.info("#{@new_resource} installing #{@new_resource.source}")
           run_noninteractive(
-            "dpkg -i#{expand_options(@new_resource.options)} #{@new_resource.source}",
+            "dpkg -i#{expand_options(@new_resource.options)} #{@new_resource.source}"
           )
         end
 
         def remove_package(name, version)
           Chef::Log.info("#{@new_resource} removing #{@new_resource.package_name}")
           run_noninteractive(
-            "dpkg -r#{expand_options(@new_resource.options)} #{@new_resource.package_name}",
+            "dpkg -r#{expand_options(@new_resource.options)} #{@new_resource.package_name}"
           )
         end
 
