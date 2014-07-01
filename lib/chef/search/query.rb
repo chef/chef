@@ -57,19 +57,23 @@ class Chef
       def search(type, query='*:*', *args, &block)
         raise ArgumentError, "Type must be a string or a symbol!" unless (type.kind_of?(String) || type.kind_of?(Symbol))
         raise ArgumentError, "Invalid number of arguments!" if (args.size > 3)
-        if args.size == 1 && args[0].is_a?(Hash)
-          args_hash = args[0] 
-          # just in case the hash doesn't have the correct defaults, we'll set them
-          args_hash[:sort] = args_hash.key?(:sort) ? args_hash[:sort] : 'X_CHEF_id_CHEF_X asc'
-          args_hash[:start] = args_hash.key?(:start) ? args_hash[:start] : 0
-          args_hash[:rows] = args_hash.key?(:rows) ? args_hash[:rows] : 1000
-          do_search(type, query, args_hash, &block)
+
+        scrubbed_args = Hash.new
+
+        # argify everything
+        if not args[0].kind_of?(Hash)
+          # This api will be deprecated in a future release
+          scrubbed_args = { :sort => args[0], :start => args[1], :rows => args[2] }
         else
-          sort = args.length >= 1 ? args[0] : 'X_CHEF_id_CHEF_X asc'
-          start = args.length >= 2 ? args[1] : 0
-          rows = args.length >= 3 ? args[2] : 1000
-          search_old(type, query, sort, start, rows, &block)
+          scrubbed_args = args[0]
         end
+
+        # set defaults, if they haven't been set yet.
+        scrubbed_args[:sort] = 'X_CHEF_id_CHEF_X asc' if scrubbed_args[:sort].nil?
+        scrubbed_args[:start] = 0 if scrubbed_args[:start].nil?
+        scrubbed_args[:rows] = 1000 if scrubbed_args[:rows].nil?
+
+        do_search(type, query, scrubbed_args, &block)
       end
 
       def list_indexes
@@ -84,14 +88,8 @@ class Chef
         # new search api that allows for a cleaner implementation of things like return filters
         # (formerly known as 'partial search'). A passthrough to either the old style ("full search")
         # or the new 'filtered' search
-        def do_search(type, query="*:*", args=nil, &block)
+        def do_search(type, query="*:*", args, &block)
           raise ArgumentError, "Type must be a string or a symbol!" unless (type.kind_of?(String) || type.kind_of?(Symbol))
-
-          # if args is nil, we need to set some defaults, for backwards compatibility
-          if args.nil?
-            args = Hash.new
-            args = args || { :sort => 'X_CHEF_id_CHEF_X asc', :start => 0, :rows => 1000 }
-          end
 
           query_string = create_query_string(type, query, args)
           response = call_rest_service(query_string, args)
@@ -105,20 +103,7 @@ class Chef
           else
             [ response["rows"], response["start"], response["total"] ]
           end
-        end
-        
-        # Search Solr for objects of a given type, for a given query. If you give
-        # it a block, it will handle the paging for you dynamically.
-        def search_old(type, query="*:*", sort='X_CHEF_id_CHEF_X asc', start=0, rows=1000, &block)
-          raise ArgumentError, "Type must be a string or a symbol!" unless (type.kind_of?(String) || type.kind_of?(Symbol))
-
-          # here we need to put a nice message saying "this is deprecated, use the argified version!"
- 
-          # argify things
-          args = Hash.new
-          args = { :sort => sort, :start => start, :rows => rows }
-          do_search(type, query, args, &block)
-        end        
+        end 
 
         # create the full rest url string
         def create_query_string(type, query, args)
