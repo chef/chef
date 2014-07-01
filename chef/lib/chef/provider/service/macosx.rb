@@ -53,7 +53,7 @@ class Chef
             a.failure_message Chef::Exceptions::Service, "Several plist files match service name. Please use full service name."
           end
 
-          requirements.assert(:all_actions) do |a|
+          requirements.assert(:enable, :disable) do |a|
             a.assertion { !@service_label.to_s.empty? }
             a.failure_message Chef::Exceptions::Service,
               "Could not find service's label in plist file '#{@plist}'!"
@@ -166,6 +166,10 @@ class Chef
       private
 
         def find_service_label
+          # CHEF-5223 "you can't glob for a file that hasn't been converged
+          # onto the node yet."
+          return nil if @plist.nil?
+
           # Most services have the same internal label as the name of the
           # plist file. However, there is no rule saying that *has* to be
           # the case, and some core services (notably, ssh) do not follow
