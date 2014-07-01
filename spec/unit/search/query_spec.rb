@@ -125,6 +125,10 @@ describe Chef::Search::Query do
       @query.search(:node, "platform:rhel", "id desc", 2, 40)
     end
 
+    it "should throw an exception if you pass to many options" do
+      lambda { @query.search(:node, "platform:rhel", "id desc", 2, 40, "wrong") }.should raise_error(ArgumentError)
+    end
+
     it "should return the raw rows, start, and total if no block is passed" do
       rows, start, total = @query.search(:node)
       rows.should equal(@response["rows"])
