@@ -89,17 +89,28 @@ class Chef
       end
 
       def action_create
+        # current_resource is the symlink that currently exists
+        # new_resource is the symlink we need to create
+        #   to - the location to link to
+        #   target_file - the name of the link
+
         if @current_resource.to != canonicalize(@new_resource.to) ||
            @current_resource.link_type != @new_resource.link_type
-          if @current_resource.to # nil if target_file does not exist
+          # Can't use file existance because we care what the link is tryingto point to,
+          # not if that file exists
+          if @current_resource.to
+            # The extra check on @new_resource.to is because swinging a link from a
+            #  directory to a file is speced to fail.
+            #  - Swinging from a directory to a directory will trigger the below unlink dir code and succeed
+            #  - Swinging from a file will trigger the else cause and unlink cleanly
+            #  - Swinging from a directory to a file will attempt to trigger the else clause,
+            #    which will throw an exception as desired.
             if ::File.directory?(@new_resource.to) &&
                ::File.directory?(@current_resource.target_file)
               converge_by("unlink existing dir at #{@new_resource.target_file}") do
                 ::Dir.unlink(@new_resource.target_file)
               end
             else
-                # This will fail when current is a directory and new is a file,
-                # which is desired behavior
               converge_by("unlink existing file at #{@new_resource.target_file}") do
                 ::File.unlink(@new_resource.target_file)
               end
