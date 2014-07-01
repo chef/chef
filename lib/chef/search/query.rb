@@ -61,17 +61,17 @@ class Chef
         scrubbed_args = Hash.new
 
         # argify everything
-        if not args[0].kind_of?(Hash)
+        if args[0].kind_of?(Hash)
+          scrubbed_args = args[0]
+        else
           # This api will be deprecated in a future release
           scrubbed_args = { :sort => args[0], :start => args[1], :rows => args[2] }
-        else
-          scrubbed_args = args[0]
         end
 
         # set defaults, if they haven't been set yet.
-        scrubbed_args[:sort] = 'X_CHEF_id_CHEF_X asc' if scrubbed_args[:sort].nil?
-        scrubbed_args[:start] = 0 if scrubbed_args[:start].nil?
-        scrubbed_args[:rows] = 1000 if scrubbed_args[:rows].nil?
+        scrubbed_args[:sort] ||= 'X_CHEF_id_CHEF_X asc'
+        scrubbed_args[:start] ||= 0
+        scrubbed_args[:rows] ||= 1000
 
         do_search(type, query, scrubbed_args, &block)
       end
@@ -86,15 +86,14 @@ class Chef
         end
 
         # new search api that allows for a cleaner implementation of things like return filters
-        # (formerly known as 'partial search'). A passthrough to either the old style ("full search")
-        # or the new 'filtered' search
+        # (formerly known as 'partial search').
         def do_search(type, query="*:*", args, &block)
           raise ArgumentError, "Type must be a string or a symbol!" unless (type.kind_of?(String) || type.kind_of?(Symbol))
 
           query_string = create_query_string(type, query, args)
           response = call_rest_service(query_string, args)
-          if block
-            response["rows"].each { |o| block.call(o) unless o.nil?}
+          unless block.nil?
+            response["rows"].each { |rowset| block.call(rowset) unless rowset.nil?}
             unless (response["start"] + response["rows"].length) >= response["total"]
               args[:start] = response["start"] + args[:rows]
               do_search(type, query, args, &block)
