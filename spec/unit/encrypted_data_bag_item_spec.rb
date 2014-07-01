@@ -92,7 +92,8 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
     end
   end
 
-  describe "when using version 3 format" do
+  describe "when using version 3 format",
+    :if => (RUBY_VERSION >= "2" and OpenSSL::OPENSSL_VERSION_NUMBER >= 10001000) do
 
     before do
       Chef::Config[:data_bag_encrypt_version] = 3
@@ -129,7 +130,9 @@ describe Chef::EncryptedDataBagItem::Decryptor do
   let(:encryption_key) { "passwd" }
   let(:decryption_key) { encryption_key }
 
-  context "when decrypting a version 3 (JSON+aes-256-gcm+random iv+auth tag) encrypted value" do
+  context "when decrypting a version 3 (JSON+aes-256-gcm+random iv+auth tag) encrypted value",
+    :if => (RUBY_VERSION >= "2" and OpenSSL::OPENSSL_VERSION_NUMBER >= 10001000) do
+
     let(:encrypted_value) do
       Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor.new(plaintext_data, encryption_key).for_encrypted_item
     end
