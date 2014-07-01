@@ -81,3 +81,7 @@ If your config file looks like `automatic_attribute_whitelist = []`, then none o
 The default behavior is for the node to save all the attribute data. This can be ensured by setting your whitelist filter to `nil`.
 
 We recommend only using `automatic_attribute_whitelist` to reduce the size of the system data being stored for nodes, and discourage the use of the other attribute whitelists except by advanced users.
+
+### Encrypted Data Bags Version 3
+
+Encrypted Data Bag version 3 uses [GCM](http://en.wikipedia.org/wiki/Galois/Counter_Mode) internally. Ruby 2 and OpenSSL version 1.0.1 or higher are required to use it.
