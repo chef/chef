@@ -24,13 +24,14 @@ require 'chef/mixin/get_source_from_package'
 class Chef
   class Provider
     class Package
-      class Dpkg < Chef::Provider::Package::Apt
+      class Dpkg < Chef::Provider::Package
         # http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version
         DPKG_INFO = /([a-z\d\-\+\.]+)\t([\w\d.~:-]+)/
         DPKG_INSTALLED = /^Status: install ok installed/
         DPKG_VERSION = /^Version: (.+)$/
 
         include Chef::Mixin::GetSourceFromPackage
+
         def define_resource_requirements
           super
           requirements.assert(:install) do |a|
@@ -98,31 +99,49 @@ class Chef
         end
 
         def install_package(name, version)
-          run_command_with_systems_locale(
-            :command => "dpkg -i#{expand_options(@new_resource.options)} #{@new_resource.source}",
-            :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
-            }
+          Chef::Log.info("#{@new_resource} installing #{@new_resource.source}")
+          run_noninteractive(
+            "dpkg -i#{expand_options(@new_resource.options)} #{@new_resource.source}",
           )
         end
 
         def remove_package(name, version)
-          run_command_with_systems_locale(
-            :command => "dpkg -r#{expand_options(@new_resource.options)} #{@new_resource.package_name}",
-            :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
-            }
+          Chef::Log.info("#{@new_resource} removing #{@new_resource.package_name}")
+          run_noninteractive(
+            "dpkg -r#{expand_options(@new_resource.options)} #{@new_resource.package_name}",
           )
         end
 
         def purge_package(name, version)
-          run_command_with_systems_locale(
-            :command => "dpkg -P#{expand_options(@new_resource.options)} #{@new_resource.package_name}",
-            :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
-            }
+          Chef::Log.info("#{@new_resource} purging #{@new_resource.package_name}")
+          run_noninteractive(
+            "dpkg -P#{expand_options(@new_resource.options)} #{@new_resource.package_name}"
           )
         end
+
+        def upgrade_package(name, version)
+          install_package(name, version)
+        end
+
+        def preseed_package(preseed_file)
+          Chef::Log.info("#{@new_resource} pre-seeding package installation instructions")
+          run_noninteractive("debconf-set-selections #{preseed_file}")
+        end
+
+        def reconfig_package(name, version)
+          Chef::Log.info("#{@new_resource} reconfiguring")
+          run_noninteractive("dpkg-reconfigure #{name}")
+        end
+
+        # Runs command via shell_out with magic environment to disable
+        # interactive prompts. Command is run with default localization rather
+        # than forcing locale to "C", so command output may not be stable.
+        #
+        # FIXME: This should be "LC_ALL" => "en_US.UTF-8" in order to stabilize the output and get UTF-8
+        def run_noninteractive(command)
+          shell_out!(command, :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
+        end
+
       end
     end
   end
