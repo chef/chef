@@ -122,46 +122,34 @@ DPKG_S
 
   describe Chef::Provider::Package::Dpkg, "install and upgrade" do
     it "should run dpkg -i with the package source" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
+      @provider.should_receive(:run_noninteractive).with(
+        "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
+      )
       @provider.install_package("wget", "1.11.4-1ubuntu1")
     end
 
     it "should run dpkg -i if the package is a path and the source is nil" do
       @new_resource = Chef::Resource::Package.new("/tmp/wget_1.11.4-1ubuntu1_amd64.deb")
       @provider = Chef::Provider::Package::Dpkg.new(@new_resource, @run_context)
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
+      @provider.should_receive(:run_noninteractive).with(
+        "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb"
+      )
       @provider.install_package("/tmp/wget_1.11.4-1ubuntu1_amd64.deb", "1.11.4-1ubuntu1")
     end
 
     it "should run dpkg -i if the package is a path and the source is nil for an upgrade" do
       @new_resource = Chef::Resource::Package.new("/tmp/wget_1.11.4-1ubuntu1_amd64.deb")
       @provider = Chef::Provider::Package::Dpkg.new(@new_resource, @run_context)
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
+      @provider.should_receive(:run_noninteractive).with(
+        "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb"
+      )
       @provider.upgrade_package("/tmp/wget_1.11.4-1ubuntu1_amd64.deb", "1.11.4-1ubuntu1")
     end
 
     it "should run dpkg -i with the package source and options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "dpkg -i --force-yes /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
+      @provider.should_receive(:run_noninteractive).with(
+        "dpkg -i --force-yes /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
+      )
       @new_resource.stub(:options).and_return("--force-yes")
 
       @provider.install_package("wget", "1.11.4-1ubuntu1")
@@ -174,44 +162,32 @@ DPKG_S
 
   describe Chef::Provider::Package::Dpkg, "remove and purge" do
     it "should run dpkg -r to remove the package" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "dpkg -r wget",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
+      @provider.should_receive(:run_noninteractive).with(
+        "dpkg -r wget",
+      )
       @provider.remove_package("wget", "1.11.4-1ubuntu1")
     end
 
     it "should run dpkg -r to remove the package with options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "dpkg -r --force-yes wget",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
+      @provider.should_receive(:run_noninteractive).with(
+        "dpkg -r --force-yes wget"
+      )
       @new_resource.stub(:options).and_return("--force-yes")
 
       @provider.remove_package("wget", "1.11.4-1ubuntu1")
     end
 
     it "should run dpkg -P to purge the package" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "dpkg -P wget",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
+      @provider.should_receive(:run_noninteractive).with(
+        "dpkg -P wget"
+      )
       @provider.purge_package("wget", "1.11.4-1ubuntu1")
     end
 
     it "should run dpkg -P to purge the package with options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "dpkg -P --force-yes wget",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
+      @provider.should_receive(:run_noninteractive).with(
+        "dpkg -P --force-yes wget",
+      )
       @new_resource.stub(:options).and_return("--force-yes")
 
       @provider.purge_package("wget", "1.11.4-1ubuntu1")
