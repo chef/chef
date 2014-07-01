@@ -123,7 +123,7 @@ DPKG_S
   describe Chef::Provider::Package::Dpkg, "install and upgrade" do
     it "should run dpkg -i with the package source" do
       @provider.should_receive(:run_noninteractive).with(
-        "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
+        "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb"
       )
       @provider.install_package("wget", "1.11.4-1ubuntu1")
     end
@@ -148,7 +148,7 @@ DPKG_S
 
     it "should run dpkg -i with the package source and options if specified" do
       @provider.should_receive(:run_noninteractive).with(
-        "dpkg -i --force-yes /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
+        "dpkg -i --force-yes /tmp/wget_1.11.4-1ubuntu1_amd64.deb"
       )
       @new_resource.stub(:options).and_return("--force-yes")
 
@@ -163,7 +163,7 @@ DPKG_S
   describe Chef::Provider::Package::Dpkg, "remove and purge" do
     it "should run dpkg -r to remove the package" do
       @provider.should_receive(:run_noninteractive).with(
-        "dpkg -r wget",
+        "dpkg -r wget"
       )
       @provider.remove_package("wget", "1.11.4-1ubuntu1")
     end
@@ -186,7 +186,7 @@ DPKG_S
 
     it "should run dpkg -P to purge the package with options if specified" do
       @provider.should_receive(:run_noninteractive).with(
-        "dpkg -P --force-yes wget",
+        "dpkg -P --force-yes wget"
       )
       @new_resource.stub(:options).and_return("--force-yes")
 
