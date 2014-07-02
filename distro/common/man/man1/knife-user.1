@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-USER" "1" "Chef 11.12.0" "" "knife user"
+.TH "KNIFE-USER" "1" "Chef 11.14" "" "knife user"
 .SH NAME
 knife-user \- The man page for the knife user subcommand.
 .
@@ -51,10 +51,10 @@ The port on which chef\-zero will listen.
 The configuration file to use.
 .TP
 .B \fB\-d\fP, \fB\-\-disable\-editing\fP
-Indicates that $EDITOR will not be opened; data will be accepted as\-is.
+Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Indicates that Knife will use the default value, instead of asking a user to provide one.
+Use to have Knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -72,10 +72,10 @@ Shows help for the command.
 The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-[no\-]color\fP
-Indicates whether colored output will be used.
+Use to view colored output.
 .TP
 .B \fB\-\-print\-after\fP
-Indicates that data will be shown after a destructive operation.
+Use to show data after a destructive operation.
 .TP
 .B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
 The URL for the Chef server\&.
@@ -90,10 +90,10 @@ Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 The version of the chef\-client\&.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
+Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
+Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .SH CREATE
 .sp
@@ -125,7 +125,7 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fB\-a\fP, \fB\-\-admin\fP
-Indicates that a client will be created as an admin client. This is required when users of the open source Chef server need to access the Chef Server API as an administrator. This option only works when used with the open source Chef server and will have no effect when used with Enterprise Chef\&.
+Use to create a client as an admin client. This is required for any user to access Open Source Chef as an administrator. This option only works when used with the open source Chef server and will have no effect when used with Enterprise Chef\&.
 .TP
 .B \fB\-f FILE_NAME\fP, \fB\-\-file FILE_NAME\fP
 Use to save a private key to the specified file name.
@@ -230,7 +230,7 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fB\-w\fP, \fB\-\-with\-uri\fP
-Indicates that the corresponding URIs will be shown.
+Use to show the corresponding URIs.
 .UNINDENT
 .sp
 \fBExamples\fP

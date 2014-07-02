@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-SEARCH" "1" "Chef 11.12.0" "" "knife search"
+.TH "KNIFE-SEARCH" "1" "Chef 11.14" "" "knife search"
 .SH NAME
 knife-search \- The man page for the knife search subcommand.
 .
@@ -138,13 +138,13 @@ The configuration file to use.
 The port on which chef\-zero will listen.
 .TP
 .B \fB\-\-[no\-]color\fP
-Indicates whether colored output will be used.
+Use to view colored output.
 .TP
 .B \fB\-d\fP, \fB\-\-disable\-editing\fP
-Indicates that $EDITOR will not be opened; data will be accepted as\-is.
+Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Indicates that Knife will use the default value, instead of asking a user to provide one.
+Use to have Knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -159,7 +159,7 @@ The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, 
 Shows help for the command.
 .TP
 .B \fB\-i\fP, \fB\-\-id\-only\fP
-Indicates that only matching object IDs will be shown.
+Use to show only matching object IDs.
 .TP
 .B \fBINDEX\fP
 The name of the index to be queried: \fBclient\fP, \fBenvironment\fP, \fBnode\fP, \fBrole\fP, or \fBDATA_BAG_NAME\fP\&. Default index: \fBnode\fP\&.
@@ -177,13 +177,13 @@ Display more, but not all, of a node\(aqs data when searching using the default 
 The order in which search results will be sorted.
 .TP
 .B \fB\-\-print\-after\fP
-Indicates that data will be shown after a destructive operation.
+Use to show data after a destructive operation.
 .TP
 .B \fB\-q SEARCH_QUERY\fP, \fB\-\-query SEARCH_QUERY\fP
 Use to protect search queries that start with a hyphen (\-). A \fB\-q\fP query may be specified as an argument or an option, but not both.
 .TP
 .B \fB\-r\fP, \fB\-\-run\-list\fP
-Indicates that only the run\-list will be shown.
+Use to show only the run\-list.
 .TP
 .B \fB\-R INT\fP, \fB\-\-rows INT\fP
 The number of rows to be returned.
@@ -204,10 +204,10 @@ The version of the chef\-client\&.
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
+Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
+Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .sp
 \fBExamples\fP
