@@ -229,4 +229,23 @@ describe Chef::Provider::Env do
       @provider.compare_value.should be_true
     end
   end
+
+  describe "modify_env" do
+    before(:each) do
+      @provider.stub(:create_env).and_return(true)
+      @new_resource.delim ";"
+
+      @current_resource = Chef::Resource::Env.new("FOO")
+      @current_resource.value "C:/foo/bin"
+      @provider.current_resource = @current_resource
+    end
+
+    it "should not modify the variable passed to the resource" do
+      new_value = "C:/bar/bin"
+      passed_value = new_value.dup
+      @new_resource.value(passed_value)
+      @provider.modify_env
+      passed_value.should == new_value
+    end
+  end
 end
