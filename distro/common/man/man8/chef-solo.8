@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "CHEF-SOLO" "8" "Chef 11.12.0" "" "chef-solo"
+.TH "CHEF-SOLO" "8" "Chef 11.14" "" "chef-solo"
 .SH NAME
 chef-solo \- The man page for the chef-solo command line tool.
 .
@@ -55,7 +55,8 @@ chef\-solo can be run as a daemon.
 .UNINDENT
 .sp
 The chef\-solo executable is run as a command\-line tool.
-.SH OPTIONS
+.sp
+\fBOptions\fP
 .sp
 This command has the following syntax:
 .INDENT 0.0
@@ -76,13 +77,13 @@ This command has the following options:
 The configuration file to use.
 .TP
 .B \fB\-d\fP, \fB\-\-daemonize\fP
-Indicates that the executable will be run as a daemon. This option is only available on machines that run in UNIX or Linux environments. For machines that are running Microsoft Windows that require similar functionality, use the \fBchef\-client::service\fP recipe in the \fBchef\-client\fP cookbook: \fI\%http://community.opscode.com/cookbooks/chef\-client\fP\&. This will install a chef\-client service under Microsoft Windows using the Windows Service Wrapper\&.
+Use to run the executable as a daemon. This option is only available on machines that run in UNIX or Linux environments. For machines that are running Microsoft Windows that require similar functionality, use the \fBchef\-client::service\fP recipe in the \fBchef\-client\fP cookbook: \fI\%http://community.opscode.com/cookbooks/chef\-client\fP\&. This will install a chef\-client service under Microsoft Windows using the Windows Service Wrapper\&.
 .TP
 .B \fB\-E ENVIRONMENT_NAME\fP, \fB\-\-environment ENVIRONMENT_NAME\fP
 The name of the environment.
 .TP
 .B \fB\-f\fP, \fB\-\-[no\-]fork\fP
-Indicates that a chef\-client run will be contained in a secondary process with dedicated RAM. When the chef\-client run is complete the RAM will be returned to the master process. This option helps ensure that a chef\-client will use a steady amount of RAM over time because the master process will not run recipes. This option will also help prevent memory leaks (such as those that can be introduced by the code contained within a poorly designed cookbook). Use \fB\-\-no\-fork\fP to disable running the chef\-client in fork node. Default value: \fB\-\-fork\fP\&.
+Use to contain the chef\-client run in a secondary process with dedicated RAM. When the chef\-client run is complete the RAM will be returned to the master process. This option helps ensure that a chef\-client will use a steady amount of RAM over time because the master process will not run recipes. This option will also help prevent memory leaks (such as those that can be introduced by the code contained within a poorly designed cookbook). Use \fB\-\-no\-fork\fP to disable running the chef\-client in fork node. Default value: \fB\-\-fork\fP\&.
 .TP
 .B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
 The output format: \fBdoc\fP (default) or \fBmin\fP\&.
@@ -94,10 +95,10 @@ Use \fBmin\fP to print the progress of the chef\-client run using single charact
 Other formatting options are available when those formatters are configured in the client.rb file using the \fBadd_formatter\fP option.
 .TP
 .B \fB\-\-force\-formatter\fP
-Indicates that formatter output will be used instead of logger output.
+Use to show formatter output instead of logger output.
 .TP
 .B \fB\-\-force\-logger\fP
-Indicates that logger output will be used instead of formatter output.
+Use to show logger output instead of formatter output.
 .TP
 .B \fB\-g GROUP\fP, \fB\-\-group GROUP\fP
 The name of the group that owns a process. This is required when starting any executable as a daemon.
@@ -118,7 +119,7 @@ The level of logging that will be stored in a log file.
 The location in which log file output files will be saved. If this location is set to something other than \fBSTDOUT\fP, standard output logging will still be performed (otherwise there would be no output other than to a file). This is recommended when starting any executable as a daemon.
 .TP
 .B \fB\-\-[no\-]color\fP
-Indicates whether colored output will be used. Default setting: \fB\-\-color\fP\&.
+Use to view colored output. Default setting: \fB\-\-color\fP\&.
 .TP
 .B \fB\-N NODE_NAME\fP, \fB\-\-node\-name NODE_NAME\fP
 The name of the node.
@@ -128,6 +129,9 @@ Replace the current run list with the specified items.
 .TP
 .B \fB\-r RECIPE_URL\fP, \fB\-\-recipe\-url RECIPE_URL\fP
 The URL location from which a remote cookbook tar.gz will be downloaded.
+.TP
+.B \fB\-\-run\-lock\-timeout SECONDS\fP
+The amount of time (in seconds) to wait for a chef\-client run to finish. Default value: not set (indefinite). Set to \fB0\fP to cause a second chef\-client to exit immediately.
 .TP
 .B \fB\-s SECONDS\fP, \fB\-\-splay SECONDS\fP
 A number (in seconds) to add to the \fBinterval\fP that is used to determine the frequency of chef\-client runs. This number can help prevent server load when there are many clients running at the same time.
@@ -139,11 +143,10 @@ The user that owns a process. This is required when starting any executable as a
 The version of the chef\-client\&.
 .TP
 .B \fB\-W\fP, \fB\-\-why\-run\fP
-Indicates that the executable will be run in why\-run mode, which is a type of chef\-client run that does everything except modify the system. Use why\-run mode to understand why the chef\-client makes the decisions that it makes and to learn more about the current and proposed state of the system.
+Use to run the executable in why\-run mode, which is a type of chef\-client run that does everything except modify the system. Use why\-run mode to understand why the chef\-client makes the decisions that it makes and to learn more about the current and proposed state of the system.
 .UNINDENT
-.SH EXAMPLES
 .sp
-\fBUse a URL\fP
+\fBExamples\fP
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -156,8 +159,6 @@ $ chef\-solo \-c ~/solo.rb \-j ~/node.json \-r http://www.example.com/chef\-solo
 .UNINDENT
 .sp
 The tar.gz archived into the \fBfile_cache_path\fP, and then extracted to \fBcookbooks_path\fP\&.
-.sp
-\fBUse a directory\fP
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -170,8 +171,6 @@ $ chef\-solo \-c ~/solo.rb \-j ~/node.json
 .UNINDENT
 .sp
 chef\-solo will look in the solo.rb file to determine the directory in which cookbooks are located.
-.sp
-\fBUse a URL for cookbook and JSON data\fP
 .INDENT 0.0
 .INDENT 3.5
 .sp
