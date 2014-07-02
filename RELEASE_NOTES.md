@@ -25,6 +25,18 @@ Original bug: [JIRA CHEF-5276](https://tickets.opscode.com/browse/CHEF-5276)
 
 ## Bug Fixes and New Features
 
+### New JSON gem:  ffi-yajl
+
+The dependencies on yajl-ruby and json have been dropped in favor of using the ffi-yajl gem.  This is a dual-mode
+(ffi and c-extension) gem which uses the yajl 2.x c-library for JSON parsing.  It fixes several bugs related to
+truncated JSON or JSON with trailing garbage being parsed successfully (e.g. CHEF-4565 and CHEF-4899).  It also should
+remove the conflicts based on collisions over JSON gem versions.
+
+Gem installs of Chef may not require both libffi headers (libffi-dev/devel packages) and "build-essential" tools
+(c-compiler, make, etc) to install the ffi library on Unix-ish systems.  The compilers were already previously required
+for native gem installation and yajl-ruby -- the libffi header file dependency is new.  Omnibus chef installers will
+ship with the libffi that we already build and ship with omnibus chef.
+
 ### CHEF-5223 OS X Service provider regression.
 
 This commit: https://github.com/opscode/chef/commit/024b1e3e4de523d3c1ebbb42883a2bef3f9f415c
