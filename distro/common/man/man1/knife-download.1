@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-DOWNLOAD" "1" "Chef 11.12.0" "" "knife download"
+.TH "KNIFE-DOWNLOAD" "1" "Chef 11.14" "" "knife download"
 .SH NAME
 knife-download \- The man page for the knife download subcommand.
 .
@@ -62,7 +62,7 @@ The path to the chef\-repo\&. This setting will override the default path to the
 The port on which chef\-zero will listen.
 .TP
 .B \fB\-\-[no\-]color\fP
-Indicates whether colored output will be used.
+Use to view colored output.
 .TP
 .B \fB\-\-concurrency\fP
 The number of allowed concurrent connections. Default: \fB10\fP\&.
@@ -71,13 +71,13 @@ The number of allowed concurrent connections. Default: \fB10\fP\&.
 The version of a cookbook to be downloaded.
 .TP
 .B \fB\-d\fP, \fB\-\-disable\-editing\fP
-Indicates that $EDITOR will not be opened; data will be accepted as\-is.
+Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Indicates that Knife will use the default value, instead of asking a user to provide one.
+Use to have Knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-\-[no\-]diff\fP
-Indicates that only new and modified files will be downloaded. Set to \fBfalse\fP to download all files. Default: \fB\-\-diff\fP\&.
+Use to download only new and modified files. Set to \fBfalse\fP to download all files. Default: \fB\-\-diff\fP\&.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -98,10 +98,10 @@ Shows help for the command.
 The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-n\fP, \fB\-\-dry\-run\fP
-Indicates that no action is taken and that results are only printed out. Default: \fBfalse\fP\&.
+Use to take no action and only print out results. Default: \fBfalse\fP\&.
 .TP
 .B \fB\-\-print\-after\fP
-Indicates that data will be shown after a destructive operation.
+Use to show data after a destructive operation.
 .TP
 .B \fB\-\-[no\-]purge\fP
 Use \fB\-\-purge\fP to delete local files and directories that do not exist on the Chef server\&. By default, if a role, cookbook, etc. does not exist on the Chef server, the local file for said role will be left alone and NOT deleted. Default: \fB\-\-no\-purge\fP\&.
@@ -125,10 +125,10 @@ The version of the chef\-client\&.
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
+Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
+Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .sp
 \fBExamples\fP
