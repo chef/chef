@@ -18,7 +18,7 @@
 
 require 'chef/provider/package'
 require 'chef/mixin/command'
-require 'chef/resource/apt_package'
+require 'chef/resource/package'
 require 'chef/mixin/shell_out'
 
 
@@ -31,7 +31,7 @@ class Chef
         attr_accessor :is_virtual_package
 
         def load_current_resource
-          @current_resource = Chef::Resource::AptPackage.new(@new_resource.name)
+          @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
           check_package_state(@new_resource.package_name)
           @current_resource
