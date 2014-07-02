@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="shortcut icon" href="_static/chef.ico"/>
 
 
   </head>
@@ -181,12 +180,12 @@
 </div>
 <div class="section" id="from-file">
 <h2>from file<a class="headerlink" href="#from-file" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">from</span> <span class="pre">file</span></tt> argument is used to create a data bag on the Chef server from a file. The path to the data bag file must specify one of the following:</p>
+<p>The <tt class="docutils literal"><span class="pre">from</span> <span class="pre">file</span></tt> argument is used to:</p>
 <ul class="simple">
-<li>the name of a data bag</li>
-<li>a relative or absolute path to a file</li>
+<li>Add a data bag item to a data bag</li>
+<li>Update the contents of an existing data bag item</li>
 </ul>
-<p>If the name of a data bag is specified, Knife will search for the data bag in <tt class="docutils literal"><span class="pre">./data_bags/bag_name/file</span></tt>. Once opened, the JSON file should be a hash that contains at least an ID key which represents the name of the data bag item.</p>
+<p>The data bag itself must already exist on the Chef server and must be specified as part of the command. The contents of the data bag item are specified using a JSON file. This JSON file may be located at a relative or absolute path; its location must be specified as part of the command. The JSON file that defines the contents of the data bag item must at least contain the name of the data bag item&#8212;<tt class="docutils literal"><span class="pre">&quot;id&quot;:</span> <span class="pre">&quot;name&quot;</span></tt>.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">A chef-client must be version 11.6 (or higher) when using the <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">data</span> <span class="pre">bag</span> <span class="pre">from</span> <span class="pre">file</span></tt> argument with the Enterprise Chef or Open Source Chef version 11 servers.</p>
@@ -203,7 +202,7 @@
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-a</span></tt>, <tt class="docutils literal"><span class="pre">--all</span></tt></dt>
-<dd>Indicates that all data bags found at the specified path will be uploaded.</dd>
+<dd>Use to upload all data bags found at the specified path.</dd>
 <dt><tt class="docutils literal"><span class="pre">--secret</span> <span class="pre">SECRET</span></tt></dt>
 <dd>The encryption key that is used for values contained within a data bag item.</dd>
 <dt><tt class="docutils literal"><span class="pre">--secret-file</span> <span class="pre">FILE</span></tt></dt>
@@ -244,7 +243,7 @@
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-w</span></tt>, <tt class="docutils literal"><span class="pre">--with-uri</span></tt></dt>
-<dd>Indicates that the corresponding URIs will be shown.</dd>
+<dd>Use to show the corresponding URIs.</dd>
 </dl>
 </div>
 <div class="section" id="id12">

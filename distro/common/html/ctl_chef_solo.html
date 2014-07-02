@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="shortcut icon" href="_static/chef.ico"/>
 
 
   </head>
@@ -51,6 +50,10 @@
 <li>Authentication or authorization</li>
 <li>Persistent attributes</li>
 </ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">chef-solo can be run as a daemon.</p>
+</div>
 <p>The chef-solo executable is run as a command-line tool.</p>
 <div class="section" id="options">
 <h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
@@ -63,11 +66,11 @@
 <dt><tt class="docutils literal"><span class="pre">-c</span> <span class="pre">CONFIG</span></tt>, <tt class="docutils literal"><span class="pre">--config</span> <span class="pre">CONFIG</span></tt></dt>
 <dd>The configuration file to use.</dd>
 <dt><tt class="docutils literal"><span class="pre">-d</span></tt>, <tt class="docutils literal"><span class="pre">--daemonize</span></tt></dt>
-<dd>Indicates that the executable will be run as a daemon. This option is only available on machines that run in UNIX or Linux environments. For machines that are running Microsoft Windows that require similar functionality, use the <tt class="docutils literal"><span class="pre">chef-client::service</span></tt> recipe in the <tt class="docutils literal"><span class="pre">chef-client</span></tt> cookbook: <a class="reference external" href="http://community.opscode.com/cookbooks/chef-client">http://community.opscode.com/cookbooks/chef-client</a>. This will install a chef-client service under Microsoft Windows using the Windows Service Wrapper.</dd>
+<dd>Use to run the executable as a daemon. This option is only available on machines that run in UNIX or Linux environments. For machines that are running Microsoft Windows that require similar functionality, use the <tt class="docutils literal"><span class="pre">chef-client::service</span></tt> recipe in the <tt class="docutils literal"><span class="pre">chef-client</span></tt> cookbook: <a class="reference external" href="http://community.opscode.com/cookbooks/chef-client">http://community.opscode.com/cookbooks/chef-client</a>. This will install a chef-client service under Microsoft Windows using the Windows Service Wrapper.</dd>
 <dt><tt class="docutils literal"><span class="pre">-E</span> <span class="pre">ENVIRONMENT_NAME</span></tt>, <tt class="docutils literal"><span class="pre">--environment</span> <span class="pre">ENVIRONMENT_NAME</span></tt></dt>
 <dd>The name of the environment.</dd>
 <dt><tt class="docutils literal"><span class="pre">-f</span></tt>, <tt class="docutils literal"><span class="pre">--[no-]fork</span></tt></dt>
-<dd>Indicates that a chef-client run will be contained in a secondary process with dedicated RAM. When the chef-client run is complete the RAM will be returned to the master process. This option helps ensure that a chef-client will use a steady amount of RAM over time because the master process will not run recipes. This option will also help prevent memory leaks (such as those that can be introduced by the code contained within a poorly designed cookbook). Use <tt class="docutils literal"><span class="pre">--no-fork</span></tt> to disable running the chef-client in fork node. Default value: <tt class="docutils literal"><span class="pre">--fork</span></tt>.</dd>
+<dd>Use to contain the chef-client run in a secondary process with dedicated RAM. When the chef-client run is complete the RAM will be returned to the master process. This option helps ensure that a chef-client will use a steady amount of RAM over time because the master process will not run recipes. This option will also help prevent memory leaks (such as those that can be introduced by the code contained within a poorly designed cookbook). Use <tt class="docutils literal"><span class="pre">--no-fork</span></tt> to disable running the chef-client in fork node. Default value: <tt class="docutils literal"><span class="pre">--fork</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-F</span> <span class="pre">FORMAT</span></tt>, <tt class="docutils literal"><span class="pre">--format</span> <span class="pre">FORMAT</span></tt></dt>
 <dd><p class="first">The output format: <tt class="docutils literal"><span class="pre">doc</span></tt> (default) or <tt class="docutils literal"><span class="pre">min</span></tt>.</p>
 <p>Use <tt class="docutils literal"><span class="pre">doc</span></tt> to print the progress of the chef-client run using full strings that display a summary of updates as they occur.</p>
@@ -75,9 +78,9 @@
 <p class="last">Other formatting options are available when those formatters are configured in the client.rb file using the <tt class="docutils literal"><span class="pre">add_formatter</span></tt> option.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--force-formatter</span></tt></dt>
-<dd>Indicates that formatter output will be used instead of logger output.</dd>
+<dd>Use to show formatter output instead of logger output.</dd>
 <dt><tt class="docutils literal"><span class="pre">--force-logger</span></tt></dt>
-<dd>Indicates that logger output will be used instead of formatter output.</dd>
+<dd>Use to show logger output instead of formatter output.</dd>
 <dt><tt class="docutils literal"><span class="pre">-g</span> <span class="pre">GROUP</span></tt>, <tt class="docutils literal"><span class="pre">--group</span> <span class="pre">GROUP</span></tt></dt>
 <dd>The name of the group that owns a process. This is required when starting any executable as a daemon.</dd>
 <dt><tt class="docutils literal"><span class="pre">-h</span></tt>, <tt class="docutils literal"><span class="pre">--help</span></tt></dt>
@@ -91,13 +94,15 @@
 <dt><tt class="docutils literal"><span class="pre">-L</span> <span class="pre">LOGLOCATION</span></tt>, <tt class="docutils literal"><span class="pre">--logfile</span> <span class="pre">c</span></tt></dt>
 <dd>The location in which log file output files will be saved. If this location is set to something other than <tt class="docutils literal"><span class="pre">STDOUT</span></tt>, standard output logging will still be performed (otherwise there would be no output other than to a file). This is recommended when starting any executable as a daemon.</dd>
 <dt><tt class="docutils literal"><span class="pre">--[no-]color</span></tt></dt>
-<dd>Indicates whether colored output will be used. Default setting: <tt class="docutils literal"><span class="pre">--color</span></tt>.</dd>
+<dd>Use to view colored output. Default setting: <tt class="docutils literal"><span class="pre">--color</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-N</span> <span class="pre">NODE_NAME</span></tt>, <tt class="docutils literal"><span class="pre">--node-name</span> <span class="pre">NODE_NAME</span></tt></dt>
 <dd>The name of the node.</dd>
 <dt><tt class="docutils literal"><span class="pre">-o</span> <span class="pre">RUN_LIST_ITEM</span></tt>, <tt class="docutils literal"><span class="pre">--override-runlist</span> <span class="pre">RUN_LIST_ITEM</span></tt></dt>
 <dd>Replace the current run list with the specified items.</dd>
 <dt><tt class="docutils literal"><span class="pre">-r</span> <span class="pre">RECIPE_URL</span></tt>, <tt class="docutils literal"><span class="pre">--recipe-url</span> <span class="pre">RECIPE_URL</span></tt></dt>
 <dd>The URL location from which a remote cookbook tar.gz will be downloaded.</dd>
+<dt><tt class="docutils literal"><span class="pre">--run-lock-timeout</span> <span class="pre">SECONDS</span></tt></dt>
+<dd>The amount of time (in seconds) to wait for a chef-client run to finish. Default value: not set (indefinite). Set to <tt class="docutils literal"><span class="pre">0</span></tt> to cause a second chef-client to exit immediately.</dd>
 <dt><tt class="docutils literal"><span class="pre">-s</span> <span class="pre">SECONDS</span></tt>, <tt class="docutils literal"><span class="pre">--splay</span> <span class="pre">SECONDS</span></tt></dt>
 <dd>A number (in seconds) to add to the <tt class="docutils literal"><span class="pre">interval</span></tt> that is used to determine the frequency of chef-client runs. This number can help prevent server load when there are many clients running at the same time.</dd>
 <dt><tt class="docutils literal"><span class="pre">-u</span> <span class="pre">USER</span></tt>, <tt class="docutils literal"><span class="pre">--user</span> <span class="pre">USER</span></tt></dt>
@@ -105,7 +110,7 @@
 <dt><tt class="docutils literal"><span class="pre">-v</span></tt>, <tt class="docutils literal"><span class="pre">--version</span></tt></dt>
 <dd>The version of the chef-client.</dd>
 <dt><tt class="docutils literal"><span class="pre">-W</span></tt>, <tt class="docutils literal"><span class="pre">--why-run</span></tt></dt>
-<dd>Indicates that the executable will be run in why-run mode, which is a type of chef-client run that does everything except modify the system. Use why-run mode to understand why the chef-client makes the decisions that it makes and to learn more about the current and proposed state of the system.</dd>
+<dd>Use to run the executable in why-run mode, which is a type of chef-client run that does everything except modify the system. Use why-run mode to understand why the chef-client makes the decisions that it makes and to learn more about the current and proposed state of the system.</dd>
 </dl>
 </div>
 <div class="section" id="examples">

@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="shortcut icon" href="_static/chef.ico"/>
 
 
   </head>
@@ -43,6 +42,10 @@
   <div class="section" id="knife-ssl-check">
 <h1>knife ssl check<a class="headerlink" href="#knife-ssl-check" title="Permalink to this headline">¶</a></h1>
 <p>The <strong>knife ssl check</strong> subcommand is used to verify the SSL configuration for the Enterprise Chef and/or Open Source Chef servers, or at another location specified by a URL or URI.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">When verification of a remote server&#8217;s SSL certificate is disabled, the chef-client will issue a warning similar to &#8220;SSL validation of HTTPS requests is disabled. HTTPS connections are still encrypted, but the chef-client is not able to detect forged replies or man-in-the-middle attacks.&#8221; To configure SSL for the chef-client, set <tt class="docutils literal"><span class="pre">ssl_verify_mode</span></tt> to <tt class="docutils literal"><span class="pre">:verify_peer</span></tt> (recommended) <strong>or</strong> <tt class="docutils literal"><span class="pre">verify_api_cert</span></tt> to <tt class="docutils literal"><span class="pre">true</span></tt> in the client.rb file.</p>
+</div>
 <p><strong>Syntax</strong></p>
 <p>This subcommand has the following syntax:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife ssl check URI
@@ -54,7 +57,7 @@
 <dt><tt class="docutils literal"><span class="pre">-a</span> <span class="pre">SSH_ATTR</span></tt>, <tt class="docutils literal"><span class="pre">--attribute</span> <span class="pre">SSH_ATTR</span></tt></dt>
 <dd>The attribute that is used when opening the SSH connection. The default attribute is the FQDN of the host. Other possible values include a public IP address, a private IP address, or a hostname.</dd>
 <dt><tt class="docutils literal"><span class="pre">-A</span></tt>, <tt class="docutils literal"><span class="pre">--forward-agent</span></tt></dt>
-<dd>Indicates that SSH agent forwarding is enabled.</dd>
+<dd>Use to enable SSH agent forwarding.</dd>
 <dt><tt class="docutils literal"><span class="pre">-c</span> <span class="pre">CONFIG_FILE</span></tt>, <tt class="docutils literal"><span class="pre">--config</span> <span class="pre">CONFIG_FILE</span></tt></dt>
 <dd>The configuration file to use.</dd>
 <dt><tt class="docutils literal"><span class="pre">-C</span> <span class="pre">NUM</span></tt>, <tt class="docutils literal"><span class="pre">--concurrency</span> <span class="pre">NUM</span></tt></dt>
@@ -62,11 +65,11 @@
 <dt><tt class="docutils literal"><span class="pre">--chef-zero-port</span> <span class="pre">PORT</span></tt></dt>
 <dd>The port on which chef-zero will listen.</dd>
 <dt><tt class="docutils literal"><span class="pre">--[no-]color</span></tt></dt>
-<dd>Indicates whether colored output will be used.</dd>
+<dd>Use to view colored output.</dd>
 <dt><tt class="docutils literal"><span class="pre">-d</span></tt>, <tt class="docutils literal"><span class="pre">--disable-editing</span></tt></dt>
-<dd>Indicates that $EDITOR will not be opened; data will be accepted as-is.</dd>
+<dd>Use to prevent the $EDITOR from being opened and to accept data as-is.</dd>
 <dt><tt class="docutils literal"><span class="pre">--defaults</span></tt></dt>
-<dd>Indicates that Knife will use the default value, instead of asking a user to provide one.</dd>
+<dd>Use to have Knife use the default value instead of asking a user to provide one.</dd>
 <dt><tt class="docutils literal"><span class="pre">-e</span> <span class="pre">EDITOR</span></tt>, <tt class="docutils literal"><span class="pre">--editor</span> <span class="pre">EDITOR</span></tt></dt>
 <dd>The $EDITOR that is used for all interactive commands.</dd>
 <dt><tt class="docutils literal"><span class="pre">-E</span> <span class="pre">ENVIRONMENT</span></tt>, <tt class="docutils literal"><span class="pre">--environment</span> <span class="pre">ENVIRONMENT</span></tt></dt>
@@ -82,7 +85,7 @@
 <dt><tt class="docutils literal"><span class="pre">-k</span> <span class="pre">KEY</span></tt>, <tt class="docutils literal"><span class="pre">--key</span> <span class="pre">KEY</span></tt></dt>
 <dd>The private key that Knife will use to sign requests made by the API client to the Chef server.</dd>
 <dt><tt class="docutils literal"><span class="pre">-m</span></tt>, <tt class="docutils literal"><span class="pre">--manual-list</span></tt></dt>
-<dd>Indicates that a search query is a space-separated list of servers. If there is more than one item in the list, put quotes around the entire list. For example: <tt class="docutils literal"><span class="pre">--manual-list</span> <span class="pre">&quot;server01</span> <span class="pre">server</span> <span class="pre">02</span> <span class="pre">server</span> <span class="pre">03&quot;</span></tt></dd>
+<dd>Use to define a search query as a space-separated list of servers. If there is more than one item in the list, put quotes around the entire list. For example: <tt class="docutils literal"><span class="pre">--manual-list</span> <span class="pre">&quot;server01</span> <span class="pre">server</span> <span class="pre">02</span> <span class="pre">server</span> <span class="pre">03&quot;</span></tt></dd>
 <dt><tt class="docutils literal"><span class="pre">--[no-]host-key-verify</span></tt></dt>
 <dd>Use <tt class="docutils literal"><span class="pre">--no-host-key-verify</span></tt> to disable host key verification. Default setting: <tt class="docutils literal"><span class="pre">--host-key-verify</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">OTHER</span></tt></dt>
@@ -92,7 +95,7 @@
 <dt><tt class="docutils literal"><span class="pre">-P</span> <span class="pre">PASSWORD</span></tt>, <tt class="docutils literal"><span class="pre">--ssh-password</span> <span class="pre">PASSWORD</span></tt></dt>
 <dd>The SSH password. This can be used to pass the password directly on the command line. If this option is not specified (and a password is required) Knife will prompt for the password.</dd>
 <dt><tt class="docutils literal"><span class="pre">--print-after</span></tt></dt>
-<dd>Indicates that data will be shown after a destructive operation.</dd>
+<dd>Use to show data after a destructive operation.</dd>
 <dt><tt class="docutils literal"><span class="pre">-s</span> <span class="pre">URL</span></tt>, <tt class="docutils literal"><span class="pre">--server-url</span> <span class="pre">URL</span></tt></dt>
 <dd>The URL for the Chef server.</dd>
 <dt><tt class="docutils literal"><span class="pre">SEARCH_QUERY</span></tt></dt>
@@ -108,9 +111,9 @@
 <dt><tt class="docutils literal"><span class="pre">-x</span> <span class="pre">USER_NAME</span></tt>, <tt class="docutils literal"><span class="pre">--ssh-user</span> <span class="pre">USER_NAME</span></tt></dt>
 <dd>The SSH user name.</dd>
 <dt><tt class="docutils literal"><span class="pre">-y</span></tt>, <tt class="docutils literal"><span class="pre">--yes</span></tt></dt>
-<dd>Indicates that the response to all confirmation prompts will be &#8220;Yes&#8221; (and that Knife will not ask for confirmation).</dd>
+<dd>Use to respond to all confirmation prompts with &#8220;Yes&#8221;. Knife will not ask for confirmation.</dd>
 <dt><tt class="docutils literal"><span class="pre">-z</span></tt>, <tt class="docutils literal"><span class="pre">--local-mode</span></tt></dt>
-<dd>Indicates that the chef-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef-repo.</dd>
+<dd>Use to run the chef-client in local mode. This allows all commands that work against the Chef server to also work against the local chef-repo.</dd>
 </dl>
 <p><strong>Examples</strong></p>
 <p>The following examples show how to use this Knife subcommand:</p>

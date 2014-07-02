@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="shortcut icon" href="_static/chef.ico"/>
 
 
   </head>
@@ -59,21 +58,21 @@
 <p>This subcommand has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-1</span></tt></dt>
-<dd>Indicates that only one column of results will be shown. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
+<dd>Use to show only one column of results. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--chef-repo-path</span> <span class="pre">PATH</span></tt></dt>
 <dd>The path to the chef-repo. This setting will override the default path to the chef-repo. Default: same value as specified by <tt class="docutils literal"><span class="pre">chef_repo_path</span></tt> in client.rb.</dd>
 <dt><tt class="docutils literal"><span class="pre">--concurrency</span></tt></dt>
 <dd>The number of allowed concurrent connections. Default: <tt class="docutils literal"><span class="pre">10</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-d</span></tt></dt>
-<dd>Indicates that a directory&#8217;s children will not be shown when a directory matches a pattern. Default value: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
+<dd>Use to prevent a directory&#8217;s children from showing when a directory matches a pattern. Default value: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-f</span></tt>, <tt class="docutils literal"><span class="pre">--flat</span></tt></dt>
 <dd>Use to show a list of file names. Set to <tt class="docutils literal"><span class="pre">false</span></tt> to view ls-like output. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--local</span></tt></dt>
-<dd>Indicates that only contents of the local directory will be returned. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
+<dd>Use to return only the contents of the local directory. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-p</span></tt></dt>
-<dd>Indicates that trailing slashes (/) will be shown for directories. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
+<dd>Use to show directories with trailing slashes (/). Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-R</span></tt></dt>
-<dd>Indicates that directories will be listed recursively. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
+<dd>Use to list directories recursively. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--repo-mode</span> <span class="pre">MODE</span></tt></dt>
 <dd>The layout of the local chef-repo. Possible values: <tt class="docutils literal"><span class="pre">static</span></tt>, <tt class="docutils literal"><span class="pre">everything</span></tt>, or <tt class="docutils literal"><span class="pre">hosted_everything</span></tt>. Use <tt class="docutils literal"><span class="pre">static</span></tt> for just roles, environments, cookbooks, and data bags. By default, <tt class="docutils literal"><span class="pre">everything</span></tt> and <tt class="docutils literal"><span class="pre">hosted_everything</span></tt> are dynamically selected depending on the server type. Default: <tt class="docutils literal"><span class="pre">everything</span></tt> / <tt class="docutils literal"><span class="pre">hosted_everything</span></tt>.</dd>
 </dl>

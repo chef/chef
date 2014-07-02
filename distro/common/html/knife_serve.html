@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>knife recipe list &mdash; chef-client Man Pages</title>
+    <title>knife serve &mdash; chef-client Man Pages</title>
     
     <link rel="stylesheet" href="_static/guide.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -39,13 +39,13 @@
 
           <div class="body">
             
-  <div class="section" id="knife-recipe-list">
-<h1>knife recipe list<a class="headerlink" href="#knife-recipe-list" title="Permalink to this headline">¶</a></h1>
-<p>The <strong>knife recipe list</strong> subcommand is used to view all of the recipes that are on a Chef server. A regular expression can be used to limit the results to recipes that match a specific pattern. The regular expression must be within quotes and not be surrounded by forward slashes (/).</p>
+  <div class="section" id="knife-serve">
+<h1>knife serve<a class="headerlink" href="#knife-serve" title="Permalink to this headline">¶</a></h1>
+<p>The <strong>knife serve</strong> subcommand is used to run a persistent chef-zero against the local chef-repo. (chef-zero is a lightweight Chef server that runs in-memory on the local machine.) This is the same as running the chef-client executable with the <tt class="docutils literal"><span class="pre">--local-mode</span></tt> option. The <tt class="docutils literal"><span class="pre">chef_repo_path</span></tt> is located automatically and the Chef server will bind to port <tt class="docutils literal"><span class="pre">8900</span></tt> by default. <strong>knife serve</strong> will print the URL for the local Chef server, so that it may be added to the knife.rb file.</p>
 <div class="section" id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
 <p>This subcommand has the following syntax:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife recipe list REGEX
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife serve <span class="o">(</span>options<span class="o">)</span>
 </pre></div>
 </div>
 </div>
@@ -59,19 +59,7 @@
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>The following examples show how to use this Knife subcommand:</p>
-<p><strong>View a list of recipes</strong></p>
-<p>To view a list of recipes:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife recipe list <span class="s1">&#39;couchdb::*&#39;</span>
-</pre></div>
-</div>
-<p>to return:</p>
-<div class="highlight-bash"><div class="highlight"><pre>couchdb::main_monitors
-couchdb::master
-couchdb::default
-couchdb::org_cleanu
-</pre></div>
-</div>
+<p>None.</p>
 </div>
 </div>
 

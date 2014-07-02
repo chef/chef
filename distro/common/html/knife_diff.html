@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="shortcut icon" href="_static/chef.ico"/>
 
 
   </head>
@@ -65,11 +64,11 @@
 <dt><tt class="docutils literal"><span class="pre">--concurrency</span></tt></dt>
 <dd>The number of allowed concurrent connections. Default: <tt class="docutils literal"><span class="pre">10</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--diff-filter=[(A|D|M|T)...[*]]</span></tt></dt>
-<dd>Indicates that files will be selected that have been added (<tt class="docutils literal"><span class="pre">A</span></tt>), deleted (<tt class="docutils literal"><span class="pre">D</span></tt>), modified (<tt class="docutils literal"><span class="pre">M</span></tt>), and/or have had their type changed (<tt class="docutils literal"><span class="pre">T</span></tt>). Any combination of filter characters may be used, including no filter characters. Use <tt class="docutils literal"><span class="pre">*</span></tt> to select all paths if a file matches other criteria in the comparison. Default value: <tt class="docutils literal"><span class="pre">nil</span></tt>.</dd>
+<dd>Use to select only files that have been added (<tt class="docutils literal"><span class="pre">A</span></tt>), deleted (<tt class="docutils literal"><span class="pre">D</span></tt>), modified (<tt class="docutils literal"><span class="pre">M</span></tt>), and/or have had their type changed (<tt class="docutils literal"><span class="pre">T</span></tt>). Any combination of filter characters may be used, including no filter characters. Use <tt class="docutils literal"><span class="pre">*</span></tt> to select all paths if a file matches other criteria in the comparison. Default value: <tt class="docutils literal"><span class="pre">nil</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--name-only</span></tt></dt>
-<dd>Indicates that only the names of modified files will be shown.</dd>
+<dd>Use to show only the names of modified files.</dd>
 <dt><tt class="docutils literal"><span class="pre">--name-status</span></tt></dt>
-<dd>Indicates that only the names of files with a status of <tt class="docutils literal"><span class="pre">Added</span></tt>, <tt class="docutils literal"><span class="pre">Deleted</span></tt>, <tt class="docutils literal"><span class="pre">Modified</span></tt>, or <tt class="docutils literal"><span class="pre">Type</span> <span class="pre">Changed</span></tt> will be shown.</dd>
+<dd>Use to show only the names of files with a status of <tt class="docutils literal"><span class="pre">Added</span></tt>, <tt class="docutils literal"><span class="pre">Deleted</span></tt>, <tt class="docutils literal"><span class="pre">Modified</span></tt>, or <tt class="docutils literal"><span class="pre">Type</span> <span class="pre">Changed</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--no-recurse</span></tt></dt>
 <dd>Use <tt class="docutils literal"><span class="pre">--no-recurse</span></tt> to disable listing a directory recursively. Default: <tt class="docutils literal"><span class="pre">--recurse</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--repo-mode</span> <span class="pre">MODE</span></tt></dt>
