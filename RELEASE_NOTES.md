@@ -145,3 +145,6 @@ knife now includes a warning in the -E/--environment option that this setting is
 
 ### New configurable option :yum-lock-timeout
 You can now set the timeout for receiving the yum lock in `config.rb` by adding `yum-lock-timeout SECONDS` (default is 30 seconds).
+
+### New `timeout` attribute for `package` resource
+`package` resource now exposes a new attribute called `timeout` which is used during the execution of specified actions. This attribute currently is only supported by `Chef::Provider::Package::Apt` provider on `ubuntu`, `gcel`, `linaro`, `raspbian`, `linuxmint` and `debian` operating systems.
