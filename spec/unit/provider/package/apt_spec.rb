@@ -24,7 +24,7 @@ describe Chef::Provider::Package::Apt do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::AptPackage.new("irssi", @run_context)
+    @new_resource = Chef::Resource::Package.new("irssi", @run_context)
 
     @status = double("Status", :exitstatus => 0)
     @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context)
@@ -52,7 +52,7 @@ PKG_STATUS
       @provider.load_current_resource
 
       current_resource = @provider.current_resource
-      current_resource.should be_a(Chef::Resource::AptPackage)
+      current_resource.should be_a(Chef::Resource::Package)
       current_resource.name.should == "irssi"
       current_resource.package_name.should == "irssi"
       current_resource.version.should be_nil
@@ -201,7 +201,7 @@ SHOWPKG_STDOUT
 
   context "after loading the current resource" do
     before do
-      @current_resource = Chef::Resource::AptPackage.new("irssi", @run_context)
+      @current_resource = Chef::Resource::Package.new("irssi", @run_context)
       @provider.current_resource = @current_resource
     end
 

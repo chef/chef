@@ -39,6 +39,7 @@ class Chef
         @response_file_variables = Hash.new
         @source = nil
         @version = nil
+        @timeout = 900
       end
 
       def package_name(arg=nil)
@@ -83,11 +84,20 @@ class Chef
 
       def options(arg=nil)
         set_or_return(
-	  :options,
-	  arg,
-	  :kind_of => [ String ]
-	)
+      	  :options,
+      	  arg,
+      	  :kind_of => [ String ]
+      	)
       end
+
+      def timeout(arg=nil)
+        set_or_return(
+          :timeout,
+          arg,
+          :kind_of => [String, Integer]
+        )
+      end
+
     end
   end
 end
