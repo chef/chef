@@ -93,7 +93,8 @@
   Added the initial exherbo linux support for Chef providers.
 
 
-
+* YAJL Allows Invalid JSON File Sending To The Server (CHEF-4899)
+* YAJL Silently Ingesting Invalid JSON and "Normalizing" Incorrectly (CHEF-4565)
 * Update rpm provider checking regex to allow for special characters (CHEF-4893)
 * Allow for spaces in selinux controlled directories (CHEF-5095)
 * Windows batch resource run action fails: " TypeError: can't convert nil into String" (CHEF-5287)
