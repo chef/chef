@@ -200,6 +200,7 @@ class Chef
         end
 
         @http_client.read_timeout = config[:rest_timeout]
+        @http_client.open_timeout = config[:rest_timeout]
       end
 
 
