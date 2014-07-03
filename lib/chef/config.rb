@@ -384,7 +384,7 @@ class Chef
     # certificates in this directory will be added to whatever CA bundle ruby
     # is using. Use this to add self-signed certs for your Chef Server or local
     # HTTP file servers.
-    default(:trusted_certs_dir) { config_dir && path_join(config_dir, "trusted_certs") }
+    default(:trusted_certs_dir) { config_dir && File.join(config_dir, "trusted_certs") }
 
     # Where should chef-solo download recipes from?
     default :recipe_url, nil
