@@ -232,7 +232,7 @@ class Chef::Application
       :specific_recipes => specific_recipes,
       :runlist => config[:runlist]
     )
-    @chef_client_json = nil
+    @chef_client_json = nil unless Chef::Config[:solo]
 
     @chef_client.run
     @chef_client = nil
