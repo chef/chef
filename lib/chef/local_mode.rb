@@ -18,6 +18,32 @@ require 'chef/config'
 
 class Chef
   module LocalMode
+    # Create a chef local server (if the configuration requires one) for the
+    # duration of the given block.
+    #
+    #     # This ...
+    #     with_server_connectivity { stuff }
+    #
+    #     # Is exactly equivalent to this ...
+    #     Chef::LocalMode.setup_server_connectivity
+    #     begin
+    #       stuff
+    #     ensure
+    #       Chef::LocalMode.destroy_server_connectivity
+    #     end
+    #
+    def self.with_server_connectivity
+      setup_server_connectivity
+      begin
+        yield
+      ensure
+        destroy_server_connectivity
+      end
+    end
+
+    # If Chef::Config.chef_zero.enabled is true, sets up a chef-zero server
+    # according to the Chef::Config.chef_zero and path options, and sets
+    # chef_server_url to point at it.
     def self.setup_server_connectivity
       if Chef::Config.chef_zero.enabled
         destroy_server_connectivity
@@ -42,10 +68,12 @@ class Chef
       end
     end
 
+    # Return the current chef-zero server set up by setup_server_connectivity.
     def self.chef_zero_server
       @chef_zero_server
     end
 
+    # If chef_zero_server is non-nil, stop it and remove references to it.
     def self.destroy_server_connectivity
       if @chef_zero_server
         @chef_zero_server.stop
