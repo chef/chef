@@ -187,9 +187,7 @@ class Chef::Application
 
   # Initializes Chef::Client instance and runs it
   def run_chef_client(specific_recipes = [])
-    Chef::LocalMode.setup_server_connectivity
-
-    begin
+    Chef::LocalMode.with_server_connectivity do
       override_runlist = config[:override_runlist]
       if specific_recipes.size > 0
         override_runlist ||= []
@@ -204,8 +202,6 @@ class Chef::Application
 
       @chef_client.run
       @chef_client = nil
-    ensure
-      Chef::LocalMode.destroy_server_connectivity
     end
   end
 
