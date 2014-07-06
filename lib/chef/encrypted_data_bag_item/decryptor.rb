@@ -26,6 +26,7 @@ require 'chef/encrypted_data_bag_item/unsupported_encrypted_data_bag_item_format
 require 'chef/encrypted_data_bag_item/unacceptable_encrypted_data_bag_item_format'
 require 'chef/encrypted_data_bag_item/decryption_failure'
 require 'chef/encrypted_data_bag_item/unsupported_cipher'
+require 'chef/encrypted_data_bag_item/assertions'
 
 class Chef::EncryptedDataBagItem
 
@@ -37,6 +38,7 @@ class Chef::EncryptedDataBagItem
   # to create an instance of the appropriate strategy for the given encrypted
   # data bag value.
   module Decryptor
+    extend Chef::EncryptedDataBagItem::Assertions
 
     # Detects the encrypted data bag item format version and instantiates a
     # decryptor object for that version. Call #for_decrypted_item on the
@@ -67,15 +69,8 @@ class Chef::EncryptedDataBagItem
       end
     end
 
-    def self.assert_format_version_acceptable!(format_version)
-      unless format_version.kind_of?(Integer) and format_version >= Chef::Config[:data_bag_decrypt_minimum_version]
-        raise UnacceptableEncryptedDataBagItemFormat,
-          "The encrypted data bag item has format version `#{format_version}', " +
-          "but the config setting 'data_bag_decrypt_minimum_version' requires version `#{Chef::Config[:data_bag_decrypt_minimum_version]}'"
-      end
-    end
-
     class Version0Decryptor
+      include Chef::EncryptedDataBagItem::Assertions
 
       attr_reader :encrypted_data
       attr_reader :key
@@ -155,7 +150,7 @@ class Chef::EncryptedDataBagItem
 
       def openssl_decryptor
         @openssl_decryptor ||= begin
-          assert_valid_cipher!
+          assert_valid_cipher!(@encrypted_data["cipher"], algorithm)
           d = OpenSSL::Cipher::Cipher.new(algorithm)
           d.decrypt
           # We must set key before iv: https://bugs.ruby-lang.org/issues/8221
@@ -165,15 +160,6 @@ class Chef::EncryptedDataBagItem
         end
       end
 
-      def assert_valid_cipher!
-        # In the future, chef may support configurable ciphers. For now, only
-        # aes-256-cbc and aes-256-gcm are supported.
-        requested_cipher = @encrypted_data["cipher"]
-        unless requested_cipher == algorithm
-          raise UnsupportedCipher,
-            "Cipher '#{requested_cipher}' is not supported by this version of Chef. Available ciphers: ['#{ALGORITHM}', '#{AEAD_ALGORITHM}']"
-        end
-      end
     end
 
     class Version2Decryptor < Version1Decryptor
@@ -207,6 +193,12 @@ class Chef::EncryptedDataBagItem
     end
 
     class Version3Decryptor < Version1Decryptor
+
+      def initialize(encrypted_data, key)
+        super
+        assert_aead_requirements_met!(algorithm)
+      end
+
 
       # Returns the used decryption algorithm
       def algorithm

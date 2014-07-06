@@ -92,34 +92,59 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
     end
   end
 
-  describe "when using version 3 format",
-    :if => (RUBY_VERSION >= "2" and OpenSSL::OPENSSL_VERSION_NUMBER >= 10001000) do
-
+  describe "when using version 3 format" do
     before do
       Chef::Config[:data_bag_encrypt_version] = 3
     end
 
-    it "creates a version 3 encryptor" do
-      encryptor.should be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor)
-    end
+    context "on supported platforms",
+      :if => (RUBY_VERSION >= "2" and OpenSSL::OPENSSL_VERSION_NUMBER >= 10001000) do
 
-    it "generates different authentication tags" do
-      encryptor3 = Chef::EncryptedDataBagItem::Encryptor.new(plaintext_data, key)
-      encryptor.for_encrypted_item # required to generate the auth_tag
-      encryptor3.for_encrypted_item
-      encryptor.auth_tag.should_not eq(encryptor3.auth_tag)
-    end
+      it "creates a version 3 encryptor" do
+        encryptor.should be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor)
+      end
 
-    it "includes the auth_tag in the envelope" do
-      final_data = encryptor.for_encrypted_item
-      final_data["auth_tag"].should eq(Base64::encode64(encryptor.auth_tag))
-    end
+      it "generates different authentication tags" do
+        encryptor3 = Chef::EncryptedDataBagItem::Encryptor.new(plaintext_data, key)
+        encryptor.for_encrypted_item # required to generate the auth_tag
+        encryptor3.for_encrypted_item
+        encryptor.auth_tag.should_not eq(encryptor3.auth_tag)
+      end
 
-    it "throws an error if auth tag is read before encrypting the data" do
-      lambda { encryptor.auth_tag }.should raise_error(Chef::EncryptedDataBagItem::EncryptionFailure)
-    end
+      it "includes the auth_tag in the envelope" do
+        final_data = encryptor.for_encrypted_item
+        final_data["auth_tag"].should eq(Base64::encode64(encryptor.auth_tag))
+      end
 
-  end
+      it "throws an error if auth tag is read before encrypting the data" do
+        lambda { encryptor.auth_tag }.should raise_error(Chef::EncryptedDataBagItem::EncryptionFailure)
+      end
+
+    end # context on supported platforms
+
+    context "on unsupported platforms" do
+
+      context "on platforms with old Ruby",
+        :if => RUBY_VERSION < "2" do
+
+        it "throws an error warning about the Ruby version" do
+          lambda { encryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires Ruby/)
+        end
+
+      end # context on platforms with old Ruby
+
+      context "on platforms with old OpenSSL",
+        :if => OpenSSL::OPENSSL_VERSION_NUMBER < 10001000 do
+
+        it "throws an error warning about the OpenSSL version" do
+          lambda { encryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires an OpenSSL/)
+        end
+
+      end # context on platforms with old OpenSSL
+
+    end # context on unsupported platforms
+
+  end # when using version 3 format
 
 end
 
@@ -130,34 +155,68 @@ describe Chef::EncryptedDataBagItem::Decryptor do
   let(:encryption_key) { "passwd" }
   let(:decryption_key) { encryption_key }
 
-  context "when decrypting a version 3 (JSON+aes-256-gcm+random iv+auth tag) encrypted value",
-    :if => (RUBY_VERSION >= "2" and OpenSSL::OPENSSL_VERSION_NUMBER >= 10001000) do
+  context "when decrypting a version 3 (JSON+aes-256-gcm+random iv+auth tag) encrypted value" do
 
-    let(:encrypted_value) do
-      Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor.new(plaintext_data, encryption_key).for_encrypted_item
-    end
+    context "on supported platforms",
+      :if => (RUBY_VERSION >= "2" and OpenSSL::OPENSSL_VERSION_NUMBER >= 10001000) do
 
-    let(:bogus_auth_tag) { "bogus_auth_tag" }
+      let(:encrypted_value) do
+        Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor.new(plaintext_data, encryption_key).for_encrypted_item
+      end
 
-    it "decrypts the encrypted value" do
-      decryptor.decrypted_data.should eq({"json_wrapper" => plaintext_data}.to_json)
-    end
+      let(:bogus_auth_tag) { "bogus_auth_tag" }
 
-    it "unwraps the encrypted data and returns it" do
-      decryptor.for_decrypted_item.should eq plaintext_data
-    end
+      it "decrypts the encrypted value" do
+        decryptor.decrypted_data.should eq({"json_wrapper" => plaintext_data}.to_json)
+      end
 
-    it "rejects the data if the authentication tag is wrong" do
-      encrypted_value["auth_tag"] = bogus_auth_tag
-      lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
-    end
+      it "unwraps the encrypted data and returns it" do
+        decryptor.for_decrypted_item.should eq plaintext_data
+      end
 
-    it "rejects the data if the authentication tag is missing" do
-      encrypted_value.delete("auth_tag")
-      lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
-    end
+      it "rejects the data if the authentication tag is wrong" do
+        encrypted_value["auth_tag"] = bogus_auth_tag
+        lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+      end
 
-  end
+      it "rejects the data if the authentication tag is missing" do
+        encrypted_value.delete("auth_tag")
+        lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+      end
+
+    end # context on supported platforms
+
+    context "on unsupported platforms" do
+      let(:encrypted_value) do
+        {
+          "encrypted_data" => "",
+          "iv" => "",
+          "version" => 3,
+          "cipher" => "aes-256-cbc",
+        }
+      end
+
+      context "on platforms with old Ruby",
+        :if => RUBY_VERSION < "2" do
+
+        it "throws an error warning about the Ruby version" do
+          lambda { decryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires Ruby/)
+        end
+
+      end # context on platforms with old Ruby
+
+      context "on platforms with old OpenSSL",
+        :if => OpenSSL::OPENSSL_VERSION_NUMBER < 10001000 do
+
+        it "throws an error warning about the OpenSSL version" do
+          lambda { decryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires an OpenSSL/)
+        end
+
+      end # context on unsupported platforms
+
+    end # context on platforms with old OpenSSL
+
+  end # context when decrypting a version 3
 
   context "when decrypting a version 2 (JSON+aes-256-cbc+hmac-sha256+random iv) encrypted value" do
     let(:encrypted_value) do

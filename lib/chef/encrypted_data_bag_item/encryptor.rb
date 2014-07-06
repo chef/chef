@@ -23,6 +23,7 @@ require 'ffi_yajl'
 require 'chef/encrypted_data_bag_item'
 require 'chef/encrypted_data_bag_item/unsupported_encrypted_data_bag_item_format'
 require 'chef/encrypted_data_bag_item/encryption_failure'
+require 'chef/encrypted_data_bag_item/assertions'
 
 class Chef::EncryptedDataBagItem
 
@@ -52,6 +53,8 @@ class Chef::EncryptedDataBagItem
     class Version1Encryptor
       attr_reader :key
       attr_reader :plaintext_data
+
+      include Chef::EncryptedDataBagItem::Assertions
 
       # Create a new Encryptor for +data+, which will be encrypted with the given
       # +key+.
@@ -149,9 +152,11 @@ class Chef::EncryptedDataBagItem
     end
 
     class Version3Encryptor < Version1Encryptor
+      include Chef::EncryptedDataBagItem::Assertions
 
       def initialize(plaintext_data, key, iv=nil)
         super
+        assert_aead_requirements_met!(algorithm)
         @auth_tag = nil
       end
 
