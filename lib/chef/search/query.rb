@@ -87,7 +87,8 @@ class Chef
 
         # new search api that allows for a cleaner implementation of things like return filters
         # (formerly known as 'partial search').
-        def do_search(type, query="*:*", args, &block)
+        # Also args should never be nil, but that is required for Ruby 1.8 compatibility
+        def do_search(type, query="*:*", args=nil, &block)
           raise ArgumentError, "Type must be a string or a symbol!" unless (type.kind_of?(String) || type.kind_of?(Symbol))
 
           query_string = create_query_string(type, query, args)
