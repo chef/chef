@@ -313,7 +313,7 @@ class Chef
 
     # Lazy initializer for tags attribute
     def tags
-      normal[:tags] = [] unless attribute?(:tags)
+      normal[:tags] = [] if not attribute?(:tags) or node[:tags].nil?
       normal[:tags]
     end
 
