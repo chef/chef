@@ -21,6 +21,7 @@ require 'socket'
 require 'chef/config'
 require 'chef/config_fetcher'
 require 'chef/exceptions'
+require 'chef/local_mode'
 require 'chef/log'
 require 'chef/platform'
 require 'mixlib/cli'
@@ -184,60 +185,24 @@ class Chef::Application
     raise Chef::Exceptions::Application, "#{self.to_s}: you must override run_application"
   end
 
-  def self.setup_server_connectivity
-    if Chef::Config.chef_zero.enabled
-      destroy_server_connectivity
-
-      require 'chef_zero/server'
-      require 'chef/chef_fs/chef_fs_data_store'
-      require 'chef/chef_fs/config'
-
-      chef_fs = Chef::ChefFS::Config.new.local_fs
-      chef_fs.write_pretty_json = true
-      data_store = Chef::ChefFS::ChefFSDataStore.new(chef_fs)
-      server_options = {}
-      server_options[:data_store] = data_store
-      server_options[:log_level] = Chef::Log.level
-      server_options[:host] = Chef::Config.chef_zero.host
-      server_options[:port] = Chef::Config.chef_zero.port
-      Chef::Log.info("Starting chef-zero on host #{Chef::Config.chef_zero.host}, port #{Chef::Config.chef_zero.port} with repository at #{chef_fs.fs_description}")
-      @chef_zero_server = ChefZero::Server.new(server_options)
-      @chef_zero_server.start_background
-      Chef::Config.chef_server_url = @chef_zero_server.url
-    end
-  end
-
-  def self.chef_zero_server
-    @chef_zero_server
-  end
-
-  def self.destroy_server_connectivity
-    if @chef_zero_server
-      @chef_zero_server.stop
-      @chef_zero_server = nil
-    end
-  end
-
   # Initializes Chef::Client instance and runs it
   def run_chef_client(specific_recipes = [])
-    Chef::Application.setup_server_connectivity
+    Chef::LocalMode.with_server_connectivity do
+      override_runlist = config[:override_runlist]
+      if specific_recipes.size > 0
+        override_runlist ||= []
+      end
+      @chef_client = Chef::Client.new(
+        @chef_client_json,
+        :override_runlist => config[:override_runlist],
+        :specific_recipes => specific_recipes,
+        :runlist => config[:runlist]
+      )
+      @chef_client_json = nil
 
-    override_runlist = config[:override_runlist]
-    if specific_recipes.size > 0
-      override_runlist ||= []
+      @chef_client.run
+      @chef_client = nil
     end
-    @chef_client = Chef::Client.new(
-      @chef_client_json,
-      :override_runlist => config[:override_runlist],
-      :specific_recipes => specific_recipes,
-      :runlist => config[:runlist]
-    )
-    @chef_client_json = nil
-
-    @chef_client.run
-    @chef_client = nil
-
-    Chef::Application.destroy_server_connectivity
   end
 
   private

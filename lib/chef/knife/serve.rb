@@ -1,4 +1,5 @@
 require 'chef/knife'
+require 'chef/local_mode'
 
 class Chef
   class Knife
@@ -30,8 +31,8 @@ class Chef
       end
 
       def run
+        server = Chef::LocalMode.chef_zero_server
         begin
-          server = Chef::Application.chef_zero_server
           output "Serving files from:\n#{server.options[:data_store].chef_fs.fs_description}"
           server.stop
           server.start(stdout) # to print header
