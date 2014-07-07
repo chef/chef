@@ -148,3 +148,6 @@ You can now set the timeout for receiving the yum lock in `config.rb` by adding 
 
 ### New `timeout` attribute for `package` resource
 `package` resource now exposes a new attribute called `timeout` which is used during the execution of specified actions. This attribute currently is only supported by `Chef::Provider::Package::Apt` provider on `ubuntu`, `gcel`, `linaro`, `raspbian`, `linuxmint` and `debian` operating systems.
+
+### Ohai 7.2.0
+In this release of Chef included ohai version is bumped to 7.2.0 which contains [these](https://github.com/opscode/ohai/blob/7-stable/CHANGELOG.md) changes.
