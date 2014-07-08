@@ -89,17 +89,17 @@ class Chef::EncryptedDataBagItem
 
       # Generates or returns the IV.
       def iv
-        # Generated IV comes from OpenSSL::Cipher::Cipher#random_iv
+        # Generated IV comes from OpenSSL::Cipher#random_iv
         # This gets generated when +openssl_encryptor+ gets created.
         openssl_encryptor if @iv.nil?
         @iv
       end
 
-      # Generates (and memoizes) an OpenSSL::Cipher::Cipher object and configures
+      # Generates (and memoizes) an OpenSSL::Cipher object and configures
       # it for the specified iv and encryption key.
       def openssl_encryptor
         @openssl_encryptor ||= begin
-          encryptor = OpenSSL::Cipher::Cipher.new(algorithm)
+          encryptor = OpenSSL::Cipher.new(algorithm)
           encryptor.encrypt
           # We must set key before iv: https://bugs.ruby-lang.org/issues/8221
           encryptor.key = Digest::SHA256.digest(key)
@@ -144,7 +144,7 @@ class Chef::EncryptedDataBagItem
       # Generates an HMAC-SHA2-256 of the encrypted data (encrypt-then-mac)
       def hmac
         @hmac ||= begin
-          digest = OpenSSL::Digest::Digest.new("sha256")
+          digest = OpenSSL::Digest.new("sha256")
           raw_hmac = OpenSSL::HMAC.digest(digest, key, encrypted_data)
           Base64.encode64(raw_hmac)
         end
@@ -180,7 +180,7 @@ class Chef::EncryptedDataBagItem
       # Returns a wrapped and encrypted version of +plaintext_data+ suitable for
       # Returns the auth_tag.
       def auth_tag
-        # Generated auth_tag comes from OpenSSL::Cipher::Cipher#auth_tag
+        # Generated auth_tag comes from OpenSSL::Cipher#auth_tag
         # This must be generated after the data is encrypted
         if @auth_tag.nil?
           raise EncryptionFailure, "Internal Error: GCM authentication tag read before encryption"
@@ -188,7 +188,7 @@ class Chef::EncryptedDataBagItem
         @auth_tag
       end
 
-      # Generates (and memoizes) an OpenSSL::Cipher::Cipher object and configures
+      # Generates (and memoizes) an OpenSSL::Cipher object and configures
       # it for the specified iv and encryption key using AEAD
       def openssl_encryptor
         @openssl_encryptor ||= begin

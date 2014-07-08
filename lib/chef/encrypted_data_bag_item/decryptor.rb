@@ -104,7 +104,7 @@ class Chef::EncryptedDataBagItem
 
       def openssl_decryptor
         @openssl_decryptor ||= begin
-          d = OpenSSL::Cipher::Cipher.new(algorithm)
+          d = OpenSSL::Cipher.new(algorithm)
           d.decrypt
           d.pkcs5_keyivgen(key)
           d
@@ -151,7 +151,7 @@ class Chef::EncryptedDataBagItem
       def openssl_decryptor
         @openssl_decryptor ||= begin
           assert_valid_cipher!(@encrypted_data["cipher"], algorithm)
-          d = OpenSSL::Cipher::Cipher.new(algorithm)
+          d = OpenSSL::Cipher.new(algorithm)
           d.decrypt
           # We must set key before iv: https://bugs.ruby-lang.org/issues/8221
           d.key = Digest::SHA256.digest(key)
@@ -170,7 +170,7 @@ class Chef::EncryptedDataBagItem
       end
 
       def validate_hmac!
-        digest = OpenSSL::Digest::Digest.new("sha256")
+        digest = OpenSSL::Digest.new("sha256")
         raw_hmac = OpenSSL::HMAC.digest(digest, key, @encrypted_data["encrypted_data"])
 
         if candidate_hmac_matches?(raw_hmac)

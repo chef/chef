@@ -23,7 +23,7 @@ module Version0Encryptor
   def self.encrypt_value(plaintext_data, key)
     data = plaintext_data.to_yaml
 
-    cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
+    cipher = OpenSSL::Cipher.new("aes-256-cbc")
     cipher.encrypt
     cipher.pkcs5_keyivgen(key)
     encrypted_bytes = cipher.update(data)
@@ -224,7 +224,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
     end
 
     let(:bogus_hmac) do
-      digest = OpenSSL::Digest::Digest.new("sha256")
+      digest = OpenSSL::Digest.new("sha256")
       raw_hmac = OpenSSL::HMAC.digest(digest, "WRONG", encrypted_value["encrypted_data"])
       Base64.encode64(raw_hmac)
     end
