@@ -56,6 +56,5 @@ suites:
       omnibus:
         build_user: vagrant
         install_dir: /opt/chef
-    run_list: 
+    run_list:
       - omnibus::default
-      - docker::default
