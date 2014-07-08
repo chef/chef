@@ -37,7 +37,7 @@ Invoke crontab to edit user cron:
       crontab.run_command
 
 ## Windows Impersonation Example
-Invoke crontab to edit user cron:
+Invoke "whoami.exe" to demonstrate running a command as another user:
 
       whomai = Mixlib::ShellOut.new("whoami.exe", :user => "username", :domain => "DOMAIN", :password => "password")
       whoami.run_command      
