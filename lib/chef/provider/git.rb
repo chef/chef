@@ -283,8 +283,20 @@ class Chef
         env['GIT_SSH'] = @new_resource.ssh_wrapper if @new_resource.ssh_wrapper
         run_opts[:log_tag] = @new_resource.to_s
         run_opts[:timeout] = @new_resource.timeout if @new_resource.timeout
-        @new_resource.environment.delete('HOME') if @new_resource.environment
-        run_opts[:environment] = @new_resource.environment ? env.merge(@new_resource.environment) : env
+        if @new_resource.environment
+          # 'HOME' is ensured to come for the user attribute
+          # If you need specific 'HOME', set new 'HOME' as 'OVERRIDE_HOME'.
+          @new_resource.environment.delete('HOME')
+          if @new_resource.environment['OVERRIDE_HOME']
+            env['HOME'] = @new_resource.environment['OVERRIDE_HOME']
+            @new_resource.environment.delete('OVERRIDE_HOME')
+          end
+        end
+        if @new_resource.environment
+          run_opts[:environment] = env.merge(@new_resource.environment)
+        elsif !env.empty?
+          run_opts[:environment] = env
+        end
         run_opts
 
       end
