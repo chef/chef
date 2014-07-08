@@ -21,6 +21,7 @@
 
 require File.expand_path("../../spec_helper", __FILE__)
 require 'chef/resource_reporter'
+require 'socket'
 
 describe Chef::ResourceReporter do
   before(:all) do
@@ -738,12 +739,20 @@ describe Chef::ResourceReporter do
         @resource_reporter.post_reporting_data
       end
 
+      it "should log if a socket error happens" do
+        @rest_client.stub(:raw_http_request).and_raise(SocketError.new("test socket error"))
+        Chef::Log.should_receive(:error).with(/test socket error/)
+
+        @resource_reporter.post_reporting_data
+
+      end
+
       it "should raise if an unkwown error happens" do
-        @rest_client.stub(:raw_http_request).and_raise(RuntimeError.new)
+        @rest_client.stub(:raw_http_request).and_raise(Exception.new)
 
         lambda {
           @resource_reporter.post_reporting_data
-        }.should raise_error(RuntimeError)
+        }.should raise_error(Exception)
       end
     end
   end

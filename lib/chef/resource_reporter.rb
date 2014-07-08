@@ -231,18 +231,17 @@ class Chef
         Chef::Log.info("Sending resource update report (run-id: #{run_id})")
         Chef::Log.debug run_data.inspect
         compressed_data = encode_gzip(run_data.to_json)
+        Chef::Log.debug("Sending compressed run data...")
+        # Since we're posting compressed data we can not directly call post_rest which expects JSON
+        reporting_url = @rest_client.create_url(resource_history_url)
         begin
-          Chef::Log.debug("Sending compressed run data...")
-          # Since we're posting compressed data we can not directly call post_rest which expects JSON
-          reporting_url = @rest_client.create_url(resource_history_url)
           @rest_client.raw_http_request(:POST, reporting_url, headers({'Content-Encoding' => 'gzip'}), compressed_data)
         rescue StandardError => e
-          raise if !e.respond_to? :response
-          if e.response.code.to_s == "400"
+          if e.respond_to? :response
             Chef::FileCache.store("failed-reporting-data.json", Chef::JSONCompat.to_json_pretty(run_data), 0640)
-            Chef::Log.error("Failed to post reporting data to server (HTTP 400), saving to #{Chef::FileCache.load("failed-reporting-data.json", false)}")
+            Chef::Log.error("Failed to post reporting data to server (HTTP #{e.response.code}), saving to #{Chef::FileCache.load("failed-reporting-data.json", false)}")
           else
-            Chef::Log.error("Failed to post reporting data to server (HTTP #{e.response.code.to_s})")
+            Chef::Log.error("Failed to post reporting data to server (#{e})")
           end
         end
       else
