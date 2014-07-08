@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="shortcut icon" href="_static/chef.ico"/>
 
 
   </head>
@@ -63,13 +62,13 @@
 <dt><tt class="docutils literal"><span class="pre">--concurrency</span></tt></dt>
 <dd>The number of allowed concurrent connections. Default: <tt class="docutils literal"><span class="pre">10</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--[no-]diff</span></tt></dt>
-<dd>Indicates that only new and modified files will be uploaded. Set to <tt class="docutils literal"><span class="pre">false</span></tt> to upload all files. Default: <tt class="docutils literal"><span class="pre">true</span></tt>.</dd>
+<dd>Use to upload only new and modified files. Set to <tt class="docutils literal"><span class="pre">false</span></tt> to upload all files. Default: <tt class="docutils literal"><span class="pre">true</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--[no-]force</span></tt></dt>
 <dd>Use <tt class="docutils literal"><span class="pre">--force</span></tt> to upload roles, cookbooks, etc. even if the file in the directory is identical (by default, no <tt class="docutils literal"><span class="pre">POST</span></tt> or <tt class="docutils literal"><span class="pre">PUT</span></tt> is performed unless an actual change would be made). Default: <tt class="docutils literal"><span class="pre">--no-force</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--[no-]freeze</span></tt></dt>
-<dd>Indicates that a cookbook cannot be modified; any changes to this cookbook must be included as a new version. Only the <tt class="docutils literal"><span class="pre">--force</span></tt> option can override this setting. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
+<dd>Use to require changes to a cookbook be included as a new version. Only the <tt class="docutils literal"><span class="pre">--force</span></tt> option can override this setting. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-n</span></tt>, <tt class="docutils literal"><span class="pre">--dry-run</span></tt></dt>
-<dd>Indicates that no action is taken and that results are only printed out. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
+<dd>Use to take no action and only print out results. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--[no-]purge</span></tt></dt>
 <dd>Use <tt class="docutils literal"><span class="pre">--purge</span></tt> to delete roles, cookbooks, etc. from the Chef server if their corresponding files do not exist in the chef-repo. By default, such objects are left alone and NOT purged. Default: <tt class="docutils literal"><span class="pre">--no-purge</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--[no-]recurse</span></tt></dt>

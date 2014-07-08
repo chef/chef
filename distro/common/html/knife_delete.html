@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="shortcut icon" href="_static/chef.ico"/>
 
 
   </head>
@@ -59,13 +58,13 @@
 <p>This subcommand has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">--both</span></tt></dt>
-<dd>Indicates that both local and remote copies of an object should be deleted. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
+<dd>Use to delete both local and remote copies of an object. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--chef-repo-path</span> <span class="pre">PATH</span></tt></dt>
 <dd>The path to the chef-repo. This setting will override the default path to the chef-repo. Default: same value as specified by <tt class="docutils literal"><span class="pre">chef_repo_path</span></tt> in client.rb.</dd>
 <dt><tt class="docutils literal"><span class="pre">--concurrency</span></tt></dt>
 <dd>The number of allowed concurrent connections. Default: <tt class="docutils literal"><span class="pre">10</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--local</span></tt></dt>
-<dd>Indicates that only the local copy of an object should be deleted. (The remote copy will not be deleted.) Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
+<dd>Use to delete only the local copy of an object. (A remote copy will not be deleted.) Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-r</span></tt>, <tt class="docutils literal"><span class="pre">--[no-]recurse</span></tt></dt>
 <dd>Use <tt class="docutils literal"><span class="pre">--recurse</span></tt> to delete directories recursively. Default: <tt class="docutils literal"><span class="pre">--no-recurse</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--repo-mode</span> <span class="pre">MODE</span></tt></dt>

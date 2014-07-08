@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-ENVIRONMENT" "1" "Chef 11.12.0" "" "knife environment"
+.TH "KNIFE-ENVIRONMENT" "1" "Chef 11.14" "" "knife environment"
 .SH NAME
 knife-environment \- The man page for the knife environment subcommand.
 .
@@ -46,10 +46,10 @@ The port on which chef\-zero will listen.
 The configuration file to use.
 .TP
 .B \fB\-d\fP, \fB\-\-disable\-editing\fP
-Indicates that $EDITOR will not be opened; data will be accepted as\-is.
+Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Indicates that Knife will use the default value, instead of asking a user to provide one.
+Use to have Knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -67,10 +67,10 @@ Shows help for the command.
 The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-[no\-]color\fP
-Indicates whether colored output will be used.
+Use to view colored output.
 .TP
 .B \fB\-\-print\-after\fP
-Indicates that data will be shown after a destructive operation.
+Use to show data after a destructive operation.
 .TP
 .B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
 The URL for the Chef server\&.
@@ -85,10 +85,10 @@ Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 The version of the chef\-client\&.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
+Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
+Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .SH COMPARE
 .sp
@@ -114,7 +114,7 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fB\-a\fP, \fB\-\-all\fP
-Indicates that all environments found at the specified path will be uploaded.
+Use to upload all environments found at the specified path.
 .TP
 .B \fB\-m\fP, \fB\-\-mismatch\fP
 Use to show only matching versions.
@@ -361,7 +361,7 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fB\-a\fP, \fB\-\-all\fP
-Indicates that all environments found at the specified path will be uploaded.
+Use to upload all environments found at the specified path.
 .UNINDENT
 .sp
 \fBExamples\fP
@@ -413,7 +413,7 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fB\-w\fP, \fB\-\-with\-uri\fP
-Indicates that the corresponding URIs will be shown.
+Use to show the corresponding URIs.
 .UNINDENT
 .sp
 \fBExamples\fP

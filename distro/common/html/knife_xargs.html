@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="shortcut icon" href="_static/chef.ico"/>
 
 
   </head>
@@ -59,7 +58,7 @@
 <p>This subcommand has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-0</span></tt></dt>
-<dd>Indicates that a <tt class="docutils literal"><span class="pre">NULL</span></tt> character (<tt class="docutils literal"><span class="pre">\0</span></tt>) will be used as a separator, instead of white space. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
+<dd>Use to show a <tt class="docutils literal"><span class="pre">NULL</span></tt> character (<tt class="docutils literal"><span class="pre">\0</span></tt>) instead of white space as the separator. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--chef-repo-path</span> <span class="pre">PATH</span></tt></dt>
 <dd>The path to the chef-repo. This setting will override the default path to the chef-repo. Default: same value as specified by <tt class="docutils literal"><span class="pre">chef_repo_path</span></tt> in client.rb.</dd>
 <dt><tt class="docutils literal"><span class="pre">--concurrency</span></tt></dt>
@@ -75,7 +74,7 @@
 <dt><tt class="docutils literal"><span class="pre">-J</span> <span class="pre">REPLACE_STRING</span></tt>, <tt class="docutils literal"><span class="pre">--replace-first</span> <span class="pre">REPLACE_STRING</span></tt></dt>
 <dd>Use to define a string that will be used to replace the first occurrence of a file name. Default: <tt class="docutils literal"><span class="pre">nil</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--local</span></tt></dt>
-<dd>Indicates that a command line will be built or executed against a local file. Set to <tt class="docutils literal"><span class="pre">false</span></tt> to build or execute against a remote file. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
+<dd>Use to build or execute a command line against a local file. Set to <tt class="docutils literal"><span class="pre">false</span></tt> to build or execute against a remote file. Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-n</span> <span class="pre">MAX_ARGS</span></tt>, <tt class="docutils literal"><span class="pre">--max-args</span> <span class="pre">MAX_ARGS</span></tt></dt>
 <dd>The maximum number of arguments per command line. Default: <tt class="docutils literal"><span class="pre">nil</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-p</span> <span class="pre">[PATTERN...]</span></tt>, <tt class="docutils literal"><span class="pre">--pattern</span> <span class="pre">[PATTERN...]</span></tt></dt>
@@ -85,7 +84,7 @@
 <dt><tt class="docutils literal"><span class="pre">-s</span> <span class="pre">LENGTH</span></tt>, <tt class="docutils literal"><span class="pre">--max-chars</span> <span class="pre">LENGTH</span></tt></dt>
 <dd>The maximum size (in characters) for a command line. Default: <tt class="docutils literal"><span class="pre">nil</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-t</span></tt></dt>
-<dd>Indicates that the print command will be run on the command line. Default: <tt class="docutils literal"><span class="pre">nil</span></tt>.</dd>
+<dd>Use to run the print command on the command line. Default: <tt class="docutils literal"><span class="pre">nil</span></tt>.</dd>
 </dl>
 </div>
 <div class="section" id="examples">

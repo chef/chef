@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="shortcut icon" href="_static/chef.ico"/>
 
 
   </head>
@@ -67,6 +66,13 @@
 <dd>Use to follow the Chef server logs for all services or for a single service.</dd>
 <dt><tt class="docutils literal"><span class="pre">test</span> <span class="pre">--all</span></tt></dt>
 <dd>Use to execute chef-pedant, an integration test suite for the Chef server installation. By default, only a subset of the available test are run. Add the <tt class="docutils literal"><span class="pre">--all</span></tt> flag to run the full test suite.</dd>
+<dt><tt class="docutils literal"><span class="pre">upgrade</span> <span class="pre">--all</span></tt></dt>
+<dd><p class="first">Use for in-place upgrades of the Open Source Chef server, version 11.0.4 (or higher). This subcommand will apply the necessary SQL changes without having to back up data and install the server from scratch. (Data should still be backed up before performing the upgrade, just to ensure that it is available, should it be needed.) This subcommand may only be used when the Open Source Chef server is configured for a standalone topology and it assumes that all services used by Open Source Chef are enabled.</p>
+<div class="last admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The <tt class="docutils literal"><span class="pre">upgrade</span></tt> option applies only to upgrading standalone configurations of the Open Source Chef server.</p>
+</div>
+</dd>
 </dl>
 </div>
 <div class="section" id="examples">

@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="shortcut icon" href="_static/chef.ico"/>
 
 
   </head>
@@ -235,7 +234,7 @@
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-w</span></tt>, <tt class="docutils literal"><span class="pre">--with-uri</span></tt></dt>
-<dd>Indicates that the corresponding URIs will be shown.</dd>
+<dd>Use to show the corresponding URIs.</dd>
 </dl>
 </div>
 <div class="section" id="id15">
@@ -255,8 +254,14 @@ rs-123456
 </div>
 <div class="section" id="run-list-add">
 <h2>run_list add<a class="headerlink" href="#run-list-add" title="Permalink to this headline">¶</a></h2>
-<p>A run-list is an ordered list of roles and/or recipes that are run in an exact order. A run-list is always specific to the node on which it runs, though it is possible for many nodes to have run-lists that are similar or even identical. The items within a run-list are maintained using Knife and are uploaded to the Chef server and stored as part of the node object for each node. The chef-client always configures a node in the exact order specified by its run-list and will never run the same recipe twice.</p>
-<p>The <tt class="docutils literal"><span class="pre">run_list</span> <span class="pre">add</span></tt> argument is used to add run list items (roles or recipes) to a node.</p>
+<p>A run-list defines all of the configuration settings that are necessary for a node that is under management by Chef to be put into the desired state. A run-list is:</p>
+<ul class="simple">
+<li>An ordered list of roles and/or recipes that are run in an exact order; if a recipe appears more than once in the run-list, the chef-client will never run that recipe twice</li>
+<li>Always specific to the node on which it runs, though it is possible for many nodes to have run-lists that are similar or even identical</li>
+<li>Stored as part of the node object on the Chef server</li>
+<li>Maintained using Knife and uploaded to the Chef server or via the Chef Manage user interface</li>
+</ul>
+<p>The <tt class="docutils literal"><span class="pre">run_list</span> <span class="pre">add</span></tt> argument is used to add run-list items (roles or recipes) to a node.</p>
 <p>A run-list must be in one of the following formats: fully qualified, cookbook, or default. Both roles and recipes must be in quotes, for example:</p>
 <div class="highlight-ruby"><div class="highlight"><pre><span class="s1">&#39;role[ROLE_NAME]&#39;</span>
 </pre></div>
@@ -282,6 +287,8 @@ rs-123456
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-a</span> <span class="pre">ITEM</span></tt>, <tt class="docutils literal"><span class="pre">--after</span> <span class="pre">ITEM</span></tt></dt>
 <dd>Use this to add the run list item after the specified run list item.</dd>
+<dt><tt class="docutils literal"><span class="pre">-b</span> <span class="pre">ITEM</span></tt>, <tt class="docutils literal"><span class="pre">--before</span> <span class="pre">ITEM</span></tt></dt>
+<dd>Use this to add the run list item before the specified run list item.</dd>
 </dl>
 </div>
 <div class="section" id="id18">
@@ -316,7 +323,7 @@ rs-123456
 </div>
 <div class="section" id="run-list-remove">
 <h2>run_list remove<a class="headerlink" href="#run-list-remove" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">run_list</span> <span class="pre">remove</span></tt> argument is used to remove run list items (roles or recipes) from a node. A recipe must be in one of the following formats: fully qualified, cookbook, or default. Both roles and recipes must be in quotes, for example: <tt class="docutils literal"><span class="pre">'role[ROLE_NAME]'</span></tt> or <tt class="docutils literal"><span class="pre">'recipe[COOKBOOK::RECIPE_NAME]'</span></tt>. Use a comma to separate roles and recipes when removing more than one, like this: <tt class="docutils literal"><span class="pre">'recipe[COOKBOOK::RECIPE_NAME],COOKBOOK::RECIPE_NAME,role[ROLE_NAME]'</span></tt>.</p>
+<p>The <tt class="docutils literal"><span class="pre">run_list</span> <span class="pre">remove</span></tt> argument is used to remove run-list items (roles or recipes) from a node. A recipe must be in one of the following formats: fully qualified, cookbook, or default. Both roles and recipes must be in quotes, for example: <tt class="docutils literal"><span class="pre">'role[ROLE_NAME]'</span></tt> or <tt class="docutils literal"><span class="pre">'recipe[COOKBOOK::RECIPE_NAME]'</span></tt>. Use a comma to separate roles and recipes when removing more than one, like this: <tt class="docutils literal"><span class="pre">'recipe[COOKBOOK::RECIPE_NAME],COOKBOOK::RECIPE_NAME,role[ROLE_NAME]'</span></tt>.</p>
 <div class="section" id="id19">
 <h3>Syntax<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -364,7 +371,7 @@ rs-123456
 <dt><tt class="docutils literal"><span class="pre">-m</span></tt>, <tt class="docutils literal"><span class="pre">--medium</span></tt></dt>
 <dd>Display more, but not all, of a node&#8217;s data when searching using the default summary format.</dd>
 <dt><tt class="docutils literal"><span class="pre">-r</span></tt>, <tt class="docutils literal"><span class="pre">--run-list</span></tt></dt>
-<dd>Indicates that only the run-list will be shown.</dd>
+<dd>Use to show only the run-list.</dd>
 </dl>
 </div>
 <div class="section" id="id24">

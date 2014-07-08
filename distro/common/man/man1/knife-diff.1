@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-DIFF" "1" "Chef 11.12.0" "" "knife diff"
+.TH "KNIFE-DIFF" "1" "Chef 11.14" "" "knife diff"
 .SH NAME
 knife-diff \- The man page for the knife diff subcommand.
 .
@@ -62,7 +62,7 @@ The path to the chef\-repo\&. This setting will override the default path to the
 The port on which chef\-zero will listen.
 .TP
 .B \fB\-\-[no\-]color\fP
-Indicates whether colored output will be used.
+Use to view colored output.
 .TP
 .B \fB\-\-cookbook\-version VERSION\fP
 The version of a cookbook to be downloaded.
@@ -71,13 +71,13 @@ The version of a cookbook to be downloaded.
 The number of allowed concurrent connections. Default: \fB10\fP\&.
 .TP
 .B \fB\-d\fP, \fB\-\-disable\-editing\fP
-Indicates that $EDITOR will not be opened; data will be accepted as\-is.
+Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Indicates that Knife will use the default value, instead of asking a user to provide one.
+Use to have Knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-\-diff\-filter=[(A|D|M|T)...[*]]\fP
-Indicates that files will be selected that have been added (\fBA\fP), deleted (\fBD\fP), modified (\fBM\fP), and/or have had their type changed (\fBT\fP). Any combination of filter characters may be used, including no filter characters. Use \fB*\fP to select all paths if a file matches other criteria in the comparison. Default value: \fBnil\fP\&.
+Use to select only files that have been added (\fBA\fP), deleted (\fBD\fP), modified (\fBM\fP), and/or have had their type changed (\fBT\fP). Any combination of filter characters may be used, including no filter characters. Use \fB*\fP to select all paths if a file matches other criteria in the comparison. Default value: \fBnil\fP\&.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -95,16 +95,16 @@ Shows help for the command.
 The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-name\-only\fP
-Indicates that only the names of modified files will be shown.
+Use to show only the names of modified files.
 .TP
 .B \fB\-\-name\-status\fP
-Indicates that only the names of files with a status of \fBAdded\fP, \fBDeleted\fP, \fBModified\fP, or \fBType Changed\fP will be shown.
+Use to show only the names of files with a status of \fBAdded\fP, \fBDeleted\fP, \fBModified\fP, or \fBType Changed\fP\&.
 .TP
 .B \fB\-\-no\-recurse\fP
 Use \fB\-\-no\-recurse\fP to disable listing a directory recursively. Default: \fB\-\-recurse\fP\&.
 .TP
 .B \fB\-\-print\-after\fP
-Indicates that data will be shown after a destructive operation.
+Use to show data after a destructive operation.
 .TP
 .B \fB\-\-repo\-mode MODE\fP
 The layout of the local chef\-repo\&. Possible values: \fBstatic\fP, \fBeverything\fP, or \fBhosted_everything\fP\&. Use \fBstatic\fP for just roles, environments, cookbooks, and data bags. By default, \fBeverything\fP and \fBhosted_everything\fP are dynamically selected depending on the server type. Default: \fBeverything\fP / \fBhosted_everything\fP\&.
@@ -122,10 +122,10 @@ The version of the chef\-client\&.
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
+Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
+Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .sp
 \fBknife.rb File Settings\fP

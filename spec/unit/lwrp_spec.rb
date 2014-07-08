@@ -133,6 +133,33 @@ describe "LWRP" do
       cls.node[:penguin_name].should eql("jackass")
     end
 
+    context "resource_name" do
+      let(:klass) { Class.new(Chef::Resource::LWRPBase) }
+
+      it "returns nil when the resource_name is not set" do
+        expect(klass.resource_name).to be_nil
+      end
+
+      it "allows to user to user the resource_name" do
+        expect {
+          klass.resource_name(:foo)
+        }.to_not raise_error
+      end
+
+      it "returns the set value for the resource" do
+        klass.resource_name(:foo)
+        expect(klass.resource_name).to eq(:foo)
+      end
+
+      context "when creating a new instance" do
+        it "raises an exception if resource_name is nil" do
+          expect {
+            klass.new('blah')
+          }.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
+        end
+      end
+    end
+
   end
 
   describe "Lightweight Chef::Provider" do

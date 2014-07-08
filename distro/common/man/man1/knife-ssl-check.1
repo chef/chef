@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-SSL-CHECK" "1" "Chef 11.12.0" "" "knife ssl check"
+.TH "KNIFE-SSL-CHECK" "1" "Chef 11.14" "" "knife ssl check"
 .SH NAME
 knife-ssl-check \- The man page for the knife ssl check subcommand.
 .
@@ -63,7 +63,7 @@ This subcommand has the following options:
 The attribute that is used when opening the SSH connection. The default attribute is the FQDN of the host. Other possible values include a public IP address, a private IP address, or a hostname.
 .TP
 .B \fB\-A\fP, \fB\-\-forward\-agent\fP
-Indicates that SSH agent forwarding is enabled.
+Use to enable SSH agent forwarding.
 .TP
 .B \fB\-c CONFIG_FILE\fP, \fB\-\-config CONFIG_FILE\fP
 The configuration file to use.
@@ -75,13 +75,13 @@ The number of allowed concurrent connections.
 The port on which chef\-zero will listen.
 .TP
 .B \fB\-\-[no\-]color\fP
-Indicates whether colored output will be used.
+Use to view colored output.
 .TP
 .B \fB\-d\fP, \fB\-\-disable\-editing\fP
-Indicates that $EDITOR will not be opened; data will be accepted as\-is.
+Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Indicates that Knife will use the default value, instead of asking a user to provide one.
+Use to have Knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -105,7 +105,7 @@ The SSH identity file used for authentication. Key\-based authentication is reco
 The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-m\fP, \fB\-\-manual\-list\fP
-Indicates that a search query is a space\-separated list of servers. If there is more than one item in the list, put quotes around the entire list. For example: \fB\-\-manual\-list "server01 server 02 server 03"\fP
+Use to define a search query as a space\-separated list of servers. If there is more than one item in the list, put quotes around the entire list. For example: \fB\-\-manual\-list "server01 server 02 server 03"\fP
 .TP
 .B \fB\-\-[no\-]host\-key\-verify\fP
 Use \fB\-\-no\-host\-key\-verify\fP to disable host key verification. Default setting: \fB\-\-host\-key\-verify\fP\&.
@@ -120,7 +120,7 @@ The SSH port.
 The SSH password. This can be used to pass the password directly on the command line. If this option is not specified (and a password is required) Knife will prompt for the password.
 .TP
 .B \fB\-\-print\-after\fP
-Indicates that data will be shown after a destructive operation.
+Use to show data after a destructive operation.
 .TP
 .B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
 The URL for the Chef server\&.
@@ -144,10 +144,10 @@ Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 The SSH user name.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
+Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
+Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .sp
 \fBExamples\fP

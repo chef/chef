@@ -64,19 +64,23 @@ class Chef
             },
             :ubuntu   => {
               :default => {
+                :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Debian,
                 :cron => Chef::Provider::Cron,
                 :mdadm => Chef::Provider::Mdadm
               },
               ">= 11.10" => {
                 :ifconfig => Chef::Provider::Ifconfig::Debian
-              },
-              ">= 13.10" => {
-                :service => Chef::Provider::Service::Upstart,
               }
+              # Chef::Provider::Service::Upstart is a candidate to be used in
+              # ubuntu versions >= 13.10 but it currently requires all the
+              # services to have an entry under /etc/init. We need to update it
+              # to use the service ctl apis in order to migrate to using it on
+              # ubuntu >= 13.10.
             },
             :gcel   => {
               :default => {
+                :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Debian,
                 :cron => Chef::Provider::Cron,
                 :mdadm => Chef::Provider::Mdadm
@@ -84,6 +88,7 @@ class Chef
             },
             :linaro   => {
               :default => {
+                :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Debian,
                 :cron => Chef::Provider::Cron,
                 :mdadm => Chef::Provider::Mdadm
@@ -91,6 +96,7 @@ class Chef
             },
             :raspbian   => {
               :default => {
+                :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Debian,
                 :cron => Chef::Provider::Cron,
                 :mdadm => Chef::Provider::Mdadm
@@ -98,6 +104,7 @@ class Chef
             },
             :linuxmint   => {
               :default => {
+                :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Upstart,
                 :cron => Chef::Provider::Cron,
                 :mdadm => Chef::Provider::Mdadm
@@ -105,6 +112,7 @@ class Chef
             },
             :debian => {
               :default => {
+                :package => Chef::Provider::Package::Apt,
                 :service => Chef::Provider::Service::Debian,
                 :cron => Chef::Provider::Cron,
                 :mdadm => Chef::Provider::Mdadm

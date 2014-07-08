@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="shortcut icon" href="_static/chef.ico"/>
 
 
   </head>
@@ -61,7 +60,7 @@
 <dt><tt class="docutils literal"><span class="pre">-a</span> <span class="pre">SSH_ATTR</span></tt>, <tt class="docutils literal"><span class="pre">--attribute</span> <span class="pre">SSH_ATTR</span></tt></dt>
 <dd>The attribute that is used when opening the SSH connection. The default attribute is the FQDN of the host. Other possible values include a public IP address, a private IP address, or a hostname.</dd>
 <dt><tt class="docutils literal"><span class="pre">-A</span></tt>, <tt class="docutils literal"><span class="pre">--forward-agent</span></tt></dt>
-<dd>Indicates that SSH agent forwarding is enabled.</dd>
+<dd>Use to enable SSH agent forwarding.</dd>
 <dt><tt class="docutils literal"><span class="pre">-C</span> <span class="pre">NUM</span></tt>, <tt class="docutils literal"><span class="pre">--concurrency</span> <span class="pre">NUM</span></tt></dt>
 <dd>The number of allowed concurrent connections.</dd>
 <dt><tt class="docutils literal"><span class="pre">-G</span> <span class="pre">GATEWAY</span></tt>, <tt class="docutils literal"><span class="pre">--ssh-gateway</span> <span class="pre">GATEWAY</span></tt></dt>
@@ -69,7 +68,7 @@
 <dt><tt class="docutils literal"><span class="pre">-i</span> <span class="pre">IDENTITY_FILE</span></tt>, <tt class="docutils literal"><span class="pre">--identity-file</span> <span class="pre">IDENTIFY_FILE</span></tt></dt>
 <dd>The SSH identity file used for authentication. Key-based authentication is recommended.</dd>
 <dt><tt class="docutils literal"><span class="pre">-m</span></tt>, <tt class="docutils literal"><span class="pre">--manual-list</span></tt></dt>
-<dd>Indicates that a search query is a space-separated list of servers. If there is more than one item in the list, put quotes around the entire list. For example: <tt class="docutils literal"><span class="pre">--manual-list</span> <span class="pre">&quot;server01</span> <span class="pre">server</span> <span class="pre">02</span> <span class="pre">server</span> <span class="pre">03&quot;</span></tt></dd>
+<dd>Use to define a search query as a space-separated list of servers. If there is more than one item in the list, put quotes around the entire list. For example: <tt class="docutils literal"><span class="pre">--manual-list</span> <span class="pre">&quot;server01</span> <span class="pre">server</span> <span class="pre">02</span> <span class="pre">server</span> <span class="pre">03&quot;</span></tt></dd>
 <dt><tt class="docutils literal"><span class="pre">--[no-]host-key-verify</span></tt></dt>
 <dd>Use <tt class="docutils literal"><span class="pre">--no-host-key-verify</span></tt> to disable host key verification. Default setting: <tt class="docutils literal"><span class="pre">--host-key-verify</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">OTHER</span></tt></dt>

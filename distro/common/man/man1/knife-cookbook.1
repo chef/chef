@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-COOKBOOK" "1" "Chef 11.12.0" "" "knife cookbook"
+.TH "KNIFE-COOKBOOK" "1" "Chef 11.14" "" "knife cookbook"
 .SH NAME
 knife-cookbook \- The man page for the knife cookbook subcommand.
 .
@@ -66,10 +66,10 @@ The port on which chef\-zero will listen.
 The configuration file to use.
 .TP
 .B \fB\-d\fP, \fB\-\-disable\-editing\fP
-Indicates that $EDITOR will not be opened; data will be accepted as\-is.
+Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Indicates that Knife will use the default value, instead of asking a user to provide one.
+Use to have Knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -87,10 +87,10 @@ Shows help for the command.
 The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-[no\-]color\fP
-Indicates whether colored output will be used.
+Use to view colored output.
 .TP
 .B \fB\-\-print\-after\fP
-Indicates that data will be shown after a destructive operation.
+Use to show data after a destructive operation.
 .TP
 .B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
 The URL for the Chef server\&.
@@ -105,10 +105,10 @@ Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 The version of the chef\-client\&.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
+Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
+Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .SH BULK DELETE
 .sp
@@ -134,7 +134,7 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fB\-p\fP, \fB\-\-purge\fP
-Indicates that a cookbook (or cookbook version) will be removed entirely from the Chef server\&. This action should be used carefully because only one copy of any single file is stored on the Chef server\&. Consequently, purging a cookbook will disable any other cookbook that references one or more files from a cookbook that has been purged.
+Use to entirely remove a cookbook (or cookbook version) from the Chef server\&. This action should be used carefully because only one copy of any single file is stored on the Chef server\&. Consequently, purging a cookbook will disable any other cookbook that references one or more files from a cookbook that has been purged.
 .UNINDENT
 .sp
 \fBExamples\fP
@@ -270,13 +270,13 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fB\-a\fP, \fB\-\-all\fP
-Indicates that a cookbook and every version of that cookbook will be deleted.
+Use to delete all cookbooks (and cookbook versions).
 .TP
 .B \fBCOOKBOOK_VERSION\fP
 The version of a cookbook to be deleted. If a cookbook has only one version, this option does not need to be specified. If a cookbook has more than one version and this option is not specified, Knife will prompt for a version.
 .TP
 .B \fB\-p\fP, \fB\-\-purge\fP
-Indicates that a cookbook (or cookbook version) will be removed entirely from the Chef server\&. This action should be used carefully because only one copy of any single file is stored on the Chef server\&. Consequently, purging a cookbook will disable any other cookbook that references one or more files from a cookbook that has been purged.
+Use to entirely remove a cookbook (or cookbook version) from the Chef server\&. This action should be used carefully because only one copy of any single file is stored on the Chef server\&. Consequently, purging a cookbook will disable any other cookbook that references one or more files from a cookbook that has been purged.
 .UNINDENT
 .sp
 \fBExamples\fP
@@ -331,10 +331,10 @@ This argument has the following options:
 The directory into which a cookbook will be downloaded.
 .TP
 .B \fB\-f\fP, \fB\-\-force\fP
-Indicates that an existing directory will be overwritten.
+Use to overwrite an existing directory.
 .TP
 .B \fB\-N\fP, \fB\-\-latest\fP
-Indicates that the most recent version of a cookbook will be downloaded.
+Use to download the most recent version of a cookbook.
 .UNINDENT
 .sp
 \fBExamples\fP
@@ -374,10 +374,10 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fB\-a\fP, \fB\-\-all\fP
-Indicates that all available versions of each cookbook will be returned.
+Use to return all available versions for every cookbook.
 .TP
 .B \fB\-w\fP, \fB\-\-with\-uri\fP
-Indicates that the corresponding URIs will be shown.
+Use to show the corresponding URIs.
 .UNINDENT
 .sp
 \fBExamples\fP
@@ -417,7 +417,7 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fB\-a\fP, \fB\-\-all\fP
-Indicates that metadata should be generated for all cookbooks, and not just for a specified cookbook.
+Use to generate metadata for all cookbooks.
 .TP
 .B \fB\-o PATH:PATH\fP, \fB\-\-cookbook\-path PATH:PATH\fP
 The directory in which cookbook are created. This can be a colon\-separated path.
@@ -462,7 +462,7 @@ This command does not have any specific options.
 .sp
 .nf
 .ft C
-$ knife cookbook metadta from file /path/to/file
+$ knife cookbook metadata from file /path/to/file
 .ft P
 .fi
 .UNINDENT
@@ -509,7 +509,7 @@ The part of the cookbook to show: \fBattributes\fP, \fBdefinitions\fP, \fBfiles\
 The version of the platform.
 .TP
 .B \fB\-w\fP, \fB\-\-with\-uri\fP
-Indicates that the corresponding URIs will be shown.
+Use to show the corresponding URIs.
 .UNINDENT
 .sp
 \fBExamples\fP
@@ -617,7 +617,7 @@ $ knife role show devops \-F json
 Other formats available include \fBtext\fP, \fByaml\fP, and \fBpp\fP\&.
 .SH TEST
 .sp
-The \fBtest\fP argument is used to test a cookbook for syntax errors. This argument uses Ruby syntax checking to verify every file in a cookbook that ends in .rb and Embedded Ruby (ERB)\&.
+The \fBtest\fP argument is used to test a cookbook for syntax errors. This argument uses Ruby syntax checking to verify every file in a cookbook that ends in .rb and Embedded Ruby (ERB)\&. This argument will respect \&.chefignore files when determining which cookbooks to test for syntax errors.
 .sp
 \fBSyntax\fP
 .sp
@@ -639,7 +639,7 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fB\-a\fP, \fB\-\-all\fP
-Indicates that all cookbooks will be tested.
+Use to test all cookbooks.
 .TP
 .B \fB\-o PATH:PATH\fP, \fB\-\-cookbook\-path PATH:PATH\fP
 The directory in which cookbook are created. This can be a colon\-separated path.
@@ -694,22 +694,22 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fB\-a\fP, \fB\-\-all\fP
-Indicates that all cookbooks will be uploaded.
+Use to upload all cookbooks.
 .TP
 .B \fB\-\-concurrency\fP
 The number of allowed concurrent connections. Default: \fB10\fP\&.
 .TP
 .B \fB\-d\fP, \fB\-\-include\-dependencies\fP
-Indicates that when a cookbook has a dependency on one (or more) cookbooks, those cookbooks will also be uploaded.
+Use to ensure that when a cookbook has a dependency on one (or more) cookbooks, those cookbooks will also be uploaded.
 .TP
 .B \fB\-E ENVIRONMENT\fP, \fB\-\-environment ENVIRONMENT\fP
 Use to set the environment version dependency to the cookbook version being uploaded.
 .TP
 .B \fB\-\-force\fP
-Indicates that a cookbook should be updated even if the \fB\-\-freeze\fP flag has been set.
+Use to update a cookbook even if the \fB\-\-freeze\fP flag has been set.
 .TP
 .B \fB\-\-freeze\fP
-Indicates that a cookbook cannot be modified; any changes to this cookbook must be included as a new version. Only the \fB\-\-force\fP option can override this setting.
+Use to require changes to a cookbook be included as a new version. Only the \fB\-\-force\fP option can override this setting.
 .TP
 .B \fB\-o PATH:PATH\fP, \fB\-\-cookbook\-path PATH:PATH\fP
 The directory in which cookbook are created. This can be a colon\-separated path.

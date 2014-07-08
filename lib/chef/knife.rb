@@ -25,6 +25,7 @@ require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/path_sanity'
 require 'chef/knife/core/subcommand_loader'
 require 'chef/knife/core/ui'
+require 'chef/local_mode'
 require 'chef/rest'
 require 'pp'
 
@@ -488,11 +489,8 @@ class Chef
         ui.error "You need to add a #run method to your knife command before you can use it"
       end
       enforce_path_sanity
-      Chef::Application.setup_server_connectivity
-      begin
+      Chef::LocalMode.with_server_connectivity do
         run
-      ensure
-        Chef::Application.destroy_server_connectivity
       end
     rescue Exception => e
       raise if raise_exception || Chef::Config[:verbosity] == 2
@@ -625,4 +623,3 @@ class Chef
 
   end
 end
-

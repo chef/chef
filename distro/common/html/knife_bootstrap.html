@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="shortcut icon" href="_static/chef.ico"/>
 
 
   </head>
@@ -64,7 +63,13 @@
 <p>This subcommand has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-A</span></tt>, <tt class="docutils literal"><span class="pre">--forward-agent</span></tt></dt>
-<dd>Indicates that SSH agent forwarding is enabled.</dd>
+<dd>Use to enable SSH agent forwarding.</dd>
+<dt><tt class="docutils literal"><span class="pre">--bootstrap-curl-options</span> <span class="pre">OPTIONS</span></tt></dt>
+<dd>Use to specify arbitrary options to be added to the bootstrap command when using cURL. This option may not be used in the same command with <tt class="docutils literal"><span class="pre">--bootstrap-install-command</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">--bootstrap-install-command</span> <span class="pre">COMMAND</span></tt></dt>
+<dd>Use to execute a custom installation command sequence for the chef-client. This option may not be used in the same command with <tt class="docutils literal"><span class="pre">--bootstrap-curl-options</span></tt>, <tt class="docutils literal"><span class="pre">--bootstrap-install-sh</span></tt>, or <tt class="docutils literal"><span class="pre">--bootstrap-wget-options</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">--bootstrap-install-sh</span> <span class="pre">URL</span></tt></dt>
+<dd>Use to fetch and execute an installation script at the specified URL. This option may not be used in the same command with <tt class="docutils literal"><span class="pre">--bootstrap-install-command</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--bootstrap-no-proxy</span> <span class="pre">NO_PROXY_URL_or_IP</span></tt></dt>
 <dd><p class="first">A URL or IP address that specifies a location that should not be proxied.</p>
 <div class="last admonition note">
@@ -76,6 +81,8 @@
 <dd>The proxy server for the node that is the target of a bootstrap operation.</dd>
 <dt><tt class="docutils literal"><span class="pre">--bootstrap-version</span> <span class="pre">VERSION</span></tt></dt>
 <dd>The version of the chef-client to install.</dd>
+<dt><tt class="docutils literal"><span class="pre">--bootstrap-wget-options</span> <span class="pre">OPTIONS</span></tt></dt>
+<dd>Use to specify arbitrary options to be added to the bootstrap command when using GNU Wget. This option may not be used in the same command with <tt class="docutils literal"><span class="pre">--bootstrap-install-command</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-d</span> <span class="pre">DISTRO</span></tt>, <tt class="docutils literal"><span class="pre">--distro</span> <span class="pre">DISTRO</span></tt></dt>
 <dd><p class="first">The template file to be used during a bootstrap operation. The following distributions are supported: <tt class="docutils literal"><span class="pre">chef-full</span></tt> (the default bootstrap), <tt class="docutils literal"><span class="pre">centos5-gems</span></tt>, <tt class="docutils literal"><span class="pre">fedora13-gems</span></tt>, <tt class="docutils literal"><span class="pre">ubuntu10.04-gems</span></tt>, <tt class="docutils literal"><span class="pre">ubuntu10.04-apt</span></tt>, <tt class="docutils literal"><span class="pre">ubuntu12.04-gems</span></tt>, and the name of a custom bootstrap template file. When this option is used, Knife will search for the template file in the following order: the <tt class="docutils literal"><span class="pre">bootstrap/</span></tt> folder in the current working directory, the <tt class="docutils literal"><span class="pre">bootstrap/</span></tt> folder in the chef-repo, the <tt class="docutils literal"><span class="pre">bootstrap/</span></tt> folder in the <tt class="docutils literal"><span class="pre">~/.chef/</span></tt> directory, or a default bootstrap file. Do not use the <tt class="docutils literal"><span class="pre">--template-file</span></tt> option when <tt class="docutils literal"><span class="pre">--distro</span></tt> is specified.</p>
 <div class="last admonition warning">
@@ -83,6 +90,8 @@
 <p class="last">The default bootstrap operation uses the omnibus installer, which means the default template file (<tt class="docutils literal"><span class="pre">chef-full</span></tt>) should work on all supported platforms. It is recommended to use custom bootstrap templates only when the omnibus installer cannot be used. The <tt class="docutils literal"><span class="pre">.erb</span></tt> file extension is added automatically and should not be passed as part of the bootstrap command.</p>
 </div>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">-E</span> <span class="pre">ENVIRONMENT</span></tt>, <tt class="docutils literal"><span class="pre">--environment</span> <span class="pre">ENVIRONMENT</span></tt></dt>
+<dd>The name of the environment. When this option is added to a command, the command will run only against the named environment.</dd>
 <dt><tt class="docutils literal"><span class="pre">-G</span> <span class="pre">GATEWAY</span></tt>, <tt class="docutils literal"><span class="pre">--ssh-gateway</span> <span class="pre">GATEWAY</span></tt></dt>
 <dd>The SSH tunnel or gateway that is used to run a bootstrap action on a machine that is not accessible from the workstation.</dd>
 <dt><tt class="docutils literal"><span class="pre">--hint</span> <span class="pre">HINT_NAME[=HINT_FILE]</span></tt></dt>
@@ -100,7 +109,7 @@
 <dt><tt class="docutils literal"><span class="pre">-P</span> <span class="pre">PASSWORD</span></tt>, <tt class="docutils literal"><span class="pre">--ssh-password</span> <span class="pre">PASSWORD</span></tt></dt>
 <dd>The SSH password. This can be used to pass the password directly on the command line. If this option is not specified (and a password is required) Knife will prompt for the password.</dd>
 <dt><tt class="docutils literal"><span class="pre">--prerelease</span></tt></dt>
-<dd>Indicates that pre-release gems should be installed.</dd>
+<dd>Use to install pre-release gems.</dd>
 <dt><tt class="docutils literal"><span class="pre">-r</span> <span class="pre">RUN_LIST</span></tt>, <tt class="docutils literal"><span class="pre">--run-list</span> <span class="pre">RUN_LIST</span></tt></dt>
 <dd>A comma-separated list of roles and/or recipes to be applied.</dd>
 <dt><tt class="docutils literal"><span class="pre">--secret</span> <span class="pre">SECRET</span></tt></dt>
@@ -108,11 +117,13 @@
 <dt><tt class="docutils literal"><span class="pre">--secret-file</span> <span class="pre">FILE</span></tt></dt>
 <dd>The path to the file that contains the encryption key.</dd>
 <dt><tt class="docutils literal"><span class="pre">--sudo</span></tt></dt>
-<dd>Indicates that a bootstrap operation should be executed using sudo.</dd>
+<dd>Use to execute a bootstrap operation with sudo.</dd>
 <dt><tt class="docutils literal"><span class="pre">--template-file</span> <span class="pre">TEMPLATE</span></tt></dt>
 <dd>The path to a template file that will be used during a bootstrap operation. Do not use the <tt class="docutils literal"><span class="pre">--distro</span></tt> option when <tt class="docutils literal"><span class="pre">--template-file</span></tt> is specified.</dd>
 <dt><tt class="docutils literal"><span class="pre">--use-sudo-password</span></tt></dt>
-<dd>Indicates that a bootstrap operation is done using sudo, with the password specified by the <tt class="docutils literal"><span class="pre">-P</span></tt> (or <tt class="docutils literal"><span class="pre">--ssh-password</span></tt>) option.</dd>
+<dd>Use to perform a bootstrap operation with sudo; specify the password with the <tt class="docutils literal"><span class="pre">-P</span></tt> (or <tt class="docutils literal"><span class="pre">--ssh-password</span></tt>) option.</dd>
+<dt><tt class="docutils literal"><span class="pre">-V</span> <span class="pre">-V</span></tt></dt>
+<dd>Use to run the initial chef-client run at the <tt class="docutils literal"><span class="pre">debug</span></tt> log-level (e.g. <tt class="docutils literal"><span class="pre">chef-client</span> <span class="pre">-l</span> <span class="pre">debug</span></tt>).</dd>
 <dt><tt class="docutils literal"><span class="pre">-x</span> <span class="pre">USERNAME</span></tt>, <tt class="docutils literal"><span class="pre">--ssh-user</span> <span class="pre">USERNAME</span></tt></dt>
 <dd>The SSH user name.</dd>
 </dl>

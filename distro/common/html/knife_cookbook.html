@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="shortcut icon" href="_static/chef.ico"/>
 
 
   </head>
@@ -74,7 +73,7 @@
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-p</span></tt>, <tt class="docutils literal"><span class="pre">--purge</span></tt></dt>
-<dd>Indicates that a cookbook (or cookbook version) will be removed entirely from the Chef server. This action should be used carefully because only one copy of any single file is stored on the Chef server. Consequently, purging a cookbook will disable any other cookbook that references one or more files from a cookbook that has been purged.</dd>
+<dd>Use to entirely remove a cookbook (or cookbook version) from the Chef server. This action should be used carefully because only one copy of any single file is stored on the Chef server. Consequently, purging a cookbook will disable any other cookbook that references one or more files from a cookbook that has been purged.</dd>
 </dl>
 </div>
 <div class="section" id="examples">
@@ -160,11 +159,11 @@
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-a</span></tt>, <tt class="docutils literal"><span class="pre">--all</span></tt></dt>
-<dd>Indicates that a cookbook and every version of that cookbook will be deleted.</dd>
+<dd>Use to delete all cookbooks (and cookbook versions).</dd>
 <dt><tt class="docutils literal"><span class="pre">COOKBOOK_VERSION</span></tt></dt>
 <dd>The version of a cookbook to be deleted. If a cookbook has only one version, this option does not need to be specified. If a cookbook has more than one version and this option is not specified, Knife will prompt for a version.</dd>
 <dt><tt class="docutils literal"><span class="pre">-p</span></tt>, <tt class="docutils literal"><span class="pre">--purge</span></tt></dt>
-<dd>Indicates that a cookbook (or cookbook version) will be removed entirely from the Chef server. This action should be used carefully because only one copy of any single file is stored on the Chef server. Consequently, purging a cookbook will disable any other cookbook that references one or more files from a cookbook that has been purged.</dd>
+<dd>Use to entirely remove a cookbook (or cookbook version) from the Chef server. This action should be used carefully because only one copy of any single file is stored on the Chef server. Consequently, purging a cookbook will disable any other cookbook that references one or more files from a cookbook that has been purged.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -198,9 +197,9 @@
 <dt><tt class="docutils literal"><span class="pre">-d</span> <span class="pre">DOWNLOAD_DIRECTORY</span></tt>, <tt class="docutils literal"><span class="pre">--dir</span> <span class="pre">DOWNLOAD_DIRECTORY</span></tt></dt>
 <dd>The directory into which a cookbook will be downloaded.</dd>
 <dt><tt class="docutils literal"><span class="pre">-f</span></tt>, <tt class="docutils literal"><span class="pre">--force</span></tt></dt>
-<dd>Indicates that an existing directory will be overwritten.</dd>
+<dd>Use to overwrite an existing directory.</dd>
 <dt><tt class="docutils literal"><span class="pre">-N</span></tt>, <tt class="docutils literal"><span class="pre">--latest</span></tt></dt>
-<dd>Indicates that the most recent version of a cookbook will be downloaded.</dd>
+<dd>Use to download the most recent version of a cookbook.</dd>
 </dl>
 </div>
 <div class="section" id="id9">
@@ -228,9 +227,9 @@
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-a</span></tt>, <tt class="docutils literal"><span class="pre">--all</span></tt></dt>
-<dd>Indicates that all available versions of each cookbook will be returned.</dd>
+<dd>Use to return all available versions for every cookbook.</dd>
 <dt><tt class="docutils literal"><span class="pre">-w</span></tt>, <tt class="docutils literal"><span class="pre">--with-uri</span></tt></dt>
-<dd>Indicates that the corresponding URIs will be shown.</dd>
+<dd>Use to show the corresponding URIs.</dd>
 </dl>
 </div>
 <div class="section" id="id12">
@@ -258,7 +257,7 @@
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-a</span></tt>, <tt class="docutils literal"><span class="pre">--all</span></tt></dt>
-<dd>Indicates that metadata should be generated for all cookbooks, and not just for a specified cookbook.</dd>
+<dd>Use to generate metadata for all cookbooks.</dd>
 <dt><tt class="docutils literal"><span class="pre">-o</span> <span class="pre">PATH:PATH</span></tt>, <tt class="docutils literal"><span class="pre">--cookbook-path</span> <span class="pre">PATH:PATH</span></tt></dt>
 <dd>The directory in which cookbook are created. This can be a colon-separated path.</dd>
 </dl>
@@ -290,7 +289,7 @@
 <h3>Examples<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
 <p>The following examples show how to use this Knife subcommand:</p>
 <p><strong>View metadata</strong></p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife cookbook metadta from file /path/to/file
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife cookbook metadata from file /path/to/file
 </pre></div>
 </div>
 </div>
@@ -322,7 +321,7 @@
 <dt><tt class="docutils literal"><span class="pre">-V</span> <span class="pre">PLATFORM_VERSION</span></tt>, <tt class="docutils literal"><span class="pre">--platform-version</span> <span class="pre">PLATFORM_VERSION</span></tt></dt>
 <dd>The version of the platform.</dd>
 <dt><tt class="docutils literal"><span class="pre">-w</span></tt>, <tt class="docutils literal"><span class="pre">--with-uri</span></tt></dt>
-<dd>Indicates that the corresponding URIs will be shown.</dd>
+<dd>Use to show the corresponding URIs.</dd>
 </dl>
 </div>
 <div class="section" id="id21">
@@ -381,7 +380,7 @@ url:          https://someurlhere.com
 </div>
 <div class="section" id="test">
 <h2>test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">test</span></tt> argument is used to test a cookbook for syntax errors. This argument uses Ruby syntax checking to verify every file in a cookbook that ends in .rb and Embedded Ruby (ERB).</p>
+<p>The <tt class="docutils literal"><span class="pre">test</span></tt> argument is used to test a cookbook for syntax errors. This argument uses Ruby syntax checking to verify every file in a cookbook that ends in .rb and Embedded Ruby (ERB). This argument will respect .chefignore files when determining which cookbooks to test for syntax errors.</p>
 <div class="section" id="id22">
 <h3>Syntax<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -394,7 +393,7 @@ url:          https://someurlhere.com
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-a</span></tt>, <tt class="docutils literal"><span class="pre">--all</span></tt></dt>
-<dd>Indicates that all cookbooks will be tested.</dd>
+<dd>Use to test all cookbooks.</dd>
 <dt><tt class="docutils literal"><span class="pre">-o</span> <span class="pre">PATH:PATH</span></tt>, <tt class="docutils literal"><span class="pre">--cookbook-path</span> <span class="pre">PATH:PATH</span></tt></dt>
 <dd>The directory in which cookbook are created. This can be a colon-separated path.</dd>
 </dl>
@@ -431,17 +430,17 @@ url:          https://someurlhere.com
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-a</span></tt>, <tt class="docutils literal"><span class="pre">--all</span></tt></dt>
-<dd>Indicates that all cookbooks will be uploaded.</dd>
+<dd>Use to upload all cookbooks.</dd>
 <dt><tt class="docutils literal"><span class="pre">--concurrency</span></tt></dt>
 <dd>The number of allowed concurrent connections. Default: <tt class="docutils literal"><span class="pre">10</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-d</span></tt>, <tt class="docutils literal"><span class="pre">--include-dependencies</span></tt></dt>
-<dd>Indicates that when a cookbook has a dependency on one (or more) cookbooks, those cookbooks will also be uploaded.</dd>
+<dd>Use to ensure that when a cookbook has a dependency on one (or more) cookbooks, those cookbooks will also be uploaded.</dd>
 <dt><tt class="docutils literal"><span class="pre">-E</span> <span class="pre">ENVIRONMENT</span></tt>, <tt class="docutils literal"><span class="pre">--environment</span> <span class="pre">ENVIRONMENT</span></tt></dt>
 <dd>Use to set the environment version dependency to the cookbook version being uploaded.</dd>
 <dt><tt class="docutils literal"><span class="pre">--force</span></tt></dt>
-<dd>Indicates that a cookbook should be updated even if the <tt class="docutils literal"><span class="pre">--freeze</span></tt> flag has been set.</dd>
+<dd>Use to update a cookbook even if the <tt class="docutils literal"><span class="pre">--freeze</span></tt> flag has been set.</dd>
 <dt><tt class="docutils literal"><span class="pre">--freeze</span></tt></dt>
-<dd>Indicates that a cookbook cannot be modified; any changes to this cookbook must be included as a new version. Only the <tt class="docutils literal"><span class="pre">--force</span></tt> option can override this setting.</dd>
+<dd>Use to require changes to a cookbook be included as a new version. Only the <tt class="docutils literal"><span class="pre">--force</span></tt> option can override this setting.</dd>
 <dt><tt class="docutils literal"><span class="pre">-o</span> <span class="pre">PATH:PATH</span></tt>, <tt class="docutils literal"><span class="pre">--cookbook-path</span> <span class="pre">PATH:PATH</span></tt></dt>
 <dd>The directory in which cookbook are created. This can be a colon-separated path.</dd>
 </dl>

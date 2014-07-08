@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-STATUS" "1" "Chef 11.12.0" "" "knife status"
+.TH "KNIFE-STATUS" "1" "Chef 11.14" "" "knife status"
 .SH NAME
 knife-status \- The man page for the knife status subcommand.
 .
@@ -59,13 +59,13 @@ The configuration file to use.
 The port on which chef\-zero will listen.
 .TP
 .B \fB\-\-[no\-]color\fP
-Indicates whether colored output will be used.
+Use to view colored output.
 .TP
 .B \fB\-d\fP, \fB\-\-disable\-editing\fP
-Indicates that $EDITOR will not be opened; data will be accepted as\-is.
+Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Indicates that Knife will use the default value, instead of asking a user to provide one.
+Use to have Knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -80,13 +80,13 @@ The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, 
 Shows help for the command.
 .TP
 .B \fB\-H\fP, \fB\-\-hide\-healthy\fP
-Indicates that nodes on which a chef\-client run has occurred within the previous hour will be hidden.
+Use to hide nodes on which a chef\-client run has occurred within the previous hour.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
 The private key that Knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-print\-after\fP
-Indicates that data will be shown after a destructive operation.
+Use to show data after a destructive operation.
 .TP
 .B \fBSEARCH_QUERY\fP
 The search query used to identify a a list of items on a Chef server\&. This option uses the same syntax as the \fBsearch\fP sub\-command.
@@ -95,7 +95,7 @@ The search query used to identify a a list of items on a Chef server\&. This opt
 A comma\-separated list of roles and/or recipes to be applied.
 .TP
 .B \fB\-s\fP, \fB\-\-sort\-reverse\fP
-Indicates that the list will be sorted by last run time, descending.
+Use to sort a list by last run time, descending.
 .TP
 .B \fB\-\-server\-url URL\fP
 The URL for the Chef server\&.
@@ -110,10 +110,10 @@ The version of the chef\-client\&.
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
+Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
-Indicates that the chef\-client will be run in local mode, which allows all commands that work against the Chef server to also work against the local chef\-repo\&.
+Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .sp
 \fBExamples\fP

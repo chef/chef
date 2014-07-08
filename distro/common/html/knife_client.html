@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="shortcut icon" href="_static/chef.ico"/>
 
 
   </head>
@@ -49,7 +48,7 @@
 </div>
 <div class="section" id="bulk-delete">
 <h2>bulk delete<a class="headerlink" href="#bulk-delete" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">bulk</span> <span class="pre">delete</span></tt> argument is used to delete any API client that matches a pattern defined by a regular expression. The regular expression must be within quotes and not be surrounded by forward slashes (/).</p>
+<p>The <tt class="docutils literal"><span class="pre">bulk</span> <span class="pre">delete</span></tt> argument is used to delete any API client that matches a pattern defined by a regular expression. The regular expression must be within quotes and not be surrounded by forward slashes (<tt class="docutils literal"><span class="pre">/</span></tt>).</p>
 <div class="section" id="syntax">
 <h3>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -85,14 +84,18 @@
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-a</span></tt>, <tt class="docutils literal"><span class="pre">--admin</span></tt></dt>
-<dd>Indicates that a client will be created as an admin client. This is required when users of the open source Chef server need to access the Chef Server API as an administrator. This option only works when used with the open source Chef server and will have no effect when used with Enterprise Chef.</dd>
+<dd>Use to create a client as an admin client. This is required for any user to access Open Source Chef as an administrator. This option only works when used with the open source Chef server and will have no effect when used with Enterprise Chef.</dd>
+<dt><tt class="docutils literal"><span class="pre">-f</span> <span class="pre">FILE</span></tt>, <tt class="docutils literal"><span class="pre">--file</span> <span class="pre">FILE</span></tt></dt>
+<dd>Use to save a private key to the specified file name.</dd>
+<dt><tt class="docutils literal"><span class="pre">--validator</span></tt></dt>
+<dd>Use to create the client as the chef-validator. Default value: <tt class="docutils literal"><span class="pre">true</span></tt>.</dd>
 </dl>
 </div>
 <div class="section" id="id3">
 <h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>The following examples show how to use this Knife subcommand:</p>
 <p><strong>Create an admin client</strong></p>
-<p>To create a Chef Admin client with the name &#8220;exampleorg&#8221; and save its private key to a file, enter:</p>
+<p>To create a chef-client that can access the Chef Server API as an administrator&#8212;sometimes referred to as an &#8220;API chef-client&#8221;&#8212;with the name &#8220;exampleorg&#8221; and save its private key to a file, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife client create exampleorg -a -f <span class="s2">&quot;/etc/chef/client.pem&quot;</span>
 </pre></div>
 </div>
@@ -167,7 +170,7 @@
 <p>This argument has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-w</span></tt>, <tt class="docutils literal"><span class="pre">--with-uri</span></tt></dt>
-<dd>Indicates that the corresponding URIs will be shown.</dd>
+<dd>Use to show the corresponding URIs.</dd>
 </dl>
 </div>
 <div class="section" id="id12">

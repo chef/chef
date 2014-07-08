@@ -40,12 +40,4 @@ describe Chef::Resource::AptPackage, "initialize" do
     @resource.default_release("lenny-backports")
     @resource.default_release.should eql("lenny-backports")
   end
-
-  # String, Integer
-  [ "600", 600 ].each do |val|
-    it "supports setting a timeout as a #{val.class}" do
-      @resource.timeout(val)
-      expect(@resource.timeout).to eql(val)
-    end
-  end
 end
