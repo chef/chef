@@ -127,7 +127,7 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
       it "throws an error warning about the Ruby version if it has no GCM support" do
         # Force OpenSSL with AEAD support
         OpenSSL::Cipher.stub(:ciphers).and_return([ aead_algorithm ])
-        # Ruby with AEAD support
+        # Ruby without AEAD support
         OpenSSL::Cipher.should_receive(:method_defined?).with(:auth_data=).and_return(false)
         lambda { encryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires Ruby/)
       end
