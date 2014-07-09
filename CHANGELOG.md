@@ -1,8 +1,9 @@
 # Chef Client Changelog
 
 ## Unreleased:
-* Add method shell_out_with_systems_locale to ShellOut.
+* Add method `shell_out_with_systems_locale` to ShellOut.
 * Fix knife cookbook site share on windows (CHEF-4994)
+* Remove chef-repo rake tasks.
 
 ## Last Release: 11.14.0
 
