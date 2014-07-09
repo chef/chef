@@ -18,7 +18,7 @@
 
 require 'chef/resource/service'
 require 'chef/provider/service/simple'
-require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 
 class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   def load_current_resource
@@ -29,11 +29,9 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     if @new_resource.status_command
       Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
 
-      begin
-        if run_command_with_systems_locale(:command => @new_resource.status_command) == 0
-          @current_resource.running(true)
-        end
-      rescue Chef::Exceptions::Exec
+      unless shell_out_with_systems_locale(@new_resource.status_command).error?
+        @current_resource.running(true)
+      else
         @status_check_success = false
         @current_resource.running(false)
         @current_resource.enabled(false)
@@ -64,7 +62,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       if @new_resource.start_command
         super
       else
-        run_command_with_systems_locale(:command => "/bin/systemctl start #{@new_resource.service_name}")
+        shell_out_with_systems_locale("/bin/systemctl start #{@new_resource.service_name}")
       end
     end
   end
@@ -76,7 +74,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       if @new_resource.stop_command
         super
       else
-        run_command_with_systems_locale(:command => "/bin/systemctl stop #{@new_resource.service_name}")
+        shell_out_with_systems_locale("/bin/systemctl stop #{@new_resource.service_name}")
       end
     end
   end
@@ -85,7 +83,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     if @new_resource.restart_command
       super
     else
-      run_command_with_systems_locale(:command => "/bin/systemctl restart #{@new_resource.service_name}")
+      shell_out_with_systems_locale("/bin/systemctl restart #{@new_resource.service_name}")
     end
   end
 
@@ -93,23 +91,27 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     if @new_resource.reload_command
       super
     else
-      run_command_with_systems_locale(:command => "/bin/systemctl reload #{@new_resource.service_name}")
+      if @current_resource.running
+        shell_out_with_systems_locale("/bin/systemctl reload #{@new_resource.service_name}")
+      else
+        start_service
+      end
     end
   end
 
   def enable_service
-    run_command_with_systems_locale(:command => "/bin/systemctl enable #{@new_resource.service_name}")
+    shell_out_with_systems_locale("/bin/systemctl enable #{@new_resource.service_name}")
   end
 
   def disable_service
-    run_command_with_systems_locale(:command => "/bin/systemctl disable #{@new_resource.service_name}")
+    shell_out_with_systems_locale("/bin/systemctl disable #{@new_resource.service_name}")
   end
 
   def is_active?
-    run_command_with_systems_locale({:command => "/bin/systemctl is-active #{@new_resource.service_name}", :ignore_failure => true}) == 0
+    shell_out_with_systems_locale("/bin/systemctl is-active #{@new_resource.service_name} --quiet").exitstatus == 0
   end
 
   def is_enabled?
-    run_command_with_systems_locale({:command => "/bin/systemctl is-enabled #{@new_resource.service_name}", :ignore_failure => true}) == 0
+    shell_out_with_systems_locale("/bin/systemctl is-enabled #{@new_resource.service_name} --quiet").exitstatus == 0
   end
 end
