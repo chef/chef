@@ -185,14 +185,10 @@ class Chef::Application::Solo < Chef::Application
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
 
       Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
-      FileUtils.mkdir_p recipes_path
-      path = File.join(recipes_path, 'recipes.tgz')
-      File.open(path, 'wb') do |f|
-        open(Chef::Config[:recipe_url]) do |r|
-          f.write(r.read)
-        end
-      end
-      Chef::Mixin::Command.run_command(:command => "tar zxvf #{path} -C #{recipes_path}")
+      FileUtils.mkdir_p(recipes_path)
+      tarball_path = File.join(recipes_path, 'recipes.tgz')
+      fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
+      Chef::Mixin::Command.run_command(:command => "tar zxvf #{tarball_path} -C #{recipes_path}")
     end
 
     # json_attribs shuld be fetched after recipe_url tarball is unpacked.
@@ -243,4 +239,14 @@ class Chef::Application::Solo < Chef::Application
     end
   end
 
+  private
+
+  def fetch_recipe_tarball(url, path)
+    Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
+    File.open(path, 'wb') do |f|
+      open(url) do |r|
+        f.write(r.read)
+      end
+    end
+  end
 end
