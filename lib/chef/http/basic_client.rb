@@ -84,7 +84,13 @@ class Chef
       #adapted from buildr/lib/buildr/core/transports.rb
       def proxy_uri
         proxy = Chef::Config["#{url.scheme}_proxy"]
-        proxy = URI.parse(proxy) if String === proxy
+        # Check if the proxy string contains a scheme. If not, add the url's scheme to the
+        # proxy before parsing. The regex /^.*:\/\// matches, for example, http://.
+        proxy = if proxy.match(/^.*:\/\//)
+          URI.parse(proxy)
+        else
+          URI.parse("#{url.scheme}://#{proxy}")
+        end if String === proxy
         excludes = Chef::Config[:no_proxy].to_s.split(/\s*,\s*/).compact
         excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
         return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }
