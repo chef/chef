@@ -30,8 +30,8 @@ build_version do
   # Use chef to determine the build version
   source :git, from_dependency: 'chef-windows'
 
-  # Set a Rubygems style version
-  output_format :git_describe
+  # Output a SemVer compliant version string
+  output_format :semver
 end
 
 package_name    "chef-client"
