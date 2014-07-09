@@ -379,7 +379,9 @@ describe Chef::Resource::Link do
         end
         context 'and the link already exists and points to a different directory' do
           before(:each) do
-            Dir.mkdir(target_file)
+            other_dir = File.join(test_file_dir, make_tmpname("other_dir"))
+            Dir.mkdir(other_dir)
+            symlink(other_dir, target_file)
           end
           include_context 'create symbolic link succeeds'
         end

@@ -98,19 +98,19 @@ class Chef
            @current_resource.link_type != @new_resource.link_type
           # Handle the case where the symlink already exists and is pointing at a valid to_file
           if @current_resource.to
-            # On windows, to fix a symlink already pointing at a directory we must first
+            # On Windows, to fix a symlink already pointing at a directory we must first
             # ::Dir.unlink the symlink (not the directory), while if we have a symlink
             # pointing at file we must use ::File.unlink on the symlink.
             # However if the new symlink will point to a file and the current symlink is pointing at a
             # directory we want to throw an exception and calling ::File.unlink on the directory symlink
             # will throw the correct ones.
-            if ::File.directory?(@new_resource.to) &&
+            if Chef::Platform.windows? && ::File.directory?(@new_resource.to) &&
                ::File.directory?(@current_resource.target_file)
-              converge_by("unlink existing dir at #{@new_resource.target_file}") do
+              converge_by("unlink existing windows symlink to dir at #{@new_resource.target_file}") do
                 ::Dir.unlink(@new_resource.target_file)
               end
             else
-              converge_by("unlink existing file at #{@new_resource.target_file}") do
+              converge_by("unlink existing symlink to file at #{@new_resource.target_file}") do
                 ::File.unlink(@new_resource.target_file)
               end
             end
