@@ -6,6 +6,7 @@
 * Fix OS X service provider actions that don't require the service label
   to work when there is no plist. (backport CHEF-5223)
 * Set Net::HTTP open_timeout. (backport Chef-1585)
+* Fix RPM package version detection (backport Issue 1554)
 
 ## 10.32.2
 
