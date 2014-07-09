@@ -187,8 +187,56 @@ describe Mixlib::ShellOut do
         let(:value) { stream }
         let(:stream) { StringIO.new }
 
+        before(:each) do
+          shell_cmd.live_stream = stream
+        end
+
         it "should set the live stream" do
-          should eql(value)
+          shell_cmd.live_stream.should eql(stream)
+        end
+
+        it "should set the live stderr stream" do
+          shell_cmd.live_stderr_stream.should eql(stream)
+        end
+      end
+
+      context 'when setting a live stream and live stderr stream separately' do
+        let(:accessor) { :live_stream }
+        let(:stream) { StringIO.new }
+        let(:value) { stream }
+        let(:stdout_stream) { StringIO.new }
+        let(:stderr_stream) { StringIO.new }
+
+        before(:each) do
+          shell_cmd.live_stream = stdout_stream
+          shell_cmd.live_stderr_stream = stderr_stream
+        end
+
+        it "should set the live stream" do
+          shell_cmd.live_stream.should eql(stdout_stream)
+        end
+
+        it "should set the live stream" do
+          shell_cmd.live_stderr_stream.should eql(stderr_stream)
+        end
+      end
+
+      context 'when setting a live stream and explicitly disabling live stderr stream' do
+        let(:accessor) { :live_stream }
+        let(:value) { stream }
+        let(:stream) { StringIO.new }
+
+        before(:each) do
+          shell_cmd.live_stream = stream
+          shell_cmd.live_stderr_stream = nil
+        end
+
+        it "should set the live stream" do
+          shell_cmd.live_stream.should eql(stream)
+        end
+
+        it "should set the live stderr stream" do
+          shell_cmd.live_stderr_stream.should eql(nil)
         end
       end
 
@@ -457,9 +505,35 @@ describe Mixlib::ShellOut do
         stream.string.should include("hello#{LINE_ENDING}")
       end
 
-      it "should copy the child's stderr to the live stream" do
-        shell_cmd.run_command
-        stream.string.should include("world#{LINE_ENDING}")
+      context "with default stderr stream" do
+        it "should copy the child's stderr to the live stream" do
+          shell_cmd.run_command
+          stream.string.should include("world#{LINE_ENDING}")
+        end
+      end
+
+      context "without an stderr stream" do
+        it "should not copy the child's stderr to the live stream" do
+          shell_cmd.live_stderr_stream = nil
+          shell_cmd.run_command
+          stream.string.should_not include("world#{LINE_ENDING}")
+        end
+      end
+
+      context "with a separate stderr stream" do
+        let(:stderr_stream) { StringIO.new }
+
+        it "should not copy the child's stderr to the live stream" do
+          shell_cmd.live_stderr_stream = stderr_stream
+          shell_cmd.run_command
+          stream.string.should_not include("world#{LINE_ENDING}")
+        end
+
+        it "should copy the child's stderr to the live stderr stream" do
+          shell_cmd.live_stderr_stream = stderr_stream
+          shell_cmd.run_command
+          stderr_stream.string.should include("world#{LINE_ENDING}")
+        end
       end
     end
 

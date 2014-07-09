@@ -54,9 +54,12 @@ module Mixlib
     attr_accessor :valid_exit_codes
 
     # When live_stream is set, stdout and stderr of the subprocess will be
-    # copied to it as the subprocess is running. For example, if live_stream is
-    # set to STDOUT, the command's output will be echoed to STDOUT.
+    # copied to it as the subprocess is running. The stderr will also be copied,
+    # unless live_stderr_stream is set to nil or a different object. For example,
+    # if live_stream is set to STDOUT, the command's output will be echoed to STDOUT.
     attr_accessor :live_stream
+
+    attr_writer :live_stderr_stream
 
     # ShellOut will push data from :input down the stdin of the subprocss.
     # Normally set via options passed to new.
@@ -161,6 +164,20 @@ module Mixlib
       end
 
       @command = command_args.size == 1 ? command_args.first : command_args
+    end
+
+    # When live_stderr_stream is set, the stderr of the subprocess will be
+    # copied to it as the subprocess is running. For example, if live_stderr_stream is
+    # set to STDERR, the command's output will be echoed to STDERR. The default
+    # value is to match live_stream, so setting live_stream to STDOUT will also
+    # set live_stderr_stream to STDOUT. If you only want the stdout of the subprocess
+    # copied, then you should explicitly set live_stderr_stream to nil.
+    def live_stderr_stream
+      # We can't use ||= because it would override an explicit nil
+      unless defined?(@live_stderr_stream)
+        @live_stderr_stream = live_stream
+      end
+      @live_stderr_stream
     end
 
     # Set the umask that the subprocess will have. If given as a string, it
@@ -287,6 +304,9 @@ module Mixlib
           self.valid_exit_codes = Array(setting)
         when 'live_stream'
           self.live_stream = setting
+        when 'live_stderr_stream'
+          puts "Setting to #{setting}"
+          self.live_stderr_stream = setting
         when 'input'
           self.input = setting
         when 'logger'
