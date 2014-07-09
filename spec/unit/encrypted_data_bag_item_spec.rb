@@ -97,8 +97,7 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
       Chef::Config[:data_bag_encrypt_version] = 3
     end
 
-    context "on supported platforms",
-      :if => (RUBY_VERSION >= "2" and OpenSSL::OPENSSL_VERSION_NUMBER >= 10001000) do
+    context "on supported platforms", :ruby_gte_20_and_openssl_gte_101 do
 
       it "creates a version 3 encryptor" do
         encryptor.should be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor)
@@ -123,9 +122,25 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
     end # context on supported platforms
 
     context "on unsupported platforms" do
+      let(:aead_algorithm) { Chef::EncryptedDataBagItem::AEAD_ALGORITHM }
 
-      context "on platforms with old Ruby",
-        :if => RUBY_VERSION < "2" do
+      it "throws an error warning about the Ruby version if it has no GCM support" do
+        # Force OpenSSL with AEAD support
+        OpenSSL::Cipher.stub(:ciphers).and_return([ aead_algorithm ])
+        # Ruby with AEAD support
+        OpenSSL::Cipher.should_receive(:method_defined?).with(:auth_data=).and_return(false)
+        lambda { encryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires Ruby/)
+      end
+
+      it "throws an error warning about the OpenSSL version if it has no GCM support" do
+        # Force Ruby with AEAD support
+        OpenSSL::Cipher.stub(:method_defined?).with(:auth_data=).and_return(true)
+        # OpenSSL without AEAD support
+        OpenSSL::Cipher.should_receive(:ciphers).and_return([])
+        lambda { encryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires an OpenSSL/)
+      end
+
+      context "on platforms with old Ruby", :ruby_lt_20 do
 
         it "throws an error warning about the Ruby version" do
           lambda { encryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires Ruby/)
@@ -133,8 +148,7 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
 
       end # context on platforms with old Ruby
 
-      context "on platforms with old OpenSSL",
-        :if => OpenSSL::OPENSSL_VERSION_NUMBER < 10001000 do
+      context "on platforms with old OpenSSL", :openssl_lt_101 do
 
         it "throws an error warning about the OpenSSL version" do
           lambda { encryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires an OpenSSL/)
@@ -157,8 +171,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
 
   context "when decrypting a version 3 (JSON+aes-256-gcm+random iv+auth tag) encrypted value" do
 
-    context "on supported platforms",
-      :if => (RUBY_VERSION >= "2" and OpenSSL::OPENSSL_VERSION_NUMBER >= 10001000) do
+    context "on supported platforms", :ruby_gte_20_and_openssl_gte_101 do
 
       let(:encrypted_value) do
         Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor.new(plaintext_data, encryption_key).for_encrypted_item
@@ -196,8 +209,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
         }
       end
 
-      context "on platforms with old Ruby",
-        :if => RUBY_VERSION < "2" do
+      context "on platforms with old Ruby", :ruby_lt_20 do
 
         it "throws an error warning about the Ruby version" do
           lambda { decryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires Ruby/)
@@ -205,8 +217,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
 
       end # context on platforms with old Ruby
 
-      context "on platforms with old OpenSSL",
-        :if => OpenSSL::OPENSSL_VERSION_NUMBER < 10001000 do
+      context "on platforms with old OpenSSL", :openssl_lt_101 do
 
         it "throws an error warning about the OpenSSL version" do
           lambda { decryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires an OpenSSL/)
