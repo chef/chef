@@ -17,11 +17,22 @@
 #
 
 require 'chef/win32/security'
+require 'chef/win32/api/net'
+require 'chef/win32/api/error'
+
+require 'wmi-lite/wmi'
 
 class Chef
   module ReservedNames::Win32
     class Security
       class SID
+        include Chef::ReservedNames::Win32::API::Net
+        include Chef::ReservedNames::Win32::API::Error
+
+        class << self
+          include Chef::ReservedNames::Win32::API::Net
+          include Chef::ReservedNames::Win32::API::Error
+        end
 
         def initialize(pointer, owner = nil)
           @pointer = pointer
@@ -178,13 +189,11 @@ class Chef
           SID.from_string_sid('S-1-5-32-544')
         end
 
-        # Machine-specific, well-known SIDs
-        # TODO: don't use strings, dummy
         def self.None
           SID.from_account("#{::ENV['COMPUTERNAME']}\\None")
         end
         def self.Administrator
-          SID.from_account("#{::ENV['COMPUTERNAME']}\\Administrator")
+          SID.from_account("#{::ENV['COMPUTERNAME']}\\#{SID.admin_account_name}")
         end
         def self.Guest
           SID.from_account("#{::ENV['COMPUTERNAME']}\\Guest")
@@ -192,6 +201,47 @@ class Chef
 
         def self.current_user
           SID.from_account("#{::ENV['USERDOMAIN']}\\#{::ENV['USERNAME']}")
+        end
+
+        def self.admin_account_name
+          @admin_account_name ||= begin
+            admin_account_name = nil
+
+            # Call NetUserEnum to enumerate the users without hitting network
+            # http://msdn.microsoft.com/en-us/library/windows/desktop/aa370652(v=vs.85).aspx
+            servername = nil # We are querying the local server
+            level = 3 # We want USER_INFO_3 structure which contains the SID
+            filter = FILTER_NORMAL_ACCOUNT # Only query the user accounts
+            bufptr = FFI::MemoryPointer.new(:pointer) # Buffer which will receive the data
+            prefmaxlen = MAX_PREFERRED_LENGTH # Let the system allocate the needed amount of memory
+            entriesread = FFI::Buffer.new(:long).write_long(0)
+            totalentries = FFI::Buffer.new(:long).write_long(0)
+            resume_handle = FFI::Buffer.new(:long).write_long(0)
+
+            status = ERROR_MORE_DATA
+
+            while(status == ERROR_MORE_DATA) do
+              status = NetUserEnum(servername, level, filter, bufptr, prefmaxlen, entriesread, totalentries, resume_handle)
+
+              if (status == NERR_Success || status == ERROR_MORE_DATA)
+                entriesread.read_long.times.collect do |i|
+                  user_info = USER_INFO_3.new(bufptr.read_pointer + i * USER_INFO_3.size)
+                  # Check if the account is the Administrator account
+                  # RID for the Administrator account is always 500 and it's privilage is set to USER_PRIV_ADMIN
+                  if user_info[:usri3_user_id] == 500 && user_info[:usri3_priv] == 2 # USER_PRIV_ADMIN (2) - Administrator
+                    admin_account_name = user_info[:usri3_name].read_wstring
+                    break
+                  end
+                end
+
+                # Free the memory allocated by the system
+                NetApiBufferFree(bufptr.read_pointer)
+              end
+            end
+
+            raise "Can not determine the administrator account name." if admin_account_name.nil?
+            admin_account_name
+          end
         end
       end
     end

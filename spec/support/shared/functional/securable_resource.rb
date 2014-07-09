@@ -240,7 +240,7 @@ shared_examples_for "a securable resource with existing target" do
 
     describe "when setting owner" do
       before do
-        resource.owner('Administrator')
+        resource.owner(SID.admin_account_name)
         resource.run_action(:create)
       end
 
@@ -539,4 +539,3 @@ shared_examples_for "a securable resource without existing target" do
 
   end
 end
-
