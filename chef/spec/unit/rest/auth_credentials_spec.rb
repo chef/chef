@@ -211,6 +211,11 @@ describe Chef::REST::RESTRequest do
       new_request.http_client.read_timeout.should == 9001
     end
 
+    it "configures the HTTP client with the open timeout set in the config file" do
+      Chef::Config[:rest_timeout] = 9001
+      new_request.http_client.read_timeout.should == 9001
+    end
+
     describe "for SSL" do
       before do
         Chef::Config[:ssl_client_cert] = nil
