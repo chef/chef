@@ -29,7 +29,15 @@ describe Chef::Mixin::ShellOut do
           shell_out_with_systems_locale('echo $LC_ALL')
         end
 
-        cmd.stdout.chomp.should eq ENV['LC_ALL'].to_s
+        expected_systems_locale = if windows? && ENV['LC_ALL'].nil?
+          # On Windows, if an environment variable is not set, the command
+          # `echo %VARNAME%` outputs %VARNAME%
+          "%LC_ALL%"
+        else
+          ENV['LC_ALL'].to_s
+        end
+
+        cmd.stdout.chomp.should eq expected_systems_locale.to_s
       end
     end
 
