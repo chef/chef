@@ -93,6 +93,9 @@
   Added the initial exherbo linux support for Chef providers.
 * [**Seth Vargo**](https://github.com/sethvargo):
   Added DelayedEvaluator support in LWRP using the `lazy {}` key
+* [**Seth Vargo**](https://github.com/sethvargo):
+  Fixed a bug where nested resources that inherited from Resource::LWRPBase
+  would not share the same actions/default_action as their parent
 
 
 * YAJL Allows Invalid JSON File Sending To The Server (CHEF-4899)
