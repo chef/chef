@@ -151,3 +151,35 @@ You can now set the timeout for receiving the yum lock in `config.rb` by adding 
 
 ### Ohai 7.2.0
 In this release of Chef included ohai version is bumped to 7.2.0 which contains [these](https://github.com/opscode/ohai/blob/7-stable/CHANGELOG.md) changes.
+
+### Declare `lazy` values in LWRPs
+In prior releases of Chef, it was impossible to declare "composite" attribute values due to scoping context:
+
+```ruby
+attribute :username, kind_of: String
+
+# This will fail because `username` is not defined at this scope
+attribute :home, default: "/home/#{username}"
+```
+
+In this release of Chef, you can use the `lazy` key to define an attribute that will yield the `new_resource` instance when called:
+
+```ruby
+attribute :username, kind_of: String
+attribute :home, default: lazy { |new_resource| "/home/#{new_resource.username}" }
+```
+
+You can also pass a more complex, multi-line block to your `lazy`:
+
+```ruby
+attribute :home, default: lazy do |new_resource|
+  case platform_family
+  when 'windows'
+    "C:/Users/#{new_resource.username}"
+  when 'osx'
+    "/Users/#{new_resource.username}"
+  else
+    "/home/#{new_resource.username}"
+  end
+end
+```
