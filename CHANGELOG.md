@@ -91,6 +91,8 @@
   knife[:attribute] in knife.rb should not override --attribute (CHEF-5158)
 * [**Vasiliy Tolstov**](https://github.com/vtolstov):
   Added the initial exherbo linux support for Chef providers.
+* [**Seth Vargo**](https://github.com/sethvargo):
+  Added DelayedEvaluator support in LWRP using the `lazy {}` key
 
 
 * YAJL Allows Invalid JSON File Sending To The Server (CHEF-4899)
