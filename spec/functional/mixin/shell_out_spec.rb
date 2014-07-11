@@ -29,7 +29,7 @@ describe Chef::Mixin::ShellOut do
           shell_out_with_systems_locale('echo $LC_ALL')
         end
 
-        cmd.stdout.chomp.should eq ENV['LC_ALL'].to_s
+        cmd.stdout.chomp.should match_environment_variable('LC_ALL')
       end
     end
 
