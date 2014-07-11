@@ -163,8 +163,8 @@ describe "LWRP" do
         let(:klass) do
           Class.new(Chef::Resource::LWRPBase) do
             self.resource_name = :sample_resource
-            attribute :food,  default: lazy { 'BACON!'*3 }
-            attribute :drink, default: lazy { |r| "Drink after #{r.food}!"}
+            attribute :food,  :default => lazy { 'BACON!'*3 }
+            attribute :drink, :default => lazy { |r| "Drink after #{r.food}!"}
           end
         end
 
