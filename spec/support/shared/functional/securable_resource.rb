@@ -525,16 +525,24 @@ shared_examples_for "a securable resource without existing target" do
     it "has the inheritable acls of parent directory if no acl is specified" do
       File.exist?(path).should == false
 
+      # Collect the inheritable acls form the parent by creating a file without
+      # any specific ACLs
       parent_acls = parent_inheritable_acls
+
+      # On certain flavors of Windows the default list of ACLs sometimes includes
+      # non-inherited ACLs. Filter them out here.
+      parent_inherited_acls = parent_acls.dacl.collect do |ace|
+        ace.inherited?
+      end
 
       resource.run_action(:create)
 
-      descriptor.dacl.each_with_index do |ace, index|
-        # On Windows Server 2003 OS creates a default non-inheritable
-        # ACL during file creation unless otherwise specified.
-        ace.inherited?.should == true unless windows_win2k3?
-        ace.should == parent_acls.dacl[index]
+      # Similarly filter out the non-inherited ACLs
+      resource_inherited_acls = descriptor.dacl.collect do |ace|
+        ace.inherited?
       end
+
+      resource_inherited_acls.should == parent_inherited_acls
     end
 
   end
