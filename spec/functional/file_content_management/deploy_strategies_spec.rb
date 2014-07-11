@@ -87,11 +87,7 @@ shared_examples_for "a content deploy strategy" do
       end
     end
 
-    # Win2003 has annoying differences in ACL inheritance behavior that make
-    # the default ACLs substantially different from those created on subsequent
-    # windows versions. The behaviors here are also covered by resource-level
-    # tests so we'll skip win2k3 here to keep the tests simple.
-    it "touches the file to create it (Windows)", :windows_only, :not_supported_on_win2k3 do
+    it "touches the file to create it (Windows)", :windows_only do
       content_deployer.create(target_file_path)
       File.should exist(target_file_path)
       file_info = File.stat(target_file_path)
@@ -102,11 +98,16 @@ shared_examples_for "a content deploy strategy" do
       security_obj = Chef::ReservedNames::Win32::Security::SecurableObject.new(target_file_path)
 
       security_descriptor = security_obj.security_descriptor(true)
-      security_descriptor.dacl.each_with_index do |ace, index|
-        ace.inherited?.should be_true
-        ace.mask.should == parent_aces[index].mask
+      # On certain windows systems like 2003 and Azure VMs there are some default
+      # ACEs that are not inherited from parents. So filter out the parents before
+      # comparing the aces
+      self_aces = security_descriptor.dacl.select do |ace|
+        ace_inherits?(ace)
       end
 
+      self_aces.each_with_index do |ace, index|
+        ace.mask.should == parent_aces[index].mask
+      end
     end
   end
 
