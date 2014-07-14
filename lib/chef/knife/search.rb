@@ -74,7 +74,7 @@ class Chef
       option :filter_result,
         :short => "-f FILTER",
         :long => "--filter-result FILTER",
-        :description => "Only bring back specific elements of the matching objects"
+        :description => "Only bring back specific attributes of the matching objects"
 
       def run
         read_cli_args
