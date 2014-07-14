@@ -50,7 +50,8 @@ describe 'knife common options' do
         end
       end
 
-      context 'And chef_zero.host is 0.0.0.0' do
+      # 0.0.0.0 is not a valid address to bind to on windows.
+      context 'And chef_zero.host is 0.0.0.0', :unix_only do
         before(:each) { Chef::Config.chef_zero.host = '0.0.0.0' }
  
         it 'knife raw /nodes/x should retrieve the role' do
