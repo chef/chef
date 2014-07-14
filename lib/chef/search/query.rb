@@ -38,10 +38,28 @@ class Chef
       # This search is only kept for backwards compatibility, since the results of the
       # new filtered search method will be in a slightly different format
       def partial_search(type, query='*:*', *args, &block)
-        results = search(type,query,args,&block)
+        # accept both types of args
+        if args.length == 1 && args[0].is_a?(Hash)
+          args_hash = args[0]
+          args_hash[:filter_result] = args_hash[:keys]
+        else
+          args_hash = {}
+          args_hash[:sort] = args[0] if args.length >= 1
+          args_hash[:start] = args[1] if args.length >= 2
+          args_hash[:rows] = args[2] if args.length >= 3
+        end
 
+        unless block.nil?
+          raw_results = search(type,query,args_hash)
+        else
+          raw_results = search(type,query,args,&block)
+        end
+        results = Array.new
+        raw_results[0].each do |r|
+          results << r
+        end
+        return results
       end
-
 
       #
       # New search input, designed to be backwards compatible with the old method signature
