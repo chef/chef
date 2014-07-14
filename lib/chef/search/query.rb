@@ -39,6 +39,7 @@ class Chef
       # new filtered search method will be in a slightly different format
       def partial_search(type, query='*:*', *args, &block)
         # accept both types of args
+        Chef::Log.warn("DEPRECATED: The 'partial_search' api is deprecated, please use the search api with 'filter_result'")
         if args.length == 1 && args[0].is_a?(Hash)
           args_hash = args[0]
           args_hash[:filter_result] = args_hash[:keys]
