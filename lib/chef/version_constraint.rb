@@ -50,11 +50,11 @@ class Chef
     end
 
     def inspect
-      "(#{@op} #{@version})"
+      "(#{to_s})"
     end
 
     def to_s
-      "#{@op} #{@version}"
+      "#{@op} #{@raw_version}"
     end
 
     def eql?(o)
