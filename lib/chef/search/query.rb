@@ -42,6 +42,8 @@ class Chef
         Chef::Log.warn("DEPRECATED: The 'partial_search' api is deprecated, please use the search api with 'filter_result'")
         if args.length == 1 && args[0].is_a?(Hash)
           args_hash = args[0]
+          # partial_search implemented in the partial search cookbook uses the
+          # arg hash :keys instead of :filter_result to filter returned data
           args_hash[:filter_result] = args_hash[:keys]
         else
           args_hash = {}
@@ -72,7 +74,7 @@ class Chef
       # {
       #   :returned_name1 => ["path", "to", "variable"],
       #   :returned_name2 => ["shorter", "path"]
-      # } 
+      # }
       # a real world example might be something like:
       # {
       #   :ip_address => ["ipaddress"],
@@ -81,7 +83,7 @@ class Chef
       #  this will bring back 2 variables 'ip_address' and 'ruby_version' with whatever value was found
       # an example of the returned json may be:
       # {"ip_address":"127.0.0.1", "ruby_version": "1.9.3"}
-      # 
+      #
       def search(type, query='*:*', *args, &block)
         raise ArgumentError, "Type must be a string or a symbol!" unless (type.kind_of?(String) || type.kind_of?(Symbol))
         raise ArgumentError, "Invalid number of arguments!" if (args.size > 3)
@@ -137,7 +139,7 @@ class Chef
         else
           [ response_rows, response["start"], response["total"] ]
         end
-      end 
+      end
 
       # create the full rest url string
       def create_query_string(type, query, args)
