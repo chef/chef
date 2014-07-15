@@ -30,7 +30,19 @@ end
 
 module FFI
   class Pointer
-    def read_wstring(num_wchars)
+    def read_wstring(num_wchars = nil)
+      if num_wchars.nil?
+        # Find the length of the string
+        length = 0
+        last_char = nil
+        while last_char != "\000\000" do
+          length += 1
+          last_char = self.get_bytes(0,length * 2)[-2..-1]
+        end
+
+        num_wchars = length
+      end
+
       Chef::ReservedNames::Win32::Unicode.wide_to_utf8(self.get_bytes(0, num_wchars*2))
     end
   end
