@@ -1,14 +1,13 @@
 GIT
   remote: git://github.com/opscode/omnibus-ruby.git
-  revision: 290a91bcdcb3fec2609560dad75206e66d873822
+  revision: ab7a856bc8dfc0022990c4d878840b2d5702647c
   branch: master
   specs:
-    omnibus (3.1.1)
+    omnibus (3.2.0.rc.1)
       chef-sugar (~> 1.2)
       fpm (~> 0.4)
-      mixlib-config (~> 2.1)
       mixlib-shellout (~> 1.4)
-      ohai (~> 6.12)
+      ohai (~> 7.2.0.rc)
       thor (~> 0.18)
       uber-s3
 
@@ -32,6 +31,9 @@ GEM
       ffi (~> 1.0, >= 1.0.11)
     clamp (0.6.3)
     ffi (1.9.3)
+    ffi-yajl (0.2.0)
+      ffi (~> 1.5)
+      libyajl2
     fpm (0.4.42)
       arr-pm (~> 0.0.8)
       backports (>= 2.6.2)
@@ -48,24 +50,28 @@ GEM
     http_parser.rb (0.5.3)
     ipaddress (0.8.0)
     json (1.8.1)
+    libyajl2 (0.1.17)
     mime-types (1.25.1)
     mixlib-cli (1.5.0)
     mixlib-config (2.1.0)
     mixlib-log (1.6.0)
     mixlib-shellout (1.4.0)
-    ohai (6.22.0)
+    ohai (7.2.0.rc.2)
+      ffi (~> 1.9)
+      ffi-yajl
       ipaddress
+      mime-types (~> 1.16)
       mixlib-cli
-      mixlib-config
+      mixlib-config (~> 2.0)
       mixlib-log
-      mixlib-shellout
-      systemu (~> 2.5.2)
-      yajl-ruby
-    systemu (2.5.2)
+      mixlib-shellout (~> 1.2)
+      systemu (~> 2.6.4)
+      wmi-lite (~> 1.0)
+    systemu (2.6.4)
     thor (0.19.1)
     uber-s3 (0.2.4)
       mime-types (~> 1.17)
-    yajl-ruby (1.2.1)
+    wmi-lite (1.0.0)
 
 PLATFORMS
   ruby
