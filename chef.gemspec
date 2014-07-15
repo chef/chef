@@ -19,7 +19,10 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-shellout", "~> 1.4"
   s.add_dependency "ohai", "= 7.2.0.rc.1"
 
-  s.add_dependency "rest-client", ">= 1.0.4", "< 1.7.0"
+  # Lock down rest-client to avoid pulling in rdoc and breaking Omnibus builds
+  # on Solaris. See the original issue for more details:
+  # https://github.com/opscode/chef/issues/1211
+  s.add_dependency "rest-client", ">= 1.0.4", "<= 1.6.7"
   # rest-client has an unbounded dependency on mime-types.
   # mime-types 2.0 removes support for ruby 1.8.7 (gemspec requires ruby
   # 1.9.2+), so we have to add an additional pin. 1.16 is chosen just becuase
