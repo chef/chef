@@ -23,6 +23,50 @@ describe Chef::Search::Query do
   let(:rest) { double("Chef::REST") }
   let(:query) { Chef::Search::Query.new }
 
+  shared_context "filtered search" do
+    let(:query_string) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=1000" }
+    let(:server_url) { "https://api.opscode.com/organizations/opscode/nodes" }
+    let(:args) { { filter_key => filter_hash } }
+    let(:filter_hash) {
+      {
+        'env' => [ 'chef_environment' ],
+        'ruby_plat' => [ 'languages', 'ruby', 'platform' ]
+      }
+    }
+    let(:response) {
+      {
+        "rows" => [
+          { "url" => "#{server_url}/my-name-is-node",
+            "data" => {
+              "env" => "elysium",
+              "ruby_plat" => "nudibranch"
+            }
+          },
+          { "url" => "#{server_url}/my-name-is-jonas",
+            "data" => {
+              "env" => "hades",
+              "ruby_plat" => "i386-mingw32"
+            }
+          },
+          { "url" => "#{server_url}/my-name-is-flipper",
+            "data" => {
+              "env" => "elysium",
+              "ruby_plat" => "centos"
+            }
+          },
+          { "url" => "#{server_url}/my-name-is-butters",
+            "data" => {
+              "env" => "moon",
+              "ruby_plat" => "solaris2",
+            }
+          }
+        ],
+        "start" => 0,
+        "total" => 4
+      }
+    }
+  end
+
   before(:each) do
     Chef::REST.stub(:new).and_return(rest)
     rest.stub(:get_rest).and_return(response)
@@ -143,57 +187,66 @@ describe Chef::Search::Query do
     end
 
     context "when :filter_result is provided as a result" do
-      let(:server_url) { "https://api.opscode.com/organizations/opscode/nodes"}
-      let(:response) { {
-        "rows" => [
-          { "url" => "#{server_url}/my-name-is-node",
-            "data" => {
-              "env" => "elysium",
-              "ruby_plat" => "nudibranch"
-            }
-          },
-          { "url" => "#{server_url}/my-name-is-jonas",
-            "data" => {
-              "env" => "hades",
-              "ruby_plat" => "i386-mingw32"
-            }
-          },
-          { "url" => "#{server_url}/my-name-is-flipper",
-            "data" => {
-              "env" => "elysium",
-              "ruby_plat" => "centos"
-            }
-          },
-          { "url" => "#{server_url}/my-name-is-butters",
-            "data" => {
-              "env" => "moon",
-              "ruby_plat" => "solaris2",
-            }
-          }
-        ],
-        "start" => 0,
-        "total" => 4
-      } }
+      include_context "filtered search" do
+        let(:filter_key) { :filter_result }
 
-      it "should return only the filtered data" do
-        args = {
-          :filter_result => {
-            'env' => ['chef_environment'],
-            'ruby_plat' => ['languages', 'ruby', 'platform']
-          }
-        }
+        before(:each) do
+          rest.should_receive(:post_rest).with(query_string, args[filter_key]).and_return(response)
+        end
 
-        rest.should_receive(:post_rest).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=1000", args[:filter_result]).and_return(response)
-        results, start, total = query.search(:node, "platform:rhel", args)
+        it "should return start" do
+          start = query.search(:node, "platform:rhel", args)[1]
+          start.should == response['start']
+        end
+
+        it "should return total" do
+          total = query.search(:node, "platform:rhel", args)[2]
+          total.should == response['total']
+        end
+
+        it "should return rows with the filter applied" do
+          results = query.search(:node, "platform:rhel", args)[0]
+
+          results.each_with_index do |result, idx|
+            expected = response["rows"][idx]
+
+            result.should have_key("url")
+            result["url"].should == expected["url"]
+
+            result.should have_key("data")
+            filter_hash.keys.each do |filter_key|
+              result["data"].should have_key(filter_key)
+              result["data"][filter_key].should == expected["data"][filter_key]
+            end
+          end
+        end
+
+      end
+    end
+  end
+
+  describe "#partial_search" do
+    include_context "filtered search" do
+      let(:filter_key) { :keys }
+
+      it "should emit a deprecation warning" do
+        # partial_search calls search, so we'll stub search to return empty
+        query.stub(:search).and_return( [ [], 0, 0 ] )
+        Chef::Log.should_receive(:warn).with("DEPRECATED: The 'partial_search' api is deprecated, please use the search api with 'filter_result'")
+        query.partial_search(:node, "platform:rhel", args)
+      end
+
+      it "should return an array of filtered hashes" do
+        rest.should_receive(:post_rest).with(query_string, args[filter_key]).and_return(response)
+        results = query.partial_search(:node, "platform:rhel", args)
 
         results.each_with_index do |result, idx|
           expected = response["rows"][idx]
 
-          result.should have_key('env')
-          result['env'].should == expected['data']['env']
-
-          result.should have_key('ruby_plat')
-          result['ruby_plat'].should == expected['data']['ruby_plat']
+          filter_hash.keys.each do |filter_key|
+            result.should have_key(filter_key)
+            result[filter_key].should == expected["data"][filter_key]
+          end
         end
       end
     end

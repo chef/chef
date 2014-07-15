@@ -38,10 +38,10 @@ class Chef
       # This search is only kept for backwards compatibility, since the results of the
       # new filtered search method will be in a slightly different format
       def partial_search(type, query='*:*', *args, &block)
-        # accept both types of args
         Chef::Log.warn("DEPRECATED: The 'partial_search' api is deprecated, please use the search api with 'filter_result'")
+        # accept both types of args
         if args.length == 1 && args[0].is_a?(Hash)
-          args_hash = args[0]
+          args_hash = args[0].dup
           # partial_search implemented in the partial search cookbook uses the
           # arg hash :keys instead of :filter_result to filter returned data
           args_hash[:filter_result] = args_hash[:keys]
@@ -55,11 +55,11 @@ class Chef
         unless block.nil?
           raw_results = search(type,query,args_hash)
         else
-          raw_results = search(type,query,args,&block)
+          raw_results = search(type,query,args_hash,&block)
         end
         results = Array.new
         raw_results[0].each do |r|
-          results << r
+          results << r["data"]
         end
         return results
       end
@@ -123,21 +123,15 @@ class Chef
 
         query_string = create_query_string(type, query, args)
         response = call_rest_service(query_string, args)
-        if !args.nil? && args.key?(:filter_result)
-          response_rows = response['rows'].map { |row| row['data'] }
-        else
-          response_rows = response['rows']
-        end
-
         unless block.nil?
-          response_rows.each { |rowset| block.call(rowset) unless rowset.nil?}
-          unless (response["start"] + response_rows.length) >= response["total"]
+          response["rows"].each { |rowset| block.call(rowset) unless rowset.nil?}
+          unless (response["start"] + response["rows"].length) >= response["total"]
             args[:start] = response["start"] + args[:rows]
             do_search(type, query, args, &block)
           end
           true
         else
-          [ response_rows, response["start"], response["total"] ]
+          [ response["rows"], response["start"], response["total"] ]
         end
       end
 
