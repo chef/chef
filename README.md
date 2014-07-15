@@ -4,7 +4,7 @@ Want to try Chef? Get started with [learnchef](https://learnchef.opscode.com)
 
 * Documentation: [http://docs.opscode.com](http://docs.opscode.com)
 * Source: [http://github.com/opscode/chef/tree/master](http://github.com/opscode/chef/tree/master)
-* Tickets/Issues: [http://tickets.opscode.com](http://tickets.opscode.com)
+* Tickets/Issues: [https://github.com/opscode/chef/issues](https://github.com/opscode/chef/issues)
 * IRC: `#chef` and `#chef-hacking` on Freenode
 * Mailing list: [http://lists.opscode.com](http://lists.opscode.com)
 
