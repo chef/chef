@@ -92,19 +92,32 @@ class Chef
       # Sets the default action
       def self.default_action(action_name=NULL_ARG)
         unless action_name.equal?(NULL_ARG)
-          valid_actions.push(action_name)
-          @default_action = action_name
+          action = action_name.to_sym
+          actions.push(action) unless actions.include?(action)
+          @default_action = action
         end
-        @default_action
+
+        @default_action ||= from_superclass(:default_action)
       end
 
       # Adds +action_names+ to the list of valid actions for this resource.
       def self.actions(*action_names)
-        valid_actions.push(*action_names)
+        if action_names.empty?
+          defined?(@actions) ? @actions : from_superclass(:actions, []).dup
+        else
+          # BC-compat way for checking if actions have already been defined
+          if defined?(@actions)
+            @actions.push(*action_names)
+          else
+            @actions = action_names
+          end
+        end
       end
 
-      def self.valid_actions
-        @valid_actions ||= []
+      # @deprecated
+      def self.valid_actions(*args)
+        Chef::Log.warn("`valid_actions' is deprecated, please use actions `instead'!")
+        actions(*args)
       end
 
       # Set the run context on the class. Used to provide access to the node
@@ -121,6 +134,21 @@ class Chef
         run_context.node
       end
 
+      def self.lazy(&block)
+        DelayedEvaluator.new(&block)
+      end
+
+      private
+
+      # Get the value from the superclass, if it responds, otherwise return
+      # +nil+. Since class instance variables are **not** inherited upon
+      # subclassing, this is a required check to ensure Chef pulls the
+      # +default_action+ and other DSL-y methods when extending LWRP::Base.
+      def self.from_superclass(m, default = nil)
+        return default if superclass == Chef::Resource::LWRPBase
+        superclass.respond_to?(m) ? superclass.send(m) : default
+      end
+
       # Default initializer. Sets the default action and allowed actions.
       def initialize(name, run_context=nil)
         super(name, run_context)
@@ -133,7 +161,7 @@ class Chef
 
         @resource_name = self.class.resource_name.to_sym
         @action = self.class.default_action
-        allowed_actions.push(self.class.valid_actions).flatten!
+        allowed_actions.push(self.class.actions).flatten!
       end
 
     end

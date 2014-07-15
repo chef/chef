@@ -158,6 +158,87 @@ describe "LWRP" do
           }.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
         end
       end
+
+      context "lazy default values" do
+        let(:klass) do
+          Class.new(Chef::Resource::LWRPBase) do
+            self.resource_name = :sample_resource
+            attribute :food,  :default => lazy { 'BACON!'*3 }
+            attribute :drink, :default => lazy { |r| "Drink after #{r.food}!"}
+          end
+        end
+
+        let(:instance) { klass.new('kitchen') }
+
+        it "evaluates the default value when requested" do
+          expect(instance.food).to eq('BACON!BACON!BACON!')
+        end
+
+        it "evaluates yields self to the block" do
+          expect(instance.drink).to eq('Drink after BACON!BACON!BACON!!')
+        end
+      end
+    end
+
+    describe "when inheriting from LWRPBase" do
+      let(:parent) do
+        Class.new(Chef::Resource::LWRPBase) do
+          actions :eat, :sleep
+          default_action :eat
+        end
+      end
+
+      context "when the child does not defined the methods" do
+        let(:child) do
+          Class.new(parent)
+        end
+
+        it "delegates #actions to the parent" do
+          expect(child.actions).to eq([:eat, :sleep])
+        end
+
+        it "delegates #default_action to the parent" do
+          expect(child.default_action).to eq(:eat)
+        end
+      end
+
+      context "when the child does define the methods" do
+        let(:child) do
+          Class.new(parent) do
+            actions :dont_eat, :dont_sleep
+            default_action :dont_eat
+          end
+        end
+
+        it "does not delegate #actions to the parent" do
+          expect(child.actions).to eq([:dont_eat, :dont_sleep])
+        end
+
+        it "does not delegate #default_action to the parent" do
+          expect(child.default_action).to eq(:dont_eat)
+        end
+      end
+
+      context "when actions are already defined" do
+        let(:child) do
+          Class.new(parent) do
+            actions :eat
+            actions :sleep
+            actions :drink
+          end
+        end
+
+        def raise_if_deprecated!
+          if Chef::VERSION.split('.').first.to_i > 11
+            raise "This test should be removed and the associated code should be removed!"
+          end
+        end
+
+        it "ammends actions when they are already defined" do
+          raise_if_deprecated!
+          expect(child.actions).to eq([:eat, :sleep, :drink])
+        end
+      end
     end
 
   end

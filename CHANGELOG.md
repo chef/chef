@@ -1,6 +1,9 @@
 # Chef Client Changelog
 
 ## Unreleased:
+* [**Vasiliy Tolstov**](https://github.com/vtolstov):
+  Reload systemd service only if it's running, otherwise start.
+
 * Add method shell_out_with_systems_locale to ShellOut.
 * Fix knife cookbook site share on windows (CHEF-4994)
 

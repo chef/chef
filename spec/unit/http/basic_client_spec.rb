@@ -38,5 +38,39 @@ describe "HTTP Connection" do
       subject.build_http_client.open_timeout.should_not be_nil
     end
   end
-end
 
+  describe "#proxy_uri" do
+    shared_examples_for "a proxy uri" do
+      let(:proxy_host) { "proxy.mycorp.com" }
+      let(:proxy_port) { 8080 }
+      let(:proxy) { "#{proxy_prefix}#{proxy_host}:#{proxy_port}" }
+
+      before do
+        Chef::Config["#{uri.scheme}_proxy"] = proxy
+        Chef::Config[:no_proxy] = nil
+      end
+
+      it "should contain the host" do
+        proxy_uri = subject.proxy_uri
+        proxy_uri.host.should == proxy_host
+      end
+
+      it "should contain the port" do
+        proxy_uri = subject.proxy_uri
+        proxy_uri.port.should == proxy_port
+      end
+    end
+
+    context "when the config setting is normalized (does not contain the scheme)" do
+      include_examples "a proxy uri" do
+        let(:proxy_prefix) { "" }
+      end
+    end
+
+    context "when the config setting is not normalized (contains the scheme)" do
+      include_examples "a proxy uri" do
+        let(:proxy_prefix) { "#{uri.scheme}://" }
+      end
+    end
+  end
+end
