@@ -89,11 +89,30 @@ class Chef
       end
 
       def action_create
+        # current_resource is the symlink that currently exists
+        # new_resource is the symlink we need to create
+        #   to - the location to link to
+        #   target_file - the name of the link
+
         if @current_resource.to != canonicalize(@new_resource.to) ||
            @current_resource.link_type != @new_resource.link_type
-          if @current_resource.to # nil if target_file does not exist
-            converge_by("unlink existing file at #{@new_resource.target_file}") do
-              ::File.unlink(@new_resource.target_file)
+          # Handle the case where the symlink already exists and is pointing at a valid to_file
+          if @current_resource.to
+            # On Windows, to fix a symlink already pointing at a directory we must first
+            # ::Dir.unlink the symlink (not the directory), while if we have a symlink
+            # pointing at file we must use ::File.unlink on the symlink.
+            # However if the new symlink will point to a file and the current symlink is pointing at a
+            # directory we want to throw an exception and calling ::File.unlink on the directory symlink
+            # will throw the correct ones.
+            if Chef::Platform.windows? && ::File.directory?(@new_resource.to) &&
+               ::File.directory?(@current_resource.target_file)
+              converge_by("unlink existing windows symlink to dir at #{@new_resource.target_file}") do
+                ::Dir.unlink(@new_resource.target_file)
+              end
+            else
+              converge_by("unlink existing symlink to file at #{@new_resource.target_file}") do
+                ::File.unlink(@new_resource.target_file)
+              end
             end
           end
           if @new_resource.link_type == :symbolic

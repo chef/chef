@@ -9,6 +9,8 @@
 
 ## Last Release: 11.14.0
 
+* [**Jess Mink**](https://github.com/jmink):
+  Symlinks to directories should be swingable on windows (CHEF-3960)
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
 * [**Pierre Ynard**](https://github.com/linkfanel):
