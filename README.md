@@ -18,14 +18,14 @@ $ bundle install --binstubs
 
 ### Build
 
-You create a platform-specific package using the `build project` command:
+You create a platform-specific package using the `build` command:
 
 ```shell
 $ bin/omnibus build chef
 ```
 
 The platform/architecture type of the package created will match the platform
-where the `build project` command is invoked. So running this command on say a
+where the `build` command is invoked. So running this command on say a
 MacBook Pro will generate a Mac OS X specific package. After the build
 completes packages will be available in `pkg/`.
 
