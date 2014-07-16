@@ -80,6 +80,18 @@ describe Chef::Provider::Package::Rpm do
       @provider.stub!(:popen4).and_return(status)
       lambda { @provider.run_action(:any) }.should raise_error(Chef::Exceptions::Package)
     end
+
+    it "should not detect the package name as version when not installed" do
+      @status = double("Status", :exitstatus => -1)
+      @stdout = StringIO.new("package openssh-askpass is not installed")
+      @new_resource = Chef::Resource::Package.new("openssh-askpass")
+      @new_resource.source 'openssh-askpass'
+      @provider = Chef::Provider::Package::Rpm.new(@new_resource, @run_context)
+      @provider.should_receive(:popen4).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' openssh-askpass").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @provider.should_receive(:popen4).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' openssh-askpass").and_return(@status)
+      @provider.load_current_resource
+      @provider.current_resource.version.should be_nil
+    end
   end
   
   describe "after the current resource is loaded" do
