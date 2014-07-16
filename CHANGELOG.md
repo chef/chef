@@ -6,6 +6,8 @@
 
 * Add method shell_out_with_systems_locale to ShellOut.
 * Fix knife cookbook site share on windows (CHEF-4994)
+* chef-repo rake tasks are deprecated; print relevant information for
+  each one.
 
 ## Last Release: 11.14.0
 
