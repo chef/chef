@@ -11,7 +11,7 @@ We utilize **Github Issues** for issue tracking and contributions. You can contr
 
 We have a 3 step process that utilizes **Github Issues**:
 
-1. [Sign](https://supermarket.getchef.com/become-a-contributor) the Individual Contributor License Agreement (CLA) or ask your company's Corporate Contributor License Agreemeent administrator to add you to the Corporate CLA.
+1. Sign or be added to an existing [Contributor License Agreement (CLA)](https://supermarket.getchef.com/become-a-contributor).
 2. Create a Github Pull Request.
 3. Do [Code Review](#cr) with the **Chef Engineering Team** or **Chef Core Committers** on the pull request.
 
