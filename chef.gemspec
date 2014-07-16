@@ -9,8 +9,8 @@ Gem::Specification.new do |s|
   s.summary = "A systems integration framework, built to bring the benefits of configuration management to your entire infrastructure."
   s.description = s.summary
   s.author = "Adam Jacob"
-  s.email = "adam@opscode.com"
-  s.homepage = "http://wiki.opscode.com/display/chef"
+  s.email = "adam@getchef.com"
+  s.homepage = "http://www.getchef.com"
 
   s.add_dependency "mixlib-config", "~> 2.0"
   s.add_dependency "mixlib-cli", "~> 1.4"
