@@ -115,7 +115,7 @@ module Mixlib
         # If the child dies very quickly, @child_pid may be a zombie, so handle
         # ESRCH here.
         @child_pgid = -Process.getpgid(@child_pid)
-      rescue Errno::ESRCH
+      rescue Errno::ESRCH, Errno::EPERM
         @child_pgid = nil
       end
 
