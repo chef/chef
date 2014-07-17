@@ -33,7 +33,7 @@ class Chef
 
       def shell_out(*command_args)
         cmd = Mixlib::ShellOut.new(*run_command_compatible_options(command_args))
-        cmd.live_stream = io_for_live_stream
+        cmd.live_stream ||= io_for_live_stream
         cmd.run_command
         cmd
       end
