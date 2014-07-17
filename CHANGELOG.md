@@ -1,12 +1,14 @@
 # Chef Client 10.x Changelog
 
-## Unreleased
+## 10.34.0
 
 * `options` attribute of mount resource now supports lazy evaluation. (CHEF-5163)
 * Fix OS X service provider actions that don't require the service label
   to work when there is no plist. (backport CHEF-5223)
 * Set Net::HTTP open_timeout. (backport Chef-1585)
 * Fix RPM package version detection (backport Issue 1554)
+* Support for single letter environments.
+*
 
 ## 10.32.2
 
@@ -18,7 +20,8 @@
   SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   bump up upper limit on json gem to 1.8.1 (CHEF-4632)
-
+* [**Ryan Cragun**](https://github.com/ryancragun):
+  Don't detect package name as version when the RPM isn't installed.
 
 * pin sdoc to 0.3.0 due to solaris packaging issues.
 
