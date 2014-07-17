@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 gemspec :name => "chef"
 
-gem 'rest-client', :github => 'opscode/rest-client'
+gem 'rest-client', :github => 'opscode/rest-client', :branch => 'lcg/1.6.7-version-lying'
 gem 'chef-pedant', :github => 'opscode/chef-pedant', :ref => '4744d7f318b629ff60a0d22cf02296df36936397'
 
 # TODO figure out how to grab this stuff from the main Gemfile
