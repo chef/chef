@@ -22,7 +22,6 @@ dependency "libyaml-windows"
 dependency "openssl-windows"
 dependency "ruby-windows-devkit"
 dependency "bundler"
-dependency "ffi-yajl"
 dependency "cacerts"
 
 default_version "master"
