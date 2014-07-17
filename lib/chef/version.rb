@@ -17,7 +17,15 @@
 
 class Chef
   CHEF_ROOT = File.dirname(File.expand_path(File.dirname(__FILE__)))
-  VERSION = '11.16.0.alpha.0'
+  VERSION = '12.0.0.alpha.0'
 end
 
+#
 # NOTE: the Chef::Version class is defined in version_class.rb
+#
+# NOTE: to further confuse things, *NEVER* use the Chef::Version class
+#       on a Chef::VERSION -- the class only applies to cookbook versions which
+#       only have "X.Y.Z" versions with no alpha/rc/prerelease tags.  A
+#       simple Chef::VERSION.to_f coercion will likely work better, or else
+#       you need to coerce the Chef::VERSION into exactly "X.Y.Z" yourself.
+#
