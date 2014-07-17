@@ -1,5 +1,11 @@
 # Chef Client Release Notes:
 
+## Removed Rest-Client dependency
+
+- cookbooks that previously were able to use rest-client directly will now need to install it via `chef_gem "rest-client"`.
+- cookbooks that were broken because of the version of rest-client that chef used will now be able to track and install whatever
+  version that they depend on.
+
 ## Chef local mode port ranges
 
 - to avoid crashes, by default, Chef will now scan a port range and take the first available port from 8889-9999.
