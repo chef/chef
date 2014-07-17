@@ -278,7 +278,7 @@ module Mixlib
       def read_stdout_to_buffer
         while chunk = child_stdout.read_nonblock(READ_SIZE)
           @stdout << chunk
-          @live_stream << chunk if @live_stream
+          @live_stdout << chunk if @live_stdout
         end
       rescue Errno::EAGAIN
       rescue EOFError
@@ -288,7 +288,7 @@ module Mixlib
       def read_stderr_to_buffer
         while chunk = child_stderr.read_nonblock(READ_SIZE)
           @stderr << chunk
-          live_stderr_stream << chunk if live_stderr_stream
+          @live_stderr << chunk if @live_stderr
         end
       rescue Errno::EAGAIN
       rescue EOFError

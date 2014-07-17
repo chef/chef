@@ -191,16 +191,20 @@ describe Mixlib::ShellOut do
           shell_cmd.live_stream = stream
         end
 
-        it "should set the live stream" do
+        it "live stream should return the stream used for live stdout and live stderr" do
           shell_cmd.live_stream.should eql(stream)
         end
 
+        it "should set the live stdout stream" do
+          shell_cmd.live_stderr.should eql(stream)
+        end
+
         it "should set the live stderr stream" do
-          shell_cmd.live_stderr_stream.should eql(stream)
+          shell_cmd.live_stderr.should eql(stream)
         end
       end
 
-      context 'when setting a live stream and live stderr stream separately' do
+      context 'when setting the live stdout and live stderr streams separately' do
         let(:accessor) { :live_stream }
         let(:stream) { StringIO.new }
         let(:value) { stream }
@@ -208,35 +212,43 @@ describe Mixlib::ShellOut do
         let(:stderr_stream) { StringIO.new }
 
         before(:each) do
-          shell_cmd.live_stream = stdout_stream
-          shell_cmd.live_stderr_stream = stderr_stream
+          shell_cmd.live_stdout = stdout_stream
+          shell_cmd.live_stderr = stderr_stream
         end
 
-        it "should set the live stream" do
-          shell_cmd.live_stream.should eql(stdout_stream)
+        it "live_stream should return nil" do
+          shell_cmd.live_stream.should be_nil
         end
 
-        it "should set the live stream" do
-          shell_cmd.live_stderr_stream.should eql(stderr_stream)
+        it "should set the live stdout" do
+          shell_cmd.live_stdout.should eql(stdout_stream)
+        end
+
+        it "should set the live stderr" do
+          shell_cmd.live_stderr.should eql(stderr_stream)
         end
       end
 
-      context 'when setting a live stream and explicitly disabling live stderr stream' do
+      context 'when setting a live stream and then overriding the live stderr' do
         let(:accessor) { :live_stream }
         let(:value) { stream }
         let(:stream) { StringIO.new }
 
         before(:each) do
-          shell_cmd.live_stream = stream
-          shell_cmd.live_stderr_stream = nil
+          shell_cmd.live_stdout = stream
+          shell_cmd.live_stderr = nil
         end
 
-        it "should set the live stream" do
-          shell_cmd.live_stream.should eql(stream)
+        it "should return nil" do
+          should be_nil
         end
 
-        it "should set the live stderr stream" do
-          shell_cmd.live_stderr_stream.should eql(nil)
+        it "should set the live stdout" do
+          shell_cmd.live_stdout.should eql(stream)
+        end
+
+        it "should set the live stderr" do
+          shell_cmd.live_stderr.should eql(nil)
         end
       end
 
@@ -505,32 +517,32 @@ describe Mixlib::ShellOut do
         stream.string.should include("hello#{LINE_ENDING}")
       end
 
-      context "with default stderr stream" do
+      context "with default live stderr" do
         it "should copy the child's stderr to the live stream" do
           shell_cmd.run_command
           stream.string.should include("world#{LINE_ENDING}")
         end
       end
 
-      context "without an stderr stream" do
+      context "without live stderr" do
         it "should not copy the child's stderr to the live stream" do
-          shell_cmd.live_stderr_stream = nil
+          shell_cmd.live_stderr = nil
           shell_cmd.run_command
           stream.string.should_not include("world#{LINE_ENDING}")
         end
       end
 
-      context "with a separate stderr stream" do
+      context "with a separate live stderr" do
         let(:stderr_stream) { StringIO.new }
 
         it "should not copy the child's stderr to the live stream" do
-          shell_cmd.live_stderr_stream = stderr_stream
+          shell_cmd.live_stderr = stderr_stream
           shell_cmd.run_command
           stream.string.should_not include("world#{LINE_ENDING}")
         end
 
         it "should copy the child's stderr to the live stderr stream" do
-          shell_cmd.live_stderr_stream = stderr_stream
+          shell_cmd.live_stderr = stderr_stream
           shell_cmd.run_command
           stderr_stream.string.should include("world#{LINE_ENDING}")
         end
