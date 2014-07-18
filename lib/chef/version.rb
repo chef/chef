@@ -23,9 +23,8 @@ end
 #
 # NOTE: the Chef::Version class is defined in version_class.rb
 #
-# NOTE: to further confuse things, *NEVER* use the Chef::Version class
-#       on a Chef::VERSION -- the class only applies to cookbook versions which
-#       only have "X.Y.Z" versions with no alpha/rc/prerelease tags.  A
-#       simple Chef::VERSION.to_f coercion will likely work better, or else
-#       you need to coerce the Chef::VERSION into exactly "X.Y.Z" yourself.
+# NOTE: DO NOT Use the Chef::Version class on Chef::VERSIONs.  The
+#       Chef::Version class is for _cookbooks_ only, and cannot handle
+#       pre-release chef-client versions like "10.14.0.rc.2".  Please
+#       use Rubygem's Gem::Version class instead.
 #
