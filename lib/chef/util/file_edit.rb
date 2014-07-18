@@ -76,6 +76,12 @@ class Chef
         @changes = (editor.append_line_if_missing(regex, newline) > 0) || @changes
       end
 
+      #search the file line by line and match each line with the given regex
+      #if not matched, insert newline at the beginning of the file
+      def prepend_line_if_no_match(regex, newline)
+        @changes = (editor.prepend_line_if_missing(regex, newline) > 0) || @changes
+      end
+
       def unwritten_changes?
         !!@changes
       end
