@@ -48,7 +48,7 @@ describe Chef::Util::Editor do
     context 'when there is no match' do
       subject(:execute) { editor.append_line_if_missing('missing', 'new') }
 
-      it('returns the number of added lines') { should be == 1 }
+      it('returns that it added one line') { should be == 1 }
       it 'adds a line to the end' do
         execute
         expect(editor.lines).to be == ['one', 'two', 'two', 'three', 'new']
@@ -67,6 +67,32 @@ describe Chef::Util::Editor do
     it 'matches a Regexp' do
       expect(editor.append_line_if_missing(/ee$/, 'new')).to be == 0
       expect(editor.append_line_if_missing(/^ee/, 'new')).to be == 1
+    end
+  end
+
+  describe '#prepend_line_if_missing' do
+    context 'when there is no match' do
+      subject(:execute) { editor.prepend_line_if_missing('missing', 'new') }
+
+      it('returns that it added one line') { should be == 1 }
+      it 'adds a line at the beginning' do
+        execute 
+        expect(editor.lines).to be == ['new', 'one', 'two', 'two', 'three']
+      end
+    end
+
+    context 'when there is a match' do
+      subject(:execute) { editor.prepend_line_if_missing('two', 'new') }
+
+      it('returns the number of lines') { should be == 0 }
+      it 'does not add any lines' do
+        expect { execute }.to_not change { editor.lines }
+      end
+    end
+
+    it 'matches a Regexp' do
+      expect(editor.prepend_line_if_missing(/ee$/, 'new')).to be == 0
+      expect(editor.prepend_line_if_missing(/^ee/, 'new')).to be == 1
     end
   end
 

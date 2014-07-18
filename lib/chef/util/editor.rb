@@ -37,14 +37,15 @@ class Chef
       end
 
       def append_line_if_missing(search, line_to_append)
-        count = 0
-
-        unless @lines.find { |line| line.match(search) }
-          count = 1
+        when_missing_line(search) do
           @lines << line_to_append
         end
+      end
 
-        count
+      def prepend_line_if_missing(search, line_to_prepend)
+        when_missing_line(search) do
+          @lines.unshift line_to_prepend
+        end
       end
 
       def remove_lines(search)
@@ -86,6 +87,22 @@ class Chef
 
         count
       end
+
+      private
+
+      def when_missing_line(line, &block)
+        count = 0 
+        if missing_line?(line)
+          count = 1
+          block.call
+        end
+        count
+      end
+
+      def missing_line?(searched_line)
+        ! @lines.find { |line| line.match(searched_line) }
+      end
+      
     end
   end
 end
