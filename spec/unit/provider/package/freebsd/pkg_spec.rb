@@ -147,6 +147,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
     end
 
     it "should use the package_name as the port path when it starts with /" do
+      ::File.stub(:exist?).with('/usr/ports/www/wordpress').and_return(true)
       new_resource = Chef::Resource::Package.new("/usr/ports/www/wordpress")
       provider = Chef::Provider::Package::Freebsd::Pkg.new(new_resource, @run_context)
       provider.should_not_receive(:popen4)
@@ -157,6 +158,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
       # @new_resource = double( "Chef::Resource::Package",
       #                       :package_name => "www/wordpress",
       #                       :cookbook_name => "xenoparadox")
+      ::File.stub(:exist?).with('www/wordpress').and_return(true)
       new_resource = Chef::Resource::Package.new("www/wordpress")
       provider = Chef::Provider::Package::Freebsd::Pkg.new(new_resource, @run_context)
       provider.should_not_receive(:popen4)

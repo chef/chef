@@ -461,9 +461,9 @@ class Chef
       end
 
       def save_release_state
-        if ::File.exists?(@new_resource.current_path)
+        if ::File.exist?(@new_resource.current_path)
           release = ::File.readlink(@new_resource.current_path)
-          @previous_release_path = release if ::File.exists?(release)
+          @previous_release_path = release if ::File.exist?(release)
         end
       end
 

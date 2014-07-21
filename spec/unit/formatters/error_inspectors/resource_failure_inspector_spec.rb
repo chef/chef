@@ -116,10 +116,10 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         # fake code to run through #recipe_snippet
         source_file = [ "if true", "var = non_existant", "end" ]
         IO.stub(:readlines).and_return(source_file)
-        File.stub(:exists?).and_return(true)
       end
 
       it "parses a Windows path" do
+        File.stub(:exist?).and_return(true)
         source_line = "C:/Users/btm/chef/chef/spec/unit/fake_file.rb:2: undefined local variable or method `non_existant' for main:Object (NameError)"
         @resource.source_line = source_line
         @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
@@ -127,6 +127,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
       end
 
       it "parses a unix path" do
+        File.stub(:exist?).and_return(true)
         source_line = "/home/btm/src/chef/chef/spec/unit/fake_file.rb:2: undefined local variable or method `non_existant' for main:Object (NameError)"
         @resource.source_line = source_line
         @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
@@ -135,7 +136,6 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
 
       context "when the recipe file does not exist" do
         before do
-          File.stub(:exists?).and_return(false)
           IO.stub(:readlines).and_raise(Errno::ENOENT)
         end
 

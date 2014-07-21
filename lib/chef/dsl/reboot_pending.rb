@@ -51,7 +51,7 @@ class Chef
                 [1,2,3].include?(registry_get_values('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').select { |v| v[:name] == "Flags" }[0][:data]))
         elsif platform?("ubuntu")
           # This should work for Debian as well if update-notifier-common happens to be installed. We need an API for that.
-          File.exists?('/var/run/reboot-required')
+          File.exist?('/var/run/reboot-required')
         else
           raise Chef::Exceptions::UnsupportedPlatform.new(node[:platform])
         end

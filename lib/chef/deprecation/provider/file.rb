@@ -51,10 +51,10 @@ class Chef
           suppress_resource_reporting = false
 
           return [ "(diff output suppressed by config)" ] if Chef::Config[:diff_disabled]
-          return [ "(no temp file with new content, diff output suppressed)" ] unless ::File.exists?(temp_path)  # should never happen?
+          return [ "(no temp file with new content, diff output suppressed)" ] unless ::File.exist?(temp_path)  # should never happen?
 
           # solaris does not support diff -N, so create tempfile to diff against if we are creating a new file
-          target_path = if ::File.exists?(@current_resource.path)
+          target_path = if ::File.exist?(@current_resource.path)
                           @current_resource.path
                         else
                           suppress_resource_reporting = true  # suppress big diffs going to resource reporting service
@@ -117,7 +117,7 @@ class Chef
             description << "update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(new_resource_content_checksum)}"
             description << diff_current_from_content(@new_resource.content)
             converge_by(description) do
-              backup @new_resource.path if ::File.exists?(@new_resource.path)
+              backup @new_resource.path if ::File.exist?(@new_resource.path)
               ::File.open(@new_resource.path, "w") {|f| f.write @new_resource.content }
               Chef::Log.info("#{@new_resource} contents updated")
             end

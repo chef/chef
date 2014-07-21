@@ -122,7 +122,7 @@ Include = /etc/pacman.d/mirrorlist
 Include = /etc/pacman.d/mirrorlist
 PACMAN_CONF
 
-      ::File.stub(:exists?).with("/etc/pacman.conf").and_return(true)
+      ::File.stub(:exist?).with("/etc/pacman.conf").and_return(true)
       ::File.stub(:read).with("/etc/pacman.conf").and_return(@pacman_conf)
       @stdout.stub(:each).and_yield("customrepo/nano 1.2.3-4").
                             and_yield("    My custom package")

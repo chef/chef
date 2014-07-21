@@ -390,9 +390,9 @@ describe Chef::Provider::Package::Rubygems do
     platform_mock :unix do
       RbConfig::CONFIG.stub(:[]).with('bindir').and_return("/opt/chef/embedded/bin")
       ENV.stub(:[]).with('PATH').and_return("/usr/bin:/usr/sbin:/opt/chef/embedded/bin")
-      File.stub(:exists?).with('/usr/bin/gem').and_return(false)
-      File.stub(:exists?).with('/usr/sbin/gem').and_return(true)
-      File.stub(:exists?).with('/opt/chef/embedded/bin/gem').and_return(true) # should not get here
+      File.stub(:exist?).with('/usr/bin/gem').and_return(false)
+      File.stub(:exist?).with('/usr/sbin/gem').and_return(true)
+      File.stub(:exist?).with('/opt/chef/embedded/bin/gem').and_return(true) # should not get here
       provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
       provider.gem_env.gem_binary_location.should == '/usr/sbin/gem'
     end
@@ -402,11 +402,11 @@ describe Chef::Provider::Package::Rubygems do
     platform_mock :windows do
       RbConfig::CONFIG.stub(:[]).with('bindir').and_return("d:/opscode/chef/embedded/bin")
       ENV.stub(:[]).with('PATH').and_return('C:\windows\system32;C:\windows;C:\Ruby186\bin;d:\opscode\chef\embedded\bin')
-      File.stub(:exists?).with('C:\\windows\\system32\\gem').and_return(false)
-      File.stub(:exists?).with('C:\\windows\\gem').and_return(false)
-      File.stub(:exists?).with('C:\\Ruby186\\bin\\gem').and_return(true)
-      File.stub(:exists?).with('d:\\opscode\\chef\\bin\\gem').and_return(false) # should not get here
-      File.stub(:exists?).with('d:\\opscode\\chef\\embedded\\bin\\gem').and_return(false) # should not get here
+      File.stub(:exist?).with('C:\\windows\\system32\\gem').and_return(false)
+      File.stub(:exist?).with('C:\\windows\\gem').and_return(false)
+      File.stub(:exist?).with('C:\\Ruby186\\bin\\gem').and_return(true)
+      File.stub(:exist?).with('d:\\opscode\\chef\\bin\\gem').and_return(false) # should not get here
+      File.stub(:exist?).with('d:\\opscode\\chef\\embedded\\bin\\gem').and_return(false) # should not get here
       provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
       provider.gem_env.gem_binary_location.should == 'C:\Ruby186\bin\gem'
     end
@@ -508,7 +508,6 @@ describe Chef::Provider::Package::Rubygems do
 
       # this catches 'gem_package "foo"' when "./foo" is a file in the cwd, and instead of installing './foo' it fetches the remote gem
       it "installs the gem via the gems api, when the package has no file separator characters in it, but a matching file exists in cwd" do
-        ::File.stub(:exists?).and_return(true)
         @new_resource.package_name('rspec-core')
         @provider.gem_env.should_receive(:install).with(@gem_dep, :sources => nil)
         @provider.action_install.should be_true

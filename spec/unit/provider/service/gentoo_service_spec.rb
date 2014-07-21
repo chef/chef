@@ -32,16 +32,16 @@ describe Chef::Provider::Service::Gentoo do
     Chef::Resource::Service.stub(:new).and_return(@current_resource)
     @status = double("Status", :exitstatus => 0, :stdout => @stdout)
     @provider.stub(:shell_out).and_return(@status)
-    File.stub(:exists?).with("/etc/init.d/chef").and_return(true)
-    File.stub(:exists?).with("/sbin/rc-update").and_return(true)
-    File.stub(:exists?).with("/etc/runlevels/default/chef").and_return(false)
+    File.stub(:exist?).with("/etc/init.d/chef").and_return(true)
+    File.stub(:exist?).with("/sbin/rc-update").and_return(true)
+    File.stub(:exist?).with("/etc/runlevels/default/chef").and_return(false)
     File.stub(:readable?).with("/etc/runlevels/default/chef").and_return(false)
   end
  # new test: found_enabled state
   #
   describe "load_current_resource" do
     it "should raise Chef::Exceptions::Service if /sbin/rc-update does not exist" do
-      File.should_receive(:exists?).with("/sbin/rc-update").and_return(false)
+      File.should_receive(:exist?).with("/sbin/rc-update").and_return(false)
       @provider.define_resource_requirements
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
@@ -65,7 +65,7 @@ describe Chef::Provider::Service::Gentoo do
 
         describe "and the file exists and is readable" do
           before do
-            File.stub(:exists?).with("/etc/runlevels/default/chef").and_return(true)
+            File.stub(:exist?).with("/etc/runlevels/default/chef").and_return(true)
             File.stub(:readable?).with("/etc/runlevels/default/chef").and_return(true)
           end
           it "should set enabled to true" do
@@ -76,7 +76,7 @@ describe Chef::Provider::Service::Gentoo do
 
         describe "and the file exists but is not readable" do
           before do
-            File.stub(:exists?).with("/etc/runlevels/default/chef").and_return(true)
+            File.stub(:exist?).with("/etc/runlevels/default/chef").and_return(true)
             File.stub(:readable?).with("/etc/runlevels/default/chef").and_return(false)
           end
 
@@ -88,7 +88,7 @@ describe Chef::Provider::Service::Gentoo do
 
         describe "and the file does not exist" do
           before do
-            File.stub(:exists?).with("/etc/runlevels/default/chef").and_return(false)
+            File.stub(:exist?).with("/etc/runlevels/default/chef").and_return(false)
             File.stub(:readable?).with("/etc/runlevels/default/chef").and_return("foobarbaz")
           end
 

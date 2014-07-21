@@ -94,7 +94,7 @@ class Chef
         end
 
         def can_upload?
-          File.exists?(uploaded_cookbook_version_path) || children.size > 0
+          File.exist?(uploaded_cookbook_version_path) || children.size > 0
         end
 
         protected

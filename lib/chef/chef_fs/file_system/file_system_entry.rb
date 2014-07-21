@@ -80,7 +80,7 @@ class Chef
         end
 
         def exists?
-          File.exists?(file_path)
+          File.exist?(file_path)
         end
 
         def read

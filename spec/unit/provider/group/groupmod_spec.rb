@@ -33,17 +33,17 @@ describe Chef::Provider::Group::Groupmod do
   describe "manage_group" do
     describe "when determining the current group state" do
       it "should raise an error if the required binary /usr/sbin/group doesn't exist" do
-        File.should_receive(:exists?).with("/usr/sbin/group").and_return(false)
+        File.should_receive(:exist?).with("/usr/sbin/group").and_return(false)
         lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Group)
       end
       it "should raise an error if the required binary /usr/sbin/user doesn't exist" do
-        File.should_receive(:exists?).with("/usr/sbin/group").and_return(true)
-        File.should_receive(:exists?).with("/usr/sbin/user").and_return(false)
+        File.should_receive(:exist?).with("/usr/sbin/group").and_return(true)
+        File.should_receive(:exist?).with("/usr/sbin/user").and_return(false)
         lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Group)
       end
 
       it "shouldn't raise an error if the required binaries exist" do
-        File.stub(:exists?).and_return(true)
+        File.stub(:exist?).and_return(true)
         lambda { @provider.load_current_resource }.should_not raise_error
       end
     end

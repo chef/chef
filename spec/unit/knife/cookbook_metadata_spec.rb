@@ -89,14 +89,14 @@ describe Chef::Knife::CookbookMetadata do
     end
 
     it 'should generate the metadata from metadata.rb if it exists' do
-      File.should_receive(:exists?).with("#{@cookbook_dir}/foobar/metadata.rb").
+      File.should_receive(:exist?).with("#{@cookbook_dir}/foobar/metadata.rb").
                                     and_return(true)
       @knife.should_receive(:generate_metadata_from_file).with('foobar', "#{@cookbook_dir}/foobar/metadata.rb")
       @knife.run
     end
 
     it 'should validate the metadata json if metadata.rb does not exist' do
-      File.should_receive(:exists?).with("#{@cookbook_dir}/foobar/metadata.rb").
+      File.should_receive(:exist?).with("#{@cookbook_dir}/foobar/metadata.rb").
                                     and_return(false)
       @knife.should_receive(:validate_metadata_json).with(@cookbook_dir, 'foobar')
       @knife.run

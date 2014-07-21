@@ -89,7 +89,7 @@ class Chef
         FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "providers")}"
         FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "files", "default")}"
         FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "templates", "default")}"
-        unless File.exists?(File.join(dir, cookbook_name, "recipes", "default.rb"))
+        unless File.exist?(File.join(dir, cookbook_name, "recipes", "default.rb"))
           open(File.join(dir, cookbook_name, "recipes", "default.rb"), "w") do |file|
             file.puts <<-EOH
 #
@@ -182,7 +182,7 @@ EOH
 
       def create_changelog(dir, cookbook_name)
         msg("** Creating CHANGELOG for cookbook: #{cookbook_name}")
-        unless File.exists?(File.join(dir,cookbook_name,'CHANGELOG.md'))
+        unless File.exist?(File.join(dir,cookbook_name,'CHANGELOG.md'))
           open(File.join(dir, cookbook_name, 'CHANGELOG.md'),'w') do |file|
             file.puts <<-EOH
 #{cookbook_name} CHANGELOG
@@ -205,7 +205,7 @@ EOH
 
       def create_readme(dir, cookbook_name, readme_format)
         msg("** Creating README for cookbook: #{cookbook_name}")
-        unless File.exists?(File.join(dir, cookbook_name, "README.#{readme_format}"))
+        unless File.exist?(File.join(dir, cookbook_name, "README.#{readme_format}"))
           open(File.join(dir, cookbook_name, "README.#{readme_format}"), "w") do |file|
             case readme_format
             when "rdoc"
@@ -415,9 +415,9 @@ EOH
                          "All rights reserved"
                        end
 
-        unless File.exists?(File.join(dir, cookbook_name, "metadata.rb"))
+        unless File.exist?(File.join(dir, cookbook_name, "metadata.rb"))
           open(File.join(dir, cookbook_name, "metadata.rb"), "w") do |file|
-            if File.exists?(File.join(dir, cookbook_name, "README.#{readme_format}"))
+            if File.exist?(File.join(dir, cookbook_name, "README.#{readme_format}"))
               long_description = "long_description IO.read(File.join(File.dirname(__FILE__), 'README.#{readme_format}'))"
             end
             file.puts <<-EOH

@@ -30,7 +30,7 @@ describe Chef::Provider::Package::Rpm do
     @provider = Chef::Provider::Package::Rpm.new(@new_resource, @run_context)
 
     @status = double("Status", :exitstatus => 0)
-    ::File.stub(:exists?).and_return(true)
+    ::File.stub(:exist?).and_return(true)
   end
 
   describe "when determining the current state of the package" do
@@ -48,7 +48,7 @@ describe Chef::Provider::Package::Rpm do
     end
 
     it "should raise an exception if a source is supplied but not found" do
-      ::File.stub(:exists?).and_return(false)
+      ::File.stub(:exist?).and_return(false)
       lambda { @provider.run_action(:any) }.should raise_error(Chef::Exceptions::Package)
     end
 

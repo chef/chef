@@ -65,7 +65,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
     end
 
     # Delete the test_service_file if it exists
-    if File.exists?(test_service_file)
+    if File.exist?(test_service_file)
       File.delete(test_service_file)
     end
 
@@ -179,7 +179,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
         it "start should start the service", :volatile do
           service_manager.run(["-a", "start"])
           test_service_state.should == "running"
-          File.exists?(test_service_file).should be_true
+          File.exist?(test_service_file).should be_true
         end
 
         it "stop should not affect the service" do

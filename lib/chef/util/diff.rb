@@ -63,7 +63,7 @@ class Chef
 
       def use_tempfile_if_missing(file)
         tempfile = nil
-        unless File.exists?(file)
+        unless File.exist?(file)
           Chef::Log.debug("file #{file} does not exist to diff against, using empty tempfile")
           tempfile = Tempfile.new("chef-diff")
           file = tempfile.path
@@ -82,7 +82,7 @@ class Chef
           end
         end
       end
-      
+
       # produces a unified-output-format diff with 3 lines of context
       # ChefFS uses udiff() directly
       def udiff(old_file, new_file)

@@ -34,7 +34,7 @@ describe Chef::Knife::CookbookMetadataFromFile do
   end
 
   after do
-    if File.exists?(@tgt)
+    if File.exist?(@tgt)
       File.unlink(@tgt)
     end
   end

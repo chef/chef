@@ -62,11 +62,11 @@ end
 
 desc "Install the latest copy of the repository on this Chef Server"
 task :install => [ :update, :roles, :upload_cookbooks ] do
-  if File.exists?(File.join(TOPDIR, "config", "server.rb"))
+  if File.exist?(File.join(TOPDIR, "config", "server.rb"))
     puts "* Installing new Chef Server Config"
     sh "#{LOCAL_EXEC_PREFIX} rsync -rlt --delete --exclude '.svn' --exclude '.git*' config/server.rb #{REMOTE_PATH_PREFIX}#{CHEF_SERVER_CONFIG}"
   end
-  if File.exists?(File.join(TOPDIR, "config", "client.rb"))
+  if File.exist?(File.join(TOPDIR, "config", "client.rb"))
     puts "* Installing new Chef Client Config"
     sh "#{LOCAL_EXEC_PREFIX} rsync -rlt --delete --exclude '.svn' --exclude '.git*' config/client.rb #{REMOTE_PATH_PREFIX}#{CHEF_CLIENT_CONFIG}"
   end
@@ -94,7 +94,7 @@ def create_cookbook(dir)
   sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "providers")}"
   sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "files", "default")}"
   sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "templates", "default")}"
-  unless File.exists?(File.join(dir, ENV["COOKBOOK"], "recipes", "default.rb"))
+  unless File.exist?(File.join(dir, ENV["COOKBOOK"], "recipes", "default.rb"))
     open(File.join(dir, ENV["COOKBOOK"], "recipes", "default.rb"), "w") do |file|
       file.puts <<-EOH
 #
@@ -133,7 +133,7 @@ end
 def create_readme(dir)
   raise "Must provide a COOKBOOK=" unless ENV["COOKBOOK"]
   puts "** Creating README for cookbook: #{ENV["COOKBOOK"]}"
-  unless File.exists?(File.join(dir, ENV["COOKBOOK"], "README.rdoc"))
+  unless File.exist?(File.join(dir, ENV["COOKBOOK"], "README.rdoc"))
     open(File.join(dir, ENV["COOKBOOK"], "README.md"), "w") do |file|
       file.puts <<-EOH
 Description
@@ -164,9 +164,9 @@ def create_metadata(dir)
     license = "All rights reserved"
   end
 
-  unless File.exists?(File.join(dir, ENV["COOKBOOK"], "metadata.rb"))
+  unless File.exist?(File.join(dir, ENV["COOKBOOK"], "metadata.rb"))
     open(File.join(dir, ENV["COOKBOOK"], "metadata.rb"), "w") do |file|
-      if File.exists?(File.join(dir, ENV["COOKBOOK"], 'README.rdoc'))
+      if File.exist?(File.join(dir, ENV["COOKBOOK"], 'README.rdoc'))
         long_description = "long_description IO.read(File.join(File.dirname(__FILE__), 'README.rdoc'))"
       end
       file.puts <<-EOH
@@ -266,7 +266,7 @@ namespace :databag do
     input_databag = args[:databag] || 'none_specified'
     databag = File.join(path, input_databag)
 
-    if File.exists?(databag) && File.directory?(databag)
+    if File.exist?(databag) && File.directory?(databag)
       system "knife data bag create #{input_databag}"
       Dir.foreach(databag) do |item|
         name, type = item.split('.')
@@ -281,7 +281,7 @@ namespace :databag do
 
   desc "Upload all databags"
   task :upload_all do
-    if File.exists?(path) && File.directory?(path)
+    if File.exist?(path) && File.directory?(path)
       Dir.foreach(path) do |databag|
         if databag == databag[/^[\-[:alnum:]_]+$/]
           Rake::Task['databag:upload'].execute( { :databag => databag } )
@@ -296,9 +296,9 @@ namespace :databag do
   task :create, :databag do |t, args|
     input_databag = args[:databag] || 'none_specified'
 
-    FileUtils.mkdir(path) unless File.exists?(path)
+    FileUtils.mkdir(path) unless File.exist?(path)
     databag = File.join(path, input_databag)
-    FileUtils.mkdir(databag) unless File.exists?(databag)
+    FileUtils.mkdir(databag) unless File.exist?(databag)
   end
 
   desc "Create a databag item stub"
@@ -307,10 +307,10 @@ namespace :databag do
     input_item = args[:item] || false
 
     databag = File.join(path, input_databag)
-    if File.exists?(databag) && File.directory?(databag)
+    if File.exist?(databag) && File.directory?(databag)
       if input_item
         json_filename = File.join(databag, "#{input_item}.json")
-        if !File.exists?(json_filename)
+        if !File.exist?(json_filename)
           stub = <<EOH
 {
   "id" : "#{input_item}"

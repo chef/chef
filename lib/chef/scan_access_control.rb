@@ -47,12 +47,16 @@ class Chef
     # Modifies @current_resource, setting the current access control state.
     def set_all!
       if ::File.exist?(new_resource.path)
-        set_owner
-        set_group
-        set_mode
+        set_all
       else
         # leave the values as nil.
       end
+    end
+
+    def set_all
+      set_owner
+      set_group
+      set_mode
     end
 
     # Set the owner attribute of +current_resource+ to whatever the current
@@ -128,11 +132,11 @@ class Chef
 
     def stat
       @stat ||= if @new_resource.instance_of?(Chef::Resource::Link)
-        ::File.lstat(@new_resource.path)
-      else
-        realpath = ::File.realpath(@new_resource.path)
-        ::File.stat(realpath)
-      end
+                  ::File.lstat(@new_resource.path)
+                else
+                  realpath = ::File.realpath(@new_resource.path)
+                  ::File.stat(realpath)
+                end
     end
   end
 end

@@ -41,6 +41,9 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
   def canonicalize(path)
     Chef::Platform.windows? ? path.gsub('/', '\\') : path
   end
+  before do
+    ::File.stub(:exist?).and_call_original
+  end
 
   describe "when the target is a symlink" do
     before(:each) do
@@ -123,7 +126,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
 
   describe "when the target doesn't exist" do
     before do
-      File.stub(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
+      File.stub(:exist?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
       provider.file_class.stub(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
       provider.load_current_resource
     end
@@ -148,15 +151,16 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
       stat.stub(:uid).and_return(501)
       stat.stub(:gid).and_return(501)
       stat.stub(:mode).and_return(0755)
+      provider.file_class.stub(:lstat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
       provider.file_class.stub(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
 
-      File.stub(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+      File.stub(:exist?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
       provider.file_class.stub(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
     end
 
     describe "and the source does not exist" do
       before do
-        File.stub(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(false)
+        File.stub(:exist?).with("#{CHEF_SPEC_DATA}/fofile").and_return(false)
         provider.load_current_resource
       end
 
@@ -183,7 +187,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
 
         provider.file_class.stub(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
 
-        File.stub(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
+        File.stub(:exist?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
         provider.load_current_resource
       end
 
@@ -210,7 +214,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
 
         provider.file_class.stub(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
 
-        File.stub(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
+        File.stub(:exist?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
         provider.load_current_resource
       end
 

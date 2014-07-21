@@ -33,7 +33,7 @@ class Chef
 
         def matches_current_checksum?(candidate_file)
           Chef::Log.debug "#{@new_resource} checking for file existence of #{@new_resource.path}"
-          if ::File.exists?(@new_resource.path)
+          if ::File.exist?(@new_resource.path)
             Chef::Log.debug "#{@new_resource} file exists at #{@new_resource.path}"
             @new_resource.checksum(checksum(candidate_file.path))
             Chef::Log.debug "#{@new_resource} target checksum: #{@current_resource.checksum}"
@@ -47,7 +47,7 @@ class Chef
         end
 
         def backup_new_resource
-          if ::File.exists?(@new_resource.path)
+          if ::File.exist?(@new_resource.path)
             Chef::Log.debug "#{@new_resource} checksum changed from #{@current_resource.checksum} to #{@new_resource.checksum}"
             backup @new_resource.path
           end

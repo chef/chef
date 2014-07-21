@@ -10,12 +10,12 @@ require 'fileutils'
 require 'chef/version'
 
 def start_server(chef_repo_path)
-  Dir.mkdir(chef_repo_path) if !File.exists?(chef_repo_path)
+  Dir.mkdir(chef_repo_path) if !File.exist?(chef_repo_path)
 
   # 11.6 and below had a bug where it couldn't create the repo children automatically
   if Chef::VERSION.to_f < 11.8
     %w(clients cookbooks data_bags environments nodes roles users).each do |child|
-      Dir.mkdir("#{chef_repo_path}/#{child}") if !File.exists?("#{chef_repo_path}/#{child}")
+      Dir.mkdir("#{chef_repo_path}/#{child}") if !File.exist?("#{chef_repo_path}/#{child}")
     end
   end
 

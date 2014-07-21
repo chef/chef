@@ -126,12 +126,12 @@ describe Chef::Provider::Group::Pw do
       @provider.define_resource_requirements
     end
     it "should raise an error if the required binary /usr/sbin/pw doesn't exist" do
-      File.should_receive(:exists?).with("/usr/sbin/pw").and_return(false)
+      File.should_receive(:exist?).with("/usr/sbin/pw").and_return(false)
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Group)
     end
 
     it "shouldn't raise an error if /usr/sbin/pw exists" do
-      File.stub(:exists?).and_return(true)
+      File.stub(:exist?).and_return(true)
       lambda { @provider.process_resource_requirements }.should_not raise_error
     end
   end

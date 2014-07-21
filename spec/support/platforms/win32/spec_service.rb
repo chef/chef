@@ -25,7 +25,7 @@ class SpecService < ::Win32::Daemon
 
   def service_main(*startup_parameters)
     while running? do
-      if !File.exists?(@test_service_file)
+      if !File.exist?(@test_service_file)
         File.open(@test_service_file, 'wb') do |f|
           f.write("This file is created by SpecService")
         end

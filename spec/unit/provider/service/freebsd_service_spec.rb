@@ -47,8 +47,9 @@ PS_SAMPLE
       @status = double(:stdout => @stdout, :exitstatus => 0)
       @provider.stub(:shell_out!).with(@node[:command][:ps]).and_return(@status)
 
-      ::File.stub(:exists?).and_return(false)
-      ::File.stub(:exists?).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(true)
+      ::File.stub(:exist?).with('/etc/rc.d/apache22').and_return(false)
+      ::File.stub(:exist?).with('/etc/rc.conf').and_return(false)
+      ::File.stub(:exist?).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(true)
       @lines = double("lines")
       @lines.stub(:each).and_yield("sshd_enable=\"YES\"").
                           and_yield("#{@new_resource.name}_enable=\"YES\"")
@@ -128,7 +129,7 @@ RC_SAMPLE
 
     describe "when executing assertions" do
       it "should verify that /etc/rc.conf exists" do
-        ::File.should_receive(:exists?).with("/etc/rc.conf")
+        ::File.should_receive(:exist?).with("/etc/rc.conf")
         @provider.stub(:service_enable_variable_name).and_return("#{@current_resource.service_name}_enable")
         @provider.load_current_resource
       end
@@ -136,7 +137,7 @@ RC_SAMPLE
       context "and the init script is not found" do
         [ "start", "reload", "restart", "enable" ].each do |action|
           it "should raise an exception when the action is #{action}" do
-            ::File.stub(:exists?).and_return(false)
+            ::File.stub(:exist?).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(false)
             @provider.load_current_resource
             @provider.define_resource_requirements
             @provider.instance_variable_get("@rcd_script_found").should be_false
@@ -154,14 +155,14 @@ RC_SAMPLE
       end
 
       it "update state when current resource enabled state could not be determined" do
-        ::File.should_receive(:exists?).with("/etc/rc.conf").and_return false
+        ::File.should_receive(:exist?).with("/etc/rc.conf").and_return false
         @provider.load_current_resource
         @provider.instance_variable_get("@enabled_state_found").should be_false
       end
 
       it "update state when current resource enabled state could be determined" do
         ::File.stub(:exist?).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(true)
-        ::File.should_receive(:exists?).with("/etc/rc.conf").and_return  true
+        ::File.should_receive(:exist?).with("/etc/rc.conf").and_return  true
         @provider.load_current_resource
         @provider.instance_variable_get("@enabled_state_found").should be_false
         @provider.instance_variable_get("@rcd_script_found").should be_true

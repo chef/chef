@@ -252,10 +252,10 @@ class Chef
       js_file = File.join(Chef::Config[:environment_path], "#{name}.json")
       rb_file = File.join(Chef::Config[:environment_path], "#{name}.rb")
 
-      if File.exists?(js_file)
+      if File.exist?(js_file)
         # from_json returns object.class => json_class in the JSON.
         Chef::JSONCompat.from_json(IO.read(js_file))
-      elsif File.exists?(rb_file)
+      elsif File.exist?(rb_file)
         environment = Chef::Environment.new
         environment.name(name)
         environment.from_file(rb_file)

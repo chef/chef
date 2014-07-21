@@ -54,7 +54,7 @@ describe Chef::Provider::Execute do
 
   it "should do nothing if the sentinel file exists" do
     @provider.stub(:load_current_resource)
-    File.should_receive(:exists?).with(@new_resource.creates).and_return(true)
+    File.should_receive(:exist?).with(@new_resource.creates).and_return(true)
     @provider.should_not_receive(:shell_out!)
     Chef::Log.should_not_receive(:warn)
 
@@ -66,8 +66,8 @@ describe Chef::Provider::Execute do
     @new_resource.cwd "/tmp"
     @new_resource.creates "foo_resource"
     @provider.stub(:load_current_resource)
-    File.should_receive(:exists?).with(@new_resource.creates).and_return(false)
-    File.should_receive(:exists?).with(File.join("/tmp", @new_resource.creates)).and_return(true)
+    File.should_receive(:exist?).with(@new_resource.creates).and_return(false)
+    File.should_receive(:exist?).with(File.join("/tmp", @new_resource.creates)).and_return(true)
     Chef::Log.should_not_receive(:warn)
     @provider.should_not_receive(:shell_out!)
 
@@ -79,7 +79,7 @@ describe Chef::Provider::Execute do
     @new_resource.creates "foo_resource"
     @provider.stub(:load_current_resource)
     Chef::Log.should_receive(:warn).with(/relative path/)
-    File.should_receive(:exists?).with(@new_resource.creates).and_return(true)
+    File.should_receive(:exist?).with(@new_resource.creates).and_return(true)
     @provider.should_not_receive(:shell_out!)
 
     @provider.run_action(:run)

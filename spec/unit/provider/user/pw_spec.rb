@@ -240,12 +240,12 @@ describe Chef::Provider::User::Pw do
     end
 
     it "should raise an error if the required binary /usr/sbin/pw doesn't exist" do
-      File.should_receive(:exists?).with("/usr/sbin/pw").and_return(false)
+      File.should_receive(:exist?).with("/usr/sbin/pw").and_return(false)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::User)
     end
 
     it "shouldn't raise an error if /usr/sbin/pw exists" do
-      File.stub(:exists?).and_return(true)
+      File.should_receive(:exist?).with("/usr/sbin/pw").and_return(true)
       lambda { @provider.load_current_resource }.should_not raise_error
     end
   end

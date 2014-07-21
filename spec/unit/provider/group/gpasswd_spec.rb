@@ -41,13 +41,13 @@ describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
     # for Chef::Provider::Group - no need to repeat it here.  We'll
     # include only what's specific to this provider.
     it "should raise an error if the required binary /usr/bin/gpasswd doesn't exist" do
-      File.stub(:exists?).and_return(true)
-      File.should_receive(:exists?).with("/usr/bin/gpasswd").and_return(false)
+      File.stub(:exist?).and_return(true)
+      File.should_receive(:exist?).with("/usr/bin/gpasswd").and_return(false)
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Group)
     end
 
     it "shouldn't raise an error if the required binaries exist" do
-      File.stub(:exists?).and_return(true)
+      File.stub(:exist?).and_return(true)
       lambda { @provider.process_resource_requirements }.should_not raise_error
     end
   end

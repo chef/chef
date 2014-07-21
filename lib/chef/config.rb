@@ -259,7 +259,7 @@ class Chef
 
     # Returns true only if the path exists and is readable and writeable for the user.
     def self.path_accessible?(path)
-      File.exists?(path) && File.readable?(path) && File.writable?(path)
+      File.exist?(path) && File.readable?(path) && File.writable?(path)
     end
 
     # Where cookbook files are stored on the server (by content checksum)

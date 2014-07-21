@@ -44,7 +44,7 @@ end
 def setup_normal_file
   [ resource_path, normalized_path, windows_path].each do |path|
     File.stub(:file?).with(path).and_return(true)
-    File.stub(:exists?).with(path).and_return(true)
+    File.stub(:exist?).with(path).and_return(true)
     File.stub(:exist?).with(path).and_return(true)
     File.stub(:directory?).with(path).and_return(false)
     File.stub(:writable?).with(path).and_return(true)
@@ -58,7 +58,7 @@ def setup_missing_file
   [ resource_path, normalized_path, windows_path].each do |path|
     File.stub(:file?).with(path).and_return(false)
     File.stub(:realpath?).with(path).and_return(resource_path)
-    File.stub(:exists?).with(path).and_return(false)
+    File.stub(:exist?).with(path).and_return(false)
     File.stub(:exist?).with(path).and_return(false)
     File.stub(:directory?).with(path).and_return(false)
     File.stub(:writable?).with(path).and_return(false)
@@ -71,7 +71,7 @@ def setup_symlink
   [ resource_path, normalized_path, windows_path].each do |path|
     File.stub(:file?).with(path).and_return(true)
     File.stub(:realpath?).with(path).and_return(normalized_path)
-    File.stub(:exists?).with(path).and_return(true)
+    File.stub(:exist?).with(path).and_return(true)
     File.stub(:exist?).with(path).and_return(true)
     File.stub(:directory?).with(path).and_return(false)
     File.stub(:writable?).with(path).and_return(true)
@@ -84,7 +84,7 @@ def setup_unwritable_file
   [ resource_path, normalized_path, windows_path].each do |path|
     File.stub(:file?).with(path).and_return(false)
     File.stub(:realpath?).with(path).and_raise(Errno::ENOENT)
-    File.stub(:exists?).with(path).and_return(true)
+    File.stub(:exist?).with(path).and_return(true)
     File.stub(:exist?).with(path).and_return(true)
     File.stub(:directory?).with(path).and_return(false)
     File.stub(:writable?).with(path).and_return(false)
@@ -97,7 +97,7 @@ def setup_missing_enclosing_directory
   [ resource_path, normalized_path, windows_path].each do |path|
     File.stub(:file?).with(path).and_return(false)
     File.stub(:realpath?).with(path).and_raise(Errno::ENOENT)
-    File.stub(:exists?).with(path).and_return(false)
+    File.stub(:exist?).with(path).and_return(false)
     File.stub(:exist?).with(path).and_return(false)
     File.stub(:directory?).with(path).and_return(false)
     File.stub(:writable?).with(path).and_return(false)
@@ -138,7 +138,7 @@ shared_examples_for Chef::Provider::File do
   before(:each) do
     content.stub(:tempfile).and_return(tempfile)
     File.stub(:exist?).with(tempfile.path).and_call_original
-    File.stub(:exists?).with(tempfile.path).and_call_original
+    File.stub(:exist?).with(tempfile.path).and_call_original
   end
 
   after do
@@ -482,7 +482,7 @@ shared_examples_for Chef::Provider::File do
           provider.load_current_resource
           tempfile = double('Tempfile', :path => "/tmp/foo-bar-baz")
           content.stub(:tempfile).and_return(tempfile)
-          File.should_receive(:exists?).with("/tmp/foo-bar-baz").and_return(true)
+          File.should_receive(:exist?).with("/tmp/foo-bar-baz").and_return(true)
           tempfile.should_receive(:close).once
           tempfile.should_receive(:unlink).once
         end
@@ -542,7 +542,7 @@ shared_examples_for Chef::Provider::File do
       it "raises an exception when the content object returns a tempfile that does not exist" do
         tempfile = double('Tempfile', :path => "/tmp/foo-bar-baz")
         provider.send(:content).should_receive(:tempfile).at_least(:once).and_return(tempfile)
-        File.should_receive(:exists?).with("/tmp/foo-bar-baz").and_return(false)
+        File.should_receive(:exist?).with("/tmp/foo-bar-baz").and_return(false)
         lambda{ provider.send(:do_contents_changes) }.should raise_error
       end
     end

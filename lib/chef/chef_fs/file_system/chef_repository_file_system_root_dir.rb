@@ -88,7 +88,7 @@ class Chef
 
         def make_child_entry(name)
           paths = child_paths[name].select do |path|
-            File.exists?(path)
+            File.exist?(path)
           end
           if paths.size == 0
             return nil

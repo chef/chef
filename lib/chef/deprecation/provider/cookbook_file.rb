@@ -44,7 +44,7 @@ class Chef
         end
 
         def backup_new_resource
-          if ::File.exists?(@new_resource.path)
+          if ::File.exist?(@new_resource.path)
             backup @new_resource.path
           end
         end

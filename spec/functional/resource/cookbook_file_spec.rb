@@ -74,7 +74,7 @@ describe Chef::Resource::CookbookFile do
     end
 
     after do
-      FileUtils.rm_r(windows_non_temp_dir) if Chef::Platform.windows? && File.exists?(windows_non_temp_dir)
+      FileUtils.rm_r(windows_non_temp_dir) if Chef::Platform.windows? && File.exist?(windows_non_temp_dir)
     end
 
   end
