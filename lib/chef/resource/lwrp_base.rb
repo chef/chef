@@ -92,9 +92,15 @@ class Chef
       # Sets the default action
       def self.default_action(action_name=NULL_ARG)
         unless action_name.equal?(NULL_ARG)
-          action = action_name.to_sym
-          actions.push(action) unless actions.include?(action)
-          @default_action = action
+          if action_name.is_a?(Array)
+            action = action_name.map { |arg| arg.to_sym }
+            actions.push(*action)
+            @default_action = action
+          else
+            action = action_name.to_sym
+            actions.push(action)
+            @default_action = action
+          end
         end
 
         @default_action ||= from_superclass(:default_action)

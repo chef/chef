@@ -180,6 +180,19 @@ describe "LWRP" do
       end
     end
 
+    describe "when #default_action is an array" do
+      let(:lwrp) do
+        Class.new(Chef::Resource::LWRPBase) do
+          actions :eat, :sleep
+          default_action [:eat, :sleep]
+        end
+      end
+
+      it "returns the array of default actions" do
+        expect(lwrp.default_action).to eq([:eat, :sleep])
+      end
+    end
+
     describe "when inheriting from LWRPBase" do
       let(:parent) do
         Class.new(Chef::Resource::LWRPBase) do
