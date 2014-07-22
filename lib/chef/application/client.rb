@@ -238,6 +238,7 @@ class Chef::Application::Client < Chef::Application
 
   IMMEDIATE_RUN_SIGNAL = "1".freeze
   GRACEFUL_EXIT_SIGNAL = "2".freeze
+  RELOAD_SIGNAL        = "3".freeze
 
   attr_reader :chef_client_json
 
@@ -300,6 +301,11 @@ class Chef::Application::Client < Chef::Application
     unless Chef::Platform.windows?
       SELF_PIPE.replace IO.pipe
 
+      trap("HUP") do
+        Chef::Log.info("Caught SIGHUP, reloading resources")
+        SELF_PIPE[1].putc(RELOAD_SIGNAL)
+      end
+
       trap("USR1") do
         Chef::Log.info("SIGUSR1 received, waking up")
         SELF_PIPE[1].putc(IMMEDIATE_RUN_SIGNAL) # wakeup master process from select
@@ -328,14 +334,23 @@ class Chef::Application::Client < Chef::Application
       begin
         Chef::Application.exit!("Exiting", 0) if signal == GRACEFUL_EXIT_SIGNAL
 
+        if signal == RELOAD_SIGNAL
+          reconfigure
+          Chef::Log.info('Logging restarted because of SIGHUP')
+        end
+
         if Chef::Config[:splay] and signal != IMMEDIATE_RUN_SIGNAL
           splay = rand Chef::Config[:splay]
           Chef::Log.debug("Splay sleep #{splay} seconds")
           sleep splay
         end
 
-        signal = nil
-        run_chef_client(Chef::Config[:specific_recipes])
+        unless signal == RELOAD_SIGNAL
+          signal = nil
+          run_chef_client(Chef::Config[:specific_recipes])
+        else
+          signal = nil
+        end
 
         if Chef::Config[:interval]
           Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
