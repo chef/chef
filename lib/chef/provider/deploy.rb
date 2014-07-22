@@ -31,7 +31,7 @@ class Chef
       include Chef::Mixin::FromFile
       include Chef::Mixin::Command
 
-      attr_reader :scm_provider, :release_path, :previous_release_path
+      attr_reader :scm_provider, :release_path, :shared_path, :previous_release_path
 
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
@@ -53,6 +53,7 @@ class Chef
       def load_current_resource
         @scm_provider.load_current_resource
         @release_path = @new_resource.deploy_to + "/releases/#{release_slug}"
+        @shared_path = @new_resource.shared_path
       end
 
       def sudo(command,&block)
