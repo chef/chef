@@ -57,7 +57,7 @@ build do
 
     gem "install pkg/chef-*.gem" \
         " --bindir '#{install_dir}/bin'" \
-        " --no-document", env: env
+        " --no-ri --no-rdoc", env: env
 
     # install the whole bundle, so that we get dev gems (like rspec) and can
     # later test in CI against all the exact gems that we ship (we will run
@@ -73,7 +73,7 @@ build do
 
     # Don't use -n #{install_dir}/bin. Appbundler will take care of them later
     gem "install pkg/chef-*.gem " \
-        " --no-document", env: env
+        " --no-ri --no-rdoc", env: env
   end
 
   auxiliary_gems = {}
@@ -82,7 +82,7 @@ build do
   auxiliary_gems.each do |name, version|
     gem "install #{name}" \
         " --version '#{version}'" \
-        " --no-document" \
+        " --no-ri --no-rdoc" \
         " --verbose", env: env
   end
 

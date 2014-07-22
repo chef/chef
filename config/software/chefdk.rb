@@ -53,7 +53,7 @@ build do
   rake "build", env: env
 
   gem "install pkg/chef-dk*.gem" \
-      " --no-document" \
+      " --no-ri --no-rdoc" \
       " --verbose", env: env
 
   auxiliary_gems = {}
@@ -70,7 +70,7 @@ build do
     gem "install #{name}" \
         " --version '#{version}'" \
         " --bindir '#{install_dir}/bin'" \
-        " --no-document" \
+        " --no-ri --no-rdoc" \
         " --verbose", env: env
   end
 

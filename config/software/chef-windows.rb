@@ -64,7 +64,7 @@ build do
 
   gem "install pkg/chef*mingw32.gem" \
       " --bindir '#{install_dir}/bin'" \
-      " --no-document" \
+      " --no-ri --no-rdoc" \
       " --verbose"
 
   # Depending on which shell is being used, the path environment variable can
