@@ -23,7 +23,7 @@ homepage "http://www.getchef.com"
 # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
 #       Native gems will use gcc which will barf on files with spaces,
 #       which is only fixable if everyone in the world fixes their Makefiles
-install_path    "c:\\opscode\\chef"
+install_dir    "c:/opscode/chef"
 
 build_iteration 1
 build_version do
