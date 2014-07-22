@@ -155,6 +155,17 @@ describe Chef::Application::Client, "run_application", :unix_only do
     @pipe[0].gets.should == "finished\n"
   end
 
+  it "should reload the application when sent a SIGHUP", :volatile_on_solaris do
+    pid = fork do
+      @app.run_application
+    end
+    @pipe[0].gets.should == "started\n"
+    Process.kill("HUP", pid)
+    Process.wait
+    IO.select([@pipe[0]], nil, nil, 0).should_not be_nil
+    @pipe[0].gets.should == "finished\n"  
+  end
+
   describe "when splay is set" do
     before do
       Chef::Config[:splay] = 10
