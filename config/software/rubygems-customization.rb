@@ -38,8 +38,9 @@ end
 
 
 build do
-
   sitelibdir_cmd = %Q{#{install_dir}/embedded/bin/ruby -rrbconfig -e "puts RbConfig::CONFIG['sitelibdir']"}
+
+  # TODO: use +windows_safe_path+
   sitelibdir_cmd.gsub!('/', '\\') if platform == "windows"
 
   block do
