@@ -1,6 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012-2014 Chef Software, Inc.
-# License:: Apache License, Version 2.0
+# Copyright 2012-2014 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,46 +43,43 @@ build do
   }
   env = with_embedded_path(env)
 
-  def appbuilder(app_path, bin_path)
+  def appbundle(app_path, bin_path)
     gemfile = File.join(app_path, "Gemfile.lock")
-    env = {
-      'RUBYOPT'         => nil,
-      'BUNDLE_BIN_PATH' => nil,
-      'BUNDLE_GEMFILE'  => gemfile,
-      'GEM_PATH'        => nil,
-      'GEM_HOME'        => nil,
-    }
-    env = with_embedded_path(env)
-    command("#{install_dir}/embedded/bin/appbundler #{app_path} #{bin_path}", :env => env)
+    env = with_embedded_path.merge("BUNDLE_GEMFILE" => gemfile)
+    command("#{install_dir}/embedded/bin/appbundler '#{app_path}' '#{bin_path}'", env: env)
   end
 
-  bundle "install", :env => env
-  rake "build", :env => env
+  bundle "install", env: env
+  rake "build", env: env
 
-  gem ["install pkg/chef-dk*.gem",
-      "--no-rdoc --no-ri"].join(" "), :env => env
+  gem "install pkg/chef-dk*.gem" \
+      " --no-document" \
+      " --verbose", env: env
 
-  auxiliary_gems = []
+  auxiliary_gems = {}
+  auxiliary_gems['foodcritic']      = '3.0.3'
+  auxiliary_gems['chefspec']        = '3.4.0'
+  auxiliary_gems['rubocop']         = '0.18.1'
+  auxiliary_gems['knife-spork']     = '1.3.2'
+  auxiliary_gems['kitchen-vagrant'] = '0.15.0'
+  # Strainer build is hosed on windows
+  # auxiliary_gems['strainer'] = '3.3.0'
 
-  auxiliary_gems << {name: 'foodcritic',  version: '3.0.3'}
-  auxiliary_gems << {name: 'chefspec',    version: '3.4.0'}
-  auxiliary_gems << {name: 'rubocop',     version: '0.18.1'}
-  auxiliary_gems << {name: 'knife-spork', version: '1.3.2'}
-  auxiliary_gems << {name: 'kitchen-vagrant', version: '0.15.0'}
-  # strainer build is hosed on windows
-  # auxiliary_gems << {name: 'strainer',    version: '3.3.0'}
-
-  # do multiple gem installs to better isolate/debug failures
-  auxiliary_gems.each do |g|
-    gem "install #{g[:name]} -v #{g[:version]} -n #{install_dir}/bin --no-rdoc --no-ri --verbose", :env => env
+  # Perform multiple gem installs to better isolate/debug failures
+  auxiliary_gems.each do |name, version|
+    gem "install #{name}" \
+        " --version '#{version}'" \
+        " --bindir '#{install_dir}/bin'" \
+        " --no-document" \
+        " --verbose", env: env
   end
 
-  block { FileUtils.mkdir_p("#{install_dir}/embedded/apps") }
+  mkdir("#{install_dir}/embedded/apps")
 
   appbundler_apps = %w[chef berkshelf test-kitchen chef-dk chef-vault ohai]
   appbundler_apps.each do |app_name|
-    block { FileUtils.cp_r("#{source_dir}/#{app_name}", "#{install_dir}/embedded/apps/") }
-    block { FileUtils.rm_rf("#{install_dir}/embedded/apps/#{app_name}/.git") }
-    appbuilder("#{install_dir}/embedded/apps/#{app_name}", "#{install_dir}/bin")
+    copy("#{source_dir}/#{app_name}", "#{install_dir}/embedded/apps/")
+    delete("#{install_dir}/embedded/apps/#{app_name}/.git")
+    appbundle("#{install_dir}/embedded/apps/#{app_name}", "#{install_dir}/bin")
   end
 end
