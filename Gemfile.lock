@@ -1,10 +1,9 @@
 GIT
   remote: git://github.com/opscode/omnibus-ruby.git
-  revision: ed60550b9122a46f75a9501810f6b634d4e3aa2a
+  revision: 6c099d5e0c1231efbb51e985a8e6c1c7f25b372a
   branch: master
   specs:
-    omnibus (3.2.0.rc.1)
-      bundler
+    omnibus (3.2.0.rc.3)
       chef-sugar (~> 1.2)
       fpm (~> 0.4)
       mixlib-shellout (~> 1.4)
@@ -14,7 +13,7 @@ GIT
 
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: 4f92644e5aa0e728b34b82b21170d553826d5f41
+  revision: a86b0f1335ccb823d2c7f7d691be5b0395a7476a
   branch: master
   specs:
     omnibus-software (0.0.1)
@@ -57,9 +56,9 @@ GEM
     mixlib-config (2.1.0)
     mixlib-log (1.6.0)
     mixlib-shellout (1.4.0)
-    ohai (7.2.0.rc.2)
+    ohai (7.2.0)
       ffi (~> 1.9)
-      ffi-yajl
+      ffi-yajl (~> 1.0)
       ipaddress
       mime-types (~> 1.16)
       mixlib-cli
