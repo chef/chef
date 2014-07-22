@@ -71,5 +71,13 @@ build do
   # be "PATH" or "Path". If *both* are set, only one is honored.
   path_key = ENV.keys.grep(/\Apath\Z/i).first
 
-  bundle "install", :env => { path_key => "#{install_dir}\\embedded\\bin;#{install_dir}\\embedded\\mingw\\bin;C:\\Windows\\system32;C:\\Windows;C:\\Windows\\System32\\Wbem"}
+  bundle "install", env: {
+    path_key => [
+      windows_safe_path(install_dir, 'embedded', 'bin'),
+      windows_safe_path(install_dir, 'embedded', 'mingw', 'bin'),
+      windows_safe_path('C:/Windows/system32'),
+      windows_safe_path('C:/Windows'),
+      windows_safe_path('C:/Windows/System32/Wbem'),
+    ].join(File::PATH_SEPARATOR)
+  }
 end
