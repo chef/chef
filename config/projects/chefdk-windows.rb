@@ -60,10 +60,7 @@ dependency "version-manifest"
 resources_path File.join(files_path, "chefdk")
 
 msi_parameters do
-  msi_parameters = { }
-
-  # Upgrade code for Chef DK MSI
-  msi_parameters[:upgrade_code] = "AB1D6FBD-F9DC-4395-BDAD-26C4541168E7"
-
-  msi_parameters
+  {
+    upgrade_code: 'AB1D6FBD-F9DC-4395-BDAD-26C4541168E7',
+  }
 end
