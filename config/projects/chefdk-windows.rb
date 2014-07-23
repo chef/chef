@@ -23,7 +23,7 @@ homepage "http://www.getchef.com"
 # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
 #       Native gems will use gcc which will barf on files with spaces,
 #       which is only fixable if everyone in the world fixes their Makefiles
-install_path    "c:\\opscode\\chefdk"
+install_dir "c:/opscode/chefdk"
 
 build_iteration 1
 build_version do
@@ -60,10 +60,7 @@ dependency "version-manifest"
 resources_path File.join(files_path, "chefdk")
 
 msi_parameters do
-  msi_parameters = { }
-
-  # Upgrade code for Chef DK MSI
-  msi_parameters[:upgrade_code] = "AB1D6FBD-F9DC-4395-BDAD-26C4541168E7"
-
-  msi_parameters
+  {
+    upgrade_code: 'AB1D6FBD-F9DC-4395-BDAD-26C4541168E7',
+  }
 end
