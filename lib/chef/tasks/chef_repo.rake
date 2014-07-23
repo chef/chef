@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2014, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,320 +16,186 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-require 'rubygems'
-require 'chef/json_compat'
-require 'chef'
-require 'chef/role'
-require 'chef/cookbook/metadata'
-require 'tempfile'
+TOPDIR = '.'
 require 'rake'
 
-# Allow REMOTE options to be overridden on the command line
-REMOTE_HOST = ENV["REMOTE_HOST"] if ENV["REMOTE_HOST"] != nil
-REMOTE_SUDO = ENV["REMOTE_SUDO"] if ENV["REMOTE_SUDO"] != nil
-if defined? REMOTE_HOST
-  REMOTE_PATH_PREFIX = "#{REMOTE_HOST}:"
-  REMOTE_EXEC_PREFIX = "ssh #{REMOTE_HOST}"
-  REMOTE_EXEC_PREFIX += " sudo" if defined? REMOTE_SUDO
-  LOCAL_EXEC_PREFIX = ""
-else
-  REMOTE_PATH_PREFIX = ""
-  REMOTE_EXEC_PREFIX = ""
-  LOCAL_EXEC_PREFIX = "sudo"
+desc "By default, print deprecation notice"
+task :default do
+  puts deprecation_notice
+end
+
+desc "Install the latest copy of the repository on this Chef Server"
+task :install do
+  puts deprecation_notice
+  puts 'The `install` rake task, which included the `update`, `roles`, and'
+  puts '`upload_cookbooks` rake tasks is replaced by the `knife upload`'
+  puts 'sub-command. The notion of "installing" the chef-repo to the Chef'
+  puts 'Server. Previously the `install` task would manage server and'
+  puts 'client configuration. This will not work at all on Chef Server 11+'
+  puts 'and client configuration should be managed with the `chef-client`'
+  puts 'cookbook.'
 end
 
 desc "Update your repository from source control"
 task :update do
-  puts "** Updating your repository"
-
-  case $vcs
-  when :svn
-    sh %{svn up}
-  when :git
-    pull = false
-    IO.foreach(File.join(TOPDIR, ".git", "config")) do |line|
-      pull = true if line =~ /\[remote "origin"\]/
-    end
-    if pull
-      sh %{git pull}
-    else
-      puts "* Skipping git pull, no origin specified"
-    end
-  else
-    puts "* No SCM configured, skipping update"
-  end
+  puts deprecation_notice
+  puts 'The `update` rake task previously updated the chef-repo from'
+  puts 'the detected version control system, either svn or git. However,'
+  puts 'it has not been recommended for users for years. Most users in'
+  puts 'the community use `git`, so the Subversion functionality is not'
+  puts 'required, and `git pull` is sufficient for many workflows. The'
+  puts 'world of git workflows is rather different now than it was when'
+  puts 'this rake task was created.'
 end
-
-desc "Install the latest copy of the repository on this Chef Server"
-task :install => [ :update, :roles, :upload_cookbooks ] do
-  if File.exists?(File.join(TOPDIR, "config", "server.rb"))
-    puts "* Installing new Chef Server Config"
-    sh "#{LOCAL_EXEC_PREFIX} rsync -rlt --delete --exclude '.svn' --exclude '.git*' config/server.rb #{REMOTE_PATH_PREFIX}#{CHEF_SERVER_CONFIG}"
-  end
-  if File.exists?(File.join(TOPDIR, "config", "client.rb"))
-    puts "* Installing new Chef Client Config"
-    sh "#{LOCAL_EXEC_PREFIX} rsync -rlt --delete --exclude '.svn' --exclude '.git*' config/client.rb #{REMOTE_PATH_PREFIX}#{CHEF_CLIENT_CONFIG}"
-  end
-end
-
-desc "By default, run rake test_cookbooks"
-task :default => [ :test_cookbooks ]
 
 desc "Create a new cookbook (with COOKBOOK=name, optional CB_PREFIX=site-)"
 task :new_cookbook do
-  puts "***WARN: rake new_cookbook is deprecated. Please use 'knife cookbook create COOKBOOK' command.***"
-  create_cookbook(File.join(TOPDIR, "#{ENV["CB_PREFIX"]}cookbooks"))
-  create_readme(File.join(TOPDIR, "#{ENV["CB_PREFIX"]}cookbooks"))
-  create_metadata(File.join(TOPDIR, "#{ENV["CB_PREFIX"]}cookbooks"))
-end
-
-def create_cookbook(dir)
-  raise "Must provide a COOKBOOK=" unless ENV["COOKBOOK"]
-  puts "** Creating cookbook #{ENV["COOKBOOK"]}"
-  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "attributes")}"
-  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "recipes")}"
-  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "definitions")}"
-  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "libraries")}"
-  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "resources")}"
-  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "providers")}"
-  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "files", "default")}"
-  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "templates", "default")}"
-  unless File.exists?(File.join(dir, ENV["COOKBOOK"], "recipes", "default.rb"))
-    open(File.join(dir, ENV["COOKBOOK"], "recipes", "default.rb"), "w") do |file|
-      file.puts <<-EOH
-#
-# Cookbook Name:: #{ENV["COOKBOOK"]}
-# Recipe:: default
-#
-# Copyright #{Time.now.year}, #{COMPANY_NAME}
-#
-EOH
-      case NEW_COOKBOOK_LICENSE
-      when :apachev2
-        file.puts <<-EOH
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-EOH
-      when :none
-        file.puts <<-EOH
-# All rights reserved - Do Not Redistribute
-#
-EOH
-      end
-    end
-  end
-end
-
-def create_readme(dir)
-  raise "Must provide a COOKBOOK=" unless ENV["COOKBOOK"]
-  puts "** Creating README for cookbook: #{ENV["COOKBOOK"]}"
-  unless File.exists?(File.join(dir, ENV["COOKBOOK"], "README.rdoc"))
-    open(File.join(dir, ENV["COOKBOOK"], "README.md"), "w") do |file|
-      file.puts <<-EOH
-Description
-===========
-
-Requirements
-============
-
-Attributes
-==========
-
-Usage
-=====
-
-EOH
-    end
-  end
-end
-
-def create_metadata(dir)
-  raise "Must provide a COOKBOOK=" unless ENV["COOKBOOK"]
-  puts "** Creating metadata for cookbook: #{ENV["COOKBOOK"]}"
-
-  case NEW_COOKBOOK_LICENSE
-  when :apachev2
-    license = "Apache 2.0"
-  when :none
-    license = "All rights reserved"
-  end
-
-  unless File.exists?(File.join(dir, ENV["COOKBOOK"], "metadata.rb"))
-    open(File.join(dir, ENV["COOKBOOK"], "metadata.rb"), "w") do |file|
-      if File.exists?(File.join(dir, ENV["COOKBOOK"], 'README.rdoc'))
-        long_description = "long_description IO.read(File.join(File.dirname(__FILE__), 'README.rdoc'))"
-      end
-      file.puts <<-EOH
-maintainer       "#{COMPANY_NAME}"
-maintainer_email "#{SSL_EMAIL_ADDRESS}"
-license          "#{license}"
-description      "Installs/Configures #{ENV["COOKBOOK"]}"
-#{long_description}
-version          "0.1"
-EOH
-    end
-  end
+  cb = ENV['COOKBOOK'] || 'my_cookbook_name'
+  puts deprecation_notice
+  puts 'The `new_cookbook` rake task is replaced by the ChefDK cookbook'
+  puts 'generator. To generate a new cookbook run:'
+  puts
+  puts "chef generate cookbook #{ENV['COOKBOOK']}"
+  puts
+  puts 'Or, if you are not using ChefDK, use `knife cookbook create`:'
+  puts
+  puts "knife cookbook create #{ENV['COOKBOOK']}"
 end
 
 desc "Create a new self-signed SSL certificate for FQDN=foo.example.com"
 task :ssl_cert do
-  $expect_verbose = true
-  fqdn = ENV["FQDN"]
-  fqdn =~ /^(.+?)\.(.+)$/
-  hostname = $1
-  domain = $2
-  raise "Must provide FQDN!" unless fqdn && hostname && domain
-  keyfile = fqdn.gsub("*", "wildcard")
-  puts "** Creating self signed SSL Certificate for #{fqdn}"
-  sh("(cd #{CADIR} && openssl genrsa 2048 > #{keyfile}.key)")
-  sh("(cd #{CADIR} && chmod 644 #{keyfile}.key)")
-  puts "* Generating Self Signed Certificate Request"
-  tf = Tempfile.new("#{keyfile}.ssl-conf")
-  ssl_config = <<EOH
-[ req ]
-distinguished_name = req_distinguished_name
-prompt = no
-
-[ req_distinguished_name ]
-C                      = #{SSL_COUNTRY_NAME}
-ST                     = #{SSL_STATE_NAME}
-L                      = #{SSL_LOCALITY_NAME}
-O                      = #{COMPANY_NAME}
-OU                     = #{SSL_ORGANIZATIONAL_UNIT_NAME}
-CN                     = #{fqdn}
-emailAddress           = #{SSL_EMAIL_ADDRESS}
-EOH
-  tf.puts(ssl_config)
-  tf.close
-  sh("(cd #{CADIR} && openssl req -config '#{tf.path}' -new -x509 -nodes -sha1 -days 3650 -key #{keyfile}.key > #{keyfile}.crt)")
-  sh("(cd #{CADIR} && openssl x509 -noout -fingerprint -text < #{keyfile}.crt > #{keyfile}.info)")
-  sh("(cd #{CADIR} && cat #{keyfile}.crt #{keyfile}.key > #{keyfile}.pem)")
-  sh("(cd #{CADIR} && chmod 644 #{keyfile}.pem)")
-end
-
-rule(%r{\b(?:site-)?cookbooks/[^/]+/metadata\.json\Z} => [ proc { |task_name| task_name.sub(/\.[^.]+$/, '.rb') } ]) do |t|
-  system("knife cookbook metadata from file #{t.source}")
+  puts deprecation_notice
+  puts 'The `ssl_cert` rake task is superseded by using the CHEF-maintained'
+  puts '`openssl` cookbook\'s `openssl_x509` resource which can generate'
+  puts 'self-signed certificate chains as convergent resources.'
+  puts
+  puts 'https://supermarket.getchef.com/cookbooks/openssl'
 end
 
 desc "Build cookbook metadata.json from metadata.rb"
-task :metadata => FileList[File.join(TOPDIR, '*cookbooks', ENV['COOKBOOK'] || '*', 'metadata.rb')].pathmap('%X.json')
-
-rule(%r{\broles/\S+\.json\Z} => [ proc { |task_name| task_name.sub(/\.[^.]+$/, '.rb') } ]) do |t|
-  system("knife role from file #{t.source}")
+task :metadata do
+  puts deprecation_notice
+  puts 'The `metadata` rake task is not recommended. Cookbook'
+  puts '`metadata.json` is automatically generated from `metadata.rb`'
+  puts 'by `knife` when uploading cookbooks to the Chef Server.'
 end
 
 desc "Update roles"
-task :roles  => FileList[File.join(TOPDIR, 'roles', '**', '*.rb')].pathmap('%X.json')
+task :roles do
+  puts deprecation_notice
+  puts 'The `roles` rake task is not recommended. If you are using Ruby'
+  puts 'role files (roles/*.rb), you can upload them all with:'
+  puts
+  puts 'knife role from file roles/*'
+  puts
+  puts 'If you are using JSON role files (roles/*.json), you can upload'
+  puts 'them all with:'
+  puts
+  puts 'knife upload roles/*.json'
+end
 
 desc "Update a specific role"
-task :role, :role_name do |t, args|
-  system("knife role from file #{File.join(TOPDIR, 'roles', args.role_name)}.rb")
+task :role do
+  puts deprecation_notice
+  puts 'The `role` rake task is not recommended. If you are using Ruby'
+  puts 'role files, you can upload a single role with:'
+  puts
+  puts 'knife role from file rolename.rb'
+  puts
+  puts 'If you are using JSON role files, you can upload a single role with'
+  puts
+  puts 'knife upload roles/rolename.json'
 end
 
 desc "Upload all cookbooks"
-task :upload_cookbooks => [ :metadata ]
 task :upload_cookbooks do
-  system("knife cookbook upload --all")
+  puts deprecation_notice
+  puts deprecated_cookbook_upload
 end
 
 desc "Upload a single cookbook"
-task :upload_cookbook => [ :metadata ]
-task :upload_cookbook, :cookbook do |t, args|
-  system("knife cookbook upload #{args.cookbook}")
+task :upload_cookbook do
+  puts deprecation_notice
+  puts deprecated_cookbook_upload
 end
 
 desc "Test all cookbooks"
 task :test_cookbooks do
-  system("knife cookbook test --all")
+  puts deprecation_notice
+  puts 'The `test_cookbooks` rake task is no longer recommended. Previously'
+  puts 'it only performed a syntax check, and did no other kind of testing,'
+  puts 'and the Chef Community has a rich ecosystem of testing tools for'
+  puts 'various purposes:'
+  puts
+  puts '- knife cookbook test will perform a syntax check, as this task did'
+  puts '  before.'
+  puts '- rubocop and foodcritic will perform lint checking for Ruby and'
+  puts '  Chef cookbook style according to community standards.'
+  puts '- ChefSpec will perform unit testing'
+  puts '- Test Kitchen will perform convergence and post-convergence'
+  puts '  testing on virtual machines.'
 end
 
 desc "Test a single cookbook"
-task :test_cookbook, :cookbook do |t, args|
-  system("knife cookbook test #{args.cookbook}")
-end
+task :test_cookbook => [:test_cookbooks]
 
 namespace :databag do
-  path = "data_bags"
-
   desc "Upload a single databag"
-  task :upload, :databag do |t, args|
-    input_databag = args[:databag] || 'none_specified'
-    databag = File.join(path, input_databag)
-
-    if File.exists?(databag) && File.directory?(databag)
-      system "knife data bag create #{input_databag}"
-      Dir.foreach(databag) do |item|
-        name, type = item.split('.')
-        if type == 'json' && name.length > 0
-          system "knife data bag from file #{input_databag} " + File.join(databag, item)
-        end
-      end
-    else
-      puts "ERROR: Could not find the databag in your databag path (" + File.join(path, input_databag) + "), skipping it"
-    end
+  task :upload do
+    puts deprecation_notice
+    puts 'The `data_bags:upload` task is not recommended. You should use'
+    puts 'the `knife upload` sub-command for uploading data bag items.'
+    puts
+    puts 'knife upload data_bags/bagname/itemname.json'
   end
 
   desc "Upload all databags"
   task :upload_all do
-    if File.exists?(path) && File.directory?(path)
-      Dir.foreach(path) do |databag|
-        if databag == databag[/^[\-[:alnum:]_]+$/]
-          Rake::Task['databag:upload'].execute( { :databag => databag } )
-        end
-      end
-    else
-      puts "ERROR: Could not find any databags, skipping it"
-    end
+    puts deprecation_notice
+    puts 'The `data_bags:upload_all` task is not recommended. You should'
+    puts 'use the `knife upload` sub-command for uploading data bag items.'
+    puts
+    puts 'knife upload data_bags/*'
   end
 
   desc "Create a databag"
-  task :create, :databag do |t, args|
-    input_databag = args[:databag] || 'none_specified'
-
-    FileUtils.mkdir(path) unless File.exists?(path)
-    databag = File.join(path, input_databag)
-    FileUtils.mkdir(databag) unless File.exists?(databag)
+  task :create do
+    puts deprecation_notice
+    puts deprecated_data_bag_creation
   end
 
   desc "Create a databag item stub"
-  task :create_item, :databag, :item do |t, args|
-    input_databag = args[:databag] || 'none_specified'
-    input_item = args[:item] || false
-
-    databag = File.join(path, input_databag)
-    if File.exists?(databag) && File.directory?(databag)
-      if input_item
-        json_filename = File.join(databag, "#{input_item}.json")
-        if !File.exists?(json_filename)
-          stub = <<EOH
-{
-  "id" : "#{input_item}"
-}
-EOH
-          json_file = File.new(json_filename, "w")
-          json_file.write(stub)
-          json_file.close
-        else
-          puts "ERROR: databag item already exists (#{json_filename}), skipping it"
-        end
-      else
-        puts "ERROR: No item id specified, skipping it"
-      end
-    else
-      puts "ERROR: Could not find your databag (#{databag}), skipping it"
-    end
+  task :create_item do
+    puts deprecation_notice
+    puts deprecated_data_bag_creation
   end
+end
+
+def deprecation_notice
+  %Q[*************************************************
+NOTICE: Chef Repository Rake Tasks Are Deprecated
+*************************************************
+]
 
 end
 
+def deprecated_cookbook_upload
+  %Q[
+The `upload_cookbook` and `upload_cookbooks` rake tasks are not
+recommended. These tasks are replaced by other, better workflow
+tools, such as `knife cookbook upload`, `knife upload`, or `berks`
+]
+end
+
+def deprecated_data_bag_creation
+  %Q[
+The `data_bags:create` and `data_bags:create_item` tasks are not
+recommended. You should create data bag items as JSON files in the data_bags
+directory, with a sub-directory for each bag, and use `knife upload` to
+upload them. For example, if you have a data bags named `users`, with
+`finn`, and `jake` items, you would have:
+
+./data_bags/users/finn.json
+./data-bags/users/jake.json
+]
+end
