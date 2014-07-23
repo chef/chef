@@ -59,7 +59,7 @@ PKG_STATUS
     end
 
     it "should run pkg info with the package name" do
-      @provider.should_receive(:shell_out!).with("cave -L warning print-ids -m \"*/#{@new_resource.package_name.split('/').last}\" -f \"%c/%p %v %r\n\"").and_return(@shell_out)
+      @provider.should_receive(:shell_out!).with("cave -L warning print-ids -M none -m \"*/#{@new_resource.package_name.split('/').last}\" -f \"%c/%p %v %r\n\"").and_return(@shell_out)
       @provider.load_current_resource
     end
 
@@ -86,13 +86,13 @@ INSTALLED
 
   context "when installing a package" do
     it "should run pkg install with the package name and version" do
-      @provider.should_receive(:shell_out!).with("cave -L warning resolve -x \"=net/ntp-4.2.6_p5-r2\"")
+      @provider.should_receive(:shell_out!).with("cave -L warning resolve -x \"=net/ntp-4.2.6_p5-r2\"", {:timeout=>86400})
       @provider.install_package("net/ntp", "4.2.6_p5-r2")
     end
 
 
     it "should run pkg install with the package name and version and options if specified" do
-      @provider.should_receive(:shell_out!).with("cave -L warning resolve -x --preserve-world \"=net/ntp-4.2.6_p5-r2\"")
+      @provider.should_receive(:shell_out!).with("cave -L warning resolve -x --preserve-world \"=net/ntp-4.2.6_p5-r2\"", {:timeout=>86400})
       @new_resource.stub(:options).and_return("--preserve-world")
       @provider.install_package("net/ntp", "4.2.6_p5-r2")
     end
@@ -102,7 +102,7 @@ INSTALLED
 sys-process/lsof 4.87 arbor
 sys-process/lsof 4.87 x86_64
 PKG_STATUS
-      @provider.should_receive(:shell_out!).with("cave -L warning resolve -x \"=sys-process/lsof-4.87\"")
+      @provider.should_receive(:shell_out!).with("cave -L warning resolve -x \"=sys-process/lsof-4.87\"", {:timeout=>86400})
       @provider.install_package("sys-process/lsof", "4.87")
     end
 
@@ -120,7 +120,7 @@ PKG_STATUS
 
   context "when upgrading a package" do
     it "should run pkg install with the package name and version" do
-      @provider.should_receive(:shell_out!).with("cave -L warning resolve -x \"=net/ntp-4.2.6_p5-r2\"")
+      @provider.should_receive(:shell_out!).with("cave -L warning resolve -x \"=net/ntp-4.2.6_p5-r2\"", {:timeout=>86400})
       @provider.upgrade_package("net/ntp", "4.2.6_p5-r2")
     end
   end
