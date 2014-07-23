@@ -50,7 +50,7 @@ class Chef
       def resolve_resource_reference(resource_collection)
         return resource if resource.is_a?(Chef::Resource) && notifying_resource.is_a?(Chef::Resource)
 
-        unless resource.is_a?(Chef::Resource))
+        unless resource.is_a?(Chef::Resource)
           fix_resource_reference(resource_collection)
         end
 
