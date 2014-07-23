@@ -53,7 +53,7 @@ class Chef
         ui.use_presenter Knife::Core::StatusPresenter
         all_nodes = []
         q = Chef::Search::Query.new
-        query = @name_args[0].dup || '*:*' 
+        query = @name_args[0] ? @name_args[0].dup : '*:*' 
         if config[:hide_healthy]
           time = Time.now.to_i
           query_unhealthy = "NOT ohai_time:[" << (time - 60*60).to_s << " TO " << time.to_s << "]"
