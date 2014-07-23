@@ -25,18 +25,18 @@ describe 'knife raw' do
   include KnifeSupport
   include AppServerSupport
 
-  include_context "default config options"
+  include_context 'default config options'
 
-  when_the_chef_server "has one of each thing" do
+  when_the_chef_server 'has one of each thing' do
     client 'x', '{}'
-    cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
-    data_bag 'x', { 'y' => '{}' }
+    cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"'
+    data_bag 'x',  'y' => '{}'
     environment 'x', '{}'
     node 'x', '{}'
     role 'x', '{}'
     user 'x', '{}'
 
-    it 'knife raw /nodes/x returns the node', :pending => (RUBY_VERSION < "1.9") do
+    it 'knife raw /nodes/x returns the node', pending: (RUBY_VERSION < '1.9') do
       knife('raw /nodes/x').should_succeed <<EOM
 {
   "name": "x",
@@ -62,7 +62,7 @@ EOM
       knife('raw /blarghle').should_fail(/ERROR: Server responded with error 404 "Not Found\s*"/)
     end
 
-    it 'knife raw -m DELETE /roles/x succeeds', :pending => (RUBY_VERSION < "1.9") do
+    it 'knife raw -m DELETE /roles/x succeeds', pending: (RUBY_VERSION < '1.9') do
       knife('raw -m DELETE /roles/x').should_succeed <<EOM
 {
   "name": "x",
@@ -83,7 +83,7 @@ EOM
       knife('show /roles/x.json').should_fail "ERROR: /roles/x.json: No such file or directory\n"
     end
 
-    it 'knife raw -m PUT -i blah.txt /roles/x succeeds', :pending => (RUBY_VERSION < "1.9") do
+    it 'knife raw -m PUT -i blah.txt /roles/x succeeds', pending: (RUBY_VERSION < '1.9') do
       Tempfile.open('raw_put_input') do |file|
         file.write <<EOM
 {
@@ -131,7 +131,7 @@ EOM
       end
     end
 
-    it 'knife raw -m POST -i blah.txt /roles succeeds', :pending => (RUBY_VERSION < "1.9") do
+    it 'knife raw -m POST -i blah.txt /roles succeeds', pending: (RUBY_VERSION < '1.9') do
       Tempfile.open('raw_put_input') do |file|
         file.write <<EOM
 {
@@ -169,9 +169,9 @@ EOM
 
     context 'When a server returns raw json' do
       before :each do
-        Chef::Config.chef_server_url = "http://localhost:9018"
-        app = lambda do |env|
-          [200, {'Content-Type' => 'application/json' }, ['{ "x": "y", "a": "b" }'] ]
+        Chef::Config.chef_server_url = 'http://localhost:9018'
+        app = lambda do |_env|
+          [200, { 'Content-Type' => 'application/json' }, ['{ "x": "y", "a": "b" }']]
         end
         @raw_server, @raw_server_thread = start_app_server(app, 9018)
       end
@@ -181,7 +181,7 @@ EOM
         @raw_server_thread.kill if @raw_server_thread
       end
 
-      it 'knife raw /blah returns the prettified json', :pending => (RUBY_VERSION < "1.9") do
+      it 'knife raw /blah returns the prettified json', pending: (RUBY_VERSION < '1.9') do
         knife('raw /blah').should_succeed <<EOM
 {
   "x": "y",
@@ -199,9 +199,9 @@ EOM
 
     context 'When a server returns text' do
       before :each do
-        Chef::Config.chef_server_url = "http://localhost:9018"
-        app = lambda do |env|
-          [200, {'Content-Type' => 'text' }, ['{ "x": "y", "a": "b" }'] ]
+        Chef::Config.chef_server_url = 'http://localhost:9018'
+        app = lambda do |_env|
+          [200, { 'Content-Type' => 'text' }, ['{ "x": "y", "a": "b" }']]
         end
         @raw_server, @raw_server_thread = start_app_server(app, 9018)
       end

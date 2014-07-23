@@ -31,7 +31,7 @@ class Chef
         @cookbook_version = options[:cookbook_version]
 
         # Default to getting *everything* from the server.
-        if !@chef_config[:repo_mode]
+        unless @chef_config[:repo_mode]
           if @chef_config[:chef_server_url] =~ /\/+organizations\/.+/
             @chef_config[:repo_mode] = 'hosted_everything'
           else
@@ -50,7 +50,7 @@ class Chef
 
       def create_chef_fs
         require 'chef/chef_fs/file_system/chef_server_root_dir'
-        Chef::ChefFS::FileSystem::ChefServerRootDir.new("remote", @chef_config, :cookbook_version => @cookbook_version)
+        Chef::ChefFS::FileSystem::ChefServerRootDir.new('remote', @chef_config, cookbook_version: @cookbook_version)
       end
 
       def local_fs
@@ -91,7 +91,7 @@ class Chef
           paths.each do |path|
             realest_path = Chef::ChefFS::PathUtils.realest_path(path)
             if PathUtils.descendant_of?(absolute_pwd, realest_path)
-              relative_path = Chef::ChefFS::PathUtils::relative_to(absolute_pwd, realest_path)
+              relative_path = Chef::ChefFS::PathUtils.relative_to(absolute_pwd, realest_path)
               return relative_path == '.' ? "/#{name}" : "/#{name}/#{relative_path}"
             end
           end
@@ -122,12 +122,12 @@ class Chef
       # Print the given server path, relative to the current directory
       def format_path(entry)
         server_path = entry.path
-        if base_path && server_path[0,base_path.length] == base_path
+        if base_path && server_path[0, base_path.length] == base_path
           if server_path == base_path
-            return "."
-          elsif server_path[base_path.length,1] == "/"
+            return '.'
+          elsif server_path[base_path.length, 1] == '/'
             return server_path[base_path.length + 1, server_path.length - base_path.length - 1]
-          elsif base_path == "/" && server_path[0,1] == "/"
+          elsif base_path == '/' && server_path[0, 1] == '/'
             return server_path[1, server_path.length - 1]
           end
         end

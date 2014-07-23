@@ -27,11 +27,9 @@ require 'chef/run_context/cookbook_compiler'
 require 'chef/event_dispatch/events_output_stream'
 
 class Chef
-
   # == Chef::RunContext
   # Value object that loads and tracks the context of a Chef run
   class RunContext
-
     # Chef::Node object for this run
     attr_reader :node
 
@@ -70,9 +68,9 @@ class Chef
       @node = node
       @cookbook_collection = cookbook_collection
       @resource_collection = Chef::ResourceCollection.new
-      @immediate_notification_collection = Hash.new {|h,k| h[k] = []}
-      @delayed_notification_collection = Hash.new {|h,k| h[k] = []}
-      @definitions = Hash.new
+      @immediate_notification_collection = Hash.new { |h, k| h[k] = [] }
+      @delayed_notification_collection = Hash.new { |h, k| h[k] = [] }
+      @definitions = {}
       @loaded_recipes = {}
       @loaded_attributes = {}
       @events = events
@@ -130,7 +128,7 @@ class Chef
 
     # Evaluates the recipes +recipe_names+. Used by DSL::IncludeRecipe
     def include_recipe(*recipe_names)
-      result_recipes = Array.new
+      result_recipes = []
       recipe_names.flatten.each do |recipe_name|
         if result = load_recipe(recipe_name)
           result_recipes << result
@@ -155,7 +153,6 @@ including it from in that cookbook's metadata.
 ERROR_MESSAGE
       end
 
-
       if loaded_fully_qualified_recipe?(cookbook_name, recipe_short_name)
         Chef::Log.debug("I am not loading #{recipe_name}, because I have already seen it.")
         false
@@ -168,8 +165,8 @@ ERROR_MESSAGE
     end
 
     def load_recipe_file(recipe_file)
-      if !File.exist?(recipe_file)
-        raise Chef::Exceptions::RecipeNotFound, "could not find recipe file #{recipe_file}"
+      unless File.exist?(recipe_file)
+        fail Chef::Exceptions::RecipeNotFound, "could not find recipe file #{recipe_file}"
       end
 
       Chef::Log.debug("Loading Recipe File #{recipe_file}")
@@ -182,10 +179,10 @@ ERROR_MESSAGE
     # +attr_file_name+. Used by DSL::IncludeAttribute
     def resolve_attribute(cookbook_name, attr_file_name)
       cookbook = cookbook_collection[cookbook_name]
-      raise Chef::Exceptions::CookbookNotFound, "could not find cookbook #{cookbook_name} while loading attribute #{name}" unless cookbook
+      fail Chef::Exceptions::CookbookNotFound, "could not find cookbook #{cookbook_name} while loading attribute #{name}" unless cookbook
 
       attribute_filename = cookbook.attribute_filenames_by_short_filename[attr_file_name]
-      raise Chef::Exceptions::AttributeNotFound, "could not find filename for attribute #{attr_file_name} in cookbook #{cookbook_name}" unless attribute_filename
+      fail Chef::Exceptions::AttributeNotFound, "could not find filename for attribute #{attr_file_name} in cookbook #{cookbook_name}" unless attribute_filename
 
       attribute_filename
     end
@@ -211,7 +208,7 @@ ERROR_MESSAGE
     end
 
     def loaded_fully_qualified_recipe?(cookbook, recipe)
-      @loaded_recipes.has_key?("#{cookbook}::#{recipe}")
+      @loaded_recipes.key?("#{cookbook}::#{recipe}")
     end
 
     # Returns true if +recipe+ has been loaded, false otherwise. Default recipe
@@ -223,7 +220,7 @@ ERROR_MESSAGE
     end
 
     def loaded_fully_qualified_attribute?(cookbook, attribute_file)
-      @loaded_attributes.has_key?("#{cookbook}::#{attribute_file}")
+      @loaded_attributes.key?("#{cookbook}::#{attribute_file}")
     end
 
     def loaded_attribute(cookbook, attribute_file)
@@ -276,6 +273,5 @@ ERROR_MESSAGE
     def loaded_recipe(cookbook, recipe)
       @loaded_recipes["#{cookbook}::#{recipe}"] = true
     end
-
   end
 end

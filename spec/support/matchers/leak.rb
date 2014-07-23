@@ -20,7 +20,7 @@ module Matchers
   module LeakBase
     include RSpec::Matchers
 
-    def initialize(opts={}, &block)
+    def initialize(opts = {}, &_block)
       @warmup = opts[:warmup] || 5
       @iterations = opts[:iterations] || 100
       @variance = opts[:variance] || 5000
@@ -68,7 +68,6 @@ module Matchers
         end
       end
     end
-
   end
 
   class LeakMemory
@@ -90,6 +89,7 @@ module Matchers
   def leak_memory(opts, &block)
     Matchers::LeakMemory.new(opts, &block)
   end
+
   def leak_handles(opts, &block)
     Matchers::LeakHandles.new(opts, &block)
   end

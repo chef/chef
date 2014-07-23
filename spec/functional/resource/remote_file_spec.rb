@@ -37,7 +37,7 @@ describe Chef::Resource::RemoteFile do
 
   include_context Chef::Resource::File
 
-  let(:file_base) { "remote_file_spec" }
+  let(:file_base) { 'remote_file_spec' }
 
   def create_resource
     node = Chef::Node.new
@@ -54,7 +54,7 @@ describe Chef::Resource::RemoteFile do
 
   let(:default_mode) { ((0100666 - File.umask) & 07777).to_s(8) }
 
-  context "when fetching files over HTTP" do
+  context 'when fetching files over HTTP' do
     before(:all) do
       start_tiny_server
     end
@@ -67,47 +67,47 @@ describe Chef::Resource::RemoteFile do
       let(:source) { 'http://localhost:9000/seattle_capo.png' }
 
       before do
-        @api.get("/seattle_capo.png", 304, "", { 'Etag' => 'abcdef' } )
+        @api.get('/seattle_capo.png', 304, '',  'Etag' => 'abcdef')
       end
 
-      it "does not fetch the file" do
+      it 'does not fetch the file' do
         resource.run_action(:create)
       end
 
     end
 
-    context "when using normal encoding" do
+    context 'when using normal encoding' do
       let(:source) { 'http://localhost:9000/nyan_cat.png' }
       let(:expected_content) { binread(nyan_uncompressed_filename) }
 
-      it_behaves_like "a file resource"
+      it_behaves_like 'a file resource'
 
-      it_behaves_like "a securable resource with reporting"
+      it_behaves_like 'a securable resource with reporting'
     end
 
-    context "when using gzip encoding" do
+    context 'when using gzip encoding' do
       let(:source) { 'http://localhost:9000/nyan_cat.png.gz' }
       let(:expected_content) { binread(nyan_compressed_filename) }
 
-      it_behaves_like "a file resource"
+      it_behaves_like 'a file resource'
 
-      it_behaves_like "a securable resource with reporting"
+      it_behaves_like 'a securable resource with reporting'
     end
 
   end
 
-  context "when fetching files over HTTPS" do
+  context 'when fetching files over HTTPS' do
 
     before(:all) do
-      cert_text = File.read(File.expand_path("ssl/chef-rspec.cert", CHEF_SPEC_DATA))
+      cert_text = File.read(File.expand_path('ssl/chef-rspec.cert', CHEF_SPEC_DATA))
       cert = OpenSSL::X509::Certificate.new(cert_text)
-      key_text = File.read(File.expand_path("ssl/chef-rspec.key", CHEF_SPEC_DATA))
+      key_text = File.read(File.expand_path('ssl/chef-rspec.key', CHEF_SPEC_DATA))
       key = OpenSSL::PKey::RSA.new(key_text)
 
-      server_opts = { :SSLEnable => true,
-                      :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE,
-                      :SSLCertificate => cert,
-                      :SSLPrivateKey => key }
+      server_opts = { SSLEnable: true,
+                      SSLVerifyClient: OpenSSL::SSL::VERIFY_NONE,
+                      SSLCertificate: cert,
+                      SSLPrivateKey: key }
 
       start_tiny_server(server_opts)
     end
@@ -120,11 +120,11 @@ describe Chef::Resource::RemoteFile do
 
     let(:expected_content) { binread(nyan_uncompressed_filename) }
 
-    it_behaves_like "a file resource"
+    it_behaves_like 'a file resource'
 
   end
 
-  context "when dealing with content length checking" do
+  context 'when dealing with content length checking' do
     before(:all) do
       start_tiny_server
     end
@@ -133,7 +133,7 @@ describe Chef::Resource::RemoteFile do
       stop_tiny_server
     end
 
-    context "when downloading compressed data" do
+    context 'when downloading compressed data' do
       let(:expected_content) { binread(nyan_uncompressed_filename) }
       let(:source) { 'http://localhost:9000/nyan_cat_content_length_compressed.png' }
 
@@ -142,20 +142,20 @@ describe Chef::Resource::RemoteFile do
         resource.run_action(:create)
       end
 
-      it "should create the file" do
+      it 'should create the file' do
         File.should exist(path)
       end
 
-      it "should mark the resource as updated" do
+      it 'should mark the resource as updated' do
         resource.should be_updated_by_last_action
       end
 
-      it "has the correct content" do
+      it 'has the correct content' do
         binread(path).should == expected_content
       end
     end
 
-    context "when downloding uncompressed data" do
+    context 'when downloding uncompressed data' do
       let(:expected_content) { binread(nyan_uncompressed_filename) }
       let(:source) { 'http://localhost:9000/nyan_cat_content_length.png' }
 
@@ -164,46 +164,46 @@ describe Chef::Resource::RemoteFile do
         resource.run_action(:create)
       end
 
-      it "should create the file" do
+      it 'should create the file' do
         File.should exist(path)
       end
 
-      it "should mark the resource as updated" do
+      it 'should mark the resource as updated' do
         resource.should be_updated_by_last_action
       end
 
-      it "has the correct content" do
+      it 'has the correct content' do
         binread(path).should == expected_content
       end
     end
 
-    context "when downloading truncated compressed data" do
+    context 'when downloading truncated compressed data' do
       let(:source) { 'http://localhost:9000/nyan_cat_truncated_compressed.png' }
 
       before do
         File.should_not exist(path)
       end
 
-      it "should raise ContentLengthMismatch" do
+      it 'should raise ContentLengthMismatch' do
         lambda { resource.run_action(:create) }.should raise_error(Chef::Exceptions::ContentLengthMismatch)
-        #File.should_not exist(path) # XXX: CHEF-5081
+        # File.should_not exist(path) # XXX: CHEF-5081
       end
     end
 
-    context "when downloding truncated uncompressed data" do
+    context 'when downloding truncated uncompressed data' do
       let(:source) { 'http://localhost:9000/nyan_cat_truncated.png' }
 
       before do
         File.should_not exist(path)
       end
 
-      it "should raise ContentLengthMismatch" do
+      it 'should raise ContentLengthMismatch' do
         lambda { resource.run_action(:create) }.should raise_error(Chef::Exceptions::ContentLengthMismatch)
-        #File.should_not exist(path) # XXX: CHEF-5081
+        # File.should_not exist(path) # XXX: CHEF-5081
       end
     end
 
-    context "when downloding data with transfer-encoding set" do
+    context 'when downloding data with transfer-encoding set' do
       let(:expected_content) { binread(nyan_uncompressed_filename) }
       let(:source) { 'http://localhost:9000/nyan_cat_transfer_encoding.png' }
 
@@ -212,15 +212,15 @@ describe Chef::Resource::RemoteFile do
         resource.run_action(:create)
       end
 
-      it "should create the file" do
+      it 'should create the file' do
         File.should exist(path)
       end
 
-      it "should mark the resource as updated" do
+      it 'should mark the resource as updated' do
         resource.should be_updated_by_last_action
       end
 
-      it "has the correct content" do
+      it 'has the correct content' do
         binread(path).should == expected_content
       end
     end

@@ -45,8 +45,8 @@ class Chef
         @current_resource
       end
 
-      def env_value(key_name)
-        raise Chef::Exceptions::Env, "#{self.to_s} provider does not implement env_value!"
+      def env_value(_key_name)
+        fail Chef::Exceptions::Env, "#{self} provider does not implement env_value!"
       end
 
       def env_key_exists(key_name)
@@ -60,8 +60,8 @@ class Chef
       # <false>:: If a change is not required
       def compare_value
         if @new_resource.delim
-          #e.g. check for existing value within PATH
-          not @current_resource.value.split(@new_resource.delim).any? do |val|
+          # e.g. check for existing value within PATH
+          !@current_resource.value.split(@new_resource.delim).any? do |val|
             val == @new_resource.value
           end
         else
@@ -83,31 +83,31 @@ class Chef
         end
       end
 
-      #e.g. delete a PATH element
+      # e.g. delete a PATH element
       #
       # ==== Returns
       # <true>:: If we handled the element case and caller should not delete the key
       # <false>:: Caller should delete the key, either no :delim was specific or value was empty
       #           after we removed the element.
       def delete_element
-        return false unless @new_resource.delim #no delim: delete the key
+        return false unless @new_resource.delim # no delim: delete the key
         if compare_value
           Chef::Log.debug("#{@new_resource} element '#{@new_resource.value}' does not exist")
-          return true #do not delete the key
+          return true # do not delete the key
         else
           new_value =
-            @current_resource.value.split(@new_resource.delim).select { |item|
+            @current_resource.value.split(@new_resource.delim).select do |item|
             item != @new_resource.value
-          }.join(@new_resource.delim)
+          end.join(@new_resource.delim)
 
           if new_value.empty?
-            return false #nothing left here, delete the key
+            return false # nothing left here, delete the key
           else
             old_value = @new_resource.value(new_value)
             create_env
             Chef::Log.debug("#{@new_resource} deleted #{old_value} element")
             @new_resource.updated_by_last_action(true)
-            return true #we removed the element and updated; do not delete the key
+            return true # we removed the element and updated; do not delete the key
           end
         end
       end
@@ -128,21 +128,21 @@ class Chef
             @new_resource.updated_by_last_action(true)
           end
         else
-          raise Chef::Exceptions::Env, "Cannot modify #{@new_resource} - key does not exist!"
+          fail Chef::Exceptions::Env, "Cannot modify #{@new_resource} - key does not exist!"
         end
       end
 
       def create_env
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :#{@new_resource.action}"
+        fail Chef::Exceptions::UnsupportedAction, "#{self} does not support :#{@new_resource.action}"
       end
 
       def delete_env
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :delete"
+        fail Chef::Exceptions::UnsupportedAction, "#{self} does not support :delete"
       end
 
       def modify_env
         if @new_resource.delim
-          #e.g. add to PATH
+          # e.g. add to PATH
           @new_resource.value << @new_resource.delim << @current_resource.value
         end
         create_env

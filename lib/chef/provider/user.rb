@@ -23,7 +23,6 @@ require 'etc'
 class Chef
   class Provider
     class User < Chef::Provider
-
       include Chef::Mixin::Command
 
       attr_accessor :user_exists, :locked
@@ -97,9 +96,9 @@ class Chef
         end
         requirements.assert(:all_actions) do |a|
           a.assertion { @shadow_lib_ok }
-          a.failure_message Chef::Exceptions::MissingLibrary, "You must have ruby-shadow installed for password support!"
-          a.whyrun "ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed." +
-                   "Note that user update converge may report false-positive on the basis of mismatched password. "
+          a.failure_message Chef::Exceptions::MissingLibrary, 'You must have ruby-shadow installed for password support!'
+          a.whyrun 'ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed.' \
+                   'Note that user update converge may report false-positive on the basis of mismatched password. '
         end
         requirements.assert(:modify, :lock, :unlock) do |a|
           a.assertion { @user_exists }
@@ -114,11 +113,11 @@ class Chef
       # <true>:: If a change is required
       # <false>:: If the users are identical
       def compare_user
-        changed = [ :comment, :home, :shell, :password ].select do |user_attrib|
+        changed = [:comment, :home, :shell, :password].select do |user_attrib|
           !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib) != @current_resource.send(user_attrib)
         end
 
-        changed += [ :uid, :gid ].select do |user_attrib|
+        changed += [:uid, :gid].select do |user_attrib|
           !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib).to_s != @current_resource.send(user_attrib).to_s
         end
 
@@ -126,7 +125,6 @@ class Chef
       end
 
       def action_create
-
         if !@user_exists
           converge_by("create user #{@new_resource.username}") do
             create_user
@@ -150,7 +148,7 @@ class Chef
       end
 
       def remove_user
-        raise NotImplementedError
+        fail NotImplementedError
       end
 
       def action_manage
@@ -163,7 +161,7 @@ class Chef
       end
 
       def manage_user
-        raise NotImplementedError
+        fail NotImplementedError
       end
 
       def action_modify
@@ -176,26 +174,26 @@ class Chef
       end
 
       def action_lock
-        if check_lock() == false
+        if check_lock == false
           converge_by("lock the user #{@new_resource.username}") do
             lock_user
             Chef::Log.info("#{@new_resource} locked")
           end
          else
-          Chef::Log.debug("#{@new_resource} already locked - nothing to do")
+           Chef::Log.debug("#{@new_resource} already locked - nothing to do")
         end
       end
 
       def check_lock
-        raise NotImplementedError
+        fail NotImplementedError
       end
 
       def lock_user
-        raise NotImplementedError
+        fail NotImplementedError
       end
 
       def action_unlock
-        if check_lock() == true
+        if check_lock == true
           converge_by("unlock user #{@new_resource.username}") do
             unlock_user
             Chef::Log.info("#{@new_resource} unlocked")
@@ -206,9 +204,8 @@ class Chef
       end
 
       def unlock_user
-        raise NotImplementedError
+        fail NotImplementedError
       end
-
     end
   end
 end

@@ -21,19 +21,17 @@ require 'chef/win32/file'
 class Chef
   module ReservedNames::Win32
     class File
-
       # Objects of class Chef::ReservedNames::Win32::File::Stat encapsulate common status
       # information for Chef::ReservedNames::Win32::File objects. The information
       # is recorded at the moment the Chef::ReservedNames::Win32::File::Stat object is
       # created; changes made to the file after that point will not be reflected.
       class Info
-
         include Chef::ReservedNames::Win32::API::File
         include Chef::ReservedNames::Win32::API
 
         # http://msdn.microsoft.com/en-us/library/windows/desktop/aa363788(v=vs.85).aspx
         def initialize(file_name)
-          raise Errno::ENOENT, file_name unless ::File.exist?(file_name)
+          fail Errno::ENOENT, file_name unless ::File.exist?(file_name)
           @file_info = retrieve_file_info(file_name)
         end
 
@@ -67,9 +65,9 @@ class Chef
 
         ##############################
         # ::File::Stat compat
-        alias :atime :last_access_time
-        alias :mtime :last_write_time
-        alias :ctime :creation_time
+        alias_method :atime, :last_access_time
+        alias_method :mtime, :last_write_time
+        alias_method :ctime, :creation_time
 
         # we're faking it here, but this is in the spirit of ino in *nix
         #
@@ -90,10 +88,8 @@ class Chef
         #
         def parse_time(file_time_struct)
           wtime_to_time(make_uint64(file_time_struct[:dw_low_date_time],
-            file_time_struct[:dw_high_date_time]))
+                                    file_time_struct[:dw_high_date_time]))
         end
-
-
       end
     end
   end

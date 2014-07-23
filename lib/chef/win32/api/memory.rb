@@ -50,43 +50,33 @@ class Chef
 
         ffi_lib 'kernel32'
 
-=begin
-HLOCAL WINAPI LocalAlloc(
-  __in  UINT uFlags,
-  __in  SIZE_T uBytes
-);
-=end
-        safe_attach_function :LocalAlloc, [ :UINT, :SIZE_T ], :pointer
+        # HLOCAL WINAPI LocalAlloc(
+        #   __in  UINT uFlags,
+        #   __in  SIZE_T uBytes
+        # );
+        safe_attach_function :LocalAlloc, [:UINT, :SIZE_T], :pointer
 
-=begin
-UINT WINAPI LocalFlags(
-  __in  HLOCAL hMem
-);
-=end
-        safe_attach_function :LocalFlags, [ :pointer ], :UINT
+        # UINT WINAPI LocalFlags(
+        #   __in  HLOCAL hMem
+        # );
+        safe_attach_function :LocalFlags, [:pointer], :UINT
 
-=begin
-HLOCAL WINAPI LocalFree(
-  __in  HLOCAL hMem
-);
-=end
-        safe_attach_function :LocalFree, [ :pointer ], :pointer
+        # HLOCAL WINAPI LocalFree(
+        #   __in  HLOCAL hMem
+        # );
+        safe_attach_function :LocalFree, [:pointer], :pointer
 
-=begin
-HLOCAL WINAPI LocalReAlloc(
-  __in  HLOCAL hMem,
-  __in  SIZE_T uBytes,
-  __in  UINT uFlags
-);
-=end
-        safe_attach_function :LocalReAlloc, [ :pointer, :SIZE_T, :UINT ], :pointer
+        # HLOCAL WINAPI LocalReAlloc(
+        #   __in  HLOCAL hMem,
+        #   __in  SIZE_T uBytes,
+        #   __in  UINT uFlags
+        # );
+        safe_attach_function :LocalReAlloc, [:pointer, :SIZE_T, :UINT], :pointer
 
-=begin
-UINT WINAPI LocalSize(
-  __in  HLOCAL hMem
-);
-=end
-        safe_attach_function :LocalSize, [ :pointer ], :SIZE_T
+        # UINT WINAPI LocalSize(
+        #   __in  HLOCAL hMem
+        # );
+        safe_attach_function :LocalSize, [:pointer], :SIZE_T
 
         ###############################################
         # FFI API Bindings
@@ -98,7 +88,6 @@ UINT WINAPI LocalSize(
         safe_attach_function :realloc, [:pointer, :size_t], :pointer
         safe_attach_function :free, [:pointer], :void
         safe_attach_function :memcpy, [:pointer, :pointer, :size_t], :pointer
-
       end
     end
   end

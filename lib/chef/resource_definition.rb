@@ -21,34 +21,33 @@ require 'chef/mixin/params_validate'
 
 class Chef
   class ResourceDefinition
-
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
     attr_accessor :name, :params, :recipe, :node
 
-    def initialize(node=nil)
+    def initialize(node = nil)
       @name = nil
-      @params = Hash.new
+      @params = {}
       @recipe = nil
       @node = node
     end
 
-    def define(resource_name, prototype_params=nil, &block)
-      unless resource_name.kind_of?(Symbol)
-        raise ArgumentError, "You must use a symbol when defining a new resource!"
+    def define(resource_name, prototype_params = nil, &block)
+      unless resource_name.is_a?(Symbol)
+        fail ArgumentError, 'You must use a symbol when defining a new resource!'
       end
       @name = resource_name
       if prototype_params
-        unless prototype_params.kind_of?(Hash)
-          raise ArgumentError, "You must pass a hash as the prototype parameters for a definition."
+        unless prototype_params.is_a?(Hash)
+          fail ArgumentError, 'You must pass a hash as the prototype parameters for a definition.'
         end
         @params = prototype_params
       end
       if Kernel.block_given?
         @recipe = block
       else
-        raise ArgumentError, "You must pass a block to a definition."
+        fail ArgumentError, 'You must pass a block to a definition.'
       end
       true
     end
@@ -61,7 +60,7 @@ class Chef
     end
 
     def to_s
-      "#{name.to_s}"
+      "#{name}"
     end
   end
 end

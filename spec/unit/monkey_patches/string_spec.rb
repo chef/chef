@@ -21,8 +21,8 @@ require 'chef/monkey_patches/string'
 
 describe String do
 
-  describe "#ord" do
-    it "converts each ASCII-8BIT character to corresponding positive Fixnum" do
+  describe '#ord' do
+    it 'converts each ASCII-8BIT character to corresponding positive Fixnum' do
       (0..0xff).each do |num|
         ch = num.chr
         ch.force_encoding('ASCII-8BIT') if ch.respond_to? :force_encoding

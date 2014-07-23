@@ -1,1 +1,1 @@
-LibraryLoadOrder.record("test-with-deps")
+LibraryLoadOrder.record('test-with-deps')

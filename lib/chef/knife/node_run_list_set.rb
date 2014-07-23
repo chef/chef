@@ -21,17 +21,16 @@ require 'chef/knife'
 class Chef
   class Knife
     class NodeRunListSet < Knife
-
       deps do
         require 'chef/node'
         require 'chef/json_compat'
       end
 
-      banner "knife node run_list set NODE ENTRIES (options)"
+      banner 'knife node run_list set NODE ENTRIES (options)'
 
       def run
         if @name_args.size < 2
-          ui.fatal "You must supply both a node name and a run list."
+          ui.fatal 'You must supply both a node name and a run list.'
           show_usage
           exit 1
         elsif @name_args.size > 2
@@ -60,7 +59,6 @@ class Chef
         node.run_list.run_list_items.clear
         entries.each { |e| node.run_list << e }
       end
-
     end
   end
 end

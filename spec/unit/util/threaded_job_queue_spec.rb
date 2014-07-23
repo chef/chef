@@ -21,8 +21,8 @@ end
 describe Chef::Util::ThreadedJobQueue do
   let(:queue) { Chef::Util::ThreadedJobQueue.new }
 
-  it "should pass mutex to jobs with an arity of 1" do
-    job = double()
+  it 'should pass mutex to jobs with an arity of 1' do
+    job = double
     job.should_receive(:arity).at_least(:once).and_return(1)
     job.should_receive(:call).exactly(5).times.with(an_instance_of(Mutex))
 
@@ -30,8 +30,8 @@ describe Chef::Util::ThreadedJobQueue do
     queue.process
   end
 
-  it "should pass nothing to jobs with an arity of 0" do
-    job = double()
+  it 'should pass nothing to jobs with an arity of 0' do
+    job = double
     job.should_receive(:arity).at_least(:once).and_return(0)
     job.should_receive(:call).exactly(5).times.with(no_args)
 
@@ -39,13 +39,13 @@ describe Chef::Util::ThreadedJobQueue do
     queue.process
   end
 
-  it "should use specified number of threads" do
+  it 'should use specified number of threads' do
     Thread.should_receive(:new).exactly(7).times.and_call_original
     queue.process(7)
   end
 
-  it "should propagate exceptions to the main thread" do
-    queue << lambda { raise WorkerThreadError }
+  it 'should propagate exceptions to the main thread' do
+    queue << lambda { fail WorkerThreadError }
     lambda { queue.process }.should raise_error(WorkerThreadError)
   end
 end

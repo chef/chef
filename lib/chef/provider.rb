@@ -75,7 +75,7 @@ class Chef
     end
 
     def load_current_resource
-      raise Chef::Exceptions::Override, "You must override load_current_resource in #{self.to_s}"
+      fail Chef::Exceptions::Override, "You must override load_current_resource in #{self}"
     end
 
     def define_resource_requirements
@@ -85,7 +85,7 @@ class Chef
     end
 
     def action_nothing
-      Chef::Log.debug("Doing nothing for #{@new_resource.to_s}")
+      Chef::Log.debug("Doing nothing for #{@new_resource}")
       true
     end
 
@@ -93,7 +93,7 @@ class Chef
       run_context.events
     end
 
-    def run_action(action=nil)
+    def run_action(action = nil)
       @action = action unless action.nil?
 
       # TODO: it would be preferable to get the action to be executed in the
@@ -172,7 +172,7 @@ class Chef
       # this block cannot interact with resources outside, e.g.,
       # manipulating notifies.
 
-      converge_by ("evaluate block and run any associated actions") do
+      converge_by ('evaluate block and run any associated actions') do
         saved_run_context = @run_context
         @run_context = @run_context.dup
         @run_context.resource_collection = Chef::ResourceCollection.new
@@ -181,6 +181,5 @@ class Chef
         @run_context = saved_run_context
       end
     end
-
   end
 end

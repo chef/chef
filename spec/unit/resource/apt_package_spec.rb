@@ -18,26 +18,26 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::AptPackage, "initialize" do
+describe Chef::Resource::AptPackage, 'initialize' do
 
   before(:each) do
-    @resource = Chef::Resource::AptPackage.new("foo")
+    @resource = Chef::Resource::AptPackage.new('foo')
   end
 
-  it "should return a Chef::Resource::AptPackage" do
+  it 'should return a Chef::Resource::AptPackage' do
     @resource.should be_a_kind_of(Chef::Resource::AptPackage)
   end
 
-  it "should set the resource_name to :apt_package" do
+  it 'should set the resource_name to :apt_package' do
     @resource.resource_name.should eql(:apt_package)
   end
 
-  it "should set the provider to Chef::Provider::Package::Apt" do
+  it 'should set the provider to Chef::Provider::Package::Apt' do
     @resource.provider.should eql(Chef::Provider::Package::Apt)
   end
 
-  it "should support default_release" do
-    @resource.default_release("lenny-backports")
-    @resource.default_release.should eql("lenny-backports")
+  it 'should support default_release' do
+    @resource.default_release('lenny-backports')
+    @resource.default_release.should eql('lenny-backports')
   end
 end

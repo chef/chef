@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 require 'spec_helper'
 
 describe Chef::Provider::Subversion do
@@ -37,7 +36,7 @@ describe Chef::Provider::Subversion do
   it "converts resource attributes to options for run_command and popen4" do
     @provider.run_options.should == {}
     @resource.user 'deployninja'
-    @provider.run_options.should == {:user => "deployninja"}
+    @provider.run_options.should == {user: "deployninja"}
   end
 
   context "determining the revision of the currently deployed code" do
@@ -69,7 +68,7 @@ describe Chef::Provider::Subversion do
       @stdout.stub(:string).and_return(example_svn_info)
       @stderr.stub(:string).and_return("")
       @exitstatus.stub(:exitstatus).and_return(0)
-      expected_command = ["svn info", {:cwd=>"/my/deploy/dir"}]
+      expected_command = ["svn info", {cwd: "/my/deploy/dir"}]
       @provider.should_receive(:popen4).with(*expected_command).
                                         and_yield("no-pid", "no-stdin", @stdout,@stderr).
                                         and_return(@exitstatus)
@@ -133,7 +132,7 @@ describe Chef::Provider::Subversion do
       @resource.revision "HEAD"
       @stdout.stub(:string).and_return(example_svn_info)
       @stderr.stub(:string).and_return("")
-      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", {:cwd=>Dir.tmpdir}]
+      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", {cwd: Dir.tmpdir}]
       @provider.should_receive(:popen4).with(*expected_command).
                                         and_yield("no-pid","no-stdin",@stdout,@stderr).
                                         and_return(exitstatus)
@@ -166,13 +165,13 @@ describe Chef::Provider::Subversion do
   it "generates a checkout command with authentication" do
     @resource.svn_username "deployNinja"
     @resource.svn_password "vanish!"
-    @provider.checkout_command.should eql("svn checkout -q --username deployNinja --password vanish!  " +
+    @provider.checkout_command.should eql("svn checkout -q --username deployNinja --password vanish!  " \
                                           "-r12345 http://svn.example.org/trunk/ /my/deploy/dir")
   end
 
   it "generates a checkout command with arbitrary options" do
     @resource.svn_arguments "--no-auth-cache"
-    @provider.checkout_command.should eql("svn checkout --no-auth-cache -q  -r12345 "+
+    @provider.checkout_command.should eql("svn checkout --no-auth-cache -q  -r12345 "\
                                           "http://svn.example.org/trunk/ /my/deploy/dir")
   end
 
@@ -199,7 +198,7 @@ describe Chef::Provider::Subversion do
   it "runs an export with the --force option" do
     ::File.stub(:directory?).with("/my/deploy").and_return(true)
     expected_cmd = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
-    @provider.should_receive(:run_command).with(:command => expected_cmd)
+    @provider.should_receive(:run_command).with(command: expected_cmd)
     @provider.run_action(:force_export)
     @resource.should be_updated
   end
@@ -207,7 +206,7 @@ describe Chef::Provider::Subversion do
   it "runs the checkout command for action_checkout" do
     ::File.stub(:directory?).with("/my/deploy").and_return(true)
     expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
-    @provider.should_receive(:run_command).with(:command => expected_cmd)
+    @provider.should_receive(:run_command).with(command: expected_cmd)
     @provider.run_action(:checkout)
     @resource.should be_updated
   end
@@ -231,7 +230,7 @@ describe Chef::Provider::Subversion do
     @resource.user "whois"
     @resource.group "thisis"
     expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
-    @provider.should_receive(:run_command).with(:command => expected_cmd, :user => "whois", :group => "thisis")
+    @provider.should_receive(:run_command).with(command: expected_cmd, user: "whois", group: "thisis")
     @provider.run_action(:checkout)
     @resource.should be_updated
   end
@@ -256,7 +255,7 @@ describe Chef::Provider::Subversion do
     @provider.stub(:find_current_revision).and_return("11410")
     @provider.stub(:current_revision_matches_target_revision?).and_return(false)
     expected_cmd = "svn update -q  -r12345 /my/deploy/dir"
-    @provider.should_receive(:run_command).with(:command => expected_cmd)
+    @provider.should_receive(:run_command).with(command: expected_cmd)
     @provider.run_action(:sync)
     @resource.should be_updated
   end
@@ -273,7 +272,7 @@ describe Chef::Provider::Subversion do
   it "runs the export_command on action_export" do
     ::File.stub(:directory?).with("/my/deploy").and_return(true)
     expected_cmd = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
-    @provider.should_receive(:run_command).with(:command => expected_cmd)
+    @provider.should_receive(:run_command).with(command: expected_cmd)
     @provider.run_action(:export)
     @resource.should be_updated
   end

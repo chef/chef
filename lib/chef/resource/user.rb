@@ -21,12 +21,11 @@ require 'chef/resource'
 class Chef
   class Resource
     class User < Chef::Resource
-
       identity_attr :username
 
       state_attrs :uid, :gid, :home
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :user
         @username = name
@@ -41,94 +40,93 @@ class Chef
         @non_unique = false
         @action = :create
         @supports = {
-          :manage_home => false,
-          :non_unique => false
+          manage_home: false,
+          non_unique: false
         }
         @allowed_actions.push(:create, :remove, :modify, :manage, :lock, :unlock)
       end
 
-      def username(arg=nil)
+      def username(arg = nil)
         set_or_return(
           :username,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def comment(arg=nil)
+      def comment(arg = nil)
         set_or_return(
           :comment,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def uid(arg=nil)
+      def uid(arg = nil)
         set_or_return(
           :uid,
           arg,
-          :kind_of => [ String, Integer ]
+          kind_of: [String, Integer]
         )
       end
 
-      def gid(arg=nil)
+      def gid(arg = nil)
         set_or_return(
           :gid,
           arg,
-          :kind_of => [ String, Integer ]
+          kind_of: [String, Integer]
         )
       end
 
       alias_method :group, :gid
 
-      def home(arg=nil)
+      def home(arg = nil)
         set_or_return(
           :home,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def shell(arg=nil)
+      def shell(arg = nil)
         set_or_return(
           :shell,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def password(arg=nil)
+      def password(arg = nil)
         set_or_return(
           :password,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def system(arg=nil)
+      def system(arg = nil)
         set_or_return(
           :system,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [TrueClass, FalseClass]
         )
       end
 
-      def manage_home(arg=nil)
+      def manage_home(arg = nil)
         set_or_return(
           :manage_home,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [TrueClass, FalseClass]
         )
       end
 
-      def non_unique(arg=nil)
+      def non_unique(arg = nil)
         set_or_return(
           :non_unique,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [TrueClass, FalseClass]
         )
       end
-
     end
   end
 end

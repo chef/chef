@@ -28,19 +28,18 @@ class Chef
         include Chef::Mixin::ShellOut
         attr_reader :maintenance
 
-        def initialize(new_resource, run_context=nil)
+        def initialize(new_resource, run_context = nil)
           super
-          @init_command = "/usr/sbin/svcadm"
-          @status_command = "/bin/svcs -l"
+          @init_command = '/usr/sbin/svcadm'
+          @status_command = '/bin/svcs -l'
           @maintenace     = false
         end
-
 
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
-          unless ::File.exists? "/bin/svcs"
-            raise Chef::Exceptions::Service, "/bin/svcs does not exist!"
+          unless ::File.exist? '/bin/svcs'
+            fail Chef::Exceptions::Service, '/bin/svcs does not exist!'
           end
           @status = service_status.enabled
           @current_resource
@@ -65,11 +64,11 @@ class Chef
         def restart_service
           ## svcadm restart doesn't supports sync(-s) option
           disable_service
-          return enable_service
+          enable_service
         end
 
         def service_status
-          status = shell_out!("#{@status_command} #{@current_resource.service_name}", :returns => [0, 1])
+          status = shell_out!("#{@status_command} #{@current_resource.service_name}", returns: [0, 1])
           status.stdout.each_line do |line|
             case line
             when /state\s+online/
@@ -85,7 +84,6 @@ class Chef
           end
           @current_resource
         end
-
       end
     end
   end

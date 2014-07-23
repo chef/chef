@@ -25,9 +25,7 @@ require 'chef/provider/remote_file/cache_control_data'
 class Chef
   class Provider
     class RemoteFile
-
       class HTTP
-
         attr_reader :uri
         attr_reader :new_resource
         attr_reader :current_resource
@@ -46,10 +44,10 @@ class Chef
         def conditional_get_headers
           cache_control_headers = {}
           if last_modified = cache_control_data.mtime and want_mtime_cache_control?
-            cache_control_headers["if-modified-since"] = last_modified
+            cache_control_headers['if-modified-since'] = last_modified
           end
           if etag = cache_control_data.etag and want_etag_cache_control?
-            cache_control_headers["if-none-match"] = etag
+            cache_control_headers['if-none-match'] = etag
           end
           Chef::Log.debug("Cache control headers: #{cache_control_headers.inspect}")
           cache_control_headers
@@ -95,7 +93,7 @@ class Chef
         end
 
         def http_client_opts
-          opts={}
+          opts = {}
           # CHEF-3140
           # 1. If it's already compressed, trying to compress it more will
           # probably be counter-productive.
@@ -105,12 +103,11 @@ class Chef
           # case you'd end up with a tar archive (no gzip) named, e.g., foo.tgz,
           # which is not what you wanted.
           if uri.to_s =~ /gz$/
-            Chef::Log.debug("turning gzip compression off due to filename ending in gz")
+            Chef::Log.debug('turning gzip compression off due to filename ending in gz')
             opts[:disable_gzip] = true
           end
           opts
         end
-
       end
     end
   end

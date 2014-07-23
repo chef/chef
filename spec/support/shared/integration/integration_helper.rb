@@ -32,7 +32,7 @@ module IntegrationSupport
   def when_the_repository(description, *args, &block)
     context "When the local repository #{description}", *args do
       before :each do
-        raise "Can only create one directory per test" if @repository_dir
+        fail 'Can only create one directory per test' if @repository_dir
         @repository_dir = Dir.mktmpdir('chef_repo')
         Chef::Config.chef_repo_path = @repository_dir
         %w(client cookbook data_bag environment node role user).each do |object_name|
@@ -130,7 +130,7 @@ module IntegrationSupport
   # Versioned cookbooks
 
   def with_versioned_cookbooks(_metadata = {}, &block)
-    _m = { :versioned_cookbooks => true }.merge(_metadata)
+    _m = { versioned_cookbooks: true }.merge(_metadata)
     context 'with versioned cookbooks', _m do
       before(:each) { Chef::Config[:versioned_cookbooks] = true }
       after(:each)  { Chef::Config.delete(:versioned_cookbooks) }
@@ -139,7 +139,7 @@ module IntegrationSupport
   end
 
   def without_versioned_cookbooks(_metadata = {}, &block)
-    _m = { :versioned_cookbooks => false }.merge(_metadata)
+    _m = { versioned_cookbooks: false }.merge(_metadata)
     context 'with versioned cookbooks', _m do
       # Just make sure this goes back to default
       before(:each) { Chef::Config[:versioned_cookbooks] = false }

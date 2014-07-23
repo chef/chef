@@ -23,43 +23,43 @@ describe Chef::Provider::Env::Windows, :windows_only do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::Env.new("CHEF_WINDOWS_ENV_TEST")
-    @new_resource.value("foo")
+    @new_resource = Chef::Resource::Env.new('CHEF_WINDOWS_ENV_TEST')
+    @new_resource.value('foo')
     @provider = Chef::Provider::Env::Windows.new(@new_resource, @run_context)
     @provider.stub(:env_obj).and_return(double('null object').as_null_object)
   end
 
-  describe "action_create" do
+  describe 'action_create' do
     before do
       ENV.delete('CHEF_WINDOWS_ENV_TEST')
       @provider.key_exists = false
     end
 
-    it "should update the ruby ENV object when it creates the key" do
+    it 'should update the ruby ENV object when it creates the key' do
       @provider.action_create
       expect(ENV['CHEF_WINDOWS_ENV_TEST']).to eql('foo')
     end
   end
 
-  describe "action_modify" do
+  describe 'action_modify' do
     before do
       ENV['CHEF_WINDOWS_ENV_TEST'] = 'foo'
     end
 
-    it "should update the ruby ENV object when it updates the value" do
+    it 'should update the ruby ENV object when it updates the value' do
       @provider.should_receive(:compare_value).and_return(true)
-      @new_resource.value("foobar")
+      @new_resource.value('foobar')
       @provider.action_modify
       expect(ENV['CHEF_WINDOWS_ENV_TEST']).to eql('foobar')
     end
   end
 
-  describe "action_delete" do
+  describe 'action_delete' do
     before do
       ENV['CHEF_WINDOWS_ENV_TEST'] = 'foo'
     end
 
-    it "should update the ruby ENV object when it deletes the key" do
+    it 'should update the ruby ENV object when it deletes the key' do
       @provider.action_delete
       expect(ENV['CHEF_WINDOWS_ENV_TEST']).to eql(nil)
     end

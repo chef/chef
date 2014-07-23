@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
-#require 'spec_helper'
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_helper'))
+# require 'spec_helper'
 
 describe Chef::Provider::Execute do
   before do
@@ -24,20 +24,19 @@ describe Chef::Provider::Execute do
     @cookbook_collection = Chef::CookbookCollection.new([])
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
-    @new_resource = Chef::Resource::Execute.new("foo_resource", @run_context)
+    @new_resource = Chef::Resource::Execute.new('foo_resource', @run_context)
     @new_resource.timeout 3600
     @new_resource.returns 0
-    @new_resource.creates "/foo_resource"
+    @new_resource.creates '/foo_resource'
     @provider = Chef::Provider::Execute.new(@new_resource, @run_context)
-    @current_resource = Chef::Resource::Ifconfig.new("foo_resource", @run_context)
+    @current_resource = Chef::Resource::Ifconfig.new('foo_resource', @run_context)
     @provider.current_resource = @current_resource
     Chef::Log.level = :info
     # FIXME: There should be a test for how STDOUT.tty? changes the live_stream option being passed
     STDOUT.stub(:tty?).and_return(true)
   end
 
-
-  it "should execute foo_resource" do
+  it 'should execute foo_resource' do
     @provider.stub(:load_current_resource)
     opts = {}
     opts[:timeout] = @new_resource.timeout
@@ -52,7 +51,7 @@ describe Chef::Provider::Execute do
     @new_resource.should be_updated
   end
 
-  it "should do nothing if the sentinel file exists" do
+  it 'should do nothing if the sentinel file exists' do
     @provider.stub(:load_current_resource)
     File.should_receive(:exists?).with(@new_resource.creates).and_return(true)
     @provider.should_not_receive(:shell_out!)
@@ -63,11 +62,11 @@ describe Chef::Provider::Execute do
   end
 
   it "should respect cwd options for 'creates'" do
-    @new_resource.cwd "/tmp"
-    @new_resource.creates "foo_resource"
+    @new_resource.cwd '/tmp'
+    @new_resource.creates 'foo_resource'
     @provider.stub(:load_current_resource)
     File.should_receive(:exists?).with(@new_resource.creates).and_return(false)
-    File.should_receive(:exists?).with(File.join("/tmp", @new_resource.creates)).and_return(true)
+    File.should_receive(:exists?).with(File.join('/tmp', @new_resource.creates)).and_return(true)
     Chef::Log.should_not_receive(:warn)
     @provider.should_not_receive(:shell_out!)
 
@@ -75,8 +74,8 @@ describe Chef::Provider::Execute do
     @new_resource.should_not be_updated
   end
 
-  it "should warn if user specified relative path without cwd" do
-    @new_resource.creates "foo_resource"
+  it 'should warn if user specified relative path without cwd' do
+    @new_resource.creates 'foo_resource'
     @provider.stub(:load_current_resource)
     Chef::Log.should_receive(:warn).with(/relative path/)
     File.should_receive(:exists?).with(@new_resource.creates).and_return(true)
@@ -86,4 +85,3 @@ describe Chef::Provider::Execute do
     @new_resource.should_not be_updated
   end
 end
-

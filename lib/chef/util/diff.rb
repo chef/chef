@@ -52,20 +52,20 @@ class Chef
 
       def for_output
         # formatted output to a terminal uses arrays of strings and returns error strings
-        @diff.nil? ? [ @error ] : @diff
+        @diff.nil? ? [@error] : @diff
       end
 
       def for_reporting
         # caller needs to ensure that new files aren't posted to resource reporting
         return nil if @diff.nil?
-        @diff.join("\\n")
+        @diff.join('\\n')
       end
 
       def use_tempfile_if_missing(file)
         tempfile = nil
-        unless File.exists?(file)
+        unless File.exist?(file)
           Chef::Log.debug("file #{file} does not exist to diff against, using empty tempfile")
-          tempfile = Tempfile.new("chef-diff")
+          tempfile = Tempfile.new('chef-diff')
           file = tempfile.path
         end
         yield file
@@ -82,11 +82,11 @@ class Chef
           end
         end
       end
-      
+
       # produces a unified-output-format diff with 3 lines of context
       # ChefFS uses udiff() directly
       def udiff(old_file, new_file)
-        diff_str = ""
+        diff_str = ''
         file_length_difference = 0
 
         old_data = IO.readlines(old_file).map { |e| e.chomp }
@@ -117,14 +117,14 @@ class Chef
           end
         end
         diff_str << old_hunk.diff(:unified) << "\n"
-        return diff_str
+        diff_str
       end
 
       private
 
       def do_diff(old_file, new_file)
         if Chef::Config[:diff_disabled]
-          return "(diff output suppressed by config)"
+          return '(diff output suppressed by config)'
         end
 
         diff_filesize_threshold = Chef::Config[:diff_filesize_threshold]
@@ -135,14 +135,14 @@ class Chef
         end
 
         # MacOSX(BSD?) diff will *sometimes* happily spit out nasty binary diffs
-        return "(current file is binary, diff output suppressed)" if is_binary?(old_file)
-        return "(new content is binary, diff output suppressed)" if is_binary?(new_file)
+        return '(current file is binary, diff output suppressed)' if is_binary?(old_file)
+        return '(new content is binary, diff output suppressed)' if is_binary?(new_file)
 
         begin
           Chef::Log.debug("running: diff -u #{old_file} #{new_file}")
           diff_str = udiff(old_file, new_file)
 
-        rescue Exception => e
+        rescue => e
           # Should *not* receive this, but in some circumstances it seems that
           # an exception can be thrown even using shell_out instead of shell_out!
           return "Could not determine diff. Error: #{e.message}"
@@ -154,10 +154,10 @@ class Chef
           else
             diff_str = encode_diff_for_json(diff_str)
             @diff = diff_str.split("\n")
-            return "(diff available)"
+            return '(diff available)'
           end
         else
-          return "(no diff)"
+          return '(no diff)'
         end
       end
 
@@ -165,7 +165,7 @@ class Chef
         File.open(path) do |file|
           # XXX: this slurps into RAM, but we should have already checked our diff has a reasonable size
           buff = file.read
-          buff = "" if buff.nil?
+          buff = '' if buff.nil?
           begin
             return buff !~ /\A[\s[:print:]]*\z/m
           rescue ArgumentError => e
@@ -177,12 +177,10 @@ class Chef
 
       def encode_diff_for_json(diff_str)
         if Object.const_defined? :Encoding
-          diff_str.encode!('UTF-8', :invalid => :replace, :undef => :replace, :replace => '?')
+          diff_str.encode!('UTF-8', invalid: :replace, undef: :replace, replace: '?')
         end
-        return diff_str
+        diff_str
       end
-
     end
   end
 end
-

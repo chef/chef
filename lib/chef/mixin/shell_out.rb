@@ -25,7 +25,6 @@ require 'chef/config'
 class Chef
   module Mixin
     module ShellOut
-
       # shell_out! runs a command on the system and will raise an error if the command fails, which is what you want
       # for debugging, shell_out and shell_out! both will display command output to the tty when the log level is debug
       # Generally speaking, 'extend Chef::Mixin::ShellOut' in your recipes and include 'Chef::Mixin::ShellOut' in your LWRPs
@@ -39,7 +38,7 @@ class Chef
       end
 
       def shell_out!(*command_args)
-        cmd= shell_out(*command_args)
+        cmd = shell_out(*command_args)
         cmd.error!
         cmd
       end
@@ -49,19 +48,19 @@ class Chef
         args = command_args.dup
         if args.last.is_a?(Hash)
           options = args.last
-          env_key = options.has_key?(:env) ? :env : :environment
+          env_key = options.key?(:env) ? :env : :environment
           options[env_key] ||= {}
           options[env_key]['LC_ALL'] ||= nil
         else
-          args << { :environment => { 'LC_ALL' => nil } }
+          args << { environment: { 'LC_ALL' => nil } }
         end
 
         shell_out(*args)
       end
 
       DEPRECATED_OPTIONS =
-        [ [:command_log_level,   :log_level],
-          [:command_log_prepend, :log_tag] ]
+        [[:command_log_level,   :log_level],
+         [:command_log_prepend, :log_tag]]
 
       # CHEF-3090: Deprecate command_log_level and command_log_prepend
       # Patterned after https://github.com/opscode/chef/commit/e1509990b559984b43e428d4d801c394e970f432
@@ -78,7 +77,7 @@ class Chef
           _options[new_option] = value
         end
 
-        return _command_args
+        _command_args
       end
 
       private

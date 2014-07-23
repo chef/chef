@@ -21,7 +21,6 @@ require 'chef/knife'
 class Chef
   class Knife
     class RoleShow < Knife
-
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
@@ -29,24 +28,20 @@ class Chef
         require 'chef/json_compat'
       end
 
-      banner "knife role show ROLE (options)"
-
+      banner 'knife role show ROLE (options)'
 
       def run
         @role_name = @name_args[0]
 
         if @role_name.nil?
           show_usage
-          ui.fatal("You must specify a role name")
+          ui.fatal('You must specify a role name')
           exit 1
         end
 
         role = Chef::Role.load(@role_name)
         output(format_for_display(config[:environment] ? role.environment(config[:environment]) : role))
       end
-
     end
   end
 end
-
-

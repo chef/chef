@@ -24,7 +24,7 @@ class Chef
     module FileSystem
       class DataBagsDir < RestListDir
         def initialize(parent)
-          super("data_bags", parent, "data")
+          super('data_bags', parent, 'data')
         end
 
         def child(name)
@@ -33,32 +33,30 @@ class Chef
         end
 
         def children
-          begin
-            @children ||= root.get_json(api_path).keys.sort.map do |entry|
-              DataBagDir.new(entry, self, true)
-            end
-          rescue Timeout::Error => e
-            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e), "Timeout getting children: #{e}"
-          rescue Net::HTTPServerException => e
-            if e.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
-            else
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e), "HTTP error getting children: #{e}"
-            end
+          @children ||= root.get_json(api_path).keys.sort.map do |entry|
+            DataBagDir.new(entry, self, true)
+          end
+        rescue Timeout::Error => e
+          raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e), "Timeout getting children: #{e}"
+        rescue Net::HTTPServerException => e
+          if e.response.code == '404'
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
+          else
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e), "HTTP error getting children: #{e}"
           end
         end
 
-        def can_have_child?(name, is_dir)
+        def can_have_child?(_name, is_dir)
           is_dir
         end
 
-        def create_child(name, file_contents)
+        def create_child(name, _file_contents)
           begin
-            rest.post(api_path, { 'name' => name })
+            rest.post(api_path,  'name' => name)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e), "Timeout creating child '#{name}': #{e}"
           rescue Net::HTTPServerException => e
-            if e.response.code == "409"
+            if e.response.code == '409'
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self, e), "Cannot create #{name} under #{path}: already exists"
             else
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e), "HTTP error creating child '#{name}': #{e}"

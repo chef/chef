@@ -20,13 +20,12 @@
 class Chef
   class Resource
     class RubyBlock < Chef::Resource
-
       identity_attr :block_name
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :ruby_block
-        @action = "run"
+        @action = 'run'
         @allowed_actions << :create << :run
         @block_name = name
       end
@@ -39,11 +38,11 @@ class Chef
         end
       end
 
-      def block_name(arg=nil)
+      def block_name(arg = nil)
         set_or_return(
           :block_name,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
     end

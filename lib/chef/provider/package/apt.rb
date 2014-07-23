@@ -21,12 +21,10 @@ require 'chef/mixin/command'
 require 'chef/resource/package'
 require 'chef/mixin/shell_out'
 
-
 class Chef
   class Provider
     class Package
       class Apt < Chef::Provider::Package
-
         include Chef::Mixin::ShellOut
         attr_accessor :is_virtual_package
 
@@ -55,10 +53,10 @@ class Chef
           Chef::Log.debug("#{@new_resource} checking package status for #{package}")
           installed = false
 
-          shell_out!("apt-cache#{expand_options(default_release_options)} policy #{package}", :timeout => @new_resource.timeout).stdout.each_line do |line|
+          shell_out!("apt-cache#{expand_options(default_release_options)} policy #{package}", timeout: @new_resource.timeout).stdout.each_line do |line|
             case line
             when /^\s{2}Installed: (.+)$/
-              installed_version = $1
+              installed_version = Regexp.last_match[1]
               if installed_version == '(none)'
                 Chef::Log.debug("#{@new_resource} current version is nil")
                 @current_resource.version(nil)
@@ -68,33 +66,33 @@ class Chef
                 installed = true
               end
             when /^\s{2}Candidate: (.+)$/
-              candidate_version = $1
+              candidate_version = Regexp.last_match[1]
               if candidate_version == '(none)'
                 # This may not be an appropriate assumption, but it shouldn't break anything that already worked -- btm
                 @is_virtual_package = true
-                showpkg = shell_out!("apt-cache showpkg #{package}", :timeout => @new_resource.timeout).stdout
+                showpkg = shell_out!("apt-cache showpkg #{package}", timeout: @new_resource.timeout).stdout
                 providers = Hash.new
                 # Returns all lines after 'Reverse Provides:'
-                showpkg.rpartition(/Reverse Provides:\s*#{$/}/)[2].each_line do |line|
+                showpkg.rpartition(/Reverse Provides:\s*#{$INPUT_RECORD_SEPARATOR}/)[2].each_line do |line|
                   provider, version = line.split
                   providers[provider] = version
                 end
                 # Check if the package providing this virtual package is installed
                 num_providers = providers.length
-                raise Chef::Exceptions::Package, "#{@new_resource.package_name} has no candidate in the apt-cache" if num_providers == 0
+                fail Chef::Exceptions::Package, "#{@new_resource.package_name} has no candidate in the apt-cache" if num_providers == 0
                 # apt will only install a virtual package if there is a single providing package
-                raise Chef::Exceptions::Package, "#{@new_resource.package_name} is a virtual package provided by #{num_providers} packages, you must explicitly select one to install" if num_providers > 1
+                fail Chef::Exceptions::Package, "#{@new_resource.package_name} is a virtual package provided by #{num_providers} packages, you must explicitly select one to install" if num_providers > 1
                 # Check if the package providing this virtual package is installed
                 Chef::Log.info("#{@new_resource} is a virtual package, actually acting on package[#{providers.keys.first}]")
                 installed = check_package_state(providers.keys.first)
               else
-                Chef::Log.debug("#{@new_resource} candidate version is #{$1}")
-                @candidate_version = $1
+                Chef::Log.debug("#{@new_resource} candidate version is #{Regexp.last_match[1]}")
+                @candidate_version = Regexp.last_match[1]
               end
             end
           end
 
-          return installed
+          installed
         end
 
         def install_package(name, version)
@@ -107,12 +105,12 @@ class Chef
           install_package(name, version)
         end
 
-        def remove_package(name, version)
+        def remove_package(name, _version)
           package_name = "#{name}"
           run_noninteractive("apt-get -q -y#{expand_options(@new_resource.options)} remove #{package_name}")
         end
 
-        def purge_package(name, version)
+        def purge_package(_name, _version)
           run_noninteractive("apt-get -q -y#{expand_options(@new_resource.options)} purge #{@new_resource.package_name}")
         end
 
@@ -121,7 +119,7 @@ class Chef
           run_noninteractive("debconf-set-selections #{preseed_file}")
         end
 
-        def reconfig_package(name, version)
+        def reconfig_package(name, _version)
           Chef::Log.info("#{@new_resource} reconfiguring")
           run_noninteractive("dpkg-reconfigure #{name}")
         end
@@ -132,9 +130,8 @@ class Chef
         # interactive prompts. Command is run with default localization rather
         # than forcing locale to "C", so command output may not be stable.
         def run_noninteractive(command)
-          shell_out!(command, :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil }, :timeout => @new_resource.timeout)
+          shell_out!(command, env: { 'DEBIAN_FRONTEND' => 'noninteractive', 'LC_ALL' => nil }, timeout: @new_resource.timeout)
         end
-
       end
     end
   end

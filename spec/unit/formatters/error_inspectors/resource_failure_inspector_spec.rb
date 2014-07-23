@@ -23,37 +23,37 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
 
   def run_context
     node = Chef::Node.new
-    node.automatic_attrs[:platform] = "ubuntu"
-    node.automatic_attrs[:platform_version] = "10.04"
+    node.automatic_attrs[:platform] = 'ubuntu'
+    node.automatic_attrs[:platform_version] = '10.04'
     Chef::RunContext.new(node, {}, nil)
   end
 
   def cookbook_name
-    "rspec-example"
+    'rspec-example'
   end
 
   def recipe_name
-    "rspec-example-recipe"
+    'rspec-example-recipe'
   end
 
   before do
-    @description = Chef::Formatters::ErrorDescription.new("Error Converging Resource:")
+    @description = Chef::Formatters::ErrorDescription.new('Error Converging Resource:')
     @stdout = StringIO.new
     @outputter = Chef::Formatters::IndentableOutputStream.new(@stdout, STDERR)
-    #@outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
+    # @outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
 
-    Chef::Config.stub(:cookbook_path).and_return([ "/var/chef/cache" ])
+    Chef::Config.stub(:cookbook_path).and_return(['/var/chef/cache'])
   end
 
-  describe "when explaining an error converging a resource" do
+  describe 'when explaining an error converging a resource' do
     before do
-      @resource = package("non-existing-package") do
+      @resource = package('non-existing-package') do
 
         only_if do
           true
         end
 
-        not_if("/bin/false")
+        not_if('/bin/false')
         action :upgrade
       end
 
@@ -68,7 +68,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
       @inspector.add_explanation(@description)
     end
 
-    it "filters chef core code from the backtrace" do
+    it 'filters chef core code from the backtrace' do
       @expected_filtered_trace = [
         "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb:14:in `from_file'",
         "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb:11:in `from_file'",
@@ -77,20 +77,20 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
       @inspector.filtered_bt.should == @expected_filtered_trace
     end
 
-    it "prints a pretty message" do
+    it 'prints a pretty message' do
       @description.display(@outputter)
     end
 
-    describe "and the error is a template error" do
+    describe 'and the error is a template error' do
       before do
-        @description = Chef::Formatters::ErrorDescription.new("Error Converging Resource:")
+        @description = Chef::Formatters::ErrorDescription.new('Error Converging Resource:')
         @template_class = Class.new { include Chef::Mixin::Template }
         @template = @template_class.new
         @context = Chef::Mixin::Template::TemplateContext.new({})
-        @context[:chef] = "cool"
+        @context[:chef] = 'cool'
 
-        @resource = template("/tmp/foo.txt") do
-          mode "0644"
+        @resource = template('/tmp/foo.txt') do
+          mode '0644'
         end
 
         @error = begin
@@ -103,59 +103,58 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         @inspector.add_explanation(@description)
       end
 
-      it "includes contextual info from the template error in the output" do
+      it 'includes contextual info from the template error in the output' do
         @description.display(@outputter)
         @stdout.string.should include(@error.source_listing)
       end
 
-
     end
 
-    describe "recipe_snippet" do
+    describe 'recipe_snippet' do
       before do
         # fake code to run through #recipe_snippet
-        source_file = [ "if true", "var = non_existant", "end" ]
+        source_file = ['if true', 'var = non_existant', 'end']
         IO.stub(:readlines).and_return(source_file)
         File.stub(:exists?).and_return(true)
       end
 
-      it "parses a Windows path" do
+      it 'parses a Windows path' do
         source_line = "C:/Users/btm/chef/chef/spec/unit/fake_file.rb:2: undefined local variable or method `non_existant' for main:Object (NameError)"
         @resource.source_line = source_line
         @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
         @inspector.recipe_snippet.should match(/^# In C:\/Users\/btm/)
       end
 
-      it "parses a unix path" do
+      it 'parses a unix path' do
         source_line = "/home/btm/src/chef/chef/spec/unit/fake_file.rb:2: undefined local variable or method `non_existant' for main:Object (NameError)"
         @resource.source_line = source_line
         @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
         @inspector.recipe_snippet.should match(/^# In \/home\/btm/)
       end
 
-      context "when the recipe file does not exist" do
+      context 'when the recipe file does not exist' do
         before do
           File.stub(:exists?).and_return(false)
           IO.stub(:readlines).and_raise(Errno::ENOENT)
         end
 
-        it "does not try to parse a recipe in chef-shell/irb (CHEF-3411)" do
+        it 'does not try to parse a recipe in chef-shell/irb (CHEF-3411)' do
           @resource.source_line = "(irb#1):1:in `irb_binding'"
           @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
           @inspector.recipe_snippet.should be_nil
         end
 
-        it "does not raise an exception trying to load a non-existant file (CHEF-3411)" do
-          @resource.source_line = "/somewhere/in/space"
+        it 'does not raise an exception trying to load a non-existant file (CHEF-3411)' do
+          @resource.source_line = '/somewhere/in/space'
           @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
           lambda { @inspector.recipe_snippet }.should_not raise_error
         end
       end
     end
 
-    describe "when examining a resource that confuses the parser" do
+    describe 'when examining a resource that confuses the parser' do
       before do
-        angry_bash_recipe = File.expand_path("cookbooks/angrybash/recipes/default.rb", CHEF_SPEC_DATA)
+        angry_bash_recipe = File.expand_path('cookbooks/angrybash/recipes/default.rb', CHEF_SPEC_DATA)
         source_line = "#{angry_bash_recipe}:1:in `<main>'"
 
         # source_line = caller(0)[0]; @resource = bash "go off the rails" do
@@ -174,13 +173,12 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
       end
 
-      it "does not generate an error" do
+      it 'does not generate an error' do
         lambda { @inspector.add_explanation(@description) }.should_not raise_error
         @description.display(@outputter)
       end
     end
 
   end
-
 
 end

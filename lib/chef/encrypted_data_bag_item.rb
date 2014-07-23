@@ -72,24 +72,24 @@ class Chef::EncryptedDataBagItem
 
   def [](key)
     value = @enc_hash[key]
-    if key == "id" || value.nil?
+    if key == 'id' || value.nil?
       value
     else
       Decryptor.for(value, @secret).for_decrypted_item
     end
   end
 
-  def []=(key, value)
-    raise ArgumentError, "assignment not supported for #{self.class}"
+  def []=(_key, _value)
+    fail ArgumentError, "assignment not supported for #{self.class}"
   end
 
   def to_hash
-    @enc_hash.keys.inject({}) { |hash, key| hash[key] = self[key]; hash }
+    @enc_hash.keys.reduce({}) { |hash, key| hash[key] = self[key]; hash }
   end
 
   def self.encrypt_data_bag_item(plain_hash, secret)
-    plain_hash.inject({}) do |h, (key, val)|
-      h[key] = if key != "id"
+    plain_hash.reduce({}) do |h, (key, val)|
+      h[key] = if key != 'id'
                  Encryptor.new(val, secret).for_encrypted_item
                else
                  val
@@ -120,14 +120,14 @@ class Chef::EncryptedDataBagItem
   #
   def self.load(data_bag, name, secret = nil)
     raw_hash = Chef::DataBagItem.load(data_bag, name)
-    secret = secret || self.load_secret
-    self.new(raw_hash, secret)
+    secret = secret || load_secret
+    new(raw_hash, secret)
   end
 
-  def self.load_secret(path=nil)
+  def self.load_secret(path = nil)
     path ||= Chef::Config[:encrypted_data_bag_secret]
-    if !path
-      raise ArgumentError, "No secret specified to load_secret and no secret found at #{Chef::Config.platform_specific_path('/etc/chef/encrypted_data_bag_secret')}"
+    unless path
+      fail ArgumentError, "No secret specified to load_secret and no secret found at #{Chef::Config.platform_specific_path('/etc/chef/encrypted_data_bag_secret')}"
     end
     secret = case path
              when /^\w+:\/\//
@@ -140,15 +140,14 @@ class Chef::EncryptedDataBagItem
                  raise ArgumentError, "Remote key not found at '#{path}'"
                end
              else
-               if !File.exist?(path)
-                 raise Errno::ENOENT, "file not found '#{path}'"
+               unless File.exist?(path)
+                 fail Errno::ENOENT, "file not found '#{path}'"
                end
                IO.read(path).strip
              end
     if secret.size < 1
-      raise ArgumentError, "invalid zero length secret in '#{path}'"
+      fail ArgumentError, "invalid zero length secret in '#{path}'"
     end
     secret
   end
-
 end

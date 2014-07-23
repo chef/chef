@@ -24,16 +24,14 @@ require 'chef/encrypted_data_bag_item'
 require 'chef/encrypted_data_bag_item/unsupported_encrypted_data_bag_item_format'
 
 class Chef::EncryptedDataBagItem
-
   # Implementation class for converting plaintext data bag item values to an
   # encrypted value, including any necessary wrappers and metadata.
   module Encryptor
-
     # "factory" method that creates an encryptor object with the proper class
     # for the desired encrypted data bag format version.
     #
     # +Chef::Config[:data_bag_encrypt_version]+ determines which version is used.
-    def self.new(value, secret, iv=nil)
+    def self.new(value, secret, iv = nil)
       format_version = Chef::Config[:data_bag_encrypt_version]
       case format_version
       when 1
@@ -41,8 +39,8 @@ class Chef::EncryptedDataBagItem
       when 2
         Version2Encryptor.new(value, secret, iv)
       else
-        raise UnsupportedEncryptedDataBagItemFormat,
-          "Invalid encrypted data bag format version `#{format_version}'. Supported versions are '1', '2'"
+        fail UnsupportedEncryptedDataBagItemFormat,
+             "Invalid encrypted data bag format version `#{format_version}'. Supported versions are '1', '2'"
       end
     end
 
@@ -59,7 +57,7 @@ class Chef::EncryptedDataBagItem
       # * iv: The optional +iv+ parameter is intended for testing use only. When
       # *not* supplied, Encryptor will use OpenSSL to generate a secure random
       # IV, which is what you want.
-      def initialize(plaintext_data, key, iv=nil)
+      def initialize(plaintext_data, key, iv = nil)
         @plaintext_data = plaintext_data
         @key = key
         @iv = iv && Base64.decode64(iv)
@@ -69,10 +67,10 @@ class Chef::EncryptedDataBagItem
       # using as the value in an encrypted data bag item.
       def for_encrypted_item
         {
-          "encrypted_data" => encrypted_data,
-          "iv" => Base64.encode64(iv),
-          "version" => 1,
-          "cipher" => ALGORITHM
+          'encrypted_data' => encrypted_data,
+          'iv' => Base64.encode64(iv),
+          'version' => 1,
+          'cipher' => ALGORITHM
         }
       end
 
@@ -111,28 +109,27 @@ class Chef::EncryptedDataBagItem
       # Strings) that do not produce valid JSON when serialized without the
       # wrapper.
       def serialized_data
-        FFI_Yajl::Encoder.encode(:json_wrapper => plaintext_data)
+        FFI_Yajl::Encoder.encode(json_wrapper: plaintext_data)
       end
     end
 
     class Version2Encryptor < Version1Encryptor
-
       # Returns a wrapped and encrypted version of +plaintext_data+ suitable for
       # using as the value in an encrypted data bag item.
       def for_encrypted_item
         {
-          "encrypted_data" => encrypted_data,
-          "hmac" => hmac,
-          "iv" => Base64.encode64(iv),
-          "version" => 2,
-          "cipher" => ALGORITHM
+          'encrypted_data' => encrypted_data,
+          'hmac' => hmac,
+          'iv' => Base64.encode64(iv),
+          'version' => 2,
+          'cipher' => ALGORITHM
         }
       end
 
       # Generates an HMAC-SHA2-256 of the encrypted data (encrypt-then-mac)
       def hmac
         @hmac ||= begin
-          digest = OpenSSL::Digest::Digest.new("sha256")
+          digest = OpenSSL::Digest::Digest.new('sha256')
           raw_hmac = OpenSSL::HMAC.digest(digest, key, encrypted_data)
           Base64.encode64(raw_hmac)
         end

@@ -21,12 +21,9 @@ require 'chef/formatters/error_inspectors/api_error_formatting'
 class Chef
   module Formatters
     module ErrorInspectors
-
-
       # == APIErrorInspector
       # Wraps exceptions caused by API calls to the server.
       class NodeLoadErrorInspector
-
         include APIErrorFormatting
 
         attr_reader :exception
@@ -46,15 +43,15 @@ class Chef
           when *NETWORK_ERROR_CLASSES
             describe_network_errors(error_description)
           when Chef::Exceptions::PrivateKeyMissing
-            error_description.section("Private Key Not Found:",<<-E)
+            error_description.section('Private Key Not Found:', <<-E)
 Your private key could not be loaded. If the key file exists, ensure that it is
 readable by chef-client.
 E
-            error_description.section("Relevant Config Settings:",<<-E)
+            error_description.section('Relevant Config Settings:', <<-E)
 client_key        "#{api_key}"
 E
           else
-            error_description.section("Unexpected Error:","#{exception.class.name}: #{exception.message}")
+            error_description.section('Unexpected Error:', "#{exception.class.name}: #{exception.message}")
           end
         end
 
@@ -68,12 +65,12 @@ E
             # TODO: we're rescuing errors from Node.find_or_create
             # * could be no write on nodes container
             # * could be no read on the node
-            error_description.section("Authorization Error",<<-E)
+            error_description.section('Authorization Error', <<-E)
 Your client is not authorized to load the node data (HTTP 403).
 E
-            error_description.section("Server Response:", format_rest_error)
+            error_description.section('Server Response:', format_rest_error)
 
-            error_description.section("Possible Causes:",<<-E)
+            error_description.section('Possible Causes:', <<-E)
 * Your client (#{username}) may have misconfigured authorization permissions.
 E
           when Net::HTTPBadRequest
@@ -94,10 +91,10 @@ E
         # one, e.g., PUT http://wrong.url/nodes/node-name becomes a GET after a
         # redirect.
         def describe_404_error(error_description)
-          error_description.section("Resource Not Found:",<<-E)
+          error_description.section('Resource Not Found:', <<-E)
 The server returned a HTTP 404. This usually indicates that your chef_server_url is incorrect.
 E
-          error_description.section("Relevant Config Settings:",<<-E)
+          error_description.section('Relevant Config Settings:', <<-E)
 chef_server_url "#{server_url}"
 E
         end
@@ -117,9 +114,7 @@ E
         def clock_skew?
           exception.response.body =~ /synchronize the clock/i
         end
-
       end
-
     end
   end
 end

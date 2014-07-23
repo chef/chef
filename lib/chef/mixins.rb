@@ -11,4 +11,3 @@ require 'chef/mixin/path_sanity'
 require 'chef/mixin/template'
 require 'chef/mixin/securable'
 require 'chef/mixin/xml_escape'
-

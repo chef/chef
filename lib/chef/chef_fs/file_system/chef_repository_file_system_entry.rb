@@ -41,9 +41,9 @@ class Chef
 
         def chef_object
           begin
-            return data_handler.chef_object(JSON.parse(read, :create_additions => false))
+            return data_handler.chef_object(JSON.parse(read, create_additions: false))
           rescue
-            Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{$!}")
+            Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{$ERROR_INFO}")
           end
           nil
         end
@@ -60,7 +60,7 @@ class Chef
         end
 
         def minimize(file_contents, entry)
-          object = JSONCompat.from_json(file_contents, :create_additions => false)
+          object = JSONCompat.from_json(file_contents, create_additions: false)
           object = data_handler.normalize(object, entry)
           object = data_handler.minimize(object, entry)
           JSONCompat.to_json_pretty(object)
@@ -68,13 +68,11 @@ class Chef
 
         def children
           # Except cookbooks and data bag dirs, all things must be json files
-          begin
-            Dir.entries(file_path).sort.
-                select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
-                map { |child_name| make_child(child_name) }
-          rescue Errno::ENOENT
-            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-          end
+          Dir.entries(file_path).sort.
+              select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
+              map { |child_name| make_child(child_name) }
+        rescue Errno::ENOENT
+          raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $ERROR_INFO)
         end
 
         protected

@@ -22,65 +22,63 @@ require 'chef/resource'
 class Chef
   class Resource
     class ErlCall < Chef::Resource
-
       # erl_call : http://erlang.org/doc/man/erl_call.html
 
       identity_attr :code
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :erl_call
 
-        @code = "q()." # your erlang code goes here
+        @code = 'q().' # your erlang code goes here
         @cookie = nil # cookie of the erlang node
         @distributed = false # if you want to have a distributed erlang node
-        @name_type = "sname" # type of erlang hostname name or sname
-        @node_name = "chef@localhost" # the erlang node hostname
+        @name_type = 'sname' # type of erlang hostname name or sname
+        @node_name = 'chef@localhost' # the erlang node hostname
 
-        @action = "run"
+        @action = 'run'
         @allowed_actions.push(:run)
       end
 
-      def code(arg=nil)
+      def code(arg = nil)
         set_or_return(
           :code,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def cookie(arg=nil)
+      def cookie(arg = nil)
         set_or_return(
           :cookie,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def distributed(arg=nil)
+      def distributed(arg = nil)
         set_or_return(
           :distributed,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [TrueClass, FalseClass]
         )
       end
 
-      def name_type(arg=nil)
+      def name_type(arg = nil)
         set_or_return(
           :name_type,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def node_name(arg=nil)
+      def node_name(arg = nil)
         set_or_return(
           :node_name,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
-
     end
   end
 end

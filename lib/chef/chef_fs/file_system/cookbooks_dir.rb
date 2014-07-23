@@ -29,16 +29,15 @@ class Chef
   module ChefFS
     module FileSystem
       class CookbooksDir < RestListDir
-
         include Chef::Mixin::FileClass
 
         def initialize(parent)
-          super("cookbooks", parent)
+          super('cookbooks', parent)
         end
 
         def child(name)
           if @children
-            result = self.children.select { |child| child.name == name }.first
+            result = children.select { |child| child.name == name }.first
             if result
               result
             else
@@ -55,11 +54,11 @@ class Chef
               result = []
               root.get_json("#{api_path}/?num_versions=all").each_pair do |cookbook_name, cookbooks|
                 cookbooks['versions'].each do |cookbook_version|
-                  result << CookbookDir.new("#{cookbook_name}-#{cookbook_version['version']}", self, :exists => true)
+                  result << CookbookDir.new("#{cookbook_name}-#{cookbook_version['version']}", self, exists: true)
                 end
               end
             else
-              result = root.get_json(api_path).keys.map { |cookbook_name| CookbookDir.new(cookbook_name, self, :exists => true) }
+              result = root.get_json(api_path).keys.map { |cookbook_name| CookbookDir.new(cookbook_name, self, exists: true) }
             end
             result.sort_by(&:name)
           end
@@ -76,7 +75,7 @@ class Chef
           raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "Timeout writing: #{e}"
         rescue Net::HTTPServerException => e
           case e.response.code
-          when "409"
+          when '409'
             raise Chef::ChefFS::FileSystem::CookbookFrozenError.new(:write, self, e), "Cookbook #{other.name} is frozen"
           else
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "HTTP error writing: #{e}"
@@ -106,7 +105,7 @@ class Chef
             cookbook_to_upload.freeze_version if options[:freeze]
 
             # Instantiate a new uploader based on the proxy loader
-            uploader = Chef::CookbookUploader.new(cookbook_to_upload, proxy_cookbook_path, :force => options[:force], :rest => root.chef_rest)
+            uploader = Chef::CookbookUploader.new(cookbook_to_upload, proxy_cookbook_path, force: options[:force], rest: root.chef_rest)
 
             with_actual_cookbooks_dir(temp_cookbooks_path) do
               upload_cookbook!(uploader)
@@ -128,7 +127,7 @@ class Chef
         def upload_unversioned_cookbook(other, options)
           cookbook_to_upload = other.chef_object
           cookbook_to_upload.freeze_version if options[:freeze]
-          uploader = Chef::CookbookUploader.new(cookbook_to_upload, other.parent.file_path, :force => options[:force], :rest => root.chef_rest)
+          uploader = Chef::CookbookUploader.new(cookbook_to_upload, other.parent.file_path, force: options[:force], rest: root.chef_rest)
 
           with_actual_cookbooks_dir(other.parent.file_path) do
             upload_cookbook!(uploader)
@@ -138,14 +137,14 @@ class Chef
         # Work around the fact that CookbookUploader doesn't understand chef_repo_path (yet)
         def with_actual_cookbooks_dir(actual_cookbook_path)
           old_cookbook_path = Chef::Config.cookbook_path
-          Chef::Config.cookbook_path = actual_cookbook_path if !Chef::Config.cookbook_path
+          Chef::Config.cookbook_path = actual_cookbook_path unless Chef::Config.cookbook_path
 
           yield
         ensure
           Chef::Config.cookbook_path = old_cookbook_path
         end
 
-        def upload_cookbook!(uploader, options = {})
+        def upload_cookbook!(uploader, _options = {})
           if uploader.respond_to?(:upload_cookbook)
             uploader.upload_cookbook
           else
@@ -154,9 +153,9 @@ class Chef
         end
 
         def can_have_child?(name, is_dir)
-          return false if !is_dir
+          return false unless is_dir
           return false if Chef::Config[:versioned_cookbooks] && name !~ Chef::ChefFS::FileSystem::CookbookDir::VALID_VERSIONED_COOKBOOK_NAME
-          return true
+          true
         end
       end
     end

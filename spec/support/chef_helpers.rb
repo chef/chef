@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/../data/")
+CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + '/../data/')
 CHEF_SPEC_BACKUP_PATH = File.join(Dir.tmpdir, 'test-backup-path')
 
 Chef::Config[:log_level] = :fatal
@@ -23,7 +23,6 @@ Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
 Chef::Log.init(StringIO.new)
 Chef::Log.level(Chef::Config.log_level)
 Chef::Config.solo(false)
-
 
 def sha256_checksum(path)
   Digest::SHA256.hexdigest(File.read(path))
@@ -36,15 +35,15 @@ def make_tmpname(prefix_suffix, n = nil)
   case prefix_suffix
   when String
     prefix = prefix_suffix
-    suffix = ""
+    suffix = ''
   when Array
     prefix = prefix_suffix[0]
     suffix = prefix_suffix[1]
   else
-    raise ArgumentError, "unexpected prefix_suffix: #{prefix_suffix.inspect}"
+    fail ArgumentError, "unexpected prefix_suffix: #{prefix_suffix.inspect}"
   end
-  t = Time.now.strftime("%Y%m%d")
-  path = "#{prefix}#{t}-#{$$}-#{rand(0x100000000).to_s(36)}"
+  t = Time.now.strftime('%Y%m%d')
+  path = "#{prefix}#{t}-#{$PROCESS_ID}-#{rand(0x100000000).to_s(36)}"
   path << "-#{n}" if n
   path << suffix
 end
@@ -53,13 +52,11 @@ end
 # This is a temporary fix to get tests passing on systems that have no `diff`
 # until we can replace shelling out to `diff` with ruby diff-lcs
 def has_diff?
-  begin
-    diff_cmd = Mixlib::ShellOut.new("diff -v")
-    diff_cmd.run_command
-    true
-  rescue Errno::ENOENT
-    false
-  end
+  diff_cmd = Mixlib::ShellOut.new('diff -v')
+  diff_cmd.run_command
+  true
+rescue Errno::ENOENT
+  false
 end
 
 # This is a helper to determine if the ruby in the PATH contains
@@ -86,7 +83,7 @@ end
 
 # Check if a cmd exists on the PATH
 def which(cmd)
-  paths = ENV['PATH'].split(File::PATH_SEPARATOR) + [ '/bin', '/usr/bin', '/sbin', '/usr/sbin' ]
+  paths = ENV['PATH'].split(File::PATH_SEPARATOR) + ['/bin', '/usr/bin', '/sbin', '/usr/sbin']
   paths.each do |path|
     filename = File.join(path, cmd)
     return filename if File.executable?(filename)

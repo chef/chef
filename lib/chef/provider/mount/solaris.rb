@@ -30,7 +30,7 @@ class Chef
         include Chef::Mixin::ShellOut
         extend Forwardable
 
-        VFSTAB = "/etc/vfstab".freeze
+        VFSTAB = '/etc/vfstab'.freeze
 
         def_delegator :@new_resource, :device, :device
         def_delegator :@new_resource, :device_type, :device_type
@@ -64,7 +64,7 @@ class Chef
 
         def mount_fs
           actual_options = options || []
-          actual_options.delete("noauto")
+          actual_options.delete('noauto')
           command = "mount -F #{fstype}"
           command << " -o #{actual_options.join(',')}" unless actual_options.empty?
           command << " #{device} #{mount_point}"
@@ -81,21 +81,21 @@ class Chef
         end
 
         def enable_fs
-          if !mount_options_unchanged?
+          unless mount_options_unchanged?
             # we are enabling because our options have changed, so disable first then re-enable.
             # XXX: this should be refactored to be the responsibility of the caller
             disable_fs if current_resource.enabled
           end
 
-          auto = options.nil? || ! options.include?("noauto")
+          auto = options.nil? || !options.include?('noauto')
           actual_options = unless options.nil?
-                             options.delete("noauto")
+                             options.delete('noauto')
                              options
                            end
 
           autostr = auto ? 'yes' : 'no'
-          passstr = pass == 0 ? "-" : pass
-          optstr = (actual_options.nil? || actual_options.empty?) ? "-" : actual_options.join(',')
+          passstr = pass == 0 ? '-' : pass
+          optstr = (actual_options.nil? || actual_options.empty?) ? '-' : actual_options.join(',')
 
           etc_tempfile do |f|
             f.write(IO.read(VFSTAB).chomp)
@@ -105,7 +105,6 @@ class Chef
             mover = Chef::FileContentManagement::Deploy.strategy(true)
             mover.deploy(f.path, VFSTAB)
           end
-
         end
 
         def disable_fs
@@ -137,19 +136,19 @@ class Chef
         end
 
         def etc_tempfile
-          yield Tempfile.open("vfstab", "/etc")
+          yield Tempfile.open('vfstab', '/etc')
         end
 
         def mount_options_unchanged?
-          current_resource.fstype == fstype and
-            current_resource.options == options and
-            current_resource.dump == dump and
+          current_resource.fstype == fstype &&
+            current_resource.options == options &&
+            current_resource.dump == dump &&
             current_resource.pass == pass
         end
 
         def update_current_resource_state
           current_resource.mounted(mounted?)
-          ( enabled, fstype, options, pass ) = read_vfstab_status
+          ( enabled, fstype, options, pass) = read_vfstab_status
           current_resource.enabled(enabled)
           current_resource.fstype(fstype)
           current_resource.options(options)
@@ -162,7 +161,7 @@ class Chef
 
         def mounted?
           mounted = false
-          shell_out!("mount -v").stdout.each_line do |line|
+          shell_out!('mount -v').stdout.each_line do |line|
             # <device> on <mountpoint> type <fstype> <options> on <date>
             # /dev/dsk/c1t0d0s0 on / type ufs read/write/setuid/devices/intr/largefiles/logging/xattr/onerror=panic/dev=700040 on Tue May  1 11:33:55 2012
             case line
@@ -170,7 +169,7 @@ class Chef
               Chef::Log.debug("Special device #{device} is mounted as #{mount_point}")
               mounted = true
             when /^([\/\w]+)\son\s#{Regexp.escape(mount_point)}\s+/
-              Chef::Log.debug("Special device #{$1} is mounted as #{mount_point}")
+              Chef::Log.debug("Special device #{Regexp.last_match[1]} is mounted as #{mount_point}")
               mounted = false
             end
           end
@@ -192,18 +191,18 @@ class Chef
               # to mount       to fsck         point           type    pass    at boot options
             when /^#{device_regex}\s+[-\/\w]+\s+#{Regexp.escape(mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
               enabled = true
-              fstype = $1
-              options = $4
+              fstype = Regexp.last_match[1]
+              options = Regexp.last_match[4]
               # Store the 'mount at boot' column from vfstab as the 'noauto' option
               # in current_resource.options (linux style)
-              if $3 == "yes"
+              if Regexp.last_match[3] == 'yes'
                 if options.nil? || options.empty?
-                  options = "noauto"
+                  options = 'noauto'
                 else
-                  options += ",noauto"
+                  options += ',noauto'
                 end
               end
-              pass = ( $2 == "-" ) ? 0 : $2.to_i
+              pass = ( Regexp.last_match[2] == '-') ? 0 : Regexp.last_match[2].to_i
               Chef::Log.debug("Found mount #{device} to #{mount_point} in #{VFSTAB}")
               next
             when /^[-\/\w]+\s+[-\/\w]+\s+#{Regexp.escape(mount_point)}\s+/
@@ -212,21 +211,20 @@ class Chef
               Chef::Log.debug("Found conflicting mount point #{mount_point} in #{VFSTAB}")
             end
           end
-          [ enabled, fstype, options, pass ]
+          [enabled, fstype, options, pass]
         end
 
         def device_should_exist?
-          !%w{tmpfs nfs ctfs proc mntfs objfs sharefs fd smbfs}.include?(fstype)
+          !%w(tmpfs nfs ctfs proc mntfs objfs sharefs fd smbfs).include?(fstype)
         end
 
         def device_regex
           if ::File.symlink?(device)
-            "(?:#{Regexp.escape(device)}|#{Regexp.escape(::File.expand_path(::File.readlink(device),::File.dirname(device)))})"
+            "(?:#{Regexp.escape(device)}|#{Regexp.escape(::File.expand_path(::File.readlink(device), ::File.dirname(device)))})"
           else
             Regexp.escape(device)
           end
         end
-
       end
     end
   end

@@ -27,7 +27,6 @@ class Chef
       # * @run_list - the run list for the node to boostrap
       #
       class BootstrapContext
-
         def initialize(config, run_list, chef_config)
           @config       = config
           @run_list     = run_list
@@ -36,7 +35,7 @@ class Chef
 
         def bootstrap_version_string
           if @config[:prerelease]
-            "--prerelease"
+            '--prerelease'
           else
             "--version #{chef_version}"
           end
@@ -67,22 +66,23 @@ chef_server_url  "#{@chef_config[:chef_server_url]}"
 validation_client_name "#{@chef_config[:validation_client_name]}"
 CONFIG
           if @config[:chef_node_name]
-            client_rb << %Q{node_name "#{@config[:chef_node_name]}"\n}
+            client_rb << %Q(node_name "#{@config[:chef_node_name]}"\n)
           else
             client_rb << "# Using default node name (fqdn)\n"
           end
 
           if knife_config[:bootstrap_proxy]
-            client_rb << %Q{http_proxy        "#{knife_config[:bootstrap_proxy]}"\n}
-            client_rb << %Q{https_proxy       "#{knife_config[:bootstrap_proxy]}"\n}
+            client_rb << %Q(http_proxy        "#{knife_config[:bootstrap_proxy]}"\n)
+            client_rb << %Q(https_proxy       "#{knife_config[:bootstrap_proxy]}"\n)
           end
 
           if knife_config[:bootstrap_no_proxy]
-            client_rb << %Q{no_proxy       "#{knife_config[:bootstrap_no_proxy]}"\n}
+            client_rb << %Q(no_proxy       "#{knife_config[:bootstrap_no_proxy]}"\n)
           end
 
           if encrypted_data_bag_secret
-            client_rb << %Q{encrypted_data_bag_secret "/etc/chef/encrypted_data_bag_secret"\n}
+            client_rb << 'encrypted_data_bag_secret "/etc/chef/encrypted_data_bag_secret"
+'
           end
 
           client_rb
@@ -92,7 +92,7 @@ CONFIG
           # If the user doesn't have a client path configure, let bash use the PATH for what it was designed for
           client_path = @chef_config[:chef_client_path] || 'chef-client'
           s = "#{client_path} -j /etc/chef/first-boot.json"
-          s << ' -l debug' if @config[:verbosity] and @config[:verbosity] >= 2
+          s << ' -l debug' if @config[:verbosity] && @config[:verbosity] >= 2
           s << " -E #{bootstrap_environment}" if chef_version.to_f != 0.9 # only use the -E option on Chef 0.10+
           s
         end
@@ -115,25 +115,24 @@ CONFIG
         # X here can be 10 or 11
         def latest_current_chef_version_string
           chef_version_string = if knife_config[:bootstrap_version]
-            knife_config[:bootstrap_version]
+                                  knife_config[:bootstrap_version]
           else
-            Chef::VERSION.split(".").first
+            Chef::VERSION.split('.').first
           end
 
-          installer_version_string = ["-v", chef_version_string]
+          installer_version_string = ['-v', chef_version_string]
 
           # If bootstrapping a pre-release version add -p to the installer string
-          if chef_version_string.split(".").length > 3
-            installer_version_string << "-p"
+          if chef_version_string.split('.').length > 3
+            installer_version_string << '-p'
           end
 
-          installer_version_string.join(" ")
+          installer_version_string.join(' ')
         end
 
         def first_boot
-          (@config[:first_boot_attributes] || {}).merge(:run_list => @run_list)
+          (@config[:first_boot_attributes] || {}).merge(run_list: @run_list)
         end
-
       end
     end
   end

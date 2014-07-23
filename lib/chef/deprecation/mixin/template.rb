@@ -36,7 +36,7 @@ class Chef
           rescue Object => e
             raise TemplateError.new(e, template, context)
           end
-          Tempfile.open("chef-rendered-template") do |tempfile|
+          Tempfile.open('chef-rendered-template') do |tempfile|
             tempfile.print(output)
             tempfile.close
             yield tempfile
@@ -46,4 +46,3 @@ class Chef
     end
   end
 end
-

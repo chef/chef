@@ -22,7 +22,6 @@ require 'erubis'
 class Chef
   class Knife
     class Bootstrap < Knife
-
       deps do
         require 'chef/knife/core/bootstrap_context'
         require 'chef/json_compat'
@@ -34,167 +33,167 @@ class Chef
         Chef::Knife::Ssh.load_deps
       end
 
-      banner "knife bootstrap FQDN (options)"
+      banner 'knife bootstrap FQDN (options)'
 
       option :ssh_user,
-        :short => "-x USERNAME",
-        :long => "--ssh-user USERNAME",
-        :description => "The ssh username",
-        :default => "root"
+             short: '-x USERNAME',
+             long: '--ssh-user USERNAME',
+             description: 'The ssh username',
+             default: 'root'
 
       option :ssh_password,
-        :short => "-P PASSWORD",
-        :long => "--ssh-password PASSWORD",
-        :description => "The ssh password"
+             short: '-P PASSWORD',
+             long: '--ssh-password PASSWORD',
+             description: 'The ssh password'
 
       option :ssh_port,
-        :short => "-p PORT",
-        :long => "--ssh-port PORT",
-        :description => "The ssh port",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_port] = key }
+             short: '-p PORT',
+             long: '--ssh-port PORT',
+             description: 'The ssh port',
+             proc: proc { |key| Chef::Config[:knife][:ssh_port] = key }
 
       option :ssh_gateway,
-        :short => "-G GATEWAY",
-        :long => "--ssh-gateway GATEWAY",
-        :description => "The ssh gateway",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key }
+             short: '-G GATEWAY',
+             long: '--ssh-gateway GATEWAY',
+             description: 'The ssh gateway',
+             proc: proc { |key| Chef::Config[:knife][:ssh_gateway] = key }
 
       option :forward_agent,
-        :short => "-A",
-        :long => "--forward-agent",
-        :description => "Enable SSH agent forwarding",
-        :boolean => true
+             short: '-A',
+             long: '--forward-agent',
+             description: 'Enable SSH agent forwarding',
+             boolean: true
 
       option :identity_file,
-        :short => "-i IDENTITY_FILE",
-        :long => "--identity-file IDENTITY_FILE",
-        :description => "The SSH identity file used for authentication"
+             short: '-i IDENTITY_FILE',
+             long: '--identity-file IDENTITY_FILE',
+             description: 'The SSH identity file used for authentication'
 
       option :chef_node_name,
-        :short => "-N NAME",
-        :long => "--node-name NAME",
-        :description => "The Chef node name for your new node"
+             short: '-N NAME',
+             long: '--node-name NAME',
+             description: 'The Chef node name for your new node'
 
       option :prerelease,
-        :long => "--prerelease",
-        :description => "Install the pre-release chef gems"
+             long: '--prerelease',
+             description: 'Install the pre-release chef gems'
 
       option :bootstrap_version,
-        :long => "--bootstrap-version VERSION",
-        :description => "The version of Chef to install",
-        :proc => lambda { |v| Chef::Config[:knife][:bootstrap_version] = v }
+             long: '--bootstrap-version VERSION',
+             description: 'The version of Chef to install',
+             proc: lambda { |v| Chef::Config[:knife][:bootstrap_version] = v }
 
       option :bootstrap_proxy,
-        :long => "--bootstrap-proxy PROXY_URL",
-        :description => "The proxy server for the node being bootstrapped",
-        :proc => Proc.new { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
+             long: '--bootstrap-proxy PROXY_URL',
+             description: 'The proxy server for the node being bootstrapped',
+             proc: proc { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
 
       option :bootstrap_no_proxy,
-        :long => "--bootstrap-no-proxy [NO_PROXY_URL|NO_PROXY_IP]",
-        :description => "Do not proxy locations for the node being bootstrapped; this option is used internally by Opscode",
-        :proc => Proc.new { |np| Chef::Config[:knife][:bootstrap_no_proxy] = np }
+             long: '--bootstrap-no-proxy [NO_PROXY_URL|NO_PROXY_IP]',
+             description: 'Do not proxy locations for the node being bootstrapped; this option is used internally by Opscode',
+             proc: proc { |np| Chef::Config[:knife][:bootstrap_no_proxy] = np }
 
       option :distro,
-        :short => "-d DISTRO",
-        :long => "--distro DISTRO",
-        :description => "Bootstrap a distro using a template",
-        :default => "chef-full"
+             short: '-d DISTRO',
+             long: '--distro DISTRO',
+             description: 'Bootstrap a distro using a template',
+             default: 'chef-full'
 
       option :use_sudo,
-        :long => "--sudo",
-        :description => "Execute the bootstrap via sudo",
-        :boolean => true
+             long: '--sudo',
+             description: 'Execute the bootstrap via sudo',
+             boolean: true
 
       option :use_sudo_password,
-        :long => "--use-sudo-password",
-        :description => "Execute the bootstrap via sudo with password",
-        :boolean => false
+             long: '--use-sudo-password',
+             description: 'Execute the bootstrap via sudo with password',
+             boolean: false
 
       option :template_file,
-        :long => "--template-file TEMPLATE",
-        :description => "Full path to location of template to use",
-        :default => false
+             long: '--template-file TEMPLATE',
+             description: 'Full path to location of template to use',
+             default: false
 
       option :run_list,
-        :short => "-r RUN_LIST",
-        :long => "--run-list RUN_LIST",
-        :description => "Comma separated list of roles/recipes to apply",
-        :proc => lambda { |o| o.split(/[\s,]+/) },
-        :default => []
+             short: '-r RUN_LIST',
+             long: '--run-list RUN_LIST',
+             description: 'Comma separated list of roles/recipes to apply',
+             proc: lambda { |o| o.split(/[\s,]+/) },
+             default: []
 
       option :first_boot_attributes,
-        :short => "-j JSON_ATTRIBS",
-        :long => "--json-attributes",
-        :description => "A JSON string to be added to the first run of chef-client",
-        :proc => lambda { |o| JSON.parse(o) },
-        :default => {}
+             short: '-j JSON_ATTRIBS',
+             long: '--json-attributes',
+             description: 'A JSON string to be added to the first run of chef-client',
+             proc: lambda { |o| JSON.parse(o) },
+             default: {}
 
       option :host_key_verify,
-        :long => "--[no-]host-key-verify",
-        :description => "Verify host key, enabled by default.",
-        :boolean => true,
-        :default => true
+             long: '--[no-]host-key-verify',
+             description: 'Verify host key, enabled by default.',
+             boolean: true,
+             default: true
 
       option :hint,
-        :long => "--hint HINT_NAME[=HINT_FILE]",
-        :description => "Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.",
-        :proc => Proc.new { |h|
-          Chef::Config[:knife][:hints] ||= Hash.new
-          name, path = h.split("=")
-          Chef::Config[:knife][:hints][name] = path ? JSON.parse(::File.read(path)) : Hash.new  }
+             long: '--hint HINT_NAME[=HINT_FILE]',
+             description: 'Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.',
+             proc: Proc.new { |h|
+                    Chef::Config[:knife][:hints] ||= Hash.new
+                    name, path = h.split("=")
+                    Chef::Config[:knife][:hints][name] = path ? JSON.parse(::File.read(path)) : Hash.new }
 
       option :secret,
-        :short => "-s SECRET",
-        :long  => "--secret ",
-        :description => "The secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
+             short: '-s SECRET',
+             long: '--secret ',
+             description: 'The secret key to use to encrypt data bag item values',
+             proc: proc { |s| Chef::Config[:knife][:secret] = s }
 
       option :secret_file,
-        :long => "--secret-file SECRET_FILE",
-        :description => "A file containing the secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
+             long: '--secret-file SECRET_FILE',
+             description: 'A file containing the secret key to use to encrypt data bag item values',
+             proc: proc { |sf| Chef::Config[:knife][:secret_file] = sf }
 
       option :bootstrap_url,
-        :long        => "--bootstrap-url URL",
-        :description => "URL to a custom installation script",
-        :proc        => Proc.new { |u| Chef::Config[:knife][:bootstrap_url] = u }
+             long: '--bootstrap-url URL',
+             description: 'URL to a custom installation script',
+             proc: proc { |u| Chef::Config[:knife][:bootstrap_url] = u }
 
       option :bootstrap_install_command,
-        :long        => "--bootstrap-install-command COMMANDS",
-        :description => "Custom command to install chef-client",
-        :proc        => Proc.new { |ic| Chef::Config[:knife][:bootstrap_install_command] = ic }
+             long: '--bootstrap-install-command COMMANDS',
+             description: 'Custom command to install chef-client',
+             proc: proc { |ic| Chef::Config[:knife][:bootstrap_install_command] = ic }
 
       option :bootstrap_wget_options,
-        :long        => "--bootstrap-wget-options OPTIONS",
-        :description => "Add options to wget when installing chef-client",
-        :proc        => Proc.new { |wo| Chef::Config[:knife][:bootstrap_wget_options] = wo }
+             long: '--bootstrap-wget-options OPTIONS',
+             description: 'Add options to wget when installing chef-client',
+             proc: proc { |wo| Chef::Config[:knife][:bootstrap_wget_options] = wo }
 
       option :bootstrap_curl_options,
-        :long        => "--bootstrap-curl-options OPTIONS",
-        :description => "Add options to curl when install chef-client",
-        :proc        => Proc.new { |co| Chef::Config[:knife][:bootstrap_curl_options] = co }
+             long: '--bootstrap-curl-options OPTIONS',
+             description: 'Add options to curl when install chef-client',
+             proc: proc { |co| Chef::Config[:knife][:bootstrap_curl_options] = co }
 
-      def find_template(template=nil)
+      def find_template(template = nil)
         # Are we bootstrapping using an already shipped template?
         if config[:template_file]
           bootstrap_files = config[:template_file]
         else
           bootstrap_files = []
           bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{config[:distro]}.erb")
-          bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{config[:distro]}.erb") if Knife.chef_config_dir
+          bootstrap_files << File.join(Knife.chef_config_dir, 'bootstrap', "#{config[:distro]}.erb") if Knife.chef_config_dir
           bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{config[:distro]}.erb") if ENV['HOME']
-          bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{config[:distro]}.erb"))
+          bootstrap_files << Gem.find_files(File.join('chef', 'knife', 'bootstrap', "#{config[:distro]}.erb"))
           bootstrap_files.flatten!
         end
 
         template = Array(bootstrap_files).find do |bootstrap_template|
           Chef::Log.debug("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
-          File.exists?(bootstrap_template)
+          File.exist?(bootstrap_template)
         end
 
         unless template
           ui.info("Can not find bootstrap definition for #{config[:distro]}")
-          raise Errno::ENOENT
+          fail Errno::ENOENT
         end
 
         Chef::Log.debug("Found bootstrap template in #{File.dirname(template)}")
@@ -202,7 +201,7 @@ class Chef
         template
       end
 
-      def render_template(template=nil)
+      def render_template(template = nil)
         context = Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config)
         Erubis::Eruby.new(template).evaluate(context)
       end
@@ -237,9 +236,9 @@ class Chef
 
       def validate_name_args!
         if Array(@name_args).first.nil?
-          ui.error("Must pass an FQDN or ip to bootstrap")
+          ui.error('Must pass an FQDN or ip to bootstrap')
           exit 1
-        elsif Array(@name_args).first == "windows"
+        elsif Array(@name_args).first == 'windows'
           ui.warn("Hostname containing 'windows' specified. Please install 'knife-windows' if you are attempting to bootstrap a Windows node via WinRM.")
         end
       end
@@ -251,7 +250,7 @@ class Chef
       def knife_ssh
         ssh = Chef::Knife::Ssh.new
         ssh.ui = ui
-        ssh.name_args = [ server_name, ssh_command ]
+        ssh.name_args = [server_name, ssh_command]
         ssh.config[:ssh_user] = Chef::Config[:knife][:ssh_user] || config[:ssh_user]
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:ssh_port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
@@ -283,7 +282,7 @@ class Chef
 
       def warn_chef_config_secret_key
         unless Chef::Config[:encrypted_data_bag_secret].nil?
-          ui.warn "* " * 40
+          ui.warn '* ' * 40
           ui.warn(<<-WARNING)
 Specifying the encrypted data bag secret key using an 'encrypted_data_bag_secret'
 entry in 'knife.rb' is deprecated. Please see CHEF-4011 for more details. You
@@ -299,10 +298,9 @@ please use the '--secret' or '--secret-file' options of this command instead.
 behavior will be removed and any 'encrypted_data_bag_secret' entries in
 'knife.rb' will be ignored completely.
 WARNING
-          ui.warn "* " * 40
+          ui.warn '* ' * 40
         end
       end
-
     end
   end
 end

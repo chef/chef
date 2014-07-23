@@ -28,8 +28,7 @@ require 'chef/http/http_request'
 class Chef
   class HTTP
     class BasicClient
-
-      HTTPS = "https".freeze
+      HTTPS = 'https'.freeze
 
       attr_reader :url
       attr_reader :http_client
@@ -40,7 +39,7 @@ class Chef
       # url:: An URI for the remote server.
       # === Options:
       # ssl_policy:: The SSL Policy to use, defaults to DefaultSSLPolicy
-      def initialize(url, opts={})
+      def initialize(url, opts = {})
         @url = url
         @ssl_policy = opts[:ssl_policy] || DefaultSSLPolicy
         @http_client = build_http_client
@@ -54,22 +53,22 @@ class Chef
         @url.port
       end
 
-      def request(method, url, req_body, base_headers={})
+      def request(method, url, req_body, base_headers = {})
         http_request = HTTPRequest.new(method, url, req_body, base_headers).http_request
         Chef::Log.debug("Initiating #{method} to #{url}")
-        Chef::Log.debug("---- HTTP Request Header Data: ----")
+        Chef::Log.debug('---- HTTP Request Header Data: ----')
         base_headers.each do |name, value|
           Chef::Log.debug("#{name}: #{value}")
         end
-        Chef::Log.debug("---- End HTTP Request Header Data ----")
+        Chef::Log.debug('---- End HTTP Request Header Data ----')
         http_client.request(http_request) do |response|
-          Chef::Log.debug("---- HTTP Status and Header Data: ----")
+          Chef::Log.debug('---- HTTP Status and Header Data: ----')
           Chef::Log.debug("HTTP #{response.http_version} #{response.code} #{response.msg}")
 
           response.each do |header, value|
             Chef::Log.debug("#{header}: #{value}")
           end
-          Chef::Log.debug("---- End HTTP Status/Header Data ----")
+          Chef::Log.debug('---- End HTTP Status/Header Data ----')
 
           yield response if block_given?
           # http_client.request may not have the return signature we want, so
@@ -81,13 +80,13 @@ class Chef
         raise
       end
 
-      #adapted from buildr/lib/buildr/core/transports.rb
+      # adapted from buildr/lib/buildr/core/transports.rb
       def proxy_uri
         proxy = Chef::Config["#{url.scheme}_proxy"]
         # Check if the proxy string contains a scheme. If not, add the url's scheme to the
         # proxy before parsing. The regex /^.*:\/\// matches, for example, http://.
         proxy = if proxy.match(/^.*:\/\//)
-          URI.parse(proxy)
+                  URI.parse(proxy)
         else
           URI.parse("#{url.scheme}://#{proxy}")
         end if String === proxy
@@ -128,7 +127,6 @@ class Chef
         http_client.use_ssl = true
         ssl_policy.apply_to(http_client)
       end
-
     end
   end
 end

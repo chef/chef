@@ -23,7 +23,7 @@ class Chef
     module FileSystem
       class FileSystemRootDir < FileSystemEntry
         def initialize(file_path)
-          super("", nil, file_path)
+          super('', nil, file_path)
         end
       end
     end

@@ -21,23 +21,22 @@ require 'chef/knife'
 class Chef
   class Knife
     class NodeRunListAdd < Knife
-
       deps do
         require 'chef/node'
         require 'chef/json_compat'
       end
 
-      banner "knife node run_list add [NODE] [ENTRY[,ENTRY]] (options)"
+      banner 'knife node run_list add [NODE] [ENTRY[,ENTRY]] (options)'
 
       option :after,
-        :short => "-a ITEM",
-        :long  => "--after ITEM",
-        :description => "Place the ENTRY in the run list after ITEM"
+             short: '-a ITEM',
+             long: '--after ITEM',
+             description: 'Place the ENTRY in the run list after ITEM'
 
       option :before,
-             :short => "-b ITEM",
-             :long  => "--before ITEM",
-             :description => "Place the ENTRY in the run list before ITEM"
+             short: '-b ITEM',
+             long: '--before ITEM',
+             description: 'Place the ENTRY in the run list before ITEM'
 
       def run
         node = Chef::Node.load(@name_args[0])
@@ -52,7 +51,7 @@ class Chef
         end
 
         if config[:after] && config[:before]
-          ui.fatal("You cannot specify both --before and --after!")
+          ui.fatal('You cannot specify both --before and --after!')
           exit 1
         end
 
@@ -73,7 +72,7 @@ class Chef
 
       private
 
-      def add_to_run_list_after(node, entries, after=nil)
+      def add_to_run_list_after(node, entries, after = nil)
         if after
           nlist = []
           node.run_list.each do |entry|
@@ -98,7 +97,6 @@ class Chef
         end
         node.run_list.reset!(nlist)
       end
-
     end
   end
 end

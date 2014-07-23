@@ -20,21 +20,20 @@ require 'spec_helper'
 
 describe Chef::Provider::CookbookFile::Content do
 
-  let(:new_resource) { double('Chef::Resource::CookbookFile (new)', :cookbook_name => 'apache2', :cookbook => 'apache2') }
+  let(:new_resource) { double('Chef::Resource::CookbookFile (new)', cookbook_name: 'apache2', cookbook: 'apache2') }
   let(:content) do
     @run_context = double('Chef::RunContext')
     @current_resource = double('Chef::Resource::CookbookFile (current)')
     Chef::Provider::CookbookFile::Content.new(new_resource, @current_resource, @run_context)
   end
 
-  it "prefers the explicit cookbook name on the resource to the implicit one" do
+  it 'prefers the explicit cookbook name on the resource to the implicit one' do
     new_resource.stub(:cookbook).and_return('nginx')
     content.send(:resource_cookbook).should == 'nginx'
   end
 
-  it "falls back to the implicit cookbook name on the resource" do
+  it 'falls back to the implicit cookbook name on the resource' do
     content.send(:resource_cookbook).should == 'apache2'
   end
 
 end
-

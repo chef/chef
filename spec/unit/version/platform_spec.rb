@@ -19,17 +19,17 @@ require 'chef/version/platform'
 
 describe Chef::Version::Platform do
 
-  it "is a subclass of Chef::Version" do
+  it 'is a subclass of Chef::Version' do
     v = Chef::Version::Platform.new('1.1')
     v.should be_an_instance_of(Chef::Version::Platform)
     v.should be_a_kind_of(Chef::Version)
   end
 
-  it "should transform 1 to 1.0.0" do
-    Chef::Version::Platform.new("1").to_s.should == "1.0.0"
+  it 'should transform 1 to 1.0.0' do
+    Chef::Version::Platform.new('1').to_s.should == '1.0.0'
   end
 
-  describe "when creating valid Versions" do
+  describe 'when creating valid Versions' do
     good_versions = %w(1 1.2 1.2.3 1000.80.50000 0.300.25 001.02.00003 1.2-STABLE 10.0-BETA3 9.1-RELEASE-p3)
     good_versions.each do |v|
       it "should accept '#{v}'" do
@@ -38,9 +38,9 @@ describe Chef::Version::Platform do
     end
   end
 
-  describe "when given bogus input" do
-    bad_versions = ["1.2.3.4", "1.2.a4", "a", "1.2 3", "1.2 a",
-                    "1 2 3", "1-2-3", "1_2_3", "1.2_3", "1.2-3"]
+  describe 'when given bogus input' do
+    bad_versions = ['1.2.3.4', '1.2.a4', 'a', '1.2 3', '1.2 a',
+                    '1 2 3', '1-2-3', '1_2_3', '1.2_3', '1.2-3']
     the_error = Chef::Exceptions::InvalidPlatformVersion
     bad_versions.each do |v|
       it "should raise #{the_error} when given '#{v}'" do
@@ -49,13 +49,12 @@ describe Chef::Version::Platform do
     end
   end
 
-  describe "<=>" do
+  describe '<=>' do
 
-    it "should equate versions 1 and 1.0.0" do
-      Chef::Version::Platform.new("1").should == Chef::Version::Platform.new("1.0.0")
+    it 'should equate versions 1 and 1.0.0' do
+      Chef::Version::Platform.new('1').should == Chef::Version::Platform.new('1.0.0')
     end
 
   end
 
 end
-

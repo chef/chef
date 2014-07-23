@@ -23,16 +23,16 @@ describe Chef::Provider::Service do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::Service.new("chef")
-    @current_resource = Chef::Resource::Service.new("chef")
+    @new_resource = Chef::Resource::Service.new('chef')
+    @current_resource = Chef::Resource::Service.new('chef')
 
     @provider = Chef::Provider::Service.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
     @provider.stub(:load_current_resource)
   end
 
-  describe "when enabling the service" do
-    it "should enable the service if disabled and set the resource as updated" do
+  describe 'when enabling the service' do
+    it 'should enable the service if disabled and set the resource as updated' do
       @current_resource.enabled(false)
       @provider.should_receive(:enable_service).and_return(true)
       @provider.action_enable
@@ -40,7 +40,7 @@ describe Chef::Provider::Service do
       @provider.new_resource.should be_updated
     end
 
-    it "should not enable the service if already enabled" do
+    it 'should not enable the service if already enabled' do
       @current_resource.enabled(true)
       @provider.should_not_receive(:enable_service)
       @provider.action_enable
@@ -49,16 +49,15 @@ describe Chef::Provider::Service do
     end
   end
 
-
-  describe "when disabling the service" do
-    it "should disable the service if enabled and set the resource as updated" do
+  describe 'when disabling the service' do
+    it 'should disable the service if enabled and set the resource as updated' do
       @current_resource.stub(:enabled).and_return(true)
       @provider.should_receive(:disable_service).and_return(true)
       @provider.run_action(:disable)
       @provider.new_resource.should be_updated
     end
 
-    it "should not disable the service if already disabled" do
+    it 'should not disable the service if already disabled' do
       @current_resource.stub(:enabled).and_return(false)
       @provider.should_not_receive(:disable_service)
       @provider.run_action(:disable)
@@ -66,7 +65,7 @@ describe Chef::Provider::Service do
     end
   end
 
-  describe "action_start" do
+  describe 'action_start' do
     it "should start the service if it isn't running and set the resource as updated" do
       @current_resource.running(false)
       @provider.should_receive(:start_service).with.and_return(true)
@@ -74,7 +73,7 @@ describe Chef::Provider::Service do
       @provider.new_resource.should be_updated
     end
 
-    it "should not start the service if already running" do
+    it 'should not start the service if already running' do
       @current_resource.running(true)
       @provider.should_not_receive(:start_service)
       @provider.run_action(:start)
@@ -82,8 +81,8 @@ describe Chef::Provider::Service do
     end
   end
 
-  describe "action_stop" do
-    it "should stop the service if it is running and set the resource as updated" do
+  describe 'action_stop' do
+    it 'should stop the service if it is running and set the resource as updated' do
       @current_resource.stub(:running).and_return(true)
       @provider.should_receive(:stop_service).and_return(true)
       @provider.run_action(:stop)
@@ -98,9 +97,9 @@ describe Chef::Provider::Service do
     end
   end
 
-  describe "action_restart" do
+  describe 'action_restart' do
     before do
-      @current_resource.supports(:restart => true)
+      @current_resource.supports(restart: true)
     end
 
     it "should restart the service if it's supported and set the resource as updated" do
@@ -117,18 +116,18 @@ describe Chef::Provider::Service do
     end
   end
 
-  describe "action_reload" do
+  describe 'action_reload' do
     before do
-      @new_resource.supports(:reload => true)
+      @new_resource.supports(reload: true)
     end
 
     it "should raise an exception if reload isn't supported" do
-      @new_resource.supports(:reload => false)
+      @new_resource.supports(reload: false)
       @new_resource.stub(:reload_command).and_return(false)
       lambda { @provider.run_action(:reload) }.should raise_error(Chef::Exceptions::UnsupportedAction)
     end
 
-    it "should reload the service if it is running and set the resource as updated" do
+    it 'should reload the service if it is running and set the resource as updated' do
       @current_resource.stub(:running).and_return(true)
       @provider.should_receive(:reload_service).and_return(true)
       @provider.run_action(:reload)
@@ -143,27 +142,27 @@ describe Chef::Provider::Service do
     end
   end
 
-  it "delegates enable_service to subclasses" do
+  it 'delegates enable_service to subclasses' do
     lambda { @provider.enable_service }.should raise_error(Chef::Exceptions::UnsupportedAction)
   end
 
-  it "delegates disable_service to subclasses" do
+  it 'delegates disable_service to subclasses' do
     lambda { @provider.disable_service }.should raise_error(Chef::Exceptions::UnsupportedAction)
   end
 
-  it "delegates start_service to subclasses" do
+  it 'delegates start_service to subclasses' do
     lambda { @provider.start_service }.should raise_error(Chef::Exceptions::UnsupportedAction)
   end
 
-  it "delegates stop_service to subclasses" do
+  it 'delegates stop_service to subclasses' do
     lambda { @provider.stop_service }.should raise_error(Chef::Exceptions::UnsupportedAction)
   end
 
-  it "delegates restart_service to subclasses" do
+  it 'delegates restart_service to subclasses' do
     lambda { @provider.restart_service }.should raise_error(Chef::Exceptions::UnsupportedAction)
   end
 
-  it "delegates reload_service to subclasses" do
+  it 'delegates reload_service to subclasses' do
     lambda { @provider.reload_service }.should raise_error(Chef::Exceptions::UnsupportedAction)
   end
 end

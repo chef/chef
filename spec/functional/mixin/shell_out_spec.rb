@@ -20,11 +20,11 @@ require 'spec_helper'
 describe Chef::Mixin::ShellOut do
   include Chef::Mixin::ShellOut
 
-  describe "shell_out_with_systems_locale" do
+  describe 'shell_out_with_systems_locale' do
     describe "when environment['LC_ALL'] is not set" do
-      it "should use the default shell_out setting" do
+      it 'should use the default shell_out setting' do
         cmd = if windows?
-          shell_out_with_systems_locale('echo %LC_ALL%')
+                shell_out_with_systems_locale('echo %LC_ALL%')
         else
           shell_out_with_systems_locale('echo $LC_ALL')
         end
@@ -36,9 +36,9 @@ describe Chef::Mixin::ShellOut do
     describe "when environment['LC_ALL'] is set" do
       it "should use the option's setting" do
         cmd = if windows?
-          shell_out_with_systems_locale('echo %LC_ALL%', :environment => {'LC_ALL' => 'POSIX'})
+                shell_out_with_systems_locale('echo %LC_ALL%', environment: { 'LC_ALL' => 'POSIX' })
         else
-          shell_out_with_systems_locale('echo $LC_ALL', :environment => {'LC_ALL' => 'POSIX'})
+          shell_out_with_systems_locale('echo $LC_ALL', environment: { 'LC_ALL' => 'POSIX' })
         end
 
         cmd.stdout.chomp.should eq 'POSIX'

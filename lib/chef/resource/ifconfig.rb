@@ -22,12 +22,11 @@ require 'chef/resource'
 class Chef
   class Resource
     class Ifconfig < Chef::Resource
-
       identity_attr :device
 
       state_attrs :inet_addr, :mask
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :ifconfig
         @target = name
@@ -46,104 +45,101 @@ class Chef
         @onparent = nil
       end
 
-      def target(arg=nil)
+      def target(arg = nil)
         set_or_return(
           :target,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def device(arg=nil)
+      def device(arg = nil)
         set_or_return(
           :device,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def hwaddr(arg=nil)
+      def hwaddr(arg = nil)
         set_or_return(
           :hwaddr,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def inet_addr(arg=nil)
+      def inet_addr(arg = nil)
         set_or_return(
           :inet_addr,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def bcast(arg=nil)
+      def bcast(arg = nil)
         set_or_return(
           :bcast,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def mask(arg=nil)
+      def mask(arg = nil)
         set_or_return(
           :mask,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def mtu(arg=nil)
+      def mtu(arg = nil)
         set_or_return(
           :mtu,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def metric(arg=nil)
+      def metric(arg = nil)
         set_or_return(
           :metric,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def onboot(arg=nil)
+      def onboot(arg = nil)
         set_or_return(
           :onboot,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def network(arg=nil)
+      def network(arg = nil)
         set_or_return(
           :network,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def bootproto(arg=nil)
+      def bootproto(arg = nil)
         set_or_return(
           :bootproto,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def onparent(arg=nil)
+      def onparent(arg = nil)
         set_or_return(
           :onparent,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
     end
-
   end
 end
-
-

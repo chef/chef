@@ -27,7 +27,6 @@ class Chef
   class Provider
     class Deploy
       class Revision < Chef::Provider::Deploy
-
         def all_releases
           sorted_releases
         end
@@ -54,11 +53,11 @@ class Chef
         protected
 
         def release_created(release)
-          sorted_releases {|r| r.delete(release); r << release }
+          sorted_releases { |r| r.delete(release); r << release }
         end
 
         def release_deleted(release)
-          sorted_releases { |r| r.delete(release)}
+          sorted_releases { |r| r.delete(release) }
         end
 
         def release_slug
@@ -85,22 +84,19 @@ class Chef
         end
 
         def sorted_releases_from_filesystem
-          Dir.glob(new_resource.deploy_to + "/releases/*").sort_by { |d| ::File.ctime(d) }
+          Dir.glob(new_resource.deploy_to + '/releases/*').sort_by { |d| ::File.ctime(d) }
         end
 
         def load_cache
-          begin
-            Chef::JSONCompat.from_json(Chef::FileCache.load("revision-deploys/#{new_resource.name}"))
-          rescue Chef::Exceptions::FileNotFound
-            sorted_releases_from_filesystem
-          end
+          Chef::JSONCompat.from_json(Chef::FileCache.load("revision-deploys/#{new_resource.name}"))
+        rescue Chef::Exceptions::FileNotFound
+          sorted_releases_from_filesystem
         end
 
         def save_cache(cache)
           Chef::FileCache.store("revision-deploys/#{new_resource.name}", cache.to_json)
           cache
         end
-
       end
     end
   end

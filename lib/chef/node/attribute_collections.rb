@@ -18,13 +18,11 @@
 
 class Chef
   class Node
-
     # == AttrArray
     # AttrArray is identical to Array, except that it keeps a reference to the
     # "root" (Chef::Node::Attribute) object, and will trigger a cache
     # invalidation on that object when mutated.
     class AttrArray < Array
-
       MUTATOR_METHODS = [
         :<<,
         :[]=,
@@ -84,9 +82,8 @@ class Chef
       end
 
       def dup
-        Array.new(map {|e| safe_dup(e)})
+        Array.new(map { |e| safe_dup(e) })
       end
-
     end
 
     # == VividMash
@@ -134,7 +131,7 @@ class Chef
         METHOD_DEFN
       end
 
-      def initialize(root, data={})
+      def initialize(root, data = {})
         @root = root
         super(data)
       end
@@ -158,7 +155,7 @@ class Chef
         end
       end
 
-      alias :attribute? :has_key?
+      alias_method :attribute?, :key?
 
       def method_missing(symbol, *args)
         # Calling `puts arg` implicitly calls #to_ary on `arg`. If `arg` does
@@ -174,7 +171,7 @@ class Chef
           key_to_set = symbol.to_s[/^(.+)=$/, 1]
           self[key_to_set] = (args.length == 1 ? args[0] : args)
         else
-          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'. To set an attribute, use `#{symbol}=value' instead."
+          fail NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'. To set an attribute, use `#{symbol}=value' instead."
         end
       end
 
@@ -206,8 +203,6 @@ class Chef
       def dup
         Mash.new(self)
       end
-
     end
-
   end
 end

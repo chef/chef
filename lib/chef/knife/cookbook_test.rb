@@ -23,24 +23,23 @@ require 'chef/knife'
 class Chef
   class Knife
     class CookbookTest < Knife
-
       deps do
         require 'chef/cookbook_loader'
         require 'chef/cookbook/syntax_check'
       end
 
-      banner "knife cookbook test [COOKBOOKS...] (options)"
+      banner 'knife cookbook test [COOKBOOKS...] (options)'
 
       option :cookbook_path,
-        :short => "-o PATH:PATH",
-        :long => "--cookbook-path PATH:PATH",
-        :description => "A colon-separated path to look for cookbooks in",
-        :proc => lambda { |o| o.split(":") }
+             short: '-o PATH:PATH',
+             long: '--cookbook-path PATH:PATH',
+             description: 'A colon-separated path to look for cookbooks in',
+             proc: lambda { |o| o.split(':') }
 
       option :all,
-        :short => "-a",
-        :long => "--all",
-        :description => "Test all cookbooks, rather than just a single cookbook"
+             short: '-a',
+             long: '--all',
+             description: 'Test all cookbooks, rather than just a single cookbook'
 
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
@@ -49,7 +48,7 @@ class Chef
         if config[:all]
           cl = cookbook_loader
           cl.load_cookbooks
-          cl.each do |key, cookbook|
+          cl.each do |key, _cookbook|
             checked_a_cookbook = true
             test_cookbook(key)
           end
@@ -75,21 +74,19 @@ class Chef
         end
       end
 
-
       def test_ruby(syntax_checker)
-        ui.info("Validating ruby files")
+        ui.info('Validating ruby files')
         exit(1) unless syntax_checker.validate_ruby_files
       end
 
       def test_templates(syntax_checker)
-        ui.info("Validating templates")
+        ui.info('Validating templates')
         exit(1) unless syntax_checker.validate_templates
       end
 
       def cookbook_loader
         @cookbook_loader ||= Chef::CookbookLoader.new(config[:cookbook_path])
       end
-
     end
   end
 end

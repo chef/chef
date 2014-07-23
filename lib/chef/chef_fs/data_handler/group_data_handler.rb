@@ -37,7 +37,7 @@ class Chef
         end
 
         def preserve_key(key)
-          return key == 'name'
+          key == 'name'
         end
 
         def chef_class

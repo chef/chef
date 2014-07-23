@@ -23,7 +23,6 @@ require 'tempfile'
 class Chef
   class Knife
     class NodeEditor
-
       attr_reader :node
       attr_reader :ui
       attr_reader :config
@@ -33,7 +32,7 @@ class Chef
       end
 
       def edit_node
-        abort "You specified the --disable_editing option, nothing to edit" if config[:disable_editing]
+        abort 'You specified the --disable_editing option, nothing to edit' if config[:disable_editing]
         assert_editor_set!
 
         updated_node_data = @ui.edit_data(view)
@@ -42,49 +41,49 @@ class Chef
       end
 
       def updated?
-        pristine_copy = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(node), :create_additions => false)
-        updated_copy  = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@updated_node), :create_additions => false)
+        pristine_copy = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(node), create_additions: false)
+        updated_copy  = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@updated_node), create_additions: false)
         unless pristine_copy == updated_copy
-          updated_properties = %w{name normal chef_environment run_list default override automatic}.reject do |key|
-             pristine_copy[key] == updated_copy[key]
+          updated_properties = %w(name normal chef_environment run_list default override automatic).reject do |key|
+            pristine_copy[key] == updated_copy[key]
           end
         end
-        ( pristine_copy != updated_copy ) && updated_properties
+        ( pristine_copy != updated_copy) && updated_properties
       end
 
       private
 
       def view
         result = {}
-        result["name"] = node.name
-        result["chef_environment"] = node.chef_environment
-        result["normal"] = node.normal_attrs
-        result["run_list"] = node.run_list
+        result['name'] = node.name
+        result['chef_environment'] = node.chef_environment
+        result['normal'] = node.normal_attrs
+        result['run_list'] = node.run_list
 
         if config[:all_attributes]
-          result["default"]   = node.default_attrs
-          result["override"]  = node.override_attrs
-          result["automatic"] = node.automatic_attrs
+          result['default']   = node.default_attrs
+          result['override']  = node.override_attrs
+          result['automatic'] = node.automatic_attrs
         end
         result
       end
 
       def apply_updates(updated_data)
-        if node.name and node.name != updated_data["name"]
+        if node.name and node.name != updated_data['name']
           ui.warn "Changing the name of a node results in a new node being created, #{node.name} will not be modified or removed."
-          confirm = ui.confirm "Proceed with creation of new node"
+          confirm = ui.confirm 'Proceed with creation of new node'
         end
 
         @updated_node = Node.new.tap do |n|
-          n.name( updated_data["name"] )
-          n.chef_environment( updated_data["chef_environment"] )
-          n.run_list( updated_data["run_list"])
-          n.normal_attrs = updated_data["normal"]
+          n.name(updated_data['name'])
+          n.chef_environment(updated_data['chef_environment'])
+          n.run_list(updated_data['run_list'])
+          n.normal_attrs = updated_data['normal']
 
           if config[:all_attributes]
-            n.default_attrs   = updated_data["default"]
-            n.override_attrs  = updated_data["override"]
-            n.automatic_attrs = updated_data["automatic"]
+            n.default_attrs   = updated_data['default']
+            n.override_attrs  = updated_data['override']
+            n.automatic_attrs = updated_data['automatic']
           else
             n.default_attrs   = node.default_attrs
             n.override_attrs  = node.override_attrs
@@ -100,11 +99,9 @@ class Chef
 
       def assert_editor_set!
         unless config[:editor]
-          abort "You must set your EDITOR environment variable or configure your editor via knife.rb"
+          abort 'You must set your EDITOR environment variable or configure your editor via knife.rb'
         end
       end
-
     end
   end
 end
-

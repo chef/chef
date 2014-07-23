@@ -21,7 +21,6 @@ require 'chef/knife'
 class Chef
   class Knife
     class ClientShow < Knife
-
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
@@ -29,21 +28,20 @@ class Chef
         require 'chef/json_compat'
       end
 
-      banner "knife client show CLIENT (options)"
+      banner 'knife client show CLIENT (options)'
 
       def run
         @client_name = @name_args[0]
 
         if @client_name.nil?
           show_usage
-          ui.fatal("You must specify a client name")
+          ui.fatal('You must specify a client name')
           exit 1
         end
 
         client = Chef::ApiClient.load(@client_name)
         output(format_for_display(client))
       end
-
     end
   end
 end

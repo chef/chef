@@ -18,25 +18,25 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::IpsPackage, "initialize" do
+describe Chef::Resource::IpsPackage, 'initialize' do
 
   before(:each) do
-    @resource = Chef::Resource::IpsPackage.new("crypto/gnupg")
+    @resource = Chef::Resource::IpsPackage.new('crypto/gnupg')
   end
 
-  it "should return a Chef::Resource::IpsPackage" do
+  it 'should return a Chef::Resource::IpsPackage' do
     @resource.should be_a_kind_of(Chef::Resource::IpsPackage)
   end
 
-  it "should set the resource_name to :ips_package" do
+  it 'should set the resource_name to :ips_package' do
     @resource.resource_name.should eql(:ips_package)
   end
 
-  it "should set the provider to Chef::Provider::Package::Ips" do
+  it 'should set the provider to Chef::Provider::Package::Ips' do
     @resource.provider.should eql(Chef::Provider::Package::Ips)
   end
 
-  it "should support accept_license" do
+  it 'should support accept_license' do
     @resource.accept_license(true)
     @resource.accept_license.should eql(true)
   end

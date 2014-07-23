@@ -31,11 +31,10 @@ class Chef
         ffi_lib 'kernel32'
 
         safe_attach_function :GetCurrentProcess, [], :HANDLE
-        safe_attach_function :GetProcessHandleCount, [ :HANDLE, :LPDWORD ], :BOOL
-        safe_attach_function :GetProcessId, [ :HANDLE ], :DWORD
-        safe_attach_function :CloseHandle, [ :HANDLE ], :BOOL
-        safe_attach_function :IsWow64Process, [ :HANDLE, :PBOOL ], :BOOL
-
+        safe_attach_function :GetProcessHandleCount, [:HANDLE, :LPDWORD], :BOOL
+        safe_attach_function :GetProcessId, [:HANDLE], :DWORD
+        safe_attach_function :CloseHandle, [:HANDLE], :BOOL
+        safe_attach_function :IsWow64Process, [:HANDLE, :PBOOL], :BOOL
       end
     end
   end

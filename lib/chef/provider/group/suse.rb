@@ -23,7 +23,6 @@ class Chef
   class Provider
     class Group
       class Suse < Chef::Provider::Group::Groupadd
-
         include Chef::Mixin::ShellOut
 
         def load_current_resource
@@ -33,7 +32,7 @@ class Chef
         def define_resource_requirements
           super
           requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exists?("/usr/sbin/groupmod") }
+            a.assertion { ::File.exist?('/usr/sbin/groupmod') }
             a.failure_message Chef::Exceptions::Group, "Could not find binary /usr/sbin/groupmod for #{@new_resource.name}"
             # No whyrun alternative: this component should be available in the base install of any given system that uses it
           end
@@ -56,7 +55,6 @@ class Chef
         def remove_member(member)
           shell_out!("groupmod -R #{member} #{@new_resource.group_name}")
         end
-
       end
     end
   end

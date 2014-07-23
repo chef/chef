@@ -18,21 +18,21 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::RpmPackage, "initialize" do
+describe Chef::Resource::RpmPackage, 'initialize' do
 
   before(:each) do
-    @resource = Chef::Resource::RpmPackage.new("foo")
+    @resource = Chef::Resource::RpmPackage.new('foo')
   end
 
-  it "should return a Chef::Resource::RpmPackage" do
+  it 'should return a Chef::Resource::RpmPackage' do
     @resource.should be_a_kind_of(Chef::Resource::RpmPackage)
   end
 
-  it "should set the resource_name to :rpm_package" do
+  it 'should set the resource_name to :rpm_package' do
     @resource.resource_name.should eql(:rpm_package)
   end
 
-  it "should set the provider to Chef::Provider::Package::Rpm" do
+  it 'should set the provider to Chef::Provider::Package::Rpm' do
     @resource.provider.should eql(Chef::Provider::Package::Rpm)
   end
 end

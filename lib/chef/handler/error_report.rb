@@ -22,12 +22,10 @@ require 'chef/resource/directory'
 class Chef
   class Handler
     class ErrorReport < ::Chef::Handler
-
       def report
-        Chef::FileCache.store("failed-run-data.json", Chef::JSONCompat.to_json_pretty(data), 0640)
-        Chef::Log.fatal("Saving node information to #{Chef::FileCache.load("failed-run-data.json", false)}")
+        Chef::FileCache.store('failed-run-data.json', Chef::JSONCompat.to_json_pretty(data), 0640)
+        Chef::Log.fatal("Saving node information to #{Chef::FileCache.load('failed-run-data.json', false)}")
       end
-
     end
   end
 end

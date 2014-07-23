@@ -22,19 +22,18 @@ require 'chef/knife'
 class Chef
   class Knife
     class CookbookBulkDelete < Knife
-
       deps do
         require 'chef/knife/cookbook_delete'
         require 'chef/cookbook_version'
       end
 
-      option :purge, :short => '-p', :long => '--purge', :boolean => true, :description => 'Permanently remove files from backing data store'
+      option :purge, short: '-p', long: '--purge', boolean: true, description: 'Permanently remove files from backing data store'
 
-      banner "knife cookbook bulk delete REGEX (options)"
+      banner 'knife cookbook bulk delete REGEX (options)'
 
       def run
         unless regex_str = @name_args.first
-          ui.fatal("You must supply a regular expression to match the results against")
+          ui.fatal('You must supply a regular expression to match the results against')
           exit 42
         end
 
@@ -42,27 +41,26 @@ class Chef
 
         all_cookbooks = Chef::CookbookVersion.list
         cookbooks_names = all_cookbooks.keys.grep(regex)
-        cookbooks_to_delete = cookbooks_names.inject({}) { |hash, name| hash[name] = all_cookbooks[name];hash }
-        ui.msg "All versions of the following cookbooks will be deleted:"
-        ui.msg ""
+        cookbooks_to_delete = cookbooks_names.reduce({}) { |hash, name| hash[name] = all_cookbooks[name]; hash }
+        ui.msg 'All versions of the following cookbooks will be deleted:'
+        ui.msg ''
         ui.msg ui.list(cookbooks_to_delete.keys.sort, :columns_down)
-        ui.msg ""
+        ui.msg ''
 
         unless config[:yes]
-          ui.confirm("Do you really want to delete these cookbooks")
+          ui.confirm('Do you really want to delete these cookbooks')
 
           if config[:purge]
-            ui.msg("Files that are common to multiple cookbooks are shared, so purging the files may break other cookbooks.")
-            ui.confirm("Are you sure you want to purge files instead of just deleting the cookbooks")
+            ui.msg('Files that are common to multiple cookbooks are shared, so purging the files may break other cookbooks.')
+            ui.confirm('Are you sure you want to purge files instead of just deleting the cookbooks')
           end
-          ui.msg ""
+          ui.msg ''
         end
 
-
         cookbooks_names.each do |cookbook_name|
-          versions = rest.get_rest("cookbooks/#{cookbook_name}")[cookbook_name]["versions"].map {|v| v["version"]}.flatten
+          versions = rest.get_rest("cookbooks/#{cookbook_name}")[cookbook_name]['versions'].map { |v| v['version'] }.flatten
           versions.each do |version|
-            object = rest.delete_rest("cookbooks/#{cookbook_name}/#{version}#{config[:purge] ? "?purge=true" : ""}")
+            object = rest.delete_rest("cookbooks/#{cookbook_name}/#{version}#{config[:purge] ? '?purge=true' : ''}")
             ui.info("Deleted cookbook  #{cookbook_name.ljust(25)} [#{version}]")
           end
         end

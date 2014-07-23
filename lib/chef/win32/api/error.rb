@@ -178,7 +178,7 @@ class Chef
         ERROR_LOCK_FAILED               = 167
         ERROR_BUSY                      = 170
         ERROR_CANCEL_VIOLATION          = 173
-        ERROR_ATOMIC_LOCKS_NOT_SUPPORTED= 174
+        ERROR_ATOMIC_LOCKS_NOT_SUPPORTED = 174
 
         ERROR_INVALID_SEGMENT_NUMBER    = 180
         ERROR_INVALID_CALLGATE          = 181
@@ -211,9 +211,9 @@ class Chef
         ERROR_META_EXPANSION_TOO_LONG   = 208 # if "*a" > 8.3
         ERROR_INVALID_SIGNAL_NUMBER     = 209
         ERROR_THREAD_1_INACTIVE         = 210
-        ERROR_INFO_NOT_AVAIL            = 211 #@@ PTM 5550
+        ERROR_INFO_NOT_AVAIL            = 211 # @@ PTM 5550
         ERROR_LOCKED                    = 212
-        ERROR_BAD_DYNALINK              = 213 #@@ PTM 5760
+        ERROR_BAD_DYNALINK              = 213 # @@ PTM 5760
         ERROR_TOO_MANY_MODULES          = 214
         ERROR_NESTING_NOT_ALLOWED       = 215
         ERROR_EXE_MACHINE_TYPE_MISMATCH = 216
@@ -446,7 +446,7 @@ class Chef
         ERROR_DOWNGRADE_DETECTED              = 1265
         ERROR_MACHINE_LOCKED                  = 1271
         ERROR_CALLBACK_SUPPLIED_INVALID_DATA  = 1273
-        ERROR_SYNC_FOREGROUND_REFRESH_REQUIRED= 1274
+        ERROR_SYNC_FOREGROUND_REFRESH_REQUIRED = 1274
         ERROR_DRIVER_BLOCKED                  = 1275
         ERROR_INVALID_IMPORT_OF_NON_DLL       = 1276
         ERROR_NOT_ALL_ASSIGNED                = 1300
@@ -750,7 +750,7 @@ class Chef
         ERROR_NETLOGON_NOT_STARTED            = 1792
         ERROR_ACCOUNT_EXPIRED                 = 1793
         ERROR_REDIRECTOR_HAS_OPEN_HANDLES     = 1794
-        ERROR_PRINTER_DRIVER_ALREADY_INSTALLED= 1795
+        ERROR_PRINTER_DRIVER_ALREADY_INSTALLED = 1795
         ERROR_UNKNOWN_PORT                    = 1796
         ERROR_UNKNOWN_PRINTER_DRIVER          = 1797
         ERROR_UNKNOWN_PRINTPROCESSOR          = 1798
@@ -824,9 +824,9 @@ class Chef
         ERROR_CONTEXT_EXPIRED                 = 1931
         ERROR_PER_USER_TRUST_QUOTA_EXCEEDED   = 1932
         ERROR_ALL_USER_TRUST_QUOTA_EXCEEDED   = 1933
-        ERROR_USER_DELETE_TRUST_QUOTA_EXCEEDED= 1934
+        ERROR_USER_DELETE_TRUST_QUOTA_EXCEEDED = 1934
         ERROR_AUTHENTICATION_FIREWALL_FAILED  = 1935
-        ERROR_REMOTE_PRINT_CONNECTIONS_BLOCKED= 1936
+        ERROR_REMOTE_PRINT_CONNECTIONS_BLOCKED = 1936
         ERROR_INVALID_PIXEL_FORMAT            = 2000
         ERROR_BAD_DRIVER                      = 2001
         ERROR_INVALID_WINDOW_STYLE            = 2002
@@ -879,42 +879,31 @@ class Chef
 
         ffi_lib 'kernel32', 'user32'
 
-=begin
-DWORD WINAPI FormatMessage(
-  __in      DWORD dwFlags,
-  __in_opt  LPCVOID lpSource,
-  __in      DWORD dwMessageId,
-  __in      DWORD dwLanguageId,
-  __out     LPTSTR lpBuffer,
-  __in      DWORD nSize,
-  __in_opt  va_list *Arguments
-);
-=end
+        # DWORD WINAPI FormatMessage(
+        #   __in      DWORD dwFlags,
+        #   __in_opt  LPCVOID lpSource,
+        #   __in      DWORD dwMessageId,
+        #   __in      DWORD dwLanguageId,
+        #   __out     LPTSTR lpBuffer,
+        #   __in      DWORD nSize,
+        #   __in_opt  va_list *Arguments
+        # );
         safe_attach_function :FormatMessageA, [:DWORD, :LPCVOID, :DWORD, :DWORD, :LPTSTR, :DWORD, :varargs], :DWORD
         safe_attach_function :FormatMessageW, [:DWORD, :LPCVOID, :DWORD, :DWORD, :LPWSTR, :DWORD, :varargs], :DWORD
 
-=begin
-DWORD WINAPI GetLastError(void);
-=end
+        # DWORD WINAPI GetLastError(void);
         safe_attach_function :GetLastError, [], :DWORD
-=begin
-void WINAPI SetLastError(
-  __in  DWORD dwErrCode
-);
-=end
+        # void WINAPI SetLastError(
+        #   __in  DWORD dwErrCode
+        # );
         safe_attach_function :SetLastError, [:DWORD], :void
         safe_attach_function :SetLastErrorEx, [:DWORD, :DWORD], :void
-=begin
-UINT WINAPI GetErrorMode(void);s
-=end
+        # UINT WINAPI GetErrorMode(void);s
         safe_attach_function :GetErrorMode, [], :uint
-=begin
-UINT WINAPI SetErrorMode(
-  __in  UINT uMode
-);
-=end
+        # UINT WINAPI SetErrorMode(
+        #   __in  UINT uMode
+        # );
         safe_attach_function :SetErrorMode, [:UINT], :UINT
-
       end
     end
   end

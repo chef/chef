@@ -27,14 +27,13 @@ require 'pathname'
 
 class Chef
   class Config
-
     extend Mixlib::Config
 
     # Evaluates the given string as config.
     #
     # +filename+ is used for context in stacktraces, but doesn't need to be the name of an actual file.
     def self.from_string(string, filename)
-      self.instance_eval(string, filename, 1)
+      instance_eval(string, filename, 1)
     end
 
     # Manages the chef secret session key
@@ -43,13 +42,13 @@ class Chef
     #
     def self.manage_secret_key
       newkey = nil
-      if Chef::FileCache.has_key?("chef_server_cookie_id")
-        newkey = Chef::FileCache.load("chef_server_cookie_id")
+      if Chef::FileCache.key?('chef_server_cookie_id')
+        newkey = Chef::FileCache.load('chef_server_cookie_id')
       else
-        chars = ("a".."z").to_a + ("A".."Z").to_a + ("0".."9").to_a
-        newkey = ""
-        40.times { |i| newkey << chars[rand(chars.size-1)] }
-        Chef::FileCache.store("chef_server_cookie_id", newkey)
+        chars = ('a'..'z').to_a + ('A'..'Z').to_a + ('0'..'9').to_a
+        newkey = ''
+        40.times { |_i| newkey << chars[rand(chars.size - 1)] }
+        Chef::FileCache.store('chef_server_cookie_id', newkey)
       end
       newkey
     end
@@ -74,8 +73,8 @@ class Chef
 
     def self.path_join(*args)
       args = args.flatten
-      args.inject do |joined_path, component|
-        unless joined_path[-1,1] == platform_path_separator
+      args.reduce do |joined_path, component|
+        unless joined_path[-1, 1] == platform_path_separator
           joined_path += platform_path_separator
         end
         joined_path += component
@@ -85,7 +84,7 @@ class Chef
     def self.platform_specific_path(path)
       if on_windows?
         # turns /etc/chef/client.rb into C:/chef/client.rb
-        system_drive = env['SYSTEMDRIVE'] ? env['SYSTEMDRIVE'] : ""
+        system_drive = env['SYSTEMDRIVE'] ? env['SYSTEMDRIVE'] : ''
         path = File.join(system_drive, path.split('/')[2..-1])
         # ensure all forward slashes are backslashes
         path.gsub!(File::SEPARATOR, (File::ALT_SEPARATOR || '\\'))
@@ -93,7 +92,7 @@ class Chef
       path
     end
 
-    def self.add_formatter(name, file_path=nil)
+    def self.add_formatter(name, file_path = nil)
       formatters << [name, file_path]
     end
 
@@ -133,11 +132,11 @@ class Chef
     # that upload or download files (such as knife upload, knife role from file,
     # etc.) work.
     default :chef_repo_path do
-      if self.configuration[:cookbook_path]
-        if self.configuration[:cookbook_path].kind_of?(String)
-          File.expand_path('..', self.configuration[:cookbook_path])
+      if configuration[:cookbook_path]
+        if configuration[:cookbook_path].is_a?(String)
+          File.expand_path('..', configuration[:cookbook_path])
         else
-          self.configuration[:cookbook_path].map do |path|
+          configuration[:cookbook_path].map do |path|
             File.expand_path('..', path)
           end
         end
@@ -150,7 +149,7 @@ class Chef
       # In local mode, we auto-discover the repo root by looking for a path with "cookbooks" under it.
       # This allows us to run config-free.
       path = cwd
-      until File.directory?(path_join(path, "cookbooks"))
+      until File.directory?(path_join(path, 'cookbooks'))
         new_path = File.expand_path('..', path)
         if new_path == path
           Chef::Log.warn("No cookbooks directory found at or above current directory.  Assuming #{Dir.pwd}.")
@@ -163,10 +162,10 @@ class Chef
     end
 
     def self.derive_path_from_chef_repo_path(child_path)
-      if chef_repo_path.kind_of?(String)
+      if chef_repo_path.is_a?(String)
         path_join(chef_repo_path, child_path)
       else
-        chef_repo_path.map { |path| path_join(path, child_path)}
+        chef_repo_path.map { |path| path_join(path, child_path) }
       end
     end
 
@@ -183,7 +182,7 @@ class Chef
     # Defaults to <chef_repo_path>/cookbooks.  If chef_repo_path
     # is not specified, this is set to [/var/chef/cookbooks, /var/chef/site-cookbooks]).
     default(:cookbook_path) do
-      if self.configuration[:chef_repo_path]
+      if configuration[:chef_repo_path]
         derive_path_from_chef_repo_path('cookbooks')
       else
         Array(derive_path_from_chef_repo_path('cookbooks')).flatten +
@@ -226,7 +225,7 @@ class Chef
     default :enforce_path_sanity, true
 
     # Formatted Chef Client output is a beta feature, disabled by default:
-    default :formatter, "null"
+    default :formatter, 'null'
 
     # The number of times the client should retry when registering with the server
     default :client_registration_retries, 5
@@ -240,8 +239,8 @@ class Chef
       if local_mode
         "#{config_dir}local-mode-cache"
       else
-        primary_cache_root = platform_specific_path("/var")
-        primary_cache_path = platform_specific_path("/var/chef")
+        primary_cache_root = platform_specific_path('/var')
+        primary_cache_path = platform_specific_path('/var/chef')
         # Use /var/chef as the cache path only if that folder exists and we can read and write
         # into it, or /var exists and we can read and write into it (we'll create /var/chef later).
         # Otherwise, we'll create .chef under the user's home directory and use that as
@@ -259,24 +258,24 @@ class Chef
 
     # Returns true only if the path exists and is readable and writeable for the user.
     def self.path_accessible?(path)
-      File.exists?(path) && File.readable?(path) && File.writable?(path)
+      File.exist?(path) && File.readable?(path) && File.writable?(path)
     end
 
     # Where cookbook files are stored on the server (by content checksum)
-    default(:checksum_path) { path_join(cache_path, "checksums") }
+    default(:checksum_path) { path_join(cache_path, 'checksums') }
 
     # Where chef's cache files should be stored
-    default(:file_cache_path) { path_join(cache_path, "cache") }
+    default(:file_cache_path) { path_join(cache_path, 'cache') }
 
     # Where backups of chef-managed files should go
-    default(:file_backup_path) { path_join(cache_path, "backup") }
+    default(:file_backup_path) { path_join(cache_path, 'backup') }
 
     # The chef-client (or solo) lockfile.
     #
     # If your `file_cache_path` resides on a NFS (or non-flock()-supporting
     # fs), it's recommended to set this to something like
     # '/tmp/chef-client-running.pid'
-    default(:lockfile) { path_join(file_cache_path, "chef-client-running.pid") }
+    default(:lockfile) { path_join(file_cache_path, 'chef-client-running.pid') }
 
     ## Daemonization Settings ##
     # What user should Chef run as?
@@ -315,8 +314,8 @@ class Chef
     default :verbose_logging, true
     default :node_name, nil
     default :diff_disabled,           false
-    default :diff_filesize_threshold, 10000000
-    default :diff_output_threshold,   1000000
+    default :diff_filesize_threshold, 10_000_000
+    default :diff_output_threshold,   1_000_000
     default :local_mode, false
 
     default :pid_file, nil
@@ -327,7 +326,7 @@ class Chef
       default :host, 'localhost'
       default :port, 8889.upto(9999) # Will try ports from 8889-9999 until one works
     end
-    default :chef_server_url,   "https://localhost:443"
+    default :chef_server_url,   'https://localhost:443'
 
     default :rest_timeout, 300
     default :yum_timeout, 900
@@ -372,8 +371,8 @@ class Chef
     # Path to the default CA bundle files.
     default :ssl_ca_path, nil
     default(:ssl_ca_file) do
-      if on_windows? and embedded_path = embedded_dir
-        cacert_path = File.join(embedded_path, "ssl/certs/cacert.pem")
+      if on_windows? && embedded_path = embedded_dir
+        cacert_path = File.join(embedded_path, 'ssl/certs/cacert.pem')
         cacert_path if File.exist?(cacert_path)
       else
         nil
@@ -384,7 +383,7 @@ class Chef
     # certificates in this directory will be added to whatever CA bundle ruby
     # is using. Use this to add self-signed certs for your Chef Server or local
     # HTTP file servers.
-    default(:trusted_certs_dir) { config_dir && path_join(config_dir, "trusted_certs") }
+    default(:trusted_certs_dir) { config_dir && path_join(config_dir, 'trusted_certs') }
 
     # Where should chef-solo download recipes from?
     default :recipe_url, nil
@@ -403,7 +402,7 @@ class Chef
     #
     # In the future, this configuration option may be replaced with an
     # automatic negotiation scheme.
-    default :authentication_protocol_version, "1.0"
+    default :authentication_protocol_version, '1.0'
 
     # This key will be used to sign requests to the Chef server. This location
     # must be writable by Chef during initial setup when generating a client
@@ -413,7 +412,7 @@ class Chef
     # `node_name` of the client.
     #
     # If chef-zero is enabled, this defaults to nil (no authentication).
-    default(:client_key) { chef_zero.enabled ? nil : platform_specific_path("/etc/chef/client.pem") }
+    default(:client_key) { chef_zero.enabled ? nil : platform_specific_path('/etc/chef/client.pem') }
 
     # This secret is used to decrypt encrypted data bag items.
     default(:encrypted_data_bag_secret) do
@@ -421,8 +420,8 @@ class Chef
       # since +Chef::Config[:encrypted_data_bag_secret]+ is read by older
       # bootstrap templates to determine if the local secret should be uploaded to
       # node being bootstrapped. This should be removed in Chef 12.
-      if File.exist?(platform_specific_path("/etc/chef/encrypted_data_bag_secret"))
-        platform_specific_path("/etc/chef/encrypted_data_bag_secret")
+      if File.exist?(platform_specific_path('/etc/chef/encrypted_data_bag_secret'))
+        platform_specific_path('/etc/chef/encrypted_data_bag_secret')
       else
         nil
       end
@@ -451,8 +450,8 @@ class Chef
     # The `validation_key` is never used if the `client_key` exists.
     #
     # If chef-zero is enabled, this defaults to nil (no authentication).
-    default(:validation_key) { chef_zero.enabled ? nil : platform_specific_path("/etc/chef/validation.pem") }
-    default :validation_client_name, "chef-validator"
+    default(:validation_key) { chef_zero.enabled ? nil : platform_specific_path('/etc/chef/validation.pem') }
+    default :validation_client_name, 'chef-validator'
 
     # When creating a new client via the validation_client account, Chef 11
     # servers allow the client to generate a key pair locally and sent the
@@ -491,7 +490,7 @@ class Chef
     default(:syntax_check_cache_path) { cache_options[:path] }
 
     # Deprecated:
-    default(:cache_options) { { :path => path_join(file_cache_path, "checksums") } }
+    default(:cache_options) { { path: path_join(file_cache_path, 'checksums') } }
 
     # Set to false to silence Chef 11 deprecation warnings:
     default :chef11_deprecation_warnings, true
@@ -516,8 +515,8 @@ class Chef
       # valid user and group name
       # From http://technet.microsoft.com/en-us/library/cc776019(WS.10).aspx
       principal_valid_regex_part = '[^"\/\\\\\[\]\:;|=,+*?<>]+'
-      default :user_valid_regex, [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
-      default :group_valid_regex, [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
+      default :user_valid_regex, [/^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/]
+      default :group_valid_regex, [/^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/]
 
       default :fatal_windows_admin_check, false
     end
@@ -530,8 +529,8 @@ class Chef
       # user/group cannot contain ':', ',' or non-space-whitespace or null byte
       # everything else is allowed (UTF-8, spaces, etc) and we delegate to your O/S useradd program to barf or not
       # copies: http://anonscm.debian.org/viewvc/pkg-shadow/debian/trunk/debian/patches/506_relaxed_usernames?view=markup
-      default :user_valid_regex, [ /^[^-+~:,\t\r\n\f\0]+[^:,\t\r\n\f\0]*$/ ]
-      default :group_valid_regex, [ /^[^-+~:,\t\r\n\f\0]+[^:,\t\r\n\f\0]*$/ ]
+      default :user_valid_regex, [/^[^-+~:,\t\r\n\f\0]+[^:,\t\r\n\f\0]*$/]
+      default :group_valid_regex, [/^[^-+~:,\t\r\n\f\0]+[^:,\t\r\n\f\0]*$/]
     end
 
     # Those lists of regular expressions define what chef considers a
@@ -553,7 +552,7 @@ class Chef
     end
 
     # returns a platform specific path to the user home dir if set, otherwise default to current directory.
-    default( :user_home ) { env['HOME'] || windows_home_path || env['USERPROFILE'] || Dir.pwd }
+    default(:user_home) { env['HOME'] || windows_home_path || env['USERPROFILE'] || Dir.pwd }
 
     # Enable file permission fixup for selinux. Fixup will be done
     # only if selinux is enabled in the system.
@@ -594,7 +593,7 @@ class Chef
     # omnibus. This is used to locate the cacert.pem file on windows.
     def self.embedded_dir
       Pathname.new(_this_file).ascend do |path|
-        if path.basename.to_s == "embedded"
+        if path.basename.to_s == 'embedded'
           return path.to_s
         end
       end

@@ -55,20 +55,20 @@ describe Chef::ChefFS::FileSystem do
   end
 
   context 'with a populated filesystem' do
-    let(:fs) {
-      memory_fs('', {
-        :a => {
-          :aa => {
-            :c => '',
-            :zz => ''
-          },
-          :ab => {
-            :c => '',
-          }
-        },
-        :x => ''
-      })
-    }
+    let(:fs) do
+      memory_fs('',
+                a: {
+                  aa: {
+                    c: '',
+                    zz: ''
+                  },
+                  ab: {
+                    c: '',
+                  }
+                },
+                x: ''
+                )
+    end
     context 'list' do
       it '/**' do
         list_should_yield_paths(fs, '/**', '/', '/a', '/x', '/a/aa', '/a/aa/c', '/a/aa/zz', '/a/ab', '/a/ab/c')

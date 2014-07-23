@@ -31,7 +31,6 @@ require 'pp'
 
 class Chef
   class Knife
-
     Chef::REST::RESTRequest.user_agent = "Chef Knife#{Chef::REST::RESTRequest::UA_COMMON}"
 
     include Mixlib::CLI
@@ -68,7 +67,7 @@ class Chef
       @ui ||= Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
     end
 
-    def self.msg(msg="")
+    def self.msg(msg = '')
       ui.msg(msg)
     end
 
@@ -137,14 +136,14 @@ class Chef
 
     # Print the list of subcommands knife knows about. If +preferred_category+
     # is given, only subcommands in that category are shown
-    def self.list_commands(preferred_category=nil)
+    def self.list_commands(preferred_category = nil)
       load_commands
 
-      category_desc = preferred_category ? preferred_category + " " : ''
+      category_desc = preferred_category ? preferred_category + ' ' : ''
       msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
 
       if preferred_category && subcommands_by_category.key?(preferred_category)
-        commands_to_show = {preferred_category => subcommands_by_category[preferred_category]}
+        commands_to_show = { preferred_category => subcommands_by_category[preferred_category] }
       else
         commands_to_show = subcommands_by_category
       end
@@ -165,7 +164,7 @@ class Chef
     # args::: usually ARGV
     # options::: A Mixlib::CLI option parser hash. These +options+ are how
     # subcommands know about global knife CLI options
-    def self.run(args, options={})
+    def self.run(args, options = {})
       load_commands
       subcommand_class = subcommand_class_from(args)
       subcommand_class.options = options.merge!(subcommand_class.options)
@@ -176,8 +175,8 @@ class Chef
     end
 
     def self.guess_category(args)
-      category_words = args.select {|arg| arg =~ /^(([[:alnum:]])[[:alnum:]\_\-]+)$/ }
-      category_words.map! {|w| w.split('-')}.flatten!
+      category_words = args.select { |arg| arg =~ /^(([[:alnum:]])[[:alnum:]\_\-]+)$/ }
+      category_words.map! { |w| w.split('-') }.flatten!
       matching_category = nil
       while (!matching_category) && (!category_words.empty?)
         candidate_category = category_words.join(' ')
@@ -188,12 +187,12 @@ class Chef
     end
 
     def self.subcommand_class_from(args)
-      command_words = args.select {|arg| arg =~ /^(([[:alnum:]])[[:alnum:]\_\-]+)$/ }
+      command_words = args.select { |arg| arg =~ /^(([[:alnum:]])[[:alnum:]\_\-]+)$/ }
 
       subcommand_class = nil
 
-      while ( !subcommand_class ) && ( !command_words.empty? )
-        snake_case_class_name = command_words.join("_")
+      while ( !subcommand_class) && ( !command_words.empty?)
+        snake_case_class_name = command_words.join('_')
         unless subcommand_class = subcommands[snake_case_class_name]
           command_words.pop
         end
@@ -219,7 +218,7 @@ class Chef
 
     private
 
-    OFFICIAL_PLUGINS = %w[ec2 rackspace windows openstack terremark bluebox]
+    OFFICIAL_PLUGINS = %w(ec2 rackspace windows openstack terremark bluebox)
 
     # :nodoc:
     # Error out and print usage. probably becuase the arguments given by the
@@ -229,7 +228,7 @@ class Chef
 
       if category_commands = guess_category(args)
         list_commands(category_commands)
-      elsif missing_plugin = ( OFFICIAL_PLUGINS.find {|plugin| plugin == args[0]} )
+      elsif missing_plugin = ( OFFICIAL_PLUGINS.find { |plugin| plugin == args[0] })
         ui.info("The #{missing_plugin} commands were moved to plugins in Chef 0.10")
         ui.info("You can install the plugin with `(sudo) gem install knife-#{missing_plugin}")
       else
@@ -255,14 +254,13 @@ class Chef
 
     reset_config_path!
 
-
     # search upward from current_dir until .chef directory is found
     def self.chef_config_dir
       if @@chef_config_dir.nil? # share this with subclasses
         @@chef_config_dir = false
         full_path = working_directory.split(File::SEPARATOR)
         (full_path.length - 1).downto(0) do |i|
-          candidate_directory = File.join(full_path[0..i] + [".chef" ])
+          candidate_directory = File.join(full_path[0..i] + ['.chef'])
           if File.exist?(candidate_directory) && File.directory?(candidate_directory)
             @@chef_config_dir = candidate_directory
             break
@@ -272,12 +270,11 @@ class Chef
       @@chef_config_dir
     end
 
-
     public
 
     # Create a new instance of the current class configured for the given
     # arguments and options
-    def initialize(argv=[])
+    def initialize(argv = [])
       super() # having to call super in initialize is the most annoying anti-pattern :(
       @ui = Chef::Knife::UI.new(STDOUT, STDERR, STDIN, config)
 
@@ -306,7 +303,7 @@ class Chef
     def parse_options(args)
       super
     rescue OptionParser::InvalidOption => e
-      puts "Error: " + e.to_s
+      puts 'Error: ' + e.to_s
       show_usage
       exit(1)
     end
@@ -317,7 +314,7 @@ class Chef
     def config_file_settings
       config_file_settings = {}
       self.class.options.keys.each do |key|
-        config_file_settings[key] = Chef::Config[:knife][key] if Chef::Config[:knife].has_key?(key)
+        config_file_settings[key] = Chef::Config[:knife][key] if Chef::Config[:knife].key?(key)
       end
       config_file_settings
     end
@@ -348,11 +345,11 @@ class Chef
 
       candidate_configs.each do | candidate_config |
         fetcher = config_fetcher(candidate_config)
-        if !fetcher.config_missing?
+        unless fetcher.config_missing?
           return candidate_config
         end
       end
-      return nil
+      nil
     end
 
     # Apply Config in this order:
@@ -391,8 +388,8 @@ class Chef
       Chef::Config[:chef_server_url]   = config[:chef_server_url] if config[:chef_server_url]
       Chef::Config[:environment]       = config[:environment]     if config[:environment]
 
-      Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
-      if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+      Chef::Config.local_mode = config[:local_mode] if config.key?(:local_mode)
+      if Chef::Config.local_mode && !Chef::Config.key?(:cookbook_path) && !Chef::Config.key?(:chef_repo_path)
         Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
       end
       Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
@@ -411,12 +408,12 @@ class Chef
       if Chef::Config[:node_name] && Chef::Config[:node_name].bytesize > 90
         # node names > 90 bytes only work with authentication protocol >= 1.1
         # see discussion in config.rb.
-        Chef::Config[:authentication_protocol_version] = "1.1"
+        Chef::Config[:authentication_protocol_version] = '1.1'
       end
     end
 
     def configure_chef
-      if !config[:config_file]
+      unless config[:config_file]
         located_config_file = self.class.locate_config_file
         config[:config_file] = located_config_file if located_config_file
       end
@@ -426,7 +423,7 @@ class Chef
         Chef::Config.config_file = config[:config_file]
         fetcher = Chef::ConfigFetcher.new(config[:config_file], Chef::Config.config_file_jail)
         if fetcher.config_missing?
-          ui.error("Specified config file #{config[:config_file]} does not exist#{Chef::Config.config_file_jail ? " or is not under config file jail #{Chef::Config.config_file_jail}" : ""}!")
+          ui.error("Specified config file #{config[:config_file]} does not exist#{Chef::Config.config_file_jail ? " or is not under config file jail #{Chef::Config.config_file_jail}" : ''}!")
           exit 1
         end
         Chef::Log.debug("Using configuration from #{config[:config_file]}")
@@ -434,7 +431,7 @@ class Chef
       else
         # ...but do log a message if no config was found.
         Chef::Config[:color] = config[:color]
-        ui.warn("No knife configuration file found")
+        ui.warn('No knife configuration file found')
       end
 
       merge_configs
@@ -451,12 +448,12 @@ class Chef
         highlight_config_error(config_file_path, line)
       end
       exit 1
-    rescue Exception => e
+    rescue => e
       ui.error "You have an error in your config file #{config_file_path}"
       ui.info "#{e.class.name}: #{e.message}"
       filtered_trace = e.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
-      filtered_trace.each {|line| ui.msg("  " + ui.color(line, :red))}
-      if !filtered_trace.empty?
+      filtered_trace.each { |line| ui.msg('  ' + ui.color(line, :red)) }
+      unless filtered_trace.empty?
         line_nr = filtered_trace.first[/#{Regexp.escape(config_file_path)}:([\d]+)/, 1]
         highlight_config_error(config_file_path, line_nr.to_i)
       end
@@ -466,7 +463,7 @@ class Chef
 
     def highlight_config_error(file, line)
       config_file_lines = []
-      IO.readlines(file).each_with_index {|l, i| config_file_lines << "#{(i + 1).to_s.rjust(3)}: #{l.chomp}"}
+      IO.readlines(file).each_with_index { |l, i| config_file_lines << "#{(i + 1).to_s.rjust(3)}: #{l.chomp}" }
       if line == 1
         lines = config_file_lines[0..3]
         lines[0] = ui.color(lines[0], :red)
@@ -474,25 +471,25 @@ class Chef
         lines = config_file_lines[Range.new(line - 2, line)]
         lines[1] = ui.color(lines[1], :red)
       end
-      ui.msg ""
+      ui.msg ''
       ui.msg ui.color("     # #{file}", :white)
-      lines.each {|l| ui.msg(l)}
-      ui.msg ""
+      lines.each { |l| ui.msg(l) }
+      ui.msg ''
     end
 
     def show_usage
-      stdout.puts("USAGE: " + self.opt_parser.to_s)
+      stdout.puts('USAGE: ' + opt_parser.to_s)
     end
 
     def run_with_pretty_exceptions(raise_exception = false)
       unless self.respond_to?(:run)
-        ui.error "You need to add a #run method to your knife command before you can use it"
+        ui.error 'You need to add a #run method to your knife command before you can use it'
       end
       enforce_path_sanity
       Chef::LocalMode.with_server_connectivity do
         run
       end
-    rescue Exception => e
+    rescue => e
       raise if raise_exception || Chef::Config[:verbosity] == 2
       humanize_exception(e)
       exit 100
@@ -501,23 +498,23 @@ class Chef
     def humanize_exception(e)
       case e
       when SystemExit
-        raise # make sure exit passes through.
+        fail # make sure exit passes through.
       when Net::HTTPServerException, Net::HTTPFatalError
         humanize_http_exception(e)
       when Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError
         ui.error "Network Error: #{e.message}"
-        ui.info "Check your knife configuration and network settings"
+        ui.info 'Check your knife configuration and network settings'
       when NameError, NoMethodError
-        ui.error "knife encountered an unexpected error"
-        ui.info  "This may be a bug in the '#{self.class.common_name}' knife command or plugin"
-        ui.info  "Please collect the output of this command with the `-VV` option before filing a bug report."
-        ui.info  "Exception: #{e.class.name}: #{e.message}"
+        ui.error 'knife encountered an unexpected error'
+        ui.info "This may be a bug in the '#{self.class.common_name}' knife command or plugin"
+        ui.info 'Please collect the output of this command with the `-VV` option before filing a bug report.'
+        ui.info "Exception: #{e.class.name}: #{e.message}"
       when Chef::Exceptions::PrivateKeyMissing
         ui.error "Your private key could not be loaded from #{api_key}"
-        ui.info  "Check your configuration file and ensure that your private key is readable"
+        ui.info 'Check your configuration file and ensure that your private key is readable'
       when Chef::Exceptions::InvalidRedirect
         ui.error "Invalid Redirect: #{e.message}"
-        ui.info  "Change your server location in knife.rb to the server's FQDN to avoid unwanted redirections."
+        ui.info "Change your server location in knife.rb to the server's FQDN to avoid unwanted redirections."
       else
         ui.error "#{e.class.name}: #{e.message}"
       end
@@ -533,19 +530,19 @@ class Chef
         ui.error "You authenticated successfully to #{server_url} as #{username} but you are not authorized for this action"
         ui.info "Response:  #{format_rest_error(response)}"
       when Net::HTTPBadRequest
-        ui.error "The data in your request was invalid"
+        ui.error 'The data in your request was invalid'
         ui.info "Response: #{format_rest_error(response)}"
       when Net::HTTPNotFound
-        ui.error "The object you are looking for could not be found"
+        ui.error 'The object you are looking for could not be found'
         ui.info "Response: #{format_rest_error(response)}"
       when Net::HTTPInternalServerError
-        ui.error "internal server error"
+        ui.error 'internal server error'
         ui.info "Response: #{format_rest_error(response)}"
       when Net::HTTPBadGateway
-        ui.error "bad gateway"
+        ui.error 'bad gateway'
         ui.info "Response: #{format_rest_error(response)}"
       when Net::HTTPServiceUnavailable
-        ui.error "Service temporarily unavailable"
+        ui.error 'Service temporarily unavailable'
         ui.info "Response: #{format_rest_error(response)}"
       else
         ui.error response.message
@@ -566,12 +563,12 @@ class Chef
     #--
     # TODO: this code belongs in Chef::REST
     def format_rest_error(response)
-      Array(Chef::JSONCompat.from_json(response.body)["error"]).join('; ')
-    rescue Exception
+      Array(Chef::JSONCompat.from_json(response.body)['error']).join('; ')
+    rescue
       response.body
     end
 
-    def create_object(object, pretty_name=nil, &block)
+    def create_object(object, pretty_name = nil, &block)
       output = edit_data(object)
 
       if Kernel.block_given?
@@ -582,12 +579,12 @@ class Chef
 
       pretty_name ||= output
 
-      self.msg("Created #{pretty_name}")
+      msg("Created #{pretty_name}")
 
       output(output) if config[:print_after]
     end
 
-    def delete_object(klass, name, delete_name=nil, &block)
+    def delete_object(klass, name, delete_name = nil, &block)
       confirm("Do you really want to delete #{name}")
 
       if Kernel.block_given?
@@ -600,7 +597,7 @@ class Chef
       output(format_for_display(object)) if config[:print_after]
 
       obj_name = delete_name ? "#{delete_name}[#{name}]" : object
-      self.msg("Deleted #{obj_name}")
+      msg("Deleted #{obj_name}")
     end
 
     def rest
@@ -620,6 +617,5 @@ class Chef
     def server_url
       Chef::Config[:chef_server_url]
     end
-
   end
 end

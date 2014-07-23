@@ -35,7 +35,7 @@ class Chef
         def define_resource_requirements
           super
           requirements.assert(:install) do |a|
-            a.assertion{ not @new_resource.source.nil? }
+            a.assertion { !@new_resource.source.nil? }
             a.failure_message Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
           end
 
@@ -44,7 +44,7 @@ class Chef
           requirements.assert(:all_actions) do |a|
             a.assertion { @source_exists }
             a.failure_message Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
-            a.whyrun "Assuming it would have been previously downloaded."
+            a.whyrun 'Assuming it would have been previously downloaded.'
           end
         end
 
@@ -55,11 +55,11 @@ class Chef
           @new_resource.version(nil)
 
           if @new_resource.source
-            @source_exists = ::File.exists?(@new_resource.source)
+            @source_exists = ::File.exist?(@new_resource.source)
             if @source_exists
               # Get information from the package if supplied
               Chef::Log.debug("#{@new_resource} checking dpkg status")
-              status = popen4("dpkg-deb -W #{@new_resource.source}") do |pid, stdin, stdout, stderr|
+              status = popen4("dpkg-deb -W #{@new_resource.source}") do |_pid, _stdin, stdout, _stderr|
                 stdout.each_line do |line|
                   if pkginfo = DPKG_INFO.match(line)
                     @current_resource.package_name(pkginfo[1])
@@ -77,42 +77,42 @@ class Chef
           # Check to see if it is installed
           package_installed = nil
           Chef::Log.debug("#{@new_resource} checking install state")
-          status = popen4("dpkg -s #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
+          status = popen4("dpkg -s #{@current_resource.package_name}") do |_pid, _stdin, stdout, _stderr|
             stdout.each_line do |line|
               case line
               when DPKG_INSTALLED
                 package_installed = true
               when DPKG_VERSION
                 if package_installed
-                  Chef::Log.debug("#{@new_resource} current version is #{$1}")
-                  @current_resource.version($1)
+                  Chef::Log.debug("#{@new_resource} current version is #{Regexp.last_match[1]}")
+                  @current_resource.version(Regexp.last_match[1])
                 end
               end
             end
           end
 
           unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "dpkg failed - #{status.inspect}!"
+            fail Chef::Exceptions::Package, "dpkg failed - #{status.inspect}!"
           end
 
           @current_resource
         end
 
-        def install_package(name, version)
+        def install_package(_name, _version)
           Chef::Log.info("#{@new_resource} installing #{@new_resource.source}")
           run_noninteractive(
             "dpkg -i#{expand_options(@new_resource.options)} #{@new_resource.source}"
           )
         end
 
-        def remove_package(name, version)
+        def remove_package(_name, _version)
           Chef::Log.info("#{@new_resource} removing #{@new_resource.package_name}")
           run_noninteractive(
             "dpkg -r#{expand_options(@new_resource.options)} #{@new_resource.package_name}"
           )
         end
 
-        def purge_package(name, version)
+        def purge_package(_name, _version)
           Chef::Log.info("#{@new_resource} purging #{@new_resource.package_name}")
           run_noninteractive(
             "dpkg -P#{expand_options(@new_resource.options)} #{@new_resource.package_name}"
@@ -128,7 +128,7 @@ class Chef
           run_noninteractive("debconf-set-selections #{preseed_file}")
         end
 
-        def reconfig_package(name, version)
+        def reconfig_package(name, _version)
           Chef::Log.info("#{@new_resource} reconfiguring")
           run_noninteractive("dpkg-reconfigure #{name}")
         end
@@ -139,9 +139,8 @@ class Chef
         #
         # FIXME: This should be "LC_ALL" => "en_US.UTF-8" in order to stabilize the output and get UTF-8
         def run_noninteractive(command)
-          shell_out!(command, :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
+          shell_out!(command, env: { 'DEBIAN_FRONTEND' => 'noninteractive', 'LC_ALL' => nil })
         end
-
       end
     end
   end

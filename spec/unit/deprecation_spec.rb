@@ -24,7 +24,7 @@ describe Chef::Deprecation do
   # Support code for Chef::Deprecation
 
   def self.class_from_string(str)
-    str.split('::').inject(Object) do |mod, class_name|
+    str.split('::').reduce(Object) do |mod, class_name|
       mod.const_get(class_name)
     end
   end
@@ -45,8 +45,8 @@ describe Chef::Deprecation do
     add_deprecation_warnings_for(DeprecatedMethods.instance_methods)
   end
 
-  method_snapshot_file = File.join(CHEF_SPEC_DATA, "file-providers-method-snapshot-chef-11-4.json")
-  method_snapshot = JSON.parse(File.open(method_snapshot_file).read())
+  method_snapshot_file = File.join(CHEF_SPEC_DATA, 'file-providers-method-snapshot-chef-11-4.json')
+  method_snapshot = JSON.parse(File.open(method_snapshot_file).read)
 
   method_snapshot.each do |class_name, old_methods|
     class_object = class_from_string(class_name)
@@ -61,7 +61,7 @@ describe Chef::Deprecation do
 
   context 'deprecation warning messages' do
     before(:each) do
-      @warning_output = [ ]
+      @warning_output = []
       Chef::Log.stub(:warn) { |msg| @warning_output << msg }
     end
 
@@ -72,7 +72,7 @@ describe Chef::Deprecation do
 
     it 'should contain stack trace' do
       TestClass.new.deprecated_method(10)
-      @warning_output.join("").include?(".rb").should be_true
+      @warning_output.join('').include?('.rb').should be_true
     end
   end
 
@@ -83,4 +83,3 @@ describe Chef::Deprecation do
   end
 
 end
-

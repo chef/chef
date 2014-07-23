@@ -25,7 +25,6 @@ class Chef
   class Provider
     class Package
       class Aix < Chef::Provider::Package
-
         include Chef::Mixin::GetSourceFromPackage
 
         def define_resource_requirements
@@ -47,16 +46,16 @@ class Chef
           @new_resource.version(nil)
 
           if @new_resource.source
-            @package_source_found = ::File.exists?(@new_resource.source)
+            @package_source_found = ::File.exist?(@new_resource.source)
             if @package_source_found
               Chef::Log.debug("#{@new_resource} checking pkg status")
-              status = popen4("installp -L -d #{@new_resource.source}") do |pid, stdin, stdout, stderr|
+              status = popen4("installp -L -d #{@new_resource.source}") do |_pid, _stdin, stdout, _stderr|
                 package_found = false
                 stdout.each do |line|
                   case line
                   when /#{@new_resource.package_name}:/
                     package_found = true
-                    fields = line.split(":")
+                    fields = line.split(':')
                     @new_resource.version(fields[2])
                   end
                 end
@@ -65,11 +64,11 @@ class Chef
           end
 
           Chef::Log.debug("#{@new_resource} checking install state")
-          status = popen4("lslpp -lcq #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
+          status = popen4("lslpp -lcq #{@current_resource.package_name}") do |_pid, _stdin, stdout, _stderr|
             stdout.each do |line|
               case line
               when /#{@current_resource.package_name}/
-                fields = line.split(":")
+                fields = line.split(':')
                 Chef::Log.debug("#{@new_resource} version #{fields[2]} is already installed")
                 @current_resource.version(fields[2])
               end
@@ -77,7 +76,7 @@ class Chef
           end
 
           unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "lslpp failed - #{status.inspect}!"
+            fail Chef::Exceptions::Package, "lslpp failed - #{status.inspect}!"
           end
 
           @current_resource
@@ -85,11 +84,11 @@ class Chef
 
         def candidate_version
           return @candidate_version if @candidate_version
-          status = popen4("installp -L -d #{@new_resource.source}") do |pid, stdin, stdout, stderr|
+          status = popen4("installp -L -d #{@new_resource.source}") do |_pid, _stdin, stdout, _stderr|
             stdout.each_line do |line|
               case line
               when /\w:#{Regexp.escape(@new_resource.package_name)}:(.*)/
-                fields = line.split(":")
+                fields = line.split(':')
                 @candidate_version = fields[2]
                 @new_resource.version(fields[2])
                 Chef::Log.debug("#{@new_resource} setting install candidate version to #{@candidate_version}")
@@ -97,7 +96,7 @@ class Chef
             end
           end
           unless status.exitstatus == 0
-            raise Chef::Exceptions::Package, "installp -L -d #{@new_resource.source} - #{status.inspect}!"
+            fail Chef::Exceptions::Package, "installp -L -d #{@new_resource.source} - #{status.inspect}!"
           end
           @candidate_version
         end
@@ -109,16 +108,16 @@ class Chef
         # options of installp.
         # So far, the code has been tested only with standalone packages.
         #
-        def install_package(name, version)
+        def install_package(_name, _version)
           Chef::Log.debug("#{@new_resource} package install options: #{@new_resource.options}")
           if @new_resource.options.nil?
             run_command_with_systems_locale(
-                    :command => "installp -aYF -d #{@new_resource.source} #{@new_resource.package_name}"
+                    command: "installp -aYF -d #{@new_resource.source} #{@new_resource.package_name}"
                   )
             Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           else
             run_command_with_systems_locale(
-              :command => "installp -aYF #{expand_options(@new_resource.options)} -d #{@new_resource.source} #{@new_resource.package_name}"
+              command: "installp -aYF #{expand_options(@new_resource.options)} -d #{@new_resource.source} #{@new_resource.package_name}"
             )
             Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           end
@@ -126,20 +125,19 @@ class Chef
 
         alias_method :upgrade_package, :install_package
 
-        def remove_package(name, version)
+        def remove_package(name, _version)
           if @new_resource.options.nil?
             run_command_with_systems_locale(
-                    :command => "installp -u #{name}"
+                    command: "installp -u #{name}"
                   )
             Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
           else
             run_command_with_systems_locale(
-              :command => "installp -u #{expand_options(@new_resource.options)} #{name}"
+              command: "installp -u #{expand_options(@new_resource.options)} #{name}"
             )
             Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
           end
         end
-
       end
     end
   end

@@ -21,7 +21,6 @@ class Chef
   module Formatters
     module ErrorInspectors
       class ResourceFailureInspector
-
         attr_reader :resource
         attr_reader :action
         attr_reader :exception
@@ -36,26 +35,26 @@ class Chef
           error_description.section(exception.class.name, exception.message)
 
           unless filtered_bt.empty?
-            error_description.section("Cookbook Trace:", filtered_bt.join("\n"))
+            error_description.section('Cookbook Trace:', filtered_bt.join("\n"))
           end
 
           unless dynamic_resource?
-            error_description.section("Resource Declaration:", resource.sensitive ? "suppressed sensitive resource output" : recipe_snippet)
+            error_description.section('Resource Declaration:', resource.sensitive ? 'suppressed sensitive resource output' : recipe_snippet)
           end
 
-          error_description.section("Compiled Resource:", "#{resource.to_text}")
+          error_description.section('Compiled Resource:', "#{resource.to_text}")
 
           # Template errors get wrapped in an exception class that can show the relevant template code,
           # so add them to the error output.
           if exception.respond_to?(:source_listing)
-            error_description.section("Template Context:", "#{exception.source_location}\n#{exception.source_listing}")
+            error_description.section('Template Context:', "#{exception.source_location}\n#{exception.source_listing}")
           end
 
           if Chef::Platform.windows?
             require 'chef/win32/security'
 
-            if !Chef::ReservedNames::Win32::Security.has_admin_privileges?
-              error_description.section("Missing Windows Admin Privileges", "chef-client doesn't have administrator privileges. This can be a possible reason for the resource failure.")
+            unless Chef::ReservedNames::Win32::Security.has_admin_privileges?
+              error_description.section('Missing Windows Admin Privileges', "chef-client doesn't have administrator privileges. This can be a possible reason for the resource failure.")
             end
           end
         end
@@ -63,12 +62,11 @@ class Chef
         def recipe_snippet
           return nil if dynamic_resource?
           @snippet ||= begin
-            if file = resource.source_line[/^(([\w]:)?[^:]+):([\d]+)/,1] and line = resource.source_line[/^#{file}:([\d]+)/,1].to_i
-              return nil unless ::File.exists?(file)
+            if file = resource.source_line[/^(([\w]:)?[^:]+):([\d]+)/, 1] and line = resource.source_line[/^#{file}:([\d]+)/, 1].to_i
+              return nil unless ::File.exist?(file)
               lines = IO.readlines(file)
 
               relevant_lines = ["# In #{file}\n\n"]
-
 
               current_line = line - 1
               current_line = 0 if current_line < 0
@@ -89,7 +87,7 @@ class Chef
                 current_line += 1
               end
               relevant_lines << format_line(current_line + 1, lines[current_line + 1]) if lines[current_line + 1]
-              relevant_lines.join("")
+              relevant_lines.join('')
             end
           end
         end
@@ -99,18 +97,17 @@ class Chef
         end
 
         def filtered_bt
-          filters = Array(Chef::Config.cookbook_path).map {|p| /^#{Regexp.escape(p)}/ }
-          exception.backtrace.select {|line| filters.any? {|filter| line =~ filter }}
+          filters = Array(Chef::Config.cookbook_path).map { |p| /^#{Regexp.escape(p)}/ }
+          exception.backtrace.select { |line| filters.any? { |filter| line =~ filter } }
         end
 
         private
 
         def format_line(line_nr, line)
           # Print line number as 1-indexed not zero
-          line_nr_string = (line_nr + 1).to_s.rjust(3) + ": "
+          line_nr_string = (line_nr + 1).to_s.rjust(3) + ': '
           line_nr_string + line
         end
-
       end
     end
   end

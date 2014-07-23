@@ -30,12 +30,12 @@ class Chef
           unless printable?(path)
             msg = "Path '#{path}' contains non-printable characters. Check that backslashes are escaped with another backslash (e.g. C:\\\\Windows) in double-quoted strings."
             Chef::Log.error(msg)
-            raise Chef::Exceptions::ValidationFailed, msg
+            fail Chef::Exceptions::ValidationFailed, msg
           end
-            
+
           if windows_max_length_exceeded?(path)
             Chef::Log.debug("Path '#{path}' is longer than #{WIN_MAX_PATH}, prefixing with'\\\\?\\'")
-            path.insert(0, "\\\\?\\")
+            path.insert(0, '\\\\?\\')
           end
         end
 
@@ -50,7 +50,7 @@ class Chef
             return true
           end
         end
-        
+
         false
       end
 
@@ -65,9 +65,9 @@ class Chef
       end
 
       # Produces a comparable path.
-      def self.canonical_path(path, add_prefix=true)
+      def self.canonical_path(path, add_prefix = true)
         # Rather than find an equivalent for File.absolute_path on 1.8.7, just bail out
-        raise NotImplementedError, "This feature is not supported on Ruby versions < 1.9" if RUBY_VERSION.to_f < 1.9
+        fail NotImplementedError, 'This feature is not supported on Ruby versions < 1.9' if RUBY_VERSION.to_f < 1.9
 
         # First remove extra separators and resolve any relative paths
         abs_path = File.absolute_path(path)
@@ -77,7 +77,7 @@ class Chef
           # Downcase on Windows where paths are still case-insensitive
           abs_path.gsub!(::File::SEPARATOR, ::File::ALT_SEPARATOR)
           if add_prefix && abs_path !~ /^\\\\?\\/
-            abs_path.insert(0, "\\\\?\\")
+            abs_path.insert(0, '\\\\?\\')
           end
 
           abs_path.downcase!

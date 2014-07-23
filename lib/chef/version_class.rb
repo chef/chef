@@ -20,7 +20,7 @@ class Chef
     include Comparable
     attr_reader :major, :minor, :patch
 
-    def initialize(str="")
+    def initialize(str = '')
       parse(str)
     end
 
@@ -34,7 +34,7 @@ class Chef
 
     def <=>(v)
       [:major, :minor, :patch].each do |method|
-        ans = (self.send(method) <=> v.send(method))
+        ans = (send(method) <=> v.send(method))
         return ans if ans != 0
       end
       0
@@ -53,18 +53,17 @@ class Chef
 
     protected
 
-    def parse(str="")
+    def parse(str = '')
       @major, @minor, @patch =
         case str.to_s
         when /^(\d+)\.(\d+)\.(\d+)$/
-          [ $1.to_i, $2.to_i, $3.to_i ]
+          [Regexp.last_match[1].to_i, Regexp.last_match[2].to_i, Regexp.last_match[3].to_i]
         when /^(\d+)\.(\d+)$/
-          [ $1.to_i, $2.to_i, 0 ]
+          [Regexp.last_match[1].to_i, Regexp.last_match[2].to_i, 0]
         else
-          msg = "'#{str.to_s}' does not match 'x.y.z' or 'x.y'"
-          raise Chef::Exceptions::InvalidCookbookVersion.new( msg )
+          msg = "'#{str}' does not match 'x.y.z' or 'x.y'"
+          fail Chef::Exceptions::InvalidCookbookVersion.new(msg)
         end
     end
-
   end
 end

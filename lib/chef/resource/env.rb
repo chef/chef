@@ -20,12 +20,11 @@
 class Chef
   class Resource
     class Env < Chef::Resource
-
       identity_attr :key_name
 
       state_attrs :value
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :env
         @key_name = name
@@ -35,27 +34,27 @@ class Chef
         @allowed_actions.push(:create, :delete, :modify)
       end
 
-      def key_name(arg=nil)
+      def key_name(arg = nil)
         set_or_return(
           :key_name,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def value(arg=nil)
+      def value(arg = nil)
         set_or_return(
           :value,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def delim(arg=nil)
+      def delim(arg = nil)
         set_or_return(
           :delim,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
     end

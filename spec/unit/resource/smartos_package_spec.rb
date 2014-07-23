@@ -16,23 +16,23 @@
 # limitations under the License.
 #
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_helper'))
 
-describe Chef::Resource::SmartosPackage, "initialize" do
+describe Chef::Resource::SmartosPackage, 'initialize' do
 
   before(:each) do
-    @resource = Chef::Resource::SmartosPackage.new("foo")
+    @resource = Chef::Resource::SmartosPackage.new('foo')
   end
 
-  it "should return a Chef::Resource::SmartosPackage" do
+  it 'should return a Chef::Resource::SmartosPackage' do
     @resource.should be_a_kind_of(Chef::Resource::SmartosPackage)
   end
 
-  it "should set the resource_name to :smartos_package" do
+  it 'should set the resource_name to :smartos_package' do
     @resource.resource_name.should eql(:smartos_package)
   end
 
-  it "should set the provider to Chef::Provider::Package::SmartOS" do
+  it 'should set the provider to Chef::Provider::Package::SmartOS' do
     @resource.provider.should eql(Chef::Provider::Package::SmartOS)
   end
 end

@@ -23,16 +23,15 @@ require 'chef/version_constraint'
 class Chef
   class RunList
     class VersionedRecipeList < Array
-
       def initialize
         super
-        @versions = Hash.new
+        @versions = {}
       end
 
-      def add_recipe(name, version=nil)
-        if version && @versions.has_key?(name)
+      def add_recipe(name, version = nil)
+        if version && @versions.key?(name)
           unless Chef::Version.new(@versions[name]) == Chef::Version.new(version)
-            raise Chef::Exceptions::CookbookVersionConflict, "Run list requires #{name} at versions #{@versions[name]} and #{version}"
+            fail Chef::Exceptions::CookbookVersionConflict, "Run list requires #{name} at versions #{@versions[name]} and #{version}"
           end
         end
         @versions[name] = version if version
@@ -40,22 +39,22 @@ class Chef
       end
 
       def with_versions
-        self.map {|recipe_name| {:name => recipe_name, :version => @versions[recipe_name]}}
+        map { |recipe_name| { name: recipe_name, version: @versions[recipe_name] } }
       end
 
       # Return an Array of Hashes, each of the form:
       #  {:name => RECIPE_NAME, :version_constraint => Chef::VersionConstraint }
       def with_version_constraints
-        self.map do |recipe_name|
+        map do |recipe_name|
           constraint = Chef::VersionConstraint.new(@versions[recipe_name])
-          { :name => recipe_name, :version_constraint => constraint }
+          { name: recipe_name, version_constraint: constraint }
         end
       end
 
       # Return an Array of Strings, each of the form:
       #  "NAME@VERSION"
       def with_version_constraints_strings
-        self.map do |recipe_name|
+        map do |recipe_name|
           if @versions[recipe_name]
             "#{recipe_name}@#{@versions[recipe_name]}"
           else

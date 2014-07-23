@@ -20,7 +20,6 @@ class Chef
   class VersionConstraint
     class Platform < Chef::VersionConstraint
       VERSION_CLASS = Chef::Version::Platform
-
     end
   end
 end

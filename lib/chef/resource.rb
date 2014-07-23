@@ -36,7 +36,6 @@ require 'chef/mixin/deprecation'
 class Chef
   class Resource
     class Notification < Struct.new(:resource, :action, :notifying_resource)
-
       def duplicates?(other_notification)
         unless other_notification.respond_to?(:resource) && other_notification.respond_to?(:action)
           msg = "only duck-types of Chef::Resource::Notification can be checked for duplication "\
@@ -49,13 +48,13 @@ class Chef
       # If resource and/or notifying_resource is not a resource object, this will look them up in the resource collection
       # and fix the references from strings to actual Resource objects.
       def resolve_resource_reference(resource_collection)
-        return resource if resource.kind_of?(Chef::Resource) && notifying_resource.kind_of?(Chef::Resource)
+        return resource if resource.is_a?(Chef::Resource) && notifying_resource.is_a?(Chef::Resource)
 
-        if not(resource.kind_of?(Chef::Resource))
+        unless resource.is_a?(Chef::Resource)
           fix_resource_reference(resource_collection)
         end
 
-        if not(notifying_resource.kind_of?(Chef::Resource))
+        unless notifying_resource.is_a?(Chef::Resource)
           fix_notifier_reference(resource_collection)
         end
       end
@@ -80,12 +79,12 @@ FAIL
         err.set_backtrace(e.backtrace)
         raise err
       rescue Chef::Exceptions::InvalidResourceSpecification => e
-          err = Chef::Exceptions::InvalidResourceSpecification.new(<<-F)
+        err = Chef::Exceptions::InvalidResourceSpecification.new(<<-F)
 Resource #{notifying_resource} is configured to notify resource #{resource} with action #{action}, \
 but #{resource.inspect} is not valid syntax to look up a resource in the resource collection. Notification \
 is defined near #{notifying_resource.source_line}
 F
-          err.set_backtrace(e.backtrace)
+        err.set_backtrace(e.backtrace)
         raise err
       end
 
@@ -110,15 +109,14 @@ FAIL
         err.set_backtrace(e.backtrace)
         raise err
       rescue Chef::Exceptions::InvalidResourceSpecification => e
-          err = Chef::Exceptions::InvalidResourceSpecification.new(<<-F)
+        err = Chef::Exceptions::InvalidResourceSpecification.new(<<-F)
 Resource #{resource} is configured to receive notifications from  #{notifying_resource} with action #{action}, \
 but #{notifying_resource.inspect} is not valid syntax to look up a resource in the resource collection. Notification \
 is defined near #{resource.source_line}
 F
-          err.set_backtrace(e.backtrace)
+        err.set_backtrace(e.backtrace)
         raise err
       end
-
     end
 
     FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if, :@enclosing_provider]
@@ -133,7 +131,6 @@ F
     include Chef::Mixin::Deprecation
 
     extend Chef::Mixin::ConvertToClassName
-
 
     if Module.method(:const_defined?).arity == 1
       def self.strict_const_defined?(const)
@@ -238,7 +235,7 @@ F
       @run_context = run_context
       @noop = nil
       @before = nil
-      @params = Hash.new
+      @params = {}
       @provider = nil
       @allowed_actions = [ :nothing ]
       @action = :nothing
@@ -261,7 +258,7 @@ F
     # Returns a Hash of attribute => value for the state attributes declared in
     # the resource's class definition.
     def state
-      self.class.state_attrs.inject({}) do |state_attrs, attr_name|
+      self.class.state_attrs.reduce({}) do |state_attrs, attr_name|
         state_attrs[attr_name] = send(attr_name)
         state_attrs
       end
@@ -276,7 +273,6 @@ F
         name
       end
     end
-
 
     def updated=(true_or_false)
       Chef::Log.warn("Chef::Resource#updated=(true|false) is deprecated. Please call #updated_by_last_action(true|false) instead.")
@@ -297,7 +293,7 @@ F
       if enclosing_provider && enclosing_provider.respond_to?(method_symbol)
         enclosing_provider.send(method_symbol, *args, &block)
       else
-        raise NoMethodError, "undefined method `#{method_symbol.to_s}' for #{self.class.to_s}"
+        raise NoMethodError, "undefined method `#{method_symbol}' for #{self.class}"
       end
     end
 
@@ -306,7 +302,7 @@ F
         prior_resource = run_context.resource_collection.lookup(self.to_s)
         # if we get here, there is a prior resource (otherwise we'd have jumped
         # to the rescue clause).
-        Chef::Log.warn("Cloning resource attributes for #{self.to_s} from prior resource (CHEF-3694)")
+        Chef::Log.warn("Cloning resource attributes for #{self} from prior resource (CHEF-3694)")
         Chef::Log.warn("Previous #{prior_resource}: #{prior_resource.source_line}") if prior_resource.source_line
         Chef::Log.warn("Current  #{self}: #{self.source_line}") if self.source_line
         prior_resource.instance_variables.each do |iv|
@@ -329,7 +325,7 @@ F
     end
 
     def provider(arg=nil)
-      klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
+      klass = if arg.is_a?(String) || arg.is_a?(Symbol)
                 lookup_provider_constant(arg)
               else
                 arg
@@ -337,21 +333,21 @@ F
       set_or_return(
         :provider,
         klass,
-        :kind_of => [ Class ]
+        kind_of: [ Class ]
       )
     end
 
     def action(arg=nil)
       if arg
-        action_list = arg.kind_of?(Array) ? arg : [ arg ]
-        action_list = action_list.collect { |a| a.to_sym }
+        action_list = arg.is_a?(Array) ? arg : [ arg ]
+        action_list = action_list.map { |a| a.to_sym }
         action_list.each do |action|
           validate(
             {
-              :action => action,
+              action: action,
             },
             {
-              :action => { :kind_of => Symbol, :equal_to => @allowed_actions },
+              action: { kind_of: Symbol, equal_to: @allowed_actions },
             }
           )
         end
@@ -362,15 +358,15 @@ F
     end
 
     def name(name=nil)
-      if !name.nil?
-        raise ArgumentError, "name must be a string!" unless name.kind_of?(String)
+      unless name.nil?
+        raise ArgumentError, "name must be a string!" unless name.is_a?(String)
         @name = name
       end
       @name
     end
 
     def noop(tf=nil)
-      if !tf.nil?
+      unless tf.nil?
         raise ArgumentError, "noop must be true or false!" unless tf == true || tf == false
         @noop = tf
       end
@@ -381,7 +377,7 @@ F
       set_or_return(
         :ignore_failure,
         arg,
-        :kind_of => [ TrueClass, FalseClass ]
+        kind_of: [ TrueClass, FalseClass ]
       )
     end
 
@@ -389,7 +385,7 @@ F
       set_or_return(
         :retries,
         arg,
-        :kind_of => Integer
+        kind_of: Integer
       )
     end
 
@@ -397,7 +393,7 @@ F
       set_or_return(
         :retry_delay,
         arg,
-        :kind_of => Integer
+        kind_of: Integer
       )
     end
 
@@ -405,7 +401,7 @@ F
       set_or_return(
         :sensitive,
         arg,
-        :kind_of => [ TrueClass, FalseClass ]
+        kind_of: [ TrueClass, FalseClass ]
       )
     end
 
@@ -417,7 +413,7 @@ F
       set_or_return(
         :guard_interpreter,
         arg,
-        :kind_of => Symbol
+        kind_of: Symbol
       )
     end
 
@@ -521,7 +517,7 @@ F
 
     def inspect
       ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
-      ivars.inject("<#{to_s}") do |str, ivar|
+      ivars.reduce("<#{self}") do |str, ivar|
         str << " #{ivar}: #{instance_variable_get(ivar).inspect}"
       end << ">"
     end
@@ -529,9 +525,9 @@ F
     # as_json does most of the to_json heavy lifted. It exists here in case activesupport
     # is loaded. activesupport will call as_json and skip over to_json. This ensure
     # json is encoded as expected
-    def as_json(*a)
+    def as_json(*_a)
       safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
-      instance_vars = Hash.new
+      instance_vars = {}
       safe_ivars.each do |iv|
         instance_vars[iv.to_s.sub(/^@/, '')] = instance_variable_get(iv)
       end
@@ -549,7 +545,7 @@ F
 
     def to_hash
       safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
-      instance_vars = Hash.new
+      instance_vars = {}
       safe_ivars.each do |iv|
         key = iv.to_s.sub(/^@/,'').to_sym
         instance_vars[key] = instance_variable_get(iv)
@@ -646,7 +642,7 @@ F
       begin
         return if should_skip?(action)
         provider_for_action(action).run_action
-      rescue Exception => e
+      rescue => e
         if ignore_failure
           Chef::Log.error("#{custom_exception_message(e)}; ignore_failure is set, continuing")
           events.resource_failed(self, action, e)
@@ -772,25 +768,25 @@ F
     # TODO: 2011-11-02 schisamo - platform_version support
     def self.provides(short_name, opts={})
       short_name_sym = short_name
-      if short_name.kind_of?(String)
+      if short_name.is_a?(String)
         short_name.downcase!
         short_name.gsub!(/\s/, "_")
         short_name_sym = short_name.to_sym
       end
-      if opts.has_key?(:on_platforms)
+      if opts.key?(:on_platforms)
         platforms = [opts[:on_platforms]].flatten
         platforms.each do |p|
           p = :default if :all == p.to_sym
           platform_map.set(
-            :platform => p.to_sym,
-            :short_name => short_name_sym,
-            :resource => self
+            platform: p.to_sym,
+            short_name: short_name_sym,
+            resource: self
           )
         end
       else
         platform_map.set(
-          :short_name => short_name_sym,
-          :resource => self
+          short_name: short_name_sym,
+          resource: self
         )
       end
     end

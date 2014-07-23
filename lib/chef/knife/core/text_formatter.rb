@@ -20,18 +20,17 @@ class Chef
   class Knife
     module Core
       class TextFormatter
-
         attr_reader :data
         attr_reader :ui
 
         def initialize(data, ui)
           @ui = ui
           @data = if data.respond_to?(:display_hash)
-            data.display_hash
-          elsif data.kind_of?(Array)
-            data
+                    data.display_hash
+          elsif data.is_a?(Array)
+                    data
           elsif data.respond_to?(:to_hash)
-            data.to_hash
+                    data.to_hash
           else
             data
           end
@@ -45,10 +44,10 @@ class Chef
           buffer = ''
 
           if data.respond_to?(:keys)
-            justify_width = data.keys.map {|k| k.to_s.size }.max.to_i + 1
+            justify_width = data.keys.map { |k| k.to_s.size }.max.to_i + 1
             data.sort.each do |key, value|
               # key: ['value'] should be printed as key: value
-              if value.kind_of?(Array) && value.size == 1 && is_singleton(value[0])
+              if value.is_a?(Array) && value.size == 1 && is_singleton(value[0])
                 value = value[0]
               end
               if is_singleton(value)
@@ -62,13 +61,13 @@ class Chef
                 lines.each { |line| buffer << "  #{line}\n" }
               end
             end
-          elsif data.kind_of?(Array)
+          elsif data.is_a?(Array)
             data.each_index do |index|
               item = data[index]
               buffer << text_format(data[index])
               # Separate items with newlines if it's an array of hashes or an
               # array of arrays
-              buffer << "\n" if !is_singleton(data[index]) && index != data.size-1
+              buffer << "\n" if !is_singleton(data[index]) && index != data.size - 1
             end
           else
             buffer << "#{data}\n"
@@ -77,10 +76,9 @@ class Chef
         end
 
         def is_singleton(value)
-          !(value.kind_of?(Array) || value.respond_to?(:keys))
+          !(value.is_a?(Array) || value.respond_to?(:keys))
         end
       end
     end
   end
 end
-

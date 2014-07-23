@@ -27,7 +27,6 @@ require 'pathname'
 require 'chef/monkey_patches/pathname'
 
 class Chef
-
   # == Chef::CookbookVersion
   # CookbookVersion is a model object encapsulating the data about a Chef
   # cookbook. Chef supports maintaining multiple versions of a cookbook on a
@@ -39,7 +38,7 @@ class Chef
   class CookbookVersion
     include Comparable
 
-    COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
+    COOKBOOK_SEGMENTS = [:resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files]
 
     attr_accessor :root_paths
     attr_accessor :definition_filenames
@@ -91,17 +90,17 @@ class Chef
       @name = name
       @root_paths = root_paths
       @frozen = false
-      @attribute_filenames = Array.new
-      @definition_filenames = Array.new
-      @template_filenames = Array.new
-      @file_filenames = Array.new
-      @recipe_filenames = Array.new
-      @recipe_filenames_by_name = Hash.new
-      @library_filenames = Array.new
-      @resource_filenames = Array.new
-      @provider_filenames = Array.new
-      @metadata_filenames = Array.new
-      @root_filenames = Array.new
+      @attribute_filenames = []
+      @definition_filenames = []
+      @template_filenames = []
+      @file_filenames = []
+      @recipe_filenames = []
+      @recipe_filenames_by_name = {}
+      @library_filenames = []
+      @resource_filenames = []
+      @provider_filenames = []
+      @metadata_filenames = []
+      @root_filenames = []
       @status = :ready
       @manifest = nil
       @file_vendor = nil
@@ -124,7 +123,7 @@ class Chef
     end
 
     def version=(new_version)
-      manifest["version"] = new_version
+      manifest['version'] = new_version
       metadata.version(new_version)
     end
 
@@ -163,8 +162,8 @@ class Chef
       @manifest_records_by_path = extract_manifest_records_by_path(@manifest)
 
       COOKBOOK_SEGMENTS.each do |segment|
-        next unless @manifest.has_key?(segment)
-        filenames = @manifest[segment].map{|manifest_record| manifest_record['name']}
+        next unless @manifest.key?(segment)
+        filenames = @manifest[segment].map { |manifest_record| manifest_record['name'] }
 
         replace_segment_filenames(segment, filenames)
       end
@@ -195,12 +194,12 @@ class Chef
     end
 
     ## BACKCOMPAT/DEPRECATED - Remove these and fix breakage before release [DAN - 5/20/2010]##
-    alias :attribute_files :attribute_filenames
-    alias :attribute_files= :attribute_filenames=
+    alias_method :attribute_files, :attribute_filenames
+    alias_method :attribute_files=, :attribute_filenames=
 
     # Return recipe names in the form of cookbook_name::recipe_name
     def fully_qualified_recipe_names
-      results = Array.new
+      results = []
       recipe_filenames_by_name.each_key do |rname|
         results << "#{name}::#{rname}"
       end
@@ -214,13 +213,13 @@ class Chef
     end
 
     ## BACKCOMPAT/DEPRECATED - Remove these and fix breakage before release [DAN - 5/20/2010]##
-    alias :recipe_files :recipe_filenames
-    alias :recipe_files= :recipe_filenames=
+    alias_method :recipe_files, :recipe_filenames
+    alias_method :recipe_files=, :recipe_filenames=
 
     # called from DSL
     def load_recipe(recipe_name, run_context)
-      unless recipe_filenames_by_name.has_key?(recipe_name)
-        raise Chef::Exceptions::RecipeNotFound, "could not find recipe #{recipe_name} for cookbook #{name}"
+      unless recipe_filenames_by_name.key?(recipe_name)
+        fail Chef::Exceptions::RecipeNotFound, "could not find recipe #{recipe_name} for cookbook #{name}"
       end
 
       Chef::Log.debug("Found recipe #{recipe_name} in cookbook #{name}")
@@ -228,7 +227,7 @@ class Chef
       recipe_filename = recipe_filenames_by_name[recipe_name]
 
       unless recipe_filename
-        raise Chef::Exceptions::RecipeNotFound, "could not find #{recipe_name} files for cookbook #{name}"
+        fail Chef::Exceptions::RecipeNotFound, "could not find #{recipe_name} files for cookbook #{name}"
       end
 
       recipe.from_file(recipe_filename)
@@ -237,7 +236,7 @@ class Chef
 
     def segment_filenames(segment)
       unless COOKBOOK_SEGMENTS.include?(segment)
-        raise ArgumentError, "invalid segment #{segment}: must be one of #{COOKBOOK_SEGMENTS.join(', ')}"
+        fail ArgumentError, "invalid segment #{segment}: must be one of #{COOKBOOK_SEGMENTS.join(', ')}"
       end
 
       case segment.to_sym
@@ -316,14 +315,14 @@ class Chef
           unless existing_files.empty?
             error_message << "\n\nThis cookbook _does_ contain: ['#{existing_files.join("','")}']"
           end
-          raise Chef::Exceptions::FileNotFound, error_message
+          fail Chef::Exceptions::FileNotFound, error_message
         else
-          raise Chef::Exceptions::FileNotFound, "cookbook #{name} does not contain file #{segment}/#{filename}"
+          fail Chef::Exceptions::FileNotFound, "cookbook #{name} does not contain file #{segment}/#{filename}"
         end
       end
     end
 
-    def preferred_filename_on_disk_location(node, segment, filename, current_filepath=nil)
+    def preferred_filename_on_disk_location(node, segment, filename, current_filepath = nil)
       manifest_record = preferred_manifest_record(node, segment, filename)
       if current_filepath && (manifest_record['checksum'] == self.class.checksum_cookbook_file(current_filepath))
         nil
@@ -334,7 +333,7 @@ class Chef
 
     def relative_filenames_in_preferred_directory(node, segment, dirname)
       preferences = preferences_for_path(node, segment, dirname)
-      filenames_by_pref = Hash.new
+      filenames_by_pref = {}
       preferences.each { |pref| filenames_by_pref[pref] = Array.new }
 
       manifest[segment].each do |manifest_record|
@@ -352,7 +351,7 @@ class Chef
         # cookbook find them by filespecificity again. but it's the shortest
         # path to "success" for now.
         if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)})\/.+$/
-          specificity_dirname = $1
+          specificity_dirname = Regexp.last_match[1]
           non_specific_path = manifest_record_path[/#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)}\/(.+)$/, 1]
           # Record the specificity_dirname only if it's in the list of
           # valid preferences
@@ -364,10 +363,9 @@ class Chef
 
       best_pref = preferences.find { |pref| !filenames_by_pref[pref].empty? }
 
-      raise Chef::Exceptions::FileNotFound, "cookbook #{name} has no directory #{segment}/default/#{dirname}" unless best_pref
+      fail Chef::Exceptions::FileNotFound, "cookbook #{name} has no directory #{segment}/default/#{dirname}" unless best_pref
 
       filenames_by_pref[best_pref]
-
     end
 
     # Determine the manifest records from the most specific directory
@@ -375,7 +373,7 @@ class Chef
     # description of entries of the returned Array.
     def preferred_manifest_records_for_directory(node, segment, dirname)
       preferences = preferences_for_path(node, segment, dirname)
-      records_by_pref = Hash.new
+      records_by_pref = {}
       preferences.each { |pref| records_by_pref[pref] = Array.new }
 
       manifest[segment].each do |manifest_record|
@@ -387,7 +385,7 @@ class Chef
           # dirname argument as above, which is what
           # preferences_for_path returns. It could be
           # "files/ubuntu-9.10/dirname", for example.
-          specificity_dirname = $1
+          specificity_dirname = Regexp.last_match[1]
 
           # Record the specificity_dirname only if it's in the list of
           # valid preferences
@@ -399,11 +397,10 @@ class Chef
 
       best_pref = preferences.find { |pref| !records_by_pref[pref].empty? }
 
-      raise Chef::Exceptions::FileNotFound, "cookbook #{name} (#{version}) has no directory #{segment}/default/#{dirname}" unless best_pref
+      fail Chef::Exceptions::FileNotFound, "cookbook #{name} (#{version}) has no directory #{segment}/default/#{dirname}" unless best_pref
 
       records_by_pref[best_pref]
     end
-
 
     # Given a node, segment and path (filename or directory name),
     # return the priority-ordered list of preference locations to
@@ -416,8 +413,8 @@ class Chef
         rescue ArgumentError => e
           # Skip platform/version if they were not found by find_platform_and_version
           if e.message =~ /Cannot find a (?:platform|version)/
-            platform = "/unknown_platform/"
-            version = "/unknown_platform_version/"
+            platform = '/unknown_platform/'
+            version = '/unknown_platform_version/'
           else
             raise
           end
@@ -435,12 +432,12 @@ class Chef
         end
 
         # Most specific to least specific places to find the path
-        search_path = [ File.join(segment.to_s, "host-#{fqdn}", path) ]
+        search_path = [File.join(segment.to_s, "host-#{fqdn}", path)]
         search_versions.each do |v|
           search_path << File.join(segment.to_s, "#{platform}-#{v}", path)
         end
         search_path << File.join(segment.to_s, platform.to_s, path)
-        search_path << File.join(segment.to_s, "default", path)
+        search_path << File.join(segment.to_s, 'default', path)
 
         search_path
       else
@@ -457,31 +454,31 @@ class Chef
     end
 
     def to_json(*a)
-      result = self.to_hash
+      result = to_hash
       result['json_class'] = self.class.name
       result.to_json(*a)
     end
 
     def self.json_create(o)
-      cookbook_version = new(o["cookbook_name"])
+      cookbook_version = new(o['cookbook_name'])
       # We want the Chef::Cookbook::Metadata object to always be inflated
-      cookbook_version.metadata = Chef::Cookbook::Metadata.from_hash(o["metadata"])
+      cookbook_version.metadata = Chef::Cookbook::Metadata.from_hash(o['metadata'])
       cookbook_version.manifest = o
 
       # We don't need the following step when we decide to stop supporting deprecated operators in the metadata (e.g. <<, >>)
-      cookbook_version.manifest["metadata"] = Chef::JSONCompat.from_json(cookbook_version.metadata.to_json)
+      cookbook_version.manifest['metadata'] = Chef::JSONCompat.from_json(cookbook_version.metadata.to_json)
 
-      cookbook_version.freeze_version if o["frozen?"]
+      cookbook_version.freeze_version if o['frozen?']
       cookbook_version
     end
 
     def generate_manifest_with_urls(&url_generator)
       rendered_manifest = manifest.dup
       COOKBOOK_SEGMENTS.each do |segment|
-        if rendered_manifest.has_key?(segment)
+        if rendered_manifest.key?(segment)
           rendered_manifest[segment].each do |manifest_record|
-            url_options = { :cookbook_name => name.to_s, :cookbook_version => version, :checksum => manifest_record["checksum"] }
-            manifest_record["url"] = url_generator.call(url_options)
+            url_options = { cookbook_name: name.to_s, cookbook_version: version, checksum: manifest_record['checksum'] }
+            manifest_record['url'] = url_generator.call(url_options)
           end
         end
       end
@@ -489,15 +486,15 @@ class Chef
     end
 
     def metadata_json_file
-      File.join(root_paths[0], "metadata.json")
+      File.join(root_paths[0], 'metadata.json')
     end
 
     def metadata_rb_file
-      File.join(root_paths[0], "metadata.rb")
+      File.join(root_paths[0], 'metadata.rb')
     end
 
     def reload_metadata!
-      if File.exists?(metadata_json_file)
+      if File.exist?(metadata_json_file)
         metadata.from_json(IO.read(metadata_json_file))
       end
     end
@@ -532,8 +529,8 @@ class Chef
       self
     end
 
-    def self.load(name, version="_latest")
-      version = "_latest" if version == "latest"
+    def self.load(name, version = '_latest')
+      version = '_latest' if version == 'latest'
       chef_server_rest.get_rest("cookbooks/#{name}/#{version}")
     end
 
@@ -553,8 +550,8 @@ class Chef
     # [String]::  Array of cookbook versions, which are strings like 'x.y.z'
     # nil::       if the cookbook doesn't exist. an error will also be logged.
     def self.available_versions(cookbook_name)
-      chef_server_rest.get_rest("cookbooks/#{cookbook_name}")[cookbook_name]["versions"].map do |cb|
-        cb["version"]
+      chef_server_rest.get_rest("cookbooks/#{cookbook_name}")[cookbook_name]['versions'].map do |cb|
+        cb['version']
       end
     rescue Net::HTTPServerException => e
       if e.to_s =~ /^404/
@@ -571,11 +568,11 @@ class Chef
     end
 
     def <=>(o)
-      raise Chef::Exceptions::CookbookVersionNameMismatch if self.name != o.name
+      fail Chef::Exceptions::CookbookVersionNameMismatch if name != o.name
       # FIXME: can we change the interface to the Metadata class such
       # that metadata.version returns a Chef::Version instance instead
       # of a string?
-      Chef::Version.new(self.version) <=> Chef::Version.new(o.version)
+      Chef::Version.new(version) <=> Chef::Version.new(o.version)
     end
 
     private
@@ -588,34 +585,34 @@ class Chef
       manifest
 
       # in order of prefernce, look for the filename in the manifest
-      preferences.find {|preferred_filename| @manifest_records_by_path[preferred_filename] }
+      preferences.find { |preferred_filename| @manifest_records_by_path[preferred_filename] }
     end
 
     # For each filename, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location
     def filenames_by_name(filenames)
-      filenames.select{|filename| filename =~ /\.rb$/}.inject({}){|memo, filename| memo[File.basename(filename, '.rb')] = filename ; memo }
+      filenames.select { |filename| filename =~ /\.rb$/ }.reduce({}) { |memo, filename| memo[File.basename(filename, '.rb')] = filename; memo }
     end
 
     # See #manifest for a description of the manifest return value.
     # See #preferred_manifest_record for a description an individual manifest record.
     def generate_manifest
-      manifest = Mash.new({
-        :recipes => Array.new,
-        :definitions => Array.new,
-        :libraries => Array.new,
-        :attributes => Array.new,
-        :files => Array.new,
-        :templates => Array.new,
-        :resources => Array.new,
-        :providers => Array.new,
-        :root_files => Array.new
-      })
+      manifest = Mash.new(
+                            recipes: [],
+                            definitions: [],
+                            libraries: [],
+                            attributes: [],
+                            files: [],
+                            templates: [],
+                            resources: [],
+                            providers: [],
+                            root_files: []
+                          )
       checksums_to_on_disk_paths = {}
 
       if !root_paths || root_paths.size == 0
         Chef::Log.error("Cookbook #{name} does not have root_paths! Cannot generate manifest.")
-        raise "Cookbook #{name} does not have root_paths! Cannot generate manifest."
+        fail "Cookbook #{name} does not have root_paths! Cannot generate manifest."
       end
 
       COOKBOOK_SEGMENTS.each do |segment|
@@ -627,12 +624,12 @@ class Chef
 
           csum = self.class.checksum_cookbook_file(segment_file)
           checksums_to_on_disk_paths[csum] = segment_file
-          rs = Mash.new({
-            :name => file_name,
-            :path => path,
-            :checksum => csum,
-            :specificity => specificity
-          })
+          rs = Mash.new(
+                          name: file_name,
+                          path: path,
+                          checksum: csum,
+                          specificity: specificity
+                        )
 
           manifest[segment] << rs
         end
@@ -656,13 +653,13 @@ class Chef
         # Check if path is actually under root_path
         next if parts[0] == '..'
         if segment == :templates || segment == :files
-          return [ pathname.to_s, parts[1] ]
+          return [pathname.to_s, parts[1]]
         else
-          return [ pathname.to_s, 'default' ]
+          return [pathname.to_s, 'default']
         end
       end
       Chef::Log.error("Cookbook file #{segment_file} not under cookbook root paths #{root_paths.inspect}.")
-      raise "Cookbook file #{segment_file} not under cookbook root paths #{root_paths.inspect}."
+      fail "Cookbook file #{segment_file} not under cookbook root paths #{root_paths.inspect}."
     end
 
     def file_vendor
@@ -675,7 +672,7 @@ class Chef
     def extract_checksums_from_manifest(manifest)
       checksums = {}
       COOKBOOK_SEGMENTS.each do |segment|
-        next unless manifest.has_key?(segment)
+        next unless manifest.key?(segment)
         manifest[segment].each do |manifest_record|
           checksums[manifest_record[:checksum]] = nil
         end
@@ -686,13 +683,12 @@ class Chef
     def extract_manifest_records_by_path(manifest)
       manifest_records_by_path = {}
       COOKBOOK_SEGMENTS.each do |segment|
-        next unless manifest.has_key?(segment)
+        next unless manifest.key?(segment)
         manifest[segment].each do |manifest_record|
           manifest_records_by_path[manifest_record[:path]] = manifest_record
         end
       end
       manifest_records_by_path
     end
-
   end
 end

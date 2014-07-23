@@ -67,18 +67,18 @@ class Chef
       def should_update_owner?
         if target_uid.nil?
           # the user has not specified a permission on the new resource, so we never manage it with FAC
-          Chef::Log.debug("found target_uid == nil, so no owner was specified on resource, not managing owner")
+          Chef::Log.debug('found target_uid == nil, so no owner was specified on resource, not managing owner')
           return false
         elsif current_uid.nil?
           # the user has specified a permission, and we are creating a file, so always enforce permissions
-          Chef::Log.debug("found current_uid == nil, so we are creating a new file, updating owner")
+          Chef::Log.debug('found current_uid == nil, so we are creating a new file, updating owner')
           return true
         elsif target_uid != current_uid
           # the user has specified a permission, and it does not match the file, so fix the permission
-          Chef::Log.debug("found target_uid != current_uid, updating owner")
+          Chef::Log.debug('found target_uid != current_uid, updating owner')
           return true
         else
-          Chef::Log.debug("found target_uid == current_uid, not updating owner")
+          Chef::Log.debug('found target_uid == current_uid, not updating owner')
           # the user has specified a permission, but it matches the file, so behave idempotently
           return false
         end
@@ -105,14 +105,14 @@ class Chef
       end
 
       def gid_from_resource(resource)
-        return nil if resource == nil or resource.group.nil?
-        if resource.group.kind_of?(String)
-          diminished_radix_complement( Etc.getgrnam(resource.group).gid )
-        elsif resource.group.kind_of?(Integer)
+        return nil if resource.nil? or resource.group.nil?
+        if resource.group.is_a?(String)
+          diminished_radix_complement(Etc.getgrnam(resource.group).gid)
+        elsif resource.group.is_a?(Integer)
           resource.group
         else
-          Chef::Log.error("The `group` parameter of the #@resource resource is set to an invalid value (#{resource.owner.inspect})")
-          raise ArgumentError, "cannot resolve #{resource.group.inspect} to gid, group must be a string or integer"
+          Chef::Log.error("The `group` parameter of the #{@resource} resource is set to an invalid value (#{resource.owner.inspect})")
+          fail ArgumentError, "cannot resolve #{resource.group.inspect} to gid, group must be a string or integer"
         end
       rescue ArgumentError
         provider.requirements.assert(:create, :create_if_missing, :touch) do |a|
@@ -126,18 +126,18 @@ class Chef
       def should_update_group?
         if target_gid.nil?
           # the user has not specified a permission on the new resource, so we never manage it with FAC
-          Chef::Log.debug("found target_gid == nil, so no group was specified on resource, not managing group")
+          Chef::Log.debug('found target_gid == nil, so no group was specified on resource, not managing group')
           return false
         elsif current_gid.nil?
           # the user has specified a permission, and we are creating a file, so always enforce permissions
-          Chef::Log.debug("found current_gid == nil, so we are creating a new file, updating group")
+          Chef::Log.debug('found current_gid == nil, so we are creating a new file, updating group')
           return true
         elsif target_gid != current_gid
           # the user has specified a permission, and it does not match the file, so fix the permission
-          Chef::Log.debug("found target_gid != current_gid, updating group")
+          Chef::Log.debug('found target_gid != current_gid, updating group')
           return true
         else
-          Chef::Log.debug("found target_gid == current_gid, not updating group")
+          Chef::Log.debug('found target_gid == current_gid, not updating group')
           # the user has specified a permission, but it matches the file, so behave idempotently
           return false
         end
@@ -156,7 +156,7 @@ class Chef
       end
 
       def mode_from_resource(res)
-        return nil if res == nil or res.mode.nil?
+        return nil if res.nil? or res.mode.nil?
         (res.mode.respond_to?(:oct) ? res.mode.oct : res.mode.to_i) & 007777
       end
 
@@ -165,7 +165,7 @@ class Chef
       end
 
       def mode_to_s(mode)
-        mode.nil? ? "" : "0#{mode.to_s(8)}"
+        mode.nil? ? '' : "0#{mode.to_s(8)}"
       end
 
       def current_mode
@@ -175,18 +175,18 @@ class Chef
       def should_update_mode?
         if target_mode.nil?
           # the user has not specified a permission on the new resource, so we never manage it with FAC
-          Chef::Log.debug("found target_mode == nil, so no mode was specified on resource, not managing mode")
+          Chef::Log.debug('found target_mode == nil, so no mode was specified on resource, not managing mode')
           return false
         elsif current_mode.nil?
           # the user has specified a permission, and we are creating a file, so always enforce permissions
-          Chef::Log.debug("found current_mode == nil, so we are creating a new file, updating mode")
+          Chef::Log.debug('found current_mode == nil, so we are creating a new file, updating mode')
           return true
         elsif target_mode != current_mode
           # the user has specified a permission, and it does not match the file, so fix the permission
-          Chef::Log.debug("found target_mode != current_mode, updating mode")
+          Chef::Log.debug('found target_mode != current_mode, updating mode')
           return true
         else
-          Chef::Log.debug("found target_mode == current_mode, not updating mode")
+          Chef::Log.debug('found target_mode == current_mode, not updating mode')
           # the user has specified a permission, but it matches the file, so behave idempotently
           return false
         end
@@ -250,14 +250,14 @@ class Chef
       end
 
       def uid_from_resource(resource)
-        return nil if resource == nil or resource.owner.nil?
-        if resource.owner.kind_of?(String)
-          diminished_radix_complement( Etc.getpwnam(resource.owner).uid )
-        elsif resource.owner.kind_of?(Integer)
+        return nil if resource.nil? or resource.owner.nil?
+        if resource.owner.is_a?(String)
+          diminished_radix_complement(Etc.getpwnam(resource.owner).uid)
+        elsif resource.owner.is_a?(Integer)
           resource.owner
         else
-          Chef::Log.error("The `owner` parameter of the #@resource resource is set to an invalid value (#{resource.owner.inspect})")
-          raise ArgumentError, "cannot resolve #{resource.owner.inspect} to uid, owner must be a string or integer"
+          Chef::Log.error("The `owner` parameter of the #{@resource} resource is set to an invalid value (#{resource.owner.inspect})")
+          fail ArgumentError, "cannot resolve #{resource.owner.inspect} to uid, owner must be a string or integer"
         end
       rescue ArgumentError
         provider.requirements.assert(:create, :create_if_missing, :touch) do |a|
@@ -267,7 +267,6 @@ class Chef
         end
         return nil
       end
-
     end
   end
 end

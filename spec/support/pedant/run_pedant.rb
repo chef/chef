@@ -10,12 +10,12 @@ require 'fileutils'
 require 'chef/version'
 
 def start_server(chef_repo_path)
-  Dir.mkdir(chef_repo_path) if !File.exists?(chef_repo_path)
+  Dir.mkdir(chef_repo_path) unless File.exist?(chef_repo_path)
 
   # 11.6 and below had a bug where it couldn't create the repo children automatically
   if Chef::VERSION.to_f < 11.8
     %w(clients cookbooks data_bags environments nodes roles users).each do |child|
-      Dir.mkdir("#{chef_repo_path}/#{child}") if !File.exists?("#{chef_repo_path}/#{child}")
+      Dir.mkdir("#{chef_repo_path}/#{child}") unless File.exist?("#{chef_repo_path}/#{child}")
     end
   end
 
@@ -25,8 +25,8 @@ def start_server(chef_repo_path)
   Chef::Config.versioned_cookbooks = true
   chef_fs = Chef::ChefFS::Config.new.local_fs
   data_store = Chef::ChefFS::ChefFSDataStore.new(chef_fs)
-  data_store = ChefZero::DataStore::V1ToV2Adapter.new(data_store, 'chef', :org_defaults => ChefZero::DataStore::V1ToV2Adapter::ORG_DEFAULTS)
-  server = ChefZero::Server.new(:port => 8889.upto(9999), :data_store => data_store)#, :log_level => :debug)
+  data_store = ChefZero::DataStore::V1ToV2Adapter.new(data_store, 'chef', org_defaults: ChefZero::DataStore::V1ToV2Adapter::ORG_DEFAULTS)
+  server = ChefZero::Server.new(port: 8889.upto(9999), data_store: data_store) # , :log_level => :debug)
   server.start_background
   server
 end
@@ -42,7 +42,7 @@ begin
   require 'pedant'
   require 'pedant/opensource'
 
-  #Pedant::Config.rerun = true
+  # Pedant::Config.rerun = true
 
   Pedant.config.suite = 'api'
   Pedant.config[:config_file] = 'spec/support/pedant/pedant_config.rb'

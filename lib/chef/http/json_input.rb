@@ -21,16 +21,14 @@ require 'chef/json_compat'
 
 class Chef
   class HTTP
-
     # Middleware that takes json input and turns it into raw text
     class JSONInput
-
-      def initialize(opts={})
+      def initialize(_opts = {})
       end
 
-      def handle_request(method, url, headers={}, data=false)
+      def handle_request(method, url, headers = {}, data = false)
         if data
-          headers["Content-Type"] = 'application/json'
+          headers['Content-Type'] = 'application/json'
           data = Chef::JSONCompat.to_json(data)
           # Force encoding to binary to fix SSL related EOFErrors
           # cf. http://tickets.opscode.com/browse/CHEF-2363
@@ -44,14 +42,13 @@ class Chef
         [http_response, rest_request, return_value]
       end
 
-      def stream_response_handler(response)
+      def stream_response_handler(_response)
         nil
       end
 
       def handle_stream_complete(http_response, rest_request, return_value)
         [http_response, rest_request, return_value]
       end
-
     end
   end
 end

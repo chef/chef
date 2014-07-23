@@ -5,16 +5,16 @@ class Chef
   class Knife
     class Serve < Knife
       option :repo_mode,
-        :long => '--repo-mode MODE',
-        :description => "Specifies the local repository layout.  Values: static (only environments/roles/data_bags/cookbooks), everything (includes nodes/clients/users), hosted_everything (includes acls/groups/etc. for Enterprise/Hosted Chef).  Default: everything/hosted_everything"
+             long: '--repo-mode MODE',
+             description: 'Specifies the local repository layout.  Values: static (only environments/roles/data_bags/cookbooks), everything (includes nodes/clients/users), hosted_everything (includes acls/groups/etc. for Enterprise/Hosted Chef).  Default: everything/hosted_everything'
 
       option :chef_repo_path,
-        :long => '--chef-repo-path PATH',
-        :description => 'Overrides the location of chef repo. Default is specified by chef_repo_path in the config'
+             long: '--chef-repo-path PATH',
+             description: 'Overrides the location of chef repo. Default is specified by chef_repo_path in the config'
 
       option :chef_zero_host,
-        :long => '--chef-zero-host IP',
-        :description => 'Overrides the host upon which chef-zero listens. Default is 127.0.0.1.'
+             long: '--chef-zero-host IP',
+             description: 'Overrides the host upon which chef-zero listens. Default is 127.0.0.1.'
 
       def configure_chef
         super

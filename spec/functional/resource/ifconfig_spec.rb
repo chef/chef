@@ -20,9 +20,9 @@ require 'functional/resource/base'
 require 'chef/mixin/shell_out'
 
 # run this test only for following platforms.
-include_flag = !(['ubuntu', 'centos', 'aix'].include?(ohai[:platform]))
+include_flag = !(%w(ubuntu centos aix).include?(ohai[:platform]))
 
-describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
+describe Chef::Resource::Ifconfig, :requires_root, external: include_flag do
   include Chef::Mixin::ShellOut
 
   let(:new_resource) do
@@ -42,7 +42,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
   def lo_interface_for_test
     # use loopback interface for tests
     case ohai[:platform]
-    when "aix"
+    when 'aix'
       'lo0'
     else
       'lo'
@@ -52,7 +52,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
   # **Caution: any updates to core interfaces can be risky.
   def en0_interface_for_test
     case ohai[:platform]
-    when "aix"
+    when 'aix'
       'en0'
     else
       'eth0'
@@ -61,10 +61,10 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
 
   def network_interface_alias(interface)
     case ohai[:platform]
-    when "aix"
+    when 'aix'
       interface
     else
-      interface + ":10"
+      interface + ':10'
     end
   end
 
@@ -78,25 +78,25 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
     resource.device network_interface_alias(en0_interface_for_test)
   end
 
-  def interface_should_exists(interface)
+  def interface_should_exists(_interface)
     expect(shell_out("ifconfig #{@interface} | grep 10.10.0.1").exitstatus).to eq(0)
   end
 
-  def interface_should_not_exists(interface)
+  def interface_should_not_exists(_interface)
     expect(shell_out("ifconfig #{@interface} | grep 10.10.0.1").exitstatus).to eq(1)
   end
 
-  def interface_persistence_should_exists(interface)
+  def interface_persistence_should_exists(_interface)
     case ohai[:platform]
-    when "aix"
+    when 'aix'
       expect(shell_out("lsattr -E -l #{@interface} | grep 10.10.0.1").exitstatus).to eq(0)
     else
     end
   end
 
-  def interface_persistence_should_not_exists(interface)
+  def interface_persistence_should_not_exists(_interface)
     case ohai[:platform]
-    when "aix"
+    when 'aix'
       expect(shell_out("lsattr -E -l #{@interface} | grep 10.10.0.1").exitstatus).to eq(1)
     else
     end
@@ -104,7 +104,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
 
   # Actual tests
 
-  describe "#load_current_resource" do
+  describe '#load_current_resource' do
     it 'should load given interface' do
       new_resource.device lo_interface_for_test
       expect(current_resource.device).to eql(lo_interface_for_test)
@@ -113,11 +113,11 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
   end
 
   exclude_test = ohai[:platform] != 'ubuntu'
-  describe "#action_add", :external => exclude_test do
+  describe '#action_add', external: exclude_test do
     after do
       new_resource.run_action(:delete)
     end
-    it "should add interface (vip)" do
+    it 'should add interface (vip)' do
       setup_add_interface(new_resource)
       new_resource.run_action(:add)
       interface_should_exists(network_interface_alias(en0_interface_for_test))
@@ -125,35 +125,35 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
     end
   end
 
-  describe "#action_enable", :external => exclude_test do
+  describe '#action_enable', external: exclude_test do
     after do
       new_resource.run_action(:disable)
     end
-    it "should enable interface (vip)" do
+    it 'should enable interface (vip)' do
       setup_enable_interface(new_resource)
       new_resource.run_action(:enable)
       interface_should_exists(network_interface_alias(en0_interface_for_test))
     end
   end
 
-  describe "#action_disable", :external => exclude_test do
+  describe '#action_disable', external: exclude_test do
     before do
       setup_enable_interface(new_resource)
       new_resource.run_action(:enable)
     end
-    it "should disable interface (vip)" do
+    it 'should disable interface (vip)' do
       new_resource.run_action(:disable)
       new_resource.should be_updated_by_last_action
       interface_should_not_exists(network_interface_alias(en0_interface_for_test))
     end
   end
 
-  describe "#action_delete", :external => exclude_test do
+  describe '#action_delete', external: exclude_test do
     before do
       setup_add_interface(new_resource)
       new_resource.run_action(:add)
     end
-    it "should delete interface (vip)" do
+    it 'should delete interface (vip)' do
       new_resource.run_action(:delete)
       new_resource.should be_updated_by_last_action
       interface_should_not_exists(network_interface_alias(en0_interface_for_test))

@@ -20,7 +20,7 @@ require 'functional/resource/base'
 require 'chef/mixin/shell_out'
 
 # Run the test only for AIX platform.
-describe Chef::Resource::BffPackage, :external => ohai[:platform] != 'aix' do
+describe Chef::Resource::BffPackage, external: ohai[:platform] != 'aix' do
   include Chef::Mixin::ShellOut
 
   let(:new_resource) do
@@ -31,27 +31,26 @@ describe Chef::Resource::BffPackage, :external => ohai[:platform] != 'aix' do
 
   def bff_pkg_should_be_installed(resource)
     expect(shell_out("lslpp -L #{resource.name}").exitstatus).to eq(0)
-    ::File.exists?("/usr/PkgA/bin/acommand")
+    ::File.exist?('/usr/PkgA/bin/acommand')
   end
 
   def bff_pkg_should_be_removed(resource)
     expect(shell_out("lslpp -L #{resource.name}").exitstatus).to eq(1)
-    !::File.exists?("/usr/PkgA/bin/acommand")
+    !::File.exist?('/usr/PkgA/bin/acommand')
   end
 
-
   before(:all) do
-    @pkg_name = "PkgA.rte"
-    @pkg_path = "/tmp/PkgA.1.0.0.0.bff"
-    FileUtils.cp 'spec/functional/assets/PkgA.1.0.0.0.bff' , @pkg_path
+    @pkg_name = 'PkgA.rte'
+    @pkg_path = '/tmp/PkgA.1.0.0.0.bff'
+    FileUtils.cp 'spec/functional/assets/PkgA.1.0.0.0.bff', @pkg_path
   end
 
   after(:all) do
     FileUtils.rm @pkg_path
   end
 
-  context "package install action" do
-    it "should install a package" do
+  context 'package install action' do
+    it 'should install a package' do
       new_resource.run_action(:install)
       bff_pkg_should_be_installed(new_resource)
     end
@@ -61,27 +60,27 @@ describe Chef::Resource::BffPackage, :external => ohai[:platform] != 'aix' do
     end
   end
 
-  context "package install action with options" do
-    it "should install a package" do
-      new_resource.options("-e/tmp/installp.log")
+  context 'package install action with options' do
+    it 'should install a package' do
+      new_resource.options('-e/tmp/installp.log')
       new_resource.run_action(:install)
       bff_pkg_should_be_installed(new_resource)
     end
 
     after(:each) do
       shell_out("installp -u #{@pkg_name}")
-      FileUtils.rm "/tmp/installp.log"
+      FileUtils.rm '/tmp/installp.log'
     end
   end
 
-  context "package upgrade action" do
+  context 'package upgrade action' do
     before(:each) do
       shell_out("installp -aYF -d #{@pkg_path} #{@pkg_name}")
-      @pkg_path = "/tmp/PkgA.2.0.0.0.bff"
-      FileUtils.cp 'spec/functional/assets/PkgA.2.0.0.0.bff' , @pkg_path
+      @pkg_path = '/tmp/PkgA.2.0.0.0.bff'
+      FileUtils.cp 'spec/functional/assets/PkgA.2.0.0.0.bff', @pkg_path
     end
 
-    it "should upgrade package" do
+    it 'should upgrade package' do
       new_resource.run_action(:install)
       bff_pkg_should_be_installed(new_resource)
     end
@@ -92,31 +91,30 @@ describe Chef::Resource::BffPackage, :external => ohai[:platform] != 'aix' do
     end
   end
 
-  context "package remove action" do
+  context 'package remove action' do
     before(:each) do
       shell_out("installp -aYF -d #{@pkg_path} #{@pkg_name}")
     end
 
-    it "should remove an installed package" do
+    it 'should remove an installed package' do
       new_resource.run_action(:remove)
       bff_pkg_should_be_removed(new_resource)
     end
   end
 
-  context "package remove action with options" do
+  context 'package remove action with options' do
     before(:each) do
       shell_out("installp -aYF -d #{@pkg_path} #{@pkg_name}")
     end
 
-    it "should remove an installed package" do
-      new_resource.options("-e/tmp/installp.log")
+    it 'should remove an installed package' do
+      new_resource.options('-e/tmp/installp.log')
       new_resource.run_action(:remove)
       bff_pkg_should_be_removed(new_resource)
     end
 
     after(:each) do
-      FileUtils.rm "/tmp/installp.log"
+      FileUtils.rm '/tmp/installp.log'
     end
   end
 end
-

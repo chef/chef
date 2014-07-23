@@ -19,7 +19,6 @@
 class Chef
   class Resource
     class Log < Chef::Resource
-
       identity_attr :message
 
       # Sends a string from a recipe to a log provider
@@ -42,7 +41,7 @@ class Chef
       # name<String>:: Message to log
       # collection<Array>:: Collection of included recipes
       # node<Chef::Node>:: Node where resource will be used
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :log
         @level = :info
@@ -51,25 +50,22 @@ class Chef
         @message = name
       end
 
-      def message(arg=nil)
+      def message(arg = nil)
         set_or_return(
           :message,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
       # <Symbol> Log level, one of :debug, :info, :warn, :error or :fatal
-      def level(arg=nil)
+      def level(arg = nil)
         set_or_return(
           :level,
           arg,
-          :equal_to => [ :debug, :info, :warn, :error, :fatal ]
+          equal_to: [:debug, :info, :warn, :error, :fatal]
         )
       end
-
     end
   end
 end
-
-

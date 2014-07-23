@@ -17,13 +17,12 @@
 # limitations under the License.
 #
 
-require "chef/resource/scm"
+require 'chef/resource/scm'
 
 class Chef
   class Resource
     class Subversion < Chef::Resource::Scm
-
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @svn_arguments = '--no-auth-cache'
         @svn_info_args = '--no-auth-cache'
@@ -34,7 +33,7 @@ class Chef
 
       # Override exception to strip password if any, so it won't appear in logs and different Chef notifications
       def custom_exception_message(e)
-        "#{self} (#{defined_at}) had an error: #{e.class.name}: #{svn_password ? e.message.gsub(svn_password, "[hidden_password]") : e.message}"
+        "#{self} (#{defined_at}) had an error: #{e.class.name}: #{svn_password ? e.message.gsub(svn_password, '[hidden_password]') : e.message}"
       end
     end
   end

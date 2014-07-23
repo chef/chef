@@ -19,16 +19,16 @@
 require 'spec_helper'
 
 describe Chef::Provider::Cron do
-  describe "when with special time string" do
+  describe 'when with special time string' do
     before do
       @node = Chef::Node.new
       @events = Chef::EventDispatch::Dispatcher.new
       @run_context = Chef::RunContext.new(@node, {}, @events)
 
-      @new_resource = Chef::Resource::Cron.new("cronhole some stuff", @run_context)
-      @new_resource.user "root"
-      @new_resource.minute "30"
-      @new_resource.command "/bin/true"
+      @new_resource = Chef::Resource::Cron.new('cronhole some stuff', @run_context)
+      @new_resource.user 'root'
+      @new_resource.minute '30'
+      @new_resource.command '/bin/true'
       @new_resource.time :reboot
       @provider = Chef::Provider::Cron.new(@new_resource, @run_context)
     end
@@ -47,19 +47,19 @@ describe Chef::Provider::Cron do
 CRONTAB
       end
 
-      it "should set cron_exists" do
+      it 'should set cron_exists' do
         @provider.load_current_resource
         @provider.cron_exists.should == true
         @provider.cron_empty.should == false
       end
 
-      it "should pull the details out of the cron line" do
+      it 'should pull the details out of the cron line' do
         cron = @provider.load_current_resource
         cron.time.should == :reboot
         cron.command.should == '/bin/true param1 param2'
       end
 
-      it "should pull env vars out" do
+      it 'should pull env vars out' do
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -83,7 +83,7 @@ CRONTAB
         cron.command.should == '/bin/true param1 param2'
       end
 
-      it "should parse and load generic and standard environment variables from cron entry" do
+      it 'should parse and load generic and standard environment variables from cron entry' do
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 # Chef Name: cronhole some stuff
 MAILTO=warn@example.com
@@ -93,11 +93,11 @@ FLAG=1
 CRONTAB
         cron = @provider.load_current_resource
 
-        cron.mailto.should == "warn@example.com"
-        cron.environment.should == {"TEST" => "lol", "FLAG" => "1"}
+        cron.mailto.should == 'warn@example.com'
+        cron.environment.should == { 'TEST' => 'lol', 'FLAG' => '1' }
       end
 
-      it "should not break with variables that match the cron resource internals" do
+      it 'should not break with variables that match the cron resource internals' do
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 # Chef Name: cronhole some stuff
 MINUTE=40
@@ -109,27 +109,27 @@ CRONTAB
         cron = @provider.load_current_resource
 
         cron.time.should == :reboot
-        cron.environment.should == {"MINUTE" => "40", "REBOOT" => "midnight", "TEST" => "lol", "ENVIRONMENT" => "production"}
+        cron.environment.should == { 'MINUTE' => '40', 'REBOOT' => 'midnight', 'TEST' => 'lol', 'ENVIRONMENT' => 'production' }
       end
 
-      it "should report the match" do
+      it 'should report the match' do
         Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'")
         @provider.load_current_resource
       end
 
-      describe "action_create" do
+      describe 'action_create' do
         before :each do
           @provider.stub(:write_crontab)
           @provider.stub(:read_crontab).and_return(nil)
         end
 
-        context "when there is no existing crontab" do
+        context 'when there is no existing crontab' do
           before :each do
             @provider.cron_exists = false
             @provider.cron_empty = true
           end
 
-          it "should create a crontab with the entry" do
+          it 'should create a crontab with the entry' do
             @provider.should_receive(:write_crontab).with(<<-ENDCRON)
 # Chef Name: cronhole some stuff
 @reboot /bin/true
@@ -146,26 +146,26 @@ CRONTAB
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @new_resource = Chef::Resource::Cron.new("cronhole some stuff", @run_context)
-    @new_resource.user "root"
-    @new_resource.minute "30"
-    @new_resource.command "/bin/true"
+    @new_resource = Chef::Resource::Cron.new('cronhole some stuff', @run_context)
+    @new_resource.user 'root'
+    @new_resource.minute '30'
+    @new_resource.command '/bin/true'
     @provider = Chef::Provider::Cron.new(@new_resource, @run_context)
   end
 
-  describe "when examining the current system state" do
-    context "with no crontab for the user" do
+  describe 'when examining the current system state' do
+    context 'with no crontab for the user' do
       before :each do
         @provider.stub(:read_crontab).and_return(nil)
       end
 
-      it "should set cron_empty" do
+      it 'should set cron_empty' do
         @provider.load_current_resource
         @provider.cron_empty.should == true
         @provider.cron_exists.should == false
       end
 
-      it "should report an empty crontab" do
+      it 'should report an empty crontab' do
         Chef::Log.should_receive(:debug).with("Cron empty for '#{@new_resource.user}'")
         @provider.load_current_resource
       end
@@ -183,13 +183,13 @@ CRONTAB
 CRONTAB
       end
 
-      it "should not set cron_exists or cron_empty" do
+      it 'should not set cron_exists or cron_empty' do
         @provider.load_current_resource
         @provider.cron_exists.should == false
         @provider.cron_empty.should == false
       end
 
-      it "should report no entry found" do
+      it 'should report no entry found' do
         Chef::Log.should_receive(:debug).with("Cron '#{@new_resource.name}' not found")
         @provider.load_current_resource
       end
@@ -199,9 +199,9 @@ CRONTAB
 # Chef Name: foo[bar] (baz)
 21 */4 * * * some_prog 1234567
 CRONTAB
-        lambda {
+        lambda do
           @provider.load_current_resource
-        }.should_not raise_error
+        end.should_not raise_error
       end
     end
 
@@ -219,24 +219,24 @@ CRONTAB
 CRONTAB
       end
 
-      it "should set cron_exists" do
+      it 'should set cron_exists' do
         @provider.load_current_resource
         @provider.cron_exists.should == true
         @provider.cron_empty.should == false
       end
 
-      it "should pull the details out of the cron line" do
+      it 'should pull the details out of the cron line' do
         cron = @provider.load_current_resource
         cron.minute.should == '*'
         cron.hour.should == '5'
         cron.day.should == '*'
         cron.month.should == '1'
         cron.weekday.should == '*'
-        cron.time.should == nil
+        cron.time.should.nil?
         cron.command.should == '/bin/true param1 param2'
       end
 
-      it "should pull env vars out" do
+      it 'should pull env vars out' do
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -261,11 +261,11 @@ CRONTAB
         cron.day.should == '*'
         cron.month.should == '1'
         cron.weekday.should == '*'
-        cron.time.should == nil
+        cron.time.should.nil?
         cron.command.should == '/bin/true param1 param2'
       end
 
-      it "should parse and load generic and standard environment variables from cron entry" do
+      it 'should parse and load generic and standard environment variables from cron entry' do
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 # Chef Name: cronhole some stuff
 MAILTO=warn@example.com
@@ -275,11 +275,11 @@ FLAG=1
 CRONTAB
         cron = @provider.load_current_resource
 
-        cron.mailto.should == "warn@example.com"
-        cron.environment.should == {"TEST" => "lol", "FLAG" => "1"}
+        cron.mailto.should == 'warn@example.com'
+        cron.environment.should == { 'TEST' => 'lol', 'FLAG' => '1' }
       end
 
-      it "should not break with variabels that match the cron resource internals" do
+      it 'should not break with variabels that match the cron resource internals' do
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 # Chef Name: cronhole some stuff
 MINUTE=40
@@ -292,10 +292,10 @@ CRONTAB
 
         cron.minute.should == '*'
         cron.hour.should == '5'
-        cron.environment.should == {"MINUTE" => "40", "HOUR" => "midnight", "TEST" => "lol", "ENVIRONMENT" => "production"}
+        cron.environment.should == { 'MINUTE' => '40', 'HOUR' => 'midnight', 'TEST' => 'lol', 'ENVIRONMENT' => 'production' }
       end
 
-      it "should report the match" do
+      it 'should report the match' do
         Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'")
         @provider.load_current_resource
       end
@@ -315,13 +315,13 @@ CRONTAB
 CRONTAB
       end
 
-      it "should set cron_exists" do
+      it 'should set cron_exists' do
         @provider.load_current_resource
         @provider.cron_exists.should == true
         @provider.cron_empty.should == false
       end
 
-      it "should pull the details out of the cron line" do
+      it 'should pull the details out of the cron line' do
         cron = @provider.load_current_resource
         cron.minute.should == '*'
         cron.hour.should == '5'
@@ -331,14 +331,14 @@ CRONTAB
         cron.command.should == '/bin/true param1 param2'
       end
 
-      it "should report the match" do
+      it 'should report the match' do
         Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'")
         @provider.load_current_resource
       end
     end
 
-    context "with a matching entry without a crontab line" do
-      it "should set cron_exists and leave current_resource values at defaults" do
+    context 'with a matching entry without a crontab line' do
+      it 'should set cron_exists and leave current_resource values at defaults' do
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -351,11 +351,11 @@ CRONTAB
         cron.day.should == '*'
         cron.month.should == '*'
         cron.weekday.should == '*'
-        cron.time.should == nil
-        cron.command.should == nil
+        cron.time.should.nil?
+        cron.command.should.nil?
       end
 
-      it "should not pick up a commented out crontab line" do
+      it 'should not pick up a commented out crontab line' do
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -369,11 +369,11 @@ CRONTAB
         cron.day.should == '*'
         cron.month.should == '*'
         cron.weekday.should == '*'
-        cron.time.should == nil
-        cron.command.should == nil
+        cron.time.should.nil?
+        cron.command.should.nil?
       end
 
-      it "should not pick up a later crontab entry" do
+      it 'should not pick up a later crontab entry' do
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -391,24 +391,24 @@ CRONTAB
         cron.day.should == '*'
         cron.month.should == '*'
         cron.weekday.should == '*'
-        cron.time.should == nil
-        cron.command.should == nil
+        cron.time.should.nil?
+        cron.command.should.nil?
       end
     end
   end
 
-  describe "cron_different?" do
+  describe 'cron_different?' do
     before :each do
-      @current_resource = Chef::Resource::Cron.new("cronhole some stuff")
-      @current_resource.user "root"
-      @current_resource.minute "30"
-      @current_resource.command "/bin/true"
+      @current_resource = Chef::Resource::Cron.new('cronhole some stuff')
+      @current_resource.user 'root'
+      @current_resource.minute '30'
+      @current_resource.command '/bin/true'
       @provider.current_resource = @current_resource
     end
 
     [:minute, :hour, :day, :month, :weekday, :command, :mailto, :path, :shell, :home].each do |attribute|
       it "should return true if #{attribute} doesn't match" do
-        @new_resource.send(attribute, "something_else")
+        @new_resource.send(attribute, 'something_else')
         @provider.cron_different?.should eql(true)
       end
     end
@@ -419,34 +419,34 @@ CRONTAB
     end
 
     it "should return true if environment doesn't match" do
-      @new_resource.environment "FOO" => "something_else"
+      @new_resource.environment 'FOO' => 'something_else'
       @provider.cron_different?.should eql(true)
     end
 
     it "should return true if mailto doesn't match" do
-      @current_resource.mailto "foo@bar.com"
+      @current_resource.mailto 'foo@bar.com'
       @new_resource.mailto(nil)
       @provider.cron_different?.should eql(true)
     end
 
-    it "should return false if the objects are identical" do
+    it 'should return false if the objects are identical' do
       @provider.cron_different?.should == false
     end
   end
 
-  describe "action_create" do
+  describe 'action_create' do
     before :each do
       @provider.stub(:write_crontab)
       @provider.stub(:read_crontab).and_return(nil)
     end
 
-    context "when there is no existing crontab" do
+    context 'when there is no existing crontab' do
       before :each do
         @provider.cron_exists = false
         @provider.cron_empty = true
       end
 
-      it "should create a crontab with the entry" do
+      it 'should create a crontab with the entry' do
         @provider.should_receive(:write_crontab).with(<<-ENDCRON)
 # Chef Name: cronhole some stuff
 30 * * * * /bin/true
@@ -454,12 +454,12 @@ CRONTAB
         @provider.run_action(:create)
       end
 
-      it "should include env variables that are set" do
+      it 'should include env variables that are set' do
         @new_resource.mailto 'foo@example.com'
         @new_resource.path '/usr/bin:/my/custom/path'
         @new_resource.shell '/bin/foosh'
         @new_resource.home '/home/foo'
-        @new_resource.environment "TEST" => "LOL"
+        @new_resource.environment 'TEST' => 'LOL'
         @provider.should_receive(:write_crontab).with(<<-ENDCRON)
 # Chef Name: cronhole some stuff
 MAILTO=foo@example.com
@@ -472,18 +472,18 @@ TEST=LOL
         @provider.run_action(:create)
       end
 
-      it "should mark the resource as updated" do
+      it 'should mark the resource as updated' do
         @provider.run_action(:create)
         @new_resource.should be_updated_by_last_action
       end
 
-      it "should log the action" do
-        Chef::Log.should_receive(:info).with("cron[cronhole some stuff] added crontab entry")
+      it 'should log the action' do
+        Chef::Log.should_receive(:info).with('cron[cronhole some stuff] added crontab entry')
         @provider.run_action(:create)
       end
     end
 
-    context "when there is a crontab with no matching section" do
+    context 'when there is a crontab with no matching section' do
       before :each do
         @provider.cron_exists = false
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
@@ -496,7 +496,7 @@ TEST=LOL
         CRONTAB
       end
 
-      it "should add the entry to the crontab" do
+      it 'should add the entry to the crontab' do
         @provider.should_receive(:write_crontab).with(<<-ENDCRON)
 0 2 * * * /some/other/command
 
@@ -510,12 +510,12 @@ TEST=LOL
         @provider.run_action(:create)
       end
 
-      it "should include env variables that are set" do
+      it 'should include env variables that are set' do
         @new_resource.mailto 'foo@example.com'
         @new_resource.path '/usr/bin:/my/custom/path'
         @new_resource.shell '/bin/foosh'
         @new_resource.home '/home/foo'
-        @new_resource.environment "TEST" => "LOL"
+        @new_resource.environment 'TEST' => 'LOL'
         @provider.should_receive(:write_crontab).with(<<-ENDCRON)
 0 2 * * * /some/other/command
 
@@ -534,18 +534,18 @@ TEST=LOL
         @provider.run_action(:create)
       end
 
-      it "should mark the resource as updated" do
+      it 'should mark the resource as updated' do
         @provider.run_action(:create)
         @new_resource.should be_updated_by_last_action
       end
 
-      it "should log the action" do
-        Chef::Log.should_receive(:info).with("cron[cronhole some stuff] added crontab entry")
+      it 'should log the action' do
+        Chef::Log.should_receive(:info).with('cron[cronhole some stuff] added crontab entry')
         @provider.run_action(:create)
       end
     end
 
-    context "when there is a crontab with a matching but different section" do
+    context 'when there is a crontab with a matching but different section' do
       before :each do
         @provider.cron_exists = true
         @provider.stub(:cron_different?).and_return(true)
@@ -561,7 +561,7 @@ TEST=LOL
         CRONTAB
       end
 
-      it "should update the crontab entry" do
+      it 'should update the crontab entry' do
         @provider.should_receive(:write_crontab).with(<<-ENDCRON)
 0 2 * * * /some/other/command
 
@@ -575,12 +575,12 @@ TEST=LOL
         @provider.run_action(:create)
       end
 
-      it "should include env variables that are set" do
+      it 'should include env variables that are set' do
         @new_resource.mailto 'foo@example.com'
         @new_resource.path '/usr/bin:/my/custom/path'
         @new_resource.shell '/bin/foosh'
         @new_resource.home '/home/foo'
-        @new_resource.environment "TEST" => "LOL"
+        @new_resource.environment 'TEST' => 'LOL'
         @provider.should_receive(:write_crontab).with(<<-ENDCRON)
 0 2 * * * /some/other/command
 
@@ -599,24 +599,24 @@ TEST=LOL
         @provider.run_action(:create)
       end
 
-      it "should mark the resource as updated" do
+      it 'should mark the resource as updated' do
         @provider.run_action(:create)
         @new_resource.should be_updated_by_last_action
       end
 
-      it "should log the action" do
-        Chef::Log.should_receive(:info).with("cron[cronhole some stuff] updated crontab entry")
+      it 'should log the action' do
+        Chef::Log.should_receive(:info).with('cron[cronhole some stuff] updated crontab entry')
         @provider.run_action(:create)
       end
     end
 
-    context "when there is a crontab with a matching section with no crontab line in it" do
+    context 'when there is a crontab with a matching section with no crontab line in it' do
       before :each do
         @provider.cron_exists = true
         @provider.stub(:cron_different?).and_return(true)
       end
 
-      it "should add the crontab to the entry" do
+      it 'should add the crontab to the entry' do
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -631,7 +631,7 @@ TEST=LOL
         @provider.run_action(:create)
       end
 
-      it "should not blat any following entries" do
+      it 'should not blat any following entries' do
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -656,7 +656,7 @@ TEST=LOL
         @provider.run_action(:create)
       end
 
-      it "should handle env vars with no crontab" do
+      it 'should handle env vars with no crontab' do
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -694,7 +694,7 @@ HOME=/home/foo
       end
     end
 
-    context "when there is a crontab with a matching and identical section" do
+    context 'when there is a crontab with a matching and identical section' do
       before :each do
         @provider.cron_exists = true
         @provider.stub(:cron_different?).and_return(false)
@@ -708,17 +708,17 @@ HOME=/home/foo
 CRONTAB
       end
 
-      it "should not update the crontab" do
+      it 'should not update the crontab' do
         @provider.should_not_receive(:write_crontab)
         @provider.run_action(:create)
       end
 
-      it "should not mark the resource as updated" do
+      it 'should not mark the resource as updated' do
         @provider.run_action(:create)
         @new_resource.should_not be_updated_by_last_action
       end
 
-      it "should log nothing changed" do
+      it 'should log nothing changed' do
         Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'")
         Chef::Log.should_receive(:debug).with("Skipping existing cron entry '#{@new_resource.name}'")
         @provider.run_action(:create)
@@ -726,7 +726,7 @@ CRONTAB
     end
   end
 
-  describe "action_delete" do
+  describe 'action_delete' do
     before :each do
       @provider.stub(:write_crontab)
       @provider.stub(:read_crontab).and_return(nil)
@@ -737,19 +737,19 @@ CRONTAB
         @provider.cron_exists = false
       end
 
-      it "should do nothing" do
+      it 'should do nothing' do
         @provider.should_not_receive(:write_crontab)
         Chef::Log.should_not_receive(:info)
         @provider.run_action(:delete)
       end
 
-      it "should not mark the resource as updated" do
+      it 'should not mark the resource as updated' do
         @provider.run_action(:delete)
         @new_resource.should_not be_updated_by_last_action
       end
     end
 
-    context "when the user has a crontab with a matching section" do
+    context 'when the user has a crontab with a matching section' do
       before :each do
         @provider.cron_exists = true
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
@@ -764,7 +764,7 @@ CRONTAB
         CRONTAB
       end
 
-      it "should remove the entry" do
+      it 'should remove the entry' do
         @provider.should_receive(:write_crontab).with(<<-ENDCRON)
 0 2 * * * /some/other/command
 
@@ -776,7 +776,7 @@ CRONTAB
         @provider.run_action(:delete)
       end
 
-      it "should remove any env vars with the entry" do
+      it 'should remove any env vars with the entry' do
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -800,23 +800,23 @@ FOO=test
         @provider.run_action(:delete)
       end
 
-      it "should mark the resource as updated" do
+      it 'should mark the resource as updated' do
         @provider.run_action(:delete)
         @new_resource.should be_updated_by_last_action
       end
 
-      it "should log the action" do
+      it 'should log the action' do
         Chef::Log.should_receive(:info).with("#{@new_resource} deleted crontab entry")
         @provider.run_action(:delete)
       end
     end
 
-    context "when the crontab has a matching section with no crontab line" do
+    context 'when the crontab has a matching section with no crontab line' do
       before :each do
         @provider.cron_exists = true
       end
 
-      it "should remove the section" do
+      it 'should remove the section' do
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -829,7 +829,7 @@ FOO=test
         @provider.run_action(:delete)
       end
 
-      it "should not blat following sections" do
+      it 'should not blat following sections' do
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -852,7 +852,7 @@ FOO=test
         @provider.run_action(:delete)
       end
 
-      it "should remove any envvars with the section" do
+      it 'should remove any envvars with the section' do
         @provider.stub(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -878,9 +878,9 @@ MAILTO=foo@example.com
     end
   end
 
-  describe "read_crontab" do
+  describe 'read_crontab' do
     before :each do
-      @status = double("Status", :exitstatus => 0)
+      @status = double('Status', exitstatus: 0)
       @stdout = StringIO.new(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -892,12 +892,12 @@ MAILTO=foo@example.com
       @provider.stub(:popen4).and_yield(1234, StringIO.new, @stdout, StringIO.new).and_return(@status)
     end
 
-    it "should call crontab -l with the user" do
+    it 'should call crontab -l with the user' do
       @provider.should_receive(:popen4).with("crontab -l -u #{@new_resource.user}").and_return(@status)
       @provider.send(:read_crontab)
     end
 
-    it "should return the contents of the crontab" do
+    it 'should return the contents of the crontab' do
       crontab = @provider.send(:read_crontab)
       crontab.should == <<-CRONTAB
 0 2 * * * /some/other/command
@@ -909,14 +909,14 @@ MAILTO=foo@example.com
       CRONTAB
     end
 
-    it "should return nil if the user has no crontab" do
-      status = double("Status", :exitstatus => 1)
+    it 'should return nil if the user has no crontab' do
+      status = double('Status', exitstatus: 1)
       @provider.stub(:popen4).and_return(status)
-      @provider.send(:read_crontab).should == nil
+      @provider.send(:read_crontab).should.nil?
     end
 
-    it "should raise an exception if another error occurs" do
-      status = double("Status", :exitstatus => 2)
+    it 'should raise an exception if another error occurs' do
+      status = double('Status', exitstatus: 2)
       @provider.stub(:popen4).and_return(status)
       lambda do
         @provider.send(:read_crontab)
@@ -924,85 +924,85 @@ MAILTO=foo@example.com
     end
   end
 
-  describe "write_crontab" do
+  describe 'write_crontab' do
     before :each do
-      @status = double("Status", :exitstatus => 0)
+      @status = double('Status', exitstatus: 0)
       @stdin = StringIO.new
       @provider.stub(:popen4).and_yield(1234, @stdin, StringIO.new, StringIO.new).and_return(@status)
     end
 
-    it "should call crontab for the user" do
-      @provider.should_receive(:popen4).with("crontab -u #{@new_resource.user} -", :waitlast => true).and_return(@status)
-      @provider.send(:write_crontab, "Foo")
+    it 'should call crontab for the user' do
+      @provider.should_receive(:popen4).with("crontab -u #{@new_resource.user} -", waitlast: true).and_return(@status)
+      @provider.send(:write_crontab, 'Foo')
     end
 
-    it "should write the given string to the crontab command" do
+    it 'should write the given string to the crontab command' do
       @provider.send(:write_crontab, "Foo\n# wibble\n wah!!")
       @stdin.string.should == "Foo\n# wibble\n wah!!"
     end
 
-    it "should raise an exception if the command returns non-zero" do
+    it 'should raise an exception if the command returns non-zero' do
       @status.stub(:exitstatus).and_return(1)
       lambda do
-        @provider.send(:write_crontab, "Foo")
+        @provider.send(:write_crontab, 'Foo')
       end.should raise_error(Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: 1")
     end
 
     it "should raise an exception if the command die's and parent tries to write" do
       class WriteErrPipe
-        def write(str)
-          raise Errno::EPIPE, "Test"
+        def write(_str)
+          fail Errno::EPIPE, 'Test'
         end
       end
       @status.stub(:exitstatus).and_return(1)
       @provider.stub(:popen4).and_yield(1234, WriteErrPipe.new, StringIO.new, StringIO.new).and_return(@status)
 
-      Chef::Log.should_receive(:debug).with("Broken pipe - Test")
+      Chef::Log.should_receive(:debug).with('Broken pipe - Test')
 
       lambda do
-        @provider.send(:write_crontab, "Foo")
+        @provider.send(:write_crontab, 'Foo')
       end.should raise_error(Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: 1")
     end
 
   end
 
-  describe "weekday_in_crontab" do
-    context "when weekday is symbol" do
-      it "should return weekday in crontab format" do
+  describe 'weekday_in_crontab' do
+    context 'when weekday is symbol' do
+      it 'should return weekday in crontab format' do
         @new_resource.weekday :wednesday
-        @provider.send(:weekday_in_crontab).should eq("3")
+        @provider.send(:weekday_in_crontab).should eq('3')
       end
 
-      it "should raise an error with an unknown weekday" do
+      it 'should raise an error with an unknown weekday' do
         expect { @new_resource.weekday :caturday }.to raise_error(RangeError)
       end
     end
 
-    context "when weekday is a number in a string" do
-      it "should return the string" do
-        @new_resource.weekday "3"
-        @provider.send(:weekday_in_crontab).should eq("3")
+    context 'when weekday is a number in a string' do
+      it 'should return the string' do
+        @new_resource.weekday '3'
+        @provider.send(:weekday_in_crontab).should eq('3')
       end
 
-      it "should raise an error with an out of range number" do
-        expect { @new_resource.weekday "-1" }.to raise_error(RangeError)
-      end
-    end
-
-    context "when weekday is string with the name of the week" do
-      it "should return the string" do
-        @new_resource.weekday "mon"
-        @provider.send(:weekday_in_crontab).should eq("mon")
+      it 'should raise an error with an out of range number' do
+        expect { @new_resource.weekday '-1' }.to raise_error(RangeError)
       end
     end
 
-    context "when weekday is an integer" do
-      it "should return the integer" do
+    context 'when weekday is string with the name of the week' do
+      it 'should return the string' do
+        @new_resource.weekday 'mon'
+        @provider.send(:weekday_in_crontab).should eq('mon')
+      end
+    end
+
+    context 'when weekday is an integer' do
+      it 'should return the integer' do
         @new_resource.weekday 1
-        @provider.send(:weekday_in_crontab).should eq("1")
+        @provider.send(:weekday_in_crontab).should eq('1')
       end
 
-      it "should raise an error with an out of range integer" do
+      it 'should raise an error with an out of range integer' do
         expect { @new_resource.weekday 45 }.to raise_error(RangeError)
       end
     end

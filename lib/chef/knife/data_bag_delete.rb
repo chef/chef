@@ -21,31 +21,28 @@ require 'chef/knife'
 class Chef
   class Knife
     class DataBagDelete < Knife
-
       deps do
         require 'chef/data_bag'
       end
 
-      banner "knife data bag delete BAG [ITEM] (options)"
-      category "data bag"
+      banner 'knife data bag delete BAG [ITEM] (options)'
+      category 'data bag'
 
       def run
         if @name_args.length == 2
-          delete_object(Chef::DataBagItem, @name_args[1], "data_bag_item") do
+          delete_object(Chef::DataBagItem, @name_args[1], 'data_bag_item') do
             rest.delete_rest("data/#{@name_args[0]}/#{@name_args[1]}")
           end
         elsif @name_args.length == 1
-          delete_object(Chef::DataBag, @name_args[0], "data_bag") do
+          delete_object(Chef::DataBag, @name_args[0], 'data_bag') do
             rest.delete_rest("data/#{@name_args[0]}")
           end
         else
           show_usage
-          ui.fatal("You must specify at least a data bag name")
+          ui.fatal('You must specify at least a data bag name')
           exit 1
         end
       end
     end
   end
 end
-
-

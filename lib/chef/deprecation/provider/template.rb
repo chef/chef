@@ -21,14 +21,12 @@ require 'chef/deprecation/mixin/template'
 class Chef
   module Deprecation
     module Provider
-
       # == Deprecation::Provider::Template
       # This module contains the deprecated functions of
       # Chef::Provider::Template. These functions are refactored to different
       # components. They are frozen and will be removed in Chef 12.
       #
       module Template
-
         include Chef::Deprecation::Mixin::Template
 
         def template_finder
@@ -39,7 +37,7 @@ class Chef
 
         def template_location
           @template_file_cache_location ||= begin
-            template_finder.find(@new_resource.source, :local => @new_resource.local, :cookbook => @new_resource.cookbook)
+            template_finder.find(@new_resource.source, local: @new_resource.local, cookbook: @new_resource.cookbook)
           end
         end
 
@@ -56,7 +54,6 @@ class Chef
         def content_matches?
           @current_resource.checksum == @new_resource.checksum
         end
-
       end
     end
   end

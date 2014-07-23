@@ -51,13 +51,12 @@ require 'chef/log'
 begin
   require 'fast_xs'
 rescue LoadError
-  Chef::Log.info "The fast_xs gem is not installed, slower pure ruby XML escaping will be used."
+  Chef::Log.info 'The fast_xs gem is not installed, slower pure ruby XML escaping will be used.'
 end
 
 class Chef
   module Mixin
     module XMLEscape
-
       module PureRuby
         extend self
 
@@ -100,22 +99,20 @@ class Chef
 
         # http://www.w3.org/TR/REC-xml/#charsets
         VALID = [[0x9, 0xA, 0xD], (0x20..0xD7FF),
-          (0xE000..0xFFFD), (0x10000..0x10FFFF)]
+                 (0xE000..0xFFFD), (0x10000..0x10FFFF)]
 
         def xml_escape(unescaped_str)
-          begin
-            unescaped_str.unpack("U*").map {|char| xml_escape_char!(char)}.join
-          rescue
-            unescaped_str.unpack("C*").map {|char| xml_escape_char!(char)}.join
-          end
+          unescaped_str.unpack('U*').map { |char| xml_escape_char!(char) }.join
+        rescue
+          unescaped_str.unpack('C*').map { |char| xml_escape_char!(char) }.join
         end
 
         private
 
         def xml_escape_char!(char)
           char = CP1252[char] || char
-          char = 42 unless VALID.detect {|range| range.include? char}
-          char = PREDEFINED[char] || (char<128 ? char.chr : "&##{char};")
+          char = 42 unless VALID.find { |range| range.include? char }
+          char = PREDEFINED[char] || (char < 128 ? char.chr : "&##{char};")
         end
       end
 
@@ -125,10 +122,9 @@ class Chef
         def xml_escape(string)
           string.fast_xs
         end
-
       end
 
-      if "strings".respond_to?(:fast_xs)
+      if 'strings'.respond_to?(:fast_xs)
         include FastXS
         extend FastXS
       else

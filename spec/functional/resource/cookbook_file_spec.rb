@@ -25,7 +25,7 @@ describe Chef::Resource::CookbookFile do
   let(:source) { 'java.response' }
   let(:cookbook_name) { 'java' }
   let(:expected_content) do
-    content = File.open(File.join(CHEF_SPEC_DATA, 'cookbooks', 'java', 'files', 'default', 'java.response'), "rb") do |f|
+    content = File.open(File.join(CHEF_SPEC_DATA, 'cookbooks', 'java', 'files', 'default', 'java.response'), 'rb') do |f|
       f.read
     end
     content.force_encoding(Encoding::BINARY) if content.respond_to?(:force_encoding)
@@ -34,7 +34,7 @@ describe Chef::Resource::CookbookFile do
 
   let(:default_mode) { ((0100666 - File.umask) & 07777).to_s(8) }
 
-  it_behaves_like "a securable resource with reporting"
+  it_behaves_like 'a securable resource with reporting'
 
   def create_resource
     # set up cookbook collection for this run to use, based on our
@@ -59,22 +59,22 @@ describe Chef::Resource::CookbookFile do
     create_resource
   end
 
-  it_behaves_like "a file resource"
+  it_behaves_like 'a file resource'
 
   # These examples cover CHEF-3467 where unexpected and incorrect
   # permissions can result on Windows because CookbookFile's
   # implementation
   # stages files in temp.
-  context "targets a file outside of the system temp directory" do
-    let(:windows_non_temp_dir) { File.join(ENV['systemdrive'], make_tmpname(file_base, "non-temp")) }
+  context 'targets a file outside of the system temp directory' do
+    let(:windows_non_temp_dir) { File.join(ENV['systemdrive'], make_tmpname(file_base, 'non-temp')) }
     let(:path) { File.join(windows_non_temp_dir, make_tmpname(file_base)) }
 
     before do
-      FileUtils::mkdir_p(windows_non_temp_dir) if Chef::Platform.windows?
+      FileUtils.mkdir_p(windows_non_temp_dir) if Chef::Platform.windows?
     end
 
     after do
-      FileUtils.rm_r(windows_non_temp_dir) if Chef::Platform.windows? && File.exists?(windows_non_temp_dir)
+      FileUtils.rm_r(windows_non_temp_dir) if Chef::Platform.windows? && File.exist?(windows_non_temp_dir)
     end
 
   end

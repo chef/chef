@@ -30,7 +30,6 @@ require 'set'
 class Chef
   class Provider
     class RemoteDirectory < Chef::Provider::Directory
-
       include Chef::Mixin::FileClass
 
       def action_create
@@ -40,14 +39,13 @@ class Chef
                                    name !~ /(?:^|#{Regexp.escape(::File::SEPARATOR)})\.\.?$/
                                  end)
 
-
         files_to_transfer.each do |cookbook_file_relative_path|
           create_cookbook_file(cookbook_file_relative_path)
           # the file is removed from the purge list
           files_to_purge.delete(::File.join(@new_resource.path, cookbook_file_relative_path))
           # parent directories are also removed from the purge list
-          directories=::File.dirname(::File.join(@new_resource.path, cookbook_file_relative_path)).split(::File::SEPARATOR)
-          for i in 0..directories.length-1
+          directories = ::File.dirname(::File.join(@new_resource.path, cookbook_file_relative_path)).split(::File::SEPARATOR)
+          for i in 0..directories.length - 1
             files_to_purge.delete(::File.join(directories[0..i]))
           end
         end
@@ -85,7 +83,7 @@ class Chef
 
       def purge_directory(dir)
         converge_by("delete unmanaged directory #{dir}") do
-          Dir::rmdir(dir)
+          Dir.rmdir(dir)
           Chef::Log.debug("#{@new_resource} removed directory #{dir}")
         end
       end
@@ -156,8 +154,8 @@ class Chef
           # rights are only meant to be applied to the toppest-level directory;
           # Windows will handle inheritance.
           if path == @new_resource.path
-            @new_resource.rights.each do |rights| #rights is a hash
-              permissions = rights.delete(:permissions) #delete will return the value or nil if not found
+            @new_resource.rights.each do |rights| # rights is a hash
+              permissions = rights.delete(:permissions) # delete will return the value or nil if not found
               principals = rights.delete(:principals)
               dir.rights(permissions, principals, rights)
             end
@@ -173,7 +171,6 @@ class Chef
       def whyrun_supported?
         true
       end
-
     end
   end
 end

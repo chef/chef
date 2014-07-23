@@ -19,15 +19,14 @@
 require 'chef/provider/service/init'
 
 class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
-
   def initialize(new_resource, run_context)
     super
     @init_command = "/etc/rc.d/#{@new_resource.service_name}"
   end
 
   def load_current_resource
-    raise Chef::Exceptions::Service, "Could not find /etc/rc.conf"  unless ::File.exists?("/etc/rc.conf")
-    raise Chef::Exceptions::Service, "No DAEMONS found in /etc/rc.conf"  unless ::File.read("/etc/rc.conf").match(/DAEMONS=\((.*)\)/m)
+    fail Chef::Exceptions::Service, 'Could not find /etc/rc.conf'  unless ::File.exist?('/etc/rc.conf')
+    fail Chef::Exceptions::Service, 'No DAEMONS found in /etc/rc.conf'  unless ::File.read('/etc/rc.conf').match(/DAEMONS=\((.*)\)/m)
     super
 
     @current_resource.enabled(daemons.include?(@current_resource.service_name))
@@ -43,8 +42,8 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
   #   )
   def daemons
     entries = []
-    if ::File.read("/etc/rc.conf").match(/DAEMONS=\((.*)\)/m)
-      entries += $1.gsub(/\\?[\r\n]/, ' ').gsub(/# *[^ ]+/,' ').split(' ') if $1.length > 0
+    if ::File.read('/etc/rc.conf').match(/DAEMONS=\((.*)\)/m)
+      entries += Regexp.last_match[1].gsub(/\\?[\r\n]/, ' ').gsub(/# *[^ ]+/, ' ').split(' ') if Regexp.last_match[1].length > 0
     end
 
     yield(entries) if block_given?
@@ -54,13 +53,13 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
 
   # FIXME: Multiple entries of DAEMONS will cause very bad results :)
   def update_daemons(entries)
-    content = ::File.read("/etc/rc.conf").gsub(/DAEMONS=\((.*)\)/m, "DAEMONS=(#{entries.join(' ')})")
-    ::File.open("/etc/rc.conf", "w") do |f|
+    content = ::File.read('/etc/rc.conf').gsub(/DAEMONS=\((.*)\)/m, "DAEMONS=(#{entries.join(' ')})")
+    ::File.open('/etc/rc.conf', 'w') do |f|
       f.write(content)
     end
   end
 
-  def enable_service()
+  def enable_service
     new_daemons = []
     entries = daemons
 
@@ -86,7 +85,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
     end
   end
 
-  def disable_service()
+  def disable_service
     new_daemons = []
     entries = daemons
 
@@ -108,5 +107,4 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
       update_daemons(new_daemons)
     end
   end
-
 end

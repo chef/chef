@@ -19,19 +19,19 @@
 # limitations under the License.
 
 begin
-  require "rubygems"
+  require 'rubygems'
 rescue LoadError
 end
 
-require "irb"
-require "irb/completion"
+require 'irb'
+require 'irb/completion'
 require 'irb/ext/save-history'
 
-$:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "lib")))
+$LOAD_PATH.unshift(File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib')))
 
-require "chef/shell"
+require 'chef/shell'
 
 # On Windows only, enable irb --noreadline because of input problems --
 # See CHEF-3284.
-IRB.conf[:USE_READLINE] = false if Chef::Platform::windows?
+IRB.conf[:USE_READLINE] = false if Chef::Platform.windows?
 Shell.start

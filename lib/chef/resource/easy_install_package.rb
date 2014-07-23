@@ -21,37 +21,35 @@ require 'chef/resource/package'
 class Chef
   class Resource
     class EasyInstallPackage < Chef::Resource::Package
-
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :easy_install_package
         @provider = Chef::Provider::Package::EasyInstall
       end
 
-      def easy_install_binary(arg=nil)
+      def easy_install_binary(arg = nil)
         set_or_return(
           :easy_install_binary,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def python_binary(arg=nil)
+      def python_binary(arg = nil)
         set_or_return(
           :python_install_binary,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def module_name(arg=nil)
+      def module_name(arg = nil)
         set_or_return(
           :module_name,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
-
     end
   end
 end

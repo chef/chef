@@ -28,7 +28,6 @@ require 'chef/search/query'
 
 class Chef
   class Role
-
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
@@ -38,7 +37,7 @@ class Chef
       @description = ''
       @default_attributes = Mash.new
       @override_attributes = Mash.new
-      @env_run_lists = {"_default" => Chef::RunList.new}
+      @env_run_lists = { '_default' => Chef::RunList.new }
     end
 
     def chef_server_rest
@@ -49,27 +48,27 @@ class Chef
       Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
-    def name(arg=nil)
+    def name(arg = nil)
       set_or_return(
         :name,
         arg,
-        :regex => /^[\-[:alnum:]_]+$/
+        regex: /^[\-[:alnum:]_]+$/
       )
     end
 
-    def description(arg=nil)
+    def description(arg = nil)
       set_or_return(
         :description,
         arg,
-        :kind_of => String
+        kind_of: String
       )
     end
 
     def run_list(*args)
-      if (args.length > 0)
-        @env_run_lists["_default"].reset!(args)
+      if args.length > 0
+        @env_run_lists['_default'].reset!(args)
       end
-      @env_run_lists["_default"]
+      @env_run_lists['_default']
     end
 
     alias_method :recipes, :run_list
@@ -77,63 +76,63 @@ class Chef
     # For run_list expansion
     def run_list_for(environment)
       if env_run_lists[environment].nil?
-        env_run_lists["_default"]
+        env_run_lists['_default']
       else
         env_run_lists[environment]
       end
     end
 
     def active_run_list_for(environment)
-      @env_run_lists.has_key?(environment) ? environment : '_default'
+      @env_run_lists.key?(environment) ? environment : '_default'
     end
 
     # Per environment run lists
-    def env_run_lists(env_run_lists=nil)
-      if (!env_run_lists.nil?)
-        unless env_run_lists.key?("_default")
+    def env_run_lists(env_run_lists = nil)
+      unless env_run_lists.nil?
+        unless env_run_lists.key?('_default')
           msg = "_default key is required in env_run_lists.\n"
           msg << "(env_run_lists: #{env_run_lists.inspect})"
-          raise Chef::Exceptions::InvalidEnvironmentRunListSpecification, msg
+          fail Chef::Exceptions::InvalidEnvironmentRunListSpecification, msg
         end
         @env_run_lists.clear
-        env_run_lists.each { |k,v| @env_run_lists[k] = Chef::RunList.new(*Array(v))}
+        env_run_lists.each { |k, v| @env_run_lists[k] = Chef::RunList.new(*Array(v)) }
       end
       @env_run_lists
     end
 
-    alias :env_run_list :env_run_lists
+    alias_method :env_run_list, :env_run_lists
 
-    def default_attributes(arg=nil)
+    def default_attributes(arg = nil)
       set_or_return(
         :default_attributes,
         arg,
-        :kind_of => Hash
+        kind_of: Hash
       )
     end
 
-    def override_attributes(arg=nil)
+    def override_attributes(arg = nil)
       set_or_return(
         :override_attributes,
         arg,
-        :kind_of => Hash
+        kind_of: Hash
       )
     end
 
     def to_hash
       env_run_lists_without_default = @env_run_lists.dup
-      env_run_lists_without_default.delete("_default")
+      env_run_lists_without_default.delete('_default')
       result = {
-        "name" => @name,
-        "description" => @description,
+        'name' => @name,
+        'description' => @description,
         'json_class' => self.class.name,
-        "default_attributes" => @default_attributes,
-        "override_attributes" => @override_attributes,
-        "chef_type" => "role",
+        'default_attributes' => @default_attributes,
+        'override_attributes' => @override_attributes,
+        'chef_type' => 'role',
 
-        #Render to_json correctly for run_list items (both run_list and evn_run_lists)
-        #so malformed json does not result
-        "run_list" => run_list.run_list.map { |item| item.to_s },
-        "env_run_lists" => env_run_lists_without_default.inject({}) do |accumulator, (k, v)|
+        # Render to_json correctly for run_list items (both run_list and evn_run_lists)
+        # so malformed json does not result
+        'run_list' => run_list.run_list.map { |item| item.to_s },
+        'env_run_lists' => env_run_lists_without_default.reduce({}) do |accumulator, (k, v)|
           accumulator[k] = v.map { |x| x.to_s }
           accumulator
         end
@@ -158,19 +157,19 @@ class Chef
     # Create a Chef::Role from JSON
     def self.json_create(o)
       role = new
-      role.name(o["name"])
-      role.description(o["description"])
-      role.default_attributes(o["default_attributes"])
-      role.override_attributes(o["override_attributes"])
+      role.name(o['name'])
+      role.description(o['description'])
+      role.default_attributes(o['default_attributes'])
+      role.override_attributes(o['override_attributes'])
 
       # _default run_list is in 'run_list' for newer clients, and
       # 'recipes' for older clients.
-      env_run_list_hash = {"_default" => (o.has_key?("run_list") ? o["run_list"] : o["recipes"])}
+      env_run_list_hash = { '_default' => (o.key?('run_list') ? o['run_list'] : o['recipes']) }
 
       # Clients before 0.10 do not include env_run_lists, so only
       # merge if it's there.
-      if o["env_run_lists"]
-        env_run_list_hash.merge!(o["env_run_lists"])
+      if o['env_run_lists']
+        env_run_list_hash.merge!(o['env_run_lists'])
       end
       role.env_run_lists(env_run_list_hash)
 
@@ -178,15 +177,15 @@ class Chef
     end
 
     # Get the list of all roles from the API.
-    def self.list(inflate=false)
+    def self.list(inflate = false)
       if inflate
-        response = Hash.new
+        response = {}
         Chef::Search::Query.new.search(:role) do |n|
           response[n.name] = n unless n.nil?
         end
         response
       else
-        chef_server_rest.get_rest("roles")
+        chef_server_rest.get_rest('roles')
       end
     end
 
@@ -213,15 +212,15 @@ class Chef
       begin
         chef_server_rest.put_rest("roles/#{@name}", self)
       rescue Net::HTTPServerException => e
-        raise e unless e.response.code == "404"
-        chef_server_rest.post_rest("roles", self)
+        raise e unless e.response.code == '404'
+        chef_server_rest.post_rest('roles', self)
       end
       self
     end
 
     # Create the role via the REST API
     def create
-      chef_server_rest.post_rest("roles", self)
+      chef_server_rest.post_rest('roles', self)
       self
     end
 
@@ -235,18 +234,18 @@ class Chef
     def self.from_disk(name)
       paths = Array(Chef::Config[:role_path])
       paths.each do |path|
-        roles_files = Dir.glob(File.join(path, "**", "**"))
+        roles_files = Dir.glob(File.join(path, '**', '**'))
         js_files = roles_files.select { |file| file.match /#{name}\.json$/ }
         rb_files = roles_files.select { |file| file.match /#{name}\.rb$/ }
         if js_files.count > 1 or rb_files.count > 1
-          raise Chef::Exceptions::DuplicateRole, "Multiple roles of same type found named #{name}"
+          fail Chef::Exceptions::DuplicateRole, "Multiple roles of same type found named #{name}"
         end
         js_path, rb_path = js_files.first, rb_files.first
 
-        if js_path && File.exists?(js_path)
+        if js_path && File.exist?(js_path)
           # from_json returns object.class => json_class in the JSON.
           return Chef::JSONCompat.from_json(IO.read(js_path))
-        elsif rb_path && File.exists?(rb_path)
+        elsif rb_path && File.exist?(rb_path)
           role = Chef::Role.new
           role.name(name)
           role.from_file(rb_path)
@@ -254,8 +253,7 @@ class Chef
         end
       end
 
-      raise Chef::Exceptions::RoleNotFound, "Role '#{name}' could not be loaded from disk"
+      fail Chef::Exceptions::RoleNotFound, "Role '#{name}' could not be loaded from disk"
     end
-
   end
 end

@@ -24,13 +24,13 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
 
   before(:each) do
     @node = Chef::Node.new
-    @node.name "make_believe"
+    @node.name 'make_believe'
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @tmpdir = Dir.mktmpdir
     @resource = Chef::Resource::File.new("#{@tmpdir}/madeup.txt")
     FileUtils.touch @resource.path
-    @resource.owner "adam"
+    @resource.owner 'adam'
     @provider = Chef::Provider::File.new(@resource, @run_context)
     @provider.current_resource = @resource
   end
@@ -39,28 +39,28 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
     FileUtils.rm_rf(@tmpdir)
   end
 
-  it "should call set_all on the file access control object" do
+  it 'should call set_all on the file access control object' do
     Chef::FileAccessControl.any_instance.should_receive(:set_all)
     @provider.enforce_ownership_and_permissions
   end
 
-  context "when nothing was updated" do
+  context 'when nothing was updated' do
     before do
       Chef::FileAccessControl.any_instance.stub(:uid_from_resource).and_return(0)
       Chef::FileAccessControl.any_instance.stub(:requires_changes?).and_return(false)
       Chef::FileAccessControl.any_instance.stub(:define_resource_requirements)
 
       passwd_struct = if windows?
-                        Struct::Passwd.new("root", "x", 0, 0, "/root", "/bin/bash")
+                        Struct::Passwd.new('root', 'x', 0, 0, '/root', '/bin/bash')
                       else
-                        Struct::Passwd.new("root", "x", 0, 0, "root", "/root", "/bin/bash")
+                        Struct::Passwd.new('root', 'x', 0, 0, 'root', '/root', '/bin/bash')
                       end
-      group_struct = OpenStruct.new(:name => "root", :passwd => "x", :gid => 0)
+      group_struct = OpenStruct.new(name: 'root', passwd: 'x', gid: 0)
       Etc.stub(:getpwuid).and_return(passwd_struct)
       Etc.stub(:getgrgid).and_return(group_struct)
     end
 
-    it "does not set updated_by_last_action on the new resource" do
+    it 'does not set updated_by_last_action on the new resource' do
       @provider.new_resource.should_not_receive(:updated_by_last_action)
 
       Chef::FileAccessControl.any_instance.stub(:set_all)
@@ -69,22 +69,22 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
 
   end
 
-  context "when something was modified" do
+  context 'when something was modified' do
     before do
       Chef::FileAccessControl.any_instance.stub(:requires_changes?).and_return(true)
       Chef::FileAccessControl.any_instance.stub(:uid_from_resource).and_return(0)
 
       passwd_struct = if windows?
-                        Struct::Passwd.new("root", "x", 0, 0, "/root", "/bin/bash")
+                        Struct::Passwd.new('root', 'x', 0, 0, '/root', '/bin/bash')
                       else
-                        Struct::Passwd.new("root", "x", 0, 0, "root", "/root", "/bin/bash")
+                        Struct::Passwd.new('root', 'x', 0, 0, 'root', '/root', '/bin/bash')
                       end
-      group_struct = OpenStruct.new(:name => "root", :passwd => "x", :gid => 0)
+      group_struct = OpenStruct.new(name: 'root', passwd: 'x', gid: 0)
       Etc.stub(:getpwuid).and_return(passwd_struct)
       Etc.stub(:getgrgid).and_return(group_struct)
     end
 
-    it "sets updated_by_last_action on the new resource" do
+    it 'sets updated_by_last_action on the new resource' do
       @provider.new_resource.owner(0) # CHEF-3557 hack - Set these because we don't for windows
       @provider.new_resource.group(0) # CHEF-3557 hack - Set these because we don't for windows
       @provider.new_resource.should_receive(:updated_by_last_action)

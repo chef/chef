@@ -1,3 +1,3 @@
-name "test-with-deps"
-depends "dependency1"
-depends "dependency2"
+name 'test-with-deps'
+depends 'dependency1'
+depends 'dependency2'

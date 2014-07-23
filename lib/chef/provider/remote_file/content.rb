@@ -25,7 +25,6 @@ class Chef
   class Provider
     class RemoteFile
       class Content < Chef::FileContentManagement::ContentBase
-
         private
 
         def file_for_provider
@@ -48,7 +47,7 @@ class Chef
             uri = URI.parse(source)
             raw_file = grab_file_from_uri(uri)
           rescue SocketError, Errno::ECONNREFUSED, Errno::ENOENT, Errno::EACCES, Timeout::Error, Net::HTTPServerException, Net::HTTPFatalError, Net::FTPError => e
-            Chef::Log.warn("#{@new_resource} cannot be downloaded from #{source}: #{e.to_s}")
+            Chef::Log.warn("#{@new_resource} cannot be downloaded from #{source}: #{e}")
             if source = sources.shift
               Chef::Log.info("#{@new_resource} trying to download from another mirror")
               retry
@@ -67,7 +66,6 @@ class Chef
         def current_resource_matches_target_checksum?
           @new_resource.checksum && @current_resource.checksum && @current_resource.checksum =~ /^#{Regexp.escape(@new_resource.checksum)}/
         end
-
       end
     end
   end

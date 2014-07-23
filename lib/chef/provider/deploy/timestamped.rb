@@ -20,11 +20,10 @@ class Chef
   class Provider
     class Deploy
       class Timestamped < Chef::Provider::Deploy
-
         protected
 
         def release_slug
-          Time.now.utc.strftime("%Y%m%d%H%M%S")
+          Time.now.utc.strftime('%Y%m%d%H%M%S')
         end
       end
     end

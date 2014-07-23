@@ -28,26 +28,24 @@ require 'chef/json_compat'
 
 module Shell
   module Extensions
-
     Help = Struct.new(:cmd, :desc, :explanation)
 
     # Extensions to be included in every 'main' object in chef-shell.
     # These objects are extended with this module.
     module ObjectCoreExtensions
-
       def ensure_session_select_defined
         # irb breaks if you prematurely define IRB::JobMangager
         # so these methods need to be defined at the latest possible time.
         unless jobs.respond_to?(:select_session_by_context)
           def jobs.select_session_by_context(&block)
-            @jobs.select { |job| block.call(job[1].context.main)}
+            @jobs.select { |job| block.call(job[1].context.main) }
           end
         end
 
         unless jobs.respond_to?(:session_select)
           def jobs.select_shell_session(target_context)
-            session = if target_context.kind_of?(Class)
-              select_session_by_context { |main| main.kind_of?(target_context) }
+            session = if target_context.is_a?(Class)
+                        select_session_by_context { |main| main.is_a?(target_context) }
             else
               select_session_by_context { |main| main.equal?(target_context) }
             end
@@ -67,35 +65,35 @@ module Shell
 
       def help_banner
         banner = []
-        banner << ""
-        banner << "chef-shell Help"
-        banner << "".ljust(80, "=")
-        banner << "| " + "Command".ljust(25) + "| " + "Description"
-        banner << "".ljust(80, "=")
+        banner << ''
+        banner << 'chef-shell Help'
+        banner << ''.ljust(80, '=')
+        banner << '| ' + 'Command'.ljust(25) + '| ' + 'Description'
+        banner << ''.ljust(80, '=')
 
-        self.all_help_descriptions.each do |help_text|
-          banner << "| " + help_text.cmd.ljust(25) + "| " + help_text.desc
+        all_help_descriptions.each do |help_text|
+          banner << '| ' + help_text.cmd.ljust(25) + '| ' + help_text.desc
         end
-        banner << "".ljust(80, "=")
+        banner << ''.ljust(80, '=')
         banner << "\n"
-        banner << "Use help(:command) to get detailed help with individual commands"
+        banner << 'Use help(:command) to get detailed help with individual commands'
         banner << "\n"
         banner.join("\n")
       end
 
       def explain_command(method_name)
-        help = self.all_help_descriptions.find { |h| h.cmd.to_s == method_name.to_s }
+        help = all_help_descriptions.find { |h| h.cmd.to_s == method_name.to_s }
         if help
-          puts ""
+          puts ''
           puts "Command: #{method_name}"
-          puts "".ljust(80, "=")
+          puts ''.ljust(80, '=')
           puts help.explanation || help.desc
-          puts "".ljust(80, "=")
-          puts ""
+          puts ''.ljust(80, '=')
+          puts ''
         else
-          puts ""
+          puts ''
           puts "command #{method_name} not found or no help available"
-          puts ""
+          puts ''
         end
       end
 
@@ -125,7 +123,7 @@ module Shell
         @explain = explain_text
       end
 
-      def subcommands(subcommand_help={})
+      def subcommands(subcommand_help = {})
         @subcommand_help = subcommand_help
       end
 
@@ -141,15 +139,14 @@ module Shell
         end
         @subcommand_help = {}
       end
-
     end
 
     module String
       def on_off_to_bool
         case self
-        when "on"
+        when 'on'
           true
-        when "off"
+        when 'off'
           false
         else
           self
@@ -159,13 +156,13 @@ module Shell
 
     module Symbol
       def on_off_to_bool
-        self.to_s.on_off_to_bool
+        to_s.on_off_to_bool
       end
     end
 
     module TrueClass
       def to_on_off_str
-        "on"
+        'on'
       end
 
       def on_off_to_bool
@@ -175,7 +172,7 @@ module Shell
 
     module FalseClass
       def to_on_off_str
-        "off"
+        'off'
       end
 
       def on_off_to_bool
@@ -186,10 +183,10 @@ module Shell
     # Methods that have associated help text need to be dynamically added
     # to the main irb objects, so we define them in a proc and later
     # instance_eval the proc in the object.
-    ObjectUIExtensions = Proc.new do
+    ObjectUIExtensions = proc do
       extend Shell::Extensions::ObjectCoreExtensions
 
-      desc "prints this help message"
+      desc 'prints this help message'
       explain(<<-E)
 ## SUMMARY ##
   When called with no argument, +help+ prints a table of all
@@ -197,7 +194,7 @@ module Shell
   prints a detailed explanation of the command if available, or the
   description if no explanation is available.
 E
-      def help(commmand=nil)
+      def help(commmand = nil)
         if commmand
           explain_command(commmand)
         else
@@ -205,31 +202,31 @@ E
         end
         :ucanhaz_halp
       end
-      alias :halp :help
+      alias_method :halp, :help
 
-      desc "prints information about chef"
+      desc 'prints information about chef'
       def version
-        puts  "This is the chef-shell.\n" +
-              " Chef Version: #{::Chef::VERSION}\n" +
-              " http://www.opscode.com/chef\n" +
-              " http://docs.opscode.com/"
+        puts "This is the chef-shell.\n" \
+              " Chef Version: #{::Chef::VERSION}\n" \
+              " http://www.opscode.com/chef\n" \
+              ' http://docs.opscode.com/'
         :ucanhaz_automation
       end
-      alias :shell :version
+      alias_method :shell, :version
 
-      desc "switch to recipe mode"
+      desc 'switch to recipe mode'
       def recipe_mode
         find_or_create_session_for Shell.session.recipe
         :recipe
       end
 
-      desc "switch to attributes mode"
+      desc 'switch to attributes mode'
       def attributes_mode
         find_or_create_session_for Shell.session.node
         :attributes
       end
 
-      desc "run chef using the current recipe"
+      desc 'run chef using the current recipe'
       def run_chef
         Chef::Log.level = :debug
         session = Shell.session
@@ -238,70 +235,70 @@ E
         runrun
       end
 
-      desc "returns an object to control a paused chef run"
-      subcommands :resume       => "resume the chef run",
-                  :step         => "run only the next resource",
-                  :skip_back    => "move back in the run list",
-                  :skip_forward => "move forward in the run list"
+      desc 'returns an object to control a paused chef run'
+      subcommands resume: 'resume the chef run',
+                  step: 'run only the next resource',
+                  skip_back: 'move back in the run list',
+                  skip_forward: 'move forward in the run list'
       def chef_run
         Shell.session.resource_collection.iterator
       end
 
-      desc "resets the current recipe"
+      desc 'resets the current recipe'
       def reset
         Shell.session.reset!
       end
 
-      desc "assume the identity of another node."
+      desc 'assume the identity of another node.'
       def become_node(node_name)
         Shell::DoppelGangerSession.instance.assume_identity(node_name)
         :doppelganger
       end
-      alias :doppelganger :become_node
+      alias_method :doppelganger, :become_node
 
-      desc "turns printout of return values on or off"
+      desc 'turns printout of return values on or off'
       def echo(on_or_off)
         conf.echo = on_or_off.on_off_to_bool
       end
 
-      desc "says if echo is on or off"
+      desc 'says if echo is on or off'
       def echo?
         puts "echo is #{conf.echo.to_on_off_str}"
       end
 
-      desc "turns on or off tracing of execution. *verbose*"
+      desc 'turns on or off tracing of execution. *verbose*'
       def tracing(on_or_off)
         conf.use_tracer = on_or_off.on_off_to_bool
         tracing?
       end
-      alias :trace :tracing
+      alias_method :trace, :tracing
 
-      desc "says if tracing is on or off"
+      desc 'says if tracing is on or off'
       def tracing?
         puts "tracing is #{conf.use_tracer.to_on_off_str}"
       end
-      alias :trace? :tracing?
+      alias_method :trace?, :tracing?
 
-      desc "simple ls style command"
+      desc 'simple ls style command'
       def ls(directory)
         Dir.entries(directory)
       end
     end
 
-    MainContextExtensions = Proc.new do
-      desc "returns the current node (i.e., this host)"
+    MainContextExtensions = proc do
+      desc 'returns the current node (i.e., this host)'
       def node
         Shell.session.node
       end
 
       desc "pretty print the node's attributes"
-      def ohai(key=nil)
+      def ohai(key = nil)
         pp(key ? node.attribute[key] : node.attribute)
       end
     end
 
-    RESTApiExtensions = Proc.new do
-      desc "edit an object in your EDITOR"
+    RESTApiExtensions = proc do
+      desc 'edit an object in your EDITOR'
       explain(<<-E)
 ## SUMMARY ##
   +edit(object)+ allows you to edit any object that can be converted to JSON.
@@ -328,10 +325,10 @@ E
           filename += object.id
         end
 
-        edited_data = Tempfile.open([filename, ".js"]) do |tempfile|
+        edited_data = Tempfile.open([filename, '.js']) do |tempfile|
           tempfile.sync = true
           tempfile.puts Chef::JSONCompat.to_json(object)
-          system("#{Shell.editor.to_s} #{tempfile.path}")
+          system("#{Shell.editor} #{tempfile.path}")
           tempfile.rewind
           tempfile.read
         end
@@ -339,7 +336,7 @@ E
         Chef::JSONCompat.from_json(edited_data)
       end
 
-      desc "Find and edit API clients"
+      desc 'Find and edit API clients'
       explain(<<-E)
 ## SUMMARY ##
   +clients+ allows you to query you chef server for information about your api
@@ -393,23 +390,23 @@ E
 
   This will strip the admin privileges from any client named after borat.
 E
-      subcommands :all        => "list all api clients",
-                  :show       => "load an api client by name",
-                  :search     => "search for API clients",
-                  :transform  => "edit all api clients via a code block and save them"
+      subcommands all: 'list all api clients',
+                  show: 'load an api client by name',
+                  search: 'search for API clients',
+                  transform: 'edit all api clients via a code block and save them'
       def clients
         @clients ||= Shell::ModelWrapper.new(Chef::ApiClient, :client)
       end
 
-      desc "Find and edit cookbooks"
-      subcommands :all        => "list all cookbooks",
-                  :show       => "load a cookbook by name",
-                  :transform  => "edit all cookbooks via a code block and save them"
+      desc 'Find and edit cookbooks'
+      subcommands all: 'list all cookbooks',
+                  show: 'load a cookbook by name',
+                  transform: 'edit all cookbooks via a code block and save them'
       def cookbooks
         @cookbooks ||= Shell::ModelWrapper.new(Chef::CookbookVersion)
       end
 
-      desc "Find and edit nodes via the API"
+      desc 'Find and edit nodes via the API'
       explain(<<-E)
 ## SUMMARY ##
   +nodes+ Allows you to query your chef server for information about your nodes.
@@ -455,15 +452,15 @@ E
 
   This will assign the attribute to every node with a FQDN matching the regex.
 E
-      subcommands :all        => "list all nodes",
-                  :show       => "load a node by name",
-                  :search     => "search for nodes",
-                  :transform  => "edit all nodes via a code block and save them"
+      subcommands all: 'list all nodes',
+                  show: 'load a node by name',
+                  search: 'search for nodes',
+                  transform: 'edit all nodes via a code block and save them'
       def nodes
         @nodes ||= Shell::ModelWrapper.new(Chef::Node)
       end
 
-      desc "Find and edit roles via the API"
+      desc 'Find and edit roles via the API'
       explain(<<-E)
 ## SUMMARY ##
   +roles+ allows you to query and edit roles on your Chef server.
@@ -477,15 +474,15 @@ E
 ## SEE ALSO ##
   See the help for +nodes+ for more information about the subcommands.
 E
-      subcommands :all        => "list all roles",
-                  :show       => "load a role by name",
-                  :search     => "search for roles",
-                  :transform  => "edit all roles via a code block and save them"
+      subcommands all: 'list all roles',
+                  show: 'load a role by name',
+                  search: 'search for roles',
+                  transform: 'edit all roles via a code block and save them'
       def roles
         @roles ||= Shell::ModelWrapper.new(Chef::Role)
       end
 
-      desc "Find and edit +databag_name+ via the api"
+      desc 'Find and edit +databag_name+ via the api'
       explain(<<-E)
 ## SUMMARY ##
   +databags(DATABAG_NAME)+ allows you to query and edit data bag items on your
@@ -503,16 +500,16 @@ E
   See the help for +nodes+ for more information about the subcommands.
 
 E
-      subcommands :all        => "list all items in the data bag",
-                  :show       => "load a data bag item by id",
-                  :search     => "search for items in the data bag",
-                  :transform  => "edit all items via a code block and save them"
+      subcommands all: 'list all items in the data bag',
+                  show: 'load a data bag item by id',
+                  search: 'search for items in the data bag',
+                  transform: 'edit all items via a code block and save them'
       def databags(databag_name)
         @named_databags_wrappers ||= {}
         @named_databags_wrappers[databag_name] ||= Shell::NamedDataBagWrapper.new(databag_name)
       end
 
-      desc "Find and edit environments via the API"
+      desc 'Find and edit environments via the API'
       explain(<<-E)
 ## SUMMARY ##
   +environments+ allows you to query and edit environments on your Chef server.
@@ -526,25 +523,25 @@ E
 ## SEE ALSO ##
   See the help for +nodes+ for more information about the subcommands.
 E
-      subcommands :all        => "list all environments",
-                  :show       => "load an environment by name",
-                  :search     => "search for environments",
-                  :transform  => "edit all environments via a code block and save them"
+      subcommands all: 'list all environments',
+                  show: 'load an environment by name',
+                  search: 'search for environments',
+                  transform: 'edit all environments via a code block and save them'
       def environments
         @environments ||= Shell::ModelWrapper.new(Chef::Environment)
       end
 
-      desc "A REST Client configured to authenticate with the API"
+      desc 'A REST Client configured to authenticate with the API'
       def api
         @rest = Shell::ShellREST.new(Chef::Config[:chef_server_url])
       end
 
     end
 
-    RecipeUIExtensions = Proc.new do
-      alias :original_resources :resources
+    RecipeUIExtensions = proc do
+      alias_method :original_resources, :resources
 
-      desc "list all the resources on the current recipe"
+      desc 'list all the resources on the current recipe'
       def resources(*args)
         if args.empty?
           pp run_context.resource_collection.instance_variable_get(:@resources_by_name).keys
@@ -572,7 +569,6 @@ E
       recipe_obj.instance_eval(&ObjectUIExtensions)
       recipe_obj.instance_eval(&RecipeUIExtensions)
     end
-
   end
 end
 

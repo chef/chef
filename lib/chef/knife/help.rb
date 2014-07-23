@@ -19,19 +19,18 @@
 class Chef
   class Knife
     class Help < Chef::Knife
-
-      banner "knife help [list|TOPIC]"
+      banner 'knife help [list|TOPIC]'
 
       def run
         if name_args.empty?
-          ui.info "Usage: knife SUBCOMMAND (options)"
-          ui.msg ""
+          ui.info 'Usage: knife SUBCOMMAND (options)'
+          ui.msg ''
           # This command is atypical, the user is likely not interested in usage of
           # this command, but knife in general. So hack the banner.
-          opt_parser.banner = "General Knife Options:"
+          opt_parser.banner = 'General Knife Options:'
           ui.msg opt_parser.to_s
-          ui.msg ""
-          ui.info "For further help:"
+          ui.msg ''
+          ui.info 'For further help:'
           ui.info(<<-MOAR_HELP)
   knife help list             list help topics
   knife help knife            show general knife help
@@ -42,8 +41,6 @@ MOAR_HELP
         else
           @query = name_args.join('-')
         end
-
-
 
         case @query
         when 'topics', 'list'
@@ -66,8 +63,8 @@ MOAR_HELP
       end
 
       def print_help_topics
-        ui.info "Available help topics are: "
-        help_topics.collect {|t| t.gsub(/knife-/, '') }.sort.each do |topic|
+        ui.info 'Available help topics are: '
+        help_topics.map { |t| t.gsub(/knife-/, '') }.sort.each do |topic|
           ui.msg "  #{topic}"
         end
       end
@@ -78,19 +75,19 @@ MOAR_HELP
         end
         if possibilities.empty?
           ui.error "No help found for '#{query}'"
-          ui.msg ""
+          ui.msg ''
           print_help_topics
           exit 1
         elsif possibilities.size == 1
           possibilities.first
         else
-          ui.info "Multiple help topics match your query. Pick one:"
+          ui.info 'Multiple help topics match your query. Pick one:'
           ui.highline.choose(*possibilities)
         end
       end
 
       def find_manpage_path(topic)
-        if ::File.exists?(::File.expand_path("../distro/common/man/man1/#{topic}.1", CHEF_ROOT))
+        if ::File.exist?(::File.expand_path("../distro/common/man/man1/#{topic}.1", CHEF_ROOT))
           # If we've provided the man page in the gem, give that
           return ::File.expand_path("../distro/common/man/man1/#{topic}.1", CHEF_ROOT)
         else

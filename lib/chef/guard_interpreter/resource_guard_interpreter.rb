@@ -21,8 +21,7 @@ require 'chef/guard_interpreter/default_guard_interpreter'
 class Chef
   class GuardInterpreter
     class ResourceGuardInterpreter < DefaultGuardInterpreter
-
-      def initialize(parent_resource, command, opts, &block)
+      def initialize(parent_resource, command, opts, &_block)
         super(command, opts)
         @parent_resource = parent_resource
         @resource = get_interpreter_resource(parent_resource)
@@ -36,7 +35,7 @@ class Chef
         # Script resources have a code attribute, which is
         # what is used to execute the command, so include
         # that with attributes specified by caller in opts
-        block_attributes = @command_opts.merge({:code => @command})
+        block_attributes = @command_opts.merge(code: @command)
 
         # Handles cases like powershell_script where default
         # attributes are different when used in a guard vs. not. For
@@ -53,7 +52,7 @@ class Chef
 
       protected
 
-      def evaluate_action(action=nil, &block)
+      def evaluate_action(action = nil, &block)
         @resource.instance_eval(&block)
 
         run_action = action || @resource.action
@@ -70,17 +69,17 @@ class Chef
 
       def get_interpreter_resource(parent_resource)
         if parent_resource.nil? || parent_resource.node.nil?
-          raise ArgumentError, "Node for guard resource parent must not be nil"
+          fail ArgumentError, 'Node for guard resource parent must not be nil'
         end
 
         resource_class = Chef::Resource.resource_for_node(parent_resource.guard_interpreter, parent_resource.node)
 
         if resource_class.nil?
-          raise ArgumentError, "Specified guard_interpreter resource #{parent_resource.guard_interpreter.to_s} unknown for this platform"
+          fail ArgumentError, "Specified guard_interpreter resource #{parent_resource.guard_interpreter} unknown for this platform"
         end
 
-        if ! resource_class.ancestors.include?(Chef::Resource::Script)
-          raise ArgumentError, "Specified guard interpreter class #{resource_class} must be a kind of Chef::Resource::Script resource"
+        unless resource_class.ancestors.include?(Chef::Resource::Script)
+          fail ArgumentError, "Specified guard interpreter class #{resource_class} must be a kind of Chef::Resource::Script resource"
         end
 
         empty_events = Chef::EventDispatch::Dispatcher.new
@@ -91,7 +90,7 @@ class Chef
       end
 
       def block_from_attributes(attributes)
-        Proc.new do
+        proc do
           attributes.keys.each do |attribute_name|
             send(attribute_name, attributes[attribute_name]) if respond_to?(attribute_name)
           end

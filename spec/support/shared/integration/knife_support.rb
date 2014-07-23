@@ -23,7 +23,7 @@ require 'chef/log'
 
 module KnifeSupport
   DEBUG = ENV['DEBUG']
-  def knife(*args, &block)
+  def knife(*args, &_block)
     # Allow knife('role from file roles/blah.json') rather than requiring the
     # arguments to be split like knife('role', 'from', 'file', 'roles/blah.json')
     # If any argument will have actual spaces in it, the long form is required.
@@ -39,8 +39,8 @@ module KnifeSupport
     # Work on machines where we can't access /var
     checksums_cache_dir = Dir.mktmpdir('checksums') do |checksums_cache_dir|
       Chef::Config[:cache_options] = {
-        :path => checksums_cache_dir,
-        :skip_expires => true
+        path: checksums_cache_dir,
+        skip_expires: true
       }
 
       # This is Chef::Knife.run without load_commands--we'll load stuff
@@ -60,9 +60,8 @@ module KnifeSupport
         instance.ui = Chef::Knife::UI.new(stdout, stderr, STDIN, {})
 
         # Don't print stuff
-        Chef::Config[:verbosity] = ( DEBUG ? 2 : 0 )
-        instance.config[:config_file] = File.join(CHEF_SPEC_DATA, "null_config.rb")
-
+        Chef::Config[:verbosity] = ( DEBUG ? 2 : 0)
+        instance.config[:config_file] = File.join(CHEF_SPEC_DATA, 'null_config.rb')
 
         # Configure chef with a (mostly) blank knife.rb
         # We set a global and then mutate it in our stub knife.rb so we can be
@@ -70,17 +69,17 @@ module KnifeSupport
         # running test scenarios against a real chef server. If things don't
         # smell right, abort.
 
-        $__KNIFE_INTEGRATION_FAILSAFE_CHECK = "ole"
+        $__KNIFE_INTEGRATION_FAILSAFE_CHECK = 'ole'
         instance.configure_chef
 
-        unless $__KNIFE_INTEGRATION_FAILSAFE_CHECK == "ole ole"
-          raise Exception, "Potential misconfiguration of integration tests detected. Aborting test."
+        unless $__KNIFE_INTEGRATION_FAILSAFE_CHECK == 'ole ole'
+          fail Exception, 'Potential misconfiguration of integration tests detected. Aborting test.'
         end
 
         logger = Logger.new(stderr)
-        logger.formatter = proc { |severity, datetime, progname, msg| "#{severity}: #{msg}\n" }
+        logger.formatter = proc { |severity, _datetime, _progname, msg| "#{severity}: #{msg}\n" }
         Chef::Log.use_log_devices([logger])
-        Chef::Log.level = ( DEBUG ? :debug : :warn )
+        Chef::Log.level = ( DEBUG ? :debug : :warn)
         Chef::Log::Formatter.show_time = false
 
         instance.run_with_pretty_exceptions(true)
@@ -125,7 +124,7 @@ module KnifeSupport
           expected[:stderr] = arg
         end
       end
-      expected[:exit_code] = 1 if !expected[:exit_code]
+      expected[:exit_code] = 1 unless expected[:exit_code]
       should_result_in(expected)
     end
 
@@ -144,9 +143,9 @@ module KnifeSupport
     private
 
     def should_result_in(expected)
-      expected[:stdout] = '' if !expected[:stdout]
-      expected[:stderr] = '' if !expected[:stderr]
-      expected[:exit_code] = 0 if !expected[:exit_code]
+      expected[:stdout] = '' unless expected[:stdout]
+      expected[:stderr] = '' unless expected[:stderr]
+      expected[:exit_code] = 0 unless expected[:exit_code]
       # TODO make this go away
       stderr_actual = @stderr.sub(/^WARNING: No knife configuration file found\n/, '')
 

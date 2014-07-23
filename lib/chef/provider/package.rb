@@ -24,7 +24,6 @@ require 'chef/platform'
 class Chef
   class Provider
     class Package < Chef::Provider
-
       include Chef::Mixin::Command
 
       attr_accessor :candidate_version
@@ -42,7 +41,7 @@ class Chef
 
       def define_resource_requirements
         requirements.assert(:install) do |a|
-          a.assertion { ((@new_resource.version != nil) && !(target_version_already_installed?)) \
+          a.assertion { ((!@new_resource.version.nil?) && !(target_version_already_installed?)) \
             || !(@current_resource.version.nil? && candidate_version.nil?)  }
           a.failure_message(Chef::Exceptions::Package, "No version specified, and no candidate version available for #{@new_resource.package_name}")
           a.whyrun("Assuming a repository that offers #{@new_resource.package_name} would have been configured")
@@ -76,7 +75,7 @@ class Chef
             end
           end
         end
-        description = install_version ? "version #{install_version} of" : ""
+        description = install_version ? "version #{install_version} of" : ''
         converge_by("install #{description} package #{@new_resource.package_name}") do
           @new_resource.version(install_version)
           install_package(@new_resource.package_name, install_version)
@@ -90,7 +89,7 @@ class Chef
           Chef::Log.debug("#{@new_resource} is at the latest version - nothing to do")
         else
           @new_resource.version(candidate_version)
-          orig_version = @current_resource.version || "uninstalled"
+          orig_version = @current_resource.version || 'uninstalled'
           converge_by("upgrade package #{@new_resource.package_name} from #{orig_version} to #{candidate_version}") do
             upgrade_package(@new_resource.package_name, candidate_version)
             Chef::Log.info("#{@new_resource} upgraded from #{orig_version} to #{candidate_version}")
@@ -100,7 +99,7 @@ class Chef
 
       def action_remove
         if removing_package?
-          description = @new_resource.version ? "version #{@new_resource.version} of " :  ""
+          description = @new_resource.version ? "version #{@new_resource.version} of " :  ''
           converge_by("remove #{description} package #{@current_resource.package_name}") do
             remove_package(@current_resource.package_name, @new_resource.version)
             Chef::Log.info("#{@new_resource} removed")
@@ -124,7 +123,7 @@ class Chef
 
       def action_purge
         if removing_package?
-          description = @new_resource.version ? "version #{@new_resource.version} of" : ""
+          description = @new_resource.version ? "version #{@new_resource.version} of" : ''
           converge_by("purge #{description} package #{@current_resource.package_name}") do
             purge_package(@current_resource.package_name, @new_resource.version)
             Chef::Log.info("#{@new_resource} purged")
@@ -133,7 +132,7 @@ class Chef
       end
 
       def action_reconfig
-        if @current_resource.version == nil then
+        if @current_resource.version.nil? then
           Chef::Log.debug("#{@new_resource} is NOT installed - nothing to do")
           return
         end
@@ -154,28 +153,28 @@ class Chef
         end
       end
 
-      def install_package(name, version)
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :install"
+      def install_package(_name, _version)
+        fail Chef::Exceptions::UnsupportedAction, "#{self} does not support :install"
       end
 
-      def upgrade_package(name, version)
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :upgrade"
+      def upgrade_package(_name, _version)
+        fail Chef::Exceptions::UnsupportedAction, "#{self} does not support :upgrade"
       end
 
-      def remove_package(name, version)
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :remove"
+      def remove_package(_name, _version)
+        fail Chef::Exceptions::UnsupportedAction, "#{self} does not support :remove"
       end
 
-      def purge_package(name, version)
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :purge"
+      def purge_package(_name, _version)
+        fail Chef::Exceptions::UnsupportedAction, "#{self} does not support :purge"
       end
 
-      def preseed_package(file)
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support pre-seeding package install/upgrade instructions"
+      def preseed_package(_file)
+        fail Chef::Exceptions::UnsupportedAction, "#{self} does not support pre-seeding package install/upgrade instructions"
       end
 
-      def reconfig_package(name, version)
-        raise( Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reconfig" )
+      def reconfig_package(_name, _version)
+        fail(Chef::Exceptions::UnsupportedAction, "#{self} does not support :reconfig")
       end
 
       def get_preseed_file(name, version)
@@ -198,7 +197,6 @@ class Chef
 
         Chef::Log.debug("#{@new_resource} fetching preseed file to #{cache_seed_to}")
 
-
         if template_available?(@new_resource.response_file)
           Chef::Log.debug("#{@new_resource} fetching preseed file via Template")
           remote_file = Chef::Resource::Template.new(cache_seed_to, run_context)
@@ -208,7 +206,7 @@ class Chef
           remote_file = Chef::Resource::CookbookFile.new(cache_seed_to, run_context)
         else
           message = "No template or cookbook file found for response file #{@new_resource.response_file}"
-          raise Chef::Exceptions::FileNotFound, message
+          fail Chef::Exceptions::FileNotFound, message
         end
 
         remote_file.cookbook_name = @new_resource.cookbook_name
@@ -218,7 +216,7 @@ class Chef
       end
 
       def expand_options(options)
-        options ? " #{options}" : ""
+        options ? " #{options}" : ''
       end
 
       def target_version_already_installed?
@@ -234,7 +232,6 @@ class Chef
       def cookbook_file_available?(path)
         run_context.has_cookbook_file_in_cookbook?(@new_resource.cookbook_name, path)
       end
-
     end
   end
 end

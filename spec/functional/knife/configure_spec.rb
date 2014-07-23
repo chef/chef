@@ -21,7 +21,7 @@ require 'spec_helper'
 require 'chef/knife/configure'
 require 'ohai'
 
-describe "knife configure" do
+describe 'knife configure' do
   let (:ohai) do
     o = Ohai::System.new
     o.load_plugins
@@ -30,7 +30,7 @@ describe "knife configure" do
     o
   end
 
-  it "loads the fqdn from Ohai" do
+  it 'loads the fqdn from Ohai' do
     knife_configure = Chef::Knife::Configure.new
     hostname_guess = ohai[:fqdn] || ohai[:machinename] || ohai[:hostname] || 'localhost'
     expect(knife_configure.guess_servername).to eql(hostname_guess)

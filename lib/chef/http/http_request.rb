@@ -27,7 +27,7 @@ require 'net/http'
 # However, in ohai before 0.6.0, the version is defined
 # in ohai, not ohai/version
 begin
-  require 'ohai/version' #used in user agent string.
+  require 'ohai/version' # used in user agent string.
 rescue LoadError
   require 'ohai'
 end
@@ -37,33 +37,32 @@ require 'chef/version'
 class Chef
   class HTTP
     class HTTPRequest
-
-      engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : "ruby"
+      engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : 'ruby'
 
       UA_COMMON = "/#{::Chef::VERSION} (#{engine}-#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}; ohai-#{Ohai::VERSION}; #{RUBY_PLATFORM}; +http://opscode.com)"
-      DEFAULT_UA = "Chef Client" << UA_COMMON
+      DEFAULT_UA = 'Chef Client' << UA_COMMON
 
-      USER_AGENT = "User-Agent".freeze
+      USER_AGENT = 'User-Agent'.freeze
 
-      ACCEPT_ENCODING = "Accept-Encoding".freeze
-      ENCODING_GZIP_DEFLATE = "gzip;q=1.0,deflate;q=0.6,identity;q=0.3".freeze
+      ACCEPT_ENCODING = 'Accept-Encoding'.freeze
+      ENCODING_GZIP_DEFLATE = 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3'.freeze
 
-      GET     = "get".freeze
-      PUT     = "put".freeze
-      POST    = "post".freeze
-      DELETE  = "delete".freeze
-      HEAD    = "head".freeze
+      GET     = 'get'.freeze
+      PUT     = 'put'.freeze
+      POST    = 'post'.freeze
+      DELETE  = 'delete'.freeze
+      HEAD    = 'head'.freeze
 
-      HTTPS = "https".freeze
+      HTTPS = 'https'.freeze
 
-      SLASH = "/".freeze
+      SLASH = '/'.freeze
 
-      HOST_LOWER = "host".freeze
+      HOST_LOWER = 'host'.freeze
 
       URI_SCHEME_DEFAULT_PORT = { 'http'  => 80, 'https' => 443 }.freeze
 
-      def self.user_agent=(ua)
-        @user_agent = ua
+      class << self
+        attr_writer :user_agent
       end
 
       def self.user_agent
@@ -72,7 +71,7 @@ class Chef
 
       attr_reader :method, :url, :headers, :http_client, :http_request
 
-      def initialize(method, url, req_body, base_headers={})
+      def initialize(method, url, req_body, base_headers = {})
         @method, @url = method, url
         @request_body = nil
         build_headers(base_headers)
@@ -125,9 +124,9 @@ class Chef
       rescue NoMethodError => e
         # http://redmine.ruby-lang.org/issues/show/2708
         # http://redmine.ruby-lang.org/issues/show/2758
-        if e.to_s =~ /#{Regexp.escape(%q|undefined method `closed?' for nil:NilClass|)}/
-          Chef::Log.debug("Rescued error in http connect, re-raising as Errno::ECONNREFUSED to hide bug in net/http")
-          Chef::Log.debug("#{e.class.name}: #{e.to_s}")
+        if e.to_s =~ /#{Regexp.escape("undefined method `closed?' for nil:NilClass")}/
+          Chef::Log.debug('Rescued error in http connect, re-raising as Errno::ECONNREFUSED to hide bug in net/http')
+          Chef::Log.debug("#{e.class.name}: #{e}")
           Chef::Log.debug(e.backtrace.join("\n"))
           raise Errno::ECONNREFUSED, "Connection refused attempting to contact #{url.scheme}://#{host}:#{port}"
         else
@@ -138,20 +137,19 @@ class Chef
       def build_headers(headers)
         @headers = headers.dup
         # No response compression unless we asked for it explicitly:
-        @headers[HTTPRequest::ACCEPT_ENCODING] ||= "identity"
+        @headers[HTTPRequest::ACCEPT_ENCODING] ||= 'identity'
         @headers['X-Chef-Version'] = ::Chef::VERSION
 
         # Only include port in Host header when it is not the default port
         # for the url scheme (80;443) - Fixes CHEF-5355
         host_header = uri_safe_host.dup
         host_header << ":#{port}" unless URI_SCHEME_DEFAULT_PORT[@url.scheme] == port.to_i
-        @headers['Host'] = host_header unless @headers.keys.any? {|k| k.downcase.to_s == HOST_LOWER }
+        @headers['Host'] = host_header unless @headers.keys.any? { |k| k.downcase.to_s == HOST_LOWER }
 
         @headers
       end
 
-
-      def configure_http_request(request_body=nil)
+      def configure_http_request(request_body = nil)
         req_path = "#{path}"
         req_path << "?#{query}" if query
 
@@ -167,10 +165,10 @@ class Chef
         when HEAD
           Net::HTTP::Head.new(req_path, headers)
         else
-          raise ArgumentError, "You must provide :GET, :PUT, :POST, :DELETE or :HEAD as the method"
+          fail ArgumentError, 'You must provide :GET, :PUT, :POST, :DELETE or :HEAD as the method'
         end
 
-        @http_request.body = request_body if (request_body && @http_request.request_body_permitted?)
+        @http_request.body = request_body if request_body && @http_request.request_body_permitted?
         # Optionally handle HTTP Basic Authentication
         if url.user
           user = URI.unescape(url.user)
@@ -181,7 +179,6 @@ class Chef
         # Overwrite default UA
         @http_request[USER_AGENT] = self.class.user_agent
       end
-
     end
   end
 end

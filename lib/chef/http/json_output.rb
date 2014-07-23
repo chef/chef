@@ -22,16 +22,14 @@ require 'chef/log'
 
 class Chef
   class HTTP
-
     # Middleware that takes an HTTP response, parses it as JSON if possible.
     class JSONOutput
-
-      def initialize(opts={})
+      def initialize(opts = {})
         @raw_output = opts[:raw_output]
         @inflate_json_class = opts[:inflate_json_class]
       end
 
-      def handle_request(method, url, headers={}, data=false)
+      def handle_request(method, url, headers = {}, data = false)
         # Ideally this should always set Accept to application/json, but
         # Chef::REST is sometimes used to make non-JSON requests, so it sets
         # Accept to the desired value before middlewares get called.
@@ -50,7 +48,7 @@ class Chef
             if @inflate_json_class
               return_value = Chef::JSONCompat.from_json(http_response.body.chomp)
             else
-              return_value = Chef::JSONCompat.from_json(http_response.body.chomp, :create_additions => false)
+              return_value = Chef::JSONCompat.from_json(http_response.body.chomp, create_additions: false)
             end
           end
           [http_response, rest_request, return_value]
@@ -64,10 +62,9 @@ class Chef
         [http_response, rest_request, return_value]
       end
 
-      def stream_response_handler(response)
+      def stream_response_handler(_response)
         nil
       end
-
     end
   end
 end

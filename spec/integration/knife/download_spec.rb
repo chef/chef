@@ -24,10 +24,10 @@ describe 'knife download' do
   include KnifeSupport
 
   context 'without versioned cookbooks' do
-    when_the_chef_server "has one of each thing" do
+    when_the_chef_server 'has one of each thing' do
       client 'x', {}
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
-      data_bag 'x', { 'y' => {} }
+      cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"'
+      data_bag 'x',  'y' => {}
       environment 'x', {}
       node 'x', {}
       role 'x', {}
@@ -63,17 +63,17 @@ EOM
       end
 
       when_the_repository 'has an identical copy of each thing' do
-        file 'clients/chef-validator.json', { 'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'clients/chef-webui.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'clients/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/chef-validator.json',  'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'clients/chef-webui.json',  'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'clients/x.json',  'public_key' => ChefZero::PUBLIC_KEY
         file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
         file 'data_bags/x/y.json', {}
-        file 'environments/_default.json', { "description" => "The default Chef environment" }
+        file 'environments/_default.json',  'description' => 'The default Chef environment'
         file 'environments/x.json', {}
         file 'nodes/x.json', {}
         file 'roles/x.json', {}
-        file 'users/admin.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'users/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'users/admin.json',  'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'users/x.json',  'public_key' => ChefZero::PUBLIC_KEY
 
         it 'knife download makes no changes' do
           knife('download /').should_succeed ''
@@ -139,7 +139,7 @@ EOM
         end
 
         context 'as well as one extra copy of each thing' do
-          file 'clients/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+          file 'clients/y.json',  'public_key' => ChefZero::PUBLIC_KEY
           file 'cookbooks/x/blah.rb', ''
           file 'cookbooks/y/metadata.rb', 'version "1.0.0"'
           file 'data_bags/x/z.json', {}
@@ -147,7 +147,7 @@ EOM
           file 'environments/y.json', {}
           file 'nodes/y.json', {}
           file 'roles/y.json', {}
-          file 'users/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+          file 'users/y.json',  'public_key' => ChefZero::PUBLIC_KEY
 
           it 'knife download does nothing' do
             knife('download /').should_succeed ''
@@ -237,7 +237,7 @@ EOM
         context 'when current directory is top level' do
           cwd '.'
           it 'knife download with no parameters reports an error' do
-            knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", :stdout => /USAGE/
+            knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", stdout: /USAGE/
           end
         end
       end
@@ -246,7 +246,7 @@ EOM
     # Test download of an item when the other end doesn't even have the container
     when_the_repository 'is empty' do
       when_the_chef_server 'has two data bag items' do
-        data_bag 'x', { 'y' => {}, 'z' => {} }
+        data_bag 'x',  'y' => {}, 'z' => {}
 
         it 'knife download of one data bag item itself succeeds' do
           knife('download /data_bags/x/y.json').should_succeed <<EOM
@@ -288,11 +288,10 @@ EOM
 EOM
 
       when_the_chef_server 'has a modified, unmodified, added and deleted data bag item' do
-        data_bag 'x', {
-          'added' => {},
-          'modified' => { 'foo' => 'bar' },
-          'unmodified' => {}
-        }
+        data_bag 'x',
+                 'added' => {},
+                 'modified' => { 'foo' => 'bar' },
+                 'unmodified' => {}
 
         it 'knife download of the modified file succeeds' do
           knife('download /data_bags/x/modified.json').should_succeed <<EOM
@@ -357,7 +356,7 @@ EOM
         context 'when cwd is the /data_bags directory' do
           cwd 'data_bags'
           it 'knife download fails' do
-            knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", :stdout => /USAGE/
+            knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", stdout: /USAGE/
           end
           it 'knife download --purge . downloads everything' do
             knife('download --purge .').should_succeed <<EOM
@@ -384,7 +383,7 @@ EOM
       file 'cookbooks/x/z.rb', ''
 
       when_the_chef_server 'has a modified, added and deleted file for the cookbook' do
-        cookbook 'x', '1.0.0', { 'metadata.rb' => 'version  "1.0.0"', 'y.rb' => 'hi' }
+        cookbook 'x', '1.0.0',  'metadata.rb' => 'version  "1.0.0"', 'y.rb' => 'hi'
 
         it 'knife download of a modified file succeeds' do
           knife('download /cookbooks/x/metadata.rb').should_succeed "Updated /cookbooks/x/metadata.rb\n"
@@ -440,8 +439,8 @@ EOM
       file 'cookbooks/x/onlyin1.0.0.rb', 'old_text'
 
       when_the_chef_server 'has a later version for the cookbook' do
-        cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => '' }
-        cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi' }
+        cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''
+        cookbook 'x', '1.0.1',  'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi'
 
         it 'knife download /cookbooks/x downloads the latest version' do
           knife('download --purge /cookbooks/x').should_succeed <<EOM
@@ -454,8 +453,8 @@ EOM
       end
 
       when_the_chef_server 'has an earlier version for the cookbook' do
-        cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''}
-        cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi' }
+        cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''
+        cookbook 'x', '0.9.9',  'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi'
         it 'knife download /cookbooks/x downloads the updated file' do
           knife('download --purge /cookbooks/x').should_succeed <<EOM
 Updated /cookbooks/x/onlyin1.0.0.rb
@@ -465,7 +464,7 @@ EOM
       end
 
       when_the_chef_server 'has a later version for the cookbook, and no current version' do
-        cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi' }
+        cookbook 'x', '1.0.1',  'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi'
 
         it 'knife download /cookbooks/x downloads the latest version' do
           knife('download --purge /cookbooks/x').should_succeed <<EOM
@@ -478,7 +477,7 @@ EOM
       end
 
       when_the_chef_server 'has an earlier version for the cookbook, and no current version' do
-        cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi' }
+        cookbook 'x', '0.9.9',  'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi'
 
         it 'knife download /cookbooks/x downloads the old version' do
           knife('download --purge /cookbooks/x').should_succeed <<EOM
@@ -496,13 +495,13 @@ EOM
       when_the_repository 'has an environment with bad JSON' do
         file 'environments/x.json', '{'
         it 'knife download succeeds' do
-          knife('download /environments/x.json').should_succeed "Updated /environments/x.json\n", :stderr => "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n"
+          knife('download /environments/x.json').should_succeed "Updated /environments/x.json\n", stderr: "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n"
           knife('diff --name-status /environments/x.json').should_succeed ''
         end
       end
 
       when_the_repository 'has the same environment with the wrong name in the file' do
-        file 'environments/x.json', { 'name' => 'y' }
+        file 'environments/x.json',  'name' => 'y'
         it 'knife download succeeds' do
           knife('download /environments/x.json').should_succeed "Updated /environments/x.json\n"
           knife('diff --name-status /environments/x.json').should_succeed ''
@@ -510,7 +509,7 @@ EOM
       end
 
       when_the_repository 'has the same environment with no name in the file' do
-        file 'environments/x.json', { 'description' => 'hi' }
+        file 'environments/x.json',  'description' => 'hi'
         it 'knife download succeeds' do
           knife('download /environments/x.json').should_succeed "Updated /environments/x.json\n"
           knife('diff --name-status /environments/x.json').should_succeed ''
@@ -520,10 +519,10 @@ EOM
   end # without versioned cookbooks
 
   with_versioned_cookbooks do
-    when_the_chef_server "has one of each thing" do
+    when_the_chef_server 'has one of each thing' do
       client 'x', {}
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
-      data_bag 'x', { 'y' => {} }
+      cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"'
+      data_bag 'x',  'y' => {}
       environment 'x', {}
       node 'x', {}
       role 'x', {}
@@ -559,17 +558,17 @@ EOM
       end
 
       when_the_repository 'has an identical copy of each thing' do
-        file 'clients/chef-validator.json', { 'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'clients/chef-webui.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'clients/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/chef-validator.json',  'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'clients/chef-webui.json',  'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'clients/x.json',  'public_key' => ChefZero::PUBLIC_KEY
         file 'cookbooks/x-1.0.0/metadata.rb', 'version "1.0.0"'
         file 'data_bags/x/y.json', {}
-        file 'environments/_default.json', { "description" => "The default Chef environment" }
+        file 'environments/_default.json',  'description' => 'The default Chef environment'
         file 'environments/x.json', {}
         file 'nodes/x.json', {}
         file 'roles/x.json', {}
-        file 'users/admin.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'users/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'users/admin.json',  'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'users/x.json',  'public_key' => ChefZero::PUBLIC_KEY
 
         it 'knife download makes no changes' do
           knife('download /').should_succeed ''
@@ -582,7 +581,7 @@ EOM
         end
 
         context 'except the role file' do
-          file 'roles/x.json', { "description" => "blarghle" }
+          file 'roles/x.json',  'description' => 'blarghle'
 
           it 'knife download changes the role' do
             knife('download /').should_succeed "Updated /roles/x.json\n"
@@ -615,7 +614,7 @@ EOM
         end
 
         context 'as well as one extra copy of each thing' do
-          file 'clients/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+          file 'clients/y.json',  'public_key' => ChefZero::PUBLIC_KEY
           file 'cookbooks/x-1.0.0/blah.rb', ''
           file 'cookbooks/x-2.0.0/metadata.rb', 'version "2.0.0"'
           file 'cookbooks/y-1.0.0/metadata.rb', 'version "1.0.0"'
@@ -624,7 +623,7 @@ EOM
           file 'environments/y.json', {}
           file 'nodes/y.json', {}
           file 'roles/y.json', {}
-          file 'users/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+          file 'users/y.json',  'public_key' => ChefZero::PUBLIC_KEY
 
           it 'knife download does nothing' do
             knife('download /').should_succeed ''
@@ -690,7 +689,7 @@ EOM
         context 'when current directory is top level' do
           cwd '.'
           it 'knife download with no parameters reports an error' do
-            knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", :stdout => /USAGE/
+            knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", stdout: /USAGE/
           end
         end
       end
@@ -699,7 +698,7 @@ EOM
     # Test download of an item when the other end doesn't even have the container
     when_the_repository 'is empty' do
       when_the_chef_server 'has two data bag items' do
-        data_bag 'x', { 'y' => {}, 'z' => {} }
+        data_bag 'x',  'y' => {}, 'z' => {}
 
         it 'knife download of one data bag item itself succeeds' do
           knife('download /data_bags/x/y.json').should_succeed <<EOM
@@ -732,11 +731,10 @@ EOM
 EOM
 
       when_the_chef_server 'has a modified, unmodified, added and deleted data bag item' do
-        data_bag 'x', {
-          'added' => {},
-          'modified' => { 'foo' => 'bar' },
-          'unmodified' => {}
-        }
+        data_bag 'x',
+                 'added' => {},
+                 'modified' => { 'foo' => 'bar' },
+                 'unmodified' => {}
 
         it 'knife download of the modified file succeeds' do
           knife('download /data_bags/x/modified.json').should_succeed <<EOM
@@ -801,7 +799,7 @@ EOM
         context 'when cwd is the /data_bags directory' do
           cwd 'data_bags'
           it 'knife download fails' do
-            knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", :stdout => /USAGE/
+            knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", stdout: /USAGE/
           end
           it 'knife download --purge . downloads everything' do
             knife('download --purge .').should_succeed <<EOM
@@ -828,7 +826,7 @@ EOM
       file 'cookbooks/x-1.0.0/z.rb', ''
 
       when_the_chef_server 'has a modified, added and deleted file for the cookbook' do
-        cookbook 'x', '1.0.0', { 'metadata.rb' => 'version  "1.0.0"', 'y.rb' => 'hi' }
+        cookbook 'x', '1.0.0',  'metadata.rb' => 'version  "1.0.0"', 'y.rb' => 'hi'
 
         it 'knife download of a modified file succeeds' do
           knife('download /cookbooks/x-1.0.0/metadata.rb').should_succeed "Updated /cookbooks/x-1.0.0/metadata.rb\n"
@@ -884,8 +882,8 @@ EOM
       file 'cookbooks/x-1.0.0/onlyin1.0.0.rb', 'old_text'
 
       when_the_chef_server 'has a later version for the cookbook' do
-        cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => '' }
-        cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi' }
+        cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''
+        cookbook 'x', '1.0.1',  'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi'
 
         it 'knife download /cookbooks/x downloads the latest version' do
           knife('download --purge /cookbooks').should_succeed <<EOM
@@ -899,8 +897,8 @@ EOM
       end
 
       when_the_chef_server 'has an earlier version for the cookbook' do
-        cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''}
-        cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi' }
+        cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''
+        cookbook 'x', '0.9.9',  'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi'
         it 'knife download /cookbooks downloads the updated file' do
           knife('download --purge /cookbooks').should_succeed <<EOM
 Created /cookbooks/x-0.9.9
@@ -913,7 +911,7 @@ EOM
       end
 
       when_the_chef_server 'has a later version for the cookbook, and no current version' do
-        cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi' }
+        cookbook 'x', '1.0.1',  'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi'
 
         it 'knife download /cookbooks/x downloads the latest version' do
           knife('download --purge /cookbooks').should_succeed <<EOM
@@ -927,7 +925,7 @@ EOM
       end
 
       when_the_chef_server 'has an earlier version for the cookbook, and no current version' do
-        cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi' }
+        cookbook 'x', '0.9.9',  'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi'
 
         it 'knife download --purge /cookbooks downloads the old version and deletes the new version' do
           knife('download --purge /cookbooks').should_succeed <<EOM
@@ -946,13 +944,13 @@ EOM
       when_the_repository 'has an environment with bad JSON' do
         file 'environments/x.json', '{'
         it 'knife download succeeds' do
-          knife('download /environments/x.json').should_succeed "Updated /environments/x.json\n", :stderr => "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n"
+          knife('download /environments/x.json').should_succeed "Updated /environments/x.json\n", stderr: "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n"
           knife('diff --name-status /environments/x.json').should_succeed ''
         end
       end
 
       when_the_repository 'has the same environment with the wrong name in the file' do
-        file 'environments/x.json', { 'name' => 'y' }
+        file 'environments/x.json',  'name' => 'y'
         it 'knife download succeeds' do
           knife('download /environments/x.json').should_succeed "Updated /environments/x.json\n"
           knife('diff --name-status /environments/x.json').should_succeed ''
@@ -960,7 +958,7 @@ EOM
       end
 
       when_the_repository 'has the same environment with no name in the file' do
-        file 'environments/x.json', { 'description' => 'hi' }
+        file 'environments/x.json',  'description' => 'hi'
         it 'knife download succeeds' do
           knife('download /environments/x.json').should_succeed "Updated /environments/x.json\n"
           knife('diff --name-status /environments/x.json').should_succeed ''
@@ -970,7 +968,7 @@ EOM
   end # with versioned cookbooks
 
   when_the_chef_server 'has a cookbook' do
-    cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
+    cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"'
 
     when_the_repository 'is empty' do
       it 'knife download /cookbooks/x signs all requests', :ruby_gte_19_only do

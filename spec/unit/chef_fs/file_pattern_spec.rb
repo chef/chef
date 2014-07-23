@@ -157,7 +157,7 @@ describe Chef::ChefFS::FilePattern do
     end
   end
 
-  context 'with simple pattern "a\*\b"', :pending => (Chef::Platform.windows?) do
+  context 'with simple pattern "a\*\b"', pending: (Chef::Platform.windows?) do
     let(:pattern) { Chef::ChefFS::FilePattern.new('a\*\b') }
     it 'match?' do
       pattern.match?('a*b').should be_true
@@ -192,7 +192,7 @@ describe Chef::ChefFS::FilePattern do
     end
     it 'exact_child_name_under' do
       pattern.exact_child_name_under('/').should == 'abc'
-      pattern.exact_child_name_under('/abc').should == nil
+      pattern.exact_child_name_under('/abc').should.nil?
       pattern.exact_child_name_under('/abc/def').should == 'ghi'
     end
   end
@@ -226,7 +226,7 @@ describe Chef::ChefFS::FilePattern do
     end
     it 'exact_child_name_under' do
       pattern.exact_child_name_under('/').should == 'abc'
-      pattern.exact_child_name_under('/abc').should == nil
+      pattern.exact_child_name_under('/abc').should.nil?
       pattern.exact_child_name_under('/abc/def').should == 'ghi'
     end
   end
@@ -259,12 +259,12 @@ describe Chef::ChefFS::FilePattern do
     end
     it 'exact_child_name_under' do
       pattern.exact_child_name_under('/').should == 'abc'
-      pattern.exact_child_name_under('/abc').should == nil
+      pattern.exact_child_name_under('/abc').should.nil?
       pattern.exact_child_name_under('/abc/deef').should == 'ghi'
     end
   end
 
-  context 'with star pattern "/abc/d[a-z][0-9]f/ghi"', :pending => (Chef::Platform.windows?) do
+  context 'with star pattern "/abc/d[a-z][0-9]f/ghi"', pending: (Chef::Platform.windows?) do
     let(:pattern) { Chef::ChefFS::FilePattern.new('/abc/d[a-z][0-9]f/ghi') }
     it 'match?' do
       pattern.match?('/abc/de1f/ghi').should be_true
@@ -297,7 +297,7 @@ describe Chef::ChefFS::FilePattern do
     end
     it 'exact_child_name_under' do
       pattern.exact_child_name_under('/').should == 'abc'
-      pattern.exact_child_name_under('/abc').should == nil
+      pattern.exact_child_name_under('/abc').should.nil?
       pattern.exact_child_name_under('/abc/de1f').should == 'ghi'
     end
   end
@@ -326,8 +326,8 @@ describe Chef::ChefFS::FilePattern do
     end
     it 'exact_child_name_under' do
       pattern.exact_child_name_under('/').should == 'abc'
-      pattern.exact_child_name_under('/abc').should == nil
-      pattern.exact_child_name_under('/abc/def').should == nil
+      pattern.exact_child_name_under('/abc').should.nil?
+      pattern.exact_child_name_under('/abc/def').should.nil?
     end
   end
 
@@ -359,9 +359,9 @@ describe Chef::ChefFS::FilePattern do
       end
     end
     it 'exact_child_name_under' do
-      pattern.exact_child_name_under('/').should == nil
-      pattern.exact_child_name_under('/abc').should == nil
-      pattern.exact_child_name_under('/abc/def').should == nil
+      pattern.exact_child_name_under('/').should.nil?
+      pattern.exact_child_name_under('/abc').should.nil?
+      pattern.exact_child_name_under('/abc/def').should.nil?
     end
   end
 
@@ -391,8 +391,8 @@ describe Chef::ChefFS::FilePattern do
     end
     it 'exact_child_name_under' do
       pattern.exact_child_name_under('/').should == 'abc'
-      pattern.exact_child_name_under('/abc').should == nil
-      pattern.exact_child_name_under('/abc/def').should == nil
+      pattern.exact_child_name_under('/abc').should.nil?
+      pattern.exact_child_name_under('/abc/def').should.nil?
     end
   end
 
@@ -441,7 +441,7 @@ describe Chef::ChefFS::FilePattern do
       p('/.').exact_path.should == '/'
       p('/.').match?('/').should be_true
     end
-    it 'handles dot by itself', :pending => "decide what to do with dot by itself" do
+    it 'handles dot by itself', pending: 'decide what to do with dot by itself' do
       p('.').normalized_pattern.should == '.'
       p('.').exact_path.should == '.'
       p('.').match?('.').should be_true
@@ -490,7 +490,6 @@ describe Chef::ChefFS::FilePattern do
       p('/..').match?('/').should be_true
     end
   end
-
 
   # match?
   #  - single element matches (empty, fixed, ?, *, characters, escapes)

@@ -21,25 +21,24 @@ require 'chef/knife'
 class Chef
   class Knife
     class EnvironmentCreate < Knife
-
       deps do
         require 'chef/environment'
         require 'chef/json_compat'
       end
 
-      banner "knife environment create ENVIRONMENT (options)"
+      banner 'knife environment create ENVIRONMENT (options)'
 
       option :description,
-        :short => "-d DESCRIPTION",
-        :long => "--description DESCRIPTION",
-        :description => "The environment description"
+             short: '-d DESCRIPTION',
+             long: '--description DESCRIPTION',
+             description: 'The environment description'
 
       def run
         env_name = @name_args[0]
 
         if env_name.nil?
           show_usage
-          ui.fatal("You must specify an environment name")
+          ui.fatal('You must specify an environment name')
           exit 1
         end
 

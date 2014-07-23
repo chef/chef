@@ -24,12 +24,10 @@ require 'chef/formatters/error_mapper'
 require 'chef/formatters/indentable_output_stream'
 
 class Chef
-
   # == Chef::Formatters
   # Formatters handle printing output about the progress/status of a chef
   # client run to the user's screen.
   module Formatters
-
     class UnknownFormatter < StandardError; end
 
     def self.formatters_by_name
@@ -52,7 +50,7 @@ class Chef
     # TODO: is it too clever to be defining new() on a module like this?
     def self.new(name, out, err)
       formatter_class = by_name(name.to_s) or
-        raise UnknownFormatter, "No output formatter found for #{name} (available: #{available_formatters.join(', ')})"
+        fail UnknownFormatter, "No output formatter found for #{name} (available: #{available_formatters.join(', ')})"
 
       formatter_class.new(out, err)
     end
@@ -60,7 +58,6 @@ class Chef
     # == Formatters::Base
     # Base class that all formatters should inherit from.
     class Base < EventDispatch::Base
-
       include ErrorMapper
 
       def self.cli_name(name)
@@ -98,12 +95,12 @@ class Chef
       # Input: a Formatters::ErrorDescription object.
       # Outputs error to STDOUT.
       def display_error(description)
-        puts("")
+        puts('')
         description.display(output)
       end
 
       def registration_failed(node_name, exception, config)
-        #A Formatters::ErrorDescription object
+        # A Formatters::ErrorDescription object
         description = ErrorMapper.registration_failed(node_name, exception, config)
         display_error(description)
       end
@@ -139,7 +136,7 @@ class Chef
       # Formatters::Base can implement #file_loaded to do the same thing for
       # every kind of file that Chef loads from a recipe instead of
       # implementing all the per-filetype callbacks.
-      def file_loaded(path)
+      def file_loaded(_path)
       end
 
       # Generic callback for any attribute/library/lwrp/recipe file throwing an
@@ -204,18 +201,13 @@ class Chef
       def recipe_file_load_failed(path, exception)
         file_load_failed(path, exception)
       end
-
     end
-
 
     # == NullFormatter
     # Formatter that doesn't actually produce any output. You can use this to
     # disable the use of output formatters.
     class NullFormatter < Base
-
       cli_name(:null)
-
     end
-
   end
 end

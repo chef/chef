@@ -22,14 +22,14 @@ require 'spec_helper'
 describe Chef::Resource::Scm do
 
   before(:each) do
-    @resource = Chef::Resource::Scm.new("my awesome app")
+    @resource = Chef::Resource::Scm.new('my awesome app')
   end
 
-  it "should be a SCM resource" do
+  it 'should be a SCM resource' do
     @resource.should be_a_kind_of(Chef::Resource::Scm)
   end
 
-  it "supports :checkout, :export, :sync, :diff, and :log actions" do
+  it 'supports :checkout, :export, :sync, :diff, and :log actions' do
     @resource.allowed_actions.should include(:checkout)
     @resource.allowed_actions.should include(:export)
     @resource.allowed_actions.should include(:sync)
@@ -37,145 +37,145 @@ describe Chef::Resource::Scm do
     @resource.allowed_actions.should include(:log)
   end
 
-  it "takes the destination path as a string" do
-    @resource.destination "/path/to/deploy/dir"
-    @resource.destination.should eql("/path/to/deploy/dir")
+  it 'takes the destination path as a string' do
+    @resource.destination '/path/to/deploy/dir'
+    @resource.destination.should eql('/path/to/deploy/dir')
   end
 
-  it "takes a string for the repository URL" do
-    @resource.repository "git://github.com/opscode/chef.git"
-    @resource.repository.should eql("git://github.com/opscode/chef.git")
+  it 'takes a string for the repository URL' do
+    @resource.repository 'git://github.com/opscode/chef.git'
+    @resource.repository.should eql('git://github.com/opscode/chef.git')
   end
 
-  it "takes a string for the revision" do
-    @resource.revision "abcdef"
-    @resource.revision.should eql("abcdef")
+  it 'takes a string for the revision' do
+    @resource.revision 'abcdef'
+    @resource.revision.should eql('abcdef')
   end
 
   it "defaults to the ``HEAD'' revision" do
-    @resource.revision.should eql("HEAD")
+    @resource.revision.should eql('HEAD')
   end
 
-  it "takes a string for the user to run as" do
-    @resource.user "dr_deploy"
-    @resource.user.should eql("dr_deploy")
+  it 'takes a string for the user to run as' do
+    @resource.user 'dr_deploy'
+    @resource.user.should eql('dr_deploy')
   end
 
-  it "also takes an integer for the user to run as" do
+  it 'also takes an integer for the user to run as' do
     @resource.user 0
     @resource.user.should eql(0)
   end
 
-  it "takes a string for the group to run as, defaulting to nil" do
+  it 'takes a string for the group to run as, defaulting to nil' do
     @resource.group.should be_nil
-    @resource.group "opsdevs"
-    @resource.group.should == "opsdevs"
+    @resource.group 'opsdevs'
+    @resource.group.should == 'opsdevs'
   end
 
-  it "also takes an integer for the group to run as" do
+  it 'also takes an integer for the group to run as' do
     @resource.group 23
     @resource.group.should == 23
   end
 
-  it "has a svn_username String attribute" do
-    @resource.svn_username "moartestsplz"
-    @resource.svn_username.should eql("moartestsplz")
+  it 'has a svn_username String attribute' do
+    @resource.svn_username 'moartestsplz'
+    @resource.svn_username.should eql('moartestsplz')
   end
 
-  it "has a svn_password String attribute" do
-    @resource.svn_password "taftplz"
-    @resource.svn_password.should eql("taftplz")
+  it 'has a svn_password String attribute' do
+    @resource.svn_password 'taftplz'
+    @resource.svn_password.should eql('taftplz')
   end
 
-  it "has a svn_arguments String attribute" do
-    @resource.svn_arguments "--more-taft plz"
-    @resource.svn_arguments.should eql("--more-taft plz")
+  it 'has a svn_arguments String attribute' do
+    @resource.svn_arguments '--more-taft plz'
+    @resource.svn_arguments.should eql('--more-taft plz')
   end
 
-  it "has a svn_info_args String attribute" do
+  it 'has a svn_info_args String attribute' do
     @resource.svn_info_args.should be_nil
-    @resource.svn_info_args("--no-moar-plaintext-creds yep")
-    @resource.svn_info_args.should == "--no-moar-plaintext-creds yep"
+    @resource.svn_info_args('--no-moar-plaintext-creds yep')
+    @resource.svn_info_args.should == '--no-moar-plaintext-creds yep'
   end
 
-  it "takes the depth as an integer for shallow clones" do
+  it 'takes the depth as an integer for shallow clones' do
     @resource.depth 5
     @resource.depth.should == 5
-    lambda {@resource.depth "five"}.should raise_error(ArgumentError)
+    lambda { @resource.depth 'five' }.should raise_error(ArgumentError)
   end
 
-  it "defaults to nil depth for a full clone" do
+  it 'defaults to nil depth for a full clone' do
     @resource.depth.should be_nil
   end
 
-  it "takes a boolean for #enable_submodules" do
+  it 'takes a boolean for #enable_submodules' do
     @resource.enable_submodules true
     @resource.enable_submodules.should be_true
-    lambda {@resource.enable_submodules "lolz"}.should raise_error(ArgumentError)
+    lambda { @resource.enable_submodules 'lolz' }.should raise_error(ArgumentError)
   end
 
-  it "defaults to not enabling submodules" do
+  it 'defaults to not enabling submodules' do
     @resource.enable_submodules.should be_false
   end
 
-  it "takes a boolean for #enable_checkout" do
+  it 'takes a boolean for #enable_checkout' do
     @resource.enable_checkout true
     @resource.enable_checkout.should be_true
-    lambda {@resource.enable_checkout "lolz"}.should raise_error(ArgumentError)
+    lambda { @resource.enable_checkout 'lolz' }.should raise_error(ArgumentError)
   end
 
-  it "defaults to enabling checkout" do
+  it 'defaults to enabling checkout' do
     @resource.enable_checkout.should be_true
   end
 
-  it "takes a string for the remote" do
-    @resource.remote "opscode"
-    @resource.remote.should eql("opscode")
-    lambda {@resource.remote 1337}.should raise_error(ArgumentError)
+  it 'takes a string for the remote' do
+    @resource.remote 'opscode'
+    @resource.remote.should eql('opscode')
+    lambda { @resource.remote 1337 }.should raise_error(ArgumentError)
   end
 
   it "defaults to ``origin'' for the remote" do
-    @resource.remote.should == "origin"
+    @resource.remote.should == 'origin'
   end
 
-  it "takes a string for the ssh wrapper" do
-    @resource.ssh_wrapper "with_ssh_fu"
-    @resource.ssh_wrapper.should eql("with_ssh_fu")
+  it 'takes a string for the ssh wrapper' do
+    @resource.ssh_wrapper 'with_ssh_fu'
+    @resource.ssh_wrapper.should eql('with_ssh_fu')
   end
 
-  it "defaults to nil for the ssh wrapper" do
+  it 'defaults to nil for the ssh wrapper' do
     @resource.ssh_wrapper.should be_nil
   end
 
-  describe "when it has a timeout attribute" do
+  describe 'when it has a timeout attribute' do
     let(:ten_seconds) { 10 }
     before { @resource.timeout(ten_seconds) }
-    it "stores this timeout" do
+    it 'stores this timeout' do
       @resource.timeout.should == ten_seconds
     end
   end
-  describe "when it has no timeout attribute" do
-    it "should have no default timeout" do
+  describe 'when it has no timeout attribute' do
+    it 'should have no default timeout' do
       @resource.timeout.should be_nil
     end
   end
 
-  describe "when it has repository, revision, user, and group" do
+  describe 'when it has repository, revision, user, and group' do
     before do
-      @resource.destination("hell")
-      @resource.repository("apt")
-      @resource.revision("1.2.3")
-      @resource.user("root")
-      @resource.group("super_adventure_club")
+      @resource.destination('hell')
+      @resource.repository('apt')
+      @resource.revision('1.2.3')
+      @resource.user('root')
+      @resource.group('super_adventure_club')
     end
 
-    it "describes its state" do
+    it 'describes its state' do
       state = @resource.state
-      state[:revision].should == "1.2.3"
+      state[:revision].should == '1.2.3'
     end
 
-    it "returns the destination as its identity" do
-      @resource.identity.should == "hell"
+    it 'returns the destination as its identity' do
+      @resource.identity.should == 'hell'
     end
   end
 

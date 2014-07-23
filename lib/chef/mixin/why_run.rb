@@ -20,7 +20,6 @@
 class Chef
   module Mixin
     module WhyRun
-
       # ==ConvergeActions
       # ConvergeActions implements the logic for why run. A ConvergeActions
       # object wraps a collection of actions, which consist of a descriptive
@@ -34,7 +33,7 @@ class Chef
       class ConvergeActions
         attr_reader :actions
 
-        def initialize(resource, run_context, action)
+        def initialize(resource, run_context, _action)
           @resource, @run_context = resource, run_context
           @actions = []
         end
@@ -48,7 +47,7 @@ class Chef
         # block/proc that implements the action.
         def add_action(descriptions, &block)
           @actions << [descriptions, block]
-          if !Chef::Config[:why_run]
+          unless Chef::Config[:why_run]
             block.call
           end
           events.resource_update_applied(@resource, @action, descriptions)
@@ -122,7 +121,6 @@ class Chef
       # method, which gets mixed in to providers. See that method's
       # documentation for examples.
       class ResourceRequirements
-
         # Implements the logic for a single assertion/assumption. See the
         # documentation for ResourceRequirements for full discussion.
         class Assertion
@@ -170,7 +168,7 @@ class Chef
             when 2
               @exception_type, @failure_message = args[0], args[1]
             else
-              raise ArgumentError, "#{self.class}#failure_message takes 1 or 2 arguments, you gave #{args.inspect}"
+              fail ArgumentError, "#{self.class}#failure_message takes 1 or 2 arguments, you gave #{args.inspect}"
             end
           end
 
@@ -222,7 +220,6 @@ class Chef
             @assertion_failed
           end
 
-
           # Runs the assertion/assumption logic. Will raise an Exception of the
           # type specified in #failure_message (or AssertionFailure by default)
           # if the requirement is not met and Chef is not running in why run
@@ -238,7 +235,7 @@ class Chef
               else
                 if @failure_message
                   events.provider_requirement_failed(action, resource, @exception_type, @failure_message)
-                  raise @exception_type, @failure_message
+                  fail @exception_type, @failure_message
                 end
               end
             end
@@ -247,7 +244,7 @@ class Chef
 
         def initialize(resource, run_context)
           @resource, @run_context = resource, run_context
-          @assertions = Hash.new {|h,k| h[k] = [] }
+          @assertions = Hash.new { |h, k| h[k] = [] }
           @blocked_actions = []
         end
 
@@ -313,7 +310,7 @@ class Chef
         def assert(*actions)
           assertion = Assertion.new
           yield assertion
-          actions.each {|action| @assertions[action] << assertion }
+          actions.each { |action| @assertions[action] << assertion }
         end
 
         # Run the assertion and assumption logic.

@@ -22,34 +22,34 @@ Chef::Knife::NodeFromFile.load_deps
 
 describe Chef::Knife::NodeFromFile do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name]  = 'webmonkey.example.com'
     @knife = Chef::Knife::NodeFromFile.new
     @knife.config = {
-      :print_after => nil
+      print_after: nil
     }
-    @knife.name_args = [ "adam.rb" ]
+    @knife.name_args = ['adam.rb']
     @knife.stub(:output).and_return(true)
     @knife.stub(:confirm).and_return(true)
-    @node = Chef::Node.new()
+    @node = Chef::Node.new
     @node.stub(:save)
     @knife.loader.stub(:load_from).and_return(@node)
     @stdout = StringIO.new
     @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
-  describe "run" do
-    it "should load from a file" do
+  describe 'run' do
+    it 'should load from a file' do
       @knife.loader.should_receive(:load_from).with('nodes', 'adam.rb').and_return(@node)
       @knife.run
     end
 
-    it "should not print the Node" do
+    it 'should not print the Node' do
       @knife.should_not_receive(:output)
       @knife.run
     end
 
-    describe "with -p or --print-after" do
-      it "should print the Node" do
+    describe 'with -p or --print-after' do
+      it 'should print the Node' do
         @knife.config[:print_after] = true
         @knife.should_receive(:output)
         @knife.run

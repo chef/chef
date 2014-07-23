@@ -47,10 +47,10 @@ class Chef
       def backup_filename
         @backup_filename ||= begin
           time = Time.now
-          nanoseconds = sprintf("%6f", time.to_f).split('.')[1]
+          nanoseconds = sprintf('%6f', time.to_f).split('.')[1]
           savetime = time.strftime("%Y%m%d%H%M%S.#{nanoseconds}")
           backup_filename = "#{path}.chef-#{savetime}"
-          backup_filename = backup_filename.sub(/^([A-Za-z]:)/, "") #strip drive letter on Windows
+          backup_filename = backup_filename.sub(/^([A-Za-z]:)/, '') # strip drive letter on Windows
         end
       end
 
@@ -67,7 +67,7 @@ class Chef
 
       def do_backup
         FileUtils.mkdir_p(::File.dirname(backup_path)) if Chef::Config[:file_backup_path]
-        FileUtils.cp(path, backup_path, :preserve => true)
+        FileUtils.cp(path, backup_path, preserve: true)
         Chef::Log.info("#{@new_resource} backed up to #{backup_path}")
       end
 
@@ -77,9 +77,8 @@ class Chef
       end
 
       def sorted_backup_files
-        Dir[::File.join(prefix, ".#{path}.chef-*")].sort { |a,b| b <=> a }
+        Dir[::File.join(prefix, ".#{path}.chef-*")].sort { |a, b| b <=> a }
       end
     end
   end
 end
-

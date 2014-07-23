@@ -3,21 +3,19 @@ require 'chef/util/threaded_job_queue'
 require 'singleton'
 
 class Chef
-
   # Keep track of the filenames that we use in both eager cookbook
   # downloading (during sync_cookbooks) and lazy (during the run
   # itself, through FileVendor). After the run is over, clean up the
   # cache.
   class CookbookCacheCleaner
-
     # Setup a notification to clear the valid_cache_entries when a Chef client
     # run starts
-    Chef::Client.when_run_starts do |run_status|
+    Chef::Client.when_run_starts do |_run_status|
       instance.reset!
     end
 
     # Register a notification to cleanup unused files from cookbooks
-    Chef::Client.when_run_completes_successfully do |run_status|
+    Chef::Client.when_run_completes_successfully do |_run_status|
       instance.cleanup_file_cache
     end
 
@@ -43,7 +41,7 @@ class Chef
       unless Chef::Config[:solo]
         # Delete each file in the cache that we didn't encounter in the
         # manifest.
-        cache.find(File.join(%w{cookbooks ** *})).each do |cache_filename|
+        cache.find(File.join(%w(cookbooks ** *))).each do |cache_filename|
           unless @valid_cache_entries[cache_filename]
             Chef::Log.info("Removing #{cache_filename} from the cache; it is no longer needed by chef-client.")
             cache.delete(cache_filename)
@@ -51,7 +49,6 @@ class Chef
         end
       end
     end
-
   end
 
   # Synchronizes the locally cached copies of cookbooks with the files on the
@@ -93,7 +90,7 @@ class Chef
     end
 
     def files
-      @files ||= cookbooks.inject([]) do |memo, cookbook|
+      @files ||= cookbooks.reduce([]) do |memo, cookbook|
         @eager_segments.each do |segment|
           cookbook.manifest[segment].each do |manifest_record|
             memo << CookbookFile.new(cookbook, segment, manifest_record)
@@ -109,7 +106,7 @@ class Chef
 
     def files_remaining_by_cookbook
       @files_remaining_by_cookbook ||= begin
-        files_by_cookbook.inject({}) do |memo, (cookbook, files)|
+        files_by_cookbook.reduce({}) do |memo, (cookbook, files)|
           memo[cookbook] = files.size
           memo
         end
@@ -125,11 +122,11 @@ class Chef
     end
 
     # Synchronizes all the cookbooks from the chef-server.
-    #)
+    # )
     # === Returns
     # true:: Always returns true
     def sync_cookbooks
-      Chef::Log.info("Loading cookbooks [#{cookbooks.map {|ckbk| ckbk.name + '@' + ckbk.version}.join(', ')}]")
+      Chef::Log.info("Loading cookbooks [#{cookbooks.map { |ckbk| ckbk.name + '@' + ckbk.version }.join(', ')}]")
       Chef::Log.debug("Cookbooks detail: #{cookbooks.inspect}")
 
       clear_obsoleted_cookbooks
@@ -151,9 +148,9 @@ class Chef
       @events.cookbook_sync_start(cookbook_count)
       queue.process(Chef::Config[:cookbook_sync_threads])
       # Update the full file paths in the manifest
-      update_cookbook_filenames()
+      update_cookbook_filenames
 
-    rescue Exception => e
+    rescue => e
       @events.cookbook_sync_failed(cookbooks, e)
       raise
     else
@@ -164,8 +161,8 @@ class Chef
     # Saves the full_path to the file of the cookbook to be updated
     # in the manifest later
     def save_full_file_path(file, full_path)
-      @cookbook_full_file_paths[file.cookbook] ||= { }
-      @cookbook_full_file_paths[file.cookbook][file.segment] ||= [ ]
+      @cookbook_full_file_paths[file.cookbook] ||= {}
+      @cookbook_full_file_paths[file.cookbook][file.segment] ||= []
       @cookbook_full_file_paths[file.cookbook][file.segment] << full_path
     end
 
@@ -174,9 +171,9 @@ class Chef
     def clear_obsoleted_cookbooks
       @events.cookbook_clean_start
       # Remove all cookbooks no longer relevant to this node
-      cache.find(File.join(%w{cookbooks ** *})).each do |cache_file|
+      cache.find(File.join(%w(cookbooks ** *))).each do |cache_file|
         cache_file =~ /^cookbooks\/([^\/]+)\//
-        unless have_cookbook?($1)
+        unless have_cookbook?(Regexp.last_match[1])
           Chef::Log.info("Removing #{cache_file} from the cache; its cookbook is no longer needed on this client.")
           cache.delete(cache_file)
           @events.removed_cookbook_file(cache_file)
@@ -202,7 +199,7 @@ class Chef
     # === Returns
     # Full path to the cached file as a String
     def sync_file(file)
-      cache_filename = File.join("cookbooks", file.cookbook.name, file.manifest_record['path'])
+      cache_filename = File.join('cookbooks', file.cookbook.name, file.manifest_record['path'])
       mark_cached_file_valid(cache_filename)
 
       # If the checksums are different between on-disk (current) and on-server
@@ -220,7 +217,7 @@ class Chef
     end
 
     def cached_copy_up_to_date?(local_path, expected_checksum)
-      if cache.has_key?(local_path)
+      if cache.key?(local_path)
         current_checksum = CookbookVersion.checksum_cookbook_file(cache.load(local_path, false))
         expected_checksum == current_checksum
       else
@@ -246,6 +243,5 @@ class Chef
     def server_api
       Chef::REST.new(Chef::Config[:chef_server_url])
     end
-
   end
 end

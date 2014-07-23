@@ -38,10 +38,9 @@ require 'chef/whitelist'
 
 class Chef
   class Node
-
     extend Forwardable
 
-    def_delegators :attributes, :keys, :each_key, :each_value, :key?, :has_key?
+    def_delegators :attributes, :keys, :each_key, :each_value, :key?, :key?
 
     attr_accessor :recipe_list, :run_state, :override_runlist
 
@@ -82,13 +81,13 @@ class Chef
     end
 
     # Set the name of this Node, or return the current name.
-    def name(arg=nil)
-      if arg != nil
+    def name(arg = nil)
+      if !arg.nil?
         validate(
-                 {:name => arg },
-                 {:name => { :kind_of => String,
-                     :cannot_be => :blank,
-                     :regex => /^[\-[:alnum:]_:.]+$/}
+                 { name: arg },
+                 { name: { kind_of: String,
+                           cannot_be: :blank,
+                           regex: /^[\-[:alnum:]_:.]+$/ }
                  })
         @name = arg
       else
@@ -96,11 +95,11 @@ class Chef
       end
     end
 
-    def chef_environment(arg=nil)
+    def chef_environment(arg = nil)
       set_or_return(
         :chef_environment,
         arg,
-        { :regex => /^[\-[:alnum:]_]+$/, :kind_of => String }
+        regex: /^[\-[:alnum:]_]+$/, kind_of: String
       )
     end
 
@@ -108,14 +107,12 @@ class Chef
       chef_environment(environment)
     end
 
-    alias :environment :chef_environment
+    alias_method :environment, :chef_environment
 
-    def attributes
-      @attributes
-    end
+    attr_reader :attributes
 
-    alias :attribute :attributes
-    alias :construct_attributes :attributes
+    alias_method :attribute, :attributes
+    alias_method :construct_attributes, :attributes
 
     # Return an attribute of this node.  Returns nil if the attribute is not found.
     def [](attrib)
@@ -181,9 +178,8 @@ class Chef
       attributes.override
     end
 
-
     def override_attrs
-     attributes.override
+      attributes.override
     end
 
     def override_attrs=(new_values)
@@ -261,9 +257,7 @@ class Chef
       run_list.include?("role[#{role_name}]")
     end
 
-    def primary_runlist
-      @primary_runlist
-    end
+    attr_reader :primary_runlist
 
     def override_runlist(*args)
       args.length > 0 ? @override_runlist.reset!(args) : @override_runlist
@@ -287,28 +281,28 @@ class Chef
 
     # Returns true if this Node expects a given role, false if not.
     def run_list?(item)
-      run_list.detect { |r| r == item } ? true : false
+      run_list.find { |r| r == item } ? true : false
     end
 
     # Consume data from ohai and Attributes provided as JSON on the command line.
     def consume_external_attrs(ohai_data, json_cli_attrs)
-      Chef::Log.debug("Extracting run list from JSON attributes provided on command line")
+      Chef::Log.debug('Extracting run list from JSON attributes provided on command line')
       consume_attributes(json_cli_attrs)
 
       self.automatic_attrs = ohai_data
 
       platform, version = Chef::Platform.find_platform_and_version(self)
       Chef::Log.debug("Platform is #{platform} version #{version}")
-      self.automatic[:platform] = platform
-      self.automatic[:platform_version] = version
+      automatic[:platform] = platform
+      automatic[:platform_version] = version
     end
 
     # Consumes the combined run_list and other attributes in +attrs+
     def consume_attributes(attrs)
       normal_attrs_to_merge = consume_run_list(attrs)
-      Chef::Log.debug("Applying attributes from json file")
-      self.normal_attrs = Chef::Mixin::DeepMerge.merge(normal_attrs,normal_attrs_to_merge)
-      self.tags # make sure they're defined
+      Chef::Log.debug('Applying attributes from json file')
+      self.normal_attrs = Chef::Mixin::DeepMerge.merge(normal_attrs, normal_attrs_to_merge)
+      tags # make sure they're defined
     end
 
     # Lazy initializer for tags attribute
@@ -319,7 +313,7 @@ class Chef
 
     def tag(*tags)
       tags.each do |tag|
-        self.normal[:tags].push(tag.to_s) unless self[:tags].include? tag.to_s
+        normal[:tags].push(tag.to_s) unless self[:tags].include? tag.to_s
       end
 
       self[:tags]
@@ -328,9 +322,9 @@ class Chef
     # Extracts the run list from +attrs+ and applies it. Returns the remaining attributes
     def consume_run_list(attrs)
       attrs = attrs ? attrs.dup : {}
-      if new_run_list = attrs.delete("recipes") || attrs.delete("run_list")
-        if attrs.key?("recipes") || attrs.key?("run_list")
-          raise Chef::Exceptions::AmbiguousRunlistSpecification, "please set the node's run list using the 'run_list' attribute only."
+      if new_run_list = attrs.delete('recipes') || attrs.delete('run_list')
+        if attrs.key?('recipes') || attrs.key?('run_list')
+          fail Chef::Exceptions::AmbiguousRunlistSpecification, "please set the node's run list using the 'run_list' attribute only."
         end
         Chef::Log.info("Setting the run_list to #{new_run_list.inspect} from CLI options")
         run_list(new_run_list)
@@ -341,8 +335,8 @@ class Chef
     # Clear defaults and overrides, so that any deleted attributes
     # between runs are still gone.
     def reset_defaults_and_overrides
-      self.default.clear
-      self.override.clear
+      default.clear
+      override.clear
     end
 
     # Expands the node's run list and sets the default and override
@@ -359,9 +353,9 @@ class Chef
     # invalidated only when run_list is mutated?
     def expand!(data_source = 'server')
       expansion = run_list.expand(chef_environment, data_source)
-      raise Chef::Exceptions::MissingRole, expansion if expansion.errors?
+      fail Chef::Exceptions::MissingRole, expansion if expansion.errors?
 
-      self.tags # make sure they're defined
+      tags # make sure they're defined
 
       automatic_attrs[:recipes] = expansion.recipes
       automatic_attrs[:roles] = expansion.roles
@@ -374,8 +368,8 @@ class Chef
     # Apply the default and overrides attributes from the expansion
     # passed in, which came from roles.
     def apply_expansion_attributes(expansion)
-      loaded_environment = if chef_environment == "_default"
-                             Chef::Environment.new.tap {|e| e.name("_default")}
+      loaded_environment = if chef_environment == '_default'
+                             Chef::Environment.new.tap { |e| e.name('_default') }
                            else
                              Chef::Environment.load(chef_environment)
                            end
@@ -389,28 +383,28 @@ class Chef
 
     # Transform the node to a Hash
     def to_hash
-      index_hash = Hash.new
-      index_hash["chef_type"] = "node"
-      index_hash["name"] = name
-      index_hash["chef_environment"] = chef_environment
+      index_hash = {}
+      index_hash['chef_type'] = 'node'
+      index_hash['name'] = name
+      index_hash['chef_environment'] = chef_environment
       attribute.each do |key, value|
         index_hash[key] = value
       end
-      index_hash["recipe"] = run_list.recipe_names if run_list.recipe_names.length > 0
-      index_hash["role"] = run_list.role_names if run_list.role_names.length > 0
-      index_hash["run_list"] = run_list.run_list if run_list.run_list.length > 0
+      index_hash['recipe'] = run_list.recipe_names if run_list.recipe_names.length > 0
+      index_hash['role'] = run_list.role_names if run_list.role_names.length > 0
+      index_hash['run_list'] = run_list.run_list if run_list.run_list.length > 0
       index_hash
     end
 
     def display_hash
       display = {}
-      display["name"]             = name
-      display["chef_environment"] = chef_environment
-      display["automatic"]        = automatic_attrs
-      display["normal"]           = normal_attrs
-      display["default"]          = attributes.combined_default
-      display["override"]         = attributes.combined_override
-      display["run_list"]         = run_list.run_list
+      display['name']             = name
+      display['chef_environment'] = chef_environment
+      display['automatic']        = automatic_attrs
+      display['normal']           = normal_attrs
+      display['default']          = attributes.combined_default
+      display['override']         = attributes.combined_override
+      display['run_list']         = run_list.run_list
       display
     end
 
@@ -421,16 +415,16 @@ class Chef
 
     def for_json
       result = {
-        "name" => name,
-        "chef_environment" => chef_environment,
+        'name' => name,
+        'chef_environment' => chef_environment,
         'json_class' => self.class.name,
-        "automatic" => attributes.automatic,
-        "normal" => attributes.normal,
-        "chef_type" => "node",
-        "default" => attributes.combined_default,
-        "override" => attributes.combined_override,
-        #Render correctly for run_list items so malformed json does not result
-        "run_list" => @primary_runlist.run_list.map { |item| item.to_s }
+        'automatic' => attributes.automatic,
+        'normal' => attributes.normal,
+        'chef_type' => 'node',
+        'default' => attributes.combined_default,
+        'override' => attributes.combined_override,
+        # Render correctly for run_list items so malformed json does not result
+        'run_list' => @primary_runlist.run_list.map { |item| item.to_s }
       }
       result
     end
@@ -448,43 +442,43 @@ class Chef
     # Create a Chef::Node from JSON
     def self.json_create(o)
       node = new
-      node.name(o["name"])
-      node.chef_environment(o["chef_environment"])
-      if o.has_key?("attributes")
-        node.normal_attrs = o["attributes"]
+      node.name(o['name'])
+      node.chef_environment(o['chef_environment'])
+      if o.key?('attributes')
+        node.normal_attrs = o['attributes']
       end
-      node.automatic_attrs = Mash.new(o["automatic"]) if o.has_key?("automatic")
-      node.normal_attrs = Mash.new(o["normal"]) if o.has_key?("normal")
-      node.default_attrs = Mash.new(o["default"]) if o.has_key?("default")
-      node.override_attrs = Mash.new(o["override"]) if o.has_key?("override")
+      node.automatic_attrs = Mash.new(o['automatic']) if o.key?('automatic')
+      node.normal_attrs = Mash.new(o['normal']) if o.key?('normal')
+      node.default_attrs = Mash.new(o['default']) if o.key?('default')
+      node.override_attrs = Mash.new(o['override']) if o.key?('override')
 
-      if o.has_key?("run_list")
-        node.run_list.reset!(o["run_list"])
+      if o.key?('run_list')
+        node.run_list.reset!(o['run_list'])
       else
-        o["recipes"].each { |r| node.recipes << r }
+        o['recipes'].each { |r| node.recipes << r }
       end
       node
     end
 
-    def self.list_by_environment(environment, inflate=false)
+    def self.list_by_environment(environment, inflate = false)
       if inflate
-        response = Hash.new
-        Chef::Search::Query.new.search(:node, "chef_environment:#{environment}") {|n| response[n.name] = n unless n.nil?}
+        response = {}
+        Chef::Search::Query.new.search(:node, "chef_environment:#{environment}") { |n| response[n.name] = n unless n.nil? }
         response
       else
         Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("environments/#{environment}/nodes")
       end
     end
 
-    def self.list(inflate=false)
+    def self.list(inflate = false)
       if inflate
-        response = Hash.new
+        response = {}
         Chef::Search::Query.new.search(:node) do |n|
           response[n.name] = n unless n.nil?
         end
         response
       else
-        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes")
+        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest('nodes')
       end
     end
 
@@ -519,20 +513,20 @@ class Chef
       # so then POST to create.
       begin
         if Chef::Config[:why_run]
-          Chef::Log.warn("In whyrun mode, so NOT performing node save.")
+          Chef::Log.warn('In whyrun mode, so NOT performing node save.')
         else
           chef_server_rest.put_rest("nodes/#{name}", data_for_save)
         end
       rescue Net::HTTPServerException => e
-        raise e unless e.response.code == "404"
-        chef_server_rest.post_rest("nodes", data_for_save)
+        raise e unless e.response.code == '404'
+        chef_server_rest.post_rest('nodes', data_for_save)
       end
       self
     end
 
     # Create the node via the REST API
     def create
-      chef_server_rest.post_rest("nodes", data_for_save)
+      chef_server_rest.post_rest('nodes', data_for_save)
       self
     end
 
@@ -541,14 +535,14 @@ class Chef
     end
 
     def <=>(other_node)
-      self.name <=> other_node.name
+      name <=> other_node.name
     end
 
     private
 
     def data_for_save
       data = for_json
-      ["automatic", "default", "normal", "override"].each do |level|
+      %w(automatic default normal override).each do |level|
         whitelist_config_option = "#{level}_attribute_whitelist".to_sym
         whitelist = Chef::Config[whitelist_config_option]
         unless whitelist.nil? # nil => save everything
@@ -558,6 +552,5 @@ class Chef
       end
       data
     end
-
   end
 end

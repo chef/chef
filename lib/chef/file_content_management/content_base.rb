@@ -19,7 +19,6 @@
 class Chef
   class FileContentManagement
     class ContentBase
-
       attr_reader :run_context
       attr_reader :new_resource
       attr_reader :current_resource
@@ -49,7 +48,7 @@ class Chef
       # the contents to a Tempfile if you need to.
       #
       def file_for_provider
-        raise "class must implement file_for_provider!"
+        fail 'class must implement file_for_provider!'
       end
     end
   end

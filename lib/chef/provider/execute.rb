@@ -23,7 +23,6 @@ require 'chef/provider'
 class Chef
   class Provider
     class Execute < Chef::Provider
-
       include Chef::Mixin::ShellOut
 
       def load_current_resource
@@ -72,11 +71,11 @@ class Chef
             Chef::Log.warn "You have provided relative path for execute#creates (#{sentinel_file}) without execute#cwd (see CHEF-3819)"
           end
 
-          if ::File.exists?(sentinel_file)
+          if ::File.exist?(sentinel_file)
             sentinel_file
           elsif cwd && relative
             sentinel_file = ::File.join(cwd, sentinel_file)
-            sentinel_file if ::File.exists?(sentinel_file)
+            sentinel_file if ::File.exist?(sentinel_file)
           end
         end
       end

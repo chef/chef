@@ -25,13 +25,13 @@ require 'support/shared/unit/provider/file'
 describe Chef::Provider::CookbookFile do
   let(:node) { double('Chef::Node') }
   let(:events) { double('Chef::Events').as_null_object }  # mock all the methods
-  let(:run_context) { double('Chef::RunContext', :node => node, :events => events) }
-  let(:enclosing_directory) {
-    canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
-  }
-  let(:resource_path) {
-    canonicalize_path(File.expand_path(File.join(enclosing_directory, "seattle.txt")))
-  }
+  let(:run_context) { double('Chef::RunContext', node: node, events: events) }
+  let(:enclosing_directory) do
+    canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, 'templates')))
+  end
+  let(:resource_path) do
+    canonicalize_path(File.expand_path(File.join(enclosing_directory, 'seattle.txt')))
+  end
 
   # Subject
 
@@ -42,7 +42,7 @@ describe Chef::Provider::CookbookFile do
   end
 
   let(:resource) do
-    resource = Chef::Resource::CookbookFile.new("seattle", @run_context)
+    resource = Chef::Resource::CookbookFile.new('seattle', @run_context)
     resource.path(resource_path)
     resource.cookbook_name = 'apache2'
     resource
@@ -54,5 +54,5 @@ describe Chef::Provider::CookbookFile do
 
   it_behaves_like Chef::Provider::File
 
-  it_behaves_like "a file provider with source field"
+  it_behaves_like 'a file provider with source field'
 end

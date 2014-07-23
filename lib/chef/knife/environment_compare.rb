@@ -15,49 +15,48 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
- 
+
 require 'chef/knife'
- 
+
 class Chef
   class Knife
     class EnvironmentCompare < Knife
- 
       deps do
         require 'chef/environment'
       end
- 
-      banner "knife environment compare [ENVIRONMENT..] (options)"
+
+      banner 'knife environment compare [ENVIRONMENT..] (options)'
 
       option :all,
-        :short => "-a",
-        :long => "--all",
-        :description => "Show all cookbooks",
-        :boolean => true 
+             short: '-a',
+             long: '--all',
+             description: 'Show all cookbooks',
+             boolean: true
 
       option :mismatch,
-        :short => "-m",
-        :long => "--mismatch",
-        :description => "Only show mismatching versions",
-        :boolean => true
- 
+             short: '-m',
+             long: '--mismatch',
+             description: 'Only show mismatching versions',
+             boolean: true
+
       def run
         # Get the commandline environments or all if none are provided.
-        environments = environment_list     
+        environments = environment_list
 
         # Get a list of all cookbooks that have constraints and their environment.
-        constraints = constraint_list(environments) 
+        constraints = constraint_list(environments)
 
         # Get the total list of cookbooks that have constraints
         cookbooks = cookbook_list(constraints)
 
         # If we cannot find any cookbooks, we can stop here.
         if cookbooks.nil? || cookbooks.empty?
-          ui.error "Cannot find any environment cookbook constraints"
+          ui.error 'Cannot find any environment cookbook constraints'
           exit 1
         end
-     
+
         # Get all cookbooks so we can compare them all
-        cookbooks = rest.get_rest("/cookbooks?num_versions=1") if config[:all]
+        cookbooks = rest.get_rest('/cookbooks?num_versions=1') if config[:all]
 
         # display matrix view of in the requested format.
         if config[:format] == 'summary'
@@ -77,13 +76,13 @@ class Chef
         else
           environments = Chef::Environment.list
         end
-      end 
+      end
 
       def constraint_list(environments)
         constraints = {}
-        environments.each do |env,url|
+        environments.each do |env, _url|
           # Because you cannot modify the default environment I filter it out here.
-          unless env == "_default"
+          unless env == '_default'
             envdata = Chef::Environment.load(env)
             ver = envdata.cookbook_versions
             constraints[env] = ver
@@ -91,22 +90,22 @@ class Chef
         end
         constraints
       end
- 
+
       def cookbook_list(constraints)
         result = {}
-        constraints.each { |env, cb| result.merge!(cb) }
+        constraints.each { |_env, cb| result.merge!(cb) }
         result
-      end      
+      end
 
       def matrix_output(cookbooks, constraints)
-        rows = [ '' ]
+        rows = ['']
         environments = []
-        constraints.each { |e,v| environments << e.to_s }
+        constraints.each { |e, _v| environments << e.to_s }
         columns = environments.count + 1
         environments.each { |env| rows << ui.color(env, :bold) }
-        cookbooks.each do |c,v|
+        cookbooks.each do |c, _v|
           total = []
-          environments.each { |n| total << constraints[n][c]}
+          environments.each { |n| total << constraints[n][c] }
           if total.uniq.count == 1
             next if config[:mismatch]
             color = :white
@@ -115,13 +114,12 @@ class Chef
           end
           rows << ui.color(c, :bold)
           environments.each do |e|
-            tag = constraints[e][c] || "latest"
-            rows << ui.color(tag, color)   
+            tag = constraints[e][c] || 'latest'
+            rows << ui.color(tag, color)
           end
         end
         ui.list(rows, :uneven_columns_across, columns)
       end
-
     end
   end
 end

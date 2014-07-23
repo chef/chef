@@ -28,7 +28,7 @@ class Chef
 
       # See http://msdn.microsoft.com/en-us/library/windows/desktop/ms683179(v=vs.85).aspx
       # The handle value returned by the GetCurrentProcess function is the pseudo handle (HANDLE)-1 (which is 0xFFFFFFFF)
-      CURRENT_PROCESS_HANDLE = 4294967295
+      CURRENT_PROCESS_HANDLE = 4_294_967_295
 
       def initialize(handle)
         @handle = handle
@@ -49,7 +49,6 @@ class Chef
           Chef::ReservedNames::Win32::Error.raise!
         end
       end
-
     end
   end
 end

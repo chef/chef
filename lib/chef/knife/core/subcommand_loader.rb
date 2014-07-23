@@ -20,11 +20,10 @@ require 'chef/version'
 class Chef
   class Knife
     class SubcommandLoader
-
       attr_reader :chef_config_dir
       attr_reader :env
 
-      def initialize(chef_config_dir, env=ENV)
+      def initialize(chef_config_dir, env = ENV)
         @chef_config_dir, @env = chef_config_dir, env
         @forced_activate = {}
       end
@@ -41,7 +40,7 @@ class Chef
         user_specific_files = []
 
         if chef_config_dir
-          user_specific_files.concat Dir.glob(File.expand_path("plugins/knife/*.rb", chef_config_dir))
+          user_specific_files.concat Dir.glob(File.expand_path('plugins/knife/*.rb', chef_config_dir))
         end
 
         # finally search ~/.chef/plugins/knife/*.rb
@@ -97,8 +96,8 @@ class Chef
         # Kernel.require()) => full_path. The relative path isn't used
         # currently, so we just map full_path => full_path.
         subcommand_files = {}
-        plugin_manifest["plugins"].each do |plugin_name, plugin_manifest|
-          plugin_manifest["paths"].each do |cmd_path|
+        plugin_manifest['plugins'].each do |_plugin_name, plugin_manifest|
+          plugin_manifest['paths'].each do |cmd_path|
             subcommand_files[cmd_path] = cmd_path
           end
         end
@@ -110,7 +109,7 @@ class Chef
         files = Dir[File.expand_path('../../../knife/*.rb', __FILE__)]
         subcommand_files = {}
         files.each do |knife_file|
-          rel_path = knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/,1]
+          rel_path = knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/, 1]
           subcommand_files[rel_path] = knife_file
         end
         subcommand_files
@@ -128,7 +127,7 @@ class Chef
       end
 
       def have_plugin_manifest?
-        ENV["HOME"] && File.exist?(plugin_manifest_path)
+        ENV['HOME'] && File.exist?(plugin_manifest_path)
       end
 
       def plugin_manifest
@@ -141,7 +140,7 @@ class Chef
 
       private
 
-      def find_files_latest_gems(glob, check_load_path=true)
+      def find_files_latest_gems(glob, check_load_path = true)
         files = []
 
         if check_load_path
@@ -162,12 +161,12 @@ class Chef
         files.concat gem_files
         files.uniq! if check_load_path
 
-        return files
+        files
       end
 
       def latest_gem_specs
         @latest_gem_specs ||= if Gem::Specification.respond_to? :latest_specs
-          Gem::Specification.latest_specs(true)  # find prerelease gems
+                                Gem::Specification.latest_specs(true)  # find prerelease gems
         else
           Gem.source_index.latest_specs(true)
         end
@@ -175,7 +174,7 @@ class Chef
 
       def check_spec_for_glob(spec, glob)
         dirs = if spec.require_paths.size > 1 then
-          "{#{spec.require_paths.join(',')}}"
+                 "{#{spec.require_paths.join(',')}}"
         else
           spec.require_paths.first
         end

@@ -22,22 +22,21 @@ require 'chef/knife'
 class Chef
   class Knife
     class CookbookList < Knife
-
-      banner "knife cookbook list (options)"
+      banner 'knife cookbook list (options)'
 
       option :with_uri,
-        :short => "-w",
-        :long => "--with-uri",
-        :description => "Show corresponding URIs"
+             short: '-w',
+             long: '--with-uri',
+             description: 'Show corresponding URIs'
 
       option :all_versions,
-        :short => "-a",
-        :long => "--all",
-        :description => "Show all available versions."
+             short: '-a',
+             long: '--all',
+             description: 'Show all available versions.'
 
       def run
         env          = config[:environment]
-        num_versions = config[:all_versions] ? "num_versions=all" : "num_versions=1"
+        num_versions = config[:all_versions] ? 'num_versions=all' : 'num_versions=1'
         api_endpoint = env ? "/environments/#{env}/cookbooks?#{num_versions}" : "/cookbooks?#{num_versions}"
         cookbook_versions = rest.get_rest(api_endpoint)
         ui.output(format_cookbook_list_for_display(cookbook_versions))

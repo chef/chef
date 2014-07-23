@@ -22,30 +22,29 @@ class Chef
   class Provider
     class User
       class Pw < Chef::Provider::User
-
         def load_current_resource
           super
-          raise Chef::Exceptions::User, "Could not find binary /usr/sbin/pw for #{@new_resource}" unless ::File.exists?("/usr/sbin/pw")
+          fail Chef::Exceptions::User, "Could not find binary /usr/sbin/pw for #{@new_resource}" unless ::File.exist?('/usr/sbin/pw')
         end
 
         def create_user
-          command = "pw useradd"
+          command = 'pw useradd'
           command << set_options
-          run_command(:command => command)
+          run_command(command: command)
           modify_password
         end
 
         def manage_user
-          command = "pw usermod"
+          command = 'pw usermod'
           command << set_options
-          run_command(:command => command)
+          run_command(command: command)
           modify_password
         end
 
         def remove_user
           command = "pw userdel #{@new_resource.username}"
-          command << " -r" if @new_resource.supports[:manage_home]
-          run_command(:command => command)
+          command << ' -r' if @new_resource.supports[:manage_home]
+          run_command(command: command)
         end
 
         def check_lock
@@ -59,24 +58,24 @@ class Chef
         end
 
         def lock_user
-          run_command(:command => "pw lock #{@new_resource.username}")
+          run_command(command: "pw lock #{@new_resource.username}")
         end
 
         def unlock_user
-          run_command(:command => "pw unlock #{@new_resource.username}")
+          run_command(command: "pw unlock #{@new_resource.username}")
         end
 
         def set_options
           opts = " #{@new_resource.username}"
 
           field_list = {
-            'comment' => "-c",
-            'home' => "-d",
-            'gid' => "-g",
-            'uid' => "-u",
-            'shell' => "-s"
+            'comment' => '-c',
+            'home' => '-d',
+            'gid' => '-g',
+            'uid' => '-u',
+            'shell' => '-s'
           }
-          field_list.sort{ |a,b| a[0] <=> b[0] }.each do |field, option|
+          field_list.sort { |a, b| a[0] <=> b[0] }.each do |field, option|
             field_symbol = field.to_sym
             if @current_resource.send(field_symbol) != @new_resource.send(field_symbol)
               if @new_resource.send(field_symbol)
@@ -87,21 +86,21 @@ class Chef
           end
           if @new_resource.supports[:manage_home]
             Chef::Log.debug("#{@new_resource} is managing the users home directory")
-            opts << " -m"
+            opts << ' -m'
           end
           opts
         end
 
         def modify_password
-          if (not @new_resource.password.nil?) && (@current_resource.password != @new_resource.password)
+          if (!@new_resource.password.nil?) && (@current_resource.password != @new_resource.password)
             Chef::Log.debug("#{new_resource} updating password")
             command = "pw usermod #{@new_resource.username} -H 0"
-            status = popen4(command, :waitlast => true) do |pid, stdin, stdout, stderr|
+            status = popen4(command, waitlast: true) do |_pid, stdin, _stdout, _stderr|
               stdin.puts "#{@new_resource.password}"
             end
 
             unless status.exitstatus == 0
-              raise Chef::Exceptions::User, "pw failed - #{status.inspect}!"
+              fail Chef::Exceptions::User, "pw failed - #{status.inspect}!"
             end
           else
             Chef::Log.debug("#{new_resource} no change needed to password")

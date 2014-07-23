@@ -20,27 +20,26 @@
 require 'spec_helper'
 
 describe Chef::Resource::Script do
-  let(:resource_instance_name) { "fakey_fakerton" }
+  let(:resource_instance_name) { 'fakey_fakerton' }
   let(:script_resource) { Chef::Resource::Script.new(resource_instance_name) }
   let(:resource_name) { :script }
 
-  it "should accept a string for the interpreter" do
-    script_resource.interpreter "naaaaNaNaNaaNaaNaaNaa"
-    script_resource.interpreter.should eql("naaaaNaNaNaaNaaNaaNaa")
+  it 'should accept a string for the interpreter' do
+    script_resource.interpreter 'naaaaNaNaNaaNaaNaaNaa'
+    script_resource.interpreter.should eql('naaaaNaNaNaaNaaNaaNaa')
   end
 
-  describe "when it has interpreter and flags" do
+  describe 'when it has interpreter and flags' do
     before do
-      script_resource.command("grep")
-      script_resource.interpreter("gcc")
-      script_resource.flags("-al")
+      script_resource.command('grep')
+      script_resource.interpreter('gcc')
+      script_resource.flags('-al')
     end
 
-   it "returns the command as its identity" do
-      script_resource.identity.should == "grep"
-    end
+    it 'returns the command as its identity' do
+       script_resource.identity.should == 'grep'
+     end
   end
 
-  it_behaves_like "a script resource"
+  it_behaves_like 'a script resource'
 end
-

@@ -21,7 +21,6 @@ require 'chef/knife'
 class Chef
   class Knife
     class UserShow < Knife
-
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
@@ -29,21 +28,20 @@ class Chef
         require 'chef/json_compat'
       end
 
-      banner "knife user show USER (options)"
+      banner 'knife user show USER (options)'
 
       def run
         @user_name = @name_args[0]
 
         if @user_name.nil?
           show_usage
-          ui.fatal("You must specify a user name")
+          ui.fatal('You must specify a user name')
           exit 1
         end
 
         user = Chef::User.load(@user_name)
         output(format_for_display(user))
       end
-
     end
   end
 end

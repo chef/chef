@@ -21,13 +21,12 @@ require 'chef/knife'
 class Chef
   class Knife
     class NodeRunListRemove < Knife
-
       deps do
         require 'chef/node'
         require 'chef/json_compat'
       end
 
-      banner "knife node run_list remove [NODE] [ENTRIES] (options)"
+      banner 'knife node run_list remove [NODE] [ENTRIES] (options)'
 
       def run
         node = Chef::Node.load(@name_args[0])
@@ -41,8 +40,6 @@ class Chef
 
         output(format_for_display(node))
       end
-
     end
   end
 end
-

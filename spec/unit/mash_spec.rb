@@ -20,31 +20,31 @@ require 'spec_helper'
 require 'chef/mash'
 
 describe Mash do
-  it "should duplicate a simple key/value mash to a new mash" do
-    data = {:x=>"one", :y=>"two", :z=>"three"}
+  it 'should duplicate a simple key/value mash to a new mash' do
+    data = { x: 'one', y: 'two', z: 'three' }
     @orig = Mash.new(data)
     @copy = @orig.dup
     @copy.to_hash.should == Mash.new(data).to_hash
-    @copy[:x] = "four"
-    @orig[:x].should == "one"
+    @copy[:x] = 'four'
+    @orig[:x].should == 'one'
   end
 
-  it "should duplicate a mash with an array to a new mash" do
-    data = {:x=>"one", :y=>"two", :z=>[1,2,3]}
+  it 'should duplicate a mash with an array to a new mash' do
+    data = { x: 'one', y: 'two', z: [1, 2, 3] }
     @orig = Mash.new(data)
     @copy = @orig.dup
     @copy.to_hash.should == Mash.new(data).to_hash
     @copy[:z] << 4
-    @orig[:z].should == [1,2,3]
+    @orig[:z].should == [1, 2, 3]
   end
 
-  it "should duplicate a nested mash to a new mash" do
-    data = {:x=>"one", :y=>"two", :z=>Mash.new({:a=>[1,2,3]})}
+  it 'should duplicate a nested mash to a new mash' do
+    data = { x: 'one', y: 'two', z: Mash.new(a: [1, 2, 3]) }
     @orig = Mash.new(data)
     @copy = @orig.dup
     @copy.to_hash.should == Mash.new(data).to_hash
     @copy[:z][:a] << 4
-    @orig[:z][:a].should == [1,2,3]
+    @orig[:z][:a].should == [1, 2, 3]
   end
 
   # add more!

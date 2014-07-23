@@ -21,17 +21,16 @@ require 'chef/knife'
 class Chef
   class Knife
     class RoleBulkDelete < Knife
-
       deps do
         require 'chef/role'
         require 'chef/json_compat'
       end
 
-      banner "knife role bulk delete REGEX (options)"
+      banner 'knife role bulk delete REGEX (options)'
 
       def run
         if @name_args.length < 1
-          ui.error("You must supply a regular expression to match the results against")
+          ui.error('You must supply a regular expression to match the results against')
           exit 1
         end
 
@@ -49,11 +48,11 @@ class Chef
           exit 0
         end
 
-        ui.msg("The following roles will be deleted:")
-        ui.msg("")
+        ui.msg('The following roles will be deleted:')
+        ui.msg('')
         ui.msg(ui.list(roles_to_delete.keys.sort, :columns_down))
-        ui.msg("")
-        ui.confirm("Are you sure you want to delete these roles")
+        ui.msg('')
+        ui.confirm('Are you sure you want to delete these roles')
 
         roles_to_delete.sort.each do |name, role|
           role.destroy
@@ -63,8 +62,3 @@ class Chef
     end
   end
 end
-
-
-
-
-

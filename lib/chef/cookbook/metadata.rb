@@ -27,12 +27,10 @@ require 'chef/version_constraint'
 
 class Chef
   class Cookbook
-
     # == Chef::Cookbook::Metadata
     # Chef::Cookbook::Metadata provides a convenient DSL for declaring metadata
     # about Chef Cookbooks.
     class Metadata
-
       NAME              = 'name'.freeze
       DESCRIPTION       = 'description'.freeze
       LONG_DESCRIPTION  = 'long_description'.freeze
@@ -51,33 +49,33 @@ class Chef
       RECIPES           = 'recipes'.freeze
       VERSION           = 'version'.freeze
 
-      COMPARISON_FIELDS = [ :name, :description, :long_description, :maintainer,
-                            :maintainer_email, :license, :platforms, :dependencies,
-                            :recommendations, :suggestions, :conflicting, :providing,
-                            :replacing, :attributes, :groupings, :recipes, :version]
+      COMPARISON_FIELDS = [:name, :description, :long_description, :maintainer,
+                           :maintainer_email, :license, :platforms, :dependencies,
+                           :recommendations, :suggestions, :conflicting, :providing,
+                           :replacing, :attributes, :groupings, :recipes, :version]
 
-      VERSION_CONSTRAINTS = {:depends     => DEPENDENCIES,
-                             :recommends  => RECOMMENDATIONS,
-                             :suggests    => SUGGESTIONS,
-                             :conflicts   => CONFLICTING,
-                             :provides    => PROVIDING,
-                             :replaces    => REPLACING }
+      VERSION_CONSTRAINTS = { depends: DEPENDENCIES,
+                              recommends: RECOMMENDATIONS,
+                              suggests: SUGGESTIONS,
+                              conflicts: CONFLICTING,
+                              provides: PROVIDING,
+                              replaces: REPLACING }
 
       include Chef::Mixin::ParamsValidate
       include Chef::Mixin::FromFile
 
-      attr_reader   :cookbook,
-                    :platforms,
-                    :dependencies,
-                    :recommendations,
-                    :suggestions,
-                    :conflicting,
-                    :providing,
-                    :replacing,
-                    :attributes,
-                    :groupings,
-                    :recipes,
-                    :version
+      attr_reader :cookbook,
+                  :platforms,
+                  :dependencies,
+                  :recommendations,
+                  :suggestions,
+                  :conflicting,
+                  :providing,
+                  :replacing,
+                  :attributes,
+                  :groupings,
+                  :recipes,
+                  :version
 
       # Builds a new Chef::Cookbook::Metadata object.
       #
@@ -89,14 +87,14 @@ class Chef
       #
       # === Returns
       # metadata<Chef::Cookbook::Metadata>
-      def initialize(cookbook=nil, maintainer='YOUR_COMPANY_NAME', maintainer_email='YOUR_EMAIL', license='none')
+      def initialize(cookbook = nil, maintainer = 'YOUR_COMPANY_NAME', maintainer_email = 'YOUR_EMAIL', license = 'none')
         @cookbook = cookbook
-        @name = cookbook ? cookbook.name : ""
-        @long_description = ""
+        @name = cookbook ? cookbook.name : ''
+        @long_description = ''
         self.maintainer(maintainer)
         self.maintainer_email(maintainer_email)
         self.license(license)
-        self.description('A fabulous new cookbook')
+        description('A fabulous new cookbook')
         @platforms = Mash.new
         @dependencies = Mash.new
         @recommendations = Mash.new
@@ -107,19 +105,19 @@ class Chef
         @attributes = Mash.new
         @groupings = Mash.new
         @recipes = Mash.new
-        @version = Version.new "0.0.0"
+        @version = Version.new '0.0.0'
         if cookbook
-          @recipes = cookbook.fully_qualified_recipe_names.inject({}) do |r, e|
-            e = self.name.to_s if e =~ /::default$/
-            r[e] ||= ""
-            self.provides e
+          @recipes = cookbook.fully_qualified_recipe_names.reduce({}) do |r, e|
+            e = name.to_s if e =~ /::default$/
+            r[e] ||= ''
+            provides e
             r
           end
         end
       end
 
       def ==(other)
-        COMPARISON_FIELDS.inject(true) do |equal_so_far, field|
+        COMPARISON_FIELDS.reduce(true) do |equal_so_far, field|
           equal_so_far && other.respond_to?(field) && (other.send(field) == send(field))
         end
       end
@@ -131,11 +129,11 @@ class Chef
       #
       # === Returns
       # maintainer<String>:: Returns the current maintainer.
-      def maintainer(arg=nil)
+      def maintainer(arg = nil)
         set_or_return(
           :maintainer,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
@@ -146,11 +144,11 @@ class Chef
       #
       # === Returns
       # maintainer_email<String>:: Returns the current maintainer email.
-      def maintainer_email(arg=nil)
+      def maintainer_email(arg = nil)
         set_or_return(
           :maintainer_email,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
@@ -161,11 +159,11 @@ class Chef
       #
       # === Returns
       # license<String>:: Returns the current license
-      def license(arg=nil)
+      def license(arg = nil)
         set_or_return(
           :license,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
@@ -176,11 +174,11 @@ class Chef
       #
       # === Returns
       # description<String>:: Returns the description
-      def description(arg=nil)
+      def description(arg = nil)
         set_or_return(
           :description,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
@@ -191,11 +189,11 @@ class Chef
       #
       # === Returns
       # long_description<String>:: Returns the long description
-      def long_description(arg=nil)
+      def long_description(arg = nil)
         set_or_return(
           :long_description,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
@@ -207,7 +205,7 @@ class Chef
       #
       # === Returns
       # version<String>:: Returns the current version
-      def version(arg=nil)
+      def version(arg = nil)
         if arg
           @version = Chef::Version.new(arg)
         end
@@ -222,11 +220,11 @@ class Chef
       #
       # === Returns
       # name<String>:: Returns the current cookbook name.
-      def name(arg=nil)
+      def name(arg = nil)
         set_or_return(
           :name,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
@@ -386,16 +384,16 @@ class Chef
       def attribute(name, options)
         validate(
           options,
-          {
-            :display_name => { :kind_of => String },
-            :description => { :kind_of => String },
-            :choice => { :kind_of => [ Array ], :default => [] },
-            :calculated => { :equal_to => [ true, false ], :default => false },
-            :type => { :equal_to => [ "string", "array", "hash", "symbol", "boolean", "numeric" ], :default => "string" },
-            :required => { :equal_to => [ "required", "recommended", "optional", true, false ], :default => "optional" },
-            :recipes => { :kind_of => [ Array ], :default => [] },
-            :default => { :kind_of => [ String, Array, Hash, Symbol, Numeric, TrueClass, FalseClass ] }
-          }
+
+          display_name: { kind_of: String },
+          description: { kind_of: String },
+          choice: { kind_of: [Array], default: [] },
+          calculated: { equal_to: [true, false], default: false },
+          type: { equal_to: %w(string array hash symbol boolean numeric), default: 'string' },
+          required: { equal_to: ['required', 'recommended', 'optional', true, false], default: 'optional' },
+          recipes: { kind_of: [Array], default: [] },
+          default: { kind_of: [String, Array, Hash, Symbol, Numeric, TrueClass, FalseClass] }
+
         )
         options[:required] = remap_required_attribute(options[:required]) unless options[:required].nil?
         validate_choice_array(options)
@@ -409,10 +407,10 @@ class Chef
       def grouping(name, options)
         validate(
           options,
-          {
-            :title => { :kind_of => String },
-            :description => { :kind_of => String }
-          }
+
+          title: { kind_of: String },
+          description: { kind_of: String }
+
         )
         @groupings[name] = options
         @groupings[name]
@@ -420,70 +418,70 @@ class Chef
 
       def to_hash
         {
-          NAME             => self.name,
-          DESCRIPTION      => self.description,
-          LONG_DESCRIPTION => self.long_description,
-          MAINTAINER       => self.maintainer,
-          MAINTAINER_EMAIL => self.maintainer_email,
-          LICENSE          => self.license,
-          PLATFORMS        => self.platforms,
-          DEPENDENCIES     => self.dependencies,
-          RECOMMENDATIONS  => self.recommendations,
-          SUGGESTIONS      => self.suggestions,
-          CONFLICTING      => self.conflicting,
-          PROVIDING        => self.providing,
-          REPLACING        => self.replacing,
-          ATTRIBUTES       => self.attributes,
-          GROUPINGS        => self.groupings,
-          RECIPES          => self.recipes,
-          VERSION          => self.version
+          NAME             => name,
+          DESCRIPTION      => description,
+          LONG_DESCRIPTION => long_description,
+          MAINTAINER       => maintainer,
+          MAINTAINER_EMAIL => maintainer_email,
+          LICENSE          => license,
+          PLATFORMS        => platforms,
+          DEPENDENCIES     => dependencies,
+          RECOMMENDATIONS  => recommendations,
+          SUGGESTIONS      => suggestions,
+          CONFLICTING      => conflicting,
+          PROVIDING        => providing,
+          REPLACING        => replacing,
+          ATTRIBUTES       => attributes,
+          GROUPINGS        => groupings,
+          RECIPES          => recipes,
+          VERSION          => version
         }
       end
 
       def to_json(*a)
-        self.to_hash.to_json(*a)
+        to_hash.to_json(*a)
       end
 
       def self.from_hash(o)
-        cm = self.new()
+        cm = new
         cm.from_hash(o)
         cm
       end
 
       def from_hash(o)
-        @name                         = o[NAME] if o.has_key?(NAME)
-        @description                  = o[DESCRIPTION] if o.has_key?(DESCRIPTION)
-        @long_description             = o[LONG_DESCRIPTION] if o.has_key?(LONG_DESCRIPTION)
-        @maintainer                   = o[MAINTAINER] if o.has_key?(MAINTAINER)
-        @maintainer_email             = o[MAINTAINER_EMAIL] if o.has_key?(MAINTAINER_EMAIL)
-        @license                      = o[LICENSE] if o.has_key?(LICENSE)
-        @platforms                    = o[PLATFORMS] if o.has_key?(PLATFORMS)
-        @dependencies                 = handle_deprecated_constraints(o[DEPENDENCIES]) if o.has_key?(DEPENDENCIES)
-        @recommendations              = handle_deprecated_constraints(o[RECOMMENDATIONS]) if o.has_key?(RECOMMENDATIONS)
-        @suggestions                  = handle_deprecated_constraints(o[SUGGESTIONS]) if o.has_key?(SUGGESTIONS)
-        @conflicting                  = handle_deprecated_constraints(o[CONFLICTING]) if o.has_key?(CONFLICTING)
-        @providing                    = o[PROVIDING] if o.has_key?(PROVIDING)
-        @replacing                    = handle_deprecated_constraints(o[REPLACING]) if o.has_key?(REPLACING)
-        @attributes                   = o[ATTRIBUTES] if o.has_key?(ATTRIBUTES)
-        @groupings                    = o[GROUPINGS] if o.has_key?(GROUPINGS)
-        @recipes                      = o[RECIPES] if o.has_key?(RECIPES)
-        @version                      = o[VERSION] if o.has_key?(VERSION)
+        @name                         = o[NAME] if o.key?(NAME)
+        @description                  = o[DESCRIPTION] if o.key?(DESCRIPTION)
+        @long_description             = o[LONG_DESCRIPTION] if o.key?(LONG_DESCRIPTION)
+        @maintainer                   = o[MAINTAINER] if o.key?(MAINTAINER)
+        @maintainer_email             = o[MAINTAINER_EMAIL] if o.key?(MAINTAINER_EMAIL)
+        @license                      = o[LICENSE] if o.key?(LICENSE)
+        @platforms                    = o[PLATFORMS] if o.key?(PLATFORMS)
+        @dependencies                 = handle_deprecated_constraints(o[DEPENDENCIES]) if o.key?(DEPENDENCIES)
+        @recommendations              = handle_deprecated_constraints(o[RECOMMENDATIONS]) if o.key?(RECOMMENDATIONS)
+        @suggestions                  = handle_deprecated_constraints(o[SUGGESTIONS]) if o.key?(SUGGESTIONS)
+        @conflicting                  = handle_deprecated_constraints(o[CONFLICTING]) if o.key?(CONFLICTING)
+        @providing                    = o[PROVIDING] if o.key?(PROVIDING)
+        @replacing                    = handle_deprecated_constraints(o[REPLACING]) if o.key?(REPLACING)
+        @attributes                   = o[ATTRIBUTES] if o.key?(ATTRIBUTES)
+        @groupings                    = o[GROUPINGS] if o.key?(GROUPINGS)
+        @recipes                      = o[RECIPES] if o.key?(RECIPES)
+        @version                      = o[VERSION] if o.key?(VERSION)
         self
       end
 
       def self.from_json(string)
         o = Chef::JSONCompat.from_json(string)
-        self.from_hash(o)
+        from_hash(o)
       end
 
       def self.validate_json(json_str)
         o = Chef::JSONCompat.from_json(json_str)
-        metadata = new()
+        metadata = new
         VERSION_CONSTRAINTS.each do |method_name, hash_key|
           if constraints = o[hash_key]
-           constraints.each do |cb_name, constraints|
-             metadata.send(method_name, cb_name, *Array(constraints))
-           end
+            constraints.each do |cb_name, constraints|
+              metadata.send(method_name, cb_name, *Array(constraints))
+            end
           end
         end
         true
@@ -494,24 +492,24 @@ class Chef
         from_hash(o)
       end
 
-    private
+      private
 
       def new_args_format(caller_name, dep_name, version_constraints)
         if version_constraints.empty?
-          ">= 0.0.0"
+          '>= 0.0.0'
         elsif version_constraints.size == 1
           version_constraints.first
         else
-          msg=<<-OBSOLETED
+          msg = <<-OBSOLETED
 The dependency specification syntax you are using is no longer valid. You may not
 specify more than one version constraint for a particular cookbook.
 Consult http://wiki.opscode.com/display/chef/Metadata for the updated syntax.
 
-Called by: #{caller_name} '#{dep_name}', #{version_constraints.map {|vc| vc.inspect}.join(", ")}
+Called by: #{caller_name} '#{dep_name}', #{version_constraints.map { |vc| vc.inspect }.join(', ')}
 Called from:
-#{caller[0...5].map {|line| "  " + line}.join("\n")}
+#{caller[0...5].map { |line| '  ' + line }.join("\n")}
 OBSOLETED
-          raise Exceptions::ObsoleteDependencySyntax, msg
+          fail Exceptions::ObsoleteDependencySyntax, msg
         end
       end
 
@@ -520,7 +518,7 @@ OBSOLETED
       rescue Chef::Exceptions::InvalidVersionConstraint => e
         Log.debug(e)
 
-        msg=<<-INVALID
+        msg = <<-INVALID
 The version constraint syntax you are using is not valid. If you recently
 upgraded to Chef 0.10.0, be aware that you no may longer use "<<" and ">>" for
 'less than' and 'greater than'; use '<' and '>' instead.
@@ -528,7 +526,7 @@ Consult http://wiki.opscode.com/display/chef/Metadata for more information.
 
 Called by: #{caller_name} '#{dep_name}', '#{constraint_str}'
 Called from:
-#{caller[0...5].map {|line| "  " + line}.join("\n")}
+#{caller[0...5].map { |line| '  ' + line }.join("\n")}
 INVALID
         raise Exceptions::InvalidVersionConstraint, msg
       end
@@ -545,9 +543,9 @@ INVALID
       # === Parameters
       # arry<Array>:: An array to be validated
       def validate_string_array(arry)
-        if arry.kind_of?(Array)
+        if arry.is_a?(Array)
           arry.each do |choice|
-            validate( {:choice => choice}, {:choice => {:kind_of => String}} )
+            validate({ choice: choice }, { choice: { kind_of: String } })
           end
         end
       end
@@ -557,28 +555,28 @@ INVALID
       # Raise an exception if the members of the array do not match the defaults
       # === Parameters
       # opts<Hash>:: The options hash
-        def validate_choice_array(opts)
-          if opts[:choice].kind_of?(Array)
-            case opts[:type]
-            when "string"
-              validator = [ String ]
-            when "array"
-              validator = [ Array ]
-            when "hash"
-              validator = [ Hash ]
-            when "symbol"
-              validator = [ Symbol ]
-            when "boolean"
-              validator = [ TrueClass, FalseClass ]
-            when "numeric"
-              validator = [ Numeric ]
-            end
+      def validate_choice_array(opts)
+        if opts[:choice].is_a?(Array)
+          case opts[:type]
+          when 'string'
+            validator = [String]
+          when 'array'
+            validator = [Array]
+          when 'hash'
+            validator = [Hash]
+          when 'symbol'
+            validator = [Symbol]
+          when 'boolean'
+            validator = [TrueClass, FalseClass]
+          when 'numeric'
+            validator = [Numeric]
+          end
 
-            opts[:choice].each do |choice|
-              validate( {:choice => choice}, {:choice => {:kind_of => validator}} )
-            end
+          opts[:choice].each do |choice|
+            validate({ choice: choice }, { choice: { kind_of: validator } })
           end
         end
+      end
 
       # For backwards compatibility, remap Boolean values to String
       #   true is mapped to "required"
@@ -592,30 +590,30 @@ INVALID
       def remap_required_attribute(value)
         case value
         when true
-          value = "required"
+          value = 'required'
         when false
-          value = "optional"
+          value = 'optional'
         end
         value
       end
 
       def validate_calculated_default_rule(options)
         calculated_conflict = ((options[:default].is_a?(Array) && !options[:default].empty?) ||
-                               (options[:default].is_a?(String) && !options[:default] != "")) &&
+                               (options[:default].is_a?(String) && !options[:default] != '')) &&
                               options[:calculated] == true
-        raise ArgumentError, "Default cannot be specified if calculated is true!" if calculated_conflict
+        fail ArgumentError, 'Default cannot be specified if calculated is true!' if calculated_conflict
       end
 
       def validate_choice_default_rule(options)
         return if !options[:choice].is_a?(Array) || options[:choice].empty?
 
-        if options[:default].is_a?(String) && options[:default] != ""
-          raise ArgumentError, "Default must be one of your choice values!" if options[:choice].index(options[:default]) == nil
+        if options[:default].is_a?(String) && options[:default] != ''
+          fail ArgumentError, 'Default must be one of your choice values!' if options[:choice].index(options[:default]).nil?
         end
 
         if options[:default].is_a?(Array) && !options[:default].empty?
           options[:default].each do |val|
-            raise ArgumentError, "Default values must be a subset of your choice values!" if options[:choice].index(val) == nil
+            fail ArgumentError, 'Default values must be a subset of your choice values!' if options[:choice].index(val).nil?
           end
         end
       end
@@ -632,16 +630,15 @@ INVALID
       # constraint, we are replacing the old << and >> with the new <
       # and >.
       def handle_deprecated_constraints(specification)
-        specification.inject(Mash.new) do |acc, (cb, constraints)|
+        specification.reduce(Mash.new) do |acc, (cb, constraints)|
           constraints = Array(constraints)
           acc[cb] = (constraints.empty? || constraints.size > 1) ? [] : constraints.first.gsub(/>>/, '>').gsub(/<</, '<')
           acc
         end
       end
-
     end
 
-    #== Chef::Cookbook::MinimalMetadata
+    # == Chef::Cookbook::MinimalMetadata
     # MinimalMetadata is a duck type of Cookbook::Metadata, used
     # internally by Chef Server when determining the optimal set of
     # cookbooks for a node.
@@ -655,7 +652,5 @@ INVALID
         from_hash(params)
       end
     end
-
-
   end
 end

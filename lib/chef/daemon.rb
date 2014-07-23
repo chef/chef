@@ -37,15 +37,15 @@ class Chef
         @runlock = RunLock.new(pid_file)
         if runlock.test
           # We've acquired the daemon lock. Now daemonize.
-          Chef::Log.info("Daemonizing..")
+          Chef::Log.info('Daemonizing..')
           begin
             exit if fork
             Process.setsid
             exit if fork
             Chef::Log.info("Forked, in #{Process.pid}. Privileges: #{Process.euid} #{Process.egid}")
             File.umask Chef::Config[:umask]
-            $stdin.reopen("/dev/null")
-            $stdout.reopen("/dev/null", "a")
+            $stdin.reopen('/dev/null')
+            $stdout.reopen('/dev/null', 'a')
             $stderr.reopen($stdout)
             runlock.save_pid
           rescue NotImplementedError => e
@@ -61,7 +61,7 @@ class Chef
       # String::
       #   Location of the pid file for @name
       def pid_file
-         Chef::Config[:pid_file] or "/tmp/#{@name}.pid"
+        Chef::Config[:pid_file] || "/tmp/#{@name}.pid"
       end
 
       # Suck the pid out of pid_file
@@ -80,9 +80,9 @@ class Chef
       # Change process user/group to those specified in Chef::Config
       #
       def change_privilege
-        Dir.chdir("/")
+        Dir.chdir('/')
 
-        if Chef::Config[:user] and Chef::Config[:group]
+        if Chef::Config[:user] && Chef::Config[:group]
           Chef::Log.info("About to change privilege to #{Chef::Config[:user]}:#{Chef::Config[:group]}")
           _change_privilege(Chef::Config[:user], Chef::Config[:group])
         elsif Chef::Config[:user]
@@ -100,7 +100,7 @@ class Chef
       # ==== Alternatives
       # If group is left out, the user will be used (changing to user:user)
       #
-      def _change_privilege(user, group=user)
+      def _change_privilege(user, group = user)
         uid, gid = Process.euid, Process.egid
 
         begin

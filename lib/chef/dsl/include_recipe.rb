@@ -21,7 +21,6 @@ require 'chef/log'
 class Chef
   module DSL
     module IncludeRecipe
-
       def include_recipe(*recipe_names)
         run_context.include_recipe(*recipe_names)
       end
@@ -31,10 +30,9 @@ class Chef
       end
 
       def require_recipe(*args)
-        Chef::Log.warn("require_recipe is deprecated and will be removed in a future release, please use include_recipe")
+        Chef::Log.warn('require_recipe is deprecated and will be removed in a future release, please use include_recipe')
         include_recipe(*args)
       end
-
     end
   end
 end
@@ -42,4 +40,3 @@ end
 # **DEPRECATED**
 # This used to be part of chef/mixin/language_include_recipe. Load the file to activate the deprecation code.
 require 'chef/mixin/language_include_recipe'
-

@@ -20,13 +20,12 @@ require 'chef/http/json_output'
 
 class Chef
   class HTTP
-
     # A Middleware-ish thing that takes an HTTP response, parses it as JSON if
     # possible, and converts it into an appropriate model object if it contains
     # a `json_class` key.
     class JSONToModelOutput < JSONOutput
-      def initialize(opts={})
-        opts[:inflate_json_class] = true if !opts.has_key?(:inflate_json_class)
+      def initialize(opts = {})
+        opts[:inflate_json_class] = true unless opts.key?(:inflate_json_class)
         super
       end
     end

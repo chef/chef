@@ -21,33 +21,32 @@ require 'chef/knife'
 class Chef
   class Knife
     class CookbookSiteList < Knife
-
-      banner "knife cookbook site list (options)"
-      category "cookbook site"
+      banner 'knife cookbook site list (options)'
+      category 'cookbook site'
 
       option :with_uri,
-        :short => "-w",
-        :long => "--with-uri",
-        :description => "Show corresponding URIs"
+             short: '-w',
+             long: '--with-uri',
+             description: 'Show corresponding URIs'
 
       def run
         if config[:with_uri]
-          cookbooks = Hash.new
-          get_cookbook_list.each{ |k,v| cookbooks[k] = v['cookbook'] }
+          cookbooks = {}
+          get_cookbook_list.each { |k, v| cookbooks[k] = v['cookbook'] }
           ui.output(format_for_display(cookbooks))
         else
           ui.msg(ui.list(get_cookbook_list.keys.sort, :columns_down))
         end
       end
 
-      def get_cookbook_list(items=10, start=0, cookbook_collection={})
+      def get_cookbook_list(items = 10, start = 0, cookbook_collection = {})
         cookbooks_url = "http://cookbooks.opscode.com/api/v1/cookbooks?items=#{items}&start=#{start}"
         cr = noauth_rest.get_rest(cookbooks_url)
-        cr["items"].each do |cookbook|
-          cookbook_collection[cookbook["cookbook_name"]] = cookbook
+        cr['items'].each do |cookbook|
+          cookbook_collection[cookbook['cookbook_name']] = cookbook
         end
-        new_start = start + cr["items"].length
-        if new_start < cr["total"]
+        new_start = start + cr['items'].length
+        if new_start < cr['total']
           get_cookbook_list(items, new_start, cookbook_collection)
         else
           cookbook_collection
@@ -56,7 +55,3 @@ class Chef
     end
   end
 end
-
-
-
-

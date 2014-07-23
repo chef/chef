@@ -22,11 +22,9 @@ require 'chef/provider/file'
 require 'chef/deprecation/provider/template'
 require 'chef/deprecation/warnings'
 
-
 class Chef
   class Provider
     class Template < Chef::Provider::File
-
       extend Chef::Deprecation::Warnings
       include Chef::Deprecation::Provider::Template
       add_deprecation_warnings_for(Chef::Deprecation::Provider::Template.instance_methods)
@@ -45,7 +43,7 @@ class Chef
         super
 
         requirements.assert(:create, :create_if_missing) do |a|
-          a.assertion { ::File::exists?(content.template_location) }
+          a.assertion { ::File.exist?(content.template_location) }
           a.failure_message "Template source #{content.template_location} could not be found."
           a.whyrun "Template source #{content.template_location} does not exist. Assuming it would have been created."
           a.block_action!
@@ -59,8 +57,6 @@ class Chef
         return true if !@new_resource.source.nil? && @action != :create_if_missing
         false
       end
-
     end
   end
 end
-

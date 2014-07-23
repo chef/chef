@@ -25,10 +25,10 @@ describe 'knife upload' do
   include KnifeSupport
 
   context 'without versioned cookbooks' do
-    when_the_chef_server "has one of each thing" do
+    when_the_chef_server 'has one of each thing' do
       client 'x', {}
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
-      data_bag 'x', { 'y' => {} }
+      cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"'
+      data_bag 'x',  'y' => {}
       environment 'x', {}
       node 'x', {}
       role 'x', {}
@@ -61,7 +61,7 @@ EOM
         end
 
         it 'knife upload --purge deletes everything' do
-          knife('upload --purge /').should_succeed(<<EOM, :stderr => "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
+          knife('upload --purge /').should_succeed(<<EOM, stderr: "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
 Deleted extra entry /clients/chef-validator.json (purge is on)
 Deleted extra entry /clients/chef-webui.json (purge is on)
 Deleted extra entry /clients/x.json (purge is on)
@@ -73,24 +73,24 @@ Deleted extra entry /roles/x.json (purge is on)
 Deleted extra entry /users/admin.json (purge is on)
 Deleted extra entry /users/x.json (purge is on)
 EOM
-        knife('diff --name-status /').should_succeed <<EOM
+          knife('diff --name-status /').should_succeed <<EOM
 D\t/environments/_default.json
 EOM
         end
       end
 
       when_the_repository 'has an identical copy of each thing' do
-        file 'clients/chef-validator.json', { 'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'clients/chef-webui.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'clients/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/chef-validator.json',  'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'clients/chef-webui.json',  'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'clients/x.json',  'public_key' => ChefZero::PUBLIC_KEY
         file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
         file 'data_bags/x/y.json', {}
-        file 'environments/_default.json', { "description" => "The default Chef environment" }
+        file 'environments/_default.json',  'description' => 'The default Chef environment'
         file 'environments/x.json', {}
         file 'nodes/x.json', {}
         file 'roles/x.json', {}
-        file 'users/admin.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'users/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'users/admin.json',  'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'users/x.json',  'public_key' => ChefZero::PUBLIC_KEY
 
         it 'knife upload makes no changes' do
           knife('upload /cookbooks/x').should_succeed ''
@@ -103,7 +103,7 @@ EOM
         end
 
         context 'except the role file' do
-          file 'roles/x.json', { 'description' => 'blarghle' }
+          file 'roles/x.json',  'description' => 'blarghle'
           it 'knife upload changes the role' do
             knife('upload /').should_succeed "Updated /roles/x.json\n"
             knife('diff --name-status /').should_succeed ''
@@ -139,7 +139,7 @@ EOM
         end
 
         context 'as well as one extra copy of each thing' do
-          file 'clients/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+          file 'clients/y.json',  'public_key' => ChefZero::PUBLIC_KEY
           file 'cookbooks/x/blah.rb', ''
           file 'cookbooks/y/metadata.rb', 'version "1.0.0"'
           file 'data_bags/x/z.json', {}
@@ -147,7 +147,7 @@ EOM
           file 'environments/y.json', {}
           file 'nodes/y.json', {}
           file 'roles/y.json', {}
-          file 'users/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+          file 'users/y.json',  'public_key' => ChefZero::PUBLIC_KEY
 
           it 'knife upload adds the new files' do
             knife('upload /').should_succeed <<EOM
@@ -221,7 +221,7 @@ EOM
         context 'when current directory is top level' do
           cwd '.'
           it 'knife upload with no parameters reports an error' do
-            knife('upload').should_fail "FATAL: Must specify at least one argument.  If you want to upload everything in this directory, type \"knife upload .\"\n", :stdout => /USAGE/
+            knife('upload').should_fail "FATAL: Must specify at least one argument.  If you want to upload everything in this directory, type \"knife upload .\"\n", stdout: /USAGE/
           end
         end
       end
@@ -229,7 +229,7 @@ EOM
 
     when_the_chef_server 'is empty' do
       when_the_repository 'has a data bag item' do
-        file 'data_bags/x/y.json', { 'foo' => 'bar' }
+        file 'data_bags/x/y.json',  'foo' => 'bar'
         it 'knife upload of the data bag uploads only the values in the data bag item and no other' do
           knife('upload /data_bags/x/y.json').should_succeed <<EOM
 Created /data_bags/x
@@ -237,7 +237,7 @@ Created /data_bags/x/y.json
 EOM
           knife('diff --name-status /data_bags').should_succeed <<EOM
 EOM
-          JSON.parse(knife('raw /data/x/y').stdout, :create_additions => false).keys.sort.should == [ 'foo', 'id' ]
+          JSON.parse(knife('raw /data/x/y').stdout, create_additions: false).keys.sort.should == %w(foo id)
         end
 
         it 'knife upload /data_bags/x /data_bags/x/y.json uploads x once' do
@@ -249,15 +249,15 @@ EOM
       end
 
       when_the_repository 'has a data bag item with keys chef_type and data_bag' do
-        file 'data_bags/x/y.json', { 'chef_type' => 'aaa', 'data_bag' => 'bbb' }
+        file 'data_bags/x/y.json',  'chef_type' => 'aaa', 'data_bag' => 'bbb'
         it 'upload preserves chef_type and data_bag' do
           knife('upload /data_bags/x/y.json').should_succeed <<EOM
 Created /data_bags/x
 Created /data_bags/x/y.json
 EOM
           knife('diff --name-status /data_bags').should_succeed ''
-          result = JSON.parse(knife('raw /data/x/y').stdout, :create_additions => false)
-          result.keys.sort.should == [ 'chef_type', 'data_bag', 'id' ]
+          result = JSON.parse(knife('raw /data/x/y').stdout, create_additions: false)
+          result.keys.sort.should == %w(chef_type data_bag id)
           result['chef_type'].should == 'aaa'
           result['data_bag'].should == 'bbb'
         end
@@ -280,11 +280,11 @@ EOM
     end
 
     when_the_chef_server 'has three data bag items' do
-      data_bag 'x', { 'deleted' => {}, 'modified' => {}, 'unmodified' => {} }
+      data_bag 'x',  'deleted' => {}, 'modified' => {}, 'unmodified' => {}
 
       when_the_repository 'has a modified, unmodified, added and deleted data bag item' do
         file 'data_bags/x/added.json', {}
-        file 'data_bags/x/modified.json', { 'foo' => 'bar' }
+        file 'data_bags/x/modified.json',  'foo' => 'bar'
         file 'data_bags/x/unmodified.json', {}
 
         it 'knife upload of the modified file succeeds' do
@@ -350,7 +350,7 @@ EOM
         context 'when cwd is the /data_bags directory' do
           cwd 'data_bags'
           it 'knife upload fails' do
-            knife('upload').should_fail "FATAL: Must specify at least one argument.  If you want to upload everything in this directory, type \"knife upload .\"\n", :stdout => /USAGE/
+            knife('upload').should_fail "FATAL: Must specify at least one argument.  If you want to upload everything in this directory, type \"knife upload .\"\n", stdout: /USAGE/
           end
           it 'knife upload --purge . uploads everything' do
             knife('upload --purge .').should_succeed <<EOM
@@ -376,7 +376,7 @@ EOM
     # upload of a file is designed not to work at present.  Make sure that is the
     # case.
     when_the_chef_server 'has a cookbook' do
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'z.rb' => '' }
+      cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"', 'z.rb' => ''
       when_the_repository 'has a modified, extra and missing file for the cookbook' do
         file 'cookbooks/x/metadata.rb', 'version  "1.0.0"'
         file 'cookbooks/x/y.rb', 'hi'
@@ -439,7 +439,7 @@ EOM
     when_the_chef_server 'has a frozen cookbook' do
       cookbook 'frozencook', '1.0.0', {
         'metadata.rb' => 'version "1.0.0"'
-      }, :frozen => true
+      }, frozen: true
 
       when_the_repository 'has an update to said cookbook' do
         file 'cookbooks/frozencook/metadata.rb', 'version "1.0.0" # This is different'
@@ -460,8 +460,8 @@ EOM
       file 'cookbooks/x/onlyin1.0.0.rb', 'old_text'
 
       when_the_chef_server 'has a later version for the cookbook' do
-        cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => '' }
-        cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi' }
+        cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''
+        cookbook 'x', '1.0.1',  'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi'
 
         it 'knife upload /cookbooks/x uploads the local version' do
           knife('diff --name-status /cookbooks').should_succeed <<EOM
@@ -481,8 +481,8 @@ EOM
       end
 
       when_the_chef_server 'has an earlier version for the cookbook' do
-        cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''}
-        cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi' }
+        cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''
+        cookbook 'x', '0.9.9',  'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi'
         it 'knife upload /cookbooks/x uploads the local version' do
           knife('upload --purge /cookbooks/x').should_succeed <<EOM
 Updated /cookbooks/x
@@ -492,7 +492,7 @@ EOM
       end
 
       when_the_chef_server 'has a later version for the cookbook, and no current version' do
-        cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi' }
+        cookbook 'x', '1.0.1',  'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi'
 
         it 'knife upload /cookbooks/x uploads the local version' do
           knife('diff --name-status /cookbooks').should_succeed <<EOM
@@ -512,7 +512,7 @@ EOM
       end
 
       when_the_chef_server 'has an earlier version for the cookbook, and no current version' do
-        cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi' }
+        cookbook 'x', '0.9.9',  'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi'
 
         it 'knife upload /cookbooks/x uploads the new version' do
           knife('upload --purge /cookbooks/x').should_succeed <<EOM
@@ -529,12 +529,12 @@ EOM
         file 'environments/x.json', '{'
         it 'knife upload tries and fails' do
           knife('upload /environments/x.json').should_fail "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\nERROR: /environments/x.json failed to write: Parse error reading JSON: A JSON text must at least contain two octets!\n"
-          knife('diff --name-status /environments/x.json').should_succeed "M\t/environments/x.json\n", :stderr => "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n"
+          knife('diff --name-status /environments/x.json').should_succeed "M\t/environments/x.json\n", stderr: "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n"
         end
       end
 
       when_the_repository 'has the same environment with the wrong name in the file' do
-        file 'environments/x.json', { 'name' => 'y' }
+        file 'environments/x.json',  'name' => 'y'
         it 'knife upload fails' do
           knife('upload /environments/x.json').should_fail "ERROR: /environments/x.json failed to write: Name must be 'x' (is 'y')\n"
           knife('diff --name-status /environments/x.json').should_succeed "M\t/environments/x.json\n"
@@ -542,7 +542,7 @@ EOM
       end
 
       when_the_repository 'has the same environment with no name in the file' do
-        file 'environments/x.json', { 'description' => 'hi' }
+        file 'environments/x.json',  'description' => 'hi'
         it 'knife upload succeeds' do
           knife('upload /environments/x.json').should_succeed "Updated /environments/x.json\n"
           knife('diff --name-status /environments/x.json').should_succeed ''
@@ -560,7 +560,7 @@ EOM
       end
 
       when_the_repository 'has an environment with the wrong name in the file' do
-        file 'environments/x.json', { 'name' => 'y' }
+        file 'environments/x.json',  'name' => 'y'
         it 'knife upload fails' do
           knife('upload /environments/x.json').should_fail "ERROR: /environments failed to create_child: Error creating 'x.json': Name must be 'x' (is 'y')\n"
           knife('diff --name-status /environments/x.json').should_succeed "A\t/environments/x.json\n"
@@ -568,7 +568,7 @@ EOM
       end
 
       when_the_repository 'has an environment with no name in the file' do
-        file 'environments/x.json', { 'description' => 'hi' }
+        file 'environments/x.json',  'description' => 'hi'
         it 'knife upload succeeds' do
           knife('upload /environments/x.json').should_succeed "Created /environments/x.json\n"
           knife('diff --name-status /environments/x.json').should_succeed ''
@@ -576,7 +576,7 @@ EOM
       end
 
       when_the_repository 'has a data bag with no id in the file' do
-        file 'data_bags/bag/x.json', { 'foo' => 'bar' }
+        file 'data_bags/bag/x.json',  'foo' => 'bar'
         it 'knife upload succeeds' do
           knife('upload /data_bags/bag/x.json').should_succeed "Created /data_bags/bag\nCreated /data_bags/bag/x.json\n"
           knife('diff --name-status /data_bags/bag/x.json').should_succeed ''
@@ -586,10 +586,10 @@ EOM
   end # without versioned cookbooks
 
   with_versioned_cookbooks do
-    when_the_chef_server "has one of each thing" do
+    when_the_chef_server 'has one of each thing' do
       client 'x', {}
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
-      data_bag 'x', { 'y' => {} }
+      cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"'
+      data_bag 'x',  'y' => {}
       environment 'x', {}
       node 'x', {}
       role 'x', {}
@@ -622,7 +622,7 @@ EOM
         end
 
         it 'knife upload --purge deletes everything' do
-          knife('upload --purge /').should_succeed(<<EOM, :stderr => "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
+          knife('upload --purge /').should_succeed(<<EOM, stderr: "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
 Deleted extra entry /clients/chef-validator.json (purge is on)
 Deleted extra entry /clients/chef-webui.json (purge is on)
 Deleted extra entry /clients/x.json (purge is on)
@@ -641,17 +641,17 @@ EOM
       end
 
       when_the_repository 'has an identical copy of each thing' do
-        file 'clients/chef-validator.json', { 'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'clients/chef-webui.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'clients/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/chef-validator.json',  'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'clients/chef-webui.json',  'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'clients/x.json',  'public_key' => ChefZero::PUBLIC_KEY
         file 'cookbooks/x-1.0.0/metadata.rb', 'version "1.0.0"'
         file 'data_bags/x/y.json', {}
-        file 'environments/_default.json', { 'description' => 'The default Chef environment' }
+        file 'environments/_default.json',  'description' => 'The default Chef environment'
         file 'environments/x.json', {}
         file 'nodes/x.json', {}
         file 'roles/x.json', {}
-        file 'users/admin.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'users/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'users/admin.json',  'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'users/x.json',  'public_key' => ChefZero::PUBLIC_KEY
 
         it 'knife upload makes no changes' do
           knife('upload /cookbooks/x-1.0.0').should_succeed ''
@@ -664,7 +664,7 @@ EOM
         end
 
         context 'except the role file' do
-          file 'roles/x.json', { 'description' => 'blarghle' }
+          file 'roles/x.json',  'description' => 'blarghle'
 
           it 'knife upload changes the role' do
             knife('upload /').should_succeed "Updated /roles/x.json\n"
@@ -697,7 +697,7 @@ EOM
         end
 
         context 'as well as one extra copy of each thing' do
-          file 'clients/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+          file 'clients/y.json',  'public_key' => ChefZero::PUBLIC_KEY
           file 'cookbooks/x-1.0.0/blah.rb', ''
           file 'cookbooks/x-2.0.0/metadata.rb', 'version "2.0.0"'
           file 'cookbooks/y-1.0.0/metadata.rb', 'version "1.0.0"'
@@ -706,7 +706,7 @@ EOM
           file 'environments/y.json', {}
           file 'nodes/y.json', {}
           file 'roles/y.json', {}
-          file 'users/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+          file 'users/y.json',  'public_key' => ChefZero::PUBLIC_KEY
 
           it 'knife upload adds the new files' do
             knife('upload /').should_succeed <<EOM
@@ -765,7 +765,7 @@ EOM
         context 'when current directory is top level' do
           cwd '.'
           it 'knife upload with no parameters reports an error' do
-            knife('upload').should_fail "FATAL: Must specify at least one argument.  If you want to upload everything in this directory, type \"knife upload .\"\n", :stdout => /USAGE/
+            knife('upload').should_fail "FATAL: Must specify at least one argument.  If you want to upload everything in this directory, type \"knife upload .\"\n", stdout: /USAGE/
           end
         end
       end
@@ -790,10 +790,10 @@ EOM
     end
 
     when_the_chef_server 'has three data bag items' do
-      data_bag 'x', { 'deleted' => {}, 'modified' => {}, 'unmodified' => {} }
+      data_bag 'x',  'deleted' => {}, 'modified' => {}, 'unmodified' => {}
       when_the_repository 'has a modified, unmodified, added and deleted data bag item' do
         file 'data_bags/x/added.json', {}
-        file 'data_bags/x/modified.json', { 'foo' => 'bar' }
+        file 'data_bags/x/modified.json',  'foo' => 'bar'
         file 'data_bags/x/unmodified.json', {}
 
         it 'knife upload of the modified file succeeds' do
@@ -859,7 +859,7 @@ EOM
         context 'when cwd is the /data_bags directory' do
           cwd 'data_bags'
           it 'knife upload fails' do
-            knife('upload').should_fail "FATAL: Must specify at least one argument.  If you want to upload everything in this directory, type \"knife upload .\"\n", :stdout => /USAGE/
+            knife('upload').should_fail "FATAL: Must specify at least one argument.  If you want to upload everything in this directory, type \"knife upload .\"\n", stdout: /USAGE/
           end
           it 'knife upload --purge . uploads everything' do
             knife('upload --purge .').should_succeed <<EOM
@@ -885,7 +885,7 @@ EOM
     # upload of a file is designed not to work at present.  Make sure that is the
     # case.
     when_the_chef_server 'has a cookbook' do
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'z.rb' => '' }
+      cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"', 'z.rb' => ''
 
       when_the_repository 'has a modified, extra and missing file for the cookbook' do
         file 'cookbooks/x-1.0.0/metadata.rb', 'version  "1.0.0"'
@@ -945,8 +945,8 @@ EOM
       file 'cookbooks/x-1.0.0/onlyin1.0.0.rb', 'old_text'
 
       when_the_chef_server 'has a later version for the cookbook' do
-        cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => '' }
-        cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi' }
+        cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''
+        cookbook 'x', '1.0.1',  'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi'
 
         it 'knife upload /cookbooks uploads the local version' do
           knife('diff --name-status /cookbooks').should_succeed <<EOM
@@ -962,8 +962,8 @@ EOM
       end
 
       when_the_chef_server 'has an earlier version for the cookbook' do
-        cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''}
-        cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi' }
+        cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''
+        cookbook 'x', '0.9.9',  'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi'
         it 'knife upload /cookbooks uploads the local version' do
           knife('upload --purge /cookbooks').should_succeed <<EOM
 Updated /cookbooks/x-1.0.0
@@ -974,7 +974,7 @@ EOM
       end
 
       when_the_chef_server 'has a later version for the cookbook, and no current version' do
-        cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi' }
+        cookbook 'x', '1.0.1',  'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi'
 
         it 'knife upload /cookbooks/x uploads the local version' do
           knife('diff --name-status /cookbooks').should_succeed <<EOM
@@ -990,7 +990,7 @@ EOM
       end
 
       when_the_chef_server 'has an earlier version for the cookbook, and no current version' do
-        cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi' }
+        cookbook 'x', '0.9.9',  'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi'
 
         it 'knife upload /cookbooks/x uploads the new version' do
           knife('upload --purge /cookbooks').should_succeed <<EOM
@@ -1008,12 +1008,12 @@ EOM
         file 'environments/x.json', '{'
         it 'knife upload tries and fails' do
           knife('upload /environments/x.json').should_fail "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\nERROR: /environments/x.json failed to write: Parse error reading JSON: A JSON text must at least contain two octets!\n"
-          knife('diff --name-status /environments/x.json').should_succeed "M\t/environments/x.json\n", :stderr => "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n"
+          knife('diff --name-status /environments/x.json').should_succeed "M\t/environments/x.json\n", stderr: "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n"
         end
       end
 
       when_the_repository 'has the same environment with the wrong name in the file' do
-        file 'environments/x.json', { 'name' => 'y' }
+        file 'environments/x.json',  'name' => 'y'
         it 'knife upload fails' do
           knife('upload /environments/x.json').should_fail "ERROR: /environments/x.json failed to write: Name must be 'x' (is 'y')\n"
           knife('diff --name-status /environments/x.json').should_succeed "M\t/environments/x.json\n"
@@ -1021,7 +1021,7 @@ EOM
       end
 
       when_the_repository 'has the same environment with no name in the file' do
-        file 'environments/x.json', { 'description' => 'hi' }
+        file 'environments/x.json',  'description' => 'hi'
         it 'knife upload succeeds' do
           knife('upload /environments/x.json').should_succeed "Updated /environments/x.json\n"
           knife('diff --name-status /environments/x.json').should_succeed ''
@@ -1039,7 +1039,7 @@ EOM
       end
 
       when_the_repository 'has an environment with the wrong name in the file' do
-        file 'environments/x.json', { 'name' => 'y' }
+        file 'environments/x.json',  'name' => 'y'
         it 'knife upload fails' do
           knife('upload /environments/x.json').should_fail "ERROR: /environments failed to create_child: Error creating 'x.json': Name must be 'x' (is 'y')\n"
           knife('diff --name-status /environments/x.json').should_succeed "A\t/environments/x.json\n"
@@ -1047,7 +1047,7 @@ EOM
       end
 
       when_the_repository 'has an environment with no name in the file' do
-        file 'environments/x.json', { 'description' => 'hi' }
+        file 'environments/x.json',  'description' => 'hi'
         it 'knife upload succeeds' do
           knife('upload /environments/x.json').should_succeed "Created /environments/x.json\n"
           knife('diff --name-status /environments/x.json').should_succeed ''
@@ -1055,7 +1055,7 @@ EOM
       end
 
       when_the_repository 'has a data bag with no id in the file' do
-        file 'data_bags/bag/x.json', { 'foo' => 'bar' }
+        file 'data_bags/bag/x.json',  'foo' => 'bar'
         it 'knife upload succeeds' do
           knife('upload /data_bags/bag/x.json').should_succeed "Created /data_bags/bag\nCreated /data_bags/bag/x.json\n"
           knife('diff --name-status /data_bags/bag/x.json').should_succeed ''
@@ -1067,7 +1067,7 @@ EOM
   when_the_chef_server 'has a user' do
     user 'x', {}
     when_the_repository 'has the same user with json_class in it' do
-      file 'users/x.json', { 'admin' => true, 'json_class' => 'Chef::WebUIUser' }
+      file 'users/x.json',  'admin' => true, 'json_class' => 'Chef::WebUIUser'
       it 'knife upload /users/x.json succeeds' do
         knife('upload /users/x.json').should_succeed "Updated /users/x.json\n"
       end

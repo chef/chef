@@ -22,11 +22,11 @@ require 'spec_helper'
 
 describe Chef::Knife::CookbookMetadataFromFile do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
-    @src = File.expand_path(File.join(CHEF_SPEC_DATA, "metadata", "quick_start", "metadata.rb"))
-    @tgt = File.expand_path(File.join(CHEF_SPEC_DATA, "metadata", "quick_start", "metadata.json"))
+    Chef::Config[:node_name]  = 'webmonkey.example.com'
+    @src = File.expand_path(File.join(CHEF_SPEC_DATA, 'metadata', 'quick_start', 'metadata.rb'))
+    @tgt = File.expand_path(File.join(CHEF_SPEC_DATA, 'metadata', 'quick_start', 'metadata.json'))
     @knife = Chef::Knife::CookbookMetadataFromFile.new
-    @knife.name_args = [ @src ]
+    @knife.name_args = [@src]
     @knife.stub(:to_json_pretty).and_return(true)
     @md = Chef::Cookbook::Metadata.new
     Chef::Cookbook::Metadata.stub(:new).and_return(@md)
@@ -34,29 +34,29 @@ describe Chef::Knife::CookbookMetadataFromFile do
   end
 
   after do
-    if File.exists?(@tgt)
+    if File.exist?(@tgt)
       File.unlink(@tgt)
     end
   end
 
-  describe "run" do
-    it "should determine cookbook name from path" do
-      @md.should_receive(:name).with()
-      @md.should_receive(:name).with("quick_start")
+  describe 'run' do
+    it 'should determine cookbook name from path' do
+      @md.should_receive(:name).with
+      @md.should_receive(:name).with('quick_start')
       @knife.run
     end
 
-    it "should load the metadata source" do
+    it 'should load the metadata source' do
       @md.should_receive(:from_file).with(@src)
       @knife.run
     end
 
-    it "should write out the metadata to the correct location" do
-      File.should_receive(:open).with(@tgt, "w")
+    it 'should write out the metadata to the correct location' do
+      File.should_receive(:open).with(@tgt, 'w')
       @knife.run
     end
 
-    it "should generate json from the metadata" do
+    it 'should generate json from the metadata' do
       Chef::JSONCompat.should_receive(:to_json_pretty).with(@md)
       @knife.run
     end
