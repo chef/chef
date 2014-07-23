@@ -9,8 +9,8 @@ Gem::Specification.new do |s|
   s.summary = "A systems integration framework, built to bring the benefits of configuration management to your entire infrastructure."
   s.description = s.summary
   s.author = "Adam Jacob"
-  s.email = "adam@opscode.com"
-  s.homepage = "http://wiki.opscode.com/display/chef"
+  s.email = "adam@getchef.com"
+  s.homepage = "http://www.getchef.com"
 
   s.add_dependency "mixlib-config", "~> 2.0"
   s.add_dependency "mixlib-cli", "~> 1.4"
@@ -19,17 +19,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-shellout", "~> 1.4"
   s.add_dependency "ohai", "= 7.2.0.rc.1"
 
-  # Lock down rest-client to avoid pulling in rdoc and breaking Omnibus builds
-  # on Solaris. See the original issue for more details:
-  # https://github.com/opscode/chef/issues/1211
-  s.add_dependency "rest-client", ">= 1.0.4", "<= 1.6.7"
-  # rest-client has an unbounded dependency on mime-types.
-  # mime-types 2.0 removes support for ruby 1.8.7 (gemspec requires ruby
-  # 1.9.2+), so we have to add an additional pin. 1.16 is chosen just becuase
-  # it's the version I had when I tested.
-  s.add_dependency "mime-types", "~> 1.16"
-
-  s.add_dependency "ffi-yajl"
+  s.add_dependency "ffi-yajl", "~> 1.0"
   s.add_dependency "net-ssh", "~> 2.6"
   s.add_dependency "net-ssh-multi", "~> 1.1"
   # CHEF-3027: The knife-cloud plugins require newer features from highline, core chef should not.

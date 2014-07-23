@@ -194,7 +194,7 @@ EXPECTED
   describe "when a bootstrap_version is not specified" do
     it "should send the latest current to the installer" do
       # Intentionally hard coded in order not to replicate the logic.
-      bootstrap_context.latest_current_chef_version_string.should eq("-v 11")
+      bootstrap_context.latest_current_chef_version_string.should eq("-v #{Chef::VERSION.to_i}")
     end
   end
 end
