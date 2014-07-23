@@ -8,6 +8,7 @@
 * [**Xabier de Zuazo**](https://github.com/zuazo):
   Remove the unused StreamingCookbookUploader class (CHEF-4586)
 
+* set file_stating_uses_destdir config option default to true (CHEF-5040)
 * remove dependency on rest-client gem
 * Add method shell_out_with_systems_locale to ShellOut.
 * Fix knife cookbook site share on windows (CHEF-4994)

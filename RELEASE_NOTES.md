@@ -1,5 +1,14 @@
 # Chef Client Release Notes:
 
+## Changed file_staging_uses_destdir Config default to True
+
+Staging into the system's tempdir (usually /tmp or /var/tmp) rather than the destination directory can
+cause issues with permissions or available space.  It can also become problematic when doing cross-devices
+renames which turn move operations into copy operations (using mv uses a new inode on Unix which avoids
+ETXTBSY exceptions, while cp reuses the inode and can raise that error).  Staging the tempfile for the
+Chef file providers into the destination directory solve these problems for users.  Windows ACLs on the
+directory will also be inherited correctly.
+
 ## Removed Rest-Client dependency
 
 - cookbooks that previously were able to use rest-client directly will now need to install it via `chef_gem "rest-client"`.

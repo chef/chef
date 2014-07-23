@@ -567,7 +567,7 @@ class Chef
     # If false file staging is will be done via tempfiles that are
     # created under ENV['TMP'] otherwise tempfiles will be created in
     # the directory that files are going to reside.
-    default :file_staging_uses_destdir, false
+    default :file_staging_uses_destdir, true
 
     # Exit if another run is in progress and the chef-client is unable to
     # get the lock before time expires. If nil, no timeout is enforced. (Exits
