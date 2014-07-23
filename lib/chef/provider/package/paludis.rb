@@ -37,7 +37,7 @@ class Chef
           installed = false
           re = Regexp.new('(.*)[[:blank:]](.*)[[:blank:]](.*)$')
 
-          shell_out!("cave -L warning print-ids -m \"*/#{@new_resource.package_name.split('/').last}\" -f \"%c/%p %v %r\n\"").stdout.each_line do |line|
+          shell_out!("cave -L warning print-ids -M none -m \"*/#{@new_resource.package_name.split('/').last}\" -f \"%c/%p %v %r\n\"").stdout.each_line do |line|
             res = re.match(line)
             unless res.nil?
               case res[3]
@@ -62,7 +62,7 @@ class Chef
           else
             pkg = "#{@new_resource.package_name}"
           end
-          shell_out!("cave -L warning resolve -x#{expand_options(@new_resource.options)} \"#{pkg}\"")
+          shell_out!("cave -L warning resolve -x#{expand_options(@new_resource.options)} \"#{pkg}\"",:timeout => 86400)
         end
 
         def upgrade_package(name, version)
