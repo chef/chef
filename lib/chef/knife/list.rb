@@ -3,9 +3,9 @@ require 'chef/chef_fs/knife'
 class Chef
   class Knife
     class List < Chef::ChefFS::Knife
-      banner "knife list [-dfR1p] [PATTERN1 ... PATTERNn]"
+      banner 'knife list [-dfR1p] [PATTERN1 ... PATTERNn]'
 
-      category "path-based"
+      category 'path-based'
 
       deps do
         require 'chef/chef_fs/file_system'
@@ -13,35 +13,35 @@ class Chef
       end
 
       option :recursive,
-        :short => '-R',
-        :boolean => true,
-        :description => "List directories recursively"
+             short: '-R',
+             boolean: true,
+             description: 'List directories recursively'
       option :bare_directories,
-        :short => '-d',
-        :boolean => true,
-        :description => "When directories match the pattern, do not show the directories' children"
+             short: '-d',
+             boolean: true,
+             description: "When directories match the pattern, do not show the directories' children"
       option :local,
-        :long => '--local',
-        :boolean => true,
-        :description => "List local directory instead of remote"
+             long: '--local',
+             boolean: true,
+             description: 'List local directory instead of remote'
       option :flat,
-        :short => '-f',
-        :long => '--flat',
-        :boolean => true,
-        :description => "Show a list of filenames rather than the prettified ls-like output normally produced"
+             short: '-f',
+             long: '--flat',
+             boolean: true,
+             description: 'Show a list of filenames rather than the prettified ls-like output normally produced'
       option :one_column,
-        :short => '-1',
-        :boolean => true,
-        :description => "Show only one column of results"
+             short: '-1',
+             boolean: true,
+             description: 'Show only one column of results'
       option :trailing_slashes,
-        :short => '-p',
-        :boolean => true,
-        :description => "Show trailing slashes after directories"
+             short: '-p',
+             boolean: true,
+             description: 'Show trailing slashes after directories'
 
       attr_accessor :exit_code
 
       def run
-        patterns = name_args.length == 0 ? [""] : name_args
+        patterns = name_args.length == 0 ? [''] : name_args
 
         # Get the top-level matches
         args = pattern_args_from(patterns)
@@ -69,7 +69,7 @@ class Chef
 
         # Flatten out directory results if necessary
         if config[:flat]
-          dir_results.each do |result, children|
+          dir_results.each do |_result, children|
             results += children
           end
           dir_results = []
@@ -89,15 +89,15 @@ class Chef
         printed_something = results.length > 0
         dir_results.each do |result, children|
           if printed_something
-            output ""
+            output ''
           else
             printed_something = true
           end
           output "#{format_path(result)}:"
-          print_results(children.map { |result| maybe_add_slash(result.name, result.dir?) }.sort, "")
+          print_results(children.map { |result| maybe_add_slash(result.name, result.dir?) }.sort, '')
         end
 
-        exit self.exit_code if self.exit_code
+        exit exit_code if exit_code
       end
 
       def add_dir_result(result)
@@ -108,7 +108,7 @@ class Chef
           return []
         end
 
-        result = [ [ result, children ] ]
+        result = [[result, children]]
         if config[:recursive]
           child_dirs = children.select { |child| child.dir? }
           result += parallelize(child_dirs) { |child| add_dir_result(child) }.flatten(1).to_a
@@ -116,7 +116,7 @@ class Chef
         result
       end
 
-      def print_result_paths(results, indent = "")
+      def print_result_paths(results, indent = '')
         print_results(results.map { |result| maybe_add_slash(format_path(result), result.dir?) }, indent)
       end
 

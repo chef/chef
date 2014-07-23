@@ -20,7 +20,6 @@ require 'chef/policy_builder/expand_node_object'
 require 'chef/policy_builder/policyfile'
 
 class Chef
-
   # PolicyBuilder contains classes that handles fetching policy from server or
   # disk and resolving any indirection (e.g. expanding run_list).
   #
@@ -36,7 +35,6 @@ class Chef
   # * cookbooks sync'd to disk
   # * cookbook_hash is stored in run_context
   module PolicyBuilder
-
     def self.strategy
       if Chef::Config[:use_policyfile]
         Policyfile
@@ -44,6 +42,5 @@ class Chef
         ExpandNodeObject
       end
     end
-
   end
 end

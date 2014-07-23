@@ -25,22 +25,22 @@ describe Chef::Provider::File::Content do
   #
 
   let(:current_resource) do
-    double("Chef::Provider::File::Resource (current)")
+    double('Chef::Provider::File::Resource (current)')
   end
 
-  let(:enclosing_directory) {
-    canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
-  }
-  let(:resource_path) {
-    canonicalize_path(File.expand_path(File.join(enclosing_directory, "seattle.txt")))
-  }
+  let(:enclosing_directory) do
+    canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, 'templates')))
+  end
+  let(:resource_path) do
+    canonicalize_path(File.expand_path(File.join(enclosing_directory, 'seattle.txt')))
+  end
 
   let(:new_resource) do
-    double("Chef::Provider::File::Resource (new)", :name => "seattle.txt", :path => resource_path)
+    double('Chef::Provider::File::Resource (new)', name: 'seattle.txt', path: resource_path)
   end
 
   let(:run_context) do
-    double("Chef::RunContext")
+    double('Chef::RunContext')
   end
 
   #
@@ -50,44 +50,43 @@ describe Chef::Provider::File::Content do
     Chef::Provider::File::Content.new(new_resource, current_resource, run_context)
   end
 
-  describe "when the resource has a content attribute set" do
+  describe 'when the resource has a content attribute set' do
 
     before do
-      new_resource.stub(:content).and_return("Do do do do, do do do do, do do do do, do do do do")
+      new_resource.stub(:content).and_return('Do do do do, do do do do, do do do do, do do do do')
     end
 
-    it "returns a tempfile" do
+    it 'returns a tempfile' do
       content.tempfile.should be_a_kind_of(Tempfile)
     end
 
-    it "the tempfile contents should match the resource contents" do
+    it 'the tempfile contents should match the resource contents' do
       IO.read(content.tempfile.path).should == new_resource.content
     end
 
-    it "returns a tempfile in the tempdir when :file_staging_uses_destdir is not set" do
+    it 'returns a tempfile in the tempdir when :file_staging_uses_destdir is not set' do
       Chef::Config[:file_staging_uses_destdir] = false
-      content.tempfile.path.start_with?(Dir::tmpdir).should be_true
+      content.tempfile.path.start_with?(Dir.tmpdir).should be_true
       canonicalize_path(content.tempfile.path).start_with?(enclosing_directory).should be_false
     end
 
-    it "returns a tempfile in the destdir when :file_desployment_uses_destdir is not set" do
+    it 'returns a tempfile in the destdir when :file_desployment_uses_destdir is not set' do
       Chef::Config[:file_staging_uses_destdir] = true
-      content.tempfile.path.start_with?(Dir::tmpdir).should be_false
+      content.tempfile.path.start_with?(Dir.tmpdir).should be_false
       canonicalize_path(content.tempfile.path).start_with?(enclosing_directory).should be_true
     end
 
   end
 
-  describe "when the resource does not have a content attribute set" do
+  describe 'when the resource does not have a content attribute set' do
 
     before do
       new_resource.stub(:content).and_return(nil)
     end
 
-    it "should return nil instead of a tempfile" do
+    it 'should return nil instead of a tempfile' do
       content.tempfile.should be_nil
     end
 
   end
 end
-

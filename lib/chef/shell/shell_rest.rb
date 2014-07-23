@@ -18,11 +18,9 @@
 
 module Shell
   class ShellREST < Chef::REST
-
-    alias :get    :get_rest
-    alias :put    :put_rest
-    alias :post   :post_rest
-    alias :delete :delete_rest
-
+    alias_method :get,    :get_rest
+    alias_method :put,    :put_rest
+    alias_method :post,   :post_rest
+    alias_method :delete, :delete_rest
   end
 end

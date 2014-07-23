@@ -20,18 +20,16 @@ require 'chef/http/cookie_jar'
 
 class Chef
   class HTTP
-
     # An HTTP middleware to manage storing/sending cookies in HTTP requests.
     # Most HTTP communication in Chef does not need cookies, it was originally
     # implemented to support OpenID, but it's not known who might be relying on
     # it, so it's included with Chef::REST
     class CookieManager
-
-      def initialize(options={})
+      def initialize(_options = {})
         @cookies = CookieJar.instance
       end
 
-      def handle_request(method, url, headers={}, data=false)
+      def handle_request(method, url, headers = {}, data = false)
         @host, @port = url.host, url.port
         if @cookies.key?("#{@host}:#{@port}")
           headers['Cookie'] = @cookies["#{@host}:#{@port}"]
@@ -46,14 +44,13 @@ class Chef
         [http_response, rest_request, return_value]
       end
 
-      def stream_response_handler(response)
+      def stream_response_handler(_response)
         nil
       end
 
       def handle_stream_complete(http_response, rest_request, return_value)
         [http_response, rest_request, return_value]
       end
-
     end
   end
 end

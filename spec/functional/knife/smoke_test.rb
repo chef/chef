@@ -18,14 +18,14 @@
 
 require 'spec_helper'
 
-describe "knife smoke tests" do
+describe 'knife smoke tests' do
 
   # Since our specs load all code, there could be a case where knife does not
   # run correctly b/c of a missing require, but is not caught by other tests.
   #
   # We run `knife -v` to verify that knife at least loads all its code.
-  it "can run and print its version" do
-    knife_path = File.expand_path("../../bin/knife", CHEF_SPEC_DATA)
+  it 'can run and print its version' do
+    knife_path = File.expand_path('../../bin/knife', CHEF_SPEC_DATA)
     knife_cmd = Mixlib::ShellOut.new("#{knife_path} -v")
     knife_cmd.run_command
     knife_cmd.error!

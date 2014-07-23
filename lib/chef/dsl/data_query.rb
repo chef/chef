@@ -23,12 +23,10 @@ require 'chef/encrypted_data_bag_item'
 
 class Chef
   module DSL
-
     # ==Chef::DSL::DataQuery
     # Provides DSL for querying data from the chef-server via search or data
     # bag.
     module DataQuery
-
       def search(*args, &block)
         # If you pass a block, or have at least the start argument, do raw result parsing
         #
@@ -36,7 +34,7 @@ class Chef
         if Kernel.block_given? || args.length >= 4
           Chef::Search::Query.new.search(*args, &block)
         else
-          results = Array.new
+          results = []
           Chef::Search::Query.new.search(*args) do |o|
             results << o
           end
@@ -48,7 +46,7 @@ class Chef
         DataBag.validate_name!(bag.to_s)
         rbag = DataBag.load(bag)
         rbag.keys
-      rescue Exception
+      rescue
         Log.error("Failed to list data bag items in data bag: #{bag.inspect}")
         raise
       end
@@ -57,7 +55,7 @@ class Chef
         DataBag.validate_name!(bag.to_s)
         DataBagItem.validate_id!(item)
         DataBagItem.load(bag, item)
-      rescue Exception
+      rescue
         Log.error("Failed to load data bag item: #{bag.inspect} #{item.inspect}")
         raise
       end
@@ -68,4 +66,3 @@ end
 # **DEPRECATED**
 # This used to be part of chef/mixin/language. Load the file to activate the deprecation code.
 require 'chef/mixin/language'
-

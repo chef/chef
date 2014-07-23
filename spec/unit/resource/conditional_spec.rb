@@ -27,31 +27,31 @@ describe Chef::Resource::Conditional do
     @parent_resource = Chef::Resource.new(nil, Chef::Node.new)
   end
 
-  describe "when created as an `only_if`" do
-    describe "after running a successful command" do
+  describe 'when created as an `only_if`' do
+    describe 'after running a successful command' do
       before do
-        @conditional = Chef::Resource::Conditional.only_if(@parent_resource, "true")
+        @conditional = Chef::Resource::Conditional.only_if(@parent_resource, 'true')
       end
 
-      it "indicates that resource convergence should continue" do
+      it 'indicates that resource convergence should continue' do
         @conditional.continue?.should be_true
       end
     end
 
-    describe "after running a negative/false command" do
+    describe 'after running a negative/false command' do
       before do
-        @status.send("success?=", false)
-        @conditional = Chef::Resource::Conditional.only_if(@parent_resource, "false")
+        @status.send('success?=', false)
+        @conditional = Chef::Resource::Conditional.only_if(@parent_resource, 'false')
       end
 
-      it "indicates that resource convergence should not continue" do
+      it 'indicates that resource convergence should not continue' do
         @conditional.continue?.should be_false
       end
     end
 
     describe 'after running a command which timed out' do
       before do
-        @conditional = Chef::Resource::Conditional.only_if(@parent_resource, "false")
+        @conditional = Chef::Resource::Conditional.only_if(@parent_resource, 'false')
         Chef::GuardInterpreter::DefaultGuardInterpreter.any_instance.stub(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
       end
 
@@ -65,52 +65,52 @@ describe Chef::Resource::Conditional do
       end
     end
 
-    describe "after running a block that returns a truthy value" do
+    describe 'after running a block that returns a truthy value' do
       before do
         @conditional = Chef::Resource::Conditional.only_if(@parent_resource) { Object.new }
       end
 
-      it "indicates that resource convergence should continue" do
+      it 'indicates that resource convergence should continue' do
         @conditional.continue?.should be_true
       end
     end
 
-    describe "after running a block that returns a falsey value" do
+    describe 'after running a block that returns a falsey value' do
       before do
         @conditional = Chef::Resource::Conditional.only_if(@parent_resource) { nil }
       end
 
-      it "indicates that resource convergence should not continue" do
+      it 'indicates that resource convergence should not continue' do
         @conditional.continue?.should be_false
       end
     end
   end
 
-  describe "when created as a `not_if`" do
-    describe "after running a successful/true command" do
+  describe 'when created as a `not_if`' do
+    describe 'after running a successful/true command' do
       before do
-        @conditional = Chef::Resource::Conditional.not_if(@parent_resource, "true")
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource, 'true')
       end
 
-      it "indicates that resource convergence should not continue" do
+      it 'indicates that resource convergence should not continue' do
         @conditional.continue?.should be_false
       end
     end
 
-    describe "after running a failed/false command" do
+    describe 'after running a failed/false command' do
       before do
-        @status.send("success?=", false)
-        @conditional = Chef::Resource::Conditional.not_if(@parent_resource, "false")
+        @status.send('success?=', false)
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource, 'false')
       end
 
-      it "indicates that resource convergence should continue" do
+      it 'indicates that resource convergence should continue' do
         @conditional.continue?.should be_true
       end
     end
 
     describe 'after running a command which timed out' do
       before do
-        @conditional = Chef::Resource::Conditional.not_if(@parent_resource,  "false")
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource,  'false')
         Chef::GuardInterpreter::DefaultGuardInterpreter.any_instance.stub(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
       end
 
@@ -124,22 +124,22 @@ describe Chef::Resource::Conditional do
       end
     end
 
-    describe "after running a block that returns a truthy value" do
+    describe 'after running a block that returns a truthy value' do
       before do
         @conditional = Chef::Resource::Conditional.not_if(@parent_resource) { Object.new }
       end
 
-      it "indicates that resource convergence should not continue" do
+      it 'indicates that resource convergence should not continue' do
         @conditional.continue?.should be_false
       end
     end
 
-    describe "after running a block that returns a falsey value" do
+    describe 'after running a block that returns a falsey value' do
       before do
         @conditional = Chef::Resource::Conditional.not_if(@parent_resource) { nil }
       end
 
-      it "indicates that resource convergence should continue" do
+      it 'indicates that resource convergence should continue' do
         @conditional.continue?.should be_true
       end
     end

@@ -49,7 +49,6 @@
 # This class has dubious semantics and we only have it so that people can write
 # params[:key] instead of params['key'].
 class Mash < Hash
-
   # @param constructor<Object>
   #   The default value for the mash. Defaults to an empty hash.
   #
@@ -71,8 +70,8 @@ class Mash < Hash
   def initialize_copy(orig)
     super
     # Handle nested values
-    each do |k,v|
-      if v.kind_of?(Mash) || v.is_a?(Array)
+    each do |k, v|
+      if v.is_a?(Mash) || v.is_a?(Array)
         self[k] = v.dup
       end
     end
@@ -142,14 +141,14 @@ class Mash < Hash
   #
   # @return [Array] The values at each of the provided keys
   def values_at(*indices)
-    indices.collect {|key| self[convert_key(key)]}
+    indices.map { |key| self[convert_key(key)] }
   end
 
   # @param hash<Hash> The hash to merge with the mash.
   #
   # @return [Mash] A new mash with the hash values merged in.
   def merge(hash)
-    self.dup.update(hash)
+    dup.update(hash)
   end
 
   # @param key<Object>
@@ -166,13 +165,15 @@ class Mash < Hash
   #   { :one => 1, :two => 2, :three => 3 }.except(:one)
   #     #=> { "two" => 2, "three" => 3 }
   def except(*keys)
-    super(*keys.map {|k| convert_key(k)})
+    super(*keys.map { |k| convert_key(k) })
   end
 
   # Used to provide the same interface as Hash.
   #
   # @return [Mash] This mash unchanged.
-  def stringify_keys!; self end
+  def stringify_keys!
+    self
+  end
 
   # @return [Hash] The mash as a Hash with symbolized keys.
   def symbolize_keys
@@ -203,7 +204,7 @@ class Mash < Hash
   #
   # @api private
   def convert_key(key)
-    key.kind_of?(Symbol) ? key.to_s : key
+    key.is_a?(Symbol) ? key.to_s : key
   end
 
   # @param value<Object> The value to convert.
@@ -217,7 +218,7 @@ class Mash < Hash
     if value.class == Hash
       Mash.from_hash(value)
     elsif value.is_a?(Array)
-      value.collect { |e| convert_value(e) }
+      value.map { |e| convert_value(e) }
     else
       value
     end

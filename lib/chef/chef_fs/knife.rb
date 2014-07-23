@@ -44,16 +44,16 @@ class Chef
       end
 
       option :repo_mode,
-        :long => '--repo-mode MODE',
-        :description => "Specifies the local repository layout.  Values: static, everything, hosted_everything.  Default: everything/hosted_everything"
+             long: '--repo-mode MODE',
+             description: 'Specifies the local repository layout.  Values: static, everything, hosted_everything.  Default: everything/hosted_everything'
 
       option :chef_repo_path,
-        :long => '--chef-repo-path PATH',
-        :description => 'Overrides the location of chef repo. Default is specified by chef_repo_path in the config'
+             long: '--chef-repo-path PATH',
+             description: 'Overrides the location of chef repo. Default is specified by chef_repo_path in the config'
 
       option :concurrency,
-        :long => '--concurrency THREADS',
-        :description => 'Maximum number of simultaneous requests to send (default: 10)'
+             long: '--concurrency THREADS',
+             description: 'Maximum number of simultaneous requests to send (default: 10)'
 
       def configure_chef
         super

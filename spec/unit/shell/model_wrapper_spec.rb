@@ -21,53 +21,53 @@ require 'ostruct'
 
 describe Shell::ModelWrapper do
   before do
-    @model = OpenStruct.new(:name=>"Chef::Node")
+    @model = OpenStruct.new(name: 'Chef::Node')
     @wrapper = Shell::ModelWrapper.new(@model)
   end
 
-  describe "when created with an explicit model_symbol" do
+  describe 'when created with an explicit model_symbol' do
     before do
-      @model = OpenStruct.new(:name=>"Chef::ApiClient")
+      @model = OpenStruct.new(name: 'Chef::ApiClient')
       @wrapper = Shell::ModelWrapper.new(@model, :client)
     end
 
-    it "uses the explicit model symbol" do
+    it 'uses the explicit model symbol' do
       @wrapper.model_symbol.should == :client
     end
   end
 
-  it "determines the model symbol from the class name" do
+  it 'determines the model symbol from the class name' do
     @wrapper.model_symbol.should == :node
   end
 
-  describe "when listing objects" do
+  describe 'when listing objects' do
     before do
       @node_1 = Chef::Node.new
-      @node_1.name("sammich")
+      @node_1.name('sammich')
       @node_2 = Chef::Node.new
-      @node_2.name("yummy")
-      @server_response = {:node_1 => @node_1, :node_2 => @node_2}
+      @node_2.name('yummy')
+      @server_response = { node_1: @node_1, node_2: @node_2 }
       @wrapper = Shell::ModelWrapper.new(Chef::Node)
       Chef::Node.stub(:list).and_return(@server_response)
     end
 
-    it "lists fully inflated objects without the resource IDs" do
+    it 'lists fully inflated objects without the resource IDs' do
       @wrapper.all.should have(2).nodes
       @wrapper.all.should include(@node_1, @node_2)
     end
 
-    it "maps the listed nodes when given a block" do
-      @wrapper.all {|n| n.name }.sort.reverse.should == %w{yummy sammich}
+    it 'maps the listed nodes when given a block' do
+      @wrapper.all { |n| n.name }.sort.reverse.should == %w(yummy sammich)
     end
   end
 
-  describe "when searching for objects" do
+  describe 'when searching for objects' do
     before do
       @node_1 = Chef::Node.new
-      @node_1.name("sammich")
+      @node_1.name('sammich')
       @node_2 = Chef::Node.new
-      @node_2.name("yummy")
-      @server_response = {:node_1 => @node_1, :node_2 => @node_2}
+      @node_2.name('yummy')
+      @server_response = { node_1: @node_1, node_2: @node_2 }
       @wrapper = Shell::ModelWrapper.new(Chef::Node)
 
       # Creating a Chef::Search::Query object tries to read the private key...
@@ -80,18 +80,17 @@ describe Shell::ModelWrapper do
       @wrapper.find(:all).should include(@node_1, @node_2)
     end
 
-    it "searches for objects using the given query string" do
+    it 'searches for objects using the given query string' do
       @searcher.should_receive(:search).with(:node, 'name:app*').and_yield(@node_1).and_yield(@node_2)
-      @wrapper.find("name:app*").should include(@node_1, @node_2)
+      @wrapper.find('name:app*').should include(@node_1, @node_2)
     end
 
     it "creates a 'AND'-joined query string from a HASH" do
       # Hash order woes
       @searcher.should_receive(:search).with(:node, 'name:app* AND name:app*').and_yield(@node_1).and_yield(@node_2)
-      @wrapper.find(:name=>"app*",'name'=>"app*").should include(@node_1, @node_2)
+      @wrapper.find(:name => 'app*', 'name' => 'app*').should include(@node_1, @node_2)
     end
 
   end
-
 
 end

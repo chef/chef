@@ -24,7 +24,7 @@ class Chef
     class ZenMaster < Chef::Resource
       attr_reader :peace
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         @resource_name = :zen_master
         super
         allowed_actions << :win << :score
@@ -34,8 +34,8 @@ class Chef
         @peace = tf
       end
 
-      def something(arg=nil)
-        if !arg.nil?
+      def something(arg = nil)
+        unless arg.nil?
           @something = arg
         end
         @something

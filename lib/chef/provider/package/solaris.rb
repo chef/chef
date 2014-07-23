@@ -24,7 +24,6 @@ class Chef
   class Provider
     class Package
       class Solaris < Chef::Provider::Package
-
         include Chef::Mixin::GetSourceFromPackage
 
         # def initialize(*args)
@@ -50,14 +49,14 @@ class Chef
           @new_resource.version(nil)
 
           if @new_resource.source
-            @package_source_found = ::File.exists?(@new_resource.source)
+            @package_source_found = ::File.exist?(@new_resource.source)
             if @package_source_found
               Chef::Log.debug("#{@new_resource} checking pkg status")
-              status = popen4("pkginfo -l -d #{@new_resource.source} #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
+              status = popen4("pkginfo -l -d #{@new_resource.source} #{@new_resource.package_name}") do |_pid, _stdin, stdout, _stderr|
                 stdout.each do |line|
                   case line
                   when /VERSION:\s+(.+)/
-                    @new_resource.version($1)
+                    @new_resource.version(Regexp.last_match[1])
                   end
                 end
               end
@@ -65,18 +64,18 @@ class Chef
           end
 
           Chef::Log.debug("#{@new_resource} checking install state")
-          status = popen4("pkginfo -l #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
+          status = popen4("pkginfo -l #{@current_resource.package_name}") do |_pid, _stdin, stdout, _stderr|
             stdout.each do |line|
               case line
               when /VERSION:\s+(.+)/
-                Chef::Log.debug("#{@new_resource} version #{$1} is already installed")
-                @current_resource.version($1)
+                Chef::Log.debug("#{@new_resource} version #{Regexp.last_match[1]} is already installed")
+                @current_resource.version(Regexp.last_match[1])
               end
             end
           end
 
           unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "pkginfo failed - #{status.inspect}!"
+            fail Chef::Exceptions::Package, "pkginfo failed - #{status.inspect}!"
           end
 
           unless @current_resource.version.nil?
@@ -88,23 +87,23 @@ class Chef
 
         def candidate_version
           return @candidate_version if @candidate_version
-          status = popen4("pkginfo -l -d #{@new_resource.source} #{new_resource.package_name}") do |pid, stdin, stdout, stderr|
+          status = popen4("pkginfo -l -d #{@new_resource.source} #{new_resource.package_name}") do |_pid, _stdin, stdout, _stderr|
             stdout.each_line do |line|
               case line
               when /VERSION:\s+(.+)/
-                @candidate_version = $1
-                @new_resource.version($1)
+                @candidate_version = Regexp.last_match[1]
+                @new_resource.version(Regexp.last_match[1])
                 Chef::Log.debug("#{@new_resource} setting install candidate version to #{@candidate_version}")
               end
             end
           end
           unless status.exitstatus == 0
-            raise Chef::Exceptions::Package, "pkginfo -l -d #{@new_resource.source} - #{status.inspect}!"
+            fail Chef::Exceptions::Package, "pkginfo -l -d #{@new_resource.source} - #{status.inspect}!"
           end
           @candidate_version
         end
 
-        def install_package(name, version)
+        def install_package(_name, _version)
           Chef::Log.debug("#{@new_resource} package install options: #{@new_resource.options}")
           if @new_resource.options.nil?
             if ::File.directory?(@new_resource.source) # CHEF-4469
@@ -113,7 +112,7 @@ class Chef
               command = "pkgadd -n -d #{@new_resource.source} all"
             end
             run_command_with_systems_locale(
-                    :command => command
+                    command: command
                   )
             Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           else
@@ -123,26 +122,25 @@ class Chef
               command = "pkgadd -n#{expand_options(@new_resource.options)} -d #{@new_resource.source} all"
             end
             run_command_with_systems_locale(
-              :command => command
+              command: command
             )
             Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           end
         end
 
-        def remove_package(name, version)
+        def remove_package(name, _version)
           if @new_resource.options.nil?
             run_command_with_systems_locale(
-                    :command => "pkgrm -n #{name}"
+                    command: "pkgrm -n #{name}"
                   )
             Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
           else
             run_command_with_systems_locale(
-              :command => "pkgrm -n#{expand_options(@new_resource.options)} #{name}"
+              command: "pkgrm -n#{expand_options(@new_resource.options)} #{name}"
             )
             Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
           end
         end
-
       end
     end
   end

@@ -21,7 +21,6 @@ require 'chef/log'
 class Chef
   module DSL
     module IncludeAttribute
-
       # Loads the attribute file specified by the short name of the
       # file, e.g., loads specified cookbook's
       #   "attributes/mailservers.rb"
@@ -48,10 +47,9 @@ class Chef
         if match = file_spec.match(/(.+?)::(.+)/)
           [match[1], match[2]]
         else
-          [file_spec, "default"]
+          [file_spec, 'default']
         end
       end
-
     end
   end
 end
@@ -59,5 +57,3 @@ end
 # **DEPRECATED**
 # This used to be part of chef/mixin/language_include_attribute. Load the file to activate the deprecation code.
 require 'chef/mixin/language_include_attribute'
-
-

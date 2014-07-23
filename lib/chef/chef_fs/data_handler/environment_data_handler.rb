@@ -6,19 +6,19 @@ class Chef
     module DataHandler
       class EnvironmentDataHandler < DataHandlerBase
         def normalize(environment, entry)
-          normalize_hash(environment, {
-            'name' => remove_dot_json(entry.name),
-            'description' => '',
-            'cookbook_versions' => {},
-            'default_attributes' => {},
-            'override_attributes' => {},
-            'json_class' => 'Chef::Environment',
-            'chef_type' => 'environment'
-          })
+          normalize_hash(environment,
+                         'name' => remove_dot_json(entry.name),
+                         'description' => '',
+                         'cookbook_versions' => {},
+                         'default_attributes' => {},
+                         'override_attributes' => {},
+                         'json_class' => 'Chef::Environment',
+                         'chef_type' => 'environment'
+                         )
         end
 
         def preserve_key(key)
-          return key == 'name'
+          key == 'name'
         end
 
         def chef_class

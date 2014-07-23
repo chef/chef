@@ -23,7 +23,7 @@ class Regexp
   # Standard in Ruby 1.8.7+. See official documentation[http://www.ruby-doc.org/core-1.8.7/classes/Regexp.html]
   class << self
     unless (union(%w(a b)) rescue false)
-      alias :union_without_array_argument :union
+      alias_method :union_without_array_argument, :union
 
       def union(*arg)
         return union_without_array_argument(*arg) unless arg.size == 1

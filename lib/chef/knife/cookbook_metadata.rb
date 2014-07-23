@@ -22,24 +22,23 @@ require 'chef/knife'
 class Chef
   class Knife
     class CookbookMetadata < Knife
-
       deps do
         require 'chef/cookbook_loader'
         require 'chef/cookbook/metadata'
       end
 
-      banner "knife cookbook metadata COOKBOOK (options)"
+      banner 'knife cookbook metadata COOKBOOK (options)'
 
       option :cookbook_path,
-        :short => "-o PATH:PATH",
-        :long => "--cookbook-path PATH:PATH",
-        :description => "A colon-separated path to look for cookbooks in",
-        :proc => lambda { |o| o.split(":") }
+             short: '-o PATH:PATH',
+             long: '--cookbook-path PATH:PATH',
+             description: 'A colon-separated path to look for cookbooks in',
+             proc: lambda { |o| o.split(':') }
 
       option :all,
-        :short => "-a",
-        :long => "--all",
-        :description => "Generate metadata for all cookbooks, rather than just a single cookbook"
+             short: '-a',
+             long: '--all',
+             description: 'Generate metadata for all cookbooks, rather than just a single cookbook'
 
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
@@ -47,13 +46,13 @@ class Chef
         if config[:all]
           cl = Chef::CookbookLoader.new(config[:cookbook_path])
           cl.load_cookbooks
-          cl.each do |cname, cookbook|
+          cl.each do |cname, _cookbook|
             generate_metadata(cname.to_s)
           end
         else
           cookbook_name = @name_args[0]
           if cookbook_name.nil? || cookbook_name.empty?
-            ui.error "You must specify the cookbook to generate metadata for, or use the --all option."
+            ui.error 'You must specify the cookbook to generate metadata for, or use the --all option.'
             exit 1
           end
           generate_metadata(cookbook_name)
@@ -63,7 +62,7 @@ class Chef
       def generate_metadata(cookbook)
         Array(config[:cookbook_path]).reverse.each do |path|
           file = File.expand_path(File.join(path, cookbook, 'metadata.rb'))
-          if File.exists?(file)
+          if File.exist?(file)
             generate_metadata_from_file(cookbook, file)
           else
             validate_metadata_json(path, cookbook)
@@ -77,7 +76,7 @@ class Chef
         md.name(cookbook)
         md.from_file(file)
         json_file = File.join(File.dirname(file), 'metadata.json')
-        File.open(json_file, "w") do |f|
+        File.open(json_file, 'w') do |f|
           f.write(Chef::JSONCompat.to_json_pretty(md))
         end
         generated = true
@@ -102,7 +101,6 @@ class Chef
         ui.stderr.puts e.message
         exit 1
       end
-
     end
   end
 end

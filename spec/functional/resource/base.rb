@@ -22,7 +22,7 @@ def ohai
   # provider is platform-dependent, we need platform ohai data:
   @OHAI_SYSTEM ||= begin
     ohai = Ohai::System.new
-    ohai.all_plugins("platform")
+    ohai.all_plugins('platform')
     ohai
   end
 end
@@ -36,4 +36,3 @@ def run_context
     Chef::RunContext.new(node, {}, events)
   end
 end
-

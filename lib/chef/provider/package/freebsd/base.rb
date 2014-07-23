@@ -28,10 +28,9 @@ class Chef
   class Provider
     class Package
       module Freebsd
-
         module PortsHelper
           def supports_ports?
-            ::File.exist?("/usr/ports/Makefile")
+            ::File.exist?('/usr/ports/Makefile')
           end
 
           def port_dir(port)
@@ -48,21 +47,20 @@ class Chef
 
             # Otherwise look up the path to the ports directory using 'whereis'
             else
-              whereis = shell_out!("whereis -s #{port}", :env => nil)
+              whereis = shell_out!("whereis -s #{port}", env: nil)
               unless _path = whereis.stdout[/^#{Regexp.escape(port)}:\s+(.+)$/, 1]
-                raise Chef::Exceptions::Package, "Could not find port with the name #{port}"
+                fail Chef::Exceptions::Package, "Could not find port with the name #{port}"
               end
               _path
             end
           end
 
           def makefile_variable_value(variable, dir = nil)
-            options = dir ? { :cwd => dir } : {}
-            make_v = shell_out!("make -V #{variable}", options.merge!(:env => nil, :returns => [0,1]))
-            make_v.exitstatus.zero? ? make_v.stdout.strip.split($\).first : nil   # $\ is the line separator, i.e. newline.
+            options = dir ? { cwd: dir } : {}
+            make_v = shell_out!("make -V #{variable}", options.merge!(env: nil, returns: [0, 1]))
+            make_v.exitstatus.zero? ? make_v.stdout.strip.split($OUTPUT_RECORD_SEPARATOR).first : nil   # $\ is the line separator, i.e. newline.
           end
         end
-
 
         class Base < Chef::Provider::Package
           include Chef::Mixin::ShellOut
@@ -85,7 +83,6 @@ class Chef
             @current_resource
           end
         end
-
       end
     end
   end

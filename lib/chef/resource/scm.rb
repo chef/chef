@@ -16,162 +16,159 @@
 # limitations under the License.
 #
 
-
 require 'chef/resource'
 
 class Chef
   class Resource
     class Scm < Chef::Resource
-
       identity_attr :destination
 
       state_attrs :revision
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @destination = name
         @resource_name = :scm
         @enable_submodules = false
         @enable_checkout = true
-        @revision = "HEAD"
-        @remote = "origin"
+        @revision = 'HEAD'
+        @remote = 'origin'
         @ssh_wrapper = nil
         @depth = nil
         @allowed_actions.push(:checkout, :export, :sync, :diff, :log)
         @action = [:sync]
-        @checkout_branch = "deploy"
+        @checkout_branch = 'deploy'
       end
 
-      def destination(arg=nil)
+      def destination(arg = nil)
         set_or_return(
           :destination,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def repository(arg=nil)
+      def repository(arg = nil)
         set_or_return(
           :repository,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def revision(arg=nil)
+      def revision(arg = nil)
         set_or_return(
           :revision,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def user(arg=nil)
+      def user(arg = nil)
         set_or_return(
           :user,
           arg,
-          :kind_of => [String, Integer]
+          kind_of: [String, Integer]
         )
       end
 
-      def group(arg=nil)
+      def group(arg = nil)
         set_or_return(
           :group,
           arg,
-          :kind_of => [String, Integer]
+          kind_of: [String, Integer]
         )
       end
 
-      def svn_username(arg=nil)
+      def svn_username(arg = nil)
         set_or_return(
           :svn_username,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def svn_password(arg=nil)
+      def svn_password(arg = nil)
         set_or_return(
           :svn_password,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def svn_arguments(arg=nil)
+      def svn_arguments(arg = nil)
         @svn_arguments, arg = nil, nil if arg == false
         set_or_return(
           :svn_arguments,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def svn_info_args(arg=nil)
+      def svn_info_args(arg = nil)
         @svn_info_args, arg = nil, nil if arg == false
         set_or_return(
           :svn_info_args,
           arg,
-          :kind_of => String)
+          kind_of: String)
       end
 
       # Capistrano and git-deploy use ``shallow clone''
-      def depth(arg=nil)
+      def depth(arg = nil)
         set_or_return(
           :depth,
           arg,
-          :kind_of => Integer
+          kind_of: Integer
         )
       end
 
-      def enable_submodules(arg=nil)
+      def enable_submodules(arg = nil)
         set_or_return(
           :enable_submodules,
           arg,
-          :kind_of => [TrueClass, FalseClass]
+          kind_of: [TrueClass, FalseClass]
         )
       end
 
-      def enable_checkout(arg=nil)
+      def enable_checkout(arg = nil)
         set_or_return(
           :enable_checkout,
           arg,
-          :kind_of => [TrueClass, FalseClass]
+          kind_of: [TrueClass, FalseClass]
         )
       end
 
-      def remote(arg=nil)
+      def remote(arg = nil)
         set_or_return(
           :remote,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def ssh_wrapper(arg=nil)
+      def ssh_wrapper(arg = nil)
         set_or_return(
           :ssh_wrapper,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def timeout(arg=nil)
+      def timeout(arg = nil)
         set_or_return(
           :timeout,
           arg,
-          :kind_of => Integer
+          kind_of: Integer
         )
       end
 
-      def checkout_branch(arg=nil)
+      def checkout_branch(arg = nil)
         set_or_return(
           :checkout_branch,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
-
     end
   end
 end

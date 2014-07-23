@@ -18,11 +18,11 @@
 require 'support/shared/integration/integration_helper'
 require 'chef/mixin/shell_out'
 
-describe "chef-client" do
+describe 'chef-client' do
   extend IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_zero_opts) { {:host => "::1"} }
+  let(:chef_zero_opts) { { host: '::1' } }
 
   let(:validation_pem) do
     <<-END_VALIDATION_PEM
@@ -73,10 +73,9 @@ END_CLIENT_RB
     basic_config_file
   end
 
+  let(:chef_dir) { File.join(File.dirname(__FILE__), '..', '..', '..', 'bin') }
 
-  let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
-
-  let(:chef_client_cmd) { %Q[chef-client -c "#{path_to('config/client.rb')}" -lwarn] }
+  let(:chef_client_cmd) { %Q(chef-client -c "#{path_to('config/client.rb')}" -lwarn) }
 
   after do
     FileUtils.rm_rf(cache_path)
@@ -84,25 +83,25 @@ END_CLIENT_RB
 
   # Some Solaris test platforms are too old for IPv6. These tests should not
   # otherwise be platform dependent, so exclude solaris
-  when_the_chef_server "is running on IPv6", :not_supported_on_solaris do
+  when_the_chef_server 'is running on IPv6', :not_supported_on_solaris do
 
-    when_the_repository "has a cookbook with a no-op recipe" do
-      cookbook 'noop', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }, "recipes" => {"default.rb" => "#raise 'foo'"}
+    when_the_repository 'has a cookbook with a no-op recipe' do
+      cookbook 'noop', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }, 'recipes' => { 'default.rb' => "#raise 'foo'" }
       before do
         file 'config/client.rb', client_rb_content
         file 'config/validator.pem', validation_pem
       end
 
-      it "should complete with success" do
-        result = shell_out("#{chef_client_cmd} -o 'noop::default'", :cwd => chef_dir)
+      it 'should complete with success' do
+        result = shell_out("#{chef_client_cmd} -o 'noop::default'", cwd: chef_dir)
         result.error!
       end
 
     end
 
-    when_the_repository "has a cookbook that hits server APIs" do
+    when_the_repository 'has a cookbook that hits server APIs' do
 
-      recipe=<<-END_RECIPE
+      recipe = <<-END_RECIPE
         actual_item = data_bag_item("expect_bag", "expect_item")
         if actual_item.key?("expect_key") and actual_item["expect_key"] == "expect_value"
           Chef::Log.info "lookin good"
@@ -114,17 +113,17 @@ END_CLIENT_RB
 
       END_RECIPE
 
-      data_bag('expect_bag', { 'expect_item' => {"expect_key" => "expect_value"} })
+      data_bag('expect_bag',  'expect_item' => { 'expect_key' => 'expect_value' })
 
-      cookbook 'api-smoke-test', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }, "recipes" => {"default.rb" => recipe}
+      cookbook 'api-smoke-test', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }, 'recipes' => { 'default.rb' => recipe }
 
       before do
         file 'config/client.rb', client_rb_content
         file 'config/validator.pem', validation_pem
       end
 
-      it "should complete with success" do
-        result = shell_out("#{chef_client_cmd} -o 'api-smoke-test::default'", :cwd => chef_dir)
+      it 'should complete with success' do
+        result = shell_out("#{chef_client_cmd} -o 'api-smoke-test::default'", cwd: chef_dir)
         result.error!
       end
 

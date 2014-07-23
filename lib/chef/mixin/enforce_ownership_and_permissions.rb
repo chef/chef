@@ -21,7 +21,6 @@ require 'chef/file_access_control'
 class Chef
   module Mixin
     module EnforceOwnershipAndPermissions
-
       def access_controls
         @access_controls ||= Chef::FileAccessControl.new(current_resource, new_resource, self)
       end
@@ -33,7 +32,6 @@ class Chef
         access_controls.set_all
         new_resource.updated_by_last_action(true) if access_controls.modified?
       end
-
     end
   end
 end

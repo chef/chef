@@ -41,53 +41,53 @@ describe Chef::Knife::SslFetch do
     s
   end
 
-  context "when no arguments are given" do
+  context 'when no arguments are given' do
 
     before do
-      Chef::Config.chef_server_url = "https://example.com:8443/chef-server"
+      Chef::Config.chef_server_url = 'https://example.com:8443/chef-server'
     end
 
-    it "uses the chef_server_url as the host to fetch" do
-      expect(ssl_fetch.host).to eq("example.com")
+    it 'uses the chef_server_url as the host to fetch' do
+      expect(ssl_fetch.host).to eq('example.com')
       expect(ssl_fetch.port).to eq(8443)
     end
   end
 
-  context "when a specific URI is given" do
-    let(:name_args) { %w{https://example.test:10443/foo} }
+  context 'when a specific URI is given' do
+    let(:name_args) { %w(https://example.test:10443/foo) }
 
-    it "fetchs the SSL configuration against the given host" do
-      expect(ssl_fetch.host).to eq("example.test")
-      expect(ssl_fetch.port).to eq(10443)
+    it 'fetchs the SSL configuration against the given host' do
+      expect(ssl_fetch.host).to eq('example.test')
+      expect(ssl_fetch.port).to eq(10_443)
     end
   end
 
-  context "when an invalid URI is given" do
+  context 'when an invalid URI is given' do
 
-    let(:name_args) { %w{foo.test} }
+    let(:name_args) { %w(foo.test) }
 
-    it "prints an error and exits" do
+    it 'prints an error and exits' do
       expect { ssl_fetch.run }.to raise_error(SystemExit)
-      expected_stdout=<<-E
+      expected_stdout = <<-E
 USAGE: knife ssl fetch [URL] (options)
 E
-      expected_stderr=<<-E
+      expected_stderr = <<-E
 ERROR: Given URI: `foo.test' is invalid
 E
       expect(stdout_io.string).to eq(expected_stdout)
       expect(stderr_io.string).to eq(expected_stderr)
     end
 
-    context "and its malformed enough to make URI.parse barf" do
+    context 'and its malformed enough to make URI.parse barf' do
 
-      let(:name_args) { %w{ftp://lkj\\blah:example.com/blah} }
+      let(:name_args) { %w(ftp://lkj\\blah:example.com/blah) }
 
-      it "prints an error and exits" do
+      it 'prints an error and exits' do
         expect { ssl_fetch.run }.to raise_error(SystemExit)
-        expected_stdout=<<-E
+        expected_stdout = <<-E
 USAGE: knife ssl fetch [URL] (options)
 E
-        expected_stderr=<<-E
+        expected_stderr = <<-E
 ERROR: Given URI: `#{name_args[0]}' is invalid
 E
         expect(stdout_io.string).to eq(expected_stdout)
@@ -96,33 +96,33 @@ E
     end
   end
 
-  describe "normalizing CNs for use as paths" do
+  describe 'normalizing CNs for use as paths' do
 
     it "normalizes '*' to 'wildcard'" do
-      expect(ssl_fetch.normalize_cn("*.example.com")).to eq("wildcard_example_com")
+      expect(ssl_fetch.normalize_cn('*.example.com')).to eq('wildcard_example_com')
     end
 
-    it "normalizes non-alnum and hyphen characters to underscores" do
-      expect(ssl_fetch.normalize_cn("Billy-Bob's Super Awesome CA!")).to eq("Billy-Bob_s_Super_Awesome_CA_")
+    it 'normalizes non-alnum and hyphen characters to underscores' do
+      expect(ssl_fetch.normalize_cn("Billy-Bob's Super Awesome CA!")).to eq('Billy-Bob_s_Super_Awesome_CA_')
     end
 
   end
 
-  describe "fetching the remote cert chain" do
+  describe 'fetching the remote cert chain' do
 
-    let(:name_args) { %w{https://foo.example.com:8443} }
+    let(:name_args) { %w(https://foo.example.com:8443) }
 
     let(:tcp_socket) { double(TCPSocket) }
     let(:ssl_socket) { double(OpenSSL::SSL::SSLSocket) }
 
-    let(:self_signed_crt_path) { File.join(CHEF_SPEC_DATA, "trusted_certs", "example.crt") }
+    let(:self_signed_crt_path) { File.join(CHEF_SPEC_DATA, 'trusted_certs', 'example.crt') }
     let(:self_signed_crt) { OpenSSL::X509::Certificate.new(File.read(self_signed_crt_path)) }
 
     let(:trusted_certs_dir) { Dir.mktmpdir }
 
     def run
       ssl_fetch.run
-    rescue Exception
+    rescue
       puts "OUT: #{stdout_io.string}"
       puts "ERR: #{stderr_io.string}"
       raise
@@ -131,7 +131,7 @@ E
     before do
       Chef::Config.trusted_certs_dir = trusted_certs_dir
 
-      TCPSocket.should_receive(:new).with("foo.example.com", 8443).and_return(tcp_socket)
+      TCPSocket.should_receive(:new).with('foo.example.com', 8443).and_return(tcp_socket)
       OpenSSL::SSL::SSLSocket.should_receive(:new).with(tcp_socket, ssl_fetch.noverify_peer_ssl_context).and_return(ssl_socket)
       ssl_socket.should_receive(:connect)
       ssl_socket.should_receive(:peer_cert_chain).and_return([self_signed_crt])
@@ -141,9 +141,9 @@ E
       FileUtils.rm_rf(trusted_certs_dir)
     end
 
-    it "fetches the cert chain and writes the certs to the trusted_certs_dir" do
+    it 'fetches the cert chain and writes the certs to the trusted_certs_dir' do
       run
-      stored_cert_path = File.join(trusted_certs_dir, "example_local.crt")
+      stored_cert_path = File.join(trusted_certs_dir, 'example_local.crt')
       expect(File).to exist(stored_cert_path)
       expect(File.read(stored_cert_path)).to eq(File.read(self_signed_crt_path))
     end

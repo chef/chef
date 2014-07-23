@@ -18,7 +18,7 @@ require 'chef/version_class'
 
 class Chef
   class VersionConstraint
-    DEFAULT_CONSTRAINT = ">= 0.0.0"
+    DEFAULT_CONSTRAINT = '>= 0.0.0'
     STANDARD_OPS = %w(< > <= >=)
     OPS = %w(< > = <= >= ~>)
     PATTERN = /^(#{OPS.join('|')}) *([0-9].*)$/
@@ -26,7 +26,7 @@ class Chef
 
     attr_reader :op, :version, :raw_version
 
-    def initialize(constraint_spec=DEFAULT_CONSTRAINT)
+    def initialize(constraint_spec = DEFAULT_CONSTRAINT)
       case constraint_spec
       when nil
         parse(DEFAULT_CONSTRAINT)
@@ -36,7 +36,7 @@ class Chef
         parse(constraint_spec)
       else
         msg = "VersionConstraint should be created from a String. You gave: #{constraint_spec.inspect}"
-        raise Chef::Exceptions::InvalidVersionConstraint, msg
+        fail Chef::Exceptions::InvalidVersionConstraint, msg
       end
     end
 
@@ -46,7 +46,7 @@ class Chef
                 else
                   self.class::VERSION_CLASS.new(v.to_s)
                 end
-     do_op(version)
+      do_op(version)
     end
 
     def inspect
@@ -79,7 +79,7 @@ class Chef
            other_version.patch >= @version.patch)
         end
       else                      # should never happen
-        raise "bad op #{@op}"
+        fail "bad op #{@op}"
       end
     end
 
@@ -91,28 +91,27 @@ class Chef
       else
         msg = "only one version constraint operation is supported, but you gave #{constraint_spec.size} "
         msg << "['#{constraint_spec.join(', ')}']"
-        raise Chef::Exceptions::InvalidVersionConstraint, msg
+        fail Chef::Exceptions::InvalidVersionConstraint, msg
       end
     end
 
     def parse(str)
       @missing_patch_level = false
-      if str.index(" ").nil? && str =~ /^[0-9]/
+      if str.index(' ').nil? && str =~ /^[0-9]/
         # try for lone version, implied '='
         @raw_version = str
         @version = self.class::VERSION_CLASS.new(@raw_version)
-        @op = "="
+        @op = '='
       elsif PATTERN.match str
-        @op = $1
-        @raw_version = $2
+        @op = Regexp.last_match[1]
+        @raw_version = Regexp.last_match[2]
         @version = self.class::VERSION_CLASS.new(@raw_version)
         if raw_version.split('.').size <= 2
           @missing_patch_level = true
         end
       else
-        raise Chef::Exceptions::InvalidVersionConstraint, "'#{str}'"
+        fail Chef::Exceptions::InvalidVersionConstraint, "'#{str}'"
       end
     end
-
   end
 end

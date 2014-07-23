@@ -20,8 +20,8 @@ require 'spec_helper'
 
 describe Chef::Knife::IndexRebuild do
 
-  let(:knife){Chef::Knife::IndexRebuild.new}
-  let(:rest_client){double(Chef::REST)}
+  let(:knife) { Chef::Knife::IndexRebuild.new }
+  let(:rest_client) { double(Chef::REST) }
 
   let(:stub_rest!) do
     knife.should_receive(:rest).and_return(rest_client)
@@ -32,15 +32,15 @@ describe Chef::Knife::IndexRebuild do
     knife.ui.stub(:stdout).and_return(StringIO.new)
   end
 
-  context "#grab_api_info" do
+  context '#grab_api_info' do
     let(:http_not_found_response) do
-      e = Net::HTTPNotFound.new("1.1", 404, "blah")
-      e.stub(:[]).with("x-ops-api-info").and_return(api_header_value)
+      e = Net::HTTPNotFound.new('1.1', 404, 'blah')
+      e.stub(:[]).with('x-ops-api-info').and_return(api_header_value)
       e
     end
 
     let(:http_server_exception) do
-      Net::HTTPServerException.new("404: Not Found", http_not_found_response)
+      Net::HTTPServerException.new('404: Not Found', http_not_found_response)
     end
 
     before(:each) do
@@ -48,34 +48,34 @@ describe Chef::Knife::IndexRebuild do
       rest_client.stub(:get_rest).and_raise(http_server_exception)
     end
 
-    context "against a Chef 11 server" do
-      let(:api_header_value){"flavor=osc;version=11.0.0;erchef=1.2.3"}
-      it "retrieves API information" do
-        knife.grab_api_info.should == {"flavor" => "osc", "version" => "11.0.0", "erchef" => "1.2.3"}
+    context 'against a Chef 11 server' do
+      let(:api_header_value) { 'flavor=osc;version=11.0.0;erchef=1.2.3' }
+      it 'retrieves API information' do
+        knife.grab_api_info.should == { 'flavor' => 'osc', 'version' => '11.0.0', 'erchef' => '1.2.3' }
       end
     end # Chef 11
 
-    context "against a Chef 10 server" do
-      let(:api_header_value){nil}
-      it "finds no API information" do
+    context 'against a Chef 10 server' do
+      let(:api_header_value) { nil }
+      it 'finds no API information' do
         knife.grab_api_info.should == {}
       end
     end # Chef 10
   end # grab_api_info
 
-  context "#unsupported_version?" do
-    context "with Chef 11 API metadata" do
-      it "is unsupported" do
-        knife.unsupported_version?({"version" => "11.0.0", "flavor" => "osc", "erchef" => "1.2.3"}).should be_true
+  context '#unsupported_version?' do
+    context 'with Chef 11 API metadata' do
+      it 'is unsupported' do
+        knife.unsupported_version?('version' => '11.0.0', 'flavor' => 'osc', 'erchef' => '1.2.3').should be_true
       end
 
-      it "only truly relies on the version being non-nil" do
-        knife.unsupported_version?({"version" => "1", "flavor" => "osc", "erchef" => "1.2.3"}).should be_true
+      it 'only truly relies on the version being non-nil' do
+        knife.unsupported_version?('version' => '1', 'flavor' => 'osc', 'erchef' => '1.2.3').should be_true
       end
     end
 
-    context "with Chef 10 API metadata" do
-      it "is supported" do
+    context 'with Chef 10 API metadata' do
+      it 'is supported' do
         # Chef 10 will have no metadata
         knife.unsupported_version?({}).should be_false
       end
@@ -89,11 +89,11 @@ describe Chef::Knife::IndexRebuild do
       server_specific_stubs!
     end
 
-    context "against a Chef 11 server" do
+    context 'against a Chef 11 server' do
       let(:api_info) do
-        {"flavor" => "osc",
-          "version" => "11.0.0",
-          "erchef" => "1.2.3"
+        { 'flavor' => 'osc',
+          'version' => '11.0.0',
+          'erchef' => '1.2.3'
         }
       end
       let(:server_specific_stubs!) do
@@ -101,28 +101,25 @@ describe Chef::Knife::IndexRebuild do
         knife.should_receive(:exit).with(1)
       end
 
-      it "should not be allowed" do
+      it 'should not be allowed' do
         knife.run
       end
     end
 
-    context "against a Chef 10 server" do
-      let(:api_info){ {} }
+    context 'against a Chef 10 server' do
+      let(:api_info) { {} }
       let(:server_specific_stubs!) do
         stub_rest!
-        rest_client.should_receive(:post_rest).with("/search/reindex", {}).and_return("representative output")
+        rest_client.should_receive(:post_rest).with('/search/reindex', {}).and_return('representative output')
         knife.should_not_receive(:unsupported_server_message)
         knife.should_receive(:deprecated_server_message)
         knife.should_receive(:nag)
-        knife.should_receive(:output).with("representative output")
+        knife.should_receive(:output).with('representative output')
       end
-      it "should be allowed" do
+      it 'should be allowed' do
         knife.run
       end
     end
   end
 
 end
-
-
-

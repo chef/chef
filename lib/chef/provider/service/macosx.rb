@@ -27,10 +27,10 @@ class Chef
         include Chef::Mixin::ShellOut
 
         def self.gather_plist_dirs
-          locations = %w{/Library/LaunchAgents
+          locations = %w(/Library/LaunchAgents
                          /Library/LaunchDaemons
                          /System/Library/LaunchAgents
-                         /System/Library/LaunchDaemons }
+                         /System/Library/LaunchDaemons)
 
           locations << "#{ENV['HOME']}/Library/LaunchAgents" if ENV['HOME']
           locations
@@ -50,27 +50,27 @@ class Chef
         end
 
         def define_resource_requirements
-          #super
+          # super
           requirements.assert(:reload) do |a|
-            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
+            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self} does not support :reload"
           end
 
           requirements.assert(:all_actions) do |a|
             a.assertion { @plist_size < 2 }
-            a.failure_message Chef::Exceptions::Service, "Several plist files match service name. Please use full service name."
+            a.failure_message Chef::Exceptions::Service, 'Several plist files match service name. Please use full service name.'
           end
 
           requirements.assert(:enable, :disable) do |a|
             a.assertion { !@service_label.to_s.empty? }
             a.failure_message Chef::Exceptions::Service,
-              "Could not find service's label in plist file '#{@plist}'!"
+                              "Could not find service's label in plist file '#{@plist}'!"
           end
 
           requirements.assert(:all_actions) do |a|
             a.assertion { @plist_size > 0 }
             # No failrue here in original code - so we also will not
             # fail. Instead warn that the service is potentially missing
-            a.whyrun "Assuming that the service would have been previously installed and is currently disabled." do
+            a.whyrun 'Assuming that the service would have been previously installed and is currently disabled.' do
               @current_resource.enabled(false)
               @current_resource.running(false)
             end
@@ -84,7 +84,7 @@ class Chef
             if @new_resource.start_command
               super
             else
-              shell_out!("launchctl load -w '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
+              shell_out!("launchctl load -w '#{@plist}'", user: @owner_uid, group: @owner_gid)
             end
           end
         end
@@ -96,7 +96,7 @@ class Chef
             if @new_resource.stop_command
               super
             else
-              shell_out!("launchctl unload '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
+              shell_out!("launchctl unload '#{@plist}'", user: @owner_uid, group: @owner_gid)
             end
           end
         end
@@ -122,7 +122,7 @@ class Chef
           else
             shell_out!(
               "launchctl load -w '#{@plist}'",
-              :user => @owner_uid, :group => @owner_gid
+              user: @owner_uid, group: @owner_gid
             )
           end
         end
@@ -133,17 +133,17 @@ class Chef
           else
             shell_out!(
               "launchctl unload -w '#{@plist}'",
-              :user => @owner_uid, :group => @owner_gid
+              user: @owner_uid, group: @owner_gid
             )
           end
         end
 
         def set_service_status
-          return if @plist == nil or @service_label.to_s.empty?
+          return if @plist.nil? || @service_label.to_s.empty?
 
           cmd = shell_out(
             "launchctl list #{@service_label}",
-            :user => @owner_uid, :group => @owner_gid
+            user: @owner_uid, group: @owner_gid
           )
 
           if cmd.exitstatus == 0
@@ -157,11 +157,11 @@ class Chef
             @owner_gid = ::File.stat(@plist).gid
 
             shell_out!(
-              "launchctl list", :user => @owner_uid, :group => @owner_gid
+              'launchctl list', user: @owner_uid, group: @owner_gid
             ).stdout.each_line do |line|
               case line
               when /(\d+|-)\s+(?:\d+|-)\s+(.*\.?)#{@service_label}/
-                pid = $1
+                pid = Regexp.last_match[1]
                 @current_resource.running(!pid.to_i.zero?)
               end
             end
@@ -170,7 +170,7 @@ class Chef
           end
         end
 
-      private
+        private
 
         def find_service_label
           # CHEF-5223 "you can't glob for a file that hasn't been converged
@@ -192,7 +192,7 @@ class Chef
         end
 
         def find_service_plist
-          plists = PLIST_DIRS.inject([]) do |results, dir|
+          plists = PLIST_DIRS.reduce([]) do |results, dir|
             edir = ::File.expand_path(dir)
             entries = Dir.glob(
               "#{edir}/*#{@current_resource.service_name}*.plist"

@@ -21,7 +21,7 @@ require 'spec_helper'
 describe Chef::Knife::ClientShow do
   before(:each) do
     @knife = Chef::Knife::ClientShow.new
-    @knife.name_args = [ 'adam' ]
+    @knife.name_args = ['adam']
     @client_mock = double('client_mock')
   end
 

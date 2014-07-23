@@ -24,52 +24,52 @@ describe Chef::REST do
   include ChefHTTPShared
 
   let(:http_client) { described_class.new(source) }
-  let(:http_client_disable_gzip) { described_class.new(source, Chef::Config[:node_name], Chef::Config[:client_key], { :disable_gzip => true } ) }
+  let(:http_client_disable_gzip) { described_class.new(source, Chef::Config[:node_name], Chef::Config[:client_key],  disable_gzip: true) }
 
-  shared_examples_for "downloads requests correctly" do
-    it "successfully downloads a streaming request" do
+  shared_examples_for 'downloads requests correctly' do
+    it 'successfully downloads a streaming request' do
       tempfile = http_client.streaming_request(source, {})
       tempfile.close
       expect(Digest::MD5.hexdigest(binread(tempfile.path))).to eq(Digest::MD5.hexdigest(expected_content))
     end
 
-    it "successfully downloads a GET request" do
+    it 'successfully downloads a GET request' do
       tempfile = http_client.get(source, {})
       tempfile.close
       expect(Digest::MD5.hexdigest(binread(tempfile.path))).to eq(Digest::MD5.hexdigest(expected_content))
     end
   end
 
-  shared_examples_for "validates content length and throws an exception" do
-    it "fails validation on a streaming download" do
+  shared_examples_for 'validates content length and throws an exception' do
+    it 'fails validation on a streaming download' do
       expect { http_client.streaming_request(source, {}) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
     end
 
-    it "fails validation on a GET request" do
+    it 'fails validation on a GET request' do
       expect { http_client.get(source, {}) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
     end
   end
 
-  shared_examples_for "an endpoint that 403s" do
-    it "fails with a Net::HTTPServerException on a streaming download" do
+  shared_examples_for 'an endpoint that 403s' do
+    it 'fails with a Net::HTTPServerException on a streaming download' do
       expect { http_client.streaming_request(source, {}) }.to raise_error(Net::HTTPServerException)
     end
 
-    it "fails with a Net::HTTPServerException on a GET request" do
+    it 'fails with a Net::HTTPServerException on a GET request' do
       expect { http_client.get(source, {}) }.to raise_error(Net::HTTPServerException)
     end
   end
 
   # see CHEF-5100
-  shared_examples_for "a 403 after a successful request when reusing the request object" do
-    it "fails with a Net::HTTPServerException on a streaming download" do
+  shared_examples_for 'a 403 after a successful request when reusing the request object' do
+    it 'fails with a Net::HTTPServerException on a streaming download' do
       tempfile = http_client.streaming_request(source, {})
       tempfile.close
       expect(Digest::MD5.hexdigest(binread(tempfile.path))).to eq(Digest::MD5.hexdigest(expected_content))
       expect { http_client.streaming_request(source2, {}) }.to raise_error(Net::HTTPServerException)
     end
 
-    it "fails with a Net::HTTPServerException on a GET request" do
+    it 'fails with a Net::HTTPServerException on a GET request' do
       tempfile = http_client.get(source, {})
       tempfile.close
       expect(Digest::MD5.hexdigest(binread(tempfile.path))).to eq(Digest::MD5.hexdigest(expected_content))
@@ -78,8 +78,8 @@ describe Chef::REST do
   end
 
   before do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
-    Chef::Config[:client_key] = CHEF_SPEC_DATA + "/ssl/private_key.pem"
+    Chef::Config[:node_name]  = 'webmonkey.example.com'
+    Chef::Config[:client_key] = CHEF_SPEC_DATA + '/ssl/private_key.pem'
   end
 
   before(:all) do
@@ -90,5 +90,5 @@ describe Chef::REST do
     stop_tiny_server
   end
 
-  it_behaves_like "downloading all the things"
+  it_behaves_like 'downloading all the things'
 end

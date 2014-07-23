@@ -24,7 +24,6 @@ class Chef
   class Provider
     class Package
       class Pacman < Chef::Provider::Package
-
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
@@ -32,19 +31,19 @@ class Chef
           @current_resource.version(nil)
 
           Chef::Log.debug("#{@new_resource} checking pacman for #{@new_resource.package_name}")
-          status = popen4("pacman -Qi #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
+          status = popen4("pacman -Qi #{@new_resource.package_name}") do |_pid, _stdin, stdout, _stderr|
             stdout.each do |line|
               line.force_encoding(Encoding::UTF_8) if line.respond_to?(:force_encoding)
               case line
               when /^Version(\s?)*: (.+)$/
-                Chef::Log.debug("#{@new_resource} current version is #{$2}")
-                @current_resource.version($2)
+                Chef::Log.debug("#{@new_resource} current version is #{Regexp.last_match[2]}")
+                @current_resource.version(Regexp.last_match[2])
               end
             end
           end
 
           unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "pacman failed - #{status.inspect}!"
+            fail Chef::Exceptions::Package, "pacman failed - #{status.inspect}!"
           end
 
           @current_resource
@@ -53,41 +52,40 @@ class Chef
         def candidate_version
           return @candidate_version if @candidate_version
 
-          repos = ["extra","core","community"]
+          repos = %w(extra core community)
 
-          if(::File.exists?("/etc/pacman.conf"))
-            pacman = ::File.read("/etc/pacman.conf")
+          if ::File.exist?('/etc/pacman.conf')
+            pacman = ::File.read('/etc/pacman.conf')
             repos = pacman.scan(/\[(.+)\]/).flatten
           end
 
-          package_repos = repos.map {|r| Regexp.escape(r) }.join('|')
+          package_repos = repos.map { |r| Regexp.escape(r) }.join('|')
 
-          status = popen4("pacman -Ss #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
+          status = popen4("pacman -Ss #{@new_resource.package_name}") do |_pid, _stdin, stdout, _stderr|
             stdout.each do |line|
               case line
                 when /^(#{package_repos})\/#{Regexp.escape(@new_resource.package_name)} (.+)$/
                   # $2 contains a string like "4.4.0-1 (kde kdenetwork)" or "3.10-4 (base)"
                   # simply split by space and use first token
-                  @candidate_version = $2.split(" ").first
+                  @candidate_version = Regexp.last_match[2].split(' ').first
               end
             end
           end
 
           unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "pacman failed - #{status.inspect}!"
+            fail Chef::Exceptions::Package, "pacman failed - #{status.inspect}!"
           end
 
           unless @candidate_version
-            raise Chef::Exceptions::Package, "pacman does not have a version of package #{@new_resource.package_name}"
+            fail Chef::Exceptions::Package, "pacman does not have a version of package #{@new_resource.package_name}"
           end
 
           @candidate_version
-
         end
 
-        def install_package(name, version)
+        def install_package(name, _version)
           run_command_with_systems_locale(
-            :command => "pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}"
+            command: "pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}"
           )
         end
 
@@ -95,16 +93,15 @@ class Chef
           install_package(name, version)
         end
 
-        def remove_package(name, version)
+        def remove_package(name, _version)
           run_command_with_systems_locale(
-            :command => "pacman --remove --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}"
+            command: "pacman --remove --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}"
           )
         end
 
         def purge_package(name, version)
           remove_package(name, version)
         end
-
       end
     end
   end

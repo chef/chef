@@ -34,13 +34,13 @@ class Chef
         attr_reader :block
 
         def each
-          each_with_input do |output, index, input, type|
+          each_with_input do |output, _index, _input, _type|
             yield output
           end
         end
 
         def each_with_index
-          each_with_input do |output, index, input|
+          each_with_input do |output, index, _input|
             yield output, index
           end
         end
@@ -52,13 +52,13 @@ class Chef
               if @options[:ordered] == false
                 exception ||= output
               else
-                raise output
+                fail output
               end
             else
               yield output, index, input
             end
           end
-          raise exception if exception
+          fail exception if exception
         end
 
         def each_with_exceptions(&block)
@@ -71,10 +71,10 @@ class Chef
 
         def wait
           exception = nil
-          each_with_exceptions_unordered do |output, index, input, type|
+          each_with_exceptions_unordered do |output, _index, _input, type|
             exception ||= output if type == :exception
           end
-          raise exception if exception
+          fail exception if exception
         end
 
         # Enumerable methods
@@ -82,7 +82,7 @@ class Chef
           ParallelEnumerable.new(@parent_task_queue, enumerable, @options, &@block)
         end
 
-        alias :original_count :count
+        alias_method :original_count, :count
 
         def count(*args, &block)
           if args.size == 0 && block.nil?
@@ -92,7 +92,7 @@ class Chef
           end
         end
 
-        def first(n=nil)
+        def first(n = nil)
           if n
             restricted_copy(@input_enumerable.first(n)).to_a
           else
@@ -129,12 +129,12 @@ class Chef
               @parallel_enumerable.restricted_copy(input)
             end
 
-            def method_missing(method, *args, &block)
+            def method_missing(_method, *args, &block)
               @actual_lazy.send(:method, *args, &block)
             end
           end
 
-          alias :original_lazy :lazy
+          alias_method :original_lazy, :lazy
 
           def lazy
             RestrictedLazy.new(self, original_lazy)
@@ -145,7 +145,7 @@ class Chef
 
         def each_with_exceptions_unordered
           if @each_running
-            raise "each() called on parallel enumerable twice simultaneously!  Bad mojo"
+            fail 'each() called on parallel enumerable twice simultaneously!  Bad mojo'
           end
           @each_running = true
           begin
@@ -153,11 +153,11 @@ class Chef
             # in case the enumeration itself takes time
             begin
               @input_enumerable.each_with_index do |input, index|
-                @unconsumed_input.push([ input, index ])
+                @unconsumed_input.push([input, index])
                 @parent_task_queue.push(method(:process_one))
 
                 stop_processing_input = false
-                while !@unconsumed_output.empty?
+                until @unconsumed_output.empty?
                   output, index, input, type = @unconsumed_output.pop
                   yield output, index, input, type
                   if type == :exception && @options[:stop_on_exception]
@@ -172,19 +172,19 @@ class Chef
               end
             rescue
               # We still want to wait for the rest of the outputs to process
-              @unconsumed_output.push([$!, nil, nil, :exception])
+              @unconsumed_output.push([$ERROR_INFO, nil, nil, :exception])
               if @options[:stop_on_exception]
                 @unconsumed_input.clear
               end
             end
 
-            while !finished?
+            until finished?
               # yield thread to others (for 1.8.7)
               if @unconsumed_output.empty?
                 sleep(0.01)
               end
 
-              while !@unconsumed_output.empty?
+              until @unconsumed_output.empty?
                 yield @unconsumed_output.pop
               end
 
@@ -199,7 +199,7 @@ class Chef
             # If we exited early, perhaps due to any? finding a result, we want
             # to make sure and throw away any extra results (gracefully) so that
             # the next enumerator can start over.
-            if !finished?
+            unless finished?
               stop
             end
             raise
@@ -212,7 +212,7 @@ class Chef
           next_to_yield = 0
           unconsumed = {}
           each_with_exceptions_unordered do |output, index, input, type|
-            unconsumed[index] = [ output, input, type ]
+            unconsumed[index] = [output, input, type]
             while unconsumed[next_to_yield]
               input_output = unconsumed.delete(next_to_yield)
               yield input_output[0], next_to_yield, input_output[1], input_output[2]
@@ -265,12 +265,12 @@ class Chef
         def process_input(input, index)
           begin
             output = @block.call(input)
-            @unconsumed_output.push([ output, index, input, :result ])
+            @unconsumed_output.push([output, index, input, :result])
           rescue
             if @options[:stop_on_exception]
               @unconsumed_input.clear
             end
-            @unconsumed_output.push([ $!, index, input, :exception ])
+            @unconsumed_output.push([$ERROR_INFO, index, input, :exception])
           end
 
           index

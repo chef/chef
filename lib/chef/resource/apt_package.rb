@@ -22,22 +22,20 @@ require 'chef/provider/package/apt'
 class Chef
   class Resource
     class AptPackage < Chef::Resource::Package
-
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :apt_package
         @provider = Chef::Provider::Package::Apt
         @default_release = nil
       end
 
-      def default_release(arg=nil)
+      def default_release(arg = nil)
         set_or_return(
           :default_release,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
-
     end
   end
 end

@@ -21,14 +21,13 @@ require 'chef/knife'
 class Chef
   class Knife
     class RoleFromFile < Knife
-
       deps do
         require 'chef/role'
         require 'chef/knife/core/object_loader'
         require 'chef/json_compat'
       end
 
-      banner "knife role from file FILE [FILE..] (options)"
+      banner 'knife role from file FILE [FILE..] (options)'
 
       def loader
         @loader ||= Knife::Core::ObjectLoader.new(Chef::Role, ui)
@@ -36,7 +35,7 @@ class Chef
 
       def run
         @name_args.each do |arg|
-          updated = loader.load_from("roles", arg)
+          updated = loader.load_from('roles', arg)
 
           updated.save
 
@@ -45,12 +44,6 @@ class Chef
           ui.info("Updated Role #{updated.name}!")
         end
       end
-
     end
   end
 end
-
-
-
-
-

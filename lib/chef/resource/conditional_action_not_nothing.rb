@@ -19,7 +19,6 @@
 class Chef
   class Resource
     class ConditionalActionNotNothing
-
       attr_reader :current_action
 
       def initialize(current_action)
@@ -36,13 +35,12 @@ class Chef
       end
 
       def description
-        "action :nothing"
+        'action :nothing'
       end
 
       def to_text
-        "not_if { action == :nothing }"
+        'not_if { action == :nothing }'
       end
-
     end
   end
 end

@@ -198,76 +198,76 @@ class Chef
         ###############################################
 
         SE_OBJECT_TYPE = enum :SE_OBJECT_TYPE, [
-             :SE_UNKNOWN_OBJECT_TYPE,
-             :SE_FILE_OBJECT,
-             :SE_SERVICE,
-             :SE_PRINTER,
-             :SE_REGISTRY_KEY,
-             :SE_LMSHARE,
-             :SE_KERNEL_OBJECT,
-             :SE_WINDOW_OBJECT,
-             :SE_DS_OBJECT,
-             :SE_DS_OBJECT_ALL,
-             :SE_PROVIDER_DEFINED_OBJECT,
-             :SE_WMIGUID_OBJECT,
-             :SE_REGISTRY_WOW64_32KEY
+          :SE_UNKNOWN_OBJECT_TYPE,
+          :SE_FILE_OBJECT,
+          :SE_SERVICE,
+          :SE_PRINTER,
+          :SE_REGISTRY_KEY,
+          :SE_LMSHARE,
+          :SE_KERNEL_OBJECT,
+          :SE_WINDOW_OBJECT,
+          :SE_DS_OBJECT,
+          :SE_DS_OBJECT_ALL,
+          :SE_PROVIDER_DEFINED_OBJECT,
+          :SE_WMIGUID_OBJECT,
+          :SE_REGISTRY_WOW64_32KEY
         ]
 
         SID_NAME_USE = enum :SID_NAME_USE, [
-             :SidTypeUser, 1,
-             :SidTypeGroup,
-             :SidTypeDomain,
-             :SidTypeAlias,
-             :SidTypeWellKnownGroup,
-             :SidTypeDeletedAccount,
-             :SidTypeInvalid,
-             :SidTypeUnknown,
-             :SidTypeComputer,
-             :SidTypeLabel
+          :SidTypeUser, 1,
+          :SidTypeGroup,
+          :SidTypeDomain,
+          :SidTypeAlias,
+          :SidTypeWellKnownGroup,
+          :SidTypeDeletedAccount,
+          :SidTypeInvalid,
+          :SidTypeUnknown,
+          :SidTypeComputer,
+          :SidTypeLabel
         ]
 
         TOKEN_INFORMATION_CLASS = enum :TOKEN_INFORMATION_CLASS, [
-             :TokenUser, 1,
-             :TokenGroups,
-             :TokenPrivileges,
-             :TokenOwner,
-             :TokenPrimaryGroup,
-             :TokenDefaultDacl,
-             :TokenSource,
-             :TokenType,
-             :TokenImpersonationLevel,
-             :TokenStatistics,
-             :TokenRestrictedSids,
-             :TokenSessionId,
-             :TokenGroupsAndPrivileges,
-             :TokenSessionReference,
-             :TokenSandBoxInert,
-             :TokenAuditPolicy,
-             :TokenOrigin,
-             :TokenElevationType,
-             :TokenLinkedToken,
-             :TokenElevation,
-             :TokenHasRestrictions,
-             :TokenAccessInformation,
-             :TokenVirtualizationAllowed,
-             :TokenVirtualizationEnabled,
-             :TokenIntegrityLevel,
-             :TokenUIAccess,
-             :TokenMandatoryPolicy,
-             :TokenLogonSid,
-             :TokenIsAppContainer,
-             :TokenCapabilities,
-             :TokenAppContainerSid,
-             :TokenAppContainerNumber,
-             :TokenUserClaimAttributes,
-             :TokenDeviceClaimAttributes,
-             :TokenRestrictedUserClaimAttributes,
-             :TokenRestrictedDeviceClaimAttributes,
-             :TokenDeviceGroups,
-             :TokenRestrictedDeviceGroups,
-             :TokenSecurityAttributes,
-             :TokenIsRestricted,
-             :MaxTokenInfoClass
+          :TokenUser, 1,
+          :TokenGroups,
+          :TokenPrivileges,
+          :TokenOwner,
+          :TokenPrimaryGroup,
+          :TokenDefaultDacl,
+          :TokenSource,
+          :TokenType,
+          :TokenImpersonationLevel,
+          :TokenStatistics,
+          :TokenRestrictedSids,
+          :TokenSessionId,
+          :TokenGroupsAndPrivileges,
+          :TokenSessionReference,
+          :TokenSandBoxInert,
+          :TokenAuditPolicy,
+          :TokenOrigin,
+          :TokenElevationType,
+          :TokenLinkedToken,
+          :TokenElevation,
+          :TokenHasRestrictions,
+          :TokenAccessInformation,
+          :TokenVirtualizationAllowed,
+          :TokenVirtualizationEnabled,
+          :TokenIntegrityLevel,
+          :TokenUIAccess,
+          :TokenMandatoryPolicy,
+          :TokenLogonSid,
+          :TokenIsAppContainer,
+          :TokenCapabilities,
+          :TokenAppContainerSid,
+          :TokenAppContainerNumber,
+          :TokenUserClaimAttributes,
+          :TokenDeviceClaimAttributes,
+          :TokenRestrictedUserClaimAttributes,
+          :TokenRestrictedDeviceClaimAttributes,
+          :TokenDeviceGroups,
+          :TokenRestrictedDeviceGroups,
+          :TokenSecurityAttributes,
+          :TokenIsRestricted,
+          :MaxTokenInfoClass
         ]
 
         # SECURITY_DESCRIPTOR is an opaque structure whose contents can vary.  Pass the
@@ -325,7 +325,7 @@ class Chef
                  :Privileges, LUID_AND_ATTRIBUTES
 
           def self.size_with_privileges(num_privileges)
-            offset_of(:Privileges) + LUID_AND_ATTRIBUTES.size*num_privileges
+            offset_of(:Privileges) + LUID_AND_ATTRIBUTES.size * num_privileges
           end
 
           def size_with_privileges
@@ -337,48 +337,48 @@ class Chef
           end
         end
 
-        ffi_lib "advapi32"
+        ffi_lib 'advapi32'
 
-        safe_attach_function :AddAce, [ :pointer, :DWORD, :DWORD, :LPVOID, :DWORD ], :BOOL
-        safe_attach_function :AddAccessAllowedAce, [ :pointer, :DWORD, :DWORD, :pointer ], :BOOL
-        safe_attach_function :AddAccessAllowedAceEx, [ :pointer, :DWORD, :DWORD, :DWORD, :pointer ], :BOOL
-        safe_attach_function :AddAccessDeniedAce, [ :pointer, :DWORD, :DWORD, :pointer ], :BOOL
-        safe_attach_function :AddAccessDeniedAceEx, [ :pointer, :DWORD, :DWORD, :DWORD, :pointer ], :BOOL
-        safe_attach_function :AdjustTokenPrivileges, [ :HANDLE, :BOOL, :pointer, :DWORD, :pointer, :PDWORD ], :BOOL
-        safe_attach_function :ConvertSidToStringSidA, [ :pointer, :pointer ], :BOOL
-        safe_attach_function :ConvertStringSidToSidW, [ :pointer, :pointer ], :BOOL
-        safe_attach_function :DeleteAce, [ :pointer, :DWORD ], :BOOL
-        safe_attach_function :EqualSid, [ :pointer, :pointer ], :BOOL
-        safe_attach_function :FreeSid, [ :pointer ], :pointer
-        safe_attach_function :GetAce, [ :pointer, :DWORD, :pointer ], :BOOL
-        safe_attach_function :GetLengthSid, [ :pointer ], :DWORD
-        safe_attach_function :GetNamedSecurityInfoW,  [ :LPWSTR, :SE_OBJECT_TYPE, :DWORD, :pointer, :pointer, :pointer, :pointer, :pointer ], :DWORD
-        safe_attach_function :GetSecurityDescriptorControl, [ :pointer, :PWORD, :LPDWORD], :BOOL
-        safe_attach_function :GetSecurityDescriptorDacl, [ :pointer, :LPBOOL, :pointer, :LPBOOL ], :BOOL
-        safe_attach_function :GetSecurityDescriptorGroup, [ :pointer, :pointer, :LPBOOL], :BOOL
-        safe_attach_function :GetSecurityDescriptorOwner, [ :pointer, :pointer, :LPBOOL], :BOOL
-        safe_attach_function :GetSecurityDescriptorSacl, [ :pointer, :LPBOOL, :pointer, :LPBOOL ], :BOOL
-        safe_attach_function :InitializeAcl, [ :pointer, :DWORD, :DWORD ], :BOOL
-        safe_attach_function :InitializeSecurityDescriptor, [ :pointer, :DWORD ], :BOOL
-        safe_attach_function :IsValidAcl, [ :pointer ], :BOOL
-        safe_attach_function :IsValidSecurityDescriptor, [ :pointer ], :BOOL
-        safe_attach_function :IsValidSid, [ :pointer ], :BOOL
-        safe_attach_function :LookupAccountNameW, [ :LPCWSTR, :LPCWSTR, :pointer, :LPDWORD, :LPWSTR, :LPDWORD, :pointer ], :BOOL
-        safe_attach_function :LookupAccountSidW, [ :LPCWSTR, :pointer, :LPWSTR, :LPDWORD, :LPWSTR, :LPDWORD, :pointer ], :BOOL
-        safe_attach_function :LookupPrivilegeNameW, [ :LPCWSTR, :PLUID, :LPWSTR, :LPDWORD ], :BOOL
-        safe_attach_function :LookupPrivilegeDisplayNameW, [ :LPCWSTR, :LPCWSTR, :LPWSTR, :LPDWORD, :LPDWORD ], :BOOL
-        safe_attach_function :LookupPrivilegeValueW, [ :LPCWSTR, :LPCWSTR, :PLUID ], :BOOL
-        safe_attach_function :MakeAbsoluteSD, [ :pointer, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD], :BOOL
-        safe_attach_function :OpenProcessToken, [ :HANDLE, :DWORD, :PHANDLE ], :BOOL
-        safe_attach_function :QuerySecurityAccessMask, [ :DWORD, :LPDWORD ], :void
-        safe_attach_function :SetFileSecurityW, [ :LPWSTR, :DWORD, :pointer ], :BOOL
-        safe_attach_function :SetNamedSecurityInfoW, [ :LPWSTR, :SE_OBJECT_TYPE, :DWORD, :pointer, :pointer, :pointer, :pointer ], :DWORD
-        safe_attach_function :SetSecurityAccessMask, [ :DWORD, :LPDWORD ], :void
-        safe_attach_function :SetSecurityDescriptorDacl, [ :pointer, :BOOL, :pointer, :BOOL ], :BOOL
-        safe_attach_function :SetSecurityDescriptorGroup, [ :pointer, :pointer, :BOOL ], :BOOL
-        safe_attach_function :SetSecurityDescriptorOwner, [ :pointer, :pointer, :BOOL ], :BOOL
-        safe_attach_function :SetSecurityDescriptorSacl, [ :pointer, :BOOL, :pointer, :BOOL ], :BOOL
-        safe_attach_function :GetTokenInformation, [ :HANDLE, :TOKEN_INFORMATION_CLASS, :pointer, :DWORD, :PDWORD ], :BOOL
+        safe_attach_function :AddAce, [:pointer, :DWORD, :DWORD, :LPVOID, :DWORD], :BOOL
+        safe_attach_function :AddAccessAllowedAce, [:pointer, :DWORD, :DWORD, :pointer], :BOOL
+        safe_attach_function :AddAccessAllowedAceEx, [:pointer, :DWORD, :DWORD, :DWORD, :pointer], :BOOL
+        safe_attach_function :AddAccessDeniedAce, [:pointer, :DWORD, :DWORD, :pointer], :BOOL
+        safe_attach_function :AddAccessDeniedAceEx, [:pointer, :DWORD, :DWORD, :DWORD, :pointer], :BOOL
+        safe_attach_function :AdjustTokenPrivileges, [:HANDLE, :BOOL, :pointer, :DWORD, :pointer, :PDWORD], :BOOL
+        safe_attach_function :ConvertSidToStringSidA, [:pointer, :pointer], :BOOL
+        safe_attach_function :ConvertStringSidToSidW, [:pointer, :pointer], :BOOL
+        safe_attach_function :DeleteAce, [:pointer, :DWORD], :BOOL
+        safe_attach_function :EqualSid, [:pointer, :pointer], :BOOL
+        safe_attach_function :FreeSid, [:pointer], :pointer
+        safe_attach_function :GetAce, [:pointer, :DWORD, :pointer], :BOOL
+        safe_attach_function :GetLengthSid, [:pointer], :DWORD
+        safe_attach_function :GetNamedSecurityInfoW,  [:LPWSTR, :SE_OBJECT_TYPE, :DWORD, :pointer, :pointer, :pointer, :pointer, :pointer], :DWORD
+        safe_attach_function :GetSecurityDescriptorControl, [:pointer, :PWORD, :LPDWORD], :BOOL
+        safe_attach_function :GetSecurityDescriptorDacl, [:pointer, :LPBOOL, :pointer, :LPBOOL], :BOOL
+        safe_attach_function :GetSecurityDescriptorGroup, [:pointer, :pointer, :LPBOOL], :BOOL
+        safe_attach_function :GetSecurityDescriptorOwner, [:pointer, :pointer, :LPBOOL], :BOOL
+        safe_attach_function :GetSecurityDescriptorSacl, [:pointer, :LPBOOL, :pointer, :LPBOOL], :BOOL
+        safe_attach_function :InitializeAcl, [:pointer, :DWORD, :DWORD], :BOOL
+        safe_attach_function :InitializeSecurityDescriptor, [:pointer, :DWORD], :BOOL
+        safe_attach_function :IsValidAcl, [:pointer], :BOOL
+        safe_attach_function :IsValidSecurityDescriptor, [:pointer], :BOOL
+        safe_attach_function :IsValidSid, [:pointer], :BOOL
+        safe_attach_function :LookupAccountNameW, [:LPCWSTR, :LPCWSTR, :pointer, :LPDWORD, :LPWSTR, :LPDWORD, :pointer], :BOOL
+        safe_attach_function :LookupAccountSidW, [:LPCWSTR, :pointer, :LPWSTR, :LPDWORD, :LPWSTR, :LPDWORD, :pointer], :BOOL
+        safe_attach_function :LookupPrivilegeNameW, [:LPCWSTR, :PLUID, :LPWSTR, :LPDWORD], :BOOL
+        safe_attach_function :LookupPrivilegeDisplayNameW, [:LPCWSTR, :LPCWSTR, :LPWSTR, :LPDWORD, :LPDWORD], :BOOL
+        safe_attach_function :LookupPrivilegeValueW, [:LPCWSTR, :LPCWSTR, :PLUID], :BOOL
+        safe_attach_function :MakeAbsoluteSD, [:pointer, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD], :BOOL
+        safe_attach_function :OpenProcessToken, [:HANDLE, :DWORD, :PHANDLE], :BOOL
+        safe_attach_function :QuerySecurityAccessMask, [:DWORD, :LPDWORD], :void
+        safe_attach_function :SetFileSecurityW, [:LPWSTR, :DWORD, :pointer], :BOOL
+        safe_attach_function :SetNamedSecurityInfoW, [:LPWSTR, :SE_OBJECT_TYPE, :DWORD, :pointer, :pointer, :pointer, :pointer], :DWORD
+        safe_attach_function :SetSecurityAccessMask, [:DWORD, :LPDWORD], :void
+        safe_attach_function :SetSecurityDescriptorDacl, [:pointer, :BOOL, :pointer, :BOOL], :BOOL
+        safe_attach_function :SetSecurityDescriptorGroup, [:pointer, :pointer, :BOOL], :BOOL
+        safe_attach_function :SetSecurityDescriptorOwner, [:pointer, :pointer, :BOOL], :BOOL
+        safe_attach_function :SetSecurityDescriptorSacl, [:pointer, :BOOL, :pointer, :BOOL], :BOOL
+        safe_attach_function :GetTokenInformation, [:HANDLE, :TOKEN_INFORMATION_CLASS, :pointer, :DWORD, :PDWORD], :BOOL
       end
     end
   end

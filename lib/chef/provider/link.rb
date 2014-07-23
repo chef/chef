@@ -27,13 +27,12 @@ require 'chef/scan_access_control'
 class Chef
   class Provider
     class Link < Chef::Provider
-
       include Chef::Mixin::EnforceOwnershipAndPermissions
       include Chef::Mixin::ShellOut
       include Chef::Mixin::FileClass
 
       def negative_complement(big)
-        if big > 1073741823 # Fixnum max
+        if big > 1_073_741_823 # Fixnum max
           big -= (2**32) # diminished radix wrap to negative
         end
         big
@@ -55,13 +54,13 @@ class Chef
           )
         else
           @current_resource.link_type(:hard)
-          if ::File.exists?(@current_resource.target_file)
-            if ::File.exists?(@new_resource.to) &&
+          if ::File.exist?(@current_resource.target_file)
+            if ::File.exist?(@new_resource.to) &&
                file_class.stat(@current_resource.target_file).ino ==
                file_class.stat(@new_resource.to).ino
               @current_resource.to(canonicalize(@new_resource.to))
             else
-              @current_resource.to("")
+              @current_resource.to('')
             end
           end
         end
@@ -73,13 +72,13 @@ class Chef
         requirements.assert(:delete) do |a|
           a.assertion do
             if @current_resource.to
-              @current_resource.link_type == @new_resource.link_type and
-              (@current_resource.link_type == :symbolic  or @current_resource.to != '')
+              @current_resource.link_type == @new_resource.link_type &&
+              (@current_resource.link_type == :symbolic  || @current_resource.to != '')
             else
               true
             end
           end
-          a.failure_message Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a #{@new_resource.link_type.to_s} link."
+          a.failure_message Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a #{@new_resource.link_type} link."
           a.whyrun("Would assume the link at #{@new_resource.target_file} was previously created")
         end
       end
@@ -117,7 +116,7 @@ class Chef
           end
           if @new_resource.link_type == :symbolic
             converge_by("create symlink at #{@new_resource.target_file} to #{@new_resource.to}") do
-              file_class.symlink(canonicalize(@new_resource.to),@new_resource.target_file)
+              file_class.symlink(canonicalize(@new_resource.to), @new_resource.target_file)
               Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.target_file} -> #{@new_resource.to}")
               Chef::Log.info("#{@new_resource} created")
             end

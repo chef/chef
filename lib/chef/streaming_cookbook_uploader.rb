@@ -13,11 +13,9 @@ require 'chef/version'
 
 class Chef
   class StreamingCookbookUploader
-
     DefaultHeaders = { 'accept' => 'application/json', 'x-chef-version' => ::Chef::VERSION }
 
     class << self
-
       def post(to_url, user_id, secret_key_filename, params = {}, headers = {})
         make_request(:post, to_url, user_id, secret_key_filename, params, headers)
       end
@@ -28,7 +26,7 @@ class Chef
 
       def make_request(http_verb, to_url, user_id, secret_key_filename, params = {}, headers = {})
         Chef::Log.warn('[DEPRECATED] StreamingCookbookUploader class is deprecated. It will be removed in Chef 12. Please use CookbookSiteStreamingUploader instead.')
-        boundary = '----RubyMultipartClient' + rand(1000000).to_s + 'ZZZZZ'
+        boundary = '----RubyMultipartClient' + rand(1_000_000).to_s + 'ZZZZZ'
         parts = []
         content_file = nil
 
@@ -37,22 +35,22 @@ class Chef
 
         unless params.nil? || params.empty?
           params.each do |key, value|
-            if value.kind_of?(File)
+            if value.is_a?(File)
               content_file = value
               filepath = value.path
               filename = File.basename(filepath)
-              parts << StringPart.new( "--" + boundary + "\r\n" +
-                                       "Content-Disposition: form-data; name=\"" + key.to_s + "\"; filename=\"" + filename + "\"\r\n" +
+              parts << StringPart.new('--' + boundary + "\r\n" \
+                                       "Content-Disposition: form-data; name=\"" + key.to_s + "\"; filename=\"" + filename + "\"\r\n" \
                                        "Content-Type: application/octet-stream\r\n\r\n")
               parts << StreamPart.new(value, File.size(filepath))
               parts << StringPart.new("\r\n")
             else
-              parts << StringPart.new( "--" + boundary + "\r\n" +
+              parts << StringPart.new('--' + boundary + "\r\n" \
                                        "Content-Disposition: form-data; name=\"" + key.to_s + "\"\r\n\r\n")
               parts << StringPart.new(value.to_s + "\r\n")
             end
           end
-          parts << StringPart.new("--" + boundary + "--\r\n")
+          parts << StringPart.new('--' + boundary + "--\r\n")
         end
 
         body_stream = MultipartStream.new(parts)
@@ -69,22 +67,22 @@ class Chef
         # TODO: tim: 2009-12-28: It'd be nice to remove this special case, and
         # always hash the entire request body. In the file case it would just be
         # expanded multipart text - the entire body of the POST.
-        content_body = parts.inject("") { |result,part| result + part.read(0, part.size) }
+        content_body = parts.reduce('') { |result, part| result + part.read(0, part.size) }
         content_file.rewind if content_file # we consumed the file for the above operation, so rewind it.
 
         signing_options = {
-          :http_method=>http_verb,
-          :path=>url.path,
-          :user_id=>user_id,
-          :timestamp=>timestamp}
-        (content_file && signing_options[:file] = content_file) || (signing_options[:body] = (content_body || ""))
+          http_method: http_verb,
+          path: url.path,
+          user_id: user_id,
+          timestamp: timestamp }
+        (content_file && signing_options[:file] = content_file) || (signing_options[:body] = (content_body || ''))
 
         headers.merge!(Mixlib::Authentication::SignedHeaderAuth.signing_object(signing_options).sign(secret_key))
 
         content_file.rewind if content_file
 
         # net/http doesn't like symbols for header keys, so we'll to_s each one just in case
-        headers = DefaultHeaders.merge(Hash[*headers.map{ |k,v| [k.to_s, v] }.flatten])
+        headers = DefaultHeaders.merge(Hash[*headers.map { |k, v| [k.to_s, v] }.flatten])
 
         req = case http_verb
               when :put
@@ -97,17 +95,17 @@ class Chef
         req.body_stream = body_stream
 
         http = Net::HTTP.new(url.host, url.port)
-        if url.scheme == "https"
+        if url.scheme == 'https'
           http.use_ssl = true
           http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         end
         res = http.request(req)
-        #res = http.start {|http_proc| http_proc.request(req) }
+        # res = http.start {|http_proc| http_proc.request(req) }
 
         # alias status to code and to_s to body for test purposes
         # TODO: stop the following madness!
         class << res
-          alias :to_s :body
+          alias_method :to_s, :body
 
           # BUGBUG this makes the response compatible with what respsonse_steps expects to test headers (response.headers[] -> response[])
           def headers
@@ -120,7 +118,6 @@ class Chef
         end
         res
       end
-
     end
 
     class StreamPart
@@ -129,12 +126,10 @@ class Chef
         @stream, @size = stream, size
       end
 
-      def size
-        @size
-      end
+      attr_reader :size
 
       # read the specified amount from the stream
-      def read(offset, how_much)
+      def read(_offset, how_much)
         @stream.read(how_much)
       end
     end
@@ -164,7 +159,7 @@ class Chef
       end
 
       def size
-        @parts.inject(0) {|size, part| size + part.size}
+        @parts.reduce(0) { |size, part| size + part.size }
       end
 
       def read(how_much)
@@ -198,8 +193,5 @@ class Chef
         end
       end
     end
-
   end
-
-
 end

@@ -22,7 +22,6 @@ require 'chef/mixin/deprecation'
 
 class Chef
   module Mixin
-
     # == [DEPRECATED] Chef::Mixin::DeprecatedLanguageModule
     # This module is a temporary replacement for the previous
     # Chef::Mixin::Language. That module's functionality was split into two
@@ -34,10 +33,8 @@ class Chef
     # This module is loaded via const_missing hook when Chef::Mixin::Language
     # is accessed. See chef/mixin/deprecation for details.
     module DeprecatedLanguageModule
-
       include Chef::DSL::PlatformIntrospection
       include Chef::DSL::DataQuery
-
     end
 
     deprecate_constant(:Language, DeprecatedLanguageModule, <<-EOM)

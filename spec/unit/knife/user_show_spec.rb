@@ -22,7 +22,7 @@ describe Chef::Knife::UserShow do
   before(:each) do
     Chef::Knife::UserShow.load_deps
     @knife = Chef::Knife::UserShow.new
-    @knife.name_args = [ 'my_user' ]
+    @knife.name_args = ['my_user']
     @user_mock = double('user_mock')
   end
 

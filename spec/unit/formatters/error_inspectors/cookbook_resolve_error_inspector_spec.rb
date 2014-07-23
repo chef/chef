@@ -21,59 +21,59 @@ require 'spec_helper'
 describe Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector do
 
   before do
-    @expanded_run_list = Chef::RunList.new("recipe[annoyances]", "recipe[apache2]", "recipe[users]", "recipe[chef::client]")
+    @expanded_run_list = Chef::RunList.new('recipe[annoyances]', 'recipe[apache2]', 'recipe[users]', 'recipe[chef::client]')
 
-    @description = Chef::Formatters::ErrorDescription.new("Error Resolving Cookbooks for Run List:")
+    @description = Chef::Formatters::ErrorDescription.new('Error Resolving Cookbooks for Run List:')
     @outputter_output = StringIO.new
     @outputter = Chef::Formatters::IndentableOutputStream.new(@outputter_output, STDERR)
     # @outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
   end
 
-  describe "when explaining a 403 error" do
+  describe 'when explaining a 403 error' do
     before do
 
-      @response_body = %Q({"error": [{"message": "gtfo"}])
-      @response = Net::HTTPForbidden.new("1.1", "403", "(response) forbidden")
+      @response_body = '{"error": [{"message": "gtfo"}]'
+      @response = Net::HTTPForbidden.new('1.1', '403', '(response) forbidden')
       @response.stub(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) forbidden", @response)
+      @exception = Net::HTTPServerException.new('(exception) forbidden', @response)
 
       @inspector = Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector.new(@expanded_run_list, @exception)
       @inspector.add_explanation(@description)
     end
 
-    it "prints a nice message" do
+    it 'prints a nice message' do
       lambda { @description.display(@outputter) }.should_not raise_error
     end
 
   end
 
-  describe "when explaining a PreconditionFailed (412) error with current error message style" do
+  describe 'when explaining a PreconditionFailed (412) error with current error message style' do
     # Chef currently returns error messages with some fields as JSON strings,
     # which must be re-parsed to get the actual data.
 
     before do
 
       @response_body = "{\"error\":[\"{\\\"non_existent_cookbooks\\\":[\\\"apache2\\\"],\\\"cookbooks_with_no_versions\\\":[\\\"users\\\"],\\\"message\\\":\\\"Run list contains invalid items: no such cookbook nope.\\\"}\"]}"
-      @response = Net::HTTPPreconditionFailed.new("1.1", "412", "(response) unauthorized")
+      @response = Net::HTTPPreconditionFailed.new('1.1', '412', '(response) unauthorized')
       @response.stub(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) precondition failed", @response)
+      @exception = Net::HTTPServerException.new('(exception) precondition failed', @response)
 
       @inspector = Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector.new(@expanded_run_list, @exception)
       @inspector.add_explanation(@description)
     end
 
-    it "prints a pretty message" do
+    it 'prints a pretty message' do
       @description.display(@outputter)
       @outputter_output.rewind
       observed_output = @outputter_output.read
-      observed_output.should include("apache2")
-      observed_output.should include("users")
-      observed_output.should_not include("Run list contains invalid items: no such cookbook nope.")
+      observed_output.should include('apache2')
+      observed_output.should include('users')
+      observed_output.should_not include('Run list contains invalid items: no such cookbook nope.')
     end
 
   end
 
-  describe "when explaining a PreconditionFailed (412) error with current error message style without cookbook details" do
+  describe 'when explaining a PreconditionFailed (412) error with current error message style without cookbook details' do
     # Chef currently returns error messages with some fields as JSON strings,
     # which must be re-parsed to get the actual data.
     # In some cases the error message doesn't contain any cookbook
@@ -82,48 +82,45 @@ describe Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector do
     before do
 
       @response_body = "{\"error\":[{\"non_existent_cookbooks\":[],\"cookbooks_with_no_versions\":[],\"message\":\"unable to solve dependencies in alotted time.\"}]}"
-      @response = Net::HTTPPreconditionFailed.new("1.1", "412", "(response) unauthorized")
+      @response = Net::HTTPPreconditionFailed.new('1.1', '412', '(response) unauthorized')
       @response.stub(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) precondition failed", @response)
+      @exception = Net::HTTPServerException.new('(exception) precondition failed', @response)
 
       @inspector = Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector.new(@expanded_run_list, @exception)
       @inspector.add_explanation(@description)
     end
 
-    it "prints a pretty message" do
+    it 'prints a pretty message' do
       @description.display(@outputter)
       @outputter_output.rewind
-      @outputter_output.read.should include("unable to solve dependencies in alotted time.")
+      @outputter_output.read.should include('unable to solve dependencies in alotted time.')
     end
 
   end
 
-  describe "when explaining a PreconditionFailed (412) error with single encoded JSON" do
+  describe 'when explaining a PreconditionFailed (412) error with single encoded JSON' do
     # Chef currently returns error messages with some fields as JSON strings,
     # which must be re-parsed to get the actual data.
 
     before do
 
       @response_body = "{\"error\":[{\"non_existent_cookbooks\":[\"apache2\"],\"cookbooks_with_no_versions\":[\"users\"],\"message\":\"Run list contains invalid items: no such cookbook nope.\"}]}"
-      @response = Net::HTTPPreconditionFailed.new("1.1", "412", "(response) unauthorized")
+      @response = Net::HTTPPreconditionFailed.new('1.1', '412', '(response) unauthorized')
       @response.stub(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) precondition failed", @response)
+      @exception = Net::HTTPServerException.new('(exception) precondition failed', @response)
 
       @inspector = Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector.new(@expanded_run_list, @exception)
       @inspector.add_explanation(@description)
     end
 
-    it "prints a pretty message" do
+    it 'prints a pretty message' do
       @description.display(@outputter)
       @outputter_output.rewind
       observed_output = @outputter_output.read
-      observed_output.should include("apache2")
-      observed_output.should include("users")
-      observed_output.should_not include("Run list contains invalid items: no such cookbook nope.")
+      observed_output.should include('apache2')
+      observed_output.should include('users')
+      observed_output.should_not include('Run list contains invalid items: no such cookbook nope.')
     end
 
   end
 end
-
-
-

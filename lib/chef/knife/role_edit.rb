@@ -21,20 +21,19 @@ require 'chef/knife'
 class Chef
   class Knife
     class RoleEdit < Knife
-
       deps do
         require 'chef/role'
         require 'chef/json_compat'
       end
 
-      banner "knife role edit ROLE (options)"
+      banner 'knife role edit ROLE (options)'
 
       def run
         @role_name = @name_args[0]
 
         if @role_name.nil?
           show_usage
-          ui.fatal("You must specify a role name")
+          ui.fatal('You must specify a role name')
           exit 1
         end
 
@@ -43,6 +42,3 @@ class Chef
     end
   end
 end
-
-
-

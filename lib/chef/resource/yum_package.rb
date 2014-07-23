@@ -22,25 +22,24 @@ require 'chef/provider/package/yum'
 class Chef
   class Resource
     class YumPackage < Chef::Resource::Package
-
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :yum_package
         @provider = Chef::Provider::Package::Yum
-        @flush_cache = { :before => false, :after => false }
+        @flush_cache = { before: false, after: false }
         @allow_downgrade = false
       end
 
       # Install a specific arch
-      def arch(arg=nil)
+      def arch(arg = nil)
         set_or_return(
           :arch,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def flush_cache(args={})
+      def flush_cache(args = {})
         if args.is_a? Array
           args.each { |arg| @flush_cache[arg] = true }
         elsif args.any?
@@ -50,14 +49,13 @@ class Chef
         end
       end
 
-      def allow_downgrade(arg=nil)
+      def allow_downgrade(arg = nil)
         set_or_return(
           :allow_downgrade,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          kind_of: [TrueClass, FalseClass]
         )
       end
-
     end
   end
 end

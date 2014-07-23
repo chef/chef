@@ -33,7 +33,7 @@ module Shell
   class ShellSession
     include Singleton
 
-    def self.session_type(type=nil)
+    def self.session_type(type = nil)
       @session_type = type if type
       @session_type
     end
@@ -86,11 +86,11 @@ module Shell
     end
 
     def save_node
-      raise "Not Supported! #{self.class.name} doesn't support #save_node, maybe you need to run chef-shell in client mode?"
+      fail "Not Supported! #{self.class.name} doesn't support #save_node, maybe you need to run chef-shell in client mode?"
     end
 
     def rebuild_context
-      raise "Not Implemented! :rebuild_collection should be implemented by subclasses"
+      fail 'Not Implemented! :rebuild_collection should be implemented by subclasses'
     end
 
     private
@@ -108,11 +108,11 @@ module Shell
     end
 
     def show_loading_progress
-      print "Loading"
+      print 'Loading'
       @loading = true
       @dot_printer = Thread.new do
         while @loading
-          print "."
+          print '.'
           sleep 0.5
         end
       end
@@ -127,24 +127,22 @@ module Shell
 
     def shorten_node_inspect
       def @node.inspect
-        "<Chef::Node:0x#{self.object_id.to_s(16)} @name=\"#{self.name}\">"
+        "<Chef::Node:0x#{object_id.to_s(16)} @name=\"#{name}\">"
       end
     end
 
     def rebuild_node
-      raise "Not Implemented! :rebuild_node should be implemented by subclasses"
+      fail 'Not Implemented! :rebuild_node should be implemented by subclasses'
     end
-
   end
 
   class StandAloneSession < ShellSession
-
     session_type :standalone
 
     def rebuild_context
       cookbook_collection = Chef::CookbookCollection.new({})
       @run_context = Chef::RunContext.new(@node, cookbook_collection, @events) # no recipes
-      @run_context.load(Chef::RunList::RunListExpansionFromDisk.new("_default", [])) # empty recipe list
+      @run_context.load(Chef::RunList::RunListExpansionFromDisk.new('_default', [])) # empty recipe list
     end
 
     private
@@ -156,11 +154,9 @@ module Shell
       @client.load_node
       @client.build_node
     end
-
   end
 
   class SoloSession < ShellSession
-
     session_type :solo
 
     def definitions
@@ -174,7 +170,7 @@ module Shell
       cl.load_cookbooks
       cookbook_collection = Chef::CookbookCollection.new(cl)
       @run_context = Chef::RunContext.new(node, cookbook_collection, @events)
-      @run_context.load(Chef::RunList::RunListExpansionFromDisk.new("_default", []))
+      @run_context.load(Chef::RunList::RunListExpansionFromDisk.new('_default', []))
       @run_status.run_context = run_context
     end
 
@@ -188,11 +184,9 @@ module Shell
       @client.load_node
       @client.build_node
     end
-
   end
 
   class ClientSession < SoloSession
-
     session_type :client
 
     def save_node
@@ -220,11 +214,9 @@ module Shell
       @client.load_node
       @client.build_node
     end
-
   end
 
   class DoppelGangerClient < Chef::Client
-
     attr_reader :node_name
 
     def initialize(node_name)
@@ -244,7 +236,7 @@ module Shell
       Chef::Log.debug("Building node object for #{@node_name}")
       @node = Chef::Node.find_or_create(node_name)
       ohai_data = @ohai.data.merge(@node.automatic_attrs)
-      @node.consume_external_attrs(ohai_data,nil)
+      @node.consume_external_attrs(ohai_data, nil)
       @run_list_expansion = @node.expand!('server')
       @expanded_run_list_with_versions = @run_list_expansion.recipes.with_version_constraints_strings
       Chef::Log.info("Run List is [#{@node.run_list}]")
@@ -255,27 +247,25 @@ module Shell
     def register
       @rest = Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:node_name], Chef::Config[:client_key])
     end
-
   end
 
   class DoppelGangerSession < ClientSession
-
-    session_type "doppelganger client"
+    session_type 'doppelganger client'
 
     def save_node
-      puts "A doppelganger should think twice before saving the node"
+      puts 'A doppelganger should think twice before saving the node'
     end
 
     def assume_identity(node_name)
       Chef::Config[:doppelganger] = @node_name = node_name
       reset!
-    rescue Exception => e
+    rescue => e
       puts "#{e.class.name}: #{e.message}"
       puts Array(e.backtrace).join("\n")
       puts
-      puts "* " * 40
+      puts '* ' * 40
       puts "failed to assume the identity of node '#{node_name}', resetting"
-      puts "* " * 40
+      puts '* ' * 40
       puts
       Chef::Config[:doppelganger] = false
       @node_built = false
@@ -292,7 +282,5 @@ module Shell
       @client.build_node
       @client.sync_cookbooks
     end
-
   end
-
 end

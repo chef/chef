@@ -19,14 +19,14 @@
 require 'spec_helper'
 describe URI do
 
-  describe "when a URI contains an IPv6 literal" do
+  describe 'when a URI contains an IPv6 literal' do
 
     let(:ipv6_uri) do
-      URI.parse("https://[2a00:1450:4009:809::1008]:8443")
+      URI.parse('https://[2a00:1450:4009:809::1008]:8443')
     end
 
-    it "returns the hostname without brackets" do
-      ipv6_uri.hostname.should == "2a00:1450:4009:809::1008"
+    it 'returns the hostname without brackets' do
+      ipv6_uri.hostname.should == '2a00:1450:4009:809::1008'
     end
 
   end

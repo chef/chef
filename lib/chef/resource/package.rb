@@ -22,12 +22,11 @@ require 'chef/resource'
 class Chef
   class Resource
     class Package < Chef::Resource
-
       identity_attr :package_name
 
       state_attrs :version, :options
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @action = :install
         @allowed_actions.push(:install, :upgrade, :remove, :purge, :reconfig)
@@ -36,68 +35,67 @@ class Chef
         @package_name = name
         @resource_name = :package
         @response_file = nil
-        @response_file_variables = Hash.new
+        @response_file_variables = {}
         @source = nil
         @version = nil
         @timeout = 900
       end
 
-      def package_name(arg=nil)
+      def package_name(arg = nil)
         set_or_return(
           :package_name,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def version(arg=nil)
+      def version(arg = nil)
         set_or_return(
           :version,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def response_file(arg=nil)
+      def response_file(arg = nil)
         set_or_return(
           :response_file,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def response_file_variables(arg=nil)
+      def response_file_variables(arg = nil)
         set_or_return(
           :response_file_variables,
           arg,
-          :kind_of => [ Hash ]
+          kind_of: [Hash]
         )
       end
 
-      def source(arg=nil)
+      def source(arg = nil)
         set_or_return(
           :source,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def options(arg=nil)
+      def options(arg = nil)
         set_or_return(
       	  :options,
       	  arg,
-      	  :kind_of => [ String ]
+      	  kind_of: [String]
       	)
       end
 
-      def timeout(arg=nil)
+      def timeout(arg = nil)
         set_or_return(
           :timeout,
           arg,
-          :kind_of => [String, Integer]
+          kind_of: [String, Integer]
         )
       end
-
     end
   end
 end

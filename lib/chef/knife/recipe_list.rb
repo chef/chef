@@ -18,8 +18,7 @@
 
 require 'chef/knife'
 class Chef::Knife::RecipeList < Chef::Knife
-
-  banner "knife recipe list [PATTERN]"
+  banner 'knife recipe list [PATTERN]'
 
   def run
     recipes = rest.get_rest('cookbooks/_recipes')
@@ -28,5 +27,4 @@ class Chef::Knife::RecipeList < Chef::Knife
     end
     output(recipes)
   end
-
 end

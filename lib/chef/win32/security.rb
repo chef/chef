@@ -171,7 +171,7 @@ class Chef
         unless GetSecurityDescriptorControl(security_descriptor, result, version)
           Chef::ReservedNames::Win32::Error.raise!
         end
-        [ result.read_ushort, version.read_uint32 ]
+        [result.read_ushort, version.read_uint32]
       end
 
       def self.get_security_descriptor_dacl(security_descriptor)
@@ -183,7 +183,7 @@ class Chef
           Chef::ReservedNames::Win32::Error.raise!
         end
         acl = acl.read_pointer
-        [ present.read_char != 0, acl.null? ? nil : ACL.new(acl, security_descriptor), defaulted.read_char != 0 ]
+        [present.read_char != 0, acl.null? ? nil : ACL.new(acl, security_descriptor), defaulted.read_char != 0]
       end
 
       def self.get_security_descriptor_group(security_descriptor)
@@ -196,7 +196,7 @@ class Chef
 
         sid = SID.new(result.read_pointer, security_descriptor)
         defaulted = defaulted.read_char != 0
-        [ sid, defaulted ]
+        [sid, defaulted]
       end
 
       def self.get_security_descriptor_owner(security_descriptor)
@@ -209,7 +209,7 @@ class Chef
 
         sid = SID.new(result.read_pointer, security_descriptor)
         defaulted = defaulted.read_char != 0
-        [ sid, defaulted ]
+        [sid, defaulted]
       end
 
       def self.get_security_descriptor_sacl(security_descriptor)
@@ -221,7 +221,7 @@ class Chef
           Chef::ReservedNames::Win32::Error.raise!
         end
         acl = acl.read_pointer
-        [ present.read_char != 0, acl.null? ? nil : ACL.new(acl, security_descriptor), defaulted.read_char != 0 ]
+        [present.read_char != 0, acl.null? ? nil : ACL.new(acl, security_descriptor), defaulted.read_char != 0]
       end
 
       def self.initialize_acl(acl_size)
@@ -261,19 +261,19 @@ class Chef
         referenced_domain_name_size = FFI::Buffer.new(:long).write_long(0)
         system_name = system_name.to_wstring if system_name
         if LookupAccountNameW(system_name, name.to_wstring, nil, sid_size, nil, referenced_domain_name_size, nil)
-          raise "Expected ERROR_INSUFFICIENT_BUFFER from LookupAccountName, and got no error!"
+          fail 'Expected ERROR_INSUFFICIENT_BUFFER from LookupAccountName, and got no error!'
         elsif FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
           Chef::ReservedNames::Win32::Error.raise!
         end
 
         sid = FFI::MemoryPointer.new :char, sid_size.read_long
-        referenced_domain_name = FFI::MemoryPointer.new :char, (referenced_domain_name_size.read_long*2)
+        referenced_domain_name = FFI::MemoryPointer.new :char, (referenced_domain_name_size.read_long * 2)
         use = FFI::Buffer.new(:long).write_long(0)
         unless LookupAccountNameW(system_name, name.to_wstring, sid, sid_size, referenced_domain_name, referenced_domain_name_size, use)
           Chef::ReservedNames::Win32::Error.raise!
         end
 
-        [ referenced_domain_name.read_wstring(referenced_domain_name_size.read_long), SID.new(sid), use.read_long ]
+        [referenced_domain_name.read_wstring(referenced_domain_name_size.read_long), SID.new(sid), use.read_long]
       end
 
       def self.lookup_account_sid(sid, system_name = nil)
@@ -283,31 +283,31 @@ class Chef
         referenced_domain_name_size = FFI::Buffer.new(:long).write_long(0)
         system_name = system_name.to_wstring if system_name
         if LookupAccountSidW(system_name, sid, nil, name_size, nil, referenced_domain_name_size, nil)
-          raise "Expected ERROR_INSUFFICIENT_BUFFER from LookupAccountSid, and got no error!"
+          fail 'Expected ERROR_INSUFFICIENT_BUFFER from LookupAccountSid, and got no error!'
         elsif FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
           Chef::ReservedNames::Win32::Error.raise!
         end
 
-        name = FFI::MemoryPointer.new :char, (name_size.read_long*2)
-        referenced_domain_name = FFI::MemoryPointer.new :char, (referenced_domain_name_size.read_long*2)
+        name = FFI::MemoryPointer.new :char, (name_size.read_long * 2)
+        referenced_domain_name = FFI::MemoryPointer.new :char, (referenced_domain_name_size.read_long * 2)
         use = FFI::Buffer.new(:long).write_long(0)
         unless LookupAccountSidW(system_name, sid, name, name_size, referenced_domain_name, referenced_domain_name_size, use)
           Chef::ReservedNames::Win32::Error.raise!
         end
 
-        [ referenced_domain_name.read_wstring(referenced_domain_name_size.read_long), name.read_wstring(name_size.read_long), use.read_long ]
+        [referenced_domain_name.read_wstring(referenced_domain_name_size.read_long), name.read_wstring(name_size.read_long), use.read_long]
       end
 
       def self.lookup_privilege_name(system_name, luid)
         system_name = system_name.to_wstring if system_name
         name_size = FFI::Buffer.new(:long).write_long(0)
         if LookupPrivilegeNameW(system_name, luid, nil, name_size)
-          raise "Expected ERROR_INSUFFICIENT_BUFFER from LookupPrivilegeName, and got no error!"
+          fail 'Expected ERROR_INSUFFICIENT_BUFFER from LookupPrivilegeName, and got no error!'
         elsif FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
           Chef::ReservedNames::Win32::Error.raise!
         end
 
-        name = FFI::MemoryPointer.new :char, (name_size.read_long*2)
+        name = FFI::MemoryPointer.new :char, (name_size.read_long * 2)
         unless LookupPrivilegeNameW(system_name, luid, name, name_size)
           Chef::ReservedNames::Win32::Error.raise!
         end
@@ -320,17 +320,17 @@ class Chef
         display_name_size = FFI::Buffer.new(:long).write_long(0)
         language_id = FFI::Buffer.new(:long)
         if LookupPrivilegeDisplayNameW(system_name, name.to_wstring, nil, display_name_size, language_id)
-          raise "Expected ERROR_INSUFFICIENT_BUFFER from LookupPrivilegeDisplayName, and got no error!"
+          fail 'Expected ERROR_INSUFFICIENT_BUFFER from LookupPrivilegeDisplayName, and got no error!'
         elsif FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
           Chef::ReservedNames::Win32::Error.raise!
         end
 
-        display_name = FFI::MemoryPointer.new :char, (display_name_size.read_long*2)
+        display_name = FFI::MemoryPointer.new :char, (display_name_size.read_long * 2)
         unless LookupPrivilegeDisplayNameW(system_name, name.to_wstring, display_name, display_name_size, language_id)
           Chef::ReservedNames::Win32::Error.raise!
         end
 
-        [ display_name.read_wstring(display_name_size.read_long), language_id.read_long ]
+        [display_name.read_wstring(display_name_size.read_long), language_id.read_long]
       end
 
       def self.lookup_privilege_value(system_name, name)
@@ -352,7 +352,7 @@ class Chef
         owner_size = FFI::Buffer.new(:long).write_long(0)
         group_size = FFI::Buffer.new(:long).write_long(0)
         if MakeAbsoluteSD(security_descriptor, nil, absolute_sd_size, nil, dacl_size, nil, sacl_size, nil, owner_size, nil, group_size)
-          raise "Expected ERROR_INSUFFICIENT_BUFFER from MakeAbsoluteSD, and got no error!"
+          fail 'Expected ERROR_INSUFFICIENT_BUFFER from MakeAbsoluteSD, and got no error!'
         elsif FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
           Chef::ReservedNames::Win32::Error.raise!
         end
@@ -366,7 +366,7 @@ class Chef
           Chef::ReservedNames::Win32::Error.raise!
         end
 
-        [ SecurityDescriptor.new(absolute_sd), SID.new(owner), SID.new(group), ACL.new(dacl), ACL.new(sacl) ]
+        [SecurityDescriptor.new(absolute_sd), SID.new(owner), SID.new(group), ACL.new(dacl), ACL.new(sacl)]
       end
 
       def self.open_process_token(process, desired_access)
@@ -430,7 +430,7 @@ class Chef
       def set_security_descriptor_dacl(security_descriptor, acl, defaulted = false, present = nil)
         security_descriptor = security_descriptor.pointer if security_descriptor.respond_to?(:pointer)
         acl = acl.pointer if acl.respond_to?(:pointer)
-        present = !security_descriptor.null? if present == nil
+        present = !security_descriptor.null? if present.nil?
 
         unless SetSecurityDescriptorDacl(security_descriptor, present, acl, defaulted)
           Chef::ReservedNames::Win32::Error.raise!
@@ -458,7 +458,7 @@ class Chef
       def self.set_security_descriptor_sacl(security_descriptor, acl, defaulted = false, present = nil)
         security_descriptor = security_descriptor.pointer if security_descriptor.respond_to?(:pointer)
         acl = acl.pointer if acl.respond_to?(:pointer)
-        present = !security_descriptor.null? if present == nil
+        present = !security_descriptor.null? if present.nil?
 
         unless SetSecurityDescriptorSacl(security_descriptor, present, acl, defaulted)
           Chef::ReservedNames::Win32::Error.raise!

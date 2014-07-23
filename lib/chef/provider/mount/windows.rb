@@ -26,7 +26,6 @@ class Chef
   class Provider
     class Mount
       class Windows < Chef::Provider::Mount
-
         def is_volume(name)
           name =~ /^\\\\\?\\Volume\{[\w-]+\}\\$/ ? true : false
         end
@@ -39,7 +38,7 @@ class Chef
         def load_current_resource
           if is_volume(@new_resource.device)
             @mount = Chef::Util::Windows::Volume.new(@new_resource.name)
-          else #assume network drive
+          else # assume network drive
             @mount = Chef::Util::Windows::NetUse.new(@new_resource.name)
           end
 
@@ -59,10 +58,10 @@ class Chef
 
         def mount_fs
           unless @current_resource.mounted
-            @mount.add(:remote => @new_resource.device,
-                       :username => @new_resource.username,
-                       :domainname => @new_resource.domain,
-                       :password => @new_resource.password)
+            @mount.add(remote: @new_resource.device,
+                       username: @new_resource.username,
+                       domainname: @new_resource.domain,
+                       password: @new_resource.password)
             Chef::Log.debug("#{@new_resource} is mounted at #{@new_resource.mount_point}")
           else
             Chef::Log.debug("#{@new_resource} is already mounted at #{@new_resource.mount_point}")
@@ -77,7 +76,6 @@ class Chef
             Chef::Log.debug("#{@new_resource} is not mounted at #{@new_resource.mount_point}")
           end
         end
-
       end
     end
   end

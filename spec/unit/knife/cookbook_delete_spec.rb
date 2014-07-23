@@ -77,7 +77,7 @@ describe Chef::Knife::CookbookDelete do
       @knife.version = '1.0.0'
       @knife.should_receive(:delete_object).with(Chef::CookbookVersion,
                                                  'foobar version 1.0.0',
-                                                 'cookbook').and_yield()
+                                                 'cookbook').and_yield
       @knife.should_receive(:delete_request).with('cookbooks/foobar/1.0.0')
       @knife.delete_explicit_version
     end
@@ -127,9 +127,9 @@ describe Chef::Knife::CookbookDelete do
     before(:each) do
       @rest_mock = double('rest')
       @knife.should_receive(:rest).and_return(@rest_mock)
-      @cookbook_data = { 'foobar' => { 'versions' => [{'version' => '1.0.0'},
-                                                      {'version' => '1.1.0'},
-                                                      {'version' => '2.0.0'} ]}
+      @cookbook_data = { 'foobar' => { 'versions' => [{ 'version' => '1.0.0' },
+                                                      { 'version' => '1.1.0' },
+                                                      { 'version' => '2.0.0' }] }
       }
     end
 
@@ -156,7 +156,7 @@ describe Chef::Knife::CookbookDelete do
       end
 
       it 'should return nil' do
-        @knife.available_versions.should == nil
+        @knife.available_versions.should.nil?
       end
     end
   end

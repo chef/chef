@@ -26,7 +26,6 @@ class Chef
   class Provider
     class RemoteFile
       class FTP
-
         attr_reader :uri
         attr_reader :new_resource
         attr_reader :current_resource
@@ -48,7 +47,7 @@ class Chef
         end
 
         def use_passive_mode?
-          ! new_resource.ftp_active_mode
+          !new_resource.ftp_active_mode
         end
 
         def typecode
@@ -81,7 +80,6 @@ class Chef
           @filename
         end
 
-
         def fetch
           with_connection do
             get
@@ -113,8 +111,8 @@ class Chef
 
         def validate_typecode!
           # Only support ascii and binary types
-          if typecode and /\A[ai]\z/ !~ typecode
-            raise ArgumentError, "invalid typecode: #{typecode.inspect}"
+          if typecode && /\A[ai]\z/ !~ typecode
+            fail ArgumentError, "invalid typecode: #{typecode.inspect}"
           end
         end
 
@@ -147,15 +145,15 @@ class Chef
           tempfile
         end
 
-        #adapted from buildr/lib/buildr/core/transports.rb via chef/rest/rest_client.rb
-        def proxy_uri(uri)
-          proxy = Chef::Config["ftp_proxy"]
+        # adapted from buildr/lib/buildr/core/transports.rb via chef/rest/rest_client.rb
+        def proxy_uri(_uri)
+          proxy = Chef::Config['ftp_proxy']
           proxy = URI.parse(proxy) if String === proxy
-          if Chef::Config["ftp_proxy_user"]
-            proxy.user = Chef::Config["ftp_proxy_user"]
+          if Chef::Config['ftp_proxy_user']
+            proxy.user = Chef::Config['ftp_proxy_user']
           end
-          if Chef::Config["ftp_proxy_pass"]
-            proxy.password = Chef::Config["ftp_proxy_pass"]
+          if Chef::Config['ftp_proxy_pass']
+            proxy.password = Chef::Config['ftp_proxy_pass']
           end
           excludes = Chef::Config[:no_proxy].to_s.split(/\s*,\s*/).compact
           excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
@@ -166,18 +164,17 @@ class Chef
           path = uri.path.sub(%r{\A/}, '%2F') # re-encode the beginning slash because uri library decodes it.
           directories = path.split(%r{/}, -1)
           directories.each {|d|
-            d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [$1].pack("H2") }
+            d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [Regexp.last_match[1]].pack('H2') }
           }
           unless filename = directories.pop
-            raise ArgumentError, "no filename: #{path.inspect}"
+            fail ArgumentError, "no filename: #{path.inspect}"
           end
-          if filename.length == 0 || filename.end_with?( "/" )
-            raise ArgumentError, "no filename: #{path.inspect}"
+          if filename.length == 0 || filename.end_with?('/')
+            fail ArgumentError, "no filename: #{path.inspect}"
           end
 
           @directories, @filename = directories, filename
         end
-
       end
     end
   end

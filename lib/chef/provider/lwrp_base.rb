@@ -22,11 +22,9 @@ require 'chef/provider'
 
 class Chef
   class Provider
-
     # == Chef::Provider::LWRPBase
     # Base class from which LWRP providers inherit.
     class LWRPBase < Provider
-
       # Chef::Provider::LWRPBase::InlineResources
       # Implementation of inline resource convergence for LWRP providers. See
       # Provider::LWRPBase.use_inline_resources for a longer explanation.
@@ -34,7 +32,6 @@ class Chef
       # This code is restricted to a module so that it can be selectively
       # applied to providers on an opt-in basis.
       module InlineResources
-
         # Class methods for InlineResources. Overrides the `action` DSL method
         # with one that enables inline resource convergence.
         module ClassMethods
@@ -62,11 +59,10 @@ class Chef
           return_value
         ensure
           @run_context = saved_run_context
-          if temp_run_context.resource_collection.any? {|r| r.updated? }
+          if temp_run_context.resource_collection.any? { |r| r.updated? }
             new_resource.updated_by_last_action(true)
           end
         end
-
       end
 
       extend Chef::Mixin::ConvertToClassName
@@ -80,7 +76,7 @@ class Chef
       include Chef::DSL::PlatformIntrospection
       include Chef::DSL::DataQuery
 
-      def self.build_from_file(cookbook_name, filename, run_context)
+      def self.build_from_file(cookbook_name, filename, _run_context)
         provider_name = filename_to_qualified_string(cookbook_name, filename)
 
         # Add log entry if we override an existing light-weight provider.
@@ -144,7 +140,6 @@ class Chef
       # Chef::Exceptions::Override exception)
       def load_current_resource
       end
-
     end
   end
 end

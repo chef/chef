@@ -34,14 +34,12 @@ class Chef
         attr_reader :recursive
 
         def children
-          begin
-            Dir.entries(file_path).sort.
-                select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
-                map { |child_name| make_child(child_name) }.
-                select { |entry| !(entry.dir? && entry.children.size == 0) }
-          rescue Errno::ENOENT
-            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-          end
+          Dir.entries(file_path).sort.
+              select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
+              map { |child_name| make_child(child_name) }.
+              select { |entry| !(entry.dir? && entry.children.size == 0) }
+        rescue Errno::ENOENT
+          raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $ERROR_INFO)
         end
 
         def can_have_child?(name, is_dir)

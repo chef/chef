@@ -36,7 +36,6 @@ class Chef
   # TODO: figure out if all this works with OS X's negative uids
   # TODO: windows
   class ScanAccessControl
-
     attr_reader :new_resource
     attr_reader :current_resource
 
@@ -70,8 +69,8 @@ class Chef
       when Integer
         stat.uid
       else
-        Chef::Log.error("The `owner` parameter of the #@new_resource resource is set to an invalid value (#{new_resource.owner.inspect})")
-        raise ArgumentError, "cannot resolve #{new_resource.owner.inspect} to uid, owner must be a string or integer"
+        Chef::Log.error("The `owner` parameter of the #{@new_resource} resource is set to an invalid value (#{new_resource.owner.inspect})")
+        fail ArgumentError, "cannot resolve #{new_resource.owner.inspect} to uid, owner must be a string or integer"
       end
     end
 
@@ -97,8 +96,8 @@ class Chef
       when Integer
         stat.gid
       else
-        Chef::Log.error("The `group` parameter of the #@new_resource resource is set to an invalid value (#{new_resource.owner.inspect})")
-        raise ArgumentError, "cannot resolve #{new_resource.group.inspect} to gid, group must be a string or integer"
+        Chef::Log.error("The `group` parameter of the #{@new_resource} resource is set to an invalid value (#{new_resource.owner.inspect})")
+        fail ArgumentError, "cannot resolve #{new_resource.group.inspect} to gid, group must be a string or integer"
       end
     end
 
@@ -121,14 +120,14 @@ class Chef
       when String, Integer, nil
         "0#{(stat.mode & 07777).to_s(8)}"
       else
-        Chef::Log.error("The `mode` parameter of the #@new_resource resource is set to an invalid value (#{new_resource.mode.inspect})")
-        raise ArgumentError, "Invalid value #{new_resource.mode.inspect} for `mode` on resource #@new_resource"
+        Chef::Log.error("The `mode` parameter of the #{@new_resource} resource is set to an invalid value (#{new_resource.mode.inspect})")
+        fail ArgumentError, "Invalid value #{new_resource.mode.inspect} for `mode` on resource #{@new_resource}"
       end
     end
 
     def stat
       @stat ||= if @new_resource.instance_of?(Chef::Resource::Link)
-        ::File.lstat(@new_resource.path)
+                  ::File.lstat(@new_resource.path)
       else
         realpath = ::File.realpath(@new_resource.path)
         ::File.stat(realpath)

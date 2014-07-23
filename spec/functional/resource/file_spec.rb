@@ -21,7 +21,7 @@ require 'spec_helper'
 describe Chef::Resource::File do
   include_context Chef::Resource::File
 
-  let(:file_base) { "file_spec" }
+  let(:file_base) { 'file_spec' }
   let(:expected_content) { "Don't fear the ruby." }
 
   def create_resource
@@ -43,7 +43,7 @@ describe Chef::Resource::File do
   end
 
   let(:unmanaged_content) do
-    "This is file content that is not managed by chef"
+    'This is file content that is not managed by chef'
   end
 
   let(:current_resource) do
@@ -54,44 +54,44 @@ describe Chef::Resource::File do
 
   let(:default_mode) { ((0100666 - File.umask) & 07777).to_s(8) }
 
-  it_behaves_like "a file resource"
+  it_behaves_like 'a file resource'
 
-  it_behaves_like "a securable resource with reporting"
+  it_behaves_like 'a securable resource with reporting'
 
-  describe "when running action :create without content" do
+  describe 'when running action :create without content' do
     before do
       resource_without_content.run_action(:create)
     end
 
-    context "and the target file does not exist" do
-      it "creates the file" do
+    context 'and the target file does not exist' do
+      it 'creates the file' do
         File.should exist(path)
       end
 
-      it "is marked updated by last action" do
+      it 'is marked updated by last action' do
         resource_without_content.should be_updated_by_last_action
       end
     end
   end
 
-  describe "when running action :touch" do
-    context "and the target file does not exist" do
+  describe 'when running action :touch' do
+    context 'and the target file does not exist' do
       before do
         resource.run_action(:touch)
       end
 
-      it "it creates the file" do
+      it 'it creates the file' do
         File.should exist(path)
       end
 
-      it "is marked updated by last action" do
+      it 'is marked updated by last action' do
         resource.should be_updated_by_last_action
       end
     end
 
-    context "and the target file exists and has the correct content" do
+    context 'and the target file exists and has the correct content' do
       before(:each) do
-        File.open(path, "w") { |f| f.print expected_content }
+        File.open(path, 'w') { |f| f.print expected_content }
 
         @expected_checksum = sha256_checksum(path)
 
@@ -102,15 +102,15 @@ describe Chef::Resource::File do
         resource.run_action(:touch)
       end
 
-      it "updates the mtime of the file" do
+      it 'updates the mtime of the file' do
         File.stat(path).mtime.should > @expected_mtime
       end
 
-      it "does not change the content" do
+      it 'does not change the content' do
         sha256_checksum(path).should == @expected_checksum
       end
 
-      it "is marked as updated by last action" do
+      it 'is marked as updated by last action' do
         resource.should be_updated_by_last_action
       end
     end

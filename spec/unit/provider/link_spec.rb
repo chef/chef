@@ -22,7 +22,7 @@ require 'ostruct'
 require 'spec_helper'
 
 if Chef::Platform.windows?
-  require 'chef/win32/file' #probably need this in spec_helper
+  require 'chef/win32/file' # probably need this in spec_helper
 end
 
 describe Chef::Resource::Link, :not_supported_on_win2k3 do
@@ -42,9 +42,9 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
     Chef::Platform.windows? ? path.gsub('/', '\\') : path
   end
 
-  describe "when the target is a symlink" do
+  describe 'when the target is a symlink' do
     before(:each) do
-      lstat = double("stats", :ino => 5)
+      lstat = double('stats', ino: 5)
       lstat.stub(:uid).and_return(501)
       lstat.stub(:gid).and_return(501)
       lstat.stub(:mode).and_return(0777)
@@ -53,7 +53,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
       provider.file_class.stub(:readlink).with("#{CHEF_SPEC_DATA}/fofile-link").and_return("#{CHEF_SPEC_DATA}/fofile")
     end
 
-    describe "to a file that exists" do
+    describe 'to a file that exists' do
       before do
         File.stub(:exist?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
         new_resource.owner 501 # only loaded in current_resource if present in new
@@ -61,19 +61,19 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         provider.load_current_resource
       end
 
-      it "should set the symlink target" do
+      it 'should set the symlink target' do
         provider.current_resource.target_file.should == "#{CHEF_SPEC_DATA}/fofile-link"
       end
-      it "should set the link type" do
+      it 'should set the link type' do
         provider.current_resource.link_type.should == :symbolic
       end
-      it "should update the source of the existing link with the links target" do
+      it 'should update the source of the existing link with the links target' do
         provider.current_resource.to.should == canonicalize("#{CHEF_SPEC_DATA}/fofile")
       end
-      it "should set the owner" do
+      it 'should set the owner' do
         provider.current_resource.owner.should == 501
       end
-      it "should set the group" do
+      it 'should set the group' do
         provider.current_resource.group.should == 501
       end
 
@@ -98,24 +98,24 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         File.stub(:exist?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
         provider.file_class.stub(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
         provider.file_class.stub(:readlink).with("#{CHEF_SPEC_DATA}/fofile-link").and_return("#{CHEF_SPEC_DATA}/fofile")
-        new_resource.owner "501" # only loaded in current_resource if present in new
-        new_resource.group "501"
+        new_resource.owner '501' # only loaded in current_resource if present in new
+        new_resource.group '501'
         provider.load_current_resource
       end
 
-      it "should set the symlink target" do
+      it 'should set the symlink target' do
         provider.current_resource.target_file.should == "#{CHEF_SPEC_DATA}/fofile-link"
       end
-      it "should set the link type" do
+      it 'should set the link type' do
         provider.current_resource.link_type.should == :symbolic
       end
       it "should update the source of the existing link to the link's target" do
         provider.current_resource.to.should == canonicalize("#{CHEF_SPEC_DATA}/fofile")
       end
-      it "should not set the owner" do
+      it 'should not set the owner' do
         provider.current_resource.owner.should be_nil
       end
-      it "should not set the group" do
+      it 'should not set the group' do
         provider.current_resource.group.should be_nil
       end
     end
@@ -128,23 +128,23 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
       provider.load_current_resource
     end
 
-    it "should set the symlink target" do
+    it 'should set the symlink target' do
       provider.current_resource.target_file.should == "#{CHEF_SPEC_DATA}/fofile-link"
     end
-    it "should update the source of the existing link to nil" do
+    it 'should update the source of the existing link to nil' do
       provider.current_resource.to.should be_nil
     end
-    it "should not set the owner" do
-      provider.current_resource.owner.should == nil
+    it 'should not set the owner' do
+      provider.current_resource.owner.should.nil?
     end
-    it "should not set the group" do
-      provider.current_resource.group.should == nil
+    it 'should not set the group' do
+      provider.current_resource.group.should.nil?
     end
   end
 
-  describe "when the target is a regular old file" do
+  describe 'when the target is a regular old file' do
     before do
-      stat = double("stats", :ino => 5)
+      stat = double('stats', ino: 5)
       stat.stub(:uid).and_return(501)
       stat.stub(:gid).and_return(501)
       stat.stub(:mode).and_return(0755)
@@ -154,29 +154,29 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
       provider.file_class.stub(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
     end
 
-    describe "and the source does not exist" do
+    describe 'and the source does not exist' do
       before do
         File.stub(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(false)
         provider.load_current_resource
       end
 
-      it "should set the symlink target" do
+      it 'should set the symlink target' do
         provider.current_resource.target_file.should == "#{CHEF_SPEC_DATA}/fofile-link"
       end
-      it "should update the current source of the existing link with an empty string" do
+      it 'should update the current source of the existing link with an empty string' do
         provider.current_resource.to.should == ''
       end
-      it "should not set the owner" do
-        provider.current_resource.owner.should == nil
+      it 'should not set the owner' do
+        provider.current_resource.owner.should.nil?
       end
-      it "should not set the group" do
-        provider.current_resource.group.should == nil
+      it 'should not set the group' do
+        provider.current_resource.group.should.nil?
       end
     end
 
-    describe "and the source exists" do
+    describe 'and the source exists' do
       before do
-        stat = double("stats", :ino => 6)
+        stat = double('stats', ino: 6)
         stat.stub(:uid).and_return(502)
         stat.stub(:gid).and_return(502)
         stat.stub(:mode).and_return(0644)
@@ -187,23 +187,23 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         provider.load_current_resource
       end
 
-      it "should set the symlink target" do
+      it 'should set the symlink target' do
         provider.current_resource.target_file.should == "#{CHEF_SPEC_DATA}/fofile-link"
       end
-      it "should update the current source of the existing link with an empty string" do
+      it 'should update the current source of the existing link with an empty string' do
         provider.current_resource.to.should == ''
       end
-      it "should not set the owner" do
-        provider.current_resource.owner.should == nil
+      it 'should not set the owner' do
+        provider.current_resource.owner.should.nil?
       end
-      it "should not set the group" do
-        provider.current_resource.group.should == nil
+      it 'should not set the group' do
+        provider.current_resource.group.should.nil?
       end
     end
 
-    describe "and is hardlinked to the source" do
+    describe 'and is hardlinked to the source' do
       before do
-        stat = double("stats", :ino => 5)
+        stat = double('stats', ino: 5)
         stat.stub(:uid).and_return(502)
         stat.stub(:gid).and_return(502)
         stat.stub(:mode).and_return(0644)
@@ -214,20 +214,20 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         provider.load_current_resource
       end
 
-      it "should set the symlink target" do
+      it 'should set the symlink target' do
         provider.current_resource.target_file.should == "#{CHEF_SPEC_DATA}/fofile-link"
       end
-      it "should set the link type" do
+      it 'should set the link type' do
         provider.current_resource.link_type.should == :hard
       end
       it "should update the source of the existing link to the link's target" do
         provider.current_resource.to.should == canonicalize("#{CHEF_SPEC_DATA}/fofile")
       end
-      it "should not set the owner" do
-        provider.current_resource.owner.should == nil
+      it 'should not set the owner' do
+        provider.current_resource.owner.should.nil?
       end
-      it "should not set the group" do
-        provider.current_resource.group.should == nil
+      it 'should not set the group' do
+        provider.current_resource.group.should.nil?
       end
 
       # We test create in unit tests because there is no other way to ensure

@@ -21,19 +21,19 @@ require 'spec_helper'
 describe Chef::FileContentManagement::Deploy::Cp do
 
   let(:content_deployer) { described_class.new }
-  let(:target_file_path) { "/etc/my_app.conf" }
+  let(:target_file_path) { '/etc/my_app.conf' }
 
-  describe "creating the file" do
+  describe 'creating the file' do
 
-    it "touches the file to create it" do
+    it 'touches the file to create it' do
       FileUtils.should_receive(:touch).with(target_file_path)
       content_deployer.create(target_file_path)
     end
   end
 
-  describe "updating the file" do
+  describe 'updating the file' do
 
-    let(:staging_file_path) { "/tmp/random-dir/staging-file.tmp" }
+    let(:staging_file_path) { '/tmp/random-dir/staging-file.tmp' }
 
     it "copies the staging file's content" do
       FileUtils.should_receive(:cp).with(staging_file_path, target_file_path)
@@ -42,5 +42,3 @@ describe Chef::FileContentManagement::Deploy::Cp do
 
   end
 end
-
-

@@ -16,23 +16,23 @@
 # limitations under the License.
 #
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_helper'))
 
-describe Chef::Resource::PortagePackage, "initialize" do
+describe Chef::Resource::PortagePackage, 'initialize' do
 
   before(:each) do
-    @resource = Chef::Resource::PortagePackage.new("foo")
+    @resource = Chef::Resource::PortagePackage.new('foo')
   end
 
-  it "should return a Chef::Resource::PortagePackage" do
+  it 'should return a Chef::Resource::PortagePackage' do
     @resource.should be_a_kind_of(Chef::Resource::PortagePackage)
   end
 
-  it "should set the resource_name to :portage_package" do
+  it 'should set the resource_name to :portage_package' do
     @resource.resource_name.should eql(:portage_package)
   end
 
-  it "should set the provider to Chef::Provider::Package::Portage" do
+  it 'should set the provider to Chef::Provider::Package::Portage' do
     @resource.provider.should eql(Chef::Provider::Package::Portage)
   end
 end

@@ -24,7 +24,6 @@ require 'chef/util/diff'
 class Chef
   module ChefFS
     module CommandLine
-
       def self.diff_print(pattern, a_root, b_root, recurse_depth, output_mode, format_path = nil, diff_filter = nil, ui = nil)
         if format_path.nil?
           format_path = proc { |entry| entry.path_for_printing }
@@ -117,11 +116,11 @@ class Chef
             elsif error.is_a?(Chef::ChefFS::FileSystem::OperationNotAllowedError)
               ui.error "#{format_path.call(error.entry)} #{error.reason}." if ui
             else
-              raise error
+              fail error
             end
           end
         end
-        if !found_match
+        unless found_match
           ui.error "#{pattern}: No such file or directory on remote or local" if ui
           error = true
         end
@@ -140,7 +139,7 @@ class Chef
         if old_entry.dir?
           if new_entry.dir?
             if recurse_depth == 0
-              return [ [ :common_subdirectories, old_entry, new_entry ] ]
+              return [[:common_subdirectories, old_entry, new_entry]]
             else
               return Chef::ChefFS::Parallelizer.parallelize(Chef::ChefFS::FileSystem.child_pairs(old_entry, new_entry)) do |old_child, new_child|
                 Chef::ChefFS::CommandLine.diff_entries(old_child, new_child, recurse_depth ? recurse_depth - 1 : nil, get_content)
@@ -149,29 +148,29 @@ class Chef
 
           # If old is a directory and new is a file
           elsif new_entry.exists?
-            return [ [ :directory_to_file, old_entry, new_entry ] ]
+            return [[:directory_to_file, old_entry, new_entry]]
 
           # If old is a directory and new does not exist
           elsif new_entry.parent.can_have_child?(old_entry.name, old_entry.dir?)
-            return [ [ :deleted, old_entry, new_entry ] ]
+            return [[:deleted, old_entry, new_entry]]
 
           # If the new entry does not and *cannot* exist, report that.
           else
-            return [ [ :new_cannot_upload, old_entry, new_entry ] ]
+            return [[:new_cannot_upload, old_entry, new_entry]]
           end
 
         # If new is a directory and old is a file
         elsif new_entry.dir?
           if old_entry.exists?
-            return [ [ :file_to_directory, old_entry, new_entry ] ]
+            return [[:file_to_directory, old_entry, new_entry]]
 
           # If new is a directory and old does not exist
           elsif old_entry.parent.can_have_child?(new_entry.name, new_entry.dir?)
-            return [ [ :added, old_entry, new_entry ] ]
+            return [[:added, old_entry, new_entry]]
 
           # If the new entry does not and *cannot* exist, report that.
           else
-            return [ [ :old_cannot_upload, old_entry, new_entry ] ]
+            return [[:old_cannot_upload, old_entry, new_entry]]
           end
 
         # Neither is a directory, so they are diffable with file diff
@@ -179,9 +178,9 @@ class Chef
           are_same, old_value, new_value = Chef::ChefFS::FileSystem.compare(old_entry, new_entry)
           if are_same
             if old_value == :none
-              return [ [ :both_nonexistent, old_entry, new_entry ] ]
+              return [[:both_nonexistent, old_entry, new_entry]]
             else
-              return [ [ :same, old_entry, new_entry ] ]
+              return [[:same, old_entry, new_entry]]
             end
           else
             if old_value == :none
@@ -203,10 +202,10 @@ class Chef
             # If one of the files doesn't exist, we only want to print the diff if the
             # other file *could be uploaded/downloaded*.
             if !old_exists && !old_entry.parent.can_have_child?(new_entry.name, new_entry.dir?)
-              return [ [ :old_cannot_upload, old_entry, new_entry ] ]
+              return [[:old_cannot_upload, old_entry, new_entry]]
             end
             if !new_exists && !new_entry.parent.can_have_child?(old_entry.name, old_entry.dir?)
-              return [ [ :new_cannot_upload, old_entry, new_entry ] ]
+              return [[:new_cannot_upload, old_entry, new_entry]]
             end
 
             if get_content
@@ -223,17 +222,17 @@ class Chef
               end
             end
 
-            if old_value == :none || (old_value == nil && !old_entry.exists?)
-              return [ [ :added, old_entry, new_entry, old_value, new_value ] ]
+            if old_value == :none || (old_value.nil? && !old_entry.exists?)
+              return [[:added, old_entry, new_entry, old_value, new_value]]
             elsif new_value == :none
-              return [ [ :deleted, old_entry, new_entry, old_value, new_value ] ]
+              return [[:deleted, old_entry, new_entry, old_value, new_value]]
             else
-              return [ [ :modified, old_entry, new_entry, old_value, new_value ] ]
+              return [[:modified, old_entry, new_entry, old_value, new_value]]
             end
           end
         end
       rescue Chef::ChefFS::FileSystem::FileSystemError => e
-        return [ [ :error, old_entry, new_entry, nil, nil, e ] ]
+        return [[:error, old_entry, new_entry, nil, nil, e]]
       end
 
       private
@@ -251,7 +250,7 @@ class Chef
       end
 
       def self.canonicalize_json(json_text)
-        parsed_json = JSON.parse(json_text, :create_additions => false)
+        parsed_json = JSON.parse(json_text, create_additions: false)
         sorted_json = sort_keys(parsed_json)
         JSON.pretty_generate(sorted_json)
       end
@@ -259,26 +258,22 @@ class Chef
       def self.diff_text(old_path, new_path, old_value, new_value)
         # Copy to tempfiles before diffing
         # TODO don't copy things that are already in files!  Or find an in-memory diff algorithm
+        new_tempfile = Tempfile.new('new')
+        new_tempfile.write(new_value)
+        new_tempfile.close
         begin
-          new_tempfile = Tempfile.new("new")
-          new_tempfile.write(new_value)
-          new_tempfile.close
-
-          begin
-            old_tempfile = Tempfile.new("old")
-            old_tempfile.write(old_value)
-            old_tempfile.close
-
-            result = Chef::Util::Diff.new.udiff(old_tempfile.path, new_tempfile.path)
-            result = result.gsub(/^--- #{old_tempfile.path}/, "--- #{old_path}")
-            result = result.gsub(/^\+\+\+ #{new_tempfile.path}/, "+++ #{new_path}")
-            result
-          ensure
-            old_tempfile.close!
-          end
-        ensure
-          new_tempfile.close!
-        end
+         old_tempfile = Tempfile.new('old')
+         old_tempfile.write(old_value)
+         old_tempfile.close
+         result = Chef::Util::Diff.new.udiff(old_tempfile.path, new_tempfile.path)
+         result = result.gsub(/^--- #{old_tempfile.path}/, "--- #{old_path}")
+         result = result.gsub(/^\+\+\+ #{new_tempfile.path}/, "+++ #{new_path}")
+         result
+       ensure
+         old_tempfile.close!
+       end
+      ensure
+        new_tempfile.close!
       end
     end
   end

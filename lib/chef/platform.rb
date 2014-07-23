@@ -21,9 +21,7 @@ require 'chef/platform/query_helpers'
 
 class Chef
   class Platform
-
     # Functionality for this class is defined in chef/platform/provider_mapping
     # and chef/platform/query_helpers
-
   end
 end

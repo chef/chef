@@ -24,7 +24,6 @@ require 'chef/search/query'
 
 class Chef
   class User
-
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
@@ -36,39 +35,39 @@ class Chef
       @admin = false
     end
 
-    def name(arg=nil)
+    def name(arg = nil)
       set_or_return(:name, arg,
-                    :regex => /^[a-z0-9\-_]+$/)
+                    regex: /^[a-z0-9\-_]+$/)
     end
 
-    def admin(arg=nil)
+    def admin(arg = nil)
       set_or_return(:admin,
-                    arg, :kind_of => [TrueClass, FalseClass])
+                    arg, kind_of: [TrueClass, FalseClass])
     end
 
-    def public_key(arg=nil)
+    def public_key(arg = nil)
       set_or_return(:public_key,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
-    def private_key(arg=nil)
+    def private_key(arg = nil)
       set_or_return(:private_key,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
-    def password(arg=nil)
+    def password(arg = nil)
       set_or_return(:password,
-                    arg, :kind_of => String)
+                    arg, kind_of: String)
     end
 
     def to_hash
       result = {
-        "name" => @name,
-        "public_key" => @public_key,
-        "admin" => @admin
+        'name' => @name,
+        'public_key' => @public_key,
+        'admin' => @admin
       }
-      result["private_key"] = @private_key if @private_key
-      result["password"] = @password if @password
+      result['private_key'] = @private_key if @private_key
+      result['password'] = @password if @password
       result
     end
 
@@ -81,36 +80,34 @@ class Chef
     end
 
     def create
-      payload = {:name => self.name, :admin => self.admin, :password => self.password }
+      payload = { name: name, admin: admin, password: password }
       payload[:public_key] = public_key if public_key
-      new_user =Chef::REST.new(Chef::Config[:chef_server_url]).post_rest("users", payload)
-      Chef::User.from_hash(self.to_hash.merge(new_user))
+      new_user = Chef::REST.new(Chef::Config[:chef_server_url]).post_rest('users', payload)
+      Chef::User.from_hash(to_hash.merge(new_user))
     end
 
-    def update(new_key=false)
-      payload = {:name => name, :admin => admin}
+    def update(new_key = false)
+      payload = { name: name, admin: admin }
       payload[:private_key] = new_key if new_key
       payload[:password] = password if password
       updated_user = Chef::REST.new(Chef::Config[:chef_server_url]).put_rest("users/#{name}", payload)
-      Chef::User.from_hash(self.to_hash.merge(updated_user))
+      Chef::User.from_hash(to_hash.merge(updated_user))
     end
 
-    def save(new_key=false)
-      begin
-        create
-      rescue Net::HTTPServerException => e
-        if e.response.code == "409"
-          update(new_key)
-        else
-          raise e
-        end
+    def save(new_key = false)
+      create
+    rescue Net::HTTPServerException => e
+      if e.response.code == '409'
+        update(new_key)
+      else
+        raise e
       end
     end
 
     def reregister
       r = Chef::REST.new(Chef::Config[:chef_server_url])
-      reregistered_self = r.put_rest("users/#{name}", { :name => name, :admin => admin, :private_key => true })
-      private_key(reregistered_self["private_key"])
+      reregistered_self = r.put_rest("users/#{name}",  name: name, admin: admin, private_key: true)
+      private_key(reregistered_self['private_key'])
       self
     end
 
@@ -119,7 +116,7 @@ class Chef
     end
 
     def inspect
-      "Chef::User name:'#{name}' admin:'#{admin.inspect}'" +
+      "Chef::User name:'#{name}' admin:'#{admin.inspect}'" \
       "public_key:'#{public_key}' private_key:#{private_key}"
     end
 
@@ -143,15 +140,15 @@ class Chef
       alias_method :json_create, :from_json
     end
 
-    def self.list(inflate=false)
+    def self.list(inflate = false)
       response = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest('users')
       users = if response.is_a?(Array)
-        transform_ohc_list_response(response) # OHC/OPC
+                transform_ohc_list_response(response) # OHC/OPC
       else
         response # OSC
       end
       if inflate
-        users.inject({}) do |user_map, (name, _url)|
+        users.reduce({}) do |user_map, (name, _url)|
           user_map[name] = Chef::User.load(name)
           user_map
         end
@@ -172,7 +169,7 @@ class Chef
     # into the form
     # { "USERNAME" => "URI" }
     def self.transform_ohc_list_response(response)
-      new_response = Hash.new
+      new_response = {}
       response.each do |u|
         name = u['user']['username']
         new_response[name] = Chef::Config[:chef_server_url] + "/users/#{name}"

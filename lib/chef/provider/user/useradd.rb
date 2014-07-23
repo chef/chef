@@ -24,13 +24,12 @@ class Chef
   class Provider
     class User
       class Useradd < Chef::Provider::User
-
         include Chef::Mixin::ShellOut
 
-        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:password, "-p"], [:shell, "-s"], [:uid, "-u"]]
+        UNIVERSAL_OPTIONS = [[:comment, '-c'], [:gid, '-g'], [:password, '-p'], [:shell, '-s'], [:uid, '-u']]
 
         def create_user
-          command = compile_command("useradd") do |useradd|
+          command = compile_command('useradd') do |useradd|
             useradd.concat(universal_options)
             useradd.concat(useradd_options)
           end
@@ -39,7 +38,7 @@ class Chef
 
         def manage_user
           unless universal_options.empty?
-            command = compile_command("usermod") do |u|
+            command = compile_command('usermod') do |u|
               u.concat(universal_options)
             end
             shell_out!(*command)
@@ -47,8 +46,8 @@ class Chef
         end
 
         def remove_user
-          command = [ "userdel" ]
-          command << "-r" if managing_home_dir?
+          command = ['userdel']
+          command << '-r' if managing_home_dir?
           command << new_resource.username
           shell_out!(*command)
         end
@@ -56,13 +55,13 @@ class Chef
         def check_lock
           # we can get an exit code of 1 even when it's successful on
           # rhel/centos (redhat bug 578534). See additional error checks below.
-          passwd_s = shell_out!("passwd", "-S", new_resource.username, :returns => [0,1])
+          passwd_s = shell_out!('passwd', '-S', new_resource.username, returns: [0, 1])
           if whyrun_mode? && passwd_s.stdout.empty? && passwd_s.stderr.match(/does not exist/)
             # if we're in whyrun mode and the user is not yet created we assume it would be
             return false
           end
 
-          raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!" if passwd_s.stdout.empty?
+          fail Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!" if passwd_s.stdout.empty?
 
           status_line = passwd_s.stdout.split(' ')
           case status_line[1]
@@ -76,7 +75,7 @@ class Chef
 
           unless passwd_s.exitstatus == 0
             raise_lock_error = false
-            if ['redhat', 'centos'].include?(node[:platform])
+            if %w(redhat centos).include?(node[:platform])
               passwd_version_check = shell_out!('rpm -q passwd')
               passwd_version = passwd_version_check.stdout.chomp
 
@@ -87,18 +86,18 @@ class Chef
               raise_lock_error = true
             end
 
-            raise Chef::Exceptions::User, "Cannot determine if #{new_resource} is locked!" if raise_lock_error
+            fail Chef::Exceptions::User, "Cannot determine if #{new_resource} is locked!" if raise_lock_error
           end
 
           @locked
         end
 
         def lock_user
-          shell_out!("usermod", "-L", new_resource.username)
+          shell_out!('usermod', '-L', new_resource.username)
         end
 
         def unlock_user
-          shell_out!("usermod", "-U", new_resource.username)
+          shell_out!('usermod', '-U', new_resource.username)
         end
 
         def compile_command(base_command)
@@ -119,13 +118,13 @@ class Chef
               if updating_home?
                 if managing_home_dir?
                   Chef::Log.debug("#{new_resource} managing the users home directory")
-                  opts << "-d" << new_resource.home << "-m"
+                  opts << '-d' << new_resource.home << '-m'
                 else
                   Chef::Log.debug("#{new_resource} setting home to #{new_resource.home}")
-                  opts << "-d" << new_resource.home
+                  opts << '-d' << new_resource.home
                 end
               end
-              opts << "-o" if new_resource.non_unique || new_resource.supports[:non_unique]
+              opts << '-o' if new_resource.non_unique || new_resource.supports[:non_unique]
               opts
             end
         end
@@ -141,7 +140,7 @@ class Chef
 
         def useradd_options
           opts = []
-          opts << "-r" if new_resource.system
+          opts << '-r' if new_resource.system
           opts
         end
 
@@ -151,13 +150,12 @@ class Chef
           # ::File.expand_path("///tmp") == ::File.expand_path("/tmp") => false
           # ::File.expand_path("\\tmp") => "C:/tmp"
           return true if @current_resource.home.nil? && new_resource.home
-          new_resource.home and Pathname.new(@current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
+          new_resource.home && Pathname.new(@current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
         end
 
         def managing_home_dir?
           new_resource.manage_home || new_resource.supports[:manage_home]
         end
-
       end
     end
   end

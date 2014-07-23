@@ -82,7 +82,7 @@ if Net::SSH::Multi::Version::STRING == "1.1.0" || Net::SSH::Multi::Version::STRI
               # subclass of Exception, after all--but without explicitly rescuing
               # StandardError, things like Errno::* and SocketError don't get caught
               # here!
-            rescue Exception, StandardError => e
+            rescue, StandardError => e
               server.fail!
               @session_mutex.synchronize { @open_connections -= 1 }
 

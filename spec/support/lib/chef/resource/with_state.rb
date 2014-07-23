@@ -24,14 +24,12 @@ class Chef
     class WithState < Chef::Resource
       attr_accessor :state
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         @resource_name = :with_state
         super
       end
 
-      def state
-        @state
-      end
+      attr_reader :state
     end
   end
 end

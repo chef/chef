@@ -20,38 +20,38 @@ require 'spec_helper'
 
 describe Chef::Knife::NodeList do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name]  = 'webmonkey.example.com'
     Chef::Config[:environment] = nil # reset this value each time, as it is not reloaded
     @knife = Chef::Knife::NodeList.new
     @knife.stub(:output).and_return(true)
     @list = {
-      "foo" => "http://example.com/foo",
-      "bar" => "http://example.com/foo"
+      'foo' => 'http://example.com/foo',
+      'bar' => 'http://example.com/foo'
     }
     Chef::Node.stub(:list).and_return(@list)
     Chef::Node.stub(:list_by_environment).and_return(@list)
   end
 
-  describe "run" do
-    it "should list all of the nodes if -E is not specified" do
+  describe 'run' do
+    it 'should list all of the nodes if -E is not specified' do
       Chef::Node.should_receive(:list).and_return(@list)
       @knife.run
     end
 
-    it "should pretty print the list" do
+    it 'should pretty print the list' do
       Chef::Node.should_receive(:list).and_return(@list)
-      @knife.should_receive(:output).with([ "bar", "foo" ])
+      @knife.should_receive(:output).with(%w(bar foo))
       @knife.run
     end
 
-    it "should list nodes in the specific environment if -E ENVIRONMENT is specified" do
-      Chef::Config[:environment] = "prod"
-      Chef::Node.should_receive(:list_by_environment).with("prod").and_return(@list)
+    it 'should list nodes in the specific environment if -E ENVIRONMENT is specified' do
+      Chef::Config[:environment] = 'prod'
+      Chef::Node.should_receive(:list_by_environment).with('prod').and_return(@list)
       @knife.run
     end
 
-    describe "with -w or --with-uri" do
-      it "should pretty print the hash" do
+    describe 'with -w or --with-uri' do
+      it 'should pretty print the hash' do
         @knife.config[:with_uri] = true
         Chef::Node.should_receive(:list).and_return(@list)
         @knife.should_receive(:output).with(@list)
@@ -60,4 +60,3 @@ describe Chef::Knife::NodeList do
     end
   end
 end
-

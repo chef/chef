@@ -28,27 +28,27 @@ describe Chef::Mixin::XMLEscape do
   end
 
   it "escapes ampersands to '&amp;'" do
-    @escaper.xml_escape("&").should == "&amp;"
+    @escaper.xml_escape('&').should == '&amp;'
   end
 
-  it "escapes angle brackets to &lt; or &gt;" do
-    @escaper.xml_escape("<").should == "&lt;"
-    @escaper.xml_escape(">").should == "&gt;"
+  it 'escapes angle brackets to &lt; or &gt;' do
+    @escaper.xml_escape('<').should == '&lt;'
+    @escaper.xml_escape('>').should == '&gt;'
   end
 
-  it "does not modify ASCII strings" do
+  it 'does not modify ASCII strings' do
     @escaper.xml_escape('foobarbaz!@#$%^*()').should == 'foobarbaz!@#$%^*()'
   end
 
-  it "converts invalid bytes to asterisks" do
-    @escaper.xml_escape("\x00").should == "*"
+  it 'converts invalid bytes to asterisks' do
+    @escaper.xml_escape("\x00").should == '*'
   end
 
-  it "converts UTF-8 correctly" do
+  it 'converts UTF-8 correctly' do
     @escaper.xml_escape("\xC2\xA9").should == '&#169;'
   end
 
-  it "converts win 1252 characters correctly" do
+  it 'converts win 1252 characters correctly' do
     @escaper.xml_escape("\x80").should == '&#8364;'
   end
 end

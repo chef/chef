@@ -19,36 +19,36 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::ChefGem, "initialize" do
+describe Chef::Resource::ChefGem, 'initialize' do
 
   before(:each) do
-    @resource = Chef::Resource::ChefGem.new("foo")
+    @resource = Chef::Resource::ChefGem.new('foo')
   end
 
-  it "should return a Chef::Resource::ChefGem" do
+  it 'should return a Chef::Resource::ChefGem' do
     @resource.should be_a_kind_of(Chef::Resource::ChefGem)
   end
 
-  it "should set the resource_name to :chef_gem" do
+  it 'should set the resource_name to :chef_gem' do
     @resource.resource_name.should eql(:chef_gem)
   end
 
-  it "should set the provider to Chef::Provider::Package::Rubygems" do
+  it 'should set the provider to Chef::Provider::Package::Rubygems' do
     @resource.provider.should eql(Chef::Provider::Package::Rubygems)
   end
 end
 
-describe Chef::Resource::ChefGem, "gem_binary" do
+describe Chef::Resource::ChefGem, 'gem_binary' do
   before(:each) do
-    expect(RbConfig::CONFIG).to receive(:[]).with('bindir').and_return("/opt/chef/embedded/bin")
-    @resource = Chef::Resource::ChefGem.new("foo")
+    expect(RbConfig::CONFIG).to receive(:[]).with('bindir').and_return('/opt/chef/embedded/bin')
+    @resource = Chef::Resource::ChefGem.new('foo')
   end
 
-  it "should raise an exception when gem_binary is set" do
-    lambda { @resource.gem_binary("/lol/cats/gem") }.should raise_error(ArgumentError)
+  it 'should raise an exception when gem_binary is set' do
+    lambda { @resource.gem_binary('/lol/cats/gem') }.should raise_error(ArgumentError)
   end
 
-  it "should set the gem_binary based on computing it from RbConfig" do
-    expect(@resource.gem_binary).to eql("/opt/chef/embedded/bin/gem")
+  it 'should set the gem_binary based on computing it from RbConfig' do
+    expect(@resource.gem_binary).to eql('/opt/chef/embedded/bin/gem')
   end
 end

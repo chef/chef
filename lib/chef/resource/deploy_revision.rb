@@ -18,7 +18,6 @@
 
 class Chef
   class Resource
-
     # Convenience class for using the deploy resource with the revision
     # deployment strategy (provider)
     class DeployRevision < Chef::Resource::Deploy
@@ -35,6 +34,5 @@ class Chef
         @resource_name = :deploy_branch
       end
     end
-
   end
 end

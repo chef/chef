@@ -18,21 +18,21 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::PacmanPackage, "initialize" do
+describe Chef::Resource::PacmanPackage, 'initialize' do
 
   before(:each) do
-    @resource = Chef::Resource::PacmanPackage.new("foo")
+    @resource = Chef::Resource::PacmanPackage.new('foo')
   end
 
-  it "should return a Chef::Resource::PacmanPackage" do
+  it 'should return a Chef::Resource::PacmanPackage' do
     @resource.should be_a_kind_of(Chef::Resource::PacmanPackage)
   end
 
-  it "should set the resource_name to :pacman_package" do
+  it 'should set the resource_name to :pacman_package' do
     @resource.resource_name.should eql(:pacman_package)
   end
 
-  it "should set the provider to Chef::Provider::Package::Pacman" do
+  it 'should set the provider to Chef::Provider::Package::Pacman' do
     @resource.provider.should eql(Chef::Provider::Package::Pacman)
   end
 end

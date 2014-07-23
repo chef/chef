@@ -22,19 +22,18 @@ class Chef
   class Provider
     class Group
       class Groupmod < Chef::Provider::Group
-
         include Chef::Mixin::ShellOut
 
         def load_current_resource
           super
-          [ "group", "user" ].each do |binary|
-            raise Chef::Exceptions::Group, "Could not find binary /usr/sbin/#{binary} for #{@new_resource}" unless ::File.exists?("/usr/sbin/#{binary}")
+          %w(group user).each do |binary|
+            fail Chef::Exceptions::Group, "Could not find binary /usr/sbin/#{binary} for #{@new_resource}" unless ::File.exist?("/usr/sbin/#{binary}")
           end
         end
 
         # Create the group
         def create_group
-          command = "group add"
+          command = 'group add'
           command << set_options
           shell_out!(command)
 
@@ -44,10 +43,10 @@ class Chef
         # Manage the group when it already exists
         def manage_group
           if @new_resource.append
-            members_to_be_added = [ ]
+            members_to_be_added = []
             if @new_resource.excluded_members && !@new_resource.excluded_members.empty?
               # First find out if any member needs to be removed
-              members_to_be_removed = [ ]
+              members_to_be_removed = []
               @new_resource.excluded_members.each do |member|
                 members_to_be_removed << member if @current_resource.members.include?(member)
               end
@@ -66,7 +65,7 @@ class Chef
 
             if @new_resource.members && !@new_resource.members.empty?
               @new_resource.members.each do |member|
-                members_to_be_added << member if !@current_resource.members.include?(member)
+                members_to_be_added << member unless @current_resource.members.include?(member)
               end
             end
 
@@ -88,7 +87,7 @@ class Chef
 
         # Adds a list of usernames to the group using `user mod`
         def add_group_members(members)
-          Chef::Log.debug("#{@new_resource} adding members #{members.join(', ')}") if !members.empty?
+          Chef::Log.debug("#{@new_resource} adding members #{members.join(', ')}") unless members.empty?
           members.each do |user|
             shell_out!("user mod -G #{@new_resource.group_name} #{user}")
           end
@@ -101,8 +100,8 @@ class Chef
           rename = "group mod -n #{@new_resource.group_name}_bak #{@new_resource.group_name}"
           shell_out!(rename)
 
-          create = "group add"
-          create << set_options(:overwrite_gid => true)
+          create = 'group add'
+          create << set_options(overwrite_gid: true)
           shell_out!(create)
 
           remove = "group del #{@new_resource.group_name}_bak"
@@ -113,13 +112,13 @@ class Chef
         #
         # ==== Returns
         # <string>:: A string containing the option and then the quoted value
-        def set_options(overwrite_gid=false)
-          opts = ""
+        def set_options(overwrite_gid = false)
+          opts = ''
           if overwrite_gid || @new_resource.gid && (@current_resource.gid != @new_resource.gid)
             opts << " -g '#{@new_resource.gid}'"
           end
           if overwrite_gid
-            opts << " -o"
+            opts << ' -o'
           end
           opts << " #{@new_resource.group_name}"
           opts

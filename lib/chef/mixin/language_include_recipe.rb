@@ -21,12 +21,9 @@ require 'chef/mixin/deprecation'
 
 class Chef
   module Mixin
-
     deprecate_constant(:LanguageIncludeRecipe, Chef::DSL::IncludeRecipe, <<-EOM)
 Chef::Mixin::LanguageIncludeRecipe is deprecated, use Chef::DSL::IncludeRecipe
 instead.
 EOM
-
   end
 end
-

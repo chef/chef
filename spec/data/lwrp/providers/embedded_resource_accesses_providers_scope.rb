@@ -5,7 +5,7 @@ attr_reader :enclosed_resource
 
 action :twiddle_thumbs do
   @enclosed_resource = lwrp_foo :foo do
-    monkey generate_new_name(new_resource.monkey){ 'the monkey' }
+    monkey generate_new_name(new_resource.monkey) { 'the monkey' }
     action :twiddle_thumbs
     provider :lwrp_monkey_name_printer
   end

@@ -30,30 +30,30 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
   let(:device_type) { :device }
 
-  let(:fstype) { "ufs" }
+  let(:fstype) { 'ufs' }
 
-  let(:device) { "/dev/dsk/c0t2d0s7" }
+  let(:device) { '/dev/dsk/c0t2d0s7' }
 
-  let(:mountpoint) { "/mnt/foo" }
+  let(:mountpoint) { '/mnt/foo' }
 
   let(:options) { nil }
 
-  let(:new_resource) {
+  let(:new_resource) do
     new_resource = Chef::Resource::Mount.new(mountpoint)
-    new_resource.device      device
+    new_resource.device device
     new_resource.device_type device_type
-    new_resource.fstype      fstype
-    new_resource.options     options
+    new_resource.fstype fstype
+    new_resource.options options
 
-    new_resource.supports :remount => false
+    new_resource.supports remount: false
     new_resource
-  }
+  end
 
-  let(:provider) {
+  let(:provider) do
     Chef::Provider::Mount::Solaris.new(new_resource, run_context)
-  }
+  end
 
-  let(:vfstab_file_contents) {
+  let(:vfstab_file_contents) do
     <<-EOF.gsub /^\s*/, ''
     #device         device          mount           FS      fsck    mount   mount
     #to mount       to fsck         point           type    pass    at boot options
@@ -71,25 +71,25 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     # ufs
     /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
     EOF
-  }
+  end
 
-  let(:vfstab_file) {
-    t = Tempfile.new("rspec-vfstab")
+  let(:vfstab_file) do
+    t = Tempfile.new('rspec-vfstab')
     t.write(vfstab_file_contents)
     t.close
     t
-  }
+  end
 
-  let(:mount_output) {
+  let(:mount_output) do
     <<-EOF.gsub /^\s*/, ''
     /dev/dsk/c0t0d0s0 on / type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200000 on Tue Jul 31 22:34:46 2012
     /dev/dsk/c0t2d0s7 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
     EOF
-  }
+  end
 
   before do
-    stub_const("Chef::Provider::Mount::Solaris::VFSTAB", vfstab_file.path )
-    provider.stub(:shell_out!).with("mount -v").and_return(OpenStruct.new(:stdout => mount_output))
+    stub_const('Chef::Provider::Mount::Solaris::VFSTAB', vfstab_file.path)
+    provider.stub(:shell_out!).with('mount -v').and_return(OpenStruct.new(stdout: mount_output))
     File.stub(:symlink?).with(device).and_return(false)
     File.stub(:exist?).and_call_original # Tempfile.open on ruby 1.8.7 calls File.exist?
     File.stub(:exist?).with(device).and_return(true)
@@ -97,46 +97,46 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     expect(File).to_not receive(:exists?)
   end
 
-  describe "#define_resource_requirements" do
+  describe '#define_resource_requirements' do
     before do
       # we're not testing the actual actions so stub them all out
-      [:mount_fs, :umount_fs, :remount_fs, :enable_fs, :disable_fs].each {|m| provider.stub(m) }
+      [:mount_fs, :umount_fs, :remount_fs, :enable_fs, :disable_fs].each { |m| provider.stub(m) }
     end
 
-    it "run_action(:mount) should raise an error if the device does not exist" do
+    it 'run_action(:mount) should raise an error if the device does not exist' do
       File.stub(:exist?).with(device).and_return(false)
       expect { provider.run_action(:mount) }.to raise_error(Chef::Exceptions::Mount)
     end
 
-    it "run_action(:remount) should raise an error if the device does not exist" do
+    it 'run_action(:remount) should raise an error if the device does not exist' do
       File.stub(:exist?).with(device).and_return(false)
       expect { provider.run_action(:remount) }.to raise_error(Chef::Exceptions::Mount)
     end
 
-    it "run_action(:mount) should raise an error if the mountpoint does not exist" do
+    it 'run_action(:mount) should raise an error if the mountpoint does not exist' do
       File.stub(:exist?).with(mountpoint).and_return false
       expect { provider.run_action(:mount) }.to raise_error(Chef::Exceptions::Mount)
     end
 
-    it "run_action(:remount) should raise an error if the mountpoint does not exist" do
+    it 'run_action(:remount) should raise an error if the mountpoint does not exist' do
       File.stub(:exist?).with(mountpoint).and_return false
       expect { provider.run_action(:remount) }.to raise_error(Chef::Exceptions::Mount)
     end
 
-    %w{tmpfs nfs ctfs proc mntfs objfs sharefs fd smbfs}.each do |ft|
+    %w(tmpfs nfs ctfs proc mntfs objfs sharefs fd smbfs).each do |ft|
       context "when the device has a fstype of #{ft}" do
         let(:fstype) { ft }
-        let(:device) { "something_that_is_not_a_file" }
+        let(:device) { 'something_that_is_not_a_file' }
 
         before do
           expect(File).to_not receive(:exist?).with(device)
         end
 
-        it "run_action(:mount) should not raise an error" do
+        it 'run_action(:mount) should not raise an error' do
           expect { provider.run_action(:mount) }.to_not raise_error
         end
 
-        it "run_action(:remount) should not raise an error" do
+        it 'run_action(:remount) should not raise an error' do
           expect { provider.run_action(:remount) }.to_not raise_error
         end
       end
@@ -144,342 +144,342 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
   end
 
-  describe "#load_current_resource" do
-    context "when loading a normal UFS filesystem" do
+  describe '#load_current_resource' do
+    context 'when loading a normal UFS filesystem' do
 
       before do
         provider.load_current_resource
       end
 
-      it "should create a current_resource of type Chef::Resource::Mount" do
+      it 'should create a current_resource of type Chef::Resource::Mount' do
         expect(provider.current_resource).to be_a(Chef::Resource::Mount)
       end
 
-      it "should set the name on the current_resource" do
+      it 'should set the name on the current_resource' do
         provider.current_resource.name.should == mountpoint
       end
 
-      it "should set the mount_point on the current_resource" do
+      it 'should set the mount_point on the current_resource' do
         provider.current_resource.mount_point.should == mountpoint
       end
 
-      it "should set the device on the current_resource" do
+      it 'should set the device on the current_resource' do
         provider.current_resource.device.should == device
       end
 
-      it "should set the device_type on the current_resource" do
+      it 'should set the device_type on the current_resource' do
         provider.current_resource.device_type.should == device_type
       end
 
-      it "should set the mounted status on the current_resource" do
+      it 'should set the mounted status on the current_resource' do
         expect(provider.current_resource.mounted).to be_true
       end
 
-      it "should set the enabled status on the current_resource" do
+      it 'should set the enabled status on the current_resource' do
         expect(provider.current_resource.enabled).to be_true
       end
 
-      it "should set the fstype field on the current_resource" do
-        expect(provider.current_resource.fstype).to eql("ufs")
+      it 'should set the fstype field on the current_resource' do
+        expect(provider.current_resource.fstype).to eql('ufs')
       end
 
-      it "should set the options field on the current_resource" do
-        expect(provider.current_resource.options).to eql(["-", "noauto"])
+      it 'should set the options field on the current_resource' do
+        expect(provider.current_resource.options).to eql(['-', 'noauto'])
       end
 
-      it "should set the pass field on the current_resource" do
+      it 'should set the pass field on the current_resource' do
         expect(provider.current_resource.pass).to eql(2)
       end
 
-      it "should not throw an exception when the device does not exist - CHEF-1565" do
+      it 'should not throw an exception when the device does not exist - CHEF-1565' do
         File.stub(:exist?).with(device).and_return(false)
         expect { provider.load_current_resource }.to_not raise_error
       end
 
-      it "should not throw an exception when the mount point does not exist" do
+      it 'should not throw an exception when the mount point does not exist' do
         File.stub(:exist?).with(mountpoint).and_return false
         expect { provider.load_current_resource }.to_not raise_error
       end
     end
 
-    context "when the device is an smbfs mount" do
-      let(:mount_output) {
+    context 'when the device is an smbfs mount' do
+      let(:mount_output) do
         <<-EOF.gsub /^\s*/, ''
         //solarsystem/tmp on /mnt type smbfs read/write/setuid/devices/dev=5080000 on Tue Mar 29 11:40:18 2011
         EOF
-      }
-      let(:vfstab_file_contents) {
+      end
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ''
         //WORKGROUP;username:password@host/share    -   /mountpoint smbfs   -   no  fileperms=0777,dirperms=0777
         EOF
-      }
+      end
 
-      it "should work at some point in the future" do
-        pending "SMBFS mounts on solaris look like they will need some future code work and more investigation"
+      it 'should work at some point in the future' do
+        pending 'SMBFS mounts on solaris look like they will need some future code work and more investigation'
       end
     end
 
-    context "when the device is an NFS mount" do
-      let(:mount_output) {
+    context 'when the device is an NFS mount' do
+      let(:mount_output) do
         <<-EOF.gsub /^\s*/, ''
         cartman:/share2 on /cartman type nfs rsize=32768,wsize=32768,NFSv4,dev=4000004 on Tue Mar 29 11:40:18 2011
         EOF
-      }
+      end
 
-      let(:vfstab_file_contents) {
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ''
         cartman:/share2         -                       /cartman        nfs     -       yes     rw,soft
         EOF
-      }
+      end
 
-      let(:fstype) { "nfs" }
+      let(:fstype) { 'nfs' }
 
-      let(:device) { "cartman:/share2" }
+      let(:device) { 'cartman:/share2' }
 
-      let(:mountpoint) { "/cartman" }
+      let(:mountpoint) { '/cartman' }
 
       before do
         provider.load_current_resource
       end
 
-      it "should set the name on the current_resource" do
+      it 'should set the name on the current_resource' do
         provider.current_resource.name.should == mountpoint
       end
 
-      it "should set the mount_point on the current_resource" do
+      it 'should set the mount_point on the current_resource' do
         provider.current_resource.mount_point.should == mountpoint
       end
 
-      it "should set the device on the current_resource" do
+      it 'should set the device on the current_resource' do
         provider.current_resource.device.should == device
       end
 
-      it "should set the device_type on the current_resource" do
+      it 'should set the device_type on the current_resource' do
         provider.current_resource.device_type.should == device_type
       end
 
-      it "should set the mounted status on the current_resource" do
+      it 'should set the mounted status on the current_resource' do
         expect(provider.current_resource.mounted).to be_true
       end
 
-      it "should set the enabled status on the current_resource" do
+      it 'should set the enabled status on the current_resource' do
         expect(provider.current_resource.enabled).to be_true
       end
 
-      it "should set the fstype field on the current_resource" do
-        expect(provider.current_resource.fstype).to eql("nfs")
+      it 'should set the fstype field on the current_resource' do
+        expect(provider.current_resource.fstype).to eql('nfs')
       end
 
-      it "should set the options field on the current_resource" do
-        expect(provider.current_resource.options).to eql(["rw", "soft", "noauto"])
+      it 'should set the options field on the current_resource' do
+        expect(provider.current_resource.options).to eql(%w(rw soft noauto))
       end
 
-      it "should set the pass field on the current_resource" do
+      it 'should set the pass field on the current_resource' do
         # is this correct or should it be nil?
         expect(provider.current_resource.pass).to eql(0)
       end
 
     end
 
-    context "when the device is symlink" do
+    context 'when the device is symlink' do
 
-      let(:target) { "/dev/mapper/target" }
+      let(:target) { '/dev/mapper/target' }
 
-      let(:mount_output) {
+      let(:mount_output) do
         <<-EOF.gsub /^\s*/, ''
         #{target} on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
         EOF
-      }
+      end
 
-      let(:vfstab_file_contents) {
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ''
         #{target}       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
         EOF
-      }
+      end
 
       before do
         File.should_receive(:symlink?).with(device).at_least(:once).and_return(true)
         File.should_receive(:readlink).with(device).at_least(:once).and_return(target)
 
-        provider.load_current_resource()
+        provider.load_current_resource
       end
 
-      it "should set mounted true if the symlink target of the device is found in the mounts list" do
+      it 'should set mounted true if the symlink target of the device is found in the mounts list' do
         expect(provider.current_resource.mounted).to be_true
       end
 
-      it "should set enabled true if the symlink target of the device is found in the vfstab" do
+      it 'should set enabled true if the symlink target of the device is found in the vfstab' do
         expect(provider.current_resource.enabled).to be_true
       end
 
-      it "should have the correct mount options" do
-        expect(provider.current_resource.options).to eql(["-", "noauto"])
+      it 'should have the correct mount options' do
+        expect(provider.current_resource.options).to eql(['-', 'noauto'])
       end
     end
 
-    context "when the device is a relative symlink" do
-      let(:target) { "foo" }
+    context 'when the device is a relative symlink' do
+      let(:target) { 'foo' }
 
       let(:absolute_target) { File.expand_path(target, File.dirname(device)) }
 
-      let(:mount_output) {
+      let(:mount_output) do
         <<-EOF.gsub /^\s*/, ''
         #{absolute_target} on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
         EOF
-      }
+      end
 
-      let(:vfstab_file_contents) {
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ''
         #{absolute_target}       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
         EOF
-      }
+      end
 
       before do
         File.should_receive(:symlink?).with(device).at_least(:once).and_return(true)
         File.should_receive(:readlink).with(device).at_least(:once).and_return(target)
 
-        provider.load_current_resource()
+        provider.load_current_resource
       end
 
-      it "should set mounted true if the symlink target of the device is found in the mounts list" do
+      it 'should set mounted true if the symlink target of the device is found in the mounts list' do
         expect(provider.current_resource.mounted).to be_true
       end
 
-      it "should set enabled true if the symlink target of the device is found in the vfstab" do
+      it 'should set enabled true if the symlink target of the device is found in the vfstab' do
         expect(provider.current_resource.enabled).to be_true
       end
 
-      it "should have the correct mount options" do
-        expect(provider.current_resource.options).to eql(["-", "noauto"])
+      it 'should have the correct mount options' do
+        expect(provider.current_resource.options).to eql(['-', 'noauto'])
       end
     end
 
-    context "when the matching mount point is last in the mounts list" do
-      let(:mount_output) {
+    context 'when the matching mount point is last in the mounts list' do
+      let(:mount_output) do
         <<-EOF.gsub /^\s*/, ''
         /dev/dsk/c0t0d0s0 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200000 on Tue Jul 31 22:34:46 2012
         /dev/dsk/c0t2d0s7 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
         EOF
-      }
-      it "should set mounted true" do
-        provider.load_current_resource()
+      end
+      it 'should set mounted true' do
+        provider.load_current_resource
         provider.current_resource.mounted.should be_true
       end
     end
 
-    context "when the matching mount point is not last in the mounts list" do
-      let(:mount_output) {
+    context 'when the matching mount point is not last in the mounts list' do
+      let(:mount_output) do
         <<-EOF.gsub /^\s*/, ''
         /dev/dsk/c0t2d0s7 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
         /dev/dsk/c0t0d0s0 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200000 on Tue Jul 31 22:34:46 2012
         EOF
-      }
-      it "should set mounted false" do
-        provider.load_current_resource()
+      end
+      it 'should set mounted false' do
+        provider.load_current_resource
         provider.current_resource.mounted.should be_false
       end
     end
 
-    context "when the matching mount point is not in the mounts list (mountpoint wrong)" do
-      let(:mount_output) {
+    context 'when the matching mount point is not in the mounts list (mountpoint wrong)' do
+      let(:mount_output) do
         <<-EOF.gsub /^\s*/, ''
         /dev/dsk/c0t2d0s7 on /mnt/foob type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
         EOF
-      }
-      it "should set mounted false" do
-        provider.load_current_resource()
+      end
+      it 'should set mounted false' do
+        provider.load_current_resource
         provider.current_resource.mounted.should be_false
       end
     end
 
-    context "when the matching mount point is not in the mounts list (raw device wrong)" do
-      let(:mount_output) {
+    context 'when the matching mount point is not in the mounts list (raw device wrong)' do
+      let(:mount_output) do
         <<-EOF.gsub /^\s*/, ''
         /dev/dsk/c0t2d0s72 on /mnt/foo type ufs read/write/setuid/intr/largefiles/xattr/onerror=panic/dev=2200007 on Tue Jul 31 22:34:46 2012
         EOF
-      }
-      it "should set mounted false" do
-        provider.load_current_resource()
+      end
+      it 'should set mounted false' do
+        provider.load_current_resource
         provider.current_resource.mounted.should be_false
       end
     end
 
-    context "when the mount point is last in fstab" do
-      let(:vfstab_file_contents) {
+    context 'when the mount point is last in fstab' do
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ''
         /dev/dsk/c0t2d0s72       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
         /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
         EOF
-      }
+      end
 
-      it "should set enabled to true" do
+      it 'should set enabled to true' do
         provider.load_current_resource
         provider.current_resource.enabled.should be_true
       end
     end
 
-    context "when the mount point is not last in fstab and is a substring of another mount" do
-      let(:vfstab_file_contents) {
+    context 'when the mount point is not last in fstab and is a substring of another mount' do
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ''
         /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
         /dev/dsk/c0t2d0s72       /dev/rdsk/c0t2d0s7      /mnt/foo/bar            ufs     2       yes     -
         EOF
-      }
+      end
 
-      it "should set enabled to true" do
+      it 'should set enabled to true' do
         provider.load_current_resource
         provider.current_resource.enabled.should be_true
       end
     end
 
-    context "when the mount point is not last in fstab" do
-      let(:vfstab_file_contents) {
+    context 'when the mount point is not last in fstab' do
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ''
         /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
         /dev/dsk/c0t2d0s72       /dev/rdsk/c0t2d0s72      /mnt/foo            ufs     2       yes     -
         EOF
-      }
+      end
 
-      it "should set enabled to false" do
+      it 'should set enabled to false' do
         provider.load_current_resource
         provider.current_resource.enabled.should be_false
       end
     end
 
-    context "when the mount point is not in fstab, but the mountpoint is a substring of one that is" do
-      let(:vfstab_file_contents) {
+    context 'when the mount point is not in fstab, but the mountpoint is a substring of one that is' do
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ''
         /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foob            ufs     2       yes     -
         EOF
-      }
+      end
 
-      it "should set enabled to false" do
+      it 'should set enabled to false' do
         provider.load_current_resource
         provider.current_resource.enabled.should be_false
       end
     end
 
-    context "when the mount point is not in fstab, but the device is a substring of one that is" do
-      let(:vfstab_file_contents) {
+    context 'when the mount point is not in fstab, but the device is a substring of one that is' do
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ''
         /dev/dsk/c0t2d0s72       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
         EOF
-      }
+      end
 
-      it "should set enabled to false" do
+      it 'should set enabled to false' do
         provider.load_current_resource
         provider.current_resource.enabled.should be_false
       end
     end
 
-    context "when the mountpoint line is commented out" do
-      let(:vfstab_file_contents) {
+    context 'when the mountpoint line is commented out' do
+      let(:vfstab_file_contents) do
         <<-EOF.gsub /^\s*/, ''
         #/dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -
         EOF
-      }
+      end
 
-      it "should set enabled to false" do
+      it 'should set enabled to false' do
         provider.load_current_resource
         provider.current_resource.enabled.should be_false
       end
@@ -487,160 +487,160 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
   end
 
   context "after the mount's state has been discovered" do
-    describe "mount_fs" do
-      it "should mount the filesystem" do
+    describe 'mount_fs' do
+      it 'should mount the filesystem' do
         provider.should_receive(:shell_out!).with("mount -F #{fstype} -o defaults #{device} #{mountpoint}")
-        provider.mount_fs()
+        provider.mount_fs
       end
 
-      it "should mount the filesystem with options if options were passed" do
-        options = "logging,noatime,largefiles,nosuid,rw,quota"
+      it 'should mount the filesystem with options if options were passed' do
+        options = 'logging,noatime,largefiles,nosuid,rw,quota'
         new_resource.options(options.split(/,/))
         provider.should_receive(:shell_out!).with("mount -F #{fstype} -o #{options} #{device} #{mountpoint}")
-        provider.mount_fs()
+        provider.mount_fs
       end
 
       it "should delete the 'noauto' magic option" do
-        options = "rw,noauto"
-        new_resource.options(%w{rw noauto})
+        options = 'rw,noauto'
+        new_resource.options(%w(rw noauto))
         provider.should_receive(:shell_out!).with("mount -F #{fstype} -o rw #{device} #{mountpoint}")
-        provider.mount_fs()
+        provider.mount_fs
       end
     end
 
-    describe "umount_fs" do
-      it "should umount the filesystem if it is mounted" do
+    describe 'umount_fs' do
+      it 'should umount the filesystem if it is mounted' do
         provider.should_receive(:shell_out!).with("umount #{mountpoint}")
-        provider.umount_fs()
+        provider.umount_fs
       end
     end
 
-    describe "remount_fs" do
-      it "should use mount -o remount" do
+    describe 'remount_fs' do
+      it 'should use mount -o remount' do
         provider.should_receive(:shell_out!).with("mount -o remount #{new_resource.mount_point}")
         provider.remount_fs
       end
     end
 
-    describe "when enabling the fs" do
-      context "in the typical case" do
-        let(:other_mount) { "/dev/dsk/c0t2d0s0       /dev/rdsk/c0t2d0s0      /            ufs     2       yes     -" }
+    describe 'when enabling the fs' do
+      context 'in the typical case' do
+        let(:other_mount) { '/dev/dsk/c0t2d0s0       /dev/rdsk/c0t2d0s0      /            ufs     2       yes     -' }
 
         let(:this_mount) { "/dev/dsk/c0t2d0s7\t-\t/mnt/foo\tufs\t2\tyes\tdefaults\n" }
 
         let(:vfstab_file_contents) { [other_mount].join("\n") }
 
         before do
-          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          provider.stub(:etc_tempfile).and_yield(Tempfile.open('vfstab'))
           provider.load_current_resource
           provider.enable_fs
         end
 
-        it "should leave the other mountpoint alone" do
+        it 'should leave the other mountpoint alone' do
           IO.read(vfstab_file.path).should match(/^#{Regexp.escape(other_mount)}/)
         end
 
-        it "should enable the mountpoint we care about" do
+        it 'should enable the mountpoint we care about' do
           IO.read(vfstab_file.path).should match(/^#{Regexp.escape(this_mount)}/)
         end
       end
 
-      context "when the mount has options=noauto" do
-        let(:other_mount) { "/dev/dsk/c0t2d0s0       /dev/rdsk/c0t2d0s0      /            ufs     2       yes     -" }
+      context 'when the mount has options=noauto' do
+        let(:other_mount) { '/dev/dsk/c0t2d0s0       /dev/rdsk/c0t2d0s0      /            ufs     2       yes     -' }
 
         let(:this_mount) { "/dev/dsk/c0t2d0s7\t-\t/mnt/foo\tufs\t2\tno\t-\n" }
 
-        let(:options) { [ "noauto" ] }
+        let(:options) { ['noauto'] }
 
         let(:vfstab_file_contents) { [other_mount].join("\n") }
 
         before do
-          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          provider.stub(:etc_tempfile).and_yield(Tempfile.open('vfstab'))
           provider.load_current_resource
           provider.enable_fs
         end
 
-        it "should leave the other mountpoint alone" do
+        it 'should leave the other mountpoint alone' do
           IO.read(vfstab_file.path).should match(/^#{Regexp.escape(other_mount)}/)
         end
 
-        it "should enable the mountpoint we care about" do
+        it 'should enable the mountpoint we care about' do
           IO.read(vfstab_file.path).should match(/^#{Regexp.escape(this_mount)}/)
         end
       end
     end
 
-    describe "when disabling the fs" do
-      context "in the typical case" do
-        let(:other_mount) { "/dev/dsk/c0t2d0s0       /dev/rdsk/c0t2d0s0      /            ufs     2       yes     -" }
+    describe 'when disabling the fs' do
+      context 'in the typical case' do
+        let(:other_mount) { '/dev/dsk/c0t2d0s0       /dev/rdsk/c0t2d0s0      /            ufs     2       yes     -' }
 
-        let(:this_mount) { "/dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -" }
+        let(:this_mount) { '/dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -' }
 
         let(:vfstab_file_contents) { [other_mount, this_mount].join("\n") }
 
         before do
-          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          provider.stub(:etc_tempfile).and_yield(Tempfile.open('vfstab'))
           provider.disable_fs
         end
 
-        it "should leave the other mountpoint alone" do
+        it 'should leave the other mountpoint alone' do
           IO.read(vfstab_file.path).should match(/^#{Regexp.escape(other_mount)}/)
         end
 
-        it "should disable the mountpoint we care about" do
+        it 'should disable the mountpoint we care about' do
           IO.read(vfstab_file.path).should_not match(/^#{Regexp.escape(this_mount)}/)
         end
       end
 
-      context "when there is a commented out line" do
-        let(:other_mount) { "/dev/dsk/c0t2d0s0       /dev/rdsk/c0t2d0s0      /            ufs     2       yes     -" }
+      context 'when there is a commented out line' do
+        let(:other_mount) { '/dev/dsk/c0t2d0s0       /dev/rdsk/c0t2d0s0      /            ufs     2       yes     -' }
 
-        let(:this_mount) { "/dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -" }
+        let(:this_mount) { '/dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -' }
 
-        let(:comment) { "#/dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -" }
+        let(:comment) { '#/dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -' }
 
         let(:vfstab_file_contents) { [other_mount, this_mount, comment].join("\n") }
 
         before do
-          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          provider.stub(:etc_tempfile).and_yield(Tempfile.open('vfstab'))
           provider.disable_fs
         end
 
-        it "should leave the other mountpoint alone" do
+        it 'should leave the other mountpoint alone' do
           IO.read(vfstab_file.path).should match(/^#{Regexp.escape(other_mount)}/)
         end
 
-        it "should disable the mountpoint we care about" do
+        it 'should disable the mountpoint we care about' do
           IO.read(vfstab_file.path).should_not match(/^#{Regexp.escape(this_mount)}/)
         end
 
-        it "should keep the comment" do
+        it 'should keep the comment' do
           IO.read(vfstab_file.path).should match(/^#{Regexp.escape(comment)}/)
         end
       end
 
-      context "when there is a duplicated line" do
-        let(:other_mount) { "/dev/dsk/c0t2d0s0       /dev/rdsk/c0t2d0s0      /            ufs     2       yes     -" }
+      context 'when there is a duplicated line' do
+        let(:other_mount) { '/dev/dsk/c0t2d0s0       /dev/rdsk/c0t2d0s0      /            ufs     2       yes     -' }
 
-        let(:this_mount) { "/dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -" }
+        let(:this_mount) { '/dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       yes     -' }
 
         let(:vfstab_file_contents) { [this_mount, other_mount, this_mount].join("\n") }
 
         before do
-          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          provider.stub(:etc_tempfile).and_yield(Tempfile.open('vfstab'))
           provider.disable_fs
         end
 
-        it "should leave the other mountpoint alone" do
+        it 'should leave the other mountpoint alone' do
           IO.read(vfstab_file.path).should match(/^#{Regexp.escape(other_mount)}/)
         end
 
-        it "should still match the duplicated mountpoint" do
+        it 'should still match the duplicated mountpoint' do
           IO.read(vfstab_file.path).should match(/^#{Regexp.escape(this_mount)}/)
         end
 
-        it "should have removed the last line" do
-          IO.read(vfstab_file.path).should eql( "#{this_mount}\n#{other_mount}\n" )
+        it 'should have removed the last line' do
+          IO.read(vfstab_file.path).should eql("#{this_mount}\n#{other_mount}\n")
         end
       end
     end

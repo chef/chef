@@ -25,7 +25,6 @@ require 'chef/exceptions'
 require 'timeout'
 
 class Chef
-
   # == Chef::RunLock
   # Provides an interface for acquiring and releasing a system-wide exclusive
   # lock.
@@ -63,7 +62,7 @@ class Chef
     def acquire
       if timeout_given?
         begin
-          Timeout::timeout(time_to_wait) do
+          Timeout.timeout(time_to_wait) do
             unless test
               if time_to_wait > 0.0
                 wait
@@ -89,7 +88,7 @@ class Chef
     def test
       # ensure the runlock_file path exists
       create_path(File.dirname(runlock_file))
-      @runlock = File.open(runlock_file,'a+')
+      @runlock = File.open(runlock_file, 'a+')
 
       if Chef::Platform.windows?
         acquire_win32_mutex
@@ -102,7 +101,7 @@ class Chef
         end
         # Flock will return 0 if it can acquire the lock otherwise it
         # will return false
-        if runlock.flock(File::LOCK_NB|File::LOCK_EX) == 0
+        if runlock.flock(File::LOCK_NB | File::LOCK_EX) == 0
           true
         else
           false
@@ -163,7 +162,7 @@ class Chef
     # Mutex name is case-sensitive contrary to other things in
     # windows. "\" is the only invalid character.
     def acquire_win32_mutex
-      @mutex = Chef::ReservedNames::Win32::Mutex.new("Global\\#{runlock_file.gsub(/[\\]/, "/").downcase}")
+      @mutex = Chef::ReservedNames::Win32::Mutex.new("Global\\#{runlock_file.gsub(/[\\]/, '/').downcase}")
       mutex.test
     end
 
@@ -182,7 +181,7 @@ class Chef
     def exit_from_timeout
       rp = runpid
       release # Just to be on the safe side...
-      raise Chef::Exceptions::RunLockTimeout.new(time_to_wait, rp)
+      fail Chef::Exceptions::RunLockTimeout.new(time_to_wait, rp)
     end
   end
 end

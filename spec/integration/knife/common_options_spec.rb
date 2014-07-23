@@ -22,7 +22,7 @@ describe 'knife common options' do
   extend IntegrationSupport
   include KnifeSupport
 
-  when_the_repository "has a node" do
+  when_the_repository 'has a node' do
     file 'nodes/x.json', {}
 
     before(:each) do
@@ -112,7 +112,7 @@ EOM
     context 'when the default port (8889) is already bound' do
       before :each do
         begin
-          @server = ChefZero::Server.new(:host => 'localhost', :port => 8889)
+          @server = ChefZero::Server.new(host: 'localhost', port: 8889)
           @server.start_background
         rescue Errno::EADDRINUSE
           # OK.  Don't care who has it in use, as long as *someone* does.
@@ -131,7 +131,7 @@ EOM
     context 'when port 9999 is already bound' do
       before :each do
         begin
-          @server = ChefZero::Server.new(:host => 'localhost', :port => 9999)
+          @server = ChefZero::Server.new(host: 'localhost', port: 9999)
           @server.start_background
         rescue Errno::EADDRINUSE
           # OK.  Don't care who has it in use, as long as *someone* does.
@@ -148,7 +148,7 @@ EOM
 
       it 'knife raw -z --chef-zero-port=9999-9999,19423' do
         knife('raw -z --chef-zero-port=9999-9999,19423 /nodes/x').should_succeed /"name": "x"/
-        expect(URI(Chef::Config.chef_server_url).port).to be == 19423
+        expect(URI(Chef::Config.chef_server_url).port).to be == 19_423
       end
     end
 

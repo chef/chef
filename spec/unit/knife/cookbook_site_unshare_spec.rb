@@ -55,14 +55,14 @@ describe Chef::Knife::CookbookSiteUnshare do
     end
 
     it 'should log an error and exit when forbidden' do
-      exception = double('403 "Forbidden"', :code => '403')
+      exception = double('403 "Forbidden"', code: '403')
       @rest.stub(:delete_rest).and_raise(Net::HTTPServerException.new('403 "Forbidden"', exception))
       @knife.ui.should_receive(:error)
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 
     it 'should re-raise any non-forbidden errors on delete_rest' do
-      exception = double('500 "Application Error"', :code => '500')
+      exception = double('500 "Application Error"', code: '500')
       @rest.stub(:delete_rest).and_raise(Net::HTTPServerException.new('500 "Application Error"', exception))
       lambda { @knife.run }.should raise_error(Net::HTTPServerException)
     end

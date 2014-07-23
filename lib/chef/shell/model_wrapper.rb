@@ -21,18 +21,17 @@ require 'chef/mixin/language'
 
 module Shell
   class ModelWrapper
-
     include Chef::Mixin::ConvertToClassName
 
     attr_reader :model_symbol
 
-    def initialize(model_class, symbol=nil)
+    def initialize(model_class, symbol = nil)
       @model_class = model_class
-      @model_symbol = symbol || convert_to_snake_case(model_class.name, "Chef").to_sym
+      @model_symbol = symbol || convert_to_snake_case(model_class.name, 'Chef').to_sym
     end
 
     def search(query)
-      return all if query.to_s == "all"
+      return all if query.to_s == 'all'
       results = []
       Chef::Search::Query.new.search(@model_symbol, format_query(query)) do |obj|
         if block_given?
@@ -44,22 +43,22 @@ module Shell
       results
     end
 
-    alias :find :search
+    alias_method :find, :search
 
     def all(&block)
       all_objects = list_objects
       block_given? ? all_objects.map(&block) : all_objects
     end
 
-    alias :list :all
+    alias_method :list, :all
 
     def show(obj_id)
       @model_class.load(obj_id)
     end
 
-    alias :load :show
+    alias_method :load, :show
 
-    def transform(what_to_transform, &block)
+    def transform(what_to_transform, &_block)
       if what_to_transform == :all
         objects_to_transform = list_objects
       else
@@ -72,20 +71,20 @@ module Shell
       end
     end
 
-    alias :bulk_edit :transform
+    alias_method :bulk_edit, :transform
 
     private
 
     # paper over inconsistencies in the model classes APIs, and return the objects
     # the user wanted instead of the URI=>object stuff
     def list_objects
-      objects = @model_class.method(:list).arity == 0? @model_class.list : @model_class.list(true)
-      objects.map { |obj| Array(obj).find {|o| o.kind_of?(@model_class)} }
+      objects = @model_class.method(:list).arity == 0 ? @model_class.list : @model_class.list(true)
+      objects.map { |obj| Array(obj).find { |o| o.is_a?(@model_class) } }
     end
 
     def format_query(query)
       if query.respond_to?(:keys)
-        query.map { |key, value| "#{key}:#{value}" }.join(" AND ")
+        query.map { |key, value| "#{key}:#{value}" }.join(' AND ')
       else
         query
       end
@@ -93,13 +92,11 @@ module Shell
   end
 
   class NamedDataBagWrapper < ModelWrapper
-
     def initialize(databag_name)
       @model_symbol = @databag_name = databag_name
     end
 
-
-    alias :list :all
+    alias_method :list, :all
 
     def show(item)
       Chef::DataBagItem.load(@databag_name, item)
@@ -114,7 +111,5 @@ module Shell
       end
       all_items
     end
-
   end
-
 end

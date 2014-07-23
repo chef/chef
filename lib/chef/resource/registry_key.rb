@@ -22,7 +22,6 @@ require 'chef/digester'
 class Chef
   class Resource
     class RegistryKey < Chef::Resource
-
       identity_attr :key
       state_attrs :values
 
@@ -57,7 +56,7 @@ class Chef
       # See lib/chef/resource_reporter.rb for more information.
       attr_reader :unscrubbed_values
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :registry_key
         @action = :create
@@ -68,33 +67,33 @@ class Chef
         @allowed_actions.push(:create, :create_if_missing, :delete, :delete_key)
       end
 
-      def key(arg=nil)
+      def key(arg = nil)
         set_or_return(
           :key,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def values(arg=nil)
+      def values(arg = nil)
         if not arg.nil?
           if arg.is_a?(Hash)
-            @values = [ arg ]
+            @values = [arg]
           elsif arg.is_a?(Array)
             @values = arg
           else
-            raise ArgumentError, "Bad type for RegistryKey resource, use Hash or Array"
+            fail ArgumentError, 'Bad type for RegistryKey resource, use Hash or Array'
           end
 
           @values.each do |v|
-            raise ArgumentError, "Missing name key in RegistryKey values hash" unless v.key?(:name)
-            raise ArgumentError, "Missing type key in RegistryKey values hash" unless v.key?(:type)
-            raise ArgumentError, "Missing data key in RegistryKey values hash" unless v.key?(:data)
+            fail ArgumentError, 'Missing name key in RegistryKey values hash' unless v.key?(:name)
+            fail ArgumentError, 'Missing type key in RegistryKey values hash' unless v.key?(:type)
+            fail ArgumentError, 'Missing data key in RegistryKey values hash' unless v.key?(:data)
             v.each_key do |key|
-              raise ArgumentError, "Bad key #{key} in RegistryKey values hash" unless [:name,:type,:data].include?(key)
+              fail ArgumentError, "Bad key #{key} in RegistryKey values hash" unless [:name, :type, :data].include?(key)
             end
-            raise ArgumentError, "Type of name => #{v[:name]} should be string" unless v[:name].is_a?(String)
-            raise Argument Error "Type of type => #{v[:name]} should be symbol" unless v[:type].is_a?(Symbol)
+            fail ArgumentError, "Type of name => #{v[:name]} should be string" unless v[:name].is_a?(String)
+            fail Argument Error "Type of type => #{v[:name]} should be symbol" unless v[:type].is_a?(Symbol)
           end
           @unscrubbed_values = @values
         elsif self.instance_variable_defined?(:@values)
@@ -102,19 +101,19 @@ class Chef
         end
       end
 
-      def recursive(arg=nil)
+      def recursive(arg = nil)
         set_or_return(
           :recursive,
           arg,
-          :kind_of => [TrueClass, FalseClass]
+          kind_of: [TrueClass, FalseClass]
         )
       end
 
-      def architecture(arg=nil)
+      def architecture(arg = nil)
         set_or_return(
           :architecture,
           arg,
-          :kind_of => Symbol
+          kind_of: Symbol
         )
       end
 
@@ -139,7 +138,6 @@ class Chef
         unsafe_types = [:binary, :dword, :dword_big_endian, :qword]
         unsafe_types.include?(value[:type])
       end
-
     end
   end
 end

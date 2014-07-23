@@ -1,2 +1,2 @@
-name "test"
-environment "prod"
+name 'test'
+environment 'prod'

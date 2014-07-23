@@ -23,12 +23,11 @@ require 'chef/win32/error' if RUBY_PLATFORM =~ /mswin|mingw|windows/
 class Chef
   class Resource
     class WindowsPackage < Chef::Resource::Package
+      provides :package, on_platforms: ['windows']
 
-      provides :package, :on_platforms => ["windows"]
-
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
-        @allowed_actions = [ :install, :remove ]
+        @allowed_actions = [:install, :remove]
         @provider = Chef::Provider::Package::Windows
         @resource_name = :windows_package
         @source ||= source(@package_name)
@@ -37,38 +36,38 @@ class Chef
         @installer_type = nil
         @timeout = 600
         # In the past we accepted return code 127 for an unknown reason and 42 because of a bug
-        @returns = [ 0 ]
+        @returns = [0]
       end
 
-      def installer_type(arg=nil)
+      def installer_type(arg = nil)
         set_or_return(
           :installer_type,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def timeout(arg=nil)
+      def timeout(arg = nil)
         set_or_return(
           :timeout,
           arg,
-          :kind_of => [ String, Integer ]
+          kind_of: [String, Integer]
         )
       end
 
-      def returns(arg=nil)
+      def returns(arg = nil)
         set_or_return(
           :returns,
           arg,
-          :kind_of => [ String, Integer, Array ]
+          kind_of: [String, Integer, Array]
         )
       end
 
-      def source(arg=nil)
-        if arg == nil && self.instance_variable_defined?(:@source) == true
+      def source(arg = nil)
+        if arg.nil? && self.instance_variable_defined?(:@source) == true
           @source
         else
-          raise ArgumentError, "Bad type for WindowsPackage resource, use a String" unless arg.is_a?(String)
+          fail ArgumentError, 'Bad type for WindowsPackage resource, use a String' unless arg.is_a?(String)
           Chef::Log.debug("#{package_name}: sanitizing source path '#{arg}'")
           @source = ::File.absolute_path(arg).gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)
         end
@@ -76,4 +75,3 @@ class Chef
     end
   end
 end
-

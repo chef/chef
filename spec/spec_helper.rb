@@ -31,24 +31,23 @@ module Shell
 end
 
 # Ruby 1.9 Compat
-$:.unshift File.expand_path("../..", __FILE__)
-
+$LOAD_PATH.unshift File.expand_path('../..', __FILE__)
 
 require 'rubygems'
 require 'rspec/mocks'
 
-$:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
-$:.unshift(File.expand_path("../lib", __FILE__))
-$:.unshift(File.dirname(__FILE__))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.expand_path('../lib', __FILE__))
+$LOAD_PATH.unshift(File.dirname(__FILE__))
 
-if ENV["COVERAGE"]
+if ENV['COVERAGE']
   require 'simplecov'
   SimpleCov.start do
-    add_filter "/spec/"
-    add_group "Remote File", "remote_file"
-    add_group "Resources", "/resource/"
-    add_group "Providers", "/provider/"
-    add_group "Knife", "knife"
+    add_filter '/spec/'
+    add_group 'Remote File', 'remote_file'
+    add_group 'Resources', '/resource/'
+    add_group 'Providers', '/provider/'
+    add_group 'Knife', 'knife'
   end
 end
 
@@ -56,9 +55,9 @@ require 'chef'
 require 'chef/knife'
 
 Dir['lib/chef/knife/**/*.rb'].
-  map {|f| f.gsub('lib/', '') }.
-  map {|f| f.gsub(%r[\.rb$], '') }.
-  each {|f| require f }
+  map { |f| f.gsub('lib/', '') }.
+  map { |f| f.gsub(%r{\.rb$}, '') }.
+  each { |f| require f }
 
 require 'chef/mixins'
 require 'chef/dsl'
@@ -72,7 +71,7 @@ require 'chef/config'
 
 # If you want to load anything into the testing environment
 # without versioning it, add it to spec/support/local_gems.rb
-require 'spec/support/local_gems.rb' if File.exists?(File.join(File.dirname(__FILE__), 'support', 'local_gems.rb'))
+require 'spec/support/local_gems.rb' if File.exist?(File.join(File.dirname(__FILE__), 'support', 'local_gems.rb'))
 
 # Explicitly require spec helpers that need to load first
 require 'spec/support/platform_helpers'
@@ -80,60 +79,60 @@ require 'spec/support/platform_helpers'
 # Autoloads support files
 # Excludes support/platforms by default
 # Do not change the gsub.
-Dir["spec/support/**/*.rb"].
+Dir['spec/support/**/*.rb'].
   reject { |f| f =~ %r{^spec/support/platforms} }.
   reject { |f| f =~ %r{^spec/support/pedant} }.
   map { |f| f.gsub(%r{.rb$}, '') }.
-  map { |f| f.gsub(%r[spec/], '')}.
+  map { |f| f.gsub(%r{spec/}, '') }.
   each { |f| require f }
 
 OHAI_SYSTEM = Ohai::System.new
-OHAI_SYSTEM.all_plugins("platform")
-TEST_PLATFORM = OHAI_SYSTEM["platform"].dup.freeze
-TEST_PLATFORM_VERSION = OHAI_SYSTEM["platform_version"].dup.freeze
+OHAI_SYSTEM.all_plugins('platform')
+TEST_PLATFORM = OHAI_SYSTEM['platform'].dup.freeze
+TEST_PLATFORM_VERSION = OHAI_SYSTEM['platform_version'].dup.freeze
 
 RSpec.configure do |config|
   config.include(Matchers)
-  config.filter_run :focus => true
-  config.filter_run_excluding :external => true
+  config.filter_run focus: true
+  config.filter_run_excluding external: true
 
   # Tests that randomly fail, but may have value.
-  config.filter_run_excluding :volatile => true
-  config.filter_run_excluding :volatile_on_solaris => true if solaris?
+  config.filter_run_excluding volatile: true
+  config.filter_run_excluding volatile_on_solaris: true if solaris?
 
   # Add jruby filters here
-  config.filter_run_excluding :windows_only => true unless windows?
-  config.filter_run_excluding :not_supported_on_mac_osx_106 => true if mac_osx_106?
-  config.filter_run_excluding :not_supported_on_win2k3 => true if windows_win2k3?
-  config.filter_run_excluding :not_supported_on_solaris => true if solaris?
-  config.filter_run_excluding :win2k3_only => true unless windows_win2k3?
-  config.filter_run_excluding :windows64_only => true unless windows64?
-  config.filter_run_excluding :windows32_only => true unless windows32?
-  config.filter_run_excluding :windows_domain_joined_only => true unless windows_domain_joined?
-  config.filter_run_excluding :solaris_only => true unless solaris?
-  config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
-  config.filter_run_excluding :unix_only => true unless unix?
-  config.filter_run_excluding :supports_cloexec => true unless supports_cloexec?
-  config.filter_run_excluding :selinux_only => true unless selinux_enabled?
-  config.filter_run_excluding :ruby_18_only => true unless ruby_18?
-  config.filter_run_excluding :ruby_19_only => true unless ruby_19?
-  config.filter_run_excluding :ruby_gte_19_only => true unless ruby_gte_19?
-  config.filter_run_excluding :ruby_20_only => true unless ruby_20?
-  config.filter_run_excluding :ruby_gte_20_only => true unless ruby_gte_20?
-  config.filter_run_excluding :requires_root => true unless root?
-  config.filter_run_excluding :requires_root_or_running_windows => true unless (root? || windows?)
-  config.filter_run_excluding :requires_unprivileged_user => true if root?
-  config.filter_run_excluding :uses_diff => true unless has_diff?
+  config.filter_run_excluding windows_only: true unless windows?
+  config.filter_run_excluding not_supported_on_mac_osx_106: true if mac_osx_106?
+  config.filter_run_excluding not_supported_on_win2k3: true if windows_win2k3?
+  config.filter_run_excluding not_supported_on_solaris: true if solaris?
+  config.filter_run_excluding win2k3_only: true unless windows_win2k3?
+  config.filter_run_excluding windows64_only: true unless windows64?
+  config.filter_run_excluding windows32_only: true unless windows32?
+  config.filter_run_excluding windows_domain_joined_only: true unless windows_domain_joined?
+  config.filter_run_excluding solaris_only: true unless solaris?
+  config.filter_run_excluding system_windows_service_gem_only: true unless system_windows_service_gem?
+  config.filter_run_excluding unix_only: true unless unix?
+  config.filter_run_excluding supports_cloexec: true unless supports_cloexec?
+  config.filter_run_excluding selinux_only: true unless selinux_enabled?
+  config.filter_run_excluding ruby_18_only: true unless ruby_18?
+  config.filter_run_excluding ruby_19_only: true unless ruby_19?
+  config.filter_run_excluding ruby_gte_19_only: true unless ruby_gte_19?
+  config.filter_run_excluding ruby_20_only: true unless ruby_20?
+  config.filter_run_excluding ruby_gte_20_only: true unless ruby_gte_20?
+  config.filter_run_excluding requires_root: true unless root?
+  config.filter_run_excluding requires_root_or_running_windows: true unless root? || windows?
+  config.filter_run_excluding requires_unprivileged_user: true if root?
+  config.filter_run_excluding uses_diff: true unless has_diff?
 
   running_platform_arch = `uname -m`.strip
 
-  config.filter_run_excluding :arch => lambda {|target_arch|
+  config.filter_run_excluding arch: lambda {|target_arch|
     running_platform_arch != target_arch
   }
 
   # Functional Resource tests that are provider-specific:
   # context "on platforms that use useradd", :provider => {:user => Chef::Provider::User::Useradd}} do #...
-  config.filter_run_excluding :provider => lambda {|criteria|
+  config.filter_run_excluding provider: lambda do|criteria|
     type, target_provider = criteria.first
 
     platform = TEST_PLATFORM.dup
@@ -145,7 +144,7 @@ RSpec.configure do |config|
     rescue ArgumentError # no provider for platform
       true
     end
-  }
+  end
 
   config.run_all_when_everything_filtered = true
   config.treat_symbols_as_metadata_keys_with_true_values = true
@@ -174,7 +173,7 @@ module WEBrick
   module Utils
     class TimeoutHandler
       def initialize
-        @timeout_info = Hash.new
+        @timeout_info = {}
       end
     end
   end

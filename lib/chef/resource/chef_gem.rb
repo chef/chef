@@ -22,20 +22,19 @@ require 'chef/resource/gem_package'
 class Chef
   class Resource
     class ChefGem < Chef::Resource::Package::GemPackage
+      provides :chef_gem, on_platforms: :all
 
-      provides :chef_gem, :on_platforms => :all
-
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :chef_gem
-        @gem_binary = RbConfig::CONFIG['bindir'] + "/gem"
+        @gem_binary = RbConfig::CONFIG['bindir'] + '/gem'
         @provider = Chef::Provider::Package::Rubygems
       end
 
       # The chef_gem resources is for installing gems to the current gem environment only for use by Chef cookbooks.
-      def gem_binary(arg=nil)
+      def gem_binary(arg = nil)
         if arg
-          raise ArgumentError, "The chef_gem resource is restricted to the current gem environment, use gem_package to install to other environments."
+          fail ArgumentError, 'The chef_gem resource is restricted to the current gem environment, use gem_package to install to other environments.'
         end
 
         @gem_binary
@@ -45,7 +44,7 @@ class Chef
         # Chef::Resource.run_action: Caveat: this skips Chef::Runner.run_action, where notifications are handled
         # Action could be an array of symbols, but probably won't (think install + enable for a package)
         Array(@action).each do |action|
-          self.run_action(action)
+          run_action(action)
         end
         Gem.clear_paths
       end

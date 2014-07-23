@@ -20,27 +20,25 @@ require 'chef/knife'
 
 class Chef
   class Knife
-
     class NodeEdit < Knife
-
       deps do
         require 'chef/node'
         require 'chef/json_compat'
         require 'chef/knife/core/node_editor'
       end
 
-      banner "knife node edit NODE (options)"
+      banner 'knife node edit NODE (options)'
 
       option :all_attributes,
-        :short => "-a",
-        :long => "--all",
-        :boolean => true,
-        :description => "Display all attributes when editing"
+             short: '-a',
+             long: '--all',
+             boolean: true,
+             description: 'Display all attributes when editing'
 
       def run
         if node_name.nil?
           show_usage
-          ui.fatal("You must specify a node name")
+          ui.fatal('You must specify a node name')
           exit 1
         end
 
@@ -49,7 +47,7 @@ class Chef
           ui.info "Saving updated #{updated_values.join(', ')} on node #{node.name}"
           updated_node.save
         else
-          ui.info "Node not updated, skipping node save"
+          ui.info 'Node not updated, skipping node save'
         end
       end
 
@@ -64,9 +62,6 @@ class Chef
       def node
         @node ||= Chef::Node.load(node_name)
       end
-
     end
   end
 end
-
-

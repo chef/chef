@@ -25,8 +25,7 @@ class Chef
   class Provider
     class User
       class Windows < Chef::Provider::User
-
-        def initialize(new_resource,run_context)
+        def initialize(new_resource, run_context)
           super
           @net_user = Chef::Util::Windows::NetUser.new(@new_resource.name)
         end
@@ -63,7 +62,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} password has changed")
             return true
           end
-          [ :uid, :gid, :comment, :home, :shell ].any? do |user_attrib|
+          [:uid, :gid, :comment, :home, :shell].any? do |user_attrib|
             !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib) != @current_resource.send(user_attrib)
           end
         end
@@ -93,7 +92,7 @@ class Chef
         end
 
         def set_options
-          opts = {:name => @new_resource.username}
+          opts = { name: @new_resource.username }
 
           field_list = {
             'comment' => 'full_name',
@@ -104,7 +103,7 @@ class Chef
             'password' => 'password'
           }
 
-          field_list.sort{ |a,b| a[0] <=> b[0] }.each do |field, option|
+          field_list.sort { |a, b| a[0] <=> b[0] }.each do |field, option|
             field_symbol = field.to_sym
             if @current_resource.send(field_symbol) != @new_resource.send(field_symbol)
               if @new_resource.send(field_symbol)
@@ -117,7 +116,6 @@ class Chef
           end
           opts
         end
-
       end
     end
   end

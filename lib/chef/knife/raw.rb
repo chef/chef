@@ -3,7 +3,7 @@ require 'chef/knife'
 class Chef
   class Knife
     class Raw < Chef::Knife
-      banner "knife raw REQUEST_PATH"
+      banner 'knife raw REQUEST_PATH'
 
       deps do
         require 'chef/json_compat'
@@ -16,21 +16,21 @@ class Chef
       end
 
       option :method,
-        :long => '--method METHOD',
-        :short => '-m METHOD',
-        :default => "GET",
-        :description => "Request method (GET, POST, PUT or DELETE).  Default: GET"
+             long: '--method METHOD',
+             short: '-m METHOD',
+             default: 'GET',
+             description: 'Request method (GET, POST, PUT or DELETE).  Default: GET'
 
       option :pretty,
-        :long => '--[no-]pretty',
-        :boolean => true,
-        :default => true,
-        :description => "Pretty-print JSON output.  Default: true"
+             long: '--[no-]pretty',
+             boolean: true,
+             default: true,
+             description: 'Pretty-print JSON output.  Default: true'
 
       option :input,
-        :long => '--input FILE',
-        :short => '-i FILE',
-        :description => "Name of file to use for PUT or POST"
+             long: '--input FILE',
+             short: '-i FILE',
+             description: 'Name of file to use for PUT or POST'
 
       class RawInputServerAPI < Chef::HTTP
         def initialize(options = {})
@@ -48,11 +48,11 @@ class Chef
       def run
         if name_args.length == 0
           show_usage
-          ui.fatal("You must provide the path you want to hit on the server")
+          ui.fatal('You must provide the path you want to hit on the server')
           exit(1)
         elsif name_args.length > 1
           show_usage
-          ui.fatal("Only one path accepted for knife raw")
+          ui.fatal('Only one path accepted for knife raw')
           exit(1)
         end
 
@@ -66,17 +66,17 @@ class Chef
 
           if config[:pretty]
             chef_rest = RawInputServerAPI.new
-            result = chef_rest.request(method, name_args[0], {'Content-Type' => 'application/json'}, data)
+            result = chef_rest.request(method, name_args[0], { 'Content-Type' => 'application/json' }, data)
             unless result.is_a?(String)
               result = Chef::JSONCompat.to_json_pretty(result)
             end
           else
-            chef_rest = RawInputServerAPI.new(:raw_output => true)
-            result = chef_rest.request(method, name_args[0], {'Content-Type' => 'application/json'}, data)
+            chef_rest = RawInputServerAPI.new(raw_output: true)
+            result = chef_rest.request(method, name_args[0], { 'Content-Type' => 'application/json' }, data)
           end
           output result
         rescue Timeout::Error => e
-          ui.error "Server timeout"
+          ui.error 'Server timeout'
           exit 1
         rescue Net::HTTPServerException => e
           ui.error "Server responded with error #{e.response.code} \"#{e.response.message}\""
@@ -84,8 +84,6 @@ class Chef
           exit 1
         end
       end
-
     end # class Raw
   end
 end
-

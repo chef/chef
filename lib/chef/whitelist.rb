@@ -3,7 +3,6 @@ require 'chef/exceptions'
 
 class Chef
   class Whitelist
-
     # filter takes two arguments - the data you want to filter, and a whitelisted array
     # of keys you want included. You can capture a subtree of the data to filter by
     # providing a "/"-delimited string of keys. If some key includes "/"-characters,
@@ -27,12 +26,12 @@ class Chef
     #   },
     #   ["network/interfaces/eth0", ["filesystem", "/dev/disk"]])
     # will capture the eth0 and /dev/disk subtrees.
-    def self.filter(data, whitelist=nil)
+    def self.filter(data, whitelist = nil)
       return data if whitelist.nil?
 
       new_data = {}
       whitelist.each do |item|
-        self.add_data(data, new_data, item)
+        add_data(data, new_data, item)
       end
       new_data
     end
@@ -42,7 +41,7 @@ class Chef
     # Walk the data has according to the keys provided by the whitelisted item
     # and add the data to the whitelisting result.
     def self.add_data(data, new_data, item)
-      parts = self.to_array(item)
+      parts = to_array(item)
 
       all_data = data
       filtered_data = new_data
@@ -71,12 +70,11 @@ class Chef
     # assumed to contain exact keys (that is, Array elements will not be split
     # by "/").
     def self.to_array(item)
-      return item if item.kind_of? Array
+      return item if item.is_a? Array
 
-      parts = item.split("/")
+      parts = item.split('/')
       parts.shift if !parts.empty? && parts[0].empty?
       parts
     end
-
   end
 end

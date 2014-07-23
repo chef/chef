@@ -18,7 +18,6 @@
 
 class Chef
   class Platform
-
     class << self
       def windows?
         if RUBY_PLATFORM =~ /mswin|mingw|windows/
@@ -39,13 +38,12 @@ class Chef
 
         wmi = WmiLite::Wmi.new
         host = wmi.first_of('Win32_OperatingSystem')
-        is_server_2003 = (host['version'] && host['version'].start_with?("5.2"))
+        is_server_2003 = (host['version'] && host['version'].start_with?('5.2'))
 
         WIN32OLE.ole_uninitialize
 
         is_server_2003
       end
     end
-
   end
 end

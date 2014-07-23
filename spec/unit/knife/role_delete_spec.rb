@@ -20,44 +20,44 @@ require 'spec_helper'
 
 describe Chef::Knife::RoleDelete do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name]  = 'webmonkey.example.com'
     @knife = Chef::Knife::RoleDelete.new
     @knife.config = {
-      :print_after => nil
+      print_after: nil
     }
-    @knife.name_args = [ "adam" ]
+    @knife.name_args = ['adam']
     @knife.stub(:output).and_return(true)
     @knife.stub(:confirm).and_return(true)
-    @role = Chef::Role.new()
+    @role = Chef::Role.new
     @role.stub(:destroy).and_return(true)
     Chef::Role.stub(:load).and_return(@role)
     @stdout = StringIO.new
     @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
-  describe "run" do
-    it "should confirm that you want to delete" do
+  describe 'run' do
+    it 'should confirm that you want to delete' do
       @knife.should_receive(:confirm)
       @knife.run
     end
 
-    it "should load the Role" do
-      Chef::Role.should_receive(:load).with("adam").and_return(@role)
+    it 'should load the Role' do
+      Chef::Role.should_receive(:load).with('adam').and_return(@role)
       @knife.run
     end
 
-    it "should delete the Role" do
+    it 'should delete the Role' do
       @role.should_receive(:destroy).and_return(@role)
       @knife.run
     end
 
-    it "should not print the Role" do
+    it 'should not print the Role' do
       @knife.should_not_receive(:output)
       @knife.run
     end
 
-    describe "with -p or --print-after" do
-      it "should pretty print the Role, formatted for display" do
+    describe 'with -p or --print-after' do
+      it 'should pretty print the Role, formatted for display' do
         @knife.config[:print_after] = true
         @knife.should_receive(:output)
         @knife.run

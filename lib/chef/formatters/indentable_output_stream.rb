@@ -2,7 +2,6 @@ class Chef
   module Formatters
     # Handles basic indentation and colorization tasks
     class IndentableOutputStream
-
       attr_reader :out
       attr_reader :err
       attr_accessor :indent
@@ -35,19 +34,19 @@ class Chef
       # cause indentation but will not move to the next line yet (future 'print'
       # and 'puts' statements will stay on this line).
       def start_line(string, *args)
-        print(string, from_args(args, :start_line => true))
+        print(string, from_args(args, start_line: true))
       end
 
       # Print a line.  This will continue from the last start_line or print,
       # or start a new line and indent if necessary.
       def puts(string, *args)
-        print(string, from_args(args, :end_line => true))
+        print(string, from_args(args, end_line: true))
       end
 
       # Print an entire line from start to end.  This will terminate any existing
       # lines and cause indentation.
       def puts_line(string, *args)
-        print(string, from_args(args, :start_line => true, :end_line => true))
+        print(string, from_args(args, start_line: true, end_line: true))
       end
 
       # Print a string.
@@ -95,10 +94,10 @@ class Chef
       end
 
       def from_args(colors, merge_options = {})
-        if colors.size == 1 && colors[0].kind_of?(Hash)
+        if colors.size == 1 && colors[0].is_a?(Hash)
           merge_options.merge(colors[0])
         else
-          merge_options.merge({ :colors => colors })
+          merge_options.merge(colors: colors)
         end
       end
 
@@ -137,7 +136,7 @@ class Chef
       end
 
       def indent_line(options)
-        if !@line_started
+        unless @line_started
 
           # Print indents.  If there is a stream name, either print it (if we're
           # switching streams) or print enough blanks to match

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-if !File.respond_to?(:realpath)
+unless File.respond_to?(:realpath)
   require 'pathname'
   class File
     def self.realpath(path)

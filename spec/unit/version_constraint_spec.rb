@@ -19,9 +19,9 @@ require 'spec_helper'
 require 'chef/version_constraint'
 
 describe Chef::VersionConstraint do
-  describe "validation" do
-    bad_version = [">= 1.2.z", "> 1.2.3 < 5.0", "> 1.2.3, < 5.0"]
-    bad_op = ["> >", ">$ 1.2.3", "! 3.4"]
+  describe 'validation' do
+    bad_version = ['>= 1.2.z', '> 1.2.3 < 5.0', '> 1.2.3, < 5.0']
+    bad_op = ['> >', '>$ 1.2.3', '! 3.4']
     o_error = Chef::Exceptions::InvalidVersionConstraint
     v_error = Chef::Exceptions::InvalidCookbookVersion
     bad_version.each do |s|
@@ -35,117 +35,117 @@ describe Chef::VersionConstraint do
       end
     end
 
-    it "should interpret a lone version number as implicit = OP" do
-      vc = Chef::VersionConstraint.new("1.2.3")
-      vc.to_s.should == "= 1.2.3"
+    it 'should interpret a lone version number as implicit = OP' do
+      vc = Chef::VersionConstraint.new('1.2.3')
+      vc.to_s.should == '= 1.2.3'
     end
 
-    it "should allow initialization with [] for back compatibility" do
+    it 'should allow initialization with [] for back compatibility' do
       Chef::VersionConstraint.new([]) == Chef::VersionConstraint.new
     end
 
     it "should allow initialization with ['1.2.3'] for back compatibility" do
-      Chef::VersionConstraint.new(["1.2"]) == Chef::VersionConstraint.new("1.2")
+      Chef::VersionConstraint.new(['1.2']) == Chef::VersionConstraint.new('1.2')
     end
 
   end
 
-  it "should default to >= 0.0.0" do
+  it 'should default to >= 0.0.0' do
     vc = Chef::VersionConstraint.new
-    vc.to_s.should == ">= 0.0.0"
+    vc.to_s.should == '>= 0.0.0'
   end
 
-  it "should default to >= 0.0.0 when initialized with nil" do
-    Chef::VersionConstraint.new(nil).to_s.should == ">= 0.0.0"
+  it 'should default to >= 0.0.0 when initialized with nil' do
+    Chef::VersionConstraint.new(nil).to_s.should == '>= 0.0.0'
   end
 
-  it "should work with Chef::Version classes" do
-    vc = Chef::VersionConstraint.new("1.0")
+  it 'should work with Chef::Version classes' do
+    vc = Chef::VersionConstraint.new('1.0')
     vc.version.should be_an_instance_of(Chef::Version)
   end
 
-  it "should allow ops without space separator" do
-    Chef::VersionConstraint.new("=1.2.3").should eql(Chef::VersionConstraint.new("= 1.2.3"))
-    Chef::VersionConstraint.new(">1.2.3").should eql(Chef::VersionConstraint.new("> 1.2.3"))
-    Chef::VersionConstraint.new("<1.2.3").should eql(Chef::VersionConstraint.new("< 1.2.3"))
-    Chef::VersionConstraint.new(">=1.2.3").should eql(Chef::VersionConstraint.new(">= 1.2.3"))
-    Chef::VersionConstraint.new("<=1.2.3").should eql(Chef::VersionConstraint.new("<= 1.2.3"))
+  it 'should allow ops without space separator' do
+    Chef::VersionConstraint.new('=1.2.3').should eql(Chef::VersionConstraint.new('= 1.2.3'))
+    Chef::VersionConstraint.new('>1.2.3').should eql(Chef::VersionConstraint.new('> 1.2.3'))
+    Chef::VersionConstraint.new('<1.2.3').should eql(Chef::VersionConstraint.new('< 1.2.3'))
+    Chef::VersionConstraint.new('>=1.2.3').should eql(Chef::VersionConstraint.new('>= 1.2.3'))
+    Chef::VersionConstraint.new('<=1.2.3').should eql(Chef::VersionConstraint.new('<= 1.2.3'))
   end
 
-  it "should allow ops with multiple spaces" do
-    Chef::VersionConstraint.new("=  1.2.3").should eql(Chef::VersionConstraint.new("= 1.2.3"))
+  it 'should allow ops with multiple spaces' do
+    Chef::VersionConstraint.new('=  1.2.3').should eql(Chef::VersionConstraint.new('= 1.2.3'))
   end
 
-  describe "include?" do
-    describe "handles various input data types" do
+  describe 'include?' do
+    describe 'handles various input data types' do
       before do
-        @vc = Chef::VersionConstraint.new "> 1.2.3"
+        @vc = Chef::VersionConstraint.new '> 1.2.3'
       end
-      it "String" do
-        @vc.should include "1.4"
+      it 'String' do
+        @vc.should include '1.4'
       end
-      it "Chef::Version" do
-        @vc.should include Chef::Version.new("1.4")
+      it 'Chef::Version' do
+        @vc.should include Chef::Version.new('1.4')
       end
-      it "Chef::CookbookVersion" do
-        cv = Chef::CookbookVersion.new("alice", '/tmp/blah.txt')
-        cv.version = "1.4"
+      it 'Chef::CookbookVersion' do
+        cv = Chef::CookbookVersion.new('alice', '/tmp/blah.txt')
+        cv.version = '1.4'
         @vc.should include cv
       end
     end
 
-    it "strictly less than" do
-      vc = Chef::VersionConstraint.new "< 1.2.3"
-      vc.should_not include "1.3.0"
-      vc.should_not include "1.2.3"
-      vc.should include "1.2.2"
+    it 'strictly less than' do
+      vc = Chef::VersionConstraint.new '< 1.2.3'
+      vc.should_not include '1.3.0'
+      vc.should_not include '1.2.3'
+      vc.should include '1.2.2'
     end
 
-    it "strictly greater than" do
-      vc = Chef::VersionConstraint.new "> 1.2.3"
-      vc.should include "1.3.0"
-      vc.should_not include "1.2.3"
-      vc.should_not include "1.2.2"
+    it 'strictly greater than' do
+      vc = Chef::VersionConstraint.new '> 1.2.3'
+      vc.should include '1.3.0'
+      vc.should_not include '1.2.3'
+      vc.should_not include '1.2.2'
     end
 
-    it "less than or equal to" do
-      vc = Chef::VersionConstraint.new "<= 1.2.3"
-      vc.should_not include "1.3.0"
-      vc.should include "1.2.3"
-      vc.should include "1.2.2"
+    it 'less than or equal to' do
+      vc = Chef::VersionConstraint.new '<= 1.2.3'
+      vc.should_not include '1.3.0'
+      vc.should include '1.2.3'
+      vc.should include '1.2.2'
     end
 
-    it "greater than or equal to" do
-      vc = Chef::VersionConstraint.new ">= 1.2.3"
-      vc.should include "1.3.0"
-      vc.should include "1.2.3"
-      vc.should_not include "1.2.2"
+    it 'greater than or equal to' do
+      vc = Chef::VersionConstraint.new '>= 1.2.3'
+      vc.should include '1.3.0'
+      vc.should include '1.2.3'
+      vc.should_not include '1.2.2'
     end
 
-    it "equal to" do
-      vc = Chef::VersionConstraint.new "= 1.2.3"
-      vc.should_not include "1.3.0"
-      vc.should include "1.2.3"
-      vc.should_not include "0.3.0"
+    it 'equal to' do
+      vc = Chef::VersionConstraint.new '= 1.2.3'
+      vc.should_not include '1.3.0'
+      vc.should include '1.2.3'
+      vc.should_not include '0.3.0'
     end
 
-    it "pessimistic ~> x.y.z" do
-      vc = Chef::VersionConstraint.new "~> 1.2.3"
-      vc.should include "1.2.3"
-      vc.should include "1.2.4"
+    it 'pessimistic ~> x.y.z' do
+      vc = Chef::VersionConstraint.new '~> 1.2.3'
+      vc.should include '1.2.3'
+      vc.should include '1.2.4'
 
-      vc.should_not include "1.2.2"
-      vc.should_not include "1.3.0"
-      vc.should_not include "2.0.0"
+      vc.should_not include '1.2.2'
+      vc.should_not include '1.3.0'
+      vc.should_not include '2.0.0'
     end
 
-    it "pessimistic ~> x.y" do
-      vc = Chef::VersionConstraint.new "~> 1.2"
-      vc.should include "1.3.3"
-      vc.should include "1.4"
+    it 'pessimistic ~> x.y' do
+      vc = Chef::VersionConstraint.new '~> 1.2'
+      vc.should include '1.3.3'
+      vc.should include '1.4'
 
-      vc.should_not include "2.2"
-      vc.should_not include "0.3.0"
+      vc.should_not include '2.2'
+      vc.should_not include '0.3.0'
     end
   end
 end

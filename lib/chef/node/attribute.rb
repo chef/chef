@@ -24,14 +24,12 @@ require 'chef/log'
 
 class Chef
   class Node
-
     # == Attribute
     # Attribute implements a nested key-value (Hash) and flat collection
     # (Array) data structure supporting multiple levels of precedence, such
     # that a given key may have multiple values internally, but will only
     # return the highest precedence value when reading.
     class Attribute < Mash
-
       include Immutablize
 
       include Enumerable
@@ -57,7 +55,6 @@ class Chef
         :@role_default,
         :@force_default
       ]
-
 
       OVERRIDE_COMPONENTS = [
         :@override,
@@ -146,253 +143,249 @@ class Chef
          METHOD_DEFN
        end
 
+      # return the cookbook level default attribute component
+      attr_reader :default
 
-       # return the cookbook level default attribute component
-       attr_reader :default
+      # return the role level default attribute component
+      attr_reader :role_default
 
-       # return the role level default attribute component
-       attr_reader :role_default
+      # return the environment level default attribute component
+      attr_reader :env_default
 
-       # return the environment level default attribute component
-       attr_reader :env_default
+      # return the force_default level attribute component
+      attr_reader :force_default
 
-       # return the force_default level attribute component
-       attr_reader :force_default
+      # default! is the "advertised" method for force_default, but is
+      # implemented as an alias because instance variables can't (easily) have
+      # +!+ characters.
+      alias_method :default!, :force_default
 
-       # default! is the "advertised" method for force_default, but is
-       # implemented as an alias because instance variables can't (easily) have
-       # +!+ characters.
-       alias :default! :force_default
+      # return the "normal" level attribute component
+      attr_reader :normal
 
-       # return the "normal" level attribute component
-       attr_reader :normal
+      # return the cookbook level override attribute component
+      attr_reader :override
 
-       # return the cookbook level override attribute component
-       attr_reader :override
+      # return the role level override attribute component
+      attr_reader :role_override
 
-       # return the role level override attribute component
-       attr_reader :role_override
+      # return the enviroment level override attribute component
+      attr_reader :env_override
 
-       # return the enviroment level override attribute component
-       attr_reader :env_override
+      # return the force override level attribute component
+      attr_reader :force_override
 
-       # return the force override level attribute component
-       attr_reader :force_override
+      # +override!+ is the "advertised" method for +force_override+ but is
+      # implemented as an alias because instance variables can't easily have
+      # +!+ characters.
+      alias_method :override!, :force_override
 
-       # +override!+ is the "advertised" method for +force_override+ but is
-       # implemented as an alias because instance variables can't easily have
-       # +!+ characters.
-       alias :override! :force_override
+      # return the automatic level attribute component
+      attr_reader :automatic
 
-       # return the automatic level attribute component
-       attr_reader :automatic
+      def initialize(normal, default, override, automatic)
+        @set_unless_present = false
 
-       def initialize(normal, default, override, automatic)
-         @set_unless_present = false
+        @default = VividMash.new(self, default)
+        @env_default = VividMash.new(self, {})
+        @role_default = VividMash.new(self, {})
+        @force_default = VividMash.new(self, {})
 
-         @default = VividMash.new(self, default)
-         @env_default = VividMash.new(self, {})
-         @role_default = VividMash.new(self, {})
-         @force_default = VividMash.new(self, {})
+        @normal = VividMash.new(self, normal)
 
-         @normal = VividMash.new(self, normal)
+        @override = VividMash.new(self, override)
+        @role_override = VividMash.new(self, {})
+        @env_override = VividMash.new(self, {})
+        @force_override = VividMash.new(self, {})
 
-         @override = VividMash.new(self, override)
-         @role_override = VividMash.new(self, {})
-         @env_override = VividMash.new(self, {})
-         @force_override = VividMash.new(self, {})
+        @automatic = VividMash.new(self, automatic)
 
-         @automatic = VividMash.new(self, automatic)
+        @merged_attributes = nil
+        @combined_override = nil
+        @combined_default = nil
+      end
 
-         @merged_attributes = nil
-         @combined_override = nil
-         @combined_default = nil
-       end
+      # Debug what's going on with an attribute. +args+ is a path spec to the
+      # attribute you're interested in. For example, to debug where the value
+      # of `node[:network][:default_interface]` is coming from, use:
+      #   debug_value(:network, :default_interface).
+      # The return value is an Array of Arrays. The first element is
+      # `["set_unless_enabled?", Boolean]`, which describes whether the
+      # attribute collection is in "set_unless" mode. The rest of the Arrays
+      # are pairs of `["precedence_level", value]`, where precedence level is
+      # the component, such as role default, normal, etc. and value is the
+      # attribute value set at that precedence level. If there is no value at
+      # that precedence level, +value+ will be the symbol +:not_present+.
+      def debug_value(*args)
+        components = COMPONENTS.map do |component|
+          ivar = instance_variable_get(component)
+          value = args.reduce(ivar) do |so_far, key|
+            if so_far == :not_present
+              :not_present
+            elsif so_far.key?(key)
+              so_far[key]
+            else
+              :not_present
+            end
+          end
+          [component.to_s.sub(/^@/, ''), value]
+        end
+        [['set_unless_enabled?', @set_unless_present]] + components
+      end
 
-       # Debug what's going on with an attribute. +args+ is a path spec to the
-       # attribute you're interested in. For example, to debug where the value
-       # of `node[:network][:default_interface]` is coming from, use:
-       #   debug_value(:network, :default_interface).
-       # The return value is an Array of Arrays. The first element is
-       # `["set_unless_enabled?", Boolean]`, which describes whether the
-       # attribute collection is in "set_unless" mode. The rest of the Arrays
-       # are pairs of `["precedence_level", value]`, where precedence level is
-       # the component, such as role default, normal, etc. and value is the
-       # attribute value set at that precedence level. If there is no value at
-       # that precedence level, +value+ will be the symbol +:not_present+.
-       def debug_value(*args)
-         components = COMPONENTS.map do |component|
-           ivar = instance_variable_get(component)
-           value = args.inject(ivar) do |so_far, key|
-             if so_far == :not_present
-               :not_present
-             elsif so_far.key?(key)
-               so_far[key]
-             else
-               :not_present
-             end
-           end
-           [component.to_s.sub(/^@/,""), value]
-         end
-         [["set_unless_enabled?", @set_unless_present]] + components
-       end
+      # Enables or disables `||=`-like attribute setting. See, e.g., Node#set_unless
+      def set_unless_value_present=(setting)
+        @set_unless_present = setting
+      end
 
-       # Enables or disables `||=`-like attribute setting. See, e.g., Node#set_unless
-       def set_unless_value_present=(setting)
-         @set_unless_present = setting
-       end
+      # Clears merged_attributes, which will cause it to be recomputed on the
+      # next access.
+      def reset_cache
+        @merged_attributes = nil
+        @combined_default  = nil
+        @combined_override = nil
+        @set_unless_present = false
+      end
 
-       # Clears merged_attributes, which will cause it to be recomputed on the
-       # next access.
-       def reset_cache
-         @merged_attributes = nil
-         @combined_default  = nil
-         @combined_override = nil
-         @set_unless_present = false
-       end
+      alias_method :reset, :reset_cache
 
-       alias :reset :reset_cache
+      # Set the cookbook level default attribute component to +new_data+.
+      def default=(new_data)
+        reset
+        @default = VividMash.new(self, new_data)
+      end
 
-       # Set the cookbook level default attribute component to +new_data+.
-       def default=(new_data)
-         reset
-         @default = VividMash.new(self, new_data)
-       end
+      # Set the role level default attribute component to +new_data+
+      def role_default=(new_data)
+        reset
+        @role_default = VividMash.new(self, new_data)
+      end
 
-       # Set the role level default attribute component to +new_data+
-       def role_default=(new_data)
-         reset
-         @role_default = VividMash.new(self, new_data)
-       end
+      # Set the environment level default attribute component to +new_data+
+      def env_default=(new_data)
+        reset
+        @env_default = VividMash.new(self, new_data)
+      end
 
-       # Set the environment level default attribute component to +new_data+
-       def env_default=(new_data)
-         reset
-         @env_default = VividMash.new(self, new_data)
-       end
+      # Set the force_default (+default!+) level attributes to +new_data+
+      def force_default=(new_data)
+        reset
+        @force_default = VividMash.new(self, new_data)
+      end
 
-       # Set the force_default (+default!+) level attributes to +new_data+
-       def force_default=(new_data)
-         reset
-         @force_default = VividMash.new(self, new_data)
-       end
+      # Set the normal level attribute component to +new_data+
+      def normal=(new_data)
+        reset
+        @normal = VividMash.new(self, new_data)
+      end
 
-       # Set the normal level attribute component to +new_data+
-       def normal=(new_data)
-         reset
-         @normal = VividMash.new(self, new_data)
-       end
+      # Set the cookbook level override attribute component to +new_data+
+      def override=(new_data)
+        reset
+        @override = VividMash.new(self, new_data)
+      end
 
-       # Set the cookbook level override attribute component to +new_data+
-       def override=(new_data)
-         reset
-         @override = VividMash.new(self, new_data)
-       end
+      # Set the role level override attribute component to +new_data+
+      def role_override=(new_data)
+        reset
+        @role_override = VividMash.new(self, new_data)
+      end
 
-       # Set the role level override attribute component to +new_data+
-       def role_override=(new_data)
-         reset
-         @role_override = VividMash.new(self, new_data)
-       end
+      # Set the environment level override attribute component to +new_data+
+      def env_override=(new_data)
+        reset
+        @env_override = VividMash.new(self, new_data)
+      end
 
-       # Set the environment level override attribute component to +new_data+
-       def env_override=(new_data)
-         reset
-         @env_override = VividMash.new(self, new_data)
-       end
+      def force_override=(new_data)
+        reset
+        @force_override = VividMash.new(self, new_data)
+      end
 
-       def force_override=(new_data)
-         reset
-         @force_override = VividMash.new(self, new_data)
-       end
+      def automatic=(new_data)
+        reset
+        @automatic = VividMash.new(self, new_data)
+      end
 
-       def automatic=(new_data)
-         reset
-         @automatic = VividMash.new(self, new_data)
-       end
+      def merged_attributes
+        @merged_attributes ||= begin
+                                 components = [merge_defaults, @normal, merge_overrides, @automatic]
+                                 resolved_attrs = components.reduce(Mash.new) do |merged, component|
+                                   Chef::Mixin::DeepMerge.hash_only_merge(merged, component)
+                                 end
+                                 immutablize(resolved_attrs)
+                               end
+      end
 
-       def merged_attributes
-         @merged_attributes ||= begin
-                                  components = [merge_defaults, @normal, merge_overrides, @automatic]
-                                  resolved_attrs = components.inject(Mash.new) do |merged, component|
-                                    Chef::Mixin::DeepMerge.hash_only_merge(merged, component)
-                                  end
-                                  immutablize(resolved_attrs)
-                                end
-       end
+      def combined_override
+        @combined_override ||= immutablize(merge_overrides)
+      end
 
-       def combined_override
-         @combined_override ||= immutablize(merge_overrides)
-       end
+      def combined_default
+        @combined_default ||= immutablize(merge_defaults)
+      end
 
-       def combined_default
-         @combined_default ||= immutablize(merge_defaults)
-       end
+      def [](key)
+        merged_attributes[key]
+      end
 
-       def [](key)
-         merged_attributes[key]
-       end
+      def []=(key, value)
+        merged_attributes[key] = value
+      end
 
-       def []=(key, value)
-         merged_attributes[key] = value
-       end
+      def key?(key)
+        COMPONENTS.any? do |component_ivar|
+          instance_variable_get(component_ivar).key?(key)
+        end
+      end
 
-       def key?(key)
-         COMPONENTS.any? do |component_ivar|
-           instance_variable_get(component_ivar).key?(key)
-         end
-       end
+      alias_method :attribute?, :key?
+      alias_method :member?, :key?
+      alias_method :include?, :key?
+      alias_method :key?, :key?
 
-       alias :attribute? :key?
-       alias :member? :key?
-       alias :include? :key?
-       alias :key? :key?
+      alias_method :each_attribute, :each
 
-       alias :each_attribute :each
+      def method_missing(symbol, *args)
+        if args.empty?
+          if key?(symbol)
+            self[symbol]
+          else
+            fail NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
+          end
+        elsif symbol.to_s =~ /=$/
+          key_to_set = symbol.to_s[/^(.+)=$/, 1]
+          self[key_to_set] = (args.length == 1 ? args[0] : args)
+        else
+          fail NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
+        end
+      end
 
-       def method_missing(symbol, *args)
-         if args.empty?
-           if key?(symbol)
-             self[symbol]
-           else
-             raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
-           end
-         elsif symbol.to_s =~ /=$/
-           key_to_set = symbol.to_s[/^(.+)=$/, 1]
-           self[key_to_set] = (args.length == 1 ? args[0] : args)
-         else
-           raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
-         end
-       end
+      def inspect
+        "#<#{self.class} " << (COMPONENTS + [:@merged_attributes, :@properties]).map do|iv|
+          "#{iv}=#{instance_variable_get(iv).inspect}"
+        end.join(', ') << '>'
+      end
 
-       def inspect
-         "#<#{self.class} " << (COMPONENTS + [:@merged_attributes, :@properties]).map{|iv|
-           "#{iv}=#{instance_variable_get(iv).inspect}"
-         }.join(', ') << ">"
-       end
+      def set_unless?
+        @set_unless_present
+      end
 
-       def set_unless?
-         @set_unless_present
-       end
+      private
 
-       private
+      def merge_defaults
+        DEFAULT_COMPONENTS.reduce(Mash.new) do |merged, component_ivar|
+          component_value = instance_variable_get(component_ivar)
+          Chef::Mixin::DeepMerge.merge(merged, component_value)
+        end
+      end
 
-       def merge_defaults
-         DEFAULT_COMPONENTS.inject(Mash.new) do |merged, component_ivar|
-           component_value = instance_variable_get(component_ivar)
-           Chef::Mixin::DeepMerge.merge(merged, component_value)
-         end
-       end
-
-       def merge_overrides
-         OVERRIDE_COMPONENTS.inject(Mash.new) do |merged, component_ivar|
-           component_value = instance_variable_get(component_ivar)
-           Chef::Mixin::DeepMerge.merge(merged, component_value)
-         end
-       end
-
-
+      def merge_overrides
+        OVERRIDE_COMPONENTS.reduce(Mash.new) do |merged, component_ivar|
+          component_value = instance_variable_get(component_ivar)
+          Chef::Mixin::DeepMerge.merge(merged, component_value)
+        end
+      end
     end
-
   end
 end

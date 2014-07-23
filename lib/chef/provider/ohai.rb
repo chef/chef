@@ -21,7 +21,6 @@ require 'ohai'
 class Chef
   class Provider
     class Ohai < Chef::Provider
-
       def whyrun_supported?
         true
       end
@@ -31,7 +30,7 @@ class Chef
       end
 
       def action_reload
-        converge_by("re-run ohai and merge results into node attributes") do
+        converge_by('re-run ohai and merge results into node attributes') do
           ohai = ::Ohai::System.new
 
           # If @new_resource.plugin is nil, ohai will reload all the plugins

@@ -22,7 +22,6 @@ module RSpec
   module Prof
     module Win32
       class Profiler
-
         def start
           GC.start
         end
@@ -39,8 +38,6 @@ module RSpec
           Chef::ReservedNames::Win32::Process.get_current_process.handle_count
         end
       end
-
     end
   end
 end
-

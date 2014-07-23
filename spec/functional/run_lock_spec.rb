@@ -21,7 +21,7 @@ require 'chef/client'
 describe Chef::RunLock do
 
   # This behavior works on windows, but the tests use fork :(
-  describe "when locking the chef-client run", :unix_only => true do
+  describe 'when locking the chef-client run', unix_only: true do
 
     ##
     # Lockfile location and helpers
@@ -31,16 +31,16 @@ describe Chef::RunLock do
       "/tmp/#{Kernel.rand(Time.now.to_i + Process.pid)}"
     end
 
-    let(:lockfile){ "#{random_temp_root}/this/long/path/does/not/exist/chef-client-running.pid" }
+    let(:lockfile) { "#{random_temp_root}/this/long/path/does/not/exist/chef-client-running.pid" }
 
     # make sure to start with a clean slate.
-    before(:each){ FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
-    after(:each){ FileUtils.rm_r(random_temp_root) }
+    before(:each) { FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
+    after(:each) { FileUtils.rm_r(random_temp_root) }
 
     def wait_on_lock
       tries = 0
       until File.exist?(lockfile)
-        raise "Lockfile never created, abandoning test" if tries > 10
+        fail 'Lockfile never created, abandoning test' if tries > 10
         tries += 1
         sleep 0.1
       end
@@ -51,9 +51,9 @@ describe Chef::RunLock do
 
     # Don't lazy create the pipe or else we might not share it with subprocesses
     let!(:error_pipe) do
-      r,w = IO.pipe
+      r, w = IO.pipe
       w.sync = true
-      [r,w]
+      [r, w]
     end
 
     let(:error_read) { error_pipe[0] }
@@ -83,7 +83,7 @@ describe Chef::RunLock do
       begin
         # ArgumentError from Marshal.load indicates no data, which we assume
         # means no error in child process.
-        raise Marshal.load(err)
+        fail Marshal.load(err)
       rescue ArgumentError
         nil
       end
@@ -94,9 +94,9 @@ describe Chef::RunLock do
     # state of the processes competing over the lock without relying on sleep.
 
     let!(:sync_pipe) do
-      r,w = IO.pipe
+      r, w = IO.pipe
       w.sync = true
-      [r,w]
+      [r, w]
     end
     let(:sync_read) { sync_pipe[0] }
     let(:sync_write) { sync_pipe[1] }
@@ -111,7 +111,7 @@ describe Chef::RunLock do
     def sync_wait
       if IO.select([sync_read], nil, nil, 20).nil?
         # timeout reading from the sync pipe.
-        send_side_channel_error("Error syncing processes in run lock test (timeout)")
+        send_side_channel_error('Error syncing processes in run lock test (timeout)')
         exit!(1)
       else
         sync_read.getc
@@ -121,7 +121,7 @@ describe Chef::RunLock do
     # Sends a character in the sync pipe, which wakes ("unlocks") another
     # process that is waiting on the sync signal
     def sync_send
-      sync_write.putc("!")
+      sync_write.putc('!')
       sync_write.flush
     end
 
@@ -130,9 +130,9 @@ describe Chef::RunLock do
     # check that operations occur in the expected order.
 
     let!(:results_pipe) do
-      r,w = IO.pipe
+      r, w = IO.pipe
       w.sync = true
-      [r,w]
+      [r, w]
     end
     let(:results_read) { results_pipe[0] }
     let(:results_write) { results_pipe[1] }
@@ -162,26 +162,26 @@ describe Chef::RunLock do
     # Run lock is the system under test
     let!(:run_lock) { Chef::RunLock.new(lockfile) }
 
-    it "creates the full path to the lockfile" do
+    it 'creates the full path to the lockfile' do
       lambda { run_lock.acquire }.should_not raise_error
       File.should exist(lockfile)
     end
 
-    it "sets FD_CLOEXEC on the lockfile", :supports_cloexec => true do
+    it 'sets FD_CLOEXEC on the lockfile', supports_cloexec: true do
       run_lock.acquire
       (run_lock.runlock.fcntl(Fcntl::F_GETFD, 0) & Fcntl::FD_CLOEXEC).should == Fcntl::FD_CLOEXEC
     end
 
-    it "allows only one chef client run per lockfile" do
+    it 'allows only one chef client run per lockfile' do
       # First process, gets the lock and keeps it.
       p1 = fork do
         run_lock.acquire
-        record "p1 has lock"
+        record 'p1 has lock'
         # Wait until the other process is trying to get the lock:
         sync_wait
         # sleep a little bit to make process p2 wait on the lock
         sleep 2
-        record "p1 releasing lock"
+        record 'p1 releasing lock'
         run_lock.release
         exit!(0)
       end
@@ -193,7 +193,7 @@ describe Chef::RunLock do
         # inform process p1 that we're trying to get the lock
         sync_send
         run_lock.acquire
-        record "p2 has lock"
+        record 'p2 has lock'
         run_lock.release
         exit!(0)
       end
@@ -203,7 +203,7 @@ describe Chef::RunLock do
 
       raise_side_channel_error!
 
-      expected=<<-E
+      expected = <<-E
 p1 has lock
 p1 releasing lock
 p2 has lock
@@ -211,12 +211,12 @@ E
       results.should == expected
     end
 
-    it "clears the lock if the process dies unexpectedly" do
+    it 'clears the lock if the process dies unexpectedly' do
       p1 = fork do
         run_lock.acquire
-        record "p1 has lock"
+        record 'p1 has lock'
         sleep 60
-        record "p1 still has lock"
+        record 'p1 still has lock'
         exit! 1
       end
 
@@ -226,7 +226,7 @@ E
 
       p2 = fork do
         run_lock.acquire
-        record "p2 has lock"
+        record 'p2 has lock'
         run_lock.release
         exit! 0
       end
@@ -236,7 +236,7 @@ E
       results.should =~ /p2 has lock\Z/
     end
 
-    it "test returns true and acquires the lock" do
+    it 'test returns true and acquires the lock' do
       p1 = fork do
         run_lock.test.should == true
         sleep 2
@@ -254,7 +254,7 @@ E
       Process.waitpid2(p1)
     end
 
-    it "test returns without waiting when the lock is acquired" do
+    it 'test returns without waiting when the lock is acquired' do
       p1 = fork do
         run_lock.acquire
         sleep 2

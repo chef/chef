@@ -22,119 +22,119 @@ require 'spec_helper'
 describe Chef::Resource::Service do
 
   before(:each) do
-    @resource = Chef::Resource::Service.new("chef")
+    @resource = Chef::Resource::Service.new('chef')
   end
 
-  it "should create a new Chef::Resource::Service" do
+  it 'should create a new Chef::Resource::Service' do
     @resource.should be_a_kind_of(Chef::Resource)
     @resource.should be_a_kind_of(Chef::Resource::Service)
   end
-  
-  it "should not set a provider unless node[:init_package] is defined as systemd" do
-    @resource.provider.should == nil
+
+  it 'should not set a provider unless node[:init_package] is defined as systemd' do
+    @resource.provider.should.nil?
   end
-    
-  it "should set the provider to Chef::Provider::Service::Systemd if node[:init_package] is systemd" do
+
+  it 'should set the provider to Chef::Provider::Service::Systemd if node[:init_package] is systemd' do
     node = Chef::Node.new
-    node.set[:init_package] = "systemd"
+    node.set[:init_package] = 'systemd'
     cookbook_collection = Chef::CookbookCollection.new([])
     events = Chef::EventDispatch::Dispatcher.new
     run_context = Chef::RunContext.new(node, cookbook_collection, events)
-    @resource = Chef::Resource::Service.new("chef", run_context)
+    @resource = Chef::Resource::Service.new('chef', run_context)
     @resource.provider.should == Chef::Provider::Service::Systemd
   end
 
-  it "should set the service_name to the first argument to new" do
-    @resource.service_name.should eql("chef")
+  it 'should set the service_name to the first argument to new' do
+    @resource.service_name.should eql('chef')
   end
 
-  it "should set the pattern to be the service name by default" do
-    @resource.pattern.should eql("chef")
+  it 'should set the pattern to be the service name by default' do
+    @resource.pattern.should eql('chef')
   end
 
-  it "should accept a string for the service name" do
-    @resource.service_name "something"
-    @resource.service_name.should eql("something")
+  it 'should accept a string for the service name' do
+    @resource.service_name 'something'
+    @resource.service_name.should eql('something')
   end
 
-  it "should accept a string for the service pattern" do
-    @resource.pattern ".*"
-    @resource.pattern.should eql(".*")
+  it 'should accept a string for the service pattern' do
+    @resource.pattern '.*'
+    @resource.pattern.should eql('.*')
   end
 
-  it "should not accept a regexp for the service pattern" do
-    lambda {
+  it 'should not accept a regexp for the service pattern' do
+    lambda do
       @resource.pattern /.*/
-    }.should raise_error(ArgumentError)
+    end.should raise_error(ArgumentError)
   end
 
-  it "should accept a string for the service start command" do
-    @resource.start_command "/etc/init.d/chef start"
-    @resource.start_command.should eql("/etc/init.d/chef start")
+  it 'should accept a string for the service start command' do
+    @resource.start_command '/etc/init.d/chef start'
+    @resource.start_command.should eql('/etc/init.d/chef start')
   end
 
-  it "should not accept a regexp for the service start command" do
-    lambda {
+  it 'should not accept a regexp for the service start command' do
+    lambda do
       @resource.start_command /.*/
-    }.should raise_error(ArgumentError)
+    end.should raise_error(ArgumentError)
   end
 
-  it "should accept a string for the service stop command" do
-    @resource.stop_command "/etc/init.d/chef stop"
-    @resource.stop_command.should eql("/etc/init.d/chef stop")
+  it 'should accept a string for the service stop command' do
+    @resource.stop_command '/etc/init.d/chef stop'
+    @resource.stop_command.should eql('/etc/init.d/chef stop')
   end
 
-  it "should not accept a regexp for the service stop command" do
-    lambda {
+  it 'should not accept a regexp for the service stop command' do
+    lambda do
       @resource.stop_command /.*/
-    }.should raise_error(ArgumentError)
+    end.should raise_error(ArgumentError)
   end
 
-  it "should accept a string for the service status command" do
-    @resource.status_command "/etc/init.d/chef status"
-    @resource.status_command.should eql("/etc/init.d/chef status")
+  it 'should accept a string for the service status command' do
+    @resource.status_command '/etc/init.d/chef status'
+    @resource.status_command.should eql('/etc/init.d/chef status')
   end
 
-  it "should not accept a regexp for the service status command" do
-    lambda {
+  it 'should not accept a regexp for the service status command' do
+    lambda do
       @resource.status_command /.*/
-    }.should raise_error(ArgumentError)
+    end.should raise_error(ArgumentError)
   end
 
-  it "should accept a string for the service restart command" do
-    @resource.restart_command "/etc/init.d/chef restart"
-    @resource.restart_command.should eql("/etc/init.d/chef restart")
+  it 'should accept a string for the service restart command' do
+    @resource.restart_command '/etc/init.d/chef restart'
+    @resource.restart_command.should eql('/etc/init.d/chef restart')
   end
 
-  it "should not accept a regexp for the service restart command" do
-    lambda {
+  it 'should not accept a regexp for the service restart command' do
+    lambda do
       @resource.restart_command /.*/
-    }.should raise_error(ArgumentError)
+    end.should raise_error(ArgumentError)
   end
 
-  it "should accept a string for the service reload command" do
-    @resource.reload_command "/etc/init.d/chef reload"
-    @resource.reload_command.should eql("/etc/init.d/chef reload")
+  it 'should accept a string for the service reload command' do
+    @resource.reload_command '/etc/init.d/chef reload'
+    @resource.reload_command.should eql('/etc/init.d/chef reload')
   end
 
-  it "should not accept a regexp for the service reload command" do
-    lambda {
+  it 'should not accept a regexp for the service reload command' do
+    lambda do
       @resource.reload_command /.*/
-    }.should raise_error(ArgumentError)
+    end.should raise_error(ArgumentError)
   end
 
-  it "should accept a string for the service init command" do
-    @resource.init_command "/etc/init.d/chef"
-    @resource.init_command.should eql("/etc/init.d/chef")
+  it 'should accept a string for the service init command' do
+    @resource.init_command '/etc/init.d/chef'
+    @resource.init_command.should eql('/etc/init.d/chef')
   end
 
-  it "should not accept a regexp for the service init command" do
-    lambda {
+  it 'should not accept a regexp for the service init command' do
+    lambda do
       @resource.init_command /.*/
-    }.should raise_error(ArgumentError)
+    end.should raise_error(ArgumentError)
   end
 
-  %w{enabled running}.each do |attrib|
+  %w(enabled running).each do |attrib|
     it "should accept true for #{attrib}" do
       @resource.send(attrib, true)
       @resource.send(attrib).should eql(true)
@@ -146,45 +146,44 @@ describe Chef::Resource::Service do
     end
 
     it "should not accept a string for #{attrib}" do
-      lambda { @resource.send(attrib, "poop") }.should raise_error(ArgumentError)
+      lambda { @resource.send(attrib, 'poop') }.should raise_error(ArgumentError)
     end
 
-    it "should default all the feature support to false" do
-      support_hash = { :status => false, :restart => false, :reload=> false }
+    it 'should default all the feature support to false' do
+      support_hash = { status: false, restart: false, reload: false }
       @resource.supports.should == support_hash
     end
 
-    it "should allow you to set what features this resource supports as a array" do
-      support_array = [ :status, :restart ]
-      support_hash = { :status => true, :restart => true, :reload => false }
+    it 'should allow you to set what features this resource supports as a array' do
+      support_array = [:status, :restart]
+      support_hash = { status: true, restart: true, reload: false }
       @resource.supports(support_array)
       @resource.supports.should == support_hash
     end
 
-    it "should allow you to set what features this resource supports as a hash" do
-      support_hash = { :status => true, :restart => true, :reload => false }
+    it 'should allow you to set what features this resource supports as a hash' do
+      support_hash = { status: true, restart: true, reload: false }
       @resource.supports(support_hash)
       @resource.supports.should == support_hash
     end
   end
 
-  describe "when it has pattern and supports" do
+  describe 'when it has pattern and supports' do
     before do
-      @resource.service_name("superfriend")
+      @resource.service_name('superfriend')
       @resource.enabled(true)
       @resource.running(false)
     end
 
-    it "describes its state" do
+    it 'describes its state' do
       state = @resource.state
       state[:enabled].should eql(true)
       state[:running].should eql(false)
     end
 
-    it "returns the service name as its identity" do
-      @resource.identity.should == "superfriend"
+    it 'returns the service name as its identity' do
+      @resource.identity.should == 'superfriend'
     end
   end
-
 
 end

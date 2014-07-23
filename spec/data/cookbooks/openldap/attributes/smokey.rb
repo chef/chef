@@ -1,1 +1,1 @@
-default[:smokey] = "robinson"
+default[:smokey] = 'robinson'

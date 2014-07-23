@@ -19,9 +19,8 @@
 require 'spec_helper'
 
 # spec_helper loads the shared examples already.
-#require 'support/shared/unit/api_error_inspector_spec'
-
+# require 'support/shared/unit/api_error_inspector_spec'
 
 describe Chef::Formatters::ErrorInspectors::RegistrationErrorInspector do
-  it_behaves_like "an api error inspector"
+  it_behaves_like 'an api error inspector'
 end

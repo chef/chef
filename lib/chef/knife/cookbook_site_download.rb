@@ -20,22 +20,21 @@ require 'chef/knife'
 class Chef
   class Knife
     class CookbookSiteDownload < Knife
-
       deps do
         require 'fileutils'
       end
 
-      banner "knife cookbook site download COOKBOOK [VERSION] (options)"
-      category "cookbook site"
+      banner 'knife cookbook site download COOKBOOK [VERSION] (options)'
+      category 'cookbook site'
 
       option :file,
-        :short => "-f FILE",
-        :long => "--file FILE",
-        :description => "The filename to write to"
+             short: '-f FILE',
+             long: '--file FILE',
+             description: 'The filename to write to'
 
       option :force,
-        :long => "--force",
-        :description => "Force download deprecated version"
+             long: '--force',
+             description: 'Force download deprecated version'
 
       def run
         if current_cookbook_deprecated?
@@ -74,7 +73,7 @@ class Chef
       def desired_cookbook_data
         @desired_cookbook_data ||= begin
           uri = if @name_args.length == 1
-            current_cookbook_data['latest_version']
+                  current_cookbook_data['latest_version']
           else
             specific_cookbook_version_url
           end
@@ -86,7 +85,7 @@ class Chef
       def download_cookbook
         ui.info "Downloading #{@name_args[0]} from the cookbooks site at version #{version} to #{download_location}"
         noauth_rest.sign_on_redirect = false
-        tf = noauth_rest.get_rest desired_cookbook_data["file"], true
+        tf = noauth_rest.get_rest desired_cookbook_data['file'], true
 
         ::FileUtils.cp tf.path, download_location
         ui.info "Cookbook saved: #{download_location}"

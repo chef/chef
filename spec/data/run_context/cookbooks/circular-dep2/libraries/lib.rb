@@ -1,2 +1,1 @@
-LibraryLoadOrder.record("circular-dep2")
-
+LibraryLoadOrder.record('circular-dep2')

@@ -13,13 +13,13 @@ class Chef
         end
 
         def remove_dot_json(name)
-          if name.length < 5 || name[-5,5] != ".json"
-            raise "Invalid name #{path}: must end in .json"
+          if name.length < 5 || name[-5, 5] != '.json'
+            fail "Invalid name #{path}: must end in .json"
           end
-          name[0,name.length-5]
+          name[0, name.length - 5]
         end
 
-        def preserve_key(key)
+        def preserve_key(_key)
           false
         end
 
@@ -34,7 +34,7 @@ class Chef
             result[key] = object.key?(key) ? object[key] : default
           end
           object.each_pair do |key, value|
-            result[key] = value if !result.key?(key)
+            result[key] = value unless result.key?(key)
           end
           result
         end
@@ -68,12 +68,12 @@ class Chef
           chef_class.json_create(object)
         end
 
-        def to_ruby(object)
-          raise NotImplementedError
+        def to_ruby(_object)
+          fail NotImplementedError
         end
 
         def chef_class
-          raise NotImplementedError
+          fail NotImplementedError
         end
 
         def to_ruby_keys(object, keys)
@@ -84,11 +84,11 @@ class Chef
                 if object[key].size > 0
                   result << key
                   first = true
-                  object[key].each_pair do |k,v|
+                  object[key].each_pair do |k, v|
                     if first
                       first = false
                     else
-                      result << ' '*key.length
+                      result << ' ' * key.length
                     end
                     result << " #{k.inspect} => #{v.inspect}\n"
                   end
@@ -101,7 +101,7 @@ class Chef
                     if first
                       first = false
                     else
-                      result << ", "
+                      result << ', '
                     end
                     result << value.inspect
                   end
@@ -121,7 +121,6 @@ class Chef
             on_error.call("Name must be '#{base_name}' (is '#{object['name']}')")
           end
         end
-
       end # class DataHandlerBase
     end
   end

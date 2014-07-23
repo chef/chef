@@ -19,19 +19,18 @@
 require 'chef/knife'
 
 class Chef::Knife::Exec < Chef::Knife
-
-  banner "knife exec [SCRIPT] (options)"
+  banner 'knife exec [SCRIPT] (options)'
 
   option :exec,
-    :short => "-E CODE",
-    :long => "--exec CODE",
-    :description => "a string of Chef code to execute"
+         short: '-E CODE',
+         long: '--exec CODE',
+         description: 'a string of Chef code to execute'
 
   option :script_path,
-    :short => "-p PATH:PATH",
-    :long => "--script-path PATH:PATH",
-    :description => "A colon-separated path to look for scripts in",
-    :proc => lambda { |o| o.split(":") }
+         short: '-p PATH:PATH',
+         long: '--script-path PATH:PATH',
+         description: 'A colon-separated path to look for scripts in',
+         proc: lambda { |o| o.split(':') }
 
   deps do
     require 'chef/shell/ext'
@@ -48,7 +47,7 @@ class Chef::Knife::Exec < Chef::Knife
     context = Object.new
     Shell::Extensions.extend_context_object(context)
     if config[:exec]
-      context.instance_eval(config[:exec], "-E Argument", 0)
+      context.instance_eval(config[:exec], '-E Argument', 0)
     elsif !scripts.empty?
       scripts.each do |script|
         file = find_script(script)
@@ -56,14 +55,14 @@ class Chef::Knife::Exec < Chef::Knife
       end
     else
       script = STDIN.read
-      context.instance_eval(script, "STDIN", 0)
+      context.instance_eval(script, 'STDIN', 0)
     end
   end
 
   def find_script(x)
     # Try to find a script. First try expanding the path given.
     script = File.expand_path(x)
-    return script if File.exists?(script)
+    return script if File.exist?(script)
 
     # Failing that, try searching the script path. If we can't find
     # anything, fail gracefully.
@@ -73,7 +72,7 @@ class Chef::Knife::Exec < Chef::Knife
       path = File.expand_path(path)
       test = File.join(path, x)
       Chef::Log.debug("Testing: #{test}")
-      if File.exists?(test)
+      if File.exist?(test)
         script = test
         Chef::Log.debug("Found: #{test}")
         return script
@@ -82,5 +81,4 @@ class Chef::Knife::Exec < Chef::Knife
     ui.error("\"#{x}\" not found in current directory or script_path, giving up.")
     exit(1)
   end
-
 end

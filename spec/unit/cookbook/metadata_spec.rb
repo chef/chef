@@ -26,15 +26,15 @@ describe Chef::Cookbook::Metadata do
     @meta = Chef::Cookbook::Metadata.new(@cookbook)
   end
 
-  describe "when comparing for equality" do
+  describe 'when comparing for equality' do
     before do
-      @fields = [ :name, :description, :long_description, :maintainer,
-                  :maintainer_email, :license, :platforms, :dependencies,
-                  :recommendations, :suggestions, :conflicting, :providing,
-                  :replacing, :attributes, :groupings, :recipes, :version]
+      @fields = [:name, :description, :long_description, :maintainer,
+                 :maintainer_email, :license, :platforms, :dependencies,
+                 :recommendations, :suggestions, :conflicting, :providing,
+                 :replacing, :attributes, :groupings, :recipes, :version]
     end
 
-    it "does not depend on object identity for equality" do
+    it 'does not depend on object identity for equality' do
       @meta.should == @meta.dup
     end
 
@@ -52,7 +52,7 @@ describe Chef::Cookbook::Metadata do
       end
     end
 
-    it "is equal to another object if it has equal values for all metadata fields" do
+    it 'is equal to another object if it has equal values for all metadata fields' do
       duck_type = Struct.new(*@fields).new
       @fields.each do |field|
         setter = "#{field}="
@@ -62,7 +62,7 @@ describe Chef::Cookbook::Metadata do
       @meta.should == duck_type
     end
 
-    it "is not equal if any values are different" do
+    it 'is not equal if any values are different' do
       duck_type_class = Struct.new(*@fields)
       @fields.each do |field_to_change|
         duck_type = duck_type_class.new
@@ -82,78 +82,78 @@ describe Chef::Cookbook::Metadata do
 
   end
 
-  describe "when first created" do
-    it "should return a Chef::Cookbook::Metadata object" do
+  describe 'when first created' do
+    it 'should return a Chef::Cookbook::Metadata object' do
       @meta.should be_a_kind_of(Chef::Cookbook::Metadata)
     end
 
-    it "should allow a cookbook as the first argument" do
+    it 'should allow a cookbook as the first argument' do
       lambda { Chef::Cookbook::Metadata.new(@cookbook) }.should_not raise_error
     end
 
-    it "should allow an maintainer name for the second argument" do
+    it 'should allow an maintainer name for the second argument' do
       lambda { Chef::Cookbook::Metadata.new(@cookbook, 'Bobo T. Clown') }.should_not raise_error
     end
 
-    it "should set the maintainer name from the second argument" do
+    it 'should set the maintainer name from the second argument' do
       md = Chef::Cookbook::Metadata.new(@cookbook, 'Bobo T. Clown')
       md.maintainer.should == 'Bobo T. Clown'
     end
 
-    it "should allow an maintainer email for the third argument" do
+    it 'should allow an maintainer email for the third argument' do
       lambda { Chef::Cookbook::Metadata.new(@cookbook, 'Bobo T. Clown', 'bobo@clown.co') }.should_not raise_error
     end
 
-    it "should set the maintainer email from the third argument" do
+    it 'should set the maintainer email from the third argument' do
       md = Chef::Cookbook::Metadata.new(@cookbook, 'Bobo T. Clown', 'bobo@clown.co')
       md.maintainer_email.should == 'bobo@clown.co'
     end
 
-    it "should allow a license for the fourth argument" do
+    it 'should allow a license for the fourth argument' do
       lambda { Chef::Cookbook::Metadata.new(@cookbook, 'Bobo T. Clown', 'bobo@clown.co', 'Clown License v1') }.should_not raise_error
     end
 
-    it "should set the license from the fourth argument" do
+    it 'should set the license from the fourth argument' do
       md = Chef::Cookbook::Metadata.new(@cookbook, 'Bobo T. Clown', 'bobo@clown.co', 'Clown License v1')
       md.license.should == 'Clown License v1'
     end
   end
 
-  describe "cookbook" do
-    it "should return the cookbook we were initialized with" do
+  describe 'cookbook' do
+    it 'should return the cookbook we were initialized with' do
       @meta.cookbook.should eql(@cookbook)
     end
   end
 
-  describe "name" do
-    it "should return the name of the cookbook" do
+  describe 'name' do
+    it 'should return the name of the cookbook' do
       @meta.name.should eql(@cookbook.name)
     end
   end
 
-  describe "platforms" do
-    it "should return the current platform hash" do
+  describe 'platforms' do
+    it 'should return the current platform hash' do
       @meta.platforms.should be_a_kind_of(Hash)
     end
   end
 
-  describe "adding a supported platform" do
-    it "should support adding a supported platform with a single expression" do
-      @meta.supports("ubuntu", ">= 8.04")
-      @meta.platforms["ubuntu"].should == '>= 8.04'
+  describe 'adding a supported platform' do
+    it 'should support adding a supported platform with a single expression' do
+      @meta.supports('ubuntu', '>= 8.04')
+      @meta.platforms['ubuntu'].should == '>= 8.04'
     end
   end
 
-  describe "meta-data attributes" do
+  describe 'meta-data attributes' do
     params = {
-      :maintainer => "Adam Jacob",
-      :maintainer_email => "adam@opscode.com",
-      :license => "Apache v2.0",
-      :description => "Foobar!",
-      :long_description => "Much Longer\nSeriously",
-      :version => "0.6.0"
+      maintainer: 'Adam Jacob',
+      maintainer_email: 'adam@opscode.com',
+      license: 'Apache v2.0',
+      description: 'Foobar!',
+      long_description: "Much Longer\nSeriously",
+      version: '0.6.0'
     }
-    params.sort { |a,b| a.to_s <=> b.to_s }.each do |field, field_value|
+    params.sort { |a, b| a.to_s <=> b.to_s }.each do |field, field_value|
       describe field do
         it "should be set-able via #{field}" do
           @meta.send(field, field_value).should eql(field_value)
@@ -165,29 +165,29 @@ describe Chef::Cookbook::Metadata do
       end
     end
 
-    describe "version transformation" do
+    describe 'version transformation' do
       it "should transform an '0.6' version to '0.6.0'" do
-        @meta.send(:version, "0.6").should eql("0.6.0")
+        @meta.send(:version, '0.6').should eql('0.6.0')
       end
 
       it "should spit out '0.6.0' after transforming '0.6'" do
-        @meta.send(:version, "0.6")
-        @meta.send(:version).should eql("0.6.0")
+        @meta.send(:version, '0.6')
+        @meta.send(:version).should eql('0.6.0')
       end
     end
   end
 
-  describe "describing dependencies" do
+  describe 'describing dependencies' do
 
     dep_types = {
-      :depends     => [ :dependencies, "foo::bar", "> 0.2" ],
-      :recommends  => [ :recommendations, "foo::bar", ">= 0.2" ],
-      :suggests    => [ :suggestions, "foo::bar", "> 0.2" ],
-      :conflicts   => [ :conflicting, "foo::bar", "~> 0.2" ],
-      :provides    => [ :providing, "foo::bar", "<= 0.2" ],
-      :replaces    => [ :replacing, "foo::bar", "= 0.2.1" ],
+      depends: [:dependencies, 'foo::bar', '> 0.2'],
+      recommends: [:recommendations, 'foo::bar', '>= 0.2'],
+      suggests: [:suggestions, 'foo::bar', '> 0.2'],
+      conflicts: [:conflicting, 'foo::bar', '~> 0.2'],
+      provides: [:providing, 'foo::bar', '<= 0.2'],
+      replaces: [:replacing, 'foo::bar', '= 0.2.1'],
     }
-    dep_types.sort { |a,b| a.to_s <=> b.to_s }.each do |dep, dep_args|
+    dep_types.sort { |a, b| a.to_s <=> b.to_s }.each do |dep, dep_args|
       check_with = dep_args.shift
       describe dep do
         it "should be set-able via #{dep}" do
@@ -201,14 +201,14 @@ describe Chef::Cookbook::Metadata do
     end
 
     dep_types = {
-      :depends     => [ :dependencies, "foo::bar", ">0.2", "> 0.2" ],
-      :recommends  => [ :recommendations, "foo::bar", ">=0.2", ">= 0.2" ],
-      :suggests    => [ :suggestions, "foo::bar", ">0.2", "> 0.2" ],
-      :conflicts   => [ :conflicting, "foo::bar", "~>0.2", "~> 0.2" ],
-      :provides    => [ :providing, "foo::bar", "<=0.2", "<= 0.2" ],
-      :replaces    => [ :replacing, "foo::bar", "=0.2.1", "= 0.2.1" ],
+      depends: [:dependencies, 'foo::bar', '>0.2', '> 0.2'],
+      recommends: [:recommendations, 'foo::bar', '>=0.2', '>= 0.2'],
+      suggests: [:suggestions, 'foo::bar', '>0.2', '> 0.2'],
+      conflicts: [:conflicting, 'foo::bar', '~>0.2', '~> 0.2'],
+      provides: [:providing, 'foo::bar', '<=0.2', '<= 0.2'],
+      replaces: [:replacing, 'foo::bar', '=0.2.1', '= 0.2.1'],
     }
-    dep_types.sort { |a,b| a.to_s <=> b.to_s }.each do |dep, dep_args|
+    dep_types.sort { |a, b| a.to_s <=> b.to_s }.each do |dep, dep_args|
       check_with = dep_args.shift
       normalized_version = dep_args.pop
       describe dep do
@@ -222,376 +222,374 @@ describe Chef::Cookbook::Metadata do
       end
     end
 
-
-    describe "in the obsoleted format" do
+    describe 'in the obsoleted format' do
       dep_types = {
-        :depends     => [ "foo::bar", "> 0.2", "< 1.0" ],
-        :recommends  => [ "foo::bar", ">= 0.2", "< 1.0" ],
-        :suggests    => [ "foo::bar", "> 0.2", "< 1.0" ],
-        :conflicts   => [ "foo::bar", "> 0.2", "< 1.0" ],
-        :provides    => [ "foo::bar", "> 0.2", "< 1.0" ],
-        :replaces    => [ "foo::bar", "> 0.2.1", "< 1.0" ],
+        depends: ['foo::bar', '> 0.2', '< 1.0'],
+        recommends: ['foo::bar', '>= 0.2', '< 1.0'],
+        suggests: ['foo::bar', '> 0.2', '< 1.0'],
+        conflicts: ['foo::bar', '> 0.2', '< 1.0'],
+        provides: ['foo::bar', '> 0.2', '< 1.0'],
+        replaces: ['foo::bar', '> 0.2.1', '< 1.0'],
       }
 
       dep_types.each do |dep, dep_args|
         it "for #{dep} raises an informative error instead of vomiting on your shoes" do
-          lambda {@meta.send(dep, *dep_args)}.should raise_error(Chef::Exceptions::ObsoleteDependencySyntax)
+          lambda { @meta.send(dep, *dep_args) }.should raise_error(Chef::Exceptions::ObsoleteDependencySyntax)
         end
       end
     end
 
-
-    describe "with obsolete operators" do
+    describe 'with obsolete operators' do
       dep_types = {
-        :depends     => [ "foo::bar", ">> 0.2"],
-        :recommends  => [ "foo::bar", ">> 0.2"],
-        :suggests    => [ "foo::bar", ">> 0.2"],
-        :conflicts   => [ "foo::bar", ">> 0.2"],
-        :provides    => [ "foo::bar", ">> 0.2"],
-        :replaces    => [ "foo::bar", ">> 0.2.1"],
+        depends: ['foo::bar', '>> 0.2'],
+        recommends: ['foo::bar', '>> 0.2'],
+        suggests: ['foo::bar', '>> 0.2'],
+        conflicts: ['foo::bar', '>> 0.2'],
+        provides: ['foo::bar', '>> 0.2'],
+        replaces: ['foo::bar', '>> 0.2.1'],
       }
 
       dep_types.each do |dep, dep_args|
         it "for #{dep} raises an informative error instead of vomiting on your shoes" do
-          lambda {@meta.send(dep, *dep_args)}.should raise_error(Chef::Exceptions::InvalidVersionConstraint)
+          lambda { @meta.send(dep, *dep_args) }.should raise_error(Chef::Exceptions::InvalidVersionConstraint)
         end
       end
     end
   end
 
-  describe "attribute groupings" do
-    it "should allow you set a grouping" do
+  describe 'attribute groupings' do
+    it 'should allow you set a grouping' do
       group = {
-        "title" => "MySQL Tuning",
-        "description" => "Setting from the my.cnf file that allow you to tune your mysql server"
+        'title' => 'MySQL Tuning',
+        'description' => 'Setting from the my.cnf file that allow you to tune your mysql server'
       }
-      @meta.grouping("/db/mysql/databases/tuning", group).should == group
+      @meta.grouping('/db/mysql/databases/tuning', group).should == group
     end
-    it "should not accept anything but a string for display_name" do
-      lambda {
-        @meta.grouping("db/mysql/databases", :title => "foo")
-      }.should_not raise_error
-      lambda {
-        @meta.grouping("db/mysql/databases", :title => Hash.new)
-      }.should raise_error(ArgumentError)
+    it 'should not accept anything but a string for display_name' do
+      lambda do
+        @meta.grouping('db/mysql/databases', title: 'foo')
+      end.should_not raise_error
+      lambda do
+        @meta.grouping('db/mysql/databases', title: Hash.new)
+      end.should raise_error(ArgumentError)
     end
 
-    it "should not accept anything but a string for the description" do
-      lambda {
-        @meta.grouping("db/mysql/databases", :description => "foo")
-      }.should_not raise_error
-      lambda {
-        @meta.grouping("db/mysql/databases", :description => Hash.new)
-      }.should raise_error(ArgumentError)
+    it 'should not accept anything but a string for the description' do
+      lambda do
+        @meta.grouping('db/mysql/databases', description: 'foo')
+      end.should_not raise_error
+      lambda do
+        @meta.grouping('db/mysql/databases', description: Hash.new)
+      end.should raise_error(ArgumentError)
     end
   end
 
-  describe "cookbook attributes" do
-    it "should allow you set an attributes metadata" do
+  describe 'cookbook attributes' do
+    it 'should allow you set an attributes metadata' do
       attrs = {
-        "display_name" => "MySQL Databases",
-        "description" => "Description of MySQL",
-        "choice" => ['dedicated', 'shared'],
-        "calculated" => false,
-        "type" => 'string',
-        "required" => 'recommended',
-        "recipes" => [ "mysql::server", "mysql::master" ],
-        "default" => [ ]
+        'display_name' => 'MySQL Databases',
+        'description' => 'Description of MySQL',
+        'choice' => %w(dedicated shared),
+        'calculated' => false,
+        'type' => 'string',
+        'required' => 'recommended',
+        'recipes' => ['mysql::server', 'mysql::master'],
+        'default' => []
       }
-      @meta.attribute("/db/mysql/databases", attrs).should == attrs
+      @meta.attribute('/db/mysql/databases', attrs).should == attrs
     end
 
-    it "should not accept anything but a string for display_name" do
-      lambda {
-        @meta.attribute("db/mysql/databases", :display_name => "foo")
-      }.should_not raise_error
-      lambda {
-        @meta.attribute("db/mysql/databases", :display_name => Hash.new)
-      }.should raise_error(ArgumentError)
+    it 'should not accept anything but a string for display_name' do
+      lambda do
+        @meta.attribute('db/mysql/databases', display_name: 'foo')
+      end.should_not raise_error
+      lambda do
+        @meta.attribute('db/mysql/databases', display_name: Hash.new)
+      end.should raise_error(ArgumentError)
     end
 
-    it "should not accept anything but a string for the description" do
-      lambda {
-        @meta.attribute("db/mysql/databases", :description => "foo")
-      }.should_not raise_error
-      lambda {
-        @meta.attribute("db/mysql/databases", :description => Hash.new)
-      }.should raise_error(ArgumentError)
+    it 'should not accept anything but a string for the description' do
+      lambda do
+        @meta.attribute('db/mysql/databases', description: 'foo')
+      end.should_not raise_error
+      lambda do
+        @meta.attribute('db/mysql/databases', description: Hash.new)
+      end.should raise_error(ArgumentError)
     end
 
-    it "should not accept anything but an array of strings for choice" do
-      lambda {
-        @meta.attribute("db/mysql/databases", :choice => ['dedicated', 'shared'])
-      }.should_not raise_error
-      lambda {
-        @meta.attribute("db/mysql/databases", :choice => [10, 'shared'])
-      }.should raise_error(ArgumentError)
-      lambda {
-        @meta.attribute("db/mysql/databases", :choice => Hash.new)
-      }.should raise_error(ArgumentError)
+    it 'should not accept anything but an array of strings for choice' do
+      lambda do
+        @meta.attribute('db/mysql/databases', choice: %w(dedicated shared))
+      end.should_not raise_error
+      lambda do
+        @meta.attribute('db/mysql/databases', choice: [10, 'shared'])
+      end.should raise_error(ArgumentError)
+      lambda do
+        @meta.attribute('db/mysql/databases', choice: Hash.new)
+      end.should raise_error(ArgumentError)
     end
 
-    it "should set choice to empty array by default" do
-      @meta.attribute("db/mysql/databases", {})
-      @meta.attributes["db/mysql/databases"][:choice].should == []
+    it 'should set choice to empty array by default' do
+      @meta.attribute('db/mysql/databases', {})
+      @meta.attributes['db/mysql/databases'][:choice].should == []
     end
 
-     it "should let calculated be true or false" do
-       lambda {
-         @meta.attribute("db/mysql/databases", :calculated => true)
-       }.should_not raise_error
-       lambda {
-         @meta.attribute("db/mysql/databases", :calculated => false)
-       }.should_not raise_error
-       lambda {
-         @meta.attribute("db/mysql/databases", :calculated => Hash.new)
-       }.should raise_error(ArgumentError)
-     end
-
-     it "should set calculated to false by default" do
-       @meta.attribute("db/mysql/databases", {})
-       @meta.attributes["db/mysql/databases"][:calculated].should == false
-     end
-
-    it "accepts String for the attribute type" do
-      lambda {
-        @meta.attribute("db/mysql/databases", :type => "string")
-      }.should_not raise_error
+    it 'should let calculated be true or false' do
+      lambda do
+        @meta.attribute('db/mysql/databases', calculated: true)
+      end.should_not raise_error
+      lambda do
+        @meta.attribute('db/mysql/databases', calculated: false)
+      end.should_not raise_error
+      lambda do
+        @meta.attribute('db/mysql/databases', calculated: Hash.new)
+      end.should raise_error(ArgumentError)
     end
 
-    it "accepts Array for the attribute type" do
-      lambda {
-        @meta.attribute("db/mysql/databases", :type => "array")
-      }.should_not raise_error
-      lambda {
-        @meta.attribute("db/mysql/databases", :type => Array.new)
-      }.should raise_error(ArgumentError)
+    it 'should set calculated to false by default' do
+      @meta.attribute('db/mysql/databases', {})
+      @meta.attributes['db/mysql/databases'][:calculated].should == false
     end
 
-    it "accepts symbol for the attribute type" do
-      lambda {
-        @meta.attribute("db/mysql/databases", :type => "symbol")
-      }.should_not raise_error
+    it 'accepts String for the attribute type' do
+      lambda do
+        @meta.attribute('db/mysql/databases', type: 'string')
+      end.should_not raise_error
     end
 
-     it "should let type be hash (backwards compatability only)" do
-      lambda {
-        @meta.attribute("db/mysql/databases", :type => "hash")
-      }.should_not raise_error
+    it 'accepts Array for the attribute type' do
+      lambda do
+        @meta.attribute('db/mysql/databases', type: 'array')
+      end.should_not raise_error
+      lambda do
+        @meta.attribute('db/mysql/databases', type: Array.new)
+      end.should raise_error(ArgumentError)
     end
 
-    it "should let required be required, recommended or optional" do
-      lambda {
-        @meta.attribute("db/mysql/databases", :required => 'required')
-      }.should_not raise_error
-      lambda {
-        @meta.attribute("db/mysql/databases", :required => 'recommended')
-      }.should_not raise_error
-      lambda {
-        @meta.attribute("db/mysql/databases", :required => 'optional')
-      }.should_not raise_error
+    it 'accepts symbol for the attribute type' do
+      lambda do
+        @meta.attribute('db/mysql/databases', type: 'symbol')
+      end.should_not raise_error
     end
 
-    it "should convert required true to required" do
-      lambda {
-        @meta.attribute("db/mysql/databases", :required => true)
-      }.should_not raise_error
-      #attrib = @meta.attributes["db/mysql/databases"][:required].should == "required"
+    it 'should let type be hash (backwards compatability only)' do
+     lambda do
+       @meta.attribute('db/mysql/databases', type: 'hash')
+     end.should_not raise_error
+   end
+
+    it 'should let required be required, recommended or optional' do
+      lambda do
+        @meta.attribute('db/mysql/databases', required: 'required')
+      end.should_not raise_error
+      lambda do
+        @meta.attribute('db/mysql/databases', required: 'recommended')
+      end.should_not raise_error
+      lambda do
+        @meta.attribute('db/mysql/databases', required: 'optional')
+      end.should_not raise_error
     end
 
-    it "should convert required false to optional" do
-      lambda {
-        @meta.attribute("db/mysql/databases", :required => false)
-      }.should_not raise_error
-      #attrib = @meta.attributes["db/mysql/databases"][:required].should == "optional"
+    it 'should convert required true to required' do
+      lambda do
+        @meta.attribute('db/mysql/databases', required: true)
+      end.should_not raise_error
+      # attrib = @meta.attributes["db/mysql/databases"][:required].should == "required"
+    end
+
+    it 'should convert required false to optional' do
+      lambda do
+        @meta.attribute('db/mysql/databases', required: false)
+      end.should_not raise_error
+      # attrib = @meta.attributes["db/mysql/databases"][:required].should == "optional"
     end
 
     it "should set required to 'optional' by default" do
-      @meta.attribute("db/mysql/databases", {})
-      @meta.attributes["db/mysql/databases"][:required].should == 'optional'
+      @meta.attribute('db/mysql/databases', {})
+      @meta.attributes['db/mysql/databases'][:required].should == 'optional'
     end
 
-    it "should make sure recipes is an array" do
-      lambda {
-        @meta.attribute("db/mysql/databases", :recipes => [])
-      }.should_not raise_error
-      lambda {
-        @meta.attribute("db/mysql/databases", :required => Hash.new)
-      }.should raise_error(ArgumentError)
+    it 'should make sure recipes is an array' do
+      lambda do
+        @meta.attribute('db/mysql/databases', recipes: [])
+      end.should_not raise_error
+      lambda do
+        @meta.attribute('db/mysql/databases', required: Hash.new)
+      end.should raise_error(ArgumentError)
     end
 
-    it "should set recipes to an empty array by default" do
-      @meta.attribute("db/mysql/databases", {})
-      @meta.attributes["db/mysql/databases"][:recipes].should == []
+    it 'should set recipes to an empty array by default' do
+      @meta.attribute('db/mysql/databases', {})
+      @meta.attributes['db/mysql/databases'][:recipes].should == []
     end
 
-    it "should allow the default value to be a string, array, hash, boolean or numeric" do
-      lambda {
-        @meta.attribute("db/mysql/databases", :default => [])
-      }.should_not raise_error
-      lambda {
-        @meta.attribute("db/mysql/databases", :default => {})
-      }.should_not raise_error
-      lambda {
-        @meta.attribute("db/mysql/databases", :default => "alice in chains")
-      }.should_not raise_error
-      lambda {
-        @meta.attribute("db/mysql/databases", :default => 1337)
-      }.should_not raise_error
-      lambda {
-        @meta.attribute("db/mysql/databases", :default => true)
-      }.should_not raise_error
-      lambda {
-        @meta.attribute("db/mysql/databases", :required => :not_gonna_do_it)
-      }.should raise_error(ArgumentError)
+    it 'should allow the default value to be a string, array, hash, boolean or numeric' do
+      lambda do
+        @meta.attribute('db/mysql/databases', default: [])
+      end.should_not raise_error
+      lambda do
+        @meta.attribute('db/mysql/databases', default: {})
+      end.should_not raise_error
+      lambda do
+        @meta.attribute('db/mysql/databases', default: 'alice in chains')
+      end.should_not raise_error
+      lambda do
+        @meta.attribute('db/mysql/databases', default: 1337)
+      end.should_not raise_error
+      lambda do
+        @meta.attribute('db/mysql/databases', default: true)
+      end.should_not raise_error
+      lambda do
+        @meta.attribute('db/mysql/databases', required: :not_gonna_do_it)
+      end.should raise_error(ArgumentError)
     end
 
-    it "should limit the types allowed in the choice array" do
+    it 'should limit the types allowed in the choice array' do
       options = {
-        :type => "string",
-        :choice => [ "test1", "test2" ],
-        :default => "test1"
+        type: 'string',
+        choice: %w(test1 test2),
+        default: 'test1'
       }
       lambda {
-        @meta.attribute("test_cookbook/test", options)
-      }.should_not raise_error
-
-      options = {
-        :type => "boolean",
-        :choice => [ true, false ],
-        :default => true
-      }
-      lambda {
-        @meta.attribute("test_cookbook/test", options)
+        @meta.attribute('test_cookbook/test', options)
       }.should_not raise_error
 
       options = {
-        :type => "numeric",
-        :choice => [ 1337, 420 ],
-        :default => 1337
+        type: 'boolean',
+        choice: [true, false],
+        default: true
       }
       lambda {
-        @meta.attribute("test_cookbook/test", options)
+        @meta.attribute('test_cookbook/test', options)
       }.should_not raise_error
 
       options = {
-        :type => "numeric",
-        :choice => [ true, "false" ],
-        :default => false
+        type: 'numeric',
+        choice: [1337, 420],
+        default: 1337
       }
       lambda {
-        @meta.attribute("test_cookbook/test", options)
+        @meta.attribute('test_cookbook/test', options)
+      }.should_not raise_error
+
+      options = {
+        type: 'numeric',
+        choice: [true, 'false'],
+        default: false
+      }
+      lambda {
+        @meta.attribute('test_cookbook/test', options)
       }.should raise_error
     end
 
-    it "should error if default used with calculated" do
-      lambda {
+    it 'should error if default used with calculated' do
+      lambda do
         attrs = {
-          :calculated => true,
-          :default => [ "I thought you said calculated" ]
+          calculated: true,
+          default: ['I thought you said calculated']
         }
-        @meta.attribute("db/mysql/databases", attrs)
-      }.should raise_error(ArgumentError)
-      lambda {
+        @meta.attribute('db/mysql/databases', attrs)
+      end.should raise_error(ArgumentError)
+      lambda do
         attrs = {
-          :calculated => true,
-          :default => "I thought you said calculated"
+          calculated: true,
+          default: 'I thought you said calculated'
         }
-        @meta.attribute("db/mysql/databases", attrs)
-      }.should raise_error(ArgumentError)
+        @meta.attribute('db/mysql/databases', attrs)
+      end.should raise_error(ArgumentError)
     end
 
-    it "should allow a default that is a choice" do
-      lambda {
-        attrs = {
-          :choice => [ "a", "b", "c"],
-          :default => "b"
-        }
-        @meta.attribute("db/mysql/databases", attrs)
-      }.should_not raise_error
-      lambda {
-        attrs = {
-          :choice => [ "a", "b", "c", "d", "e"],
-          :default => ["b", "d"]
-        }
-        @meta.attribute("db/mysql/databases", attrs)
-      }.should_not raise_error
+    it 'should allow a default that is a choice' do
+       lambda do
+         attrs = {
+           choice: %w(a b c),
+           default: 'b'
+         }
+         @meta.attribute('db/mysql/databases', attrs)
+       end.should_not raise_error
+       lambda do
+         attrs = {
+           choice: %w(a b c d e),
+           default: %w(b d)
+         }
+         @meta.attribute('db/mysql/databases', attrs)
+       end.should_not raise_error
      end
 
-    it "should error if default is not a choice" do
-      lambda {
+    it 'should error if default is not a choice' do
+      lambda do
         attrs = {
-          :choice => [ "a", "b", "c"],
-          :default => "d"
+          choice: %w(a b c),
+          default: 'd'
         }
-        @meta.attribute("db/mysql/databases", attrs)
-      }.should raise_error(ArgumentError)
-      lambda {
+        @meta.attribute('db/mysql/databases', attrs)
+      end.should raise_error(ArgumentError)
+      lambda do
         attrs = {
-          :choice => [ "a", "b", "c", "d", "e"],
-          :default => ["b", "z"]
+          choice: %w(a b c d e),
+          default: %w(b z)
         }
-        @meta.attribute("db/mysql/databases", attrs)
-      }.should raise_error(ArgumentError)
+        @meta.attribute('db/mysql/databases', attrs)
+      end.should raise_error(ArgumentError)
     end
   end
 
-  describe "recipes" do
+  describe 'recipes' do
     before(:each) do
-      @cookbook.recipe_files = [ "default.rb", "enlighten.rb" ]
+      @cookbook.recipe_files = ['default.rb', 'enlighten.rb']
       @meta = Chef::Cookbook::Metadata.new(@cookbook)
     end
 
-    it "should have the names of the recipes" do
-      @meta.recipes["test_cookbook"].should == ""
-      @meta.recipes["test_cookbook::enlighten"].should == ""
+    it 'should have the names of the recipes' do
+      @meta.recipes['test_cookbook'].should == ''
+      @meta.recipes['test_cookbook::enlighten'].should == ''
     end
 
-    it "should let you set the description for a recipe" do
-      @meta.recipe "test_cookbook", "It, um... tests stuff?"
-      @meta.recipes["test_cookbook"].should == "It, um... tests stuff?"
+    it 'should let you set the description for a recipe' do
+      @meta.recipe 'test_cookbook', 'It, um... tests stuff?'
+      @meta.recipes['test_cookbook'].should == 'It, um... tests stuff?'
     end
 
-    it "should automatically provide each recipe" do
-      @meta.providing.key?("test_cookbook").should == true
-      @meta.providing.key?("test_cookbook::enlighten").should == true
+    it 'should automatically provide each recipe' do
+      @meta.providing.key?('test_cookbook').should == true
+      @meta.providing.key?('test_cookbook::enlighten').should == true
     end
 
   end
 
-  describe "json" do
+  describe 'json' do
     before(:each) do
-      @cookbook.recipe_files = [ "default.rb", "enlighten.rb" ]
+      @cookbook.recipe_files = ['default.rb', 'enlighten.rb']
       @meta = Chef::Cookbook::Metadata.new(@cookbook)
-      @meta.version "1.0"
-      @meta.maintainer "Bobo T. Clown"
-      @meta.maintainer_email "bobo@example.com"
-      @meta.long_description "I have a long arm!"
-      @meta.supports :ubuntu, "> 8.04"
-      @meta.depends "bobo", "= 1.0"
-      @meta.depends "bubu", "=1.0"
-      @meta.depends "bobotclown", "= 1.1"
-      @meta.recommends "snark", "< 3.0"
-      @meta.suggests "kindness", "> 2.0"
-      @meta.conflicts "hatred"
-      @meta.provides "foo(:bar, :baz)"
-      @meta.replaces "snarkitron"
-      @meta.recipe "test_cookbook::enlighten", "is your buddy"
-      @meta.attribute "bizspark/has_login",
-        :display_name => "You have nothing"
-      @meta.version "1.2.3"
+      @meta.version '1.0'
+      @meta.maintainer 'Bobo T. Clown'
+      @meta.maintainer_email 'bobo@example.com'
+      @meta.long_description 'I have a long arm!'
+      @meta.supports :ubuntu, '> 8.04'
+      @meta.depends 'bobo', '= 1.0'
+      @meta.depends 'bubu', '=1.0'
+      @meta.depends 'bobotclown', '= 1.1'
+      @meta.recommends 'snark', '< 3.0'
+      @meta.suggests 'kindness', '> 2.0'
+      @meta.conflicts 'hatred'
+      @meta.provides 'foo(:bar, :baz)'
+      @meta.replaces 'snarkitron'
+      @meta.recipe 'test_cookbook::enlighten', 'is your buddy'
+      @meta.attribute 'bizspark/has_login',
+                      display_name: 'You have nothing'
+      @meta.version '1.2.3'
     end
 
-    describe "serialize" do
+    describe 'serialize' do
       before(:each) do
         @serial = Chef::JSONCompat.from_json(@meta.to_json)
       end
 
-      it "should serialize to a json hash" do
+      it 'should serialize to a json hash' do
         Chef::JSONCompat.from_json(@meta.to_json).should be_a_kind_of(Hash)
       end
 
-      %w{
+      %w(
         name
         description
         long_description
@@ -608,23 +606,23 @@ describe Chef::Cookbook::Metadata do
         attributes
         recipes
         version
-      }.each do |t|
+      ).each do |t|
         it "should include '#{t}'" do
           @serial[t].should == @meta.send(t.to_sym)
         end
       end
     end
 
-    describe "deserialize" do
+    describe 'deserialize' do
       before(:each) do
         @deserial = Chef::Cookbook::Metadata.from_json(@meta.to_json)
       end
 
-      it "should deserialize to a Chef::Cookbook::Metadata object" do
+      it 'should deserialize to a Chef::Cookbook::Metadata object' do
         @deserial.should be_a_kind_of(Chef::Cookbook::Metadata)
       end
 
-      %w{
+      %w(
         name
         description
         long_description
@@ -641,14 +639,14 @@ describe Chef::Cookbook::Metadata do
         attributes
         recipes
         version
-      }.each do |t|
+      ).each do |t|
         it "should match '#{t}'" do
           @deserial.send(t.to_sym).should == @meta.send(t.to_sym)
         end
       end
     end
 
-    describe "from_hash" do
+    describe 'from_hash' do
       before(:each) do
         @hash = @meta.to_hash
       end
@@ -658,34 +656,34 @@ describe Chef::Cookbook::Metadata do
        :suggestions,
        :conflicting,
        :replacing].each do |to_check|
-        it "should transform deprecated greater than syntax for :#{to_check.to_s}" do
-          @hash[to_check.to_s]["foo::bar"] = ">> 0.2"
+        it "should transform deprecated greater than syntax for :#{to_check}" do
+          @hash[to_check.to_s]['foo::bar'] = '>> 0.2'
           deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          deserial.send(to_check)["foo::bar"].should == '> 0.2'
+          deserial.send(to_check)['foo::bar'].should == '> 0.2'
         end
 
-        it "should transform deprecated less than syntax for :#{to_check.to_s}" do
-          @hash[to_check.to_s]["foo::bar"] = "<< 0.2"
+        it "should transform deprecated less than syntax for :#{to_check}" do
+          @hash[to_check.to_s]['foo::bar'] = '<< 0.2'
           deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          deserial.send(to_check)["foo::bar"].should == '< 0.2'
+          deserial.send(to_check)['foo::bar'].should == '< 0.2'
         end
 
-        it "should ignore multiple dependency constraints for :#{to_check.to_s}" do
-          @hash[to_check.to_s]["foo::bar"] = [ ">= 1.0", "<= 5.2" ]
+        it "should ignore multiple dependency constraints for :#{to_check}" do
+          @hash[to_check.to_s]['foo::bar'] = ['>= 1.0', '<= 5.2']
           deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          deserial.send(to_check)["foo::bar"].should == []
+          deserial.send(to_check)['foo::bar'].should == []
         end
 
-        it "should accept an empty array of dependency constraints for :#{to_check.to_s}" do
-          @hash[to_check.to_s]["foo::bar"] = []
+        it "should accept an empty array of dependency constraints for :#{to_check}" do
+          @hash[to_check.to_s]['foo::bar'] = []
           deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          deserial.send(to_check)["foo::bar"].should == []
+          deserial.send(to_check)['foo::bar'].should == []
         end
 
-        it "should accept single-element arrays of dependency constraints for :#{to_check.to_s}" do
-          @hash[to_check.to_s]["foo::bar"] = [ ">= 2.0" ]
+        it "should accept single-element arrays of dependency constraints for :#{to_check}" do
+          @hash[to_check.to_s]['foo::bar'] = ['>= 2.0']
           deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          deserial.send(to_check)["foo::bar"].should == ">= 2.0"
+          deserial.send(to_check)['foo::bar'].should == '>= 2.0'
         end
       end
     end

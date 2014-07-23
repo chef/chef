@@ -24,8 +24,7 @@ require 'etc'
 
 class Chef
   module Mixin
-
-    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # NOTE:
     # The popen4 method upon which all the code here is based has a race
     # condition where it may fail to read all of the data written to stdout and
@@ -42,7 +41,7 @@ class Chef
     # In addition, you should make a note that tests need to be run with
     # volatile tests enabled on any pull request or bug report you submit with
     # your patch.
-    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     module Command
       extend self
@@ -52,11 +51,11 @@ class Chef
       if RUBY_PLATFORM =~ /mswin|mingw32|windows/
         require 'chef/mixin/command/windows'
         include ::Chef::Mixin::Command::Windows
-        extend  ::Chef::Mixin::Command::Windows
+        extend ::Chef::Mixin::Command::Windows
       else
         require 'chef/mixin/command/unix'
         include ::Chef::Mixin::Command::Unix
-        extend  ::Chef::Mixin::Command::Unix
+        extend ::Chef::Mixin::Command::Unix
       end
 
       # === Parameters
@@ -75,7 +74,7 @@ class Chef
       #
       # === Returns
       # Returns the exit status of args[:command]
-      def run_command(args={})
+      def run_command(args = {})
         status, stdout, stderr = run_command_and_return_stdout_stderr(args)
 
         status
@@ -84,15 +83,15 @@ class Chef
       # works same as above, except that it returns stdout and stderr
       # requirement => platforms like solaris 9,10 has wierd issues where
       # even in command failure the exit code is zero, so we need to lookup stderr.
-      def run_command_and_return_stdout_stderr(args={})
-        command_output = ""
+      def run_command_and_return_stdout_stderr(args = {})
+        command_output = ''
 
         args[:ignore_failure] ||= false
         args[:output_on_failure] ||= false
 
         # TODO: This is the wrong place for this responsibility.
         if args.key?(:creates)
-          if File.exists?(args[:creates])
+          if File.exist?(args[:creates])
             Chef::Log.debug("Skipping #{args[:command]} - creates #{args[:creates]} exists.")
             return false
           end
@@ -103,20 +102,20 @@ class Chef
         command_output << "STDERR: #{stderr}"
         handle_command_failures(status, command_output, args)
 
-        return status, stdout, stderr
+        [status, stdout, stderr]
       end
 
       def output_of_command(command, args)
         Chef::Log.debug("Executing #{command}")
-        stderr_string, stdout_string, status = "", "", nil
+        stderr_string, stdout_string, status = '', '', nil
 
-        exec_processing_block = lambda do |pid, stdin, stdout, stderr|
+        exec_processing_block = lambda do |_pid, _stdin, stdout, stderr|
           stdout_string, stderr_string = stdout.string.chomp, stderr.string.chomp
         end
 
         args[:cwd] ||= Dir.tmpdir
         unless ::File.directory?(args[:cwd])
-          raise Chef::Exceptions::Exec, "#{args[:cwd]} does not exist or is not a directory"
+          fail Chef::Exceptions::Exec, "#{args[:cwd]} does not exist or is not a directory"
         end
 
         Dir.chdir(args[:cwd]) do
@@ -140,22 +139,22 @@ class Chef
           Chef::Log.debug("Ran #{command} returned #{status.exitstatus}")
         end
 
-        return status, stdout_string, stderr_string
+        [status, stdout_string, stderr_string]
       end
 
-      def handle_command_failures(status, command_output, opts={})
+      def handle_command_failures(status, command_output, opts = {})
         return if opts[:ignore_failure]
         opts[:returns] ||= 0
         return if Array(opts[:returns]).include?(status.exitstatus)
 
         # if the log level is not debug, through output of command when we fail
-        output = ""
+        output = ''
         if Chef::Log.level == :debug || opts[:output_on_failure]
           output << "\n---- Begin output of #{opts[:command]} ----\n"
           output << command_output.to_s
           output << "\n---- End output of #{opts[:command]} ----\n"
         end
-        raise Chef::Exceptions::Exec, "#{opts[:command]} returned #{status.exitstatus}, expected #{opts[:returns]}#{output}"
+        fail Chef::Exceptions::Exec, "#{opts[:command]} returned #{status.exitstatus}, expected #{opts[:returns]}#{output}"
       end
 
       # Call #run_command but set LC_ALL to the system's current environment so it doesn't get changed to C.
@@ -165,9 +164,9 @@ class Chef
       #
       # === Returns
       # Returns the result of #run_command
-      def run_command_with_systems_locale(args={})
+      def run_command_with_systems_locale(args = {})
         args[:environment] ||= {}
-        args[:environment]["LC_ALL"] = ENV["LC_ALL"]
+        args[:environment]['LC_ALL'] = ENV['LC_ALL']
         run_command args
       end
 
@@ -180,13 +179,12 @@ class Chef
       def chdir_or_tmpdir(dir, &block)
         dir ||= Dir.tmpdir
         unless File.directory?(dir)
-          raise Chef::Exceptions::Exec, "#{dir} does not exist or is not a directory"
+          fail Chef::Exceptions::Exec, "#{dir} does not exist or is not a directory"
         end
         Dir.chdir(dir) do
           block.call
         end
       end
-
     end
   end
 end

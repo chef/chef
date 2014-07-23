@@ -28,7 +28,6 @@ class Chef
     # Abstract Base class for expanding a run list. Subclasses must handle
     # fetching roles from a data source by defining +fetch_role+
     class RunListExpansion
-
       attr_reader :run_list_items
 
       # A VersionedRecipeList of recipes. Populated only after #expand
@@ -54,9 +53,9 @@ class Chef
       # * Duplicate roles are not shown.
       attr_reader :run_list_trace
 
-      def initialize(environment, run_list_items, source=nil)
+      def initialize(environment, run_list_items, source = nil)
         @environment = environment
-        @missing_roles_with_including_role = Array.new
+        @missing_roles_with_including_role = []
 
         @run_list_items = run_list_items.dup
         @source = source
@@ -67,7 +66,7 @@ class Chef
         @recipes = Chef::RunList::VersionedRecipeList.new
 
         @applied_roles = {}
-        @run_list_trace = Hash.new {|h, key| h[key] = [] }
+        @run_list_trace = Hash.new { |h, key| h[key] = [] }
       end
 
       # Did we find any errors (expanding roles)?
@@ -75,7 +74,7 @@ class Chef
         @missing_roles_with_including_role.length > 0
       end
 
-      alias :invalid? :errors?
+      alias_method :invalid?, :errors?
 
       # Recurses over the run list items, expanding roles. After this,
       # +recipes+ will contain the fully expanded recipe list
@@ -113,8 +112,8 @@ class Chef
       end
 
       # In subclasses, this method will fetch the role from the data source.
-      def fetch_role(name, included_by)
-        raise NotImplementedError
+      def fetch_role(_name, _included_by)
+        fail NotImplementedError
       end
 
       # When a role is not found, an error message is logged, but no
@@ -128,7 +127,7 @@ class Chef
       end
 
       def errors
-        @missing_roles_with_including_role.map {|item| item.first }
+        @missing_roles_with_including_role.map { |item| item.first }
       end
 
       private
@@ -139,7 +138,7 @@ class Chef
         @applied_roles[role_name] = true
       end
 
-      def expand_run_list_items(items, included_by="top level")
+      def expand_run_list_items(items, included_by = 'top level')
         if entry = items.shift
           @run_list_trace[included_by.to_s] << entry.to_s
 
@@ -155,23 +154,19 @@ class Chef
           expand_run_list_items(items, included_by)
         end
       end
-
     end
 
     # Expand a run list from disk. Suitable for chef-solo
     class RunListExpansionFromDisk < RunListExpansion
-
       def fetch_role(name, included_by)
         Chef::Role.from_disk(name)
       rescue Chef::Exceptions::RoleNotFound
         role_not_found(name, included_by)
       end
-
     end
 
     # Expand a run list from the chef-server API.
     class RunListExpansionFromAPI < RunListExpansion
-
       def rest
         @rest ||= (source || Chef::REST.new(Chef::Config[:chef_server_url]))
       end
@@ -186,6 +181,5 @@ class Chef
         end
       end
     end
-
   end
 end

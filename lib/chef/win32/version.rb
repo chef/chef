@@ -48,19 +48,19 @@ class Chef
       public
 
       WIN_VERSIONS = {
-        "Windows 8.1" => {:major => 6, :minor => 3, :callable => lambda{ |product_type, suite_mask| product_type == VER_NT_WORKSTATION }},
-        "Windows Server 2012 R2" => {:major => 6, :minor => 3, :callable => lambda {|product_type, suite_mask| product_type != VER_NT_WORKSTATION }},
-        "Windows 8" => {:major => 6, :minor => 2, :callable => lambda{ |product_type, suite_mask| product_type == VER_NT_WORKSTATION }},
-        "Windows Server 2012" => {:major => 6, :minor => 2, :callable => lambda{ |product_type, suite_mask| product_type != VER_NT_WORKSTATION }},
-        "Windows 7" => {:major => 6, :minor => 1, :callable => lambda{ |product_type, suite_mask| product_type == VER_NT_WORKSTATION }},
-        "Windows Server 2008 R2" => {:major => 6, :minor => 1, :callable => lambda{ |product_type, suite_mask| product_type != VER_NT_WORKSTATION }},
-        "Windows Server 2008" => {:major => 6, :minor => 0, :callable => lambda{ |product_type, suite_mask| product_type != VER_NT_WORKSTATION }},
-        "Windows Vista" => {:major => 6, :minor => 0, :callable => lambda{ |product_type, suite_mask| product_type == VER_NT_WORKSTATION }},
-        "Windows Server 2003 R2" => {:major => 5, :minor => 2, :callable => lambda{ |product_type, suite_mask| get_system_metrics(SM_SERVERR2) != 0 }},
-        "Windows Home Server" => {:major => 5, :minor => 2, :callable => lambda{ |product_type, suite_mask| (suite_mask & VER_SUITE_WH_SERVER) == VER_SUITE_WH_SERVER }},
-        "Windows Server 2003" => {:major => 5, :minor => 2, :callable => lambda{ |product_type, suite_mask| get_system_metrics(SM_SERVERR2) == 0 }},
-        "Windows XP" => {:major => 5, :minor => 1},
-        "Windows 2000" => {:major => 5, :minor => 0}
+        'Windows 8.1' => { major: 6, minor: 3, callable: lambda { |product_type, _suite_mask| product_type == VER_NT_WORKSTATION } },
+        'Windows Server 2012 R2' => { major: 6, minor: 3, callable: lambda { |product_type, _suite_mask| product_type != VER_NT_WORKSTATION } },
+        'Windows 8' => { major: 6, minor: 2, callable: lambda { |product_type, _suite_mask| product_type == VER_NT_WORKSTATION } },
+        'Windows Server 2012' => { major: 6, minor: 2, callable: lambda { |product_type, _suite_mask| product_type != VER_NT_WORKSTATION } },
+        'Windows 7' => { major: 6, minor: 1, callable: lambda { |product_type, _suite_mask| product_type == VER_NT_WORKSTATION } },
+        'Windows Server 2008 R2' => { major: 6, minor: 1, callable: lambda { |product_type, _suite_mask| product_type != VER_NT_WORKSTATION } },
+        'Windows Server 2008' => { major: 6, minor: 0, callable: lambda { |product_type, _suite_mask| product_type != VER_NT_WORKSTATION } },
+        'Windows Vista' => { major: 6, minor: 0, callable: lambda { |product_type, _suite_mask| product_type == VER_NT_WORKSTATION } },
+        'Windows Server 2003 R2' => { major: 5, minor: 2, callable: lambda { |_product_type, _suite_mask| get_system_metrics(SM_SERVERR2) != 0 } },
+        'Windows Home Server' => { major: 5, minor: 2, callable: lambda { |_product_type, suite_mask| (suite_mask & VER_SUITE_WH_SERVER) == VER_SUITE_WH_SERVER } },
+        'Windows Server 2003' => { major: 5, minor: 2, callable: lambda { |_product_type, _suite_mask| get_system_metrics(SM_SERVERR2) == 0 } },
+        'Windows XP' => { major: 5, minor: 1 },
+        'Windows 2000' => { major: 5, minor: 0 }
       }
 
       def initialize
@@ -74,7 +74,7 @@ class Chef
         # Obtain sku information for the purpose of identifying
         # datacenter, cluster, and core skus, the latter 2 only
         # exist in releases after Windows Server 2003
-        if ! Chef::Platform::windows_server_2003?
+        if !Chef::Platform.windows_server_2003?
           @sku = get_product_info(@major_version, @minor_version, @sp_major_version, @sp_minor_version)
         else
           # The get_product_info API is not supported on Win2k3,
@@ -83,10 +83,10 @@ class Chef
         end
       end
 
-      marketing_names = Array.new
+      marketing_names = []
 
       # General Windows checks
-      WIN_VERSIONS.each do |k,v|
+      WIN_VERSIONS.each do |k, v|
         method_name = method_name_from_marketing_name(k)
         define_method(method_name) do
           (@major_version == v[:major]) &&
@@ -98,16 +98,16 @@ class Chef
 
       define_method(:marketing_name) do
         marketing_names.each do |mn|
-          break mn[0] if self.send(mn[1])
+          break mn[0] if send(mn[1])
         end
       end
 
       # Server Type checks
-      %w{ cluster core datacenter }.each do |m|
+      %w(cluster core datacenter).each do |m|
         define_method("#{m}?") do
           self.class.constants.any? do |c|
             (self.class.const_get(c) == @sku) &&
-              (c.to_s =~ /#{m}/i )
+              (c.to_s =~ /#{m}/i)
           end
         end
       end
@@ -135,7 +135,7 @@ class Chef
         # The operating system version is a string in the following form
         # that can be split into components based on the '.' delimiter:
         # MajorVersionNumber.MinorVersionNumber.BuildNumber
-        os_version.split('.').collect { | version_string | version_string.to_i }
+        os_version.split('.').map { | version_string | version_string.to_i }
       end
 
       def get_version_ex
@@ -158,7 +158,6 @@ class Chef
         # Windows Server 2003 datacenter
         sku = (ver_info[:w_suite_mask] & VER_SUITE_DATACENTER) ? PRODUCT_DATACENTER_SERVER : 0
       end
-
     end
   end
 end

@@ -22,10 +22,9 @@ require 'chef/resource/execute'
 class Chef
   class Resource
     class Script < Chef::Resource::Execute
-
       identity_attr :command
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :script
         @command = name
@@ -34,27 +33,27 @@ class Chef
         @flags = nil
       end
 
-      def code(arg=nil)
+      def code(arg = nil)
         set_or_return(
           :code,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def interpreter(arg=nil)
+      def interpreter(arg = nil)
         set_or_return(
           :interpreter,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
-      def flags(arg=nil)
+      def flags(arg = nil)
         set_or_return(
           :flags,
           arg,
-          :kind_of => [ String ]
+          kind_of: [String]
         )
       end
 
@@ -62,7 +61,7 @@ class Chef
         @class_inherited_attributes = inherited_attributes
       end
 
-      def self.guard_inherited_attributes(*inherited_attributes)
+      def self.guard_inherited_attributes(*_inherited_attributes)
         # Similar to patterns elsewhere, return attributes from this
         # class and superclasses as a form of inheritance
         ancestor_attributes = []
@@ -82,7 +81,6 @@ class Chef
        :user,
        :umask
        )
-
     end
   end
 end

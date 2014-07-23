@@ -19,7 +19,6 @@
 class Chef
   class Provider
     class Breakpoint < Chef::Provider
-
       def load_current_resource
       end
 
@@ -30,7 +29,6 @@ class Chef
           run_context.resource_collection.iterator
         end
       end
-
     end
   end
 end

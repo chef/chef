@@ -1,7 +1,7 @@
 action :prepare_thumbs do
-  "Prepared"
+  'Prepared'
 end
 
 action :twiddle_thumbs do
-  "Twiddle twiddle"
+  'Twiddle twiddle'
 end

@@ -58,18 +58,18 @@ class Chef
         @ifconfig_success = true
         @interfaces = {}
 
-        @status = popen4("ifconfig") do |pid, stdin, stdout, stderr|
+        @status = popen4('ifconfig') do |_pid, _stdin, stdout, _stderr|
           stdout.each do |line|
 
             if !line[0..9].strip.empty?
               @int_name = line[0..9].strip
-              @interfaces[@int_name] = {"hwaddr" => (line =~ /(HWaddr)/ ? ($') : "nil").strip.chomp }
+              @interfaces[@int_name] = { 'hwaddr' => (line =~ /(HWaddr)/ ? ($') : 'nil').strip.chomp }
             else
-              @interfaces[@int_name]["inet_addr"] = (line =~ /inet addr:(\S+)/ ? ($1) : "nil") if line =~ /inet addr:/
-              @interfaces[@int_name]["bcast"] = (line =~ /Bcast:(\S+)/ ? ($1) : "nil") if line =~ /Bcast:/
-              @interfaces[@int_name]["mask"] = (line =~ /Mask:(\S+)/ ? ($1) : "nil") if line =~ /Mask:/
-              @interfaces[@int_name]["mtu"] = (line =~ /MTU:(\S+)/ ? ($1) : "nil") if line =~ /MTU:/
-              @interfaces[@int_name]["metric"] = (line =~ /Metric:(\S+)/ ? ($1) : "nil") if line =~ /Metric:/
+              @interfaces[@int_name]['inet_addr'] = (line =~ /inet addr:(\S+)/ ? (Regexp.last_match[1]) : 'nil') if line =~ /inet addr:/
+              @interfaces[@int_name]['bcast'] = (line =~ /Bcast:(\S+)/ ? (Regexp.last_match[1]) : 'nil') if line =~ /Bcast:/
+              @interfaces[@int_name]['mask'] = (line =~ /Mask:(\S+)/ ? (Regexp.last_match[1]) : 'nil') if line =~ /Mask:/
+              @interfaces[@int_name]['mtu'] = (line =~ /MTU:(\S+)/ ? (Regexp.last_match[1]) : 'nil') if line =~ /MTU:/
+              @interfaces[@int_name]['metric'] = (line =~ /Metric:(\S+)/ ? (Regexp.last_match[1]) : 'nil') if line =~ /Metric:/
             end
 
             if @interfaces.key?(@new_resource.device)
@@ -77,12 +77,12 @@ class Chef
 
               @current_resource.target(@new_resource.target)
               @current_resource.device(@new_resource.device)
-              @current_resource.inet_addr(@interface["inet_addr"])
-              @current_resource.hwaddr(@interface["hwaddr"])
-              @current_resource.bcast(@interface["bcast"])
-              @current_resource.mask(@interface["mask"])
-              @current_resource.mtu(@interface["mtu"])
-              @current_resource.metric(@interface["metric"])
+              @current_resource.inet_addr(@interface['inet_addr'])
+              @current_resource.hwaddr(@interface['hwaddr'])
+              @current_resource.bcast(@interface['bcast'])
+              @current_resource.mask(@interface['mask'])
+              @current_resource.mtu(@interface['mtu'])
+              @current_resource.metric(@interface['metric'])
             end
           end
         end
@@ -106,7 +106,7 @@ class Chef
             command = add_command
             converge_by ("run #{command} to add #{@new_resource}") do
               run_command(
-                :command => command
+                command: command
               )
               Chef::Log.info("#{@new_resource} added")
               # Write out the config files
@@ -124,7 +124,7 @@ class Chef
             command = enable_command
             converge_by ("run #{command} to enable #{@new_resource}") do
               run_command(
-                :command => command
+                command: command
               )
               Chef::Log.info("#{@new_resource} enabled")
             end
@@ -138,7 +138,7 @@ class Chef
           command = delete_command
           converge_by ("run #{command} to delete #{@new_resource}") do
             run_command(
-              :command => command
+              command: command
             )
             delete_config
             Chef::Log.info("#{@new_resource} deleted")
@@ -155,7 +155,7 @@ class Chef
           command = disable_command
           converge_by ("run #{command} to disable #{@new_resource}") do
             run_command(
-              :command => command
+              command: command
             )
             Chef::Log.info("#{@new_resource} disabled")
           end
@@ -165,7 +165,7 @@ class Chef
       end
 
       def can_generate_config?
-        ! @config_template.nil? and ! @config_path.nil?
+        ! @config_template.nil? && ! @config_path.nil?
       end
 
       def generate_config
@@ -173,7 +173,7 @@ class Chef
         b = binding
         template = ::ERB.new(@config_template)
         converge_by ("generate configuration file : #{@config_path}") do
-          network_file = ::File.new(@config_path, "w")
+          network_file = ::File.new(@config_path, 'w')
           network_file.puts(template.result(b))
           network_file.close
         end
@@ -185,7 +185,7 @@ class Chef
         require 'fileutils'
         if ::File.exist?(@config_path)
           converge_by ("delete the #{@config_path}") do
-            FileUtils.rm_f(@config_path, :verbose => false)
+            FileUtils.rm_f(@config_path, verbose: false)
           end
         end
         Chef::Log.info("#{@new_resource} deleted configuration file")

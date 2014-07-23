@@ -25,11 +25,9 @@ require 'tempfile'
 
 class Chef
   class Knife
-
-    #==Chef::Knife::UI
+    # ==Chef::Knife::UI
     # The User Interaction class used by knife.
     class UI
-
       extend Forwardable
 
       attr_reader :stdout
@@ -65,24 +63,20 @@ class Chef
       # Prints a message to stdout. Aliased as +info+ for compatibility with
       # the logger API.
       def msg(message)
-        begin
-          stdout.puts message
-        rescue Errno::EPIPE => e
-          raise e if @config[:verbosity] >= 2
-          exit 0
-        end
+        stdout.puts message
+      rescue Errno::EPIPE => e
+        raise e if @config[:verbosity] >= 2
+        exit 0
       end
 
-      alias :info :msg
+      alias_method :info, :msg
 
       # Prints a msg to stderr. Used for warn, error, and fatal.
       def err(message)
-        begin
-          stderr.puts message
-        rescue Errno::EPIPE => e
-          raise e if @config[:verbosity] >= 2
-          exit 0
-        end
+        stderr.puts message
+      rescue Errno::EPIPE => e
+        raise e if @config[:verbosity] >= 2
+        exit 0
       end
 
       # Print a warning message
@@ -136,7 +130,7 @@ class Chef
         @presenter.interchange?
       end
 
-      def ask_question(question, opts={})
+      def ask_question(question, opts = {})
         question = question + "[#{opts[:default]}] " if opts[:default]
 
         if opts[:default] and config[:defaults]
@@ -154,23 +148,21 @@ class Chef
       end
 
       def pretty_print(data)
-        begin
-          stdout.puts data
-        rescue Errno::EPIPE => e
-          raise e if @config[:verbosity] >= 2
-          exit 0
-        end
+        stdout.puts data
+      rescue Errno::EPIPE => e
+        raise e if @config[:verbosity] >= 2
+        exit 0
       end
 
-      def edit_data(data, parse_output=true)
+      def edit_data(data, parse_output = true)
         output = Chef::JSONCompat.to_json_pretty(data)
 
-        if (!config[:disable_editing])
-          Tempfile.open([ 'knife-edit-', '.json' ]) do |tf|
+        unless config[:disable_editing]
+          Tempfile.open(['knife-edit-', '.json']) do |tf|
             tf.sync = true
             tf.puts output
             tf.close
-            raise "Please set EDITOR environment variable" unless system("#{config[:editor]} #{tf.path}")
+            fail 'Please set EDITOR environment variable' unless system("#{config[:editor]} #{tf.path}")
 
             output = IO.read(tf.path)
           end
@@ -194,13 +186,13 @@ class Chef
         # We wouldn't have to do these shenanigans if all the editable objects
         # implemented to_hash, or if to_json against a hash returned a string
         # with stable key order.
-        object_parsed_again = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(object), :create_additions => false)
-        output_parsed_again = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(output), :create_additions => false)
+        object_parsed_again = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(object), create_additions: false)
+        output_parsed_again = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(output), create_additions: false)
         if object_parsed_again != output_parsed_again
           output.save
-          self.msg("Saved #{output}")
+          msg("Saved #{output}")
         else
-          self.msg("Object unchanged, not saving")
+          msg('Object unchanged, not saving')
         end
         output(format_for_display(object)) if config[:print_after]
       end
@@ -217,7 +209,7 @@ class Chef
       end
 
       # See confirm method for argument information
-      def confirm_without_exit(question, append_instructions=true, default_choice=nil)
+      def confirm_without_exit(question, append_instructions = true, default_choice = nil)
         return true if config[:yes]
 
         stdout.print question
@@ -227,22 +219,22 @@ class Chef
         answer.chomp!
 
         case answer
-        when "Y", "y"
+        when 'Y', 'y'
           true
-        when "N", "n"
-          self.msg("You said no, so I'm done here.")
+        when 'N', 'n'
+          msg("You said no, so I'm done here.")
           false
-        when ""
+        when ''
           unless default_choice.nil?
             default_choice
           else
-            self.msg("I have no idea what to do with '#{answer}'")
-            self.msg("Just say Y or N, please.")
+            msg("I have no idea what to do with '#{answer}'")
+            msg('Just say Y or N, please.')
             confirm_without_exit(question, append_instructions, default_choice)
           end
         else
-          self.msg("I have no idea what to do with '#{answer}'")
-          self.msg("Just say Y or N, please.")
+          msg("I have no idea what to do with '#{answer}'")
+          msg('Just say Y or N, please.')
           confirm_without_exit(question, append_instructions, default_choice)
         end
       end
@@ -255,13 +247,12 @@ class Chef
       # append_instructions => Should print '? (Y/N)' as instructions
       # default_choice => Set to true for 'Y', and false for 'N' as default answer
       #
-      def confirm(question, append_instructions=true, default_choice=nil)
+      def confirm(question, append_instructions = true, default_choice = nil)
         unless confirm_without_exit(question, append_instructions, default_choice)
           exit 3
         end
         true
       end
-
     end
   end
 end

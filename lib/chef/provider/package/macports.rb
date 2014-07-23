@@ -11,8 +11,8 @@ class Chef
 
           @candidate_version = macports_candidate_version
 
-          if !@new_resource.version and !@candidate_version
-            raise Chef::Exceptions::Package, "Could not get a candidate version for this package -- #{@new_resource.name} does not seem to be a valid package!"
+          if !@new_resource.version && !@candidate_version
+            fail Chef::Exceptions::Package, "Could not get a candidate version for this package -- #{@new_resource.name} does not seem to be a valid package!"
           end
 
           Chef::Log.debug("#{@new_resource} candidate version is #{@candidate_version}") if @candidate_version
@@ -46,7 +46,7 @@ class Chef
             command = "port#{expand_options(@new_resource.options)} install #{name}"
             command << " @#{version}" if version and !version.empty?
             run_command_with_systems_locale(
-              :command => command
+              command: command
             )
           end
         end
@@ -55,7 +55,7 @@ class Chef
           command = "port#{expand_options(@new_resource.options)} uninstall #{name}"
           command << " @#{version}" if version and !version.empty?
           run_command_with_systems_locale(
-            :command => command
+            command: command
           )
         end
 
@@ -64,7 +64,7 @@ class Chef
           command << " @#{version}" if version and !version.empty?
 
           run_command_with_systems_locale(
-            :command => command
+            command: command
           )
         end
 
@@ -79,7 +79,7 @@ class Chef
             install_package(name, version)
           elsif current_version != version
             run_command_with_systems_locale(
-              :command => "port#{expand_options(@new_resource.options)} upgrade #{name} @#{version}"
+              command: "port#{expand_options(@new_resource.options)} upgrade #{name} @#{version}"
             )
           end
         end
@@ -87,15 +87,15 @@ class Chef
         private
         def get_response_from_command(command)
           output = nil
-          status = popen4(command) do |pid, stdin, stdout, stderr|
+          status = popen4(command) do |_pid, _stdin, stdout, _stderr|
             begin
               output = stdout.read
-            rescue Exception
+            rescue
               raise Chef::Exceptions::Package, "Could not read from STDOUT on command: #{command}"
             end
           end
           unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "#{command} failed - #{status.insect}!"
+            fail Chef::Exceptions::Package, "#{command} failed - #{status.insect}!"
           end
           output
         end

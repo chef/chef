@@ -20,7 +20,6 @@ class Chef
   class Provider
     class Group
       class Pw < Chef::Provider::Group
-
         def load_current_resource
           super
         end
@@ -29,7 +28,7 @@ class Chef
           super
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exists?("/usr/sbin/pw") }
+            a.assertion { ::File.exist?('/usr/sbin/pw') }
             a.failure_message Chef::Exceptions::Group, "Could not find binary /usr/sbin/pw for #{@new_resource}"
             # No whyrun alternative: this component should be available in the base install of any given system that uses it
           end
@@ -37,35 +36,35 @@ class Chef
 
         # Create the group
         def create_group
-          command = "pw groupadd"
+          command = 'pw groupadd'
           command << set_options
           member_options = set_members_options
           if member_options.empty?
-            run_command(:command => command)
+            run_command(command: command)
           else
             member_options.each do |option|
-              run_command(:command => command + option)
+              run_command(command: command + option)
             end
           end
         end
 
         # Manage the group when it already exists
         def manage_group
-          command = "pw groupmod"
+          command = 'pw groupmod'
           command << set_options
           member_options = set_members_options
           if member_options.empty?
-            run_command(:command => command)
+            run_command(command: command)
           else
             member_options.each do |option|
-              run_command(:command => command + option)
+              run_command(command: command + option)
             end
           end
         end
 
         # Remove the group
         def remove_group
-          run_command(:command => "pw groupdel #{@new_resource.group_name}")
+          run_command(command: "pw groupdel #{@new_resource.group_name}")
         end
 
         # Little bit of magic as per Adam's useradd provider to pull and assign the command line flags
@@ -83,9 +82,9 @@ class Chef
 
         # Set the membership option depending on the current resource states
         def set_members_options
-          opts = [ ]
-          members_to_be_added = [ ]
-          members_to_be_removed = [ ]
+          opts = []
+          members_to_be_added = []
+          members_to_be_removed = []
 
           if @new_resource.append
             # Append is set so we will only add members given in the
@@ -93,7 +92,7 @@ class Chef
             # excluded_members list.
             if @new_resource.members && !@new_resource.members.empty?
               @new_resource.members.each do |member|
-                members_to_be_added << member if !@current_resource.members.include?(member)
+                members_to_be_added << member unless @current_resource.members.include?(member)
               end
             end
 
@@ -129,7 +128,6 @@ class Chef
 
           opts
         end
-
       end
     end
   end

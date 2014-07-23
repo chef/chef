@@ -30,17 +30,13 @@ class Tempfile # :nodoc:
   if RUBY_VERSION =~ /^1\.8/
     def unlink
       # keep this order for thread safeness
-      begin
-        File.unlink(@tmpname) if File.exist?(@tmpname)
-        @@cleanlist.delete(@tmpname)
-        @tmpname = nil
-        ObjectSpace.undefine_finalizer(self)
-      rescue Errno::EACCES
-        # may not be able to unlink on Windows; just ignore
-      end
+      File.unlink(@tmpname) if File.exist?(@tmpname)
+      @@cleanlist.delete(@tmpname)
+      @tmpname = nil
+      ObjectSpace.undefine_finalizer(self)
+    rescue Errno::EACCES
     end
-    alias delete unlink
-
+    alias_method :delete, :unlink
 
   # There is a patch for this, to be merged into 1.9 at some point.
   # When that happens, we'll want to also check the RUBY_PATCHLEVEL
@@ -59,6 +55,6 @@ class Tempfile # :nodoc:
         # may not be able to unlink on Windows; just ignore
       end
     end
-    alias delete unlink
+    alias_method :delete, :unlink
   end
 end

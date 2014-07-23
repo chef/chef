@@ -5,11 +5,10 @@ require 'chef/json_compat'
 
 class Chef
   class ConfigFetcher
-
     attr_reader :config_location
     attr_reader :config_file_jail
 
-    def initialize(config_location, config_file_jail=nil)
+    def initialize(config_location, config_file_jail = nil)
       @config_location = config_location
       @config_file_jail = config_file_jail
     end
@@ -32,7 +31,7 @@ class Chef
     end
 
     def fetch_remote_config
-      http.get("")
+      http.get('')
     rescue SocketError, SystemCallError, Net::HTTPServerException => error
       Chef::Application.fatal!("Cannot fetch config '#{config_location}': '#{error.class}: #{error.message}", 2)
     end
@@ -56,7 +55,7 @@ class Chef
       end
 
       # If realpath succeeded, the file exists
-      return false if !config_file_jail
+      return false unless config_file_jail
 
       begin
         real_jail = Pathname.new(config_file_jail).realpath.to_s

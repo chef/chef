@@ -22,23 +22,23 @@ require 'net/ssh/multi'
 
 describe Chef::Knife::Ssh do
   before(:each) do
-    Chef::Config[:client_key] = CHEF_SPEC_DATA + "/ssl/private_key.pem"
+    Chef::Config[:client_key] = CHEF_SPEC_DATA + '/ssl/private_key.pem'
   end
 
   before do
     @knife = Chef::Knife::Ssh.new
     @knife.merge_configs
-    @knife.config[:attribute] = "fqdn"
+    @knife.config[:attribute] = 'fqdn'
     @node_foo = Chef::Node.new
-    @node_foo.automatic_attrs[:fqdn] = "foo.example.org"
-    @node_foo.automatic_attrs[:ipaddress] = "10.0.0.1"
+    @node_foo.automatic_attrs[:fqdn] = 'foo.example.org'
+    @node_foo.automatic_attrs[:ipaddress] = '10.0.0.1'
     @node_bar = Chef::Node.new
-    @node_bar.automatic_attrs[:fqdn] = "bar.example.org"
-    @node_bar.automatic_attrs[:ipaddress] = "10.0.0.2"
+    @node_bar.automatic_attrs[:fqdn] = 'bar.example.org'
+    @node_bar.automatic_attrs[:ipaddress] = '10.0.0.2'
   end
 
-  describe "#configure_session" do
-    context "manual is set to false (default)" do
+  describe '#configure_session' do
+    context 'manual is set to false (default)' do
       before do
         @knife.config[:manual] = false
         @query = Chef::Search::Query.new
@@ -50,24 +50,24 @@ describe Chef::Knife::Ssh do
       end
 
       def self.should_return_specified_attributes
-        it "returns an array of the attributes specified on the command line OR config file, if only one is set" do
-          @knife.config[:attribute] = "ipaddress"
-          @knife.config[:attribute_from_cli] = "ipaddress"
+        it 'returns an array of the attributes specified on the command line OR config file, if only one is set' do
+          @knife.config[:attribute] = 'ipaddress'
+          @knife.config[:attribute_from_cli] = 'ipaddress'
           configure_query([@node_foo, @node_bar])
           @knife.should_receive(:session_from_list).with([['10.0.0.1', nil], ['10.0.0.2', nil]])
           @knife.configure_session
         end
 
-        it "returns an array of the attributes specified on the command line even when a config value is set" do
-          @knife.config[:attribute] = "config_file" # this value will be the config file
-          @knife.config[:attribute_from_cli] = "ipaddress" # this is the value of the command line via #configure_attribute
+        it 'returns an array of the attributes specified on the command line even when a config value is set' do
+          @knife.config[:attribute] = 'config_file' # this value will be the config file
+          @knife.config[:attribute_from_cli] = 'ipaddress' # this is the value of the command line via #configure_attribute
           configure_query([@node_foo, @node_bar])
           @knife.should_receive(:session_from_list).with([['10.0.0.1', nil], ['10.0.0.2', nil]])
           @knife.configure_session
         end
       end
 
-      it "searchs for and returns an array of fqdns" do
+      it 'searchs for and returns an array of fqdns' do
         configure_query([@node_foo, @node_bar])
         @knife.should_receive(:session_from_list).with([
           ['foo.example.org', nil],
@@ -78,13 +78,13 @@ describe Chef::Knife::Ssh do
 
       should_return_specified_attributes
 
-      context "when cloud hostnames are available" do
+      context 'when cloud hostnames are available' do
         before do
-          @node_foo.automatic_attrs[:cloud][:public_hostname] = "ec2-10-0-0-1.compute-1.amazonaws.com"
-          @node_bar.automatic_attrs[:cloud][:public_hostname] = "ec2-10-0-0-2.compute-1.amazonaws.com"
+          @node_foo.automatic_attrs[:cloud][:public_hostname] = 'ec2-10-0-0-1.compute-1.amazonaws.com'
+          @node_bar.automatic_attrs[:cloud][:public_hostname] = 'ec2-10-0-0-2.compute-1.amazonaws.com'
         end
 
-        it "returns an array of cloud public hostnames" do
+        it 'returns an array of cloud public hostnames' do
           configure_query([@node_foo, @node_bar])
           @knife.should_receive(:session_from_list).with([
             ['ec2-10-0-0-1.compute-1.amazonaws.com', nil],
@@ -96,14 +96,14 @@ describe Chef::Knife::Ssh do
         should_return_specified_attributes
       end
 
-      it "should raise an error if no host are found" do
-          configure_query([ ])
-          @knife.ui.should_receive(:fatal)
-          @knife.should_receive(:exit).with(10)
-          @knife.configure_session
+      it 'should raise an error if no host are found' do
+        configure_query([])
+        @knife.ui.should_receive(:fatal)
+        @knife.should_receive(:exit).with(10)
+        @knife.configure_session
       end
 
-      context "when there are some hosts found but they do not have an attribute to connect with" do
+      context 'when there are some hosts found but they do not have an attribute to connect with' do
         before do
           @query.stub(:search).and_return([[@node_foo, @node_bar]])
           @node_foo.automatic_attrs[:fqdn] = nil
@@ -111,7 +111,7 @@ describe Chef::Knife::Ssh do
           Chef::Search::Query.stub(:new).and_return(@query)
         end
 
-        it "should raise a specific error (CHEF-3402)" do
+        it 'should raise a specific error (CHEF-3402)' do
           @knife.ui.should_receive(:fatal).with(/^2 nodes found/)
           @knife.should_receive(:exit).with(10)
           @knife.configure_session
@@ -119,96 +119,96 @@ describe Chef::Knife::Ssh do
       end
     end
 
-    context "manual is set to true" do
+    context 'manual is set to true' do
       before do
         @knife.config[:manual] = true
       end
 
-      it "returns an array of provided values" do
-        @knife.instance_variable_set(:@name_args, ["foo.example.org bar.example.org"])
+      it 'returns an array of provided values' do
+        @knife.instance_variable_set(:@name_args, ['foo.example.org bar.example.org'])
         @knife.should_receive(:session_from_list).with(['foo.example.org', 'bar.example.org'])
         @knife.configure_session
       end
     end
   end
 
-  describe "#configure_attribute" do
+  describe '#configure_attribute' do
     before do
       Chef::Config[:knife][:ssh_attribute] = nil
       @knife.config[:attribute] = nil
     end
 
-    it "should return fqdn by default" do
+    it 'should return fqdn by default' do
       @knife.configure_attribute
-      @knife.config[:attribute].should == "fqdn"
+      @knife.config[:attribute].should == 'fqdn'
     end
 
-    it "should return the value set in the configuration file" do
-      Chef::Config[:knife][:ssh_attribute] = "config_file"
+    it 'should return the value set in the configuration file' do
+      Chef::Config[:knife][:ssh_attribute] = 'config_file'
       @knife.configure_attribute
-      @knife.config[:attribute].should == "config_file"
+      @knife.config[:attribute].should == 'config_file'
     end
 
-    it "should return the value set on the command line" do
-      @knife.config[:attribute] = "command_line"
+    it 'should return the value set on the command line' do
+      @knife.config[:attribute] = 'command_line'
       @knife.configure_attribute
-      @knife.config[:attribute].should == "command_line"
+      @knife.config[:attribute].should == 'command_line'
     end
 
-    it "should set attribute_from_cli to the value of attribute from the command line" do
-      @knife.config[:attribute] = "command_line"
+    it 'should set attribute_from_cli to the value of attribute from the command line' do
+      @knife.config[:attribute] = 'command_line'
       @knife.configure_attribute
-      @knife.config[:attribute].should == "command_line"
-      @knife.config[:attribute_from_cli].should == "command_line"
+      @knife.config[:attribute].should == 'command_line'
+      @knife.config[:attribute_from_cli].should == 'command_line'
     end
 
-    it "should prefer the command line over the config file for the value of attribute_from_cli" do
-      Chef::Config[:knife][:ssh_attribute] = "config_file"
-      @knife.config[:attribute] = "command_line"
+    it 'should prefer the command line over the config file for the value of attribute_from_cli' do
+      Chef::Config[:knife][:ssh_attribute] = 'config_file'
+      @knife.config[:attribute] = 'command_line'
       @knife.configure_attribute
-      @knife.config[:attribute].should == "command_line"
-      @knife.config[:attribute_from_cli].should == "command_line"
+      @knife.config[:attribute].should == 'command_line'
+      @knife.config[:attribute_from_cli].should == 'command_line'
     end
   end
 
-  describe "#session_from_list" do
+  describe '#session_from_list' do
     before :each do
       @knife.instance_variable_set(:@longest, 0)
-      ssh_config = {:timeout => 50, :user => "locutus", :port => 23 }
+      ssh_config = { timeout: 50, user: 'locutus', port: 23 }
       Net::SSH.stub(:configuration_for).with('the.b.org').and_return(ssh_config)
     end
 
-    it "uses the port from an ssh config file" do
+    it 'uses the port from an ssh config file' do
       @knife.session_from_list([['the.b.org', nil]])
       @knife.session.servers[0].port.should == 23
     end
 
-    it "uses the port from a cloud attr" do
+    it 'uses the port from a cloud attr' do
       @knife.session_from_list([['the.b.org', 123]])
       @knife.session.servers[0].port.should == 123
     end
 
-    it "uses the user from an ssh config file" do
+    it 'uses the user from an ssh config file' do
       @knife.session_from_list([['the.b.org', 123]])
-      @knife.session.servers[0].user.should == "locutus"
+      @knife.session.servers[0].user.should == 'locutus'
     end
   end
 
-  describe "#ssh_command" do
-    let(:execution_channel) { double(:execution_channel, :on_data => nil) }
-    let(:session_channel) { double(:session_channel, :request_pty => nil)}
+  describe '#ssh_command' do
+    let(:execution_channel) { double(:execution_channel, on_data: nil) }
+    let(:session_channel) { double(:session_channel, request_pty: nil) }
 
-    let(:execution_channel2) { double(:execution_channel, :on_data => nil) }
-    let(:session_channel2) { double(:session_channel, :request_pty => nil)}
+    let(:execution_channel2) { double(:execution_channel, on_data: nil) }
+    let(:session_channel2) { double(:session_channel, request_pty: nil) }
 
-    let(:session) { double(:session, :loop => nil) }
+    let(:session) { double(:session, loop: nil) }
 
-    let(:command) { "false" }
+    let(:command) { 'false' }
 
     before do
       execution_channel.
         should_receive(:on_request).
-        and_yield(nil, double(:data_stream, :read_long => exit_status))
+        and_yield(nil, double(:data_stream, read_long: exit_status))
 
       session_channel.
         should_receive(:exec).
@@ -217,7 +217,7 @@ describe Chef::Knife::Ssh do
 
       execution_channel2.
         should_receive(:on_request).
-        and_yield(nil, double(:data_stream, :read_long => exit_status2))
+        and_yield(nil, double(:data_stream, read_long: exit_status2))
 
       session_channel2.
         should_receive(:exec).
@@ -230,35 +230,35 @@ describe Chef::Knife::Ssh do
         and_yield(session_channel2)
     end
 
-    context "both connections return 0" do
+    context 'both connections return 0' do
       let(:exit_status) { 0 }
       let(:exit_status2) { 0 }
 
-      it "returns a 0 exit code" do
+      it 'returns a 0 exit code' do
         @knife.ssh_command(command, session).should == 0
       end
     end
 
-    context "the first connection returns 1 and the second returns 0" do
+    context 'the first connection returns 1 and the second returns 0' do
       let(:exit_status) { 1 }
       let(:exit_status2) { 0 }
 
-      it "returns a non-zero exit code" do
+      it 'returns a non-zero exit code' do
         @knife.ssh_command(command, session).should == 1
       end
     end
 
-    context "the first connection returns 1 and the second returns 2" do
+    context 'the first connection returns 1 and the second returns 2' do
       let(:exit_status) { 1 }
       let(:exit_status2) { 2 }
 
-      it "returns a non-zero exit code" do
+      it 'returns a non-zero exit code' do
         @knife.ssh_command(command, session).should == 2
       end
     end
   end
 
-  describe "#run" do
+  describe '#run' do
     before do
       @query = Chef::Search::Query.new
       @query.should_receive(:search).and_return([[@node_foo]])
@@ -267,127 +267,127 @@ describe Chef::Knife::Ssh do
       @knife.name_args = ['*:*', 'false']
     end
 
-    context "with an error" do
+    context 'with an error' do
       let(:exit_code) { 1 }
 
-      it "should exit with a non-zero exit code" do
+      it 'should exit with a non-zero exit code' do
         @knife.should_receive(:exit).with(exit_code)
         @knife.run
       end
     end
 
-    context "with no error" do
+    context 'with no error' do
       let(:exit_code) { 0 }
 
-      it "should not exit" do
+      it 'should not exit' do
         @knife.should_not_receive(:exit)
         @knife.run
       end
     end
   end
 
-  describe "#configure_password" do
+  describe '#configure_password' do
     before do
       @knife.config.delete(:ssh_password_ng)
       @knife.config.delete(:ssh_password)
     end
 
-    context "when setting ssh_password_ng from knife ssh" do
+    context 'when setting ssh_password_ng from knife ssh' do
       # in this case ssh_password_ng exists, but ssh_password does not
-      it "should prompt for a password when ssh_passsword_ng is nil"  do
+      it 'should prompt for a password when ssh_passsword_ng is nil'  do
         @knife.config[:ssh_password_ng] = nil
-        @knife.should_receive(:get_password).and_return("mysekretpassw0rd")
+        @knife.should_receive(:get_password).and_return('mysekretpassw0rd')
         @knife.configure_password
-        @knife.config[:ssh_password].should == "mysekretpassw0rd"
+        @knife.config[:ssh_password].should == 'mysekretpassw0rd'
       end
 
-      it "should set ssh_password to false if ssh_password_ng is false"  do
+      it 'should set ssh_password to false if ssh_password_ng is false'  do
         @knife.config[:ssh_password_ng] = false
         @knife.should_not_receive(:get_password)
         @knife.configure_password
         @knife.config[:ssh_password].should be_false
       end
 
-      it "should set ssh_password to ssh_password_ng if we set a password" do
-        @knife.config[:ssh_password_ng] = "mysekretpassw0rd"
+      it 'should set ssh_password to ssh_password_ng if we set a password' do
+        @knife.config[:ssh_password_ng] = 'mysekretpassw0rd'
         @knife.should_not_receive(:get_password)
         @knife.configure_password
-        @knife.config[:ssh_password].should == "mysekretpassw0rd"
+        @knife.config[:ssh_password].should == 'mysekretpassw0rd'
       end
     end
 
-    context "when setting ssh_password from knife bootstrap / knife * server create" do
+    context 'when setting ssh_password from knife bootstrap / knife * server create' do
       # in this case ssh_password exists, but ssh_password_ng does not
-      it "should set ssh_password to nil when ssh_password is nil" do
+      it 'should set ssh_password to nil when ssh_password is nil' do
         @knife.config[:ssh_password] = nil
         @knife.should_not_receive(:get_password)
         @knife.configure_password
         @knife.config[:ssh_password].should be_nil
       end
 
-      it "should set ssh_password to false when ssh_password is false" do
+      it 'should set ssh_password to false when ssh_password is false' do
         @knife.config[:ssh_password] = false
         @knife.should_not_receive(:get_password)
         @knife.configure_password
         @knife.config[:ssh_password].should be_false
       end
 
-      it "should set ssh_password to ssh_password if we set a password" do
-        @knife.config[:ssh_password] = "mysekretpassw0rd"
+      it 'should set ssh_password to ssh_password if we set a password' do
+        @knife.config[:ssh_password] = 'mysekretpassw0rd'
         @knife.should_not_receive(:get_password)
         @knife.configure_password
-        @knife.config[:ssh_password].should == "mysekretpassw0rd"
+        @knife.config[:ssh_password].should == 'mysekretpassw0rd'
       end
     end
-    context "when setting ssh_password in the config variable" do
+    context 'when setting ssh_password in the config variable' do
       before(:each) do
-        Chef::Config[:knife][:ssh_password] = "my_knife_passw0rd"
+        Chef::Config[:knife][:ssh_password] = 'my_knife_passw0rd'
       end
-      context "when setting ssh_password_ng from knife ssh" do
+      context 'when setting ssh_password_ng from knife ssh' do
         # in this case ssh_password_ng exists, but ssh_password does not
-        it "should prompt for a password when ssh_passsword_ng is nil"  do
+        it 'should prompt for a password when ssh_passsword_ng is nil'  do
           @knife.config[:ssh_password_ng] = nil
-          @knife.should_receive(:get_password).and_return("mysekretpassw0rd")
+          @knife.should_receive(:get_password).and_return('mysekretpassw0rd')
           @knife.configure_password
-          @knife.config[:ssh_password].should == "mysekretpassw0rd"
+          @knife.config[:ssh_password].should == 'mysekretpassw0rd'
         end
 
-        it "should set ssh_password to the configured knife.rb value if ssh_password_ng is false"  do
+        it 'should set ssh_password to the configured knife.rb value if ssh_password_ng is false'  do
           @knife.config[:ssh_password_ng] = false
           @knife.should_not_receive(:get_password)
           @knife.configure_password
-          @knife.config[:ssh_password].should == "my_knife_passw0rd"
+          @knife.config[:ssh_password].should == 'my_knife_passw0rd'
         end
 
-        it "should set ssh_password to ssh_password_ng if we set a password" do
-          @knife.config[:ssh_password_ng] = "mysekretpassw0rd"
+        it 'should set ssh_password to ssh_password_ng if we set a password' do
+          @knife.config[:ssh_password_ng] = 'mysekretpassw0rd'
           @knife.should_not_receive(:get_password)
           @knife.configure_password
-          @knife.config[:ssh_password].should == "mysekretpassw0rd"
+          @knife.config[:ssh_password].should == 'mysekretpassw0rd'
         end
       end
 
-      context "when setting ssh_password from knife bootstrap / knife * server create" do
+      context 'when setting ssh_password from knife bootstrap / knife * server create' do
         # in this case ssh_password exists, but ssh_password_ng does not
-        it "should set ssh_password to the configured knife.rb value when ssh_password is nil" do
+        it 'should set ssh_password to the configured knife.rb value when ssh_password is nil' do
           @knife.config[:ssh_password] = nil
           @knife.should_not_receive(:get_password)
           @knife.configure_password
-          @knife.config[:ssh_password].should == "my_knife_passw0rd"
+          @knife.config[:ssh_password].should == 'my_knife_passw0rd'
         end
 
-        it "should set ssh_password to the configured knife.rb value when ssh_password is false" do
+        it 'should set ssh_password to the configured knife.rb value when ssh_password is false' do
           @knife.config[:ssh_password] = false
           @knife.should_not_receive(:get_password)
           @knife.configure_password
-          @knife.config[:ssh_password].should == "my_knife_passw0rd"
+          @knife.config[:ssh_password].should == 'my_knife_passw0rd'
         end
 
-        it "should set ssh_password to ssh_password if we set a password" do
-          @knife.config[:ssh_password] = "mysekretpassw0rd"
+        it 'should set ssh_password to ssh_password if we set a password' do
+          @knife.config[:ssh_password] = 'mysekretpassw0rd'
           @knife.should_not_receive(:get_password)
           @knife.configure_password
-          @knife.config[:ssh_password].should == "mysekretpassw0rd"
+          @knife.config[:ssh_password].should == 'mysekretpassw0rd'
         end
       end
     end

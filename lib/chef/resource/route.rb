@@ -22,12 +22,11 @@ require 'chef/resource'
 class Chef
   class Resource
     class Route < Chef::Resource
-
       identity_attr :target
 
       state_attrs :netmask, :gateway
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :route
         @target = name
@@ -45,96 +44,94 @@ class Chef
         @domain = nil
       end
 
-      def networking(arg=nil)
+      def networking(arg = nil)
         set_or_return(
           :networking,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def networking_ipv6(arg=nil)
+      def networking_ipv6(arg = nil)
         set_or_return(
           :networking_ipv6,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def hostname(arg=nil)
+      def hostname(arg = nil)
         set_or_return(
           :hostname,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def domainname(arg=nil)
+      def domainname(arg = nil)
         set_or_return(
           :domainname,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def domain(arg=nil)
+      def domain(arg = nil)
         set_or_return(
           :domain,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def target(arg=nil)
+      def target(arg = nil)
         set_or_return(
           :target,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def netmask(arg=nil)
+      def netmask(arg = nil)
         set_or_return(
           :netmask,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def gateway(arg=nil)
+      def gateway(arg = nil)
         set_or_return(
           :gateway,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def metric(arg=nil)
+      def metric(arg = nil)
         set_or_return(
           :metric,
           arg,
-          :kind_of => Integer
+          kind_of: Integer
         )
       end
 
-      def device(arg=nil)
+      def device(arg = nil)
         set_or_return(
           :device,
           arg,
-          :kind_of => String
+          kind_of: String
         )
       end
 
-      def route_type(arg=nil)
-        real_arg = arg.kind_of?(String) ? arg.to_sym : arg
+      def route_type(arg = nil)
+        real_arg = arg.is_a?(String) ? arg.to_sym : arg
         set_or_return(
           :route_type,
           real_arg,
-          :equal_to => [ :host, :net ]
+          equal_to: [:host, :net]
         )
       end
     end
   end
 end
-
-

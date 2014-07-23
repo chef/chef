@@ -24,8 +24,7 @@ require 'chef/cookbook_uploader'
 class Chef
   class Knife
     class CookbookUpload < Knife
-
-      CHECKSUM = "checksum"
+      CHECKSUM = 'checksum'
       MATCH_CHECKSUM = /[0-9a-f]{32,}/
 
       deps do
@@ -34,61 +33,61 @@ class Chef
         require 'chef/cookbook_uploader'
       end
 
-      banner "knife cookbook upload [COOKBOOKS...] (options)"
+      banner 'knife cookbook upload [COOKBOOKS...] (options)'
 
       option :cookbook_path,
-        :short => "-o PATH:PATH",
-        :long => "--cookbook-path PATH:PATH",
-        :description => "A colon-separated path to look for cookbooks in",
-        :proc => lambda { |o| o.split(":") }
+             short: '-o PATH:PATH',
+             long: '--cookbook-path PATH:PATH',
+             description: 'A colon-separated path to look for cookbooks in',
+             proc: lambda { |o| o.split(':') }
 
       option :freeze,
-        :long => '--freeze',
-        :description => 'Freeze this version of the cookbook so that it cannot be overwritten',
-        :boolean => true
+             long: '--freeze',
+             description: 'Freeze this version of the cookbook so that it cannot be overwritten',
+             boolean: true
 
       option :all,
-        :short => "-a",
-        :long => "--all",
-        :description => "Upload all cookbooks, rather than just a single cookbook"
+             short: '-a',
+             long: '--all',
+             description: 'Upload all cookbooks, rather than just a single cookbook'
 
       option :force,
-        :long => '--force',
-        :boolean => true,
-        :description => "Update cookbook versions even if they have been frozen"
+             long: '--force',
+             boolean: true,
+             description: 'Update cookbook versions even if they have been frozen'
 
       option :concurrency,
-        :long => '--concurrency NUMBER_OF_THREADS',
-        :description => "How many concurrent threads will be used",
-        :default => 10,
-        :proc => lambda { |o| o.to_i }
+             long: '--concurrency NUMBER_OF_THREADS',
+             description: 'How many concurrent threads will be used',
+             default: 10,
+             proc: lambda { |o| o.to_i }
 
       option :environment,
-        :short => '-E',
-        :long  => '--environment ENVIRONMENT',
-        :description => "Set ENVIRONMENT's version dependency match the version you're uploading.",
-        :default => nil
+             short: '-E',
+             long: '--environment ENVIRONMENT',
+             description: "Set ENVIRONMENT's version dependency match the version you're uploading.",
+             default: nil
 
       option :depends,
-        :short => "-d",
-        :long => "--include-dependencies",
-        :description => "Also upload cookbook dependencies"
+             short: '-d',
+             long: '--include-dependencies',
+             description: 'Also upload cookbook dependencies'
 
       def run
         # Sanity check before we load anything from the server
         unless config[:all]
           if @name_args.empty?
             show_usage
-            ui.fatal("You must specify the --all flag or at least one cookbook name")
+            ui.fatal('You must specify the --all flag or at least one cookbook name')
             exit 1
           end
         end
 
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
-        if @name_args.empty? and ! config[:all]
+        if @name_args.empty? && !config[:all]
           show_usage
-          ui.fatal("You must specify the --all flag or at least one cookbook name")
+          ui.fatal('You must specify the --all flag or at least one cookbook name')
           exit 1
         end
 
@@ -101,7 +100,7 @@ class Chef
         # Get a list of cookbooks and their versions from the server
         # to check for the existence of a cookbook's dependencies.
         @server_side_cookbooks = Chef::CookbookVersion.list_all_versions
-        justify_width = @server_side_cookbooks.map {|name| name.size}.max.to_i + 2
+        justify_width = @server_side_cookbooks.map { |name| name.size }.max.to_i + 2
         if config[:all]
           cookbook_repo.load_cookbooks
           cbs = []
@@ -113,13 +112,13 @@ class Chef
           begin
             upload(cbs, justify_width)
           rescue Exceptions::CookbookFrozen
-            ui.warn("Not updating version constraints for some cookbooks in the environment as the cookbook is frozen.")
+            ui.warn('Not updating version constraints for some cookbooks in the environment as the cookbook is frozen.')
           end
-          ui.info("Uploaded all cookbooks.")
+          ui.info('Uploaded all cookbooks.')
         else
           if @name_args.empty?
             show_usage
-            ui.error("You must specify the --all flag or at least one cookbook name")
+            ui.error('You must specify the --all flag or at least one cookbook name')
             exit 1
           end
 
@@ -140,16 +139,15 @@ class Chef
             end
           end
 
-
           upload_failures += @name_args.length - @cookbooks_to_upload.length
 
           if upload_failures == 0
-            ui.info "Uploaded #{upload_ok} cookbook#{upload_ok > 1 ? "s" : ""}."
+            ui.info "Uploaded #{upload_ok} cookbook#{upload_ok > 1 ? 's' : ''}."
           elsif upload_failures > 0 && upload_ok > 0
-            ui.warn "Uploaded #{upload_ok} cookbook#{upload_ok > 1 ? "s" : ""} ok but #{upload_failures} " +
-              "cookbook#{upload_failures > 1 ? "s" : ""} upload failed."
+            ui.warn "Uploaded #{upload_ok} cookbook#{upload_ok > 1 ? 's' : ''} ok but #{upload_failures} " \
+              "cookbook#{upload_failures > 1 ? 's' : ''} upload failed."
           elsif upload_failures > 0 && upload_ok == 0
-            ui.error "Failed to upload #{upload_failures} cookbook#{upload_failures > 1 ? "s" : ""}."
+            ui.error "Failed to upload #{upload_failures} cookbook#{upload_failures > 1 ? 's' : ''}."
             exit 1
           end
         end
@@ -167,10 +165,10 @@ class Chef
             upload_set = {}
             @name_args.each do |cookbook_name|
               begin
-                if ! upload_set.key?(cookbook_name)
+                unless upload_set.key?(cookbook_name)
                   upload_set[cookbook_name] = cookbook_repo[cookbook_name]
                   if config[:depends]
-                    upload_set[cookbook_name].metadata.dependencies.each { |dep, ver| @name_args << dep }
+                    upload_set[cookbook_name].metadata.dependencies.each { |dep, _ver| @name_args << dep }
                   end
                 end
               rescue Exceptions::CookbookNotFoundInRepo => e
@@ -206,7 +204,7 @@ class Chef
         cookbooks_to_upload
 
         unless cookbook_repo.merged_cookbooks.empty?
-          ui.warn "* " * 40
+          ui.warn '* ' * 40
           ui.warn(<<-WARNING)
 The cookbooks: #{cookbook_repo.merged_cookbooks.join(', ')} exist in multiple places in your cookbook_path.
 A composite version of these cookbooks has been compiled for uploading.
@@ -214,9 +212,9 @@ A composite version of these cookbooks has been compiled for uploading.
 #{ui.color('IMPORTANT:', :red, :bold)} In a future version of Chef, this behavior will be removed and you will no longer
 be able to have the same version of a cookbook in multiple places in your cookbook_path.
 WARNING
-          ui.warn "The affected cookbooks are located:"
+          ui.warn 'The affected cookbooks are located:'
           ui.output ui.format_for_display(cookbook_repo.merged_cookbook_paths)
-          ui.warn "* " * 40
+          ui.warn '* ' * 40
         end
       end
 
@@ -225,7 +223,7 @@ WARNING
       def assert_environment_valid!
         environment
       rescue Net::HTTPServerException => e
-        if e.response.code.to_s == "404"
+        if e.response.code.to_s == '404'
           ui.error "The environment #{config[:environment]} does not exist on the server, aborting."
           Log.debug(e)
           exit 1
@@ -240,7 +238,7 @@ WARNING
           check_for_broken_links!(cb)
           check_for_dependencies!(cb)
         end
-        Chef::CookbookUploader.new(cookbooks, config[:cookbook_path], :force => config[:force], :concurrency => config[:concurrency]).upload_cookbooks
+        Chef::CookbookUploader.new(cookbooks, config[:cookbook_path], force: config[:force], concurrency: config[:concurrency]).upload_cookbooks
       rescue Chef::Exceptions::CookbookFrozen => e
         ui.error e
         raise
@@ -250,13 +248,13 @@ WARNING
         # MUST!! dup the cookbook version object--it memoizes its
         # manifest object, but the manifest becomes invalid when you
         # regenerate the metadata
-        broken_files = cookbook.dup.manifest_records_by_path.select do |path, info|
+        broken_files = cookbook.dup.manifest_records_by_path.select do |_path, info|
           info[CHECKSUM].nil? || info[CHECKSUM] !~ MATCH_CHECKSUM
         end
         unless broken_files.empty?
-          broken_filenames = Array(broken_files).map {|path, info| path}
+          broken_filenames = Array(broken_files).map { |path, _info| path }
           ui.error "The cookbook #{cookbook.name} has one or more broken files"
-          ui.error "This is probably caused by broken symlinks in the cookbook directory"
+          ui.error 'This is probably caused by broken symlinks in the cookbook directory'
           ui.error "The broken file(s) are: #{broken_filenames.join(' ')}"
           exit 1
         end
@@ -270,9 +268,9 @@ WARNING
         end
 
         unless missing_dependencies.empty?
-          missing_cookbook_names = missing_dependencies.map { |cookbook_name, version|  "'#{cookbook_name}' version '#{version}'"}
+          missing_cookbook_names = missing_dependencies.map { |cookbook_name, version|  "'#{cookbook_name}' version '#{version}'" }
           ui.error "Cookbook #{cookbook.name} depends on cookbooks which are not currently"
-          ui.error "being uploaded and cannot be found on the server."
+          ui.error 'being uploaded and cannot be found on the server.'
           ui.error "The missing cookbook(s) are: #{missing_cookbook_names.join(', ')}"
           exit 1
         end
@@ -282,10 +280,10 @@ WARNING
         if @server_side_cookbooks[cookbook_name].nil?
           false
         else
-          versions = @server_side_cookbooks[cookbook_name]['versions'].collect {|versions| versions["version"]}
-          Log.debug "Versions of cookbook '#{cookbook_name}' returned by the server: #{versions.join(", ")}"
-          @server_side_cookbooks[cookbook_name]["versions"].each do |versions_hash|
-            if Chef::VersionConstraint.new(version).include?(versions_hash["version"])
+          versions = @server_side_cookbooks[cookbook_name]['versions'].map { |versions| versions['version'] }
+          Log.debug "Versions of cookbook '#{cookbook_name}' returned by the server: #{versions.join(', ')}"
+          @server_side_cookbooks[cookbook_name]['versions'].each do |versions_hash|
+            if Chef::VersionConstraint.new(version).include?(versions_hash['version'])
               Log.debug "Matched cookbook '#{cookbook_name}' with constraint '#{version}' to cookbook version '#{versions_hash['version']}' on the server"
               return true
             end
@@ -295,7 +293,7 @@ WARNING
       end
 
       def check_uploading_cookbooks(cookbook_name, version)
-        if (! cookbooks_to_upload[cookbook_name].nil?) && Chef::VersionConstraint.new(version).include?(cookbooks_to_upload[cookbook_name].version)
+        if (!cookbooks_to_upload[cookbook_name].nil?) && Chef::VersionConstraint.new(version).include?(cookbooks_to_upload[cookbook_name].version)
           Log.debug "Matched cookbook '#{cookbook_name}' with constraint '#{version}' to a local cookbook."
           return true
         end

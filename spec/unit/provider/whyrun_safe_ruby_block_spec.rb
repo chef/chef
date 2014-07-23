@@ -18,24 +18,24 @@
 
 require 'spec_helper'
 
-describe Chef::Provider::WhyrunSafeRubyBlock, "initialize" do
+describe Chef::Provider::WhyrunSafeRubyBlock, 'initialize' do
   before(:each) do
     $evil_global_evil_laugh = :wahwah
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::WhyrunSafeRubyBlock.new("bloc party")
-    @new_resource.block { $evil_global_evil_laugh = :mwahahaha}
+    @new_resource = Chef::Resource::WhyrunSafeRubyBlock.new('bloc party')
+    @new_resource.block { $evil_global_evil_laugh = :mwahahaha }
     @provider = Chef::Provider::WhyrunSafeRubyBlock.new(@new_resource, @run_context)
   end
 
-  it "should call the block and flag the resource as updated" do
+  it 'should call the block and flag the resource as updated' do
     @provider.run_action(:create)
     $evil_global_evil_laugh.should == :mwahahaha
     @new_resource.should be_updated
   end
 
-  it "should call the block and flat the resource as updated - even in whyrun" do
+  it 'should call the block and flat the resource as updated - even in whyrun' do
     Chef::Config[:why_run] = true
     @provider.run_action(:create)
     $evil_global_evil_laugh.should == :mwahahaha
@@ -44,4 +44,3 @@ describe Chef::Provider::WhyrunSafeRubyBlock, "initialize" do
   end
 
 end
-

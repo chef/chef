@@ -21,13 +21,11 @@ require 'chef/resource/script'
 class Chef
   class Resource
     class Perl < Chef::Resource::Script
-
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :perl
-        @interpreter = "perl"
+        @interpreter = 'perl'
       end
-
     end
   end
 end

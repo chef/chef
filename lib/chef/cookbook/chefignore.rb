@@ -19,7 +19,6 @@
 class Chef
   class Cookbook
     class Chefignore
-
       COMMENTS_AND_WHITESPACE = /^\s*(?:#.*)?$/
 
       attr_reader :ignores
@@ -34,13 +33,13 @@ class Chef
       end
 
       def remove_ignores_from(file_list)
-        Array(file_list).inject([]) do |unignored, file|
+        Array(file_list).reduce([]) do |unignored, file|
           ignored?(file) ? unignored : unignored << file
         end
       end
 
       def ignored?(file_name)
-        @ignores.any? {|glob| File.fnmatch?(glob, file_name)}
+        @ignores.any? { |glob| File.fnmatch?(glob, file_name) }
       end
 
       private
@@ -52,7 +51,7 @@ class Chef
             ignore_globs << line.strip unless line =~ COMMENTS_AND_WHITESPACE
           end
         else
-          Chef::Log.debug("No chefignore file found at #@ignore_file no files will be ignored")
+          Chef::Log.debug("No chefignore file found at #{@ignore_file} no files will be ignored")
         end
         ignore_globs
       end
@@ -65,11 +64,10 @@ class Chef
         end
       end
 
-      def readable_file_or_symlink?(path)
+      def readable_file_or_symlink?(_path)
         File.exist?(@ignore_file) && File.readable?(@ignore_file) &&
           (File.file?(@ignore_file) || File.symlink?(@ignore_file))
       end
     end
   end
 end
-

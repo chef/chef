@@ -25,7 +25,6 @@ class Chef
   class Provider
     class Service
       class Freebsd < Chef::Provider::Service::Init
-
         include Chef::Mixin::ShellOut
 
         def load_current_resource
@@ -34,9 +33,9 @@ class Chef
           @rcd_script_found = true
           @enabled_state_found = false
           # Determine if we're talking about /etc/rc.d or /usr/local/etc/rc.d
-          if ::File.exists?("/etc/rc.d/#{current_resource.service_name}")
+          if ::File.exist?("/etc/rc.d/#{current_resource.service_name}")
             @init_command = "/etc/rc.d/#{current_resource.service_name}"
-          elsif ::File.exists?("/usr/local/etc/rc.d/#{current_resource.service_name}")
+          elsif ::File.exist?("/usr/local/etc/rc.d/#{current_resource.service_name}")
             @init_command = "/usr/local/etc/rc.d/#{current_resource.service_name}"
           else
             @rcd_script_found = false
@@ -47,14 +46,14 @@ class Chef
           # Default to disabled if the service doesn't currently exist
           # at all
           var_name = service_enable_variable_name
-          if ::File.exists?("/etc/rc.conf") && var_name
+          if ::File.exist?('/etc/rc.conf') && var_name
             read_rc_conf.each do |line|
               case line
               when /#{Regexp.escape(var_name)}="(\w+)"/
                 @enabled_state_found = true
-                if $1 =~ /[Yy][Ee][Ss]/
+                if Regexp.last_match[1] =~ /[Yy][Ee][Ss]/
                   @current_resource.enabled true
-                elsif $1 =~ /[Nn][Oo][Nn]?[Oo]?[Nn]?[Ee]?/
+                elsif Regexp.last_match[1] =~ /[Nn][Oo][Nn]?[Oo]?[Nn]?[Ee]?/
                   @current_resource.enabled false
                 end
               end
@@ -79,11 +78,11 @@ class Chef
             a.assertion { @enabled_state_found }
             # for consistentcy with original behavior, this will not fail in non-whyrun mode;
             # rather it will silently set enabled state=>false
-            a.whyrun "Unable to determine enabled/disabled state, assuming this will be correct for an actual run.  Assuming disabled."
+            a.whyrun 'Unable to determine enabled/disabled state, assuming this will be correct for an actual run.  Assuming disabled.'
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { @rcd_script_found && service_enable_variable_name != nil }
+            a.assertion { @rcd_script_found && !service_enable_variable_name.nil? }
             a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{@init_command} and rcvar"
             # No recovery in whyrun mode - the init file is present but not correct.
           end
@@ -119,11 +118,11 @@ class Chef
         end
 
         def read_rc_conf
-          ::File.open("/etc/rc.conf", 'r') { |file| file.readlines }
+          ::File.open('/etc/rc.conf', 'r') { |file| file.readlines }
         end
 
         def write_rc_conf(lines)
-          ::File.open("/etc/rc.conf", 'w') do |file|
+          ::File.open('/etc/rc.conf', 'w') do |file|
             lines.each { |line| file.puts(line) }
           end
         end
@@ -138,7 +137,7 @@ class Chef
             ::File.open(@init_command) do |rcscript|
               rcscript.each_line do |line|
                 if line =~ /^name="?(\w+)"?/
-                  return $1 + "_enable"
+                  return Regexp.last_match[1] + '_enable'
                 end
               end
             end
@@ -162,14 +161,13 @@ class Chef
           write_rc_conf(lines)
         end
 
-        def enable_service()
-          set_service_enable("YES") unless @current_resource.enabled
+        def enable_service
+          set_service_enable('YES') unless @current_resource.enabled
         end
 
-        def disable_service()
-          set_service_enable("NO") if @current_resource.enabled
+        def disable_service
+          set_service_enable('NO') if @current_resource.enabled
         end
-
       end
     end
   end

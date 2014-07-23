@@ -30,32 +30,32 @@ class Chef
 
         def initialize(new_resource, run_context)
           super
-           @init_command = "/sbin/service #{@new_resource.service_name}"
-           @new_resource.supports[:status] = true
-           @service_missing = false
+          @init_command = "/sbin/service #{@new_resource.service_name}"
+          @new_resource.supports[:status] = true
+          @service_missing = false
         end
 
         def define_resource_requirements
           shared_resource_requirements
 
           requirements.assert(:all_actions) do |a|
-            chkconfig_file = "/sbin/chkconfig"
-            a.assertion { ::File.exists? chkconfig_file  }
+            chkconfig_file = '/sbin/chkconfig'
+            a.assertion { ::File.exist? chkconfig_file  }
             a.failure_message Chef::Exceptions::Service, "#{chkconfig_file} does not exist!"
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
             a.assertion { !@service_missing }
             a.failure_message Chef::Exceptions::Service, "#{@new_resource}: unable to locate the init.d script!"
-            a.whyrun "Assuming service would be disabled. The init script is not presently installed."
+            a.whyrun 'Assuming service would be disabled. The init script is not presently installed.'
           end
         end
 
         def load_current_resource
           super
 
-          if ::File.exists?("/sbin/chkconfig")
-            chkconfig = shell_out!("/sbin/chkconfig --list #{@current_resource.service_name}", :returns => [0,1])
+          if ::File.exist?('/sbin/chkconfig')
+            chkconfig = shell_out!("/sbin/chkconfig --list #{@current_resource.service_name}", returns: [0, 1])
             @current_resource.enabled(!!(chkconfig.stdout =~ CHKCONFIG_ON))
             @service_missing = !!(chkconfig.stderr =~ CHKCONFIG_MISSING)
           end
@@ -63,11 +63,11 @@ class Chef
           @current_resource
         end
 
-        def enable_service()
+        def enable_service
           shell_out! "/sbin/chkconfig #{@new_resource.service_name} on"
         end
 
-        def disable_service()
+        def disable_service
           shell_out! "/sbin/chkconfig #{@new_resource.service_name} off"
         end
       end

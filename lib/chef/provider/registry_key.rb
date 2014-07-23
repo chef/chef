@@ -29,7 +29,6 @@ require 'chef/mixin/shell_out'
 require 'chef/win32/registry'
 
 class Chef
-
   class Provider
     class RegistryKey < Chef::Provider
       include Chef::Mixin::Checksum
@@ -41,7 +40,7 @@ class Chef
 
       def running_on_windows!
         unless Chef::Platform.windows?
-          raise Chef::Exceptions::Win32NotWindows, "Attempt to manipulate the windows registry on a non-windows node"
+          fail Chef::Exceptions::Win32NotWindows, 'Attempt to manipulate the windows registry on a non-windows node'
         end
       end
 
@@ -62,32 +61,32 @@ class Chef
         @registry ||= Chef::Win32::Registry.new(@run_context, @new_resource.architecture)
       end
 
-     def values_to_hash(values)
+      def values_to_hash(values)
         if values
-         @name_hash = Hash[values.map { |val| [val[:name], val] }]
+          @name_hash = Hash[values.map { |val| [val[:name], val] }]
         else
           @name_hash = {}
         end
-      end
+       end
 
       def define_resource_requirements
         requirements.assert(:create, :create_if_missing, :delete, :delete_key) do |a|
-          a.assertion{ registry.hive_exists?(@new_resource.key) }
-          a.failure_message(Chef::Exceptions::Win32RegHiveMissing, "Hive #{@new_resource.key.split("\\").shift} does not exist")
+          a.assertion { registry.hive_exists?(@new_resource.key) }
+          a.failure_message(Chef::Exceptions::Win32RegHiveMissing, "Hive #{@new_resource.key.split('\\').shift} does not exist")
         end
         requirements.assert(:create) do |a|
-          a.assertion{ registry.key_exists?(@new_resource.key) }
+          a.assertion { registry.key_exists?(@new_resource.key) }
           a.whyrun("Key #{@new_resource.key} does not exist. Unless it would have been created before, attempt to modify its values would fail.")
         end
         requirements.assert(:create, :create_if_missing) do |a|
-          #If keys missing in the path and recursive == false
-          a.assertion{ !registry.keys_missing?(@current_resource.key) || @new_resource.recursive }
-          a.failure_message(Chef::Exceptions::Win32RegNoRecursive, "Intermediate keys missing but recursive is set to false")
+          # If keys missing in the path and recursive == false
+          a.assertion { !registry.keys_missing?(@current_resource.key) || @new_resource.recursive }
+          a.failure_message(Chef::Exceptions::Win32RegNoRecursive, 'Intermediate keys missing but recursive is set to false')
           a.whyrun("Intermediate keys in #{@new_resource.key} go not exist. Unless they would have been created earlier, attempt to modify them would fail.")
         end
         requirements.assert(:delete_key) do |a|
-          #If key to be deleted has subkeys but recurssive == false
-          a.assertion{ !registry.key_exists?(@new_resource.key) || !registry.has_subkeys?(@new_resource.key) || @new_resource.recursive }
+          # If key to be deleted has subkeys but recurssive == false
+          a.assertion { !registry.key_exists?(@new_resource.key) || !registry.has_subkeys?(@new_resource.key) || @new_resource.recursive }
           a.failure_message(Chef::Exceptions::Win32RegNoRecursive, "#{@new_resource.key} has subkeys but recursive is set to false.")
           a.whyrun("#{@current_resource.key} has subkeys, but recursive is set to false. attempt to delete would fails unless subkeys were deleted prior to this action.")
         end
@@ -149,7 +148,6 @@ class Chef
           end
         end
       end
-
     end
   end
 end

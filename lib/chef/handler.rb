@@ -56,7 +56,6 @@ class Chef
   #   end
   #
   class Handler
-
     # The list of currently configured start handlers
     def self.start_handlers
       Array(Chef::Config[:start_handlers])
@@ -65,11 +64,11 @@ class Chef
     # Run the start handlers. This will usually be called by a notification
     # from Chef::Client
     def self.run_start_handlers(run_status)
-      Chef::Log.info("Running start handlers")
+      Chef::Log.info('Running start handlers')
       start_handlers.each do |handler|
         handler.run_report_safely(run_status)
       end
-      Chef::Log.info("Start handlers complete.")
+      Chef::Log.info('Start handlers complete.')
     end
 
     # Wire up a notification to run the start handlers when the chef run
@@ -88,13 +87,13 @@ class Chef
     def self.run_report_handlers(run_status)
       events = run_status.events
       events.handlers_start(report_handlers.size)
-      Chef::Log.info("Running report handlers")
+      Chef::Log.info('Running report handlers')
       report_handlers.each do |handler|
         handler.run_report_safely(run_status)
         events.handler_executed(handler)
       end
       events.handlers_completed
-      Chef::Log.info("Report handlers complete")
+      Chef::Log.info('Report handlers complete')
     end
 
     # Wire up a notification to run the report handlers if the chef run
@@ -113,13 +112,13 @@ class Chef
     def self.run_exception_handlers(run_status)
       events = run_status.events
       events.handlers_start(exception_handlers.size)
-      Chef::Log.error("Running exception handlers")
+      Chef::Log.error('Running exception handlers')
       exception_handlers.each do |handler|
         handler.run_report_safely(run_status)
         events.handler_executed(handler)
       end
       events.handlers_completed
-      Chef::Log.error("Exception handlers complete")
+      Chef::Log.error('Exception handlers complete')
     end
 
     # Wire up a notification to run the exception handlers if the chef run fails.
@@ -212,7 +211,7 @@ class Chef
     # you're doing.
     def run_report_safely(run_status)
       run_report_unsafe(run_status)
-    rescue Exception => e
+    rescue => e
       Chef::Log.error("Report handler #{self.class.name} raised #{e.inspect}")
       Array(e.backtrace).each { |line| Chef::Log.error(line) }
     ensure
@@ -230,6 +229,5 @@ class Chef
     def data
       @run_status.to_hash
     end
-
   end
 end

@@ -19,139 +19,139 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::Group, "initialize" do
+describe Chef::Resource::Group, 'initialize' do
   before(:each) do
-    @resource = Chef::Resource::Group.new("admin")
+    @resource = Chef::Resource::Group.new('admin')
   end
 
-  it "should create a new Chef::Resource::Group" do
+  it 'should create a new Chef::Resource::Group' do
     @resource.should be_a_kind_of(Chef::Resource)
     @resource.should be_a_kind_of(Chef::Resource::Group)
   end
 
-  it "should set the resource_name to :group" do
+  it 'should set the resource_name to :group' do
     @resource.resource_name.should eql(:group)
   end
 
-  it "should set the group_name equal to the argument to initialize" do
-    @resource.group_name.should eql("admin")
+  it 'should set the group_name equal to the argument to initialize' do
+    @resource.group_name.should eql('admin')
   end
 
-  it "should default gid to nil" do
+  it 'should default gid to nil' do
     @resource.gid.should eql(nil)
   end
 
-  it "should default members to an empty array" do
+  it 'should default members to an empty array' do
     @resource.members.should eql([])
   end
 
-  it "should alias users to members, also an empty array" do
+  it 'should alias users to members, also an empty array' do
     @resource.users.should eql([])
   end
 
-  it "should set action to :create" do
+  it 'should set action to :create' do
     @resource.action.should eql(:create)
   end
 
-  %w{create remove modify manage}.each do |action|
+  %w(create remove modify manage).each do |action|
     it "should allow action #{action}" do
-      @resource.allowed_actions.detect { |a| a == action.to_sym }.should eql(action.to_sym)
+      @resource.allowed_actions.find { |a| a == action.to_sym }.should eql(action.to_sym)
     end
   end
 
   it "should accept domain groups (@ or \ separator) on non-windows" do
     lambda { @resource.group_name "domain\@group" }.should_not raise_error
     @resource.group_name.should == "domain\@group"
-    lambda { @resource.group_name "domain\\group" }.should_not raise_error
-    @resource.group_name.should == "domain\\group"
-    lambda { @resource.group_name "domain\\group^name" }.should_not raise_error
-    @resource.group_name.should == "domain\\group^name"
+    lambda { @resource.group_name 'domain\\group' }.should_not raise_error
+    @resource.group_name.should == 'domain\\group'
+    lambda { @resource.group_name 'domain\\group^name' }.should_not raise_error
+    @resource.group_name.should == 'domain\\group^name'
   end
 end
 
-describe Chef::Resource::Group, "group_name" do
+describe Chef::Resource::Group, 'group_name' do
   before(:each) do
-    @resource = Chef::Resource::Group.new("admin")
+    @resource = Chef::Resource::Group.new('admin')
   end
 
-  it "should allow a string" do
-    @resource.group_name "pirates"
-    @resource.group_name.should eql("pirates")
+  it 'should allow a string' do
+    @resource.group_name 'pirates'
+    @resource.group_name.should eql('pirates')
   end
 
-  it "should not allow a hash" do
-    lambda { @resource.send(:group_name, { :aj => "is freakin awesome" }) }.should raise_error(ArgumentError)
+  it 'should not allow a hash' do
+    lambda { @resource.send(:group_name,  aj: 'is freakin awesome') }.should raise_error(ArgumentError)
   end
 end
 
-describe Chef::Resource::Group, "gid" do
+describe Chef::Resource::Group, 'gid' do
   before(:each) do
-    @resource = Chef::Resource::Group.new("admin")
+    @resource = Chef::Resource::Group.new('admin')
   end
 
-  it "should allow an integer" do
+  it 'should allow an integer' do
     @resource.gid 100
     @resource.gid.should eql(100)
   end
 
-  it "should not allow a hash" do
-    lambda { @resource.send(:gid, { :aj => "is freakin awesome" }) }.should raise_error(ArgumentError)
+  it 'should not allow a hash' do
+    lambda { @resource.send(:gid,  aj: 'is freakin awesome') }.should raise_error(ArgumentError)
   end
 end
 
-describe Chef::Resource::Group, "members" do
+describe Chef::Resource::Group, 'members' do
   before(:each) do
-    @resource = Chef::Resource::Group.new("admin")
+    @resource = Chef::Resource::Group.new('admin')
   end
 
-  [ :users, :members].each do |method|
+  [:users, :members].each do |method|
     it "(#{method}) should allow and convert a string" do
-      @resource.send(method, "aj")
-      @resource.send(method).should eql(["aj"])
+      @resource.send(method, 'aj')
+      @resource.send(method).should eql(['aj'])
     end
 
     it "(#{method}) should allow an array" do
-      @resource.send(method, [ "aj", "adam" ])
-      @resource.send(method).should eql( ["aj", "adam"] )
+      @resource.send(method, %w(aj adam))
+      @resource.send(method).should eql(%w(aj adam))
     end
 
     it "(#{method}) should not allow a hash" do
-      lambda { @resource.send(method, { :aj => "is freakin awesome" }) }.should raise_error(ArgumentError)
+      lambda { @resource.send(method,  aj: 'is freakin awesome') }.should raise_error(ArgumentError)
     end
   end
 end
 
-describe Chef::Resource::Group, "append" do
+describe Chef::Resource::Group, 'append' do
   before(:each) do
-    @resource = Chef::Resource::Group.new("admin")
+    @resource = Chef::Resource::Group.new('admin')
   end
 
-  it "should default to false" do
+  it 'should default to false' do
     @resource.append.should eql(false)
   end
 
-  it "should allow a boolean" do
+  it 'should allow a boolean' do
     @resource.append true
     @resource.append.should eql(true)
   end
 
-  it "should not allow a hash" do
-    lambda { @resource.send(:gid, { :aj => "is freakin awesome" }) }.should raise_error(ArgumentError)
+  it 'should not allow a hash' do
+    lambda { @resource.send(:gid,  aj: 'is freakin awesome') }.should raise_error(ArgumentError)
   end
 
-  describe "when it has members" do
+  describe 'when it has members' do
     before do
-      @resource.group_name("pokemon")
-      @resource.members(["blastoise", "pikachu"])
+      @resource.group_name('pokemon')
+      @resource.members(%w(blastoise pikachu))
     end
 
-    it "describes its state" do
+    it 'describes its state' do
       state = @resource.state
-      state[:members].should eql(["blastoise", "pikachu"])
+      state[:members].should eql(%w(blastoise pikachu))
     end
 
-    it "returns the group name as its identity" do
-      @resource.identity.should == "pokemon"
+    it 'returns the group name as its identity' do
+      @resource.identity.should == 'pokemon'
     end
   end
 end

@@ -57,22 +57,21 @@ class Chef::Application
   end
 
   def setup_signal_handlers
-    trap("INT") do
-      Chef::Application.fatal!("SIGINT received, stopping", 2)
+    trap('INT') do
+      Chef::Application.fatal!('SIGINT received, stopping', 2)
     end
 
     unless Chef::Platform.windows?
-      trap("QUIT") do
+      trap('QUIT') do
         Chef::Log.info("SIGQUIT received, call stack:\n  " + caller.join("\n  "))
       end
 
-      trap("HUP") do
-        Chef::Log.info("SIGHUP received, reconfiguring")
+      trap('HUP') do
+        Chef::Log.info('SIGHUP received, reconfiguring')
         reconfigure
       end
     end
   end
-
 
   # Parse configuration (options and config file)
   def configure_chef
@@ -84,11 +83,11 @@ class Chef::Application
   def load_config_file
     config_fetcher = Chef::ConfigFetcher.new(config[:config_file], Chef::Config.config_file_jail)
     if config[:config_file].nil?
-      Chef::Log.warn("No config file found or specified on command line, using command line options.")
+      Chef::Log.warn('No config file found or specified on command line, using command line options.')
     elsif config_fetcher.config_missing?
-      Chef::Log.warn("*****************************************")
+      Chef::Log.warn('*****************************************')
       Chef::Log.warn("Did not find config file: #{config[:config_file]}, using command line options.")
-      Chef::Log.warn("*****************************************")
+      Chef::Log.warn('*****************************************')
     else
       config_content = config_fetcher.read_config
       apply_config(config_content, config[:config_file])
@@ -140,7 +139,7 @@ class Chef::Application
   # Based on config and whether or not STDOUT is a tty, should we setup a
   # secondary logger for stdout?
   def want_additional_logger?
-    ( Chef::Config[:log_location] != STDOUT ) && STDOUT.tty? && (!Chef::Config[:daemonize]) && (Chef::Config[:force_logger])
+    ( Chef::Config[:log_location] != STDOUT) && STDOUT.tty? && (!Chef::Config[:daemonize]) && (Chef::Config[:force_logger])
   end
 
   # Use of output formatters is assumed if `force_formatter` is set or if
@@ -177,12 +176,12 @@ class Chef::Application
 
   # Called prior to starting the application, by the run method
   def setup_application
-    raise Chef::Exceptions::Application, "#{self.to_s}: you must override setup_application"
+    fail Chef::Exceptions::Application, "#{self}: you must override setup_application"
   end
 
   # Actually run the application
   def run_application
-    raise Chef::Exceptions::Application, "#{self.to_s}: you must override run_application"
+    fail Chef::Exceptions::Application, "#{self}: you must override run_application"
   end
 
   # Initializes Chef::Client instance and runs it
@@ -194,9 +193,9 @@ class Chef::Application
       end
       @chef_client = Chef::Client.new(
         @chef_client_json,
-        :override_runlist => config[:override_runlist],
-        :specific_recipes => specific_recipes,
-        :runlist => config[:runlist]
+        override_runlist: config[:override_runlist],
+        specific_recipes: specific_recipes,
+        runlist: config[:runlist]
       )
       @chef_client_json = nil
 
@@ -209,34 +208,34 @@ class Chef::Application
 
   def apply_config(config_content, config_file_path)
     Chef::Config.from_string(config_content, config_file_path)
-  rescue Exception => error
+  rescue => error
     Chef::Log.fatal("Configuration error #{error.class}: #{error.message}")
     filtered_trace = error.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
-    filtered_trace.each {|line| Chef::Log.fatal("  " + line )}
+    filtered_trace.each { |line| Chef::Log.fatal('  ' + line) }
     Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", 2)
   end
 
   # Set ENV['http_proxy']
   def configure_http_proxy
     if http_proxy = Chef::Config[:http_proxy]
-      env['http_proxy'] = configure_proxy("http", http_proxy,
-        Chef::Config[:http_proxy_user], Chef::Config[:http_proxy_pass])
+      env['http_proxy'] = configure_proxy('http', http_proxy,
+                                          Chef::Config[:http_proxy_user], Chef::Config[:http_proxy_pass])
     end
   end
 
   # Set ENV['https_proxy']
   def configure_https_proxy
     if https_proxy = Chef::Config[:https_proxy]
-      env['https_proxy'] = configure_proxy("https", https_proxy,
-        Chef::Config[:https_proxy_user], Chef::Config[:https_proxy_pass])
+      env['https_proxy'] = configure_proxy('https', https_proxy,
+                                           Chef::Config[:https_proxy_user], Chef::Config[:https_proxy_pass])
     end
   end
 
   # Set ENV['ftp_proxy']
   def configure_ftp_proxy
     if ftp_proxy = Chef::Config[:ftp_proxy]
-      env['ftp_proxy'] = configure_proxy("ftp", ftp_proxy,
-        Chef::Config[:ftp_proxy_user], Chef::Config[:ftp_proxy_pass])
+      env['ftp_proxy'] = configure_proxy('ftp', ftp_proxy,
+                                         Chef::Config[:ftp_proxy_user], Chef::Config[:ftp_proxy_pass])
     end
   end
 
@@ -255,29 +254,26 @@ class Chef::Application
   #   user = username
   #   pass = password
   def configure_proxy(scheme, path, user, pass)
-    begin
-      path = "#{scheme}://#{path}" unless path.start_with?(scheme)
-      # URI.split returns the following parts:
-      # [scheme, userinfo, host, port, registry, path, opaque, query, fragment]
-      parts = URI.split(URI.encode(path))
-      # URI::Generic.build requires an integer for the port, but URI::split gives
-      # returns a string for the port.
-      parts[3] = parts[3].to_i if parts[3]
-      if user
-        userinfo = URI.encode(URI.encode(user), '@:')
-        if pass
-          userinfo << ":#{URI.encode(URI.encode(pass), '@:')}"
-        end
-        parts[1] = userinfo
+    path = "#{scheme}://#{path}" unless path.start_with?(scheme)
+    # URI.split returns the following parts:
+    # [scheme, userinfo, host, port, registry, path, opaque, query, fragment]
+    parts = URI.split(URI.encode(path))
+    # URI::Generic.build requires an integer for the port, but URI::split gives
+    # returns a string for the port.
+    parts[3] = parts[3].to_i if parts[3]
+    if user
+      userinfo = URI.encode(URI.encode(user), '@:')
+      if pass
+        userinfo << ":#{URI.encode(URI.encode(pass), '@:')}"
       end
-
-      return URI::Generic.build(parts).to_s
-    rescue URI::Error => e
-      # URI::Error messages generally include the offending string. Including a message
-      # for which proxy config item has the issue should help deduce the issue when
-      # the URI::Error message is vague.
-      raise Chef::Exceptions::BadProxyURI, "Cannot configure #{scheme} proxy. Does not comply with URI scheme. #{e.message}"
+      parts[1] = userinfo
     end
+    return URI::Generic.build(parts).to_s
+  rescue URI::Error => e
+    # URI::Error messages generally include the offending string. Including a message
+    # for which proxy config item has the issue should help deduce the issue when
+    # the URI::Error message is vague.
+    raise Chef::Exceptions::BadProxyURI, "Cannot configure #{scheme} proxy. Does not comply with URI scheme. #{e.message}"
   end
 
   # This is a hook for testing
@@ -288,11 +284,11 @@ class Chef::Application
   class << self
     def debug_stacktrace(e)
       message = "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-      chef_stacktrace_out = "Generated at #{Time.now.to_s}\n"
+      chef_stacktrace_out = "Generated at #{Time.now}\n"
       chef_stacktrace_out += message
 
-      Chef::FileCache.store("chef-stacktrace.out", chef_stacktrace_out)
-      Chef::Log.fatal("Stacktrace dumped to #{Chef::FileCache.load("chef-stacktrace.out", false)}")
+      Chef::FileCache.store('chef-stacktrace.out', chef_stacktrace_out)
+      Chef::Log.fatal("Stacktrace dumped to #{Chef::FileCache.load('chef-stacktrace.out', false)}")
       Chef::Log.debug(message)
       true
     end
@@ -308,5 +304,4 @@ class Chef::Application
       Process.exit err
     end
   end
-
 end

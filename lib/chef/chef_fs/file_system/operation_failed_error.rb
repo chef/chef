@@ -28,7 +28,7 @@ class Chef
         end
 
         def message
-          if cause && cause.is_a?(Net::HTTPExceptions) && cause.response.code == "400"
+          if cause && cause.is_a?(Net::HTTPExceptions) && cause.response.code == '400'
             "#{super} cause: #{cause.response.body}"
           else
             super

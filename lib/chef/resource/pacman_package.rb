@@ -21,13 +21,11 @@ require 'chef/resource/package'
 class Chef
   class Resource
     class PacmanPackage < Chef::Resource::Package
-
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :pacman_package
         @provider = Chef::Provider::Package::Pacman
       end
-
     end
   end
 end

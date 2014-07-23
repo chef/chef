@@ -11,7 +11,6 @@ require 'chef/sandbox'
 
 class Chef
   class CookbookUploader
-
     attr_reader :cookbooks
     attr_reader :path
     attr_reader :opts
@@ -35,7 +34,7 @@ class Chef
     #           in Chef::Config.
     # * :concurrency   An integer that decided how many threads will be used to
     #           perform concurrent uploads
-    def initialize(cookbooks, path, opts={})
+    def initialize(cookbooks, path, opts = {})
       @path, @opts = path, opts
       @cookbooks = Array(cookbooks)
       @rest = opts[:rest] || Chef::REST.new(Chef::Config[:chef_server_url])
@@ -52,10 +51,10 @@ class Chef
         checksum_files.merge!(cb.checksums)
       end
 
-      checksums = checksum_files.inject({}){|memo,elt| memo[elt.first]=nil ; memo}
-      new_sandbox = rest.post_rest("sandboxes", { :checksums => checksums })
+      checksums = checksum_files.reduce({}) { |memo, elt| memo[elt.first] = nil; memo }
+      new_sandbox = rest.post_rest('sandboxes',  checksums: checksums)
 
-      Chef::Log.info("Uploading files")
+      Chef::Log.info('Uploading files')
 
       queue = Chef::Util::ThreadedJobQueue.new
 
@@ -75,12 +74,12 @@ class Chef
       queue.process(@concurrency)
 
       sandbox_url = new_sandbox['uri']
-      Chef::Log.debug("Committing sandbox")
+      Chef::Log.debug('Committing sandbox')
       # Retry if S3 is claims a checksum doesn't exist (the eventual
       # in eventual consistency)
       retries = 0
       begin
-        rest.put_rest(sandbox_url, {:is_completed => true})
+        rest.put_rest(sandbox_url, is_completed: true)
       rescue Net::HTTPServerException => e
         if e.message =~ /^400/ && (retries += 1) <= 5
           sleep 2
@@ -97,7 +96,7 @@ class Chef
           rest.put_rest(save_url, cb)
         rescue Net::HTTPServerException => e
           case e.response.code
-          when "409"
+          when '409'
             raise Chef::Exceptions::CookbookFrozen, "Version #{cb.version} of cookbook #{cb.name} is frozen. Use --force to override."
           else
             raise
@@ -105,10 +104,10 @@ class Chef
         end
       end
 
-      Chef::Log.info("Upload complete!")
+      Chef::Log.info('Upload complete!')
     end
 
-    def worker_thread(work_queue)
+    def worker_thread(_work_queue)
     end
 
     def uploader_function_for(file, checksum, url, checksums_to_upload)
@@ -116,24 +115,24 @@ class Chef
         # Checksum is the hexadecimal representation of the md5,
         # but we need the base64 encoding for the content-md5
         # header
-        checksum64 = Base64.encode64([checksum].pack("H*")).strip
+        checksum64 = Base64.encode64([checksum].pack('H*')).strip
         timestamp = Time.now.utc.iso8601
-        file_contents = File.open(file, "rb") {|f| f.read}
+        file_contents = File.open(file, 'rb') { |f| f.read }
         # TODO - 5/28/2010, cw: make signing and sending the request streaming
-        headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, "accept" => 'application/json' }
+        headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, 'accept' => 'application/json' }
         if rest.signing_key
           sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
-                                                                             :http_method => :put,
-                                                                             :path        => URI.parse(url).path,
-                                                                             :body        => file_contents,
-                                                                             :timestamp   => timestamp,
-                                                                             :user_id     => rest.client_name
+                                                                             http_method: :put,
+                                                                             path: URI.parse(url).path,
+                                                                             body: file_contents,
+                                                                             timestamp: timestamp,
+                                                                             user_id: rest.client_name
                                                                              )
           headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(rest.signing_key)))
         end
 
         begin
-          Chef::HTTP::Simple.new(url, :headers=>headers).put(url, file_contents)
+          Chef::HTTP::Simple.new(url, headers: headers).put(url, file_contents)
           checksums_to_upload.delete(checksum)
         rescue Net::HTTPServerException, Net::HTTPFatalError, Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError => e
           error_message = "Failed to upload #{file} (#{checksum}) to #{url} : #{e.message}"
@@ -147,14 +146,13 @@ class Chef
     def validate_cookbooks
       cookbooks.each do |cb|
         syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cb.name, @user_cookbook_path)
-        Chef::Log.info("Validating ruby files")
+        Chef::Log.info('Validating ruby files')
         exit(1) unless syntax_checker.validate_ruby_files
-        Chef::Log.info("Validating templates")
+        Chef::Log.info('Validating templates')
         exit(1) unless syntax_checker.validate_templates
-        Chef::Log.info("Syntax OK")
+        Chef::Log.info('Syntax OK')
         true
       end
     end
-
   end
 end

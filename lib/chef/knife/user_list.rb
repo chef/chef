@@ -21,18 +21,17 @@ require 'chef/knife'
 class Chef
   class Knife
     class UserList < Knife
-
       deps do
         require 'chef/user'
         require 'chef/json_compat'
       end
 
-      banner "knife user list (options)"
+      banner 'knife user list (options)'
 
       option :with_uri,
-        :short => "-w",
-        :long => "--with-uri",
-        :description => "Show corresponding URIs"
+             short: '-w',
+             long: '--with-uri',
+             description: 'Show corresponding URIs'
 
       def run
         output(format_list_for_display(Chef::User.list))

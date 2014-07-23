@@ -19,23 +19,23 @@
 require 'spec_helper'
 
 describe Chef::Resource::Ohai do
-  let(:ohai) {
+  let(:ohai) do
     o = Ohai::System.new
     o.all_plugins
     o
-  }
+  end
 
   let(:node) { Chef::Node.new }
 
-  let(:run_context) {
+  let(:run_context) do
     node.default[:platform] = ohai[:platform]
     node.default[:platform_version] = ohai[:platform_version]
     events = Chef::EventDispatch::Dispatcher.new
     Chef::RunContext.new(node, {}, events)
-  }
+  end
 
-  shared_examples_for "reloaded :uptime" do
-    it "should reload :uptime" do
+  shared_examples_for 'reloaded :uptime' do
+    it 'should reload :uptime' do
       initial_uptime = ohai[:uptime]
 
       # Sleep for a second so the uptime gets updated.
@@ -46,20 +46,19 @@ describe Chef::Resource::Ohai do
     end
   end
 
-  describe "when reloading all plugins" do
-    let(:ohai_resource) { Chef::Resource::Ohai.new("reload all", run_context)}
+  describe 'when reloading all plugins' do
+    let(:ohai_resource) { Chef::Resource::Ohai.new('reload all', run_context) }
 
-    it_behaves_like "reloaded :uptime"
+    it_behaves_like 'reloaded :uptime'
   end
 
-  describe "when reloading only uptime" do
-    let(:ohai_resource) {
-      r = Chef::Resource::Ohai.new("reload all", run_context)
-      r.plugin("uptime")
+  describe 'when reloading only uptime' do
+    let(:ohai_resource) do
+      r = Chef::Resource::Ohai.new('reload all', run_context)
+      r.plugin('uptime')
       r
-    }
+    end
 
-
-    it_behaves_like "reloaded :uptime"
+    it_behaves_like 'reloaded :uptime'
   end
 end

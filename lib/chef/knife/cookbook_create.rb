@@ -21,58 +21,57 @@ require 'chef/knife'
 class Chef
   class Knife
     class CookbookCreate < Knife
-
       deps do
         require 'chef/json_compat'
         require 'uri'
         require 'fileutils'
       end
 
-      banner "knife cookbook create COOKBOOK (options)"
+      banner 'knife cookbook create COOKBOOK (options)'
 
       option :cookbook_path,
-        :short => "-o PATH",
-        :long => "--cookbook-path PATH",
-        :description => "The directory where the cookbook will be created"
+             short: '-o PATH',
+             long: '--cookbook-path PATH',
+             description: 'The directory where the cookbook will be created'
 
       option :readme_format,
-        :short => "-r FORMAT",
-        :long => "--readme-format FORMAT",
-        :description => "Format of the README file, supported formats are 'md' (markdown) and 'rdoc' (rdoc)"
+             short: '-r FORMAT',
+             long: '--readme-format FORMAT',
+             description: "Format of the README file, supported formats are 'md' (markdown) and 'rdoc' (rdoc)"
 
       option :cookbook_license,
-        :short => "-I LICENSE",
-        :long => "--license LICENSE",
-        :description => "License for cookbook, apachev2, gplv2, gplv3, mit or none"
+             short: '-I LICENSE',
+             long: '--license LICENSE',
+             description: 'License for cookbook, apachev2, gplv2, gplv3, mit or none'
 
       option :cookbook_copyright,
-        :short => "-C COPYRIGHT",
-        :long => "--copyright COPYRIGHT",
-        :description => "Name of Copyright holder"
+             short: '-C COPYRIGHT',
+             long: '--copyright COPYRIGHT',
+             description: 'Name of Copyright holder'
 
       option :cookbook_email,
-        :short => "-m EMAIL",
-        :long => "--email EMAIL",
-        :description => "Email address of cookbook maintainer"
+             short: '-m EMAIL',
+             long: '--email EMAIL',
+             description: 'Email address of cookbook maintainer'
 
       def run
         self.config = Chef::Config.merge!(config)
         if @name_args.length < 1
           show_usage
-          ui.fatal("You must specify a cookbook name")
+          ui.fatal('You must specify a cookbook name')
           exit 1
         end
 
         if default_cookbook_path_empty? && parameter_empty?(config[:cookbook_path])
-          raise ArgumentError, "Default cookbook_path is not specified in the knife.rb config file, and a value to -o is not provided. Nowhere to write the new cookbook to."
+          fail ArgumentError, 'Default cookbook_path is not specified in the knife.rb config file, and a value to -o is not provided. Nowhere to write the new cookbook to.'
         end
 
         cookbook_path = File.expand_path(Array(config[:cookbook_path]).first)
         cookbook_name = @name_args.first
-        copyright = config[:cookbook_copyright] || "YOUR_COMPANY_NAME"
-        email = config[:cookbook_email] || "YOUR_EMAIL"
-        license = ((config[:cookbook_license] != "false") && config[:cookbook_license]) || "none"
-        readme_format = ((config[:readme_format] != "false") && config[:readme_format]) || "md"
+        copyright = config[:cookbook_copyright] || 'YOUR_COMPANY_NAME'
+        email = config[:cookbook_email] || 'YOUR_EMAIL'
+        license = ((config[:cookbook_license] != 'false') && config[:cookbook_license]) || 'none'
+        readme_format = ((config[:readme_format] != 'false') && config[:readme_format]) || 'md'
         create_cookbook(cookbook_path, cookbook_name, copyright, license)
         create_readme(cookbook_path, cookbook_name, readme_format)
         create_changelog(cookbook_path, cookbook_name)
@@ -81,16 +80,16 @@ class Chef
 
       def create_cookbook(dir, cookbook_name, copyright, license)
         msg("** Creating cookbook #{cookbook_name}")
-        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "attributes")}"
-        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "recipes")}"
-        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "definitions")}"
-        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "libraries")}"
-        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "resources")}"
-        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "providers")}"
-        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "files", "default")}"
-        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "templates", "default")}"
-        unless File.exists?(File.join(dir, cookbook_name, "recipes", "default.rb"))
-          open(File.join(dir, cookbook_name, "recipes", "default.rb"), "w") do |file|
+        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, 'attributes')}"
+        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, 'recipes')}"
+        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, 'definitions')}"
+        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, 'libraries')}"
+        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, 'resources')}"
+        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, 'providers')}"
+        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, 'files', 'default')}"
+        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, 'templates', 'default')}"
+        unless File.exist?(File.join(dir, cookbook_name, 'recipes', 'default.rb'))
+          open(File.join(dir, cookbook_name, 'recipes', 'default.rb'), 'w') do |file|
             file.puts <<-EOH
 #
 # Cookbook Name:: #{cookbook_name}
@@ -100,7 +99,7 @@ class Chef
 #
 EOH
             case license
-            when "apachev2"
+            when 'apachev2'
               file.puts <<-EOH
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -115,7 +114,7 @@ EOH
 # limitations under the License.
 #
 EOH
-            when "gplv2"
+            when 'gplv2'
               file.puts <<-EOH
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -132,7 +131,7 @@ EOH
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 EOH
-            when "gplv3"
+            when 'gplv3'
               file.puts <<-EOH
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -148,7 +147,7 @@ EOH
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 EOH
-            when "mit"
+            when 'mit'
               file.puts <<-EOH
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -170,7 +169,7 @@ EOH
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 EOH
-            when "none"
+            when 'none'
               file.puts <<-EOH
 # All rights reserved - Do Not Redistribute
 #
@@ -182,11 +181,11 @@ EOH
 
       def create_changelog(dir, cookbook_name)
         msg("** Creating CHANGELOG for cookbook: #{cookbook_name}")
-        unless File.exists?(File.join(dir,cookbook_name,'CHANGELOG.md'))
-          open(File.join(dir, cookbook_name, 'CHANGELOG.md'),'w') do |file|
+        unless File.exist?(File.join(dir, cookbook_name, 'CHANGELOG.md'))
+          open(File.join(dir, cookbook_name, 'CHANGELOG.md'), 'w') do |file|
             file.puts <<-EOH
 #{cookbook_name} CHANGELOG
-#{'='*"#{cookbook_name} CHANGELOG".length}
+#{'=' * "#{cookbook_name} CHANGELOG".length}
 
 This file is used to list changes made in each version of the #{cookbook_name} cookbook.
 
@@ -205,10 +204,10 @@ EOH
 
       def create_readme(dir, cookbook_name, readme_format)
         msg("** Creating README for cookbook: #{cookbook_name}")
-        unless File.exists?(File.join(dir, cookbook_name, "README.#{readme_format}"))
-          open(File.join(dir, cookbook_name, "README.#{readme_format}"), "w") do |file|
+        unless File.exist?(File.join(dir, cookbook_name, "README.#{readme_format}"))
+          open(File.join(dir, cookbook_name, "README.#{readme_format}"), 'w') do |file|
             case readme_format
-            when "rdoc"
+            when 'rdoc'
               file.puts <<-EOH
 = #{cookbook_name} Cookbook
 TODO: Enter the cookbook description here.
@@ -271,10 +270,10 @@ e.g.
 == License and Authors
 Authors: TODO: List authors
 EOH
-            when "md","mkd","txt"
+            when 'md', 'mkd', 'txt'
               file.puts <<-EOH
 #{cookbook_name} Cookbook
-#{'='*"#{cookbook_name} Cookbook".length}
+#{'=' * "#{cookbook_name} Cookbook".length}
 TODO: Enter the cookbook description here.
 
 e.g.
@@ -345,7 +344,7 @@ EOH
             else
               file.puts <<-EOH
 #{cookbook_name} Cookbook
-#{'='*"#{cookbook_name} Cookbook".length}
+#{'=' * "#{cookbook_name} Cookbook".length}
   TODO: Enter the cookbook description here.
 
   e.g.
@@ -403,21 +402,21 @@ EOH
         msg("** Creating metadata for cookbook: #{cookbook_name}")
 
         license_name = case license
-                       when "apachev2"
-                         "Apache 2.0"
-                       when "gplv2"
-                         "GNU Public License 2.0"
-                       when "gplv3"
-                         "GNU Public License 3.0"
-                       when "mit"
-                         "MIT"
-                       when "none"
-                         "All rights reserved"
+                       when 'apachev2'
+                         'Apache 2.0'
+                       when 'gplv2'
+                         'GNU Public License 2.0'
+                       when 'gplv3'
+                         'GNU Public License 3.0'
+                       when 'mit'
+                         'MIT'
+                       when 'none'
+                         'All rights reserved'
                        end
 
-        unless File.exists?(File.join(dir, cookbook_name, "metadata.rb"))
-          open(File.join(dir, cookbook_name, "metadata.rb"), "w") do |file|
-            if File.exists?(File.join(dir, cookbook_name, "README.#{readme_format}"))
+        unless File.exist?(File.join(dir, cookbook_name, 'metadata.rb'))
+          open(File.join(dir, cookbook_name, 'metadata.rb'), 'w') do |file|
+            if File.exist?(File.join(dir, cookbook_name, "README.#{readme_format}"))
               long_description = "long_description IO.read(File.join(File.dirname(__FILE__), 'README.#{readme_format}'))"
             end
             file.puts <<-EOH
@@ -442,7 +441,6 @@ EOH
       def parameter_empty?(parameter)
         parameter.nil? || parameter.empty?
       end
-
     end
   end
 end

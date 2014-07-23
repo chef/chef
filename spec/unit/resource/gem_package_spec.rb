@@ -18,32 +18,32 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::GemPackage, "initialize" do
+describe Chef::Resource::GemPackage, 'initialize' do
 
   before(:each) do
-    @resource = Chef::Resource::GemPackage.new("foo")
+    @resource = Chef::Resource::GemPackage.new('foo')
   end
 
-  it "should return a Chef::Resource::GemPackage" do
+  it 'should return a Chef::Resource::GemPackage' do
     @resource.should be_a_kind_of(Chef::Resource::GemPackage)
   end
 
-  it "should set the resource_name to :gem_package" do
+  it 'should set the resource_name to :gem_package' do
     @resource.resource_name.should eql(:gem_package)
   end
 
-  it "should set the provider to Chef::Provider::Package::Rubygems" do
+  it 'should set the provider to Chef::Provider::Package::Rubygems' do
     @resource.provider.should eql(Chef::Provider::Package::Rubygems)
   end
 end
 
-describe Chef::Resource::GemPackage, "gem_binary" do
+describe Chef::Resource::GemPackage, 'gem_binary' do
   before(:each) do
-    @resource = Chef::Resource::GemPackage.new("foo")
+    @resource = Chef::Resource::GemPackage.new('foo')
   end
 
-  it "should set the gem_binary variable to whatever is passed in" do
-    @resource.gem_binary("/opt/local/bin/gem")
-    @resource.gem_binary.should eql("/opt/local/bin/gem")
+  it 'should set the gem_binary variable to whatever is passed in' do
+    @resource.gem_binary('/opt/local/bin/gem')
+    @resource.gem_binary.should eql('/opt/local/bin/gem')
   end
 end

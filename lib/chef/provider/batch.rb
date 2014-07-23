@@ -21,15 +21,13 @@ require 'chef/provider/windows_script'
 class Chef
   class Provider
     class Batch < Chef::Provider::WindowsScript
-
-      def initialize (new_resource, run_context)
+      def initialize(new_resource, run_context)
         super(new_resource, run_context, '.bat')
       end
 
       def flags
         @new_resource.flags.nil? ? '/c' : new_resource.flags + ' /c'
       end
-
     end
   end
 end

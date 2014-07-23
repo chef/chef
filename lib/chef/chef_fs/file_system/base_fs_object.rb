@@ -27,10 +27,10 @@ class Chef
           @parent = parent
           @name = name
           if parent
-            @path = Chef::ChefFS::PathUtils::join(parent.path, name)
+            @path = Chef::ChefFS::PathUtils.join(parent.path, name)
           else
             if name != ''
-              raise ArgumentError, "Name of root object must be empty string: was '#{name}' instead"
+              fail ArgumentError, "Name of root object must be empty string: was '#{name}' instead"
             end
             @path = '/'
           end
@@ -73,14 +73,14 @@ class Chef
         #       other_value = entry.read if other_value.nil?
         #       are_same = (value == other_value)
         #     end
-        def compare_to(other)
+        def compare_to(_other)
           nil
         end
 
         # Override can_have_child? to report whether a given file *could* be added
         # to this directory.  (Some directories can't have subdirs, some can only have .json
         # files, etc.)
-        def can_have_child?(name, is_dir)
+        def can_have_child?(_name, _is_dir)
           false
         end
 
@@ -100,13 +100,13 @@ class Chef
 
         # Override children to report your *actual* list of children as an array.
         def children
-          raise NotFoundError.new(self) if !exists?
+          fail NotFoundError.new(self) unless exists?
           []
         end
 
         # Expand this entry into a chef object (Chef::Role, ::Node, etc.)
         def chef_object
-          raise NotFoundError.new(self) if !exists?
+          fail NotFoundError.new(self) unless exists?
           nil
         end
 
@@ -116,16 +116,16 @@ class Chef
         # NOTE: create_child_from is an optional method that can also be added to
         # your entry class, and will be called without actually reading the
         # file_contents.  This is used for knife upload /cookbooks/cookbookname.
-        def create_child(name, file_contents)
-          raise NotFoundError.new(self) if !exists?
-          raise OperationNotAllowedError.new(:create_child, self)
+        def create_child(_name, _file_contents)
+          fail NotFoundError.new(self) unless exists?
+          fail OperationNotAllowedError.new(:create_child, self)
         end
 
         # Delete this item, possibly recursively.  Entries MUST NOT delete a
         # directory unless recurse is true.
-        def delete(recurse)
-          raise NotFoundError.new(self) if !exists?
-          raise OperationNotAllowedError.new(:delete, self)
+        def delete(_recurse)
+          fail NotFoundError.new(self) unless exists?
+          fail OperationNotAllowedError.new(:delete, self)
         end
 
         # Ask whether this entry is a directory.  If not, it is a file.
@@ -146,7 +146,7 @@ class Chef
             if parent_path == '.'
               name
             else
-              Chef::ChefFS::PathUtils::join(parent.path_for_printing, name)
+              Chef::ChefFS::PathUtils.join(parent.path_for_printing, name)
             end
           else
             name
@@ -159,14 +159,14 @@ class Chef
 
         # Read the contents of this file entry.
         def read
-          raise NotFoundError.new(self) if !exists?
-          raise OperationNotAllowedError.new(:read, self)
+          fail NotFoundError.new(self) unless exists?
+          fail OperationNotAllowedError.new(:read, self)
         end
 
         # Write the contents of this file entry.
-        def write(file_contents)
-          raise NotFoundError.new(self) if !exists?
-          raise OperationNotAllowedError.new(:write, self)
+        def write(_file_contents)
+          fail NotFoundError.new(self) unless exists?
+          fail OperationNotAllowedError.new(:write, self)
         end
 
         # Important directory attributes: name, parent, path, root

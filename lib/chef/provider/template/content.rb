@@ -22,14 +22,12 @@ require 'chef/file_content_management/content_base'
 class Chef
   class Provider
     class Template
-
       class Content < Chef::FileContentManagement::ContentBase
-
         include Chef::Mixin::Template
 
         def template_location
           @template_file_cache_location ||= begin
-            template_finder.find(@new_resource.source, :local => @new_resource.local, :cookbook => @new_resource.cookbook)
+            template_finder.find(@new_resource.source, local: @new_resource.local, cookbook: @new_resource.cookbook)
           end
         end
 
@@ -42,7 +40,7 @@ class Chef
           context._extend_modules(@new_resource.helper_modules)
           output = context.render_template(template_location)
 
-          tempfile = Tempfile.open("chef-rendered-template")
+          tempfile = Tempfile.open('chef-rendered-template')
           tempfile.binmode
           tempfile.write(output)
           tempfile.close
@@ -58,4 +56,3 @@ class Chef
     end
   end
 end
-

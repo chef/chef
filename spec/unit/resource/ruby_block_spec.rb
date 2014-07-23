@@ -22,26 +22,26 @@ require 'spec_helper'
 describe Chef::Resource::RubyBlock do
 
   before(:each) do
-    @resource = Chef::Resource::RubyBlock.new("fakey_fakerton")
+    @resource = Chef::Resource::RubyBlock.new('fakey_fakerton')
   end
 
-  it "should create a new Chef::Resource::RubyBlock" do
+  it 'should create a new Chef::Resource::RubyBlock' do
     @resource.should be_a_kind_of(Chef::Resource)
     @resource.should be_a_kind_of(Chef::Resource::RubyBlock)
   end
 
   it "should have a default action of 'create'" do
-    @resource.action.should eql("run")
+    @resource.action.should eql('run')
   end
 
-  it "should have a resource name of :ruby_block" do
+  it 'should have a resource name of :ruby_block' do
     @resource.resource_name.should eql(:ruby_block)
   end
 
   it "should accept a ruby block/proc/.. for the 'block' parameter" do
     @resource.block do
-      "foo"
-    end.call.should eql("foo")
+      'foo'
+    end.call.should eql('foo')
   end
 
   it "allows the action to be 'create'" do
@@ -49,12 +49,12 @@ describe Chef::Resource::RubyBlock do
     @resource.action.should == [:create]
   end
 
-  describe "when it has been initialized with block code" do
+  describe 'when it has been initialized with block code' do
     before do
       @resource.block_name("puts 'harrrr'")
     end
 
-    it "returns the block as its identity" do
+    it 'returns the block as its identity' do
       @resource.identity.should == "puts 'harrrr'"
     end
   end

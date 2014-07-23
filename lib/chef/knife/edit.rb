@@ -3,9 +3,9 @@ require 'chef/chef_fs/knife'
 class Chef
   class Knife
     class Edit < Chef::ChefFS::Knife
-      banner "knife edit [PATTERN1 ... PATTERNn]"
+      banner 'knife edit [PATTERN1 ... PATTERNn]'
 
-      category "path-based"
+      category 'path-based'
 
       deps do
         require 'chef/chef_fs/file_system'
@@ -13,9 +13,9 @@ class Chef
       end
 
       option :local,
-        :long => '--local',
-        :boolean => true,
-        :description => "Show local files instead of remote"
+             long: '--local',
+             boolean: true,
+             description: 'Show local files instead of remote'
 
       def run
         # Get the matches (recursively)
@@ -50,15 +50,15 @@ class Chef
       end
 
       def edit_text(text, extension)
-        if (!config[:disable_editing])
-          Tempfile.open([ 'knife-edit-', extension ]) do |file|
+        unless config[:disable_editing]
+          Tempfile.open(['knife-edit-', extension]) do |file|
             # Write the text to a temporary file
             file.write(text)
             file.close
 
             # Let the user edit the temporary file
-            if !system("#{config[:editor]} #{file.path}")
-              raise "Please set EDITOR environment variable"
+            unless system("#{config[:editor]} #{file.path}")
+              fail 'Please set EDITOR environment variable'
             end
 
             result_text = IO.read(file.path)
@@ -70,4 +70,3 @@ class Chef
     end
   end
 end
-

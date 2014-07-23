@@ -1,5 +1,5 @@
 action :prepare_eyes do
-  "Prepared"
+  'Prepared'
 end
 
 action :watch_paint_dry do

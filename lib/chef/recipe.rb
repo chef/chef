@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-
 require 'chef/dsl/recipe'
 require 'chef/dsl/data_query'
 require 'chef/dsl/platform_introspection'
@@ -33,7 +32,6 @@ class Chef
   # == Chef::Recipe
   # A Recipe object is the context in which Chef recipes are evaluated.
   class Recipe
-
     include Chef::DSL::DataQuery
     include Chef::DSL::PlatformIntrospection
     include Chef::DSL::IncludeRecipe
@@ -57,9 +55,9 @@ class Chef
     def self.parse_recipe_name(recipe_name)
       rmatch = recipe_name.match(/(.+?)::(.+)/)
       if rmatch
-        [ rmatch[1].to_sym, rmatch[2] ]
+        [rmatch[1].to_sym, rmatch[2]]
       else
-        [ recipe_name.to_sym, "default" ]
+        [recipe_name.to_sym, 'default']
       end
     end
 
@@ -68,7 +66,7 @@ class Chef
       @recipe_name = recipe_name
       @run_context = run_context
       # TODO: 5/19/2010 cw/tim: determine whether this can be removed
-      @params = Hash.new
+      @params = {}
       @node = deprecated_ivar(run_context.node, :node, :warn)
     end
 
@@ -115,6 +113,5 @@ class Chef
         run_context.node.normal[:tags].delete(tag)
       end
     end
-
   end
 end

@@ -18,7 +18,7 @@
 
 require 'spec_helper'
 
-describe Chef::Provider::Script, "action_run" do
+describe Chef::Provider::Script, 'action_run' do
   before(:each) do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
@@ -35,50 +35,50 @@ describe Chef::Provider::Script, "action_run" do
     @provider.stub(:shell_out!).and_return(true)
   end
 
-  it "creates a temporary file to store the script" do
+  it 'creates a temporary file to store the script' do
     @provider.script_file.should be_an_instance_of(Tempfile)
   end
 
-  it "unlinks the tempfile when finished" do
+  it 'unlinks the tempfile when finished' do
     tempfile_path = @provider.script_file.path
     @provider.unlink_script_file
     File.exist?(tempfile_path).should be_false
   end
 
-  it "sets the owner and group for the script file" do
+  it 'sets the owner and group for the script file' do
     @new_resource.user 'toor'
     @new_resource.group 'wheel'
     @provider.stub(:script_file).and_return(@script_file)
-    FileUtils.should_receive(:chown).with('toor', 'wheel', "/tmp/the_script_file")
+    FileUtils.should_receive(:chown).with('toor', 'wheel', '/tmp/the_script_file')
     @provider.set_owner_and_group
   end
 
-  context "with the script file set to the correct owner and group" do
+  context 'with the script file set to the correct owner and group' do
     before do
       @provider.stub(:set_owner_and_group)
       @provider.stub(:script_file).and_return(@script_file)
     end
-    describe "when writing the script to the file" do
-      it "should put the contents of the script in the temp file" do
+    describe 'when writing the script to the file' do
+      it 'should put the contents of the script in the temp file' do
         @provider.action_run
         @script_file.rewind
         @script_file.string.should == "$| = 1; print 'i like beans'\n"
       end
 
-      it "closes before executing the script and unlinks it when finished" do
+      it 'closes before executing the script and unlinks it when finished' do
         @provider.action_run
         @script_file.should be_closed
       end
 
     end
 
-    describe "when running the script" do
+    describe 'when running the script' do
       it 'should set the command to "interpreter"  "tempfile"' do
         @provider.action_run
         @new_resource.command.should == '"perl"  "/tmp/the_script_file"'
       end
 
-      describe "with flags set on the resource" do
+      describe 'with flags set on the resource' do
         before do
           @new_resource.flags '-f'
         end

@@ -17,27 +17,23 @@
 # limitations under the License.
 #
 
-
 class Chef
   class Provider
     class RemoteFile
       class Fetcher
-
         def self.for_resource(uri, new_resource, current_resource)
           case uri.scheme
-          when "http", "https"
+          when 'http', 'https'
             Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
-          when "ftp"
+          when 'ftp'
             Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource)
-          when "file"
+          when 'file'
             Chef::Provider::RemoteFile::LocalFile.new(uri, new_resource, current_resource)
           else
-            raise ArgumentError, "Invalid uri, Only http(s), ftp, and file are currently supported"
+            fail ArgumentError, 'Invalid uri, Only http(s), ftp, and file are currently supported'
           end
         end
-
       end
     end
   end
 end
-

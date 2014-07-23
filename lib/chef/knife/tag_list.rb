@@ -23,19 +23,18 @@ require 'chef/knife'
 class Chef
   class Knife
     class TagList < Knife
-
       deps do
         require 'chef/node'
       end
 
-      banner "knife tag list NODE"
+      banner 'knife tag list NODE'
 
       def run
         name = @name_args[0]
 
         if name.nil?
           show_usage
-          ui.fatal("You must specify a node name.")
+          ui.fatal('You must specify a node name.')
           exit 1
         end
 

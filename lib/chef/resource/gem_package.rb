@@ -21,20 +21,19 @@ require 'chef/resource/package'
 class Chef
   class Resource
     class GemPackage < Chef::Resource::Package
-
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :gem_package
         @provider = Chef::Provider::Package::Rubygems
       end
 
-      def source(arg=nil)
-        set_or_return(:source, arg, :kind_of => [ String, Array ])
+      def source(arg = nil)
+        set_or_return(:source, arg, kind_of: [String, Array])
       end
 
       # Sets a custom gem_binary to run for gem commands.
-      def gem_binary(gem_cmd=nil)
-        set_or_return(:gem_binary,gem_cmd,:kind_of => [ String ])
+      def gem_binary(gem_cmd = nil)
+        set_or_return(:gem_binary, gem_cmd, kind_of: [String])
       end
 
       ##
@@ -43,11 +42,9 @@ class Chef
       # gem will be installed via the gems API. When a String is given, the gem
       # will be installed by shelling out to the gem command. Using a Hash of
       # options with an explicit gem_binary will result in undefined behavior.
-      def options(opts=nil)
-        set_or_return(:options,opts,:kind_of => [String,Hash])
+      def options(opts = nil)
+        set_or_return(:options, opts, kind_of: [String, Hash])
       end
-
-
     end
   end
 end

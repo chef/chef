@@ -22,7 +22,6 @@ require 'chef/provider/execute'
 class Chef
   class Provider
     class Script < Chef::Provider::Execute
-
       def initialize(new_resource, run_context)
         super
         @code = @new_resource.code
@@ -50,7 +49,7 @@ class Chef
       end
 
       def script_file
-        @script_file ||= Tempfile.open("chef-script")
+        @script_file ||= Tempfile.open('chef-script')
       end
 
       def unlink_script_file

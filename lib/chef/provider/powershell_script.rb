@@ -21,7 +21,6 @@ require 'chef/provider/windows_script'
 class Chef
   class Provider
     class PowershellScript < Chef::Provider::WindowsScript
-
       protected
       EXIT_STATUS_EXCEPTION_HANDLER = "\ntrap [Exception] {write-error -exception ($_.Exception.Message);exit 1}".freeze
       EXIT_STATUS_NORMALIZATION_SCRIPT = "\nif ($? -ne $true) { if ( $LASTEXITCODE -ne 0) {exit $LASTEXITCODE} else { exit 1 }}".freeze
@@ -36,12 +35,12 @@ class Chef
       # last process run in the script if it is the last command
       # executed, otherwise 0 or 1 based on whether $? is set to true
       # (success, where we return 0) or false (where we return 1).
-      def normalize_script_exit_status( code )
+      def normalize_script_exit_status(code)
         target_code = ( EXIT_STATUS_EXCEPTION_HANDLER +
                         EXIT_STATUS_RESET_SCRIPT +
                         "\n" +
                         code.to_s +
-                        EXIT_STATUS_NORMALIZATION_SCRIPT )
+                        EXIT_STATUS_NORMALIZATION_SCRIPT)
         convert_boolean_return = @new_resource.convert_boolean_return
         @code = <<EOH
 new-variable -name interpolatedexitcode -visibility private -value $#{convert_boolean_return}
@@ -55,31 +54,31 @@ EOH
 
       public
 
-      def initialize (new_resource, run_context)
+      def initialize(new_resource, run_context)
         super(new_resource, run_context, '.ps1')
         normalize_script_exit_status(new_resource.code)
       end
 
       def flags
         default_flags = [
-          "-NoLogo",
-          "-NonInteractive",
-          "-NoProfile",
-          "-ExecutionPolicy RemoteSigned",
+          '-NoLogo',
+          '-NonInteractive',
+          '-NoProfile',
+          '-ExecutionPolicy RemoteSigned',
           # Powershell will hang if STDIN is redirected
           # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
-          "-InputFormat None",
+          '-InputFormat None',
           # Must use -File rather than -Command to launch the script
           # file created by the base class that contains the script
           # code -- otherwise, powershell.exe does not propagate the
           # error status of a failed Windows process that ran at the
           # end of the script, it gets changed to '1'.
-          "-File"
+          '-File'
         ]
 
         interpreter_flags = default_flags.join(' ')
 
-        if ! (@new_resource.flags.nil?)
+        unless @new_resource.flags.nil?
           interpreter_flags = [@new_resource.flags, interpreter_flags].join(' ')
         end
 

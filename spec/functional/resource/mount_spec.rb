@@ -21,9 +21,9 @@ require 'chef/mixin/shell_out'
 require 'tmpdir'
 
 # run this test only for following platforms.
-include_flag = !(['ubuntu', 'centos', 'aix', 'solaris2'].include?(ohai[:platform]))
+include_flag = !(%w(ubuntu centos aix solaris2).include?(ohai[:platform]))
 
-describe Chef::Resource::Mount, :requires_root, :external => include_flag do
+describe Chef::Resource::Mount, :requires_root, external: include_flag do
 
   include Chef::Mixin::ShellOut
 
@@ -33,28 +33,28 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
     # use ramdisk for creating a test device for mount.
     # This can cleaner if we have chef resource/provider for ramdisk.
     case ohai[:platform]
-    when "aix"
-      ramdisk = shell_out!("mkramdisk 16M").stdout
+    when 'aix'
+      ramdisk = shell_out!('mkramdisk 16M').stdout
 
       # identify device, for /dev/rramdisk0 it is /dev/ramdisk0
-      device = ramdisk.tr("\n","").gsub(/\/rramdisk/, '/ramdisk')
+      device = ramdisk.tr("\n", '').gsub(/\/rramdisk/, '/ramdisk')
 
-      fstype = "jfs2"
+      fstype = 'jfs2'
       shell_out!("mkfs  -V #{fstype} #{device}")
-    when "ubuntu", "centos"
-      device = "/dev/ram1"
-      shell_out("ls -1 /dev/ram*").stdout.each_line do |d|
-        if shell_out("mount | grep #{d}").exitstatus == "1"
+    when 'ubuntu', 'centos'
+      device = '/dev/ram1'
+      shell_out('ls -1 /dev/ram*').stdout.each_line do |d|
+        if shell_out("mount | grep #{d}").exitstatus == '1'
           # this device is not mounted, so use it.
           device = d
           break
         end
       end
-      fstype = "tmpfs"
+      fstype = 'tmpfs'
       shell_out!("mkfs -q #{device} 512")
-    when "solaris2"
-      device = "swap"
-      fstype = "tmpfs"
+    when 'solaris2'
+      device = 'swap'
+      fstype = 'tmpfs'
     else
     end
     [device, fstype]
@@ -62,7 +62,7 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
 
   def cleanup_device(device)
     case ohai[:platform]
-    when "aix"
+    when 'aix'
       ramdisk = device.gsub(/\/ramdisk/, '/rramdisk')
       shell_out("rmramdisk #{ramdisk}")
     else
@@ -82,17 +82,17 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
   end
 
   def mount_should_not_exists(mount_point)
-    shell_out("mount").stdout.should_not include(mount_point)
+    shell_out('mount').stdout.should_not include(mount_point)
   end
 
   def unix_mount_config_file
     case ohai[:platform]
     when 'aix'
-      mount_config = "/etc/filesystems"
+      mount_config = '/etc/filesystems'
     when 'solaris2'
-      mount_config = "/etc/vfstab"
+      mount_config = '/etc/vfstab'
     else
-      mount_config = "/etc/fstab"
+      mount_config = '/etc/fstab'
     end
   end
 
@@ -111,10 +111,10 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
 
   let(:new_resource) do
     new_resource = Chef::Resource::Mount.new(@mount_point, run_context)
-    new_resource.device      @device
-    new_resource.name        @mount_point
-    new_resource.fstype      @fstype
-    new_resource.options     "log=NULL" if ohai[:platform] == 'aix'
+    new_resource.device @device
+    new_resource.name @mount_point
+    new_resource.fstype @fstype
+    new_resource.options 'log=NULL' if ohai[:platform] == 'aix'
     new_resource
   end
 
@@ -132,13 +132,13 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
   before(:all) do
     @device, @fstype = setup_device_for_mount
 
-    @mount_point = Dir.mktmpdir("testmount")
+    @mount_point = Dir.mktmpdir('testmount')
 
     # Make sure all the potentially leaked mounts are cleared up
-    shell_out("mount").stdout.each_line do |line|
-      if line.include? "testmount"
-        line.split(" ").each do |section|
-          cleanup_mount(section) if section.include? "testmount"
+    shell_out('mount').stdout.each_line do |line|
+      if line.include? 'testmount'
+        line.split(' ').each do |section|
+          cleanup_mount(section) if section.include? 'testmount'
         end
       end
     end
@@ -153,7 +153,7 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
     cleanup_mount(new_resource.mount_point)
   end
 
-  describe "when the target state is a mounted filesystem" do
+  describe 'when the target state is a mounted filesystem' do
     it "should mount the filesystem if it isn't mounted" do
       current_resource.enabled.should be_false
       current_resource.mounted.should be_false
@@ -165,22 +165,22 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
 
   # don't run the remount tests on solaris2 (tmpfs does not support remount)
   # Need to make sure the platforms we've already excluded are considered:
-  skip_remount = include_flag || (ohai[:platform] == "solaris2")
-  describe "when the filesystem should be remounted and the resource supports remounting", :external => skip_remount do
-    it "should remount the filesystem if it is mounted" do
+  skip_remount = include_flag || (ohai[:platform] == 'solaris2')
+  describe 'when the filesystem should be remounted and the resource supports remounting', external: skip_remount do
+    it 'should remount the filesystem if it is mounted' do
       new_resource.run_action(:mount)
       mount_should_exist(new_resource.mount_point, new_resource.device)
 
       new_resource.supports[:remount] = true
-      new_resource.options "rw,log=NULL" if ohai[:platform] == 'aix'
+      new_resource.options 'rw,log=NULL' if ohai[:platform] == 'aix'
       new_resource.run_action(:remount)
 
       mount_should_exist(new_resource.mount_point, new_resource.device, nil, (ohai[:platform] == 'aix') ? new_resource.options : nil)
     end
   end
 
-  describe "when the target state is a unmounted filesystem" do
-    it "should umount the filesystem if it is mounted" do
+  describe 'when the target state is a unmounted filesystem' do
+    it 'should umount the filesystem if it is mounted' do
       new_resource.run_action(:mount)
       mount_should_exist(new_resource.mount_point, new_resource.device)
 
@@ -189,7 +189,7 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
     end
   end
 
-  describe "when enabling the filesystem to be mounted" do
+  describe 'when enabling the filesystem to be mounted' do
     after do
       new_resource.run_action(:disable)
     end
@@ -201,8 +201,8 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
     end
   end
 
-  describe "when the target state is to disable the mount" do
-    it "should disable the mount if it is enabled" do
+  describe 'when the target state is to disable the mount' do
+    it 'should disable the mount if it is enabled' do
       new_resource.run_action(:mount)
       new_resource.run_action(:enable)
       new_resource.run_action(:disable)

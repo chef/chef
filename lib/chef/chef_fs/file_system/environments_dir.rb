@@ -27,7 +27,7 @@ class Chef
     module FileSystem
       class EnvironmentsDir < RestListDir
         def initialize(parent)
-          super("environments", parent, nil, Chef::ChefFS::DataHandler::EnvironmentDataHandler.new)
+          super('environments', parent, nil, Chef::ChefFS::DataHandler::EnvironmentDataHandler.new)
         end
 
         def _make_child_entry(name, exists = nil)
@@ -44,14 +44,14 @@ class Chef
             @exists = exists
           end
 
-          def delete(recurse)
-            raise NotFoundError.new(self) if !exists?
-            raise DefaultEnvironmentCannotBeModifiedError.new(:delete, self), "#{path_for_printing} cannot be deleted."
+          def delete(_recurse)
+            fail NotFoundError.new(self) unless exists?
+            fail DefaultEnvironmentCannotBeModifiedError.new(:delete, self), "#{path_for_printing} cannot be deleted."
           end
 
-          def write(file_contents)
-            raise NotFoundError.new(self) if !exists?
-            raise DefaultEnvironmentCannotBeModifiedError.new(:write, self), "#{path_for_printing} cannot be updated."
+          def write(_file_contents)
+            fail NotFoundError.new(self) unless exists?
+            fail DefaultEnvironmentCannotBeModifiedError.new(:write, self), "#{path_for_printing} cannot be updated."
           end
         end
       end

@@ -21,20 +21,19 @@ require 'chef/knife'
 class Chef
   class Knife
     class EnvironmentDelete < Knife
-
       deps do
         require 'chef/environment'
         require 'chef/json_compat'
       end
 
-      banner "knife environment delete ENVIRONMENT (options)"
+      banner 'knife environment delete ENVIRONMENT (options)'
 
       def run
         env_name = @name_args[0]
 
         if env_name.nil?
           show_usage
-          ui.fatal("You must specify an environment name")
+          ui.fatal('You must specify an environment name')
           exit 1
         end
 

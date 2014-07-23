@@ -27,13 +27,11 @@ require 'chef/node'
 
 class Chef
   module PolicyBuilder
-
     # ExpandNodeObject is the "classic" policy builder implementation. It
     # expands the run_list on a node object and then queries the chef-server
     # to find the correct set of cookbooks, given version constraints of the
     # node's environment.
     class ExpandNodeObject
-
       attr_reader :events
       attr_reader :node
       attr_reader :node_name
@@ -54,7 +52,7 @@ class Chef
         @run_list_expansion = nil
       end
 
-      def setup_run_context(specific_recipes=nil)
+      def setup_run_context(specific_recipes = nil)
         if Chef::Config[:solo]
           Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, Chef::Config[:cookbook_path]) }
           cl = Chef::CookbookLoader.new(Chef::Config[:cookbook_path])
@@ -79,7 +77,6 @@ class Chef
         run_context
       end
 
-
       # In client-server operation, loads the node state from the server. In
       # chef-solo operation, builds a new node object.
       def load_node
@@ -91,13 +88,12 @@ class Chef
         else
           @node = Chef::Node.find_or_create(node_name)
         end
-      rescue Exception => e
+      rescue => e
         # TODO: wrap this exception so useful error info can be given to the
         # user.
         events.node_load_failed(node_name, e, Chef::Config)
         raise
       end
-
 
       # Applies environment, external JSON attributes, and override run list to
       # the node, Then expands the run_list.
@@ -132,7 +128,7 @@ class Chef
       # Expands the node's run list. Stores the run_list_expansion object for later use.
       def expand_run_list
         @run_list_expansion = if Chef::Config[:solo]
-          node.expand!('disk')
+                                node.expand!('disk')
         else
           node.expand!('server')
         end
@@ -147,7 +143,7 @@ class Chef
         #   "#{NAME}@#{VERSION}"
         @expanded_run_list_with_versions = @run_list_expansion.recipes.with_version_constraints_strings
         @run_list_expansion
-      rescue Exception => e
+      rescue => e
         # TODO: wrap/munge exception with useful error output.
         events.run_list_expand_failed(node, e)
         raise
@@ -161,13 +157,13 @@ class Chef
       # === Returns
       # Hash:: The hash of cookbooks with download URLs as given by the server
       def sync_cookbooks
-        Chef::Log.debug("Synchronizing cookbooks")
+        Chef::Log.debug('Synchronizing cookbooks')
 
         begin
           events.cookbook_resolution_start(@expanded_run_list_with_versions)
           cookbook_hash = api_service.post("environments/#{node.chef_environment}/cookbook_versions",
-                                         {:run_list => @expanded_run_list_with_versions})
-        rescue Exception => e
+                                           run_list: @expanded_run_list_with_versions)
+        rescue => e
           # TODO: wrap/munge exception to provide helpful error output
           events.cookbook_resolution_failed(@expanded_run_list_with_versions, e)
           raise
@@ -179,7 +175,7 @@ class Chef
         synchronizer.sync_cookbooks
 
         # register the file cache path in the cookbook path so that CookbookLoader actually picks up the synced cookbooks
-        Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
+        Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], 'cookbooks')
 
         cookbook_hash
       end
@@ -197,9 +193,9 @@ class Chef
 
       def setup_run_list_override
         runlist_override_sanity_check!
-        unless(override_runlist.empty?)
+        unless override_runlist.empty?
           node.override_runlist(*override_runlist)
-          Chef::Log.warn "Run List override has been provided."
+          Chef::Log.warn 'Run List override has been provided.'
           Chef::Log.warn "Original Run List: [#{node.primary_runlist}]"
           Chef::Log.warn "Overridden Run List: [#{node.run_list}]"
         end
@@ -213,7 +209,7 @@ class Chef
         end
         @override_runlist = [override_runlist].flatten.compact
         override_runlist.map! do |item|
-          if(item.is_a?(Chef::RunList::RunListItem))
+          if item.is_a?(Chef::RunList::RunListItem)
             item
           else
             Chef::RunList::RunListItem.new(item)
@@ -228,7 +224,6 @@ class Chef
       def config
         Chef::Config
       end
-
     end
   end
 end

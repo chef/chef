@@ -46,11 +46,11 @@ class Chef
         end
 
         def self.from_string_sid(string_sid)
-          Chef::ReservedNames::Win32::Security::convert_string_sid_to_sid(string_sid)
+          Chef::ReservedNames::Win32::Security.convert_string_sid_to_sid(string_sid)
         end
 
         def ==(other)
-          other != nil && Chef::ReservedNames::Win32::Security.equal_sid(self, other)
+          !other.nil? && Chef::ReservedNames::Win32::Security.equal_sid(self, other)
         end
 
         attr_reader :pointer
@@ -61,7 +61,7 @@ class Chef
 
         def account_name
           domain, name, use = account
-          (domain != nil && domain.length > 0) ? "#{domain}\\#{name}" : name
+          (!domain.nil? && domain.length > 0) ? "#{domain}\\#{name}" : name
         end
 
         def size
@@ -220,11 +220,11 @@ class Chef
 
             status = ERROR_MORE_DATA
 
-            while(status == ERROR_MORE_DATA) do
+            while (status == ERROR_MORE_DATA)
               status = NetUserEnum(servername, level, filter, bufptr, prefmaxlen, entriesread, totalentries, resume_handle)
 
-              if (status == NERR_Success || status == ERROR_MORE_DATA)
-                entriesread.read_long.times.collect do |i|
+              if status == NERR_Success || status == ERROR_MORE_DATA
+                entriesread.read_long.times.map do |i|
                   user_info = USER_INFO_3.new(bufptr.read_pointer + i * USER_INFO_3.size)
                   # Check if the account is the Administrator account
                   # RID for the Administrator account is always 500 and it's privilage is set to USER_PRIV_ADMIN
@@ -239,7 +239,7 @@ class Chef
               end
             end
 
-            raise "Can not determine the administrator account name." if admin_account_name.nil?
+            fail 'Can not determine the administrator account name.' if admin_account_name.nil?
             admin_account_name
           end
         end
