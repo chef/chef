@@ -1,5 +1,5 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: Nicolas DUPEUX (<nicolas.dupeux@arkea.com>)
 # Copyright:: Copyright (c) 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
