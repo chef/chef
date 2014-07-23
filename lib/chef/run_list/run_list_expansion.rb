@@ -101,7 +101,7 @@ class Chef
       end
 
       def applied_role?(role_name)
-        @applied_roles.has_key?(role_name)
+        @applied_roles.key?(role_name)
       end
 
       # Returns an array of role names that were expanded; this

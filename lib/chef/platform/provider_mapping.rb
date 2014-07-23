@@ -417,9 +417,9 @@ class Chef
           name_sym = name.to_sym
         end
 
-        if platforms.has_key?(name_sym)
+        if platforms.key?(name_sym)
           platform_versions = platforms[name_sym].select {|k, v| k != :default }
-          if platforms[name_sym].has_key?(:default)
+          if platforms[name_sym].key?(:default)
             provider_map.merge!(platforms[name_sym][:default])
           end
           platform_versions.each do |platform_version, provider|
@@ -502,10 +502,10 @@ class Chef
             }
           }
         )
-        if args.has_key?(:platform)
-          if args.has_key?(:version)
-            if platforms.has_key?(args[:platform])
-              if platforms[args[:platform]].has_key?(args[:version])
+        if args.key?(:platform)
+          if args.key?(:version)
+            if platforms.key?(args[:platform])
+              if platforms[args[:platform]].key?(args[:version])
                 platforms[args[:platform]][args[:version]][args[:resource].to_sym] = args[:provider]
               else
                 platforms[args[:platform]][args[:version]] = {
@@ -520,8 +520,8 @@ class Chef
               }
             end
           else
-            if platforms.has_key?(args[:platform])
-              if platforms[args[:platform]].has_key?(:default)
+            if platforms.key?(args[:platform])
+              if platforms[args[:platform]].key?(:default)
                 platforms[args[:platform]][:default][args[:resource].to_sym] = args[:provider]
               else
                 platforms[args[:platform]] = { :default => { args[:resource].to_sym => args[:provider] } }
@@ -535,7 +535,7 @@ class Chef
             end
           end
         else
-          if platforms.has_key?(:default)
+          if platforms.key?(:default)
             platforms[:default][args[:resource].to_sym] = args[:provider]
           else
             platforms[:default] = {
@@ -564,7 +564,7 @@ class Chef
         def platform_provider(platform, version, resource_type)
           pmap = Chef::Platform.find(platform, version)
           rtkey = resource_type.kind_of?(Chef::Resource) ? resource_type.resource_name.to_sym : resource_type
-          pmap.has_key?(rtkey) ? pmap[rtkey] : nil
+          pmap.key?(rtkey) ? pmap[rtkey] : nil
         end
 
         def resource_matching_provider(platform, version, resource_type)

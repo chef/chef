@@ -777,7 +777,7 @@ F
         short_name.gsub!(/\s/, "_")
         short_name_sym = short_name.to_sym
       end
-      if opts.has_key?(:on_platforms)
+      if opts.key?(:on_platforms)
         platforms = [opts[:on_platforms]].flatten
         platforms.each do |p|
           p = :default if :all == p.to_sym

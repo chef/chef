@@ -94,7 +94,7 @@ class Chef
             @children = []
             manifest = chef_object.manifest
             COOKBOOK_SEGMENT_INFO.each do |segment, segment_info|
-              next unless manifest.has_key?(segment)
+              next unless manifest.key?(segment)
 
               # Go through each file in the manifest for the segment, and
               # add cookbook subdirs and files for it.

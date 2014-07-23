@@ -84,7 +84,7 @@ class Chef
         end
 
         Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
-          next unless manifest.has_key?(segment)
+          next unless manifest.key?(segment)
           ui.info("Downloading #{segment}")
           manifest[segment].each do |segment_file|
             dest = File.join(basedir, segment_file['path'].gsub('/', File::SEPARATOR))

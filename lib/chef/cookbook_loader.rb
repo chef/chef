@@ -91,7 +91,7 @@ class Chef
         end
       end
 
-      if @loaded_cookbooks.has_key?(cookbook_name)
+      if @loaded_cookbooks.key?(cookbook_name)
         cookbook_version = @loaded_cookbooks[cookbook_name].cookbook_version
         @cookbooks_by_name[cookbook_name] = cookbook_version
         @metadata[cookbook_name] = cookbook_version.metadata
@@ -100,7 +100,7 @@ class Chef
     end
 
     def [](cookbook)
-      if @cookbooks_by_name.has_key?(cookbook.to_sym) or load_cookbook(cookbook.to_sym)
+      if @cookbooks_by_name.key?(cookbook.to_sym) or load_cookbook(cookbook.to_sym)
         @cookbooks_by_name[cookbook.to_sym]
       else
         raise Exceptions::CookbookNotFoundInRepo, "Cannot find a cookbook named #{cookbook.to_s}; did you forget to add metadata to a cookbook? (http://wiki.opscode.com/display/chef/Metadata)"
@@ -109,11 +109,11 @@ class Chef
 
     alias :fetch :[]
 
-    def has_key?(cookbook_name)
+    def key?(cookbook_name)
       not self[cookbook_name.to_sym].nil?
     end
-    alias :cookbook_exists? :has_key?
-    alias :key? :has_key?
+    alias :cookbook_exists? :key?
+    alias :key? :key?
 
     def each
       @cookbooks_by_name.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |cname|

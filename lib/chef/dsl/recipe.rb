@@ -51,7 +51,7 @@ class Chef
       end
 
       def has_resource_definition?(name)
-        yes_or_no = run_context.definitions.has_key?(name)
+        yes_or_no = run_context.definitions.key?(name)
 
         yes_or_no
       end

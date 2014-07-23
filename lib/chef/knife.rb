@@ -317,7 +317,7 @@ class Chef
     def config_file_settings
       config_file_settings = {}
       self.class.options.keys.each do |key|
-        config_file_settings[key] = Chef::Config[:knife][key] if Chef::Config[:knife].has_key?(key)
+        config_file_settings[key] = Chef::Config[:knife][key] if Chef::Config[:knife].key?(key)
       end
       config_file_settings
     end
@@ -391,8 +391,8 @@ class Chef
       Chef::Config[:chef_server_url]   = config[:chef_server_url] if config[:chef_server_url]
       Chef::Config[:environment]       = config[:environment]     if config[:environment]
 
-      Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
-      if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+      Chef::Config.local_mode = config[:local_mode] if config.key?(:local_mode)
+      if Chef::Config.local_mode && !Chef::Config.key?(:cookbook_path) && !Chef::Config.key?(:chef_repo_path)
         Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
       end
       Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]

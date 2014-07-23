@@ -68,7 +68,7 @@ class Chef
         case json_obj
         when Hash
           mapped_hash = map_hash_to_rb_obj(json_obj)
-          if json_obj.has_key?(JSON_CLASS) && (class_to_inflate = class_for_json_class(json_obj[JSON_CLASS]))
+          if json_obj.key?(JSON_CLASS) && (class_to_inflate = class_for_json_class(json_obj[JSON_CLASS]))
             class_to_inflate.json_create(mapped_hash)
           else
             mapped_hash

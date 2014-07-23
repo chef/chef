@@ -41,7 +41,7 @@ class Chef
 
     extend Forwardable
 
-    def_delegators :attributes, :keys, :each_key, :each_value, :key?, :has_key?
+    def_delegators :attributes, :keys, :each_key, :each_value, :key?, :key?
 
     attr_accessor :recipe_list, :run_state, :override_runlist
 
@@ -450,15 +450,15 @@ class Chef
       node = new
       node.name(o["name"])
       node.chef_environment(o["chef_environment"])
-      if o.has_key?("attributes")
+      if o.key?("attributes")
         node.normal_attrs = o["attributes"]
       end
-      node.automatic_attrs = Mash.new(o["automatic"]) if o.has_key?("automatic")
-      node.normal_attrs = Mash.new(o["normal"]) if o.has_key?("normal")
-      node.default_attrs = Mash.new(o["default"]) if o.has_key?("default")
-      node.override_attrs = Mash.new(o["override"]) if o.has_key?("override")
+      node.automatic_attrs = Mash.new(o["automatic"]) if o.key?("automatic")
+      node.normal_attrs = Mash.new(o["normal"]) if o.key?("normal")
+      node.default_attrs = Mash.new(o["default"]) if o.key?("default")
+      node.override_attrs = Mash.new(o["override"]) if o.key?("override")
 
-      if o.has_key?("run_list")
+      if o.key?("run_list")
         node.run_list.reset!(o["run_list"])
       else
         o["recipes"].each { |r| node.recipes << r }

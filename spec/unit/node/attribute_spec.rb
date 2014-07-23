@@ -495,26 +495,26 @@ describe Chef::Node::Attribute do
     end
   end
 
-  describe "has_key?" do
+  describe "key?" do
     it "should return true if an attribute exists" do
-      @attributes.has_key?("music").should == true
+      @attributes.key?("music").should == true
     end
 
     it "should return false if an attribute does not exist" do
-      @attributes.has_key?("ninja").should == false
+      @attributes.key?("ninja").should == false
     end
 
     it "should return false if an attribute does not exist using dot notation" do
-      @attributes.has_key?("does_not_exist_at_all").should == false
+      @attributes.key?("does_not_exist_at_all").should == false
     end
 
     it "should return true if an attribute exists but is set to nil using dot notation" do
-      @attributes.music.deeper.has_key?("gates_of_ishtar").should == true
+      @attributes.music.deeper.key?("gates_of_ishtar").should == true
     end
 
     it "should return true if an attribute exists but is set to false" do
-      @attributes.has_key?("music")
-      @attributes["music"].has_key?("apophis").should == true
+      @attributes.key?("music")
+      @attributes["music"].key?("apophis").should == true
     end
 
     it "does not find keys above the current nesting level" do

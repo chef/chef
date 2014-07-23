@@ -101,7 +101,7 @@ class Chef
               result.each_pair do |key, value|
                 if value.is_a?(Array)
                   value.each do |file|
-                    if file.is_a?(Hash) && file.has_key?('checksum')
+                    if file.is_a?(Hash) && file.key?('checksum')
                       relative = ['file_store', 'repo', 'cookbooks']
                       if Chef::Config.versioned_cookbooks
                         relative << "#{path[1]}-#{path[2]}"
@@ -273,7 +273,7 @@ class Chef
         cookbook.each_pair do |key, value|
           if value.is_a?(Array)
             value.each do |file|
-              if file.is_a?(Hash) && file.has_key?('checksum')
+              if file.is_a?(Hash) && file.key?('checksum')
                 file_data = @memory_store.get(['file_store', 'checksums', file['checksum']])
                 cookbook_fs.add_file(File.join(cookbook_path, file['path']), file_data)
               end

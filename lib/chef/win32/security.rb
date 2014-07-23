@@ -404,14 +404,14 @@ class Chef
 
         # Determine the security_information flags
         security_information = 0
-        security_information |= OWNER_SECURITY_INFORMATION if args.has_key?(:owner)
-        security_information |= GROUP_SECURITY_INFORMATION if args.has_key?(:group)
-        security_information |= DACL_SECURITY_INFORMATION if args.has_key?(:dacl)
-        security_information |= SACL_SECURITY_INFORMATION if args.has_key?(:sacl)
-        if args.has_key?(:dacl_inherits)
+        security_information |= OWNER_SECURITY_INFORMATION if args.key?(:owner)
+        security_information |= GROUP_SECURITY_INFORMATION if args.key?(:group)
+        security_information |= DACL_SECURITY_INFORMATION if args.key?(:dacl)
+        security_information |= SACL_SECURITY_INFORMATION if args.key?(:sacl)
+        if args.key?(:dacl_inherits)
           security_information |= (args[:dacl_inherits] ? UNPROTECTED_DACL_SECURITY_INFORMATION : PROTECTED_DACL_SECURITY_INFORMATION)
         end
-        if args.has_key?(:sacl_inherits)
+        if args.key?(:sacl_inherits)
           security_information |= (args[:sacl_inherits] ? UNPROTECTED_SACL_SECURITY_INFORMATION : PROTECTED_SACL_SECURITY_INFORMATION)
         end
 

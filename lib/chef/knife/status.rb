@@ -62,7 +62,7 @@ class Chef
             (n1["ohai_time"] or 0) <=> (n2["ohai_time"] or 0)
           end
         }.each do |node|
-          if node.has_key?("ec2")
+          if node.key?("ec2")
             fqdn = node['ec2']['public_hostname']
             ipaddress = node['ec2']['public_ipv4']
           else

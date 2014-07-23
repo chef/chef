@@ -455,7 +455,7 @@ describe Chef::Cookbook::Metadata do
       lambda {
         @meta.attribute("test_cookbook/test", options)
       }.should_not raise_error
-  
+
       options = {
         :type => "boolean",
         :choice => [ true, false ],
@@ -553,8 +553,8 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "should automatically provide each recipe" do
-      @meta.providing.has_key?("test_cookbook").should == true
-      @meta.providing.has_key?("test_cookbook::enlighten").should == true
+      @meta.providing.key?("test_cookbook").should == true
+      @meta.providing.key?("test_cookbook::enlighten").should == true
     end
 
   end

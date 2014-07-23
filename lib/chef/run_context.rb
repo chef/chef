@@ -211,7 +211,7 @@ ERROR_MESSAGE
     end
 
     def loaded_fully_qualified_recipe?(cookbook, recipe)
-      @loaded_recipes.has_key?("#{cookbook}::#{recipe}")
+      @loaded_recipes.key?("#{cookbook}::#{recipe}")
     end
 
     # Returns true if +recipe+ has been loaded, false otherwise. Default recipe
@@ -223,7 +223,7 @@ ERROR_MESSAGE
     end
 
     def loaded_fully_qualified_attribute?(cookbook, attribute_file)
-      @loaded_attributes.has_key?("#{cookbook}::#{attribute_file}")
+      @loaded_attributes.key?("#{cookbook}::#{attribute_file}")
     end
 
     def loaded_attribute(cookbook, attribute_file)

@@ -226,7 +226,7 @@ class Chef
            value = args.inject(ivar) do |so_far, key|
              if so_far == :not_present
                :not_present
-             elsif so_far.has_key?(key)
+             elsif so_far.key?(key)
                so_far[key]
              else
                :not_present
@@ -337,16 +337,16 @@ class Chef
          merged_attributes[key] = value
        end
 
-       def has_key?(key)
+       def key?(key)
          COMPONENTS.any? do |component_ivar|
-           instance_variable_get(component_ivar).has_key?(key)
+           instance_variable_get(component_ivar).key?(key)
          end
        end
 
-       alias :attribute? :has_key?
-       alias :member? :has_key?
-       alias :include? :has_key?
-       alias :key? :has_key?
+       alias :attribute? :key?
+       alias :member? :key?
+       alias :include? :key?
+       alias :key? :key?
 
        alias :each_attribute :each
 

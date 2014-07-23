@@ -462,7 +462,7 @@ class Chef
       # use ssh_password_ng to determine if we're coming from knife ssh or from the other utilities.  The other utilties can
       # also be patched to use ssh_password_ng easily as long they follow the convention that the default is false.
       def configure_password
-        if config.has_key?(:ssh_password_ng) && config[:ssh_password_ng].nil?
+        if config.key?(:ssh_password_ng) && config[:ssh_password_ng].nil?
           # If the parameter is called on the command line with no value
           # it will set :ssh_password_ng = nil
           # This is where we want to trigger a prompt for password
@@ -472,7 +472,7 @@ class Chef
           # using an old config[:ssh_password].  this is backwards compatibility.  all knife cloud plugins should
           # be updated to use ssh_password_ng with a default of false and ssh_password should be retired, (but
           # we'll still need to use the ssh_password out of knife.rb if we find that).
-          ssh_password = config.has_key?(:ssh_password_ng) ? config[:ssh_password_ng] : config[:ssh_password]
+          ssh_password = config.key?(:ssh_password_ng) ? config[:ssh_password_ng] : config[:ssh_password]
           # Otherwise, the password has either been specified on the command line,
           # in knife.rb, or key based auth will be attempted
           config[:ssh_password] = get_stripped_unfrozen_value(ssh_password ||

@@ -248,10 +248,10 @@ class Chef::Application::Client < Chef::Application
 
     Chef::Config[:specific_recipes] = cli_arguments.map { |file| File.expand_path(file) }
 
-    Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
+    Chef::Config[:chef_server_url] = config[:chef_server_url] if config.key? :chef_server_url
 
-    Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
-    if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+    Chef::Config.local_mode = config[:local_mode] if config.key?(:local_mode)
+    if Chef::Config.local_mode && !Chef::Config.key?(:cookbook_path) && !Chef::Config.key?(:chef_repo_path)
       Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
     end
     Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
@@ -274,7 +274,7 @@ class Chef::Application::Client < Chef::Application
 
   def load_config_file
     Chef::Config.config_file_jail = config[:config_file_jail] if config[:config_file_jail]
-    if !config.has_key?(:config_file)
+    if !config.key?(:config_file)
       if config[:local_mode]
         require 'chef/knife'
         config[:config_file] = Chef::Knife.locate_config_file

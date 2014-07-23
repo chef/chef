@@ -124,9 +124,9 @@ class Mash < Hash
     super(convert_key(key))
   end
 
-  # def include? def has_key? def member?
+  # def include? def key? def member?
   alias_method :include?, :key?
-  alias_method :has_key?, :key?
+  alias_method :key?, :key?
   alias_method :member?, :key?
 
   # @param key<Object> The key to fetch. This will be run through convert_key.

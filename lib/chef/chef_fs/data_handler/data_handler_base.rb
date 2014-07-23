@@ -31,10 +31,10 @@ class Chef
           # Make a normalized result in the specified order for diffing
           result = {}
           defaults.each_pair do |key, default|
-            result[key] = object.has_key?(key) ? object[key] : default
+            result[key] = object.key?(key) ? object[key] : default
           end
           object.each_pair do |key, value|
-            result[key] = value if !result.has_key?(key)
+            result[key] = value if !result.key?(key)
           end
           result
         end

@@ -167,7 +167,7 @@ class Chef
             upload_set = {}
             @name_args.each do |cookbook_name|
               begin
-                if ! upload_set.has_key?(cookbook_name)
+                if ! upload_set.key?(cookbook_name)
                   upload_set[cookbook_name] = cookbook_repo[cookbook_name]
                   if config[:depends]
                     upload_set[cookbook_name].metadata.dependencies.each { |dep, ver| @name_args << dep }
@@ -204,7 +204,7 @@ class Chef
         # because cookbooks are lazy-loaded, we have to force the loader
         # to load the cookbooks the user intends to upload here:
         cookbooks_to_upload
-        
+
         unless cookbook_repo.merged_cookbooks.empty?
           ui.warn "* " * 40
           ui.warn(<<-WARNING)

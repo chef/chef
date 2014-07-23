@@ -79,7 +79,7 @@ class Chef
         required_options = [:service_name, :service_display_name, :service_name, :service_description, :service_file_path]
 
         required_options.each do |req_option|
-          if !service_options.has_key?(req_option)
+          if !service_options.key?(req_option)
             raise ArgumentError, "Service definition doesn't contain required option #{req_option}"
           end
         end

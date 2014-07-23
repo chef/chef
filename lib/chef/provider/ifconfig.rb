@@ -72,7 +72,7 @@ class Chef
               @interfaces[@int_name]["metric"] = (line =~ /Metric:(\S+)/ ? ($1) : "nil") if line =~ /Metric:/
             end
 
-            if @interfaces.has_key?(@new_resource.device)
+            if @interfaces.key?(@new_resource.device)
               @interface = @interfaces.fetch(@new_resource.device)
 
               @current_resource.target(@new_resource.target)

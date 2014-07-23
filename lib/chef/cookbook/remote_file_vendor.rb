@@ -52,7 +52,7 @@ class Chef
         validate_cached_copy(cache_filename)
 
         current_checksum = nil
-        if Chef::FileCache.has_key?(cache_filename)
+        if Chef::FileCache.key?(cache_filename)
           current_checksum = Chef::CookbookVersion.checksum_cookbook_file(Chef::FileCache.load(cache_filename, false))
         end
 

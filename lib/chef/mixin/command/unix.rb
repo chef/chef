@@ -53,7 +53,7 @@ class Chef
           # Default on C locale so parsing commands output can be done
           # independently of the node's default locale.
           # "LC_ALL" could be set to nil, in which case we also must ignore it.
-          unless args[:environment].has_key?("LC_ALL")
+          unless args[:environment].key?("LC_ALL")
             args[:environment]["LC_ALL"] = "C"
           end
 

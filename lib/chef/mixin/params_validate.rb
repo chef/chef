@@ -111,9 +111,9 @@ class Chef
 
         # Return the value of a parameter, or nil if it doesn't exist.
         def _pv_opts_lookup(opts, key)
-          if opts.has_key?(key.to_s)
+          if opts.key?(key.to_s)
             opts[key.to_s]
-          elsif opts.has_key?(key.to_sym)
+          elsif opts.key?(key.to_sym)
             opts[key.to_sym]
           else
             nil
@@ -123,8 +123,8 @@ class Chef
         # Raise an exception if the parameter is not found.
         def _pv_required(opts, key, is_required=true)
           if is_required
-            if (opts.has_key?(key.to_s) && !opts[key.to_s].nil?) ||
-                (opts.has_key?(key.to_sym) && !opts[key.to_sym].nil?)
+            if (opts.key?(key.to_s) && !opts[key.to_s].nil?) ||
+                (opts.key?(key.to_sym) && !opts[key.to_sym].nil?)
               true
             else
               raise Exceptions::ValidationFailed, "Required argument #{key} is missing!"

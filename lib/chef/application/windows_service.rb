@@ -212,7 +212,7 @@ class Chef
         configure_chef startup_parameters
         configure_logging
 
-        Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
+        Chef::Config[:chef_server_url] = config[:chef_server_url] if config.key? :chef_server_url
         unless Chef::Config[:exception_handlers].any? {|h| Chef::Handler::ErrorReport === h}
           Chef::Config[:exception_handlers] << Chef::Handler::ErrorReport.new
         end

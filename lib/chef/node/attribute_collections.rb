@@ -158,7 +158,7 @@ class Chef
         end
       end
 
-      alias :attribute? :has_key?
+      alias :attribute? :key?
 
       def method_missing(symbol, *args)
         # Calling `puts arg` implicitly calls #to_ary on `arg`. If `arg` does

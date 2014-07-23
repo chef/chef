@@ -91,7 +91,7 @@ class Chef
     end
 
     def object_name
-      raise Exceptions::ValidationFailed, "You must have an 'id' or :id key in the raw data" unless raw_data.has_key?('id')
+      raise Exceptions::ValidationFailed, "You must have an 'id' or :id key in the raw data" unless raw_data.key?('id')
       raise Exceptions::ValidationFailed, "You must have declared what bag this item belongs to!" unless data_bag
 
       id = raw_data['id']

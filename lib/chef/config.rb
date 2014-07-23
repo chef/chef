@@ -43,7 +43,7 @@ class Chef
     #
     def self.manage_secret_key
       newkey = nil
-      if Chef::FileCache.has_key?("chef_server_cookie_id")
+      if Chef::FileCache.key?("chef_server_cookie_id")
         newkey = Chef::FileCache.load("chef_server_cookie_id")
       else
         chars = ("a".."z").to_a + ("A".."Z").to_a + ("0".."9").to_a

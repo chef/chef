@@ -84,7 +84,7 @@ class Chef
     end
 
     def active_run_list_for(environment)
-      @env_run_lists.has_key?(environment) ? environment : '_default'
+      @env_run_lists.key?(environment) ? environment : '_default'
     end
 
     # Per environment run lists
@@ -165,7 +165,7 @@ class Chef
 
       # _default run_list is in 'run_list' for newer clients, and
       # 'recipes' for older clients.
-      env_run_list_hash = {"_default" => (o.has_key?("run_list") ? o["run_list"] : o["recipes"])}
+      env_run_list_hash = {"_default" => (o.key?("run_list") ? o["run_list"] : o["recipes"])}
 
       # Clients before 0.10 do not include env_run_lists, so only
       # merge if it's there.

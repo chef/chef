@@ -48,7 +48,7 @@ class Chef
         end
 
         def can_have_child?(name, is_dir)
-          child_paths.has_key?(name) && is_dir
+          child_paths.key?(name) && is_dir
         end
 
         def create_child(name, file_contents = nil)

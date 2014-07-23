@@ -54,13 +54,13 @@ class Chef
         case @name_args.length
         when 4 # We are showing a specific file
           node = Hash.new
-          node[:fqdn] = config[:fqdn] if config.has_key?(:fqdn)
-          node[:platform] = config[:platform] if config.has_key?(:platform)
-          node[:platform_version] = config[:platform_version] if config.has_key?(:platform_version)
+          node[:fqdn] = config[:fqdn] if config.key?(:fqdn)
+          node[:platform] = config[:platform] if config.key?(:platform)
+          node[:platform_version] = config[:platform_version] if config.key?(:platform_version)
 
           class << node
             def attribute?(name)
-              has_key?(name)
+              key?(name)
             end
           end
 

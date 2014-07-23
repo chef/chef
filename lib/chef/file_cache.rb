@@ -174,7 +174,7 @@ class Chef
       # === Returns
       # True:: If the file exists
       # False:: If it does not
-      def has_key?(path)
+      def key?(path)
         validate(
           {
             :path => path

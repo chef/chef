@@ -33,7 +33,7 @@ class Chef
           assert_hash_is_valid_run_list_item!(item)
           @type = (item['type'] || item[:type]).to_sym
           @name = item['name'] || item[:name]
-          if (item.has_key?('version') || item.has_key?(:version))
+          if (item.key?('version') || item.key?(:version))
             @version = item['version'] || item[:version]
           end
         when String

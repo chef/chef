@@ -74,7 +74,7 @@ class Chef
               end
             end
 
-            if line =~ /Latest version available: (.*)/ && availables.has_key?(found_package_name)
+            if line =~ /Latest version available: (.*)/ && availables.key?(found_package_name)
               availables[found_package_name] = $1.strip
             end
           end

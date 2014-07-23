@@ -49,7 +49,7 @@ class Chef
         args = command_args.dup
         if args.last.is_a?(Hash)
           options = args.last
-          env_key = options.has_key?(:env) ? :env : :environment
+          env_key = options.key?(:env) ? :env : :environment
           options[env_key] ||= {}
           options[env_key]['LC_ALL'] ||= nil
         else

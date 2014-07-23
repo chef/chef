@@ -163,7 +163,7 @@ class Chef
       @manifest_records_by_path = extract_manifest_records_by_path(@manifest)
 
       COOKBOOK_SEGMENTS.each do |segment|
-        next unless @manifest.has_key?(segment)
+        next unless @manifest.key?(segment)
         filenames = @manifest[segment].map{|manifest_record| manifest_record['name']}
 
         replace_segment_filenames(segment, filenames)
@@ -219,7 +219,7 @@ class Chef
 
     # called from DSL
     def load_recipe(recipe_name, run_context)
-      unless recipe_filenames_by_name.has_key?(recipe_name)
+      unless recipe_filenames_by_name.key?(recipe_name)
         raise Chef::Exceptions::RecipeNotFound, "could not find recipe #{recipe_name} for cookbook #{name}"
       end
 
@@ -478,7 +478,7 @@ class Chef
     def generate_manifest_with_urls(&url_generator)
       rendered_manifest = manifest.dup
       COOKBOOK_SEGMENTS.each do |segment|
-        if rendered_manifest.has_key?(segment)
+        if rendered_manifest.key?(segment)
           rendered_manifest[segment].each do |manifest_record|
             url_options = { :cookbook_name => name.to_s, :cookbook_version => version, :checksum => manifest_record["checksum"] }
             manifest_record["url"] = url_generator.call(url_options)
@@ -675,7 +675,7 @@ class Chef
     def extract_checksums_from_manifest(manifest)
       checksums = {}
       COOKBOOK_SEGMENTS.each do |segment|
-        next unless manifest.has_key?(segment)
+        next unless manifest.key?(segment)
         manifest[segment].each do |manifest_record|
           checksums[manifest_record[:checksum]] = nil
         end
@@ -686,7 +686,7 @@ class Chef
     def extract_manifest_records_by_path(manifest)
       manifest_records_by_path = {}
       COOKBOOK_SEGMENTS.each do |segment|
-        next unless manifest.has_key?(segment)
+        next unless manifest.key?(segment)
         manifest[segment].each do |manifest_record|
           manifest_records_by_path[manifest_record[:path]] = manifest_record
         end

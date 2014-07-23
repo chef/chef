@@ -157,7 +157,7 @@ class Chef
         end
       end
 
-      alias :attribute? :has_key?
+      alias :attribute? :key?
 
       # Redefine all of the methods that mutate a Hash to raise an error when called.
       # This is the magic that makes this object "Immutable"
