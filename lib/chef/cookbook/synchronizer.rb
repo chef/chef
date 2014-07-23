@@ -10,6 +10,8 @@ class Chef
   # cache.
   class CookbookCacheCleaner
 
+    attr_accessor :skip_removal
+
     # Setup a notification to clear the valid_cache_entries when a Chef client
     # run starts
     Chef::Client.when_run_starts do |run_status|
@@ -40,7 +42,7 @@ class Chef
     end
 
     def cleanup_file_cache
-      unless Chef::Config[:solo]
+      unless Chef::Config[:solo] || skip_removal
         # Delete each file in the cache that we didn't encounter in the
         # manifest.
         cache.find(File.join(%w{cookbooks ** *})).each do |cache_filename|
@@ -49,6 +51,8 @@ class Chef
             cache.delete(cache_filename)
           end
         end
+      else
+        Chef::Log.info("Skipping removal of unused files from the cache")
       end
     end
 
@@ -58,6 +62,8 @@ class Chef
   # server.
   class CookbookSynchronizer
     CookbookFile = Struct.new(:cookbook, :segment, :manifest_record)
+
+    attr_accessor :remove_obsoleted_files
 
     def initialize(cookbooks_by_name, events)
       @eager_segments = Chef::CookbookVersion::COOKBOOK_SEGMENTS.dup
@@ -70,6 +76,7 @@ class Chef
       @cookbooks_by_name, @events = cookbooks_by_name, events
 
       @cookbook_full_file_paths = {}
+      @remove_obsoleted_files = true
     end
 
     def cache
@@ -172,6 +179,12 @@ class Chef
     # Iterates over cached cookbooks' files, removing files belonging to
     # cookbooks that don't appear in +cookbook_hash+
     def clear_obsoleted_cookbooks
+      unless remove_obsoleted_files
+        Chef::Log.info("Skipping removal of obsoleted cookbooks from the cache")
+        CookbookCacheCleaner.instance.skip_removal = true
+        return
+      end
+
       @events.cookbook_clean_start
       # Remove all cookbooks no longer relevant to this node
       cache.find(File.join(%w{cookbooks ** *})).each do |cache_file|

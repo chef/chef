@@ -1,5 +1,10 @@
 # Chef Client Release Notes:
 
+## When given an override run list Chef does not clean the file_cache
+
+In order to avoid redownloading the file_cache for all the cookbooks and files that are skipped when an
+override run list is used, when an override run list is set the file cache is not cleaned at all.
+
 ## Dropped Support For Ruby 1.8.7/1.9.1/1.9.2
 
 Ruby 1.8.7, 1.9.1 and 1.9.2 are no longer supported.
