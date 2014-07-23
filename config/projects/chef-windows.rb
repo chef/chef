@@ -56,15 +56,15 @@ msi_parameters do
   end
 
   # Convert the chef gem path to a relative path based on install_dir
-  # We are going to use this path in the startup command of chef
-  # service. So we need to change file seperators to make windows
-  # happy.
   relative_path = Pathname.new(chef_gem_path)
     .relative_path_from(Pathname.new(install_dir))
     .to_s
 
   # Return the result as a hash
   {
+    # We are going to use this path in the startup command of chef
+    # service. So we need to change file seperators to make windows
+    # happy.
     chef_gem_path: relative_path.gsub(File::SEPARATOR, File::ALT_SEPARATOR),
     upgrade_code:  'D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5',
   }
