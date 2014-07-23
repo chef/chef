@@ -53,14 +53,14 @@ describe Chef::Provider::Subversion do
     end
 
     it "determines the current revision if there's a checkout with svn data available" do
-      example_svn_info =  "Path: .\n" \
-                          "URL: http://svn.example.org/trunk/myapp\n" \
-                          "Repository Root: http://svn.example.org\n" \
-                          "Repository UUID: d62ff500-7bbc-012c-85f1-0026b0e37c24\n" \
-                          "Revision: 11739\nNode Kind: directory\n" \
-                          "Schedule: normal\n" \
-                          "Last Changed Author: codeninja\n" \
-                          "Last Changed Rev: 11410\n" \ # Last Changed Rev is preferred to Revision
+      example_svn_info =  "Path: .\n" +
+                          "URL: http://svn.example.org/trunk/myapp\n" +
+                          "Repository Root: http://svn.example.org\n" +
+                          "Repository UUID: d62ff500-7bbc-012c-85f1-0026b0e37c24\n" +
+                          "Revision: 11739\nNode Kind: directory\n" +
+                          "Schedule: normal\n" +
+                          "Last Changed Author: codeninja\n" +
+                          "Last Changed Rev: 11410\n" + # Last Changed Rev is preferred to Revision
                           "Last Changed Date: 2009-03-25 06:09:56 -0600 (Wed, 25 Mar 2009)\n\n"
       ::File.should_receive(:exist?).at_least(1).times.with("/my/deploy/dir/.svn").and_return(true)
       ::File.should_receive(:directory?).with("/my/deploy/dir").and_return(true)
@@ -118,14 +118,14 @@ describe Chef::Provider::Subversion do
     end
 
     it "queries the server and resolves the revision if it's not an integer (i.e. 'HEAD')" do
-      example_svn_info =  "Path: .\n" \
-                          "URL: http://svn.example.org/trunk/myapp\n" \
-                          "Repository Root: http://svn.example.org\n" \
-                          "Repository UUID: d62ff500-7bbc-012c-85f1-0026b0e37c24\n" \
-                          "Revision: 11739\nNode Kind: directory\n" \
-                          "Schedule: normal\n" \
-                          "Last Changed Author: codeninja\n" \
-                          "Last Changed Rev: 11410\n" \ # Last Changed Rev is preferred to Revision
+      example_svn_info =  "Path: .\n" +
+                          "URL: http://svn.example.org/trunk/myapp\n" +
+                          "Repository Root: http://svn.example.org\n" +
+                          "Repository UUID: d62ff500-7bbc-012c-85f1-0026b0e37c24\n" +
+                          "Revision: 11739\nNode Kind: directory\n" +
+                          "Schedule: normal\n" +
+                          "Last Changed Author: codeninja\n" +
+                          "Last Changed Rev: 11410\n" + # Last Changed Rev is preferred to Revision
                           "Last Changed Date: 2009-03-25 06:09:56 -0600 (Wed, 25 Mar 2009)\n\n"
       exitstatus = double("exitstatus")
       exitstatus.stub(:exitstatus).and_return(0)

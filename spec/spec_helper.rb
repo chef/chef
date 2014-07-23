@@ -132,7 +132,7 @@ RSpec.configure do |config|
 
   # Functional Resource tests that are provider-specific:
   # context "on platforms that use useradd", :provider => {:user => Chef::Provider::User::Useradd}} do #...
-  config.filter_run_excluding provider: lambda do|criteria|
+  config.filter_run_excluding provider: lambda { |criteria|
     type, target_provider = criteria.first
 
     platform = TEST_PLATFORM.dup
@@ -144,7 +144,7 @@ RSpec.configure do |config|
     rescue ArgumentError # no provider for platform
       true
     end
-  end
+  }
 
   config.run_all_when_everything_filtered = true
   config.treat_symbols_as_metadata_keys_with_true_values = true

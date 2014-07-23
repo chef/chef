@@ -54,7 +54,7 @@ class Chef
           fix_resource_reference(resource_collection)
         end
 
-        unless notifying_resource.is_a?(Chef::Resource))
+        unless notifying_resource.is_a?(Chef::Resource)
           fix_notifier_reference(resource_collection)
         end
       end
