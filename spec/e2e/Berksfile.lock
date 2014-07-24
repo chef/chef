@@ -1,0 +1,9 @@
+DEPENDENCIES
+  git-cookbook
+    path: cookbooks/git-cookbook
+  learnchef-tutorial
+    path: cookbooks/learnchef-tutorial
+
+GRAPH
+  git-cookbook (0.1.0)
+  learnchef-tutorial (0.1.0)

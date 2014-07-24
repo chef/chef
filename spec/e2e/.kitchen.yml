@@ -1,0 +1,26 @@
+---
+driver_config:
+  aws_access_key_id: <%= ENV['AWS_ACCESS_KEY_ID'] %>
+  aws_secret_access_key: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+  aws_ssh_key_id: <%= ENV['AWS_KEYPAIR_NAME'] %>
+  iam_profile_name: <%= ENV['IAM_PROFILE_NAME'] %>
+
+provisioner:
+  name: chef_solo
+  chef_git_sha: 9ec6b92b9eefc07b35e6d36bad3568cfd7bf82d4
+  chef_git_url: "github.com/opscode/chef"
+  require_chef_omnibus: true
+
+platforms:
+  - name: ubuntu-12.04
+    driver_plugin: ec2
+    driver_config:
+      region: "us-west-2"
+      availability_zone: "us-west-2b"
+      ssh_key: <%= ENV['EC2_SSH_KEY_PATH'] %>
+      security_group_ids: ["travis-ci"]
+
+suites:
+  - name: default
+    run_list:
+    attributes:
