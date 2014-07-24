@@ -3,6 +3,10 @@
 ## Unreleased:
 * [**Vasiliy Tolstov**](https://github.com/vtolstov):
   Reload systemd service only if it's running, otherwise start.
+* [**Chris Jerdonek**](https://github.com/cjerdonek):
+  knife diagnostic messages sent to stdout instead of stderr
+* [**Xabier de Zuazo**](https://github.com/zuazo):
+  Remove the unused StreamingCookbookUploader class (CHEF-4586)
 
 * remove dependency on rest-client gem
 * Add method shell_out_with_systems_locale to ShellOut.
