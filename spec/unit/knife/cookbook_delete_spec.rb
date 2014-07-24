@@ -204,7 +204,7 @@ describe Chef::Knife::CookbookDelete do
     it 'should output that the cookbook was deleted' do
       @knife.stub(:delete_request)
       @knife.delete_version_without_confirmation('1.0.0')
-      @stdout.string.should match /deleted cookbook\[foobar\]\[1.0.0\]/im
+      @stderr.string.should match /deleted cookbook\[foobar\]\[1.0.0\]/im
     end
 
     describe 'with --print-after' do

@@ -25,7 +25,7 @@ describe Chef::Knife::CookbookSiteDownload do
       @knife            = Chef::Knife::CookbookSiteDownload.new
       @knife.name_args  = ['apache2']
       @noauth_rest      = double('no auth rest')
-      @stdout           = StringIO.new
+      @stderr           = StringIO.new
       @cookbook_api_url = 'http://cookbooks.opscode.com/api/v1/cookbooks'
       @version          = '1.0.2'
       @version_us       = @version.gsub '.', '_'
@@ -33,7 +33,7 @@ describe Chef::Knife::CookbookSiteDownload do
                             'latest_version'   => "#{@cookbook_api_url}/apache2/versions/#{@version_us}",
                             'replacement' => 'other_apache2' }
 
-      @knife.ui.stub(:stdout).and_return(@stdout)
+      @knife.ui.stub(:stderr).and_return(@stderr)
       @knife.stub(:noauth_rest).and_return(@noauth_rest)
       @noauth_rest.should_receive(:get_rest).
                    with("#{@cookbook_api_url}/apache2").
@@ -85,8 +85,8 @@ describe Chef::Knife::CookbookSiteDownload do
                       with(/.+deprecated.+replaced by other_apache2.+/i)
             FileUtils.should_receive(:cp).with(@temp_file.path, @file)
             @knife.run
-            @stdout.string.should match /downloading apache2.+version.+#{Regexp.escape(@version)}/i
-            @stdout.string.should match /cookbook save.+#{Regexp.escape(@file)}/i
+            @stderr.string.should match /downloading apache2.+version.+#{Regexp.escape(@version)}/i
+            @stderr.string.should match /cookbook save.+#{Regexp.escape(@file)}/i
           end
 
         end
@@ -94,8 +94,8 @@ describe Chef::Knife::CookbookSiteDownload do
         it 'should download the latest version' do
           FileUtils.should_receive(:cp).with(@temp_file.path, @file)
           @knife.run
-          @stdout.string.should match /downloading apache2.+version.+#{Regexp.escape(@version)}/i
-          @stdout.string.should match /cookbook save.+#{Regexp.escape(@file)}/i
+          @stderr.string.should match /downloading apache2.+version.+#{Regexp.escape(@version)}/i
+          @stderr.string.should match /cookbook save.+#{Regexp.escape(@file)}/i
         end
 
         context 'with -f or --file' do
@@ -107,8 +107,8 @@ describe Chef::Knife::CookbookSiteDownload do
 
           it 'should download the cookbook to the desired file' do
             @knife.run
-            @stdout.string.should match /downloading apache2.+version.+#{Regexp.escape(@version)}/i
-            @stdout.string.should match /cookbook save.+#{Regexp.escape(@file)}/i
+            @stderr.string.should match /downloading apache2.+version.+#{Regexp.escape(@version)}/i
+            @stderr.string.should match /cookbook save.+#{Regexp.escape(@file)}/i
           end
         end
 
@@ -139,8 +139,8 @@ describe Chef::Knife::CookbookSiteDownload do
                        and_return(@temp_file)
           FileUtils.should_receive(:cp).with(@temp_file.path, @file)
           @knife.run
-          @stdout.string.should match /downloading apache2.+version.+#{Regexp.escape(@version)}/i
-          @stdout.string.should match /cookbook save.+#{Regexp.escape(@file)}/i
+          @stderr.string.should match /downloading apache2.+version.+#{Regexp.escape(@version)}/i
+          @stderr.string.should match /cookbook save.+#{Regexp.escape(@file)}/i
         end
       end
 
