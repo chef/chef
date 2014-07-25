@@ -17,7 +17,6 @@
 #
 
 require 'spec_helper'
-require 'highline'
 
 describe Chef::Knife::Status do
   before(:each) do
@@ -30,7 +29,7 @@ describe Chef::Knife::Status do
     Chef::Search::Query.stub(:new).and_return(query)
     @knife  = Chef::Knife::Status.new
     @stdout = StringIO.new
-    @knife.stub(:highline).and_return(HighLine.new(StringIO.new, @stdout))
+    @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
   describe "run" do
