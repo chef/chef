@@ -1,0 +1,80 @@
+#!/bin/bash
+#
+# Install a full Opscode Client
+#
+
+PROGNAME=`basename $0`
+INSTALLER_DIR=/opt/chef
+CONFIG_DIR=/etc/chef
+USAGE="usage: $0 [-v validation_key] ([-o organization] || [-u url])"
+
+error_exit()
+{
+	echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+	exit 1
+}
+
+is_smartos()
+{
+  uname -v | grep ^joyent 2>&1>/dev/null
+}
+
+if is_smartos; then
+    PREFIX="/opt/local"
+else
+    PREFIX="/usr"
+fi
+
+validation_key=
+organization=
+chef_url=
+
+while getopts o:u:v: opt
+do
+    case "$opt" in
+      v)  validation_key="${OPTARG}";;
+      o)  organization="${OPTARG}"; chef_url="https://api.opscode.com/organizations/${OPTARG}";;
+      u)  chef_url="${OPTARG}";;
+      \?)		# unknown flag
+      	  echo >&2 ${USAGE}
+	  exit 1;;
+    esac
+done
+shift `expr ${OPTIND} - 1`
+
+if [ "" != "$chef_url" ]; then
+  mkdir -p ${CONFIG_DIR} || error_exit "Cannot create ${CONFIG_DIR}!"
+  (
+  cat <<'EOP'
+log_level :info
+log_location STDOUT
+EOP
+  ) > ${CONFIG_DIR}/client.rb
+  if [ "" != "$chef_url" ]; then
+    echo "chef_server_url '${chef_url}'" >> ${CONFIG_DIR}/client.rb
+  fi
+  if [ "" != "$organization" ]; then
+    echo "validation_client_name '${organization}-validator'" >> ${CONFIG_DIR}/client.rb
+  fi
+  chmod 644 ${CONFIG_DIR}/client.rb
+fi
+
+if [ "" != "$validation_key" ]; then
+  cp ${validation_key} ${CONFIG_DIR}/validation.pem || error_exit "Cannot copy the validation key!"
+  chmod 600 ${CONFIG_DIR}/validation.pem
+fi
+
+chef_binaries="chef-init chef-client chef-solo chef-apply chef-shell knife shef ohai"
+
+# rm -f before ln -sf is required for solaris 9
+for binary in $chef_binaries; do
+  rm -f $PREFIX/bin/$binary
+end
+
+for binary in $chef_binaries; do
+  ln -sf $INSTALLER_DIR/bin/$binary $PREFIX/bin || error_exit "Cannt link $binary to $PREFIX/bin"
+done
+
+echo "Thank you for installing Chef Container!"
+
+exit 0

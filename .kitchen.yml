@@ -21,6 +21,8 @@ platforms:
     run_list: yum-epel::default
   - name: debian-7.2.0
     run_list: apt::default
+  - name: debian-7.4
+    run_list: apt::default
   - name: debian-6.0.8
     run_list: apt::default
   - name: freebsd-9.2
@@ -51,3 +53,11 @@ suites:
         build_user: vagrant
         install_dir: /opt/chefdk
     run_list: omnibus::default
+  - name: chef-container
+    attributes:
+      omnibus:
+        build_user: vagrant
+        install_dir: /opt/chef
+    run_list:
+      - omnibus::default
+      - docker::default
