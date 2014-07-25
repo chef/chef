@@ -8,6 +8,7 @@
 * [**Xabier de Zuazo**](https://github.com/zuazo):
   Remove the unused StreamingCookbookUploader class (CHEF-4586)
 
+* cookbook synchronizer deletes old files from cookbooks
 * do not clear file cache when override run list is set (CHEF-3684)
 * ruby 1.8.7/1.9.1/1.9.2 support is dropped
 * set no_lazy_load to true (CHEF-4961)

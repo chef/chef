@@ -1,5 +1,10 @@
 # Chef Client Release Notes:
 
+## Cookbook Synchronizer Cleans Deleted Files
+
+At the start of the Chef client run any files which are in active cookbooks, but are no longer in the
+manifest for the cookbook will be deleted from the cookbook file cache.
+
 ## When given an override run list Chef does not clean the file_cache
 
 In order to avoid redownloading the file_cache for all the cookbooks and files that are skipped when an

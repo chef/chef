@@ -11,34 +11,50 @@ describe Chef::CookbookCacheCleaner do
       cleaner
     end
 
-    it "removes all files that belong to unused cookbooks" do
-      # lolwut?
+    let(:file_cache) { double("Chef::FileCache with files from unused cookbooks") }
+
+    let(:unused_template_files) do
+      %w{
+        cookbooks/unused/templates/default/foo.conf.erb
+        cookbooks/unused/tempaltes/default/bar.conf.erb
+      }
+    end
+
+    let(:valid_cached_cb_files) do
+      %w{
+        cookbooks/valid1/recipes/default.rb
+        cookbooks/valid2/recipes/default.rb
+      }
+    end
+
+    before do
+      valid_cached_cb_files.each do |cbf|
+        cleaner.mark_file_as_valid(cbf)
+      end
     end
 
     it "removes all files not validated during the chef run" do
-      file_cache = double("Chef::FileCache with files from unused cookbooks")
-      unused_template_files = %w{cookbooks/unused/templates/default/foo.conf.erb cookbooks/unused/tempaltes/default/bar.conf.erb}
-      valid_cached_cb_files = %w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb}
-      cleaner.mark_file_as_valid('cookbooks/valid1/recipes/default.rb')
-      cleaner.mark_file_as_valid('cookbooks/valid2/recipes/default.rb')
-      expect(file_cache).to receive(:find).with(File.join(%w{cookbooks ** *})).and_return(valid_cached_cb_files + unused_template_files)
-      expect(file_cache).to receive(:delete).with('cookbooks/unused/templates/default/foo.conf.erb')
-      expect(file_cache).to receive(:delete).with('cookbooks/unused/tempaltes/default/bar.conf.erb')
+      expect(file_cache).to receive(:find).with(File.join(%w{cookbooks ** {*,.*}})).and_return(valid_cached_cb_files + unused_template_files)
+      unused_template_files.each do |cbf|
+        expect(file_cache).to receive(:delete).with(cbf)
+      end
       cookbook_hash = {"valid1"=> {}, "valid2" => {}}
       allow(cleaner).to receive(:cache).and_return(file_cache)
       cleaner.cleanup_file_cache
     end
 
-    describe "on chef-solo" do
-      before do
-        Chef::Config[:solo] = true
-      end
+    it "does not remove anything when skip_removal is true" do
+      cleaner.skip_removal = true
+      allow(cleaner.cache).to receive(:find).and_return(%w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb})
+      expect(cleaner.cache).not_to receive(:delete)
+      cleaner.cleanup_file_cache
+    end
 
-      it "does not remove anything" do
-        allow(cleaner.cache).to receive(:find).and_return(%w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb})
-        expect(cleaner.cache).not_to receive(:delete)
-        cleaner.cleanup_file_cache
-      end
+    it "does not remove anything on chef-solo" do
+      Chef::Config[:solo] = true
+      allow(cleaner.cache).to receive(:find).and_return(%w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb})
+      expect(cleaner.cache).not_to receive(:delete)
+      cleaner.cleanup_file_cache
     end
   end
 end
@@ -115,7 +131,30 @@ describe Chef::CookbookSynchronizer do
     expect(synchronizer.cookbooks).to eq([cookbook_a])
   end
 
-  context "when the cache contains unneeded cookbooks" do
+  context "#clear_obsoleted_cookbooks" do
+    after do
+      # Singletons == Global State == Bad
+      Chef::CookbookCacheCleaner.instance.skip_removal = nil
+    end
+
+    it "behaves correctly when remove_obsoleted_files is false" do
+      synchronizer.remove_obsoleted_files = false
+      expect(synchronizer).not_to receive(:remove_old_cookbooks)
+      expect(synchronizer).to receive(:remove_deleted_files)
+      synchronizer.clear_obsoleted_cookbooks
+      expect(Chef::CookbookCacheCleaner.instance.skip_removal).to be true
+    end
+
+    it "behaves correctly when remove_obsoleted_files is true" do
+      synchronizer.remove_obsoleted_files = true
+      expect(synchronizer).to receive(:remove_old_cookbooks)
+      expect(synchronizer).to receive(:remove_deleted_files)
+      synchronizer.clear_obsoleted_cookbooks
+      expect(Chef::CookbookCacheCleaner.instance.skip_removal).to be nil
+    end
+  end
+
+  context "#remove_old_cookbooks" do
     let(:file_cache) { double("Chef::FileCache with files from unused cookbooks") }
 
     let(:cookbook_manifest) do
@@ -125,11 +164,33 @@ describe Chef::CookbookSynchronizer do
     it "removes unneeded cookbooks" do
       valid_cached_cb_files = %w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb}
       obsolete_cb_files = %w{cookbooks/old1/recipes/default.rb cookbooks/old2/recipes/default.rb}
-      expect(file_cache).to receive(:find).with(File.join(%w{cookbooks ** *})).and_return(valid_cached_cb_files + obsolete_cb_files)
+      expect(file_cache).to receive(:find).with(File.join(%w{cookbooks ** {*,.*}})).and_return(valid_cached_cb_files + obsolete_cb_files)
       expect(file_cache).to receive(:delete).with('cookbooks/old1/recipes/default.rb')
       expect(file_cache).to receive(:delete).with('cookbooks/old2/recipes/default.rb')
       allow(synchronizer).to receive(:cache).and_return(file_cache)
-      synchronizer.clear_obsoleted_cookbooks
+      synchronizer.remove_old_cookbooks
+    end
+  end
+
+  context "#remove_deleted_files" do
+    let(:file_cache) { double("Chef::FileCache with files from unused cookbooks") }
+
+    let(:cookbook_manifest) do
+      {"valid1"=> {}, "valid2" => {}}
+    end
+
+    it "removes only deleted files" do
+      valid_cached_cb_files = %w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb}
+      obsolete_cb_files = %w{cookbooks/valid1/recipes/deleted.rb cookbooks/valid2/recipes/deleted.rb}
+      expect(file_cache).to receive(:find).with(File.join(%w{cookbooks ** {*,.*}})).and_return(valid_cached_cb_files + obsolete_cb_files)
+      # valid1 is a cookbook in our run_list
+      expect(synchronizer).to receive(:have_cookbook?).with("valid1").at_least(:once).and_return(true)
+      # valid2 is a cookbook not in our run_list (we're simulating an override run_list where valid2 needs to be preserved)
+      expect(synchronizer).to receive(:have_cookbook?).with("valid2").at_least(:once).and_return(false)
+      expect(file_cache).to receive(:delete).with('cookbooks/valid1/recipes/deleted.rb')
+      expect(synchronizer).to receive(:cookbook_segment).with("valid1", "recipes").at_least(:once).and_return([ { "path" => "recipes/default.rb" }])
+      allow(synchronizer).to receive(:cache).and_return(file_cache)
+      synchronizer.remove_deleted_files
     end
   end
 
