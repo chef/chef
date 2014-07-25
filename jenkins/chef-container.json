@@ -1,9 +1,0 @@
-{
-  "architecture=x86_64,platform=ubuntu-12.04,project=chef-container,role=builder": [
-    [
-      "ubuntu",
-      "12.04",
-      "x86_64"
-    ]
-  ]
-}

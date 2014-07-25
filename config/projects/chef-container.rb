@@ -29,8 +29,6 @@ build_version do
   output_format :semver
 end
 
-override :chef, version: "11.12.8"
-
 install_dir     "/opt/chef"
 
 resources_path File.join(files_path, "chef")
