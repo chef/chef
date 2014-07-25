@@ -223,7 +223,7 @@ class Chef
 
       def raise!
         unless empty?
-          raise self.for_raise
+          raise for_raise
         end
       end
 

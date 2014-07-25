@@ -155,27 +155,27 @@ class Chef
       end
 
       def install_package(name, version)
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :install"
+        raise Chef::Exceptions::UnsupportedAction, "#{to_s} does not support :install"
       end
 
       def upgrade_package(name, version)
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :upgrade"
+        raise Chef::Exceptions::UnsupportedAction, "#{to_s} does not support :upgrade"
       end
 
       def remove_package(name, version)
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :remove"
+        raise Chef::Exceptions::UnsupportedAction, "#{to_s} does not support :remove"
       end
 
       def purge_package(name, version)
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :purge"
+        raise Chef::Exceptions::UnsupportedAction, "#{to_s} does not support :purge"
       end
 
       def preseed_package(file)
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support pre-seeding package install/upgrade instructions"
+        raise Chef::Exceptions::UnsupportedAction, "#{to_s} does not support pre-seeding package install/upgrade instructions"
       end
 
       def reconfig_package(name, version)
-        raise( Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reconfig" )
+        raise( Chef::Exceptions::UnsupportedAction, "#{to_s} does not support :reconfig" )
       end
 
       def get_preseed_file(name, version)

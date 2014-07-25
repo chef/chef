@@ -52,7 +52,7 @@ class Chef
         def define_resource_requirements
           #super
           requirements.assert(:reload) do |a|
-            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
+            a.failure_message Chef::Exceptions::UnsupportedAction, "#{to_s} does not support :reload"
           end
 
           requirements.assert(:all_actions) do |a|

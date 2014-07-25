@@ -118,7 +118,7 @@ class Chef
             args_hash = args.length >= 3 ? args[2] : nil
             raise ArgumentError.new("wrong number of arguments (#{args.length} for 3)") if args.length >= 4
 
-            rights = self.instance_variable_get("@#{name.to_s}".to_sym)
+            rights = instance_variable_get("@#{name.to_s}".to_sym)
             unless permissions.nil?
               input = {
                 :permissions => permissions,

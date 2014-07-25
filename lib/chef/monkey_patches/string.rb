@@ -43,7 +43,7 @@ end
 class String
   unless method_defined?(:ord)
     def ord
-      self.unpack('C').first
+      unpack('C').first
     end
   end
 end

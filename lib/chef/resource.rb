@@ -303,15 +303,15 @@ F
 
     def load_prior_resource
       begin
-        prior_resource = run_context.resource_collection.lookup(self.to_s)
+        prior_resource = run_context.resource_collection.lookup(to_s)
         # if we get here, there is a prior resource (otherwise we'd have jumped
         # to the rescue clause).
-        Chef::Log.warn("Cloning resource attributes for #{self.to_s} from prior resource (CHEF-3694)")
+        Chef::Log.warn("Cloning resource attributes for #{to_s} from prior resource (CHEF-3694)")
         Chef::Log.warn("Previous #{prior_resource}: #{prior_resource.source_line}") if prior_resource.source_line
-        Chef::Log.warn("Current  #{self}: #{self.source_line}") if self.source_line
+        Chef::Log.warn("Current  #{self}: #{source_line}") if source_line
         prior_resource.instance_variables.each do |iv|
           unless iv.to_sym == :@source_line || iv.to_sym == :@action || iv.to_sym == :@not_if || iv.to_sym == :@only_if
-            self.instance_variable_set(iv, prior_resource.instance_variable_get(iv))
+            instance_variable_set(iv, prior_resource.instance_variable_get(iv))
           end
         end
         true
@@ -674,8 +674,8 @@ F
       # leverage new platform => short_name => resource
       # which requires explicitly setting provider in
       # resource class
-      if self.provider
-        provider = self.provider.new(self, self.run_context)
+      if provider
+        provider = self.provider.new(self, run_context)
         provider.action = action
         provider
       else # fall back to old provider resolution
@@ -731,7 +731,7 @@ F
     end
 
     def self.json_create(o)
-      resource = self.new(o["instance_vars"]["@name"])
+      resource = new(o["instance_vars"]["@name"])
       o["instance_vars"].each do |k,v|
         resource.instance_variable_set("@#{k}".to_sym, v)
       end

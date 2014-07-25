@@ -81,10 +81,10 @@ class Chef
     end
 
     def create
-      payload = {:name => self.name, :admin => self.admin, :password => self.password }
+      payload = {:name => name, :admin => admin, :password => password }
       payload[:public_key] = public_key if public_key
       new_user =Chef::REST.new(Chef::Config[:chef_server_url]).post_rest("users", payload)
-      Chef::User.from_hash(self.to_hash.merge(new_user))
+      Chef::User.from_hash(to_hash.merge(new_user))
     end
 
     def update(new_key=false)
@@ -92,7 +92,7 @@ class Chef
       payload[:private_key] = new_key if new_key
       payload[:password] = password if password
       updated_user = Chef::REST.new(Chef::Config[:chef_server_url]).put_rest("users/#{name}", payload)
-      Chef::User.from_hash(self.to_hash.merge(updated_user))
+      Chef::User.from_hash(to_hash.merge(updated_user))
     end
 
     def save(new_key=false)

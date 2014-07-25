@@ -98,7 +98,7 @@ class Chef
 
       define_method(:marketing_name) do
         marketing_names.each do |mn|
-          break mn[0] if self.send(mn[1])
+          break mn[0] if send(mn[1])
         end
       end
 

@@ -45,7 +45,7 @@ class Chef
         # Chef::Resource.run_action: Caveat: this skips Chef::Runner.run_action, where notifications are handled
         # Action could be an array of symbols, but probably won't (think install + enable for a package)
         Array(@action).each do |action|
-          self.run_action(action)
+          run_action(action)
         end
         Gem.clear_paths
       end

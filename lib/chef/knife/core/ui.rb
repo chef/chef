@@ -199,9 +199,9 @@ class Chef
         output_parsed_again = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(output), :create_additions => false)
         if object_parsed_again != output_parsed_again
           output.save
-          self.msg("Saved #{output}")
+          msg("Saved #{output}")
         else
-          self.msg("Object unchanged, not saving")
+          msg("Object unchanged, not saving")
         end
         output(format_for_display(object)) if config[:print_after]
       end
@@ -231,19 +231,19 @@ class Chef
         when "Y", "y"
           true
         when "N", "n"
-          self.msg("You said no, so I'm done here.")
+          msg("You said no, so I'm done here.")
           false
         when ""
           unless default_choice.nil?
             default_choice
           else
-            self.msg("I have no idea what to do with '#{answer}'")
-            self.msg("Just say Y or N, please.")
+            msg("I have no idea what to do with '#{answer}'")
+            msg("Just say Y or N, please.")
             confirm_without_exit(question, append_instructions, default_choice)
           end
         else
-          self.msg("I have no idea what to do with '#{answer}'")
-          self.msg("Just say Y or N, please.")
+          msg("I have no idea what to do with '#{answer}'")
+          msg("Just say Y or N, please.")
           confirm_without_exit(question, append_instructions, default_choice)
         end
       end

@@ -591,7 +591,7 @@ describe Chef::Provider::Deploy do
 
       callback_code = Proc.new do
         snitch = 42
-        temp_collection = self.resource_collection
+        temp_collection = resource_collection
         run("tehMice")
         snitch = temp_collection.lookup("execute[tehMice]")
       end

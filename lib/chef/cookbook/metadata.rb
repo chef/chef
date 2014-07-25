@@ -96,7 +96,7 @@ class Chef
         self.maintainer(maintainer)
         self.maintainer_email(maintainer_email)
         self.license(license)
-        self.description('A fabulous new cookbook')
+        description('A fabulous new cookbook')
         @platforms = Mash.new
         @dependencies = Mash.new
         @recommendations = Mash.new
@@ -110,9 +110,9 @@ class Chef
         @version = Version.new "0.0.0"
         if cookbook
           @recipes = cookbook.fully_qualified_recipe_names.inject({}) do |r, e|
-            e = self.name.to_s if e =~ /::default$/
+            e = name.to_s if e =~ /::default$/
             r[e] ||= ""
-            self.provides e
+            provides e
             r
           end
         end
@@ -420,32 +420,32 @@ class Chef
 
       def to_hash
         {
-          NAME             => self.name,
-          DESCRIPTION      => self.description,
-          LONG_DESCRIPTION => self.long_description,
-          MAINTAINER       => self.maintainer,
-          MAINTAINER_EMAIL => self.maintainer_email,
-          LICENSE          => self.license,
-          PLATFORMS        => self.platforms,
-          DEPENDENCIES     => self.dependencies,
-          RECOMMENDATIONS  => self.recommendations,
-          SUGGESTIONS      => self.suggestions,
-          CONFLICTING      => self.conflicting,
-          PROVIDING        => self.providing,
-          REPLACING        => self.replacing,
-          ATTRIBUTES       => self.attributes,
-          GROUPINGS        => self.groupings,
-          RECIPES          => self.recipes,
-          VERSION          => self.version
+          NAME             => name,
+          DESCRIPTION      => description,
+          LONG_DESCRIPTION => long_description,
+          MAINTAINER       => maintainer,
+          MAINTAINER_EMAIL => maintainer_email,
+          LICENSE          => license,
+          PLATFORMS        => platforms,
+          DEPENDENCIES     => dependencies,
+          RECOMMENDATIONS  => recommendations,
+          SUGGESTIONS      => suggestions,
+          CONFLICTING      => conflicting,
+          PROVIDING        => providing,
+          REPLACING        => replacing,
+          ATTRIBUTES       => attributes,
+          GROUPINGS        => groupings,
+          RECIPES          => recipes,
+          VERSION          => version
         }
       end
 
       def to_json(*a)
-        self.to_hash.to_json(*a)
+        to_hash.to_json(*a)
       end
 
       def self.from_hash(o)
-        cm = self.new()
+        cm = new()
         cm.from_hash(o)
         cm
       end
@@ -473,7 +473,7 @@ class Chef
 
       def self.from_json(string)
         o = Chef::JSONCompat.from_json(string)
-        self.from_hash(o)
+        from_hash(o)
       end
 
       def self.validate_json(json_str)

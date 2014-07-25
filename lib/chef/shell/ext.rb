@@ -73,7 +73,7 @@ module Shell
         banner << "| " + "Command".ljust(25) + "| " + "Description"
         banner << "".ljust(80, "=")
 
-        self.all_help_descriptions.each do |help_text|
+        all_help_descriptions.each do |help_text|
           banner << "| " + help_text.cmd.ljust(25) + "| " + help_text.desc
         end
         banner << "".ljust(80, "=")
@@ -84,7 +84,7 @@ module Shell
       end
 
       def explain_command(method_name)
-        help = self.all_help_descriptions.find { |h| h.cmd.to_s == method_name.to_s }
+        help = all_help_descriptions.find { |h| h.cmd.to_s == method_name.to_s }
         if help
           puts ""
           puts "Command: #{method_name}"
@@ -159,7 +159,7 @@ module Shell
 
     module Symbol
       def on_off_to_bool
-        self.to_s.on_off_to_bool
+        to_s.on_off_to_bool
       end
     end
 

@@ -63,7 +63,7 @@ unless URI::Generic.instance_methods.map {|m| m.to_s}.include?("hostname")
     # Copied from the MRI source for Ruby 1.9.3
     # File lib/uri/generic.rb, line 659
     def hostname
-      v = self.host
+      v = host
       /\A\[(.*)\]\z/ =~ v ? $1 : v
     end
   end

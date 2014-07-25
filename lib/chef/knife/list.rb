@@ -97,7 +97,7 @@ class Chef
           print_results(children.map { |result| maybe_add_slash(result.name, result.dir?) }.sort, "")
         end
 
-        exit self.exit_code if self.exit_code
+        exit exit_code if exit_code
       end
 
       def add_dir_result(result)

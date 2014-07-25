@@ -34,7 +34,7 @@ class Chef
     #
     # +filename+ is used for context in stacktraces, but doesn't need to be the name of an actual file.
     def self.from_string(string, filename)
-      self.instance_eval(string, filename, 1)
+      instance_eval(string, filename, 1)
     end
 
     # Manages the chef secret session key
@@ -133,11 +133,11 @@ class Chef
     # that upload or download files (such as knife upload, knife role from file,
     # etc.) work.
     default :chef_repo_path do
-      if self.configuration[:cookbook_path]
-        if self.configuration[:cookbook_path].kind_of?(String)
-          File.expand_path('..', self.configuration[:cookbook_path])
+      if configuration[:cookbook_path]
+        if configuration[:cookbook_path].kind_of?(String)
+          File.expand_path('..', configuration[:cookbook_path])
         else
-          self.configuration[:cookbook_path].map do |path|
+          configuration[:cookbook_path].map do |path|
             File.expand_path('..', path)
           end
         end
@@ -183,7 +183,7 @@ class Chef
     # Defaults to <chef_repo_path>/cookbooks.  If chef_repo_path
     # is not specified, this is set to [/var/chef/cookbooks, /var/chef/site-cookbooks]).
     default(:cookbook_path) do
-      if self.configuration[:chef_repo_path]
+      if configuration[:chef_repo_path]
         derive_path_from_chef_repo_path('cookbooks')
       else
         Array(derive_path_from_chef_repo_path('cookbooks')).flatten +

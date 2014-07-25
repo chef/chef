@@ -365,7 +365,7 @@ class Chef
       end
 
       def release_slug
-        raise Chef::Exceptions::Override, "You must override release_slug in #{self.to_s}"
+        raise Chef::Exceptions::Override, "You must override release_slug in #{to_s}"
       end
 
       def install_gems

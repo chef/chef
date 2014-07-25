@@ -149,7 +149,7 @@ class Mash < Hash
   #
   # @return [Mash] A new mash with the hash values merged in.
   def merge(hash)
-    self.dup.update(hash)
+    dup.update(hash)
   end
 
   # @param key<Object>

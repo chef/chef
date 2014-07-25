@@ -481,7 +481,7 @@ class Chef
     end
 
     def show_usage
-      stdout.puts("USAGE: " + self.opt_parser.to_s)
+      stdout.puts("USAGE: " + opt_parser.to_s)
     end
 
     def run_with_pretty_exceptions(raise_exception = false)
@@ -582,7 +582,7 @@ class Chef
 
       pretty_name ||= output
 
-      self.msg("Created #{pretty_name}")
+      msg("Created #{pretty_name}")
 
       output(output) if config[:print_after]
     end
@@ -600,7 +600,7 @@ class Chef
       output(format_for_display(object)) if config[:print_after]
 
       obj_name = delete_name ? "#{delete_name}[#{name}]" : object
-      self.msg("Deleted #{obj_name}")
+      msg("Deleted #{obj_name}")
     end
 
     def rest
