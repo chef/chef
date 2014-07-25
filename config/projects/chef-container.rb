@@ -16,19 +16,22 @@
 #
 
 name "chef-container"
+friendly_name "Chef Container"
 maintainer "Chef Software, Inc"
 homepage "http://www.getchef.com"
 
+build_iteration  1
 build_version do
+  # Use chef to determine the build version
   source :git, from_dependency: 'chef'
+
+  # Set a rubygems style version
   output_format :semver
 end
-build_iteration  2
-package_name     "chef-container"
 
 override :chef, version: "11.12.8"
 
-install_path     "/opt/chef"
+install_dir     "/opt/chef"
 
 resources_path File.join(files_path, "chef")
 mac_pkg_identifier "com.getchef.pkg.chef-container"
