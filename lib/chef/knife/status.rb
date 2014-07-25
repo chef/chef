@@ -24,7 +24,6 @@ class Chef
     class Status < Knife
 
       deps do
-        require 'highline'
         require 'chef/search/query'
       end
 
@@ -45,10 +44,6 @@ class Chef
         :long => "--hide-healthy",
         :description => "Hide nodes that have run chef in the last hour"
 
-      def highline
-        @h ||= HighLine.new
-      end
-
       def run
         ui.use_presenter Knife::Core::StatusPresenter
         all_nodes = []
@@ -63,7 +58,6 @@ class Chef
         q.search(:node, query) do |node|
           all_nodes << node
         end
-        list = Array.new
         output(all_nodes.sort { |n1, n2|
           if (config[:sort_reverse] || Chef::Config[:knife][:sort_status_reverse])
             (n2["ohai_time"] or 0) <=> (n1["ohai_time"] or 0)
