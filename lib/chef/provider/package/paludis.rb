@@ -27,6 +27,11 @@ class Chef
 
         include Chef::Mixin::ShellOut
 
+        def initialize(name, run_context=nil)
+	  super
+	  @new_resource.timeout ||= 3600
+        end
+
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.package_name)
           @current_resource.package_name(@new_resource.package_name)
@@ -62,7 +67,7 @@ class Chef
           else
             pkg = "#{@new_resource.package_name}"
           end
-          shell_out!("cave -L warning resolve -x#{expand_options(@new_resource.options)} \"#{pkg}\"",:timeout => 86400)
+          shell_out!("cave -L warning resolve -x#{expand_options(@new_resource.options)} \"#{pkg}\"",:timeout => @new_resource.timeout)
         end
 
         def upgrade_package(name, version)

@@ -86,13 +86,13 @@ INSTALLED
 
   context "when installing a package" do
     it "should run pkg install with the package name and version" do
-      @provider.should_receive(:shell_out!).with("cave -L warning resolve -x \"=net/ntp-4.2.6_p5-r2\"", {:timeout=>86400})
+      @provider.should_receive(:shell_out!).with("cave -L warning resolve -x \"=net/ntp-4.2.6_p5-r2\"", {:timeout=>@new_resource.timeout})
       @provider.install_package("net/ntp", "4.2.6_p5-r2")
     end
 
 
     it "should run pkg install with the package name and version and options if specified" do
-      @provider.should_receive(:shell_out!).with("cave -L warning resolve -x --preserve-world \"=net/ntp-4.2.6_p5-r2\"", {:timeout=>86400})
+      @provider.should_receive(:shell_out!).with("cave -L warning resolve -x --preserve-world \"=net/ntp-4.2.6_p5-r2\"", {:timeout=>@new_resource.timeout})
       @new_resource.stub(:options).and_return("--preserve-world")
       @provider.install_package("net/ntp", "4.2.6_p5-r2")
     end
@@ -102,7 +102,7 @@ INSTALLED
 sys-process/lsof 4.87 arbor
 sys-process/lsof 4.87 x86_64
 PKG_STATUS
-      @provider.should_receive(:shell_out!).with("cave -L warning resolve -x \"=sys-process/lsof-4.87\"", {:timeout=>86400})
+      @provider.should_receive(:shell_out!).with("cave -L warning resolve -x \"=sys-process/lsof-4.87\"", {:timeout=>@new_resource.timeout})
       @provider.install_package("sys-process/lsof", "4.87")
     end
 
@@ -120,7 +120,7 @@ PKG_STATUS
 
   context "when upgrading a package" do
     it "should run pkg install with the package name and version" do
-      @provider.should_receive(:shell_out!).with("cave -L warning resolve -x \"=net/ntp-4.2.6_p5-r2\"", {:timeout=>86400})
+      @provider.should_receive(:shell_out!).with("cave -L warning resolve -x \"=net/ntp-4.2.6_p5-r2\"", {:timeout=>@new_resource.timeout})
       @provider.upgrade_package("net/ntp", "4.2.6_p5-r2")
     end
   end
