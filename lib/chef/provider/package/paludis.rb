@@ -27,11 +27,6 @@ class Chef
 
         include Chef::Mixin::ShellOut
 
-        def initialize(name, run_context=nil)
-	  super
-	  @new_resource.timeout ||= 3600
-        end
-
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.package_name)
           @current_resource.package_name(@new_resource.package_name)

@@ -27,6 +27,7 @@ class Chef
         @resource_name = :paludis_package
         @provider = Chef::Provider::Package::Paludis
         @allowed_actions = [ :install, :remove, :upgrade ]
+	@timeout = 3600
       end
     end
   end
