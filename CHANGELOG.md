@@ -8,6 +8,7 @@
 * [**Xabier de Zuazo**](https://github.com/zuazo):
   Remove the unused StreamingCookbookUploader class (CHEF-4586)
 
+* ruby 1.8.7/1.9.1/1.9.2 support is dropped
 * set no_lazy_load to true (CHEF-4961)
 * set file_stating_uses_destdir config option default to true (CHEF-5040)
 * remove dependency on rest-client gem
