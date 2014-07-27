@@ -12,6 +12,8 @@ Gem::Specification.new do |s|
   s.email = "adam@getchef.com"
   s.homepage = "http://www.getchef.com"
 
+  s.required_ruby_version = ">= 1.9.3"
+
   s.add_dependency "mixlib-config", "~> 2.0"
   s.add_dependency "mixlib-cli", "~> 1.4"
   s.add_dependency "mixlib-log", "~> 1.3"

@@ -176,6 +176,9 @@ class Chef
         end
 
         synchronizer = Chef::CookbookSynchronizer.new(cookbook_hash, events)
+        if temporary_policy?
+          synchronizer.remove_obsoleted_files = false
+        end
         synchronizer.sync_cookbooks
 
         # register the file cache path in the cookbook path so that CookbookLoader actually picks up the synced cookbooks
