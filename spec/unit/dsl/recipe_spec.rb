@@ -46,6 +46,18 @@ describe Chef::DSL::Recipe do
     it "responds to recipe_name" do
       expect(recipe.recipe_name).to eq(recipe_name)
     end
+
+    it "responds to shell_out" do
+      expect(recipe.respond_to?(:shell_out)).to be true
+    end
+
+    it "responds to shell_out" do
+      expect(recipe.respond_to?(:shell_out!)).to be true
+    end
+
+    it "responds to shell_out" do
+      expect(recipe.respond_to?(:shell_out_with_systems_locale)).to be true
+    end
   end
 
   context "when included in a class that defines the required interface directly" do

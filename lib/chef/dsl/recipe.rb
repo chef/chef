@@ -28,6 +28,7 @@ class Chef
     # objects via method calls.
     module Recipe
 
+      include Chef::Mixin::ShellOut
       include Chef::Mixin::ConvertToClassName
 
       def method_missing(method_symbol, *args, &block)
