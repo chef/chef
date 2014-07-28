@@ -31,6 +31,7 @@ class Chef
         DPKG_VERSION = /^Version: (.+)$/
 
         include Chef::Mixin::GetSourceFromPackage
+        include Chef::Mixin::ShellOut
 
         def define_resource_requirements
           super
