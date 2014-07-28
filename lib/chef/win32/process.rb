@@ -69,8 +69,8 @@ class Chef
         result
       end
 
-        # Must have PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION rights,
-        # AND the PROCESS_VM_READ right
+      # Must have PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION rights,
+      # AND the PROCESS_VM_READ right
       def self.get_process_memory_info(handle)
         memory_info = PROCESS_MEMORY_COUNTERS.new
         unless GetProcessMemoryInfo(handle.handle, memory_info, memory_info.size)
@@ -78,7 +78,6 @@ class Chef
         end
         memory_info
       end
-
     end
   end
 end

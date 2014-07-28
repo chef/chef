@@ -21,7 +21,6 @@ require 'chef/formatters/error_inspectors/api_error_formatting'
 class Chef
   module Formatters
     module ErrorInspectors
-
       # == CookbookSyncErrorInspector
       # Generates human-friendly explanations for errors encountered during
       # cookbook sync.
@@ -29,7 +28,6 @@ class Chef
       # TODO: Not sure what errors are commonly seen during cookbook sync, so
       # the messaging is kinda generic.
       class CookbookSyncErrorInspector
-
         include APIErrorFormatting
 
         attr_reader :exception
@@ -46,7 +44,7 @@ class Chef
           when Net::HTTPServerException, Net::HTTPFatalError
             humanize_http_exception(error_description)
           else
-            error_description.section("Unexpected Error:","#{exception.class.name}: #{exception.message}")
+            error_description.section('Unexpected Error:', "#{exception.class.name}: #{exception.message}")
           end
         end
 
@@ -71,7 +69,6 @@ class Chef
             describe_http_error(error_description)
           end
         end
-
       end
     end
   end

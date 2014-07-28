@@ -22,24 +22,23 @@ class Chef
   class Provider
     class Group
       class Aix < Chef::Provider::Group::Usermod
-
         def required_binaries
-          [ "/usr/bin/mkgroup",
-            "/usr/bin/chgroup",
-            "/usr/sbin/rmgroup" ]
+          ['/usr/bin/mkgroup',
+           '/usr/bin/chgroup',
+           '/usr/sbin/rmgroup']
         end
 
         def create_group
-          command = "mkgroup"
+          command = 'mkgroup'
           command << set_options << " #{@new_resource.group_name}"
           run_command(:command => command)
           modify_group_members
         end
 
         def manage_group
-          command = "chgroup"
+          command = 'chgroup'
           options = set_options
-          #Usage: chgroup [-R load_module] "attr=value" ... group
+          # Usage: chgroup [-R load_module] "attr=value" ... group
           if options.size > 0
             command << options << " #{@new_resource.group_name}"
             run_command(:command => command)
@@ -52,18 +51,17 @@ class Chef
         end
 
         def set_options
-          opts = ""
-          { :gid => "id" }.sort { |a,b| a[0] <=> b[0] }.each do |field, option|
+          opts = ''
+          { :gid => 'id' }.sort { |a, b| a[0] <=> b[0] }.each do |field, option|
             if @current_resource.send(field) != @new_resource.send(field)
               if @new_resource.send(field)
-                Chef::Log.debug("#{@new_resource} setting #{field.to_s} to #{@new_resource.send(field)}")
+                Chef::Log.debug("#{@new_resource} setting #{field} to #{@new_resource.send(field)}")
                 opts << " '#{option}=#{@new_resource.send(field)}'"
               end
             end
           end
           opts
         end
-
       end
     end
   end

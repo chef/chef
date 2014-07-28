@@ -72,7 +72,7 @@ describe Chef::Exceptions do
 
   exception_to_super_class.each do |exception, expected_super_class|
     it "should have an exception class of #{exception} which inherits from #{expected_super_class}" do
-      lambda{ raise exception }.should raise_error(expected_super_class)
+      lambda { fail exception }.should raise_error(expected_super_class)
     end
   end
 end

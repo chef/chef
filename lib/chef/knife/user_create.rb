@@ -21,47 +21,46 @@ require 'chef/knife'
 class Chef
   class Knife
     class UserCreate < Knife
-
       deps do
         require 'chef/user'
         require 'chef/json_compat'
       end
 
       option :file,
-        :short => "-f FILE",
-        :long  => "--file FILE",
-        :description => "Write the private key to a file"
+             :short => '-f FILE',
+             :long  => '--file FILE',
+             :description => 'Write the private key to a file'
 
       option :admin,
-        :short => "-a",
-        :long  => "--admin",
-        :description => "Create the user as an admin",
-        :boolean => true
+             :short => '-a',
+             :long  => '--admin',
+             :description => 'Create the user as an admin',
+             :boolean => true
 
       option :user_password,
-        :short => "-p PASSWORD",
-        :long => "--password PASSWORD",
-        :description => "Password for newly created user",
-        :default => ""
+             :short => '-p PASSWORD',
+             :long => '--password PASSWORD',
+             :description => 'Password for newly created user',
+             :default => ''
 
       option :user_key,
-        :long => "--user-key FILENAME",
-        :description => "Public key for newly created user.  By default a key will be created for you."
+             :long => '--user-key FILENAME',
+             :description => 'Public key for newly created user.  By default a key will be created for you.'
 
-      banner "knife user create USER (options)"
+      banner 'knife user create USER (options)'
 
       def run
         @user_name = @name_args[0]
 
         if @user_name.nil?
           show_usage
-          ui.fatal("You must specify a user name")
+          ui.fatal('You must specify a user name')
           exit 1
         end
 
         if config[:user_password].length == 0
           show_usage
-          ui.fatal("You must specify a non-blank password")
+          ui.fatal('You must specify a non-blank password')
           exit 1
         end
 
@@ -80,7 +79,7 @@ class Chef
         ui.info("Created #{user}")
         if user.private_key
           if config[:file]
-            File.open(config[:file], "w") do |f|
+            File.open(config[:file], 'w') do |f|
               f.print(user.private_key)
             end
           else

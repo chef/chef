@@ -29,7 +29,7 @@ end
 
 class String
   unless method_defined?(:bytesize)
-    alias :bytesize :size
+    alias_method :bytesize, :size
   end
 
   unless method_defined?(:lines)
@@ -43,7 +43,7 @@ end
 class String
   unless method_defined?(:ord)
     def ord
-      self.unpack('C').first
+      unpack('C').first
     end
   end
 end

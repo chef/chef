@@ -26,12 +26,12 @@ describe Shell do
   # chef-shell's unit tests are by necessity very mock-heavy, and frequently do
   # not catch cases where chef-shell fails to boot because of changes in
   # chef/client.rb
-  describe "smoke tests", :unix_only => true do
+  describe 'smoke tests', :unix_only => true do
     include Chef::Mixin::Command::Unix
 
     def read_until(io, expected_value)
       start = Time.new
-      buffer = ""
+      buffer = ''
       until buffer.include?(expected_value)
         begin
           buffer << io.read_nonblock(1)
@@ -52,7 +52,7 @@ describe Shell do
 
       until exitstatus = Process.waitpid2(pid, Process::WNOHANG)
         if Time.new - start > 5
-          STDERR.puts("chef-shell tty did not exit cleanly, killing it")
+          STDERR.puts('chef-shell tty did not exit cleanly, killing it')
           Process.kill(:KILL, pid)
         end
         sleep 0.01
@@ -62,12 +62,12 @@ describe Shell do
 
     def run_chef_shell_with(options)
       case ohai[:platform]
-      when "aix"
-        config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
-        path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
+      when 'aix'
+        config = File.expand_path('shef-config.rb', CHEF_SPEC_DATA)
+        path_to_chef_shell = File.expand_path('../../../bin/chef-shell', __FILE__)
         output = ''
-        status = popen4("#{path_to_chef_shell} -c #{config} #{options}", :waitlast => true) do |pid, stdin, stdout, stderr|
-          read_until(stdout, "chef >")
+        status = popen4("#{path_to_chef_shell} -c #{config} #{options}", :waitlast => true) do |_pid, stdin, stdout, _stderr|
+          read_until(stdout, 'chef >')
           yield stdout, stdin if block_given?
           stdin.write("'done'\n")
           output = read_until(stdout, '=> "done"')
@@ -81,15 +81,15 @@ describe Shell do
         # so hide the require here
         begin
           require 'pty'
-          config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
-          path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
+          config = File.expand_path('shef-config.rb', CHEF_SPEC_DATA)
+          path_to_chef_shell = File.expand_path('../../../bin/chef-shell', __FILE__)
           reader, writer, pid = PTY.spawn("#{path_to_chef_shell} -c #{config} #{options}")
-          read_until(reader, "chef >")
+          read_until(reader, 'chef >')
           yield reader, writer if block_given?
           writer.puts('"done"')
           output = read_until(reader, '=> "done"')
           writer.print("exit\n")
-          read_until(reader, "exit")
+          read_until(reader, 'exit')
           read_until(reader, "\n")
           read_until(reader, "\n")
           writer.close
@@ -103,29 +103,29 @@ describe Shell do
       end
     end
 
-    it "boots correctly with -lauto" do
-      output, exitstatus = run_chef_shell_with("-lauto")
-      output.should include("done")
+    it 'boots correctly with -lauto' do
+      output, exitstatus = run_chef_shell_with('-lauto')
+      output.should include('done')
       expect(exitstatus).to eq(0)
     end
 
-    it "sets the log_level from the command line" do
-      output, exitstatus = run_chef_shell_with("-lfatal") do |out, keyboard|
-        show_log_level_code = %q[puts "===#{Chef::Log.level}==="]
+    it 'sets the log_level from the command line' do
+      output, exitstatus = run_chef_shell_with('-lfatal') do |out, keyboard|
+        show_log_level_code = 'puts "===#{Chef::Log.level}==="'
         keyboard.puts(show_log_level_code)
         read_until(out, show_log_level_code)
       end
-      output.should include("===fatal===")
+      output.should include('===fatal===')
       expect(exitstatus).to eq(0)
     end
 
-    it "sets the override_runlist from the command line" do
+    it 'sets the override_runlist from the command line' do
       output, exitstatus = run_chef_shell_with("-o 'override::foo,override::bar'") do |out, keyboard|
-        show_recipes_code = %q[puts "#{node.recipes.inspect}"]
+        show_recipes_code = 'puts "#{node.recipes.inspect}"'
         keyboard.puts(show_recipes_code)
         read_until(out, show_recipes_code)
       end
-      output.should include(%q{["override::foo", "override::bar"]})
+      output.should include('["override::foo", "override::bar"]')
       expect(exitstatus).to eq(0)
     end
   end

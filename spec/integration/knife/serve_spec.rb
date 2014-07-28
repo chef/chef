@@ -25,7 +25,7 @@ describe 'knife serve' do
   include AppServerSupport
 
   when_the_repository 'also has one of each thing' do
-    file 'nodes/x.json', { 'foo' => 'bar' }
+    file 'nodes/x.json',  'foo' => 'bar'
 
     it 'knife serve serves up /nodes/x' do
       exception = nil
@@ -33,7 +33,7 @@ describe 'knife serve' do
         begin
           knife('serve --chef-zero-port=8889')
         rescue
-          exception = $!
+          exception = $ERROR_INFO
         end
       end
       begin

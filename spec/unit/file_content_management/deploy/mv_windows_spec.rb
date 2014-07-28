@@ -36,26 +36,26 @@ require 'chef/file_content_management/deploy/mv_windows'
 describe Chef::FileContentManagement::Deploy::MvWindows do
 
   let(:content_deployer) { described_class.new }
-  let(:target_file_path) { "/etc/my_app.conf" }
+  let(:target_file_path) { '/etc/my_app.conf' }
 
-  describe "creating the file" do
+  describe 'creating the file' do
 
-    it "touches the file to create it" do
+    it 'touches the file to create it' do
       FileUtils.should_receive(:touch).with(target_file_path)
       content_deployer.create(target_file_path)
     end
   end
 
-  describe "updating the file" do
+  describe 'updating the file' do
 
-    let(:staging_file_path) { "/tmp/random-dir/staging-file.tmp" }
+    let(:staging_file_path) { '/tmp/random-dir/staging-file.tmp' }
 
     let(:target_file_security_object) do
-      double "Securable Object for target file"
+      double 'Securable Object for target file'
     end
 
     let(:updated_target_security_object) do
-      double "Securable Object for target file after staging file deploy"
+      double 'Securable Object for target file after staging file deploy'
     end
 
     before do
@@ -66,32 +66,31 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
 
     end
 
-    context "when run without adminstrator privileges" do
+    context 'when run without adminstrator privileges' do
       before do
         target_file_security_object.should_receive(:security_descriptor).and_raise(Chef::Exceptions::Win32APIError)
       end
 
-      it "errors out with a WindowsNotAdmin error" do
-        lambda { content_deployer.deploy(staging_file_path, target_file_path)}.should raise_error(Chef::Exceptions::WindowsNotAdmin)
+      it 'errors out with a WindowsNotAdmin error' do
+        lambda { content_deployer.deploy(staging_file_path, target_file_path) }.should raise_error(Chef::Exceptions::WindowsNotAdmin)
       end
 
     end
 
-    context "when run with administrator privileges" do
+    context 'when run with administrator privileges' do
 
-      let(:original_target_file_owner) { double("original target file owner") }
-      let(:original_target_file_group) { double("original target file group") }
+      let(:original_target_file_owner) { double('original target file owner') }
+      let(:original_target_file_group) { double('original target file group') }
 
       let(:target_file_security_descriptor) do
-        double "security descriptor for target file",
-             :group => original_target_file_group,
-             :owner => original_target_file_owner
+        double 'security descriptor for target file',
+               :group => original_target_file_group,
+               :owner => original_target_file_owner
       end
 
       let(:updated_target_security_descriptor) do
-        double "security descriptor for target file"
+        double 'security descriptor for target file'
       end
-
 
       before do
         target_file_security_object.stub(:security_descriptor).and_return(target_file_security_descriptor)
@@ -102,31 +101,31 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
         updated_target_security_object.should_receive(:owner=).with(original_target_file_owner)
       end
 
-      context "and the target file has no dacl or sacl" do
+      context 'and the target file has no dacl or sacl' do
 
         before do
           target_file_security_descriptor.stub(:dacl_present?).and_return(false)
           target_file_security_descriptor.stub(:sacl_present?).and_return(false)
         end
 
-        it "fixes up permissions and moves the file into place" do
+        it 'fixes up permissions and moves the file into place' do
           content_deployer.deploy(staging_file_path, target_file_path)
         end
 
       end
 
-      context "and the target has a dacl and sacl" do
-        let(:inherited_dacl_ace) { double("Windows dacl ace (inherited)", :inherited? => true) }
-        let(:not_inherited_dacl_ace) { double("Windows dacl ace (not inherited)", :inherited? => false) }
+      context 'and the target has a dacl and sacl' do
+        let(:inherited_dacl_ace) { double('Windows dacl ace (inherited)', :inherited? => true) }
+        let(:not_inherited_dacl_ace) { double('Windows dacl ace (not inherited)', :inherited? => false) }
 
         let(:original_target_file_dacl) { [inherited_dacl_ace, not_inherited_dacl_ace] }
 
-        let(:inherited_sacl_ace) { double("Windows sacl ace (inherited)", :inherited? => true) }
-        let(:not_inherited_sacl_ace) { double("Windows sacl ace (not inherited)", :inherited? => false) }
+        let(:inherited_sacl_ace) { double('Windows sacl ace (inherited)', :inherited? => true) }
+        let(:not_inherited_sacl_ace) { double('Windows sacl ace (not inherited)', :inherited? => false) }
         let(:original_target_file_sacl) { [inherited_sacl_ace, not_inherited_sacl_ace] }
 
-        let(:custom_dacl) { double("Windows ACL for non-inherited dacl aces") }
-        let(:custom_sacl) { double("Windows ACL for non-inherited sacl aces") }
+        let(:custom_dacl) { double('Windows ACL for non-inherited dacl aces') }
+        let(:custom_sacl) { double('Windows ACL for non-inherited sacl aces') }
 
         before do
           target_file_security_descriptor.stub(:dacl_present?).and_return(true)
@@ -155,16 +154,16 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
           let(:dacl_inherits?) { false }
           let(:sacl_inherits?) { false }
 
-          it "fixes up permissions and moves the file into place" do
+          it 'fixes up permissions and moves the file into place' do
             content_deployer.deploy(staging_file_path, target_file_path)
           end
         end
 
-        context "and the dacl and sacl inherit" do
+        context 'and the dacl and sacl inherit' do
           let(:dacl_inherits?) { true }
           let(:sacl_inherits?) { true }
 
-          it "fixes up permissions and moves the file into place" do
+          it 'fixes up permissions and moves the file into place' do
             content_deployer.deploy(staging_file_path, target_file_path)
           end
         end
@@ -175,5 +174,3 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
 
   end
 end
-
-

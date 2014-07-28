@@ -30,16 +30,14 @@ class Chef
   # objects for lazily-loaded remote cookbooks), it gets transformed
   # into this.
   class CookbookCollection < Mash
-
     # The input is a mapping of cookbook name to CookbookVersion objects. We
     # simply extract them
-    def initialize(cookbook_versions={})
-      super() do |hash, key|
-        raise Chef::Exceptions::CookbookNotFound, "Cookbook #{key} not found. " <<
+    def initialize(cookbook_versions = {})
+      super() do |_hash, key|
+        fail Chef::Exceptions::CookbookNotFound, "Cookbook #{key} not found. " \
           "If you're loading #{key} from another cookbook, make sure you configure the dependency in your metadata"
       end
-      cookbook_versions.each{ |cookbook_name, cookbook_version| self[cookbook_name] = cookbook_version }
+      cookbook_versions.each { |cookbook_name, cookbook_version| self[cookbook_name] = cookbook_version }
     end
-
   end
 end

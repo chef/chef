@@ -22,7 +22,6 @@
 # are passed to any notification or exception handlers at the completion of a
 # Chef run.
 class Chef::RunStatus
-
   attr_reader :events
 
   attr_reader :run_context
@@ -44,9 +43,7 @@ class Chef::RunStatus
     @events = events
   end
 
-  def node
-    @node
-  end
+  attr_reader :node
 
   # sets +start_time+ to the current time.
   def start_clock
@@ -115,7 +112,7 @@ class Chef::RunStatus
       :updated_resources => updated_resources,
       :exception => formatted_exception,
       :backtrace => backtrace,
-      :run_id => run_id}
+      :run_id => run_id }
   end
 
   # Returns a string of the format "ExceptionClass: message" or +nil+ if no
@@ -123,5 +120,4 @@ class Chef::RunStatus
   def formatted_exception
     @exception && "#{@exception.class.name}: #{@exception.message}"
   end
-
 end

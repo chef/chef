@@ -3,30 +3,30 @@ require 'chef/chef_fs/knife'
 class Chef
   class Knife
     class Delete < Chef::ChefFS::Knife
-      banner "knife delete [PATTERN1 ... PATTERNn]"
+      banner 'knife delete [PATTERN1 ... PATTERNn]'
 
-      category "path-based"
+      category 'path-based'
 
       deps do
         require 'chef/chef_fs/file_system'
       end
 
       option :recurse,
-        :short => '-r',
-        :long => '--[no-]recurse',
-        :boolean => true,
-        :default => false,
-        :description => "Delete directories recursively."
+             :short => '-r',
+             :long => '--[no-]recurse',
+             :boolean => true,
+             :default => false,
+             :description => 'Delete directories recursively.'
       option :both,
-        :long => '--both',
-        :boolean => true,
-        :default => false,
-        :description => "Delete both the local and remote copies."
+             :long => '--both',
+             :boolean => true,
+             :default => false,
+             :description => 'Delete both the local and remote copies.'
       option :local,
-        :long => '--local',
-        :boolean => true,
-        :default => false,
-        :description => "Delete the local copy (leave the remote copy)."
+             :long => '--local',
+             :boolean => true,
+             :default => false,
+             :description => 'Delete the local copy (leave the remote copy).'
 
       def run
         if name_args.length == 0
@@ -69,7 +69,7 @@ class Chef
       end
 
       def format_path_with_root(entry)
-        root = entry.root == chef_fs ? " (remote)" : " (local)"
+        root = entry.root == chef_fs ? ' (remote)' : ' (local)'
         "#{format_path(entry)}#{root}"
       end
 
@@ -105,4 +105,3 @@ class Chef
     end
   end
 end
-

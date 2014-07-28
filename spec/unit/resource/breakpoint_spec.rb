@@ -24,19 +24,19 @@ describe Chef::Resource::Breakpoint do
     @breakpoint = Chef::Resource::Breakpoint.new
   end
 
-  it "allows the action :break" do
+  it 'allows the action :break' do
     @breakpoint.allowed_actions.should include(:break)
   end
 
-  it "defaults to the break action" do
-    @breakpoint.action.should == "break"
+  it 'defaults to the break action' do
+    @breakpoint.action.should == 'break'
   end
 
   it "names itself after the line number of the file where it's created" do
     @breakpoint.name.should match(/breakpoint_spec\.rb\:[\d]{2}\:in \`new\'$/)
   end
 
-  it "uses the breakpoint provider" do
+  it 'uses the breakpoint provider' do
     @breakpoint.provider.should == Chef::Provider::Breakpoint
   end
 

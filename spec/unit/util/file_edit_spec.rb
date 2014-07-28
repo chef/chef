@@ -105,26 +105,26 @@ twice
     target_file.close!
   end
 
-  describe "initialiize" do
-    it "should create a new Chef::Util::FileEdit object" do
+  describe 'initialiize' do
+    it 'should create a new Chef::Util::FileEdit object' do
       expect(fedit).to be_instance_of(Chef::Util::FileEdit)
     end
 
-    it "should throw an exception if the input file does not exist" do
-      expect{Chef::Util::FileEdit.new("nonexistfile")}.to raise_error(ArgumentError)
+    it 'should throw an exception if the input file does not exist' do
+      expect { Chef::Util::FileEdit.new('nonexistfile') }.to raise_error(ArgumentError)
     end
 
     # CHEF-5018: people have monkey patched this and it has accidentally been broken
-    it "should read the contents into memory as an array" do
+    it 'should read the contents into memory as an array' do
       expect(fedit.send(:editor).lines).to be_instance_of(Array)
     end
   end
 
-  describe "when the file is blank" do
-    let(:hosts_content) { "" }
+  describe 'when the file is blank' do
+    let(:hosts_content) { '' }
 
-    it "should not throw an exception" do
-      expect{ fedit }.not_to raise_error
+    it 'should not throw an exception' do
+      expect { fedit }.not_to raise_error
     end
   end
 
@@ -132,40 +132,40 @@ twice
     IO.read(target_file.path)
   end
 
-  describe "search_file_replace" do
-    it "should accept regex passed in as a string (not Regexp object) and replace the match if there is one" do
-      fedit.search_file_replace("localhost", "replacement")
+  describe 'search_file_replace' do
+    it 'should accept regex passed in as a string (not Regexp object) and replace the match if there is one' do
+      fedit.search_file_replace('localhost', 'replacement')
       fedit.unwritten_changes?.should be_true
       fedit.write_file
       expect(edited_file_contents).to eq(localhost_replaced)
     end
 
-    it "should accept regex passed in as a Regexp object and replace the match if there is one" do
-      fedit.search_file_replace(/localhost/, "replacement")
+    it 'should accept regex passed in as a Regexp object and replace the match if there is one' do
+      fedit.search_file_replace(/localhost/, 'replacement')
       fedit.unwritten_changes?.should be_true
       fedit.write_file
       expect(edited_file_contents).to eq(localhost_replaced)
     end
 
     it "should do nothing if there isn't a match" do
-      fedit.search_file_replace(/pattern/, "replacement")
+      fedit.search_file_replace(/pattern/, 'replacement')
       fedit.unwritten_changes?.should be_false
       fedit.write_file
       expect(edited_file_contents).to eq(starting_content)
     end
   end
 
-  describe "search_file_replace_line" do
-    it "should search for match and replace the whole line" do
-      fedit.search_file_replace_line(/localhost/, "replacement line")
+  describe 'search_file_replace_line' do
+    it 'should search for match and replace the whole line' do
+      fedit.search_file_replace_line(/localhost/, 'replacement line')
       fedit.unwritten_changes?.should be_true
       fedit.write_file
       expect(edited_file_contents).to eq(localhost_line_replaced)
     end
   end
 
-  describe "search_file_delete" do
-    it "should search for match and delete the match" do
+  describe 'search_file_delete' do
+    it 'should search for match and delete the match' do
       fedit.search_file_delete(/localhost/)
       fedit.unwritten_changes?.should be_true
       fedit.write_file
@@ -173,8 +173,8 @@ twice
     end
   end
 
-  describe "search_file_delete_line" do
-    it "should search for match and delete the matching line" do
+  describe 'search_file_delete_line' do
+    it 'should search for match and delete the matching line' do
       fedit.search_file_delete_line(/localhost/)
       fedit.unwritten_changes?.should be_true
       fedit.write_file
@@ -182,41 +182,41 @@ twice
     end
   end
 
-  describe "insert_line_after_match" do
-    it "should search for match and insert the given line after the matching line" do
-      fedit.insert_line_after_match(/localhost/, "new line inserted")
+  describe 'insert_line_after_match' do
+    it 'should search for match and insert the given line after the matching line' do
+      fedit.insert_line_after_match(/localhost/, 'new line inserted')
       fedit.unwritten_changes?.should be_true
       fedit.write_file
       expect(edited_file_contents).to eq(append_after_all_localhost)
     end
   end
 
-  describe "insert_line_if_no_match" do
-    it "should search for match and insert the given line if no line match" do
-      fedit.insert_line_if_no_match(/pattern/, "new line inserted")
+  describe 'insert_line_if_no_match' do
+    it 'should search for match and insert the given line if no line match' do
+      fedit.insert_line_if_no_match(/pattern/, 'new line inserted')
       fedit.unwritten_changes?.should be_true
       fedit.write_file
       expect(edited_file_contents).to eq(append_after_content)
     end
 
-    it "should do nothing if there is a match" do
-      fedit.insert_line_if_no_match(/localhost/, "replacement")
+    it 'should do nothing if there is a match' do
+      fedit.insert_line_if_no_match(/localhost/, 'replacement')
       fedit.unwritten_changes?.should be_false
       fedit.write_file
       expect(edited_file_contents).to eq(starting_content)
     end
 
-    it "should work more than once" do
-      fedit.insert_line_if_no_match(/missing/, "once")
-      fedit.insert_line_if_no_match(/missing/, "twice")
+    it 'should work more than once' do
+      fedit.insert_line_if_no_match(/missing/, 'once')
+      fedit.insert_line_if_no_match(/missing/, 'twice')
       fedit.write_file
       expect(edited_file_contents).to eq(append_twice)
     end
   end
 
-  describe "file_edited" do
-    it "should return true if a file got edited" do
-      fedit.insert_line_if_no_match(/pattern/, "new line inserted")
+  describe 'file_edited' do
+    it 'should return true if a file got edited' do
+      fedit.insert_line_if_no_match(/pattern/, 'new line inserted')
       fedit.write_file
       expect(fedit.file_edited?).to be_true
     end

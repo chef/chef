@@ -24,26 +24,26 @@ require 'rubygems/package_task'
 require 'rdoc/task'
 require './tasks/rspec.rb'
 
-GEM_NAME = "chef"
+GEM_NAME = 'chef'
 
-Dir[File.expand_path("../*gemspec", __FILE__)].reverse.each do |gemspec_path|
+Dir[File.expand_path('../*gemspec', __FILE__)].reverse.each do |gemspec_path|
   gemspec = eval(IO.read(gemspec_path))
   Gem::PackageTask.new(gemspec).define
 end
 
 task :install => :package do
-  sh %{gem install pkg/#{GEM_NAME}-#{Chef::VERSION}.gem --no-rdoc --no-ri}
+  sh %(gem install pkg/#{GEM_NAME}-#{Chef::VERSION}.gem --no-rdoc --no-ri)
 end
 
 task :uninstall do
-  sh %{gem uninstall #{GEM_NAME} -x -v #{Chef::VERSION} }
+  sh %(gem uninstall #{GEM_NAME} -x -v #{Chef::VERSION} )
 end
 
-desc "Build it, tag it and ship it"
+desc 'Build it, tag it and ship it'
 task :ship => :gem do
   sh("git tag #{Chef::VERSION}")
-  sh("git push opscode --tags")
-  Dir[File.expand_path("../pkg/*.gem", __FILE__)].reverse.each do |built_gem|
+  sh('git push opscode --tags')
+  Dir[File.expand_path('../pkg/*.gem', __FILE__)].reverse.each do |built_gem|
     sh("gem push #{built_gem}")
   end
 end
@@ -54,9 +54,9 @@ end
 
 begin
   require 'yard'
-  DOC_FILES = [ "README.rdoc", "LICENSE", "spec/tiny_server.rb", "lib/**/*.rb" ]
+  DOC_FILES = ['README.rdoc', 'LICENSE', 'spec/tiny_server.rb', 'lib/**/*.rb']
   namespace :yard do
-    desc "Create YARD documentation"
+    desc 'Create YARD documentation'
 
     YARD::Rake::YardocTask.new(:html) do |t|
       t.files = DOC_FILES
@@ -65,5 +65,5 @@ begin
   end
 
 rescue LoadError
-  puts "yard is not available. (sudo) gem install yard to generate yard documentation."
+  puts 'yard is not available. (sudo) gem install yard to generate yard documentation.'
 end

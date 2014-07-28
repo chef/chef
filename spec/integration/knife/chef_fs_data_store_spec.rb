@@ -26,7 +26,7 @@ describe 'ChefFSDataStore tests' do
   extend IntegrationSupport
   include KnifeSupport
 
-  when_the_repository "has one of each thing" do
+  when_the_repository 'has one of each thing' do
     file 'clients/x.json', {}
     file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
     file 'data_bags/x/y.json', {}
@@ -173,7 +173,7 @@ EOM
         knife('list --local /users').should_succeed "/users/x.json\n"
       end
 
-      it 'After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty', :pending => (RUBY_VERSION < "1.9") do
+      it 'After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty', :pending => (RUBY_VERSION < '1.9') do
         knife("raw -z -i #{path_to('rolestuff.json')} -m PUT /roles/x").should_succeed /"x"/
         IO.read(path_to('roles/x.json')).should == <<EOM.strip
 {
@@ -187,9 +187,9 @@ EOM
 
   when_the_repository 'is empty' do
     context 'POST /TYPE/NAME' do
-      file 'empty.json', { 'name' => 'z' }
-      file 'empty_x.json', { 'name' => 'x' }
-      file 'empty_id.json', { 'id' => 'z' }
+      file 'empty.json',  'name' => 'z'
+      file 'empty_x.json',  'name' => 'x'
+      file 'empty_id.json',  'id' => 'z'
       file 'rolestuff.json', '{"description":"hi there","name":"x"}'
       file 'cookbooks_to_upload/z/metadata.rb', "version '1.0.0'"
 
@@ -237,7 +237,7 @@ EOM
         knife('list --local /users').should_succeed "/users/z.json\n"
       end
 
-      it 'After knife raw -z -i rolestuff.json -m POST /roles, the output is pretty', :pending => (RUBY_VERSION < "1.9") do
+      it 'After knife raw -z -i rolestuff.json -m POST /roles, the output is pretty', :pending => (RUBY_VERSION < '1.9') do
         knife("raw -z -i #{path_to('rolestuff.json')} -m POST /roles").should_succeed /uri/
         IO.read(path_to('roles/x.json')).should == <<EOM.strip
 {

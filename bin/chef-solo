@@ -19,7 +19,7 @@
 # limitations under the License.
 
 require 'rubygems'
-$:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'chef/application/solo'
 
 Chef::Application::Solo.new.run

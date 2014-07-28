@@ -19,25 +19,24 @@
 class Chef
   class Knife
     class EnvironmentFromFile < Knife
-
       deps do
         require 'chef/environment'
         require 'chef/knife/core/object_loader'
       end
 
-      banner "knife environment from file FILE [FILE..] (options)"
+      banner 'knife environment from file FILE [FILE..] (options)'
 
       option :all,
-      :short => "-a",
-      :long  => "--all",
-      :description => "Upload all environments"
+             :short => '-a',
+             :long  => '--all',
+             :description => 'Upload all environments'
 
       def loader
         @loader ||= Knife::Core::ObjectLoader.new(Chef::Environment, ui)
       end
 
       def environments_path
-        @environments_path ||= "environments"
+        @environments_path ||= 'environments'
       end
 
       def find_all_environments
@@ -56,12 +55,11 @@ class Chef
       end
 
       def load_environment(env)
-        updated = loader.load_from("environments", env)
+        updated = loader.load_from('environments', env)
         updated.save
         output(format_for_display(updated)) if config[:print_after]
         ui.info("Updated Environment #{updated.name}")
       end
-
 
       def run
         if config[:all] == true
@@ -69,7 +67,7 @@ class Chef
         else
           if @name_args[0].nil?
             show_usage
-            ui.fatal("You must specify a file to load")
+            ui.fatal('You must specify a file to load')
             exit 1
           end
 

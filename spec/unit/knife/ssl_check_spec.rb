@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require 'spec_helper'
 require 'stringio'
 
 describe Chef::Knife::SslCheck do
@@ -42,51 +42,51 @@ describe Chef::Knife::SslCheck do
   end
 
   before do
-    Chef::Config.chef_server_url = "https://example.com:8443/chef-server"
+    Chef::Config.chef_server_url = 'https://example.com:8443/chef-server'
   end
 
-  context "when no arguments are given" do
-    it "uses the chef_server_url as the host to check" do
-      expect(ssl_check.host).to eq("example.com")
+  context 'when no arguments are given' do
+    it 'uses the chef_server_url as the host to check' do
+      expect(ssl_check.host).to eq('example.com')
       expect(ssl_check.port).to eq(8443)
     end
   end
 
-  context "when a specific URI is given" do
-    let(:name_args) { %w{https://example.test:10443/foo} }
+  context 'when a specific URI is given' do
+    let(:name_args) { %w(https://example.test:10443/foo) }
 
-    it "checks the SSL configuration against the given host" do
-      expect(ssl_check.host).to eq("example.test")
-      expect(ssl_check.port).to eq(10443)
+    it 'checks the SSL configuration against the given host' do
+      expect(ssl_check.host).to eq('example.test')
+      expect(ssl_check.port).to eq(10_443)
     end
   end
 
-  context "when an invalid URI is given" do
+  context 'when an invalid URI is given' do
 
-    let(:name_args) { %w{foo.test} }
+    let(:name_args) { %w(foo.test) }
 
-    it "prints an error and exits" do
+    it 'prints an error and exits' do
       expect { ssl_check.run }.to raise_error(SystemExit)
-      expected_stdout=<<-E
+      expected_stdout = <<-E
 USAGE: knife ssl check [URL] (options)
 E
-      expected_stderr=<<-E
+      expected_stderr = <<-E
 ERROR: Given URI: `foo.test' is invalid
 E
       expect(stdout_io.string).to eq(expected_stdout)
       expect(stderr_io.string).to eq(expected_stderr)
     end
 
-    context "and its malformed enough to make URI.parse barf" do
+    context 'and its malformed enough to make URI.parse barf' do
 
-      let(:name_args) { %w{ftp://lkj\\blah:example.com/blah} }
+      let(:name_args) { %w(ftp://lkj\\blah:example.com/blah) }
 
-      it "prints an error and exits" do
+      it 'prints an error and exits' do
         expect { ssl_check.run }.to raise_error(SystemExit)
-        expected_stdout=<<-E
+        expected_stdout = <<-E
 USAGE: knife ssl check [URL] (options)
 E
-        expected_stderr=<<-E
+        expected_stderr = <<-E
 ERROR: Given URI: `#{name_args[0]}' is invalid
 E
         expect(stdout_io.string).to eq(expected_stdout)
@@ -95,22 +95,22 @@ E
     end
   end
 
-  describe "verifying the remote certificate" do
-    let(:name_args) { %w{https://foo.example.com:8443} }
+  describe 'verifying the remote certificate' do
+    let(:name_args) { %w(https://foo.example.com:8443) }
 
     let(:tcp_socket) { double(TCPSocket) }
     let(:ssl_socket) { double(OpenSSL::SSL::SSLSocket) }
 
     before do
-      TCPSocket.should_receive(:new).with("foo.example.com", 8443).and_return(tcp_socket)
+      TCPSocket.should_receive(:new).with('foo.example.com', 8443).and_return(tcp_socket)
       OpenSSL::SSL::SSLSocket.should_receive(:new).with(tcp_socket, ssl_check.verify_peer_ssl_context).and_return(ssl_socket)
     end
 
     def run
       ssl_check.run
-    rescue Exception
-      #puts "OUT: #{stdout_io.string}"
-      #puts "ERR: #{stderr_io.string}"
+    rescue
+      # puts "OUT: #{stdout_io.string}"
+      # puts "ERR: #{stderr_io.string}"
       raise
     end
 
@@ -118,28 +118,28 @@ E
 
       before do
         ssl_socket.should_receive(:connect) # no error
-        ssl_socket.should_receive(:post_connection_check).with("foo.example.com") # no error
+        ssl_socket.should_receive(:post_connection_check).with('foo.example.com') # no error
       end
 
-      it "prints a success message" do
+      it 'prints a success message' do
         ssl_check.run
         expect(stdout_io.string).to include("Successfully verified certificates from `foo.example.com'")
       end
     end
 
-    describe "and the certificate is not valid" do
+    describe 'and the certificate is not valid' do
 
       let(:tcp_socket_for_debug) { double(TCPSocket) }
       let(:ssl_socket_for_debug) { double(OpenSSL::SSL::SSLSocket) }
 
-      let(:self_signed_crt_path) { File.join(CHEF_SPEC_DATA, "trusted_certs", "example.crt") }
+      let(:self_signed_crt_path) { File.join(CHEF_SPEC_DATA, 'trusted_certs', 'example.crt') }
       let(:self_signed_crt) { OpenSSL::X509::Certificate.new(File.read(self_signed_crt_path)) }
 
       before do
-        trap(:INT, "DEFAULT")
+        trap(:INT, 'DEFAULT')
 
         TCPSocket.should_receive(:new).
-          with("foo.example.com", 8443).
+          with('foo.example.com', 8443).
           and_return(tcp_socket_for_debug)
         OpenSSL::SSL::SSLSocket.should_receive(:new).
           with(tcp_socket_for_debug, ssl_check.noverify_peer_ssl_context).
@@ -150,22 +150,22 @@ E
         before do
           ssl_socket.should_receive(:connect) # no error
           ssl_socket.should_receive(:post_connection_check).
-            with("foo.example.com").
+            with('foo.example.com').
             and_raise(OpenSSL::SSL::SSLError)
           ssl_socket_for_debug.should_receive(:connect)
           ssl_socket_for_debug.should_receive(:peer_cert).and_return(self_signed_crt)
         end
 
-        it "shows the CN used by the certificate and prints an error" do
+        it 'shows the CN used by the certificate and prints an error' do
           expect { run }.to raise_error(SystemExit)
-          expect(stderr).to include("The SSL cert is signed by a trusted authority but is not valid for the given hostname")
+          expect(stderr).to include('The SSL cert is signed by a trusted authority but is not valid for the given hostname')
           expect(stderr).to include("You are attempting to connect to:   'foo.example.com'")
           expect(stderr).to include("The server's certificate belongs to 'example.local'")
         end
 
       end
 
-      context "when the cert is not signed by any trusted authority" do
+      context 'when the cert is not signed by any trusted authority' do
         before do
           ssl_socket.should_receive(:connect).
             and_raise(OpenSSL::SSL::SSLError)
@@ -173,9 +173,9 @@ E
           ssl_socket_for_debug.should_receive(:peer_cert).and_return(self_signed_crt)
         end
 
-        it "shows the CN used by the certificate and prints an error" do
+        it 'shows the CN used by the certificate and prints an error' do
           expect { run }.to raise_error(SystemExit)
-          expect(stderr).to include("The SSL certificate of foo.example.com could not be verified")
+          expect(stderr).to include('The SSL certificate of foo.example.com could not be verified')
         end
 
       end
@@ -184,4 +184,3 @@ E
   end
 
 end
-

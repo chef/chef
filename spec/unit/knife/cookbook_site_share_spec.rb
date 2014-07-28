@@ -25,7 +25,7 @@ describe Chef::Knife::CookbookSiteShare do
 
   before(:each) do
     @knife = Chef::Knife::CookbookSiteShare.new
-    @knife.name_args = ['cookbook_name', 'AwesomeSausage']
+    @knife.name_args = %w(cookbook_name AwesomeSausage)
 
     @cookbook = Chef::CookbookVersion.new('cookbook_name')
 
@@ -34,7 +34,7 @@ describe Chef::Knife::CookbookSiteShare do
     @cookbook_loader.stub(:[]).and_return(@cookbook)
     Chef::CookbookLoader.stub(:new).and_return(@cookbook_loader)
 
-    @cookbook_uploader = Chef::CookbookUploader.new('herpderp', File.join(CHEF_SPEC_DATA, 'cookbooks'), :rest => "norest")
+    @cookbook_uploader = Chef::CookbookUploader.new('herpderp', File.join(CHEF_SPEC_DATA, 'cookbooks'), :rest => 'norest')
     Chef::CookbookUploader.stub(:new).and_return(@cookbook_uploader)
     @cookbook_uploader.stub(:validate_cookbooks).and_return(true)
     Chef::CookbookSiteStreamingUploader.stub(:create_build_dir).and_return(Dir.mktmpdir)
@@ -109,15 +109,15 @@ describe Chef::Knife::CookbookSiteShare do
     end
 
     it 'should post the cookbook to "http://cookbooks.opscode.com"' do
-      response_text = {:uri => 'http://cookbooks.opscode.com/cookbooks/cookbook_name'}.to_json
+      response_text = { :uri => 'http://cookbooks.opscode.com/cookbooks/cookbook_name' }.to_json
       @upload_response.stub(:body).and_return(response_text)
       @upload_response.stub(:code).and_return(201)
-      Chef::CookbookSiteStreamingUploader.should_receive(:post).with(/cookbooks\.opscode\.com/, anything(), anything(), anything())
+      Chef::CookbookSiteStreamingUploader.should_receive(:post).with(/cookbooks\.opscode\.com/, anything, anything, anything)
       @knife.run
     end
 
     it 'should alert the user when a version already exists' do
-      response_text = {:error_messages => ['Version already exists']}.to_json
+      response_text = { :error_messages => ['Version already exists'] }.to_json
       @upload_response.stub(:body).and_return(response_text)
       @upload_response.stub(:code).and_return(409)
       lambda { @knife.run }.should raise_error(SystemExit)
@@ -125,7 +125,7 @@ describe Chef::Knife::CookbookSiteShare do
     end
 
     it 'should pass any errors on to the user' do
-      response_text = {:error_messages => ["You're holding it wrong"]}.to_json
+      response_text = { :error_messages => ["You're holding it wrong"] }.to_json
       @upload_response.stub(:body).and_return(response_text)
       @upload_response.stub(:code).and_return(403)
       lambda { @knife.run }.should raise_error(SystemExit)
@@ -133,11 +133,11 @@ describe Chef::Knife::CookbookSiteShare do
     end
 
     it 'should print the body if no errors are exposed on failure' do
-      response_text = {:system_error => "Your call was dropped", :reason => "There's a map for that"}.to_json
+      response_text = { :system_error => 'Your call was dropped', :reason => "There's a map for that" }.to_json
       @upload_response.stub(:body).and_return(response_text)
       @upload_response.stub(:code).and_return(500)
-      @knife.ui.should_receive(:error).with(/#{Regexp.escape(response_text)}/)#.ordered
-      @knife.ui.should_receive(:error).with(/Unknown error/)#.ordered
+      @knife.ui.should_receive(:error).with(/#{Regexp.escape(response_text)}/) # .ordered
+      @knife.ui.should_receive(:error).with(/Unknown error/) # .ordered
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 

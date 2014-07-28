@@ -25,7 +25,6 @@ class Chef
 
       attr_reader :name, :type, :version
 
-
       def initialize(item)
         @version = nil
         case item
@@ -33,7 +32,7 @@ class Chef
           assert_hash_is_valid_run_list_item!(item)
           @type = (item['type'] || item[:type]).to_sym
           @name = item['name'] || item[:name]
-          if (item.has_key?('version') || item.has_key?(:version))
+          if item.key?('version') || item.key?(:version)
             @version = item['version'] || item[:version]
           end
         when String
@@ -56,7 +55,7 @@ class Chef
             # Recipe[recipe_name]
             # roles[role_name]
             name = match[1]
-            raise ArgumentError, "Unable to create #{self.class} from #{item.class}:#{item.inspect}: must be recipe[#{name}] or role[#{name}]"
+            fail ArgumentError, "Unable to create #{self.class} from #{item.class}:#{item.inspect}: must be recipe[#{name}] or role[#{name}]"
 
           else
             # recipe_name
@@ -64,12 +63,12 @@ class Chef
             @name = item
           end
         else
-          raise ArgumentError, "Unable to create #{self.class} from #{item.class}:#{item.inspect}: must be a Hash or String"
+          fail ArgumentError, "Unable to create #{self.class} from #{item.class}:#{item.inspect}: must be a Hash or String"
         end
       end
 
       def to_s
-        "#{@type}[#{@name}#{@version ? "@#{@version}" :""}]"
+        "#{@type}[#{@name}#{@version ? "@#{@version}" :  ''}]"
       end
 
       def role?
@@ -81,19 +80,18 @@ class Chef
       end
 
       def ==(other)
-        if other.kind_of?(String)
-          self.to_s == other.to_s
+        if other.is_a?(String)
+          to_s == other.to_s
         else
           other.respond_to?(:type) && other.respond_to?(:name) && other.respond_to?(:version) && other.type == @type && other.name == @name && other.version == @version
         end
       end
 
       def assert_hash_is_valid_run_list_item!(item)
-        unless (item.key?('type')|| item.key?(:type)) && (item.key?('name') || item.key?(:name))
-          raise ArgumentError, "Initializing a #{self.class} from a hash requires that it have a 'type' and 'name' key"
+        unless (item.key?('type') || item.key?(:type)) && (item.key?('name') || item.key?(:name))
+          fail ArgumentError, "Initializing a #{self.class} from a hash requires that it have a 'type' and 'name' key"
         end
       end
-
     end
   end
 end

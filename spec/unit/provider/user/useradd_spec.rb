@@ -29,19 +29,19 @@ describe Chef::Provider::User::Useradd do
   end
 
   supported_useradd_options = {
-    'comment' => "-c",
-    'gid' => "-g",
-    'uid' => "-u",
-    'shell' => "-s",
-    'password' => "-p"
+    'comment' => '-c',
+    'gid' => '-g',
+    'uid' => '-u',
+    'shell' => '-s',
+    'password' => '-p'
   }
 
-  include_examples "a useradd-based user provider", supported_useradd_options
+  include_examples 'a useradd-based user provider', supported_useradd_options
 
-  describe "manage_user" do
+  describe 'manage_user' do
     # CHEF-5247: Chef::Provider::User::Solaris subclasses Chef::Provider::User::Useradd, but does not use usermod to change passwords.
     # Thus, a call to Solaris#manage_user calls Solaris#manage_password and Useradd#manage_user, but the latter should be a no-op.
-    it "should not run the command if universal_options is an empty array" do
+    it 'should not run the command if universal_options is an empty array' do
       provider.stub(:universal_options).and_return([])
       expect(provider).not_to receive(:shell_out!)
       provider.manage_user

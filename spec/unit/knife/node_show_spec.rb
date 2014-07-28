@@ -20,28 +20,28 @@ require 'spec_helper'
 
 describe Chef::Knife::NodeShow do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name]  = 'webmonkey.example.com'
     @knife = Chef::Knife::NodeShow.new
     @knife.config = {
       :attribute => nil,
       :run_list => nil,
       :environment => nil
     }
-    @knife.name_args = [ "adam" ]
+    @knife.name_args = ['adam']
     @knife.stub(:output).and_return(true)
-    @node = Chef::Node.new()
+    @node = Chef::Node.new
     Chef::Node.stub(:load).and_return(@node)
   end
 
-  describe "run" do
-    it "should load the node" do
-      Chef::Node.should_receive(:load).with("adam").and_return(@node)
+  describe 'run' do
+    it 'should load the node' do
+      Chef::Node.should_receive(:load).with('adam').and_return(@node)
       @knife.run
     end
 
-    it "should pretty print the node, formatted for display" do
-      @knife.should_receive(:format_for_display).with(@node).and_return("poop")
-      @knife.should_receive(:output).with("poop")
+    it 'should pretty print the node, formatted for display' do
+      @knife.should_receive(:format_for_display).with(@node).and_return('poop')
+      @knife.should_receive(:output).with('poop')
       @knife.run
     end
   end

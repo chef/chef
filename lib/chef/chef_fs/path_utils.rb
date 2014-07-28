@@ -22,7 +22,6 @@ require 'pathname'
 class Chef
   module ChefFS
     class PathUtils
-
       # If you are in 'source', this is what you would have to type to reach 'dest'
       # relative_to('/a/b/c/d/e', '/a/b/x/y') == '../../c/d/e'
       # relative_to('/a/b', '/a/b') == '.'
@@ -32,22 +31,22 @@ class Chef
         dest_parts = Chef::ChefFS::PathUtils.split(dest)
         i = 0
         until i >= source_parts.length || i >= dest_parts.length || source_parts[i] != dest_parts[i]
-          i+=1
+          i += 1
         end
         # dot-dot up from 'source' to the common ancestor, then
         # descend to 'dest' from the common ancestor
-        result = Chef::ChefFS::PathUtils.join(*(['..']*(source_parts.length-i) + dest_parts[i,dest.length-i]))
+        result = Chef::ChefFS::PathUtils.join(*(['..'] * (source_parts.length - i) + dest_parts[i, dest.length - i]))
         result == '' ? '.' : result
       end
 
       def self.join(*parts)
-        return "" if parts.length == 0
+        return '' if parts.length == 0
         # Determine if it started with a slash
         absolute = parts[0].length == 0 || parts[0].length > 0 && parts[0] =~ /^#{regexp_path_separator}/
         # Remove leading and trailing slashes from each part so that the join will work (and the slash at the end will go away)
-        parts = parts.map { |part| part.gsub(/^\/|\/$/, "") }
+        parts = parts.map { |part| part.gsub(/^\/|\/$/, '') }
         # Don't join empty bits
-        result = parts.select { |part| part != "" }.join("/")
+        result = parts.select { |part| part != '' }.join('/')
         # Put the / back on
         absolute ? "/#{result}" : result
       end
@@ -57,7 +56,7 @@ class Chef
       end
 
       def self.regexp_path_separator
-        Chef::ChefFS::windows? ? '[\/\\\\]' : '/'
+        Chef::ChefFS.windows? ? '[\/\\\\]' : '/'
       end
 
       # Given a path which may only be partly real (i.e. /x/y/z when only /x exists,
@@ -83,8 +82,8 @@ class Chef
       end
 
       def self.descendant_of?(path, ancestor)
-        path[0,ancestor.length] == ancestor &&
-          (ancestor.length == path.length || path[ancestor.length,1] =~ /#{PathUtils.regexp_path_separator}/)
+        path[0, ancestor.length] == ancestor &&
+          (ancestor.length == path.length || path[ancestor.length, 1] =~ /#{PathUtils.regexp_path_separator}/)
       end
 
       def self.is_absolute?(path)

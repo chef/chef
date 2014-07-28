@@ -23,8 +23,7 @@ class Chef
     class Package
       module Freebsd
         class Pkgng < Base
-
-          def install_package(name, version)
+          def install_package(name, _version)
             unless @current_resource.version
               case @new_resource.source
               when /^(http|ftp|\/)/
@@ -44,15 +43,13 @@ class Chef
           end
 
           def current_installed_version
-            pkg_info = shell_out!("pkg info \"#{@new_resource.package_name}\"", :env => nil, :returns => [0,70])
+            pkg_info = shell_out!("pkg info \"#{@new_resource.package_name}\"", :env => nil, :returns => [0, 70])
             pkg_info.stdout[/^#{Regexp.escape(@new_resource.package_name)}-(.+)/, 1]
           end
 
           def candidate_version
             @new_resource.source ? file_candidate_version : repo_candidate_version
           end
-
-
 
           private
 
@@ -62,7 +59,7 @@ class Chef
 
           def repo_candidate_version
             if @new_resource.options && @new_resource.options.match(repo_regex)
-              options = $1
+              options = Regexp.last_match[1]
             end
 
             pkg_query = shell_out!("pkg rquery#{expand_options(options)} '%v' #{@new_resource.package_name}", :env => nil)
@@ -72,7 +69,6 @@ class Chef
           def repo_regex
             /(-r\s?\S+)\b/
           end
-
         end
       end
     end

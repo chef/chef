@@ -22,27 +22,26 @@ require 'chef/resource/directory'
 class Chef
   class Handler
     class JsonFile < ::Chef::Handler
-
       attr_reader :config
 
-      def initialize(config={})
+      def initialize(config = {})
         @config = config
-        @config[:path] ||= "/var/chef/reports"
+        @config[:path] ||= '/var/chef/reports'
         @config
       end
 
       def report
         if exception
-          Chef::Log.error("Creating JSON exception report")
+          Chef::Log.error('Creating JSON exception report')
         else
-          Chef::Log.info("Creating JSON run report")
+          Chef::Log.info('Creating JSON run report')
         end
 
         build_report_dir
-        savetime = Time.now.strftime("%Y%m%d%H%M%S")
-        File.open(File.join(config[:path], "chef-run-report-#{savetime}.json"), "w") do |file|
+        savetime = Time.now.strftime('%Y%m%d%H%M%S')
+        File.open(File.join(config[:path], "chef-run-report-#{savetime}.json"), 'w') do |file|
 
-          #ensure start time and end time are output in the json properly in the event activesupport happens to be on the system
+          # ensure start time and end time are output in the json properly in the event activesupport happens to be on the system
           run_data = data
           run_data[:start_time] = run_data[:start_time].to_s
           run_data[:end_time] = run_data[:end_time].to_s
@@ -52,13 +51,11 @@ class Chef
       end
 
       def build_report_dir
-        unless File.exists?(config[:path])
+        unless File.exist?(config[:path])
           FileUtils.mkdir_p(config[:path])
           File.chmod(00700, config[:path])
         end
       end
-
-
     end
   end
 end

@@ -17,7 +17,7 @@
 
 require 'spec_helper'
 
-describe Chef::Application::Client, "reconfigure" do
+describe Chef::Application::Client, 'reconfigure' do
   before do
     Kernel.stub(:trap).and_return(:ok)
 
@@ -39,19 +39,19 @@ describe Chef::Application::Client, "reconfigure" do
     ARGV.replace(@original_argv)
   end
 
-  describe "when in daemonized mode and no interval has been set" do
+  describe 'when in daemonized mode and no interval has been set' do
     before do
       Chef::Config[:daemonize] = true
       Chef::Config[:interval] = nil
     end
 
-    it "should set the interval to 1800" do
+    it 'should set the interval to 1800' do
       @app.reconfigure
       Chef::Config.interval.should == 1800
     end
   end
 
-  describe "when configured to run once" do
+  describe 'when configured to run once' do
     before do
       Chef::Config[:once] = true
       Chef::Config[:daemonize] = false
@@ -59,23 +59,23 @@ describe Chef::Application::Client, "reconfigure" do
       Chef::Config[:interval] = 1800
     end
 
-    it "ignores the splay" do
+    it 'ignores the splay' do
       @app.reconfigure
       Chef::Config.splay.should be_nil
     end
 
-    it "forces the interval to nil" do
+    it 'forces the interval to nil' do
       @app.reconfigure
       Chef::Config.interval.should be_nil
     end
 
   end
 
-  describe "when the json_attribs configuration option is specified" do
+  describe 'when the json_attribs configuration option is specified' do
 
-    let(:json_attribs) { {"a" => "b"} }
+    let(:json_attribs) { { 'a' => 'b' } }
     let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
-    let(:json_source) { "https://foo.com/foo.json" }
+    let(:json_source) { 'https://foo.com/foo.json' }
 
     before do
       Chef::Config[:json_attribs] = json_source
@@ -83,14 +83,14 @@ describe Chef::Application::Client, "reconfigure" do
         and_return(config_fetcher)
     end
 
-    it "reads the JSON attributes from the specified source" do
+    it 'reads the JSON attributes from the specified source' do
       @app.reconfigure
       @app.chef_client_json.should == json_attribs
     end
   end
 end
 
-describe Chef::Application::Client, "setup_application" do
+describe Chef::Application::Client, 'setup_application' do
   before do
     @app = Chef::Application::Client.new
     # this is all stuff the reconfigure method needs
@@ -99,7 +99,7 @@ describe Chef::Application::Client, "setup_application" do
     @app.stub(:configure_logging).and_return(true)
   end
 
-  it "should change privileges" do
+  it 'should change privileges' do
     Chef::Daemon.should_receive(:change_privilege).and_return(true)
     @app.setup_application
   end
@@ -108,7 +108,7 @@ describe Chef::Application::Client, "setup_application" do
   end
 end
 
-describe Chef::Application::Client, "configure_chef" do
+describe Chef::Application::Client, 'configure_chef' do
   before do
     @original_argv = ARGV.dup
     ARGV.clear
@@ -120,7 +120,7 @@ describe Chef::Application::Client, "configure_chef" do
     ARGV.replace(@original_argv)
   end
 
-  it "should set the colored output to false by default on windows and true otherwise" do
+  it 'should set the colored output to false by default on windows and true otherwise' do
     if windows?
       Chef::Config[:color].should be_false
     else
@@ -129,7 +129,7 @@ describe Chef::Application::Client, "configure_chef" do
   end
 end
 
-describe Chef::Application::Client, "run_application", :unix_only do
+describe Chef::Application::Client, 'run_application', :unix_only do
   before(:each) do
     Chef::Config[:daemonize] = true
     @pipe = IO.pipe
@@ -144,18 +144,18 @@ describe Chef::Application::Client, "run_application", :unix_only do
     end
   end
 
-  it "should exit gracefully when sent SIGTERM", :volatile_on_solaris do
+  it 'should exit gracefully when sent SIGTERM', :volatile_on_solaris do
     pid = fork do
       @app.run_application
     end
     @pipe[0].gets.should == "started\n"
-    Process.kill("TERM", pid)
+    Process.kill('TERM', pid)
     Process.wait
     IO.select([@pipe[0]], nil, nil, 0).should_not be_nil
     @pipe[0].gets.should == "finished\n"
   end
 
-  describe "when splay is set" do
+  describe 'when splay is set' do
     before do
       Chef::Config[:splay] = 10
       Chef::Config[:interval] = 10
@@ -175,7 +175,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
 
         # If everything is fine, sending USR1 to self should prevent
         # app to go into splay sleep forever.
-        Process.kill("USR1", Process.pid)
+        Process.kill('USR1', Process.pid)
       end
 
       number_of_sleep_calls = 0
@@ -185,7 +185,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
       # We have to do it this way because the main loop of
       # Chef::Application::Client swallows most exceptions, and we need to be
       # able to expose our expectation failures to the parent process in the test.
-      @app.stub(:sleep) do |arg|
+      @app.stub(:sleep) do |_arg|
         number_of_sleep_calls += 1
         if number_of_sleep_calls > 1
           exit 127

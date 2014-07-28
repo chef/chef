@@ -136,70 +136,57 @@ class Chef
 
         class OSVERSIONINFOEX < FFI::Struct
           layout :dw_os_version_info_size, :DWORD,
-            :dw_major_version, :DWORD,
-            :dw_minor_version, :DWORD,
-            :dw_build_number, :DWORD,
-            :dw_platform_id, :DWORD,
-            :sz_csd_version, [:BYTE, 256],
-            :w_service_pack_major, :WORD,
-            :w_service_pack_minor, :WORD,
-            :w_suite_mask, :WORD,
-            :w_product_type, :BYTE,
-            :w_reserved, :BYTE
+                 :dw_major_version, :DWORD,
+                 :dw_minor_version, :DWORD,
+                 :dw_build_number, :DWORD,
+                 :dw_platform_id, :DWORD,
+                 :sz_csd_version, [:BYTE, 256],
+                 :w_service_pack_major, :WORD,
+                 :w_service_pack_minor, :WORD,
+                 :w_suite_mask, :WORD,
+                 :w_product_type, :BYTE,
+                 :w_reserved, :BYTE
         end
 
-=begin
-BOOL WINAPI CloseHandle(
-  __in  HANDLE hObject
-);
-=end
-        safe_attach_function :CloseHandle, [ :HANDLE ], :BOOL
+        # BOOL WINAPI CloseHandle(
+        #   __in  HANDLE hObject
+        # );
+        safe_attach_function :CloseHandle, [:HANDLE], :BOOL
 
-=begin
-DWORD WINAPI GetVersion(void);
-=end
+        # DWORD WINAPI GetVersion(void);
         safe_attach_function :GetVersion, [], :DWORD
 
-=begin
-BOOL WINAPI GetVersionEx(
-  __inout  LPOSVERSIONINFO lpVersionInfo
-);
-=end
+        # BOOL WINAPI GetVersionEx(
+        #   __inout  LPOSVERSIONINFO lpVersionInfo
+        # );
         safe_attach_function :GetVersionExW, [:pointer], :BOOL
         safe_attach_function :GetVersionExA, [:pointer], :BOOL
 
-=begin
-BOOL WINAPI GetProductInfo(
-  __in   DWORD dwOSMajorVersion,
-  __in   DWORD dwOSMinorVersion,
-  __in   DWORD dwSpMajorVersion,
-  __in   DWORD dwSpMinorVersion,
-  __out  PDWORD pdwReturnedProductType
-);
-=end
+        # BOOL WINAPI GetProductInfo(
+        #   __in   DWORD dwOSMajorVersion,
+        #   __in   DWORD dwOSMinorVersion,
+        #   __in   DWORD dwSpMajorVersion,
+        #   __in   DWORD dwSpMinorVersion,
+        #   __out  PDWORD pdwReturnedProductType
+        # );
         safe_attach_function :GetProductInfo, [:DWORD, :DWORD, :DWORD, :DWORD, :PDWORD], :BOOL
 
-=begin
-int WINAPI GetSystemMetrics(
-  __in  int nIndex
-);
-=end
+        # int WINAPI GetSystemMetrics(
+        #   __in  int nIndex
+        # );
         safe_attach_function :GetSystemMetrics, [:int], :int
 
-=begin
-LRESULT WINAPI SendMessageTimeout(
-  _In_       HWND hWnd,
-  _In_       UINT Msg,
-  _In_       WPARAM wParam,
-  _In_       LPARAM lParam,
-  _In_       UINT fuFlags,
-  _In_       UINT uTimeout,
-  _Out_opt_  PDWORD_PTR lpdwResult
-);
-=end
+        # LRESULT WINAPI SendMessageTimeout(
+        #   _In_       HWND hWnd,
+        #   _In_       UINT Msg,
+        #   _In_       WPARAM wParam,
+        #   _In_       LPARAM lParam,
+        #   _In_       UINT fuFlags,
+        #   _In_       UINT uTimeout,
+        #   _Out_opt_  PDWORD_PTR lpdwResult
+        # );
         safe_attach_function :SendMessageTimeoutW, [:HWND, :UINT, :WPARAM, :LPARAM, :UINT, :UINT, :PDWORD_PTR], :LRESULT
         safe_attach_function :SendMessageTimeoutA, [:HWND, :UINT, :WPARAM, :LPARAM, :UINT, :UINT, :PDWORD_PTR], :LRESULT
-
       end
     end
   end

@@ -26,23 +26,21 @@ class Chef
     module FileSystem
       class NodesDir < RestListDir
         def initialize(parent)
-          super("nodes", parent, nil, Chef::ChefFS::DataHandler::NodeDataHandler.new)
+          super('nodes', parent, nil, Chef::ChefFS::DataHandler::NodeDataHandler.new)
         end
 
         # Identical to RestListDir.children, except supports environments
         def children
-          begin
-            @children ||= root.get_json(env_api_path).keys.sort.map do |key|
-              _make_child_entry("#{key}.json", true)
-            end
-          rescue Timeout::Error => e
-            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e), "Timeout retrieving children: #{e}"
-          rescue Net::HTTPServerException => e
-            if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-            else
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e), "HTTP error retrieving children: #{e}"
-            end
+          @children ||= root.get_json(env_api_path).keys.sort.map do |key|
+            _make_child_entry("#{key}.json", true)
+          end
+        rescue Timeout::Error => e
+          raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e), "Timeout retrieving children: #{e}"
+        rescue Net::HTTPServerException => e
+          if $ERROR_INFO.response.code == '404'
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $ERROR_INFO)
+          else
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e), "HTTP error retrieving children: #{e}"
           end
         end
 

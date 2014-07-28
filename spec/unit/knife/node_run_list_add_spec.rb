@@ -20,129 +20,126 @@ require 'spec_helper'
 
 describe Chef::Knife::NodeRunListAdd do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name]  = 'webmonkey.example.com'
     @knife = Chef::Knife::NodeRunListAdd.new
     @knife.config = {
       :after => nil
     }
-    @knife.name_args = [ "adam", "role[monkey]" ]
+    @knife.name_args = ['adam', 'role[monkey]']
     @knife.stub(:output).and_return(true)
-    @node = Chef::Node.new()
+    @node = Chef::Node.new
     @node.stub(:save).and_return(true)
     Chef::Node.stub(:load).and_return(@node)
   end
 
-  describe "run" do
-    it "should load the node" do
-      Chef::Node.should_receive(:load).with("adam")
+  describe 'run' do
+    it 'should load the node' do
+      Chef::Node.should_receive(:load).with('adam')
       @knife.run
     end
 
-    it "should add to the run list" do
+    it 'should add to the run list' do
       @knife.run
       @node.run_list[0].should == 'role[monkey]'
     end
 
-    it "should save the node" do
+    it 'should save the node' do
       @node.should_receive(:save)
       @knife.run
     end
 
-    it "should print the run list" do
+    it 'should print the run list' do
       @knife.should_receive(:output).and_return(true)
       @knife.run
     end
 
-    describe "with -a or --after specified" do
-      it "should add to the run list after the specified entry" do
-        @node.run_list << "role[acorns]"
-        @node.run_list << "role[barn]"
-        @knife.config[:after] = "role[acorns]"
+    describe 'with -a or --after specified' do
+      it 'should add to the run list after the specified entry' do
+        @node.run_list << 'role[acorns]'
+        @node.run_list << 'role[barn]'
+        @knife.config[:after] = 'role[acorns]'
         @knife.run
-        @node.run_list[0].should == "role[acorns]"
-        @node.run_list[1].should == "role[monkey]"
-        @node.run_list[2].should == "role[barn]"
+        @node.run_list[0].should == 'role[acorns]'
+        @node.run_list[1].should == 'role[monkey]'
+        @node.run_list[2].should == 'role[barn]'
       end
     end
 
-    describe "with -b or --before specified" do
-      it "should add to the run list before the specified entry" do
-        @node.run_list << "role[acorns]"
-        @node.run_list << "role[barn]"
-        @knife.config[:before] = "role[acorns]"
+    describe 'with -b or --before specified' do
+      it 'should add to the run list before the specified entry' do
+        @node.run_list << 'role[acorns]'
+        @node.run_list << 'role[barn]'
+        @knife.config[:before] = 'role[acorns]'
         @knife.run
-        @node.run_list[0].should == "role[monkey]"
-        @node.run_list[1].should == "role[acorns]"
-        @node.run_list[2].should == "role[barn]"
+        @node.run_list[0].should == 'role[monkey]'
+        @node.run_list[1].should == 'role[acorns]'
+        @node.run_list[2].should == 'role[barn]'
       end
     end
 
-    describe "with both --after and --before specified" do
-      it "exits with an error" do
-        @node.run_list << "role[acorns]"
-        @node.run_list << "role[barn]"
-        @knife.config[:before] = "role[acorns]"
-        @knife.config[:after]  = "role[acorns]"
+    describe 'with both --after and --before specified' do
+      it 'exits with an error' do
+        @node.run_list << 'role[acorns]'
+        @node.run_list << 'role[barn]'
+        @knife.config[:before] = 'role[acorns]'
+        @knife.config[:after]  = 'role[acorns]'
         @knife.ui.should_receive(:fatal)
         lambda { @knife.run }.should raise_error(SystemExit)
       end
     end
 
-    describe "with more than one role or recipe" do
-      it "should add to the run list all the entries" do
-        @knife.name_args = [ "adam", "role[monkey],role[duck]" ]
-        @node.run_list << "role[acorns]"
+    describe 'with more than one role or recipe' do
+      it 'should add to the run list all the entries' do
+        @knife.name_args = ['adam', 'role[monkey],role[duck]']
+        @node.run_list << 'role[acorns]'
         @knife.run
-        @node.run_list[0].should == "role[acorns]"
-        @node.run_list[1].should == "role[monkey]"
-        @node.run_list[2].should == "role[duck]"
+        @node.run_list[0].should == 'role[acorns]'
+        @node.run_list[1].should == 'role[monkey]'
+        @node.run_list[2].should == 'role[duck]'
       end
     end
 
-    describe "with more than one role or recipe with space between items" do
-      it "should add to the run list all the entries" do
-        @knife.name_args = [ "adam", "role[monkey], role[duck]" ]
-        @node.run_list << "role[acorns]"
+    describe 'with more than one role or recipe with space between items' do
+      it 'should add to the run list all the entries' do
+        @knife.name_args = ['adam', 'role[monkey], role[duck]']
+        @node.run_list << 'role[acorns]'
         @knife.run
-        @node.run_list[0].should == "role[acorns]"
-        @node.run_list[1].should == "role[monkey]"
-        @node.run_list[2].should == "role[duck]"
+        @node.run_list[0].should == 'role[acorns]'
+        @node.run_list[1].should == 'role[monkey]'
+        @node.run_list[2].should == 'role[duck]'
       end
     end
 
-    describe "with more than one role or recipe as different arguments" do
-      it "should add to the run list all the entries" do
-        @knife.name_args = [ "adam", "role[monkey]", "role[duck]" ]
-        @node.run_list << "role[acorns]"
+    describe 'with more than one role or recipe as different arguments' do
+      it 'should add to the run list all the entries' do
+        @knife.name_args = ['adam', 'role[monkey]', 'role[duck]']
+        @node.run_list << 'role[acorns]'
         @knife.run
-        @node.run_list[0].should == "role[acorns]"
-        @node.run_list[1].should == "role[monkey]"
-        @node.run_list[2].should == "role[duck]"
+        @node.run_list[0].should == 'role[acorns]'
+        @node.run_list[1].should == 'role[monkey]'
+        @node.run_list[2].should == 'role[duck]'
       end
     end
 
-    describe "with more than one role or recipe as different arguments and list separated by commas" do
-      it "should add to the run list all the entries" do
-        @knife.name_args = [ "adam", "role[monkey]", "role[duck],recipe[bird::fly]" ]
-        @node.run_list << "role[acorns]"
+    describe 'with more than one role or recipe as different arguments and list separated by commas' do
+      it 'should add to the run list all the entries' do
+        @knife.name_args = ['adam', 'role[monkey]', 'role[duck],recipe[bird::fly]']
+        @node.run_list << 'role[acorns]'
         @knife.run
-        @node.run_list[0].should == "role[acorns]"
-        @node.run_list[1].should == "role[monkey]"
-        @node.run_list[2].should == "role[duck]"
+        @node.run_list[0].should == 'role[acorns]'
+        @node.run_list[1].should == 'role[monkey]'
+        @node.run_list[2].should == 'role[duck]'
       end
     end
 
-    describe "with one role or recipe but with an extraneous comma" do
-      it "should add to the run list one item" do
-        @knife.name_args = [ "adam", "role[monkey]," ]
-        @node.run_list << "role[acorns]"
+    describe 'with one role or recipe but with an extraneous comma' do
+      it 'should add to the run list one item' do
+        @knife.name_args = ['adam', 'role[monkey],']
+        @node.run_list << 'role[acorns]'
         @knife.run
-        @node.run_list[0].should == "role[acorns]"
-        @node.run_list[1].should == "role[monkey]"
+        @node.run_list[0].should == 'role[acorns]'
+        @node.run_list[1].should == 'role[monkey]'
       end
     end
   end
 end
-
-
-

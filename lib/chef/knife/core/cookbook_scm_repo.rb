@@ -21,7 +21,6 @@ require 'chef/mixin/shell_out'
 class Chef
   class Knife
     class CookbookSCMRepo
-
       DIRTY_REPO = /^[\s]+M/
 
       include Chef::Mixin::ShellOut
@@ -31,7 +30,7 @@ class Chef
       attr_reader :use_current_branch
       attr_reader :ui
 
-      def initialize(repo_path, ui, opts={})
+      def initialize(repo_path, ui, opts = {})
         @repo_path = repo_path
         @ui = ui
         @default_branch = 'master'
@@ -46,22 +45,22 @@ class Chef
         end
         unless git_repo?(repo_path)
           ui.error "The cookbook repo #{repo_path} is not a git repository."
-          ui.info("Use `git init` to initialize a git repo")
+          ui.info('Use `git init` to initialize a git repo')
           exit 1
         end
         if use_current_branch
-          @default_branch = get_current_branch()
+          @default_branch = get_current_branch
         end
         unless branch_exists?(default_branch)
           ui.error "The default branch '#{default_branch}' does not exist"
-          ui.info "If this is a new git repo, make sure you have at least one commit before installing cookbooks"
+          ui.info 'If this is a new git repo, make sure you have at least one commit before installing cookbooks'
           exit 1
         end
         cmd = git('status --porcelain')
         if cmd.stdout =~ DIRTY_REPO
           ui.error "You have uncommitted changes to your cookbook repo (#{repo_path}):"
           ui.msg cmd.stdout
-          ui.info "Commit or stash your changes before importing cookbooks"
+          ui.info 'Commit or stash your changes before importing cookbooks'
           exit 1
         end
         # TODO: any untracked files in the cookbook directory will get nuked later
@@ -105,9 +104,9 @@ class Chef
           if system("git merge #{branch}")
             ui.info("Cookbook #{cookbook_name} version #{version} successfully installed")
           else
-            ui.error("You have merge conflicts - please resolve manually")
+            ui.error('You have merge conflicts - please resolve manually')
             ui.info("Merge status (cd #{repo_path}; git status):")
-            system("git status")
+            system('git status')
             exit 3
           end
         end
@@ -119,11 +118,11 @@ class Chef
       end
 
       def branch_exists?(branch_name)
-        git("branch --no-color").stdout.lines.any? {|l| l =~ /\s#{Regexp.escape(branch_name)}(?:\s|$)/ }
+        git('branch --no-color').stdout.lines.any? { |l| l =~ /\s#{Regexp.escape(branch_name)}(?:\s|$)/ }
       end
 
-      def get_current_branch()
-        ref = git("symbolic-ref HEAD").stdout
+      def get_current_branch
+        ref = git('symbolic-ref HEAD').stdout
         ref.chomp.split('/')[2]
       end
 
@@ -153,8 +152,6 @@ class Chef
       def git(command)
         shell_out!("git #{command}", :cwd => repo_path)
       end
-
     end
   end
 end
-

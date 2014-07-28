@@ -22,7 +22,6 @@ require 'digest'
 
 class Chef
   class Digester
-
     def self.instance
       @instance ||= new
     end
@@ -67,7 +66,5 @@ class Chef
       end
       digest.hexdigest
     end
-
   end
 end
-

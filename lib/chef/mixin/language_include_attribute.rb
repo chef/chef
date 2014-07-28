@@ -21,7 +21,6 @@ require 'chef/mixin/deprecation'
 
 class Chef
   module Mixin
-
     # DEPRECATED: This is just here for compatibility, use
     # Chef::DSL::IncludeAttribute instead.
 
@@ -29,7 +28,5 @@ class Chef
 Chef::Mixin::LanguageIncludeAttribute is deprecated. Use
 Chef::DSL::IncludeAttribute instead.
 EOM
-
   end
 end
-

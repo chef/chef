@@ -21,26 +21,26 @@ require 'spec_helper'
 describe Chef::FileContentManagement::Deploy::MvUnix do
 
   let(:content_deployer) { described_class.new }
-  let(:target_file_path) { "/etc/my_app.conf" }
+  let(:target_file_path) { '/etc/my_app.conf' }
 
-  describe "creating the file" do
+  describe 'creating the file' do
 
-    it "touches the file to create it" do
+    it 'touches the file to create it' do
       FileUtils.should_receive(:touch).with(target_file_path)
       content_deployer.create(target_file_path)
     end
   end
 
-  describe "updating the file" do
+  describe 'updating the file' do
 
-    let(:staging_file_path) { "/tmp/random-dir/staging-file.tmp" }
+    let(:staging_file_path) { '/tmp/random-dir/staging-file.tmp' }
 
     let(:target_file_mode) { 0644 }
     let(:target_file_stat) do
-      double "File::Stat struct for target file",
-           :mode => target_file_mode,
-           :uid => target_file_uid,
-           :gid => target_file_gid
+      double 'File::Stat struct for target file',
+             :mode => target_file_mode,
+             :uid => target_file_uid,
+             :gid => target_file_gid
     end
 
     before do
@@ -53,7 +53,7 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
     # * Chef runs as root
     # * The owner and group of the target file match the owner and group of the
     #   staging file.
-    context "when the user has permissions to set file ownership" do
+    context 'when the user has permissions to set file ownership' do
 
       # For the purposes of this test, the uid/gid can be anything. These
       # values are just chosen because (assuming chef-client's euid == 1001 and
@@ -67,13 +67,13 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
         File.should_receive(:chown).with(nil, target_file_gid, staging_file_path).and_return(1)
       end
 
-      it "fixes up permissions and moves the file into place" do
+      it 'fixes up permissions and moves the file into place' do
         content_deployer.deploy(staging_file_path, target_file_path)
       end
 
     end
 
-    context "when the user does not have permissions to set file ownership" do
+    context 'when the user does not have permissions to set file ownership' do
 
       # The test code does not care what these values are. These values are
       # chosen because they're representitive of the case that chef-client is
@@ -92,12 +92,10 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
         Chef::Log.should_receive(:warn).with(/^Could not set gid/)
       end
 
-      it "fixes up permissions and moves the file into place" do
+      it 'fixes up permissions and moves the file into place' do
         content_deployer.deploy(staging_file_path, target_file_path)
       end
     end
 
   end
 end
-
-

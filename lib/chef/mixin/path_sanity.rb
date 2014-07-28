@@ -19,12 +19,11 @@
 class Chef
   module Mixin
     module PathSanity
-
-      def enforce_path_sanity(env=ENV)
+      def enforce_path_sanity(env = ENV)
         if Chef::Config[:enforce_path_sanity]
-          env["PATH"] = "" if env["PATH"].nil?
+          env['PATH'] = '' if env['PATH'].nil?
           path_separator = Chef::Platform.windows? ? ';' : ':'
-          existing_paths = env["PATH"].split(path_separator)
+          existing_paths = env['PATH'].split(path_separator)
           # ensure the Ruby and Gem bindirs are included
           # mainly for 'full-stack' Chef installs
           paths_to_add = []
@@ -34,10 +33,10 @@ class Chef
           paths_to_add.flatten!.compact!
           paths_to_add.each do |sane_path|
             unless existing_paths.include?(sane_path)
-              env_path = env["PATH"].dup
-              env_path << path_separator unless env["PATH"].empty?
+              env_path = env['PATH'].dup
+              env_path << path_separator unless env['PATH'].empty?
               env_path << sane_path
-              env["PATH"] = env_path
+              env['PATH'] = env_path
             end
           end
         end
@@ -48,9 +47,9 @@ class Chef
       def sane_paths
         @sane_paths ||= begin
           if Chef::Platform.windows?
-            %w[]
+            %w()
           else
-            %w[/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin]
+            %w(/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin)
           end
         end
       end
@@ -62,7 +61,6 @@ class Chef
       def gem_bindir
         Gem.bindir
       end
-
     end
   end
 end

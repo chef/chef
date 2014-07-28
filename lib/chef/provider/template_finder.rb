@@ -18,9 +18,7 @@
 
 class Chef
   class Provider
-
     class TemplateFinder
-
       def initialize(run_context, cookbook_name, node)
         @run_context = run_context
         @cookbook_name = cookbook_name
@@ -40,7 +38,7 @@ class Chef
         cookbook.preferred_filename_on_disk_location(@node, :templates, template_name)
       end
 
-    protected
+      protected
       def template_source_name(name, options)
         if options[:source]
           options[:source]

@@ -22,68 +22,68 @@ require 'spec_helper'
 describe Chef::Resource::Package do
 
   before(:each) do
-    @resource = Chef::Resource::Package.new("emacs")
+    @resource = Chef::Resource::Package.new('emacs')
   end
 
-  it "should create a new Chef::Resource::Package" do
+  it 'should create a new Chef::Resource::Package' do
     @resource.should be_a_kind_of(Chef::Resource)
     @resource.should be_a_kind_of(Chef::Resource::Package)
   end
 
-  it "should set the package_name to the first argument to new" do
-    @resource.package_name.should eql("emacs")
+  it 'should set the package_name to the first argument to new' do
+    @resource.package_name.should eql('emacs')
   end
 
-  it "should accept a string for the package name" do
-    @resource.package_name "something"
-    @resource.package_name.should eql("something")
+  it 'should accept a string for the package name' do
+    @resource.package_name 'something'
+    @resource.package_name.should eql('something')
   end
 
-  it "should accept a string for the version" do
-    @resource.version "something"
-    @resource.version.should eql("something")
+  it 'should accept a string for the version' do
+    @resource.version 'something'
+    @resource.version.should eql('something')
   end
 
-  it "should accept a string for the response file" do
-    @resource.response_file "something"
-    @resource.response_file.should eql("something")
+  it 'should accept a string for the response file' do
+    @resource.response_file 'something'
+    @resource.response_file.should eql('something')
   end
 
-  it "should accept a hash for response file template variables" do
-    @resource.response_file_variables({:variables => true})
-    @resource.response_file_variables.should eql({:variables => true})
+  it 'should accept a hash for response file template variables' do
+    @resource.response_file_variables(:variables => true)
+    @resource.response_file_variables.should eql(:variables => true)
   end
 
-  it "should accept a string for the source" do
-    @resource.source "something"
-    @resource.source.should eql("something")
+  it 'should accept a string for the source' do
+    @resource.source 'something'
+    @resource.source.should eql('something')
   end
 
-  it "should accept a string for the options" do
-    @resource.options "something"
-    @resource.options.should eql("something")
+  it 'should accept a string for the options' do
+    @resource.options 'something'
+    @resource.options.should eql('something')
   end
 
-  describe "when it has a package_name and version" do
+  describe 'when it has a package_name and version' do
     before do
-      @resource.package_name("tomcat")
-      @resource.version("10.9.8")
-      @resource.options("-al")
+      @resource.package_name('tomcat')
+      @resource.version('10.9.8')
+      @resource.options('-al')
     end
 
-    it "describes its state" do
+    it 'describes its state' do
       state = @resource.state
-      state[:version].should == "10.9.8"
-      state[:options].should == "-al"
+      state[:version].should == '10.9.8'
+      state[:options].should == '-al'
     end
 
-    it "returns the file path as its identity" do
-      @resource.identity.should == "tomcat"
+    it 'returns the file path as its identity' do
+      @resource.identity.should == 'tomcat'
     end
   end
 
   # String, Integer
-  [ "600", 600 ].each do |val|
+  ['600', 600].each do |val|
     it "supports setting a timeout as a #{val.class}" do
       @resource.timeout(val)
       expect(@resource.timeout).to eql(val)

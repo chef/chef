@@ -19,7 +19,6 @@
 require 'spec_helper'
 require 'chef/dsl/recipe'
 
-
 RecipeDSLExampleClass = Struct.new(:cookbook_name, :recipe_name)
 class RecipeDSLExampleClass
   include Chef::DSL::Recipe
@@ -34,37 +33,36 @@ end
 # move those to here.
 describe Chef::DSL::Recipe do
 
-  let(:cookbook_name) { "example_cb" }
-  let(:recipe_name) { "example_recipe" }
+  let(:cookbook_name) { 'example_cb' }
+  let(:recipe_name) { 'example_recipe' }
 
-  shared_examples_for "A Recipe DSL Implementation" do
+  shared_examples_for 'A Recipe DSL Implementation' do
 
-    it "responds to cookbook_name" do
+    it 'responds to cookbook_name' do
       expect(recipe.cookbook_name).to eq(cookbook_name)
     end
 
-    it "responds to recipe_name" do
+    it 'responds to recipe_name' do
       expect(recipe.recipe_name).to eq(recipe_name)
     end
   end
 
-  context "when included in a class that defines the required interface directly" do
+  context 'when included in a class that defines the required interface directly' do
 
     let(:recipe) { RecipeDSLExampleClass.new(cookbook_name, recipe_name) }
 
-    include_examples "A Recipe DSL Implementation"
+    include_examples 'A Recipe DSL Implementation'
 
   end
 
   # This is the situation that occurs when the Recipe DSL gets mixed in to a
   # resource, for example.
-  context "when included in a class that defines the required interface in a superclass" do
+  context 'when included in a class that defines the required interface in a superclass' do
 
     let(:recipe) { RecipeDSLExampleSubclass.new(cookbook_name, recipe_name) }
 
-    include_examples "A Recipe DSL Implementation"
+    include_examples 'A Recipe DSL Implementation'
 
   end
 
 end
-

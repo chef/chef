@@ -34,15 +34,15 @@ require 'chef/json_compat'
 # Shell is Chef in an IRB session. Shell can interact with a Chef server via the
 # REST API, and run and debug recipes interactively.
 module Shell
-  LEADERS = Hash.new("")
-  LEADERS[Chef::Recipe] = ":recipe"
-  LEADERS[Chef::Node]   = ":attributes"
+  LEADERS = Hash.new('')
+  LEADERS[Chef::Recipe] = ':recipe'
+  LEADERS[Chef::Node]   = ':attributes'
 
   class << self
     attr_accessor :client_type
     attr_accessor :options
     attr_accessor :env
-    attr_writer   :editor
+    attr_writer :editor
   end
 
   # Start the irb REPL with chef-shell's customizations
@@ -63,11 +63,10 @@ module Shell
 
     init(irb.context.main)
 
-
     irb_conf[:IRB_RC].call(irb.context) if irb_conf[:IRB_RC]
     irb_conf[:MAIN_CONTEXT] = irb.context
 
-    trap("SIGINT") do
+    trap('SIGINT') do
       irb.signal_handle
     end
 
@@ -92,8 +91,8 @@ module Shell
 
   # Set the irb_conf object to something other than IRB.conf
   # usful for testing.
-  def self.irb_conf=(conf_hash)
-    @irb_conf = conf_hash
+  class << self
+    attr_writer :irb_conf
   end
 
   def self.irb_conf
@@ -101,7 +100,7 @@ module Shell
   end
 
   def self.configure_irb
-    irb_conf[:HISTORY_FILE] = "~/.chef/chef_shell_history"
+    irb_conf[:HISTORY_FILE] = '~/.chef/chef_shell_history'
     irb_conf[:SAVE_HISTORY] = 1000
 
     irb_conf[:IRB_RC] = lambda do |conf|
@@ -117,7 +116,7 @@ module Shell
   end
 
   def self.leader(main_object)
-    env_string = Shell.env ? " (#{Shell.env})" : ""
+    env_string = Shell.env ? " (#{Shell.env})" : ''
     LEADERS[main_object.class] + env_string
   end
 
@@ -150,7 +149,7 @@ module Shell
   def self.greeting
     " #{Etc.getlogin}@#{Shell.session.node.fqdn}"
   rescue NameError, ArgumentError
-    ""
+    ''
   end
 
   def self.parse_json
@@ -185,7 +184,7 @@ module Shell
   class Options
     include Mixlib::CLI
 
-    def self.footer(text=nil)
+    def self.footer(text = nil)
       @footer = text if text
       @footer
     end
@@ -201,69 +200,69 @@ When no CONFIG is specified, chef-shell attempts to load a default configuration
 FOOTER
 
     option :config_file,
-      :short => "-c CONFIG",
-      :long  => "--config CONFIG",
-      :description => "The configuration file to use"
+           :short => '-c CONFIG',
+           :long  => '--config CONFIG',
+           :description => 'The configuration file to use'
 
     option :help,
-      :short        => "-h",
-      :long         => "--help",
-      :description  => "Show this message",
-      :on           => :tail,
-      :boolean      => true,
-      :proc         => proc { print_help }
+           :short        => '-h',
+           :long         => '--help',
+           :description  => 'Show this message',
+           :on           => :tail,
+           :boolean      => true,
+           :proc         => proc { print_help }
 
     option :log_level,
-      :short  => "-l LOG_LEVEL",
-      :long   => '--log-level LOG_LEVEL',
-      :description => "Set the logging level",
-      :proc         => proc { |level| Chef::Config.log_level = level.to_sym; Shell.setup_logger }
+           :short  => '-l LOG_LEVEL',
+           :long   => '--log-level LOG_LEVEL',
+           :description => 'Set the logging level',
+           :proc         => proc { |level| Chef::Config.log_level = level.to_sym; Shell.setup_logger }
 
     option :standalone,
-      :short        => "-a",
-      :long         => "--standalone",
-      :description  => "standalone session",
-      :default      => true,
-      :boolean      => true
+           :short        => '-a',
+           :long         => '--standalone',
+           :description  => 'standalone session',
+           :default      => true,
+           :boolean      => true
 
     option :shell_solo,
-      :short        => "-s",
-      :long         => "--solo",
-      :description  => "chef-solo session",
-      :boolean      => true,
-      :proc         => proc {Chef::Config[:solo] = true}
+           :short        => '-s',
+           :long         => '--solo',
+           :description  => 'chef-solo session',
+           :boolean      => true,
+           :proc         => proc { Chef::Config[:solo] = true }
 
     option :client,
-      :short        => "-z",
-      :long         => "--client",
-      :description  => "chef-client session",
-      :boolean      => true
+           :short        => '-z',
+           :long         => '--client',
+           :description  => 'chef-client session',
+           :boolean      => true
 
     option :json_attribs,
-      :short => "-j JSON_ATTRIBS",
-      :long => "--json-attributes JSON_ATTRIBS",
-      :description => "Load attributes from a JSON file or URL",
-      :proc => nil
+           :short => '-j JSON_ATTRIBS',
+           :long => '--json-attributes JSON_ATTRIBS',
+           :description => 'Load attributes from a JSON file or URL',
+           :proc => nil
 
     option :chef_server_url,
-      :short => "-S CHEFSERVERURL",
-      :long => "--server CHEFSERVERURL",
-      :description => "The chef server URL",
-      :proc => nil
+           :short => '-S CHEFSERVERURL',
+           :long => '--server CHEFSERVERURL',
+           :description => 'The chef server URL',
+           :proc => nil
 
     option :version,
-      :short        => "-v",
-      :long         => "--version",
-      :description  => "Show chef version",
-      :boolean      => true,
-      :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
-      :exit         => 0
+           :short        => '-v',
+           :long         => '--version',
+           :description  => 'Show chef version',
+           :boolean      => true,
+           :proc         => lambda { |_v| puts "Chef: #{::Chef::VERSION}" },
+           :exit         => 0
 
     option :override_runlist,
-      :short        => "-o RunlistItem,RunlistItem...",
-      :long         => "--override-runlist RunlistItem,RunlistItem...",
-      :description  => "Replace current run list with specified items",
-      :proc         => lambda { |items| items.split(',').map { |item| Chef::RunList::RunListItem.new(item) }}
+           :short        => '-o RunlistItem,RunlistItem...',
+           :long         => '--override-runlist RunlistItem,RunlistItem...',
+           :description  => 'Replace current run list with specified items',
+           :proc         => lambda { |items| items.split(',').map { |item| Chef::RunList::RunListItem.new(item) } }
 
     def self.print_help
       instance = new
@@ -276,7 +275,7 @@ FOOTER
     end
 
     def self.setup!
-      self.new.parse_opts
+      new.parse_opts
     end
 
     def parse_opts
@@ -286,9 +285,9 @@ FOOTER
       # otherwise, IRB complains about command line switches it doesn't recognize.
       ARGV.clear
       config[:config_file] = config_file_for_shell_mode(environment)
-      config_msg = config[:config_file] || "none (standalone session)"
+      config_msg = config[:config_file] || 'none (standalone session)'
       puts "loading configuration: #{config_msg}"
-      Chef::Config.from_file(config[:config_file]) if !config[:config_file].nil? && File.exists?(config[:config_file]) && File.readable?(config[:config_file])
+      Chef::Config.from_file(config[:config_file]) if !config[:config_file].nil? && File.exist?(config[:config_file]) && File.readable?(config[:config_file])
       Chef::Config.merge!(config)
     end
 
@@ -308,14 +307,12 @@ FOOTER
       elsif ENV['HOME'] && ::File.exist?(File.join(ENV['HOME'], '.chef', 'chef_shell.rb'))
         File.join(ENV['HOME'], '.chef', 'chef_shell.rb')
       elsif config[:solo]
-        "/etc/chef/solo.rb"
+        '/etc/chef/solo.rb'
       elsif config[:client]
-        "/etc/chef/client.rb"
+        '/etc/chef/client.rb'
       else
         nil
       end
     end
-
   end
-
 end

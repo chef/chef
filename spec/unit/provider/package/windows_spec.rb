@@ -22,64 +22,64 @@ describe Chef::Provider::Package::Windows, :windows_only do
   let(:node) { double('Chef::Node') }
   let(:events) { double('Chef::Events').as_null_object }  # mock all the methods
   let(:run_context) { double('Chef::RunContext', :node => node, :events => events) }
-  let(:new_resource) { Chef::Resource::WindowsPackage.new("calculator.msi") }
+  let(:new_resource) { Chef::Resource::WindowsPackage.new('calculator.msi') }
   let(:provider) { Chef::Provider::Package::Windows.new(new_resource, run_context) }
 
-  describe "load_current_resource" do
+  describe 'load_current_resource' do
     before(:each) do
       Chef::Util::PathHelper.stub(:validate_path)
       provider.stub(:package_provider).and_return(double('package_provider',
-          :installed_version => "1.0", :package_version => "2.0"))
+                                                         :installed_version => '1.0', :package_version => '2.0'))
     end
 
-    it "creates a current resource with the name of the new resource" do
+    it 'creates a current resource with the name of the new resource' do
       provider.load_current_resource
       expect(provider.current_resource).to be_a(Chef::Resource::WindowsPackage)
-      expect(provider.current_resource.name).to eql("calculator.msi")
+      expect(provider.current_resource.name).to eql('calculator.msi')
     end
 
-    it "sets the current version if the package is installed" do
+    it 'sets the current version if the package is installed' do
       provider.load_current_resource
-      expect(provider.current_resource.version).to eql("1.0")
+      expect(provider.current_resource.version).to eql('1.0')
     end
 
-    it "sets the version to be installed" do
+    it 'sets the version to be installed' do
       provider.load_current_resource
-      expect(provider.new_resource.version).to eql("2.0")
+      expect(provider.new_resource.version).to eql('2.0')
     end
 
-    it "checks that the source path is valid" do
+    it 'checks that the source path is valid' do
       expect(Chef::Util::PathHelper).to receive(:validate_path)
       provider.load_current_resource
     end
   end
 
-  describe "package_provider" do
-    it "sets the package provider to MSI if the the installer type is :msi" do
+  describe 'package_provider' do
+    it 'sets the package provider to MSI if the the installer type is :msi' do
       provider.stub(:installer_type).and_return(:msi)
       expect(provider.package_provider).to be_a(Chef::Provider::Package::Windows::MSI)
     end
 
-    it "raises an error if the installer_type is unknown" do
+    it 'raises an error if the installer_type is unknown' do
       provider.stub(:installer_type).and_return(:apt_for_windows)
       expect { provider.package_provider }.to raise_error
     end
   end
 
-  describe "installer_type" do
-    it "it returns @installer_type if it is set" do
-      provider.new_resource.installer_type("downeaster")
-      expect(provider.installer_type).to eql("downeaster")
+  describe 'installer_type' do
+    it 'it returns @installer_type if it is set' do
+      provider.new_resource.installer_type('downeaster')
+      expect(provider.installer_type).to eql('downeaster')
     end
 
-    it "sets installer_type to msi if the source ends in .msi" do
-      provider.new_resource.source("microsoft_installer.msi")
+    it 'sets installer_type to msi if the source ends in .msi' do
+      provider.new_resource.source('microsoft_installer.msi')
       expect(provider.installer_type).to eql(:msi)
     end
 
-    it "raises an error if it cannot determine the installer type" do
+    it 'raises an error if it cannot determine the installer type' do
       provider.new_resource.installer_type(nil)
-      provider.new_resource.source("tomfoolery.now")
+      provider.new_resource.source('tomfoolery.now')
       expect { provider.installer_type }.to raise_error(ArgumentError)
     end
   end

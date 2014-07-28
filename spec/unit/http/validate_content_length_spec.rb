@@ -24,38 +24,38 @@ describe Chef::HTTP::ValidateContentLength do
     use Chef::HTTP::ValidateContentLength
   end
 
-  let(:method) { "GET" }
-  let(:url) { "http://dummy.com" }
+  let(:method) { 'GET' }
+  let(:url) { 'http://dummy.com' }
   let(:headers) { {} }
   let(:data) { false }
 
-  let(:request) { }
-  let(:return_value) { "200" }
+  let(:request) {}
+  let(:return_value) { '200' }
 
   # Test Variables
   let(:request_type) { :streaming }
   let(:content_length_value) { 23 }
   let(:streaming_length) { 23 }
-  let(:response_body) { "Thanks for checking in." }
-  let(:response_headers) {
+  let(:response_body) { 'Thanks for checking in.' }
+  let(:response_headers) do
     {
-      "content-length" => content_length_value
+      'content-length' => content_length_value
     }
-  }
+  end
 
-  let(:response) {
+  let(:response) do
     m = double('HttpResponse', :body => response_body)
     m.stub(:[]) do |key|
       response_headers[key]
     end
 
     m
-  }
+  end
 
-  let(:middleware) {
+  let(:middleware) do
     client = TestClient.new(url)
     client.middlewares[0]
-  }
+  end
 
   def run_content_length_validation
     stream_handler = middleware.stream_response_handler(response)
@@ -67,7 +67,7 @@ describe Chef::HTTP::ValidateContentLength do
       data_length = streaming_length
       while data_length > 0
         chunk_size = data_length > 10 ? 10 : data_length
-        stream_handler.handle_chunk(double("Chunk", :bytesize => chunk_size))
+        stream_handler.handle_chunk(double('Chunk', :bytesize => chunk_size))
         data_length -= chunk_size
       end
 
@@ -76,111 +76,111 @@ describe Chef::HTTP::ValidateContentLength do
     when :direct
       middleware.handle_response(response, request, return_value)
     else
-      raise "Unknown request_type: #{request_type}"
+      fail "Unknown request_type: #{request_type}"
     end
   end
 
   let(:debug_stream) { StringIO.new }
   let(:debug_output) { debug_stream.string }
 
-  before(:each) {
+  before(:each) do
     Chef::Log.level = :debug
     Chef::Log.stub(:debug) do |message|
       debug_stream.puts message
     end
-  }
+  end
 
-  describe "without response body" do
+  describe 'without response body' do
     let(:request_type) { :direct }
-    let(:response_body) { "Thanks for checking in." }
+    let(:response_body) { 'Thanks for checking in.' }
 
     it "shouldn't raise error" do
       lambda { run_content_length_validation }.should_not raise_error
     end
   end
 
-  describe "without Content-Length header" do
-    let(:response_headers) { { } }
+  describe 'without Content-Length header' do
+    let(:response_headers) { {} }
 
-    [ "direct", "streaming" ].each do |req_type|
+    %w(direct streaming).each do |req_type|
       describe "when running #{req_type} request" do
         let(:request_type) { req_type.to_sym }
 
-        it "should skip validation and log for debug" do
+        it 'should skip validation and log for debug' do
           run_content_length_validation
-          debug_output.should include("HTTP server did not include a Content-Length header in response")
+          debug_output.should include('HTTP server did not include a Content-Length header in response')
         end
       end
     end
   end
 
-  describe "with correct Content-Length header" do
-    [ "direct", "streaming" ].each do |req_type|
+  describe 'with correct Content-Length header' do
+    %w(direct streaming).each do |req_type|
       describe "when running #{req_type} request" do
         let(:request_type) { req_type.to_sym }
 
-        it "should validate correctly" do
+        it 'should validate correctly' do
           run_content_length_validation
-          debug_output.should include("Content-Length validated correctly.")
+          debug_output.should include('Content-Length validated correctly.')
         end
       end
     end
   end
 
-  describe "with wrong Content-Length header" do
+  describe 'with wrong Content-Length header' do
     let(:content_length_value) { 25 }
-    [ "direct", "streaming" ].each do |req_type|
+    %w(direct streaming).each do |req_type|
       describe "when running #{req_type} request" do
         let(:request_type) { req_type.to_sym }
 
-        it "should raise ContentLengthMismatch error" do
+        it 'should raise ContentLengthMismatch error' do
           lambda { run_content_length_validation }.should raise_error(Chef::Exceptions::ContentLengthMismatch)
         end
       end
     end
   end
 
-  describe "when download is interrupted" do
+  describe 'when download is interrupted' do
     let(:streaming_length) { 12 }
 
-    it "should raise ContentLengthMismatch error" do
+    it 'should raise ContentLengthMismatch error' do
       lambda { run_content_length_validation }.should raise_error(Chef::Exceptions::ContentLengthMismatch)
     end
   end
 
-  describe "when Transfer-Encoding & Content-Length is set" do
-    let(:response_headers) {
+  describe 'when Transfer-Encoding & Content-Length is set' do
+    let(:response_headers) do
       {
-        "content-length" => content_length_value,
-        "transfer-encoding" => "chunked"
+        'content-length' => content_length_value,
+        'transfer-encoding' => 'chunked'
       }
-    }
+    end
 
-    [ "direct", "streaming" ].each do |req_type|
+    %w(direct streaming).each do |req_type|
       describe "when running #{req_type} request" do
         let(:request_type) { req_type.to_sym }
 
-        it "should skip validation and log for debug" do
+        it 'should skip validation and log for debug' do
           run_content_length_validation
-          debug_output.should include("Transfer-Encoding header is set, skipping Content-Length check.")
+          debug_output.should include('Transfer-Encoding header is set, skipping Content-Length check.')
         end
       end
     end
   end
 
-  describe "when client is being reused" do
+  describe 'when client is being reused' do
     before do
       run_content_length_validation
-      debug_output.should include("Content-Length validated correctly.")
+      debug_output.should include('Content-Length validated correctly.')
     end
 
-    it "should reset internal counter" do
-        middleware.instance_variable_get(:@content_length_counter).should be_nil
+    it 'should reset internal counter' do
+      middleware.instance_variable_get(:@content_length_counter).should be_nil
     end
 
-    it "should validate correctly second time" do
+    it 'should validate correctly second time' do
       run_content_length_validation
-      debug_output.should include("Content-Length validated correctly.")
+      debug_output.should include('Content-Length validated correctly.')
     end
   end
 

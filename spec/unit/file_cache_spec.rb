@@ -30,34 +30,34 @@ describe Chef::FileCache do
   end
 
   describe "when the relative path to the cache file doesn't exist" do
-    it "creates intermediate directories as needed" do
-      Chef::FileCache.store("whiz/bang", "I found a poop")
+    it 'creates intermediate directories as needed' do
+      Chef::FileCache.store('whiz/bang', 'I found a poop')
       File.should exist(File.join(@file_cache_path, 'whiz'))
     end
 
-    it "creates the cached file at the correct relative path" do
-      File.should_receive(:open).with(File.join(@file_cache_path, 'whiz', 'bang'), "w",416).and_yield(@io)
-      Chef::FileCache.store("whiz/bang", "borkborkbork")
+    it 'creates the cached file at the correct relative path' do
+      File.should_receive(:open).with(File.join(@file_cache_path, 'whiz', 'bang'), 'w', 416).and_yield(@io)
+      Chef::FileCache.store('whiz/bang', 'borkborkbork')
     end
 
   end
 
-  describe "when storing a file" do
+  describe 'when storing a file' do
     before do
       File.stub(:open).and_yield(@io)
     end
 
-    it "should print the contents to the file" do
-      Chef::FileCache.store("whiz/bang", "borkborkbork")
-      @io.string.should == "borkborkbork"
+    it 'should print the contents to the file' do
+      Chef::FileCache.store('whiz/bang', 'borkborkbork')
+      @io.string.should == 'borkborkbork'
     end
 
   end
 
-  describe "when loading cached files" do
-    it "finds and reads the cached file" do
+  describe 'when loading cached files' do
+    it 'finds and reads the cached file' do
       FileUtils.mkdir_p(File.join(@file_cache_path, 'whiz'))
-      File.open(File.join(@file_cache_path, 'whiz', 'bang'), 'w') { |f| f.print("borkborkbork") }
+      File.open(File.join(@file_cache_path, 'whiz', 'bang'), 'w') { |f| f.print('borkborkbork') }
       Chef::FileCache.load('whiz/bang').should == 'borkborkbork'
     end
 
@@ -66,20 +66,20 @@ describe Chef::FileCache do
     end
   end
 
-  describe "when deleting cached files" do
+  describe 'when deleting cached files' do
     before(:each) do
       FileUtils.mkdir_p(File.join(@file_cache_path, 'whiz'))
-      File.open(File.join(@file_cache_path, 'whiz', 'bang'), 'w') { |f| f.print("borkborkbork") }
+      File.open(File.join(@file_cache_path, 'whiz', 'bang'), 'w') { |f| f.print('borkborkbork') }
     end
 
-    it "unlinks the file" do
-      Chef::FileCache.delete("whiz/bang")
+    it 'unlinks the file' do
+      Chef::FileCache.delete('whiz/bang')
       File.should_not exist(File.join(@file_cache_path, 'whiz', 'bang'))
     end
 
   end
 
-  describe "when listing files in the cache" do
+  describe 'when listing files in the cache' do
     before(:each) do
       FileUtils.mkdir_p(File.join(@file_cache_path, 'whiz'))
       FileUtils.touch(File.join(@file_cache_path, 'whiz', 'bang'))
@@ -87,28 +87,28 @@ describe Chef::FileCache do
       FileUtils.touch(File.join(@file_cache_path, 'snappy', 'patter'))
     end
 
-    it "should return the relative paths" do
-      Chef::FileCache.list.sort.should == %w{snappy/patter whiz/bang}
+    it 'should return the relative paths' do
+      Chef::FileCache.list.sort.should == %w(snappy/patter whiz/bang)
     end
 
-    it "searches for cached files by globbing" do
-      Chef::FileCache.find('snappy/**/*').should == %w{snappy/patter}
+    it 'searches for cached files by globbing' do
+      Chef::FileCache.find('snappy/**/*').should == %w(snappy/patter)
     end
 
   end
 
-  describe "when checking for the existence of a file" do
+  describe 'when checking for the existence of a file' do
     before do
       FileUtils.mkdir_p(File.join(@file_cache_path, 'whiz'))
     end
 
-    it "has a key if the corresponding cache file exists" do
+    it 'has a key if the corresponding cache file exists' do
       FileUtils.touch(File.join(@file_cache_path, 'whiz', 'bang'))
-      Chef::FileCache.should have_key("whiz/bang")
+      Chef::FileCache.should have_key('whiz/bang')
     end
 
     it "doesn't have a key if the corresponding cache file doesn't exist" do
-      Chef::FileCache.should_not have_key("whiz/bang")
+      Chef::FileCache.should_not have_key('whiz/bang')
     end
   end
 end

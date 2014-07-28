@@ -24,7 +24,6 @@ class Chef
   class Provider
     class Service
       class Init < Chef::Provider::Service::Simple
-
         include Chef::Mixin::ShellOut
 
         def initialize(new_resource, run_context)

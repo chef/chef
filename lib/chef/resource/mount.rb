@@ -22,19 +22,18 @@ require 'chef/resource'
 class Chef
   class Resource
     class Mount < Chef::Resource
-
       identity_attr :device
 
       state_attrs :mount_point, :device_type, :fstype, :username, :password, :domain
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :mount
         @mount_point = name
         @device = nil
         @device_type = :device
-        @fstype = "auto"
-        @options = ["defaults"]
+        @fstype = 'auto'
+        @options = ['defaults']
         @dump = 0
         @pass = 2
         @mounted = false
@@ -47,28 +46,28 @@ class Chef
         @domain = nil
       end
 
-      def mount_point(arg=nil)
+      def mount_point(arg = nil)
         set_or_return(
           :mount_point,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
-      def device(arg=nil)
+      def device(arg = nil)
         set_or_return(
           :device,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
-      def device_type(arg=nil)
-        real_arg = arg.kind_of?(String) ? arg.to_sym : arg
+      def device_type(arg = nil)
+        real_arg = arg.is_a?(String) ? arg.to_sym : arg
         valid_devices = if RUBY_PLATFORM =~ /solaris/i
-                          [ :device ]
+                          [:device]
                         else
-                          [ :device, :label, :uuid ]
+                          [:device, :label, :uuid]
                         end
         set_or_return(
           :device_type,
@@ -77,19 +76,19 @@ class Chef
         )
       end
 
-      def fstype(arg=nil)
+      def fstype(arg = nil)
         set_or_return(
           :fstype,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
-      def options(arg=nil)
+      def options(arg = nil)
         ret = set_or_return(
                             :options,
                             arg,
-                            :kind_of => [ Array, String ]
+                            :kind_of => [Array, String]
                             )
 
         if ret.is_a? String
@@ -99,39 +98,39 @@ class Chef
         end
       end
 
-      def dump(arg=nil)
+      def dump(arg = nil)
         set_or_return(
           :dump,
           arg,
-          :kind_of => [ Integer, FalseClass ]
+          :kind_of => [Integer, FalseClass]
         )
       end
 
-      def pass(arg=nil)
+      def pass(arg = nil)
         set_or_return(
           :pass,
           arg,
-          :kind_of => [ Integer, FalseClass ]
+          :kind_of => [Integer, FalseClass]
         )
       end
 
-      def mounted(arg=nil)
+      def mounted(arg = nil)
         set_or_return(
           :mounted,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [TrueClass, FalseClass]
         )
       end
 
-      def enabled(arg=nil)
+      def enabled(arg = nil)
         set_or_return(
           :enabled,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [TrueClass, FalseClass]
         )
       end
 
-      def supports(args={})
+      def supports(args = {})
         if args.is_a? Array
           args.each { |arg| @supports[arg] = true }
         elsif args.any?
@@ -141,30 +140,29 @@ class Chef
         end
       end
 
-      def username(arg=nil)
+      def username(arg = nil)
         set_or_return(
           :username,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
-      def password(arg=nil)
+      def password(arg = nil)
         set_or_return(
           :password,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
-      def domain(arg=nil)
+      def domain(arg = nil)
         set_or_return(
           :domain,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
-
     end
   end
 end

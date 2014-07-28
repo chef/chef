@@ -22,7 +22,6 @@ require 'chef/knife/core/node_presenter'
 class Chef
   class Knife
     class NodeShow < Knife
-
       include Knife::Core::NodeFormattingOptions
       include Knife::Core::MultiAttributeReturnOption
 
@@ -31,17 +30,17 @@ class Chef
         require 'chef/json_compat'
       end
 
-      banner "knife node show NODE (options)"
+      banner 'knife node show NODE (options)'
 
       option :run_list,
-        :short => "-r",
-        :long => "--run-list",
-        :description => "Show only the run list"
+             :short => '-r',
+             :long => '--run-list',
+             :description => 'Show only the run list'
 
       option :environment,
-        :short        => "-E",
-        :long         => "--environment",
-        :description  => "Show only the Chef environment"
+             :short        => '-E',
+             :long         => '--environment',
+             :description  => 'Show only the Chef environment'
 
       def run
         ui.use_presenter Knife::Core::NodePresenter
@@ -49,7 +48,7 @@ class Chef
 
         if @node_name.nil?
           show_usage
-          ui.fatal("You must specify a node name")
+          ui.fatal('You must specify a node name')
           exit 1
         end
 
@@ -58,10 +57,9 @@ class Chef
         self.class.attrs_to_show = []
       end
 
-      def self.attrs_to_show=(attrs)
-        @attrs_to_show = attrs
+      class << self
+        attr_writer :attrs_to_show
       end
     end
   end
 end
-

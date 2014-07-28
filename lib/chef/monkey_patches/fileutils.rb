@@ -27,8 +27,8 @@ unless RUBY_VERSION =~ /^2/
 
   class FileUtils::Entry_
     def copy_metadata(path)
-      st = lstat()
-      if !st.symlink?
+      st = lstat
+      unless st.symlink?
         File.utime st.atime, st.mtime, path
       end
       begin

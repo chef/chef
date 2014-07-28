@@ -22,39 +22,39 @@ describe Chef::Provider::Package::Windows::MSI, :windows_only do
   let(:node) { double('Chef::Node') }
   let(:events) { double('Chef::Events').as_null_object }  # mock all the methods
   let(:run_context) { double('Chef::RunContext', :node => node, :events => events) }
-  let(:new_resource) { Chef::Resource::WindowsPackage.new("calculator.msi") }
+  let(:new_resource) { Chef::Resource::WindowsPackage.new('calculator.msi') }
   let(:provider) { Chef::Provider::Package::Windows::MSI.new(new_resource) }
 
-  describe "expand_options" do
-    it "returns an empty string if passed no options" do
-      expect(provider.expand_options(nil)).to eql ""
+  describe 'expand_options' do
+    it 'returns an empty string if passed no options' do
+      expect(provider.expand_options(nil)).to eql ''
     end
 
-    it "returns a string with a leading space if passed options" do
-      expect(provider.expand_options("--train nope --town no_way")).to eql(" --train nope --town no_way")
-    end
-  end
-
-  describe "installed_version" do
-    it "returns the installed version" do
-      provider.stub(:get_product_property).and_return("{23170F69-40C1-2702-0920-000001000000}")
-      provider.stub(:get_installed_version).with("{23170F69-40C1-2702-0920-000001000000}").and_return("3.14159.1337.42")
-      expect(provider.installed_version).to eql("3.14159.1337.42")
+    it 'returns a string with a leading space if passed options' do
+      expect(provider.expand_options('--train nope --town no_way')).to eql(' --train nope --town no_way')
     end
   end
 
-  describe "package_version" do
-    it "returns the version of a package" do
-      provider.stub(:get_product_property).with(/calculator.msi$/, "ProductVersion").and_return(42)
+  describe 'installed_version' do
+    it 'returns the installed version' do
+      provider.stub(:get_product_property).and_return('{23170F69-40C1-2702-0920-000001000000}')
+      provider.stub(:get_installed_version).with('{23170F69-40C1-2702-0920-000001000000}').and_return('3.14159.1337.42')
+      expect(provider.installed_version).to eql('3.14159.1337.42')
+    end
+  end
+
+  describe 'package_version' do
+    it 'returns the version of a package' do
+      provider.stub(:get_product_property).with(/calculator.msi$/, 'ProductVersion').and_return(42)
       expect(provider.package_version).to eql(42)
     end
   end
 
-  describe "install_package" do
+  describe 'install_package' do
     # calls shell_out!
   end
 
-  describe "remove_package" do
+  describe 'remove_package' do
     # calls shell_out!
   end
 end

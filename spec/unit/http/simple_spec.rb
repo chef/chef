@@ -19,8 +19,8 @@
 require 'spec_helper'
 
 describe Chef::HTTP::Simple do
-  it "should have content length validation middleware after compressor middleware" do
-    client = Chef::HTTP::Simple.new("dummy.com")
+  it 'should have content length validation middleware after compressor middleware' do
+    client = Chef::HTTP::Simple.new('dummy.com')
     middlewares = client.instance_variable_get(:@middlewares)
     content_length = middlewares.find_index { |e| e.is_a? Chef::HTTP::ValidateContentLength }
     decompressor = middlewares.find_index { |e| e.is_a? Chef::HTTP::Decompressor }

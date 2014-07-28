@@ -22,12 +22,12 @@ class Chef
   class Provider
     class User
       class Solaris < Chef::Provider::User::Useradd
-        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]]
+        UNIVERSAL_OPTIONS = [[:comment, '-c'], [:gid, '-g'], [:shell, '-s'], [:uid, '-u']]
 
         attr_writer :password_file
 
         def initialize(new_resource, run_context)
-          @password_file = "/etc/shadow"
+          @password_file = '/etc/shadow'
           super
         end
 
@@ -41,7 +41,7 @@ class Chef
           super
         end
 
-      private
+        private
 
         def manage_password
           if @current_resource.password != @new_resource.password && @new_resource.password
@@ -51,10 +51,10 @@ class Chef
         end
 
         def write_shadow_file
-          buffer = Tempfile.new("shadow", "/etc")
+          buffer = Tempfile.new('shadow', '/etc')
           ::File.open(@password_file) do |shadow_file|
             shadow_file.each do |entry|
-              user = entry.split(":").first
+              user = entry.split(':').first
               if user == @new_resource.username
                 buffer.write(updated_password(entry))
               else
@@ -76,17 +76,16 @@ class Chef
         end
 
         def updated_password(entry)
-          fields = entry.split(":")
+          fields = entry.split(':')
           fields[1] = @new_resource.password
           fields[2] = days_since_epoch
-          fields.join(":")
+          fields.join(':')
         end
 
         def days_since_epoch
-          (Time.now.to_i / 86400).floor
+          (Time.now.to_i / 86_400).floor
         end
       end
     end
   end
 end
-

@@ -21,7 +21,7 @@ require 'spec_helper'
 describe Chef::Resource::Directory do
   include_context Chef::Resource::Directory
 
-  let(:directory_base) { "directory_spec" }
+  let(:directory_base) { 'directory_spec' }
 
   let(:default_mode) { ((0100777 - File.umask) & 07777).to_s(8) }
 
@@ -33,11 +33,11 @@ describe Chef::Resource::Directory do
   end
 
   let(:resource) do
-  	create_resource
+  	 create_resource
   end
 
-  it_behaves_like "a directory resource"
+  it_behaves_like 'a directory resource'
 
-  it_behaves_like "a securable resource with reporting"
+  it_behaves_like 'a securable resource with reporting'
 
 end

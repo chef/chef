@@ -40,12 +40,12 @@ class Chef
 
       provides :file, :on_platforms => :all
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :file
         @path = name
         @backup = 5
-        @action = "create"
+        @action = 'create'
         @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
         @provider = Chef::Provider::File
         @atomic_update = Chef::Config[:file_atomic_update]
@@ -54,7 +54,7 @@ class Chef
         @diff = nil
       end
 
-      def content(arg=nil)
+      def content(arg = nil)
         set_or_return(
           :content,
           arg,
@@ -62,15 +62,15 @@ class Chef
         )
       end
 
-      def backup(arg=nil)
+      def backup(arg = nil)
         set_or_return(
           :backup,
           arg,
-          :kind_of => [ Integer, FalseClass ]
+          :kind_of => [Integer, FalseClass]
         )
       end
 
-      def checksum(arg=nil)
+      def checksum(arg = nil)
         set_or_return(
           :checksum,
           arg,
@@ -78,7 +78,7 @@ class Chef
         )
       end
 
-      def path(arg=nil)
+      def path(arg = nil)
         set_or_return(
           :path,
           arg,
@@ -86,7 +86,7 @@ class Chef
         )
       end
 
-      def diff(arg=nil)
+      def diff(arg = nil)
         set_or_return(
           :diff,
           arg,
@@ -94,27 +94,27 @@ class Chef
         )
       end
 
-      def atomic_update(arg=nil)
+      def atomic_update(arg = nil)
         set_or_return(
           :atomic_update,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [TrueClass, FalseClass]
         )
       end
 
-      def force_unlink(arg=nil)
+      def force_unlink(arg = nil)
         set_or_return(
           :force_unlink,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [TrueClass, FalseClass]
         )
       end
 
-      def manage_symlink_source(arg=nil)
+      def manage_symlink_source(arg = nil)
         set_or_return(
           :manage_symlink_source,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [TrueClass, FalseClass]
         )
       end
     end

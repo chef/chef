@@ -22,12 +22,10 @@ require 'chef/resource'
 
 class Chef
   class Resource
-
     # == Chef::Resource::LWRPBase
     # Base class for LWRP resources. Adds DSL sugar on top of Chef::Resource,
     # so attributes, default action, etc. can be defined with pleasing syntax.
     class LWRPBase < Resource
-
       NULL_ARG = Object.new
 
       extend Chef::Mixin::ConvertToClassName
@@ -74,7 +72,7 @@ class Chef
 
       # Define an attribute on this resource, including optional validation
       # parameters.
-      def self.attribute(attr_name, validation_opts={})
+      def self.attribute(attr_name, validation_opts = {})
         # Ruby 1.8 doesn't support default arguments to blocks, but we have to
         # use define_method with a block to capture +validation_opts+.
         # Workaround this by defining two methods :(
@@ -84,13 +82,13 @@ class Chef
           end
         SHIM
 
-        define_method("_set_or_return_#{attr_name.to_s}".to_sym) do |arg|
+        define_method("_set_or_return_#{attr_name}".to_sym) do |arg|
           set_or_return(attr_name.to_sym, arg, validation_opts)
         end
       end
 
       # Sets the default action
-      def self.default_action(action_name=NULL_ARG)
+      def self.default_action(action_name = NULL_ARG)
         unless action_name.equal?(NULL_ARG)
           @actions ||= []
           if action_name.is_a?(Array)
@@ -118,12 +116,12 @@ class Chef
 
       # Set the run context on the class. Used to provide access to the node
       # during class definition.
-      def self.run_context=(run_context)
-        @run_context = run_context
+      class << self
+        attr_writer :run_context
       end
 
-      def self.run_context
-        @run_context
+      class << self
+        attr_reader :run_context
       end
 
       def self.node
@@ -146,20 +144,19 @@ class Chef
       end
 
       # Default initializer. Sets the default action and allowed actions.
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super(name, run_context)
 
         # Raise an exception if the resource_name was not defined
         if self.class.resource_name.nil?
-          raise Chef::Exceptions::InvalidResourceSpecification,
-            "You must specify `resource_name'!"
+          fail Chef::Exceptions::InvalidResourceSpecification,
+               "You must specify `resource_name'!"
         end
 
         @resource_name = self.class.resource_name.to_sym
         @action = self.class.default_action
         allowed_actions.push(self.class.actions).flatten!
       end
-
     end
   end
 end

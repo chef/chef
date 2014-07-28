@@ -19,13 +19,11 @@
 class Chef
   class Resource
     class WhyrunSafeRubyBlock < Chef::Resource::RubyBlock
-
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :whyrun_safe_ruby_block
         @provider = Chef::Provider::WhyrunSafeRubyBlock
       end
-
     end
   end
 end

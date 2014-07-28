@@ -21,41 +21,40 @@ require 'chef/http/http_request'
 
 class Chef
   class HTTP
-
     # Middleware-esque class for handling compression in HTTP responses.
     class Decompressor
       class NoopInflater
         def inflate(chunk)
           chunk
         end
-        alias :handle_chunk :inflate
+        alias_method :handle_chunk, :inflate
       end
 
       class GzipInflater < Zlib::Inflate
         def initialize
           super(Zlib::MAX_WBITS + 16)
         end
-        alias :handle_chunk :inflate
+        alias_method :handle_chunk, :inflate
       end
 
       class DeflateInflater < Zlib::Inflate
         def initialize
           super
         end
-        alias :handle_chunk :inflate
+        alias_method :handle_chunk, :inflate
       end
 
-      CONTENT_ENCODING  = "content-encoding".freeze
-      GZIP              = "gzip".freeze
-      DEFLATE           = "deflate".freeze
-      IDENTITY          = "identity".freeze
+      CONTENT_ENCODING  = 'content-encoding'.freeze
+      GZIP              = 'gzip'.freeze
+      DEFLATE           = 'deflate'.freeze
+      IDENTITY          = 'identity'.freeze
 
-      def initialize(opts={})
+      def initialize(opts = {})
         @disable_gzip = false
         handle_options(opts)
       end
 
-      def handle_request(method, url, headers={}, data=false)
+      def handle_request(method, url, headers = {}, data = false)
         headers[HTTPRequest::ACCEPT_ENCODING] = HTTPRequest::ENCODING_GZIP_DEFLATE unless gzip_disabled?
         [method, url, headers, data]
       end
@@ -79,10 +78,10 @@ class Chef
         else
           case response[CONTENT_ENCODING]
           when GZIP
-            Chef::Log.debug "decompressing gzip response"
+            Chef::Log.debug 'decompressing gzip response'
             Zlib::Inflate.new(Zlib::MAX_WBITS + 16).inflate(response.body)
           when DEFLATE
-            Chef::Log.debug "decompressing deflate response"
+            Chef::Log.debug 'decompressing deflate response'
             Zlib::Inflate.inflate(response.body)
           else
             response.body
@@ -101,10 +100,10 @@ class Chef
         else
           case response[CONTENT_ENCODING]
           when GZIP
-            Chef::Log.debug "Initializing gzip stream deflator"
+            Chef::Log.debug 'Initializing gzip stream deflator'
             GzipInflater.new
           when DEFLATE
-            Chef::Log.debug "Initializing deflate stream deflator"
+            Chef::Log.debug 'Initializing deflate stream deflator'
             DeflateInflater.new
           else
             Chef::Log.debug "content_encoding = '#{response[CONTENT_ENCODING]}' \
@@ -113,7 +112,6 @@ class Chef
           end
         end
       end
-
 
       # gzip is disabled using the disable_gzip => true option in the
       # constructor. When gzip is disabled, no 'Accept-Encoding' header will be
@@ -137,8 +135,6 @@ class Chef
           end
         end
       end
-
-
     end
   end
 end

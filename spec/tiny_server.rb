@@ -20,19 +20,17 @@ require 'rubygems'
 require 'webrick'
 require 'webrick/https'
 require 'rack'
-#require 'thin'
+# require 'thin'
 require 'singleton'
 require 'chef/json_compat'
 require 'open-uri'
 require 'chef/config'
 
 module TinyServer
-
   class Server < Rack::Server
-
     attr_writer :app
 
-    def self.setup(options=nil, &block)
+    def self.setup(options = nil, &block)
       tiny_app = new(options)
       app_code = Rack::Builder.new(&block).to_app
       tiny_app.app = app_code
@@ -45,7 +43,6 @@ module TinyServer
   end
 
   class Manager
-
     # 5 == debug, 3 == warning
     LOGGER = WEBrick::Log.new(STDOUT, 3)
     DEFAULT_OPTIONS = {
@@ -57,7 +54,7 @@ module TinyServer
       :AccessLog => [] # Remove this option to enable the access log when debugging.
     }
 
-    def initialize(options=nil)
+    def initialize(options = nil)
       @options = options ? DEFAULT_OPTIONS.merge(options) : DEFAULT_OPTIONS
       @creator = caller.first
     end
@@ -82,8 +79,8 @@ module TinyServer
           return true
         end
       end
-      raise "ivar weirdness" if started? && @server.nil?
-      raise "TinyServer failed to boot :/"
+      fail 'ivar weirdness' if started? && @server.nil?
+      fail 'TinyServer failed to boot :/'
     end
 
     def started?
@@ -107,16 +104,15 @@ module TinyServer
       @server_thread.join
       @server_thread = nil
     end
-
   end
 
   class API
     include Singleton
 
-    GET     = "GET"
-    PUT     = "PUT"
-    POST    = "POST"
-    DELETE  = "DELETE"
+    GET     = 'GET'
+    PUT     = 'PUT'
+    POST    = 'POST'
+    DELETE  = 'DELETE'
 
     attr_reader :routes
 
@@ -125,22 +121,22 @@ module TinyServer
     end
 
     def clear
-      @routes = {GET => [], PUT => [], POST => [], DELETE => []}
+      @routes = { GET => [], PUT => [], POST => [], DELETE => [] }
     end
 
-    def get(path, response_code, data=nil, headers=nil, &block)
+    def get(path, response_code, data = nil, headers = nil, &block)
       @routes[GET] << Route.new(path, Response.new(response_code, data, headers, &block))
     end
 
-    def put(path, response_code, data=nil, headers=nil, &block)
+    def put(path, response_code, data = nil, headers = nil, &block)
       @routes[PUT] << Route.new(path, Response.new(response_code, data, headers, &block))
     end
 
-    def post(path, response_code, data=nil, headers=nil, &block)
+    def post(path, response_code, data = nil, headers = nil, &block)
       @routes[POST] << Route.new(path, Response.new(response_code, data, headers, &block))
     end
 
-    def delete(path, response_code, data=nil, headers=nil, &block)
+    def delete(path, response_code, data = nil, headers = nil, &block)
       @routes[DELETE] << Route.new(path, Response.new(response_code, data, headers, &block))
     end
 
@@ -148,16 +144,16 @@ module TinyServer
       if response = response_for_request(env)
         response.call
       else
-        debug_info = {:message => "no data matches the request for #{env['REQUEST_URI']}",
-                      :available_routes => @routes, :request => env}
+        debug_info = { :message => "no data matches the request for #{env['REQUEST_URI']}",
+                       :available_routes => @routes, :request => env }
         # Uncomment me for glorious debugging
         # pp :not_found => debug_info
-        [404, {'Content-Type' => 'application/json'}, [ debug_info.to_json ]]
+        [404, { 'Content-Type' => 'application/json' }, [debug_info.to_json]]
       end
     end
 
     def response_for_request(env)
-      if route = @routes[env["REQUEST_METHOD"]].find { |route| route.matches_request?(env["REQUEST_URI"]) }
+      if route = @routes[env['REQUEST_METHOD']].find { |route| route.matches_request?(env['REQUEST_URI']) }
         route.response
       end
     end
@@ -178,13 +174,12 @@ module TinyServer
     def to_s
       "#{@path_spec} => (#{@response})"
     end
-
   end
 
   class Response
-    HEADERS = {'Content-Type' => 'application/json'}
+    HEADERS = { 'Content-Type' => 'application/json' }
 
-    def initialize(response_code=200, data=nil, headers=nil, &block)
+    def initialize(response_code = 200, data = nil, headers = nil, &block)
       @response_code, @data = response_code, data
       @response_headers = headers ? HEADERS.merge(headers) : HEADERS
       @block = block_given? ? block : nil
@@ -196,9 +191,7 @@ module TinyServer
     end
 
     def to_s
-      "#{@response_code} => #{(@data|| @block)}"
+      "#{@response_code} => #{(@data || @block)}"
     end
-
   end
-
 end

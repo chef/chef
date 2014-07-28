@@ -24,7 +24,6 @@ require 'chef/provider'
 class Chef
   class Provider
     class Mount < Chef::Provider
-
       include Chef::Mixin::Command
 
       attr_accessor :unmount_retries
@@ -115,12 +114,12 @@ class Chef
 
       # should actually check if the filesystem is mounted (not just return current_resource) and return true/false
       def mounted?
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not implement #mounted?"
+        fail Chef::Exceptions::UnsupportedAction, "#{self} does not implement #mounted?"
       end
 
       # should check new_resource against current_resource to see if mount options need updating, returns true/false
       def mount_options_unchanged?
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not implement #mount_options_unchanged?"
+        fail Chef::Exceptions::UnsupportedAction, "#{self} does not implement #mount_options_unchanged?"
       end
 
       #
@@ -131,28 +130,28 @@ class Chef
 
       # should implement mounting of the filesystem, raises if action does not succeed
       def mount_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :mount"
+        fail Chef::Exceptions::UnsupportedAction, "#{self} does not support :mount"
       end
 
       # should implement unmounting of the filesystem, raises if action does not succeed
       def umount_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :umount"
+        fail Chef::Exceptions::UnsupportedAction, "#{self} does not support :umount"
       end
 
       # should implement remounting of the filesystem (via a -o remount or some other atomic-ish action that isn't
       # simply a umount/mount style remount), raises if action does not succeed
       def remount_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :remount"
+        fail Chef::Exceptions::UnsupportedAction, "#{self} does not support :remount"
       end
 
       # should implement enabling of the filesystem (e.g. in /etc/fstab), raises if action does not succeed
       def enable_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :enable"
+        fail Chef::Exceptions::UnsupportedAction, "#{self} does not support :enable"
       end
 
       # should implement disabling of the filesystem (e.g. in /etc/fstab), raises if action does not succeed
       def disable_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :disable"
+        fail Chef::Exceptions::UnsupportedAction, "#{self} does not support :disable"
       end
 
       private
@@ -160,7 +159,7 @@ class Chef
       def wait_until_unmounted(tries)
         while mounted?
           if (tries -= 1) < 0
-            raise Chef::Exceptions::Mount, "Retries exceeded waiting for filesystem to unmount"
+            fail Chef::Exceptions::Mount, 'Retries exceeded waiting for filesystem to unmount'
           end
           sleep 0.1
         end

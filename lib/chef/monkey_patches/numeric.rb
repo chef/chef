@@ -10,6 +10,6 @@ end
 # for the simpler "test"[2].ord construct
 class Numeric
   def ord
-    return self
+    self
   end
 end

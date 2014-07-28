@@ -16,12 +16,11 @@
 # limitations under the License.
 #
 
-require "tempfile"
+require 'tempfile'
 
 class Chef
   class FileContentManagement
     class Tempfile
-
       attr_reader :new_resource
 
       def initialize(new_resource)
@@ -49,7 +48,7 @@ class Chef
       #
       def tempfile_basename
         basename = ::File.basename(@new_resource.name)
-        basename.insert 0, "." unless Chef::Platform.windows?  # dotfile if we're not on windows
+        basename.insert 0, '.' unless Chef::Platform.windows?  # dotfile if we're not on windows
         basename
       end
 
@@ -60,7 +59,7 @@ class Chef
         if Chef::Config[:file_staging_uses_destdir] && !Chef::Config[:why_run]
           ::File.dirname(@new_resource.path)
         else
-          Dir::tmpdir
+          Dir.tmpdir
         end
       end
     end

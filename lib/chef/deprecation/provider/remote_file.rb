@@ -19,21 +19,19 @@
 class Chef
   module Deprecation
     module Provider
-
       # == Deprecation::Provider::RemoteFile
       # This module contains the deprecated functions of
       # Chef::Provider::RemoteFile. These functions are refactored to different
       # components. They are frozen and will be removed in Chef 12.
       #
       module RemoteFile
-
         def current_resource_matches_target_checksum?
           @new_resource.checksum && @current_resource.checksum && @current_resource.checksum =~ /^#{Regexp.escape(@new_resource.checksum)}/
         end
 
         def matches_current_checksum?(candidate_file)
           Chef::Log.debug "#{@new_resource} checking for file existence of #{@new_resource.path}"
-          if ::File.exists?(@new_resource.path)
+          if ::File.exist?(@new_resource.path)
             Chef::Log.debug "#{@new_resource} file exists at #{@new_resource.path}"
             @new_resource.checksum(checksum(candidate_file.path))
             Chef::Log.debug "#{@new_resource} target checksum: #{@current_resource.checksum}"
@@ -47,7 +45,7 @@ class Chef
         end
 
         def backup_new_resource
-          if ::File.exists?(@new_resource.path)
+          if ::File.exist?(@new_resource.path)
             Chef::Log.debug "#{@new_resource} checksum changed from #{@current_resource.checksum} to #{@new_resource.checksum}"
             backup @new_resource.path
           end
@@ -64,7 +62,7 @@ class Chef
         end
 
         def http_client_opts(source)
-          opts={}
+          opts = {}
           # CHEF-3140
           # 1. If it's already compressed, trying to compress it more will
           # probably be counter-productive.
@@ -78,9 +76,7 @@ class Chef
           end
           opts
         end
-
       end
     end
   end
 end
-

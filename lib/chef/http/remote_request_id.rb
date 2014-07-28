@@ -20,12 +20,11 @@ require 'chef/request_id'
 class Chef
   class HTTP
     class RemoteRequestID
-
-      def initialize(opts={})
+      def initialize(_opts = {})
       end
 
-      def handle_request(method, url, headers={}, data=false)
-        headers.merge!({'X-REMOTE-REQUEST-ID' => Chef::RequestID.instance.request_id})
+      def handle_request(method, url, headers = {}, data = false)
+        headers.merge!('X-REMOTE-REQUEST-ID' => Chef::RequestID.instance.request_id)
         [method, url, headers, data]
       end
 
@@ -33,14 +32,13 @@ class Chef
         [http_response, rest_request, return_value]
       end
 
-      def stream_response_handler(response)
+      def stream_response_handler(_response)
         nil
       end
 
       def handle_stream_complete(http_response, rest_request, return_value)
         [http_response, rest_request, return_value]
       end
-
     end
   end
 end

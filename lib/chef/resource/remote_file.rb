@@ -28,10 +28,10 @@ class Chef
 
       provides :remote_file, :on_platforms => :all
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :remote_file
-        @action = "create"
+        @action = 'create'
         @source = []
         @use_etag = true
         @use_last_modified = true
@@ -52,9 +52,9 @@ class Chef
         arg = parse_source_args(args)
         ret = set_or_return(:source,
                             arg,
-                            { :callbacks => {
-                                :validate_source => method(:validate_source)
-                              }})
+                            :callbacks => {
+                              :validate_source => method(:validate_source)
+                            })
         if ret.is_a? String
           Array(ret)
         else
@@ -67,14 +67,14 @@ class Chef
           nil
         elsif args[0].is_a?(Chef::DelayedEvaluator) && args.count == 1
           args[0]
-        elsif args.any? {|a| a.is_a?(Chef::DelayedEvaluator)} && args.count > 1
-          raise Exceptions::InvalidRemoteFileURI, "Only 1 source argument allowed when using a lazy evaluator"
+        elsif args.any? { |a| a.is_a?(Chef::DelayedEvaluator) } && args.count > 1
+          fail Exceptions::InvalidRemoteFileURI, 'Only 1 source argument allowed when using a lazy evaluator'
         else
           Array(args).flatten
         end
       end
 
-      def checksum(args=nil)
+      def checksum(args = nil)
         set_or_return(
           :checksum,
           args,
@@ -90,33 +90,33 @@ class Chef
         use_last_modified(true_or_false)
       end
 
-      def use_etag(args=nil)
+      def use_etag(args = nil)
         set_or_return(
           :use_etag,
           args,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [TrueClass, FalseClass]
         )
       end
 
-      alias :use_etags :use_etag
+      alias_method :use_etags, :use_etag
 
-      def use_last_modified(args=nil)
+      def use_last_modified(args = nil)
         set_or_return(
           :use_last_modified,
           args,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [TrueClass, FalseClass]
         )
       end
 
-      def ftp_active_mode(args=nil)
+      def ftp_active_mode(args = nil)
         set_or_return(
           :ftp_active_mode,
           args,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [TrueClass, FalseClass]
         )
       end
 
-      def headers(args=nil)
+      def headers(args = nil)
         set_or_return(
           :headers,
           args,
@@ -132,22 +132,21 @@ class Chef
 
       def validate_source(source)
         source = Array(source).flatten
-        raise ArgumentError, "#{resource_name} has an empty source" if source.empty?
+        fail ArgumentError, "#{resource_name} has an empty source" if source.empty?
         source.each do |src|
           unless absolute_uri?(src)
-            raise Exceptions::InvalidRemoteFileURI,
-              "#{src.inspect} is not a valid `source` parameter for #{resource_name}. `source` must be an absolute URI or an array of URIs."
+            fail Exceptions::InvalidRemoteFileURI,
+                 "#{src.inspect} is not a valid `source` parameter for #{resource_name}. `source` must be an absolute URI or an array of URIs."
           end
         end
         true
       end
 
       def absolute_uri?(source)
-        source.kind_of?(String) and URI.parse(source).absolute?
+        source.is_a?(String) and URI.parse(source).absolute?
       rescue URI::InvalidURIError
         false
       end
-
     end
   end
 end

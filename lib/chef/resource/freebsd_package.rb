@@ -29,10 +29,9 @@ class Chef
     class FreebsdPackage < Chef::Resource::Package
       include Chef::Mixin::ShellOut
 
-      provides :package, :on_platforms => ["freebsd"]
+      provides :package, :on_platforms => ['freebsd']
 
-
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :freebsd_package
       end
@@ -40,8 +39,6 @@ class Chef
       def after_created
         assign_provider
       end
-
-
 
       private
 
@@ -58,14 +55,12 @@ class Chef
       def ships_with_pkgng?
         # It was not until __FreeBSD_version 1000017 that pkgng became
         # the default binary package manager. See '/usr/ports/Mk/bsd.port.mk'.
-        node[:os_version].to_i >= 1000017
+        node[:os_version].to_i >= 1_000_017
       end
 
       def supports_pkgng?
-        !!shell_out!("make -V WITH_PKGNG", :env => nil).stdout.match(/yes/i)
+        !!shell_out!('make -V WITH_PKGNG', :env => nil).stdout.match(/yes/i)
       end
-
     end
   end
 end
-

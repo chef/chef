@@ -27,7 +27,6 @@ class Chef
   # == Chef::Runner
   # This class is responsible for executing the steps in a Chef run.
   class Runner
-
     attr_reader :run_context
 
     attr_reader :delayed_actions
@@ -45,7 +44,7 @@ class Chef
 
     # Determine the appropriate provider for the given resource, then
     # execute it.
-    def run_action(resource, action, notification_type=nil, notifying_resource=nil)
+    def run_action(resource, action, notification_type = nil, notifying_resource = nil)
       resource.run_action(action, notification_type, notifying_resource)
 
       # Execute any immediate and queue up any delayed notifications
@@ -59,7 +58,7 @@ class Chef
 
         run_context.delayed_notifications(resource).each do |notification|
           if delayed_actions.any? { |existing_notification| existing_notification.duplicates?(notification) }
-            Chef::Log.info( "#{resource} not queuing delayed action #{notification.action} on #{notification.resource}"\
+            Chef::Log.info("#{resource} not queuing delayed action #{notification.action} on #{notification.resource}"\
                             " (delayed), as it's already been queued")
           else
             delayed_actions << notification
@@ -78,11 +77,11 @@ class Chef
 
       # Execute each resource.
       run_context.resource_collection.execute_each_resource do |resource|
-        Array(resource.action).each {|action| run_action(resource, action)}
+        Array(resource.action).each { |action| run_action(resource, action) }
       end
 
-    rescue Exception => e
-      Chef::Log.info "Running queued delayed notifications before re-raising exception"
+    rescue => e
+      Chef::Log.info 'Running queued delayed notifications before re-raising exception'
       run_delayed_notifications(e)
     else
       run_delayed_notifications(nil)
@@ -92,12 +91,12 @@ class Chef
     private
 
     # Run all our :delayed actions
-    def run_delayed_notifications(error=nil)
+    def run_delayed_notifications(error = nil)
       collected_failures = Exceptions::MultipleFailures.new
       collected_failures.client_run_failure(error) unless error.nil?
       delayed_actions.each do |notification|
         result = run_delayed_notification(notification)
-        if result.kind_of?(Exception)
+        if result.is_a?(Exception)
           collected_failures.notification_failure(result)
         end
       end
@@ -105,12 +104,12 @@ class Chef
     end
 
     def run_delayed_notification(notification)
-      Chef::Log.info( "#{notification.notifying_resource} sending #{notification.action}"\
+      Chef::Log.info("#{notification.notifying_resource} sending #{notification.action}"\
                       " action to #{notification.resource} (delayed)")
       # Struct of resource/action to call
       run_action(notification.resource, notification.action, :delayed)
       true
-    rescue Exception => e
+    rescue => e
       e
     end
   end

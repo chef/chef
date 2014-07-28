@@ -20,8 +20,8 @@ require 'spec_helper'
 
 describe Chef::Resource::TimestampedDeploy do
 
-  it "defaults to the TimestampedDeploy provider" do
-    @resource = Chef::Resource::TimestampedDeploy.new("stuff")
+  it 'defaults to the TimestampedDeploy provider' do
+    @resource = Chef::Resource::TimestampedDeploy.new('stuff')
     @resource.provider.should == Chef::Provider::Deploy::Timestamped
   end
 

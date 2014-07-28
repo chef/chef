@@ -18,19 +18,19 @@
 
 require 'spec_helper'
 
-describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
+describe Chef::Provider::Group::Gpasswd, 'modify_group_members' do
   before do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::Group.new("wheel")
-    @new_resource.members %w{lobster rage fist}
+    @new_resource = Chef::Resource::Group.new('wheel')
+    @new_resource.members %w(lobster rage fist)
     @new_resource.append false
     @provider = Chef::Provider::Group::Gpasswd.new(@new_resource, @run_context)
-    #@provider.stub(:run_command).and_return(true)
+    # @provider.stub(:run_command).and_return(true)
   end
 
-  describe "when determining the current group state" do
+  describe 'when determining the current group state' do
     before (:each) do
       @provider.action = :create
       @provider.load_current_resource
@@ -42,7 +42,7 @@ describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
     # include only what's specific to this provider.
     it "should raise an error if the required binary /usr/bin/gpasswd doesn't exist" do
       File.stub(:exists?).and_return(true)
-      File.should_receive(:exists?).with("/usr/bin/gpasswd").and_return(false)
+      File.should_receive(:exists?).with('/usr/bin/gpasswd').and_return(false)
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Group)
     end
 
@@ -58,55 +58,55 @@ describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
       @provider.current_resource = @new_resource
     end
 
-    describe "when no group members are specified and append is not set" do
+    describe 'when no group members are specified and append is not set' do
       before do
         @new_resource.append(false)
         @new_resource.members([])
       end
 
       it "logs a message and sets group's members to 'none'" do
-        Chef::Log.should_receive(:debug).with("group[wheel] setting group members to: none")
+        Chef::Log.should_receive(:debug).with('group[wheel] setting group members to: none')
         @provider.should_receive(:shell_out!).with("gpasswd -M \"\" wheel")
         @provider.modify_group_members
       end
     end
 
-    describe "when no group members are specified and append is set" do
+    describe 'when no group members are specified and append is set' do
       before do
         @new_resource.append(true)
         @new_resource.members([])
       end
 
-      it "does not modify group membership" do
+      it 'does not modify group membership' do
         @provider.should_not_receive(:shell_out!)
         @provider.modify_group_members
       end
     end
 
-    describe "when the resource specifies group members" do
-      it "should log an appropriate debug message" do
-        Chef::Log.should_receive(:debug).with("group[wheel] setting group members to: lobster, rage, fist")
+    describe 'when the resource specifies group members' do
+      it 'should log an appropriate debug message' do
+        Chef::Log.should_receive(:debug).with('group[wheel] setting group members to: lobster, rage, fist')
         @provider.stub(:shell_out!)
         @provider.modify_group_members
       end
 
       it "should run gpasswd with the members joined by ',' followed by the target group" do
-        @provider.should_receive(:shell_out!).with("gpasswd -M lobster,rage,fist wheel")
+        @provider.should_receive(:shell_out!).with('gpasswd -M lobster,rage,fist wheel')
         @provider.modify_group_members
       end
 
-      describe "when no user exists in the system" do
+      describe 'when no user exists in the system' do
         before do
           current_resource = @new_resource.dup
-          current_resource.members([ ])
+          current_resource.members([])
           @provider.current_resource = current_resource
         end
 
-        it "should run gpasswd individually for each user when the append option is set" do
+        it 'should run gpasswd individually for each user when the append option is set' do
           @new_resource.append(true)
-          @provider.should_receive(:shell_out!).with("gpasswd -a lobster wheel")
-          @provider.should_receive(:shell_out!).with("gpasswd -a rage wheel")
-          @provider.should_receive(:shell_out!).with("gpasswd -a fist wheel")
+          @provider.should_receive(:shell_out!).with('gpasswd -a lobster wheel')
+          @provider.should_receive(:shell_out!).with('gpasswd -a rage wheel')
+          @provider.should_receive(:shell_out!).with('gpasswd -a fist wheel')
           @provider.modify_group_members
         end
       end

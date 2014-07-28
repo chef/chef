@@ -24,9 +24,8 @@ class Chef
   class Provider
     class Package
       class Windows < Chef::Provider::Package
-
-        # Depending on the installer, we may need to examine installer_type or 
-        # source attributes, or search for text strings in the installer file 
+        # Depending on the installer, we may need to examine installer_type or
+        # source attributes, or search for text strings in the installer file
         # binary to determine the installer type for the user. Since the file
         # must be on disk to do so, we have to make this choice in the provider.
         require 'chef/provider/package/windows/msi.rb'
@@ -47,7 +46,7 @@ class Chef
             when :msi
               Chef::Provider::Package::Windows::MSI.new(@new_resource)
             else
-              raise "Unable to find a Chef::Provider::Package::Windows provider for installer_type '#{installer_type}'"
+              fail "Unable to find a Chef::Provider::Package::Windows provider for installer_type '#{installer_type}'"
             end
           end
         end
@@ -57,12 +56,12 @@ class Chef
             if @new_resource.installer_type
               @new_resource.installer_type
             else
-              file_extension = ::File.basename(@new_resource.source).split(".").last.downcase
+              file_extension = ::File.basename(@new_resource.source).split('.').last.downcase
 
-              if file_extension == "msi"
+              if file_extension == 'msi'
                 :msi
               else
-                raise ArgumentError, "Installer type for Windows Package '#{@new_resource.name}' not specified and cannot be determined from file extension '#{file_extension}'"
+                fail ArgumentError, "Installer type for Windows Package '#{@new_resource.name}' not specified and cannot be determined from file extension '#{file_extension}'"
               end
             end
           end

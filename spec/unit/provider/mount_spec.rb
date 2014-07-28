@@ -29,20 +29,20 @@ describe Chef::Provider::Mount do
 
   let(:new_resource) do
     new_resource = Chef::Resource::Mount.new('/tmp/foo')
-    new_resource.device      "/dev/sdz1"
-    new_resource.name        "/tmp/foo"
-    new_resource.mount_point "/tmp/foo"
-    new_resource.fstype      "ext3"
+    new_resource.device '/dev/sdz1'
+    new_resource.name '/tmp/foo'
+    new_resource.mount_point '/tmp/foo'
+    new_resource.fstype 'ext3'
     new_resource
   end
 
   let(:current_resource) do
     # this abstract superclass has no load_current_resource to call
     current_resource = Chef::Resource::Mount.new('/tmp/foo')
-    current_resource.device      "/dev/sdz1"
-    current_resource.name        "/tmp/foo"
-    current_resource.mount_point "/tmp/foo"
-    current_resource.fstype      "ext3"
+    current_resource.device '/dev/sdz1'
+    current_resource.name '/tmp/foo'
+    current_resource.mount_point '/tmp/foo'
+    current_resource.fstype 'ext3'
     current_resource
   end
 
@@ -52,7 +52,7 @@ describe Chef::Provider::Mount do
     provider
   end
 
-  describe "when the target state is a mounted filesystem" do
+  describe 'when the target state is a mounted filesystem' do
 
     it "should mount the filesystem if it isn't mounted" do
       allow(current_resource).to receive(:mounted).and_return(false)
@@ -61,7 +61,7 @@ describe Chef::Provider::Mount do
       expect(new_resource).to be_updated_by_last_action
     end
 
-    it "should not mount the filesystem if it is mounted" do
+    it 'should not mount the filesystem if it is mounted' do
       allow(current_resource).to receive(:mounted).and_return(true)
       expect(provider).not_to receive(:mount_fs)
       provider.run_action(:mount)
@@ -70,15 +70,15 @@ describe Chef::Provider::Mount do
 
   end
 
-  describe "when the target state is an unmounted filesystem" do
-    it "should umount the filesystem if it is mounted" do
+  describe 'when the target state is an unmounted filesystem' do
+    it 'should umount the filesystem if it is mounted' do
       allow(current_resource).to receive(:mounted).and_return(true)
       expect(provider).to receive(:umount_fs).and_return(true)
       provider.run_action(:umount)
       expect(new_resource).to be_updated_by_last_action
     end
 
-    it "should not umount the filesystem if it is not mounted" do
+    it 'should not umount the filesystem if it is not mounted' do
       allow(current_resource).to receive(:mounted).and_return(false)
       expect(provider).not_to receive(:umount_fs)
       provider.run_action(:umount)
@@ -86,19 +86,19 @@ describe Chef::Provider::Mount do
     end
   end
 
-  describe "when the filesystem should be remounted and the resource supports remounting" do
+  describe 'when the filesystem should be remounted and the resource supports remounting' do
     before do
       new_resource.supports[:remount] = true
     end
 
-    it "should remount the filesystem if it is mounted" do
+    it 'should remount the filesystem if it is mounted' do
       allow(current_resource).to receive(:mounted).and_return(true)
       expect(provider).to receive(:remount_fs).and_return(true)
       provider.run_action(:remount)
       expect(new_resource).to be_updated_by_last_action
     end
 
-    it "should not remount the filesystem if it is not mounted" do
+    it 'should not remount the filesystem if it is not mounted' do
       allow(current_resource).to receive(:mounted).and_return(false)
       expect(provider).not_to receive(:remount_fs)
       provider.run_action(:remount)
@@ -106,13 +106,13 @@ describe Chef::Provider::Mount do
     end
   end
 
-  describe "when the filesystem should be remounted and the resource does not support remounting" do
+  describe 'when the filesystem should be remounted and the resource does not support remounting' do
     before do
       new_resource.supports[:remount] = false
       allow(current_resource).to receive(:mounted).and_return(true)
     end
 
-    it "should try a umount/remount of the filesystem" do
+    it 'should try a umount/remount of the filesystem' do
       expect(provider).to receive(:umount_fs)
       expect(provider).to receive(:mounted?).and_return(true, false)
       expect(provider).to receive(:mount_fs)
@@ -120,15 +120,15 @@ describe Chef::Provider::Mount do
       expect(new_resource).to be_updated_by_last_action
     end
 
-    it "should fail when it runs out of remounts" do
+    it 'should fail when it runs out of remounts' do
       provider.unmount_retries = 1
       expect(provider).to receive(:umount_fs)
       expect(provider).to receive(:mounted?).and_return(true, true)
-      expect{ provider.run_action(:remount) }.to raise_error(Chef::Exceptions::Mount)
+      expect { provider.run_action(:remount) }.to raise_error(Chef::Exceptions::Mount)
     end
   end
 
-  describe "when enabling the filesystem to be mounted" do
+  describe 'when enabling the filesystem to be mounted' do
     it "should enable the mount if it isn't enable" do
       allow(current_resource).to receive(:enabled).and_return(false)
       expect(provider).not_to receive(:mount_options_unchanged?)
@@ -137,7 +137,7 @@ describe Chef::Provider::Mount do
       expect(new_resource).to be_updated_by_last_action
     end
 
-    it "should enable the mount if it is enabled and mount options have changed" do
+    it 'should enable the mount if it is enabled and mount options have changed' do
       allow(current_resource).to receive(:enabled).and_return(true)
       expect(provider).to receive(:mount_options_unchanged?).and_return(false)
       expect(provider).to receive(:enable_fs).and_return(true)
@@ -145,7 +145,7 @@ describe Chef::Provider::Mount do
       expect(new_resource).to be_updated_by_last_action
     end
 
-    it "should not enable the mount if it is enabled and mount options have not changed" do
+    it 'should not enable the mount if it is enabled and mount options have not changed' do
       allow(current_resource).to receive(:enabled).and_return(true)
       expect(provider).to receive(:mount_options_unchanged?).and_return(true)
       expect(provider).not_to receive(:enable_fs)
@@ -154,8 +154,8 @@ describe Chef::Provider::Mount do
     end
   end
 
-  describe "when the target state is to disable the mount" do
-    it "should disable the mount if it is enabled" do
+  describe 'when the target state is to disable the mount' do
+    it 'should disable the mount if it is enabled' do
       allow(current_resource).to receive(:enabled).and_return(true)
       expect(provider).to receive(:disable_fs).and_return(true)
       provider.run_action(:disable)
@@ -170,24 +170,23 @@ describe Chef::Provider::Mount do
     end
   end
 
-
-  it "should delegates the mount implementation to subclasses" do
+  it 'should delegates the mount implementation to subclasses' do
     expect { provider.mount_fs }.to raise_error(Chef::Exceptions::UnsupportedAction)
   end
 
-  it "should delegates the umount implementation to subclasses" do
+  it 'should delegates the umount implementation to subclasses' do
     expect { provider.umount_fs }.to raise_error(Chef::Exceptions::UnsupportedAction)
   end
 
-  it "should delegates the remount implementation to subclasses" do
+  it 'should delegates the remount implementation to subclasses' do
     expect { provider.remount_fs }.to raise_error(Chef::Exceptions::UnsupportedAction)
   end
 
-  it "should delegates the enable implementation to subclasses" do
+  it 'should delegates the enable implementation to subclasses' do
     expect { provider.enable_fs }.to raise_error(Chef::Exceptions::UnsupportedAction)
   end
 
-  it "should delegates the disable implementation to subclasses" do
+  it 'should delegates the disable implementation to subclasses' do
     expect { provider.disable_fs }.to raise_error(Chef::Exceptions::UnsupportedAction)
   end
 end

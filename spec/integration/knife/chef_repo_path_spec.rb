@@ -802,7 +802,7 @@ EOM
       end
 
       context 'when data_bag_path is set and nothing else' do
-        include_context "default config options"
+        include_context 'default config options'
 
         before :each do
           %w(client cookbook  environment node role user).each do |object_name|

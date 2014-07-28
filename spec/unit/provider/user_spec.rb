@@ -27,38 +27,38 @@ describe Chef::Provider::User do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @new_resource = Chef::Resource::User.new("adam")
-    @new_resource.comment "Adam Jacob"
+    @new_resource = Chef::Resource::User.new('adam')
+    @new_resource.comment 'Adam Jacob'
     @new_resource.uid 1000
     @new_resource.gid 1000
-    @new_resource.home "/home/adam"
-    @new_resource.shell "/usr/bin/zsh"
+    @new_resource.home '/home/adam'
+    @new_resource.shell '/usr/bin/zsh'
 
-    @current_resource = Chef::Resource::User.new("adam")
-    @current_resource.comment "Adam Jacob"
+    @current_resource = Chef::Resource::User.new('adam')
+    @current_resource.comment 'Adam Jacob'
     @current_resource.uid 1000
     @current_resource.gid 1000
-    @current_resource.home "/home/adam"
-    @current_resource.shell "/usr/bin/zsh"
+    @current_resource.home '/home/adam'
+    @current_resource.shell '/usr/bin/zsh'
 
     @provider = Chef::Provider::User.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
   end
 
-  describe "when first created" do
-    it "assume the user exists by default" do
+  describe 'when first created' do
+    it 'assume the user exists by default' do
       @provider.user_exists.should eql(true)
     end
 
-    it "does not know the locked state" do
+    it 'does not know the locked state' do
       @provider.locked.should eql(nil)
     end
   end
 
-  describe "executing load_current_resource" do
+  describe 'executing load_current_resource' do
     before(:each) do
       @node = Chef::Node.new
-      #@new_resource = double("Chef::Resource::User",
+      # @new_resource = double("Chef::Resource::User",
       #  :null_object => true,
       #  :username => "adam",
       #  :comment => "Adam Jacob",
@@ -68,41 +68,41 @@ describe Chef::Provider::User do
       #  :shell => "/usr/bin/zsh",
       #  :password => nil,
       #  :updated => nil
-      #)
+      # )
       Chef::Resource::User.stub(:new).and_return(@current_resource)
       @pw_user = EtcPwnamIsh.new
-      @pw_user.name = "adam"
+      @pw_user.name = 'adam'
       @pw_user.gid = 1000
       @pw_user.uid = 1000
-      @pw_user.gecos = "Adam Jacob"
-      @pw_user.dir = "/home/adam"
-      @pw_user.shell = "/usr/bin/zsh"
-      @pw_user.passwd = "*"
+      @pw_user.gecos = 'Adam Jacob'
+      @pw_user.dir = '/home/adam'
+      @pw_user.shell = '/usr/bin/zsh'
+      @pw_user.passwd = '*'
       Etc.stub(:getpwnam).and_return(@pw_user)
     end
 
-    it "should create a current resource with the same name as the new resource" do
+    it 'should create a current resource with the same name as the new resource' do
       @provider.load_current_resource
       @provider.current_resource.name.should == 'adam'
     end
 
-    it "should set the username of the current resource to the username of the new resource" do
+    it 'should set the username of the current resource to the username of the new resource' do
       @provider.load_current_resource
       @current_resource.username.should == @new_resource.username
     end
 
-    it "should change the encoding of gecos to the encoding of the new resource", :ruby_gte_19_only do
+    it 'should change the encoding of gecos to the encoding of the new resource', :ruby_gte_19_only do
       @pw_user.gecos.force_encoding('ASCII-8BIT')
       @provider.load_current_resource
       @provider.current_resource.comment.encoding.should == @new_resource.comment.encoding
     end
 
-    it "should look up the user in /etc/passwd with getpwnam" do
+    it 'should look up the user in /etc/passwd with getpwnam' do
       Etc.should_receive(:getpwnam).with(@new_resource.username).and_return(@pw_user)
       @provider.load_current_resource
     end
 
-    it "should set user_exists to false if the user is not found with getpwnam" do
+    it 'should set user_exists to false if the user is not found with getpwnam' do
       Etc.should_receive(:getpwnam).and_raise(ArgumentError)
       @provider.load_current_resource
       @provider.user_exists.should eql(false)
@@ -123,7 +123,7 @@ describe Chef::Provider::User do
       end
     end
 
-    it "should attempt to convert the group gid if one has been supplied" do
+    it 'should attempt to convert the group gid if one has been supplied' do
       @provider.should_receive(:convert_group_name)
       @provider.load_current_resource
     end
@@ -134,43 +134,41 @@ describe Chef::Provider::User do
       @provider.load_current_resource
     end
 
-    it "should return the current resource" do
+    it 'should return the current resource' do
       @provider.load_current_resource.should eql(@current_resource)
     end
 
-    describe "and running assertions" do
+    describe 'and running assertions' do
       def self.shadow_lib_unavail?
-        begin
-          require 'rubygems'
-          require 'shadow'
-        rescue LoadError => e
-          pending "ruby-shadow gem not installed for dynamic load test"
-          true
-        else
-          false
-        end
+        require 'rubygems'
+        require 'shadow'
+      rescue LoadError => e
+        pending 'ruby-shadow gem not installed for dynamic load test'
+        true
+      else
+        false
       end
 
       before (:each) do
         user = @pw_user.dup
-        user.name = "root"
-        user.passwd = "x"
-        @new_resource.password "some new password"
+        user.name = 'root'
+        user.passwd = 'x'
+        @new_resource.password 'some new password'
         Etc.stub(:getpwnam).and_return(user)
       end
 
       unless shadow_lib_unavail?
-        context "and we have the ruby-shadow gem" do
-          pending "and we are not root (rerun this again as root)", :requires_unprivileged_user => true
+        context 'and we have the ruby-shadow gem' do
+          pending 'and we are not root (rerun this again as root)', :requires_unprivileged_user => true
 
-          context "and we are root", :requires_root => true do
-            it "should pass assertions when ruby-shadow can be loaded" do
+          context 'and we are root', :requires_root => true do
+            it 'should pass assertions when ruby-shadow can be loaded' do
               @provider.action = 'create'
               original_method = @provider.method(:require)
               @provider.should_receive(:require) { |*args| original_method.call(*args) }
-              passwd_info = Struct::PasswdEntry.new(:sp_namp => "adm ", :sp_pwdp => "$1$T0N0Q.lc$nyG6pFI3Dpqa5cxUz/57j0", :sp_lstchg => 14861, :sp_min => 0, :sp_max => 99999,
+              passwd_info = Struct::PasswdEntry.new(:sp_namp => 'adm ', :sp_pwdp => '$1$T0N0Q.lc$nyG6pFI3Dpqa5cxUz/57j0', :sp_lstchg => 14_861, :sp_min => 0, :sp_max => 99_999,
                                                     :sp_warn => 7, :sp_inact => -1, :sp_expire => -1, :sp_flag => -1)
-              Shadow::Passwd.should_receive(:getspnam).with("adam").and_return(passwd_info)
+              Shadow::Passwd.should_receive(:getspnam).with('adam').and_return(passwd_info)
               @provider.load_current_resource
               @provider.define_resource_requirements
               @provider.process_resource_requirements
@@ -179,30 +177,30 @@ describe Chef::Provider::User do
         end
       end
 
-      it "should fail assertions when ruby-shadow cannot be loaded" do
-        @provider.should_receive(:require).with("shadow") { raise LoadError }
+      it 'should fail assertions when ruby-shadow cannot be loaded' do
+        @provider.should_receive(:require).with('shadow') { fail LoadError }
         @provider.load_current_resource
         @provider.define_resource_requirements
-        lambda {@provider.process_resource_requirements}.should raise_error Chef::Exceptions::MissingLibrary
+        lambda { @provider.process_resource_requirements }.should raise_error Chef::Exceptions::MissingLibrary
       end
 
     end
   end
 
-  describe "compare_user" do
-    let(:mapping) {
+  describe 'compare_user' do
+    let(:mapping) do
       {
-        'username' => ["adam", "Adam"],
-        'comment' => ["Adam Jacob", "adam jacob"],
+        'username' => %w(adam Adam),
+        'comment' => ['Adam Jacob', 'adam jacob'],
         'uid' => [1000, 1001],
         'gid' => [1000, 1001],
-        'home' => ["/home/adam", "/Users/adam"],
-        'shell'=> ["/usr/bin/zsh", "/bin/bash"],
-        'password'=> ["abcd","12345"]
+        'home' => ['/home/adam', '/Users/adam'],
+        'shell' => ['/usr/bin/zsh', '/bin/bash'],
+        'password' => %w(abcd 12345)
       }
-    }
+    end
 
-    %w{uid gid comment home shell password}.each do |attribute|
+    %w(uid gid comment home shell password).each do |attribute|
       it "should return true if #{attribute} doesn't match" do
         @new_resource.send(attribute, mapping[attribute][0])
         @current_resource.send(attribute, mapping[attribute][1])
@@ -210,20 +208,20 @@ describe Chef::Provider::User do
       end
     end
 
-    %w{uid gid}.each do |attribute|
+    %w(uid gid).each do |attribute|
       it "should return false if string #{attribute} matches fixnum" do
-        @new_resource.send(attribute, "100")
+        @new_resource.send(attribute, '100')
         @current_resource.send(attribute, 100)
         @provider.compare_user.should eql(false)
       end
     end
 
-    it "should return false if the objects are identical" do
+    it 'should return false if the objects are identical' do
       @provider.compare_user.should eql(false)
     end
   end
 
-  describe "action_create" do
+  describe 'action_create' do
     before(:each) do
       @provider.stub(:load_current_resource)
       # @current_resource = double("Chef::Resource::User",
@@ -244,7 +242,7 @@ describe Chef::Provider::User do
       # @provider.stub(:manage_user).and_return(true)
     end
 
-    it "should call create_user if the user does not exist" do
+    it 'should call create_user if the user does not exist' do
       @provider.user_exists = false
       @provider.should_receive(:create_user).and_return(true)
       @provider.action_create
@@ -252,14 +250,14 @@ describe Chef::Provider::User do
       @new_resource.should be_updated
     end
 
-    it "should call manage_user if the user exists and has mismatched attributes" do
+    it 'should call manage_user if the user exists and has mismatched attributes' do
       @provider.user_exists = true
       @provider.stub(:compare_user).and_return(true)
       @provider.should_receive(:manage_user).and_return(true)
       @provider.action_create
     end
 
-    it "should set the new_resources updated flag when it creates the user if we call manage_user" do
+    it 'should set the new_resources updated flag when it creates the user if we call manage_user' do
       @provider.user_exists = true
       @provider.stub(:compare_user).and_return(true)
       @provider.stub(:manage_user).and_return(true)
@@ -269,24 +267,24 @@ describe Chef::Provider::User do
     end
   end
 
-  describe "action_remove" do
+  describe 'action_remove' do
     before(:each) do
       @provider.stub(:load_current_resource)
     end
 
-    it "should not call remove_user if the user does not exist" do
+    it 'should not call remove_user if the user does not exist' do
       @provider.user_exists = false
       @provider.should_not_receive(:remove_user)
       @provider.action_remove
     end
 
-    it "should call remove_user if the user exists" do
+    it 'should call remove_user if the user exists' do
       @provider.user_exists = true
       @provider.should_receive(:remove_user)
       @provider.action_remove
     end
 
-    it "should set the new_resources updated flag to true if the user is removed" do
+    it 'should set the new_resources updated flag to true if the user is removed' do
       @provider.user_exists = true
       @provider.should_receive(:remove_user)
       @provider.action_remove
@@ -295,7 +293,7 @@ describe Chef::Provider::User do
     end
   end
 
-  describe "action_manage" do
+  describe 'action_manage' do
     before(:each) do
       @provider.stub(:load_current_resource)
       # @node = Chef::Node.new
@@ -311,13 +309,13 @@ describe Chef::Provider::User do
       # @provider.stub(:manage_user).and_return(true)
     end
 
-    it "should run manage_user if the user exists and has mismatched attributes" do
+    it 'should run manage_user if the user exists and has mismatched attributes' do
       @provider.should_receive(:compare_user).and_return(true)
       @provider.should_receive(:manage_user).and_return(true)
       @provider.action_manage
     end
 
-    it "should set the new resources updated flag to true if manage_user is called" do
+    it 'should set the new resources updated flag to true if manage_user is called' do
       @provider.stub(:compare_user).and_return(true)
       @provider.stub(:manage_user).and_return(true)
       @provider.action_manage
@@ -325,20 +323,20 @@ describe Chef::Provider::User do
       @new_resource.should be_updated
     end
 
-    it "should not run manage_user if the user does not exist" do
+    it 'should not run manage_user if the user does not exist' do
       @provider.user_exists = false
       @provider.should_not_receive(:manage_user)
       @provider.action_manage
     end
 
-    it "should not run manage_user if the user exists but has no differing attributes" do
+    it 'should not run manage_user if the user exists but has no differing attributes' do
       @provider.should_receive(:compare_user).and_return(false)
       @provider.should_not_receive(:manage_user)
       @provider.action_manage
     end
   end
 
-  describe "action_modify" do
+  describe 'action_modify' do
     before(:each) do
       @provider.stub(:load_current_resource)
       # @node = Chef::Node.new
@@ -354,13 +352,13 @@ describe Chef::Provider::User do
       # @provider.stub(:manage_user).and_return(true)
     end
 
-    it "should run manage_user if the user exists and has mismatched attributes" do
+    it 'should run manage_user if the user exists and has mismatched attributes' do
       @provider.should_receive(:compare_user).and_return(true)
       @provider.should_receive(:manage_user).and_return(true)
       @provider.action_modify
     end
 
-    it "should set the new resources updated flag to true if manage_user is called" do
+    it 'should set the new resources updated flag to true if manage_user is called' do
       @provider.stub(:compare_user).and_return(true)
       @provider.stub(:manage_user).and_return(true)
       @provider.action_modify
@@ -368,7 +366,7 @@ describe Chef::Provider::User do
       @new_resource.should be_updated
     end
 
-    it "should not run manage_user if the user exists but has no differing attributes" do
+    it 'should not run manage_user if the user exists but has no differing attributes' do
       @provider.should_receive(:compare_user).and_return(false)
       @provider.should_not_receive(:manage_user)
       @provider.action_modify
@@ -380,18 +378,17 @@ describe Chef::Provider::User do
     end
   end
 
-
-  describe "action_lock" do
+  describe 'action_lock' do
     before(:each) do
       @provider.stub(:load_current_resource)
     end
-    it "should lock the user if it exists and is unlocked" do
+    it 'should lock the user if it exists and is unlocked' do
       @provider.stub(:check_lock).and_return(false)
       @provider.should_receive(:lock_user).and_return(true)
       @provider.action_lock
     end
 
-    it "should set the new resources updated flag to true if lock_user is called" do
+    it 'should set the new resources updated flag to true if lock_user is called' do
       @provider.stub(:check_lock).and_return(false)
       @provider.should_receive(:lock_user)
       @provider.action_lock
@@ -399,7 +396,7 @@ describe Chef::Provider::User do
       @new_resource.should be_updated
     end
 
-    it "should raise a Chef::Exceptions::User if we try and lock a user that does not exist" do
+    it 'should raise a Chef::Exceptions::User if we try and lock a user that does not exist' do
       @provider.user_exists = false
       @provider.action = :lock
 
@@ -407,7 +404,7 @@ describe Chef::Provider::User do
     end
   end
 
-  describe "action_unlock" do
+  describe 'action_unlock' do
     before(:each) do
       @provider.stub(:load_current_resource)
       # @node = Chef::Node.new
@@ -424,7 +421,7 @@ describe Chef::Provider::User do
       # @provider.stub(:unlock_user).and_return(true)
     end
 
-    it "should unlock the user if it exists and is locked" do
+    it 'should unlock the user if it exists and is locked' do
       @provider.stub(:check_lock).and_return(true)
       @provider.should_receive(:unlock_user).and_return(true)
       @provider.action_unlock
@@ -432,21 +429,21 @@ describe Chef::Provider::User do
       @new_resource.should be_updated
     end
 
-    it "should raise a Chef::Exceptions::User if we try and unlock a user that does not exist" do
+    it 'should raise a Chef::Exceptions::User if we try and unlock a user that does not exist' do
       @provider.user_exists = false
       @provider.action = :unlock
       lambda { @provider.run_action }.should raise_error(Chef::Exceptions::User)
     end
   end
 
-  describe "convert_group_name" do
+  describe 'convert_group_name' do
     before do
       @new_resource.gid('999')
       @group = EtcGrnamIsh.new('wheel', '*', 999, [])
     end
 
-    it "should lookup the group name locally" do
-      Etc.should_receive(:getgrnam).with("999").and_return(@group)
+    it 'should lookup the group name locally' do
+      Etc.should_receive(:getgrnam).with('999').and_return(@group)
       @provider.convert_group_name.should == 999
     end
 
@@ -457,8 +454,8 @@ describe Chef::Provider::User do
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::User)
     end
 
-    it "should set the new resources gid to the integerized version if available" do
-      Etc.should_receive(:getgrnam).with("999").and_return(@group)
+    it 'should set the new resources gid to the integerized version if available' do
+      Etc.should_receive(:getgrnam).with('999').and_return(@group)
       @provider.convert_group_name
       @new_resource.gid.should == 999
     end

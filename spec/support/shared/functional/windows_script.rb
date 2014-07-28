@@ -23,10 +23,10 @@ shared_context Chef::Resource::WindowsScript do
   before(:all) do
 
     ohai_reader = Ohai::System.new
-    ohai_reader.all_plugins("platform")
+    ohai_reader.all_plugins('platform')
 
     new_node = Chef::Node.new
-    new_node.consume_external_attrs(ohai_reader.data,{})
+    new_node.consume_external_attrs(ohai_reader.data, {})
 
     events = Chef::EventDispatch::Dispatcher.new
 
@@ -34,14 +34,14 @@ shared_context Chef::Resource::WindowsScript do
   end
 
   let(:script_output_path) do
-    File.join(Dir.tmpdir, make_tmpname("windows_script_test"))
+    File.join(Dir.tmpdir, make_tmpname('windows_script_test'))
   end
 
   before(:each) do
-    File.delete(script_output_path) if File.exists?(script_output_path)
+    File.delete(script_output_path) if File.exist?(script_output_path)
   end
 
   after(:each) do
-    File.delete(script_output_path) if File.exists?(script_output_path)
+    File.delete(script_output_path) if File.exist?(script_output_path)
   end
 end

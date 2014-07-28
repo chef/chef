@@ -20,7 +20,6 @@ require 'chef/knife'
 require 'chef/knife/cookbook_site_install'
 
 class Chef::Knife::CookbookSiteVendor < Chef::Knife::CookbookSiteInstall
-
   def self.load_deps
     superclass.load_deps
   end
@@ -42,5 +41,4 @@ DEPRECATED: please use knife cookbook site install
 B
 
   category 'deprecated'
-
 end

@@ -17,13 +17,11 @@
 # limitations under the License.
 #
 
-
 class Chef
   class Cookbook
     # == Chef::Cookbook::FileVendor
     # This class handles fetching of cookbook files based on specificity.
     class FileVendor
-
       def self.on_create(&block)
         @instance_creator = block
       end
@@ -31,7 +29,7 @@ class Chef
       # Factory method that creates the appropriate kind of
       # Cookbook::FileVendor to serve the contents of the manifest
       def self.create_from_manifest(manifest)
-        raise "Must call Chef::Cookbook::FileVendor.on_create before calling create_from_manifest factory" unless defined?(@instance_creator)
+        fail 'Must call Chef::Cookbook::FileVendor.on_create before calling create_from_manifest factory' unless defined?(@instance_creator)
         @instance_creator.call(manifest)
       end
 
@@ -39,10 +37,9 @@ class Chef
       #
       # Subclasses are responsible for determining exactly how the
       # files are obtained and where they are stored.
-      def get_filename(filename)
-        raise NotImplemented, "Subclasses must implement this method"
+      def get_filename(_filename)
+        fail NotImplemented, 'Subclasses must implement this method'
       end
-
     end
   end
 end

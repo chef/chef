@@ -23,113 +23,111 @@ require 'chef/monkey_patches/net_http.rb'
 require 'chef/monkey_patches/uri.rb'
 
 class Chef::Application::Knife < Chef::Application
-
   NO_COMMAND_GIVEN = "You need to pass a sub-command (e.g., knife SUB-COMMAND)\n"
 
-  banner "Usage: knife sub-command (options)"
+  banner 'Usage: knife sub-command (options)'
 
   option :config_file,
-    :short => "-c CONFIG",
-    :long  => "--config CONFIG",
-    :description => "The configuration file to use",
-    :proc => lambda { |path| File.expand_path(path, Dir.pwd) }
+         :short => '-c CONFIG',
+         :long  => '--config CONFIG',
+         :description => 'The configuration file to use',
+         :proc => lambda { |path| File.expand_path(path, Dir.pwd) }
 
   verbosity_level = 0
   option :verbosity,
-    :short => '-V',
-    :long  => '--verbose',
-    :description => "More verbose output. Use twice for max verbosity",
-    :proc  => Proc.new { verbosity_level += 1},
-    :default => 0
+         :short => '-V',
+         :long  => '--verbose',
+         :description => 'More verbose output. Use twice for max verbosity',
+         :proc  => proc { verbosity_level += 1 },
+         :default => 0
 
   option :color,
-    :long         => '--[no-]color',
-    :boolean      => true,
-    :default      => !Chef::Platform.windows?,
-    :description  => "Use colored output, defaults to false on Windows, true otherwise"
+         :long         => '--[no-]color',
+         :boolean      => true,
+         :default      => !Chef::Platform.windows?,
+         :description  => 'Use colored output, defaults to false on Windows, true otherwise'
 
   option :environment,
-    :short        => "-E ENVIRONMENT",
-    :long         => "--environment ENVIRONMENT",
-    :description  => "Set the Chef environment (except for in searches, where this will be flagrantly ignored)"
+         :short        => '-E ENVIRONMENT',
+         :long         => '--environment ENVIRONMENT',
+         :description  => 'Set the Chef environment (except for in searches, where this will be flagrantly ignored)'
 
   option :editor,
-    :short        => "-e EDITOR",
-    :long         => "--editor EDITOR",
-    :description  => "Set the editor to use for interactive commands",
-    :default      => ENV['EDITOR']
+         :short        => '-e EDITOR',
+         :long         => '--editor EDITOR',
+         :description  => 'Set the editor to use for interactive commands',
+         :default      => ENV['EDITOR']
 
   option :disable_editing,
-    :short        => "-d",
-    :long         => "--disable-editing",
-    :description  => "Do not open EDITOR, just accept the data as is",
-    :boolean      => true,
-    :defaut       => false
+         :short        => '-d',
+         :long         => '--disable-editing',
+         :description  => 'Do not open EDITOR, just accept the data as is',
+         :boolean      => true,
+         :defaut       => false
 
   option :help,
-    :short        => "-h",
-    :long         => "--help",
-    :description  => "Show this message",
-    :on           => :tail,
-    :boolean      => true
+         :short        => '-h',
+         :long         => '--help',
+         :description  => 'Show this message',
+         :on           => :tail,
+         :boolean      => true
 
   option :node_name,
-    :short => "-u USER",
-    :long => "--user USER",
-    :description => "API Client Username"
+         :short => '-u USER',
+         :long => '--user USER',
+         :description => 'API Client Username'
 
   option :client_key,
-    :short => "-k KEY",
-    :long => "--key KEY",
-    :description => "API Client Key",
-    :proc => lambda { |path| File.expand_path(path, Dir.pwd) }
+         :short => '-k KEY',
+         :long => '--key KEY',
+         :description => 'API Client Key',
+         :proc => lambda { |path| File.expand_path(path, Dir.pwd) }
 
   option :chef_server_url,
-    :short => "-s URL",
-    :long => "--server-url URL",
-    :description => "Chef Server URL"
+         :short => '-s URL',
+         :long => '--server-url URL',
+         :description => 'Chef Server URL'
 
   option :yes,
-    :short => "-y",
-    :long => "--yes",
-    :description => "Say yes to all prompts for confirmation"
+         :short => '-y',
+         :long => '--yes',
+         :description => 'Say yes to all prompts for confirmation'
 
   option :defaults,
-    :long => "--defaults",
-    :description => "Accept default values for all questions"
+         :long => '--defaults',
+         :description => 'Accept default values for all questions'
 
   option :print_after,
-    :long => "--print-after",
-    :description => "Show the data after a destructive operation"
+         :long => '--print-after',
+         :description => 'Show the data after a destructive operation'
 
   option :format,
-    :short => "-F FORMAT",
-    :long => "--format FORMAT",
-    :description => "Which format to use for output",
-    :default => "summary"
+         :short => '-F FORMAT',
+         :long => '--format FORMAT',
+         :description => 'Which format to use for output',
+         :default => 'summary'
 
   option :local_mode,
-    :short        => "-z",
-    :long         => "--local-mode",
-    :description  => "Point knife commands at local repository instead of server",
-    :boolean      => true
+         :short        => '-z',
+         :long         => '--local-mode',
+         :description  => 'Point knife commands at local repository instead of server',
+         :boolean      => true
 
   option :chef_zero_host,
-    :long         => "--chef-zero-host HOST",
-    :description  => "Host to start chef-zero on"
+         :long         => '--chef-zero-host HOST',
+         :description  => 'Host to start chef-zero on'
 
   option :chef_zero_port,
-    :long         => "--chef-zero-port PORT",
-    :description  => "Port (or port range) to start chef-zero on.  Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works."
+         :long         => '--chef-zero-port PORT',
+         :description  => 'Port (or port range) to start chef-zero on.  Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works.'
 
   option :version,
-    :short        => "-v",
-    :long         => "--version",
-    :description  => "Show chef version",
-    :boolean      => true,
-    :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
-    :exit         => 0
-
+         :short        => '-v',
+         :long         => '--version',
+         :description  => 'Show chef version',
+         :boolean      => true,
+         :proc         => lambda { |_v| puts "Chef: #{::Chef::VERSION}" },
+         :exit         => 0
 
   # Run knife
   def run
@@ -143,11 +141,11 @@ class Chef::Application::Knife < Chef::Application
   private
 
   def quiet_traps
-    trap("TERM") do
+    trap('TERM') do
       exit 1
     end
 
-    trap("INT") do
+    trap('INT') do
       exit 2
     end
   end
@@ -158,7 +156,7 @@ class Chef::Application::Knife < Chef::Application
     if no_command_given?
       print_help_and_exit(1, NO_COMMAND_GIVEN)
     elsif no_subcommand_given?
-      if (want_help? || want_version?)
+      if want_help? || want_version?
         print_help_and_exit
       else
         print_help_and_exit(2, NO_COMMAND_GIVEN)
@@ -182,18 +180,17 @@ class Chef::Application::Knife < Chef::Application
     ARGV[0] =~ /^(--version|-v)$/
   end
 
-  def print_help_and_exit(exitcode=1, fatal_message=nil)
+  def print_help_and_exit(exitcode = 1, fatal_message = nil)
     Chef::Log.error(fatal_message) if fatal_message
 
     begin
-      self.parse_options
+      parse_options
     rescue OptionParser::InvalidOption => e
       puts "#{e}\n"
     end
-    puts self.opt_parser
+    puts opt_parser
     puts
     Chef::Knife.list_commands
     exit exitcode
   end
-
 end

@@ -35,7 +35,7 @@ class Chef
     module FileSystem
       class ChefRepositoryFileSystemRootDir < BaseFSDir
         def initialize(child_paths)
-          super("", nil)
+          super('', nil)
           @child_paths = child_paths
         end
 
@@ -48,10 +48,10 @@ class Chef
         end
 
         def can_have_child?(name, is_dir)
-          child_paths.has_key?(name) && is_dir
+          child_paths.key?(name) && is_dir
         end
 
-        def create_child(name, file_contents = nil)
+        def create_child(name, _file_contents = nil)
           child_paths[name].each do |path|
             begin
               Dir.mkdir(path)
@@ -88,7 +88,7 @@ class Chef
 
         def make_child_entry(name)
           paths = child_paths[name].select do |path|
-            File.exists?(path)
+            File.exist?(path)
           end
           if paths.size == 0
             return nil
@@ -116,7 +116,7 @@ class Chef
               when 'containers'
                 Chef::ChefFS::DataHandler::ContainerDataHandler.new
               else
-                raise "Unknown top level path #{name}"
+                fail "Unknown top level path #{name}"
               end
             dirs = paths.map { |path| ChefRepositoryFileSystemEntry.new(name, self, path, data_handler) }
           end

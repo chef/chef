@@ -58,31 +58,31 @@ class Chef
         @ifconfig_success = true
         @interfaces = {}
 
-        @status = popen4("ifconfig") do |pid, stdin, stdout, stderr|
+        @status = popen4('ifconfig') do |_pid, _stdin, stdout, _stderr|
           stdout.each do |line|
 
             if !line[0..9].strip.empty?
               @int_name = line[0..9].strip
-              @interfaces[@int_name] = {"hwaddr" => (line =~ /(HWaddr)/ ? ($') : "nil").strip.chomp }
+              @interfaces[@int_name] = { 'hwaddr' => (line =~ /(HWaddr)/ ? ($') : 'nil').strip.chomp }
             else
-              @interfaces[@int_name]["inet_addr"] = (line =~ /inet addr:(\S+)/ ? ($1) : "nil") if line =~ /inet addr:/
-              @interfaces[@int_name]["bcast"] = (line =~ /Bcast:(\S+)/ ? ($1) : "nil") if line =~ /Bcast:/
-              @interfaces[@int_name]["mask"] = (line =~ /Mask:(\S+)/ ? ($1) : "nil") if line =~ /Mask:/
-              @interfaces[@int_name]["mtu"] = (line =~ /MTU:(\S+)/ ? ($1) : "nil") if line =~ /MTU:/
-              @interfaces[@int_name]["metric"] = (line =~ /Metric:(\S+)/ ? ($1) : "nil") if line =~ /Metric:/
+              @interfaces[@int_name]['inet_addr'] = (line =~ /inet addr:(\S+)/ ? (Regexp.last_match[1]) : 'nil') if line =~ /inet addr:/
+              @interfaces[@int_name]['bcast'] = (line =~ /Bcast:(\S+)/ ? (Regexp.last_match[1]) : 'nil') if line =~ /Bcast:/
+              @interfaces[@int_name]['mask'] = (line =~ /Mask:(\S+)/ ? (Regexp.last_match[1]) : 'nil') if line =~ /Mask:/
+              @interfaces[@int_name]['mtu'] = (line =~ /MTU:(\S+)/ ? (Regexp.last_match[1]) : 'nil') if line =~ /MTU:/
+              @interfaces[@int_name]['metric'] = (line =~ /Metric:(\S+)/ ? (Regexp.last_match[1]) : 'nil') if line =~ /Metric:/
             end
 
-            if @interfaces.has_key?(@new_resource.device)
+            if @interfaces.key?(@new_resource.device)
               @interface = @interfaces.fetch(@new_resource.device)
 
               @current_resource.target(@new_resource.target)
               @current_resource.device(@new_resource.device)
-              @current_resource.inet_addr(@interface["inet_addr"])
-              @current_resource.hwaddr(@interface["hwaddr"])
-              @current_resource.bcast(@interface["bcast"])
-              @current_resource.mask(@interface["mask"])
-              @current_resource.mtu(@interface["mtu"])
-              @current_resource.metric(@interface["metric"])
+              @current_resource.inet_addr(@interface['inet_addr'])
+              @current_resource.hwaddr(@interface['hwaddr'])
+              @current_resource.bcast(@interface['bcast'])
+              @current_resource.mask(@interface['mask'])
+              @current_resource.mtu(@interface['mtu'])
+              @current_resource.metric(@interface['metric'])
             end
           end
         end
@@ -165,7 +165,7 @@ class Chef
       end
 
       def can_generate_config?
-        ! @config_template.nil? and ! @config_path.nil?
+        ! @config_template.nil? && ! @config_path.nil?
       end
 
       def generate_config
@@ -173,7 +173,7 @@ class Chef
         b = binding
         template = ::ERB.new(@config_template)
         converge_by ("generate configuration file : #{@config_path}") do
-          network_file = ::File.new(@config_path, "w")
+          network_file = ::File.new(@config_path, 'w')
           network_file.puts(template.result(b))
           network_file.close
         end

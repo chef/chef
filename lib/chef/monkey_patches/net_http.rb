@@ -21,7 +21,7 @@ module Net
   end
 end
 
-if Net::HTTP.instance_methods.map {|m| m.to_s}.include?("proxy_uri")
+if Net::HTTP.instance_methods.map { |m| m.to_s }.include?('proxy_uri')
   begin
     # Ruby 2.0 changes the way proxy support is implemented in Net::HTTP.
     # The implementation does not work correctly with IPv6 literals because it
@@ -42,15 +42,13 @@ if Net::HTTP.instance_methods.map {|m| m.to_s}.include?("proxy_uri")
     #    	from -e:1:in `<main>'
     #
     # https://bugs.ruby-lang.org/issues/9129
-    Net::HTTP.new("::1", 80).proxy_uri
+    Net::HTTP.new('::1', 80).proxy_uri
   rescue URI::InvalidURIError
     class Net::HTTP
-
       def proxy_uri # :nodoc:
-        ipv6_safe_addr = address.to_s.include?(":") ? "[#{address}]" : address
+        ipv6_safe_addr = address.to_s.include?(':') ? "[#{address}]" : address
         @proxy_uri ||= URI("http://#{ipv6_safe_addr}:#{port}").find_proxy
       end
-
     end
   end
 end

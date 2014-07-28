@@ -33,9 +33,9 @@ describe Chef::Knife::ConfigureClient do
     it 'should print usage and exit when a directory is not provided' do
       @knife.should_receive(:show_usage)
       @knife.ui.should_receive(:fatal).with(/must provide the directory/)
-      lambda {
+      lambda do
         @knife.run
-      }.should raise_error SystemExit
+      end.should raise_error SystemExit
     end
 
     describe 'when specifing a directory' do
@@ -81,4 +81,3 @@ describe Chef::Knife::ConfigureClient do
   end
 
 end
-

@@ -19,8 +19,7 @@
 class Chef
   module Mixin
     module Securable
-
-      def owner(arg=nil)
+      def owner(arg = nil)
         set_or_return(
           :owner,
           arg,
@@ -28,9 +27,9 @@ class Chef
         )
       end
 
-      alias :user :owner
+      alias_method :user, :owner
 
-      def group(arg=nil)
+      def group(arg = nil)
         set_or_return(
           :group,
           arg,
@@ -38,29 +37,28 @@ class Chef
         )
       end
 
-      def mode(arg=nil)
+      def mode(arg = nil)
         set_or_return(
           :mode,
           arg,
           :callbacks => {
-            "not in valid numeric range" => lambda { |m|
-              if m.kind_of?(String)
-                m =~ /^0/ || m="0#{m}"
+            'not in valid numeric range' => lambda do |m|
+              if m.is_a?(String)
+                m =~ /^0/ || m = "0#{m}"
               end
 
               # Windows does not support the sticky or setuid bits
               if Chef::Platform.windows?
-                Integer(m)<=0777 && Integer(m)>=0
+                Integer(m) <= 0777 && Integer(m) >= 0
               else
-                Integer(m)<=07777 && Integer(m)>=0
+                Integer(m) <= 07777 && Integer(m) >= 0
               end
-            },
+            end,
           }
         )
       end
 
-
-      #==WindowsMacros
+      # ==WindowsMacros
       # Defines methods for adding attributes to a chef resource to describe
       # Windows file security metadata.
       #
@@ -108,7 +106,6 @@ class Chef
         # * `:one_level_deep` (optional): Boolean
         #
         def rights_attribute(name)
-
           # equivalent to something like:
           # def rights(permissions=nil, principals=nil, args_hash=nil)
           define_method(name) do |*args|
@@ -116,9 +113,9 @@ class Chef
             permissions = args.length >= 1 ? args[0] : nil
             principals = args.length >= 2 ? args[1] : nil
             args_hash = args.length >= 3 ? args[2] : nil
-            raise ArgumentError.new("wrong number of arguments (#{args.length} for 3)") if args.length >= 4
+            fail ArgumentError.new("wrong number of arguments (#{args.length} for 3)") if args.length >= 4
 
-            rights = self.instance_variable_get("@#{name.to_s}".to_sym)
+            rights = instance_variable_get("@#{name}".to_sym)
             unless permissions.nil?
               input = {
                 :permissions => permissions,
@@ -126,36 +123,36 @@ class Chef
               }
               input.merge!(args_hash) unless args_hash.nil?
 
-              validations = {:permissions => { :required => true },
-                             :principals => { :required => true, :kind_of => [String, Array] },
-                             :applies_to_children => { :equal_to => [ true, false, :containers_only, :objects_only ]},
-                             :applies_to_self => { :kind_of => [ TrueClass, FalseClass ] },
-                             :one_level_deep => { :kind_of => [ TrueClass, FalseClass ] }
+              validations = { :permissions => { :required => true },
+                              :principals => { :required => true, :kind_of => [String, Array] },
+                              :applies_to_children => { :equal_to => [true, false, :containers_only, :objects_only] },
+                              :applies_to_self => { :kind_of => [TrueClass, FalseClass] },
+                              :one_level_deep => { :kind_of => [TrueClass, FalseClass] }
                             }
               validate(input, validations)
 
-              [ permissions ].flatten.each do |permission|
+              [permissions].flatten.each do |permission|
                 if permission.is_a?(Integer)
-                  if permission < 0 || permission > 1<<32
-                    raise ArgumentError, "permissions flags must be positive and <= 32 bits (#{permission})"
+                  if permission < 0 || permission > 1 << 32
+                    fail ArgumentError, "permissions flags must be positive and <= 32 bits (#{permission})"
                   end
                 elsif !([:full_control, :modify, :read_execute, :read, :write].include?(permission.to_sym))
-                  raise ArgumentError, "permissions parameter must be :full_control, :modify, :read_execute, :read, :write or an integer representing Windows permission flags"
+                  fail ArgumentError, 'permissions parameter must be :full_control, :modify, :read_execute, :read, :write or an integer representing Windows permission flags'
                 end
               end
 
-              [ principals ].flatten.each do |principal|
-                if !principal.is_a?(String)
-                  raise ArgumentError, "principals parameter must be a string or array of strings representing usernames"
+              [principals].flatten.each do |principal|
+                unless principal.is_a?(String)
+                  fail ArgumentError, 'principals parameter must be a string or array of strings representing usernames'
                 end
               end
 
               if input[:applies_to_children] == false
                 if input[:applies_to_self] == false
-                  raise ArgumentError, "'rights' attribute must specify either :applies_to_children or :applies_to_self."
+                  fail ArgumentError, "'rights' attribute must specify either :applies_to_children or :applies_to_self."
                 end
                 if input[:one_level_deep] == true
-                  raise ArgumentError, "'rights' attribute specified :one_level_deep without specifying :applies_to_children."
+                  fail ArgumentError, "'rights' attribute specified :one_level_deep without specifying :applies_to_children."
                 end
               end
               rights ||= []
@@ -170,17 +167,15 @@ class Chef
         end
       end
 
-      #==WindowsSecurableAttributes
+      # ==WindowsSecurableAttributes
       # Defines #inherits to describe Windows file security ACLs on the
       # including class
       module WindowsSecurableAttributes
-
-
-        def inherits(arg=nil)
+        def inherits(arg = nil)
           set_or_return(
             :inherits,
             arg,
-            :kind_of => [ TrueClass, FalseClass ]
+            :kind_of => [TrueClass, FalseClass]
           )
         end
       end
@@ -199,7 +194,6 @@ class Chef
           including_class.rights_attribute(:deny_rights)
         end
       end
-
     end
   end
 end

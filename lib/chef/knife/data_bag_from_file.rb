@@ -22,7 +22,6 @@ require 'chef/knife'
 class Chef
   class Knife
     class DataBagFromFile < Knife
-
       deps do
         require 'chef/data_bag'
         require 'chef/data_bag_item'
@@ -31,24 +30,24 @@ class Chef
         require 'chef/encrypted_data_bag_item'
       end
 
-      banner "knife data bag from file BAG FILE|FOLDER [FILE|FOLDER..] (options)"
-      category "data bag"
+      banner 'knife data bag from file BAG FILE|FOLDER [FILE|FOLDER..] (options)'
+      category 'data bag'
 
       option :secret,
-        :short => "-s SECRET",
-        :long  => "--secret ",
-        :description => "The secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
+             :short => '-s SECRET',
+             :long  => '--secret ',
+             :description => 'The secret key to use to encrypt data bag item values',
+             :proc => proc { |s| Chef::Config[:knife][:secret] = s }
 
       option :secret_file,
-        :long => "--secret-file SECRET_FILE",
-        :description => "A file containing the secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
+             :long => '--secret-file SECRET_FILE',
+             :description => 'A file containing the secret key to use to encrypt data bag item values',
+             :proc => proc { |sf| Chef::Config[:knife][:secret_file] = sf }
 
       option :all,
-        :short => "-a",
-        :long  => "--all",
-        :description => "Upload all data bags or all items for specified data bags"
+             :short => '-a',
+             :long  => '--all',
+             :description => 'Upload all data bags or all items for specified data bags'
 
       def read_secret
         if config[:secret]
@@ -60,7 +59,7 @@ class Chef
 
       def use_encryption
         if config[:secret] && config[:secret_file]
-          ui.fatal("please specify only one of --secret, --secret-file")
+          ui.fatal('please specify only one of --secret, --secret-file')
           exit(1)
         end
         config[:secret] || config[:secret_file]
@@ -85,7 +84,7 @@ class Chef
 
       private
       def data_bags_path
-        @data_bag_path ||= "data_bags"
+        @data_bag_path ||= 'data_bags'
       end
 
       def find_all_data_bags
@@ -123,10 +122,10 @@ class Chef
       end
 
       def normalize_item_paths(args)
-        paths = Array.new
+        paths = []
         args.each do |path|
           if File.directory?(path)
-            paths.concat(Dir.glob(File.join(path, "*.json")))
+            paths.concat(Dir.glob(File.join(path, '*.json')))
           else
             paths << path
           end

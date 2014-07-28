@@ -23,11 +23,11 @@ class SpecService < ::Win32::Daemon
     @test_service_file = "#{ENV['TMP']}/spec_service_file"
   end
 
-  def service_main(*startup_parameters)
-    while running? do
-      if !File.exists?(@test_service_file)
+  def service_main(*_startup_parameters)
+    while running?
+      unless File.exist?(@test_service_file)
         File.open(@test_service_file, 'wb') do |f|
-          f.write("This file is created by SpecService")
+          f.write('This file is created by SpecService')
         end
       end
 
@@ -54,6 +54,6 @@ end
 
 # To run this file as a service, it must be called as a script from within
 # the Windows Service framework.  In that case, kick off the main loop!
-if __FILE__ == $0
+if __FILE__ == $PROGRAM_NAME
   SpecService.mainloop
 end

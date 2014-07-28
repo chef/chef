@@ -24,109 +24,109 @@ describe Chef::Provider::Group::Pw do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @new_resource = Chef::Resource::Group.new("wheel")
+    @new_resource = Chef::Resource::Group.new('wheel')
     @new_resource.gid 50
-    @new_resource.members [ "root", "aj"]
+    @new_resource.members %w(root aj)
 
-    @current_resource = Chef::Resource::Group.new("aj")
+    @current_resource = Chef::Resource::Group.new('aj')
     @current_resource.gid 50
-    @current_resource.members [ "root", "aj"]
+    @current_resource.members %w(root aj)
     @provider = Chef::Provider::Group::Pw.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
   end
 
-  describe "when setting options for the pw command" do
-    it "does not set the gid option if gids match or are unmanaged" do
-      @provider.set_options.should ==  " wheel"
+  describe 'when setting options for the pw command' do
+    it 'does not set the gid option if gids match or are unmanaged' do
+      @provider.set_options.should ==  ' wheel'
     end
 
-    it "sets the option for gid if it is not nil" do
+    it 'sets the option for gid if it is not nil' do
       @new_resource.gid(42)
       @provider.set_options.should eql(" wheel -g '42'")
     end
   end
 
-  describe "when creating a group" do
-    it "should run pw groupadd with the return of set_options and set_members_option" do
+  describe 'when creating a group' do
+    it 'should run pw groupadd with the return of set_options and set_members_option' do
       @new_resource.gid(23)
-      @provider.should_receive(:run_command).with({ :command => "pw groupadd wheel -g '23'" }).and_return(true)
+      @provider.should_receive(:run_command).with(:command => "pw groupadd wheel -g '23'").and_return(true)
       @provider.create_group
     end
   end
 
-  describe "when managing the group" do
+  describe 'when managing the group' do
 
-    it "should run pw groupmod with the return of set_options" do
+    it 'should run pw groupmod with the return of set_options' do
       @new_resource.gid(42)
-      @new_resource.members(["someone"])
-      @provider.should_receive(:run_command).with({ :command => "pw groupmod wheel -g '42' -m someone" }).and_return(true)
-      @provider.should_receive(:run_command).with({ :command => "pw groupmod wheel -g '42' -d root,aj" }).and_return(true)
+      @new_resource.members(['someone'])
+      @provider.should_receive(:run_command).with(:command => "pw groupmod wheel -g '42' -m someone").and_return(true)
+      @provider.should_receive(:run_command).with(:command => "pw groupmod wheel -g '42' -d root,aj").and_return(true)
       @provider.manage_group
     end
 
   end
 
-  describe "when removing the group" do
-    it "should run pw groupdel with the new resources group name" do
-      @provider.should_receive(:run_command).with({ :command => "pw groupdel wheel" }).and_return(true)
+  describe 'when removing the group' do
+    it 'should run pw groupdel with the new resources group name' do
+      @provider.should_receive(:run_command).with(:command => 'pw groupdel wheel').and_return(true)
       @provider.remove_group
     end
   end
 
-  describe "when setting group membership" do
+  describe 'when setting group membership' do
 
-    describe "with an empty members array in both the new and current resource" do
+    describe 'with an empty members array in both the new and current resource' do
       before do
         @new_resource.stub(:members).and_return([])
         @current_resource.stub(:members).and_return([])
       end
 
-      it "should set no options" do
-        @provider.set_members_options.should eql([ ])
+      it 'should set no options' do
+        @provider.set_members_options.should eql([])
       end
     end
 
-    describe "with an empty members array in the new resource and existing members in the current resource" do
+    describe 'with an empty members array in the new resource and existing members in the current resource' do
       before do
         @new_resource.stub(:members).and_return([])
-        @current_resource.stub(:members).and_return(["all", "your", "base"])
+        @current_resource.stub(:members).and_return(%w(all your base))
       end
 
-      it "should log an appropriate message" do
-        Chef::Log.should_receive(:debug).with("group[wheel] removing group members: all,your,base")
+      it 'should log an appropriate message' do
+        Chef::Log.should_receive(:debug).with('group[wheel] removing group members: all,your,base')
         @provider.set_members_options
       end
 
       it "should set the -d option with the members joined by ','" do
-        @provider.set_members_options.should eql([ " -d all,your,base" ])
+        @provider.set_members_options.should eql([' -d all,your,base'])
       end
     end
 
-    describe "with supplied members array in the new resource and an empty members array in the current resource" do
+    describe 'with supplied members array in the new resource and an empty members array in the current resource' do
       before do
-        @new_resource.stub(:members).and_return(["all", "your", "base"])
+        @new_resource.stub(:members).and_return(%w(all your base))
         @current_resource.stub(:members).and_return([])
       end
 
-      it "should log an appropriate debug message" do
-        Chef::Log.should_receive(:debug).with("group[wheel] adding group members: all,your,base")
+      it 'should log an appropriate debug message' do
+        Chef::Log.should_receive(:debug).with('group[wheel] adding group members: all,your,base')
         @provider.set_members_options
       end
 
       it "should set the -M option with the members joined by ','" do
-        @provider.set_members_options.should eql([ " -m all,your,base" ])
+        @provider.set_members_options.should eql([' -m all,your,base'])
       end
     end
   end
 
-  describe"load_current_resource" do
+  describe'load_current_resource' do
     before (:each) do
       @provider.action = :create
       @provider.load_current_resource
       @provider.define_resource_requirements
     end
     it "should raise an error if the required binary /usr/sbin/pw doesn't exist" do
-      File.should_receive(:exists?).with("/usr/sbin/pw").and_return(false)
+      File.should_receive(:exists?).with('/usr/sbin/pw').and_return(false)
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Group)
     end
 

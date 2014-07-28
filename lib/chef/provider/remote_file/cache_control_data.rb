@@ -28,7 +28,6 @@ require 'chef/exceptions'
 class Chef
   class Provider
     class RemoteFile
-
       # == CacheControlData
       # Implements per-uri storage of cache control data for a remote resource
       # along with a sanity check checksum of the file in question.
@@ -51,7 +50,6 @@ class Chef
       # with new etag, mtime and checksum values in whatever format is
       # preferred by the protocol used. Then call #save to save the data to disk.
       class CacheControlData
-
         def self.load_and_validate(uri, current_copy_checksum)
           ccdata = new(uri)
           ccdata.load
@@ -82,7 +80,7 @@ class Chef
 
         def initialize(uri)
           uri = uri.dup
-          uri.password = "XXXX" unless uri.userinfo.nil?
+          uri.password = 'XXXX' unless uri.userinfo.nil?
           @uri = uri.to_s
         end
 
@@ -122,9 +120,9 @@ class Chef
 
         def hash_data
           as_hash = {}
-          as_hash["etag"]     = etag
-          as_hash["mtime"]    = mtime
-          as_hash["checksum"] = checksum
+          as_hash['etag']     = etag
+          as_hash['mtime']    = mtime
+          as_hash['checksum'] = checksum
           as_hash
         end
 
@@ -133,9 +131,9 @@ class Chef
         end
 
         def apply(previous_cc_data)
-          @etag = previous_cc_data["etag"]
-          @mtime = previous_cc_data["mtime"]
-          @checksum = previous_cc_data["checksum"]
+          @etag = previous_cc_data['etag']
+          @mtime = previous_cc_data['mtime']
+          @checksum = previous_cc_data['checksum']
         end
 
         def load_data
@@ -156,10 +154,7 @@ class Chef
           uri_md5 = Chef::Digester.instance.generate_md5_checksum(StringIO.new(uri))
           "#{scrubbed_uri}-#{uri_md5}.json"
         end
-
       end
     end
   end
 end
-
-

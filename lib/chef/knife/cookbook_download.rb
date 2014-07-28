@@ -22,7 +22,6 @@ require 'chef/knife'
 class Chef
   class Knife
     class CookbookDownload < Knife
-
       attr_reader :version
       attr_accessor :cookbook_name
 
@@ -30,24 +29,24 @@ class Chef
         require 'chef/cookbook_version'
       end
 
-      banner "knife cookbook download COOKBOOK [VERSION] (options)"
+      banner 'knife cookbook download COOKBOOK [VERSION] (options)'
 
       option :latest,
-       :short => "-N",
-       :long => "--latest",
-       :description => "The version of the cookbook to download",
-       :boolean => true
+             :short => '-N',
+             :long => '--latest',
+             :description => 'The version of the cookbook to download',
+             :boolean => true
 
       option :download_directory,
-       :short => "-d DOWNLOAD_DIRECTORY",
-       :long => "--dir DOWNLOAD_DIRECTORY",
-       :description => "The directory to download the cookbook into",
-       :default => Dir.pwd
+             :short => '-d DOWNLOAD_DIRECTORY',
+             :long => '--dir DOWNLOAD_DIRECTORY',
+             :description => 'The directory to download the cookbook into',
+             :default => Dir.pwd
 
       option :force,
-       :short => "-f",
-       :long => "--force",
-       :description => "Force download over the download directory if it exists"
+             :short => '-f',
+             :long => '--force',
+             :description => 'Force download over the download directory if it exists'
 
       # TODO: tim/cw: 5-23-2010: need to implement knife-side
       # specificity for downloads - need to implement --platform and
@@ -57,12 +56,12 @@ class Chef
 
         if @cookbook_name.nil?
           show_usage
-          ui.fatal("You must specify a cookbook name")
+          ui.fatal('You must specify a cookbook name')
           exit 1
         elsif @version.nil?
           @version = determine_version
           if @version.nil?
-            ui.fatal("No such cookbook found")
+            ui.fatal('No such cookbook found')
             exit 1
           end
         end
@@ -73,7 +72,7 @@ class Chef
         manifest = cookbook.manifest
 
         basedir = File.join(config[:download_directory], "#{@cookbook_name}-#{cookbook.version}")
-        if File.exists?(basedir)
+        if File.exist?(basedir)
           if config[:force]
             Chef::Log.debug("Deleting #{basedir}")
             FileUtils.rm_rf(basedir)
@@ -84,7 +83,7 @@ class Chef
         end
 
         Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
-          next unless manifest.has_key?(segment)
+          next unless manifest.key?(segment)
           ui.info("Downloading #{segment}")
           manifest[segment].each do |segment_file|
             dest = File.join(basedir, segment_file['path'].gsub('/', File::SEPARATOR))
@@ -99,7 +98,6 @@ class Chef
       end
 
       def determine_version
-
         if available_versions.nil?
           nil
         elsif available_versions.size == 1
@@ -139,7 +137,6 @@ class Chef
         end
         @version
       end
-
     end
   end
 end

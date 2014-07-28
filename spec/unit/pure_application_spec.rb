@@ -21,11 +21,11 @@
 
 require 'chef/application'
 
-describe "Chef::Application" do
+describe 'Chef::Application' do
   let(:app) { Chef::Application.new }
 
-  describe "load_config_file" do
-    it "calls ConfigFetcher successfully without NameError" do
+  describe 'load_config_file' do
+    it 'calls ConfigFetcher successfully without NameError' do
       expect { app.load_config_file }.not_to raise_error
     end
   end

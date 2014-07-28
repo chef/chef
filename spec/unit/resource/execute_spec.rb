@@ -20,7 +20,7 @@
 require 'spec_helper'
 
 describe Chef::Resource::Execute do
-  let(:resource_instance_name) { "some command" }
+  let(:resource_instance_name) { 'some command' }
   let(:execute_resource) { Chef::Resource::Execute.new(resource_instance_name) }
-  it_behaves_like "an execute resource"
+  it_behaves_like 'an execute resource'
 end

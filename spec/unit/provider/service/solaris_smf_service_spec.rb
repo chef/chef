@@ -20,7 +20,7 @@ require 'spec_helper'
 
 describe Chef::Provider::Service::Solaris do
   before(:each) do
-    @node =Chef::Node.new
+    @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
@@ -35,75 +35,74 @@ describe Chef::Provider::Service::Solaris do
     @stdout = StringIO.new
     @stderr = StringIO.new
     @pid = 2342
-    @stdout_string = "state disabled"
+    @stdout_string = 'state disabled'
     @stdout.stub(:gets).and_return(@stdout_string)
-    @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+    @status = double('Status', :exitstatus => 0, :stdout => @stdout)
     @provider.stub(:shell_out!).and_return(@status)
   end
 
-  it "should raise an error if /bin/svcs does not exist" do
-    File.should_receive(:exists?).with("/bin/svcs").and_return(false)
+  it 'should raise an error if /bin/svcs does not exist' do
+    File.should_receive(:exists?).with('/bin/svcs').and_return(false)
     lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
   end
 
-  describe "on a host with /bin/svcs" do
+  describe 'on a host with /bin/svcs' do
 
     before do
       File.stub(:exists?).with('/bin/svcs').and_return(true)
     end
 
-    describe "when discovering the current service state" do
-      it "should create a current resource with the name of the new resource" do
-        @provider.stub(:shell_out!).with("/bin/svcs -l chef").and_return(@status)
+    describe 'when discovering the current service state' do
+      it 'should create a current resource with the name of the new resource' do
+        @provider.stub(:shell_out!).with('/bin/svcs -l chef').and_return(@status)
         Chef::Resource::Service.should_receive(:new).and_return(@current_resource)
         @provider.load_current_resource
       end
 
-
-      it "should return the current resource" do
-        @provider.stub(:shell_out!).with("/bin/svcs -l chef").and_return(@status)
+      it 'should return the current resource' do
+        @provider.stub(:shell_out!).with('/bin/svcs -l chef').and_return(@status)
         @provider.load_current_resource.should eql(@current_resource)
       end
 
       it "should call '/bin/svcs -l service_name'" do
-        @provider.should_receive(:shell_out!).with("/bin/svcs -l chef", {:returns=>[0, 1]}).and_return(@status)
+        @provider.should_receive(:shell_out!).with('/bin/svcs -l chef', :returns => [0, 1]).and_return(@status)
         @provider.load_current_resource
       end
 
-      it "should mark service as not running" do
+      it 'should mark service as not running' do
         @provider.stub(:shell_out!).and_return(@status)
         @current_resource.should_receive(:running).with(false)
         @provider.load_current_resource
       end
 
-      it "should mark service as running" do
-        @status = double("Status", :exitstatus => 0, :stdout => 'state online')
+      it 'should mark service as running' do
+        @status = double('Status', :exitstatus => 0, :stdout => 'state online')
         @provider.stub(:shell_out!).and_return(@status)
         @current_resource.should_receive(:running).with(true)
         @provider.load_current_resource
       end
 
-      it "should not mark service as maintenance" do
+      it 'should not mark service as maintenance' do
         @provider.stub(:shell_out!).and_return(@status)
         @provider.load_current_resource
         @provider.maintenance.should be_false
       end
 
-      it "should mark service as maintenance" do
-        @status = double("Status", :exitstatus => 0, :stdout => 'state maintenance')
+      it 'should mark service as maintenance' do
+        @status = double('Status', :exitstatus => 0, :stdout => 'state maintenance')
         @provider.stub(:shell_out!).and_return(@status)
         @provider.load_current_resource
         @provider.maintenance.should be_true
       end
     end
 
-    describe "when enabling the service" do
+    describe 'when enabling the service' do
       before(:each) do
         @provider.current_resource = @current_resource
         @current_resource.enabled(true)
       end
 
-      it "should call svcadm enable -s chef" do
+      it 'should call svcadm enable -s chef' do
         @new_resource.stub(:enable_command).and_return("#{@new_resource.enable_command}")
         @provider.should_not_receive(:shell_out!).with("/usr/sbin/svcadm clear #{@current_resource.service_name}")
         @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm enable -s #{@current_resource.service_name}").and_return(@status)
@@ -111,7 +110,7 @@ describe Chef::Provider::Service::Solaris do
         @current_resource.enabled.should be_true
       end
 
-      it "should call svcadm enable -s chef for start_service" do
+      it 'should call svcadm enable -s chef for start_service' do
         @new_resource.stub(:start_command).and_return("#{@new_resource.start_command}")
         @provider.should_not_receive(:shell_out!).with("/usr/sbin/svcadm clear #{@current_resource.service_name}")
         @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm enable -s #{@current_resource.service_name}").and_return(@status)
@@ -119,8 +118,8 @@ describe Chef::Provider::Service::Solaris do
         @current_resource.enabled.should be_true
       end
 
-      it "should call svcadm clear chef for start_service when state maintenance" do
-        @status = double("Status", :exitstatus => 0, :stdout => 'state maintenance')
+      it 'should call svcadm clear chef for start_service when state maintenance' do
+        @status = double('Status', :exitstatus => 0, :stdout => 'state maintenance')
         @provider.stub(:shell_out!).and_return(@status)
         @provider.load_current_resource
         @new_resource.stub(:enable_command).and_return("#{@new_resource.enable_command}")
@@ -131,35 +130,34 @@ describe Chef::Provider::Service::Solaris do
       end
     end
 
-
-    describe "when disabling the service" do
+    describe 'when disabling the service' do
       before(:each) do
         @provider.current_resource = @current_resource
         @current_resource.enabled(false)
       end
 
-      it "should call svcadm disable -s chef" do
-        @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm disable -s chef").and_return(@status)
+      it 'should call svcadm disable -s chef' do
+        @provider.should_receive(:shell_out!).with('/usr/sbin/svcadm disable -s chef').and_return(@status)
         @provider.disable_service.should be_true
         @current_resource.enabled.should be_false
       end
 
-      it "should call svcadm disable -s chef for stop_service" do
-        @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm disable -s chef").and_return(@status)
+      it 'should call svcadm disable -s chef for stop_service' do
+        @provider.should_receive(:shell_out!).with('/usr/sbin/svcadm disable -s chef').and_return(@status)
         @provider.stop_service.should be_true
         @current_resource.enabled.should be_false
       end
 
     end
 
-    describe "when reloading the service" do
+    describe 'when reloading the service' do
       before(:each) do
-        @status = double("Process::Status", :exitstatus => 0)
+        @status = double('Process::Status', :exitstatus => 0)
         @provider.current_resource = @current_resource
       end
 
-      it "should call svcadm refresh chef" do
-        @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm refresh chef").and_return(@status)
+      it 'should call svcadm refresh chef' do
+        @provider.should_receive(:shell_out!).with('/usr/sbin/svcadm refresh chef').and_return(@status)
         @provider.reload_service
       end
 
@@ -167,19 +165,19 @@ describe Chef::Provider::Service::Solaris do
 
     describe "when the service doesn't exist" do
       before(:each) do
-        @stdout_string = ""
-        @status = double("Status", :exitstatus => 1, :stdout => @stdout)
+        @stdout_string = ''
+        @status = double('Status', :exitstatus => 1, :stdout => @stdout)
         @provider.current_resource = @current_resource
       end
 
-      it "should be marked not running" do
-        @provider.should_receive(:shell_out!).with("/bin/svcs -l chef", {:returns=>[0, 1]}).and_return(@status)
+      it 'should be marked not running' do
+        @provider.should_receive(:shell_out!).with('/bin/svcs -l chef', :returns => [0, 1]).and_return(@status)
         @provider.service_status
         @current_resource.running.should be_false
       end
 
-      it "should be marked not enabled" do
-        @provider.should_receive(:shell_out!).with("/bin/svcs -l chef", {:returns=>[0, 1]}).and_return(@status)
+      it 'should be marked not enabled' do
+        @provider.should_receive(:shell_out!).with('/bin/svcs -l chef', :returns => [0, 1]).and_return(@status)
         @provider.service_status
         @current_resource.enabled.should be_false
       end

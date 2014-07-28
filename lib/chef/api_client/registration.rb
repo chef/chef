@@ -22,7 +22,6 @@ require 'chef/exceptions'
 
 class Chef
   class ApiClient
-
     # ==Chef::ApiClient::Registration
     # Manages the process of creating or updating a Chef::ApiClient on the
     # server and writing the resulting private key to disk. Registration uses
@@ -66,8 +65,8 @@ class Chef
       end
 
       def assert_destination_writable!
-        if (File.exists?(destination) && !File.writable?(destination)) or !File.writable?(File.dirname(destination))
-          raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?"
+        if (File.exist?(destination) && !File.writable?(destination)) || !File.writable?(File.dirname(destination))
+          fail Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?"
         end
       end
 
@@ -84,13 +83,13 @@ class Chef
       rescue Net::HTTPServerException => e
         # If create fails because the client exists, attempt to update. This
         # requires admin privileges.
-        raise unless e.response.code == "409"
+        raise unless e.response.code == '409'
         update
       end
 
       def create
-        response = http_api.post("clients", post_data)
-        @server_generated_private_key = response["private_key"]
+        response = http_api.post('clients', post_data)
+        @server_generated_private_key = response['private_key']
         response
       end
 
@@ -99,7 +98,7 @@ class Chef
         if response.respond_to?(:private_key) # Chef 11
           @server_generated_private_key = response.private_key
         else # Chef 10
-          @server_generated_private_key = response["private_key"]
+          @server_generated_private_key = response['private_key']
         end
         response
       end
@@ -119,7 +118,6 @@ class Chef
         post_data[:public_key] = generated_public_key if self_generate_keys?
         post_data
       end
-
 
       def http_api
         @http_api_as_validator ||= Chef::REST.new(Chef::Config[:chef_server_url],
@@ -151,7 +149,7 @@ class Chef
       end
 
       def file_flags
-        base_flags = File::CREAT|File::TRUNC|File::RDWR
+        base_flags = File::CREAT | File::TRUNC | File::RDWR
         # Windows doesn't have symlinks, so it doesn't have NOFOLLOW
         base_flags |= File::NOFOLLOW if defined?(File::NOFOLLOW)
         base_flags
@@ -159,5 +157,3 @@ class Chef
     end
   end
 end
-
-

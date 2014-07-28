@@ -23,10 +23,10 @@ describe 'knife list' do
   extend IntegrationSupport
   include KnifeSupport
 
-  include_context "default config options"
+  include_context 'default config options'
 
-  when_the_chef_server "is empty" do
-    it "knife list / returns all top level directories" do
+  when_the_chef_server 'is empty' do
+    it 'knife list / returns all top level directories' do
       knife('list /').should_succeed <<EOM
 /clients
 /cookbooks
@@ -38,7 +38,7 @@ describe 'knife list' do
 EOM
     end
 
-    it "knife list -R / returns everything" do
+    it 'knife list -R / returns everything' do
       knife('list -R /').should_succeed <<EOM
 /:
 clients
@@ -70,13 +70,13 @@ EOM
     end
   end
 
-  when_the_chef_server "has plenty of stuff in it" do
+  when_the_chef_server 'has plenty of stuff in it' do
     client 'client1', {}
     client 'client2', {}
-    cookbook 'cookbook1', '1.0.0', { 'metadata.rb' => '' }
-    cookbook 'cookbook2', '1.0.1', { 'metadata.rb' => '', 'recipes' => { 'default.rb' => '' } }
-    data_bag 'bag1', { 'item1' => {}, 'item2' => {} }
-    data_bag 'bag2', { 'item1' => {}, 'item2' => {} }
+    cookbook 'cookbook1', '1.0.0',  'metadata.rb' => ''
+    cookbook 'cookbook2', '1.0.1',  'metadata.rb' => '', 'recipes' => { 'default.rb' => '' }
+    data_bag 'bag1',  'item1' => {}, 'item2' => {}
+    data_bag 'bag2',  'item1' => {}, 'item2' => {}
     environment 'environment1', {}
     environment 'environment2', {}
     node 'node1', {}
@@ -86,7 +86,7 @@ EOM
     user 'user1', {}
     user 'user2', {}
 
-    it "knife list / returns all top level directories" do
+    it 'knife list / returns all top level directories' do
       knife('list /').should_succeed <<EOM
 /clients
 /cookbooks
@@ -98,7 +98,7 @@ EOM
 EOM
     end
 
-    it "knife list -R / returns everything" do
+    it 'knife list -R / returns everything' do
       knife('list -R /').should_succeed <<EOM
 /:
 clients
@@ -161,7 +161,7 @@ user2.json
 EOM
     end
 
-    it "knife list -R --flat / returns everything" do
+    it 'knife list -R --flat / returns everything' do
       knife('list -R --flat /').should_succeed <<EOM
 /clients
 /clients/chef-validator.json
@@ -199,7 +199,7 @@ EOM
 EOM
     end
 
-    it "knife list -Rfp / returns everything" do
+    it 'knife list -Rfp / returns everything' do
       knife('list -Rfp /').should_succeed <<EOM
 /clients/
 /clients/chef-validator.json
@@ -237,18 +237,18 @@ EOM
 EOM
     end
 
-    it "knife list /cookbooks returns the list of cookbooks" do
+    it 'knife list /cookbooks returns the list of cookbooks' do
       knife('list /cookbooks').should_succeed <<EOM
 /cookbooks/cookbook1
 /cookbooks/cookbook2
 EOM
     end
 
-    it "knife list /cookbooks/*2/*/*.rb returns the one file" do
+    it 'knife list /cookbooks/*2/*/*.rb returns the one file' do
       knife('list /cookbooks/*2/*/*.rb').should_succeed "/cookbooks/cookbook2/recipes/default.rb\n"
     end
 
-    it "knife list /**.rb returns all ruby files" do
+    it 'knife list /**.rb returns all ruby files' do
       knife('list /**.rb').should_succeed <<EOM
 /cookbooks/cookbook1/metadata.rb
 /cookbooks/cookbook2/metadata.rb
@@ -256,7 +256,7 @@ EOM
 EOM
     end
 
-    it "knife list /cookbooks/**.rb returns all ruby files" do
+    it 'knife list /cookbooks/**.rb returns all ruby files' do
       knife('list /cookbooks/**.rb').should_succeed <<EOM
 /cookbooks/cookbook1/metadata.rb
 /cookbooks/cookbook2/metadata.rb
@@ -264,7 +264,7 @@ EOM
 EOM
     end
 
-    it "knife list /**.json returns all json files" do
+    it 'knife list /**.json returns all json files' do
       knife('list /**.json').should_succeed <<EOM
 /clients/chef-validator.json
 /clients/chef-webui.json
@@ -287,7 +287,7 @@ EOM
 EOM
     end
 
-    it "knife list /data**.json returns all data bag json files" do
+    it 'knife list /data**.json returns all data bag json files' do
       knife('list /data**.json').should_succeed <<EOM
 /data_bags/bag1/item1.json
 /data_bags/bag1/item2.json
@@ -296,20 +296,20 @@ EOM
 EOM
     end
 
-    it "knife list /environments/missing_file.json reports missing file" do
+    it 'knife list /environments/missing_file.json reports missing file' do
       knife('list /environments/missing_file.json').should_fail "ERROR: /environments/missing_file.json: No such file or directory\n"
     end
 
-    context "missing file/directory exact match tests" do
-      it "knife list /blarghle reports missing directory" do
+    context 'missing file/directory exact match tests' do
+      it 'knife list /blarghle reports missing directory' do
         knife('list /blarghle').should_fail "ERROR: /blarghle: No such file or directory\n"
       end
 
-      it "knife list /roles/blarghle reports missing directory" do
+      it 'knife list /roles/blarghle reports missing directory' do
         knife('list /roles/blarghle').should_fail "ERROR: /roles/blarghle: No such file or directory\n"
       end
 
-      it "knife list /roles/blarghle/blorghle reports missing directory" do
+      it 'knife list /roles/blarghle/blorghle reports missing directory' do
         knife('list /roles/blarghle/blorghle').should_fail "ERROR: /roles/blarghle/blorghle: No such file or directory\n"
       end
     end
@@ -319,7 +319,7 @@ EOM
         context 'when cwd is at the top of the repository' do
           cwd '.'
 
-          it "knife list -Rfp returns everything" do
+          it 'knife list -Rfp returns everything' do
             knife('list -Rfp').should_succeed <<EOM
 clients/
 clients/chef-validator.json
@@ -364,7 +364,7 @@ EOM
         context 'when cwd is in cookbooks/' do
           cwd 'cookbooks'
 
-          it "knife list -Rfp / returns everything" do
+          it 'knife list -Rfp / returns everything' do
             knife('list -Rfp /').should_succeed <<EOM
 /clients/
 /clients/chef-validator.json
@@ -402,7 +402,7 @@ cookbook2/recipes/default.rb
 EOM
           end
 
-          it "knife list -Rfp .. returns everything" do
+          it 'knife list -Rfp .. returns everything' do
             knife('list -Rfp ..').should_succeed <<EOM
 /clients/
 /clients/chef-validator.json
@@ -440,7 +440,7 @@ cookbook2/recipes/default.rb
 EOM
           end
 
-          it "knife list -Rfp returns cookbooks" do
+          it 'knife list -Rfp returns cookbooks' do
             knife('list -Rfp').should_succeed <<EOM
 cookbook1/
 cookbook1/metadata.rb
@@ -459,7 +459,7 @@ EOM
         context 'when cwd is in cookbooks/cookbook2' do
           cwd 'cookbooks/cookbook2'
 
-          it "knife list -Rfp returns cookbooks" do
+          it 'knife list -Rfp returns cookbooks' do
             knife('list -Rfp').should_succeed <<EOM
 metadata.rb
 recipes/
@@ -476,7 +476,7 @@ EOM
         context 'when cwd is in cookbooks/' do
           cwd 'cookbooks'
 
-          it "knife list -Rfp returns cookbooks" do
+          it 'knife list -Rfp returns cookbooks' do
             knife('list -Rfp').should_succeed <<EOM
 cookbook1/
 cookbook1/metadata.rb
@@ -491,7 +491,7 @@ EOM
         context 'when cwd is in symlinked/' do
           cwd 'symlinked'
 
-          it "knife list -Rfp returns cookbooks" do
+          it 'knife list -Rfp returns cookbooks' do
             knife('list -Rfp').should_succeed <<EOM
 cookbook1/
 cookbook1/metadata.rb
@@ -511,7 +511,7 @@ EOM
         context 'when cwd is in real_cookbooks/' do
           cwd 'real_cookbooks'
 
-          it "knife list -Rfp returns cookbooks" do
+          it 'knife list -Rfp returns cookbooks' do
             knife('list -Rfp').should_succeed <<EOM
 cookbook1/
 cookbook1/metadata.rb
@@ -526,7 +526,7 @@ EOM
         context 'when cwd is in cookbooks/' do
           cwd 'cookbooks'
 
-          it "knife list -Rfp returns cookbooks" do
+          it 'knife list -Rfp returns cookbooks' do
             knife('list -Rfp').should_succeed <<EOM
 cookbook1/
 cookbook1/metadata.rb
@@ -541,18 +541,18 @@ EOM
     end
   end
 
-  context "--local" do
-    when_the_repository "is empty" do
-      it "knife list --local / returns nothing" do
-        knife('list --local /').should_succeed ""
+  context '--local' do
+    when_the_repository 'is empty' do
+      it 'knife list --local / returns nothing' do
+        knife('list --local /').should_succeed ''
       end
 
-      it "knife list /roles returns nothing" do
+      it 'knife list /roles returns nothing' do
         knife('list --local /roles').should_fail "ERROR: /roles: No such file or directory\n"
       end
     end
 
-    when_the_repository "has a bunch of stuff" do
+    when_the_repository 'has a bunch of stuff' do
       file 'clients/client1.json', {}
       file 'clients/client2.json', {}
 
@@ -584,7 +584,7 @@ EOM
       file 'users/user1.json', {}
       file 'users/user2.json', {}
 
-      it "knife list -Rfp / returns everything" do
+      it 'knife list -Rfp / returns everything' do
         knife('list -Rp --local --flat /').should_succeed <<EOM
 /clients/
 /clients/client1.json
@@ -618,16 +618,16 @@ EOM
 EOM
       end
 
-      context "missing file/directory tests" do
-        it "knife list --local /blarghle reports missing directory" do
+      context 'missing file/directory tests' do
+        it 'knife list --local /blarghle reports missing directory' do
           knife('list --local /blarghle').should_fail "ERROR: /blarghle: No such file or directory\n"
         end
 
-        it "knife list /roles/blarghle reports missing directory" do
+        it 'knife list /roles/blarghle reports missing directory' do
           knife('list --local /roles/blarghle').should_fail "ERROR: /roles/blarghle: No such file or directory\n"
         end
 
-        it "knife list /roles/blarghle/blorghle reports missing directory" do
+        it 'knife list /roles/blarghle/blorghle reports missing directory' do
           knife('list --local /roles/blarghle/blorghle').should_fail "ERROR: /roles/blarghle/blorghle: No such file or directory\n"
         end
       end

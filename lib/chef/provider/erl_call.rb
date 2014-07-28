@@ -39,27 +39,27 @@ class Chef
 
       def action_run
         case @new_resource.name_type
-        when "sname"
+        when 'sname'
           node = "-sname #{@new_resource.node_name}"
-        when "name"
+        when 'name'
           node = "-name #{@new_resource.node_name}"
         end
 
         if @new_resource.cookie
           cookie = "-c #{@new_resource.cookie}"
         else
-          cookie = ""
+          cookie = ''
         end
 
         if @new_resource.distributed
-          distributed = "-s"
+          distributed = '-s'
         else
-          distributed = ""
+          distributed = ''
         end
 
         command = "erl_call -e #{distributed} #{node} #{cookie}"
 
-        converge_by("run erlang block") do
+        converge_by('run erlang block') do
           begin
             pid, stdin, stdout, stderr = popen4(command, :waitlast => true)
 
@@ -73,22 +73,22 @@ class Chef
 
             Chef::Log.debug("#{@new_resource} output: ")
 
-            stdout_output = ""
+            stdout_output = ''
             stdout.each_line { |line| stdout_output << line }
             stdout.close
 
-            stderr_output = ""
+            stderr_output = ''
             stderr.each_line { |line| stderr_output << line }
             stderr.close
 
             # fail if stderr contains anything
             if stderr_output.length > 0
-              raise Chef::Exceptions::ErlCall, stderr_output
+              fail Chef::Exceptions::ErlCall, stderr_output
             end
 
             # fail if the first 4 characters aren't "{ok,"
             unless stdout_output[0..3].include?('{ok,')
-              raise Chef::Exceptions::ErlCall, stdout_output
+              fail Chef::Exceptions::ErlCall, stdout_output
             end
 
             @new_resource.updated_by_last_action(true)
@@ -100,7 +100,6 @@ class Chef
           end
         end
       end
-
     end
   end
 end

@@ -22,11 +22,9 @@ require 'chef/digester'
 class Chef
   module Mixin
     module Checksum
-
       def checksum(file)
         Chef::Digester.checksum_for_file(file)
       end
-
     end
   end
 end

@@ -19,7 +19,7 @@
 require 'spec_helper'
 
 describe Shell::Extensions do
-  describe "extending object for top level methods" do
+  describe 'extending object for top level methods' do
 
     before do
       @shell_client = TestableShellSession.instance
@@ -28,14 +28,14 @@ describe Shell::Extensions do
       @root_context = Object.new
       @root_context.instance_eval(&ObjectTestHarness)
       Shell::Extensions.extend_context_object(@root_context)
-      @root_context.conf = double("irbconf")
+      @root_context.conf = double('irbconf')
     end
 
-    it "finds a subsession in irb for an object" do
+    it 'finds a subsession in irb for an object' do
       target_context_obj = Chef::Node.new
 
-      irb_context = double("context", :main => target_context_obj)
-      irb_session = double("irb session", :context => irb_context)
+      irb_context = double('context', :main => target_context_obj)
+      irb_session = double('irb session', :context => irb_context)
       @job_manager.jobs = [[:thread, irb_session]]
       @root_context.stub(:jobs).and_return(@job_manager)
       @root_context.ensure_session_select_defined
@@ -43,7 +43,7 @@ describe Shell::Extensions do
       @root_context.jobs.select_shell_session(:idontexist).should be_nil
     end
 
-    it "finds, then switches to a session" do
+    it 'finds, then switches to a session' do
       @job_manager.jobs = []
       @root_context.stub(:ensure_session_select_defined)
       @root_context.stub(:jobs).and_return(@job_manager)
@@ -60,63 +60,63 @@ describe Shell::Extensions do
       @root_context.find_or_create_session_for(:foo)
     end
 
-    it "switches to recipe context" do
+    it 'switches to recipe context' do
       @root_context.should respond_to(:recipe_mode)
       @shell_client.recipe = :monkeyTime
       @root_context.should_receive(:find_or_create_session_for).with(:monkeyTime)
       @root_context.recipe_mode
     end
 
-    it "switches to attribute context" do
+    it 'switches to attribute context' do
       @root_context.should respond_to(:attributes_mode)
-      @shell_client.node = "monkeyNodeTime"
-      @root_context.should_receive(:find_or_create_session_for).with("monkeyNodeTime")
+      @shell_client.node = 'monkeyNodeTime'
+      @root_context.should_receive(:find_or_create_session_for).with('monkeyNodeTime')
       @root_context.attributes_mode
     end
 
-    it "has a help command" do
+    it 'has a help command' do
       @root_context.should respond_to(:help)
     end
 
-    it "turns irb tracing on and off" do
+    it 'turns irb tracing on and off' do
       @root_context.should respond_to(:trace)
       @root_context.conf.should_receive(:use_tracer=).with(true)
       @root_context.stub(:tracing?)
       @root_context.tracing :on
     end
 
-    it "says if tracing is on or off" do
+    it 'says if tracing is on or off' do
       @root_context.conf.stub(:use_tracer).and_return(true)
-      @root_context.should_receive(:puts).with("tracing is on")
+      @root_context.should_receive(:puts).with('tracing is on')
       @root_context.tracing?
     end
 
-    it "prints node attributes" do
-      node = double("node", :attribute => {:foo => :bar})
+    it 'prints node attributes' do
+      node = double('node', :attribute => { :foo => :bar })
       @shell_client.node = node
-      @root_context.should_receive(:pp).with({:foo => :bar})
+      @root_context.should_receive(:pp).with(:foo => :bar)
       @root_context.ohai
       @root_context.should_receive(:pp).with(:bar)
       @root_context.ohai(:foo)
     end
 
-    it "resets the recipe and reloads ohai data" do
+    it 'resets the recipe and reloads ohai data' do
       @shell_client.should_receive(:reset!)
       @root_context.reset
     end
 
-    it "turns irb echo on and off" do
+    it 'turns irb echo on and off' do
       @root_context.conf.should_receive(:echo=).with(true)
       @root_context.echo :on
     end
 
-    it "says if echo is on or off" do
+    it 'says if echo is on or off' do
       @root_context.conf.stub(:echo).and_return(true)
-      @root_context.should_receive(:puts).with("echo is on")
+      @root_context.should_receive(:puts).with('echo is on')
       @root_context.echo?
     end
 
-    it "gives access to the stepable iterator" do
+    it 'gives access to the stepable iterator' do
       Shell::StandAloneSession.instance.stub(:reset!)
       Shell.session.stub(:rebuild_context)
       events = Chef::EventDispatch::Dispatcher.new
@@ -126,15 +126,15 @@ describe Shell::Extensions do
       @root_context.chef_run.should == :the_iterator
     end
 
-    it "lists directory contents" do
-      entries = %w{. .. someFile}
-      Dir.should_receive(:entries).with("/tmp").and_return(entries)
-      @root_context.ls "/tmp"
+    it 'lists directory contents' do
+      entries = %w(. .. someFile)
+      Dir.should_receive(:entries).with('/tmp').and_return(entries)
+      @root_context.ls '/tmp'
     end
 
   end
 
-  describe "extending the recipe object" do
+  describe 'extending the recipe object' do
 
     before do
       @events = Chef::EventDispatch::Dispatcher.new
@@ -143,9 +143,9 @@ describe Shell::Extensions do
       Shell::Extensions.extend_context_recipe(@recipe_object)
     end
 
-    it "gives a list of the resources" do
-      resource = @recipe_object.file("foo")
-      @recipe_object.should_receive(:pp).with(["file[foo]"])
+    it 'gives a list of the resources' do
+      resource = @recipe_object.file('foo')
+      @recipe_object.should_receive(:pp).with(['file[foo]'])
       @recipe_object.resources
     end
 

@@ -22,25 +22,24 @@ require 'chef/knife'
 class Chef
   class Knife
     class DataBagCreate < Knife
-
       deps do
         require 'chef/data_bag'
         require 'chef/encrypted_data_bag_item'
       end
 
-      banner "knife data bag create BAG [ITEM] (options)"
-      category "data bag"
+      banner 'knife data bag create BAG [ITEM] (options)'
+      category 'data bag'
 
       option :secret,
-        :short => "-s SECRET",
-        :long  => "--secret ",
-        :description => "The secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
+             :short => '-s SECRET',
+             :long  => '--secret ',
+             :description => 'The secret key to use to encrypt data bag item values',
+             :proc => proc { |s| Chef::Config[:knife][:secret] = s }
 
       option :secret_file,
-        :long => "--secret-file SECRET_FILE",
-        :description => "A file containing the secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
+             :long => '--secret-file SECRET_FILE',
+             :description => 'A file containing the secret key to use to encrypt data bag item values',
+             :proc => proc { |sf| Chef::Config[:knife][:secret_file] = sf }
 
       def read_secret
         if config[:secret]
@@ -52,7 +51,7 @@ class Chef
 
       def use_encryption
         if config[:secret] && config[:secret_file]
-          ui.fatal("please specify only one of --secret, --secret-file")
+          ui.fatal('please specify only one of --secret, --secret-file')
           exit(1)
         end
         config[:secret] || config[:secret_file]
@@ -63,7 +62,7 @@ class Chef
 
         if @data_bag_name.nil?
           show_usage
-          ui.fatal("You must specify a data bag name")
+          ui.fatal('You must specify a data bag name')
           exit 1
         end
 
@@ -76,7 +75,7 @@ class Chef
 
         # create the data bag
         begin
-          rest.post_rest("data", { "name" => @data_bag_name })
+          rest.post_rest('data',  'name' => @data_bag_name)
           ui.info("Created data_bag[#{@data_bag_name}]")
         rescue Net::HTTPServerException => e
           raise unless e.to_s =~ /^409/
@@ -85,7 +84,7 @@ class Chef
 
         # if an item is specified, create it, as well
         if @data_bag_item_name
-          create_object({ "id" => @data_bag_item_name }, "data_bag_item[#{@data_bag_item_name}]") do |output|
+          create_object({ 'id' => @data_bag_item_name }, "data_bag_item[#{@data_bag_item_name}]") do |output|
             item = Chef::DataBagItem.from_hash(
                      if use_encryption
                        Chef::EncryptedDataBagItem.encrypt_data_bag_item(output, read_secret)

@@ -24,7 +24,6 @@ class Chef
   module ReservedNames::Win32
     class Security
       class SecurableObject
-
         def initialize(path, type = :SE_FILE_OBJECT)
           @path = path
           @type = type
@@ -42,17 +41,17 @@ class Chef
         # compare an existing ACE with one you want to create.
         def predict_rights_mask(generic_mask)
           mask = generic_mask
-          #mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_READ if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_READ) != 0
-          #mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_WRITE if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE) != 0
-          #mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_EXECUTE if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE) != 0
-          #mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_ALL if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_ALL) != 0
+          # mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_READ if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_READ) != 0
+          # mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_WRITE if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE) != 0
+          # mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_EXECUTE if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE) != 0
+          # mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_ALL if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_ALL) != 0
           if type == :SE_FILE_OBJECT
             mask |= Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ if (mask & Chef::ReservedNames::Win32::API::Security::GENERIC_READ) != 0
             mask |= Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE if (mask & Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE) != 0
             mask |= Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE if (mask & Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE) != 0
             mask |= Chef::ReservedNames::Win32::API::Security::FILE_ALL_ACCESS if (mask & Chef::ReservedNames::Win32::API::Security::GENERIC_ALL) != 0
           else
-            raise "Unimplemented object type for predict_security_mask: #{type}"
+            fail "Unimplemented object type for predict_security_mask: #{type}"
           end
           mask &= ~(Chef::ReservedNames::Win32::API::Security::GENERIC_READ | Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE | Chef::ReservedNames::Win32::API::Security::GENERIC_ALL)
           mask
@@ -62,7 +61,7 @@ class Chef
           security_information = Chef::ReservedNames::Win32::API::Security::OWNER_SECURITY_INFORMATION | Chef::ReservedNames::Win32::API::Security::GROUP_SECURITY_INFORMATION | Chef::ReservedNames::Win32::API::Security::DACL_SECURITY_INFORMATION
           if include_sacl
             security_information |= Chef::ReservedNames::Win32::API::Security::SACL_SECURITY_INFORMATION
-            Security.with_privileges("SeSecurityPrivilege") do
+            Security.with_privileges('SeSecurityPrivilege') do
               Security.get_named_security_info(path, type, security_information)
             end
           else
@@ -87,19 +86,19 @@ class Chef
 
         def owner=(val)
           # TODO to fix serious permissions problems, we may need to enable SeBackupPrivilege.  But we might need it (almost) everywhere else, too.
-          Security.with_privileges("SeTakeOwnershipPrivilege", "SeRestorePrivilege") do
+          Security.with_privileges('SeTakeOwnershipPrivilege', 'SeRestorePrivilege') do
             Security.set_named_security_info(path, type, :owner => val)
           end
         end
 
         def sacl=(val)
-          Security.with_privileges("SeSecurityPrivilege") do
+          Security.with_privileges('SeSecurityPrivilege') do
             Security.set_named_security_info(path, type, :sacl => val)
           end
         end
 
         def set_sacl(sacl, sacl_inherits)
-          Security.with_privileges("SeSecurityPrivilege") do
+          Security.with_privileges('SeSecurityPrivilege') do
             Security.set_named_security_info(path, type, :sacl => sacl, :sacl_inherits => sacl_inherits)
           end
         end

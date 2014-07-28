@@ -22,7 +22,7 @@ if Chef::Platform.windows?
 end
 
 describe 'Chef::Win32::Security', :windows_only do
-  it "has_admin_privileges? returns true when running as admin" do
+  it 'has_admin_privileges? returns true when running as admin' do
     Chef::ReservedNames::Win32::Security.has_admin_privileges?.should == true
   end
 
@@ -31,7 +31,7 @@ describe 'Chef::Win32::Security', :windows_only do
   # support for windows.
   #
   # TODO - Add negative tests once mixlib-shellout has user support
-  it "has_admin_privileges? returns false when running as non-admin" do
-    pending "requires user support in mixlib-shellout"
+  it 'has_admin_privileges? returns false when running as non-admin' do
+    pending 'requires user support in mixlib-shellout'
   end
 end

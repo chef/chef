@@ -22,12 +22,11 @@ require 'chef/resource'
 class Chef
   class Resource
     class Service < Chef::Resource
-
       identity_attr :service_name
 
       state_attrs :enabled, :running
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :service
         @service_name = name
@@ -43,73 +42,73 @@ class Chef
         @init_command = nil
         @priority = nil
         @timeout = nil
-        @action = "nothing"
+        @action = 'nothing'
         @supports = { :restart => false, :reload => false, :status => false }
         @allowed_actions.push(:enable, :disable, :start, :stop, :restart, :reload)
 
-        if(run_context && run_context.node[:init_package] == "systemd")
+        if run_context && run_context.node[:init_package] == 'systemd'
           @provider = Chef::Provider::Service::Systemd
         end
       end
 
-      def service_name(arg=nil)
+      def service_name(arg = nil)
         set_or_return(
           :service_name,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
       # regex for match against ps -ef when !supports[:has_status] && status == nil
-      def pattern(arg=nil)
+      def pattern(arg = nil)
         set_or_return(
           :pattern,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
       # command to call to start service
-      def start_command(arg=nil)
+      def start_command(arg = nil)
         set_or_return(
           :start_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
       # command to call to stop service
-      def stop_command(arg=nil)
+      def stop_command(arg = nil)
         set_or_return(
           :stop_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
       # command to call to get status of service
-      def status_command(arg=nil)
+      def status_command(arg = nil)
         set_or_return(
           :status_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
       # command to call to restart service
-      def restart_command(arg=nil)
+      def restart_command(arg = nil)
         set_or_return(
           :restart_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
-      def reload_command(arg=nil)
+      def reload_command(arg = nil)
         set_or_return(
           :reload_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
@@ -118,29 +117,29 @@ class Chef
       # non-standard configurations setting this value will save having to
       # specify overrides for the start_command, stop_command and
       # restart_command attributes.
-      def init_command(arg=nil)
+      def init_command(arg = nil)
         set_or_return(
           :init_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
       # if the service is enabled or not
-      def enabled(arg=nil)
+      def enabled(arg = nil)
         set_or_return(
           :enabled,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [TrueClass, FalseClass]
         )
       end
 
       # if the service is running or not
-      def running(arg=nil)
+      def running(arg = nil)
         set_or_return(
           :running,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [TrueClass, FalseClass]
         )
       end
 
@@ -154,16 +153,16 @@ class Chef
       #   runlevel 2, stopped in 3 with priority 55 and no symlinks or
       #   similar for other runlevels
       #
-      def priority(arg=nil)
+      def priority(arg = nil)
         set_or_return(
           :priority,
           arg,
-          :kind_of => [ Integer, String, Hash ]
+          :kind_of => [Integer, String, Hash]
         )
       end
 
       # timeout only applies to the windows service manager
-      def timeout(arg=nil)
+      def timeout(arg = nil)
         set_or_return(
           :timeout,
           arg,
@@ -171,15 +170,15 @@ class Chef
         )
       end
 
-      def parameters(arg=nil)
+      def parameters(arg = nil)
         set_or_return(
           :parameters,
           arg,
-          :kind_of => [ Hash ]
+          :kind_of => [Hash]
         )
       end
 
-      def supports(args={})
+      def supports(args = {})
         if args.is_a? Array
           args.each { |arg| @supports[arg] = true }
         elsif args.any?
@@ -188,7 +187,6 @@ class Chef
           @supports
         end
       end
-
     end
   end
 end

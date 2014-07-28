@@ -16,17 +16,15 @@
 # limitations under the License.
 #
 
-
 require 'chef/resource'
 
 class Chef
   class Resource
     class Breakpoint < Chef::Resource
-
-      def initialize(action="break", *args)
+      def initialize(_action = 'break', *args)
         @name = caller.first
         super(@name, *args)
-        @action = "break"
+        @action = 'break'
         @allowed_actions << :break
         @provider = Chef::Provider::Breakpoint
       end

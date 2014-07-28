@@ -22,7 +22,6 @@ require 'chef/mixin/windows_architecture_helper'
 class Chef
   class Resource
     class WindowsScript < Chef::Resource::Script
-
       protected
 
       def initialize(name, run_context, resource_name, interpreter_command)
@@ -35,8 +34,8 @@ class Chef
 
       public
 
-      def architecture(arg=nil)
-        assert_architecture_compatible!(arg) if ! arg.nil?
+      def architecture(arg = nil)
+        assert_architecture_compatible!(arg) unless arg.nil?
         result = set_or_return(
           :architecture,
           arg,
@@ -47,9 +46,9 @@ class Chef
       protected
 
       def assert_architecture_compatible!(desired_architecture)
-        if ! node_supports_windows_architecture?(node, desired_architecture)
-          raise Chef::Exceptions::Win32ArchitectureIncorrect,
-          "cannot execute script with requested architecture '#{desired_architecture.to_s}' on a system with architecture '#{node_windows_architecture(node)}'"
+        unless node_supports_windows_architecture?(node, desired_architecture)
+          fail Chef::Exceptions::Win32ArchitectureIncorrect,
+               "cannot execute script with requested architecture '#{desired_architecture}' on a system with architecture '#{node_windows_architecture(node)}'"
         end
       end
     end

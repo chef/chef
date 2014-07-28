@@ -19,107 +19,106 @@
 
 require 'spec_helper'
 
-shared_examples_for "an execute resource" do
+shared_examples_for 'an execute resource' do
 
   before(:each) do
     @resource = execute_resource
   end
 
-  it "should create a new Chef::Resource::Execute" do
+  it 'should create a new Chef::Resource::Execute' do
     @resource.should be_a_kind_of(Chef::Resource)
     @resource.should be_a_kind_of(Chef::Resource::Execute)
   end
 
-  it "should set the command to the first argument to new" do
+  it 'should set the command to the first argument to new' do
     @resource.command.should eql(resource_instance_name)
   end
 
-  it "should accept an array on instantiation, too" do
-    resource = Chef::Resource::Execute.new(%w{something else})
+  it 'should accept an array on instantiation, too' do
+    resource = Chef::Resource::Execute.new(%w(something else))
     resource.should be_a_kind_of(Chef::Resource)
     resource.should be_a_kind_of(Chef::Resource::Execute)
-    resource.command.should eql(%w{something else})
+    resource.command.should eql(%w(something else))
   end
 
-  it "should accept a string for the command to run" do
-    @resource.command "something"
-    @resource.command.should eql("something")
+  it 'should accept a string for the command to run' do
+    @resource.command 'something'
+    @resource.command.should eql('something')
   end
 
-  it "should accept an array for the command to run" do
-    @resource.command %w{something else}
-    @resource.command.should eql(%w{something else})
+  it 'should accept an array for the command to run' do
+    @resource.command %w(something else)
+    @resource.command.should eql(%w(something else))
   end
 
-  it "should accept a string for the cwd" do
-    @resource.cwd "something"
-    @resource.cwd.should eql("something")
+  it 'should accept a string for the cwd' do
+    @resource.cwd 'something'
+    @resource.cwd.should eql('something')
   end
 
-  it "should accept a hash for the environment" do
+  it 'should accept a hash for the environment' do
     test_hash = { :one => :two }
     @resource.environment(test_hash)
     @resource.environment.should eql(test_hash)
   end
 
-  it "allows the environment to be specified with #env" do
+  it 'allows the environment to be specified with #env' do
     @resource.should respond_to(:env)
   end
 
-  it "should accept a string for the group" do
-    @resource.group "something"
-    @resource.group.should eql("something")
+  it 'should accept a string for the group' do
+    @resource.group 'something'
+    @resource.group.should eql('something')
   end
 
-  it "should accept an integer for the group" do
+  it 'should accept an integer for the group' do
     @resource.group 1
     @resource.group.should eql(1)
   end
 
-  it "should accept an array for the execution path" do
-    @resource.path ["woot"]
-    @resource.path.should eql(["woot"])
+  it 'should accept an array for the execution path' do
+    @resource.path ['woot']
+    @resource.path.should eql(['woot'])
   end
 
-  it "should accept an integer for the return code" do
+  it 'should accept an integer for the return code' do
     @resource.returns 1
     @resource.returns.should eql(1)
   end
 
-  it "should accept an integer for the timeout" do
+  it 'should accept an integer for the timeout' do
     @resource.timeout 1
     @resource.timeout.should eql(1)
   end
 
-  it "should accept a string for the user" do
-    @resource.user "something"
-    @resource.user.should eql("something")
+  it 'should accept a string for the user' do
+    @resource.user 'something'
+    @resource.user.should eql('something')
   end
 
-  it "should accept an integer for the user" do
+  it 'should accept an integer for the user' do
     @resource.user 1
     @resource.user.should eql(1)
   end
 
-  it "should accept a string for creates" do
-    @resource.creates "something"
-    @resource.creates.should eql("something")
+  it 'should accept a string for creates' do
+    @resource.creates 'something'
+    @resource.creates.should eql('something')
   end
 
-  describe "when it has cwd, environment, group, path, return value, and a user" do
+  describe 'when it has cwd, environment, group, path, return value, and a user' do
     before do
-      @resource.command("grep")
-      @resource.cwd("/tmp/")
-      @resource.environment({ :one => :two })
-      @resource.group("legos")
-      @resource.path(["/var/local/"])
+      @resource.command('grep')
+      @resource.cwd('/tmp/')
+      @resource.environment(:one => :two)
+      @resource.group('legos')
+      @resource.path(['/var/local/'])
       @resource.returns(1)
-      @resource.user("root")
+      @resource.user('root')
     end
 
-    it "returns the command as its identity" do
-      @resource.identity.should == "grep"
+    it 'returns the command as its identity' do
+      @resource.identity.should == 'grep'
     end
   end
 end
-

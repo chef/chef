@@ -144,7 +144,7 @@ class Chef
     attr_reader :events
 
     # Creates a new Chef::Client.
-    def initialize(json_attribs=nil, args={})
+    def initialize(json_attribs = nil, args = {})
       @json_attribs = json_attribs || {}
       @node = nil
       @run_status = nil
@@ -159,7 +159,7 @@ class Chef
       @specific_recipes = args.delete(:specific_recipes)
 
       if new_runlist = args.delete(:runlist)
-        @json_attribs["run_list"] = new_runlist
+        @json_attribs['run_list'] = new_runlist
       end
     end
 
@@ -168,7 +168,7 @@ class Chef
         if output_path.nil?
           Chef::Formatters.new(formatter_name, STDOUT_FD, STDERR_FD)
         else
-          io = File.open(output_path, "a+")
+          io = File.open(output_path, 'a+')
           io.sync = true
           Chef::Formatters.new(formatter_name, io, io)
         end
@@ -202,16 +202,16 @@ class Chef
       # win32-process gem exposes some form of :fork for Process
       # class. So we are seperately ensuring that the platform we're
       # running on is not windows before forking.
-      if(Chef::Config[:client_fork] && Process.respond_to?(:fork) && !Chef::Platform.windows?)
-        Chef::Log.info "Forking chef instance to converge..."
+      if Chef::Config[:client_fork] && Process.respond_to?(:fork) && !Chef::Platform.windows?
+        Chef::Log.info 'Forking chef instance to converge...'
         pid = fork do
-          [:INT, :TERM].each {|s| trap(s, "EXIT") }
-          client_solo = Chef::Config[:solo] ? "chef-solo" : "chef-client"
-          $0 = "#{client_solo} worker: ppid=#{Process.ppid};start=#{Time.new.strftime("%R:%S")};"
+          [:INT, :TERM].each { |s| trap(s, 'EXIT') }
+          client_solo = Chef::Config[:solo] ? 'chef-solo' : 'chef-client'
+          $0 = "#{client_solo} worker: ppid=#{Process.ppid};start=#{Time.new.strftime('%R:%S')};"
           begin
-            Chef::Log.debug "Forked instance now converging"
+            Chef::Log.debug 'Forked instance now converging'
             do_run
-          rescue Exception => e
+          rescue => e
             Chef::Log.error(e.to_s)
             exit 1
           else
@@ -232,11 +232,11 @@ class Chef
       status = pid_and_status[1]
       return true if status.success?
       message = if status.signaled?
-        "Chef run process terminated by signal #{status.termsig} (#{Signal.list.invert[status.termsig]})"
+                  "Chef run process terminated by signal #{status.termsig} (#{Signal.list.invert[status.termsig]})"
       else
         "Chef run process exited unsuccessfully (exit code #{status.exitstatus})"
       end
-      raise Exceptions::ChildConvergeError, message
+      fail Exceptions::ChildConvergeError, message
     end
 
     # Instantiates a Chef::Node object, possibly loading the node's prior state
@@ -276,12 +276,11 @@ class Chef
       @policy_builder ||= Chef::PolicyBuilder.strategy.new(node_name, ohai.data, json_attribs, @override_runlist, events)
     end
 
-
     def save_updated_node
       if Chef::Config[:solo]
         # nothing to do
       elsif policy_builder.temporary_policy?
-        Chef::Log.warn("Skipping final node save because override_runlist was given")
+        Chef::Log.warn('Skipping final node save because override_runlist was given')
       else
         Chef::Log.debug("Saving the current state of node #{node_name}")
         @node.save
@@ -296,12 +295,12 @@ class Chef
       name = Chef::Config[:node_name] || ohai[:fqdn] || ohai[:machinename] || ohai[:hostname]
       Chef::Config[:node_name] = name
 
-      raise Chef::Exceptions::CannotDetermineNodeName unless name
+      fail Chef::Exceptions::CannotDetermineNodeName unless name
 
       # node names > 90 bytes only work with authentication protocol >= 1.1
       # see discussion in config.rb.
       if name.bytesize > 90
-        Chef::Config[:authentication_protocol_version] = "1.1"
+        Chef::Config[:authentication_protocol_version] = '1.1'
       end
 
       name
@@ -310,11 +309,11 @@ class Chef
     #
     # === Returns
     # rest<Chef::REST>:: returns Chef::REST connection object
-    def register(client_name=node_name, config=Chef::Config)
+    def register(client_name = node_name, config = Chef::Config)
       if !config[:client_key]
         @events.skipping_registration(client_name, config)
-        Chef::Log.debug("Client key is unspecified - skipping registration")
-      elsif File.exists?(config[:client_key])
+        Chef::Log.debug('Client key is unspecified - skipping registration')
+      elsif File.exist?(config[:client_key])
         @events.skipping_registration(client_name, config)
         Chef::Log.debug("Client key #{config[:client_key]} is present - skipping registration")
       else
@@ -327,7 +326,7 @@ class Chef
       @rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
       @resource_reporter = Chef::ResourceReporter.new(@rest)
       @events.register(@resource_reporter)
-    rescue Exception => e
+    rescue => e
       # TODO: munge exception so a semantic failure message can be given to the
       # user
       @events.registration_failed(node_name, e, config)
@@ -345,7 +344,7 @@ class Chef
       runner.converge
       @events.converge_complete
       true
-    rescue Exception
+    rescue
       # TODO: should this be a separate #converge_failed(exception) method?
       @events.converge_complete
       raise
@@ -363,17 +362,16 @@ class Chef
       policy_builder.expand_run_list
     end
 
-
     def do_windows_admin_check
       if Chef::Platform.windows?
-        Chef::Log.debug("Checking for administrator privileges....")
+        Chef::Log.debug('Checking for administrator privileges....')
 
         if !has_admin_privileges?
           message = "chef-client doesn't have administrator privileges on node #{node_name}."
           if Chef::Config[:fatal_windows_admin_check]
             Chef::Log.fatal(message)
-            Chef::Log.fatal("fatal_windows_admin_check is set to TRUE.")
-            raise Chef::Exceptions::WindowsNotAdmin, message
+            Chef::Log.fatal('fatal_windows_admin_check is set to TRUE.')
+            fail Chef::Exceptions::WindowsNotAdmin, message
           else
             Chef::Log.warn("#{message} This might cause unexpected resource failures.")
           end
@@ -437,7 +435,7 @@ class Chef
         run_completed_successfully
         @events.run_completed(node)
         true
-      rescue Exception => e
+      rescue => e
         # CHEF-3336: Send the error first in case something goes wrong below and we don't know why
         Chef::Log.debug("Re-raising exception: #{e.class} - #{e.message}\n#{e.backtrace.join("\n  ")}")
         # If we failed really early, we may not have a run_status yet. Too early for these to be of much use.
@@ -461,11 +459,11 @@ class Chef
     end
 
     def empty_directory?(path)
-      !File.exists?(path) || (Dir.entries(path).size <= 2)
+      !File.exist?(path) || (Dir.entries(path).size <= 2)
     end
 
     def is_last_element?(index, object)
-      object.kind_of?(Array) ? index == object.size - 1 : true
+      object.is_a?(Array) ? index == object.size - 1 : true
     end
 
     def assert_cookbook_path_not_empty(run_context)
@@ -475,15 +473,14 @@ class Chef
         # if it's an array, go through it and check each one, raise error at the last one if no files are found
         cookbook_paths = Array(Chef::Config[:cookbook_path])
         Chef::Log.debug "Loading from cookbook_path: #{cookbook_paths.map { |path| File.expand_path(path) }.join(', ')}"
-        if cookbook_paths.all? {|path| empty_directory?(path) }
+        if cookbook_paths.all? { |path| empty_directory?(path) }
           msg = "None of the cookbook paths set in Chef::Config[:cookbook_path], #{cookbook_paths.inspect}, contain any cookbooks"
           Chef::Log.fatal(msg)
-          raise Chef::Exceptions::CookbookNotFound, msg
+          fail Chef::Exceptions::CookbookNotFound, msg
         end
       else
         Chef::Log.warn("Node #{node_name} has an empty run list.") if run_context.node.run_list.empty?
       end
-
     end
 
     def has_admin_privileges?
@@ -493,7 +490,7 @@ class Chef
     end
 
     def check_ssl_config
-      if Chef::Config[:ssl_verify_mode] == :verify_none and !Chef::Config[:verify_api_cert]
+      if Chef::Config[:ssl_verify_mode] == :verify_none && !Chef::Config[:verify_api_cert]
         Chef::Log.warn(<<-WARN)
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -522,7 +519,6 @@ To check your SSL configuration, or troubleshoot errors, you can use the
 WARN
       end
     end
-
   end
 end
 

@@ -30,11 +30,11 @@ class Chef
         private :new
       end
 
-      def self.not_if(parent_resource, command=nil, command_opts={}, &block)
+      def self.not_if(parent_resource, command = nil, command_opts = {}, &block)
         new(:not_if, parent_resource, command, command_opts, &block)
       end
 
-      def self.only_if(parent_resource, command=nil, command_opts={}, &block)
+      def self.only_if(parent_resource, command = nil, command_opts = {}, &block)
         new(:only_if, parent_resource, command, command_opts, &block)
       end
 
@@ -43,7 +43,7 @@ class Chef
       attr_reader :command_opts
       attr_reader :block
 
-      def initialize(positivity, parent_resource, command=nil, command_opts={}, &block)
+      def initialize(positivity, parent_resource, command = nil, command_opts = {}, &block)
         @positivity = positivity
         case command
         when String
@@ -51,12 +51,12 @@ class Chef
           @command, @command_opts = command, command_opts
           @block = nil
         when nil
-          raise ArgumentError, "only_if/not_if requires either a command or a block" unless block_given?
+          fail ArgumentError, 'only_if/not_if requires either a command or a block' unless block_given?
           @guard_interpreter = nil
           @command, @command_opts = nil, nil
           @block = block
         else
-          raise ArgumentError, "Invalid only_if/not_if command: #{command.inspect} (#{command.class})"
+          fail ArgumentError, "Invalid only_if/not_if command: #{command.inspect} (#{command.class})"
         end
       end
 
@@ -67,7 +67,7 @@ class Chef
         when :not_if
           !evaluate
         else
-          raise "Cannot evaluate resource conditional of type #{@positivity}"
+          fail "Cannot evaluate resource conditional of type #{@positivity}"
         end
       end
 
@@ -91,7 +91,7 @@ class Chef
       end
 
       def description
-        cmd_or_block = @command ? "command `#{@command}`" : "ruby block"
+        cmd_or_block = @command ? "command `#{@command}`" : 'ruby block'
         "#{@positivity} #{cmd_or_block}"
       end
 
@@ -112,7 +112,6 @@ class Chef
           guard_interpreter = Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, command, opts)
         end
       end
-
     end
   end
 end

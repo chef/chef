@@ -23,8 +23,8 @@ require 'chef/chef_fs/file_system/memory_file'
 
 module FileSystemSupport
   def memory_fs(pretty_name, value, cannot_be_in_regex = nil)
-    if !value.is_a?(Hash)
-      raise "memory_fs() must take a Hash"
+    unless value.is_a?(Hash)
+      fail 'memory_fs() must take a Hash'
     end
     dir = Chef::ChefFS::FileSystem::MemoryRoot.new(pretty_name, cannot_be_in_regex)
     value.each do |key, child|
@@ -54,9 +54,9 @@ module FileSystemSupport
   end
 
   def no_blocking_calls_allowed
-    [ Chef::ChefFS::FileSystem::MemoryFile, Chef::ChefFS::FileSystem::MemoryDir ].each do |c|
-      [ :children, :exists?, :read ].each do |m|
-        c.any_instance.stub(m).and_raise("#{m.to_s} should not be called")
+    [Chef::ChefFS::FileSystem::MemoryFile, Chef::ChefFS::FileSystem::MemoryDir].each do |c|
+      [:children, :exists?, :read].each do |m|
+        c.any_instance.stub(m).and_raise("#{m} should not be called")
       end
     end
   end
@@ -67,4 +67,3 @@ module FileSystemSupport
     result_paths.should =~ expected_paths
   end
 end
-

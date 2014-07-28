@@ -16,44 +16,43 @@
 # limitations under the License.
 #
 
-#simple wrapper around Volume APIs. might be possible with WMI, but possibly more complex.
+# simple wrapper around Volume APIs. might be possible with WMI, but possibly more complex.
 
 require 'chef/util/windows'
 require 'windows/volume'
 
 class Chef::Util::Windows::Volume < Chef::Util::Windows
-
   private
   include Windows::Volume
-  #XXX not defined in the current windows-pr release
+  # XXX not defined in the current windows-pr release
   DeleteVolumeMountPoint =
     Windows::API.new('DeleteVolumeMountPoint', 'S', 'B') unless defined? DeleteVolumeMountPoint
 
   public
 
   def initialize(name)
-    name += "\\" unless name =~ /\\$/ #trailing slash required
+    name += '\\' unless name =~ /\\$/ # trailing slash required
     @name = name
   end
 
   def device
     buffer = 0.chr * 256
     if GetVolumeNameForVolumeMountPoint(@name, buffer, buffer.size)
-      return buffer[0,buffer.size].unpack("Z*")[0]
+      return buffer[0, buffer.size].unpack('Z*')[0]
     else
-      raise ArgumentError, get_last_error
+      fail ArgumentError, get_last_error
     end
   end
 
   def delete
     unless DeleteVolumeMountPoint.call(@name)
-      raise ArgumentError, get_last_error
+      fail ArgumentError, get_last_error
     end
   end
 
   def add(args)
     unless SetVolumeMountPoint(@name, args[:remote])
-      raise ArgumentError, get_last_error
+      fail ArgumentError, get_last_error
     end
   end
 end

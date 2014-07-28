@@ -28,7 +28,7 @@ class Chef
       SPECIAL_TIME_VALUES = [:reboot, :yearly, :annually, :monthly, :weekly, :daily, :midnight, :hourly]
       CRON_ATTRIBUTES = [:minute, :hour, :day, :month, :weekday, :time, :command, :mailto, :path, :shell, :home, :environment]
       WEEKDAY_SYMBOLS = [:sunday, :monday, :tuesday, :wednesday, :thursday, :friday, :saturday]
-      
+
       CRON_PATTERN = /\A([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+|[a-zA-Z]{3})\s([-0-9*,\/]+|[a-zA-Z]{3})\s(.*)/
       SPECIAL_PATTERN = /\A(@(#{SPECIAL_TIME_VALUES.join('|')}))\s(.*)/
       ENV_PATTERN = /\A(\S+)=(\S*)/
@@ -59,27 +59,27 @@ class Chef
               @cron_exists = true
               next
             when ENV_PATTERN
-              set_environment_var($1, $2) if cron_found
+              set_environment_var(Regexp.last_match[1], Regexp.last_match[2]) if cron_found
               next
             when SPECIAL_PATTERN
               if cron_found
-                @current_resource.time($2.to_sym)
-                @current_resource.command($3)
-                cron_found=false
+                @current_resource.time(Regexp.last_match[2].to_sym)
+                @current_resource.command(Regexp.last_match[3])
+                cron_found = false
               end
             when CRON_PATTERN
               if cron_found
-                @current_resource.minute($1)
-                @current_resource.hour($2)
-                @current_resource.day($3)
-                @current_resource.month($4)
-                @current_resource.weekday($5)
-                @current_resource.command($6)
-                cron_found=false
+                @current_resource.minute(Regexp.last_match[1])
+                @current_resource.hour(Regexp.last_match[2])
+                @current_resource.day(Regexp.last_match[3])
+                @current_resource.month(Regexp.last_match[4])
+                @current_resource.weekday(Regexp.last_match[5])
+                @current_resource.command(Regexp.last_match[6])
+                cron_found = false
               end
               next
             else
-              cron_found=false # We've got a Chef comment with no following crontab line
+              cron_found = false # We've got a Chef comment with no following crontab line
               next
             end
           end
@@ -99,8 +99,8 @@ class Chef
       end
 
       def action_create
-        crontab = String.new
-        newcron = String.new
+        crontab = ''
+        newcron = ''
         cron_found = false
 
         newcron = get_crontab_entry
@@ -154,7 +154,7 @@ class Chef
 
       def action_delete
         if @cron_exists
-          crontab = String.new
+          crontab = ''
           cron_found = false
           read_crontab.each_line do |line|
             case line.chomp
@@ -175,7 +175,7 @@ class Chef
             crontab << line
           end
           description = cron_found ? "remove #{@new_resource.name} from crontab" :
-            "save unmodified crontab"
+            'save unmodified crontab'
           converge_by(description) do
             write_crontab crontab
             Chef::Log.info("#{@new_resource} deleted crontab entry")
@@ -195,18 +195,18 @@ class Chef
 
       def read_crontab
         crontab = nil
-        status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
+        status = popen4("crontab -l -u #{@new_resource.user}") do |_pid, _stdin, stdout, _stderr|
           crontab = stdout.read
         end
         if status.exitstatus > 1
-          raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
+          fail Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
         end
         crontab
       end
 
       def write_crontab(crontab)
         write_exception = false
-        status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
+        status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |_pid, stdin, _stdout, _stderr|
           begin
             stdin.write crontab
           rescue Errno::EPIPE => e
@@ -216,14 +216,14 @@ class Chef
           end
         end
         if status.exitstatus > 0 || write_exception
-          raise Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{status.exitstatus}"
+          fail Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{status.exitstatus}"
         end
       end
 
       def get_crontab_entry
-        newcron = ""
+        newcron = ''
         newcron << "# Chef Name: #{new_resource.name}\n"
-        [ :mailto, :path, :shell, :home ].each do |v|
+        [:mailto, :path, :shell, :home].each do |v|
           newcron << "#{v.to_s.upcase}=#{@new_resource.send(v)}\n" if @new_resource.send(v)
         end
         @new_resource.environment.each do |name, value|

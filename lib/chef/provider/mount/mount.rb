@@ -42,27 +42,27 @@ class Chef
 
         def mountable?
           # only check for existence of non-remote devices
-          if (device_should_exist? && !::File.exists?(device_real) )
-            raise Chef::Exceptions::Mount, "Device #{@new_resource.device} does not exist"
-          elsif( @new_resource.mount_point != "none" && !::File.exists?(@new_resource.mount_point) )
-            raise Chef::Exceptions::Mount, "Mount point #{@new_resource.mount_point} does not exist"
+          if device_should_exist? && !::File.exist?(device_real)
+            fail Chef::Exceptions::Mount, "Device #{@new_resource.device} does not exist"
+          elsif  @new_resource.mount_point != 'none' && !::File.exist?(@new_resource.mount_point)
+            fail Chef::Exceptions::Mount, "Mount point #{@new_resource.mount_point} does not exist"
           end
-          return true
+          true
         end
 
         def enabled?
           # Check to see if there is a entry in /etc/fstab. Last entry for a volume wins.
           enabled = false
-          ::File.foreach("/etc/fstab") do |line|
+          ::File.foreach('/etc/fstab') do |line|
             case line
             when /^[#\s]/
               next
             when /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
               enabled = true
-              @current_resource.fstype($1)
-              @current_resource.options($2)
-              @current_resource.dump($3.to_i)
-              @current_resource.pass($4.to_i)
+              @current_resource.fstype(Regexp.last_match[1])
+              @current_resource.options(Regexp.last_match[2])
+              @current_resource.dump(Regexp.last_match[3].to_i)
+              @current_resource.pass(Regexp.last_match[4].to_i)
               Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/fstab")
               next
             when /^[\/\w]+\s+#{Regexp.escape(@new_resource.mount_point)}\s+/
@@ -79,20 +79,20 @@ class Chef
           # "mount" outputs the mount points as real paths. Convert
           # the mount_point of the resource to a real path in case it
           # contains symlinks in its parents dirs.
-          real_mount_point = if ::File.exists? @new_resource.mount_point
+          real_mount_point = if ::File.exist? @new_resource.mount_point
                                ::File.realpath(@new_resource.mount_point)
                              else
                                @new_resource.mount_point
                              end
 
-          shell_out!("mount").stdout.each_line do |line|
+          shell_out!('mount').stdout.each_line do |line|
             case line
             when /^#{device_mount_regex}\s+on\s+#{Regexp.escape(real_mount_point)}/
               mounted = true
               Chef::Log.debug("Special device #{device_logstring} mounted as #{real_mount_point}")
             when /^([\/\w])+\son\s#{Regexp.escape(real_mount_point)}\s+/
               mounted = false
-              Chef::Log.debug("Special device #{$~[1]} mounted as #{real_mount_point}")
+              Chef::Log.debug("Special device #{$LAST_MATCH_INFO[1]} mounted as #{real_mount_point}")
             end
           end
           @current_resource.mounted(mounted)
@@ -129,11 +129,11 @@ class Chef
         end
 
         def remount_command
-           return "mount -o remount #{@new_resource.mount_point}"
+          "mount -o remount #{@new_resource.mount_point}"
         end
 
         def remount_fs
-          if @current_resource.mounted and @new_resource.supports[:remount]
+          if @current_resource.mounted && @new_resource.supports[:remount]
             shell_out!(remount_command)
             @new_resource.updated_by_last_action(true)
             Chef::Log.debug("#{@new_resource} is remounted at #{@new_resource.mount_point}")
@@ -157,8 +157,8 @@ class Chef
             # disable, then enable.
             disable_fs
           end
-          ::File.open("/etc/fstab", "a") do |fstab|
-            fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? "defaults" : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
+          ::File.open('/etc/fstab', 'a') do |fstab|
+            fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? 'defaults' : @new_resource.options.join(',')} #{@new_resource.dump} #{@new_resource.pass}")
             Chef::Log.debug("#{@new_resource} is enabled at #{@new_resource.mount_point}")
           end
         end
@@ -168,7 +168,7 @@ class Chef
             contents = []
 
             found = false
-            ::File.readlines("/etc/fstab").reverse_each do |line|
+            ::File.readlines('/etc/fstab').reverse_each do |line|
               if !found && line =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}/
                 found = true
                 Chef::Log.debug("#{@new_resource} is removed from fstab")
@@ -178,8 +178,8 @@ class Chef
               end
             end
 
-            ::File.open("/etc/fstab", "w") do |fstab|
-              contents.reverse_each { |line| fstab.puts line}
+            ::File.open('/etc/fstab', 'w') do |fstab|
+              contents.reverse_each { |line| fstab.puts line }
             end
           else
             Chef::Log.debug("#{@new_resource} is not enabled - nothing to do")
@@ -191,9 +191,9 @@ class Chef
         end
 
         def device_should_exist?
-          ( @new_resource.device != "none" ) &&
-            ( not network_device? ) &&
-            ( not %w[ tmpfs fuse ].include? @new_resource.fstype )
+          ( @new_resource.device != 'none') &&
+            ( !network_device?) &&
+            ( !%w(tmpfs fuse).include? @new_resource.fstype)
         end
 
         private
@@ -210,12 +210,12 @@ class Chef
         end
 
         def device_real
-          if @real_device == nil
+          if @real_device.nil?
             if @new_resource.device_type == :device
               @real_device = @new_resource.device
             else
-              @real_device = ""
-              status = popen4("/sbin/findfs #{device_fstab}") do |pid, stdin, stdout, stderr|
+              @real_device = ''
+              status = popen4("/sbin/findfs #{device_fstab}") do |_pid, _stdin, stdout, _stderr|
                 device_line = stdout.first # stdout.first consumes
                 @real_device = device_line.chomp unless device_line.nil?
               end
@@ -238,13 +238,13 @@ class Chef
         def device_mount_regex
           if network_device?
             # ignore trailing slash
-            Regexp.escape(device_real)+"/?"
+            Regexp.escape(device_real) + '/?'
           elsif ::File.symlink?(device_real)
             # This regular expression tries to match device_real. If that does not match it will try to match the target of device_real.
             # So given a symlink like this:
             # /dev/mapper/vgroot-tmp.vol -> /dev/dm-9
             # First it will try to match "/dev/mapper/vgroot-tmp.vol". If there is no match it will try matching for "/dev/dm-9".
-            "(?:#{Regexp.escape(device_real)}|#{Regexp.escape(::File.expand_path(::File.readlink(device_real),::File.dirname(device_real)))})"
+            "(?:#{Regexp.escape(device_real)}|#{Regexp.escape(::File.expand_path(::File.readlink(device_real), ::File.dirname(device_real)))})"
           else
             Regexp.escape(device_real)
           end
@@ -259,12 +259,11 @@ class Chef
         end
 
         def mount_options_unchanged?
-          @current_resource.fstype == @new_resource.fstype and
-          @current_resource.options == @new_resource.options and
-          @current_resource.dump == @new_resource.dump and
+          @current_resource.fstype == @new_resource.fstype &&
+          @current_resource.options == @new_resource.options &&
+          @current_resource.dump == @new_resource.dump &&
           @current_resource.pass == @new_resource.pass
         end
-
       end
     end
   end

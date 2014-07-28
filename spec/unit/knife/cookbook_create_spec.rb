@@ -21,20 +21,20 @@ require 'tmpdir'
 
 describe Chef::Knife::CookbookCreate do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name]  = 'webmonkey.example.com'
     @knife = Chef::Knife::CookbookCreate.new
     @knife.config = {}
-    @knife.name_args = ["foobar"]
+    @knife.name_args = ['foobar']
     @stdout = StringIO.new
     @knife.stub(:stdout).and_return(@stdout)
   end
 
-  describe "run" do
+  describe 'run' do
 
     # Fixes CHEF-2579
-    it "should expand the path of the cookbook directory" do
-      File.should_receive(:expand_path).with("~/tmp/monkeypants")
-      @knife.config = {:cookbook_path => "~/tmp/monkeypants"}
+    it 'should expand the path of the cookbook directory' do
+      File.should_receive(:expand_path).with('~/tmp/monkeypants')
+      @knife.config = { :cookbook_path => '~/tmp/monkeypants' }
       @knife.stub(:create_cookbook)
       @knife.stub(:create_readme)
       @knife.stub(:create_changelog)
@@ -42,74 +42,74 @@ describe Chef::Knife::CookbookCreate do
       @knife.run
     end
 
-    it "should create a new cookbook with default values to copyright name, email, readme format and license if those are not supplied" do
+    it 'should create a new cookbook with default values to copyright name, email, readme format and license if those are not supplied' do
       @dir = Dir.tmpdir
-      @knife.config = {:cookbook_path => @dir}
-      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "YOUR_COMPANY_NAME", "none")
-      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
+      @knife.config = { :cookbook_path => @dir }
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, 'YOUR_COMPANY_NAME', 'none')
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, 'md')
       @knife.should_receive(:create_changelog).with(@dir, @knife.name_args.first)
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "YOUR_COMPANY_NAME", "YOUR_EMAIL", "none", "md")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, 'YOUR_COMPANY_NAME', 'YOUR_EMAIL', 'none', 'md')
       @knife.run
     end
 
-    it "should create a new cookbook with specified company name in the copyright section if one is specified" do
+    it 'should create a new cookbook with specified company name in the copyright section if one is specified' do
       @dir = Dir.tmpdir
       @knife.config = {
         :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc"
+        :cookbook_copyright => 'Opscode, Inc'
       }
-      @knife.name_args=["foobar"]
-      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
-      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
+      @knife.name_args = ['foobar']
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'none')
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, 'md')
       @knife.should_receive(:create_changelog).with(@dir, @knife.name_args.first)
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "YOUR_EMAIL", "none", "md")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'YOUR_EMAIL', 'none', 'md')
       @knife.run
     end
 
-    it "should create a new cookbook with specified copyright name and email if they are specified" do
+    it 'should create a new cookbook with specified copyright name and email if they are specified' do
       @dir = Dir.tmpdir
       @knife.config = {
         :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com"
+        :cookbook_copyright => 'Opscode, Inc',
+        :cookbook_email => 'nuo@opscode.com'
       }
-      @knife.name_args=["foobar"]
-      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
-      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
+      @knife.name_args = ['foobar']
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'none')
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, 'md')
       @knife.should_receive(:create_changelog).with(@dir, @knife.name_args.first)
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "none", "md")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'nuo@opscode.com', 'none', 'md')
       @knife.run
     end
 
-    it "should create a new cookbook with specified copyright name and email and license information (true) if they are specified" do
+    it 'should create a new cookbook with specified copyright name and email and license information (true) if they are specified' do
       @dir = Dir.tmpdir
       @knife.config = {
         :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "apachev2"
+        :cookbook_copyright => 'Opscode, Inc',
+        :cookbook_email => 'nuo@opscode.com',
+        :cookbook_license => 'apachev2'
       }
-      @knife.name_args=["foobar"]
-      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "apachev2")
-      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
+      @knife.name_args = ['foobar']
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'apachev2')
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, 'md')
       @knife.should_receive(:create_changelog).with(@dir, @knife.name_args.first)
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "apachev2", "md")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'nuo@opscode.com', 'apachev2', 'md')
       @knife.run
     end
 
-    it "should create a new cookbook with specified copyright name and email and license information (false) if they are specified" do
+    it 'should create a new cookbook with specified copyright name and email and license information (false) if they are specified' do
       @dir = Dir.tmpdir
       @knife.config = {
         :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
+        :cookbook_copyright => 'Opscode, Inc',
+        :cookbook_email => 'nuo@opscode.com',
         :cookbook_license => false
       }
-      @knife.name_args=["foobar"]
-      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
-      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
+      @knife.name_args = ['foobar']
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'none')
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, 'md')
       @knife.should_receive(:create_changelog).with(@dir, @knife.name_args.first)
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "none", "md")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'nuo@opscode.com', 'none', 'md')
       @knife.run
     end
 
@@ -117,142 +117,142 @@ describe Chef::Knife::CookbookCreate do
       @dir = Dir.tmpdir
       @knife.config = {
         :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "false"
+        :cookbook_copyright => 'Opscode, Inc',
+        :cookbook_email => 'nuo@opscode.com',
+        :cookbook_license => 'false'
       }
-      @knife.name_args=["foobar"]
-      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
-      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
+      @knife.name_args = ['foobar']
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'none')
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, 'md')
       @knife.should_receive(:create_changelog).with(@dir, @knife.name_args.first)
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "none", "md")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'nuo@opscode.com', 'none', 'md')
       @knife.run
     end
 
-    it "should allow specifying a gpl2 license" do
+    it 'should allow specifying a gpl2 license' do
       @dir = Dir.tmpdir
       @knife.config = {
         :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "gplv2"
+        :cookbook_copyright => 'Opscode, Inc',
+        :cookbook_email => 'nuo@opscode.com',
+        :cookbook_license => 'gplv2'
       }
-      @knife.name_args=["foobar"]
-      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "gplv2")
-      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
+      @knife.name_args = ['foobar']
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'gplv2')
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, 'md')
       @knife.should_receive(:create_changelog).with(@dir, @knife.name_args.first)
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "gplv2", "md")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'nuo@opscode.com', 'gplv2', 'md')
       @knife.run
     end
 
-    it "should allow specifying a gplv3 license" do
+    it 'should allow specifying a gplv3 license' do
       @dir = Dir.tmpdir
       @knife.config = {
         :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "gplv3"
+        :cookbook_copyright => 'Opscode, Inc',
+        :cookbook_email => 'nuo@opscode.com',
+        :cookbook_license => 'gplv3'
       }
-      @knife.name_args=["foobar"]
-      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "gplv3")
-      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
+      @knife.name_args = ['foobar']
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'gplv3')
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, 'md')
       @knife.should_receive(:create_changelog).with(@dir, @knife.name_args.first)
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "gplv3", "md")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'nuo@opscode.com', 'gplv3', 'md')
       @knife.run
     end
 
-    it "should allow specifying the mit license" do
+    it 'should allow specifying the mit license' do
       @dir = Dir.tmpdir
       @knife.config = {
         :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "mit"
+        :cookbook_copyright => 'Opscode, Inc',
+        :cookbook_email => 'nuo@opscode.com',
+        :cookbook_license => 'mit'
       }
-      @knife.name_args=["foobar"]
-      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
-      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
+      @knife.name_args = ['foobar']
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'mit')
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, 'md')
       @knife.should_receive(:create_changelog).with(@dir, @knife.name_args.first)
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit", "md")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'nuo@opscode.com', 'mit', 'md')
       @knife.run
     end
 
-    it "should allow specifying the rdoc readme format" do
+    it 'should allow specifying the rdoc readme format' do
       @dir = Dir.tmpdir
       @knife.config = {
         :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "mit",
-        :readme_format => "rdoc"
+        :cookbook_copyright => 'Opscode, Inc',
+        :cookbook_email => 'nuo@opscode.com',
+        :cookbook_license => 'mit',
+        :readme_format => 'rdoc'
       }
-      @knife.name_args=["foobar"]
-      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
-      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "rdoc")
+      @knife.name_args = ['foobar']
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'mit')
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, 'rdoc')
       @knife.should_receive(:create_changelog).with(@dir, @knife.name_args.first)
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit", "rdoc")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'nuo@opscode.com', 'mit', 'rdoc')
       @knife.run
     end
 
-    it "should allow specifying the mkd readme format" do
+    it 'should allow specifying the mkd readme format' do
       @dir = Dir.tmpdir
       @knife.config = {
         :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "mit",
-        :readme_format => "mkd"
+        :cookbook_copyright => 'Opscode, Inc',
+        :cookbook_email => 'nuo@opscode.com',
+        :cookbook_license => 'mit',
+        :readme_format => 'mkd'
       }
-      @knife.name_args=["foobar"]
-      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
-      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "mkd")
+      @knife.name_args = ['foobar']
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'mit')
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, 'mkd')
       @knife.should_receive(:create_changelog).with(@dir, @knife.name_args.first)
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit", "mkd")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'nuo@opscode.com', 'mit', 'mkd')
       @knife.run
     end
 
-    it "should allow specifying the txt readme format" do
+    it 'should allow specifying the txt readme format' do
       @dir = Dir.tmpdir
       @knife.config = {
         :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "mit",
-        :readme_format => "txt"
+        :cookbook_copyright => 'Opscode, Inc',
+        :cookbook_email => 'nuo@opscode.com',
+        :cookbook_license => 'mit',
+        :readme_format => 'txt'
       }
-      @knife.name_args=["foobar"]
-      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
-      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "txt")
+      @knife.name_args = ['foobar']
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'mit')
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, 'txt')
       @knife.should_receive(:create_changelog).with(@dir, @knife.name_args.first)
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit", "txt")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'nuo@opscode.com', 'mit', 'txt')
       @knife.run
     end
 
-    it "should allow specifying an arbitrary readme format" do
+    it 'should allow specifying an arbitrary readme format' do
       @dir = Dir.tmpdir
       @knife.config = {
         :cookbook_path => @dir,
-        :cookbook_copyright => "Opscode, Inc",
-        :cookbook_email => "nuo@opscode.com",
-        :cookbook_license => "mit",
-        :readme_format => "foo"
+        :cookbook_copyright => 'Opscode, Inc',
+        :cookbook_email => 'nuo@opscode.com',
+        :cookbook_license => 'mit',
+        :readme_format => 'foo'
       }
-      @knife.name_args=["foobar"]
-      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
-      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "foo")
+      @knife.name_args = ['foobar']
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'mit')
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, 'foo')
       @knife.should_receive(:create_changelog).with(@dir, @knife.name_args.first)
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit", "foo")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, 'Opscode, Inc', 'nuo@opscode.com', 'mit', 'foo')
       @knife.run
     end
 
-    context "when the cookbooks path is set to nil" do
+    context 'when the cookbooks path is set to nil' do
       before do
         Chef::Config[:cookbook_path] = nil
       end
 
-      it "should throw an argument error" do
+      it 'should throw an argument error' do
         @dir = Dir.tmpdir
-        lambda{@knife.run}.should raise_error(ArgumentError)
+        lambda { @knife.run }.should raise_error(ArgumentError)
       end
     end
 

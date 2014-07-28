@@ -31,41 +31,35 @@ class Chef
         end
 
         def chef_object
-          begin
-            loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, parent.chefignore)
-            # We need the canonical cookbook name if we are using versioned cookbooks, but we don't
-            # want to spend a lot of time adding code to the main Chef libraries
-            if Chef::Config[:versioned_cookbooks]
-              _canonical_name = canonical_cookbook_name(File.basename(file_path))
-              fail "When versioned_cookbooks mode is on, cookbook #{file_path} must match format <cookbook_name>-x.y.z"  unless _canonical_name
-
-              # KLUDGE: We shouldn't have to use instance_variable_set
-              loader.instance_variable_set(:@cookbook_name, _canonical_name)
-            end
-
-            loader.load_cookbooks
-            cb = loader.cookbook_version
-            if !cb
-              Chef::Log.error("Cookbook #{file_path} empty.")
-              raise "Cookbook #{file_path} empty."
-            end
-            cb
-          rescue => e
-            Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{e}")
-            Chef::Log.error(e.backtrace.join("\n"))
-            raise
+          loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, parent.chefignore)
+          # We need the canonical cookbook name if we are using versioned cookbooks, but we don't
+          # want to spend a lot of time adding code to the main Chef libraries
+          if Chef::Config[:versioned_cookbooks]
+            _canonical_name = canonical_cookbook_name(File.basename(file_path))
+            fail "When versioned_cookbooks mode is on, cookbook #{file_path} must match format <cookbook_name>-x.y.z"  unless _canonical_name
+            # KLUDGE: We shouldn't have to use instance_variable_set
+            loader.instance_variable_set(:@cookbook_name, _canonical_name)
           end
+          loader.load_cookbooks
+          cb = loader.cookbook_version
+          unless cb
+            Chef::Log.error("Cookbook #{file_path} empty.")
+            fail "Cookbook #{file_path} empty."
+          end
+          cb
+        rescue => e
+          Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{e}")
+          Chef::Log.error(e.backtrace.join("\n"))
+          raise
         end
 
         def children
-          begin
-            Dir.entries(file_path).sort.
-                select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
-                map { |child_name| make_child(child_name) }.
-                select { |entry| !(entry.dir? && entry.children.size == 0) }
-          rescue Errno::ENOENT
-            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-          end
+          Dir.entries(file_path).sort.
+              select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
+              map { |child_name| make_child(child_name) }.
+              select { |entry| !(entry.dir? && entry.children.size == 0) }
+        rescue Errno::ENOENT
+          raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $ERROR_INFO)
         end
 
         def can_have_child?(name, is_dir)
@@ -82,7 +76,7 @@ class Chef
         def self.canonical_cookbook_name(entry_name)
           name_match = Chef::ChefFS::FileSystem::CookbookDir::VALID_VERSIONED_COOKBOOK_NAME.match(entry_name)
           return nil if name_match.nil?
-          return name_match[1]
+          name_match[1]
         end
 
         def canonical_cookbook_name(entry_name)
@@ -94,7 +88,7 @@ class Chef
         end
 
         def can_upload?
-          File.exists?(uploaded_cookbook_version_path) || children.size > 0
+          File.exist?(uploaded_cookbook_version_path) || children.size > 0
         end
 
         protected

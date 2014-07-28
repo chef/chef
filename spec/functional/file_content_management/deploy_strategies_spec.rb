@@ -18,7 +18,7 @@
 
 require 'spec_helper'
 
-shared_examples_for "a content deploy strategy" do
+shared_examples_for 'a content deploy strategy' do
 
   # Ruby 1.8 has no binread
   def binread(file)
@@ -34,7 +34,7 @@ shared_examples_for "a content deploy strategy" do
   end
 
   let(:sandbox_dir) do
-    basename = make_tmpname("content-deploy-tests")
+    basename = make_tmpname('content-deploy-tests')
     full_path = File.join(CHEF_SPEC_DATA, basename)
     FileUtils.mkdir_p(full_path)
     full_path
@@ -45,16 +45,15 @@ shared_examples_for "a content deploy strategy" do
   end
 
   let(:content_deployer) { described_class.new }
-  let(:target_file_path) { File.join(sandbox_dir, "cp-deploy-strategy-target-file.txt") }
+  let(:target_file_path) { File.join(sandbox_dir, 'cp-deploy-strategy-target-file.txt') }
 
-
-  describe "creating the file" do
+  describe 'creating the file' do
 
     ##
     # UNIX Context
     let(:default_mode) { normalize_mode(0100666 - File.umask) }
 
-    it "touches the file to create it (UNIX)", :unix_only do
+    it 'touches the file to create it (UNIX)', :unix_only do
       content_deployer.create(target_file_path)
       File.should exist(target_file_path)
       file_info = File.stat(target_file_path)
@@ -78,7 +77,7 @@ shared_examples_for "a content deploy strategy" do
 
     def ace_inherits?(ace)
       flags = ace.flags
-      (flags & masks::OBJECT_INHERIT_ACE) !=0
+      (flags & masks::OBJECT_INHERIT_ACE) != 0
     end
 
     let(:parent_inheritable_aces) do
@@ -87,7 +86,7 @@ shared_examples_for "a content deploy strategy" do
       end
     end
 
-    it "touches the file to create it (Windows)", :windows_only do
+    it 'touches the file to create it (Windows)', :windows_only do
       content_deployer.create(target_file_path)
       File.should exist(target_file_path)
       file_info = File.stat(target_file_path)
@@ -111,20 +110,20 @@ shared_examples_for "a content deploy strategy" do
     end
   end
 
-  describe "updating the file" do
+  describe 'updating the file' do
 
     let(:staging_dir) { Dir.mktmpdir }
 
-    let(:staging_file_content) { "this is the expected content" }
+    let(:staging_file_content) { 'this is the expected content' }
 
     let(:staging_file_path) do
-      path = File.join(staging_dir, "cp-deploy-strategy-staging-file.txt")
-      File.open(path, "w+", 0600) { |f| f.print(staging_file_content) }
+      path = File.join(staging_dir, 'cp-deploy-strategy-staging-file.txt')
+      File.open(path, 'w+', 0600) { |f| f.print(staging_file_content) }
       path
     end
 
     def unix_invariant_properies(stat_struct)
-      unix_invariants.inject({}) do |property_map, property|
+      unix_invariants.reduce({}) do |property_map, property|
         property_map[property] = stat_struct.send(property)
         property_map
       end
@@ -132,9 +131,9 @@ shared_examples_for "a content deploy strategy" do
 
     def win_invariant_properties(sec_obj)
       descriptor = sec_obj.security_descriptor(true)
-      security_descriptor_invariants.inject({}) do |prop_map, property|
-        prop_map[property] = descriptor.send(property)
-        prop_map
+      security_descriptor_invariants.reduce({}) do |prop_map, property|
+         prop_map[property] = descriptor.send(property)
+         prop_map
        end
     end
 
@@ -142,7 +141,7 @@ shared_examples_for "a content deploy strategy" do
       content_deployer.create(target_file_path)
     end
 
-    it "maintains invariant properties on UNIX", :unix_only do
+    it 'maintains invariant properties on UNIX', :unix_only do
       original_info = File.stat(target_file_path)
       content_deployer.deploy(staging_file_path, target_file_path)
       updated_info = File.stat(target_file_path)
@@ -150,7 +149,7 @@ shared_examples_for "a content deploy strategy" do
       unix_invariant_properies(original_info).should == unix_invariant_properies(updated_info)
     end
 
-    it "maintains invariant properties on Windows", :windows_only do
+    it 'maintains invariant properties on Windows', :windows_only do
       original_info = Chef::ReservedNames::Win32::Security::SecurableObject.new(target_file_path)
       content_deployer.deploy(staging_file_path, target_file_path)
       updated_info = Chef::ReservedNames::Win32::Security::SecurableObject.new(target_file_path)
@@ -158,12 +157,12 @@ shared_examples_for "a content deploy strategy" do
       win_invariant_properties(original_info).should == win_invariant_properties(updated_info)
     end
 
-    it "updates the target with content from staged" do
+    it 'updates the target with content from staged' do
       content_deployer.deploy(staging_file_path, target_file_path)
       binread(target_file_path).should == staging_file_content
     end
 
-    context "when the owner of the target file is not the owner of the staging file", :requires_root do
+    context 'when the owner of the target file is not the owner of the staging file', :requires_root do
 
       before do
         File.chown(1337, 1337, target_file_path)
@@ -201,7 +200,7 @@ describe Chef::FileContentManagement::Deploy::Cp do
     ]
   end
 
-  it_should_behave_like "a content deploy strategy"
+  it_should_behave_like 'a content deploy strategy'
 
 end
 
@@ -215,25 +214,25 @@ describe Chef::FileContentManagement::Deploy::MvUnix, :unix_only do
     ]
   end
 
-  it_should_behave_like "a content deploy strategy"
+  it_should_behave_like 'a content deploy strategy'
 end
 
 # On Unix we won't have loaded the file, avoid undefined constant errors:
-class Chef::FileContentManagement::Deploy::MvWindows ; end
+class Chef::FileContentManagement::Deploy::MvWindows; end
 
 describe Chef::FileContentManagement::Deploy::MvWindows, :windows_only do
 
-  context "when a file has no sacl" do
+  context 'when a file has no sacl' do
 
     let(:security_descriptor_invariants) do
       [
-       :owner,
-       :group,
-       :dacl
+        :owner,
+        :group,
+        :dacl
       ]
     end
 
-    it_should_behave_like "a content deploy strategy"
+    it_should_behave_like 'a content deploy strategy'
   end
 
 end

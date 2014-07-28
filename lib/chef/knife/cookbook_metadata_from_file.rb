@@ -24,12 +24,11 @@ require 'chef/knife'
 class Chef
   class Knife
     class CookbookMetadataFromFile < Knife
-
       deps do
         require 'chef/cookbook/metadata'
       end
 
-      banner "knife cookbook metadata from FILE (options)"
+      banner 'knife cookbook metadata from FILE (options)'
 
       def run
         file = @name_args[0]
@@ -38,7 +37,6 @@ class Chef
         @metadata = Chef::Knife::CookbookMetadata.new
         @metadata.generate_metadata_from_file(cookbook, file)
       end
-
     end
   end
 end

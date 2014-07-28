@@ -18,7 +18,6 @@
 class Chef
   module Mixin
     module CreatePath
-
       # Creates a given path, including all directories that lead up to it.
       # Like mkdir_p, but without the leaking.
       #
@@ -29,11 +28,11 @@ class Chef
       # === Returns
       # The created file_path.
       def create_path(file_path)
-        unless file_path.kind_of?(String) || file_path.kind_of?(Array)
-          raise ArgumentError, "file_path must be a string or an array!"
+        unless file_path.is_a?(String) || file_path.is_a?(Array)
+          fail ArgumentError, 'file_path must be a string or an array!'
         end
 
-        if file_path.kind_of?(String)
+        if file_path.is_a?(String)
           file_path = File.expand_path(file_path).split(File::SEPARATOR)
           file_path.shift if file_path[0] == ''
           # Check if path starts with a separator or drive letter (Windows)
@@ -53,21 +52,10 @@ class Chef
       private
 
       def create_dir(path)
-        begin
-          # When doing multithreaded downloads into the file cache, the following
-          # interleaving raises an error here:
-          #
-          # thread1                                     thread2
-          # File.directory?(create_path) <- false
-          #                                             File.directory?(create_path) <- false
-          #                                             Dir.mkdir(create_path)
-          # Dir.mkdir(create_path) <- raises Errno::EEXIST
-          Chef::Log.debug("Creating directory #{path}")
-          Dir.mkdir(path)
-        rescue Errno::EEXIST
-        end
+        Chef::Log.debug("Creating directory #{path}")
+        Dir.mkdir(path)
+      rescue Errno::EEXIST
       end
-
     end
   end
 end

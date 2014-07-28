@@ -26,37 +26,35 @@ describe Chef::Resource::FreebsdPackage do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @resource = Chef::Resource::FreebsdPackage.new("foo", @run_context)
+    @resource = Chef::Resource::FreebsdPackage.new('foo', @run_context)
   end
 
-
-  describe "Initialization" do
-    it "should return a Chef::Resource::FreebsdPackage" do
+  describe 'Initialization' do
+    it 'should return a Chef::Resource::FreebsdPackage' do
       @resource.should be_a_kind_of(Chef::Resource::FreebsdPackage)
     end
 
-    it "should set the resource_name to :freebsd_package" do
+    it 'should set the resource_name to :freebsd_package' do
       @resource.resource_name.should eql(:freebsd_package)
     end
 
-    it "should not set the provider" do
+    it 'should not set the provider' do
       @resource.provider.should be_nil
     end
   end
 
-
-  describe "Assigning provider after creation" do
-    describe "if ports specified as source" do
-      it "should be Freebsd::Port" do
+  describe 'Assigning provider after creation' do
+    describe 'if ports specified as source' do
+      it 'should be Freebsd::Port' do
         @resource.source('ports')
         @resource.after_created
         @resource.provider.should == Chef::Provider::Package::Freebsd::Port
       end
     end
 
-    describe "if __Freebsd_version is greater than or equal to 1000017" do
-      it "should be Freebsd::Pkgng" do
-        [1000017, 1000018, 1000500, 1001001, 1100000].each do |__freebsd_version|
+    describe 'if __Freebsd_version is greater than or equal to 1000017' do
+      it 'should be Freebsd::Pkgng' do
+        [1_000_017, 1_000_018, 1_000_500, 1_001_001, 1_100_000].each do |__freebsd_version|
           @node.normal[:os_version] = __freebsd_version
           @resource.after_created
           @resource.provider.should == Chef::Provider::Package::Freebsd::Pkgng
@@ -64,21 +62,21 @@ describe Chef::Resource::FreebsdPackage do
       end
     end
 
-    describe "if pkgng enabled" do
-      it "should be Freebsd::Pkgng" do
+    describe 'if pkgng enabled' do
+      it 'should be Freebsd::Pkgng' do
         pkg_enabled = OpenStruct.new(:stdout => "yes\n")
-        @resource.stub(:shell_out!).with("make -V WITH_PKGNG", :env => nil).and_return(pkg_enabled)
+        @resource.stub(:shell_out!).with('make -V WITH_PKGNG', :env => nil).and_return(pkg_enabled)
         @resource.after_created
         @resource.provider.should == Chef::Provider::Package::Freebsd::Pkgng
       end
     end
 
-    describe "if __Freebsd_version is less than 1000017 and pkgng not enabled" do
-      it "should be Freebsd::Pkg" do
+    describe 'if __Freebsd_version is less than 1000017 and pkgng not enabled' do
+      it 'should be Freebsd::Pkg' do
         pkg_enabled = OpenStruct.new(:stdout => "\n")
-        @resource.stub(:shell_out!).with("make -V WITH_PKGNG", :env => nil).and_return(pkg_enabled)
+        @resource.stub(:shell_out!).with('make -V WITH_PKGNG', :env => nil).and_return(pkg_enabled)
 
-        [1000016, 1000000, 901503, 902506, 802511].each do |__freebsd_version|
+        [1_000_016, 1_000_000, 901_503, 902_506, 802_511].each do |__freebsd_version|
           @node[:os_version] == __freebsd_version
           @node.normal[:os_version] = __freebsd_version
           @resource.after_created
@@ -88,4 +86,3 @@ describe Chef::Resource::FreebsdPackage do
     end
   end
 end
-

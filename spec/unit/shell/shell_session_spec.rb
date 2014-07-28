@@ -16,11 +16,9 @@
 #
 
 require 'spec_helper'
-require "ostruct"
-
+require 'ostruct'
 
 class TestableShellSession < Shell::ShellSession
-
   def rebuild_node
     nil
   end
@@ -36,12 +34,11 @@ class TestableShellSession < Shell::ShellSession
   def loading_complete
     nil
   end
-
 end
 
 describe Shell::ShellSession do
 
-  it "is a singleton object" do
+  it 'is a singleton object' do
     Shell::ShellSession.should include(Singleton)
   end
 
@@ -51,9 +48,9 @@ describe Shell::ClientSession do
   before do
     Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new('shell::override')] }
     @session = Shell::ClientSession.instance
-    @node = Chef::Node.build("foo")
+    @node = Chef::Node.build('foo')
     @session.node = @node
-    @client = double("Chef::Client.new",
+    @client = double('Chef::Client.new',
                      :run_ohai => true,
                      :load_node => true,
                      :build_node => true,
@@ -69,7 +66,7 @@ describe Shell::ClientSession do
     @session.rebuild_context
   end
 
-  it "passes the shell CLI args to the client" do
+  it 'passes the shell CLI args to the client' do
     Chef::Client.should_receive(:new).with(nil, Chef::Config[:shell_config]).and_return(@client)
     @session.send(:rebuild_node)
   end
@@ -87,7 +84,7 @@ describe Shell::StandAloneSession do
     Shell::Extensions.extend_context_recipe(@recipe)
   end
 
-  it "has a run_context" do
+  it 'has a run_context' do
     @session.run_context.should equal(@run_context)
   end
 
@@ -95,18 +92,18 @@ describe Shell::StandAloneSession do
     @session.resource_collection.should == @recipe.run_context.resource_collection
   end
 
-  it "gives nil for the definitions (for now)" do
+  it 'gives nil for the definitions (for now)' do
     @session.definitions.should be_nil
   end
 
-  it "gives nil for the cookbook_loader" do
+  it 'gives nil for the cookbook_loader' do
     @session.cookbook_loader.should be_nil
   end
 
-  it "runs chef with the standalone recipe" do
+  it 'runs chef with the standalone recipe' do
     @session.stub(:node_built?).and_return(true)
     Chef::Log.stub(:level)
-    chef_runner = double("Chef::Runner.new", :converge => :converged)
+    chef_runner = double('Chef::Runner.new', :converge => :converged)
     # pre-heat resource collection cache
     @session.resource_collection
 
@@ -114,8 +111,8 @@ describe Shell::StandAloneSession do
     @recipe.run_chef.should == :converged
   end
 
-  it "passes the shell CLI args to the client" do
-    @client = double("Chef::Client.new",
+  it 'passes the shell CLI args to the client' do
+    @client = double('Chef::Client.new',
                      :run_ohai => true,
                      :load_node => true,
                      :build_node => true,
@@ -146,42 +143,42 @@ describe Shell::SoloSession do
 
   it "returns a collection based on it's compilation object and the extra recipe provided by chef-shell" do
     @session.stub(:node_built?).and_return(true)
-    kitteh = Chef::Resource::Cat.new("keyboard")
+    kitteh = Chef::Resource::Cat.new('keyboard')
     @recipe.run_context.resource_collection << kitteh
     @session.resource_collection.should include(kitteh)
   end
 
-  it "returns definitions from its compilation object" do
+  it 'returns definitions from its compilation object' do
     @session.definitions.should == @run_context.definitions
   end
 
-  it "keeps json attribs and passes them to the node for consumption" do
-    @session.node_attributes = {"besnard_lakes" => "are_the_dark_horse"}
-    @session.node.besnard_lakes.should == "are_the_dark_horse"
-    #pending "1) keep attribs in an ivar 2) pass them to the node 3) feed them to the node on reset"
+  it 'keeps json attribs and passes them to the node for consumption' do
+    @session.node_attributes = { 'besnard_lakes' => 'are_the_dark_horse' }
+    @session.node.besnard_lakes.should == 'are_the_dark_horse'
+    # pending "1) keep attribs in an ivar 2) pass them to the node 3) feed them to the node on reset"
   end
 
-  it "generates its resource collection from the compiled cookbooks and the ad hoc recipe" do
+  it 'generates its resource collection from the compiled cookbooks and the ad hoc recipe' do
     @session.stub(:node_built?).and_return(true)
-    kitteh_cat = Chef::Resource::Cat.new("kitteh")
+    kitteh_cat = Chef::Resource::Cat.new('kitteh')
     @run_context.resource_collection << kitteh_cat
-    keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
+    keyboard_cat = Chef::Resource::Cat.new('keyboard_cat')
     @recipe.run_context.resource_collection << keyboard_cat
-    #@session.rebuild_collection
+    # @session.rebuild_collection
     @session.resource_collection.should include(kitteh_cat, keyboard_cat)
   end
 
-  it "runs chef with a resource collection from the compiled cookbooks" do
+  it 'runs chef with a resource collection from the compiled cookbooks' do
     @session.stub(:node_built?).and_return(true)
     Chef::Log.stub(:level)
-    chef_runner = double("Chef::Runner.new", :converge => :converged)
+    chef_runner = double('Chef::Runner.new', :converge => :converged)
     Chef::Runner.should_receive(:new).with(an_instance_of(Chef::RunContext)).and_return(chef_runner)
 
     @recipe.run_chef.should == :converged
   end
 
-  it "passes the shell CLI args to the client" do
-    @client = double("Chef::Client.new",
+  it 'passes the shell CLI args to the client' do
+    @client = double('Chef::Client.new',
                      :run_ohai => true,
                      :load_node => true,
                      :build_node => true,

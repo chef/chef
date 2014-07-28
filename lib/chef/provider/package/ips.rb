@@ -27,7 +27,6 @@ class Chef
   class Provider
     class Package
       class Ips < Chef::Provider::Package
-
         include Chef::Mixin::ShellOut
         attr_accessor :virtual
 
@@ -58,22 +57,22 @@ class Chef
             when /^\s+State: Installed/
               installed = true
             when /^\s+Version: (.*)/
-              @candidate_version = $1.split[0]
+              @candidate_version = Regexp.last_match[1].split[0]
               if installed
-                @current_resource.version($1)
+                @current_resource.version(Regexp.last_match[1])
               else
                 @current_resource.version(nil)
               end
             end
           end
 
-          return installed
+          installed
         end
 
         def install_package(name, version)
           package_name = "#{name}@#{version}"
           normal_command = "pkg#{expand_options(@new_resource.options)} install -q #{package_name}"
-          if @new_resource.respond_to?(:accept_license) and @new_resource.accept_license
+          if @new_resource.respond_to?(:accept_license) && @new_resource.accept_license
             command = normal_command.gsub('-q', '-q --accept')
           else
             command = normal_command
@@ -98,4 +97,3 @@ class Chef
     end
   end
 end
-

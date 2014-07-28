@@ -23,13 +23,13 @@ describe 'chefignore tests' do
   extend IntegrationSupport
   include KnifeSupport
 
-  when_the_repository "has lots of stuff in it" do
+  when_the_repository 'has lots of stuff in it' do
     file 'roles/x.json', {}
     file 'environments/x.json', {}
     file 'data_bags/bag1/x.json', {}
     file 'cookbooks/cookbook1/x.json', {}
 
-    context "and has a chefignore everywhere except cookbooks" do
+    context 'and has a chefignore everywhere except cookbooks' do
       chefignore = "x.json\nroles/x.json\nenvironments/x.json\ndata_bags/bag1/x.json\nbag1/x.json\ncookbooks/cookbook1/x.json\ncookbook1/x.json\n"
       file 'chefignore', chefignore
       file 'roles/chefignore', chefignore
@@ -69,7 +69,7 @@ EOM
     end
   end
 
-  when_the_repository "has multiple cookbooks" do
+  when_the_repository 'has multiple cookbooks' do
     file 'cookbooks/cookbook1/x.json', {}
     file 'cookbooks/cookbook1/y.json', {}
     file 'cookbooks/cookbook2/x.json', {}
@@ -89,7 +89,7 @@ EOM
       end
     end
 
-    context "and has a chefignore with wildcards" do
+    context 'and has a chefignore with wildcards' do
       file 'cookbooks/chefignore', "x.*\n"
       file 'cookbooks/cookbook1/x.rb', ''
 
@@ -104,7 +104,7 @@ EOM
       end
     end
 
-    context "and has a chefignore with relative paths" do
+    context 'and has a chefignore with relative paths' do
       file 'cookbooks/cookbook1/recipes/x.rb', ''
       file 'cookbooks/cookbook2/recipes/y.rb', ''
       file 'cookbooks/chefignore', "recipes/x.rb\n"
@@ -124,7 +124,7 @@ EOM
       end
     end
 
-    context "and has a chefignore with subdirectories" do
+    context 'and has a chefignore with subdirectories' do
       file 'cookbooks/cookbook1/recipes/y.rb', ''
       file 'cookbooks/chefignore', "recipes\nrecipes/\n"
 
@@ -143,7 +143,7 @@ EOM
       end
     end
 
-    context "and has a chefignore that ignores all files in a subdirectory" do
+    context 'and has a chefignore that ignores all files in a subdirectory' do
       file 'cookbooks/cookbook1/templates/default/x.rb', ''
       file 'cookbooks/cookbook1/libraries/x.rb', ''
       file 'cookbooks/chefignore', "libraries/x.rb\ntemplates/default/x.rb\n"
@@ -161,7 +161,7 @@ EOM
       end
     end
 
-    context "and has an empty chefignore" do
+    context 'and has an empty chefignore' do
       file 'cookbooks/chefignore', "\n"
 
       it 'nothing is ignored' do
@@ -177,7 +177,7 @@ EOM
       end
     end
 
-    context "and has a chefignore with comments and empty lines" do
+    context 'and has a chefignore with comments and empty lines' do
       file 'cookbooks/chefignore', "\n\n # blah\n#\nx.json\n\n"
 
       it 'matching files and directories get ignored in all cookbooks' do
@@ -192,7 +192,7 @@ EOM
     end
   end
 
-  when_the_repository "has multiple cookbook paths" do
+  when_the_repository 'has multiple cookbook paths' do
     before :each do
       Chef::Config.cookbook_path = [
         File.join(Chef::Config.chef_repo_path, 'cookbooks1'),
@@ -205,10 +205,10 @@ EOM
     file 'cookbooks2/yourcookbook/metadata.rb', ''
     file 'cookbooks2/yourcookbook/x.json', ''
 
-    context "and multiple chefignores" do
+    context 'and multiple chefignores' do
       file 'cookbooks1/chefignore', "metadata.rb\n"
       file 'cookbooks2/chefignore', "x.json\n"
-      it "chefignores apply only to the directories they are in" do
+      it 'chefignores apply only to the directories they are in' do
         knife('list --local -Rfp /').should_succeed <<EOM
 /cookbooks/
 /cookbooks/mycookbook/
@@ -218,13 +218,13 @@ EOM
 EOM
       end
 
-      context "and conflicting cookbooks" do
+      context 'and conflicting cookbooks' do
         file 'cookbooks1/yourcookbook/metadata.rb', ''
         file 'cookbooks1/yourcookbook/x.json', ''
         file 'cookbooks1/yourcookbook/onlyincookbooks1.rb', ''
         file 'cookbooks2/yourcookbook/onlyincookbooks2.rb', ''
 
-        it "chefignores apply only to the winning cookbook" do
+        it 'chefignores apply only to the winning cookbook' do
           knife('list --local -Rfp /').should_succeed(<<EOM, :stderr => "WARN: Child with name 'yourcookbook' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks1/yourcookbook and #{Chef::Config.chef_repo_path}/cookbooks2/yourcookbook\n")
 /cookbooks/
 /cookbooks/mycookbook/

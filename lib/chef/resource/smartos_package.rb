@@ -22,13 +22,11 @@ require 'chef/provider/package/smartos'
 class Chef
   class Resource
     class SmartosPackage < Chef::Resource::Package
-
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :smartos_package
         @provider = Chef::Provider::Package::SmartOS
       end
-
     end
   end
 end

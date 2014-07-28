@@ -24,26 +24,26 @@ describe Chef::Knife::EnvironmentShow do
     @knife.stub(:msg).and_return true
     @knife.stub(:output).and_return true
     @knife.stub(:show_usage).and_return true
-    @knife.name_args = [ "production" ]
+    @knife.name_args = ['production']
 
     @environment = Chef::Environment.new
-    @environment.name("production")
-    @environment.description("Look at me!")
+    @environment.name('production')
+    @environment.description('Look at me!')
     Chef::Environment.stub(:load).and_return @environment
   end
 
-  it "should load the environment" do
-    Chef::Environment.should_receive(:load).with("production")
+  it 'should load the environment' do
+    Chef::Environment.should_receive(:load).with('production')
     @knife.run
   end
 
-  it "should pretty print the environment, formatted for display" do
+  it 'should pretty print the environment, formatted for display' do
     @knife.should_receive(:format_for_display).with(@environment)
     @knife.should_receive(:output)
     @knife.run
   end
 
-  it "should show usage and exit when no environment name is provided" do
+  it 'should show usage and exit when no environment name is provided' do
     @knife.name_args = []
     @knife.ui.should_receive(:fatal)
     @knife.should_receive(:show_usage)

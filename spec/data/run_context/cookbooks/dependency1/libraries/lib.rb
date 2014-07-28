@@ -1,2 +1,1 @@
-LibraryLoadOrder.record("dependency1")
-
+LibraryLoadOrder.record('dependency1')

@@ -29,16 +29,15 @@ class Chef
   module ChefFS
     module FileSystem
       class CookbooksDir < RestListDir
-
         include Chef::Mixin::FileClass
 
         def initialize(parent)
-          super("cookbooks", parent)
+          super('cookbooks', parent)
         end
 
         def child(name)
           if @children
-            result = self.children.select { |child| child.name == name }.first
+            result = children.select { |child| child.name == name }.first
             if result
               result
             else
@@ -76,7 +75,7 @@ class Chef
           raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "Timeout writing: #{e}"
         rescue Net::HTTPServerException => e
           case e.response.code
-          when "409"
+          when '409'
             raise Chef::ChefFS::FileSystem::CookbookFrozenError.new(:write, self, e), "Cookbook #{other.name} is frozen"
           else
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "HTTP error writing: #{e}"
@@ -138,14 +137,14 @@ class Chef
         # Work around the fact that CookbookUploader doesn't understand chef_repo_path (yet)
         def with_actual_cookbooks_dir(actual_cookbook_path)
           old_cookbook_path = Chef::Config.cookbook_path
-          Chef::Config.cookbook_path = actual_cookbook_path if !Chef::Config.cookbook_path
+          Chef::Config.cookbook_path = actual_cookbook_path unless Chef::Config.cookbook_path
 
           yield
         ensure
           Chef::Config.cookbook_path = old_cookbook_path
         end
 
-        def upload_cookbook!(uploader, options = {})
+        def upload_cookbook!(uploader, _options = {})
           if uploader.respond_to?(:upload_cookbook)
             uploader.upload_cookbook
           else
@@ -154,9 +153,9 @@ class Chef
         end
 
         def can_have_child?(name, is_dir)
-          return false if !is_dir
+          return false unless is_dir
           return false if Chef::Config[:versioned_cookbooks] && name !~ Chef::ChefFS::FileSystem::CookbookDir::VALID_VERSIONED_COOKBOOK_NAME
-          return true
+          true
         end
       end
     end

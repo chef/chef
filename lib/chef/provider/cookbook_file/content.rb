@@ -23,7 +23,6 @@ class Chef
   class Provider
     class CookbookFile
       class Content < Chef::FileContentManagement::ContentBase
-
         private
 
         def file_for_provider

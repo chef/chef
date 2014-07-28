@@ -22,15 +22,14 @@ require 'chef/resource'
 class Chef
   class Resource
     class Execute < Chef::Resource
-
       identity_attr :command
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :execute
         @command = name
         @backup = 5
-        @action = "run"
+        @action = 'run'
         @creates = nil
         @cwd = nil
         @environment = nil
@@ -43,88 +42,87 @@ class Chef
         @umask = nil
       end
 
-      def umask(arg=nil)
+      def umask(arg = nil)
         set_or_return(
           :umask,
           arg,
-          :kind_of => [ String, Integer ]
+          :kind_of => [String, Integer]
         )
       end
 
-      def command(arg=nil)
+      def command(arg = nil)
         set_or_return(
           :command,
           arg,
-          :kind_of => [ String, Array ]
+          :kind_of => [String, Array]
         )
       end
 
-      def creates(arg=nil)
+      def creates(arg = nil)
         set_or_return(
           :creates,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
-      def cwd(arg=nil)
+      def cwd(arg = nil)
         set_or_return(
           :cwd,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
-      def environment(arg=nil)
+      def environment(arg = nil)
         set_or_return(
           :environment,
           arg,
-          :kind_of => [ Hash ]
+          :kind_of => [Hash]
         )
       end
 
-      alias :env :environment
+      alias_method :env, :environment
 
-      def group(arg=nil)
+      def group(arg = nil)
         set_or_return(
           :group,
           arg,
-          :kind_of => [ String, Integer ]
+          :kind_of => [String, Integer]
         )
       end
 
-      def path(arg=nil)
+      def path(arg = nil)
         set_or_return(
           :path,
           arg,
-          :kind_of => [ Array ]
+          :kind_of => [Array]
         )
       end
 
-      def returns(arg=nil)
+      def returns(arg = nil)
         set_or_return(
           :returns,
           arg,
-          :kind_of => [ Integer, Array ]
+          :kind_of => [Integer, Array]
         )
       end
 
-      def timeout(arg=nil)
+      def timeout(arg = nil)
         set_or_return(
           :timeout,
           arg,
-          :kind_of => [ Integer ]
+          :kind_of => [Integer]
         )
       end
 
-      def user(arg=nil)
+      def user(arg = nil)
         set_or_return(
           :user,
           arg,
-          :kind_of => [ String, Integer ]
+          :kind_of => [String, Integer]
         )
       end
-
     end
   end
 end

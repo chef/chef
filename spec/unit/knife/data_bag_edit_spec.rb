@@ -21,12 +21,12 @@ require 'tempfile'
 
 describe Chef::Knife::DataBagEdit do
   before do
-    @plain_data = {"login_name" => "alphaomega", "id" => "item_name"}
+    @plain_data = { 'login_name' => 'alphaomega', 'id' => 'item_name' }
     @edited_data = {
-      "login_name" => "rho", "id" => "item_name",
-      "new_key" => "new_value" }
+      'login_name' => 'rho', 'id' => 'item_name',
+      'new_key' => 'new_value' }
 
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name]  = 'webmonkey.example.com'
 
     @knife = Chef::Knife::DataBagEdit.new
     @rest = double('chef-rest-mock')
@@ -35,25 +35,25 @@ describe Chef::Knife::DataBagEdit do
     @stdout = StringIO.new
     @knife.stub(:stdout).and_return(@stdout)
     @log = Chef::Log
-    @knife.name_args = ['bag_name', 'item_name']
+    @knife.name_args = %w(bag_name item_name)
   end
 
-  it "requires data bag and item arguments" do
+  it 'requires data bag and item arguments' do
     @knife.name_args = []
     lambda { @knife.run }.should raise_error(SystemExit)
     @stdout.string.should match(/^You must supply the data bag and an item to edit/)
   end
 
-  it "saves edits on a data bag item" do
+  it 'saves edits on a data bag item' do
     Chef::DataBagItem.stub(:load).with('bag_name', 'item_name').and_return(@plain_data)
     @knife.should_receive(:edit_data).with(@plain_data).and_return(@edited_data)
-    @rest.should_receive(:put_rest).with("data/bag_name/item_name", @edited_data).ordered
+    @rest.should_receive(:put_rest).with('data/bag_name/item_name', @edited_data).ordered
     @knife.run
   end
 
-  describe "encrypted data bag items" do
+  describe 'encrypted data bag items' do
     before(:each) do
-      @secret = "abc123SECRET"
+      @secret = 'abc123SECRET'
       @enc_data = Chef::EncryptedDataBagItem.encrypt_data_bag_item(@plain_data,
                                                                    @secret)
       @enc_edited_data = Chef::EncryptedDataBagItem.encrypt_data_bag_item(@edited_data,
@@ -64,7 +64,7 @@ describe Chef::Knife::DataBagEdit do
       # will not be equal if we encrypt same value twice.
       Chef::EncryptedDataBagItem.should_receive(:encrypt_data_bag_item).and_return(@enc_edited_data)
 
-      @secret_file = Tempfile.new("encrypted_data_bag_secret_file_test")
+      @secret_file = Tempfile.new('encrypted_data_bag_secret_file_test')
       @secret_file.puts(@secret)
       @secret_file.flush
     end
@@ -74,18 +74,18 @@ describe Chef::Knife::DataBagEdit do
       @secret_file.unlink
     end
 
-    it "decrypts and encrypts via --secret" do
-      @knife.stub(:config).and_return({:secret => @secret})
+    it 'decrypts and encrypts via --secret' do
+      @knife.stub(:config).and_return(:secret => @secret)
       @knife.should_receive(:edit_data).with(@plain_data).and_return(@edited_data)
-      @rest.should_receive(:put_rest).with("data/bag_name/item_name", @enc_edited_data).ordered
+      @rest.should_receive(:put_rest).with('data/bag_name/item_name', @enc_edited_data).ordered
 
       @knife.run
     end
 
-    it "decrypts and encrypts via --secret_file" do
-      @knife.stub(:config).and_return({:secret_file => @secret_file.path})
+    it 'decrypts and encrypts via --secret_file' do
+      @knife.stub(:config).and_return(:secret_file => @secret_file.path)
       @knife.should_receive(:edit_data).with(@plain_data).and_return(@edited_data)
-      @rest.should_receive(:put_rest).with("data/bag_name/item_name", @enc_edited_data).ordered
+      @rest.should_receive(:put_rest).with('data/bag_name/item_name', @enc_edited_data).ordered
 
       @knife.run
     end

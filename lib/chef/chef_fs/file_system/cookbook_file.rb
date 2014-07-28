@@ -64,11 +64,11 @@ class Chef
             begin
               other_value = other.read
             rescue Chef::ChefFS::FileSystem::NotFoundError
-              return [ false, nil, :none ]
+              return [false, nil, :none]
             end
             other_checksum = calc_checksum(other_value)
           end
-          [ checksum == other_checksum, nil, other_value ]
+          [checksum == other_checksum, nil, other_value]
         end
 
         private

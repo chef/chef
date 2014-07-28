@@ -22,19 +22,18 @@ require 'chef/knife'
 class Chef
   class Knife
     class CookbookSiteUnshare < Knife
-
       deps do
         require 'chef/json_compat'
       end
 
-      banner "knife cookbook site unshare COOKBOOK"
-      category "cookbook site"
+      banner 'knife cookbook site unshare COOKBOOK'
+      category 'cookbook site'
 
       def run
         @cookbook_name = @name_args[0]
         if @cookbook_name.nil?
           show_usage
-          ui.fatal "You must provide the name of the cookbook to unshare"
+          ui.fatal 'You must provide the name of the cookbook to unshare'
           exit 1
         end
 
@@ -50,7 +49,6 @@ class Chef
 
         ui.info "Unshared cookbook #{@cookbook_name}"
       end
-
     end
   end
 end

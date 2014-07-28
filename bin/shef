@@ -19,17 +19,17 @@
 # limitations under the License.
 
 begin
-  require "rubygems"
+  require 'rubygems'
 rescue LoadError
 end
 
-require "irb"
-require "irb/completion"
+require 'irb'
+require 'irb/completion'
 require 'irb/ext/save-history'
 
-$:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "lib")))
+$LOAD_PATH.unshift(File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib')))
 
-require "chef/shell"
+require 'chef/shell'
 
 Chef::Log.warn("DEPRECATED: The 'shef' program is renamed to 'chef-shell'")
 Shell.start

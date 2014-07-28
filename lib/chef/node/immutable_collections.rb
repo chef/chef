@@ -1,7 +1,6 @@
 
 class Chef
   class Node
-
     module Immutablize
       def immutablize(value)
         case value
@@ -28,7 +27,7 @@ class Chef
     class ImmutableArray < Array
       include Immutablize
 
-      alias :internal_push :<<
+      alias_method :internal_push, :<<
       private :internal_push
 
       # A list of methods that mutate Array. Each of these is overridden to
@@ -93,11 +92,11 @@ class Chef
       end
 
       def dup
-        Array.new(map {|e| safe_dup(e)})
+        Array.new(map { |e| safe_dup(e) })
       end
 
       def to_a
-        a = Array.new
+        a = []
         each do |v|
           a <<
             case v
@@ -111,7 +110,6 @@ class Chef
         end
         a
       end
-
     end
 
     # == ImmutableMash
@@ -127,10 +125,9 @@ class Chef
     #   it is stale.
     # * Values can be accessed in attr_reader-like fashion via method_missing.
     class ImmutableMash < Mash
-
       include Immutablize
 
-      alias :internal_set :[]=
+      alias_method :internal_set, :[]=
       private :internal_set
 
       DISALLOWED_MUTATOR_METHODS = [
@@ -157,7 +154,7 @@ class Chef
         end
       end
 
-      alias :attribute? :has_key?
+      alias_method :attribute?, :has_key?
 
       # Redefine all of the methods that mutate a Hash to raise an error when called.
       # This is the magic that makes this object "Immutable"
@@ -177,14 +174,14 @@ class Chef
           if key?(symbol)
             self[symbol]
           else
-            raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
+            fail NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
           end
         # This will raise a ImmutableAttributeModification error:
         elsif symbol.to_s =~ /=$/
           key_to_set = symbol.to_s[/^(.+)=$/, 1]
           self[key_to_set] = (args.length == 1 ? args[0] : args)
         else
-          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
+          fail NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
         end
       end
 
@@ -204,7 +201,7 @@ class Chef
       end
 
       def to_hash
-        h = Hash.new
+        h = {}
         each_pair do |k, v|
           h[k] =
             case v
@@ -218,8 +215,6 @@ class Chef
         end
         h
       end
-
     end
-
   end
 end

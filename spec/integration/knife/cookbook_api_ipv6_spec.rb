@@ -18,12 +18,12 @@
 require 'support/shared/integration/integration_helper'
 require 'chef/mixin/shell_out'
 
-describe "Knife cookbook API integration with IPv6" do
+describe 'Knife cookbook API integration with IPv6' do
   extend IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  when_the_chef_server "is bound to IPv6" do
-    let(:chef_zero_opts) { {:host => "::1"} }
+  when_the_chef_server 'is bound to IPv6' do
+    let(:chef_zero_opts) { { :host => '::1' } }
 
     let(:client_key) do
       <<-END_VALIDATION_PEM
@@ -61,16 +61,16 @@ END_VALIDATION_PEM
       Dir.mktmpdir
     end
 
-    let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
+    let(:chef_dir) { File.join(File.dirname(__FILE__), '..', '..', '..', 'bin') }
 
-    let(:knife_config_flag) { "-c '#{path_to("config/knife.rb")}'" }
+    let(:knife_config_flag) { "-c '#{path_to('config/knife.rb')}'" }
 
     # Some Solaris test platforms are too old for IPv6. These tests should not
     # otherwise be platform dependent, so exclude solaris
-    context "and the chef_server_url contains an IPv6 literal", :not_supported_on_solaris do
+    context 'and the chef_server_url contains an IPv6 literal', :not_supported_on_solaris do
 
       # This provides helper functions we need such as #path_to()
-      when_the_repository "has the cookbook to be uploaded" do
+      when_the_repository 'has the cookbook to be uploaded' do
 
         let(:knife_rb_content) do
           <<-END_CLIENT_RB
@@ -87,21 +87,21 @@ END_CLIENT_RB
           file 'config/knifeuser.pem', client_key
         end
 
-        it "successfully uploads a cookbook" do
+        it 'successfully uploads a cookbook' do
           shell_out!("knife cookbook upload apache2 #{knife_config_flag}", :cwd => chef_dir)
-          versions_list_json = Chef::HTTP::Simple.new("http://[::1]:8900").get("/cookbooks/apache2", "accept" => "application/json")
+          versions_list_json = Chef::HTTP::Simple.new('http://[::1]:8900').get('/cookbooks/apache2', 'accept' => 'application/json')
           versions_list = Chef::JSONCompat.from_json(versions_list_json)
-          versions_list["apache2"]["versions"].should_not be_empty
+          versions_list['apache2']['versions'].should_not be_empty
         end
 
-        context "and the cookbook has been uploaded to the server" do
+        context 'and the cookbook has been uploaded to the server' do
           before do
             shell_out!("knife cookbook upload apache2 #{knife_config_flag}", :cwd => chef_dir)
           end
 
-          it "downloads the cookbook" do
+          it 'downloads the cookbook' do
             s = shell_out!("knife cookbook download apache2 #{knife_config_flag} -d #{cache_path}", :cwd => chef_dir)
-            Dir["#{cache_path}/*"].map {|entry| File.basename(entry)}.should include("apache2-0.0.0")
+            Dir["#{cache_path}/*"].map { |entry| File.basename(entry) }.should include('apache2-0.0.0')
           end
         end
 

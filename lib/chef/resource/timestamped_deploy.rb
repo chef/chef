@@ -18,7 +18,6 @@
 
 class Chef
   class Resource
-
     # Convenience class for using the deploy resource with the timestamped
     # deployment strategy (provider)
     class TimestampedDeploy < Chef::Resource::Deploy

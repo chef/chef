@@ -21,42 +21,42 @@ require 'spec_helper'
 describe Chef::Resource::Subversion do
 
   before do
-    @svn = Chef::Resource::Subversion.new("ohai, svn project!")
+    @svn = Chef::Resource::Subversion.new('ohai, svn project!')
   end
 
-  it "is a subclass of Resource::Scm" do
+  it 'is a subclass of Resource::Scm' do
     @svn.should be_an_instance_of(Chef::Resource::Subversion)
     @svn.should be_a_kind_of(Chef::Resource::Scm)
   end
 
-  it "uses the subversion provider" do
+  it 'uses the subversion provider' do
     @svn.provider.should eql(Chef::Provider::Subversion)
   end
 
-  it "allows the force_export action" do
+  it 'allows the force_export action' do
     @svn.allowed_actions.should include(:force_export)
   end
 
-  it "sets svn info arguments to --no-auth-cache by default" do
+  it 'sets svn info arguments to --no-auth-cache by default' do
     @svn.svn_info_args.should == '--no-auth-cache'
   end
 
-  it "resets svn info arguments to nil when given false in the setter" do
+  it 'resets svn info arguments to nil when given false in the setter' do
     @svn.svn_info_args(false)
     @svn.svn_info_args.should be_nil
   end
 
-  it "sets svn arguments to --no-auth-cache by default" do
+  it 'sets svn arguments to --no-auth-cache by default' do
     @svn.svn_arguments.should == '--no-auth-cache'
   end
 
-  it "resets svn arguments to nil when given false in the setter" do
+  it 'resets svn arguments to nil when given false in the setter' do
     @svn.svn_arguments(false)
     @svn.svn_arguments.should be_nil
   end
 
-  it "hides password from custom exception message" do
-    @svn.svn_password "l33th4x0rpa$$w0rd"
+  it 'hides password from custom exception message' do
+    @svn.svn_password 'l33th4x0rpa$$w0rd'
     e = @svn.customize_exception(Chef::Exceptions::Exec.new "Exception with password #{@svn.svn_password}")
     e.message.include?(@svn.svn_password).should be_false
   end

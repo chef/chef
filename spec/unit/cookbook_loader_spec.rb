@@ -20,138 +20,138 @@ require 'spec_helper'
 
 describe Chef::CookbookLoader do
   before(:each) do
-    @repo_paths = [ File.expand_path(File.join(CHEF_SPEC_DATA, "kitchen")),
-                    File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")) ]
+    @repo_paths = [File.expand_path(File.join(CHEF_SPEC_DATA, 'kitchen')),
+                   File.expand_path(File.join(CHEF_SPEC_DATA, 'cookbooks'))]
     @cookbook_loader = Chef::CookbookLoader.new(@repo_paths)
   end
 
-  describe "loading all cookbooks" do
+  describe 'loading all cookbooks' do
     before(:each) do
       @cookbook_loader.load_cookbooks
     end
 
-    describe "[]" do
-      it "should return cookbook objects with []" do
+    describe '[]' do
+      it 'should return cookbook objects with []' do
         @cookbook_loader[:openldap].should be_a_kind_of(Chef::CookbookVersion)
       end
 
-      it "should raise an exception if it cannot find a cookbook with []" do
+      it 'should raise an exception if it cannot find a cookbook with []' do
         lambda { @cookbook_loader[:monkeypoop] }.should raise_error(Chef::Exceptions::CookbookNotFoundInRepo)
       end
 
-      it "should allow you to look up available cookbooks with [] and a symbol" do
+      it 'should allow you to look up available cookbooks with [] and a symbol' do
         @cookbook_loader[:openldap].name.should eql(:openldap)
       end
 
-      it "should allow you to look up available cookbooks with [] and a string" do
-        @cookbook_loader["openldap"].name.should eql(:openldap)
+      it 'should allow you to look up available cookbooks with [] and a string' do
+        @cookbook_loader['openldap'].name.should eql(:openldap)
       end
     end
 
-    describe "each" do
-      it "should allow you to iterate over cookbooks with each" do
+    describe 'each' do
+      it 'should allow you to iterate over cookbooks with each' do
         seen = Hash.new
-        @cookbook_loader.each do |cookbook_name, cookbook|
+        @cookbook_loader.each do |cookbook_name, _cookbook|
           seen[cookbook_name] = true
         end
-        seen.should have_key("openldap")
-        seen.should have_key("apache2")
+        seen.should have_key('openldap')
+        seen.should have_key('apache2')
       end
 
-      it "should iterate in alphabetical order" do
+      it 'should iterate in alphabetical order' do
         seen = Array.new
-        @cookbook_loader.each do |cookbook_name, cookbook|
-          seen << cookbook_name
+        @cookbook_loader.each do |cookbook_name, _cookbook|
+            seen << cookbook_name
           end
-        seen[0].should == "angrybash"
-        seen[1].should == "apache2"
-        seen[2].should == "borken"
-        seen[3].should == "ignorken"
-        seen[4].should == "java"
-        seen[5].should == "openldap"
+        seen[0].should == 'angrybash'
+        seen[1].should == 'apache2'
+        seen[2].should == 'borken'
+        seen[3].should == 'ignorken'
+        seen[4].should == 'java'
+        seen[5].should == 'openldap'
       end
     end
 
-    describe "load_cookbooks" do
-      it "should find all the cookbooks in the cookbook path" do
-        Chef::Config.cookbook_path << File.expand_path(File.join(CHEF_SPEC_DATA, "hidden-cookbooks"))
+    describe 'load_cookbooks' do
+      it 'should find all the cookbooks in the cookbook path' do
+        Chef::Config.cookbook_path << File.expand_path(File.join(CHEF_SPEC_DATA, 'hidden-cookbooks'))
         @cookbook_loader.load_cookbooks
         @cookbook_loader.should have_key(:openldap)
         @cookbook_loader.should have_key(:apache2)
       end
 
-      it "should allow you to override an attribute file via cookbook_path" do
-        @cookbook_loader[:openldap].attribute_filenames.detect { |f|
+      it 'should allow you to override an attribute file via cookbook_path' do
+        @cookbook_loader[:openldap].attribute_filenames.find do |f|
           f =~ /cookbooks\/openldap\/attributes\/default.rb/
-        }.should_not eql(nil)
-        @cookbook_loader[:openldap].attribute_filenames.detect { |f|
+        end.should_not eql(nil)
+        @cookbook_loader[:openldap].attribute_filenames.find do |f|
           f =~ /kitchen\/openldap\/attributes\/default.rb/
-        }.should eql(nil)
+        end.should eql(nil)
       end
 
-      it "should load different attribute files from deeper paths" do
-        @cookbook_loader[:openldap].attribute_filenames.detect { |f|
+      it 'should load different attribute files from deeper paths' do
+        @cookbook_loader[:openldap].attribute_filenames.find do |f|
           f =~ /kitchen\/openldap\/attributes\/robinson.rb/
-        }.should_not eql(nil)
+        end.should_not eql(nil)
       end
 
-      it "should allow you to override a definition file via cookbook_path" do
-        @cookbook_loader[:openldap].definition_filenames.detect { |f|
+      it 'should allow you to override a definition file via cookbook_path' do
+        @cookbook_loader[:openldap].definition_filenames.find do |f|
           f =~ /cookbooks\/openldap\/definitions\/client.rb/
-        }.should_not eql(nil)
-        @cookbook_loader[:openldap].definition_filenames.detect { |f|
+        end.should_not eql(nil)
+        @cookbook_loader[:openldap].definition_filenames.find do |f|
           f =~ /kitchen\/openldap\/definitions\/client.rb/
-        }.should eql(nil)
+        end.should eql(nil)
       end
 
-      it "should load definition files from deeper paths" do
-        @cookbook_loader[:openldap].definition_filenames.detect { |f|
+      it 'should load definition files from deeper paths' do
+        @cookbook_loader[:openldap].definition_filenames.find do |f|
           f =~ /kitchen\/openldap\/definitions\/drewbarrymore.rb/
-        }.should_not eql(nil)
+        end.should_not eql(nil)
       end
 
-      it "should allow you to override a recipe file via cookbook_path" do
-        @cookbook_loader[:openldap].recipe_filenames.detect { |f|
+      it 'should allow you to override a recipe file via cookbook_path' do
+        @cookbook_loader[:openldap].recipe_filenames.find do |f|
           f =~ /cookbooks\/openldap\/recipes\/gigantor.rb/
-        }.should_not eql(nil)
-        @cookbook_loader[:openldap].recipe_filenames.detect { |f|
+        end.should_not eql(nil)
+        @cookbook_loader[:openldap].recipe_filenames.find do |f|
           f =~ /kitchen\/openldap\/recipes\/gigantor.rb/
-        }.should eql(nil)
+        end.should eql(nil)
       end
 
-      it "should load recipe files from deeper paths" do
-        @cookbook_loader[:openldap].recipe_filenames.detect { |f|
+      it 'should load recipe files from deeper paths' do
+        @cookbook_loader[:openldap].recipe_filenames.find do |f|
           f =~ /kitchen\/openldap\/recipes\/woot.rb/
-        }.should_not eql(nil)
+        end.should_not eql(nil)
       end
 
       it "should allow you to have an 'ignore' file, which skips loading files in later cookbooks" do
-        @cookbook_loader[:openldap].recipe_filenames.detect { |f|
+        @cookbook_loader[:openldap].recipe_filenames.find do |f|
           f =~ /kitchen\/openldap\/recipes\/ignoreme.rb/
-        }.should eql(nil)
+        end.should eql(nil)
       end
 
-      it "should find files that start with a ." do
-        @cookbook_loader[:openldap].file_filenames.detect { |f|
+      it 'should find files that start with a .' do
+        @cookbook_loader[:openldap].file_filenames.find do |f|
           f =~ /\.dotfile$/
-        }.should =~ /\.dotfile$/
-        @cookbook_loader[:openldap].file_filenames.detect { |f|
+        end.should =~ /\.dotfile$/
+        @cookbook_loader[:openldap].file_filenames.find do |f|
           f =~ /\.ssh\/id_rsa$/
-        }.should =~ /\.ssh\/id_rsa$/
+        end.should =~ /\.ssh\/id_rsa$/
       end
 
-      it "should load the metadata for the cookbook" do
-        @cookbook_loader.metadata[:openldap].name.to_s.should == "openldap"
+      it 'should load the metadata for the cookbook' do
+        @cookbook_loader.metadata[:openldap].name.to_s.should == 'openldap'
         @cookbook_loader.metadata[:openldap].should be_a_kind_of(Chef::Cookbook::Metadata)
       end
 
-      it "should check each cookbook directory only once (CHEF-3487)" do
+      it 'should check each cookbook directory only once (CHEF-3487)' do
         cookbooks = []
         @repo_paths.each do |repo_path|
-          cookbooks |= Dir[File.join(repo_path, "*")]
+          cookbooks |= Dir[File.join(repo_path, '*')]
         end
         cookbooks.each do |cookbook|
-            File.should_receive(:directory?).with(cookbook).once;
+          File.should_receive(:directory?).with(cookbook).once
         end
         @cookbook_loader.load_cookbooks
       end
@@ -159,29 +159,29 @@ describe Chef::CookbookLoader do
 
   end # loading all cookbooks
 
-  describe "loading only one cookbook" do
+  describe 'loading only one cookbook' do
     before(:each) do
       @cookbook_loader = Chef::CookbookLoader.new(@repo_paths)
-      @cookbook_loader.load_cookbook("openldap")
+      @cookbook_loader.load_cookbook('openldap')
     end
 
-    it "should have loaded the correct cookbook" do
+    it 'should have loaded the correct cookbook' do
       seen = Hash.new
-      @cookbook_loader.each do |cookbook_name, cookbook|
+      @cookbook_loader.each do |cookbook_name, _cookbook|
         seen[cookbook_name] = true
       end
-      seen.should have_key("openldap")
+      seen.should have_key('openldap')
     end
 
-    it "should not duplicate keys when serialized to JSON" do
+    it 'should not duplicate keys when serialized to JSON' do
       # Chef JSON serialization will generate duplicate keys if given
       # a Hash containing matching string and symbol keys. See CHEF-4571.
-      aa = @cookbook_loader["openldap"]
-      aa.to_hash["metadata"].recipes.keys.should_not include(:openldap)
-      aa.to_hash["metadata"].recipes.keys.should include("openldap")
-      expected_desc = "Main Open LDAP configuration"
-      aa.to_hash["metadata"].recipes["openldap"].should == expected_desc
-      raw = aa.to_hash["metadata"].recipes.to_json
+      aa = @cookbook_loader['openldap']
+      aa.to_hash['metadata'].recipes.keys.should_not include(:openldap)
+      aa.to_hash['metadata'].recipes.keys.should include('openldap')
+      expected_desc = 'Main Open LDAP configuration'
+      aa.to_hash['metadata'].recipes['openldap'].should == expected_desc
+      raw = aa.to_hash['metadata'].recipes.to_json
       search_str = "\"openldap\":\""
       key_idx = raw.index(search_str)
       key_idx.should be > 0
@@ -189,35 +189,35 @@ describe Chef::CookbookLoader do
       dup_idx.should be_nil
     end
 
-    it "should not load the cookbook again when accessed" do
+    it 'should not load the cookbook again when accessed' do
       @cookbook_loader.should_not_receive('load_cookbook')
-      @cookbook_loader["openldap"]
+      @cookbook_loader['openldap']
     end
 
-    it "should not load the other cookbooks" do
+    it 'should not load the other cookbooks' do
       seen = Hash.new
-      @cookbook_loader.each do |cookbook_name, cookbook|
+      @cookbook_loader.each do |cookbook_name, _cookbook|
         seen[cookbook_name] = true
       end
-      seen.should_not have_key("apache2")
+      seen.should_not have_key('apache2')
     end
 
-    it "should load another cookbook lazily with []" do
-      @cookbook_loader["apache2"].should be_a_kind_of(Chef::CookbookVersion)
+    it 'should load another cookbook lazily with []' do
+      @cookbook_loader['apache2'].should be_a_kind_of(Chef::CookbookVersion)
     end
 
-    describe "loading all cookbooks after loading only one cookbook" do
+    describe 'loading all cookbooks after loading only one cookbook' do
       before(:each) do
         @cookbook_loader.load_cookbooks
       end
 
-      it "should load all cookbooks" do
+      it 'should load all cookbooks' do
         seen = Hash.new
-        @cookbook_loader.each do |cookbook_name, cookbook|
+        @cookbook_loader.each do |cookbook_name, _cookbook|
           seen[cookbook_name] = true
         end
-        seen.should have_key("openldap")
-        seen.should have_key("apache2")
+        seen.should have_key('openldap')
+        seen.should have_key('apache2')
       end
     end
   end # loading only one cookbook

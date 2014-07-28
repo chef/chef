@@ -3,9 +3,9 @@ require 'chef/chef_fs/knife'
 class Chef
   class Knife
     class Show < Chef::ChefFS::Knife
-      banner "knife show [PATTERN1 ... PATTERNn]"
+      banner 'knife show [PATTERN1 ... PATTERNn]'
 
-      category "path-based"
+      category 'path-based'
 
       deps do
         require 'chef/chef_fs/file_system'
@@ -13,9 +13,9 @@ class Chef
       end
 
       option :local,
-        :long => '--local',
-        :boolean => true,
-        :description => "Show local files instead of remote"
+             :long => '--local',
+             :boolean => true,
+             :description => 'Show local files instead of remote'
 
       def run
         # Get the matches (recursively)

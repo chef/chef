@@ -25,14 +25,13 @@ if RUBY_PLATFORM =~ /mswin|mingw32|windows/
 end
 
 class Chef::Provider::Service::Windows < Chef::Provider::Service
-
   include Chef::Mixin::ShellOut
 
-  #Win32::Service.get_start_type
+  # Win32::Service.get_start_type
   AUTO_START = 'auto start'
   DISABLED = 'disabled'
 
-  #Win32::Service.get_current_state
+  # Win32::Service.get_current_state
   RUNNING = 'running'
   STOPPED = 'stopped'
   CONTINUE_PENDING = 'continue pending'
@@ -77,7 +76,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
         end
         @new_resource.updated_by_last_action(true)
       else
-        raise Chef::Exceptions::Service, "Service #{@new_resource} can't be started from state [#{state}]"
+        fail Chef::Exceptions::Service, "Service #{@new_resource} can't be started from state [#{state}]"
       end
     else
       Chef::Log.debug "#{@new_resource} does not exist - nothing to do"
@@ -104,7 +103,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
         Chef::Log.debug "#{@new_resource} already sent stop signal - waiting for stop"
         wait_for_state(STOPPED)
       else
-        raise Chef::Exceptions::Service, "Service #{@new_resource} can't be stopped from state [#{state}]"
+        fail Chef::Exceptions::Service, "Service #{@new_resource} can't be stopped from state [#{state}]"
       end
     else
       Chef::Log.debug "#{@new_resource} does not exist - nothing to do"
@@ -173,7 +172,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     retries = 0
     loop do
       break if current_state == desired_state
-      raise Timeout::Error if ( retries += 1 ) > resource_timeout
+      fail Timeout::Error if ( retries += 1) > resource_timeout
       sleep 1
     end
   end

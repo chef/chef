@@ -35,7 +35,7 @@ class Chef
     module FileSystem
       class ChefServerRootDir < BaseFSDir
         def initialize(root_name, chef_config, options = {})
-          super("", nil)
+          super('', nil)
           @chef_server_url = chef_config[:chef_server_url]
           @chef_username = chef_config[:node_name]
           @chef_private_key = chef_config[:client_key]
@@ -69,7 +69,7 @@ class Chef
         end
 
         def api_path
-          ""
+          ''
         end
 
         def path_for_printing
@@ -82,7 +82,7 @@ class Chef
 
         def org
           @org ||= if URI.parse(chef_server_url).path =~ /^\/+organizations\/+([^\/]+)$/
-            $1
+                     Regexp.last_match[1]
           else
             nil
           end
@@ -94,21 +94,21 @@ class Chef
               CookbooksDir.new(self),
               DataBagsDir.new(self),
               EnvironmentsDir.new(self),
-              RestListDir.new("roles", self, nil, Chef::ChefFS::DataHandler::RoleDataHandler.new)
+              RestListDir.new('roles', self, nil, Chef::ChefFS::DataHandler::RoleDataHandler.new)
             ]
             if repo_mode == 'hosted_everything'
               result += [
                 AclsDir.new(self),
-                RestListDir.new("clients", self, nil, Chef::ChefFS::DataHandler::ClientDataHandler.new),
-                RestListDir.new("containers", self, nil, Chef::ChefFS::DataHandler::ContainerDataHandler.new),
-                RestListDir.new("groups", self, nil, Chef::ChefFS::DataHandler::GroupDataHandler.new),
+                RestListDir.new('clients', self, nil, Chef::ChefFS::DataHandler::ClientDataHandler.new),
+                RestListDir.new('containers', self, nil, Chef::ChefFS::DataHandler::ContainerDataHandler.new),
+                RestListDir.new('groups', self, nil, Chef::ChefFS::DataHandler::GroupDataHandler.new),
                 NodesDir.new(self)
               ]
             elsif repo_mode != 'static'
               result += [
-                RestListDir.new("clients", self, nil, Chef::ChefFS::DataHandler::ClientDataHandler.new),
+                RestListDir.new('clients', self, nil, Chef::ChefFS::DataHandler::ClientDataHandler.new),
                 NodesDir.new(self),
-                RestListDir.new("users", self, nil, Chef::ChefFS::DataHandler::UserDataHandler.new)
+                RestListDir.new('users', self, nil, Chef::ChefFS::DataHandler::UserDataHandler.new)
               ]
             end
             result.sort_by { |child| child.name }

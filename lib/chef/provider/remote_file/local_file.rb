@@ -24,18 +24,17 @@ class Chef
   class Provider
     class RemoteFile
       class LocalFile
-
         attr_reader :uri
         attr_reader :new_resource
 
-        def initialize(uri, new_resource, current_resource)
+        def initialize(uri, new_resource, _current_resource)
           @new_resource = new_resource
           @uri = uri
         end
-        
+
         # CHEF-4472: Remove the leading slash from windows paths that we receive from a file:// URI
-        def fix_windows_path(path) 
-          path.gsub(/^\/([a-zA-Z]:)/,'\1')  
+        def fix_windows_path(path)
+          path.gsub(/^\/([a-zA-Z]:)/, '\1')
         end
 
         # Fetches the file at uri, returning a Tempfile-like File handle
@@ -47,7 +46,6 @@ class Chef
           tempfile.close if tempfile
           tempfile
         end
-
       end
     end
   end

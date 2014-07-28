@@ -72,7 +72,7 @@ class Chef
 
             # Otherwise, go through all children and find any matches
             elsif entry.dir?
-              results = Parallelizer::parallelize(entry.children) { |child| Chef::ChefFS::FileSystem.list(child, pattern) }
+              results = Parallelizer.parallelize(entry.children) { |child| Chef::ChefFS::FileSystem.list(child, pattern) }
               results.flatten(1).each(&block)
             end
           end
@@ -95,13 +95,13 @@ class Chef
       #
       def self.resolve_path(entry, path)
         return entry if path.length == 0
-        return resolve_path(entry.root, path) if path[0,1] == "/" && entry.root != entry
-        if path[0,1] == "/"
-          path = path[1,path.length-1]
+        return resolve_path(entry.root, path) if path[0, 1] == '/' && entry.root != entry
+        if path[0, 1] == '/'
+          path = path[1, path.length - 1]
         end
 
         result = entry
-        Chef::ChefFS::PathUtils::split(path).each do |part|
+        Chef::ChefFS::PathUtils.split(path).each do |part|
           result = result.child(part)
         end
         result
@@ -190,15 +190,15 @@ class Chef
           Chef::ChefFS::FileSystem.list(a_root, pattern).each do |a|
             found_paths << a.path
             b = Chef::ChefFS::FileSystem.resolve_path(b_root, a.path)
-            yield [ a, b ]
+            yield [a, b]
           end
 
           # Check the outer regex pattern to see if it matches anything on the
           # filesystem that isn't on the server
           Chef::ChefFS::FileSystem.list(b_root, pattern).each do |b|
-            if !found_paths.include?(b.path)
+            unless found_paths.include?(b.path)
               a = Chef::ChefFS::FileSystem.resolve_path(a_root, b.path)
-              yield [ a, b ]
+              yield [a, b]
             end
           end
         end
@@ -225,13 +225,13 @@ class Chef
         a_children_names = Set.new
         a.children.each do |a_child|
           a_children_names << a_child.name
-          result << [ a_child, b.child(a_child.name) ]
+          result << [a_child, b.child(a_child.name)]
         end
 
         # Check b for children that aren't in a
         b.children.each do |b_child|
-          if !a_children_names.include?(b_child.name)
-            result << [ a.child(b_child.name), b_child ]
+          unless a_children_names.include?(b_child.name)
+            result << [a.child(b_child.name), b_child]
           end
         end
         result
@@ -256,7 +256,7 @@ class Chef
           end
           are_same = (a_value == b_value)
         end
-        [ are_same, a_value, b_value ]
+        [are_same, a_value, b_value]
       end
 
       private
@@ -419,7 +419,7 @@ class Chef
             ui.output "Created #{parent_path}" if ui
           end
         end
-        return parent
+        parent
       end
 
       def self.parallel_do(enum, options = {}, &block)

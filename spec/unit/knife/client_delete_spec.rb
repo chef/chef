@@ -25,7 +25,7 @@ describe Chef::Knife::ClientDelete do
     @knife.config = {
       :delete_validators => false
     }
-    @knife.name_args = [ 'adam' ]
+    @knife.name_args = ['adam']
   end
 
   describe 'run' do
@@ -69,7 +69,7 @@ describe Chef::Knife::ClientDelete do
     it 'should not delete validator client if --force is not set' do
       @client.validator(true)
       @knife.ui.should_receive(:fatal)
-      lambda { @knife.run}.should raise_error(SystemExit)
+      lambda { @knife.run }.should raise_error(SystemExit)
     end
 
     it 'should delete validator client if --force is set' do

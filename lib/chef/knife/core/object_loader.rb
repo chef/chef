@@ -22,7 +22,6 @@ class Chef
   class Knife
     module Core
       class ObjectLoader
-
         attr_reader :ui
         attr_reader :klass
 
@@ -46,8 +45,8 @@ class Chef
 
         # When someone makes this awesome, please update the above error message.
         def find_file(repo_location, *components)
-          if file_exists_and_is_readable?(File.expand_path( components.last ))
-            File.expand_path( components.last )
+          if file_exists_and_is_readable?(File.expand_path(components.last))
+            File.expand_path(components.last)
           else
             relative_path = File.join(Dir.pwd, repo_location, *components)
             if file_exists_and_is_readable?(relative_path)
@@ -98,17 +97,15 @@ class Chef
             r.from_file(filename)
             r
           else
-            ui.fatal("File must end in .js, .json, or .rb")
+            ui.fatal('File must end in .js, .json, or .rb')
             exit 30
           end
         end
 
         def file_exists_and_is_readable?(file)
-          File.exists?(file) && File.readable?(file)
+          File.exist?(file) && File.readable?(file)
         end
-
       end
     end
   end
 end
-

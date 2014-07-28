@@ -21,7 +21,6 @@ require 'chef/knife'
 class Chef
   class Knife
     class Ssh < Knife
-
       deps do
         require 'net/ssh'
         require 'net/ssh/multi'
@@ -38,74 +37,74 @@ class Chef
 
       attr_writer :password
 
-      banner "knife ssh QUERY COMMAND (options)"
+      banner 'knife ssh QUERY COMMAND (options)'
 
       option :concurrency,
-        :short => "-C NUM",
-        :long => "--concurrency NUM",
-        :description => "The number of concurrent connections",
-        :default => nil,
-        :proc => lambda { |o| o.to_i }
+             :short => '-C NUM',
+             :long => '--concurrency NUM',
+             :description => 'The number of concurrent connections',
+             :default => nil,
+             :proc => lambda { |o| o.to_i }
 
       option :attribute,
-        :short => "-a ATTR",
-        :long => "--attribute ATTR",
-        :description => "The attribute to use for opening the connection - default depends on the context",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_attribute] = key.strip }
+             :short => '-a ATTR',
+             :long => '--attribute ATTR',
+             :description => 'The attribute to use for opening the connection - default depends on the context',
+             :proc => proc { |key| Chef::Config[:knife][:ssh_attribute] = key.strip }
 
       option :manual,
-        :short => "-m",
-        :long => "--manual-list",
-        :boolean => true,
-        :description => "QUERY is a space separated list of servers",
-        :default => false
+             :short => '-m',
+             :long => '--manual-list',
+             :boolean => true,
+             :description => 'QUERY is a space separated list of servers',
+             :default => false
 
       option :ssh_user,
-        :short => "-x USERNAME",
-        :long => "--ssh-user USERNAME",
-        :description => "The ssh username"
+             :short => '-x USERNAME',
+             :long => '--ssh-user USERNAME',
+             :description => 'The ssh username'
 
       option :ssh_password_ng,
-        :short => "-P [PASSWORD]",
-        :long => "--ssh-password [PASSWORD]",
-        :description => "The ssh password - will prompt if flag is specified but no password is given",
-        # default to a value that can not be a password (boolean)
-        # so we can effectively test if this parameter was specified
-        # without a vlaue
-        :default => false
+             :short => '-P [PASSWORD]',
+             :long => '--ssh-password [PASSWORD]',
+             :description => 'The ssh password - will prompt if flag is specified but no password is given',
+             # default to a value that can not be a password (boolean)
+             # so we can effectively test if this parameter was specified
+             # without a vlaue
+             :default => false
 
       option :ssh_port,
-        :short => "-p PORT",
-        :long => "--ssh-port PORT",
-        :description => "The ssh port",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_port] = key.strip }
+             :short => '-p PORT',
+             :long => '--ssh-port PORT',
+             :description => 'The ssh port',
+             :proc => proc { |key| Chef::Config[:knife][:ssh_port] = key.strip }
 
       option :ssh_gateway,
-        :short => "-G GATEWAY",
-        :long => "--ssh-gateway GATEWAY",
-        :description => "The ssh gateway",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key.strip }
+             :short => '-G GATEWAY',
+             :long => '--ssh-gateway GATEWAY',
+             :description => 'The ssh gateway',
+             :proc => proc { |key| Chef::Config[:knife][:ssh_gateway] = key.strip }
 
       option :forward_agent,
-        :short => "-A",
-        :long => "--forward-agent",
-        :description => "Enable SSH agent forwarding",
-        :boolean => true
+             :short => '-A',
+             :long => '--forward-agent',
+             :description => 'Enable SSH agent forwarding',
+             :boolean => true
 
       option :identity_file,
-        :short => "-i IDENTITY_FILE",
-        :long => "--identity-file IDENTITY_FILE",
-        :description => "The SSH identity file used for authentication"
+             :short => '-i IDENTITY_FILE',
+             :long => '--identity-file IDENTITY_FILE',
+             :description => 'The SSH identity file used for authentication'
 
       option :host_key_verify,
-        :long => "--[no-]host-key-verify",
-        :description => "Verify host key, enabled by default.",
-        :boolean => true,
-        :default => true
+             :long => '--[no-]host-key-verify',
+             :description => 'Verify host key, enabled by default.',
+             :boolean => true,
+             :default => true
 
       def session
         config[:on_error] ||= :skip
-        ssh_error_handler = Proc.new do |server|
+        ssh_error_handler = proc do |server|
           if config[:manual]
             node_name = server.host
           else
@@ -115,10 +114,10 @@ class Chef
           end
           case config[:on_error]
           when :skip
-            ui.warn "Failed to connect to #{server.host} -- #{$!.class.name}: #{$!.message}"
-            $!.backtrace.each { |l| Chef::Log.debug(l) }
+            ui.warn "Failed to connect to #{server.host} -- #{$ERROR_INFO.class.name}: #{$ERROR_INFO.message}"
+            $ERROR_INFO.backtrace.each { |l| Chef::Log.debug(l) }
           when :raise
-            #Net::SSH::Multi magic to force exception to be re-raised.
+            # Net::SSH::Multi magic to force exception to be re-raised.
             throw :go, :raise
           end
         end
@@ -144,15 +143,15 @@ class Chef
 
       def configure_session
         list = config[:manual] ?
-               @name_args[0].split(" ") :
+               @name_args[0].split(' ') :
                search_nodes
         if list.length == 0
           if @action_nodes.length == 0
-            ui.fatal("No nodes returned from search!")
+            ui.fatal('No nodes returned from search!')
           else
-            ui.fatal("#{@action_nodes.length} #{@action_nodes.length > 1 ? "nodes":"node"} found, " +
-                     "but does not have the required attribute to establish the connection. " +
-                     "Try setting another attribute to open the connection using --attribute.")
+            ui.fatal("#{@action_nodes.length} #{@action_nodes.length > 1 ? 'nodes' :  'node'} found, " \
+                     'but does not have the required attribute to establish the connection. ' \
+                     'Try setting another attribute to open the connection using --attribute.')
           end
           exit 10
         end
@@ -160,7 +159,7 @@ class Chef
       end
 
       def search_nodes
-        list = Array.new
+        list = []
         query = Chef::Search::Query.new
         @action_nodes = query.search(:node, @name_args[0])[0]
         @action_nodes.each do |item|
@@ -213,9 +212,9 @@ class Chef
                                 ssh_config[:port]
           session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
 
-          if !config[:host_key_verify]
+          unless config[:host_key_verify]
             session_opts[:paranoid] = false
-            session_opts[:user_known_hosts_file] = "/dev/null"
+            session_opts[:user_known_hosts_file] = '/dev/null'
           end
 
           session.use(hostspec, session_opts)
@@ -249,11 +248,11 @@ class Chef
 
       def print_line(host, data)
         padding = @longest - host.length
-        str = ui.color(host, :cyan) + (" " * (padding + 1)) + data
+        str = ui.color(host, :cyan) + (' ' * (padding + 1)) + data
         ui.msg(str)
       end
 
-      def ssh_command(command, subsession=nil)
+      def ssh_command(command, subsession = nil)
         exit_status = 0
         subsession ||= session
         command = fixup_sudo(command)
@@ -261,7 +260,7 @@ class Chef
         subsession.open_channel do |ch|
           ch.request_pty
           ch.exec command do |ch, success|
-            raise ArgumentError, "Cannot execute #{command}" unless success
+            fail ArgumentError, "Cannot execute #{command}" unless success
             ch.on_data do |ichannel, data|
               print_data(ichannel[:host], data)
               if data =~ /^knife sudo password: /
@@ -269,7 +268,7 @@ class Chef
                 ichannel.send_data("#{get_password}\n")
               end
             end
-            ch.on_request "exit-status" do |ichannel, data|
+            ch.on_request 'exit-status' do |_ichannel, data|
               exit_status = [exit_status, data.read_long].max
             end
           end
@@ -282,7 +281,7 @@ class Chef
         @password ||= prompt_for_password
       end
 
-      def prompt_for_password(prompt = "Enter your password: ")
+      def prompt_for_password(prompt = 'Enter your password: ')
         ui.ask(prompt) { |q| q.echo = false }
       end
 
@@ -295,7 +294,7 @@ class Chef
           command = reader.readline("#{ui.color('knife-ssh>', :bold)} ", true)
 
           if command.nil?
-            command = "exit"
+            command = 'exit'
             puts(command)
           else
             command.strip!
@@ -312,11 +311,11 @@ class Chef
       end
 
       def interactive
-        puts "Connected to #{ui.list(session.servers_for.collect { |s| ui.color(s.host, :cyan) }, :inline, " and ")}"
+        puts "Connected to #{ui.list(session.servers_for.map { |s| ui.color(s.host, :cyan) }, :inline, ' and ')}"
         puts
-        puts "To run a command on a list of servers, do:"
-        puts "  on SERVER1 SERVER2 SERVER3; COMMAND"
-        puts "  Example: on latte foamy; echo foobar"
+        puts 'To run a command on a list of servers, do:'
+        puts '  on SERVER1 SERVER2 SERVER3; COMMAND'
+        puts '  Example: on latte foamy; echo foobar'
         puts
         puts "To exit interactive mode, use 'quit!'"
         puts
@@ -327,12 +326,12 @@ class Chef
             puts 'Bye!'
             break
           when /^on (.+?); (.+)$/
-            raw_list = $1.split(" ")
-            server_list = Array.new
+            raw_list = Regexp.last_match[1].split(' ')
+            server_list = []
             session.servers.each do |session_server|
               server_list << session_server if raw_list.include?(session_server.host)
             end
-            command = $2
+            command = Regexp.last_match[2]
             ssh_command(command, session.on(*server_list))
           else
             ssh_command(command)
@@ -341,9 +340,9 @@ class Chef
       end
 
       def screen
-        tf = Tempfile.new("knife-ssh-screen")
-        if File.exist? "#{ENV["HOME"]}/.screenrc"
-          tf.puts("source #{ENV["HOME"]}/.screenrc")
+        tf = Tempfile.new('knife-ssh-screen')
+        if File.exist? "#{ENV['HOME']}/.screenrc"
+          tf.puts("source #{ENV['HOME']}/.screenrc")
         end
         tf.puts("caption always '%-Lw%{= BW}%50>%n%f* %t%{-}%+Lw%<'")
         tf.puts("hardstatus alwayslastline 'knife ssh #{@name_args[0]}'")
@@ -361,26 +360,26 @@ class Chef
       def tmux
         ssh_dest = lambda do |server|
           identity = "-i #{config[:identity_file]} " if config[:identity_file]
-          prefix = server.user ? "#{server.user}@" : ""
+          prefix = server.user ? "#{server.user}@" : ''
           "'ssh #{identity}#{prefix}#{server.host}'"
         end
 
         new_window_cmds = lambda do
           if session.servers_for.size > 1
-            [""] + session.servers_for[1..-1].map do |server|
+            [''] + session.servers_for[1..-1].map do |server|
               "new-window -a -n '#{server.host}' #{ssh_dest.call(server)}"
             end
           else
             []
-          end.join(" \\; ")
+          end.join(' \\; ')
         end
 
-        tmux_name = "'knife ssh #{@name_args[0].gsub(/:/,'=')}'"
+        tmux_name = "'knife ssh #{@name_args[0].gsub(/:/, '=')}'"
         begin
           server = session.servers_for.first
           cmd = ["tmux new-session -d -s #{tmux_name}",
                  "-n '#{server.host}'", ssh_dest.call(server),
-                 new_window_cmds.call].join(" ")
+                 new_window_cmds.call].join(' ')
           shell_out!(cmd)
           exec("tmux attach-session -t #{tmux_name}")
         rescue Chef::Exceptions::Exec
@@ -391,18 +390,18 @@ class Chef
         begin
           require 'appscript'
         rescue LoadError
-          STDERR.puts "you need the rb-appscript gem to use knife ssh macterm. `(sudo) gem install rb-appscript` to install"
+          STDERR.puts 'you need the rb-appscript gem to use knife ssh macterm. `(sudo) gem install rb-appscript` to install'
           raise
         end
 
-        Appscript.app("/Applications/Utilities/Terminal.app").windows.first.activate
-        Appscript.app("System Events").application_processes["Terminal.app"].keystroke("n", :using=>:command_down)
+        Appscript.app('/Applications/Utilities/Terminal.app').windows.first.activate
+        Appscript.app('System Events').application_processes['Terminal.app'].keystroke('n', :using => :command_down)
         term = Appscript.app('Terminal')
         window = term.windows.first.get
 
-        (session.servers_for.size - 1).times do |i|
+        (session.servers_for.size - 1).times do |_i|
           window.activate
-          Appscript.app("System Events").application_processes["Terminal.app"].keystroke("t", :using=>:command_down)
+          Appscript.app('System Events').application_processes['Terminal.app'].keystroke('t', :using => :command_down)
         end
 
         session.servers_for.each_with_index do |server, tab_number|
@@ -418,12 +417,12 @@ class Chef
         # We can tell here if fqdn was passed from the command line, rather than being the default, by checking config[:attribute]
         # However, after here, we cannot tell these things, so we must preserve config[:attribute]
         config[:attribute_from_cli] = config[:attribute]
-        config[:attribute] = (config[:attribute_from_cli] || Chef::Config[:knife][:ssh_attribute] || "fqdn").strip
+        config[:attribute] = (config[:attribute_from_cli] || Chef::Config[:knife][:ssh_attribute] || 'fqdn').strip
       end
 
       def cssh
         cssh_cmd = nil
-        %w[csshX cssh].each do |cmd|
+        %w(csshX cssh).each do |cmd|
           begin
             # Unix and Mac only
             cssh_cmd = shell_out!("which #{cmd}").stdout.strip
@@ -431,7 +430,7 @@ class Chef
           rescue Mixlib::ShellOut::ShellCommandFailed
           end
         end
-        raise Chef::Exceptions::Exec, "no command found for cssh" unless cssh_cmd
+        fail Chef::Exceptions::Exec, 'no command found for cssh' unless cssh_cmd
 
         # pass in the consolidated itentity file option to cssh(X)
         if config[:identity_file]
@@ -462,7 +461,7 @@ class Chef
       # use ssh_password_ng to determine if we're coming from knife ssh or from the other utilities.  The other utilties can
       # also be patched to use ssh_password_ng easily as long they follow the convention that the default is false.
       def configure_password
-        if config.has_key?(:ssh_password_ng) && config[:ssh_password_ng].nil?
+        if config.key?(:ssh_password_ng) && config[:ssh_password_ng].nil?
           # If the parameter is called on the command line with no value
           # it will set :ssh_password_ng = nil
           # This is where we want to trigger a prompt for password
@@ -472,7 +471,7 @@ class Chef
           # using an old config[:ssh_password].  this is backwards compatibility.  all knife cloud plugins should
           # be updated to use ssh_password_ng with a default of false and ssh_password should be retired, (but
           # we'll still need to use the ssh_password out of knife.rb if we find that).
-          ssh_password = config.has_key?(:ssh_password_ng) ? config[:ssh_password_ng] : config[:ssh_password]
+          ssh_password = config.key?(:ssh_password_ng) ? config[:ssh_password_ng] : config[:ssh_password]
           # Otherwise, the password has either been specified on the command line,
           # in knife.rb, or key based auth will be attempted
           config[:ssh_password] = get_stripped_unfrozen_value(ssh_password ||
@@ -503,22 +502,22 @@ class Chef
 
         exit_status =
         case @name_args[1]
-        when "interactive"
+        when 'interactive'
           interactive
-        when "screen"
+        when 'screen'
           screen
-        when "tmux"
+        when 'tmux'
           tmux
-        when "macterm"
+        when 'macterm'
           macterm
-        when "cssh"
+        when 'cssh'
           cssh
-        when "csshx"
-          Chef::Log.warn("knife ssh csshx will be deprecated in a future release")
-          Chef::Log.warn("please use knife ssh cssh instead")
+        when 'csshx'
+          Chef::Log.warn('knife ssh csshx will be deprecated in a future release')
+          Chef::Log.warn('please use knife ssh cssh instead')
           cssh
         else
-          ssh_command(@name_args[1..-1].join(" "))
+          ssh_command(@name_args[1..-1].join(' '))
         end
 
         session.close
@@ -530,7 +529,6 @@ class Chef
       end
 
       private :search_nodes
-
     end
   end
 end
