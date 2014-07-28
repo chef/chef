@@ -88,7 +88,7 @@ class Chef
             r = FFI_Yajl::Parser.parse(IO.read(filename))
 
             # Chef::DataBagItem doesn't work well with the json_create method
-            if @klass == Chef::DataBagItem
+            if @klass == Chef::DataBagItem || @klass == Chef::EncryptedDataBagItem
               r
             else
               @klass.json_create(r)
