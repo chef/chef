@@ -21,13 +21,12 @@ require 'chef/knife'
 class Chef
   class Knife
     class IndexRebuild < Knife
-
-      banner "knife index rebuild (options)"
+      banner 'knife index rebuild (options)'
       option :yes,
-        :short        => "-y",
-        :long         => "--yes",
-        :boolean      => true,
-        :description  => "don't bother to ask if I'm sure"
+             :short        => '-y',
+             :long         => '--yes',
+             :boolean      => true,
+             :description  => "don't bother to ask if I'm sure"
 
       def run
         api_info = grab_api_info
@@ -38,9 +37,8 @@ class Chef
         else
           deprecated_server_message
           nag
-          output rest.post_rest("/search/reindex", {})
+          output rest.post_rest('/search/reindex', {})
         end
-
       end
 
       def grab_api_info
@@ -49,7 +47,7 @@ class Chef
         # information in a more roundabout way.  We'll try to query
         # for a node we know won't exist; the 404 response that comes
         # back will give us what we want
-        dummy_node = "knife_index_rebuild_test_#{rand(1000000)}"
+        dummy_node = "knife_index_rebuild_test_#{rand(1_000_000)}"
         rest.get_rest("/nodes/#{dummy_node}")
       rescue Net::HTTPServerException => exception
         r = exception.response
@@ -60,7 +58,7 @@ class Chef
       # headers, and only those servers will lack an API endpoint for
       # index rebuilding.
       def unsupported_version?(api_info)
-        !!api_info["version"]
+        !!api_info['version']
       end
 
       def unsupported_server_message(api_info)
@@ -73,8 +71,8 @@ class Chef
       end
 
       def nag
-        ui.info("This operation is destructive.  Rebuilding the index may take some time.")
-        ui.confirm("Continue")
+        ui.info('This operation is destructive.  Rebuilding the index may take some time.')
+        ui.confirm('Continue')
       end
 
       # Chef 11 (and above) servers return various pieces of
@@ -86,11 +84,11 @@ class Chef
       # information (if present), and returns it as a hash.  If no
       # such header is found, an empty hash is returned.
       def parse_api_info(response)
-        value = response["x-ops-api-info"]
+        value = response['x-ops-api-info']
         if value
-          kv = value.split(";")
-          kv.inject({}) do |acc, pair|
-            k, v = pair.split("=")
+          kv = value.split(';')
+          kv.reduce({}) do |acc, pair|
+            k, v = pair.split('=')
             acc[k] = v
             acc
           end
@@ -103,14 +101,14 @@ class Chef
       # return a string describing the kind of server we're
       # interacting with (based on the +flavor+ field)
       def server_type(api_info)
-        case api_info["flavor"]
-        when "osc"
-          "Open Source Chef Server"
-        when "opc"
-          "Private Chef Server"
+        case api_info['flavor']
+        when 'osc'
+          'Open Source Chef Server'
+        when 'opc'
+          'Private Chef Server'
         else
           # Generic fallback
-          "Chef Server"
+          'Chef Server'
         end
       end
 
@@ -118,17 +116,16 @@ class Chef
       # return the name of the "server-ctl" command for the kind of
       # server we're interacting with (based on the +flavor+ field)
       def ctl_command(api_info)
-        case api_info["flavor"]
-        when "osc"
-          "chef-server-ctl"
-        when "opc"
-          "private-chef-ctl"
+        case api_info['flavor']
+        when 'osc'
+          'chef-server-ctl'
+        when 'opc'
+          'private-chef-ctl'
         else
           # Generic fallback
-          "chef-server-ctl"
+          'chef-server-ctl'
         end
       end
-
     end
   end
 end

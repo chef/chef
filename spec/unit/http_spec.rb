@@ -27,7 +27,7 @@ end
 
 describe Chef::HTTP do
 
-  describe "create_url" do
+  describe 'create_url' do
 
     it 'should return a correctly formatted url 1/3 CHEF-5261' do
       http = Chef::HTTP.new('http://www.getchef.com')
@@ -46,24 +46,24 @@ describe Chef::HTTP do
 
   end # create_url
 
-  describe "head" do
+  describe 'head' do
 
     it 'should return nil for a "200 Success" response (CHEF-4762)' do
-      resp = Net::HTTPOK.new("1.1", 200, "OK")
+      resp = Net::HTTPOK.new('1.1', 200, 'OK')
       resp.should_receive(:read_body).and_return(nil)
-      http = Chef::HTTP.new("")
-      Chef::HTTP::BasicClient.any_instance.should_receive(:request).and_return(["request", resp])
+      http = Chef::HTTP.new('')
+      Chef::HTTP::BasicClient.any_instance.should_receive(:request).and_return(['request', resp])
 
-      http.head("http://www.getchef.com/").should eql(nil)
+      http.head('http://www.getchef.com/').should eql(nil)
     end
 
     it 'should return false for a "304 Not Modified" response (CHEF-4762)' do
-      resp = Net::HTTPNotModified.new("1.1", 304, "Not Modified")
+      resp = Net::HTTPNotModified.new('1.1', 304, 'Not Modified')
       resp.should_receive(:read_body).and_return(nil)
-      http = Chef::HTTP.new("")
-      Chef::HTTP::BasicClient.any_instance.should_receive(:request).and_return(["request", resp])
+      http = Chef::HTTP.new('')
+      Chef::HTTP::BasicClient.any_instance.should_receive(:request).and_return(['request', resp])
 
-      http.head("http://www.getchef.com/").should eql(false)
+      http.head('http://www.getchef.com/').should eql(false)
     end
 
   end # head

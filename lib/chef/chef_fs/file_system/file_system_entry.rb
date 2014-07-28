@@ -40,17 +40,15 @@ class Chef
         end
 
         def children
-          begin
-            Dir.entries(file_path).sort.select { |entry| entry != '.' && entry != '..' }.map { |entry| make_child(entry) }
-          rescue Errno::ENOENT
-            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-          end
+          Dir.entries(file_path).sort.select { |entry| entry != '.' && entry != '..' }.map { |entry| make_child(entry) }
+        rescue Errno::ENOENT
+          raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $ERROR_INFO)
         end
 
-        def create_child(child_name, file_contents=nil)
+        def create_child(child_name, file_contents = nil)
           child = make_child(child_name)
           if child.exists?
-            raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
+            fail Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
           end
           if file_contents
             child.write(file_contents)
@@ -70,8 +68,8 @@ class Chef
 
         def delete(recurse)
           if dir?
-            if !recurse
-              raise MustDeleteRecursivelyError.new(self, $!)
+            unless recurse
+              fail MustDeleteRecursivelyError.new(self, $ERROR_INFO)
             end
             FileUtils.rm_rf(file_path)
           else
@@ -80,15 +78,13 @@ class Chef
         end
 
         def exists?
-          File.exists?(file_path)
+          File.exist?(file_path)
         end
 
         def read
-          begin
-            File.open(file_path, "rb") {|f| f.read}
-          rescue Errno::ENOENT
-            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-          end
+          File.open(file_path, 'rb') { |f| f.read }
+        rescue Errno::ENOENT
+          raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $ERROR_INFO)
         end
 
         def write(content)

@@ -32,47 +32,38 @@ class Chef
         # Win32 API Constants
         ###############################################
 
-
         ###############################################
         # Win32 API Bindings
         ###############################################
 
         ffi_lib 'msi'
 
-=begin
-UINT MsiOpenPackage(
-  _In_   LPCTSTR szPackagePath,
-  _Out_  MSIHANDLE *hProduct
-);
-=end
-        safe_attach_function :msi_open_package, :MsiOpenPackageExA, [ :string, :int, :pointer ], :int
+        # UINT MsiOpenPackage(
+        #   _In_   LPCTSTR szPackagePath,
+        #   _Out_  MSIHANDLE *hProduct
+        # );
+        safe_attach_function :msi_open_package, :MsiOpenPackageExA, [:string, :int, :pointer], :int
 
-=begin
-UINT MsiGetProductProperty(
-  _In_     MSIHANDLE hProduct,
-  _In_     LPCTSTR szProperty,
-  _Out_    LPTSTR lpValueBuf,
-  _Inout_  DWORD *pcchValueBuf
-);
-=end
-        safe_attach_function :msi_get_product_property, :MsiGetProductPropertyA, [ :pointer, :pointer, :pointer, :pointer ], :int
+        # UINT MsiGetProductProperty(
+        #   _In_     MSIHANDLE hProduct,
+        #   _In_     LPCTSTR szProperty,
+        #   _Out_    LPTSTR lpValueBuf,
+        #   _Inout_  DWORD *pcchValueBuf
+        # );
+        safe_attach_function :msi_get_product_property, :MsiGetProductPropertyA, [:pointer, :pointer, :pointer, :pointer], :int
 
-=begin
-UINT MsiGetProductInfo(
-  _In_     LPCTSTR szProduct,
-  _In_     LPCTSTR szProperty,
-  _Out_    LPTSTR lpValueBuf,
-  _Inout_  DWORD *pcchValueBuf
-);
-=end
-        safe_attach_function :msi_get_product_info, :MsiGetProductInfoA, [ :pointer, :pointer, :pointer, :pointer ], :int
+        # UINT MsiGetProductInfo(
+        #   _In_     LPCTSTR szProduct,
+        #   _In_     LPCTSTR szProperty,
+        #   _Out_    LPTSTR lpValueBuf,
+        #   _Inout_  DWORD *pcchValueBuf
+        # );
+        safe_attach_function :msi_get_product_info, :MsiGetProductInfoA, [:pointer, :pointer, :pointer, :pointer], :int
 
-=begin
-UINT MsiCloseHandle(
-  _In_  MSIHANDLE hAny
-);
-=end
-        safe_attach_function :msi_close_handle, :MsiCloseHandle, [ :pointer ], :int
+        # UINT MsiCloseHandle(
+        #   _In_  MSIHANDLE hAny
+        # );
+        safe_attach_function :msi_close_handle, :MsiCloseHandle, [:pointer], :int
 
         ###############################################
         # Helpers
@@ -92,9 +83,9 @@ UINT MsiCloseHandle(
           if status != 234
             msg = "msi_get_product_property: returned unknown error #{status} when retrieving #{property_name}: "
             msg << Chef::ReservedNames::Win32::Error.format_message(status)
-            raise Chef::Exceptions::Package, msg
+            fail Chef::Exceptions::Package, msg
           end
-         
+
           buffer_length = FFI::Buffer.new(:long).write_long(buffer_length.read_long + 1)
           buffer = 0.chr * buffer_length.read_long
 
@@ -104,28 +95,28 @@ UINT MsiCloseHandle(
           if status != 0
             msg = "msi_get_product_property: returned unknown error #{status} when retrieving #{property_name}: "
             msg << Chef::ReservedNames::Win32::Error.format_message(status)
-            raise Chef::Exceptions::Package, msg
+            fail Chef::Exceptions::Package, msg
           end
 
           msi_close_handle(pkg_ptr.read_pointer)
-          return buffer
+          buffer
         end
 
         # Opens a Microsoft Installer (MSI) file from an absolute path and returns a pointer to a handle
         # Remember to close the handle with msi_close_handle()
         def open_package(package_path)
-          # MsiOpenPackage expects a perfect absolute Windows path to the MSI 
-          raise ArgumentError, "Provided path '#{package_path}' must be an absolute path" unless Pathname.new(package_path).absolute?
+          # MsiOpenPackage expects a perfect absolute Windows path to the MSI
+          fail ArgumentError, "Provided path '#{package_path}' must be an absolute path" unless Pathname.new(package_path).absolute?
 
           pkg_ptr = FFI::MemoryPointer.new(:pointer, 4)
           status = msi_open_package(package_path, 1, pkg_ptr)
           case status
-          when 0 
+          when 0
             # success
           else
-            raise Chef::Exceptions::Package, "msi_open_package: unexpected status #{status}: #{Chef::ReservedNames::Win32::Error.format_message(status)}"
+            fail Chef::Exceptions::Package, "msi_open_package: unexpected status #{status}: #{Chef::ReservedNames::Win32::Error.format_message(status)}"
           end
-          return pkg_ptr        
+          pkg_ptr
         end
 
         # All installed product_codes should have a VersionString
@@ -133,29 +124,29 @@ UINT MsiCloseHandle(
         def get_installed_version(product_code)
           version = 0.chr
           version_length = FFI::Buffer.new(:long).write_long(0)
-         
-          status = msi_get_product_info(product_code, "VersionString", version, version_length)
-          
+
+          status = msi_get_product_info(product_code, 'VersionString', version, version_length)
+
           return nil if status == 1605 # ERROR_UNKNOWN_PRODUCT (0x645)
-         
+
           # We expect error ERROR_MORE_DATA (234) here because we passed a buffer length of 0
           if status != 234
             msg = "msi_get_product_info: product code '#{product_code}' returned unknown error #{status} when retrieving VersionString: "
             msg << Chef::ReservedNames::Win32::Error.format_message(status)
-            raise Chef::Exceptions::Package, msg
+            fail Chef::Exceptions::Package, msg
           end
 
           # We could fetch the product version now that we know the variable length, but we don't need it here.
 
           version_length = FFI::Buffer.new(:long).write_long(version_length.read_long + 1)
           version = 0.chr * version_length.read_long
-           
-          status = msi_get_product_info(product_code, "VersionString", version, version_length)
-           
+
+          status = msi_get_product_info(product_code, 'VersionString', version, version_length)
+
           if status != 0
             msg = "msi_get_product_info: product code '#{product_code}' returned unknown error #{status} when retrieving VersionString: "
             msg << Chef::ReservedNames::Win32::Error.format_message(status)
-            raise Chef::Exceptions::Package, msg
+            fail Chef::Exceptions::Package, msg
           end
 
           version

@@ -22,7 +22,6 @@ class Chef
     # == Formatters::ErrorDescription
     # Class for displaying errors on STDOUT.
     class ErrorDescription
-
       attr_reader :sections
 
       def initialize(title)
@@ -31,13 +30,13 @@ class Chef
       end
 
       def section(heading, text)
-        @sections << {heading => (text or "")}
+        @sections << { heading => (text or '') }
       end
 
       def display(out)
-        out.puts "=" * 80
+        out.puts '=' * 80
         out.puts @title, :red
-        out.puts "=" * 80
+        out.puts '=' * 80
         out.puts "\n"
         sections.each do |section|
           section.each do |heading, text|
@@ -46,7 +45,7 @@ class Chef
         end
       end
 
-      def for_json()
+      def for_json
         {
           'title' => @title,
           'sections' => @sections
@@ -57,11 +56,10 @@ class Chef
 
       def display_section(heading, text, out)
         out.puts heading
-        out.puts "-" * heading.size
+        out.puts '-' * heading.size
         out.puts text
         out.puts "\n"
       end
-
     end
   end
 end

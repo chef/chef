@@ -32,49 +32,49 @@ class Chef
       attr_reader :inline_helper_blocks
       attr_reader :inline_helper_modules
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :template
-        @action = "create"
+        @action = 'create'
         @source = "#{::File.basename(name)}.erb"
         @cookbook = nil
         @local = false
-        @variables = Hash.new
+        @variables = {}
         @provider = Chef::Provider::Template
         @inline_helper_blocks = {}
         @inline_helper_modules = []
         @helper_modules = []
       end
 
-      def source(file=nil)
+      def source(file = nil)
         set_or_return(
           :source,
           file,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
-      def variables(args=nil)
+      def variables(args = nil)
         set_or_return(
           :variables,
           args,
-          :kind_of => [ Hash ]
+          :kind_of => [Hash]
         )
       end
 
-      def cookbook(args=nil)
+      def cookbook(args = nil)
         set_or_return(
           :cookbook,
           args,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
-      def local(args=nil)
+      def local(args = nil)
         set_or_return(
           :local,
           args,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [TrueClass, FalseClass]
         )
       end
 
@@ -114,13 +114,13 @@ class Chef
       #   <%= app(:listen_ports) %>
       def helper(method_name, &block)
         unless block_given?
-          raise Exceptions::ValidationFailed,
-            "`helper(:method)` requires a block argument (e.g., `helper(:method) { code }`)"
+          fail Exceptions::ValidationFailed,
+               '`helper(:method)` requires a block argument (e.g., `helper(:method) { code }`)'
         end
 
-        unless method_name.kind_of?(Symbol)
-          raise Exceptions::ValidationFailed,
-            "method_name argument to `helper(method_name)` must be a symbol (e.g., `helper(:method) { code }`)"
+        unless method_name.is_a?(Symbol)
+          fail Exceptions::ValidationFailed,
+               'method_name argument to `helper(method_name)` must be a symbol (e.g., `helper(:method) { code }`)'
         end
 
         @inline_helper_blocks[method_name] = block
@@ -166,22 +166,22 @@ class Chef
       # And in the template resource:
       #   helpers(MyTemplateHelper)
       # The template code in the above example will work unmodified.
-      def helpers(module_name=nil,&block)
+      def helpers(module_name = nil, &block)
         if block_given? and !module_name.nil?
-          raise Exceptions::ValidationFailed,
-            "Passing both a module and block to #helpers is not supported. Call #helpers multiple times instead"
+          fail Exceptions::ValidationFailed,
+               'Passing both a module and block to #helpers is not supported. Call #helpers multiple times instead'
         elsif block_given?
           @inline_helper_modules << block
-        elsif module_name.kind_of?(::Module)
+        elsif module_name.is_a?(::Module)
           @helper_modules << module_name
         elsif module_name.nil?
-          raise Exceptions::ValidationFailed,
-            "#helpers requires either a module name or inline module code as a block.\n" +
-            "e.g.: helpers do; helper_code; end;\n" +
-            "OR: helpers(MyHelpersModule)"
+          fail Exceptions::ValidationFailed,
+               "#helpers requires either a module name or inline module code as a block.\n" \
+               "e.g.: helpers do; helper_code; end;\n" \
+               'OR: helpers(MyHelpersModule)'
         else
-          raise Exceptions::ValidationFailed,
-            "Argument to #helpers must be a module. You gave #{module_name.inspect} (#{module_name.class})"
+          fail Exceptions::ValidationFailed,
+               "Argument to #helpers must be a module. You gave #{module_name.inspect} (#{module_name.class})"
         end
       end
 
@@ -206,7 +206,7 @@ class Chef
               define_method(method_name, &method_body)
             end
           end
-          [ helper_mod ]
+          [helper_mod]
         end
       end
 
@@ -215,7 +215,6 @@ class Chef
           Module.new(&module_body)
         end
       end
-
     end
   end
 end

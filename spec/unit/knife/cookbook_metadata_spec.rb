@@ -56,8 +56,8 @@ describe Chef::Knife::CookbookMetadata do
         @bar = Chef::CookbookVersion.new('bar', '/tmp/blah')
         @bar.version = '2.0.0'
         @cookbook_loader = {
-          "foo" => @foo,
-          "bar" => @bar
+          'foo' => @foo,
+          'bar' => @bar
         }
         @cookbook_loader.should_receive(:load_cookbooks).and_return(@cookbook_loader)
         @knife.should_receive(:generate_metadata).with('foo')
@@ -128,9 +128,9 @@ describe Chef::Knife::CookbookMetadata do
       it "should print an error and exit when an #{description} syntax exception is encountered" do
         exception = klass.new("#{description} blah")
         Chef::Cookbook::Metadata.stub(:new).and_raise(exception)
-        lambda {
+        lambda do
           @knife.generate_metadata_from_file('foobar', "#{@cookbook_dir}/foobar/metadata.rb")
-        }.should raise_error(SystemExit)
+        end.should raise_error(SystemExit)
         @stderr.string.should match /error: the cookbook 'foobar' contains invalid or obsolete metadata syntax/im
         @stderr.string.should match /in #{@cookbook_dir}\/foobar\/metadata\.rb/im
         @stderr.string.should match /#{description} blah/im
@@ -166,9 +166,9 @@ describe Chef::Knife::CookbookMetadata do
                                  and_return(@json_data)
         exception = klass.new("#{description} blah")
         Chef::Cookbook::Metadata.stub(:validate_json).and_raise(exception)
-        lambda {
+        lambda do
           @knife.validate_metadata_json(@cookbook_dir, 'foobar')
-        }.should raise_error(SystemExit)
+        end.should raise_error(SystemExit)
         @stderr.string.should match /error: the cookbook 'foobar' contains invalid or obsolete metadata syntax/im
         @stderr.string.should match /in #{@cookbook_dir}\/foobar\/metadata\.json/im
         @stderr.string.should match /#{description} blah/im

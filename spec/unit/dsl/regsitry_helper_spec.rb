@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/dsl/registry_helper"
-require "spec_helper"
+require 'chef/dsl/registry_helper'
+require 'spec_helper'
 
 describe Chef::Resource::RegistryKey do
 
@@ -26,30 +26,29 @@ describe Chef::Resource::RegistryKey do
     node = Chef::Node.new
     ohai = Ohai::System.new
     ohai.all_plugins
-    node.consume_external_attrs(ohai.data,{})
+    node.consume_external_attrs(ohai.data, {})
     run_context = Chef::RunContext.new(node, {}, events)
-    @resource = Chef::Resource::new("foo", run_context)
+    @resource = Chef::Resource.new('foo', run_context)
   end
 
-  context "tests registry dsl" do
-    it "resource can access registry_helper method registry_key_exists" do
+  context 'tests registry dsl' do
+    it 'resource can access registry_helper method registry_key_exists' do
       @resource.respond_to?('registry_key_exists?').should == true
     end
-    it "resource can access registry_helper method registry_get_values" do
+    it 'resource can access registry_helper method registry_get_values' do
       @resource.respond_to?('registry_get_values').should == true
     end
-    it "resource can access registry_helper method registry_has_subkey" do
+    it 'resource can access registry_helper method registry_has_subkey' do
       @resource.respond_to?('registry_has_subkeys?').should == true
     end
-    it "resource can access registry_helper method registry_get_subkeys" do
+    it 'resource can access registry_helper method registry_get_subkeys' do
       @resource.respond_to?('registry_get_subkeys').should == true
     end
-    it "resource can access registry_helper method registry_value_exists" do
+    it 'resource can access registry_helper method registry_value_exists' do
       @resource.respond_to?('registry_value_exists?').should == true
     end
-    it "resource can access registry_helper method data_value_exists" do
+    it 'resource can access registry_helper method data_value_exists' do
       @resource.respond_to?('registry_data_exists?').should == true
     end
   end
 end
-

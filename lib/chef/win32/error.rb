@@ -60,13 +60,13 @@ class Chef
       def self.raise!(message = nil)
         code = get_last_error
         msg = format_message(code).strip
-        formatted_message = ""
+        formatted_message = ''
         formatted_message << message if message
         formatted_message << "---- Begin Win32 API output ----\n"
         formatted_message << "System Error Code: #{code}\n"
         formatted_message << "System Error Message: #{msg}\n"
         formatted_message << "---- End Win32 API output ----\n"
-        raise Chef::Exceptions::Win32APIError, msg + "\n" + formatted_message
+        fail Chef::Exceptions::Win32APIError, msg + "\n" + formatted_message
       end
     end
   end

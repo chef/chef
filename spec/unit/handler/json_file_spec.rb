@@ -20,20 +20,20 @@ require 'spec_helper'
 
 describe Chef::Handler::JsonFile do
   before(:each) do
-    @handler = Chef::Handler::JsonFile.new(:the_sun => "will rise", :path => '/tmp/foobarbazqux')
+    @handler = Chef::Handler::JsonFile.new(:the_sun => 'will rise', :path => '/tmp/foobarbazqux')
   end
 
-  it "accepts arbitrary config options" do
-    @handler.config[:the_sun].should == "will rise"
+  it 'accepts arbitrary config options' do
+    @handler.config[:the_sun].should == 'will rise'
   end
 
-  it "creates the directory where the reports will be saved" do
+  it 'creates the directory where the reports will be saved' do
     FileUtils.should_receive(:mkdir_p).with('/tmp/foobarbazqux')
     File.should_receive(:chmod).with(00700, '/tmp/foobarbazqux')
     @handler.build_report_dir
   end
 
-  describe "when reporting success" do
+  describe 'when reporting success' do
     before(:each) do
       @node = Chef::Node.new
       @events = Chef::EventDispatch::Dispatcher.new
@@ -44,17 +44,16 @@ describe Chef::Handler::JsonFile do
       @run_status.stop_clock
       @run_context = Chef::RunContext.new(@node, {}, @events)
       @run_status.run_context = @run_context
-      @run_status.exception = Exception.new("Boy howdy!")
+      @run_status.exception = Exception.new('Boy howdy!')
       @file_mock = StringIO.new
       File.stub(:open).and_yield(@file_mock)
     end
 
-
-    it "saves run status data to a file as JSON" do
+    it 'saves run status data to a file as JSON' do
       @handler.should_receive(:build_report_dir)
       @handler.run_report_unsafe(@run_status)
       reported_data = Chef::JSONCompat.from_json(@file_mock.string)
-      reported_data['exception'].should == "Exception: Boy howdy!"
+      reported_data['exception'].should == 'Exception: Boy howdy!'
       reported_data['start_time'].should == @expected_time.to_s
       reported_data['end_time'].should == (@expected_time + 5).to_s
       reported_data['elapsed_time'].should == 5

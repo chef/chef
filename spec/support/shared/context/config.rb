@@ -11,7 +11,7 @@ require 'chef/config'
 require 'spec_helper'
 
 # Basic config. Nothing fancy.
-shared_context "default config options" do
+shared_context 'default config options' do
   before do
     Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
   end

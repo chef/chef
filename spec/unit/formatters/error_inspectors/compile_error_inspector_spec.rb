@@ -18,7 +18,7 @@
 
 require 'spec_helper'
 
-BAD_RECIPE=<<-E
+BAD_RECIPE = <<-E
 #
 # Cookbook Name:: syntax-err
 # Recipe:: default
@@ -38,27 +38,27 @@ E
 
 describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
   before do
-    @node_name = "test-node.example.com"
-    @description = Chef::Formatters::ErrorDescription.new("Error Evaluating File:")
+    @node_name = 'test-node.example.com'
+    @description = Chef::Formatters::ErrorDescription.new('Error Evaluating File:')
     @exception = NoMethodError.new("undefined method `this_is_not_a_valid_method' for Chef::Resource::File")
 
     @outputter = Chef::Formatters::IndentableOutputStream.new(StringIO.new, STDERR)
-    #@outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
+    # @outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
   end
 
-  describe "when scrubbing backtraces" do
-    it "shows backtrace lines from cookbook files" do
+  describe 'when scrubbing backtraces' do
+    it 'shows backtrace lines from cookbook files' do
       # Error inspector originally used file_cache_path which is incorrect on
       # chef-solo. Using cookbook_path should do the right thing for client and
       # solo.
-      Chef::Config.stub(:cookbook_path).and_return([ "/home/someuser/dev-laptop/cookbooks" ])
+      Chef::Config.stub(:cookbook_path).and_return(['/home/someuser/dev-laptop/cookbooks'])
       @trace = [
         "/home/someuser/dev-laptop/cookbooks/syntax-err/recipes/default.rb:14:in `from_file'",
         "/home/someuser/dev-laptop/cookbooks/syntax-err/recipes/default.rb:11:in `from_file'",
         "/home/someuser/.multiruby/gems/chef/lib/chef/client.rb:123:in `run'"
       ]
       @exception.set_backtrace(@trace)
-      @path = "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb"
+      @path = '/var/chef/cache/cookbooks/syntax-err/recipes/default.rb'
       @inspector = described_class.new(@path, @exception)
 
       @expected_filtered_trace = [
@@ -69,35 +69,35 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
     end
   end
 
-  describe "when explaining an error in the compile phase" do
+  describe 'when explaining an error in the compile phase' do
     before do
-      Chef::Config.stub(:cookbook_path).and_return([ "/var/chef/cache/cookbooks" ])
-      recipe_lines = BAD_RECIPE.split("\n").map {|l| l << "\n" }
-      IO.should_receive(:readlines).with("/var/chef/cache/cookbooks/syntax-err/recipes/default.rb").and_return(recipe_lines)
+      Chef::Config.stub(:cookbook_path).and_return(['/var/chef/cache/cookbooks'])
+      recipe_lines = BAD_RECIPE.split("\n").map { |l| l << "\n" }
+      IO.should_receive(:readlines).with('/var/chef/cache/cookbooks/syntax-err/recipes/default.rb').and_return(recipe_lines)
       @trace = [
         "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb:14:in `from_file'",
         "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb:11:in `from_file'",
         "/usr/local/lib/ruby/gems/chef/lib/chef/client.rb:123:in `run'" # should not display
       ]
       @exception.set_backtrace(@trace)
-      @path = "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb"
+      @path = '/var/chef/cache/cookbooks/syntax-err/recipes/default.rb'
       @inspector = described_class.new(@path, @exception)
       @inspector.add_explanation(@description)
     end
 
-    it "finds the line number of the error from the stacktrace" do
+    it 'finds the line number of the error from the stacktrace' do
       @inspector.culprit_line.should == 14
     end
 
-    it "prints a pretty message" do
+    it 'prints a pretty message' do
       @description.display(@outputter)
     end
   end
 
-  describe "when explaining an error on windows" do
+  describe 'when explaining an error on windows' do
     before do
-      Chef::Config.stub(:cookbook_path).and_return([ "C:/opscode/chef/var/cache/cookbooks" ])
-      recipe_lines = BAD_RECIPE.split("\n").map {|l| l << "\n" }
+      Chef::Config.stub(:cookbook_path).and_return(['C:/opscode/chef/var/cache/cookbooks'])
+      recipe_lines = BAD_RECIPE.split("\n").map { |l| l << "\n" }
       IO.should_receive(:readlines).at_least(1).times.with(/:\/opscode\/chef\/var\/cache\/cookbooks\/foo\/recipes\/default.rb/).and_return(recipe_lines)
       @trace = [
         "C:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb:14 in `from_file'",
@@ -123,40 +123,39 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
         "C:/opscode/chef/bin/chef-client:19:in `<main>'"
       ]
       @exception.set_backtrace(@trace)
-      @path = "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb"
+      @path = '/var/chef/cache/cookbooks/syntax-err/recipes/default.rb'
       @inspector = described_class.new(@path, @exception)
       @inspector.add_explanation(@description)
     end
 
-
-    describe "and examining the stack trace for a recipe" do
-      it "find the culprit recipe name when the drive letter is upper case" do
-        @inspector.culprit_file.should == "C:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb"
+    describe 'and examining the stack trace for a recipe' do
+      it 'find the culprit recipe name when the drive letter is upper case' do
+        @inspector.culprit_file.should == 'C:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb'
       end
 
-      it "find the culprit recipe name when the drive letter is lower case" do
-        @trace.each { |line| line.gsub!(/^C:/, "c:") }
+      it 'find the culprit recipe name when the drive letter is lower case' do
+        @trace.each { |line| line.gsub!(/^C:/, 'c:') }
         @exception.set_backtrace(@trace)
         @inspector = described_class.new(@path, @exception)
         @inspector.add_explanation(@description)
-        @inspector.culprit_file.should == "c:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb"
+        @inspector.culprit_file.should == 'c:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb'
       end
     end
 
-    it "finds the line number of the error from the stack trace" do
+    it 'finds the line number of the error from the stack trace' do
       @inspector.culprit_line.should == 14
     end
 
-    it "prints a pretty message" do
+    it 'prints a pretty message' do
       @description.display(@outputter)
     end
   end
 
-  describe "when explaining an error on windows, and the backtrace lowercases the drive letter" do
+  describe 'when explaining an error on windows, and the backtrace lowercases the drive letter' do
     before do
-      Chef::Config.stub(:cookbook_path).and_return([ "C:/opscode/chef/var/cache/cookbooks" ])
-      recipe_lines = BAD_RECIPE.split("\n").map {|l| l << "\n" }
-      IO.should_receive(:readlines).with("c:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb").and_return(recipe_lines)
+      Chef::Config.stub(:cookbook_path).and_return(['C:/opscode/chef/var/cache/cookbooks'])
+      recipe_lines = BAD_RECIPE.split("\n").map { |l| l << "\n" }
+      IO.should_receive(:readlines).with('c:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb').and_return(recipe_lines)
       @trace = [
         "c:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb:14 in `from_file'",
         "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:144:in `rescue in block in load_libraries'",
@@ -181,20 +180,20 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
         "c:/opscode/chef/bin/chef-client:19:in `<main>'"
       ]
       @exception.set_backtrace(@trace)
-      @path = "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb"
+      @path = '/var/chef/cache/cookbooks/syntax-err/recipes/default.rb'
       @inspector = described_class.new(@path, @exception)
       @inspector.add_explanation(@description)
     end
 
-    it "finds the culprit recipe name from the stacktrace" do
-      @inspector.culprit_file.should == "c:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb"
+    it 'finds the culprit recipe name from the stacktrace' do
+      @inspector.culprit_file.should == 'c:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb'
     end
 
-    it "finds the line number of the error from the stack trace" do
+    it 'finds the line number of the error from the stack trace' do
       @inspector.culprit_line.should == 14
     end
 
-    it "prints a pretty message" do
+    it 'prints a pretty message' do
       @description.display(@outputter)
     end
   end

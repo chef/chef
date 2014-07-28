@@ -24,7 +24,6 @@ class Chef
   class Provider
     class Package
       class Paludis < Chef::Provider::Package
-
         include Chef::Mixin::ShellOut
 
         def load_current_resource
@@ -48,7 +47,7 @@ class Chef
                 @current_resource.version(res[2])
               else
                 @candidate_version = res[2]
-                @current_resource.version(nil)              
+                @current_resource.version(nil)
               end
             end
           end
@@ -57,7 +56,7 @@ class Chef
         end
 
         def install_package(name, version)
-          if(version)
+          if version
             pkg = "=#{name}-#{version}"
           else
             pkg = "#{@new_resource.package_name}"
@@ -69,8 +68,8 @@ class Chef
           install_package(name, version)
         end
 
-        def remove_package(name, version)
-          if(version)
+        def remove_package(_name, version)
+          if version
             pkg = "=#{@new_resource.package_name}-#{version}"
           else
             pkg = "#{@new_resource.package_name}"
@@ -82,10 +81,7 @@ class Chef
         def purge_package(name, version)
           remove_package(name, version)
         end
-
       end
     end
   end
 end
-
-

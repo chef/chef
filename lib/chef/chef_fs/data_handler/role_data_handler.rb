@@ -6,16 +6,16 @@ class Chef
     module DataHandler
       class RoleDataHandler < DataHandlerBase
         def normalize(role, entry)
-          result = normalize_hash(role, {
-            'name' => remove_dot_json(entry.name),
-            'description' => '',
-            'json_class' => 'Chef::Role',
-            'chef_type' => 'role',
-            'default_attributes' => {},
-            'override_attributes' => {},
-            'run_list' => [],
-            'env_run_lists' => {}
-          })
+          result = normalize_hash(role,
+                                  'name' => remove_dot_json(entry.name),
+                                  'description' => '',
+                                  'json_class' => 'Chef::Role',
+                                  'chef_type' => 'role',
+                                  'default_attributes' => {},
+                                  'override_attributes' => {},
+                                  'run_list' => [],
+                                  'env_run_lists' => {}
+                                  )
           result['run_list'] = normalize_run_list(result['run_list'])
           result['env_run_lists'].each_pair do |env, run_list|
             result['env_run_lists'][env] = normalize_run_list(run_list)
@@ -24,7 +24,7 @@ class Chef
         end
 
         def preserve_key(key)
-          return key == 'name'
+          key == 'name'
         end
 
         def chef_class

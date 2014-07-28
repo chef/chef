@@ -1,11 +1,11 @@
 require 'support/shared/integration/integration_helper'
 require 'chef/mixin/shell_out'
 
-describe "chef-client" do
+describe 'chef-client' do
   extend IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
+  let(:chef_dir) { File.join(File.dirname(__FILE__), '..', '..', '..', 'bin') }
 
   # Invoke `chef-client` as `ruby PATH/TO/chef-client`. This ensures the
   # following constraints are satisfied:
@@ -18,10 +18,10 @@ describe "chef-client" do
   # cf. CHEF-4914
   let(:chef_client) { "ruby #{chef_dir}/chef-client" }
 
-  when_the_repository "has a cookbook with a no-op recipe" do
+  when_the_repository 'has a cookbook with a no-op recipe' do
     file 'cookbooks/x/recipes/default.rb', ''
 
-    it "should complete with success" do
+    it 'should complete with success' do
       file 'config/client.rb', <<EOM
 local_mode true
 cookbook_path "#{path_to('cookbooks')}"
@@ -54,7 +54,7 @@ EOM
       it 'should load .chef/knife.rb when -z is specified' do
         result = shell_out("#{chef_client} -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to(''))
         # FATAL: Configuration error NoMethodError: undefined method `xxx' for nil:NilClass
-        result.stdout.should include("xxx")
+        result.stdout.should include('xxx')
       end
 
       it 'fails to load .chef/knife.rb when -z is specified and --config-file-jail does not include the .chef/knife.rb' do
@@ -63,7 +63,7 @@ EOM
       end
     end
 
-    it "should complete with success" do
+    it 'should complete with success' do
       file 'config/client.rb', <<EOM
 local_mode true
 cookbook_path "#{path_to('cookbooks')}"
@@ -104,7 +104,7 @@ syHLXYFNy0OxMtH/bBAXBGNHd9gf5uOnqh0pYcbe/uRAxumC7Rl0cL509eURiA2T
 -----END RSA PRIVATE KEY-----
 EOM
 
-      it "should complete with success even with a client key" do
+      it 'should complete with success even with a client key' do
         file 'config/client.rb', <<EOM
 local_mode true
 client_key #{path_to('mykey.pem').inspect}
@@ -115,7 +115,7 @@ EOM
         result.error!
       end
 
-      it "should run recipes specified directly on the command line" do
+      it 'should run recipes specified directly on the command line' do
         file 'config/client.rb', <<EOM
 local_mode true
 client_key #{path_to('mykey.pem').inspect}
@@ -141,7 +141,7 @@ EOM
         IO.read(path_to('tempfile2.txt')).should == '2'
       end
 
-      it "should run recipes specified as relative paths directly on the command line" do
+      it 'should run recipes specified as relative paths directly on the command line' do
         file 'config/client.rb', <<EOM
 local_mode true
 client_key #{path_to('mykey.pem').inspect}
@@ -160,7 +160,7 @@ EOM
         IO.read(path_to('tempfile.txt')).should == '1'
       end
 
-      it "should run recipes specified directly on the command line AFTER recipes in the run list" do
+      it 'should run recipes specified directly on the command line AFTER recipes in the run list' do
         file 'config/client.rb', <<EOM
 local_mode true
 client_key #{path_to('mykey.pem').inspect}
@@ -186,7 +186,7 @@ EOM
 
     end
 
-    it "should complete with success when passed the -z flag" do
+    it 'should complete with success when passed the -z flag' do
       file 'config/client.rb', <<EOM
 chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
@@ -196,7 +196,7 @@ EOM
       result.error!
     end
 
-    it "should complete with success when passed the --local-mode flag" do
+    it 'should complete with success when passed the --local-mode flag' do
       file 'config/client.rb', <<EOM
 chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
@@ -206,18 +206,18 @@ EOM
       result.error!
     end
 
-    it "should not print SSL warnings when running in local-mode" do
+    it 'should not print SSL warnings when running in local-mode' do
       file 'config/client.rb', <<EOM
 chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --local-mode", :cwd => chef_dir)
-      result.stdout.should_not include("SSL validation of HTTPS requests is disabled.")
+      result.stdout.should_not include('SSL validation of HTTPS requests is disabled.')
       result.error!
     end
 
-    it "should complete with success when passed -z and --chef-zero-port" do
+    it 'should complete with success when passed -z and --chef-zero-port' do
       file 'config/client.rb', <<EOM
 chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
@@ -227,16 +227,16 @@ EOM
       result.error!
     end
 
-    it "should complete with success when setting the run list with -r" do
+    it 'should complete with success when setting the run list with -r' do
       file 'config/client.rb', <<EOM
 chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -r 'x::default' -z", :cwd => chef_dir)
-      result.stdout.should_not include("Overridden Run List")
-      result.stdout.should include("Run List is [recipe[x::default]]")
-      #puts result.stdout
+      result.stdout.should_not include('Overridden Run List')
+      result.stdout.should include('Run List is [recipe[x::default]]')
+      # puts result.stdout
       result.error!
     end
 

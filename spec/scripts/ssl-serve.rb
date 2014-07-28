@@ -10,24 +10,21 @@ require 'openssl'
 require 'webrick'
 require 'webrick/https'
 
-
 $ssl = true
 
-CHEF_SPEC_DATA = File.expand_path("../../data", __FILE__)
-cert_text = File.read(File.expand_path("ssl/chef-rspec.cert", CHEF_SPEC_DATA))
+CHEF_SPEC_DATA = File.expand_path('../../data', __FILE__)
+cert_text = File.read(File.expand_path('ssl/chef-rspec.cert', CHEF_SPEC_DATA))
 cert = OpenSSL::X509::Certificate.new(cert_text)
-key_text = File.read(File.expand_path("ssl/chef-rspec.key", CHEF_SPEC_DATA))
+key_text = File.read(File.expand_path('ssl/chef-rspec.key', CHEF_SPEC_DATA))
 key = OpenSSL::PKey::RSA.new(key_text)
 
 server_opts = {}
 if $ssl
-server_opts.merge!( { :SSLEnable => true,
-                :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE,
-                :SSLCertificate => cert,
-                :SSLPrivateKey => key })
+  server_opts.merge!(:SSLEnable => true,
+                     :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE,
+                     :SSLCertificate => cert,
+                     :SSLPrivateKey => key)
 end
-
-
 
 # 5 == debug, 3 == warning
 LOGGER = WEBrick::Log.new(STDOUT, 5)
@@ -37,7 +34,7 @@ DEFAULT_OPTIONS = {
   :Host => 'localhost',
   :environment => :none,
   :Logger => LOGGER,
-  :DocumentRoot => File.expand_path("/tmp/chef-118-sampledata")
+  :DocumentRoot => File.expand_path('/tmp/chef-118-sampledata')
   #:AccessLog => [] # Remove this option to enable the access log when debugging.
 }
 
@@ -48,5 +45,3 @@ server = WEBrick::HTTPServer.new(webrick_opts)
 trap 'INT' do server.shutdown end
 
 server.start
-
-

@@ -17,16 +17,12 @@
 #
 
 class Chef
-
   class Provider
-
     class Log
-
       # Chef log provider, allows logging to chef's logs from recipes
       class ChefLog < Chef::Provider
-
         # ordered array of the log levels
-        @@levels = [ :debug, :info, :warn, :error, :fatal ]
+        @@levels = [:debug, :info, :warn, :error, :fatal]
 
         # No concept of a 'current' resource for logs, this is a no-op
         #
@@ -53,16 +49,8 @@ class Chef
           if resource_level >= global_level
             @new_resource.updated_by_last_action(true)
           end
-
         end
-
       end
-
     end
-
   end
-
 end
-
-
-

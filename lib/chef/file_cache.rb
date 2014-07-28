@@ -38,7 +38,7 @@ class Chef
       #
       # === Returns
       # true
-      def store(path, contents, perm=0640)
+      def store(path, contents, perm = 0640)
         validate(
           {
             :path => path,
@@ -53,7 +53,7 @@ class Chef
         file_path_array = File.split(path)
         file_name = file_path_array.pop
         cache_path = create_cache_path(File.join(file_path_array))
-        File.open(File.join(cache_path, file_name), "w", perm) do |io|
+        File.open(File.join(cache_path, file_name), 'w', perm) do |io|
           io.print(contents)
         end
         true
@@ -78,13 +78,13 @@ class Chef
 
         file_path_array = File.split(path)
         file_name = file_path_array.pop
-        if File.exists?(file) && File.writable?(file)
+        if File.exist?(file) && File.writable?(file)
           FileUtils.mv(
             file,
             File.join(create_cache_path(File.join(file_path_array), true), file_name)
           )
         else
-          raise RuntimeError, "Cannot move #{file} to #{path}!"
+          fail RuntimeError, "Cannot move #{file} to #{path}!"
         end
       end
 
@@ -101,7 +101,7 @@ class Chef
       #
       # === Raises
       # Chef::Exceptions::FileNotFound:: If it cannot find the file in the cache
-      def load(path, read=true)
+      def load(path, read = true)
         validate(
           {
             :path => path
@@ -111,7 +111,7 @@ class Chef
           }
         )
         cache_path = create_cache_path(path, false)
-        raise Chef::Exceptions::FileNotFound, "Cannot find #{cache_path} for #{path}!" unless File.exists?(cache_path)
+        fail Chef::Exceptions::FileNotFound, "Cannot find #{cache_path} for #{path}!" unless File.exist?(cache_path)
         if read
           File.read(cache_path)
         else
@@ -137,7 +137,7 @@ class Chef
           }
         )
         cache_path = create_cache_path(path, false)
-        if File.exists?(cache_path)
+        if File.exist?(cache_path)
           File.unlink(cache_path)
         end
         true
@@ -156,7 +156,7 @@ class Chef
       # === Returns
       # [String] - An array of file cache keys matching the glob
       def find(glob_pattern)
-        keys = Array.new
+        keys = []
         Dir[File.join(file_cache_path, glob_pattern)].each do |f|
           if File.file?(f)
             keys << f[/^#{Regexp.escape(Dir[file_cache_path].first) + File::Separator}(.+)/, 1]
@@ -184,7 +184,7 @@ class Chef
           }
         )
         full_path = create_cache_path(path, false)
-        if File.exists?(full_path)
+        if File.exist?(full_path)
           true
         else
           false
@@ -200,7 +200,7 @@ class Chef
       #
       # === Returns
       # String:: The fully expanded path
-      def create_cache_path(path, create_if_missing=true)
+      def create_cache_path(path, create_if_missing = true)
         cache_dir = File.expand_path(File.join(file_cache_path, path))
         if create_if_missing
           create_path(cache_dir)
@@ -214,7 +214,6 @@ class Chef
       def file_cache_path
         Chef::Config[:file_cache_path]
       end
-
     end
   end
 end

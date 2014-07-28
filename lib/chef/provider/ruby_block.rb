@@ -35,8 +35,7 @@ class Chef
         end
       end
 
-      alias :action_create :action_run
-
+      alias_method :action_create, :action_run
     end
   end
 end

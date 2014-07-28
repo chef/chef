@@ -24,7 +24,6 @@ class Chef
     # This FileVendor loads files by either fetching them from the local cache, or
     # if not available, loading them from the remote server.
     class RemoteFileVendor < FileVendor
-
       def initialize(manifest, rest)
         @manifest = manifest
         @cookbook_name = @manifest[:cookbook_name]
@@ -36,23 +35,23 @@ class Chef
       # file.
       def get_filename(filename)
         if filename =~ /([^\/]+)\/(.+)$/
-          segment = $1
+          segment = Regexp.last_match[1]
         else
-          raise "get_filename: Cannot determine segment/filename for incoming filename #{filename}"
+          fail "get_filename: Cannot determine segment/filename for incoming filename #{filename}"
         end
 
-        raise "No such segment #{segment} in cookbook #{@cookbook_name}" unless @manifest[segment]
-        found_manifest_record = @manifest[segment].find {|manifest_record| manifest_record[:path] == filename }
-        raise "No such file #{filename} in #{@cookbook_name}" unless found_manifest_record
+        fail "No such segment #{segment} in cookbook #{@cookbook_name}" unless @manifest[segment]
+        found_manifest_record = @manifest[segment].find { |manifest_record| manifest_record[:path] == filename }
+        fail "No such file #{filename} in #{@cookbook_name}" unless found_manifest_record
 
-        cache_filename = File.join("cookbooks", @cookbook_name, found_manifest_record['path'])
+        cache_filename = File.join('cookbooks', @cookbook_name, found_manifest_record['path'])
 
         # update valid_cache_entries so the upstream cache cleaner knows what
         # we've used.
         validate_cached_copy(cache_filename)
 
         current_checksum = nil
-        if Chef::FileCache.has_key?(cache_filename)
+        if Chef::FileCache.key?(cache_filename)
           current_checksum = Chef::CookbookVersion.checksum_cookbook_file(Chef::FileCache.load(cache_filename, false))
         end
 
@@ -78,7 +77,6 @@ class Chef
       def validate_cached_copy(cache_filename)
         CookbookCacheCleaner.instance.mark_file_as_valid(cache_filename)
       end
-
     end
   end
 end

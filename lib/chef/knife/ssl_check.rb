@@ -22,7 +22,6 @@ require 'chef/config'
 class Chef
   class Knife
     class SslCheck < Chef::Knife
-
       deps do
         require 'pp'
         require 'socket'
@@ -31,7 +30,7 @@ class Chef
         require 'openssl'
       end
 
-      banner "knife ssl check [URL] (options)"
+      banner 'knife ssl check [URL] (options)'
 
       def initialize(*args)
         @host = nil
@@ -48,7 +47,7 @@ class Chef
       end
 
       def given_uri
-        (name_args[0] or Chef::Config.chef_server_url)
+        (name_args[0] || Chef::Config.chef_server_url)
       end
 
       def host
@@ -72,7 +71,6 @@ class Chef
         show_usage
         exit 1
       end
-
 
       def verify_peer_socket
         @verify_peer_socket ||= begin
@@ -121,7 +119,7 @@ class Chef
         verify_peer_socket.post_connection_check(host)
         true
       rescue OpenSSL::SSL::SSLError => e
-        ui.error "The SSL cert is signed by a trusted authority but is not valid for the given hostname"
+        ui.error 'The SSL cert is signed by a trusted authority but is not valid for the given hostname'
         Chef::Log.debug(e)
         debug_invalid_host
         false
@@ -132,13 +130,13 @@ class Chef
         issuer_info = noverify_socket.peer_cert.issuer
         ui.msg("Certificate issuer data: #{issuer_info}")
 
-        ui.msg("\n#{ui.color("Configuration Info:", :bold)}\n\n")
+        ui.msg("\n#{ui.color('Configuration Info:', :bold)}\n\n")
         debug_ssl_settings
         debug_chef_ssl_config
 
         ui.err(<<-ADVICE)
 
-#{ui.color("TO FIX THIS ERROR:", :bold)}
+#{ui.color('TO FIX THIS ERROR:', :bold)}
 
 If the server you are connecting to uses a self-signed certificate, you must
 configure chef to trust that server's certificate.
@@ -158,14 +156,14 @@ ADVICE
       def debug_invalid_host
         noverify_socket.connect
         subject = noverify_socket.peer_cert.subject
-        cn_field_tuple = subject.to_a.find {|field| field[0] == "CN" }
+        cn_field_tuple = subject.to_a.find { |field| field[0] == 'CN' }
         cn = cn_field_tuple[1]
 
         ui.error("You are attempting to connect to:   '#{host}'")
         ui.error("The server's certificate belongs to '#{cn}'")
         ui.err(<<-ADVICE)
 
-#{ui.color("TO FIX THIS ERROR:", :bold)}
+#{ui.color('TO FIX THIS ERROR:', :bold)}
 
 The solution for this issue depends on your networking configuration. If you
 are able to connect to this server using the hostname #{cn}
@@ -178,14 +176,14 @@ ADVICE
       end
 
       def debug_ssl_settings
-        ui.err "OpenSSL Configuration:"
+        ui.err 'OpenSSL Configuration:'
         ui.err "* Version: #{OpenSSL::OPENSSL_VERSION}"
         ui.err "* Certificate file: #{OpenSSL::X509::DEFAULT_CERT_FILE}"
         ui.err "* Certificate directory: #{OpenSSL::X509::DEFAULT_CERT_DIR}"
       end
 
       def debug_chef_ssl_config
-        ui.err "Chef SSL Configuration:"
+        ui.err 'Chef SSL Configuration:'
         ui.err "* ssl_ca_path: #{configuration.ssl_ca_path.inspect}"
         ui.err "* ssl_ca_file: #{configuration.ssl_ca_file.inspect}"
         ui.err "* trusted_certs_dir: #{configuration.trusted_certs_dir.inspect}"
@@ -203,11 +201,6 @@ ADVICE
           exit 1
         end
       end
-
     end
   end
 end
-
-
-
-

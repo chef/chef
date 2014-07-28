@@ -98,10 +98,10 @@ EOM
 EOM
   end
 
-  when_the_chef_server "has one of each thing" do
+  when_the_chef_server 'has one of each thing' do
     client 'x', '{}'
-    cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
-    data_bag 'x', { 'y' => '{}' }
+    cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"'
+    data_bag 'x',  'y' => '{}'
     environment 'x', '{}'
     node 'x', '{}'
     role 'x', '{}'
@@ -591,7 +591,7 @@ EOM
       end
 
       it 'knife delete --both /environments/_default.json fails' do
-        knife('delete --both /environments/_default.json').should_fail "", :stderr => "ERROR: /environments/_default.json (remote) cannot be deleted (default environment cannot be modified).\n"
+        knife('delete --both /environments/_default.json').should_fail '', :stderr => "ERROR: /environments/_default.json (remote) cannot be deleted (default environment cannot be modified).\n"
         knife('list -Rf /').should_succeed server_everything
         knife('list -Rf --local /').should_succeed nothing
       end
@@ -888,8 +888,8 @@ EOM
     file 'cookbooks/x/onlyin1.0.0.rb', 'old_text'
 
     when_the_chef_server 'has a later version for the cookbook' do
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => '' }
-      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi' }
+      cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''
+      cookbook 'x', '1.0.1',  'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi'
 
       # TODO this seems wrong
       it 'knife delete --both -r /cookbooks/x deletes the latest version on the server and the local version' do
@@ -900,8 +900,8 @@ EOM
     end
 
     when_the_chef_server 'has an earlier version for the cookbook' do
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''}
-      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi' }
+      cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''
+      cookbook 'x', '0.9.9',  'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi'
 
       it 'knife delete --both /cookbooks/x deletes the latest version on the server and the local version' do
         knife('delete --both -r /cookbooks/x').should_succeed "Deleted /cookbooks/x\n"
@@ -911,7 +911,7 @@ EOM
     end
 
     when_the_chef_server 'has a later version for the cookbook, and no current version' do
-      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi' }
+      cookbook 'x', '1.0.1',  'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi'
 
       it 'knife delete --both /cookbooks/x deletes the server and client version of the cookbook' do
         knife('delete --both -r /cookbooks/x').should_succeed "Deleted /cookbooks/x\n"
@@ -921,7 +921,7 @@ EOM
     end
 
     when_the_chef_server 'has an earlier version for the cookbook, and no current version' do
-      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi' }
+      cookbook 'x', '0.9.9',  'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi'
 
       it 'knife delete --both /cookbooks/x deletes the server and client version of the cookbook' do
         knife('delete --both -r /cookbooks/x').should_succeed "Deleted /cookbooks/x\n"
@@ -933,8 +933,8 @@ EOM
 
   when_the_repository 'is empty' do
     when_the_chef_server 'has two versions of a cookbook' do
-      cookbook 'x', '2.0.11', { 'metadata.rb' => 'version "2.0.11"' }
-      cookbook 'x', '11.0.0', { 'metadata.rb' => 'version "11.0.0"' }
+      cookbook 'x', '2.0.11',  'metadata.rb' => 'version "2.0.11"'
+      cookbook 'x', '11.0.0',  'metadata.rb' => 'version "11.0.0"'
       it 'knife delete deletes the latest version' do
         knife('delete --both -r /cookbooks/x').should_succeed "Deleted /cookbooks/x\n"
         knife('raw /cookbooks/x').should_succeed /2.0.11/

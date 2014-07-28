@@ -20,16 +20,16 @@ if Chef::Platform.windows?
   require 'chef/application/windows_service'
 end
 
-describe "Chef::Application::WindowsService", :windows_only do
-  let (:instance) {Chef::Application::WindowsService.new}
-  let (:shell_out_result) {Object.new}
-  let (:tempfile) {Tempfile.new "log_file"}
+describe 'Chef::Application::WindowsService', :windows_only do
+  let (:instance) { Chef::Application::WindowsService.new }
+  let (:shell_out_result) { Object.new }
+  let (:tempfile) { Tempfile.new 'log_file' }
   before do
     instance.stub(:parse_options)
     shell_out_result.stub(:stdout)
     shell_out_result.stub(:stderr)
   end
-  it "runs chef-client in new process" do
+  it 'runs chef-client in new process' do
     instance.should_receive(:configure_chef).twice
     instance.service_init
     instance.should_receive(:run_chef_client).and_call_original
@@ -39,8 +39,8 @@ describe "Chef::Application::WindowsService", :windows_only do
     instance.stub(:state).and_return(4)
     instance.service_main
   end
-  it "passes config params to new process" do
-    Chef::Config.merge!({:log_location => tempfile.path, :config_file => "test_config_file", :log_level => :info})
+  it 'passes config params to new process' do
+    Chef::Config.merge!(:log_location => tempfile.path, :config_file => 'test_config_file', :log_level => :info)
     instance.should_receive(:configure_chef).twice
     instance.service_init
     instance.stub(:running?).and_return(true, false)

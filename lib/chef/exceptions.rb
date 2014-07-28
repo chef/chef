@@ -22,14 +22,13 @@ class Chef
   # Chef's custom exceptions are all contained within the Chef::Exceptions
   # namespace.
   class Exceptions
-
     # Backcompat with Chef::ShellOut code:
     require 'mixlib/shellout/exceptions'
 
     def self.const_missing(const_name)
       if const_name == :ShellCommandFailed
-        Chef::Log.warn("Chef::Exceptions::ShellCommandFailed is deprecated, use Mixlib::ShellOut::ShellCommandFailed")
-        called_from = caller[0..3].inject("Called from:\n") {|msg, trace_line| msg << "  #{trace_line}\n" }
+        Chef::Log.warn('Chef::Exceptions::ShellCommandFailed is deprecated, use Mixlib::ShellOut::ShellCommandFailed')
+        called_from = caller[0..3].reduce("Called from:\n") { |msg, trace_line| msg << "  #{trace_line}\n" }
         Chef::Log.warn(called_from)
         Mixlib::ShellOut::ShellCommandFailed
       else
@@ -118,7 +117,7 @@ class Chef
 
     # A different version of a cookbook was added to a
     # VersionedRecipeList than the one already there.
-    class CookbookVersionConflict < ArgumentError ; end
+    class CookbookVersionConflict < ArgumentError; end
 
     # does not follow X.Y.Z format. ArgumentError?
     class InvalidPlatformVersion < ArgumentError; end
@@ -180,7 +179,7 @@ class Chef
 
       attr_reader :expansion
 
-      def initialize(message_or_expansion=NULL)
+      def initialize(message_or_expansion = NULL)
         @expansion = nil
         case message_or_expansion
         when NULL
@@ -193,8 +192,6 @@ class Chef
           super("The expanded run list includes nonexistent roles: #{missing_roles}")
         end
       end
-
-
     end
     # Exception class for collecting multiple failures. Used when running
     # delayed notifications so that chef can process each delayed
@@ -207,23 +204,23 @@ class Chef
 
       def message
         base = "Multiple failures occurred:\n"
-        @all_failures.inject(base) do |message, (location, error)|
+        @all_failures.reduce(base) do |message, (location, error)|
           message << "* #{error.class} occurred in #{location}: #{error.message}\n"
         end
       end
 
       def client_run_failure(exception)
         set_backtrace(exception.backtrace)
-        @all_failures << [ "chef run", exception ]
+        @all_failures << ['chef run', exception]
       end
 
       def notification_failure(exception)
-        @all_failures << [ "delayed notification", exception ]
+        @all_failures << ['delayed notification', exception]
       end
 
       def raise!
         unless empty?
-          raise self.for_raise
+          fail for_raise
         end
       end
 
@@ -241,7 +238,6 @@ class Chef
     end
 
     class CookbookVersionSelection
-
       # Compound exception: In run_list expansion and resolution,
       # run_list items referred to cookbooks that don't exist and/or
       # have no versions available.
@@ -258,9 +254,9 @@ class Chef
 
         def to_json(*a)
           result = {
-            "message" => message,
-            "non_existent_cookbooks" => non_existent_cookbooks,
-            "cookbooks_with_no_versions" => cookbooks_with_no_matching_versions
+            'message' => message,
+            'non_existent_cookbooks' => non_existent_cookbooks,
+            'cookbooks_with_no_versions' => cookbooks_with_no_matching_versions
           }
           result.to_json(*a)
         end
@@ -292,15 +288,14 @@ class Chef
 
         def to_json(*a)
           result = {
-            "message" => message,
-            "unsatisfiable_run_list_item" => run_list_item,
-            "non_existent_cookbooks" => non_existent_cookbooks,
-            "most_constrained_cookbooks" => most_constrained_cookbooks
+            'message' => message,
+            'unsatisfiable_run_list_item' => run_list_item,
+            'non_existent_cookbooks' => non_existent_cookbooks,
+            'most_constrained_cookbooks' => most_constrained_cookbooks
           }
           result.to_json(*a)
         end
       end
-
     end # CookbookVersionSelection
 
     # When the server sends a redirect, RFC 2616 states a user-agent should

@@ -25,7 +25,6 @@ class Chef
   module ReservedNames::Win32
     class Security
       class Token
-
         def initialize(handle)
           @handle = handle
         end
@@ -55,7 +54,7 @@ class Chef
 
         def adjust_privileges(privileges_struct)
           if privileges_struct[:PrivilegeCount] > 0
-            Chef::ReservedNames::Win32::Security::adjust_token_privileges(self, privileges_struct)
+            Chef::ReservedNames::Win32::Security.adjust_token_privileges(self, privileges_struct)
           end
         end
       end

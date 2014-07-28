@@ -31,21 +31,20 @@ class FakeTempfile
   def path
     "#{@basename}.ZZZ"
   end
-
 end
 
 describe Chef::CookbookSiteStreamingUploader do
 
-  describe "create_build_dir" do
+  describe 'create_build_dir' do
 
     before(:each) do
       @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, 'cookbooks'))
       @loader = Chef::CookbookLoader.new(@cookbook_repo)
       @loader.load_cookbooks
-      File.stub(:unlink).and_return()
+      File.stub(:unlink).and_return
     end
 
-    it "should create the cookbook tmp dir" do
+    it 'should create the cookbook tmp dir' do
       cookbook = @loader[:openldap]
       files_count = Dir.glob(File.join(@cookbook_repo, cookbook.name.to_s, '**', '*'), File::FNM_DOTMATCH).count { |file| File.file?(file) }
 
@@ -57,32 +56,32 @@ describe Chef::CookbookSiteStreamingUploader do
 
   end # create_build_dir
 
-  describe "make_request" do
+  describe 'make_request' do
 
     before(:each) do
-      @uri = "http://cookbooks.dummy.com/api/v1/cookbooks"
+      @uri = 'http://cookbooks.dummy.com/api/v1/cookbooks'
       @secret_filename = File.join(CHEF_SPEC_DATA, 'ssl/private_key.pem')
       @rsa_key = File.read(@secret_filename)
       response = Net::HTTPResponse.new('1.0', '200', 'OK')
       Net::HTTP.any_instance.stub(:request).and_return(response)
     end
 
-    it "should send an http request" do
+    it 'should send an http request' do
       Net::HTTP.any_instance.should_receive(:request)
       Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
     end
 
-    it "should read the private key file" do
+    it 'should read the private key file' do
       File.should_receive(:read).with(@secret_filename).and_return(@rsa_key)
       Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
     end
 
-    it "should add the authentication signed header" do
+    it 'should add the authentication signed header' do
       Mixlib::Authentication::SigningObject.any_instance.should_receive(:sign).and_return({})
       Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
     end
 
-    it "should be able to send post requests" do
+    it 'should be able to send post requests' do
       post = Net::HTTP::Post.new(@uri, {})
 
       Net::HTTP::Post.should_receive(:new).once.and_return(post)
@@ -91,7 +90,7 @@ describe Chef::CookbookSiteStreamingUploader do
       Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
     end
 
-    it "should be able to send put requests" do
+    it 'should be able to send put requests' do
       put = Net::HTTP::Put.new(@uri, {})
 
       Net::HTTP::Post.should_not_receive(:new)
@@ -100,44 +99,44 @@ describe Chef::CookbookSiteStreamingUploader do
       Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, 'bill', @secret_filename)
     end
 
-    it "should be able to receive files to attach as argument" do
-      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, 'bill', @secret_filename, {
-        :myfile => File.new(File.join(CHEF_SPEC_DATA, 'config.rb')), # a dummy file
-      })
+    it 'should be able to receive files to attach as argument' do
+      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, 'bill', @secret_filename,
+                                                       :myfile => File.new(File.join(CHEF_SPEC_DATA, 'config.rb')) # a dummy file
+                                                       )
     end
 
-    it "should be able to receive strings to attach as argument" do
-      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, 'bill', @secret_filename, {
-        :mystring => 'Lorem ipsum',
-      })
+    it 'should be able to receive strings to attach as argument' do
+      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, 'bill', @secret_filename,
+                                                       :mystring => 'Lorem ipsum'
+                                                       )
     end
 
-    it "should be able to receive strings and files as argument at the same time" do
-      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, 'bill', @secret_filename, {
-        :myfile1 => File.new(File.join(CHEF_SPEC_DATA, 'config.rb')),
-        :mystring1 => 'Lorem ipsum',
-        :myfile2 => File.new(File.join(CHEF_SPEC_DATA, 'config.rb')),
-        :mystring2 => 'Dummy text',
-      })
+    it 'should be able to receive strings and files as argument at the same time' do
+      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, 'bill', @secret_filename,
+                                                       :myfile1 => File.new(File.join(CHEF_SPEC_DATA, 'config.rb')),
+                                                       :mystring1 => 'Lorem ipsum',
+                                                       :myfile2 => File.new(File.join(CHEF_SPEC_DATA, 'config.rb')),
+                                                       :mystring2 => 'Dummy text'
+                                                       )
     end
 
   end # make_request
 
-  describe "StreamPart" do
+  describe 'StreamPart' do
     before(:each) do
       @file = File.new(File.join(CHEF_SPEC_DATA, 'config.rb'))
       @stream_part = Chef::CookbookSiteStreamingUploader::StreamPart.new(@file, File.size(@file))
     end
 
-    it "should create a StreamPart" do
+    it 'should create a StreamPart' do
       @stream_part.should be_instance_of(Chef::CookbookSiteStreamingUploader::StreamPart)
     end
 
-    it "should expose its size" do
+    it 'should expose its size' do
       @stream_part.size.should eql(File.size(@file))
     end
 
-    it "should read with offset and how_much" do
+    it 'should read with offset and how_much' do
       content = @file.read(4)
       @file.rewind
       @stream_part.read(0, 4).should eql(content)
@@ -145,50 +144,50 @@ describe Chef::CookbookSiteStreamingUploader do
 
   end # StreamPart
 
-  describe "StringPart" do
+  describe 'StringPart' do
     before(:each) do
       @str = 'What a boring string'
       @string_part = Chef::CookbookSiteStreamingUploader::StringPart.new(@str)
     end
 
-    it "should create a StringPart" do
+    it 'should create a StringPart' do
       @string_part.should be_instance_of(Chef::CookbookSiteStreamingUploader::StringPart)
     end
 
-    it "should expose its size" do
+    it 'should expose its size' do
       @string_part.size.should eql(@str.size)
     end
 
-    it "should read with offset and how_much" do
+    it 'should read with offset and how_much' do
       @string_part.read(2, 4).should eql(@str[2, 4])
     end
 
   end # StringPart
 
-  describe "MultipartStream" do
+  describe 'MultipartStream' do
     before(:each) do
-      @string1 = "stream1"
-      @string2 = "stream2"
+      @string1 = 'stream1'
+      @string2 = 'stream2'
       @stream1 = Chef::CookbookSiteStreamingUploader::StringPart.new(@string1)
       @stream2 = Chef::CookbookSiteStreamingUploader::StringPart.new(@string2)
-      @parts = [ @stream1, @stream2 ]
+      @parts = [@stream1, @stream2]
 
       @multipart_stream = Chef::CookbookSiteStreamingUploader::MultipartStream.new(@parts)
     end
 
-    it "should create a MultipartStream" do
+    it 'should create a MultipartStream' do
       @multipart_stream.should be_instance_of(Chef::CookbookSiteStreamingUploader::MultipartStream)
     end
 
-    it "should expose its size" do
+    it 'should expose its size' do
       @multipart_stream.size.should eql(@stream1.size + @stream2.size)
     end
 
-    it "should read with how_much" do
+    it 'should read with how_much' do
       @multipart_stream.read(10).should eql("#{@string1}#{@string2}"[0, 10])
     end
 
-    it "should read receiving destination buffer as second argument (CHEF-4456: Ruby 2 compat)" do
+    it 'should read receiving destination buffer as second argument (CHEF-4456: Ruby 2 compat)' do
       dst_buf = ''
       @multipart_stream.read(10, dst_buf)
       dst_buf.should eql("#{@string1}#{@string2}"[0, 10])
@@ -197,4 +196,3 @@ describe Chef::CookbookSiteStreamingUploader do
   end # MultipartStream
 
 end
-

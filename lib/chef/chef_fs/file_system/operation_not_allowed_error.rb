@@ -33,13 +33,13 @@ class Chef
         def reason
           case operation
           when :delete
-            "cannot be deleted"
+            'cannot be deleted'
           when :write
-            "cannot be updated"
+            'cannot be updated'
           when :create_child
-            "cannot have a child created under it"
+            'cannot have a child created under it'
           when :read
-            "cannot be read"
+            'cannot be read'
           end
         end
       end

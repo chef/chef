@@ -29,11 +29,11 @@ describe Chef::Resource::Git do
   # already created. Here we intentionally don't create the deploy
   # directory beforehand.
   let(:base_dir_path) { Dir.mktmpdir }
-  let(:deploy_directory) { File.join(base_dir_path, make_tmpname("git_base")) }
+  let(:deploy_directory) { File.join(base_dir_path, make_tmpname('git_base')) }
 
   let(:node) do
     Chef::Node.new.tap do |n|
-      n.name "rspec-test"
+      n.name 'rspec-test'
       n.consume_external_attrs(@ohai.data, {})
     end
   end
@@ -53,16 +53,16 @@ describe Chef::Resource::Git do
   # of the bundle to use as a remote for the tests. This at least
   # gives the expected responses for ls-remote using git version
   # 1.7.12.4
-  let(:git_bundle_repo) { File.expand_path("git_bundles/example-repo.gitbundle", CHEF_SPEC_DATA) }
+  let(:git_bundle_repo) { File.expand_path('git_bundles/example-repo.gitbundle', CHEF_SPEC_DATA) }
   let(:origin_repo_dir) { Dir.mktmpdir }
   let(:origin_repo) { "#{origin_repo_dir}/example" }
 
   # This is the fourth version
-  let(:v1_commit) { "bc5ec79931ae74089aeadca6edc173527613e6d9" }
-  let(:v1_tag) { "9b73fb5e316bfaff7b822b0ccb3e1e08f9885085" }
-  let(:rev_foo) { "ed181b3419b6f489bedab282348162a110d6d3a1" }
-  let(:rev_testing) { "972d153654503bccec29f630c5dd369854a561e8" }
-  let(:rev_head) { "d294fbfd05aa7709ad9a9b8ef6343b17d355bf5f"}
+  let(:v1_commit) { 'bc5ec79931ae74089aeadca6edc173527613e6d9' }
+  let(:v1_tag) { '9b73fb5e316bfaff7b822b0ccb3e1e08f9885085' }
+  let(:rev_foo) { 'ed181b3419b6f489bedab282348162a110d6d3a1' }
+  let(:rev_testing) { '972d153654503bccec29f630c5dd369854a561e8' }
+  let(:rev_head) { 'd294fbfd05aa7709ad9a9b8ef6343b17d355bf5f' }
 
   let(:git_user_config) do
     <<-E
@@ -76,7 +76,7 @@ E
     Chef::Log.level = :warn # silence git command live streams
     @old_file_cache_path = Chef::Config[:file_cache_path]
     shell_out!("git clone \"#{git_bundle_repo}\" example", :cwd => origin_repo_dir)
-    File.open("#{origin_repo}/.git/config", "a+") {|f| f.print(git_user_config) }
+    File.open("#{origin_repo}/.git/config", 'a+') { |f| f.print(git_user_config) }
     Chef::Config[:file_cache_path] = file_cache_path
   end
 
@@ -92,10 +92,10 @@ E
 
   before(:all) do
     @ohai = Ohai::System.new
-    @ohai.all_plugins("os")
+    @ohai.all_plugins('os')
   end
 
-  context "working with pathes with special characters" do
+  context 'working with pathes with special characters' do
     let(:path_with_spaces) { "#{origin_repo_dir}/path with spaces" }
 
     before(:each) do
@@ -103,18 +103,18 @@ E
       FileUtils.cp(git_bundle_repo, path_with_spaces)
     end
 
-    it "clones a repository with a space in the path" do
+    it 'clones a repository with a space in the path' do
       Chef::Resource::Git.new(deploy_directory, run_context).tap do |r|
         r.repository "#{path_with_spaces}/example-repo.gitbundle"
       end.run_action(:sync)
     end
   end
 
-  context "when deploying from an annotated tag" do
+  context 'when deploying from an annotated tag' do
     let(:basic_git_resource) do
       Chef::Resource::Git.new(deploy_directory, run_context).tap do |r|
         r.repository origin_repo
-        r.revision "v1.0.0"
+        r.revision 'v1.0.0'
       end
     end
 
@@ -123,11 +123,11 @@ E
     let(:copy_git_resource) do
       Chef::Resource::Git.new(deploy_directory, run_context).tap do |r|
         r.repository origin_repo
-        r.revision "v1.0.0"
+        r.revision 'v1.0.0'
       end
     end
 
-    it "checks out the revision pointed to by the tag commit, not the tag commit itself" do
+    it 'checks out the revision pointed to by the tag commit, not the tag commit itself' do
       basic_git_resource.run_action(:sync)
       head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
       head_rev.should == v1_commit
@@ -148,7 +148,7 @@ E
     end
   end
 
-  context "when deploying from a SHA revision" do
+  context 'when deploying from a SHA revision' do
     let(:basic_git_resource) do
       Chef::Resource::Git.new(deploy_directory, run_context).tap do |r|
         r.repository git_bundle_repo
@@ -163,7 +163,7 @@ E
       end
     end
 
-    it "checks out the expected revision ed18" do
+    it 'checks out the expected revision ed18' do
       basic_git_resource.revision rev_foo
       basic_git_resource.run_action(:sync)
       head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
@@ -181,7 +181,7 @@ E
       copy_git_resource.should_not be_updated
     end
 
-    it "checks out the expected revision 972d" do
+    it 'checks out the expected revision 972d' do
       basic_git_resource.revision rev_testing
       basic_git_resource.run_action(:sync)
       head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
@@ -197,14 +197,14 @@ E
       end
     end
 
-    it "checks out the expected revision" do
+    it 'checks out the expected revision' do
       basic_git_resource.run_action(:sync)
       head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
       head_rev.should == rev_head
     end
   end
 
-  context "when deploying from the default revision" do
+  context 'when deploying from the default revision' do
     let(:basic_git_resource) do
       Chef::Resource::Git.new(deploy_directory, run_context).tap do |r|
         r.repository origin_repo
@@ -212,7 +212,7 @@ E
       end
     end
 
-    it "checks out HEAD as the default revision" do
+    it 'checks out HEAD as the default revision' do
       basic_git_resource.run_action(:sync)
       head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
       head_rev.should == rev_head
@@ -239,7 +239,7 @@ E
       end
     end
 
-    it "checks out the (master) HEAD revision and ignores the tag" do
+    it 'checks out the (master) HEAD revision and ignores the tag' do
       basic_git_resource.run_action(:sync)
       head_rev = shell_out!('git rev-parse HEAD',
                             :cwd => deploy_directory,
@@ -247,7 +247,7 @@ E
       head_rev.should == rev_head
     end
 
-    it "checks out the (master) HEAD revision when no revision is specified (ignores tag)" do
+    it 'checks out the (master) HEAD revision when no revision is specified (ignores tag)' do
       git_resource_default_rev.run_action(:sync)
       head_rev = shell_out!('git rev-parse HEAD',
                             :cwd => deploy_directory,

@@ -20,7 +20,6 @@ module RSpec
   module Prof
     module GC
       class Profiler
-
         # GC 1 invokes.
         # Index    Invoke Time(sec)       Use Size(byte)     Total Size(byte)         Total Object                    GC time(ms)
         #     1               0.012               159240               212940                10647         0.00000000000001530000
@@ -35,20 +34,16 @@ module RSpec
         end
 
         def working_set_size
-          begin
-            ::GC.start
-            ::GC::Profiler.result.scan(LINE_PATTERN)[-1][2].to_i if ::GC::Profiler.enabled?
-          ensure
-            ::GC::Profiler.clear
-          end
+          ::GC.start
+          ::GC::Profiler.result.scan(LINE_PATTERN)[-1][2].to_i if ::GC::Profiler.enabled?
+        ensure
+          ::GC::Profiler.clear
         end
 
         def handle_count
           0
         end
-
       end
     end
   end
 end
-

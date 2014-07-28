@@ -33,7 +33,5 @@ class Chef
         Mixlib::Log::Formatter.show_time = *args
       end
     end
-
   end
 end
-

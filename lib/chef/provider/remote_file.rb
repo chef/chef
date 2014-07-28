@@ -24,7 +24,6 @@ require 'chef/deprecation/warnings'
 class Chef
   class Provider
     class RemoteFile < Chef::Provider::File
-
       extend Chef::Deprecation::Warnings
       include Chef::Deprecation::Provider::RemoteFile
       add_deprecation_warnings_for(Chef::Deprecation::Provider::RemoteFile.instance_methods)
@@ -46,8 +45,6 @@ class Chef
         return true if !@new_resource.source.nil? && @action != :create_if_missing
         false
       end
-
     end
   end
 end
-

@@ -24,22 +24,21 @@ class Chef
   class JSONCompat
     JSON_MAX_NESTING = 1000
 
-    JSON_CLASS = "json_class".freeze
+    JSON_CLASS = 'json_class'.freeze
 
-    CHEF_APICLIENT          = "Chef::ApiClient".freeze
-    CHEF_CHECKSUM           = "Chef::Checksum".freeze
-    CHEF_COOKBOOKVERSION    = "Chef::CookbookVersion".freeze
-    CHEF_DATABAG            = "Chef::DataBag".freeze
-    CHEF_DATABAGITEM        = "Chef::DataBagItem".freeze
-    CHEF_ENVIRONMENT        = "Chef::Environment".freeze
-    CHEF_NODE               = "Chef::Node".freeze
-    CHEF_ROLE               = "Chef::Role".freeze
-    CHEF_SANDBOX            = "Chef::Sandbox".freeze
-    CHEF_RESOURCE           = "Chef::Resource".freeze
-    CHEF_RESOURCECOLLECTION = "Chef::ResourceCollection".freeze
+    CHEF_APICLIENT          = 'Chef::ApiClient'.freeze
+    CHEF_CHECKSUM           = 'Chef::Checksum'.freeze
+    CHEF_COOKBOOKVERSION    = 'Chef::CookbookVersion'.freeze
+    CHEF_DATABAG            = 'Chef::DataBag'.freeze
+    CHEF_DATABAGITEM        = 'Chef::DataBagItem'.freeze
+    CHEF_ENVIRONMENT        = 'Chef::Environment'.freeze
+    CHEF_NODE               = 'Chef::Node'.freeze
+    CHEF_ROLE               = 'Chef::Role'.freeze
+    CHEF_SANDBOX            = 'Chef::Sandbox'.freeze
+    CHEF_RESOURCE           = 'Chef::Resource'.freeze
+    CHEF_RESOURCECOLLECTION = 'Chef::ResourceCollection'.freeze
 
     class <<self
-
       # Just call the JSON gem's parse method with a modified :max_nesting field
       def from_json(source, opts = {})
         obj = ::FFI_Yajl::Parser.parse(source)
@@ -47,8 +46,8 @@ class Chef
         # JSON gem requires top level object to be a Hash or Array (otherwise
         # you get the "must contain two octets" error). Yajl doesn't impose the
         # same limitation. For compatibility, we re-impose this condition.
-        unless obj.kind_of?(Hash) or obj.kind_of?(Array)
-          raise JSON::ParserError, "Top level JSON object must be a Hash or Array. (actual: #{obj.class})"
+        unless obj.is_a?(Hash) or obj.is_a?(Array)
+          fail JSON::ParserError, "Top level JSON object must be a Hash or Array. (actual: #{obj.class})"
         end
 
         # The old default in the json gem (which we are mimicing because we
@@ -68,13 +67,13 @@ class Chef
         case json_obj
         when Hash
           mapped_hash = map_hash_to_rb_obj(json_obj)
-          if json_obj.has_key?(JSON_CLASS) && (class_to_inflate = class_for_json_class(json_obj[JSON_CLASS]))
+          if json_obj.key?(JSON_CLASS) && (class_to_inflate = class_for_json_class(json_obj[JSON_CLASS]))
             class_to_inflate.json_create(mapped_hash)
           else
             mapped_hash
           end
         when Array
-          json_obj.map {|e| map_to_rb_obj(e) }
+          json_obj.map { |e| map_to_rb_obj(e) }
         else
           json_obj
         end
@@ -94,7 +93,6 @@ class Chef
       def to_json_pretty(obj, opts = nil)
         ::JSON.pretty_generate(obj, opts)
       end
-
 
       # Map +json_class+ to a Class object. We use a +case+ instead of a Hash
       # assigned to a constant because otherwise this file could not be loaded
@@ -130,10 +128,9 @@ class Chef
         when /^Chef::Resource/
           Chef::Resource.find_subclass_by_name(json_class)
         else
-          raise JSON::ParserError, "Unsupported `json_class` type '#{json_class}'"
+          fail JSON::ParserError, "Unsupported `json_class` type '#{json_class}'"
         end
       end
-
     end
   end
 end

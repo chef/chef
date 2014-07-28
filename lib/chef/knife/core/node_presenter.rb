@@ -22,7 +22,6 @@ require 'chef/knife/core/generic_presenter'
 class Chef
   class Knife
     module Core
-
       # This module may be included into a knife subcommand class to automatically
       # add configuration options used by the NodePresenter
       module NodeFormattingOptions
@@ -32,27 +31,26 @@ class Chef
         def self.included(includer)
           includer.class_eval do
             option :medium_output,
-              :short   => '-m',
-              :long    => '--medium',
-              :boolean => true,
-              :default => false,
-              :description => 'Include normal attributes in the output'
+                   :short   => '-m',
+                   :long    => '--medium',
+                   :boolean => true,
+                   :default => false,
+                   :description => 'Include normal attributes in the output'
 
             option :long_output,
-              :short   => '-l',
-              :long    => '--long',
-              :boolean => true,
-              :default => false,
-              :description => 'Include all attributes in the output'
+                   :short   => '-l',
+                   :long    => '--long',
+                   :boolean => true,
+                   :default => false,
+                   :description => 'Include all attributes in the output'
           end
         end
       end
 
-      #==Chef::Knife::Core::NodePresenter
+      # ==Chef::Knife::Core::NodePresenter
       # A customized presenter for Chef::Node objects. Supports variable-length
       # output formats for displaying node data
       class NodePresenter < GenericPresenter
-
         def format(data)
           if parse_format_option == :json
             summarize_json(data)
@@ -62,19 +60,19 @@ class Chef
         end
 
         def summarize_json(data)
-          if data.kind_of?(Chef::Node)
+          if data.is_a?(Chef::Node)
             node = data
             result = {}
 
-            result["name"] = node.name
-            result["chef_environment"] = node.chef_environment
-            result["run_list"] = node.run_list
-            result["normal"] = node.normal_attrs
+            result['name'] = node.name
+            result['chef_environment'] = node.chef_environment
+            result['run_list'] = node.run_list
+            result['normal'] = node.normal_attrs
 
             if config[:long_output]
-              result["default"]   = node.default_attrs
-              result["override"]  = node.override_attrs
-              result["automatic"] = node.automatic_attrs
+              result['default']   = node.default_attrs
+              result['override']  = node.override_attrs
+              result['automatic'] = node.automatic_attrs
             end
 
             Chef::JSONCompat.to_json_pretty(result)
@@ -88,12 +86,12 @@ class Chef
         # the volume of output is adjusted accordingly. Uses colors if enabled
         # in the ui object.
         def summarize(data)
-          if data.kind_of?(Chef::Node)
+          if data.is_a?(Chef::Node)
             node = data
             # special case ec2 with their split horizon whatsis.
             ip = (node[:ec2] && node[:ec2][:public_ipv4]) || node[:ipaddress]
 
-            summarized=<<-SUMMARY
+            summarized = <<-SUMMARY
 #{ui.color('Node Name:', :bold)}   #{ui.color(node.name, :bold)}
 #{key('Environment:')} #{node.chef_environment}
 #{key('FQDN:')}        #{node[:fqdn]}
@@ -105,13 +103,13 @@ class Chef
 #{key('Tags:')}        #{Array(node[:tags]).join(', ')}
 SUMMARY
             if config[:medium_output] || config[:long_output]
-              summarized +=<<-MORE
+              summarized += <<-MORE
 #{key('Attributes:')}
 #{text_format(node.normal_attrs)}
 MORE
             end
             if config[:long_output]
-              summarized +=<<-MOST
+              summarized += <<-MOST
 #{key('Default Attributes:')}
 #{text_format(node.default_attrs)}
 #{key('Override Attributes:')}
@@ -129,9 +127,7 @@ MOST
         def key(key_text)
           ui.color(key_text, :cyan)
         end
-
       end
     end
   end
 end
-

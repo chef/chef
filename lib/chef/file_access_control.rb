@@ -20,12 +20,10 @@
 require 'chef/log'
 
 class Chef
-
   # == Chef::FileAccessControl
   # FileAccessControl objects set the owner, group and mode of +file+ to
   # the values specified by a value object, usually a Chef::Resource.
   class FileAccessControl
-
     if RUBY_PLATFORM =~ /mswin|mingw|windows/
       require 'chef/file_access_control/windows'
       include FileAccessControl::Windows
@@ -70,6 +68,5 @@ class Chef
     def log_string
       @resource || @file
     end
-
   end
 end

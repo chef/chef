@@ -27,12 +27,11 @@ class Chef
     class Deploy
       def self.strategy(atomic_update)
         if atomic_update
-          Chef::Platform.windows? ? MvWindows.new() : MvUnix.new()
+          Chef::Platform.windows? ? MvWindows.new : MvUnix.new
         else
-          Cp.new()
+          Cp.new
         end
       end
     end
   end
 end
-

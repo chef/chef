@@ -29,67 +29,66 @@ class Chef
   class Provider
     class Package
       class Zypper < Chef::Provider::Package
-
         include Chef::Mixin::ShellOut
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
 
-          is_installed=false
-          is_out_of_date=false
-          version=''
-          oud_version=''
+          is_installed = false
+          is_out_of_date = false
+          version = ''
+          oud_version = ''
           Chef::Log.debug("#{@new_resource} checking zypper")
-          status = popen4("zypper --non-interactive info #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
+          status = popen4("zypper --non-interactive info #{@new_resource.package_name}") do |_pid, _stdin, stdout, _stderr|
             stdout.each do |line|
               case line
               when /^Version: (.+)$/
-                version = $1
-                Chef::Log.debug("#{@new_resource} version #{$1}")
+                version = Regexp.last_match[1]
+                Chef::Log.debug("#{@new_resource} version #{Regexp.last_match[1]}")
               when /^Installed: Yes$/
-                is_installed=true
+                is_installed = true
                 Chef::Log.debug("#{@new_resource} is installed")
 
               when /^Installed: No$/
-                is_installed=false
+                is_installed = false
                 Chef::Log.debug("#{@new_resource} is not installed")
               when /^Status: out-of-date \(version (.+) installed\)$/
-                is_out_of_date=true
-                oud_version=$1
-                Chef::Log.debug("#{@new_resource} out of date version #{$1}")
+                is_out_of_date = true
+                oud_version = Regexp.last_match[1]
+                Chef::Log.debug("#{@new_resource} out of date version #{Regexp.last_match[1]}")
               end
             end
           end
 
-          if is_installed==false
-            @candidate_version=version
+          if is_installed == false
+            @candidate_version = version
             @current_resource.version(nil)
           end
 
-          if is_installed==true
-            if is_out_of_date==true
+          if is_installed == true
+            if is_out_of_date == true
               @current_resource.version(oud_version)
-              @candidate_version=version
+              @candidate_version = version
             else
               @current_resource.version(version)
-              @candidate_version=version
+              @candidate_version = version
             end
           end
 
           unless status.exitstatus == 0
-            raise Chef::Exceptions::Package, "zypper failed - #{status.inspect}!"
+            fail Chef::Exceptions::Package, "zypper failed - #{status.inspect}!"
           end
 
           @current_resource
         end
 
-        def zypper_version()
-          `zypper -V 2>&1`.scan(/\d+/).join(".").to_f
+        def zypper_version
+          `zypper -V 2>&1`.scan(/\d+/).join('.').to_f
         end
 
         def install_package(name, version)
-          zypper_package("install --auto-agree-with-licenses", name, version)
+          zypper_package('install --auto-agree-with-licenses', name, version)
         end
 
         def upgrade_package(name, version)
@@ -97,11 +96,11 @@ class Chef
         end
 
         def remove_package(name, version)
-          zypper_package("remove", name, version)
+          zypper_package('remove', name, version)
         end
 
         def purge_package(name, version)
-          zypper_package("remove --clean-deps", name, version)
+          zypper_package('remove --clean-deps', name, version)
         end
 
         private
@@ -110,22 +109,22 @@ class Chef
           if zypper_version < 1.0
             shell_out!("zypper#{gpg_checks} #{command} -y #{pkgname}")
           else
-            shell_out!("zypper --non-interactive#{gpg_checks} "+
+            shell_out!("zypper --non-interactive#{gpg_checks} "\
                       "#{command} #{pkgname}#{version}")
           end
         end
 
-        def gpg_checks()
+        def gpg_checks
           case Chef::Config[:zypper_check_gpg]
           when true
-            ""
+            ''
           when false
-            " --no-gpg-checks"
+            ' --no-gpg-checks'
           when nil
-            Chef::Log.warn("Chef::Config[:zypper_check_gpg] was not set. " +
-              "All packages will be installed without gpg signature checks. " +
-              "This is a security hazard.")
-            " --no-gpg-checks"
+            Chef::Log.warn('Chef::Config[:zypper_check_gpg] was not set. ' \
+              'All packages will be installed without gpg signature checks. ' \
+              'This is a security hazard.')
+            ' --no-gpg-checks'
           end
         end
       end

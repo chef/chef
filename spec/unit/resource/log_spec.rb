@@ -22,37 +22,37 @@ require 'spec_helper'
 describe Chef::Resource::Log do
 
   before(:each) do
-    @log_str = "this is my string to log"
+    @log_str = 'this is my string to log'
     @resource = Chef::Resource::Log.new(@log_str)
   end
 
-  it "should create a new Chef::Resource::Log" do
+  it 'should create a new Chef::Resource::Log' do
     @resource.should be_a_kind_of(Chef::Resource)
     @resource.should be_a_kind_of(Chef::Resource::Log)
   end
 
-  it "supports the :write actions" do
+  it 'supports the :write actions' do
     @resource.allowed_actions.should include(:write)
   end
 
-  it "should have a name of log" do
+  it 'should have a name of log' do
     @resource.resource_name.should == :log
   end
 
-  it "should allow you to set a log string" do
+  it 'should allow you to set a log string' do
     @resource.name.should == @log_str
   end
 
-  it "should set the message to the first argument to new" do
+  it 'should set the message to the first argument to new' do
     @resource.message.should == @log_str
   end
 
-  it "should accept a string for the log message" do
-    @resource.message "this is different"
-    @resource.message.should == "this is different"
+  it 'should accept a string for the log message' do
+    @resource.message 'this is different'
+    @resource.message.should == 'this is different'
   end
 
-  it "should accept a vaild level option" do
+  it 'should accept a vaild level option' do
     @resource.level :debug
     @resource.level :info
     @resource.level :warn
@@ -61,12 +61,12 @@ describe Chef::Resource::Log do
     lambda { @resource.level :unsupported }.should raise_error(ArgumentError)
   end
 
-  describe "when the identity is defined" do
+  describe 'when the identity is defined' do
     before do
       @resource = Chef::Resource::Log.new("ery day I'm loggin-in")
     end
 
-    it "returns the log string as its identity" do
+    it 'returns the log string as its identity' do
       @resource.identity.should == "ery day I'm loggin-in"
     end
   end

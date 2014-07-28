@@ -22,7 +22,6 @@ require 'chef/knife/core/node_presenter'
 class Chef
   class Knife
     class Search < Knife
-
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
@@ -34,42 +33,42 @@ class Chef
 
       include Knife::Core::NodeFormattingOptions
 
-      banner "knife search INDEX QUERY (options)"
+      banner 'knife search INDEX QUERY (options)'
 
       option :sort,
-        :short => "-o SORT",
-        :long => "--sort SORT",
-        :description => "The order to sort the results in",
-        :default => nil
+             :short => '-o SORT',
+             :long => '--sort SORT',
+             :description => 'The order to sort the results in',
+             :default => nil
 
       option :start,
-        :short => "-b ROW",
-        :long => "--start ROW",
-        :description => "The row to start returning results at",
-        :default => 0,
-        :proc => lambda { |i| i.to_i }
+             :short => '-b ROW',
+             :long => '--start ROW',
+             :description => 'The row to start returning results at',
+             :default => 0,
+             :proc => lambda { |i| i.to_i }
 
       option :rows,
-        :short => "-R INT",
-        :long => "--rows INT",
-        :description => "The number of rows to return",
-        :default => 1000,
-        :proc => lambda { |i| i.to_i }
+             :short => '-R INT',
+             :long => '--rows INT',
+             :description => 'The number of rows to return',
+             :default => 1000,
+             :proc => lambda { |i| i.to_i }
 
       option :run_list,
-        :short => "-r",
-        :long => "--run-list",
-        :description => "Show only the run list"
+             :short => '-r',
+             :long => '--run-list',
+             :description => 'Show only the run list'
 
       option :id_only,
-        :short => "-i",
-        :long => "--id-only",
-        :description => "Show only the ID of matching objects"
+             :short => '-i',
+             :long => '--id-only',
+             :description => 'Show only the ID of matching objects'
 
       option :query,
-        :short => "-q QUERY",
-        :long => "--query QUERY",
-        :description => "The search query; useful to protect queries starting with -"
+             :short => '-q QUERY',
+             :long => '--query QUERY',
+             :description => 'The search query; useful to protect queries starting with -'
 
       def run
         read_cli_args
@@ -79,10 +78,9 @@ class Chef
           ui.use_presenter Knife::Core::NodePresenter
         end
 
-
         q = Chef::Search::Query.new
         escaped_query = URI.escape(@query,
-                           Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+                                   Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
 
         result_items = []
         result_count = 0
@@ -99,13 +97,13 @@ class Chef
             result_count += 1
           end
         rescue Net::HTTPServerException => e
-          msg = Chef::JSONCompat.from_json(e.response.body)["error"].first
+          msg = Chef::JSONCompat.from_json(e.response.body)['error'].first
           ui.error("knife search failed: #{msg}")
           exit 1
         end
 
         if ui.interchange?
-          output({:results => result_count, :rows => result_items})
+          output(:results => result_count, :rows => result_items)
         else
           ui.msg "#{result_count} items found"
           ui.msg("\n")
@@ -121,7 +119,7 @@ class Chef
       def read_cli_args
         if config[:query]
           if @name_args[1]
-            ui.error "please specify query as an argument or an option via -q, not both"
+            ui.error 'please specify query as an argument or an option via -q, not both'
             ui.msg opt_parser
             exit 1
           end
@@ -130,11 +128,11 @@ class Chef
         else
           case name_args.size
           when 0
-            ui.error "no query specified"
+            ui.error 'no query specified'
             ui.msg opt_parser
             exit 1
           when 1
-            @type = "node"
+            @type = 'node'
             @query = name_args[0]
           when 2
             @type = name_args[0]
@@ -148,11 +146,6 @@ class Chef
           @query = "tags:*#{@query}* OR roles:*#{@query}* OR fqdn:*#{@query}* OR addresses:*#{@query}*"
         end
       end
-
     end
   end
 end
-
-
-
-

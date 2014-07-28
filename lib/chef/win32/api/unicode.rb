@@ -33,8 +33,8 @@ class Chef
         CP_MACCP       = 2
         CP_THREAD_ACP  = 3
         CP_SYMBOL      = 42
-        CP_UTF7        = 65000
-        CP_UTF8        = 65001
+        CP_UTF7        = 65_000
+        CP_UTF8        = 65_001
 
         MB_PRECOMPOSED       = 0x00000001
         MB_COMPOSITE         = 0x00000002
@@ -94,39 +94,33 @@ class Chef
 
         ffi_lib 'kernel32', 'advapi32'
 
-=begin
-BOOL IsTextUnicode(
-  __in     const VOID *lpv,
-  __in     int iSize,
-  __inout  LPINT lpiResult
-);
-=end
+        # BOOL IsTextUnicode(
+        #   __in     const VOID *lpv,
+        #   __in     int iSize,
+        #   __inout  LPINT lpiResult
+        # );
         safe_attach_function :IsTextUnicode, [:pointer, :int, :LPINT], :BOOL
 
-=begin
-int MultiByteToWideChar(
-  __in   UINT CodePage,
-  __in   DWORD dwFlags,
-  __in   LPCSTR lpMultiByteStr,
-  __in   int cbMultiByte,
-  __out  LPWSTR lpWideCharStr,
-  __in   int cchWideChar
-);
-=end
+        # int MultiByteToWideChar(
+        #   __in   UINT CodePage,
+        #   __in   DWORD dwFlags,
+        #   __in   LPCSTR lpMultiByteStr,
+        #   __in   int cbMultiByte,
+        #   __out  LPWSTR lpWideCharStr,
+        #   __in   int cchWideChar
+        # );
         safe_attach_function :MultiByteToWideChar, [:UINT, :DWORD, :LPCSTR, :int, :LPWSTR, :int], :int
 
-=begin
-int WideCharToMultiByte(
-  __in   UINT CodePage,
-  __in   DWORD dwFlags,
-  __in   LPCWSTR lpWideCharStr,
-  __in   int cchWideChar,
-  __out  LPSTR lpMultiByteStr,
-  __in   int cbMultiByte,
-  __in   LPCSTR lpDefaultChar,
-  __out  LPBOOL lpUsedDefaultChar
-);
-=end
+        # int WideCharToMultiByte(
+        #   __in   UINT CodePage,
+        #   __in   DWORD dwFlags,
+        #   __in   LPCWSTR lpWideCharStr,
+        #   __in   int cchWideChar,
+        #   __out  LPSTR lpMultiByteStr,
+        #   __in   int cbMultiByte,
+        #   __in   LPCSTR lpDefaultChar,
+        #   __out  LPBOOL lpUsedDefaultChar
+        # );
         safe_attach_function :WideCharToMultiByte, [:UINT, :DWORD, :LPCWSTR, :int, :LPSTR, :int, :LPCSTR, :LPBOOL], :int
 
         ###############################################
@@ -136,7 +130,7 @@ int WideCharToMultiByte(
         def utf8_to_wide(ustring)
           # ensure it is actually UTF-8
           # Ruby likes to mark binary data as ASCII-8BIT
-          ustring = (ustring + "").force_encoding('UTF-8') if ustring.respond_to?(:force_encoding) && ustring.encoding.name != "UTF-8"
+          ustring = (ustring + '').force_encoding('UTF-8') if ustring.respond_to?(:force_encoding) && ustring.encoding.name != 'UTF-8'
 
           # ensure we have the double-null termination Windows Wide likes
           ustring = ustring + "\000\000" if ustring[-1].chr != "\000"
@@ -147,7 +141,7 @@ int WideCharToMultiByte(
               ustring.encode('UTF-16LE')
             else
               require 'iconv'
-              Iconv.conv("UTF-16LE", "UTF-8", ustring)
+              Iconv.conv('UTF-16LE', 'UTF-8', ustring)
             end
           end
           ustring
@@ -164,14 +158,13 @@ int WideCharToMultiByte(
               wstring.encode('UTF-8')
             else
               require 'iconv'
-              Iconv.conv("UTF-8", "UTF-16LE", wstring)
+              Iconv.conv('UTF-8', 'UTF-16LE', wstring)
             end
           end
           # remove trailing CRLF and NULL characters
           wstring.strip!
           wstring
         end
-
       end
     end
   end

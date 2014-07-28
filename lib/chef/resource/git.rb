@@ -16,20 +16,19 @@
 # limitations under the License.
 #
 
-require "chef/resource/scm"
+require 'chef/resource/scm'
 
 class Chef
   class Resource
     class Git < Chef::Resource::Scm
-
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :git
         @provider = Chef::Provider::Git
         @additional_remotes = Hash[]
       end
 
-      def additional_remotes(arg=nil)
+      def additional_remotes(arg = nil)
         set_or_return(
           :additional_remotes,
           arg,
@@ -37,10 +36,10 @@ class Chef
         )
       end
 
-      alias :branch :revision
-      alias :reference :revision
+      alias_method :branch, :revision
+      alias_method :reference, :revision
 
-      alias :repo :repository
+      alias_method :repo, :repository
     end
   end
 end

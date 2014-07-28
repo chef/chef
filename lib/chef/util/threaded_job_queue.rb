@@ -53,7 +53,7 @@ class Chef
             end
           end
         end
-        workers.each { |worker| self << Thread.method(:exit) }
+        workers.each { |_worker| self << Thread.method(:exit) }
         workers.each { |worker| worker.join }
       end
     end

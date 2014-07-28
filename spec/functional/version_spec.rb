@@ -20,15 +20,15 @@ require 'chef/mixin/shell_out'
 require 'chef/version'
 require 'ohai/version'
 
-describe "Chef Versions" do
+describe 'Chef Versions' do
   include Chef::Mixin::ShellOut
-  let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..") }
+  let(:chef_dir) { File.join(File.dirname(__FILE__), '..', '..') }
 
-  binaries = [ "chef-client", "chef-shell", "chef-apply", "knife", "chef-solo" ]
+  binaries = ['chef-client', 'chef-shell', 'chef-apply', 'knife', 'chef-solo']
 
   binaries.each do |binary|
     it "#{binary} version should be sane" do
-      shell_out!("ruby #{File.join("bin", binary)} -v", :cwd => chef_dir).stdout.chomp.should == "Chef: #{Chef::VERSION}"
+      shell_out!("ruby #{File.join('bin', binary)} -v", :cwd => chef_dir).stdout.chomp.should == "Chef: #{Chef::VERSION}"
     end
   end
 

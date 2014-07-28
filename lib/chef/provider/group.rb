@@ -83,19 +83,19 @@ class Chef
       # <true>:: If a change is required
       # <false>:: If a change is not required
       def compare_group
-        @change_desc = [ ]
+        @change_desc = []
         if @new_resource.gid.to_s  != @current_resource.gid.to_s
           @change_desc << "change gid #{@current_resource.gid} to #{@new_resource.gid}"
         end
 
-        if(@new_resource.append)
+        if @new_resource.append
           missing_members = []
           @new_resource.members.each do |member|
             next if has_current_group_member?(member)
             missing_members << member
           end
           if missing_members.length > 0
-            @change_desc << "add missing member(s): #{missing_members.join(", ")}"
+            @change_desc << "add missing member(s): #{missing_members.join(', ')}"
           end
 
           members_to_be_removed = []
@@ -105,11 +105,11 @@ class Chef
             end
           end
           if members_to_be_removed.length > 0
-            @change_desc << "remove existing member(s): #{members_to_be_removed.join(", ")}"
+            @change_desc << "remove existing member(s): #{members_to_be_removed.join(', ')}"
           end
         else
           if @new_resource.members != @current_resource.members
-            @change_desc << "replace group members with new list of members"
+            @change_desc << 'replace group members with new list of members'
           end
         end
 
@@ -165,17 +165,16 @@ class Chef
       end
 
       def create_group
-        raise NotImplementedError, "subclasses of Chef::Provider::Group should define #create_group"
+        fail NotImplementedError, 'subclasses of Chef::Provider::Group should define #create_group'
       end
 
       def manage_group
-        raise NotImplementedError, "subclasses of Chef::Provider::Group should define #manage_group"
+        fail NotImplementedError, 'subclasses of Chef::Provider::Group should define #manage_group'
       end
 
       def remove_group
-        raise NotImplementedError, "subclasses of Chef::Provider::Group should define #remove_group"
+        fail NotImplementedError, 'subclasses of Chef::Provider::Group should define #remove_group'
       end
-
     end
   end
 end

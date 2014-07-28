@@ -40,23 +40,23 @@ class Chef
     attr_reader :run_list_items
 
     # For backwards compat
-    alias :run_list :run_list_items
+    alias_method :run_list, :run_list_items
 
     def initialize(*run_list_items)
       @run_list_items = run_list_items.map { |i| coerce_to_run_list_item(i) }
     end
 
     def role_names
-      @run_list_items.inject([]){|memo, run_list_item| memo << run_list_item.name if run_list_item.role? ; memo}
+      @run_list_items.reduce([]) { |memo, run_list_item| memo << run_list_item.name if run_list_item.role?; memo }
     end
 
-    alias :roles :role_names
+    alias_method :roles, :role_names
 
     def recipe_names
-      @run_list_items.inject([]){|memo, run_list_item| memo << run_list_item.name if run_list_item.recipe? ; memo}
+      @run_list_items.reduce([]) { |memo, run_list_item| memo << run_list_item.name if run_list_item.recipe?; memo }
     end
 
-    alias :recipes :recipe_names
+    alias_method :recipes, :recipe_names
 
     # Add an item of the form "recipe[foo::bar]" or "role[webserver]";
     # takes a String or a RunListItem
@@ -66,11 +66,11 @@ class Chef
       self
     end
 
-    alias :push :<<
-    alias :add :<<
+    alias_method :push, :<<
+    alias_method :add, :<<
 
     def ==(other)
-      if other.kind_of?(Chef::RunList)
+      if other.is_a?(Chef::RunList)
         other.run_list_items == @run_list_items
       else
         return false unless other.respond_to?(:size) && (other.size == @run_list_items.size)
@@ -82,11 +82,11 @@ class Chef
     end
 
     def to_s
-      @run_list_items.join(", ")
+      @run_list_items.join(', ')
     end
 
     def to_json(*args)
-      to_a.map { |item| item.to_s}.to_json(*args)
+      to_a.map { |item| item.to_s }.to_json(*args)
     end
 
     def empty?
@@ -116,7 +116,7 @@ class Chef
     def reset!(*args)
       @run_list_items.clear
       args.flatten.each do |item|
-        if item.kind_of?(Chef::RunList)
+        if item.is_a?(Chef::RunList)
           item.each { |r| self << r }
         else
           self << item
@@ -126,15 +126,15 @@ class Chef
     end
 
     def remove(item)
-      @run_list_items.delete_if{|i| i == item}
+      @run_list_items.delete_if { |i| i == item }
       self
     end
-    alias :delete :remove
+    alias_method :delete, :remove
 
     # Expands this run_list: recursively expand roles into their included
     # recipes.
     # Returns a RunListExpansion object.
-    def expand(environment, data_source='server', expansion_opts={})
+    def expand(environment, data_source = 'server', expansion_opts = {})
       expansion = expansion_for_data_source(environment, data_source, expansion_opts)
       expansion.expand
       expansion
@@ -146,10 +146,10 @@ class Chef
     end
 
     def coerce_to_run_list_item(item)
-      item.kind_of?(RunListItem) ? item : parse_entry(item)
+      item.is_a?(RunListItem) ? item : parse_entry(item)
     end
 
-    def expansion_for_data_source(environment, data_source, opts={})
+    def expansion_for_data_source(environment, data_source, opts = {})
       case data_source.to_s
       when 'disk'
         RunListExpansionFromDisk.new(environment, @run_list_items)
@@ -157,7 +157,5 @@ class Chef
         RunListExpansionFromAPI.new(environment, @run_list_items, opts[:rest])
       end
     end
-
-
   end
 end

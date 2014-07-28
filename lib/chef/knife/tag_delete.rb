@@ -23,12 +23,11 @@ require 'chef/knife'
 class Chef
   class Knife
     class TagDelete < Knife
-
       deps do
         require 'chef/node'
       end
 
-      banner "knife tag delete NODE TAG ..."
+      banner 'knife tag delete NODE TAG ...'
 
       def run
         name = @name_args[0]
@@ -36,12 +35,12 @@ class Chef
 
         if name.nil? || tags.nil? || tags.empty?
           show_usage
-          ui.fatal("You must specify a node name and at least one tag.")
+          ui.fatal('You must specify a node name and at least one tag.')
           exit 1
         end
 
         node = Chef::Node.load name
-        deleted_tags = Array.new
+        deleted_tags = []
         tags.each do |tag|
           unless node.tags.delete(tag).nil?
             deleted_tags << tag
@@ -49,9 +48,9 @@ class Chef
         end
         node.save
         message = if deleted_tags.empty?
-                    "Nothing has changed. The tags requested to be deleted do not exist."
+                    'Nothing has changed. The tags requested to be deleted do not exist.'
                   else
-                    "Deleted tags #{deleted_tags.join(", ")} for node #{name}."
+                    "Deleted tags #{deleted_tags.join(', ')} for node #{name}."
                   end
         ui.info(message)
       end

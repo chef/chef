@@ -21,25 +21,24 @@ require 'chef/knife'
 class Chef
   class Knife
     class ClientReregister < Knife
-
       deps do
         require 'chef/api_client'
         require 'chef/json_compat'
       end
 
-      banner "knife client reregister CLIENT (options)"
+      banner 'knife client reregister CLIENT (options)'
 
       option :file,
-        :short => "-f FILE",
-        :long  => "--file FILE",
-        :description => "Write the key to a file"
+             :short => '-f FILE',
+             :long  => '--file FILE',
+             :description => 'Write the key to a file'
 
       def run
         @client_name = @name_args[0]
 
         if @client_name.nil?
           show_usage
-          ui.fatal("You must specify a client name")
+          ui.fatal('You must specify a client name')
           exit 1
         end
 
@@ -47,7 +46,7 @@ class Chef
         Chef::Log.debug("Updated client data: #{client.inspect}")
         key = client.private_key
         if config[:file]
-          File.open(config[:file], "w") do |f|
+          File.open(config[:file], 'w') do |f|
             f.print(key)
           end
         else

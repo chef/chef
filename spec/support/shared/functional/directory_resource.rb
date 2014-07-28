@@ -16,34 +16,34 @@
 # limitations under the License.
 #
 
-shared_examples_for "a directory resource" do
+shared_examples_for 'a directory resource' do
 
-  include_context "diff disabled"
+  include_context 'diff disabled'
 
-  let(:expect_updated?) {true}
+  let(:expect_updated?) { true }
 
-  context "when the target directory does not exist" do
+  context 'when the target directory does not exist' do
     before do
       # assert pre-condition
       File.should_not exist(path)
     end
 
-    describe "when running action :create" do
-      context "and the recursive option is not set" do
+    describe 'when running action :create' do
+      context 'and the recursive option is not set' do
         before do
           resource.run_action(:create)
         end
 
-        it "creates the directory when the :create action is run" do
+        it 'creates the directory when the :create action is run' do
           File.should exist(path)
         end
 
-        it "is marked updated by last action" do
+        it 'is marked updated by last action' do
           resource.should be_updated_by_last_action
         end
       end
 
-      context "and the recursive option is set" do
+      context 'and the recursive option is set' do
         before do
           File.should_not exist(path)
 
@@ -53,12 +53,12 @@ shared_examples_for "a directory resource" do
           resource.run_action(:create)
         end
 
-        it "recursively creates required directories" do
+        it 'recursively creates required directories' do
           File.should exist(path)
           File.should exist(@recursive_path)
         end
 
-        it "is marked updated by last action" do
+        it 'is marked updated by last action' do
           resource.should be_updated_by_last_action
         end
       end
@@ -67,30 +67,30 @@ shared_examples_for "a directory resource" do
     # Set up the context for security tests
     def allowed_acl(sid, expected_perms)
       [
-       ACE.access_allowed(sid, expected_perms[:specific]),
-       ACE.access_allowed(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::INHERIT_ONLY_ACE | Chef::ReservedNames::Win32::API::Security::CONTAINER_INHERIT_ACE | Chef::ReservedNames::Win32::API::Security::OBJECT_INHERIT_ACE))
+        ACE.access_allowed(sid, expected_perms[:specific]),
+        ACE.access_allowed(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::INHERIT_ONLY_ACE | Chef::ReservedNames::Win32::API::Security::CONTAINER_INHERIT_ACE | Chef::ReservedNames::Win32::API::Security::OBJECT_INHERIT_ACE))
       ]
     end
 
     def denied_acl(sid, expected_perms)
       [
-       ACE.access_denied(sid, expected_perms[:specific]),
-       ACE.access_denied(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::INHERIT_ONLY_ACE | Chef::ReservedNames::Win32::API::Security::CONTAINER_INHERIT_ACE | Chef::ReservedNames::Win32::API::Security::OBJECT_INHERIT_ACE))
+        ACE.access_denied(sid, expected_perms[:specific]),
+        ACE.access_denied(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::INHERIT_ONLY_ACE | Chef::ReservedNames::Win32::API::Security::CONTAINER_INHERIT_ACE | Chef::ReservedNames::Win32::API::Security::OBJECT_INHERIT_ACE))
       ]
     end
 
     def parent_inheritable_acls
-      dummy_directory_path = File.join(test_file_dir, "dummy_directory")
+      dummy_directory_path = File.join(test_file_dir, 'dummy_directory')
       dummy_directory = FileUtils.mkdir_p(dummy_directory_path)
       dummy_desc = get_security_descriptor(dummy_directory_path)
       FileUtils.rm_rf(dummy_directory_path)
       dummy_desc
     end
 
-    it_behaves_like "a securable resource without existing target"
+    it_behaves_like 'a securable resource without existing target'
   end
 
-  context "when the target directory exists" do
+  context 'when the target directory exists' do
     before(:each) do
       # For resources such as remote_directory, simply creating the base
       # directory isn't enough to test that the system is in the desired state,
@@ -102,43 +102,43 @@ shared_examples_for "a directory resource" do
       resource.run_action(:create)
     end
 
-    describe "when running action :create" do
+    describe 'when running action :create' do
       before do
         resource.run_action(:create)
       end
 
-      it "does not re-create the directory" do
+      it 'does not re-create the directory' do
         File.should exist(path)
       end
 
-      it "is not marked updated by last action" do
+      it 'is not marked updated by last action' do
         resource.should_not be_updated_by_last_action
       end
     end
 
-    describe "when running action :delete" do
-      context "without the recursive option" do
+    describe 'when running action :delete' do
+      context 'without the recursive option' do
         before do
           resource.run_action(:delete)
         end
 
-        it "deletes the directory" do
+        it 'deletes the directory' do
           File.should_not exist(path)
         end
 
-        it "is marked as updated by last action" do
+        it 'is marked as updated by last action' do
           resource.should be_updated_by_last_action
         end
       end
 
-      context "with the recursive option" do
+      context 'with the recursive option' do
         before do
           FileUtils.mkdir(File.join(path, 'red-headed-stepchild'))
           resource.recursive(true)
           resource.run_action(:delete)
         end
 
-        it "recursively deletes directories" do
+        it 'recursively deletes directories' do
           File.should_not exist(path)
         end
       end
@@ -152,9 +152,9 @@ shared_context Chef::Resource::Directory do
   # deployment strategies more completely.
   let(:test_file_dir) do
     if windows?
-      File.join(ENV['systemdrive'], "test-dir")
+      File.join(ENV['systemdrive'], 'test-dir')
     else
-      File.join(CHEF_SPEC_DATA, "test-dir")
+      File.join(CHEF_SPEC_DATA, 'test-dir')
     end
   end
 
@@ -163,14 +163,14 @@ shared_context Chef::Resource::Directory do
   end
 
   before do
-    FileUtils::mkdir_p(test_file_dir)
+    FileUtils.mkdir_p(test_file_dir)
   end
 
   after do
-    FileUtils::rm_rf(test_file_dir)
+    FileUtils.rm_rf(test_file_dir)
   end
 
   after(:each) do
-    FileUtils.rm_r(path) if File.exists?(path)
+    FileUtils.rm_r(path) if File.exist?(path)
   end
 end

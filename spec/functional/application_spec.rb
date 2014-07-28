@@ -35,9 +35,9 @@ describe Chef::Application do
     ENV.update(@original_env)
   end
 
-  describe "when proxy options are set in config" do
+  describe 'when proxy options are set in config' do
     before do
-      Chef::Config[:http_proxy] = "http://proxy.example.org:8080"
+      Chef::Config[:http_proxy] = 'http://proxy.example.org:8080'
       Chef::Config[:https_proxy] = nil
       Chef::Config[:ftp_proxy] = nil
       Chef::Config[:no_proxy] = nil
@@ -45,14 +45,14 @@ describe Chef::Application do
       @app.configure_proxy_environment_variables
     end
 
-    it "saves built proxy to ENV which shell_out can use" do
+    it 'saves built proxy to ENV which shell_out can use' do
       so = if windows?
-        shell_out("echo %http_proxy%")
+             shell_out('echo %http_proxy%')
       else
-        shell_out("echo $http_proxy")
+        shell_out('echo $http_proxy')
       end
 
-      so.stdout.chomp.should == "http://proxy.example.org:8080"
+      so.stdout.chomp.should == 'http://proxy.example.org:8080'
     end
   end
 end

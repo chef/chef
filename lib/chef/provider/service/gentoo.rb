@@ -22,7 +22,6 @@ require 'chef/mixin/command'
 
 class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
   def load_current_resource
-
     @new_resource.supports[:status] = true
     @new_resource.supports[:restart] = true
     @found_script = false
@@ -31,7 +30,7 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
     @current_resource.enabled(
       Dir.glob("/etc/runlevels/**/#{@current_resource.service_name}").any? do |file|
         @found_script = true
-        exists = ::File.exists? file
+        exists = ::File.exist? file
         readable = ::File.readable? file
         Chef::Log.debug "#{@new_resource} exists: #{exists}, readable: #{readable}"
         exists and readable
@@ -44,8 +43,8 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
 
   def define_resource_requirements
     requirements.assert(:all_actions) do |a|
-      a.assertion { ::File.exists?("/sbin/rc-update") }
-      a.failure_message Chef::Exceptions::Service, "/sbin/rc-update does not exist"
+      a.assertion { ::File.exist?('/sbin/rc-update') }
+      a.failure_message Chef::Exceptions::Service, '/sbin/rc-update does not exist'
       # no whyrun recovery -t his is a core component whose presence is
       # unlikely to be affected by what we do in the course of a chef run
     end
@@ -57,11 +56,11 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
     end
   end
 
-  def enable_service()
+  def enable_service
     run_command(:command => "/sbin/rc-update add #{@new_resource.service_name} default")
   end
 
-  def disable_service()
+  def disable_service
     run_command(:command => "/sbin/rc-update del #{@new_resource.service_name} default")
   end
 end

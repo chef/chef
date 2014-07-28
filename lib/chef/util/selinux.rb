@@ -30,7 +30,6 @@ class Chef
     # without selinux utilities is not supported.
     #
     module Selinux
-
       include Chef::Mixin::ShellOut
 
       # We want to initialize below variables once during a
@@ -58,17 +57,17 @@ class Chef
       private
 
       def restorecon_path
-        @@restorecon_path = which("restorecon") if @@restorecon_path.nil?
+        @@restorecon_path = which('restorecon') if @@restorecon_path.nil?
         @@restorecon_path
       end
 
       def selinuxenabled_path
-        @@selinuxenabled_path = which("selinuxenabled") if @@selinuxenabled_path.nil?
+        @@selinuxenabled_path = which('selinuxenabled') if @@selinuxenabled_path.nil?
         @@selinuxenabled_path
       end
 
       def which(cmd)
-        paths = ENV['PATH'].split(File::PATH_SEPARATOR) + [ '/bin', '/usr/bin', '/sbin', '/usr/sbin' ]
+        paths = ENV['PATH'].split(File::PATH_SEPARATOR) + ['/bin', '/usr/bin', '/sbin', '/usr/sbin']
         paths.each do |path|
           filename = File.join(path, cmd)
           return filename if File.executable?(filename)
@@ -78,14 +77,14 @@ class Chef
 
       def check_selinux_enabled?
         if selinuxenabled_path
-          cmd = shell_out!(selinuxenabled_path, :returns => [0,1])
+          cmd = shell_out!(selinuxenabled_path, :returns => [0, 1])
           case cmd.exitstatus
           when 1
             return false
           when 0
             return true
           else
-            raise RuntimeError, "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
+            fail RuntimeError, "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
           end
         else
           # We assume selinux is not enabled if selinux utils are not
@@ -93,8 +92,6 @@ class Chef
           return false
         end
       end
-
     end
   end
 end
-

@@ -20,12 +20,11 @@
 class Chef
   class Resource
     class Ohai < Chef::Resource
-
       identity_attr :name
 
       state_attrs :plugin
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :ohai
         @name = name
@@ -34,19 +33,19 @@ class Chef
         @plugin = nil
       end
 
-      def plugin(arg=nil)
+      def plugin(arg = nil)
         set_or_return(
           :plugin,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
-      def name(arg=nil)
+      def name(arg = nil)
         set_or_return(
           :name,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
     end

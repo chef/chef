@@ -27,7 +27,7 @@ class Chef
         # The original appears in external/open4.rb in its unmodified form.
         #
         # Thanks Ara!
-        def popen4(cmd, args={}, &b)
+        def popen4(cmd, args = {}, &b)
           # Ruby 1.8 suffers from intermittent segfaults believed to be due to GC while IO.select
           # See CHEF-2916 / CHEF-1305
           GC.disable
@@ -41,11 +41,11 @@ class Chef
           args[:waitlast] ||= false
 
           args[:user] ||= nil
-          unless args[:user].kind_of?(Integer)
+          unless args[:user].is_a?(Integer)
             args[:user] = Etc.getpwnam(args[:user]).uid if args[:user]
           end
           args[:group] ||= nil
-          unless args[:group].kind_of?(Integer)
+          unless args[:group].is_a?(Integer)
             args[:group] = Etc.getgrnam(args[:group]).gid if args[:group]
           end
           args[:environment] ||= {}
@@ -53,8 +53,8 @@ class Chef
           # Default on C locale so parsing commands output can be done
           # independently of the node's default locale.
           # "LC_ALL" could be set to nil, in which case we also must ignore it.
-          unless args[:environment].has_key?("LC_ALL")
-            args[:environment]["LC_ALL"] = "C"
+          unless args[:environment].key?('LC_ALL')
+            args[:environment]['LC_ALL'] = 'C'
           end
 
           pw, pr, pe, ps = IO.pipe, IO.pipe, IO.pipe, IO.pipe
@@ -89,7 +89,7 @@ class Chef
                 Process.uid = args[:user]
               end
 
-              args[:environment].each do |key,value|
+              args[:environment].each do |key, value|
                 ENV[key] = value
               end
 
@@ -99,28 +99,28 @@ class Chef
               end
 
               begin
-                if cmd.kind_of?(Array)
+                if cmd.is_a?(Array)
                   exec(*cmd)
                 else
                   exec(cmd)
                 end
-                raise 'forty-two'
-              rescue Exception => e
+                fail 'forty-two'
+              rescue => e
                 Marshal.dump(e, ps.last)
                 ps.last.flush
               end
-              ps.last.close unless (ps.last.closed?)
+              ps.last.close unless ps.last.closed?
               exit!
             }
           ensure
             $VERBOSE = verbose
           end
 
-          [pw.first, pr.last, pe.last, ps.last].each{|fd| fd.close}
+          [pw.first, pr.last, pe.last, ps.last].each { |fd| fd.close }
 
           begin
             e = Marshal.load ps.first
-            raise(Exception === e ? e : "unknown failure!")
+            fail(Exception === e ? e : 'unknown failure!')
           rescue EOFError # If we get an EOF error, then the exec was successful
             42
           ensure
@@ -169,8 +169,8 @@ class Chef
                 while !stdout_finished || !stderr_finished
                   begin
                     channels_to_watch = []
-                    channels_to_watch << stdout if !stdout_finished
-                    channels_to_watch << stderr if !stderr_finished
+                    channels_to_watch << stdout unless stdout_finished
+                    channels_to_watch << stderr unless stderr_finished
                     ready = IO.select(channels_to_watch, nil, nil, 1.0)
                   rescue Errno::EAGAIN
                   ensure
@@ -205,7 +205,7 @@ class Chef
                 results.last
               end
             ensure
-              pi.each{|fd| fd.close unless fd.closed?}
+              pi.each { |fd| fd.close unless fd.closed? }
             end
           else
             [cid, pw.last, pr.first, pe.first]
@@ -213,7 +213,6 @@ class Chef
         ensure
           GC.enable
         end
-
       end
     end
   end

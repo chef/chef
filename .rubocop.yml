@@ -1,0 +1,8 @@
+Encoding:
+  Enabled: false
+
+HashSyntax:
+  EnforcedStyle: hash_rockets
+
+Documentation:
+  Enabled: false

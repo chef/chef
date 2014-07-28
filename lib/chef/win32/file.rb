@@ -34,7 +34,7 @@ class Chef
       # returns nil as per MRI.
       #
       def self.link(old_name, new_name)
-        raise Errno::ENOENT, "(#{old_name}, #{new_name})" unless ::File.exist?(old_name)
+        fail Errno::ENOENT, "(#{old_name}, #{new_name})" unless ::File.exist?(old_name)
         # TODO do a check for CreateHardLinkW and
         # raise NotImplemented exception on older Windows
         old_name = encode_path(old_name)
@@ -70,9 +70,9 @@ class Chef
       def self.symlink?(file_name)
         is_symlink = false
         path = encode_path(file_name)
-        if ::File.exists?(file_name)
-          if ((GetFileAttributesW(path) & FILE_ATTRIBUTE_REPARSE_POINT) > 0)
-            file_search_handle(file_name) do |handle, find_data|
+        if ::File.exist?(file_name)
+          if (GetFileAttributesW(path) & FILE_ATTRIBUTE_REPARSE_POINT) > 0
+            file_search_handle(file_name) do |_handle, find_data|
               if find_data[:dw_reserved_0] == IO_REPARSE_TAG_SYMLINK
                 is_symlink = true
               end
@@ -88,7 +88,7 @@ class Chef
       # will raise a NotImplementedError, as per MRI.
       #
       def self.readlink(link_name)
-        raise Errno::ENOENT, link_name unless ::File.exists?(link_name)
+        fail Errno::ENOENT, link_name unless ::File.exist?(link_name)
         symlink_file_handle(link_name) do |handle|
           # Go to DeviceIoControl to get the symlink information
           # http://msdn.microsoft.com/en-us/library/windows/desktop/aa364571(v=vs.85).aspx
@@ -101,7 +101,7 @@ class Chef
           # Ensure it's a symbolic link
           reparse_buffer = REPARSE_DATA_BUFFER.new(reparse_buffer)
           if reparse_buffer[:ReparseTag] != IO_REPARSE_TAG_SYMLINK
-            raise Errno::EACCES, "#{link_name} is not a symlink"
+            fail Errno::EACCES, "#{link_name} is not a symlink"
           end
 
           # Return the link destination (strip off \??\ at the beginning, which is a local filesystem thing)
@@ -120,8 +120,8 @@ class Chef
         if size == 0
           Chef::ReservedNames::Win32::Error.raise!
         end
-        result = FFI::MemoryPointer.new :char, (size+1)*2
-        if GetShortPathNameW(path, result, size+1) == 0
+        result = FFI::MemoryPointer.new :char, (size + 1) * 2
+        if GetShortPathNameW(path, result, size + 1) == 0
           Chef::ReservedNames::Win32::Error.raise!
         end
         result.read_wstring(size)
@@ -134,8 +134,8 @@ class Chef
         if size == 0
           Chef::ReservedNames::Win32::Error.raise!
         end
-        result = FFI::MemoryPointer.new :char, (size+1)*2
-        if GetLongPathNameW(path, result, size+1) == 0
+        result = FFI::MemoryPointer.new :char, (size + 1) * 2
+        if GetLongPathNameW(path, result, size + 1) == 0
           Chef::ReservedNames::Win32::Error.raise!
         end
         result.read_wstring(size)
@@ -146,20 +146,16 @@ class Chef
       end
 
       def self.verify_links_supported!
-        begin
-          CreateSymbolicLinkW(nil)
-        rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e
-          raise e
-        rescue Exception
-          # things are ok.
-        end
+        CreateSymbolicLinkW(nil)
+      rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e
+        raise e
+      rescue
       end
 
       # ::File compat
       class << self
-        alias :stat :info
+        alias_method :stat, :info
       end
-
     end
   end
 end

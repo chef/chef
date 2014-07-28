@@ -1,2 +1,2 @@
-name "circular-dep2"
-depends "circular-dep1"
+name 'circular-dep2'
+depends 'circular-dep1'

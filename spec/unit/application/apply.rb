@@ -26,50 +26,50 @@ describe Chef::Application::Apply do
     Chef::Config[:solo] = true
   end
 
-  describe "configuring the application" do
-    it "should set solo mode to true" do
+  describe 'configuring the application' do
+    it 'should set solo mode to true' do
       @app.reconfigure
       Chef::Config[:solo].should be_true
     end
   end
-  describe "read_recipe_file" do
+  describe 'read_recipe_file' do
     before do
-      @recipe_file_name = "foo.rb"
-      @recipe_path = File.expand_path("foo.rb")
-      @recipe_file = double("Tempfile (mock)", :read => @recipe_text)
+      @recipe_file_name = 'foo.rb'
+      @recipe_path = File.expand_path('foo.rb')
+      @recipe_file = double('Tempfile (mock)', :read => @recipe_text)
       @app.stub(:open).with(@recipe_path).and_return(@recipe_file)
-      File.stub(:exist?).with("foo.rb").and_return(true)
+      File.stub(:exist?).with('foo.rb').and_return(true)
       Chef::Application.stub(:fatal!).and_return(true)
     end
-    it "should read text properly" do
+    it 'should read text properly' do
       @app.read_recipe_file(@recipe_file_name)[0].should == @recipe_text
     end
-    it "should return a file_handle" do
+    it 'should return a file_handle' do
       @app.read_recipe_file(@recipe_file_name)[1].should be_instance_of(RSpec::Mocks::Mock)
     end
     describe "when recipe doesn't exist" do
       before do
         File.stub(:exist?).with(@recipe_file_name).and_return(false)
       end
-      it "should raise a fatal" do
+      it 'should raise a fatal' do
         Chef::Application.should_receive(:fatal!)
         @app.read_recipe_file(@recipe_file_name)
       end
     end
   end
-  describe "temp_recipe_file" do
+  describe 'temp_recipe_file' do
     before do
       @app.instance_variable_set(:@recipe_text, @recipe_text)
       @app.temp_recipe_file
       @recipe_fh = @app.instance_variable_get(:@recipe_fh)
     end
-    it "should open a tempfile" do
+    it 'should open a tempfile' do
       @recipe_fh.path.should match(/.*recipe-temporary-file.*/)
     end
-    it "should write recipe text to the tempfile" do
+    it 'should write recipe text to the tempfile' do
       @recipe_fh.read.should == @recipe_text
     end
-    it "should save the filename for later use" do
+    it 'should save the filename for later use' do
       @recipe_fh.path.should == @app.instance_variable_get(:@recipe_filename)
     end
   end

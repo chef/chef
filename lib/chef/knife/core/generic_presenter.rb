@@ -21,7 +21,6 @@ require 'chef/knife/core/text_formatter'
 class Chef
   class Knife
     module Core
-
       # Allows includer knife commands to  return multiple attributes
       # @brief knife node show NAME -a ATTR1 -a ATTR2
       module MultiAttributeReturnOption
@@ -30,20 +29,19 @@ class Chef
           includer.class_eval do
             @attrs_to_show = []
             option :attribute,
-              :short => "-a ATTR1 [-a ATTR2]",
-              :long => "--attribute ATTR1 [--attribute ATTR2] ",
-              :proc => lambda {|val| @attrs_to_show << val},
-              :description => "Show one or more attributes"
+                   :short => '-a ATTR1 [-a ATTR2]',
+                   :long => '--attribute ATTR1 [--attribute ATTR2] ',
+                   :proc => lambda { |val| @attrs_to_show << val },
+                   :description => 'Show one or more attributes'
           end
         end
       end
 
-      #==Chef::Knife::Core::GenericPresenter
+      # ==Chef::Knife::Core::GenericPresenter
       # The base presenter class for displaying structured data in knife commands.
       # This is not an abstract base class, and it is suitable for displaying
       # most kinds of objects that knife needs to display.
       class GenericPresenter
-
         attr_reader :ui
         attr_reader :config
 
@@ -81,7 +79,7 @@ class Chef
             Chef::JSONCompat.to_json_pretty(data)
           when :yaml
             require 'yaml'
-            YAML::dump(data)
+            YAML.dump(data)
           when :pp
             require 'stringio'
             # If you were looking for some attribute and there is only one match
@@ -105,18 +103,18 @@ class Chef
         # determined from the value of `config[:format]`
         def parse_format_option
           case config[:format]
-          when "summary", /^s/, nil
+          when 'summary', /^s/, nil
             :summary
-          when "text", /^t/
+          when 'text', /^t/
             :text
-          when "json", /^j/
+          when 'json', /^j/
             :json
-          when "yaml", /^y/
+          when 'yaml', /^y/
             :yaml
-          when "pp", /^p/
+          when 'pp', /^p/
             :pp
           else
-            raise ArgumentError, "Unknown output format #{config[:format]}"
+            fail ArgumentError, "Unknown output format #{config[:format]}"
           end
         end
 
@@ -133,7 +131,7 @@ class Chef
         end
 
         def format_list_for_display(list)
-          config[:with_uri] ? list : list.keys.sort { |a,b| a <=> b }
+          config[:with_uri] ? list : list.keys.sort { |a, b| a <=> b }
         end
 
         def format_for_display(data)
@@ -142,7 +140,7 @@ class Chef
           elsif config[:id_only]
             name_or_id_for(data)
           elsif config[:environment] && data.respond_to?(:chef_environment)
-            {"chef_environment" => data.chef_environment}
+            { 'chef_environment' => data.chef_environment }
           else
             data
           end
@@ -150,32 +148,31 @@ class Chef
 
         def format_data_subset_for_display(data)
           subset = if config[:attribute]
-            result = {}
-            Array(config[:attribute]).each do |nested_value_spec|
-              nested_value = extract_nested_value(data, nested_value_spec)
-              result[nested_value_spec] = nested_value
-            end
-            result
+                     result = {}
+                     Array(config[:attribute]).each do |nested_value_spec|
+                       nested_value = extract_nested_value(data, nested_value_spec)
+                       result[nested_value_spec] = nested_value
+                     end
+                     result
           elsif config[:run_list]
-            run_list = data.run_list.run_list
-            { "run_list" => run_list }
+                     run_list = data.run_list.run_list
+                     { 'run_list' => run_list }
           else
-            raise ArgumentError, "format_data_subset_for_display requires attribute, run_list, or id_only config option to be set"
+            fail ArgumentError, 'format_data_subset_for_display requires attribute, run_list, or id_only config option to be set'
           end
-          {name_or_id_for(data) => subset }
+          { name_or_id_for(data) => subset }
         end
 
         def name_or_id_for(data)
-          data.respond_to?(:name) ? data.name : data["id"]
+          data.respond_to?(:name) ? data.name : data['id']
         end
 
         def formatting_subset_of_data?
           config[:attribute] || config[:run_list]
         end
 
-
         def extract_nested_value(data, nested_value_spec)
-          nested_value_spec.split(".").each do |attr|
+          nested_value_spec.split('.').each do |attr|
             if data.nil?
               nil # don't get no method error on nil
             elsif data.respond_to?(attr.to_sym)
@@ -190,12 +187,12 @@ class Chef
               end
             end
           end
-          ( !data.kind_of?(Array) && data.respond_to?(:to_hash) ) ? data.to_hash : data
+          ( !data.is_a?(Array) && data.respond_to?(:to_hash)) ? data.to_hash : data
         end
 
         def format_cookbook_list_for_display(item)
           if config[:with_uri]
-            item.inject({}) do |collected, (cookbook, versions)|
+            item.reduce({}) do |collected, (cookbook, versions)|
               collected[cookbook] = Hash.new
               versions['versions'].each do |ver|
                 collected[cookbook][ver['version']] = ver['url']
@@ -203,17 +200,16 @@ class Chef
               collected
             end
           else
-            versions_by_cookbook = item.inject({}) do |collected, ( cookbook, versions )|
-              collected[cookbook] = versions["versions"].map {|v| v['version']}
+            versions_by_cookbook = item.reduce({}) do |collected, ( cookbook, versions)|
+              collected[cookbook] = versions['versions'].map { |v| v['version'] }
               collected
             end
-            key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map {|name| name.size }.max + 2
+            key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map { |name| name.size }.max + 2
             versions_by_cookbook.sort.map do |cookbook, versions|
               "#{cookbook.ljust(key_length)} #{versions.join('  ')}"
             end
           end
         end
-
       end
     end
   end

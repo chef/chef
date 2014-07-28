@@ -21,26 +21,22 @@ require 'chef/knife'
 class Chef
   class Knife
     class NodeList < Knife
-
       deps do
         require 'chef/node'
         require 'chef/json_compat'
       end
 
-      banner "knife node list (options)"
+      banner 'knife node list (options)'
 
       option :with_uri,
-        :short => "-w",
-        :long => "--with-uri",
-        :description => "Show corresponding URIs"
+             :short => '-w',
+             :long => '--with-uri',
+             :description => 'Show corresponding URIs'
 
       def run
         env = Chef::Config[:environment]
-        output(format_list_for_display( env ? Chef::Node.list_by_environment(env) : Chef::Node.list ))
+        output(format_list_for_display(env ? Chef::Node.list_by_environment(env) : Chef::Node.list))
       end
-
     end
   end
 end
-
-

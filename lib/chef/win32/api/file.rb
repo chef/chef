@@ -158,7 +158,7 @@ class Chef
         FILE_READ_ACCESS                = 0x0001
         FILE_WRITE_ACCESS               = 0x0002
 
-        def self.CTL_CODE( device_type, function, method, access )
+        def self.CTL_CODE(device_type, function, method, access)
           (device_type << 16) | (access << 14) | (function << 2) | method
         end
 
@@ -175,7 +175,7 @@ class Chef
         IO_REPARSE_TAG_SYMLINK                  = 0xA000000C
         IO_REPARSE_TAG_DFSR                     = 0x80000012
 
-        MAXIMUM_REPARSE_DATA_BUFFER_SIZE        = 16*1024
+        MAXIMUM_REPARSE_DATA_BUFFER_SIZE        = 16 * 1024
 
         ###############################################
         # Win32 API Bindings
@@ -183,143 +183,135 @@ class Chef
 
         ffi_lib 'kernel32'
 
-=begin
-typedef struct _FILETIME {
-  DWORD dwLowDateTime;
-  DWORD dwHighDateTime;
-} FILETIME, *PFILETIME;
-=end
+        # typedef struct _FILETIME {
+        #   DWORD dwLowDateTime;
+        #   DWORD dwHighDateTime;
+        # } FILETIME, *PFILETIME;
         class FILETIME < FFI::Struct
           layout :dw_low_date_time, :DWORD,
-          :dw_high_date_time, :DWORD
+                 :dw_high_date_time, :DWORD
         end
 
-=begin
-typedef struct _SECURITY_ATTRIBUTES {
-  DWORD  nLength;
-  LPVOID lpSecurityDescriptor;
-  BOOL   bInheritHandle;
-} SECURITY_ATTRIBUTES, *PSECURITY_ATTRIBUTES, *LPSECURITY_ATTRIBUTES;
-=end
+        # typedef struct _SECURITY_ATTRIBUTES {
+        #   DWORD  nLength;
+        #   LPVOID lpSecurityDescriptor;
+        #   BOOL   bInheritHandle;
+        # } SECURITY_ATTRIBUTES, *PSECURITY_ATTRIBUTES, *LPSECURITY_ATTRIBUTES;
         class SECURITY_ATTRIBUTES < FFI::Struct
           layout :n_length, :DWORD,
-          :lp_security_descriptor, :LPVOID,
-          :b_inherit_handle, :DWORD
+                 :lp_security_descriptor, :LPVOID,
+                 :b_inherit_handle, :DWORD
         end
 
-=begin
-typedef struct _WIN32_FIND_DATA {
-  DWORD    dwFileAttributes;
-  FILETIME ftCreationTime;
-  FILETIME ftLastAccessTime;
-  FILETIME ftLastWriteTime;
-  DWORD    nFileSizeHigh;
-  DWORD    nFileSizeLow;
-  DWORD    dwReserved0;
-  DWORD    dwReserved1;
-  TCHAR    cFileName[MAX_PATH];
-  TCHAR    cAlternateFileName[14];
-} WIN32_FIND_DATA, *PWIN32_FIND_DATA, *LPWIN32_FIND_DATA;
-=end
+        # typedef struct _WIN32_FIND_DATA {
+        #   DWORD    dwFileAttributes;
+        #   FILETIME ftCreationTime;
+        #   FILETIME ftLastAccessTime;
+        #   FILETIME ftLastWriteTime;
+        #   DWORD    nFileSizeHigh;
+        #   DWORD    nFileSizeLow;
+        #   DWORD    dwReserved0;
+        #   DWORD    dwReserved1;
+        #   TCHAR    cFileName[MAX_PATH];
+        #   TCHAR    cAlternateFileName[14];
+        # } WIN32_FIND_DATA, *PWIN32_FIND_DATA, *LPWIN32_FIND_DATA;
         class WIN32_FIND_DATA < FFI::Struct
           layout :dw_file_attributes, :DWORD,
-          :ft_creation_time, FILETIME,
-          :ft_last_access_time, FILETIME,
-          :ft_last_write_time, FILETIME,
-          :n_file_size_high, :DWORD,
-          :n_file_size_low, :DWORD,
-          :dw_reserved_0, :DWORD,
-          :dw_reserved_1, :DWORD,
-          :c_file_name, [:BYTE, MAX_PATH*2],
-          :c_alternate_file_name, [:BYTE, 14]
+                 :ft_creation_time, FILETIME,
+                 :ft_last_access_time, FILETIME,
+                 :ft_last_write_time, FILETIME,
+                 :n_file_size_high, :DWORD,
+                 :n_file_size_low, :DWORD,
+                 :dw_reserved_0, :DWORD,
+                 :dw_reserved_1, :DWORD,
+                 :c_file_name, [:BYTE, MAX_PATH * 2],
+                 :c_alternate_file_name, [:BYTE, 14]
         end
 
-=begin
-typedef struct _BY_HANDLE_FILE_INFORMATION {
-  DWORD    dwFileAttributes;
-  FILETIME ftCreationTime;
-  FILETIME ftLastAccessTime;
-  FILETIME ftLastWriteTime;
-  DWORD    dwVolumeSerialNumber;
-  DWORD    nFileSizeHigh;
-  DWORD    nFileSizeLow;
-  DWORD    nNumberOfLinks;
-  DWORD    nFileIndexHigh;
-  DWORD    nFileIndexLow;
-} BY_HANDLE_FILE_INFORMATION, *PBY_HANDLE_FILE_INFORMATION;
-=end
+        # typedef struct _BY_HANDLE_FILE_INFORMATION {
+        #   DWORD    dwFileAttributes;
+        #   FILETIME ftCreationTime;
+        #   FILETIME ftLastAccessTime;
+        #   FILETIME ftLastWriteTime;
+        #   DWORD    dwVolumeSerialNumber;
+        #   DWORD    nFileSizeHigh;
+        #   DWORD    nFileSizeLow;
+        #   DWORD    nNumberOfLinks;
+        #   DWORD    nFileIndexHigh;
+        #   DWORD    nFileIndexLow;
+        # } BY_HANDLE_FILE_INFORMATION, *PBY_HANDLE_FILE_INFORMATION;
         class BY_HANDLE_FILE_INFORMATION < FFI::Struct
           layout :dw_file_attributes, :DWORD,
-          :ft_creation_time, FILETIME,
-          :ft_last_access_time, FILETIME,
-          :ft_last_write_time, FILETIME,
-          :dw_volume_serial_number, :DWORD,
-          :n_file_size_high, :DWORD,
-          :n_file_size_low, :DWORD,
-          :n_number_of_links, :DWORD,
-          :n_file_index_high, :DWORD,
-          :n_file_index_low, :DWORD
+                 :ft_creation_time, FILETIME,
+                 :ft_last_access_time, FILETIME,
+                 :ft_last_write_time, FILETIME,
+                 :dw_volume_serial_number, :DWORD,
+                 :n_file_size_high, :DWORD,
+                 :n_file_size_low, :DWORD,
+                 :n_number_of_links, :DWORD,
+                 :n_file_index_high, :DWORD,
+                 :n_file_index_low, :DWORD
         end
 
-=begin
-typedef struct _REPARSE_DATA_BUFFER {
-  ULONG  ReparseTag;
-  USHORT ReparseDataLength;
-  USHORT Reserved;
-  union {
-    struct {
-      USHORT SubstituteNameOffset;
-      USHORT SubstituteNameLength;
-      USHORT PrintNameOffset;
-      USHORT PrintNameLength;
-      ULONG  Flags;
-      WCHAR  PathBuffer[1];
-    } SymbolicLinkReparseBuffer;
-    struct {
-      USHORT SubstituteNameOffset;
-      USHORT SubstituteNameLength;
-      USHORT PrintNameOffset;
-      USHORT PrintNameLength;
-      WCHAR  PathBuffer[1];
-    } MountPointReparseBuffer;
-    struct {
-      UCHAR DataBuffer[1];
-    } GenericReparseBuffer;
-  };
-} REPARSE_DATA_BUFFER, *PREPARSE_DATA_BUFFER;
-=end
+        # typedef struct _REPARSE_DATA_BUFFER {
+        #   ULONG  ReparseTag;
+        #   USHORT ReparseDataLength;
+        #   USHORT Reserved;
+        #   union {
+        #     struct {
+        #       USHORT SubstituteNameOffset;
+        #       USHORT SubstituteNameLength;
+        #       USHORT PrintNameOffset;
+        #       USHORT PrintNameLength;
+        #       ULONG  Flags;
+        #       WCHAR  PathBuffer[1];
+        #     } SymbolicLinkReparseBuffer;
+        #     struct {
+        #       USHORT SubstituteNameOffset;
+        #       USHORT SubstituteNameLength;
+        #       USHORT PrintNameOffset;
+        #       USHORT PrintNameLength;
+        #       WCHAR  PathBuffer[1];
+        #     } MountPointReparseBuffer;
+        #     struct {
+        #       UCHAR DataBuffer[1];
+        #     } GenericReparseBuffer;
+        #   };
+        # } REPARSE_DATA_BUFFER, *PREPARSE_DATA_BUFFER;
 
         class REPARSE_DATA_BUFFER_SYMBOLIC_LINK < FFI::Struct
           layout :SubstituteNameOffset, :ushort,
-            :SubstituteNameLength, :ushort,
-            :PrintNameOffset, :ushort,
-            :PrintNameLength, :ushort,
-            :Flags, :uint32,
-            :PathBuffer, :ushort
+                 :SubstituteNameLength, :ushort,
+                 :PrintNameOffset, :ushort,
+                 :PrintNameLength, :ushort,
+                 :Flags, :uint32,
+                 :PathBuffer, :ushort
 
           def substitute_name
             string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:SubstituteNameOffset]
-            string_pointer.read_wstring(self[:SubstituteNameLength]/2)
+            string_pointer.read_wstring(self[:SubstituteNameLength] / 2)
           end
+
           def print_name
             string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:PrintNameOffset]
-            string_pointer.read_wstring(self[:PrintNameLength]/2)
+            string_pointer.read_wstring(self[:PrintNameLength] / 2)
           end
         end
         class REPARSE_DATA_BUFFER_MOUNT_POINT < FFI::Struct
           layout :SubstituteNameOffset, :ushort,
-            :SubstituteNameLength, :ushort,
-            :PrintNameOffset, :ushort,
-            :PrintNameLength, :ushort,
-            :PathBuffer, :ushort
+                 :SubstituteNameLength, :ushort,
+                 :PrintNameOffset, :ushort,
+                 :PrintNameLength, :ushort,
+                 :PathBuffer, :ushort
 
           def substitute_name
             string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:SubstituteNameOffset]
-            string_pointer.read_wstring(self[:SubstituteNameLength]/2)
+            string_pointer.read_wstring(self[:SubstituteNameLength] / 2)
           end
+
           def print_name
             string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:PrintNameOffset]
-            string_pointer.read_wstring(self[:PrintNameLength]/2)
+            string_pointer.read_wstring(self[:PrintNameLength] / 2)
           end
         end
         class REPARSE_DATA_BUFFER_GENERIC < FFI::Struct
@@ -327,14 +319,14 @@ typedef struct _REPARSE_DATA_BUFFER {
         end
         class REPARSE_DATA_BUFFER_UNION < FFI::Union
           layout :SymbolicLinkReparseBuffer, REPARSE_DATA_BUFFER_SYMBOLIC_LINK,
-            :MountPointReparseBuffer, REPARSE_DATA_BUFFER_MOUNT_POINT,
-            :GenericReparseBuffer, REPARSE_DATA_BUFFER_GENERIC
+                 :MountPointReparseBuffer, REPARSE_DATA_BUFFER_MOUNT_POINT,
+                 :GenericReparseBuffer, REPARSE_DATA_BUFFER_GENERIC
         end
         class REPARSE_DATA_BUFFER < FFI::Struct
           layout :ReparseTag, :uint32,
-            :ReparseDataLength, :ushort,
-            :Reserved, :ushort,
-            :ReparseBuffer, REPARSE_DATA_BUFFER_UNION
+                 :ReparseDataLength, :ushort,
+                 :Reserved, :ushort,
+                 :ReparseBuffer, REPARSE_DATA_BUFFER_UNION
 
           def reparse_buffer
             if self[:ReparseTag] == IO_REPARSE_TAG_SYMLINK
@@ -347,107 +339,85 @@ typedef struct _REPARSE_DATA_BUFFER {
           end
         end
 
-=begin
-HANDLE WINAPI CreateFile(
-  __in      LPCTSTR lpFileName,
-  __in      DWORD dwDesiredAccess,
-  __in      DWORD dwShareMode,
-  __in_opt  LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-  __in      DWORD dwCreationDisposition,
-  __in      DWORD dwFlagsAndAttributes,
-  __in_opt  HANDLE hTemplateFile
-);
-=end
+        # HANDLE WINAPI CreateFile(
+        #   __in      LPCTSTR lpFileName,
+        #   __in      DWORD dwDesiredAccess,
+        #   __in      DWORD dwShareMode,
+        #   __in_opt  LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+        #   __in      DWORD dwCreationDisposition,
+        #   __in      DWORD dwFlagsAndAttributes,
+        #   __in_opt  HANDLE hTemplateFile
+        # );
         safe_attach_function :CreateFileW, [:LPCTSTR, :DWORD, :DWORD, :LPSECURITY_ATTRIBUTES, :DWORD, :DWORD, :pointer], :HANDLE
 
-=begin
-BOOL WINAPI FindClose(
-  __inout  HANDLE hFindFile
-);
-=end
+        # BOOL WINAPI FindClose(
+        #   __inout  HANDLE hFindFile
+        # );
         safe_attach_function :FindClose, [:HANDLE], :BOOL
 
-=begin
-DWORD WINAPI GetFileAttributes(
-  __in  LPCTSTR lpFileName
-);
-=end
+        # DWORD WINAPI GetFileAttributes(
+        #   __in  LPCTSTR lpFileName
+        # );
         safe_attach_function :GetFileAttributesW, [:LPCWSTR], :DWORD
 
-=begin
-DWORD WINAPI GetFinalPathNameByHandle(
-  __in   HANDLE hFile,
-  __out  LPTSTR lpszFilePath,
-  __in   DWORD cchFilePath,
-  __in   DWORD dwFlags
-);
-=end
+        # DWORD WINAPI GetFinalPathNameByHandle(
+        #   __in   HANDLE hFile,
+        #   __out  LPTSTR lpszFilePath,
+        #   __in   DWORD cchFilePath,
+        #   __in   DWORD dwFlags
+        # );
         safe_attach_function :GetFinalPathNameByHandleW, [:HANDLE, :LPTSTR, :DWORD, :DWORD], :DWORD
 
-=begin
-BOOL WINAPI GetFileInformationByHandle(
-  __in   HANDLE hFile,
-  __out  LPBY_HANDLE_FILE_INFORMATION lpFileInformation
-);
-=end
+        # BOOL WINAPI GetFileInformationByHandle(
+        #   __in   HANDLE hFile,
+        #   __out  LPBY_HANDLE_FILE_INFORMATION lpFileInformation
+        # );
         safe_attach_function :GetFileInformationByHandle, [:HANDLE, :LPBY_HANDLE_FILE_INFORMATION], :BOOL
 
-=begin
-HANDLE WINAPI FindFirstFile(
-  __in   LPCTSTR lpFileName,
-  __out  LPWIN32_FIND_DATA lpFindFileData
-);
-=end
+        # HANDLE WINAPI FindFirstFile(
+        #   __in   LPCTSTR lpFileName,
+        #   __out  LPWIN32_FIND_DATA lpFindFileData
+        # );
         safe_attach_function :FindFirstFileW, [:LPCTSTR, :LPWIN32_FIND_DATA], :HANDLE
 
-=begin
-BOOL WINAPI CreateHardLink(
-  __in        LPCTSTR lpFileName,
-  __in        LPCTSTR lpExistingFileName,
-  __reserved  LPSECURITY_ATTRIBUTES lpSecurityAttributes
-);
-=end
+        # BOOL WINAPI CreateHardLink(
+        #   __in        LPCTSTR lpFileName,
+        #   __in        LPCTSTR lpExistingFileName,
+        #   __reserved  LPSECURITY_ATTRIBUTES lpSecurityAttributes
+        # );
         safe_attach_function :CreateHardLinkW, [:LPCTSTR, :LPCTSTR, :LPSECURITY_ATTRIBUTES], :BOOLEAN
 
-=begin
-BOOLEAN WINAPI CreateSymbolicLink(
-  __in  LPTSTR lpSymlinkFileName,
-  __in  LPTSTR lpTargetFileName,
-  __in  DWORD dwFlags
-);
-=end
+        # BOOLEAN WINAPI CreateSymbolicLink(
+        #   __in  LPTSTR lpSymlinkFileName,
+        #   __in  LPTSTR lpTargetFileName,
+        #   __in  DWORD dwFlags
+        # );
         safe_attach_function :CreateSymbolicLinkW, [:LPTSTR, :LPTSTR, :DWORD], :BOOLEAN
 
-=begin
-DWORD WINAPI GetLongPathName(
-  __in   LPCTSTR lpszShortPath,
-  __out  LPTSTR lpszLongPath,
-  __in   DWORD cchBuffer
-);
-=end
+        # DWORD WINAPI GetLongPathName(
+        #   __in   LPCTSTR lpszShortPath,
+        #   __out  LPTSTR lpszLongPath,
+        #   __in   DWORD cchBuffer
+        # );
         safe_attach_function :GetLongPathNameW, [:LPCTSTR, :LPTSTR, :DWORD], :DWORD
 
-=begin
-DWORD WINAPI GetShortPathName(
-  __in   LPCTSTR lpszLongPath,
-  __out  LPTSTR lpszShortPath,
-  __in   DWORD cchBuffer
-);
-=end
+        # DWORD WINAPI GetShortPathName(
+        #   __in   LPCTSTR lpszLongPath,
+        #   __out  LPTSTR lpszShortPath,
+        #   __in   DWORD cchBuffer
+        # );
         safe_attach_function :GetShortPathNameW, [:LPCTSTR, :LPTSTR, :DWORD], :DWORD
 
-=begin
-BOOL WINAPI DeviceIoControl(
-  __in         HANDLE hDevice,
-  __in         DWORD dwIoControlCode,
-  __in_opt     LPVOID lpInBuffer,
-  __in         DWORD nInBufferSize,
-  __out_opt    LPVOID lpOutBuffer,
-  __in         DWORD nOutBufferSize,
-  __out_opt    LPDWORD lpBytesReturned,
-  __inout_opt  LPOVERLAPPED lpOverlapped
-);
-=end
+        # BOOL WINAPI DeviceIoControl(
+        #   __in         HANDLE hDevice,
+        #   __in         DWORD dwIoControlCode,
+        #   __in_opt     LPVOID lpInBuffer,
+        #   __in         DWORD nInBufferSize,
+        #   __out_opt    LPVOID lpOutBuffer,
+        #   __in         DWORD nOutBufferSize,
+        #   __out_opt    LPDWORD lpBytesReturned,
+        #   __inout_opt  LPOVERLAPPED lpOverlapped
+        # );
         safe_attach_function :DeviceIoControl, [:HANDLE, :DWORD, :LPVOID, :DWORD, :LPVOID, :DWORD, :LPDWORD, :pointer], :BOOL
 
         ###############################################
@@ -463,64 +433,50 @@ BOOL WINAPI DeviceIoControl(
         end
 
         def path_prepender
-          "\\\\?\\"
+          '\\\\?\\'
         end
 
         # retrieves a file search handle and passes it
         # to +&block+ along with the find_data.  also
         # ensures the handle is closed on exit of the block
         def file_search_handle(path, &block)
-          begin
-            # Workaround for CHEF-4419:
-            # Make sure paths starting with "/" has a drive letter
-            # assigned from the current working diretory.
-            # Note: With CHEF-4427 this issue will be fixed with a
-            # broader fix to map all the paths starting with "/" to
-            # SYSTEM_DRIVE on windows.
-            path = ::File.expand_path(path) if path.start_with? "/"
-            path = encode_path(path)
-            find_data = WIN32_FIND_DATA.new
-            handle = FindFirstFileW(path, find_data)
-            if handle == INVALID_HANDLE_VALUE
-              Chef::ReservedNames::Win32::Error.raise!
-            end
-            block.call(handle, find_data)
-          ensure
-            FindClose(handle) if handle && handle != INVALID_HANDLE_VALUE
+          path = ::File.expand_path(path) if path.start_with? '/'
+          path = encode_path(path)
+          find_data = WIN32_FIND_DATA.new
+          handle = FindFirstFileW(path, find_data)
+          if handle == INVALID_HANDLE_VALUE
+            Chef::ReservedNames::Win32::Error.raise!
           end
+          block.call(handle, find_data)
+        ensure
+          FindClose(handle) if handle && handle != INVALID_HANDLE_VALUE
         end
 
         # retrieves a file handle and passes it
         # to +&block+ along with the find_data.  also
         # ensures the handle is closed on exit of the block
         def file_handle(path, &block)
-          begin
-            path = encode_path(path)
-            handle = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ,
-                                  nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS, nil)
-
-            if handle == INVALID_HANDLE_VALUE
-              Chef::ReservedNames::Win32::Error.raise!
-            end
-            block.call(handle)
-          ensure
-            CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
-          end
+          path = encode_path(path)
+          handle = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ,
+                               nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS, nil)
+          if handle == INVALID_HANDLE_VALUE
+            Chef::ReservedNames::Win32::Error.raise!
+         end
+          block.call(handle)
+        ensure
+          CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
         end
 
         def symlink_file_handle(path, &block)
-          begin
-            path = encode_path(path)
-            handle = CreateFileW(path, FILE_READ_EA, FILE_SHARE_READ,
-                                  nil, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, nil)
-
-            if handle == INVALID_HANDLE_VALUE
-              Chef::ReservedNames::Win32::Error.raise!
-            end
-            block.call(handle)
-          ensure
-            CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
-          end
+          path = encode_path(path)
+          handle = CreateFileW(path, FILE_READ_EA, FILE_SHARE_READ,
+                               nil, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, nil)
+          if handle == INVALID_HANDLE_VALUE
+            Chef::ReservedNames::Win32::Error.raise!
+         end
+          block.call(handle)
+        ensure
+          CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
         end
 
         def retrieve_file_info(file_name)
@@ -534,7 +490,6 @@ BOOL WINAPI DeviceIoControl(
           end
           file_information
         end
-
       end
     end
   end

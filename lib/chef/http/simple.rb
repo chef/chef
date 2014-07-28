@@ -6,9 +6,7 @@ require 'chef/http/validate_content_length'
 
 class Chef
   class HTTP
-
     class Simple < HTTP
-
       use Decompressor
       use CookieManager
 
@@ -16,7 +14,6 @@ class Chef
       # because the order of middlewares is reversed when handling
       # responses.
       use ValidateContentLength
-
     end
   end
 end

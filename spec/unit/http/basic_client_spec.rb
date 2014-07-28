@@ -18,30 +18,30 @@
 require 'spec_helper'
 require 'chef/http/basic_client'
 
-describe "HTTP Connection" do
+describe 'HTTP Connection' do
 
-  let(:uri) { URI("https://example.com:4443") }
+  let(:uri) { URI('https://example.com:4443') }
   subject { Chef::HTTP::BasicClient.new(uri) }
 
-  describe ".new" do
-    it "creates an instance" do
+  describe '.new' do
+    it 'creates an instance' do
       subject
     end
   end
 
-  describe "#build_http_client" do
-    it "should build an http client" do
+  describe '#build_http_client' do
+    it 'should build an http client' do
       subject.build_http_client
     end
 
-    it "should set an open timeout" do
+    it 'should set an open timeout' do
       subject.build_http_client.open_timeout.should_not be_nil
     end
   end
 
-  describe "#proxy_uri" do
-    shared_examples_for "a proxy uri" do
-      let(:proxy_host) { "proxy.mycorp.com" }
+  describe '#proxy_uri' do
+    shared_examples_for 'a proxy uri' do
+      let(:proxy_host) { 'proxy.mycorp.com' }
       let(:proxy_port) { 8080 }
       let(:proxy) { "#{proxy_prefix}#{proxy_host}:#{proxy_port}" }
 
@@ -50,25 +50,25 @@ describe "HTTP Connection" do
         Chef::Config[:no_proxy] = nil
       end
 
-      it "should contain the host" do
+      it 'should contain the host' do
         proxy_uri = subject.proxy_uri
         proxy_uri.host.should == proxy_host
       end
 
-      it "should contain the port" do
+      it 'should contain the port' do
         proxy_uri = subject.proxy_uri
         proxy_uri.port.should == proxy_port
       end
     end
 
-    context "when the config setting is normalized (does not contain the scheme)" do
-      include_examples "a proxy uri" do
-        let(:proxy_prefix) { "" }
+    context 'when the config setting is normalized (does not contain the scheme)' do
+      include_examples 'a proxy uri' do
+        let(:proxy_prefix) { '' }
       end
     end
 
-    context "when the config setting is not normalized (contains the scheme)" do
-      include_examples "a proxy uri" do
+    context 'when the config setting is not normalized (contains the scheme)' do
+      include_examples 'a proxy uri' do
         let(:proxy_prefix) { "#{uri.scheme}://" }
       end
     end

@@ -25,7 +25,6 @@ class Chef
   class Provider
     class Service
       class Simple < Chef::Provider::Service
-
         include Chef::Mixin::ShellOut
 
         def load_current_resource
@@ -48,7 +47,7 @@ class Chef
           super
           requirements.assert(:all_actions) do |a|
             a.assertion { @status_load_success }
-            a.whyrun ["Service status not available. Assuming a prior action would have installed the service.", "Assuming status of not running."]
+            a.whyrun ['Service status not available. Assuming a prior action would have installed the service.', 'Assuming status of not running.']
           end
         end
 
@@ -57,26 +56,26 @@ class Chef
           shared_resource_requirements
           requirements.assert(:start) do |a|
             a.assertion { @new_resource.start_command }
-            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that start_command be set"
+            a.failure_message Chef::Exceptions::Service, "#{self} requires that start_command be set"
           end
           requirements.assert(:stop) do |a|
             a.assertion { @new_resource.stop_command }
-            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that stop_command be set"
+            a.failure_message Chef::Exceptions::Service, "#{self} requires that stop_command be set"
           end
 
           requirements.assert(:restart) do |a|
-            a.assertion { @new_resource.restart_command  || ( @new_resource.start_command && @new_resource.stop_command ) }
-            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires a restart_command or both start_command and stop_command be set in order to perform a restart"
+            a.assertion { @new_resource.restart_command  || ( @new_resource.start_command && @new_resource.stop_command) }
+            a.failure_message Chef::Exceptions::Service, "#{self} requires a restart_command or both start_command and stop_command be set in order to perform a restart"
           end
 
           requirements.assert(:reload) do |a|
             a.assertion { @new_resource.reload_command }
-            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} requires a reload_command be set in order to perform a reload"
+            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self} requires a reload_command be set in order to perform a reload"
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { @new_resource.status_command or @new_resource.supports[:status] or
-              (!ps_cmd.nil? and !ps_cmd.empty?) }
+            a.assertion { @new_resource.status_command || @new_resource.supports[:status] ||
+              (!ps_cmd.nil? && !ps_cmd.empty?) }
             a.failure_message Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this node's 'command.ps' attribute"
           end
           requirements.assert(:all_actions) do |a|
@@ -107,7 +106,7 @@ class Chef
           shell_out!(@new_resource.reload_command)
         end
 
-      protected
+        protected
         def determine_current_status!
           if @new_resource.status_command
             Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
@@ -118,9 +117,9 @@ class Chef
                 Chef::Log.debug("#{@new_resource} is running")
               end
             rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError
-            # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
-            # Temporarily catching different types of exceptions here until we get Shellout fixed.
-            # TODO: Remove the line before one we get the ShellOut fix.
+              # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
+              # Temporarily catching different types of exceptions here until we get Shellout fixed.
+              # TODO: Remove the line before one we get the ShellOut fix.
               @status_load_success = false
               @current_resource.running false
               nil

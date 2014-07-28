@@ -23,7 +23,6 @@ require 'chef/deprecation/warnings'
 class Chef
   class Provider
     class CookbookFile < Chef::Provider::File
-
       extend Chef::Deprecation::Warnings
       include Chef::Deprecation::Provider::CookbookFile
       add_deprecation_warnings_for(Chef::Deprecation::Provider::CookbookFile.instance_methods)
@@ -45,8 +44,6 @@ class Chef
         return true if !@new_resource.source.nil? && @action != :create_if_missing
         false
       end
-
     end
   end
 end
-

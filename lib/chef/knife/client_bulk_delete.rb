@@ -21,22 +21,21 @@ require 'chef/knife'
 class Chef
   class Knife
     class ClientBulkDelete < Knife
-
       deps do
         require 'chef/api_client'
         require 'chef/json_compat'
       end
 
       option :delete_validators,
-       :short => "-D",
-       :long => "--delete-validators",
-       :description => "Force deletion of clients if they're validators"
+             :short => '-D',
+             :long => '--delete-validators',
+             :description => "Force deletion of clients if they're validators"
 
-      banner "knife client bulk delete REGEX (options)"
+      banner 'knife client bulk delete REGEX (options)'
 
       def run
         if name_args.length < 1
-          ui.fatal("You must supply a regular expression to match the results against")
+          ui.fatal('You must supply a regular expression to match the results against')
           exit 42
         end
         all_clients = Chef::ApiClient.list(true)
@@ -65,13 +64,13 @@ class Chef
       def check_and_delete_validators(validators)
         unless validators.empty?
           unless config[:delete_validators]
-            ui.msg("Following clients are validators and will not be deleted.")
+            ui.msg('Following clients are validators and will not be deleted.')
             print_clients(validators)
-            ui.msg("You must specify --delete-validators to delete the validator clients")
+            ui.msg('You must specify --delete-validators to delete the validator clients')
           else
-            ui.msg("The following validators will be deleted:")
+            ui.msg('The following validators will be deleted:')
             print_clients(validators)
-            if ui.confirm_without_exit("Are you sure you want to delete these validators")
+            if ui.confirm_without_exit('Are you sure you want to delete these validators')
               destroy_clients(validators)
             end
           end
@@ -80,9 +79,9 @@ class Chef
 
       def check_and_delete_clients(clients)
         unless clients.empty?
-          ui.msg("The following clients will be deleted:")
+          ui.msg('The following clients will be deleted:')
           print_clients(clients)
-          ui.confirm("Are you sure you want to delete these clients")
+          ui.confirm('Are you sure you want to delete these clients')
           destroy_clients(clients)
         end
       end
@@ -95,9 +94,9 @@ class Chef
       end
 
       def print_clients(clients)
-        ui.msg("")
+        ui.msg('')
         ui.msg(ui.list(clients.keys.sort, :columns_down))
-        ui.msg("")
+        ui.msg('')
       end
     end
   end

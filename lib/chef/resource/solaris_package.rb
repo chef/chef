@@ -23,15 +23,11 @@ require 'chef/provider/package/solaris'
 class Chef
   class Resource
     class SolarisPackage < Chef::Resource::Package
-
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :solaris_package
         @provider = Chef::Provider::Package::Solaris
       end
-
     end
   end
 end
-
-

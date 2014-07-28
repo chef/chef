@@ -24,10 +24,10 @@ describe Chef::Provider::ErlCall do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @new_resource = Chef::Resource::ErlCall.new("test", @node)
+    @new_resource = Chef::Resource::ErlCall.new('test', @node)
     @new_resource.code("io:format(\"burritos\", []).")
-    @new_resource.node_name("chef@localhost")
-    @new_resource.name("test")
+    @new_resource.node_name('chef@localhost')
+    @new_resource.name('test')
 
     @provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
 
@@ -35,27 +35,27 @@ describe Chef::Provider::ErlCall do
     @stdin = StringIO.new
     @stdout = StringIO.new('{ok, woohoo}')
     @stderr = StringIO.new
-    @pid = 2342999
+    @pid = 2_342_999
   end
 
-  it "should return a Chef::Provider::ErlCall object" do
+  it 'should return a Chef::Provider::ErlCall object' do
     provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
     provider.should be_a_kind_of(Chef::Provider::ErlCall)
   end
 
-  it "should return true" do
+  it 'should return true' do
     @provider.load_current_resource.should eql(true)
   end
 
-  describe "when running a distributed erl call resource" do
+  describe 'when running a distributed erl call resource' do
     before do
-      @new_resource.cookie("nomnomnom")
+      @new_resource.cookie('nomnomnom')
       @new_resource.distributed(true)
-      @new_resource.name_type("sname")
+      @new_resource.name_type('sname')
     end
 
-    it "should write to stdin of the erl_call command" do
-      expected_cmd = "erl_call -e -s -sname chef@localhost -c nomnomnom"
+    it 'should write to stdin of the erl_call command' do
+      expected_cmd = 'erl_call -e -s -sname chef@localhost -c nomnomnom'
       @provider.should_receive(:popen4).with(expected_cmd, :waitlast => true).and_return([@pid, @stdin, @stdout, @stderr])
       Process.should_receive(:wait).with(@pid)
 
@@ -65,15 +65,15 @@ describe Chef::Provider::ErlCall do
     end
   end
 
-  describe "when running a local erl call resource" do
+  describe 'when running a local erl call resource' do
     before do
       @new_resource.cookie(nil)
       @new_resource.distributed(false)
-      @new_resource.name_type("name")
+      @new_resource.name_type('name')
     end
 
-    it "should write to stdin of the erl_call command" do
-      @provider.should_receive(:popen4).with("erl_call -e  -name chef@localhost ", :waitlast => true).and_return([@pid, @stdin, @stdout, @stderr])
+    it 'should write to stdin of the erl_call command' do
+      @provider.should_receive(:popen4).with('erl_call -e  -name chef@localhost ', :waitlast => true).and_return([@pid, @stdin, @stdout, @stderr])
       Process.should_receive(:wait).with(@pid)
 
       @provider.action_run
@@ -83,4 +83,3 @@ describe Chef::Provider::ErlCall do
   end
 
 end
-

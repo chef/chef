@@ -22,25 +22,24 @@ require 'chef/knife'
 class Chef
   class Knife
     class DataBagEdit < Knife
-
       deps do
         require 'chef/data_bag_item'
         require 'chef/encrypted_data_bag_item'
       end
 
-      banner "knife data bag edit BAG ITEM (options)"
-      category "data bag"
+      banner 'knife data bag edit BAG ITEM (options)'
+      category 'data bag'
 
       option :secret,
-        :short => "-s SECRET",
-        :long  => "--secret ",
-        :description => "The secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
+             :short => '-s SECRET',
+             :long  => '--secret ',
+             :description => 'The secret key to use to encrypt data bag item values',
+             :proc => proc { |s| Chef::Config[:knife][:secret] = s }
 
       option :secret_file,
-        :long => "--secret-file SECRET_FILE",
-        :description => "A file containing the secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
+             :long => '--secret-file SECRET_FILE',
+             :description => 'A file containing the secret key to use to encrypt data bag item values',
+             :proc => proc { |sf| Chef::Config[:knife][:secret_file] = sf }
 
       def read_secret
         if config[:secret]
@@ -52,7 +51,7 @@ class Chef
 
       def use_encryption
         if config[:secret] && config[:secret_file]
-          stdout.puts "please specify only one of --secret, --secret-file"
+          stdout.puts 'please specify only one of --secret, --secret-file'
           exit(1)
         end
         config[:secret] || config[:secret_file]
@@ -78,7 +77,7 @@ class Chef
 
       def run
         if @name_args.length != 2
-          stdout.puts "You must supply the data bag and an item to edit!"
+          stdout.puts 'You must supply the data bag and an item to edit!'
           stdout.puts opt_parser
           exit 1
         end
@@ -91,6 +90,3 @@ class Chef
     end
   end
 end
-
-
-

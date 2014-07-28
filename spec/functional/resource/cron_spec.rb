@@ -27,7 +27,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
   # Platform specific validation routines.
   def cron_should_exists(cron_name, command)
     case ohai[:platform]
-    when "aix", "solaris", "opensolaris", "solaris2", "omnios"
+    when 'aix', 'solaris', 'opensolaris', 'solaris2', 'omnios'
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(0)
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{command}\"").exitstatus).to eq(0)
     else
@@ -38,7 +38,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
 
   def cron_should_not_exists(cron_name)
     case ohai[:platform]
-    when "aix", "solaris", "opensolaris", "solaris2", "omnios"
+    when 'aix', 'solaris', 'opensolaris', 'solaris2', 'omnios'
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(1)
     else
       expect(shell_out("crontab -l -u #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(1)
@@ -47,10 +47,10 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
 
   # Actual tests
   let(:new_resource) do
-    new_resource = Chef::Resource::Cron.new("Chef functional test cron", run_context)
-    new_resource.user  'root'
-    new_resource.minute "30"
-    new_resource.command "/bin/true"
+    new_resource = Chef::Resource::Cron.new('Chef functional test cron', run_context)
+    new_resource.user 'root'
+    new_resource.minute '30'
+    new_resource.command '/bin/true'
     new_resource
   end
 
@@ -59,23 +59,23 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     provider
   end
 
-  describe "create action" do
+  describe 'create action' do
     after do
       new_resource.run_action(:delete)
     end
 
-    it "should create a crontab entry" do
+    it 'should create a crontab entry' do
       new_resource.run_action(:create)
       cron_should_exists(new_resource.name, new_resource.command)
     end
   end
 
-  describe "delete action" do
+  describe 'delete action' do
     before do
       new_resource.run_action(:create)
     end
 
-    it "should delete a crontab entry" do
+    it 'should delete a crontab entry' do
       # Note that test cron is created by previous test
       new_resource.run_action(:delete)
 
@@ -83,11 +83,11 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     end
   end
 
-  exclude_solaris = ["solaris", "opensolaris", "solaris2", "omnios"].include?(ohai[:platform])
-  describe "create action with various attributes", :external => exclude_solaris do
+  exclude_solaris = %w(solaris opensolaris solaris2 omnios).include?(ohai[:platform])
+  describe 'create action with various attributes', :external => exclude_solaris do
     def create_and_validate_with_attribute(resource, attribute, value)
       if ohai[:platform] == 'aix'
-         expect {resource.run_action(:create)}.to raise_error(Chef::Exceptions::Cron, /Aix cron entry does not support environment variables. Please set them in script and use script in cron./)
+        expect { resource.run_action(:create) }.to raise_error(Chef::Exceptions::Cron, /Aix cron entry does not support environment variables. Please set them in script and use script in cron./)
       else
         resource.run_action(:create)
         # Verify if the cron is created successfully
@@ -96,9 +96,9 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     end
 
     def cron_attribute_should_exists(cron_name, attribute, value)
-      return if ['aix', 'solaris'].include?(ohai[:platform])
+      return if %w(aix solaris).include?(ohai[:platform])
       # Test if the attribute exists on newly created cron
-      cron_should_exists(cron_name, "")
+      cron_should_exists(cron_name, '')
       expect(shell_out("crontab -l -u #{new_resource.user} | grep \"#{attribute.upcase}=#{value}\"").exitstatus).to eq(0)
     end
 
@@ -106,40 +106,40 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
       new_resource.run_action(:delete)
     end
 
-    it "should create a crontab entry for mailto attribute" do
-      new_resource.mailto "cheftest@example.com"
-      create_and_validate_with_attribute(new_resource, "mailto", "cheftest@example.com")
+    it 'should create a crontab entry for mailto attribute' do
+      new_resource.mailto 'cheftest@example.com'
+      create_and_validate_with_attribute(new_resource, 'mailto', 'cheftest@example.com')
     end
 
-    it "should create a crontab entry for path attribute" do
-      new_resource.path "/usr/local/bin"
-      create_and_validate_with_attribute(new_resource, "path", "/usr/local/bin")
+    it 'should create a crontab entry for path attribute' do
+      new_resource.path '/usr/local/bin'
+      create_and_validate_with_attribute(new_resource, 'path', '/usr/local/bin')
     end
 
-    it "should create a crontab entry for shell attribute" do
-      new_resource.shell "/bin/bash"
-      create_and_validate_with_attribute(new_resource, "shell", "/bin/bash")
+    it 'should create a crontab entry for shell attribute' do
+      new_resource.shell '/bin/bash'
+      create_and_validate_with_attribute(new_resource, 'shell', '/bin/bash')
     end
 
-    it "should create a crontab entry for home attribute" do
-      new_resource.home "/home/opscode"
-      create_and_validate_with_attribute(new_resource, "home", "/home/opscode")
+    it 'should create a crontab entry for home attribute' do
+      new_resource.home '/home/opscode'
+      create_and_validate_with_attribute(new_resource, 'home', '/home/opscode')
     end
   end
 
-  describe "negative tests for create action" do
+  describe 'negative tests for create action' do
     def cron_create_should_raise_exception
       expect { new_resource.run_action(:create) }.to raise_error(Chef::Exceptions::Cron, /Error updating state of #{new_resource.name}, exit: 1/)
       cron_should_not_exists(new_resource.name)
     end
 
-    it "should not create cron with invalid minute" do
-      new_resource.minute "invalid"
+    it 'should not create cron with invalid minute' do
+      new_resource.minute 'invalid'
       cron_create_should_raise_exception
     end
 
-    it "should not create cron with invalid user" do
-      new_resource.user "1-really-really-invalid-user-name"
+    it 'should not create cron with invalid user' do
+      new_resource.user '1-really-really-invalid-user-name'
       cron_create_should_raise_exception
     end
 

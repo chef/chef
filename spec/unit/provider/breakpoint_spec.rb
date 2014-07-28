@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 require 'spec_helper'
 describe Chef::Provider::Breakpoint do
 
@@ -25,18 +24,18 @@ describe Chef::Provider::Breakpoint do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @collection = double("resource collection")
+    @collection = double('resource collection')
     @run_context.stub(:resource_collection).and_return(@collection)
     @provider = Chef::Provider::Breakpoint.new(@resource, @run_context)
   end
 
-  it "responds to load_current_resource" do
+  it 'responds to load_current_resource' do
     @provider.should respond_to(:load_current_resource)
   end
 
-  it "gets the iterator from @collection and pauses it" do
+  it 'gets the iterator from @collection and pauses it' do
     Shell.stub(:running?).and_return(true)
-    @iterator = double("stepable_iterator")
+    @iterator = double('stepable_iterator')
     @collection.stub(:iterator).and_return(@iterator)
     @iterator.should_receive(:pause)
     @provider.action_break
@@ -45,7 +44,7 @@ describe Chef::Provider::Breakpoint do
 
   it "doesn't pause the iterator if chef-shell isn't running" do
     Shell.stub(:running?).and_return(false)
-    @iterator = double("stepable_iterator")
+    @iterator = double('stepable_iterator')
     @collection.stub(:iterator).and_return(@iterator)
     @iterator.should_not_receive(:pause)
     @provider.action_break

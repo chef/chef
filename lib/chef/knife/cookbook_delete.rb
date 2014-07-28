@@ -21,7 +21,6 @@ require 'chef/knife'
 class Chef
   class Knife
     class CookbookDelete < Knife
-
       attr_accessor :cookbook_name, :version
 
       deps do
@@ -32,10 +31,10 @@ class Chef
 
       option :purge, :short => '-p', :long => '--purge', :boolean => true, :description => 'Permanently remove files from backing data store'
 
-      banner "knife cookbook delete COOKBOOK VERSION (options)"
+      banner 'knife cookbook delete COOKBOOK VERSION (options)'
 
       def run
-        confirm("Files that are common to multiple cookbooks are shared, so purging the files may disable other cookbooks. Are you sure you want to purge files instead of just deleting the cookbook") if config[:purge]
+        confirm('Files that are common to multiple cookbooks are shared, so purging the files may disable other cookbooks. Are you sure you want to purge files instead of just deleting the cookbook') if config[:purge]
         @cookbook_name, @version = name_args
         if @cookbook_name && @version
           delete_explicit_version
@@ -45,13 +44,13 @@ class Chef
           delete_without_explicit_version
         elsif @cookbook_name.nil?
           show_usage
-          ui.fatal("You must provide the name of the cookbook to delete")
+          ui.fatal('You must provide the name of the cookbook to delete')
           exit(1)
         end
       end
 
       def delete_explicit_version
-        delete_object(Chef::CookbookVersion, "#{@cookbook_name} version #{@version}", "cookbook") do
+        delete_object(Chef::CookbookVersion, "#{@cookbook_name} version #{@version}", 'cookbook') do
           delete_request("cookbooks/#{@cookbook_name}/#{@version}")
         end
       end
@@ -85,8 +84,8 @@ class Chef
       end
 
       def available_versions
-        @available_versions ||= rest.get_rest("cookbooks/#{@cookbook_name}").map do |name, url_and_version|
-          url_and_version["versions"].map {|url_by_version| url_by_version["version"]}
+        @available_versions ||= rest.get_rest("cookbooks/#{@cookbook_name}").map do |_name, url_and_version|
+          url_and_version['versions'].map { |url_by_version| url_by_version['version'] }
         end.flatten
       rescue Net::HTTPServerException => e
         if e.to_s =~ /^404/
@@ -109,7 +108,7 @@ class Chef
         responses = ask_question(question).split(',').map { |response| response.strip }
 
         if responses.empty?
-          ui.error("No versions specified, exiting")
+          ui.error('No versions specified, exiting')
           exit(1)
         end
         versions = responses.map do |response|
@@ -142,10 +141,9 @@ class Chef
       private
 
       def delete_request(path)
-        path += "?purge=true" if config[:purge]
+        path += '?purge=true' if config[:purge]
         rest.delete_rest(path)
       end
-
     end
   end
 end

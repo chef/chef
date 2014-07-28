@@ -38,7 +38,7 @@ class Chef
 
         def initialize(new_resource, run_context)
           # TODO: re-evaluate if this is needed after integrating cookbook fix
-          raise ArgumentError, "run_context cannot be nil" unless run_context
+          fail ArgumentError, 'run_context cannot be nil' unless run_context
           super
 
           run_context.node
@@ -53,12 +53,12 @@ class Chef
           end
 
           platform, version = Chef::Platform.find_platform_and_version(run_context.node)
-          if platform == "ubuntu" && (8.04..9.04).include?(version.to_f)
-            @upstart_job_dir = "/etc/event.d"
-            @upstart_conf_suffix = ""
+          if platform == 'ubuntu' && (8.04..9.04).include?(version.to_f)
+            @upstart_job_dir = '/etc/event.d'
+            @upstart_conf_suffix = ''
           else
-            @upstart_job_dir = "/etc/init"
-            @upstart_conf_suffix = ".conf"
+            @upstart_job_dir = '/etc/init'
+            @upstart_conf_suffix = '.conf'
           end
 
           @command_success = true # new_resource.status_command= false, means upstart used
@@ -70,9 +70,9 @@ class Chef
           # Do not call super, only call shared requirements
           shared_resource_requirements
           requirements.assert(:all_actions) do |a|
-            if !@command_success
+            unless @command_success
               whyrun_msg = @new_resource.status_command ? "Provided status command #{@new_resource.status_command} failed." :
-                "Could not determine upstart state for service"
+                'Could not determine upstart state for service'
             end
             a.assertion { @command_success }
             # no failure here, just document the assumptions made.
@@ -107,7 +107,7 @@ class Chef
             end
           else
             begin
-              if upstart_state == "running"
+              if upstart_state == 'running'
                 @current_resource.running true
               else
                 @current_resource.running false
@@ -119,9 +119,9 @@ class Chef
             end
           end
           # Get enabled/disabled state by reading job configuration file
-          if ::File.exists?("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
+          if ::File.exist?("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
             Chef::Log.debug("#{@new_resource} found #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
-            ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}",'r') do |file|
+            ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}", 'r') do |file|
               while line = file.gets
                 case line
                 when /^start on/
@@ -200,20 +200,20 @@ class Chef
         def enable_service
           Chef::Log.debug("#{@new_resource} upstart lacks inherent support for enabling services, editing job config file")
           conf = Chef::Util::FileEdit.new("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
-          conf.search_file_replace(/^#start on/, "start on")
+          conf.search_file_replace(/^#start on/, 'start on')
           conf.write_file
         end
 
         def disable_service
           Chef::Log.debug("#{@new_resource} upstart lacks inherent support for disabling services, editing job config file")
           conf = Chef::Util::FileEdit.new("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
-          conf.search_file_replace(/^start on/, "#start on")
+          conf.search_file_replace(/^start on/, '#start on')
           conf.write_file
         end
 
         def upstart_state
           command = "/sbin/status #{@job}"
-          status = popen4(command) do |pid, stdin, stdout, stderr|
+          status = popen4(command) do |_pid, _stdin, stdout, _stderr|
             stdout.each_line do |line|
               # rsyslog stop/waiting
               # service goal/state
@@ -226,7 +226,6 @@ class Chef
             end
           end
         end
-
       end
     end
   end

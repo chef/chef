@@ -25,32 +25,31 @@ class Chef
   class Provider
     class Cron
       class Unix < Chef::Provider::Cron
-
         private
 
         def read_crontab
           crontab = nil
-          status = popen4("crontab -l #{@new_resource.user}") do |pid, stdin, stdout, stderr|
+          status = popen4("crontab -l #{@new_resource.user}") do |_pid, _stdin, stdout, _stderr|
             crontab = stdout.read
           end
           if status.exitstatus > 1
-            raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
+            fail Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
           end
           crontab
         end
 
         def write_crontab(crontab)
-          tempcron = Tempfile.new("chef-cron")
+          tempcron = Tempfile.new('chef-cron')
           tempcron << crontab
           tempcron.flush
           tempcron.chmod(0644)
           exit_status = 0
-          error_message = ""
+          error_message = ''
           begin
-            status, stdout, stderr = run_command_and_return_stdout_stderr(:command => "/usr/bin/crontab #{tempcron.path}",:user => @new_resource.user)
+            status, stdout, stderr = run_command_and_return_stdout_stderr(:command => "/usr/bin/crontab #{tempcron.path}", :user => @new_resource.user)
             exit_status = status.exitstatus
             # solaris9, 10 on some failures for example invalid 'mins' in crontab fails with exit code of zero :(
-            if stderr && stderr.include?("errors detected in input, no crontab file generated")
+            if stderr && stderr.include?('errors detected in input, no crontab file generated')
               error_message = stderr
               exit_status = 1
             end
@@ -66,10 +65,9 @@ class Chef
           end
           tempcron.close!
           if exit_status > 0
-            raise Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{exit_status}, message: #{error_message}"
+            fail Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{exit_status}, message: #{error_message}"
           end
         end
-
       end
     end
   end

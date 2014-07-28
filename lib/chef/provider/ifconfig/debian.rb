@@ -23,13 +23,12 @@ class Chef
   class Provider
     class Ifconfig
       class Debian < Chef::Provider::Ifconfig
-
-        INTERFACES_FILE = "/etc/network/interfaces"
-        INTERFACES_DOT_D_DIR = "/etc/network/interfaces.d"
+        INTERFACES_FILE = '/etc/network/interfaces'
+        INTERFACES_DOT_D_DIR = '/etc/network/interfaces.d'
 
         def initialize(new_resource, run_context)
           super(new_resource, run_context)
-          @config_template = %{
+          @config_template = %(
 <% if @new_resource.device %>
 <% if @new_resource.onboot == "yes" %>auto <%= @new_resource.device %><% end %>
 <% case @new_resource.bootproto
@@ -48,7 +47,7 @@ iface <%= @new_resource.device %> inet static
     <% if @new_resource.mtu %>mtu <%= @new_resource.mtu %><% end %>
 <% end %>
 <% end %>
-          }
+          )
           @config_path = "#{INTERFACES_DOT_D_DIR}/ifcfg-#{@new_resource.device}"
         end
 
@@ -67,7 +66,7 @@ iface <%= @new_resource.device %> inet static
           # roll our own file_edit resource, this will not get reported until we have a file_edit resource
           interfaces_dot_d_for_regexp = INTERFACES_DOT_D_DIR.gsub(/\./, '\.')  # escape dots for the regexp
           regexp = %r{^\s*source\s+#{interfaces_dot_d_for_regexp}/\*\s*$}
-          unless ::File.exists?(INTERFACES_FILE) && regexp.match(IO.read(INTERFACES_FILE))
+          unless ::File.exist?(INTERFACES_FILE) && regexp.match(IO.read(INTERFACES_FILE))
             converge_by("modifying #{INTERFACES_FILE} to source #{INTERFACES_DOT_D_DIR}") do
               conf = Chef::Util::FileEdit.new(INTERFACES_FILE)
               conf.insert_line_if_no_match(regexp, "source #{INTERFACES_DOT_D_DIR}/*")
@@ -75,7 +74,6 @@ iface <%= @new_resource.device %> inet static
             end
           end
         end
-
       end
     end
   end

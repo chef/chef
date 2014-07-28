@@ -28,7 +28,7 @@ class Chef
 
         def reason
           result = super
-          result + " (default environment cannot be modified)"
+          result + ' (default environment cannot be modified)'
         end
       end
     end

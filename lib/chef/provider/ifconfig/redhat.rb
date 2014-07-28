@@ -22,10 +22,9 @@ class Chef
   class Provider
     class Ifconfig
       class Redhat < Chef::Provider::Ifconfig
-
         def initialize(new_resource, run_context)
           super(new_resource, run_context)
-          @config_template = %{
+          @config_template = %(
 <% if @new_resource.device %>DEVICE=<%= @new_resource.device %><% end %>
 <% if @new_resource.onboot == "yes" %>ONBOOT=<%= @new_resource.onboot %><% end %>
 <% if @new_resource.bootproto %>BOOTPROTO=<%= @new_resource.bootproto %><% end %>
@@ -37,10 +36,9 @@ class Chef
 <% if @new_resource.hwaddr %>HWADDR=<%= @new_resource.hwaddr %><% end %>
 <% if @new_resource.metric %>METRIC=<%= @new_resource.metric %><% end %>
 <% if @new_resource.mtu %>MTU=<%= @new_resource.mtu %><% end %>
-          }
+          )
           @config_path = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
         end
-
       end
     end
   end

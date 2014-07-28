@@ -22,7 +22,7 @@ describe 'knife common options' do
   extend IntegrationSupport
   include KnifeSupport
 
-  when_the_repository "has a node" do
+  when_the_repository 'has a node' do
     file 'nodes/x.json', {}
 
     before(:each) do
@@ -148,7 +148,7 @@ EOM
 
       it 'knife raw -z --chef-zero-port=9999-9999,19423' do
         knife('raw -z --chef-zero-port=9999-9999,19423 /nodes/x').should_succeed /"name": "x"/
-        expect(URI(Chef::Config.chef_server_url).port).to be == 19423
+        expect(URI(Chef::Config.chef_server_url).port).to be == 19_423
       end
     end
 

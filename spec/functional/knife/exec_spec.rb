@@ -21,7 +21,7 @@ require 'tiny_server'
 
 describe Chef::Knife::Exec do
   before(:all) do
-    @server = TinyServer::Manager.new#(:debug => true)
+    @server = TinyServer::Manager.new # (:debug => true)
     @server.start
   end
 
@@ -41,14 +41,14 @@ describe Chef::Knife::Exec do
     @server.stop
   end
 
-  pending "executes a script in the context of the chef-shell main context", :ruby_18_only
+  pending 'executes a script in the context of the chef-shell main context', :ruby_18_only
 
-  it "executes a script in the context of the chef-shell main context", :ruby_gte_19_only do
+  it 'executes a script in the context of the chef-shell main context', :ruby_gte_19_only do
     @node = Chef::Node.new
-    @node.name("ohai-world")
-    response = {"rows" => [@node],"start" => 0,"total" => 1}
+    @node.name('ohai-world')
+    response = { 'rows' => [@node], 'start' => 0, 'total' => 1 }
     @api.get(%r{^/search/node}, 200, response.to_json)
-    code = "$output.puts nodes.all"
+    code = '$output.puts nodes.all'
     @knife.config[:exec] = code
     @knife.run
     $output.string.should match(%r{node\[ohai-world\]})

@@ -23,7 +23,6 @@ class Chef
   module Formatters
     module ErrorInspectors
       class RunListExpansionErrorInspector
-
         include APIErrorFormatting
 
         attr_reader :exception
@@ -36,7 +35,7 @@ class Chef
         def add_explanation(error_description)
           case exception
           when Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError
-            error_description.section("Networking Error:",<<-E)
+            error_description.section('Networking Error:', <<-E)
 #{exception.message}
 
 Your chef_server_url may be misconfigured, or the network could be down.
@@ -46,14 +45,14 @@ E
           when Chef::Exceptions::MissingRole
             describe_missing_role(error_description)
           else
-            error_description.section("Unexpected Error:","#{exception.class.name}: #{exception.message}")
+            error_description.section('Unexpected Error:', "#{exception.class.name}: #{exception.message}")
           end
         end
 
         def describe_missing_role(error_description)
-          error_description.section("Missing Role(s) in Run List:", missing_roles_explained)
-          original_run_list = node.run_list.map {|item| "* #{item}"}.join("\n")
-          error_description.section("Original Run List", original_run_list)
+          error_description.section('Missing Role(s) in Run List:', missing_roles_explained)
+          original_run_list = node.run_list.map { |item| "* #{item}" }.join("\n")
+          error_description.section('Original Run List', original_run_list)
         end
 
         def missing_roles_explained
@@ -74,12 +73,12 @@ E
           response = exception.response
           case response
           when Net::HTTPUnauthorized
-            error_description.section("Authentication Error:",<<-E)
+            error_description.section('Authentication Error:', <<-E)
 Failed to authenticate to the chef server (http 401).
 E
 
-            error_description.section("Server Response:", format_rest_error)
-            error_description.section("Relevant Config Settings:",<<-E)
+            error_description.section('Server Response:', format_rest_error)
+            error_description.section('Relevant Config Settings:', <<-E)
 chef_server_url   "#{server_url}"
 node_name         "#{username}"
 client_key        "#{api_key}"
@@ -90,29 +89,27 @@ E
             # TODO: we're rescuing errors from Node.find_or_create
             # * could be no write on nodes container
             # * could be no read on the node
-            error_description.section("Authorization Error",<<-E)
+            error_description.section('Authorization Error', <<-E)
 Your client is not authorized to load one or more of your roles (HTTP 403).
 E
-            error_description.section("Server Response:", format_rest_error)
+            error_description.section('Server Response:', format_rest_error)
 
-            error_description.section("Possible Causes:",<<-E)
+            error_description.section('Possible Causes:', <<-E)
 * Your client (#{username}) may have misconfigured authorization permissions.
 E
           when Net::HTTPInternalServerError
-            error_description.section("Unknown Server Error:",<<-E)
+            error_description.section('Unknown Server Error:', <<-E)
 The server had a fatal error attempting to load a role.
 E
-            error_description.section("Server Response:", format_rest_error)
+            error_description.section('Server Response:', format_rest_error)
           when Net::HTTPBadGateway, Net::HTTPServiceUnavailable
-            error_description.section("Server Unavailable","The Chef Server is temporarily unavailable")
-            error_description.section("Server Response:", format_rest_error)
+            error_description.section('Server Unavailable', 'The Chef Server is temporarily unavailable')
+            error_description.section('Server Response:', format_rest_error)
           else
-            error_description.section("Unexpected API Request Failure:", format_rest_error)
+            error_description.section('Unexpected API Request Failure:', format_rest_error)
           end
         end
-
       end
     end
   end
 end
-

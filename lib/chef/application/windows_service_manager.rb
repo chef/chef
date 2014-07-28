@@ -35,52 +35,52 @@ class Chef
       include Mixlib::CLI
 
       option :action,
-        :short => "-a ACTION",
-        :long  => "--action ACTION",
-        :default => "status",
-        :description => "Action to carry out on chef-service (install, uninstall, status, start, stop, pause, or resume)"
+             :short => '-a ACTION',
+             :long  => '--action ACTION',
+             :default => 'status',
+             :description => 'Action to carry out on chef-service (install, uninstall, status, start, stop, pause, or resume)'
 
       option :config_file,
-        :short => "-c CONFIG",
-        :long  => "--config CONFIG",
-        :default => "#{ENV['SYSTEMDRIVE']}/chef/client.rb",
-        :description => "The configuration file to use for chef runs"
+             :short => '-c CONFIG',
+             :long  => '--config CONFIG',
+             :default => "#{ENV['SYSTEMDRIVE']}/chef/client.rb",
+             :description => 'The configuration file to use for chef runs'
 
       option :log_location,
-        :short        => "-L LOGLOCATION",
-        :long         => "--logfile LOGLOCATION",
-        :description  => "Set the log file location for chef-service",
-        :default => "#{ENV['SYSTEMDRIVE']}/chef/client.log"
+             :short        => '-L LOGLOCATION',
+             :long         => '--logfile LOGLOCATION',
+             :description  => 'Set the log file location for chef-service',
+             :default => "#{ENV['SYSTEMDRIVE']}/chef/client.log"
 
       option :help,
-        :short        => "-h",
-        :long         => "--help",
-        :description  => "Show this message",
-        :on           => :tail,
-        :boolean      => true,
-        :show_options => true,
-        :exit         => 0
+             :short        => '-h',
+             :long         => '--help',
+             :description  => 'Show this message',
+             :on           => :tail,
+             :boolean      => true,
+             :show_options => true,
+             :exit         => 0
 
       option :version,
-        :short        => "-v",
-        :long         => "--version",
-        :description  => "Show chef version",
-        :boolean      => true,
-        :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
-        :exit         => 0
+             :short        => '-v',
+             :long         => '--version',
+             :description  => 'Show chef version',
+             :boolean      => true,
+             :proc         => lambda { |_v| puts "Chef: #{::Chef::VERSION}" },
+             :exit         => 0
 
       def initialize(service_options)
         # having to call super in initialize is the most annoying
         # anti-pattern :(
         super()
 
-        raise ArgumentError, "Service definition is not provided" if service_options.nil?
+        fail ArgumentError, 'Service definition is not provided' if service_options.nil?
 
         required_options = [:service_name, :service_display_name, :service_name, :service_description, :service_file_path]
 
         required_options.each do |req_option|
-          if !service_options.has_key?(req_option)
-            raise ArgumentError, "Service definition doesn't contain required option #{req_option}"
+          unless service_options.key?(req_option)
+            fail ArgumentError, "Service definition doesn't contain required option #{req_option}"
           end
         end
 
@@ -100,7 +100,7 @@ class Chef
           else
             ruby = File.join(RbConfig::CONFIG['bindir'], 'ruby')
 
-            opts = ""
+            opts = ''
             opts << " -c #{config[:config_file]}" if config[:config_file]
             opts << " -L #{config[:log_location]}" if config[:log_location]
 
@@ -149,15 +149,15 @@ class Chef
       private
 
       # Just some state constants
-      STOPPED = "stopped"
-      RUNNING = "running"
-      PAUSED = "paused"
+      STOPPED = 'stopped'
+      RUNNING = 'running'
+      PAUSED = 'paused'
 
       def service_exists?
-        return ::Win32::Service.exists?(@service_name)
+        ::Win32::Service.exists?(@service_name)
       end
 
-      def take_action(action=nil, desired_state=nil)
+      def take_action(action = nil, desired_state = nil)
         if service_exists?
           if current_state != desired_state
             ::Win32::Service.send(action, @service_name)
@@ -184,7 +184,6 @@ class Chef
           sleep 1
         end
       end
-
     end
   end
 end

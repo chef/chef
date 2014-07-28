@@ -68,8 +68,8 @@ class Chef
     end
 
     # Return the current chef-zero server set up by setup_server_connectivity.
-    def self.chef_zero_server
-      @chef_zero_server
+    class << self
+      attr_reader :chef_zero_server
     end
 
     # If chef_zero_server is non-nil, stop it and remove references to it.
@@ -84,11 +84,11 @@ class Chef
       if port.is_a?(String)
         parts = port.split(',')
         if parts.size == 1
-          a,b = parts[0].split('-',2)
+          a, b = parts[0].split('-', 2)
           if b
             a.to_i.upto(b.to_i)
           else
-            [ a.to_i ]
+            [a.to_i]
           end
         else
           array = []

@@ -21,7 +21,7 @@ if Chef::Platform.windows?
   require 'chef/win32/version'
 end
 
-describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on_win2k3 do
+describe 'Chef::ReservedNames::Win32::Version', :windows_only, :not_supported_on_win2k3 do
   before do
 
     wmi = WmiLite::Wmi.new
@@ -36,7 +36,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on
     # from WMI contain extended characters such as registered
     # trademark on Win2k8 and Win2k3 that we're not using in our
     # library, so we have to set the expectation statically.
-    if Chef::Platform::windows_server_2003?
+    if Chef::Platform.windows_server_2003?
       @current_os_version = 'Windows Server 2003 R2'
     elsif is_windows_server_2008?(host)
       @current_os_version = 'Windows Server 2008'
@@ -50,23 +50,23 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on
     @version = Chef::ReservedNames::Win32::Version.new
   end
 
-  def for_each_windows_version(&block)
+  def for_each_windows_version(&_block)
     @version.methods.each do |method_name|
-      if Chef::ReservedNames::Win32::Version::WIN_VERSIONS.keys.find { | key | method_name.to_s == Chef::ReservedNames::Win32::Version.send(:method_name_from_marketing_name,key) }
+      if Chef::ReservedNames::Win32::Version::WIN_VERSIONS.keys.find { | key | method_name.to_s == Chef::ReservedNames::Win32::Version.send(:method_name_from_marketing_name, key) }
         yield method_name
       end
     end
   end
 
-  context "Win32 version object" do
-    it "should have have one method for each marketing version" do
+  context 'Win32 version object' do
+    it 'should have have one method for each marketing version' do
       versions = 0
       for_each_windows_version { versions += 1 }
       versions.should > 0
       versions.should == Chef::ReservedNames::Win32::Version::WIN_VERSIONS.length
     end
 
-    it "should only contain version methods with legal method names" do
+    it 'should only contain version methods with legal method names' do
       method_name_pattern = /[a-z]+([a-z]|[0-9]|_)*\?{0,1}/
 
       for_each_windows_version do |method_name|
@@ -76,7 +76,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on
       end
     end
 
-    it "should have exactly one method that returns true" do
+    it 'should have exactly one method that returns true' do
       true_versions = 0
       for_each_windows_version do |method_name|
         true_versions += 1 if @version.send(method_name)
@@ -84,13 +84,13 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on
       true_versions.should == 1
     end
 
-    it "should successfully execute all version methods" do
+    it 'should successfully execute all version methods' do
       for_each_windows_version { |method_name| @version.send(method_name.to_sym) }
     end
   end
 
-  context "Windows Operating System version" do
-    it "should match the version from WMI" do
+  context 'Windows Operating System version' do
+    it 'should match the version from WMI' do
       @current_os_version.should include(@version.marketing_name)
     end
   end
@@ -106,7 +106,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on
     os_version_components = os_version.split('.')
 
     if os_version_components.length < 2
-      raise 'WMI returned a Windows version from Win32_OperatingSystem.Version ' +
+      fail 'WMI returned a Windows version from Win32_OperatingSystem.Version ' \
         'with an unexpected format. The Windows version could not be determined.'
     end
 

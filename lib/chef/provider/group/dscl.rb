@@ -20,23 +20,22 @@ class Chef
   class Provider
     class Group
       class Dscl < Chef::Provider::Group
-
         def dscl(*args)
-          host = "."
-          stdout_result = ""; stderr_result = ""; cmd = "dscl #{host} -#{args.join(' ')}"
-          status = popen4(cmd) do |pid, stdin, stdout, stderr|
+          host = '.'
+          stdout_result = ''; stderr_result = ''; cmd = "dscl #{host} -#{args.join(' ')}"
+          status = popen4(cmd) do |_pid, _stdin, stdout, stderr|
             stdout.each { |line| stdout_result << line }
             stderr.each { |line| stderr_result << line }
           end
-          return [cmd, status, stdout_result, stderr_result]
+          [cmd, status, stdout_result, stderr_result]
         end
 
         def safe_dscl(*args)
           result = dscl(*args)
-          return "" if ( args.first =~ /^delete/ ) && ( result[1].exitstatus != 0 )
-          raise(Chef::Exceptions::Group,"dscl error: #{result.inspect}") unless result[1].exitstatus == 0
-          raise(Chef::Exceptions::Group,"dscl error: #{result.inspect}") if result[2] =~ /No such key: /
-          return result[2]
+          return '' if ( args.first =~ /^delete/) && ( result[1].exitstatus != 0)
+          fail(Chef::Exceptions::Group, "dscl error: #{result.inspect}") unless result[1].exitstatus == 0
+          fail(Chef::Exceptions::Group, "dscl error: #{result.inspect}") if result[2] =~ /No such key: /
+          result[2]
         end
 
         # This is handled in providers/group.rb by Etc.getgrnam()
@@ -46,10 +45,10 @@ class Chef
         # end
 
         # get a free GID greater than 200
-        def get_free_gid(search_limit=1000)
+        def get_free_gid(search_limit = 1000)
           gid = nil; next_gid_guess = 200
-          groups_gids = safe_dscl("list /Groups gid")
-          while(next_gid_guess < search_limit + 200)
+          groups_gids = safe_dscl('list /Groups gid')
+          while next_gid_guess < search_limit + 200
             if groups_gids =~ Regexp.new("#{Regexp.escape(next_gid_guess.to_s)}\n")
               next_gid_guess += 1
             else
@@ -57,18 +56,18 @@ class Chef
               break
             end
           end
-          return gid || raise("gid not found. Exhausted. Searched #{search_limit} times")
+          gid || fail("gid not found. Exhausted. Searched #{search_limit} times")
         end
 
         def gid_used?(gid)
           return false unless gid
-          groups_gids = safe_dscl("list /Groups gid")
-          !! ( groups_gids =~ Regexp.new("#{Regexp.escape(gid.to_s)}\n") )
+          groups_gids = safe_dscl('list /Groups gid')
+          !! ( groups_gids =~ Regexp.new("#{Regexp.escape(gid.to_s)}\n"))
         end
 
         def set_gid
-          @new_resource.gid(get_free_gid) if [nil,""].include? @new_resource.gid
-          raise(Chef::Exceptions::Group,"gid is already in use") if gid_used?(@new_resource.gid)
+          @new_resource.gid(get_free_gid) if [nil, ''].include? @new_resource.gid
+          fail(Chef::Exceptions::Group, 'gid is already in use') if gid_used?(@new_resource.gid)
           safe_dscl("create /Groups/#{@new_resource.group_name} PrimaryGroupID #{@new_resource.gid}")
         end
 
@@ -78,14 +77,14 @@ class Chef
             Chef::Log.debug("#{@new_resource} removing group members #{@current_resource.members.join(' ')}") unless @current_resource.members.empty?
             safe_dscl("create /Groups/#{@new_resource.group_name} GroupMembers ''") # clear guid list
             safe_dscl("create /Groups/#{@new_resource.group_name} GroupMembership ''") # clear user list
-            @current_resource.members([ ])
+            @current_resource.members([])
           end
 
           # Add any members that need to be added
           if @new_resource.members && !@new_resource.members.empty?
-            members_to_be_added = [ ]
+            members_to_be_added = []
             @new_resource.members.each do |member|
-              members_to_be_added << member if !@current_resource.members.include?(member)
+              members_to_be_added << member unless @current_resource.members.include?(member)
             end
             unless members_to_be_added.empty?
               Chef::Log.debug("#{@new_resource} setting group members #{members_to_be_added.join(', ')}")
@@ -95,7 +94,7 @@ class Chef
 
           # Remove any members that need to be removed
           if @new_resource.excluded_members && !@new_resource.excluded_members.empty?
-            members_to_be_removed = [ ]
+            members_to_be_removed = []
             @new_resource.excluded_members.each do |member|
               members_to_be_removed << member if @current_resource.members.include?(member)
             end
@@ -109,7 +108,7 @@ class Chef
         def define_resource_requirements
           super
           requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exists?("/usr/bin/dscl") }
+            a.assertion { ::File.exist?('/usr/bin/dscl') }
             a.failure_message Chef::Exceptions::Group, "Could not find binary /usr/bin/dscl for #{@new_resource.name}"
             # No whyrun alternative: this component should be available in the base install of any given system that uses it
           end

@@ -20,25 +20,25 @@ require 'tempfile'
 require 'spec_helper'
 
 describe MonoLogger do
-  it "should disable buffering when passed an IO stream" do
+  it 'should disable buffering when passed an IO stream' do
     STDOUT.sync = false
     MonoLogger.new(STDOUT)
     STDOUT.sync.should == true
   end
 
-  describe "when given an object that responds to write and close e.g. IO" do
-    it "should use the object directly" do
+  describe 'when given an object that responds to write and close e.g. IO' do
+    it 'should use the object directly' do
       stream = StringIO.new
       MonoLogger.new(stream).fatal("Houston, we've had a problem.")
       stream.string.should =~ /Houston, we've had a problem./
     end
   end
 
-  describe "when given an object that is stringable (to_str)" do
-    it "should open a File object with the given path" do
-      temp_file = Tempfile.new("rspec-monologger-log")
+  describe 'when given an object that is stringable (to_str)' do
+    it 'should open a File object with the given path' do
+      temp_file = Tempfile.new('rspec-monologger-log')
       temp_file.close
-      MonoLogger.new(temp_file.path).fatal("Do, or do not. There is no try.")
+      MonoLogger.new(temp_file.path).fatal('Do, or do not. There is no try.')
       File.read(temp_file.path).should =~ /Do, or do not. There is no try./
     end
   end

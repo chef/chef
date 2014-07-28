@@ -1,2 +1,2 @@
-name "test"
-description "prod"
+name 'test'
+description 'prod'

@@ -23,7 +23,6 @@ require 'openssl'
 class Chef
   class HTTP
     class Authenticator
-
       attr_reader :signing_key_filename
       attr_reader :raw_key
       attr_reader :attr_names
@@ -31,7 +30,7 @@ class Chef
 
       attr_accessor :sign_request
 
-      def initialize(opts={})
+      def initialize(opts = {})
         @raw_key = nil
         @sign_request = true
         @signing_key_filename = opts[:signing_key_filename]
@@ -39,7 +38,7 @@ class Chef
         @auth_credentials = AuthCredentials.new(opts[:client_name], @key)
       end
 
-      def handle_request(method, url, headers={}, data=false)
+      def handle_request(method, url, headers = {}, data = false)
         headers.merge!(authentication_headers(method, url, data)) if sign_requests?
         [method, url, headers, data]
       end
@@ -48,7 +47,7 @@ class Chef
         [http_response, rest_request, return_value]
       end
 
-      def stream_response_handler(response)
+      def stream_response_handler(_response)
         nil
       end
 
@@ -65,9 +64,9 @@ class Chef
       end
 
       def load_signing_key(key_file, raw_key = nil)
-        if (!!key_file)
+        if !!key_file
           @raw_key = IO.read(key_file).strip
-        elsif (!!raw_key)
+        elsif !!raw_key
           @raw_key = raw_key.strip
         else
           return nil
@@ -82,12 +81,11 @@ class Chef
         raise Chef::Exceptions::InvalidPrivateKey, msg
       end
 
-      def authentication_headers(method, url, json_body=nil)
-        request_params = {:http_method => method, :path => url.path, :body => json_body, :host => "#{url.host}:#{url.port}"}
-        request_params[:body] ||= ""
+      def authentication_headers(method, url, json_body = nil)
+        request_params = { :http_method => method, :path => url.path, :body => json_body, :host => "#{url.host}:#{url.port}" }
+        request_params[:body] ||= ''
         auth_credentials.signature_headers(request_params)
       end
-
     end
   end
 end

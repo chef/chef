@@ -1,6 +1,5 @@
 module KnifeSpecs
   class TestYourself < Chef::Knife
-
     class << self
       attr_reader :test_deps_loaded
     end

@@ -49,20 +49,20 @@ describe Chef::Knife::CookbookDownload do
 
         @manifest_data = {
           :recipes => [
-            {'path' => 'recipes/foo.rb',
-             'url' => 'http://example.org/files/foo.rb'},
-            {'path' => 'recipes/bar.rb',
-             'url' => 'http://example.org/files/bar.rb'}
+            { 'path' => 'recipes/foo.rb',
+              'url' => 'http://example.org/files/foo.rb' },
+            { 'path' => 'recipes/bar.rb',
+              'url' => 'http://example.org/files/bar.rb' }
           ],
           :templates => [
-            {'path' => 'templates/default/foo.erb',
-             'url' => 'http://example.org/files/foo.erb'},
-            {'path' => 'templates/default/bar.erb',
-             'url' => 'http://example.org/files/bar.erb'}
+            { 'path' => 'templates/default/foo.erb',
+              'url' => 'http://example.org/files/foo.erb' },
+            { 'path' => 'templates/default/bar.erb',
+              'url' => 'http://example.org/files/bar.erb' }
           ],
           :attributes => [
-            {'path' => 'attributes/default.rb',
-             'url' => 'http://example.org/files/default.rb'}
+            { 'path' => 'attributes/default.rb',
+              'url' => 'http://example.org/files/default.rb' }
           ]
         }
 
@@ -120,7 +120,7 @@ describe Chef::Knife::CookbookDownload do
           it "should download the cookbook when the cookbook download directory doesn't exist" do
             File.should_receive(:exists?).with('/var/tmp/chef/foobar-1.0.0').and_return(false)
             @knife.run
-            ['attributes', 'recipes', 'templates'].each do |segment|
+            %w(attributes recipes templates).each do |segment|
               @stderr.string.should match /downloading #{segment}/im
             end
             @stderr.string.should match /downloading foobar cookbook version 1\.0\.0/im
@@ -146,8 +146,8 @@ describe Chef::Knife::CookbookDownload do
 
     it 'should return nil if there are no versions' do
       @knife.should_receive(:available_versions).and_return(nil)
-      @knife.determine_version.should == nil
-      @knife.version.should == nil
+      @knife.determine_version.should.nil?
+      @knife.version.should.nil?
     end
 
     it 'should return and set the version if there is only one version' do
@@ -182,7 +182,7 @@ describe Chef::Knife::CookbookDownload do
       Chef::CookbookVersion.should_receive(:available_versions).
                             with('foobar').
                             and_return(nil)
-      @knife.available_versions.should == nil
+      @knife.available_versions.should.nil?
     end
 
     it 'should return the available versions' do

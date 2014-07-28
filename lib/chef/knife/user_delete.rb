@@ -21,26 +21,24 @@ require 'chef/knife'
 class Chef
   class Knife
     class UserDelete < Knife
-
       deps do
         require 'chef/user'
         require 'chef/json_compat'
       end
 
-      banner "knife user delete USER (options)"
+      banner 'knife user delete USER (options)'
 
       def run
         @user_name = @name_args[0]
 
         if @user_name.nil?
           show_usage
-          ui.fatal("You must specify a user name")
+          ui.fatal('You must specify a user name')
           exit 1
         end
 
         delete_object(Chef::User, @user_name)
       end
-
     end
   end
 end

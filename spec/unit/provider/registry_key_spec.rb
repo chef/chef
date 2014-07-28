@@ -18,15 +18,15 @@
 
 require 'spec_helper'
 
-shared_examples_for "a registry key" do
+shared_examples_for 'a registry key' do
   before(:each) do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @new_resource = Chef::Resource::RegistryKey.new("windows is fun", @run_context)
+    @new_resource = Chef::Resource::RegistryKey.new('windows is fun', @run_context)
     @new_resource.key keyname
-    @new_resource.values( testval1 )
+    @new_resource.values(testval1)
     @new_resource.recursive false
 
     @provider = Chef::Provider::RegistryKey.new(@new_resource, @run_context)
@@ -36,109 +36,109 @@ shared_examples_for "a registry key" do
     @provider.stub(:registry).and_return(@double_registry)
   end
 
-  describe "when first created" do
+  describe 'when first created' do
   end
 
-  describe "executing load_current_resource" do
-    describe "when the key exists" do
+  describe 'executing load_current_resource' do
+    describe 'when the key exists' do
       before(:each) do
         @double_registry.should_receive(:key_exists?).with(keyname).and_return(true)
-        @double_registry.should_receive(:get_values).with(keyname).and_return( testval2 )
+        @double_registry.should_receive(:get_values).with(keyname).and_return(testval2)
         @provider.load_current_resource
       end
 
-      it "should set the key of the current resource to the key of the new resource" do
+      it 'should set the key of the current resource to the key of the new resource' do
         @provider.current_resource.key.should == @new_resource.key
       end
 
-      it "should set the architecture of the current resource to the architecture of the new resource" do
+      it 'should set the architecture of the current resource to the architecture of the new resource' do
         @provider.current_resource.architecture.should == @new_resource.architecture
       end
 
-      it "should set the recursive flag of the current resource to the recursive flag of the new resource" do
+      it 'should set the recursive flag of the current resource to the recursive flag of the new resource' do
         @provider.current_resource.recursive.should == @new_resource.recursive
       end
 
-      it "should set the unscrubbed values of the current resource to the values it got from the registry" do
-        @provider.current_resource.unscrubbed_values.should == [ testval2 ]
+      it 'should set the unscrubbed values of the current resource to the values it got from the registry' do
+        @provider.current_resource.unscrubbed_values.should == [testval2]
       end
     end
 
-    describe "when the key does not exist" do
+    describe 'when the key does not exist' do
       before(:each) do
         @double_registry.should_receive(:key_exists?).with(keyname).and_return(false)
         @provider.load_current_resource
       end
 
-      it "should set the values in the current resource to empty array" do
+      it 'should set the values in the current resource to empty array' do
         @provider.current_resource.values.should == []
       end
     end
   end
 
-  describe "action_create" do
-    context "when the key exists" do
+  describe 'action_create' do
+    context 'when the key exists' do
       before(:each) do
         @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(true)
       end
-      it "should do nothing if the key and the value both exist" do
-        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1 )
+      it 'should do nothing if the key and the value both exist' do
+        @double_registry.should_receive(:get_values).with(keyname).and_return(testval1)
         @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
         @provider.action_create
       end
-      it "should create the value if the key exists but the value does not" do
-        @double_registry.should_receive(:get_values).with(keyname).and_return( testval2 )
+      it 'should create the value if the key exists but the value does not' do
+        @double_registry.should_receive(:get_values).with(keyname).and_return(testval2)
         @double_registry.should_receive(:set_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_create
       end
-      it "should set the value if the key exists but the data does not match" do
-        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1_wrong_data )
+      it 'should set the value if the key exists but the data does not match' do
+        @double_registry.should_receive(:get_values).with(keyname).and_return(testval1_wrong_data)
         @double_registry.should_receive(:set_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_create
       end
-      it "should set the value if the key exists but the type does not match" do
-        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1_wrong_type )
+      it 'should set the value if the key exists but the type does not match' do
+        @double_registry.should_receive(:get_values).with(keyname).and_return(testval1_wrong_type)
         @double_registry.should_receive(:set_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_create
       end
     end
-    context "when the key exists and the values in the new resource are empty" do
-      it "when a value is in the key, it should do nothing" do
+    context 'when the key exists and the values in the new resource are empty' do
+      it 'when a value is in the key, it should do nothing' do
         @provider.new_resource.values([])
         @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(true)
-        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1 )
+        @double_registry.should_receive(:get_values).with(keyname).and_return(testval1)
         @double_registry.should_not_receive(:create_key)
         @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
         @provider.action_create
       end
-      it "when no value is in the key, it should do nothing" do
+      it 'when no value is in the key, it should do nothing' do
         @provider.new_resource.values([])
         @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(true)
-        @double_registry.should_receive(:get_values).with(keyname).and_return( nil )
+        @double_registry.should_receive(:get_values).with(keyname).and_return(nil)
         @double_registry.should_not_receive(:create_key)
         @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
         @provider.action_create
       end
     end
-    context "when the key does not exist" do
+    context 'when the key does not exist' do
       before(:each) do
         @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(false)
       end
-      it "should create the key and the value" do
+      it 'should create the key and the value' do
         @double_registry.should_receive(:create_key).with(keyname, false)
         @double_registry.should_receive(:set_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_create
       end
     end
-    context "when the key does not exist and the values in the new resource are empty" do
-      it "should create the key" do
+    context 'when the key does not exist and the values in the new resource are empty' do
+      it 'should create the key' do
         @new_resource.values([])
         @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(false)
         @double_registry.should_receive(:create_key).with(keyname, false)
@@ -149,41 +149,41 @@ shared_examples_for "a registry key" do
     end
   end
 
-  describe "action_create_if_missing" do
-    context "when the key exists" do
+  describe 'action_create_if_missing' do
+    context 'when the key exists' do
       before(:each) do
         @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(true)
       end
-      it "should do nothing if the key and the value both exist" do
-        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1 )
+      it 'should do nothing if the key and the value both exist' do
+        @double_registry.should_receive(:get_values).with(keyname).and_return(testval1)
         @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
         @provider.action_create_if_missing
       end
-      it "should create the value if the key exists but the value does not" do
-        @double_registry.should_receive(:get_values).with(keyname).and_return( testval2 )
+      it 'should create the value if the key exists but the value does not' do
+        @double_registry.should_receive(:get_values).with(keyname).and_return(testval2)
         @double_registry.should_receive(:set_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_create_if_missing
       end
-      it "should not set the value if the key exists but the data does not match" do
-        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1_wrong_data )
+      it 'should not set the value if the key exists but the data does not match' do
+        @double_registry.should_receive(:get_values).with(keyname).and_return(testval1_wrong_data)
         @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
         @provider.action_create_if_missing
       end
-      it "should not set the value if the key exists but the type does not match" do
-        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1_wrong_type )
+      it 'should not set the value if the key exists but the type does not match' do
+        @double_registry.should_receive(:get_values).with(keyname).and_return(testval1_wrong_type)
         @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
         @provider.action_create_if_missing
       end
     end
-    context "when the key does not exist" do
+    context 'when the key does not exist' do
       before(:each) do
         @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(false)
       end
-      it "should create the key and the value" do
+      it 'should create the key and the value' do
         @double_registry.should_receive(:create_key).with(keyname, false)
         @double_registry.should_receive(:set_value).with(keyname, testval1)
         @provider.load_current_resource
@@ -192,41 +192,41 @@ shared_examples_for "a registry key" do
     end
   end
 
-  describe "action_delete" do
-    context "when the key exists" do
+  describe 'action_delete' do
+    context 'when the key exists' do
       before(:each) do
         @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(true)
       end
-      it "deletes the value when the value exists" do
-        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1 )
+      it 'deletes the value when the value exists' do
+        @double_registry.should_receive(:get_values).with(keyname).and_return(testval1)
         @double_registry.should_receive(:delete_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_delete
       end
-      it "deletes the value when the value exists, but the type is wrong" do
-        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1_wrong_type )
+      it 'deletes the value when the value exists, but the type is wrong' do
+        @double_registry.should_receive(:get_values).with(keyname).and_return(testval1_wrong_type)
         @double_registry.should_receive(:delete_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_delete
       end
-      it "deletes the value when the value exists, but the data is wrong" do
-        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1_wrong_data )
+      it 'deletes the value when the value exists, but the data is wrong' do
+        @double_registry.should_receive(:get_values).with(keyname).and_return(testval1_wrong_data)
         @double_registry.should_receive(:delete_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_delete
       end
-      it "does not delete the value when the value does not exist" do
-        @double_registry.should_receive(:get_values).with(keyname).and_return( testval2 )
+      it 'does not delete the value when the value does not exist' do
+        @double_registry.should_receive(:get_values).with(keyname).and_return(testval2)
         @double_registry.should_not_receive(:delete_value)
         @provider.load_current_resource
         @provider.action_delete
       end
     end
-    context "when the key does not exist" do
+    context 'when the key does not exist' do
       before(:each) do
         @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(false)
       end
-      it "does nothing" do
+      it 'does nothing' do
         @double_registry.should_not_receive(:delete_value)
         @provider.load_current_resource
         @provider.action_delete
@@ -234,23 +234,23 @@ shared_examples_for "a registry key" do
     end
   end
 
-  describe "action_delete_key" do
-    context "when the key exists" do
+  describe 'action_delete_key' do
+    context 'when the key exists' do
       before(:each) do
         @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(true)
       end
-      it "deletes the key" do
-        @double_registry.should_receive(:get_values).with(keyname).and_return( testval1 )
+      it 'deletes the key' do
+        @double_registry.should_receive(:get_values).with(keyname).and_return(testval1)
         @double_registry.should_receive(:delete_key).with(keyname, false)
         @provider.load_current_resource
         @provider.action_delete_key
       end
     end
-    context "when the key does not exist" do
+    context 'when the key does not exist' do
       before(:each) do
         @double_registry.should_receive(:key_exists?).twice.with(keyname).and_return(false)
       end
-      it "does nothing" do
+      it 'does nothing' do
         @double_registry.should_not_receive(:delete_key)
         @provider.load_current_resource
         @provider.action_delete_key
@@ -261,23 +261,23 @@ shared_examples_for "a registry key" do
 end
 
 describe Chef::Provider::RegistryKey do
-  context "when the key data is safe" do
+  context 'when the key data is safe' do
     let(:keyname) { 'HKLM\Software\Opscode\Testing\Safe' }
-    let(:testval1) { { :name => "one", :type => :string, :data => "1" } }
-    let(:testval1_wrong_type) { { :name => "one", :type => :multi_string, :data => "1" } }
-    let(:testval1_wrong_data) { { :name => "one", :type => :string, :data => "2" } }
-    let(:testval2) { { :name => "two", :type => :string, :data => "2" } }
+    let(:testval1) { { :name => 'one', :type => :string, :data => '1' } }
+    let(:testval1_wrong_type) { { :name => 'one', :type => :multi_string, :data => '1' } }
+    let(:testval1_wrong_data) { { :name => 'one', :type => :string, :data => '2' } }
+    let(:testval2) { { :name => 'two', :type => :string, :data => '2' } }
 
-    it_should_behave_like "a registry key"
+    it_should_behave_like 'a registry key'
   end
 
-  context "when the key data is unsafe" do
+  context 'when the key data is unsafe' do
     let(:keyname) { 'HKLM\Software\Opscode\Testing\Unsafe' }
-    let(:testval1) { { :name => "one", :type => :binary, :data => 255.chr * 1 } }
-    let(:testval1_wrong_type) { { :name => "one", :type => :string, :data => 255.chr * 1 } }
-    let(:testval1_wrong_data) { { :name => "one", :type => :binary, :data => 254.chr * 1 } }
-    let(:testval2) { { :name => "two", :type => :binary, :data => 0.chr * 1 } }
+    let(:testval1) { { :name => 'one', :type => :binary, :data => 255.chr * 1 } }
+    let(:testval1_wrong_type) { { :name => 'one', :type => :string, :data => 255.chr * 1 } }
+    let(:testval1_wrong_data) { { :name => 'one', :type => :binary, :data => 254.chr * 1 } }
+    let(:testval2) { { :name => 'two', :type => :binary, :data => 0.chr * 1 } }
 
-    it_should_behave_like "a registry key"
+    it_should_behave_like 'a registry key'
   end
 end

@@ -25,7 +25,6 @@ require 'chef/mixin/securable'
 class Chef
   class Resource
     class Directory < Chef::Resource
-
       identity_attr :path
 
       state_attrs :group, :mode, :owner
@@ -34,7 +33,7 @@ class Chef
 
       provides :directory, :on_platforms => :all
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :directory
         @path = name
@@ -44,22 +43,21 @@ class Chef
         @provider = Chef::Provider::Directory
       end
 
-      def recursive(arg=nil)
+      def recursive(arg = nil)
         set_or_return(
           :recursive,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [TrueClass, FalseClass]
         )
       end
 
-      def path(arg=nil)
+      def path(arg = nil)
         set_or_return(
           :path,
           arg,
           :kind_of => String
         )
       end
-
     end
   end
 end

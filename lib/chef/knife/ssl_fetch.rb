@@ -22,7 +22,6 @@ require 'chef/config'
 class Chef
   class Knife
     class SslFetch < Chef::Knife
-
       deps do
         require 'pp'
         require 'socket'
@@ -30,7 +29,7 @@ class Chef
         require 'openssl'
       end
 
-      banner "knife ssl fetch [URL] (options)"
+      banner 'knife ssl fetch [URL] (options)'
 
       def initialize(*args)
         super
@@ -45,7 +44,7 @@ class Chef
       end
 
       def given_uri
-        (name_args[0] or Chef::Config.chef_server_url)
+        (name_args[0] || Chef::Config.chef_server_url)
       end
 
       def host
@@ -85,10 +84,9 @@ class Chef
         end
       end
 
-
       def cn_of(certificate)
         subject = certificate.subject
-        cn_field_tuple = subject.to_a.find {|field| field[0] == "CN" }
+        cn_field_tuple = subject.to_a.find { |field| field[0] == 'CN' }
         cn_field_tuple[1]
       end
 
@@ -102,7 +100,7 @@ class Chef
       # practice.
       # https://tools.ietf.org/html/rfc6125#section-6.4.2
       def normalize_cn(cn)
-        cn.gsub("*", "wildcard").gsub(/[^[:alnum:]\-]/, '_')
+        cn.gsub('*', 'wildcard').gsub(/[^[:alnum:]\-]/, '_')
       end
 
       def configuration
@@ -118,7 +116,7 @@ class Chef
         cn = cn_of(cert)
         filename = File.join(trusted_certs_dir, "#{normalize_cn(cn)}.crt")
         ui.msg("Adding certificate for #{cn} in #{filename}")
-        File.open(filename, File::CREAT|File::TRUNC|File::RDWR, 0644) do |f|
+        File.open(filename, File::CREAT | File::TRUNC | File::RDWR, 0644) do |f|
           f.print(cert.to_s)
         end
       end
@@ -137,9 +135,6 @@ TRUST_TRUST
           write_cert(cert)
         end
       end
-
-
     end
   end
 end
-

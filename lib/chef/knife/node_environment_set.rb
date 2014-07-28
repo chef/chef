@@ -21,16 +21,15 @@ require 'chef/knife'
 class Chef
   class Knife
     class NodeEnvironmentSet < Knife
-
       deps do
         require 'chef/node'
       end
 
-      banner "knife node environment set NODE ENVIRONMENT"
+      banner 'knife node environment set NODE ENVIRONMENT'
 
       def run
         if @name_args.size < 2
-          ui.fatal "You must specify a node name and an environment."
+          ui.fatal 'You must specify a node name and an environment.'
           show_usage
           exit 1
         else
@@ -44,11 +43,10 @@ class Chef
 
         node.save
 
-        config[:attribute] = "chef_environment"
+        config[:attribute] = 'chef_environment'
 
-        output(format_for_display(node))   
+        output(format_for_display(node))
       end
-
     end
   end
 end

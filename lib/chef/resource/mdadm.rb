@@ -22,12 +22,11 @@ require 'chef/resource'
 class Chef
   class Resource
     class Mdadm < Chef::Resource
-
       identity_attr :raid_device
 
       state_attrs :devices, :level, :chunk
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :mdadm
 
@@ -35,7 +34,7 @@ class Chef
         @devices = []
         @exists = false
         @level = 1
-        @metadata = "0.90"
+        @metadata = '0.90'
         @bitmap = nil
         @raid_device = name
 
@@ -43,63 +42,61 @@ class Chef
         @allowed_actions.push(:create, :assemble, :stop)
       end
 
-      def chunk(arg=nil)
+      def chunk(arg = nil)
         set_or_return(
           :chunk,
           arg,
-          :kind_of => [ Integer ]
+          :kind_of => [Integer]
         )
       end
 
-      def devices(arg=nil)
+      def devices(arg = nil)
         set_or_return(
           :devices,
           arg,
-          :kind_of => [ Array ]
+          :kind_of => [Array]
         )
       end
 
-      def exists(arg=nil)
+      def exists(arg = nil)
         set_or_return(
           :exists,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [TrueClass, FalseClass]
         )
       end
 
-      def level(arg=nil)
+      def level(arg = nil)
         set_or_return(
           :level,
           arg,
-          :kind_of => [ Integer ]
+          :kind_of => [Integer]
         )
       end
 
-      def metadata(arg=nil)
+      def metadata(arg = nil)
         set_or_return(
           :metadata,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
-      def bitmap(arg=nil)
+      def bitmap(arg = nil)
         set_or_return(
           :bitmap,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
 
-      def raid_device(arg=nil)
+      def raid_device(arg = nil)
         set_or_return(
           :raid_device,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [String]
         )
       end
-
-
     end
   end
 end

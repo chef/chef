@@ -28,19 +28,19 @@ class Chef
         class Pkg < Base
           include PortsHelper
 
-          def install_package(name, version)
+          def install_package(_name, _version)
             unless @current_resource.version
               case @new_resource.source
               when /^http/, /^ftp/
                 if @new_resource.source =~ /\/$/
-                  shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil }).status
+                  shell_out!("pkg_add -r #{package_name}", :env => { 'PACKAGESITE' => @new_resource.source, 'LC_ALL' => nil }).status
                 else
-                  shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGEROOT" => @new_resource.source, 'LC_ALL' => nil }).status
+                  shell_out!("pkg_add -r #{package_name}", :env => { 'PACKAGEROOT' => @new_resource.source, 'LC_ALL' => nil }).status
                 end
                 Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
 
               when /^\//
-                shell_out!("pkg_add #{file_candidate_version_path}", :env => { "PKG_PATH" => @new_resource.source , 'LC_ALL'=>nil}).status
+                shell_out!("pkg_add #{file_candidate_version_path}", :env => { 'PKG_PATH' => @new_resource.source, 'LC_ALL' => nil }).status
                 Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
 
               else
@@ -49,17 +49,17 @@ class Chef
             end
           end
 
-          def remove_package(name, version)
+          def remove_package(_name, version)
             shell_out!("pkg_delete #{package_name}-#{version || @current_resource.version}", :env => nil).status
           end
 
           # The name of the package (without the version number) as understood by pkg_add and pkg_info.
           def package_name
             if supports_ports?
-              if makefile_variable_value("PKGNAME", port_path) =~ /^(.+)-[^-]+$/
-                $1
+              if makefile_variable_value('PKGNAME', port_path) =~ /^(.+)-[^-]+$/
+                Regexp.last_match[1]
               else
-                raise Chef::Exceptions::Package, "Unexpected form for PKGNAME variable in #{port_path}/Makefile"
+                fail Chef::Exceptions::Package, "Unexpected form for PKGNAME variable in #{port_path}/Makefile"
               end
             else
               @new_resource.package_name
@@ -67,11 +67,11 @@ class Chef
           end
 
           def latest_link_name
-            makefile_variable_value("LATEST_LINK", port_path)
+            makefile_variable_value('LATEST_LINK', port_path)
           end
 
           def current_installed_version
-            pkg_info = shell_out!("pkg_info -E \"#{package_name}*\"", :env => nil, :returns => [0,1])
+            pkg_info = shell_out!("pkg_info -E \"#{package_name}*\"", :env => nil, :returns => [0, 1])
             pkg_info.stdout[/^#{Regexp.escape(package_name)}-(.+)/, 1]
           end
 
@@ -95,17 +95,16 @@ class Chef
           end
 
           def repo_candidate_version
-            "0.0.0"
+            '0.0.0'
           end
 
           def ports_candidate_version
-            makefile_variable_value("PORTVERSION", port_path)
+            makefile_variable_value('PORTVERSION', port_path)
           end
 
           def port_path
             port_dir @new_resource.package_name
           end
-
         end
       end
     end

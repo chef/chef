@@ -49,40 +49,32 @@ class Chef
         MUTEX_ALL_ACCESS = 0x001F0001
         MUTEX_MODIFY_STATE = 0x00000001
 
-=begin
-HANDLE WINAPI CreateMutex(
-  _In_opt_  LPSECURITY_ATTRIBUTES lpMutexAttributes,
-  _In_      BOOL bInitialOwner,
-  _In_opt_  LPCTSTR lpName
-);
-=end
-        safe_attach_function :CreateMutexW, [ :LPSECURITY_ATTRIBUTES, :BOOL, :LPCTSTR ], :HANDLE
-        safe_attach_function :CreateMutexA, [ :LPSECURITY_ATTRIBUTES, :BOOL, :LPCTSTR ], :HANDLE
+        # HANDLE WINAPI CreateMutex(
+        #   _In_opt_  LPSECURITY_ATTRIBUTES lpMutexAttributes,
+        #   _In_      BOOL bInitialOwner,
+        #   _In_opt_  LPCTSTR lpName
+        # );
+        safe_attach_function :CreateMutexW, [:LPSECURITY_ATTRIBUTES, :BOOL, :LPCTSTR], :HANDLE
+        safe_attach_function :CreateMutexA, [:LPSECURITY_ATTRIBUTES, :BOOL, :LPCTSTR], :HANDLE
 
-=begin
-DWORD WINAPI WaitForSingleObject(
-  _In_  HANDLE hHandle,
-  _In_  DWORD dwMilliseconds
-);
-=end
-        safe_attach_function :WaitForSingleObject, [ :HANDLE, :DWORD ], :DWORD
+        # DWORD WINAPI WaitForSingleObject(
+        #   _In_  HANDLE hHandle,
+        #   _In_  DWORD dwMilliseconds
+        # );
+        safe_attach_function :WaitForSingleObject, [:HANDLE, :DWORD], :DWORD
 
-=begin
-BOOL WINAPI ReleaseMutex(
-  _In_  HANDLE hMutex
-);
-=end
-        safe_attach_function :ReleaseMutex, [ :HANDLE ], :BOOL
+        # BOOL WINAPI ReleaseMutex(
+        #   _In_  HANDLE hMutex
+        # );
+        safe_attach_function :ReleaseMutex, [:HANDLE], :BOOL
 
-=begin
-HANDLE WINAPI OpenMutex(
-  _In_  DWORD dwDesiredAccess,
-  _In_  BOOL bInheritHandle,
-  _In_  LPCTSTR lpName
-);
-=end
-        safe_attach_function :OpenMutexW, [ :DWORD, :BOOL, :LPCTSTR ], :HANDLE
-        safe_attach_function :OpenMutexA, [ :DWORD, :BOOL, :LPCTSTR ], :HANDLE
+        # HANDLE WINAPI OpenMutex(
+        #   _In_  DWORD dwDesiredAccess,
+        #   _In_  BOOL bInheritHandle,
+        #   _In_  LPCTSTR lpName
+        # );
+        safe_attach_function :OpenMutexW, [:DWORD, :BOOL, :LPCTSTR], :HANDLE
+        safe_attach_function :OpenMutexA, [:DWORD, :BOOL, :LPCTSTR], :HANDLE
       end
     end
   end

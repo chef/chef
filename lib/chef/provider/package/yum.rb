@@ -24,15 +24,12 @@ require 'chef/resource/package'
 require 'singleton'
 require 'chef/mixin/get_source_from_package'
 
-
 class Chef
   class Provider
     class Package
       class Yum < Chef::Provider::Package
-
         class RPMUtils
           class << self
-
             # RPM::Version version_parse equivalent
             def version_parse(evr)
               return if evr.nil?
@@ -46,15 +43,15 @@ class Chef
               tail = evr.size
 
               if evr =~ %r{^([\d]+):}
-                epoch = $1.to_i
-                lead = $1.length + 1
-              elsif evr[0].ord == ":".ord
+                epoch = Regexp.last_match[1].to_i
+                lead = Regexp.last_match[1].length + 1
+              elsif evr[0].ord == ':'.ord
                 epoch = 0
                 lead = 1
               end
 
               if evr =~ %r{:?.*-(.*)$}
-                release = $1
+                release = Regexp.last_match[1]
                 tail = evr.length - release.length - lead - 1
 
                 if release.empty?
@@ -62,12 +59,12 @@ class Chef
                 end
               end
 
-              version = evr[lead,tail]
+              version = evr[lead, tail]
               if version.empty?
                 version = nil
               end
 
-              [ epoch, version, release ]
+              [epoch, version, release]
             end
 
             # verify
@@ -91,11 +88,11 @@ class Chef
               return 0 if x == y
 
               if x.nil?
-                x = ""
+                x = ''
               end
 
               if y.nil?
-                y = ""
+                y = ''
               end
 
               # not so easy :(
@@ -127,7 +124,7 @@ class Chef
               y_pos_max = y.length - 1
               y_comp = nil
 
-              while (x_pos <= x_pos_max and y_pos <= y_pos_max)
+              while x_pos <= x_pos_max and y_pos <= y_pos_max
                 # first we skip over anything non alphanumeric
                 while (x_pos <= x_pos_max) and (isalnum(x[x_pos]) == false)
                   x_pos += 1 # +1 over pos_max if end of string
@@ -158,12 +155,12 @@ class Chef
                   end
                   # copy the segment but not the unmatched character that x_seg_pos will
                   # refer to
-                  x_comp = x[x_pos,x_seg_pos - x_pos]
+                  x_comp = x[x_pos, x_seg_pos - x_pos]
 
                   while (y_seg_pos <= y_pos_max) and isdigit(y[y_seg_pos])
                     y_seg_pos += 1
                   end
-                  y_comp = y[y_pos,y_seg_pos - y_pos]
+                  y_comp = y[y_pos, y_seg_pos - y_pos]
                 else
                   # we are comparing strings
                   x_seg_is_num = false
@@ -171,12 +168,12 @@ class Chef
                   while (x_seg_pos <= x_pos_max) and isalpha(x[x_seg_pos])
                     x_seg_pos += 1
                   end
-                  x_comp = x[x_pos,x_seg_pos - x_pos]
+                  x_comp = x[x_pos, x_seg_pos - x_pos]
 
                   while (y_seg_pos <= y_pos_max) and isalpha(y[y_seg_pos])
                     y_seg_pos += 1
                   end
-                  y_comp = y[y_pos,y_seg_pos - y_pos]
+                  y_comp = y[y_pos, y_seg_pos - y_pos]
                 end
 
                 # if y_seg_pos didn't advance in the above loop it means the segments are
@@ -223,7 +220,6 @@ class Chef
                 return -1
               end
             end
-
           end # self
         end # RPMUtils
 
@@ -238,17 +234,17 @@ class Chef
               @v = args[1]
               @r = args[2]
             else
-              raise ArgumentError, "Expecting either 'epoch-version-release' or 'epoch, " +
+              fail ArgumentError, "Expecting either 'epoch-version-release' or 'epoch, " \
                                    "version, release'"
             end
           end
           attr_reader :e, :v, :r
-          alias :epoch :e
-          alias :version :v
-          alias :release :r
+          alias_method :epoch, :e
+          alias_method :version, :v
+          alias_method :release, :r
 
           def self.parse(*args)
-            self.new(*args)
+            new(*args)
           end
 
           def <=>(y)
@@ -285,7 +281,7 @@ class Chef
           # 2:1.2-1 == 2:1.2
           # 2:1.2-1 == 2:
           #
-          def compare_versions(y, partial=false)
+          def compare_versions(y, partial = false)
             x = self
 
             # compare epoch
@@ -325,7 +321,7 @@ class Chef
               return cmp
             end
 
-            return 0
+            0
           end
         end
 
@@ -343,22 +339,22 @@ class Chef
               e = args[1].to_i
               v = args[2]
               r = args[3]
-              @version = RPMVersion.new(e,v,r)
+              @version = RPMVersion.new(e, v, r)
               @a = args[4]
               @provides = args[5]
             else
-              raise ArgumentError, "Expecting either 'name, epoch-version-release, arch, provides' " +
+              fail ArgumentError, "Expecting either 'name, epoch-version-release, arch, provides' " \
                                    "or 'name, epoch, version, release, arch, provides'"
             end
 
             # We always have one, ourselves!
             if @provides.empty?
-              @provides = [ RPMProvide.new(@n, @version.evr, :==) ]
+              @provides = [RPMProvide.new(@n, @version.evr, :==)]
             end
           end
           attr_reader :n, :a, :version, :provides
-          alias :name :n
-          alias :arch :a
+          alias_method :name, :n
+          alias_method :arch, :a
 
           def <=>(y)
             compare(y)
@@ -403,7 +399,7 @@ class Chef
               end
             end
 
-            return 0
+            0
           end
 
           def to_s
@@ -428,10 +424,10 @@ class Chef
               e = args[1].to_i
               v = args[2]
               r = args[3]
-              @version = RPMVersion.new(e,v,r)
+              @version = RPMVersion.new(e, v, r)
               @flag = args[4] || :==
             else
-              raise ArgumentError, "Expecting either 'name, epoch-version-release, flag' or " +
+              fail ArgumentError, "Expecting either 'name, epoch-version-release, flag' or " \
                                    "'name, epoch, version, release, flag'"
             end
           end
@@ -443,25 +439,25 @@ class Chef
           # "mta"
           def self.parse(string)
             if string =~ %r{^(\S+)\s+(>|>=|=|==|<=|<)\s+(\S+)$}
-              name = $1
-              if $2 == "="
+              name = Regexp.last_match[1]
+              if Regexp.last_match[2] == '='
                 flag = :==
               else
-                flag = :"#{$2}"
+                flag = :"#{Regexp.last_match[2]}"
               end
-              version = $3
+              version = Regexp.last_match[3]
 
-              return self.new(name, version, flag)
+              return new(name, version, flag)
             else
               name = string
-              return self.new(name, nil, nil)
+              return new(name, nil, nil)
             end
           end
 
           # Test if another RPMDependency satisfies our requirements
           def satisfy?(y)
-            unless y.kind_of?(RPMDependency)
-              raise ArgumentError, "Expecting an RPMDependency object"
+            unless y.is_a?(RPMDependency)
+              fail ArgumentError, 'Expecting an RPMDependency object'
             end
 
             x = self
@@ -489,7 +485,7 @@ class Chef
               return true
             end
 
-            return false
+            false
           end
         end
 
@@ -512,11 +508,11 @@ class Chef
         class RPMDb
           def initialize
             # package name => [ RPMPackage, RPMPackage ] of different versions
-            @rpms = Hash.new
+            @rpms = {}
             # package nevra => RPMPackage for lookups
-            @index = Hash.new
+            @index = {}
             # provide name (aka feature) => [RPMPackage, RPMPackage] each providing this feature
-            @provides = Hash.new
+            @provides = {}
             # RPMPackages listed as available
             @available = Set.new
             # RPMPackages listed as installed
@@ -524,7 +520,7 @@ class Chef
           end
 
           def [](package_name)
-            self.lookup(package_name)
+            lookup(package_name)
           end
 
           # Lookup package_name and return a descending array of package objects
@@ -545,8 +541,8 @@ class Chef
           # The available/installed state can be overwritten for existing packages.
           def push(*args)
             args.flatten.each do |new_rpm|
-              unless new_rpm.kind_of?(RPMDbPackage)
-                raise ArgumentError, "Expecting an RPMDbPackage object"
+              unless new_rpm.is_a?(RPMDbPackage)
+                fail ArgumentError, 'Expecting an RPMDbPackage object'
               end
 
               @rpms[new_rpm.n] ||= Array.new
@@ -582,7 +578,7 @@ class Chef
           end
 
           def <<(*args)
-            self.push(args)
+            push(args)
           end
 
           def clear
@@ -604,7 +600,7 @@ class Chef
           def size
             @rpms.size
           end
-          alias :length :size
+          alias_method :length, :size
 
           def available_size
             @available.size
@@ -623,8 +619,8 @@ class Chef
           end
 
           def whatprovides(rpmdep)
-            unless rpmdep.kind_of?(RPMDependency)
-              raise ArgumentError, "Expecting an RPMDependency object"
+            unless rpmdep.is_a?(RPMDependency)
+              fail ArgumentError, 'Expecting an RPMDependency object'
             end
 
             what = []
@@ -640,7 +636,7 @@ class Chef
               end
             end
 
-            return what
+            what
           end
         end
 
@@ -687,17 +683,17 @@ class Chef
             when :installed
               reset_installed
               # fast
-              opts=" --installed"
+              opts = ' --installed'
             when :all
               reset
               # medium
-              opts=" --options --installed-provides"
+              opts = ' --options --installed-provides'
             when :provides
               reset
               # slow!
-              opts=" --options --all-provides"
+              opts = ' --options --all-provides'
             else
-              raise ArgumentError, "Unexpected value in next_refresh: #{@next_refresh}"
+              fail ArgumentError, "Unexpected value in next_refresh: #{@next_refresh}"
             end
 
             if @extra_repo_control
@@ -720,39 +716,39 @@ class Chef
                 line.chomp!
 
                 if line =~ %r{\[option (.*)\] (.*)}
-                  if $1 == "installonlypkgs"
-                    @allow_multi_install = $2.split
+                  if Regexp.last_match[1] == 'installonlypkgs'
+                    @allow_multi_install = Regexp.last_match[2].split
                   else
-                    raise Chef::Exceptions::Package, "Strange, unknown option line '#{line}' from yum-dump.py"
+                    fail Chef::Exceptions::Package, "Strange, unknown option line '#{line}' from yum-dump.py"
                   end
                   next
                 end
 
                 if line =~ %r{^(\S+) ([0-9]+) (\S+) (\S+) (\S+) \[(.*)\] ([i,a,r]) (\S+)$}
-                  name     = $1
-                  epoch    = $2
-                  version  = $3
-                  release  = $4
-                  arch     = $5
-                  provides = parse_provides($6)
-                  type     = $7
-                  repoid   = $8
+                  name     = Regexp.last_match[1]
+                  epoch    = Regexp.last_match[2]
+                  version  = Regexp.last_match[3]
+                  release  = Regexp.last_match[4]
+                  arch     = Regexp.last_match[5]
+                  provides = parse_provides(Regexp.last_match[6])
+                  type     = Regexp.last_match[7]
+                  repoid   = Regexp.last_match[8]
                 else
-                  Chef::Log.warn("Problem parsing line '#{line}' from yum-dump.py! " +
-                                 "Please check your yum configuration.")
+                  Chef::Log.warn("Problem parsing line '#{line}' from yum-dump.py! " \
+                                 'Please check your yum configuration.')
                   next
                 end
 
                 case type
-                when "i"
+                when 'i'
                   # if yum-dump was called with --installed this may not be true, but it's okay
                   # since we don't touch the @available Set in reload_installed
                   available = false
                   installed = true
-                when "a"
+                when 'a'
                   available = true
                   installed = false
-                when "r"
+                when 'r'
                   available = true
                   installed = true
                 end
@@ -768,11 +764,11 @@ class Chef
             end
 
             if status.exitstatus != 0
-              raise Chef::Exceptions::Package, "Yum failed - #{status.inspect} - returns: #{error}"
+              fail Chef::Exceptions::Package, "Yum failed - #{status.inspect} - returns: #{error}"
             else
               unless one_line
-                Chef::Log.warn("Odd, no output from yum-dump.py. Please check " +
-                               "your yum configuration.")
+                Chef::Log.warn('Odd, no output from yum-dump.py. Please check ' \
+                               'your yum configuration.')
               end
             end
 
@@ -811,8 +807,8 @@ class Chef
               return true
             else
               if package_name =~ %r{^(.*)\.(.*)$}
-                pkg_name = $1
-                pkg_arch = $2
+                pkg_name = Regexp.last_match[1]
+                pkg_arch = Regexp.last_match[2]
 
                 if matches = @rpmdb.lookup(pkg_name)
                   matches.each do |m|
@@ -822,7 +818,7 @@ class Chef
               end
             end
 
-            return false
+            false
           end
 
           # Returns a array of packages satisfying an RPMDependency
@@ -832,31 +828,31 @@ class Chef
           end
 
           # Check if a package-version.arch is available to install
-          def version_available?(package_name, desired_version, arch=nil)
+          def version_available?(package_name, desired_version, arch = nil)
             version(package_name, arch, true, false) do |v|
               return true if desired_version == v
             end
 
-            return false
+            false
           end
 
           # Return the source repository for a package-version.arch
-          def package_repository(package_name, desired_version, arch=nil)
+          def package_repository(package_name, desired_version, arch = nil)
             package(package_name, arch, true, false) do |pkg|
               return pkg.repoid if desired_version == pkg.version.to_s
             end
 
-            return nil
+            nil
           end
 
           # Return the latest available version for a package.arch
-          def available_version(package_name, arch=nil)
+          def available_version(package_name, arch = nil)
             version(package_name, arch, true, false)
           end
-          alias :candidate_version :available_version
+          alias_method :candidate_version, :available_version
 
           # Return the currently installed version for a package.arch
-          def installed_version(package_name, arch=nil)
+          def installed_version(package_name, arch = nil)
             version(package_name, arch, false, true)
           end
 
@@ -884,7 +880,7 @@ class Chef
 
           private
 
-          def version(package_name, arch=nil, is_available=false, is_installed=false)
+          def version(package_name, arch = nil, is_available = false, is_installed = false)
             package(package_name, arch, is_available, is_installed) do |pkg|
               if block_given?
                 yield pkg.version.to_s
@@ -901,7 +897,7 @@ class Chef
             end
           end
 
-          def package(package_name, arch=nil, is_available=false, is_installed=false)
+          def package(package_name, arch = nil, is_available = false, is_installed = false)
             refresh
             packages = @rpmdb[package_name]
             if packages
@@ -936,16 +932,15 @@ class Chef
           def parse_provides(string)
             ret = []
             # ['atk = 1.12.2-1.fc6', 'libatk-1.0.so.0']
-            string.split(", ").each do |seg|
+            string.split(', ').each do |seg|
               # 'atk = 1.12.2-1.fc6'
               if seg =~ %r{^'(.*)'$}
-                ret << RPMProvide.parse($1)
+                ret << RPMProvide.parse(Regexp.last_match[1])
               end
             end
 
-            return ret
+            ret
           end
-
         end # YumCache
 
         include Chef::Mixin::GetSourceFromPackage
@@ -961,7 +956,7 @@ class Chef
         #
 
         def arch
-          if @new_resource.respond_to?("arch")
+          if @new_resource.respond_to?('arch')
             @new_resource.arch
           else
             nil
@@ -969,7 +964,7 @@ class Chef
         end
 
         def flush_cache
-          if @new_resource.respond_to?("flush_cache")
+          if @new_resource.respond_to?('flush_cache')
             @new_resource.flush_cache
           else
             { :before => false, :after => false }
@@ -977,7 +972,7 @@ class Chef
         end
 
         def allow_downgrade
-          if @new_resource.respond_to?("allow_downgrade")
+          if @new_resource.respond_to?('allow_downgrade')
             @new_resource.allow_downgrade
           else
             false
@@ -992,7 +987,7 @@ class Chef
         end
 
         def yum_command(command)
-          status, stdout, stderr = output_of_command(command, {:timeout => Chef::Config[:yum_timeout]})
+          status, stdout, stderr = output_of_command(command, :timeout => Chef::Config[:yum_timeout])
 
           # This is fun: rpm can encounter errors in the %post/%postun scripts which aren't
           # considered fatal - meaning the rpm is still successfully installed. These issue
@@ -1007,9 +1002,9 @@ class Chef
             stdout.each_line do |l|
               # rpm-4.4.2.3 lib/psm.c line 2182
               if l =~ %r{^error: %(post|postun)\(.*\) scriptlet failed, exit status \d+$}
-                Chef::Log.warn("#{@new_resource} caught non-fatal scriptlet issue: \"#{l}\". Can't trust yum exit status " +
-                               "so running install again to verify.")
-                status, stdout, stderr = output_of_command(command, {:timeout => Chef::Config[:yum_timeout]})
+                Chef::Log.warn("#{@new_resource} caught non-fatal scriptlet issue: \"#{l}\". Can't trust yum exit status " \
+                               'so running install again to verify.')
+                status, stdout, stderr = output_of_command(command, :timeout => Chef::Config[:yum_timeout])
                 break
               end
             end
@@ -1039,7 +1034,7 @@ class Chef
             end
 
             if repo_control.size > 0
-              @yum.enable_extra_repo_control(repo_control.join(" "))
+              @yum.enable_extra_repo_control(repo_control.join(' '))
             else
               @yum.disable_extra_repo_control
             end
@@ -1068,16 +1063,16 @@ class Chef
           @current_resource.package_name(@new_resource.package_name)
 
           if @new_resource.source
-            unless ::File.exists?(@new_resource.source)
-              raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
+            unless ::File.exist?(@new_resource.source)
+              fail Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
             end
 
             Chef::Log.debug("#{@new_resource} checking rpm status")
             shell_out!("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}", :timeout => Chef::Config[:yum_timeout]).stdout.each_line do |line|
               case line
               when /([\w\d_.-]+)\s([\w\d_.-]+)/
-                @current_resource.package_name($1)
-                @new_resource.version($2)
+                @current_resource.package_name(Regexp.last_match[1])
+                @new_resource.version(Regexp.last_match[2])
               end
             end
           end
@@ -1095,8 +1090,8 @@ class Chef
 
           @candidate_version = @yum.candidate_version(@new_resource.package_name, arch)
 
-          Chef::Log.debug("#{@new_resource} installed version: #{installed_version || "(none)"} candidate version: " +
-                          "#{@candidate_version || "(none)"}")
+          Chef::Log.debug("#{@new_resource} installed version: #{installed_version || '(none)'} candidate version: " \
+                          "#{@candidate_version || '(none)'}")
 
           @current_resource
         end
@@ -1107,8 +1102,8 @@ class Chef
           else
             # Work around yum not exiting with an error if a package doesn't exist for CHEF-2062
             if @yum.version_available?(name, version, arch)
-              method = "install"
-              log_method = "installing"
+              method = 'install'
+              log_method = 'installing'
 
               # More Yum fun:
               #
@@ -1120,11 +1115,11 @@ class Chef
                 if RPMVersion.parse(@current_resource.version) > RPMVersion.parse(version)
                   # Unless they want this...
                   if allow_downgrade
-                    method = "downgrade"
-                    log_method = "downgrading"
+                    method = 'downgrade'
+                    log_method = 'downgrading'
                   else
                     # we bail like yum when the package is older
-                    raise Chef::Exceptions::Package, "Installed package #{name}-#{@current_resource.version} is newer " +
+                    fail Chef::Exceptions::Package, "Installed package #{name}-#{@current_resource.version} is newer " \
                                                      "than candidate package #{name}-#{version}"
                   end
                 end
@@ -1135,8 +1130,8 @@ class Chef
 
               yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{name}-#{version}#{yum_arch}")
             else
-              raise Chef::Exceptions::Package, "Version #{version} of #{name} not found. Did you specify both version " +
-                                               "and release? (version-release, e.g. 1.84-10.fc6)"
+              fail Chef::Exceptions::Package, "Version #{version} of #{name} not found. Did you specify both version " \
+                                               'and release? (version-release, e.g. 1.84-10.fc6)'
             end
           end
 
@@ -1194,16 +1189,16 @@ class Chef
           # Allow for foo.x86_64 style package_name like yum uses in it's output
           #
           if @new_resource.package_name =~ %r{^(.*)\.(.*)$}
-            new_package_name = $1
-            new_arch = $2
+            new_package_name = Regexp.last_match[1]
+            new_arch = Regexp.last_match[2]
             # foo.i386 and foo.beta1 are both valid package names or expressions of an arch.
             # Ensure we don't have an existing package matching package_name, then ensure we at
             # least have a match for the new_package+new_arch before we overwrite. If neither
             # then fall through to standard package handling.
-            if (@yum.installed_version(@new_resource.package_name).nil? and @yum.candidate_version(@new_resource.package_name).nil?) and
+            if (@yum.installed_version(@new_resource.package_name).nil? && @yum.candidate_version(@new_resource.package_name).nil?) and
                  (@yum.installed_version(new_package_name, new_arch) or @yum.candidate_version(new_package_name, new_arch))
-               @new_resource.package_name(new_package_name)
-               @new_resource.arch(new_arch)
+              @new_resource.package_name(new_package_name)
+              @new_resource.arch(new_arch)
             end
           end
         end
@@ -1229,8 +1224,8 @@ class Chef
             # Don't bother if we are just ensuring a package is removed - we don't need Provides data
             actions = Array(@new_resource.action)
             unless actions.size == 1 and (actions[0] == :remove || actions[0] == :purge)
-              Chef::Log.debug("#{@new_resource} couldn't match #{@new_resource.package_name} in " +
-                            "installed Provides, loading available Provides - this may take a moment")
+              Chef::Log.debug("#{@new_resource} couldn't match #{@new_resource.package_name} in " \
+                            'installed Provides, loading available Provides - this may take a moment')
               @yum.reload_provides
               packages = @yum.packages_from_require(yum_require)
             end
@@ -1238,7 +1233,7 @@ class Chef
 
           unless packages.empty?
             new_package_name = packages.first.name
-            Chef::Log.debug("#{@new_resource} no package found for #{@new_resource.package_name} " +
+            Chef::Log.debug("#{@new_resource} no package found for #{@new_resource.package_name} " \
                             "but matched Provides for #{new_package_name}")
 
             # Ensure it's not the same package under a different architecture
@@ -1249,15 +1244,14 @@ class Chef
             unique_names.uniq!
 
             if unique_names.size > 1
-              Chef::Log.warn("#{@new_resource} matched multiple Provides for #{@new_resource.package_name} " +
-                             "but we can only use the first match: #{new_package_name}. Please use a more " +
-                             "specific version.")
+              Chef::Log.warn("#{@new_resource} matched multiple Provides for #{@new_resource.package_name} " \
+                             "but we can only use the first match: #{new_package_name}. Please use a more " \
+                             'specific version.')
             end
 
             @new_resource.package_name(new_package_name)
           end
         end
-
       end
     end
   end

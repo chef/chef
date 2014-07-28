@@ -21,36 +21,35 @@ require 'chef/knife'
 class Chef
   class Knife
     class ClientCreate < Knife
-
       deps do
         require 'chef/api_client'
         require 'chef/json_compat'
       end
 
       option :file,
-        :short => "-f FILE",
-        :long  => "--file FILE",
-        :description => "Write the key to a file"
+             :short => '-f FILE',
+             :long  => '--file FILE',
+             :description => 'Write the key to a file'
 
       option :admin,
-        :short => "-a",
-        :long  => "--admin",
-        :description => "Create the client as an admin",
-        :boolean => true
+             :short => '-a',
+             :long  => '--admin',
+             :description => 'Create the client as an admin',
+             :boolean => true
 
       option :validator,
-        :long  => "--validator",
-        :description => "Create the client as a validator",
-        :boolean => true
+             :long  => '--validator',
+             :description => 'Create the client as a validator',
+             :boolean => true
 
-      banner "knife client create CLIENT (options)"
+      banner 'knife client create CLIENT (options)'
 
       def run
         @client_name = @name_args[0]
 
         if @client_name.nil?
           show_usage
-          ui.fatal("You must specify a client name")
+          ui.fatal('You must specify a client name')
           exit 1
         end
 
@@ -69,7 +68,7 @@ class Chef
           ui.info("Created #{output}")
 
           if config[:file]
-            File.open(config[:file], "w") do |f|
+            File.open(config[:file], 'w') do |f|
               f.print(client['private_key'])
             end
           else
@@ -83,4 +82,3 @@ class Chef
     end
   end
 end
-

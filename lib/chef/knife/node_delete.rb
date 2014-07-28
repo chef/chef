@@ -21,27 +21,24 @@ require 'chef/knife'
 class Chef
   class Knife
     class NodeDelete < Knife
-
       deps do
         require 'chef/node'
         require 'chef/json_compat'
       end
 
-      banner "knife node delete NODE (options)"
+      banner 'knife node delete NODE (options)'
 
       def run
         @node_name = @name_args[0]
 
         if @node_name.nil?
           show_usage
-          ui.fatal("You must specify a node name")
+          ui.fatal('You must specify a node name')
           exit 1
         end
 
         delete_object(Chef::Node, @node_name)
       end
-
     end
   end
 end
-

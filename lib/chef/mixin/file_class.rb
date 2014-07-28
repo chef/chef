@@ -21,11 +21,10 @@
 class Chef
   module Mixin
     module FileClass
-
       def file_class
         @host_os_file ||= if Chef::Platform.windows?
-          require 'chef/win32/file'
-          Chef::ReservedNames::Win32::File
+                            require 'chef/win32/file'
+                            Chef::ReservedNames::Win32::File
         else
           ::File
         end
@@ -33,5 +32,3 @@ class Chef
     end
   end
 end
-
-

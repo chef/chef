@@ -43,7 +43,6 @@ class Chef
   # Chef's custom REST client with built-in JSON support and RSA signed header
   # authentication.
   class REST < HTTP
-
     # Backwards compatibility for things that use
     # Chef::REST::RESTRequest or its constants
     RESTRequest = HTTP::HTTPRequest
@@ -56,7 +55,7 @@ class Chef
     # all subsequent requests. For example, when initialized with a base url
     # http://localhost:4000, a call to +get_rest+ with 'nodes' will make an
     # HTTP GET request to http://localhost:4000/nodes
-    def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key], options={})
+    def initialize(url, client_name = Chef::Config[:node_name], signing_key_filename = Chef::Config[:client_key], options = {})
       options = options.dup
       options[:client_name] = client_name
       options[:signing_key_filename] = signing_key_filename
@@ -77,7 +76,6 @@ class Chef
       # because the order of middlewares is reversed when handling
       # responses.
       @middlewares << ValidateContentLength.new(options)
-
     end
 
     def signing_key_filename
@@ -108,7 +106,7 @@ class Chef
     # path:: The path to GET
     # raw:: Whether you want the raw body returned, or JSON inflated.  Defaults
     #   to JSON inflated.
-    def get(path, raw=false, headers={})
+    def get(path, raw = false, headers = {})
       if raw
         streaming_request(path, headers)
       else
@@ -116,24 +114,24 @@ class Chef
       end
     end
 
-    alias :get_rest :get
+    alias_method :get_rest, :get
 
-    alias :delete_rest :delete
+    alias_method :delete_rest, :delete
 
-    alias :post_rest :post
+    alias_method :post_rest, :post
 
-    alias :put_rest :put
+    alias_method :put_rest, :put
 
     # Streams a download to a tempfile, then yields the tempfile to a block.
     # After the download, the tempfile will be closed and unlinked.
     # If you rename the tempfile, it will not be deleted.
     # Beware that if the server streams infinite content, this method will
     # stream it until you run out of disk space.
-    def fetch(path, headers={})
-      streaming_request(create_url(path), headers) {|tmp_file| yield tmp_file }
+    def fetch(path, headers = {})
+      streaming_request(create_url(path), headers) { |tmp_file| yield tmp_file }
     end
 
-    alias :api_request :request
+    alias_method :api_request, :request
 
     # Do a HTTP request where no middleware is loaded (e.g. JSON input/output
     # conversion) but the standard Chef Authentication headers are added to the
@@ -145,7 +143,7 @@ class Chef
       response, rest_request, return_value = send_http_request(method, url, headers, data)
       response.error! unless success_response?(response)
       return_value
-    rescue Exception => exception
+    rescue => exception
       log_failed_request(response, return_value) unless response.nil?
 
       if exception.respond_to?(:chef_rest_request=)
@@ -171,11 +169,11 @@ class Chef
     # Customized streaming behavior; sets the accepted content type to "*/*"
     # if not otherwise specified for compatibility purposes
     def streaming_request(url, headers, &block)
-      headers["Accept"] ||= "*/*"
+      headers['Accept'] ||= '*/*'
       super
     end
 
-    alias :retriable_rest_request :retriable_http_request
+    alias_method :retriable_rest_request, :retriable_http_request
 
     def follow_redirect
       unless @sign_on_redirect
@@ -188,7 +186,7 @@ class Chef
 
     public :create_url
 
-    def http_client(base_url=nil)
+    def http_client(base_url = nil)
       base_url ||= url
       BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
     end
@@ -201,9 +199,8 @@ class Chef
       @decompressor.decompress_body(body)
     end
 
-    def authentication_headers(method, url, json_body=nil)
+    def authentication_headers(method, url, json_body = nil)
       authenticator.authentication_headers(method, url, json_body)
     end
-
   end
 end

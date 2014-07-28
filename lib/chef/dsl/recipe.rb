@@ -22,12 +22,10 @@ require 'chef/mixin/convert_to_class_name'
 
 class Chef
   module DSL
-
     # == Chef::DSL::Recipe
     # Provides the primary recipe DSL functionality for defining Chef resource
     # objects via method calls.
     module Recipe
-
       include Chef::Mixin::ConvertToClassName
 
       def method_missing(method_symbol, *args, &block)
@@ -51,14 +49,13 @@ class Chef
       end
 
       def has_resource_definition?(name)
-        yes_or_no = run_context.definitions.has_key?(name)
+        yes_or_no = run_context.definitions.key?(name)
 
         yes_or_no
       end
 
       # Processes the arguments and block as a resource definition.
       def evaluate_resource_definition(definition_name, *args, &block)
-
         # This dupes the high level object, but we still need to dup the params
         new_def = run_context.definitions[definition_name].dup
 
@@ -66,7 +63,6 @@ class Chef
         new_def.node = run_context.node
         # This sets up the parameter overrides
         new_def.instance_eval(&block) if block
-
 
         new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, run_context)
         new_recipe.params = new_def.params
@@ -79,7 +75,7 @@ class Chef
       # resource collection. Note that resource classes are looked up directly,
       # so this will create the resource you intended even if the method name
       # corresponding to that resource has been overridden.
-      def declare_resource(type, name, created_at=nil, &resource_attrs_block)
+      def declare_resource(type, name, created_at = nil, &resource_attrs_block)
         created_at ||= caller[0]
 
         resource = build_resource(type, name, created_at, &resource_attrs_block)
@@ -92,7 +88,7 @@ class Chef
       # attributes as given in the +resource_attrs_block+.
       #
       # The resource is NOT added to the resource collection.
-      def build_resource(type, name, created_at=nil, &resource_attrs_block)
+      def build_resource(type, name, created_at = nil, &resource_attrs_block)
         created_at ||= caller[0]
 
         # Checks the new platform => short_name => resource mapping initially
@@ -100,7 +96,7 @@ class Chef
         # backward compatibility
         resource_class = resource_class_for(type)
 
-        raise ArgumentError, "You must supply a name when declaring a #{type} resource" if name.nil?
+        fail ArgumentError, "You must supply a name when declaring a #{type} resource" if name.nil?
 
         resource = resource_class.new(name, run_context)
         resource.source_line = created_at
@@ -139,14 +135,13 @@ class Chef
 
       def describe_self_for_error
         if respond_to?(:name)
-          %Q[`#{self.class.name} "#{name}"']
+          %Q(`#{self.class.name} "#{name}"')
         elsif respond_to?(:recipe_name)
-          %Q[`#{self.class.name} "#{recipe_name}"']
+          %Q(`#{self.class.name} "#{recipe_name}"')
         else
           to_s
         end
       end
-
     end
   end
 end

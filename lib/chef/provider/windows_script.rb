@@ -22,13 +22,12 @@ require 'chef/mixin/windows_architecture_helper'
 class Chef
   class Provider
     class WindowsScript < Chef::Provider::Script
-
       protected
 
       include Chef::Mixin::WindowsArchitectureHelper
 
-      def initialize( new_resource, run_context, script_extension='')
-        super( new_resource, run_context )
+      def initialize(new_resource, run_context, script_extension = '')
+        super(new_resource, run_context)
         @script_extension = script_extension
 
         target_architecture = new_resource.architecture.nil? ?
@@ -37,9 +36,9 @@ class Chef
         @is_wow64 = wow64_architecture_override_required?(run_context.node, target_architecture)
 
         # if the user wants to run the script 32 bit && we are on a 64bit windows system && we are running a 64bit ruby ==> fail
-        if ( target_architecture == :i386 ) && node_windows_architecture(run_context.node) == :x86_64 && !is_i386_process_on_x86_64_windows?
-          raise Chef::Exceptions::Win32ArchitectureIncorrect,
-          "Support for the i386 architecture from a 64-bit Ruby runtime is not yet implemented"
+        if ( target_architecture == :i386) && node_windows_architecture(run_context.node) == :x86_64 && !is_i386_process_on_x86_64_windows?
+          fail Chef::Exceptions::Win32ArchitectureIncorrect,
+               'Support for the i386 architecture from a 64-bit Ruby runtime is not yet implemented'
         end
       end
 
@@ -57,15 +56,15 @@ class Chef
         rescue
           raise
         ensure
-          if ! wow64_redirection_state.nil?
+          unless wow64_redirection_state.nil?
             restore_wow64_file_redirection(@run_context.node, wow64_redirection_state)
           end
         end
       end
 
       def script_file
-        base_script_name = "chef-script"
-        temp_file_arguments = [ base_script_name, @script_extension ]
+        base_script_name = 'chef-script'
+        temp_file_arguments = [base_script_name, @script_extension]
 
         @script_file ||= Tempfile.open(temp_file_arguments)
       end

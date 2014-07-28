@@ -21,18 +21,18 @@ require 'rack'
 require 'stringio'
 
 module AppServerSupport
-  def start_app_server(app, port)
+  def start_app_server(app, _port)
     server = nil
     thread = Thread.new do
       Rack::Handler::WEBrick.run(app,
-        :Port => 9018,
-        :AccessLog => [],
-        :Logger => WEBrick::Log::new(StringIO.new, 7)
+                                 :Port => 9018,
+                                 :AccessLog => [],
+                                 :Logger => WEBrick::Log.new(StringIO.new, 7)
       ) do |found_server|
         server = found_server
       end
     end
-    Timeout::timeout(5) do
+    Timeout.timeout(5) do
       until server && server.status == :Running
         sleep(0.01)
       end

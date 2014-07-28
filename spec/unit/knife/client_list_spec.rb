@@ -21,7 +21,7 @@ require 'spec_helper'
 describe Chef::Knife::ClientList do
   before(:each) do
     @knife = Chef::Knife::ClientList.new
-    @knife.name_args = [ 'adam' ]
+    @knife.name_args = ['adam']
   end
 
   describe 'run' do

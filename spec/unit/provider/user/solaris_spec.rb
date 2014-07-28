@@ -32,47 +32,47 @@ describe Chef::Provider::User::Solaris do
   end
 
   supported_useradd_options = {
-    'comment' => "-c",
-    'gid' => "-g",
-    'uid' => "-u",
-    'shell' => "-s"
+    'comment' => '-c',
+    'gid' => '-g',
+    'uid' => '-u',
+    'shell' => '-s'
   }
 
-  include_examples "a useradd-based user provider", supported_useradd_options
+  include_examples 'a useradd-based user provider', supported_useradd_options
 
-  describe "when we want to set a password" do
+  describe 'when we want to set a password' do
     before(:each) do
       @node = Chef::Node.new
       @events = Chef::EventDispatch::Dispatcher.new
       @run_context = Chef::RunContext.new(@node, {}, @events)
 
-      @new_resource = Chef::Resource::User.new("adam", @run_context)
-      @current_resource = Chef::Resource::User.new("adam", @run_context)
+      @new_resource = Chef::Resource::User.new('adam', @run_context)
+      @current_resource = Chef::Resource::User.new('adam', @run_context)
 
-      @new_resource.password "hocus-pocus"
+      @new_resource.password 'hocus-pocus'
 
       # Let these tests run #write_shadow_file
       provider.unstub(:write_shadow_file)
     end
 
-    it "should use its own shadow file writer to set the password" do
+    it 'should use its own shadow file writer to set the password' do
       provider.should_receive(:write_shadow_file)
       provider.stub(:shell_out!).and_return(true)
       provider.manage_user
     end
 
-    it "should write out a modified version of the password file" do
-      password_file = Tempfile.new("shadow")
-      password_file.puts "adam:existingpassword:15441::::::"
+    it 'should write out a modified version of the password file' do
+      password_file = Tempfile.new('shadow')
+      password_file.puts 'adam:existingpassword:15441::::::'
       password_file.close
       provider.password_file = password_file.path
       provider.stub(:shell_out!).and_return(true)
       # may not be able to write to /etc for tests...
-      temp_file = Tempfile.new("shadow")
-      Tempfile.stub(:new).with("shadow", "/etc").and_return(temp_file)
-      @new_resource.password "verysecurepassword"
+      temp_file = Tempfile.new('shadow')
+      Tempfile.stub(:new).with('shadow', '/etc').and_return(temp_file)
+      @new_resource.password 'verysecurepassword'
       provider.manage_user
-      ::File.open(password_file.path, "r").read.should =~ /adam:verysecurepassword:/
+      ::File.open(password_file.path, 'r').read.should =~ /adam:verysecurepassword:/
       password_file.unlink
     end
   end

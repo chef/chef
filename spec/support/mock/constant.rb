@@ -9,13 +9,13 @@ def mock_constants(constants, &block)
   constants.each do |constant, val|
     source_object, const_name = parse_constant(constant)
     saved_constants[constant] = source_object.const_get(const_name)
-    with_warnings(nil) {source_object.const_set(const_name, val) }
+    with_warnings(nil) { source_object.const_set(const_name, val) }
   end
 
   begin
     block.call
   ensure
-    constants.each do |constant, val|
+    constants.each do |constant, _val|
       source_object, const_name = parse_constant(constant)
       with_warnings(nil) { source_object.const_set(const_name, saved_constants[constant]) }
     end

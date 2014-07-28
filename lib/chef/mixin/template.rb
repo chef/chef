@@ -22,7 +22,6 @@ require 'erubis'
 class Chef
   module Mixin
     module Template
-
       # A compatibility wrapper around IO.binread so it works on Ruby 1.8.7.
       # --
       # Used in the TemplateContext class, but that method namespace is shared
@@ -31,7 +30,7 @@ class Chef
         if IO.respond_to?(:binread)
           IO.binread(file)
         else
-          File.open(file, "rb") {|f| f.read }
+          File.open(file, 'rb') { |f| f.read }
         end
       end
 
@@ -51,7 +50,6 @@ class Chef
       # extended to add logic to a specific template.
       #
       class TemplateContext < Erubis::Context
-
         include ChefContext
 
         attr_reader :_extension_modules
@@ -70,8 +68,8 @@ class Chef
         # by the bare `node` everywhere.
         def node
           return @node if @node
-          raise "Could not find a value for node. If you are explicitly setting variables in a template, " +
-                "include a node variable if you plan to use it."
+          fail 'Could not find a value for node. If you are explicitly setting variables in a template, ' \
+                'include a node variable if you plan to use it.'
         end
 
         #
@@ -98,7 +96,7 @@ class Chef
         #              need them you will need to propagate them explicitly.
         #
         def render(partial_name, options = {})
-          raise "You cannot render partials in this context" unless @template_finder
+          fail 'You cannot render partials in this context' unless @template_finder
 
           partial_variables = options.delete(:variables) || _public_instance_variables
           partial_context = self.class.new(partial_variables)
@@ -141,7 +139,7 @@ class Chef
           # this template.
 
           if Chef::Platform.windows?
-            output = output.gsub(/\r?\n/,"\r\n")
+            output = output.gsub(/\r?\n/, "\r\n")
           end
 
           output
@@ -167,7 +165,7 @@ class Chef
         def _public_instance_variables
           all_ivars = instance_variables
           all_ivars.delete(:@_extension_modules)
-          all_ivars.inject({}) do |ivar_map, ivar_symbol_name|
+          all_ivars.reduce({}) do |ivar_map, ivar_symbol_name|
             value = instance_variable_get(ivar_symbol_name)
             name_without_at = ivar_symbol_name.to_s[1..-1].to_sym
             ivar_map[name_without_at] = value
@@ -189,7 +187,7 @@ class Chef
         end
 
         def line_number
-          @line_number ||= $1.to_i if original_exception.backtrace.find {|line| line =~ /\(erubis\):(\d+)/ }
+          @line_number ||= Regexp.last_match[1].to_i if original_exception.backtrace.find { |line| line =~ /\(erubis\):(\d+)/ }
         end
 
         def source_location
@@ -210,7 +208,7 @@ class Chef
             contextual_lines = lines[beginning_line, source_size]
             output = []
             contextual_lines.each_with_index do |line, index|
-              line_number = (index+beginning_line+1).to_s.rjust(3)
+              line_number = (index + beginning_line + 1).to_s.rjust(3)
               output << "#{line_number}: #{line}"
             end
             output.join("\n")
@@ -218,7 +216,7 @@ class Chef
         end
 
         def to_s
-          "\n\n#{self.class} (#{message}) #{source_location}:\n\n" +
+          "\n\n#{self.class} (#{message}) #{source_location}:\n\n" \
             "#{source_listing}\n\n  #{original_exception.backtrace.join("\n  ")}\n\n"
         end
       end

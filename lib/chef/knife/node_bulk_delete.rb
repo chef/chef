@@ -21,20 +21,18 @@ require 'chef/knife'
 class Chef
   class Knife
     class NodeBulkDelete < Knife
-
       deps do
         require 'chef/node'
         require 'chef/json_compat'
       end
 
-      banner "knife node bulk delete REGEX (options)"
+      banner 'knife node bulk delete REGEX (options)'
 
       def run
         if name_args.length < 1
-          ui.fatal("You must supply a regular expression to match the results against")
+          ui.fatal('You must supply a regular expression to match the results against')
           exit 42
         end
-
 
         nodes_to_delete = {}
         matcher = /#{name_args[0]}/
@@ -49,12 +47,11 @@ class Chef
           exit 0
         end
 
-        ui.msg("The following nodes will be deleted:")
-        ui.msg("")
+        ui.msg('The following nodes will be deleted:')
+        ui.msg('')
         ui.msg(ui.list(nodes_to_delete.keys.sort, :columns_down))
-        ui.msg("")
-        ui.confirm("Are you sure you want to delete these nodes")
-
+        ui.msg('')
+        ui.confirm('Are you sure you want to delete these nodes')
 
         nodes_to_delete.sort.each do |name, node|
           node.destroy
@@ -65,16 +62,11 @@ class Chef
       def all_nodes
         node_uris_by_name = Chef::Node.list
 
-        node_uris_by_name.keys.inject({}) do |nodes_by_name, name|
-          nodes_by_name[name] = Chef::Node.new.tap {|n| n.name(name)}
+        node_uris_by_name.keys.reduce({}) do |nodes_by_name, name|
+          nodes_by_name[name] = Chef::Node.new.tap { |n| n.name(name) }
           nodes_by_name
         end
       end
-
     end
   end
 end
-
-
-
-

@@ -2,11 +2,10 @@ require 'logger'
 
 require 'pp'
 
-#== MonoLogger
+# == MonoLogger
 # A subclass of Ruby's stdlib Logger with all the mutex and logrotation stuff
 # ripped out.
 class MonoLogger < Logger
-
   #
   # === Synopsis
   #
@@ -39,9 +38,7 @@ class MonoLogger < Logger
     end
   end
 
-
   class LocklessLogDevice < LogDevice
-
     def initialize(log = nil)
       @dev = @filename = @shift_age = @shift_size = nil
       if log.respond_to?(:write) and log.respond_to?(:close)
@@ -55,7 +52,7 @@ class MonoLogger < Logger
 
     def write(message)
       @dev.write(message)
-    rescue Exception => ignored
+    rescue => ignored
       warn("log writing failed. #{ignored}")
     end
 
@@ -63,10 +60,10 @@ class MonoLogger < Logger
       @dev.close rescue nil
     end
 
-  private
+    private
 
     def open_logfile(filename)
-      if (FileTest.exist?(filename))
+      if FileTest.exist?(filename)
         open(filename, (File::WRONLY | File::APPEND))
       else
         create_logfile(filename)
@@ -84,9 +81,5 @@ class MonoLogger < Logger
         "# Logfile created on %s by %s\n" % [Time.now.to_s, Logger::ProgName]
       )
     end
-
   end
-
-
 end
-

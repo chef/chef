@@ -5,7 +5,7 @@
 # 'i386-mingw32' (windows) or 'x86_64-darwin11.2.0' (unix).  Usueful for
 # testing code that mixes in platform specific modules like +Chef::Mixin::Securable+
 # or +Chef::FileAccessControl+
-def platform_mock(platform = :unix, &block)
+def platform_mock(platform = :unix, &_block)
   Chef::Platform.stub(:windows?).and_return(platform == :windows ? true : false)
   ENV['SYSTEMDRIVE'] = (platform == :windows ? 'C:' : nil)
 
@@ -16,10 +16,10 @@ def platform_mock(platform = :unix, &block)
   end
 
   if block_given?
-    mock_constants({"RUBY_PLATFORM" => (platform == :windows ? 'i386-mingw32' : 'x86_64-darwin11.2.0'),
-                    "File::PATH_SEPARATOR" => (platform == :windows ? ";" : ":"),
-                    "File::ALT_SEPARATOR" => (platform == :windows ? "\\" : nil) }) do
-yield
+    mock_constants('RUBY_PLATFORM' => (platform == :windows ? 'i386-mingw32' : 'x86_64-darwin11.2.0'),
+                   'File::PATH_SEPARATOR' => (platform == :windows ? ';' : ':'),
+                   'File::ALT_SEPARATOR' => (platform == :windows ? '\\' : nil)) do
+      yield
     end
   end
 end

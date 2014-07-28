@@ -5,14 +5,14 @@ class Chef
     module DataHandler
       class ContainerDataHandler < DataHandlerBase
         def normalize(container, entry)
-          normalize_hash(container, {
-            'containername' => remove_dot_json(entry.name),
-            'containerpath' => remove_dot_json(entry.name)
-          })
+          normalize_hash(container,
+                         'containername' => remove_dot_json(entry.name),
+                         'containerpath' => remove_dot_json(entry.name)
+                         )
         end
 
         def preserve_key(key)
-          return key == 'containername'
+          key == 'containername'
         end
 
         def verify_integrity(object, entry, &on_error)

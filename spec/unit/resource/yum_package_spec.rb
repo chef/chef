@@ -18,68 +18,68 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::YumPackage, "initialize" do
+describe Chef::Resource::YumPackage, 'initialize' do
 
   before(:each) do
-    @resource = Chef::Resource::YumPackage.new("foo")
+    @resource = Chef::Resource::YumPackage.new('foo')
   end
 
-  it "should return a Chef::Resource::YumPackage" do
+  it 'should return a Chef::Resource::YumPackage' do
     @resource.should be_a_kind_of(Chef::Resource::YumPackage)
   end
 
-  it "should set the resource_name to :yum_package" do
+  it 'should set the resource_name to :yum_package' do
     @resource.resource_name.should eql(:yum_package)
   end
 
-  it "should set the provider to Chef::Provider::Package::Yum" do
+  it 'should set the provider to Chef::Provider::Package::Yum' do
     @resource.provider.should eql(Chef::Provider::Package::Yum)
   end
 end
 
-describe Chef::Resource::YumPackage, "arch" do
+describe Chef::Resource::YumPackage, 'arch' do
   before(:each) do
-    @resource = Chef::Resource::YumPackage.new("foo")
+    @resource = Chef::Resource::YumPackage.new('foo')
   end
 
-  it "should set the arch variable to whatever is passed in" do
-    @resource.arch("i386")
-    @resource.arch.should eql("i386")
+  it 'should set the arch variable to whatever is passed in' do
+    @resource.arch('i386')
+    @resource.arch.should eql('i386')
   end
 end
 
-describe Chef::Resource::YumPackage, "flush_cache" do
+describe Chef::Resource::YumPackage, 'flush_cache' do
   before(:each) do
-    @resource = Chef::Resource::YumPackage.new("foo")
+    @resource = Chef::Resource::YumPackage.new('foo')
   end
 
-  it "should default the flush timing to false" do
+  it 'should default the flush timing to false' do
     flush_hash = { :before => false, :after => false }
     @resource.flush_cache.should == flush_hash
   end
 
-  it "should allow you to set the flush timing with an array" do
-    flush_array = [ :before, :after ]
+  it 'should allow you to set the flush timing with an array' do
+    flush_array = [:before, :after]
     flush_hash = { :before => true, :after => true }
     @resource.flush_cache(flush_array)
     @resource.flush_cache.should == flush_hash
   end
 
-  it "should allow you to set the flush timing with a hash" do
+  it 'should allow you to set the flush timing with a hash' do
     flush_hash = { :before => true, :after => true }
     @resource.flush_cache(flush_hash)
     @resource.flush_cache.should == flush_hash
   end
 end
 
-describe Chef::Resource::YumPackage, "allow_downgrade" do
+describe Chef::Resource::YumPackage, 'allow_downgrade' do
   before(:each) do
-    @resource = Chef::Resource::YumPackage.new("foo")
+    @resource = Chef::Resource::YumPackage.new('foo')
   end
 
-  it "should allow you to specify whether allow_downgrade is true or false" do
+  it 'should allow you to specify whether allow_downgrade is true or false' do
     lambda { @resource.allow_downgrade true }.should_not raise_error
     lambda { @resource.allow_downgrade false }.should_not raise_error
-    lambda { @resource.allow_downgrade "monkey" }.should raise_error(ArgumentError)
+    lambda { @resource.allow_downgrade 'monkey' }.should raise_error(ArgumentError)
   end
 end

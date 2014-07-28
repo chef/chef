@@ -22,7 +22,6 @@ class Chef
   class Provider
     class Service
       class Insserv < Chef::Provider::Service::Init
-
         def load_current_resource
           super
 
@@ -36,12 +35,12 @@ class Chef
           @current_resource
         end
 
-        def enable_service()
+        def enable_service
           run_command(:command => "/sbin/insserv -r -f #{@new_resource.service_name}")
           run_command(:command => "/sbin/insserv -d -f #{@new_resource.service_name}")
         end
 
-        def disable_service()
+        def disable_service
           run_command(:command => "/sbin/insserv -r -f #{@new_resource.service_name}")
         end
       end

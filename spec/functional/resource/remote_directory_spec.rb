@@ -21,11 +21,11 @@ require 'spec_helper'
 describe Chef::Resource::RemoteDirectory do
   include_context Chef::Resource::Directory
 
-  let(:directory_base) { "directory_spec" }
+  let(:directory_base) { 'directory_spec' }
   let(:default_mode) { ((0100777 - File.umask) & 07777).to_s(8) }
 
   def create_resource
-    cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
+    cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, 'cookbooks'))
     Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, cookbook_repo) }
     node = Chef::Node.new
     cl = Chef::CookbookLoader.new(cookbook_repo)
@@ -35,7 +35,7 @@ describe Chef::Resource::RemoteDirectory do
     run_context = Chef::RunContext.new(node, cookbook_collection, events)
 
     resource = Chef::Resource::RemoteDirectory.new(path, run_context)
-    resource.source "remotedir"
+    resource.source 'remotedir'
     resource.cookbook('openldap')
     resource
   end
@@ -68,76 +68,76 @@ describe Chef::Resource::RemoteDirectory do
     ]
   end
 
-  it_behaves_like "a directory resource"
+  it_behaves_like 'a directory resource'
 
-  it_behaves_like "a securable resource with reporting"
+  it_behaves_like 'a securable resource with reporting'
 
-  context "when creating the remote directory with purging disabled" do
+  context 'when creating the remote directory with purging disabled' do
 
-    context "and the directory does not yet exist" do
+    context 'and the directory does not yet exist' do
       before do
         resource.run_action(:create)
       end
 
-      it "transfers the directory with all contents" do
+      it 'transfers the directory with all contents' do
         expected_files.each do |file_path|
           File.should exist(file_path)
         end
       end
 
-      it "is marked as updated by last action" do
+      it 'is marked as updated by last action' do
         resource.should be_updated_by_last_action
       end
     end
 
-    context "and there are extraneous files in the directory" do
+    context 'and there are extraneous files in the directory' do
       before do
         create_extraneous_files
         resource.run_action(:create)
       end
 
-      it "does not modify the expected state of the directory" do
+      it 'does not modify the expected state of the directory' do
         expected_files.each do |file_path|
           File.should exist(file_path)
         end
       end
 
-      it "does not remove unmanaged files" do
+      it 'does not remove unmanaged files' do
         File.should exist(@existing1)
         File.should exist(@existing2)
       end
     end
 
-    context "and the directory is in the desired state" do
+    context 'and the directory is in the desired state' do
       before do
         resource.run_action(:create)
         resource_second_pass.run_action(:create)
       end
 
-      it "does not modify the expected state of the directory" do
+      it 'does not modify the expected state of the directory' do
         expected_files.each do |file_path|
           File.should exist(file_path)
         end
       end
 
-      it "is not marked as updated by last action" do
+      it 'is not marked as updated by last action' do
         resource_second_pass.should_not be_updated_by_last_action
       end
 
     end
 
-    describe "with overwrite disabled" do
+    describe 'with overwrite disabled' do
       before(:each) do
         resource.purge(false)
         resource.overwrite(false)
       end
 
-      it "leaves modifications alone" do
+      it 'leaves modifications alone' do
         FileUtils.mkdir_p(File.join(path, 'remotesubdir'))
         modified_file = File.join(path, 'remote_dir_file1.txt')
         modified_subdir_file = File.join(path, 'remotesubdir', 'remote_subdir_file1.txt')
-        File.open(modified_file, 'a') {|f| f.puts "santa is real"}
-        File.open(modified_subdir_file, 'a') {|f| f.puts "so is rudolph"}
+        File.open(modified_file, 'a') { |f| f.puts 'santa is real' }
+        File.open(modified_subdir_file, 'a') { |f| f.puts 'so is rudolph' }
         modified_file_checksum = sha256_checksum(modified_file)
         modified_subdir_file_checksum = sha256_checksum(modified_subdir_file)
 
@@ -148,17 +148,17 @@ describe Chef::Resource::RemoteDirectory do
     end
   end
 
-  context "when creating the directory with purging enabled" do
+  context 'when creating the directory with purging enabled' do
     before(:each) do
       resource.purge(true)
     end
 
-    context "and there are no extraneous files in the directory" do
+    context 'and there are no extraneous files in the directory' do
       before do
         resource.run_action(:create)
       end
 
-      it "creates the directory contents as normal" do
+      it 'creates the directory contents as normal' do
         expected_files.each do |file_path|
           File.should exist(file_path)
         end
@@ -166,29 +166,29 @@ describe Chef::Resource::RemoteDirectory do
 
     end
 
-    context "and there are extraneous files in the directory" do
+    context 'and there are extraneous files in the directory' do
       before do
         create_extraneous_files
         resource.run_action(:create)
       end
 
-      it "removes unmanaged files" do
+      it 'removes unmanaged files' do
         File.should_not exist(@existing1)
         File.should_not exist(@existing2)
       end
 
-      it "does not modify managed files" do
+      it 'does not modify managed files' do
         expected_files.each do |file_path|
           File.should exist(file_path)
         end
       end
 
-      it "is marked as updated by last action" do
+      it 'is marked as updated by last action' do
         resource.should be_updated_by_last_action
       end
     end
 
-    context "and there are deeply nested extraneous files in the directory" do
+    context 'and there are deeply nested extraneous files in the directory' do
       before do
         FileUtils.mkdir_p(File.join(path, 'a', 'multiply', 'nested', 'directory'))
         @existing1 = File.join(path, 'a', 'foo.txt')
@@ -203,14 +203,14 @@ describe Chef::Resource::RemoteDirectory do
         resource.run_action(:create)
       end
 
-      it "removes files in subdirectories before files above" do
+      it 'removes files in subdirectories before files above' do
         File.should_not exist(@existing1)
         File.should_not exist(@existing2)
         File.should_not exist(@existing3)
         File.should_not exist(@existing4)
       end
 
-      it "is marked as updated by last action" do
+      it 'is marked as updated by last action' do
         resource.should be_updated_by_last_action
       end
 

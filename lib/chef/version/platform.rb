@@ -19,26 +19,24 @@ require 'chef/version_class'
 class Chef
   class Version
     class Platform < Chef::Version
-
       protected
 
-      def parse(str="")
+      def parse(str = '')
         @major, @minor, @patch =
           case str.to_s
           when /^(\d+)\.(\d+)\.(\d+)$/
-            [ $1.to_i, $2.to_i, $3.to_i ]
+            [Regexp.last_match[1].to_i, Regexp.last_match[2].to_i, Regexp.last_match[3].to_i]
           when /^(\d+)\.(\d+)$/
-            [ $1.to_i, $2.to_i, 0 ]
+            [Regexp.last_match[1].to_i, Regexp.last_match[2].to_i, 0]
           when /^(\d+)$/
-            [ $1.to_i, 0, 0 ]
+            [Regexp.last_match[1].to_i, 0, 0]
           when /^(\d+).(\d+)-[a-z]+\d?(-p(\d+))?$/i   # Match FreeBSD
-            [ $1.to_i, $2.to_i, ($4 ? $4.to_i : 0)]
+            [Regexp.last_match[1].to_i, Regexp.last_match[2].to_i, (Regexp.last_match[4] ? Regexp.last_match[4].to_i : 0)]
           else
-            msg = "'#{str.to_s}' does not match 'x.y.z', 'x.y' or 'x'"
-            raise Chef::Exceptions::InvalidPlatformVersion.new( msg )
+            msg = "'#{str}' does not match 'x.y.z', 'x.y' or 'x'"
+            fail Chef::Exceptions::InvalidPlatformVersion.new(msg)
           end
       end
-
     end
   end
 end

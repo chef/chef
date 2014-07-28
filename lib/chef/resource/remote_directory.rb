@@ -32,7 +32,7 @@ class Chef
 
       state_attrs :files_owner, :files_group, :files_mode
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :remote_directory
         @path = name
@@ -56,8 +56,7 @@ class Chef
         rights_attribute(:files_rights)
       end
 
-
-      def source(args=nil)
+      def source(args = nil)
         set_or_return(
           :source,
           args,
@@ -65,23 +64,23 @@ class Chef
         )
       end
 
-      def files_backup(arg=nil)
+      def files_backup(arg = nil)
         set_or_return(
           :files_backup,
           arg,
-          :kind_of => [ Integer, FalseClass ]
+          :kind_of => [Integer, FalseClass]
         )
       end
 
-      def purge(arg=nil)
+      def purge(arg = nil)
         set_or_return(
           :purge,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [TrueClass, FalseClass]
         )
       end
 
-      def files_group(arg=nil)
+      def files_group(arg = nil)
         set_or_return(
           :files_group,
           arg,
@@ -89,7 +88,7 @@ class Chef
         )
       end
 
-      def files_mode(arg=nil)
+      def files_mode(arg = nil)
         set_or_return(
           :files_mode,
           arg,
@@ -97,7 +96,7 @@ class Chef
         )
       end
 
-      def files_owner(arg=nil)
+      def files_owner(arg = nil)
         set_or_return(
           :files_owner,
           arg,
@@ -105,22 +104,21 @@ class Chef
         )
       end
 
-      def overwrite(arg=nil)
+      def overwrite(arg = nil)
         set_or_return(
           :overwrite,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [TrueClass, FalseClass]
         )
       end
 
-      def cookbook(args=nil)
+      def cookbook(args = nil)
         set_or_return(
           :cookbook,
           args,
           :kind_of => String
         )
       end
-
     end
   end
 end

@@ -21,28 +21,27 @@ require 'chef/knife'
 class Chef
   class Knife
     class Status < Knife
-
       deps do
         require 'highline'
         require 'chef/search/query'
       end
 
-      banner "knife status QUERY (options)"
+      banner 'knife status QUERY (options)'
 
       option :run_list,
-        :short => "-r",
-        :long => "--run-list",
-        :description => "Show the run list"
+             :short => '-r',
+             :long => '--run-list',
+             :description => 'Show the run list'
 
       option :sort_reverse,
-        :short => "-s",
-        :long => "--sort-reverse",
-        :description => "Sort the status list by last run time descending"
+             :short => '-s',
+             :long => '--sort-reverse',
+             :description => 'Sort the status list by last run time descending'
 
       option :hide_healthy,
-        :short => "-H",
-        :long => "--hide-healthy",
-        :description => "Hide nodes that have run chef in the last hour"
+             :short => '-H',
+             :long => '--hide-healthy',
+             :description => 'Hide nodes that have run chef in the last hour'
 
       def highline
         @h ||= HighLine.new
@@ -51,25 +50,25 @@ class Chef
       def run
         all_nodes = []
         q = Chef::Search::Query.new
-        query = @name_args[0] || "*:*"
+        query = @name_args[0] || '*:*'
         q.search(:node, query) do |node|
           all_nodes << node
         end
         all_nodes.sort { |n1, n2|
-          if (config[:sort_reverse] || Chef::Config[:knife][:sort_status_reverse])
-            (n2["ohai_time"] or 0) <=> (n1["ohai_time"] or 0)
+          if config[:sort_reverse] || Chef::Config[:knife][:sort_status_reverse]
+            (n2['ohai_time'] or 0) <=> (n1['ohai_time'] or 0)
           else
-            (n1["ohai_time"] or 0) <=> (n2["ohai_time"] or 0)
+            (n1['ohai_time'] or 0) <=> (n2['ohai_time'] or 0)
           end
         }.each do |node|
-          if node.has_key?("ec2")
+          if node.key?('ec2')
             fqdn = node['ec2']['public_hostname']
             ipaddress = node['ec2']['public_ipv4']
           else
             fqdn = node['fqdn']
             ipaddress = node['ipaddress']
           end
-          hours, minutes, seconds = time_difference_in_hms(node["ohai_time"])
+          hours, minutes, seconds = time_difference_in_hms(node['ohai_time'])
           hours_text   = "#{hours} hour#{hours == 1 ? ' ' : 's'}"
           minutes_text = "#{minutes} minute#{minutes == 1 ? ' ' : 's'}"
           run_list = "#{node.run_list}" if config[:run_list]
@@ -85,7 +84,7 @@ class Chef
           end
 
           line_parts = Array.new
-          line_parts << @ui.color(text, color) + " ago" << node.name
+          line_parts << @ui.color(text, color) + ' ago' << node.name
           line_parts << fqdn if fqdn
           line_parts << ipaddress if ipaddress
           line_parts << run_list if run_list
@@ -97,9 +96,8 @@ class Chef
             end
             line_parts << platform
           end
-          highline.say(line_parts.join(', ') + '.') unless (config[:hide_healthy] && hours < 1)
+          highline.say(line_parts.join(', ') + '.') unless config[:hide_healthy] && hours < 1
         end
-
       end
 
       # :nodoc:
@@ -111,9 +109,8 @@ class Chef
         difference = difference % 3600
         minutes = (difference / 60).to_i
         seconds = (difference % 60)
-        return [hours, minutes, seconds]
+        [hours, minutes, seconds]
       end
-
     end
   end
 end

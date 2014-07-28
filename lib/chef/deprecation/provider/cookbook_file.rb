@@ -16,18 +16,15 @@
 # limitations under the License.
 #
 
-
 class Chef
   module Deprecation
     module Provider
-
       # == Deprecation::Provider::CookbookFile
       # This module contains the deprecated functions of
       # Chef::Provider::CookbookFile. These functions are refactored to
       # different components. They are frozen and will be removed in Chef 12.
       #
       module CookbookFile
-
         def file_cache_location
           @file_cache_location ||= begin
             cookbook = run_context.cookbook_collection[resource_cookbook]
@@ -40,15 +37,14 @@ class Chef
         end
 
         def content_stale?
-          ( ! ::File.exist?(@new_resource.path)) || ( ! compare_content)
+          ( ! ::File.exist?(@new_resource.path)) || ( !compare_content)
         end
 
         def backup_new_resource
-          if ::File.exists?(@new_resource.path)
+          if ::File.exist?(@new_resource.path)
             backup @new_resource.path
           end
         end
-
       end
     end
   end

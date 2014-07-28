@@ -27,7 +27,6 @@ require 'chef/json_compat'
 
 class Chef
   class DataBag
-
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
@@ -35,7 +34,7 @@ class Chef
 
     def self.validate_name!(name)
       unless name =~ VALID_NAME
-        raise Exceptions::InvalidDataBagName, "DataBags must have a name matching #{VALID_NAME.inspect}, you gave #{name.inspect}"
+        fail Exceptions::InvalidDataBagName, "DataBags must have a name matching #{VALID_NAME.inspect}, you gave #{name.inspect}"
       end
     end
 
@@ -44,7 +43,7 @@ class Chef
       @name = ''
     end
 
-    def name(arg=nil)
+    def name(arg = nil)
       set_or_return(
         :name,
         arg,
@@ -54,9 +53,9 @@ class Chef
 
     def to_hash
       result = {
-        "name" => @name,
+        'name' => @name,
         'json_class' => self.class.name,
-        "chef_type" => "data_bag",
+        'chef_type' => 'data_bag',
       }
       result
     end
@@ -77,27 +76,27 @@ class Chef
     # Create a Chef::Role from JSON
     def self.json_create(o)
       bag = new
-      bag.name(o["name"])
+      bag.name(o['name'])
       bag
     end
 
-    def self.list(inflate=false)
+    def self.list(inflate = false)
       if Chef::Config[:solo]
         unless File.directory?(Chef::Config[:data_bag_path])
-          raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{Chef::Config[:data_bag_path]}' is invalid"
+          fail Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{Chef::Config[:data_bag_path]}' is invalid"
         end
 
-        names = Dir.glob(File.join(Chef::Config[:data_bag_path], "*")).map{|f|File.basename(f)}.sort
-        names.inject({}) {|h, n| h[n] = n; h}
+        names = Dir.glob(File.join(Chef::Config[:data_bag_path], '*')).map { |f|File.basename(f) }.sort
+        names.reduce({}) { |h, n| h[n] = n; h }
       else
         if inflate
           # Can't search for all data bags like other objects, fall back to N+1 :(
-          list(false).inject({}) do |response, bag_and_uri|
+          list(false).reduce({}) do |response, bag_and_uri|
             response[bag_and_uri.first] = load(bag_and_uri.first)
             response
           end
         else
-          Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data")
+          Chef::REST.new(Chef::Config[:chef_server_url]).get_rest('data')
         end
       end
     end
@@ -106,10 +105,10 @@ class Chef
     def self.load(name)
       if Chef::Config[:solo]
         unless File.directory?(Chef::Config[:data_bag_path])
-          raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{Chef::Config[:data_bag_path]}' is invalid"
+          fail Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{Chef::Config[:data_bag_path]}' is invalid"
         end
 
-        Dir.glob(File.join(Chef::Config[:data_bag_path], "#{name}", "*.json")).inject({}) do |bag, f|
+        Dir.glob(File.join(Chef::Config[:data_bag_path], "#{name}", '*.json')).reduce({}) do |bag, f|
           item = Chef::JSONCompat.from_json(IO.read(f))
           bag[item['id']] = item
           bag
@@ -127,19 +126,19 @@ class Chef
     def save
       begin
         if Chef::Config[:why_run]
-          Chef::Log.warn("In whyrun mode, so NOT performing data bag save.")
+          Chef::Log.warn('In whyrun mode, so NOT performing data bag save.')
         else
           create
         end
       rescue Net::HTTPServerException => e
-        raise e unless e.response.code == "409"
+        raise e unless e.response.code == '409'
       end
       self
     end
 
-    #create a data bag via RESTful API
+    # create a data bag via RESTful API
     def create
-      chef_server_rest.post_rest("data", self)
+      chef_server_rest.post_rest('data', self)
       self
     end
 
@@ -147,7 +146,5 @@ class Chef
     def to_s
       "data_bag[#{@name}]"
     end
-
   end
 end
-

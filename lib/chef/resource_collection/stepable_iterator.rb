@@ -18,7 +18,6 @@
 class Chef
   class ResourceCollection
     class StepableIterator
-
       def self.for_collection(new_collection)
         instance = new(new_collection)
         instance
@@ -27,7 +26,7 @@ class Chef
       attr_accessor :collection
       attr_reader :position
 
-      def initialize(collection=[])
+      def initialize(collection = [])
         @position = 0
         @paused = false
         @collection = collection
@@ -72,11 +71,11 @@ class Chef
         @position = 0
       end
 
-      def skip_back(skips=1)
+      def skip_back(skips = 1)
         @position -= skips
       end
 
-      def skip_forward(skips=1)
+      def skip_forward(skips = 1)
         @position += skips
       end
 
@@ -115,10 +114,9 @@ class Chef
         when :element_with_index
           @iterator_block.call(collection[@position], @position)
         else
-          raise "42error: someone forgot to set @iterator_type, wtf?"
+          fail '42error: someone forgot to set @iterator_type, wtf?'
         end
       end
-
     end
   end
 end

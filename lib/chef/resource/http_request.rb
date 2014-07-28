@@ -22,10 +22,9 @@ require 'chef/resource'
 class Chef
   class Resource
     class HttpRequest < Chef::Resource
-
       identity_attr :url
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :http_request
         @message = name
@@ -35,7 +34,7 @@ class Chef
         @allowed_actions.push(:get, :put, :post, :delete, :head, :options)
       end
 
-      def url(args=nil)
+      def url(args = nil)
         set_or_return(
           :url,
           args,
@@ -43,7 +42,7 @@ class Chef
         )
       end
 
-      def message(args=nil, &block)
+      def message(args = nil, &block)
         args = block if block_given?
         set_or_return(
           :message,
@@ -52,14 +51,13 @@ class Chef
         )
       end
 
-      def headers(args=nil)
+      def headers(args = nil)
         set_or_return(
           :headers,
           args,
           :kind_of => Hash
         )
       end
-
     end
   end
 end

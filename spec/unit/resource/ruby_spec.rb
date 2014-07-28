@@ -21,20 +21,20 @@ require 'spec_helper'
 describe Chef::Resource::Ruby do
 
   before(:each) do
-    @resource = Chef::Resource::Ruby.new("fakey_fakerton")
+    @resource = Chef::Resource::Ruby.new('fakey_fakerton')
   end
 
-  it "should create a new Chef::Resource::Ruby" do
+  it 'should create a new Chef::Resource::Ruby' do
     @resource.should be_a_kind_of(Chef::Resource)
     @resource.should be_a_kind_of(Chef::Resource::Ruby)
   end
 
-  it "should have a resource name of :ruby" do
+  it 'should have a resource name of :ruby' do
     @resource.resource_name.should eql(:ruby)
   end
 
-  it "should have an interpreter of ruby" do
-    @resource.interpreter.should eql("ruby")
+  it 'should have an interpreter of ruby' do
+    @resource.interpreter.should eql('ruby')
   end
 
 end

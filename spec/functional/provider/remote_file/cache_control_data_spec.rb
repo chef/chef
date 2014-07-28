@@ -22,13 +22,13 @@ require 'uri'
 describe Chef::Provider::RemoteFile::CacheControlData do
 
   before do
-    @original_config = Chef::Config.hash_dup    
+    @original_config = Chef::Config.hash_dup
   end
 
   after do
-    Chef::Config.configuration = @original_config if @original_config    
+    Chef::Config.configuration = @original_config if @original_config
   end
-  
+
   before(:each) do
     Chef::Config[:file_cache_path] = Dir.mktmpdir
   end
@@ -37,19 +37,19 @@ describe Chef::Provider::RemoteFile::CacheControlData do
     FileUtils.rm_rf(Chef::Config[:file_cache_path])
   end
 
-  let(:uri) { URI.parse("http://www.bing.com/robots.txt") }
-  
-  describe "when the cache control data save method is invoked" do
+  let(:uri) { URI.parse('http://www.bing.com/robots.txt') }
+
+  describe 'when the cache control data save method is invoked' do
 
     subject(:cache_control_data) do
       Chef::Provider::RemoteFile::CacheControlData.load_and_validate(uri, file_checksum)
     end
 
     # the checksum of the file last we fetched it.
-    let(:file_checksum) { "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" }
+    let(:file_checksum) { 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855' }
 
     let(:etag) { "\"a-strong-identifier\"" }
-    let(:mtime) { "Thu, 01 Aug 2013 08:16:32 GMT" }
+    let(:mtime) { 'Thu, 01 Aug 2013 08:16:32 GMT' }
 
     before do
       cache_control_data.etag = etag
@@ -57,45 +57,44 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       cache_control_data.checksum = file_checksum
     end
 
-    it "writes data to the cache" do
+    it 'writes data to the cache' do
       cache_control_data.save
     end
 
-    it "writes the data to the cache and the same data can be read back" do
+    it 'writes the data to the cache and the same data can be read back' do
       cache_control_data.save
       saved_cache_control_data = Chef::Provider::RemoteFile::CacheControlData.load_and_validate(uri, file_checksum)
       saved_cache_control_data.etag.should == cache_control_data.etag
       saved_cache_control_data.mtime.should == cache_control_data.mtime
-      saved_cache_control_data.checksum.should == cache_control_data.checksum  
+      saved_cache_control_data.checksum.should == cache_control_data.checksum
     end
 
     # Cover the very long remote file path case -- see CHEF-4422 where
     # local cache file names generated from the long uri exceeded
     # local file system path limits resulting in exceptions from
     # file system API's on both Windows and Unix systems.
-    context "when the length of the uri exceeds the path length limits for the local file system" do
+    context 'when the length of the uri exceeds the path length limits for the local file system' do
       let(:uri_exceeds_file_system_limit) do
-        URI.parse("http://www.bing.com/" + ('0' * 1024))
+        URI.parse('http://www.bing.com/' + ('0' * 1024))
       end
 
       let(:uri) { uri_exceeds_file_system_limit }
 
-      it "writes data to the cache" do
+      it 'writes data to the cache' do
         lambda do
           cache_control_data.save
         end.should_not raise_error
       end
 
-      it "writes the data to the cache and the same data can be read back" do
+      it 'writes the data to the cache and the same data can be read back' do
         cache_control_data.save
         saved_cache_control_data = Chef::Provider::RemoteFile::CacheControlData.load_and_validate(uri, file_checksum)
         saved_cache_control_data.etag.should == cache_control_data.etag
         saved_cache_control_data.mtime.should == cache_control_data.mtime
-        saved_cache_control_data.checksum.should == cache_control_data.checksum  
+        saved_cache_control_data.checksum.should == cache_control_data.checksum
       end
 
     end
   end
 
 end
-

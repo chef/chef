@@ -2,7 +2,6 @@ class Chef
   module Formatters
     # Handles basic indentation and colorization tasks
     class IndentableOutputStream
-
       attr_reader :out
       attr_reader :err
       attr_accessor :indent
@@ -95,10 +94,10 @@ class Chef
       end
 
       def from_args(colors, merge_options = {})
-        if colors.size == 1 && colors[0].kind_of?(Hash)
+        if colors.size == 1 && colors[0].is_a?(Hash)
           merge_options.merge(colors[0])
         else
-          merge_options.merge({ :colors => colors })
+          merge_options.merge(:colors => colors)
         end
       end
 
@@ -137,7 +136,7 @@ class Chef
       end
 
       def indent_line(options)
-        if !@line_started
+        unless @line_started
 
           # Print indents.  If there is a stream name, either print it (if we're
           # switching streams) or print enough blanks to match

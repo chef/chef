@@ -17,7 +17,7 @@
 #
 
 require 'spec_helper'
-require "chef/cookbook/syntax_check"
+require 'chef/cookbook/syntax_check'
 
 describe Chef::Cookbook::SyntaxCheck do
 
@@ -25,75 +25,75 @@ describe Chef::Cookbook::SyntaxCheck do
   let(:syntax_check) { Chef::Cookbook::SyntaxCheck.new(cookbook_path) }
 
   let(:open_ldap_cookbook_files) do
-    %w{ attributes/default.rb 
-        attributes/smokey.rb
-        definitions/client.rb
-        definitions/server.rb
-        metadata.rb
-        recipes/default.rb
-        recipes/gigantor.rb
-        recipes/one.rb
-        recipes/return.rb }.map{ |f| File.join(cookbook_path, f) }
+    %w(attributes/default.rb
+       attributes/smokey.rb
+       definitions/client.rb
+       definitions/server.rb
+       metadata.rb
+       recipes/default.rb
+       recipes/gigantor.rb
+       recipes/one.rb
+       recipes/return.rb).map { |f| File.join(cookbook_path, f) }
   end
 
   before do
     Chef::Log.logger = Logger.new(StringIO.new)
     Chef::Log.level = :warn # suppress "Syntax OK" messages
 
-    @attr_files = %w{default.rb smokey.rb}.map { |f| File.join(cookbook_path, 'attributes', f) }
-    @defn_files = %w{client.rb server.rb}.map { |f| File.join(cookbook_path, 'definitions', f)}
-    @recipes = %w{default.rb gigantor.rb one.rb return.rb}.map { |f| File.join(cookbook_path, 'recipes', f) }
-    @ruby_files = @attr_files + @defn_files + @recipes + [File.join(cookbook_path, "metadata.rb")]
-    basenames = %w{ helpers_via_partial_test.erb
-                    helper_test.erb
-                    openldap_stuff.conf.erb
-                    openldap_variable_stuff.conf.erb
-                    test.erb
-                    some_windows_line_endings.erb
-                    all_windows_line_endings.erb
-                    no_windows_line_endings.erb }
-    @template_files = basenames.map { |f| File.join(cookbook_path, 'templates', 'default', f)}
+    @attr_files = %w(default.rb smokey.rb).map { |f| File.join(cookbook_path, 'attributes', f) }
+    @defn_files = %w(client.rb server.rb).map { |f| File.join(cookbook_path, 'definitions', f) }
+    @recipes = %w(default.rb gigantor.rb one.rb return.rb).map { |f| File.join(cookbook_path, 'recipes', f) }
+    @ruby_files = @attr_files + @defn_files + @recipes + [File.join(cookbook_path, 'metadata.rb')]
+    basenames = %w(helpers_via_partial_test.erb
+                   helper_test.erb
+                   openldap_stuff.conf.erb
+                   openldap_variable_stuff.conf.erb
+                   test.erb
+                   some_windows_line_endings.erb
+                   all_windows_line_endings.erb
+                   no_windows_line_endings.erb)
+    @template_files = basenames.map { |f| File.join(cookbook_path, 'templates', 'default', f) }
   end
 
-  it "creates a syntax checker given the cookbook name when Chef::Config.cookbook_path is set" do
+  it 'creates a syntax checker given the cookbook name when Chef::Config.cookbook_path is set' do
     Chef::Config[:cookbook_path] = File.dirname(cookbook_path)
     syntax_check = Chef::Cookbook::SyntaxCheck.for_cookbook(:openldap)
     syntax_check.cookbook_path.should == cookbook_path
     syntax_check.ruby_files.sort.should == open_ldap_cookbook_files.sort
   end
 
-  it "creates a syntax checker given the cookbook name and cookbook_path" do
+  it 'creates a syntax checker given the cookbook name and cookbook_path' do
     syntax_check = Chef::Cookbook::SyntaxCheck.for_cookbook(:openldap, File.join(CHEF_SPEC_DATA, 'cookbooks'))
     syntax_check.cookbook_path.should == cookbook_path
     syntax_check.ruby_files.sort.should == open_ldap_cookbook_files.sort
   end
 
-  context "when using a standalone cookbook" do
+  context 'when using a standalone cookbook' do
     let(:cookbook_path) { File.join(CHEF_SPEC_DATA, 'standalone_cookbook') }
 
-    it "creates a syntax checker given the cookbook name and cookbook_path for a standalone cookbook" do
+    it 'creates a syntax checker given the cookbook name and cookbook_path for a standalone cookbook' do
       syntax_check = Chef::Cookbook::SyntaxCheck.for_cookbook(:standalone_cookbook, CHEF_SPEC_DATA)
       syntax_check.cookbook_path.should == cookbook_path
       syntax_check.ruby_files.should == [File.join(cookbook_path, 'recipes/default.rb')]
     end
   end
 
-  describe "when first created" do
-    it "has the path to the cookbook to syntax check" do
+  describe 'when first created' do
+    it 'has the path to the cookbook to syntax check' do
       syntax_check.cookbook_path.should == cookbook_path
     end
 
-    it "lists the ruby files in the cookbook" do
+    it 'lists the ruby files in the cookbook' do
       syntax_check.ruby_files.sort.should == @ruby_files.sort
     end
 
-    it "lists the erb templates in the cookbook" do
+    it 'lists the erb templates in the cookbook' do
       syntax_check.template_files.sort.should == @template_files.sort
     end
 
   end
 
-  describe "when validating cookbooks" do
+  describe 'when validating cookbooks' do
     let(:cache_path) { Dir.mktmpdir }
 
     before do
@@ -104,64 +104,64 @@ describe Chef::Cookbook::SyntaxCheck do
       FileUtils.rm_rf(cache_path) if File.exist?(cache_path)
     end
 
-    describe "and the files have not been syntax checked previously" do
-      it "shows that all ruby files require a syntax check" do
+    describe 'and the files have not been syntax checked previously' do
+      it 'shows that all ruby files require a syntax check' do
         syntax_check.untested_ruby_files.sort.should == @ruby_files.sort
       end
 
-      it "shows that all template files require a syntax check" do
+      it 'shows that all template files require a syntax check' do
         syntax_check.untested_template_files.sort.should == @template_files.sort
       end
 
-      it "removes a ruby file from the list of untested files after it is marked as validated" do
+      it 'removes a ruby file from the list of untested files after it is marked as validated' do
         recipe = File.join(cookbook_path, 'recipes', 'default.rb')
         syntax_check.validated(recipe)
         syntax_check.untested_ruby_files.should_not include(recipe)
       end
 
-      it "removes a template file from the list of untested files after it is marked as validated" do
+      it 'removes a template file from the list of untested files after it is marked as validated' do
         template = File.join(cookbook_path, 'templates', 'default', 'test.erb')
         syntax_check.validated(template)
         syntax_check.untested_template_files.should_not include(template)
       end
 
-      it "validates all ruby files" do
+      it 'validates all ruby files' do
         syntax_check.validate_ruby_files.should be_true
         syntax_check.untested_ruby_files.should be_empty
       end
 
-      it "validates all templates" do
+      it 'validates all templates' do
         syntax_check.validate_templates.should be_true
         syntax_check.untested_template_files.should be_empty
       end
 
-      describe "and a file has a syntax error" do
+      describe 'and a file has a syntax error' do
         before do
           cookbook_path = File.join(CHEF_SPEC_DATA, 'cookbooks', 'borken')
           syntax_check.cookbook_path.replace(cookbook_path)
         end
 
-        it "it indicates that a ruby file has a syntax error" do
+        it 'it indicates that a ruby file has a syntax error' do
           syntax_check.validate_ruby_files.should be_false
         end
 
-        it "does not remove the invalid file from the list of untested files" do
+        it 'does not remove the invalid file from the list of untested files' do
           syntax_check.untested_ruby_files.should include(File.join(cookbook_path, 'recipes', 'default.rb'))
           lambda { syntax_check.validate_ruby_files }.should_not change(syntax_check, :untested_ruby_files)
         end
 
-        it "indicates that a template file has a syntax error" do
+        it 'indicates that a template file has a syntax error' do
           syntax_check.validate_templates.should be_false
         end
 
-        it "does not remove the invalid template from the list of untested templates" do
+        it 'does not remove the invalid template from the list of untested templates' do
           syntax_check.untested_template_files.should include(File.join(cookbook_path, 'templates', 'default', 'borken.erb'))
-          lambda {syntax_check.validate_templates}.should_not change(syntax_check, :untested_template_files)
+          lambda { syntax_check.validate_templates }.should_not change(syntax_check, :untested_template_files)
         end
 
       end
 
-      describe "and an ignored file has a syntax error" do
+      describe 'and an ignored file has a syntax error' do
         before do
           cookbook_path = File.join(CHEF_SPEC_DATA, 'cookbooks', 'ignorken')
           Chef::Config[:cookbook_path] = File.dirname(cookbook_path)
@@ -169,11 +169,11 @@ describe Chef::Cookbook::SyntaxCheck do
           @ruby_files = [File.join(cookbook_path, 'recipes/default.rb')]
         end
 
-        it "shows that ignored ruby files do not require a syntax check" do
+        it 'shows that ignored ruby files do not require a syntax check' do
           syntax_check.untested_ruby_files.sort.should == @ruby_files.sort
         end
 
-        it "does not indicate that a ruby file has a syntax error" do
+        it 'does not indicate that a ruby file has a syntax error' do
           syntax_check.validate_ruby_files.should be_true
           syntax_check.untested_ruby_files.should be_empty
         end
@@ -182,18 +182,18 @@ describe Chef::Cookbook::SyntaxCheck do
 
     end
 
-    describe "and the files have been syntax checked previously" do
+    describe 'and the files have been syntax checked previously' do
       before do
         syntax_check.untested_ruby_files.each { |f| syntax_check.validated(f) }
         syntax_check.untested_template_files.each { |f| syntax_check.validated(f) }
       end
 
-      it "does not syntax check ruby files" do
+      it 'does not syntax check ruby files' do
         syntax_check.should_not_receive(:shell_out)
         syntax_check.validate_ruby_files.should be_true
       end
 
-      it "does not syntax check templates" do
+      it 'does not syntax check templates' do
         syntax_check.should_not_receive(:shell_out)
         syntax_check.validate_templates.should be_true
       end

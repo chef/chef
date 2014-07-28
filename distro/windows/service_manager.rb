@@ -16,5 +16,5 @@
 # limitations under the License.
 #
 
-$stderr.puts "WARNING: service_manager.rb is changed to: chef-service-manager"
-$stderr.puts "Please use chef-service-manager instead of service_manager.rb to install and manage chef-client as a windows service."
+$stderr.puts 'WARNING: service_manager.rb is changed to: chef-service-manager'
+$stderr.puts 'Please use chef-service-manager instead of service_manager.rb to install and manage chef-client as a windows service.'

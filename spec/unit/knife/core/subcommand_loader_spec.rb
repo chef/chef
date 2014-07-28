@@ -22,24 +22,24 @@ describe Chef::Knife::SubcommandLoader do
   before do
 
     @home = File.join(CHEF_SPEC_DATA, 'knife-home')
-    @env = {'HOME' => @home}
+    @env = { 'HOME' => @home }
     @loader = Chef::Knife::SubcommandLoader.new(File.join(CHEF_SPEC_DATA, 'knife-site-subcommands'), @env)
   end
 
-  it "builds a list of the core subcommand file require paths" do
+  it 'builds a list of the core subcommand file require paths' do
     @loader.subcommand_files.should_not be_empty
     @loader.subcommand_files.each do |require_path|
       require_path.should match(/chef\/knife\/.*|plugins\/knife\/.*/)
     end
   end
 
-  it "finds files installed via rubygems" do
+  it 'finds files installed via rubygems' do
     @loader.find_subcommands_via_rubygems.should include('chef/knife/node_create')
-    @loader.find_subcommands_via_rubygems.each {|rel_path, abs_path| abs_path.should match(%r[chef/knife/.+])}
+    @loader.find_subcommands_via_rubygems.each { |_rel_path, abs_path| abs_path.should match(%r{chef/knife/.+}) }
   end
 
-  it "finds files from latest version of installed gems" do
-    gems = [ double('knife-ec2-0.5.12') ]
+  it 'finds files from latest version of installed gems' do
+    gems = [double('knife-ec2-0.5.12')]
     gem_files = [
       '/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_base.rb',
       '/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_otherstuff.rb'
@@ -58,9 +58,9 @@ describe Chef::Knife::SubcommandLoader do
     @loader.find_subcommands_via_rubygems.values.select { |file| file =~ /knife-ec2/ }.sort.should == gem_files
   end
 
-  it "finds files using a dirglob when rubygems is not available" do
+  it 'finds files using a dirglob when rubygems is not available' do
     @loader.find_subcommands_via_dirglob.should include('chef/knife/node_create')
-    @loader.find_subcommands_via_dirglob.each {|rel_path, abs_path| abs_path.should match(%r[chef/knife/.+])}
+    @loader.find_subcommands_via_dirglob.each { |_rel_path, abs_path| abs_path.should match(%r{chef/knife/.+}) }
   end
 
   it "finds user-specific subcommands in the user's ~/.chef directory" do
@@ -68,27 +68,27 @@ describe Chef::Knife::SubcommandLoader do
     @loader.site_subcommands.should include(expected_command)
   end
 
-  it "finds repo specific subcommands by searching for a .chef directory" do
+  it 'finds repo specific subcommands by searching for a .chef directory' do
     expected_command = File.join(CHEF_SPEC_DATA, 'knife-site-subcommands', 'plugins', 'knife', 'example_subcommand.rb')
     @loader.site_subcommands.should include(expected_command)
   end
 
-  describe "finding 3rd party plugins" do 
-    let(:env_home) { "/home/alice" }
-    let(:manifest_path) { env_home + "/.chef/plugin_manifest.json" }
+  describe 'finding 3rd party plugins' do
+    let(:env_home) { '/home/alice' }
+    let(:manifest_path) { env_home + '/.chef/plugin_manifest.json' }
 
     before do
       env_dup = ENV.to_hash
       ENV.stub(:[]).and_return { |key| env_dup[key] }
-      ENV.stub(:[]).with("HOME").and_return(env_home)
+      ENV.stub(:[]).with('HOME').and_return(env_home)
     end
 
-    context "when there is not a ~/.chef/plugin_manifest.json file" do
+    context 'when there is not a ~/.chef/plugin_manifest.json file' do
       before do
         File.stub(:exist?).with(manifest_path).and_return(false)
       end
 
-      it "searches rubygems for plugins" do
+      it 'searches rubygems for plugins' do
         if Gem::Specification.respond_to?(:latest_specs)
           Gem::Specification.should_receive(:latest_specs).and_call_original
         else
@@ -99,12 +99,12 @@ describe Chef::Knife::SubcommandLoader do
         end
       end
 
-      context "and HOME environment variable is not set" do
+      context 'and HOME environment variable is not set' do
         before do
-          ENV.stub(:[]).with("HOME").and_return(nil)
+          ENV.stub(:[]).with('HOME').and_return(nil)
         end
 
-        it "searches rubygems for plugins" do
+        it 'searches rubygems for plugins' do
           if Gem::Specification.respond_to?(:latest_specs)
             Gem::Specification.should_receive(:latest_specs).and_call_original
           else
@@ -118,17 +118,17 @@ describe Chef::Knife::SubcommandLoader do
 
     end
 
-    context "when there is a ~/.chef/plugin_manifest.json file" do
-      let(:ec2_server_create_plugin) { "/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_server_create.rb" }
+    context 'when there is a ~/.chef/plugin_manifest.json file' do
+      let(:ec2_server_create_plugin) { '/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_server_create.rb' }
 
       let(:manifest_content) do
-        { "plugins" => {
-            "knife-ec2" => {
-              "paths" => [
-                ec2_server_create_plugin
-              ]
-            }
+        { 'plugins' => {
+          'knife-ec2' => {
+            'paths' => [
+              ec2_server_create_plugin
+            ]
           }
+        }
         }
       end
 
@@ -139,7 +139,7 @@ describe Chef::Knife::SubcommandLoader do
         File.stub(:read).with(manifest_path).and_return(manifest_json)
       end
 
-      it "uses paths from the manifest instead of searching gems" do
+      it 'uses paths from the manifest instead of searching gems' do
         Gem::Specification.should_not_receive(:latest_specs).and_call_original
         @loader.subcommand_files.should include(ec2_server_create_plugin)
       end

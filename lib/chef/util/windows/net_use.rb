@@ -16,19 +16,18 @@
 # limitations under the License.
 #
 
-#the Win32 Volume APIs do not support mapping network drives. not supported by WMI either.
-#see also: WNetAddConnection2 and WNetAddConnection3
-#see also cmd.exe: net use /?
+# the Win32 Volume APIs do not support mapping network drives. not supported by WMI either.
+# see also: WNetAddConnection2 and WNetAddConnection3
+# see also cmd.exe: net use /?
 
 require 'chef/util/windows'
 
 class Chef::Util::Windows::NetUse < Chef::Util::Windows
-
   private
 
   USE_NOFORCE = 0
   USE_FORCE = 1
-  USE_LOTS_OF_FORCE = 2 #every windows API should support this flag
+  USE_LOTS_OF_FORCE = 2 # every windows API should support this flag
 
   USE_INFO_2 = [
     [:local, nil],
@@ -43,28 +42,28 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   ]
 
   USE_INFO_2_TEMPLATE =
-    USE_INFO_2.collect { |field| field[1].class == Fixnum ? 'i' : 'L' }.join
+    USE_INFO_2.map { |field| field[1].class == Fixnum ? 'i' : 'L' }.join
 
-  SIZEOF_USE_INFO_2 = #sizeof(USE_INFO_2)
-    USE_INFO_2.inject(0){|sum,item|
+  SIZEOF_USE_INFO_2 = # sizeof(USE_INFO_2)
+    USE_INFO_2.reduce(0)do|sum, item|
     sum + (item[1].class == Fixnum ? 4 : PTR_SIZE)
-  }
+  end
 
   def use_info_2(args)
-    USE_INFO_2.collect { |field|
+    USE_INFO_2.map { |field|
       args.include?(field[0]) ? args[field[0]] : field[1]
     }
   end
 
   def use_info_2_pack(use)
-    use.collect { |v|
+    use.map { |v|
       v.class == Fixnum ? v : str_to_ptr(multi_to_wide(v))
     }.pack(USE_INFO_2_TEMPLATE)
   end
 
   def use_info_2_unpack(buffer)
-    use = Hash.new
-    USE_INFO_2.each_with_index do |field,offset|
+    use = {}
+    USE_INFO_2.each_with_index do |field, offset|
       use[field[0]] = field[1].class == Fixnum ?
       dword_to_i(buffer, offset) : lpwstr_to_s(buffer, offset)
     end
@@ -81,7 +80,7 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   def add(args)
     if args.class == String
       remote = args
-      args = Hash.new
+      args = {}
       args[:remote] = remote
     end
     args[:local] ||= @localname
@@ -89,7 +88,7 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
     buffer = use_info_2_pack(use)
     rc = NetUseAdd.call(nil, 2, buffer, nil)
     if rc != NERR_Success
-      raise ArgumentError, get_last_error(rc)
+      fail ArgumentError, get_last_error(rc)
     end
   end
 
@@ -98,7 +97,7 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
     rc = NetUseGetInfo.call(nil, @name, 2, ptr)
 
     if rc != NERR_Success
-      raise ArgumentError, get_last_error(rc)
+      fail ArgumentError, get_last_error(rc)
     end
 
     ptr = ptr.unpack('L')[0]
@@ -109,13 +108,13 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   end
 
   def device
-    get_info()[:remote]
+    get_info[:remote]
   end
-  #XXX should we use some FORCE here?
+  # XXX should we use some FORCE here?
   def delete
     rc = NetUseDel.call(nil, @name, USE_NOFORCE)
     if rc != NERR_Success
-      raise ArgumentError, get_last_error(rc)
+      fail ArgumentError, get_last_error(rc)
     end
   end
 end

@@ -8,8 +8,9 @@ class Chef
           super(name, parent)
           @value = value
         end
+
         def read
-          return @value
+          @value
         end
       end
     end

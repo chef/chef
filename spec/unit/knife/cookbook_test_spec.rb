@@ -23,48 +23,48 @@ Chef::Knife::CookbookTest.load_deps
 
 describe Chef::Knife::CookbookTest do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name]  = 'webmonkey.example.com'
     @knife = Chef::Knife::CookbookTest.new
-    @knife.config[:cookbook_path] = File.join(CHEF_SPEC_DATA,'cookbooks')
+    @knife.config[:cookbook_path] = File.join(CHEF_SPEC_DATA, 'cookbooks')
     @knife.cookbook_loader.stub(:cookbook_exists?).and_return(true)
     @cookbooks = []
-    %w{tats central_market jimmy_johns pho}.each do |cookbook_name|
+    %w(tats central_market jimmy_johns pho).each do |cookbook_name|
       @cookbooks << Chef::CookbookVersion.new(cookbook_name)
     end
     @stdout = StringIO.new
     @knife.ui.stub(:stdout).and_return(@stdout)
   end
 
-  describe "run" do
-    it "should test the cookbook" do
+  describe 'run' do
+    it 'should test the cookbook' do
       @knife.stub(:test_cookbook).and_return(true)
-      @knife.name_args = ["italian"]
-      @knife.should_receive(:test_cookbook).with("italian")
+      @knife.name_args = ['italian']
+      @knife.should_receive(:test_cookbook).with('italian')
       @knife.run
     end
 
-    it "should test multiple cookbooks when provided" do
+    it 'should test multiple cookbooks when provided' do
       @knife.stub(:test_cookbook).and_return(true)
-      @knife.name_args = ["tats", "jimmy_johns"]
-      @knife.should_receive(:test_cookbook).with("tats")
-      @knife.should_receive(:test_cookbook).with("jimmy_johns")
-      @knife.should_not_receive(:test_cookbook).with("central_market")
-      @knife.should_not_receive(:test_cookbook).with("pho")
+      @knife.name_args = %w(tats jimmy_johns)
+      @knife.should_receive(:test_cookbook).with('tats')
+      @knife.should_receive(:test_cookbook).with('jimmy_johns')
+      @knife.should_not_receive(:test_cookbook).with('central_market')
+      @knife.should_not_receive(:test_cookbook).with('pho')
       @knife.run
     end
 
-    it "should test both ruby and templates" do
-      @knife.name_args = ["example"]
+    it 'should test both ruby and templates' do
+      @knife.name_args = ['example']
       @knife.config[:cookbook_path].should_not be_empty
-      Array(@knife.config[:cookbook_path]).reverse.each do |path|
+      Array(@knife.config[:cookbook_path]).reverse.each do |_path|
         @knife.should_receive(:test_ruby).with(an_instance_of(Chef::Cookbook::SyntaxCheck))
         @knife.should_receive(:test_templates).with(an_instance_of(Chef::Cookbook::SyntaxCheck))
       end
       @knife.run
     end
 
-    describe "with -a or --all" do
-      it "should test all of the cookbooks" do
+    describe 'with -a or --all' do
+      it 'should test all of the cookbooks' do
         @knife.stub(:test_cookbook).and_return(true)
         @knife.config[:all] = true
         @loader = {}
@@ -73,7 +73,7 @@ describe Chef::Knife::CookbookTest do
           @loader[cookbook.name] = cookbook
         end
         @knife.stub(:cookbook_loader).and_return(@loader)
-        @loader.each do |key, cookbook|
+        @loader.each do |_key, cookbook|
           @knife.should_receive(:test_cookbook).with(cookbook.name)
         end
         @knife.run

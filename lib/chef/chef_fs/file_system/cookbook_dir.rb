@@ -34,8 +34,8 @@ class Chef
           # the actual cookbook_name and version.
           if Chef::Config[:versioned_cookbooks]
             if name =~ VALID_VERSIONED_COOKBOOK_NAME
-              @cookbook_name = $1
-              @version = $2
+              @cookbook_name = Regexp.last_match[1]
+              @version = Regexp.last_match[2]
             else
               @exists = false
             end
@@ -56,7 +56,7 @@ class Chef
           :files => { :recursive => true },
           :resources => { :ruby_only => true, :recursive => true },
           :providers => { :ruby_only => true, :recursive => true },
-          :root_files => { }
+          :root_files => {}
         }
 
         # See Erchef code
@@ -68,7 +68,7 @@ class Chef
         end
 
         def api_path
-          "#{parent.api_path}/#{cookbook_name}/#{version || "_latest"}"
+          "#{parent.api_path}/#{cookbook_name}/#{version || '_latest'}"
         end
 
         def child(name)
@@ -80,13 +80,13 @@ class Chef
             return result if result
           rescue Chef::ChefFS::FileSystem::NotFoundError
           end
-          return NonexistentFSObject.new(name, self)
+          NonexistentFSObject.new(name, self)
         end
 
         def can_have_child?(name, is_dir)
           # A cookbook's root may not have directories unless they are segment directories
           return name != 'root_files' && COOKBOOK_SEGMENT_INFO.keys.include?(name.to_sym) if is_dir
-          return true
+          true
         end
 
         def children
@@ -94,7 +94,7 @@ class Chef
             @children = []
             manifest = chef_object.manifest
             COOKBOOK_SEGMENT_INFO.each do |segment, segment_info|
-              next unless manifest.has_key?(segment)
+              next unless manifest.key?(segment)
 
               # Go through each file in the manifest for the segment, and
               # add cookbook subdirs and files for it.
@@ -102,16 +102,16 @@ class Chef
                 parts = segment_file[:path].split('/')
                 # Get or create the path to the file
                 container = self
-                parts[0,parts.length-1].each do |part|
+                parts[0, parts.length - 1].each do |part|
                   old_container = container
                   container = old_container.children.select { |child| part == child.name }.first
-                  if !container
+                  unless container
                     container = CookbookSubdir.new(part, old_container, segment_info[:ruby_only], segment_info[:recursive])
                     old_container.add_child(container)
                   end
                 end
                 # Create the file itself
-                container.add_child(CookbookFile.new(parts[parts.length-1], container, segment_file))
+                container.add_child(CookbookFile.new(parts[parts.length - 1], container, segment_file))
               end
             end
             @children = @children.sort_by { |c| c.name }
@@ -130,15 +130,15 @@ class Chef
             rescue Timeout::Error => e
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "Timeout deleting: #{e}"
             rescue Net::HTTPServerException
-              if $!.response.code == "404"
-                raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+              if $ERROR_INFO.response.code == '404'
+                raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $ERROR_INFO)
               else
                 raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "HTTP error deleting: #{e}"
               end
             end
           else
-            raise NotFoundError.new(self) if !exists?
-            raise MustDeleteRecursivelyError.new(self), "#{path_for_printing} must be deleted recursively"
+            fail NotFoundError.new(self) unless exists?
+            fail MustDeleteRecursivelyError.new(self), "#{path_for_printing} must be deleted recursively"
           end
         end
 
@@ -152,16 +152,16 @@ class Chef
         end
 
         def compare_to(other)
-          if !other.dir?
-            return [ !exists?, nil, nil ]
+          unless other.dir?
+            return [!exists?, nil, nil]
           end
           are_same = true
-          Chef::ChefFS::CommandLine::diff_entries(self, other, nil, :name_only).each do |type, old_entry, new_entry|
-            if [ :directory_to_file, :file_to_directory, :deleted, :added, :modified ].include?(type)
+          Chef::ChefFS::CommandLine.diff_entries(self, other, nil, :name_only).each do |type, _old_entry, _new_entry|
+            if [:directory_to_file, :file_to_directory, :deleted, :added, :modified].include?(type)
               are_same = false
             end
           end
-          [ are_same, nil, nil ]
+          [are_same, nil, nil]
         end
 
         def copy_from(other, options = {})
@@ -179,7 +179,7 @@ class Chef
 
           # The negative (not found) response is cached
           if @could_not_get_chef_object
-            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, @could_not_get_chef_object)
+            fail Chef::ChefFS::FileSystem::NotFoundError.new(self, @could_not_get_chef_object)
           end
 
           begin
@@ -200,7 +200,7 @@ class Chef
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "Timeout reading: #{e}"
 
           rescue Net::HTTPServerException => e
-            if e.response.code == "404"
+            if e.response.code == '404'
               @could_not_get_chef_object = e
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, @could_not_get_chef_object)
             else
@@ -210,7 +210,7 @@ class Chef
           # Chef bug http://tickets.opscode.com/browse/CHEF-3066 ... instead of 404 we get 500 right now.
           # Remove this when that bug is fixed.
           rescue Net::HTTPFatalError => e
-            if e.response.code == "500"
+            if e.response.code == '500'
               @could_not_get_chef_object = e
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, @could_not_get_chef_object)
             else

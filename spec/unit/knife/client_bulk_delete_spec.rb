@@ -20,11 +20,11 @@ require 'spec_helper'
 
 describe Chef::Knife::ClientBulkDelete do
   let(:stdout_io) { StringIO.new }
-  let(:stdout) {stdout_io.string}
+  let(:stdout) { stdout_io.string }
   let(:stderr_io) { StringIO.new }
   let(:stderr) { stderr_io.string }
 
-  let(:knife) {
+  let(:knife) do
     k = Chef::Knife::ClientBulkDelete.new
     k.name_args = name_args
     k.config = option_args
@@ -33,33 +33,33 @@ describe Chef::Knife::ClientBulkDelete do
     k.ui.stub(:confirm).and_return(knife_confirm)
     k.ui.stub(:confirm_without_exit).and_return(knife_confirm)
     k
-  }
+  end
 
-  let(:name_args) { [ "." ] }
+  let(:name_args) { ['.'] }
   let(:option_args) { {} }
 
   let(:knife_confirm) { true }
 
-  let(:nonvalidator_client_names) { %w{tim dan stephen} }
-  let(:nonvalidator_clients) {
+  let(:nonvalidator_client_names) { %w(tim dan stephen) }
+  let(:nonvalidator_clients) do
     clients = Hash.new
 
     nonvalidator_client_names.each do |client_name|
-      client = Chef::ApiClient.new()
+      client = Chef::ApiClient.new
       client.name(client_name)
       client.stub(:destroy).and_return(true)
       clients[client_name] = client
     end
 
     clients
-  }
+  end
 
-  let(:validator_client_names) { %w{myorg-validator} }
-  let(:validator_clients) {
+  let(:validator_client_names) { %w(myorg-validator) }
+  let(:validator_clients) do
     clients = Hash.new
 
     validator_client_names.each do |validator_client_name|
-      validator_client = Chef::ApiClient.new()
+      validator_client = Chef::ApiClient.new
       validator_client.name(validator_client_name)
       validator_client.stub(:validator).and_return(true)
       validator_client.stub(:destroy).and_return(true)
@@ -67,54 +67,54 @@ describe Chef::Knife::ClientBulkDelete do
     end
 
     clients
-  }
+  end
 
-  let(:client_names) { nonvalidator_client_names + validator_client_names}
-  let(:clients) {
+  let(:client_names) { nonvalidator_client_names + validator_client_names }
+  let(:clients) do
     nonvalidator_clients.merge(validator_clients)
-  }
+  end
 
   before(:each) do
     Chef::ApiClient.stub(:list).and_return(clients)
   end
 
-  describe "run" do
-    describe "without a regex" do
-      let(:name_args) { [ ] }
+  describe 'run' do
+    describe 'without a regex' do
+      let(:name_args) { [] }
 
-      it "should exit if the regex is not provided" do
+      it 'should exit if the regex is not provided' do
         lambda { knife.run }.should raise_error(SystemExit)
       end
     end
 
-    describe "with any clients" do
-      it "should get the list of the clients" do
+    describe 'with any clients' do
+      it 'should get the list of the clients' do
         Chef::ApiClient.should_receive(:list)
         knife.run
       end
 
-      it "should print the name of the clients" do
+      it 'should print the name of the clients' do
         knife.run
         client_names.each do |client_name|
           stdout.should include(client_name)
         end
       end
 
-      it "should confirm you really want to delete them" do
+      it 'should confirm you really want to delete them' do
         knife.ui.should_receive(:confirm)
         knife.run
       end
 
-      describe "without --delete-validators" do
-        it "should mention that validator clients wont be deleted" do
+      describe 'without --delete-validators' do
+        it 'should mention that validator clients wont be deleted' do
           knife.run
-          stdout.should include("Following clients are validators and will not be deleted.")
-          info = stdout.index "Following clients are validators and will not be deleted."
-          val = stdout.index "myorg-validator"
+          stdout.should include('Following clients are validators and will not be deleted.')
+          info = stdout.index 'Following clients are validators and will not be deleted.'
+          val = stdout.index 'myorg-validator'
           (val > info).should be_true
         end
 
-        it "should only delete nonvalidator clients" do
+        it 'should only delete nonvalidator clients' do
           nonvalidator_clients.each_value do |c|
             c.should_receive(:destroy)
           end
@@ -127,21 +127,21 @@ describe Chef::Knife::ClientBulkDelete do
         end
       end
 
-      describe "with --delete-validators" do
-        let(:option_args) { {:delete_validators => true} }
+      describe 'with --delete-validators' do
+        let(:option_args) { { :delete_validators => true } }
 
-        it "should mention that validator clients will be deleted" do
+        it 'should mention that validator clients will be deleted' do
           knife.run
-          stdout.should include("The following validators will be deleted")
+          stdout.should include('The following validators will be deleted')
         end
 
-        it "should confirm twice" do
+        it 'should confirm twice' do
           knife.ui.should_receive(:confirm).once
           knife.ui.should_receive(:confirm_without_exit).once
           knife.run
         end
 
-        it "should delete all clients" do
+        it 'should delete all clients' do
           clients.each_value do |c|
             c.should_receive(:destroy)
           end
@@ -151,14 +151,14 @@ describe Chef::Knife::ClientBulkDelete do
       end
     end
 
-    describe "with some clients" do
-      let(:name_args) { [ "^ti" ] }
+    describe 'with some clients' do
+      let(:name_args) { ['^ti'] }
 
-      it "should only delete clients that match the regex" do
-        clients["tim"].should_receive(:destroy)
-        clients["stephen"].should_not_receive(:destroy)
-        clients["dan"].should_not_receive(:destroy)
-        clients["myorg-validator"].should_not_receive(:destroy)
+      it 'should only delete clients that match the regex' do
+        clients['tim'].should_receive(:destroy)
+        clients['stephen'].should_not_receive(:destroy)
+        clients['dan'].should_not_receive(:destroy)
+        clients['myorg-validator'].should_not_receive(:destroy)
         knife.run
       end
     end

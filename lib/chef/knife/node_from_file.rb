@@ -21,14 +21,13 @@ require 'chef/knife'
 class Chef
   class Knife
     class NodeFromFile < Knife
-
       deps do
         require 'chef/node'
         require 'chef/json_compat'
         require 'chef/knife/core/object_loader'
       end
 
-      banner "knife node from file FILE (options)"
+      banner 'knife node from file FILE (options)'
 
       def loader
         @loader ||= Knife::Core::ObjectLoader.new(Chef::Node, ui)
@@ -43,8 +42,6 @@ class Chef
 
         ui.info("Updated Node #{updated.name}!")
       end
-
     end
   end
 end
-

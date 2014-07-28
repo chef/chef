@@ -23,26 +23,26 @@ describe 'knife diff' do
   include KnifeSupport
 
   context 'without versioned cookbooks' do
-    when_the_chef_server "has one of each thing" do
+    when_the_chef_server 'has one of each thing' do
       client 'x', '{}'
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
-      data_bag 'x', { 'y' => '{}' }
+      cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"'
+      data_bag 'x',  'y' => '{}'
       environment 'x', '{}'
       node 'x', '{}'
       role 'x', '{}'
       user 'x', '{}'
 
       when_the_repository 'has only top-level directories' do
-        directory 'clients'
-        directory 'cookbooks'
-        directory 'data_bags'
-        directory 'environments'
-        directory 'nodes'
-        directory 'roles'
-        directory 'users'
+      directory 'clients'
+      directory 'cookbooks'
+      directory 'data_bags'
+      directory 'environments'
+      directory 'nodes'
+      directory 'roles'
+      directory 'users'
 
-        it 'knife diff reports everything as deleted' do
-          knife('diff --name-status /').should_succeed <<EOM
+      it 'knife diff reports everything as deleted' do
+      knife('diff --name-status /').should_succeed <<EOM
 D\t/clients/chef-validator.json
 D\t/clients/chef-webui.json
 D\t/clients/x.json
@@ -55,22 +55,22 @@ D\t/roles/x.json
 D\t/users/admin.json
 D\t/users/x.json
 EOM
-      end
+    end
     end
 
       when_the_repository 'has an identical copy of each thing' do
 
-        file 'clients/chef-validator.json', { 'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'clients/chef-webui.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'clients/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/chef-validator.json',  'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'clients/chef-webui.json',  'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'clients/x.json',  'public_key' => ChefZero::PUBLIC_KEY
         file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
         file 'data_bags/x/y.json', {}
-        file 'environments/_default.json', { "description" => "The default Chef environment" }
+        file 'environments/_default.json',  'description' => 'The default Chef environment'
         file 'environments/x.json', {}
         file 'nodes/x.json', {}
         file 'roles/x.json', {}
-        file 'users/admin.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'users/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'users/admin.json',  'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'users/x.json',  'public_key' => ChefZero::PUBLIC_KEY
 
         it 'knife diff reports no differences' do
           knife('diff /').should_succeed ''
@@ -98,7 +98,7 @@ EOM
         end
 
         context 'as well as one extra copy of each thing' do
-          file 'clients/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+          file 'clients/y.json',  'public_key' => ChefZero::PUBLIC_KEY
           file 'cookbooks/x/blah.rb', ''
           file 'cookbooks/y/metadata.rb', 'version "1.0.0"'
           file 'data_bags/x/z.json', {}
@@ -106,7 +106,7 @@ EOM
           file 'environments/y.json', {}
           file 'nodes/y.json', {}
           file 'roles/y.json', {}
-          file 'users/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+          file 'users/y.json',  'public_key' => ChefZero::PUBLIC_KEY
 
           it 'knife diff reports the new files as added' do
             knife('diff --name-status /').should_succeed <<EOM
@@ -160,8 +160,8 @@ EOM
       file 'cookbooks/x/onlyin1.0.0.rb', ''
 
       when_the_chef_server 'has a later version for the cookbook' do
-        cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''}
-        cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => '' }
+        cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''
+        cookbook 'x', '1.0.1',  'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => ''
 
         it 'knife diff /cookbooks/x shows differences' do
           knife('diff --name-status /cookbooks/x').should_succeed <<EOM
@@ -180,15 +180,15 @@ EOM
       end
 
       when_the_chef_server 'has an earlier version for the cookbook' do
-        cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => '' }
-        cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => '' }
+        cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''
+        cookbook 'x', '0.9.9',  'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => ''
         it 'knife diff /cookbooks/x shows no differences' do
           knife('diff --name-status /cookbooks/x').should_succeed ''
         end
       end
 
       when_the_chef_server 'has a later version for the cookbook, and no current version' do
-        cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => '' }
+        cookbook 'x', '1.0.1',  'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => ''
 
         it 'knife diff /cookbooks/x shows the differences' do
           knife('diff --name-status /cookbooks/x').should_succeed <<EOM
@@ -200,7 +200,7 @@ EOM
       end
 
       when_the_chef_server 'has an earlier version for the cookbook, and no current version' do
-        cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => '' }
+        cookbook 'x', '0.9.9',  'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => ''
 
         it 'knife diff /cookbooks/x shows the differences' do
           knife('diff --name-status /cookbooks/x').should_succeed <<EOM
@@ -222,8 +222,8 @@ EOM
           end
         end
         when_the_chef_server 'has an environment with a different value' do
-          environment 'x', { 'description' => 'hi' }
-          it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
+          environment 'x',  'description' => 'hi'
+          it 'knife diff reports the difference', :pending => (RUBY_VERSION < '1.9') do
             knife('diff /environments/x.json').should_succeed(/
  {
 -  "name": "x",
@@ -236,16 +236,16 @@ EOM
       end
 
       when_the_repository 'has an environment file with a value in it' do
-        file 'environments/x.json', { 'description' => 'hi' }
+        file 'environments/x.json',  'description' => 'hi'
         when_the_chef_server 'has an environment with the same value' do
-          environment 'x', { 'description' => 'hi' }
+          environment 'x',  'description' => 'hi'
           it 'knife diff returns no differences' do
             knife('diff /environments/x.json').should_succeed ''
           end
         end
         when_the_chef_server 'has an environment with no value' do
           environment 'x', {}
-          it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
+          it 'knife diff reports the difference', :pending => (RUBY_VERSION < '1.9') do
             knife('diff /environments/x.json').should_succeed(/
  {
 -  "name": "x"
@@ -256,8 +256,8 @@ EOM
           end
         end
         when_the_chef_server 'has an environment with a different value' do
-          environment 'x', { 'description' => 'lo' }
-          it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
+          environment 'x',  'description' => 'lo'
+          it 'knife diff reports the difference', :pending => (RUBY_VERSION < '1.9') do
             knife('diff /environments/x.json').should_succeed(/
  {
    "name": "x",
@@ -282,26 +282,26 @@ EOM
   end # without versioned cookbooks
 
   with_versioned_cookbooks do
-    when_the_chef_server "has one of each thing" do
+    when_the_chef_server 'has one of each thing' do
       client 'x', '{}'
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
-      data_bag 'x', { 'y' => '{}' }
+      cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"'
+      data_bag 'x',  'y' => '{}'
       environment 'x', '{}'
       node 'x', '{}'
       role 'x', '{}'
       user 'x', '{}'
 
       when_the_repository 'has only top-level directories' do
-        directory 'clients'
-        directory 'cookbooks'
-        directory 'data_bags'
-        directory 'environments'
-        directory 'nodes'
-        directory 'roles'
-        directory 'users'
+      directory 'clients'
+      directory 'cookbooks'
+      directory 'data_bags'
+      directory 'environments'
+      directory 'nodes'
+      directory 'roles'
+      directory 'users'
 
-        it 'knife diff reports everything as deleted' do
-          knife('diff --name-status /').should_succeed <<EOM
+      it 'knife diff reports everything as deleted' do
+      knife('diff --name-status /').should_succeed <<EOM
 D\t/clients/chef-validator.json
 D\t/clients/chef-webui.json
 D\t/clients/x.json
@@ -314,21 +314,21 @@ D\t/roles/x.json
 D\t/users/admin.json
 D\t/users/x.json
 EOM
-      end
+    end
     end
 
       when_the_repository 'has an identical copy of each thing' do
-        file 'clients/chef-validator.json', { 'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'clients/chef-webui.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'clients/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/chef-validator.json',  'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'clients/chef-webui.json',  'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'clients/x.json',  'public_key' => ChefZero::PUBLIC_KEY
         file 'cookbooks/x-1.0.0/metadata.rb', 'version "1.0.0"'
         file 'data_bags/x/y.json', {}
-        file 'environments/_default.json', { "description" => "The default Chef environment" }
+        file 'environments/_default.json',  'description' => 'The default Chef environment'
         file 'environments/x.json', {}
         file 'nodes/x.json', {}
         file 'roles/x.json', {}
-        file 'users/admin.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
-        file 'users/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'users/admin.json',  'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY
+        file 'users/x.json',  'public_key' => ChefZero::PUBLIC_KEY
 
         it 'knife diff reports no differences' do
           knife('diff /').should_succeed ''
@@ -420,8 +420,8 @@ EOM
       file 'cookbooks/x-1.0.0/onlyin1.0.0.rb', ''
 
       when_the_chef_server 'has a later version for the cookbook' do
-        cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''}
-        cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => '' }
+        cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''
+        cookbook 'x', '1.0.1',  'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => ''
 
         it 'knife diff /cookbooks shows differences' do
           knife('diff --name-status /cookbooks').should_succeed <<EOM
@@ -435,15 +435,15 @@ EOM
       end
 
       when_the_chef_server 'has an earlier version for the cookbook' do
-        cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => '' }
-        cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => '' }
+        cookbook 'x', '1.0.0',  'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''
+        cookbook 'x', '0.9.9',  'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => ''
         it 'knife diff /cookbooks shows the differences' do
           knife('diff --name-status /cookbooks').should_succeed "D\t/cookbooks/x-0.9.9\n"
         end
       end
 
       when_the_chef_server 'has a later version for the cookbook, and no current version' do
-        cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => '' }
+        cookbook 'x', '1.0.1',  'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => ''
 
         it 'knife diff /cookbooks shows the differences' do
           knife('diff --name-status /cookbooks').should_succeed <<EOM
@@ -454,7 +454,7 @@ EOM
       end
 
       when_the_chef_server 'has an earlier version for the cookbook, and no current version' do
-        cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => '' }
+        cookbook 'x', '0.9.9',  'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => ''
 
         it 'knife diff /cookbooks shows the differences' do
           knife('diff --name-status /cookbooks').should_succeed <<EOM
@@ -475,8 +475,8 @@ EOM
           end
         end
         when_the_chef_server 'has an environment with a different value' do
-          environment 'x', { 'description' => 'hi' }
-          it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
+          environment 'x',  'description' => 'hi'
+          it 'knife diff reports the difference', :pending => (RUBY_VERSION < '1.9') do
             knife('diff /environments/x.json').should_succeed(/
  {
 -  "name": "x",
@@ -489,16 +489,16 @@ EOM
       end
 
       when_the_repository 'has an environment file with a value in it' do
-        file 'environments/x.json', { 'description' => 'hi' }
+        file 'environments/x.json',  'description' => 'hi'
         when_the_chef_server 'has an environment with the same value' do
-          environment 'x', { 'description' => 'hi' }
+          environment 'x',  'description' => 'hi'
           it 'knife diff returns no differences' do
             knife('diff /environments/x.json').should_succeed ''
           end
         end
         when_the_chef_server 'has an environment with no value' do
           environment 'x', {}
-          it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
+          it 'knife diff reports the difference', :pending => (RUBY_VERSION < '1.9') do
             knife('diff /environments/x.json').should_succeed(/
  {
 -  "name": "x"
@@ -509,8 +509,8 @@ EOM
           end
         end
         when_the_chef_server 'has an environment with a different value' do
-          environment 'x', { 'description' => 'lo' }
-          it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
+          environment 'x',  'description' => 'lo'
+          it 'knife diff reports the difference', :pending => (RUBY_VERSION < '1.9') do
             knife('diff /environments/x.json').should_succeed(/
  {
    "name": "x",

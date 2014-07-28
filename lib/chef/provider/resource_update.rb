@@ -1,7 +1,6 @@
 
 class Chef
   class Provider
-
     # {
     #    "run_id" : "1000",
     #    "resource" : {
@@ -28,10 +27,9 @@ class Chef
     # }
 
     class ResourceUpdate
-
       attr_accessor :type
       attr_accessor :name
-      attr_accessor :duration #ms
+      attr_accessor :duration # ms
       attr_accessor :status
       attr_accessor :initial_state
       attr_accessor :final_state
@@ -46,10 +44,6 @@ class Chef
       def updated_state_from_resource(resource)
         @final_properties = resource.to_hash
       end
-
     end
   end
 end
-
-
-

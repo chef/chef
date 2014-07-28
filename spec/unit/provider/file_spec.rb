@@ -23,7 +23,7 @@ describe Chef::Provider::File do
 
   let(:resource) do
     # need to check for/against mutating state within the new_resource, so don't mock
-    resource = Chef::Resource::File.new("seattle")
+    resource = Chef::Resource::File.new('seattle')
     resource.path(resource_path)
     resource
   end
@@ -35,12 +35,12 @@ describe Chef::Provider::File do
   let(:node) { double('Chef::Node') }
   let(:events) { double('Chef::Events').as_null_object }  # mock all the methods
   let(:run_context) { double('Chef::RunContext', :node => node, :events => events) }
-  let(:enclosing_directory) {
-    canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
-  }
-  let(:resource_path) {
-    canonicalize_path(File.expand_path(File.join(enclosing_directory, "seattle.txt")))
-  }
+  let(:enclosing_directory) do
+    canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, 'templates')))
+  end
+  let(:resource_path) do
+    canonicalize_path(File.expand_path(File.join(enclosing_directory, 'seattle.txt')))
+  end
 
   # Subject
 
@@ -52,6 +52,5 @@ describe Chef::Provider::File do
 
   it_behaves_like Chef::Provider::File
 
-  it_behaves_like "a file provider with content field"
+  it_behaves_like 'a file provider with content field'
 end
-

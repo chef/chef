@@ -22,8 +22,8 @@ describe Chef::Knife::UserReregister do
   before(:each) do
     Chef::Knife::UserReregister.load_deps
     @knife = Chef::Knife::UserReregister.new
-    @knife.name_args = [ 'a_user' ]
-    @user_mock = double('user_mock', :private_key => "private_key")
+    @knife.name_args = ['a_user']
+    @user_mock = double('user_mock', :private_key => 'private_key')
     Chef::User.stub(:load).and_return(@user_mock)
     @stdout = StringIO.new
     @knife.ui.stub(:stdout).and_return(@stdout)
@@ -39,7 +39,7 @@ describe Chef::Knife::UserReregister do
   it 'reregisters the user and prints the key' do
     @user_mock.should_receive(:reregister).and_return(@user_mock)
     @knife.run
-    @stdout.string.should match( /private_key/ )
+    @stdout.string.should match(/private_key/)
   end
 
   it 'writes the private key to a file when --file is specified' do
@@ -48,6 +48,6 @@ describe Chef::Knife::UserReregister do
     filehandle = StringIO.new
     File.should_receive(:open).with('/tmp/a_file', 'w').and_yield(filehandle)
     @knife.run
-    filehandle.string.should == "private_key"
+    filehandle.string.should == 'private_key'
   end
 end

@@ -21,7 +21,7 @@ class Chef
           @children.push(child)
         end
 
-        def can_have_child?(name, is_dir)
+        def can_have_child?(name, _is_dir)
           root.cannot_be_in_regex ? (name !~ root.cannot_be_in_regex) : true
         end
 
@@ -38,7 +38,7 @@ class Chef
           dir = self
           path_parts.each do |path_part|
             subdir = dir.child(path_part)
-            if !subdir.exists?
+            unless subdir.exists?
               subdir = MemoryDir.new(path_part, dir)
               dir.add_child(subdir)
             end

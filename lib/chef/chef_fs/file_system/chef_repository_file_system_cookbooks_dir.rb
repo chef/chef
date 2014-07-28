@@ -37,22 +37,20 @@ class Chef
         attr_reader :chefignore
 
         def children
-          begin
-            Dir.entries(file_path).sort.
-                select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
-                map { |child_name| make_child(child_name) }.
-                select do |entry|
-                  # empty cookbooks and cookbook directories are ignored
-                  if !entry.can_upload?
-                    Chef::Log.warn("Cookbook '#{entry.name}' is empty or entirely chefignored at #{entry.path_for_printing}")
-                    false
-                  else
-                    true
-                  end
+          Dir.entries(file_path).sort.
+              select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
+              map { |child_name| make_child(child_name) }.
+              select do |entry|
+                # empty cookbooks and cookbook directories are ignored
+                if !entry.can_upload?
+                  Chef::Log.warn("Cookbook '#{entry.name}' is empty or entirely chefignored at #{entry.path_for_printing}")
+                  false
+                else
+                  true
                 end
-          rescue Errno::ENOENT
-            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-          end
+              end
+        rescue Errno::ENOENT
+          raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $ERROR_INFO)
         end
 
         def can_have_child?(name, is_dir)
@@ -65,11 +63,11 @@ class Chef
 
           # Use the copy/diff algorithm to copy it down so we don't destroy
           # chefignored data.  This is terribly un-thread-safe.
-          Chef::ChefFS::FileSystem.copy_to(Chef::ChefFS::FilePattern.new("/#{cookbook_path}"), from_fs, child, nil, {:purge => true})
+          Chef::ChefFS::FileSystem.copy_to(Chef::ChefFS::FilePattern.new("/#{cookbook_path}"), from_fs, child, nil, :purge => true)
 
           # Write out .uploaded-cookbook-version.json
           cookbook_file_path = File.join(file_path, cookbook_name)
-          if !File.exists?(cookbook_file_path)
+          unless File.exist?(cookbook_file_path)
             FileUtils.mkdir_p(cookbook_file_path)
           end
           uploaded_cookbook_version_path = File.join(cookbook_file_path, Chef::Cookbook::CookbookVersionLoader::UPLOADED_COOKBOOK_VERSION_FILE)

@@ -31,7 +31,6 @@ class Chef
         include Chef::Mixin::ShellOut
         attr_accessor :is_virtual_package
 
-
         def load_current_resource
           Chef::Log.debug("#{@new_resource} loading current resource")
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
@@ -44,7 +43,7 @@ class Chef
         def check_package_state(name)
           Chef::Log.debug("#{@new_resource} checking package #{name}")
           version = nil
-          info = shell_out!("/opt/local/sbin/pkg_info -E \"#{name}*\"", :env => nil, :returns => [0,1])
+          info = shell_out!("/opt/local/sbin/pkg_info -E \"#{name}*\"", :env => nil, :returns => [0, 1])
 
           if info.stdout
             version = info.stdout[/^#{@new_resource.package_name}-(.+)/, 1]
@@ -61,7 +60,7 @@ class Chef
           return @candidate_version if @candidate_version
           name = nil
           version = nil
-          pkg = shell_out!("/opt/local/bin/pkgin se #{new_resource.package_name}", :env => nil, :returns => [0,1])
+          pkg = shell_out!("/opt/local/bin/pkgin se #{new_resource.package_name}", :env => nil, :returns => [0, 1])
           pkg.stdout.each_line do |line|
             case line
             when /^#{new_resource.package_name}/
@@ -88,7 +87,6 @@ class Chef
           package = "#{name}"
           out = shell_out!("/opt/local/bin/pkgin -y remove #{package}", :env => nil)
         end
-
       end
     end
   end

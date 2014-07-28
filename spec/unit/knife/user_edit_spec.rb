@@ -27,13 +27,13 @@ describe Chef::Knife::UserEdit do
     @knife = Chef::Knife::UserEdit.new
     @knife.ui.stub(:stderr).and_return(@stderr)
     @knife.ui.stub(:stdout).and_return(@stdout)
-    @knife.name_args = [ 'my_user' ]
+    @knife.name_args = ['my_user']
     @knife.config[:disable_editing] = true
   end
 
   it 'loads and edits the user' do
-    data = { :name => "my_user" }
-    Chef::User.stub(:load).with("my_user").and_return(data)
+    data = { :name => 'my_user' }
+    Chef::User.stub(:load).with('my_user').and_return(data)
     @knife.should_receive(:edit_data).with(data).and_return(data)
     @knife.run
   end

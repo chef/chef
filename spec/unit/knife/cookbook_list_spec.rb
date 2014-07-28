@@ -23,13 +23,13 @@ describe Chef::Knife::CookbookList do
     @knife = Chef::Knife::CookbookList.new
     @rest_mock = double('rest')
     @knife.stub(:rest).and_return(@rest_mock)
-    @cookbook_names = ['apache2', 'mysql']
+    @cookbook_names = %w(apache2 mysql)
     @base_url = 'https://server.example.com/cookbooks'
     @cookbook_data = {}
     @cookbook_names.each do |item|
-      @cookbook_data[item] = {'url' => "#{@base_url}/#{item}",
-                              'versions' => [{'version' => '1.0.1',
-                                              'url' => "#{@base_url}/#{item}/1.0.1"}]}
+      @cookbook_data[item] = { 'url' => "#{@base_url}/#{item}",
+                               'versions' => [{ 'version' => '1.0.1',
+                                                'url' => "#{@base_url}/#{item}/1.0.1" }] }
     end
     @stdout = StringIO.new
     @knife.ui.stub(:stdout).and_return(@stdout)
@@ -68,8 +68,8 @@ describe Chef::Knife::CookbookList do
     describe 'with -a or --all' do
       before do
         @cookbook_names.each do |item|
-          @cookbook_data[item]['versions'] << {'version' => '1.0.0',
-                                               'url' => "#{@base_url}/#{item}/1.0.0"}
+          @cookbook_data[item]['versions'] << { 'version' => '1.0.0',
+                                                'url' => "#{@base_url}/#{item}/1.0.0" }
         end
       end
 

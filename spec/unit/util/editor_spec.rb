@@ -16,7 +16,7 @@ describe Chef::Util::Editor do
   end
 
   subject(:editor) { described_class.new(input_lines) }
-  let(:input_lines) { ['one', 'two', 'two', 'three'] }
+  let(:input_lines) { %w(one two two three) }
 
   describe '#append_line_after' do
     context 'when there is no match' do
@@ -34,7 +34,7 @@ describe Chef::Util::Editor do
       it('returns the number of added lines') { should be == 2 }
       it 'adds a line after each match' do
         execute
-        expect(editor.lines).to be == ['one', 'two', 'new', 'two', 'new', 'three']
+        expect(editor.lines).to be == %w(one two new two new three)
       end
     end
 
@@ -51,7 +51,7 @@ describe Chef::Util::Editor do
       it('returns the number of added lines') { should be == 1 }
       it 'adds a line to the end' do
         execute
-        expect(editor.lines).to be == ['one', 'two', 'two', 'three', 'new']
+        expect(editor.lines).to be == %w(one two two three new)
       end
     end
 
@@ -86,7 +86,7 @@ describe Chef::Util::Editor do
       it('returns the number of removed lines') { should be == 2 }
       it 'removes the matching lines' do
         execute
-        expect(editor.lines).to be == ['one', 'three']
+        expect(editor.lines).to be == %w(one three)
       end
     end
 
@@ -112,14 +112,14 @@ describe Chef::Util::Editor do
       it('returns the number of changed lines') { should be == 2 }
       it 'replaces the matching portions' do
         execute
-        expect(editor.lines).to be == ['one', 'new', 'new', 'three']
+        expect(editor.lines).to be == %w(one new new three)
       end
     end
 
     it 'matches a Regexp' do
       expect(editor.replace(/^ee/, 'new')).to be == 0
       expect(editor.replace(/ee$/, 'new')).to be == 1
-      expect(editor.lines).to be == ['one', 'two', 'two', 'thrnew']
+      expect(editor.lines).to be == %w(one two two thrnew)
     end
   end
 
@@ -139,14 +139,14 @@ describe Chef::Util::Editor do
       it('returns the number of replaced lines') { should be == 2 }
       it 'replaces the matching line' do
         execute
-        expect(editor.lines).to be == ['one', 'new', 'new', 'three']
+        expect(editor.lines).to be == %w(one new new three)
       end
     end
 
     it 'matches a Regexp' do
       expect(editor.replace_lines(/^ee/, 'new')).to be == 0
       expect(editor.replace_lines(/ee$/, 'new')).to be == 1
-      expect(editor.lines).to be == ['one', 'two', 'two', 'new']
+      expect(editor.lines).to be == %w(one two two new)
     end
   end
 end

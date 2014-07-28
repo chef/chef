@@ -1,1 +1,1 @@
-monkey_soup("tastes nice")
+monkey_soup('tastes nice')

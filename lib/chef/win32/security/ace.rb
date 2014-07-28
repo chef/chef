@@ -26,7 +26,6 @@ class Chef
   module ReservedNames::Win32
     class Security
       class ACE
-
         def initialize(pointer, owner = nil)
           if Chef::ReservedNames::Win32::API::Security::ACE_WITH_MASK_AND_SID.supports?(pointer.read_uchar)
             @struct = Chef::ReservedNames::Win32::API::Security::ACE_WITH_MASK_AND_SID.new pointer
@@ -69,7 +68,7 @@ class Chef
         end
 
         def explicit?
-          ! inherited?
+          !inherited?
         end
 
         def inherited?

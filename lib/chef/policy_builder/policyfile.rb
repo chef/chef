@@ -27,7 +27,6 @@ require 'chef/node'
 
 class Chef
   module PolicyBuilder
-
     # Policyfile is an experimental policy builder implementation that gets run
     # list and cookbook version information from a single document.
     #
@@ -46,7 +45,6 @@ class Chef
     # * chef-solo:: not currently supported. Need more design thought around
     # how this should work.
     class Policyfile
-
       class UnsupportedFeature < StandardError; end
 
       class PolicyfileError < StandardError; end
@@ -68,22 +66,22 @@ class Chef
 
         @node = nil
 
-        Chef::Log.warn("Using experimental Policyfile feature")
+        Chef::Log.warn('Using experimental Policyfile feature')
 
         if Chef::Config[:solo]
-          raise UnsupportedFeature, "Policyfile does not support chef-solo at this time."
+          fail UnsupportedFeature, 'Policyfile does not support chef-solo at this time.'
         end
 
         if override_runlist
-          raise UnsupportedFeature, "Policyfile does not support override run lists at this time"
+          fail UnsupportedFeature, 'Policyfile does not support override run lists at this time'
         end
 
-        if json_attribs && json_attribs.key?("run_list")
-          raise UnsupportedFeature, "Policyfile does not support setting the run_list in json data at this time"
+        if json_attribs && json_attribs.key?('run_list')
+          fail UnsupportedFeature, 'Policyfile does not support setting the run_list in json data at this time'
         end
 
         if Chef::Config[:environment] && !Chef::Config[:environment].chomp.empty?
-          raise UnsupportedFeature, "Policyfile does not work with Chef Environments"
+          fail UnsupportedFeature, 'Policyfile does not work with Chef Environments'
         end
       end
 
@@ -120,7 +118,7 @@ class Chef
         @node = Chef::Node.find_or_create(node_name)
         validate_policyfile
         node
-      rescue Exception => e
+      rescue => e
         events.node_load_failed(node_name, e, Chef::Config)
         raise
       end
@@ -144,16 +142,15 @@ class Chef
         Chef::Log.info("Run List is [#{run_list}]")
         Chef::Log.info("Run List expands to [#{run_list_with_versions_for_display.join(', ')}]")
 
-
         events.node_load_completed(node, run_list_with_versions_for_display, Chef::Config)
 
         node
-      rescue Exception => e
+      rescue => e
         events.node_load_failed(node_name, e, Chef::Config)
         raise
       end
 
-      def setup_run_context(specific_recipes=nil)
+      def setup_run_context(_specific_recipes = nil)
         # TODO: This file vendor stuff is duplicated and initializing it with a
         # block traps a reference to this object in a global context which will
         # prevent it from getting GC'd. Simplify it.
@@ -174,14 +171,13 @@ class Chef
         run_list_expansion_ish
       end
 
-
       def sync_cookbooks
-        Chef::Log.debug("Synchronizing cookbooks")
+        Chef::Log.debug('Synchronizing cookbooks')
         synchronizer = Chef::CookbookSynchronizer.new(cookbooks_to_sync, events)
         synchronizer.sync_cookbooks
 
         # register the file cache path in the cookbook path so that CookbookLoader actually picks up the synced cookbooks
-        Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
+        Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], 'cookbooks')
 
         cookbooks_to_sync
       end
@@ -198,7 +194,7 @@ class Chef
         run_list.map do |recipe_spec|
           cookbook, recipe = parse_recipe_spec(recipe_spec)
           lock_data = cookbook_lock_for(cookbook)
-          display = "#{cookbook}::#{recipe}@#{lock_data["version"]} (#{lock_data["identifier"][0...7]})"
+          display = "#{cookbook}::#{recipe}@#{lock_data['version']} (#{lock_data['identifier'][0...7]})"
           display
         end
       end
@@ -212,14 +208,14 @@ class Chef
       end
 
       def apply_policyfile_attributes
-        node.attributes.role_default = policy["default_attributes"]
-        node.attributes.role_override = policy["override_attributes"]
+        node.attributes.role_default = policy['default_attributes']
+        node.attributes.role_override = policy['override_attributes']
       end
 
       def parse_recipe_spec(recipe_spec)
         rmatch = recipe_spec.match(/recipe\[([^:]+)::([^:]+)\]/)
         if rmatch.nil?
-          raise PolicyfileError, "invalid recipe specification #{recipe_spec} in Policyfile from #{policyfile_location}"
+          fail PolicyfileError, "invalid recipe specification #{recipe_spec} in Policyfile from #{policyfile_location}"
         else
           [rmatch[1], rmatch[2]]
         end
@@ -230,7 +226,7 @@ class Chef
       end
 
       def run_list
-        policy["run_list"]
+        policy['run_list']
       end
 
       def policy
@@ -251,22 +247,22 @@ class Chef
       def validate_policyfile
         errors = []
         unless run_list
-          errors << "Policyfile is missing run_list element"
+          errors << 'Policyfile is missing run_list element'
         end
-        unless policy.key?("cookbook_locks")
-          errors << "Policyfile is missing cookbook_locks element"
+        unless policy.key?('cookbook_locks')
+          errors << 'Policyfile is missing cookbook_locks element'
         end
-        if run_list.kind_of?(Array)
+        if run_list.is_a?(Array)
           run_list_errors = run_list.select do |maybe_recipe_spec|
             validate_recipe_spec(maybe_recipe_spec)
           end
           errors += run_list_errors
         else
-          errors << "Policyfile run_list is malformed, must be an array of `recipe[cb_name::recipe_name]` items: #{policy["run_list"]}"
+          errors << "Policyfile run_list is malformed, must be an array of `recipe[cb_name::recipe_name]` items: #{policy['run_list']}"
         end
 
         unless errors.empty?
-          raise PolicyfileError, "Policyfile fetched from #{policyfile_location} was invalid:\n#{errors.join("\n")}"
+          fail PolicyfileError, "Policyfile fetched from #{policyfile_location} was invalid:\n#{errors.join("\n")}"
         end
       end
 
@@ -281,7 +277,7 @@ class Chef
 
       def deployment_group
         Chef::Config[:deployment_group] or
-          raise ConfigurationError, "Setting `deployment_group` is not configured."
+          fail ConfigurationError, 'Setting `deployment_group` is not configured.'
       end
 
       # Builds a 'cookbook_hash' map of the form
@@ -297,7 +293,7 @@ class Chef
         @cookbook_to_sync ||= begin
           events.cookbook_resolution_start(run_list_with_versions_for_display)
 
-          cookbook_versions_by_name = cookbook_locks.inject({}) do |cb_map, (name, lock_data)|
+          cookbook_versions_by_name = cookbook_locks.reduce({}) do |cb_map, (name, lock_data)|
             cb_map[name] = manifest_for(name, lock_data)
             cb_map
           end
@@ -305,7 +301,7 @@ class Chef
 
           cookbook_versions_by_name
         end
-      rescue Exception => e
+      rescue => e
         # TODO: wrap/munge exception to provide helpful error output
         events.cookbook_resolution_failed(run_list_with_versions_for_display, e)
         raise
@@ -317,9 +313,9 @@ class Chef
       # cookbooks are fetched by the "dotted_decimal_identifier": a
       # representation of a SHA1 in the traditional x.y.z version format.
       def manifest_for(cookbook_name, lock_data)
-        xyz_version = lock_data["dotted_decimal_identifier"]
+        xyz_version = lock_data['dotted_decimal_identifier']
         http_api.get("cookbooks/#{cookbook_name}/#{xyz_version}")
-      rescue Exception => e
+      rescue => e
         message = "Error loading cookbook #{cookbook_name} at version #{xyz_version}: #{e.class} - #{e.message}"
         err = Chef::Exceptions::CookbookNotFound.new(message)
         err.set_backtrace(e.backtrace)
@@ -327,7 +323,7 @@ class Chef
       end
 
       def cookbook_locks
-        policy["cookbook_locks"]
+        policy['cookbook_locks']
       end
 
       def http_api
@@ -337,8 +333,6 @@ class Chef
       def config
         Chef::Config
       end
-
     end
   end
 end
-

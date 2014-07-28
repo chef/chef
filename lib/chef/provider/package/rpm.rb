@@ -24,7 +24,6 @@ class Chef
   class Provider
     class Package
       class Rpm < Chef::Provider::Package
-
         include Chef::Mixin::GetSourceFromPackage
 
         def define_resource_requirements
@@ -51,19 +50,19 @@ class Chef
           @new_resource.version(nil)
 
           if @new_resource.source
-            unless ::File.exists?(@new_resource.source)
+            unless ::File.exist?(@new_resource.source)
               @package_source_exists = false
               return
             end
 
             Chef::Log.debug("#{@new_resource} checking rpm status")
-            status = popen4("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}") do |pid, stdin, stdout, stderr|
+            status = popen4("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}") do |_pid, _stdin, stdout, _stderr|
               stdout.each do |line|
                 case line
                 when /([\w\d+_.-]+)\s([\w\d_.-]+)/
-                  @current_resource.package_name($1)
-                  @new_resource.version($2)
-                  @candidate_version = $2
+                  @current_resource.package_name(Regexp.last_match[1])
+                  @new_resource.version(Regexp.last_match[2])
+                  @candidate_version = Regexp.last_match[2]
                 end
               end
             end
@@ -75,21 +74,20 @@ class Chef
           end
 
           Chef::Log.debug("#{@new_resource} checking install state")
-          @rpm_status = popen4("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
+          @rpm_status = popen4("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}") do |_pid, _stdin, stdout, _stderr|
             stdout.each do |line|
               case line
               when /([\w\d+_.-]+)\s([\w\d_.-]+)/
-                Chef::Log.debug("#{@new_resource} current version is #{$2}")
-                @current_resource.version($2)
+                Chef::Log.debug("#{@new_resource} current version is #{Regexp.last_match[2]}")
+                @current_resource.version(Regexp.last_match[2])
               end
             end
           end
 
-
           @current_resource
         end
 
-        def install_package(name, version)
+        def install_package(_name, _version)
           unless @current_resource.version
             run_command_with_systems_locale(
               :command => "rpm #{@new_resource.options} -i #{@new_resource.source}"
@@ -114,9 +112,7 @@ class Chef
             )
           end
         end
-
       end
     end
   end
 end
-

@@ -31,7 +31,7 @@ class Chef
 
       state_attrs :to, :owner, :group
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         verify_links_supported!
         super
         @resource_name = :link
@@ -43,7 +43,7 @@ class Chef
         @provider = Chef::Provider::Link
       end
 
-      def to(arg=nil)
+      def to(arg = nil)
         set_or_return(
           :to,
           arg,
@@ -51,7 +51,7 @@ class Chef
         )
       end
 
-      def target_file(arg=nil)
+      def target_file(arg = nil)
         set_or_return(
           :target_file,
           arg,
@@ -59,16 +59,16 @@ class Chef
         )
       end
 
-      def link_type(arg=nil)
-        real_arg = arg.kind_of?(String) ? arg.to_sym : arg
+      def link_type(arg = nil)
+        real_arg = arg.is_a?(String) ? arg.to_sym : arg
         set_or_return(
           :link_type,
           real_arg,
-          :equal_to => [ :symbolic, :hard ]
+          :equal_to => [:symbolic, :hard]
         )
       end
 
-      def group(arg=nil)
+      def group(arg = nil)
         set_or_return(
           :group,
           arg,
@@ -76,7 +76,7 @@ class Chef
         )
       end
 
-      def owner(arg=nil)
+      def owner(arg = nil)
         set_or_return(
           :owner,
           arg,
@@ -99,7 +99,7 @@ class Chef
           begin
             Chef::ReservedNames::Win32::File.verify_links_supported!
           rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e
-            Chef::Log.fatal("Link resource is not supported on this version of Windows")
+            Chef::Log.fatal('Link resource is not supported on this version of Windows')
             raise e
           end
         end

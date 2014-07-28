@@ -24,7 +24,7 @@ describe 'redirection' do
   include KnifeSupport
   include AppServerSupport
 
-  include_context "default config options"
+  include_context 'default config options'
 
   when_the_chef_server 'has a role' do
     role 'x', {}
@@ -32,9 +32,9 @@ describe 'redirection' do
     context 'and another server redirects to it with 302' do
       before :each do
         real_chef_server_url = Chef::Config.chef_server_url
-        Chef::Config.chef_server_url = "http://localhost:9018"
+        Chef::Config.chef_server_url = 'http://localhost:9018'
         app = lambda do |env|
-          [302, {'Content-Type' => 'text','Location' => "#{real_chef_server_url}#{env['PATH_INFO']}" }, ['302 found'] ]
+          [302, { 'Content-Type' => 'text', 'Location' => "#{real_chef_server_url}#{env['PATH_INFO']}" }, ['302 found']]
         end
         @redirector_server, @redirector_server_thread = start_app_server(app, 9018)
       end

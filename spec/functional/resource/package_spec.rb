@@ -22,17 +22,17 @@ require 'webrick'
 
 module AptServer
   def enable_testing_apt_source
-    File.open("/etc/apt/sources.list.d/chef-integration-test.list", "w+") do |f|
-      f.puts "deb http://localhost:9000/ sid main"
+    File.open('/etc/apt/sources.list.d/chef-integration-test.list', 'w+') do |f|
+      f.puts 'deb http://localhost:9000/ sid main'
     end
     # Magic to update apt cache for only our repo
-    shell_out!("apt-get update " +
-               '-o Dir::Etc::sourcelist="sources.list.d/chef-integration-test.list" ' +
+    shell_out!('apt-get update ' \
+               '-o Dir::Etc::sourcelist="sources.list.d/chef-integration-test.list" ' \
                '-o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"')
   end
 
   def disable_testing_apt_source
-    FileUtils.rm("/etc/apt/sources.list.d/chef-integration-test.list")
+    FileUtils.rm('/etc/apt/sources.list.d/chef-integration-test.list')
   rescue Errno::ENOENT
     puts("Attempted to remove integration test from /etc/apt/sources.list.d but it didn't exist")
   end
@@ -51,10 +51,10 @@ module AptServer
   def apt_server
     @apt_server ||= WEBrick::HTTPServer.new(
       :Port         => 9000,
-      :DocumentRoot => apt_data_dir + "/var/www/apt",
+      :DocumentRoot => apt_data_dir + '/var/www/apt',
       # Make WEBrick quiet, comment out for debug.
       :Logger       => Logger.new(StringIO.new),
-      :AccessLog    => [ StringIO.new, WEBrick::AccessLog::COMMON_LOG_FORMAT ]
+      :AccessLog    => [StringIO.new, WEBrick::AccessLog::COMMON_LOG_FORMAT]
     )
   end
 
@@ -66,12 +66,12 @@ module AptServer
     @apt_server_thread = Thread.new do
       run_apt_server
     end
-    until tcp_test_port("localhost", 9000) do
+    until tcp_test_port('localhost', 9000)
       if @apt_server_thread.alive?
         sleep 1
       else
         @apt_server_thread.join
-        raise "apt server failed to start"
+        fail 'apt server failed to start'
       end
     end
   end
@@ -82,20 +82,20 @@ module AptServer
   end
 
   def apt_data_dir
-    File.join(CHEF_SPEC_DATA, "apt")
+    File.join(CHEF_SPEC_DATA, 'apt')
   end
 end
 
 metadata = { :unix_only => true,
-  :requires_root => true,
-  :provider => {:package => Chef::Provider::Package::Apt},
-  :arch => "x86_64" # test packages are 64bit
+             :requires_root => true,
+             :provider => { :package => Chef::Provider::Package::Apt },
+             :arch => 'x86_64' # test packages are 64bit
 }
 
 describe Chef::Resource::Package, metadata do
   include Chef::Mixin::ShellOut
 
-  context "with a remote package source" do
+  context 'with a remote package source' do
 
     include AptServer
 
@@ -109,14 +109,13 @@ describe Chef::Resource::Package, metadata do
     after(:all) do
       stop_apt_server
       disable_testing_apt_source
-      shell_out!("apt-get clean")
+      shell_out!('apt-get clean')
     end
 
-
     after do
-      shell_out!("dpkg -r chef-integration-test")
-      shell_out("dpkg --clear-avail")
-      shell_out!("apt-get clean")
+      shell_out!('dpkg -r chef-integration-test')
+      shell_out('dpkg --clear-avail')
+      shell_out!('apt-get clean')
     end
 
     let(:node) do
@@ -132,7 +131,7 @@ describe Chef::Resource::Package, metadata do
     # TODO: lots of duplication from client.rb;
     # All of this must be setup for preseed files to get found
     let(:cookbook_collection) do
-      cookbook_path = File.join(CHEF_SPEC_DATA, "cookbooks")
+      cookbook_path = File.join(CHEF_SPEC_DATA, 'cookbooks')
       cl = Chef::CookbookLoader.new(cookbook_path)
       cl.load_cookbooks
       Chef::Cookbook::FileVendor.on_create do |manifest|
@@ -146,10 +145,10 @@ describe Chef::Resource::Package, metadata do
     end
 
     def base_resource
-      r = Chef::Resource::Package.new("chef-integration-test", run_context)
+      r = Chef::Resource::Package.new('chef-integration-test', run_context)
       # The apt repository in the spec data is not gpg signed, so we need to
       # force apt to accept the package:
-      r.options("--force-yes")
+      r.options('--force-yes')
       r
     end
 
@@ -157,39 +156,39 @@ describe Chef::Resource::Package, metadata do
       base_resource
     end
 
-    context "when the package is not yet installed" do
-      it "installs the package with action :install" do
+    context 'when the package is not yet installed' do
+      it 'installs the package with action :install' do
         package_resource.run_action(:install)
-        shell_out!("dpkg -l chef-integration-test")
+        shell_out!('dpkg -l chef-integration-test')
         package_resource.should be_updated_by_last_action
       end
 
-      it "installs the package for action :upgrade" do
+      it 'installs the package for action :upgrade' do
         package_resource.run_action(:upgrade)
-        shell_out!("dpkg -l chef-integration-test")
+        shell_out!('dpkg -l chef-integration-test')
         package_resource.should be_updated_by_last_action
       end
 
-      it "does nothing for action :remove" do
+      it 'does nothing for action :remove' do
         package_resource.run_action(:remove)
-        shell_out!("dpkg -l chef-integration-test", :returns => [1])
+        shell_out!('dpkg -l chef-integration-test', :returns => [1])
         package_resource.should_not be_updated_by_last_action
       end
 
-      it "does nothing for action :purge" do
+      it 'does nothing for action :purge' do
         package_resource.run_action(:purge)
-        shell_out!("dpkg -l chef-integration-test", :returns => [1])
+        shell_out!('dpkg -l chef-integration-test', :returns => [1])
         package_resource.should_not be_updated_by_last_action
       end
 
-      context "and a not-available package version is specified" do
+      context 'and a not-available package version is specified' do
         let(:package_resource) do
           r = base_resource
-          r.version("2.0")
+          r.version('2.0')
           r
         end
 
-        it "raises a reasonable error for action :install" do
+        it 'raises a reasonable error for action :install' do
           expect do
             package_resource.run_action(:install)
           end.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
@@ -197,7 +196,7 @@ describe Chef::Resource::Package, metadata do
 
       end
 
-      describe "when preseeding the install" do
+      describe 'when preseeding the install' do
 
         let(:file_cache_path) { Dir.mktmpdir }
 
@@ -211,36 +210,36 @@ describe Chef::Resource::Package, metadata do
           FileUtils.rm_rf(file_cache_path)
         end
 
-        context "with a preseed file" do
+        context 'with a preseed file' do
 
           let(:package_resource) do
             r = base_resource
-            r.cookbook_name = "preseed"
-            r.response_file("preseed-file.seed")
+            r.cookbook_name = 'preseed'
+            r.response_file('preseed-file.seed')
             r
           end
 
-          it "preseeds the package, then installs it" do
+          it 'preseeds the package, then installs it' do
             package_resource.run_action(:install)
-            cmd = shell_out!("debconf-show chef-integration-test")
+            cmd = shell_out!('debconf-show chef-integration-test')
             cmd.stdout.should include('chef-integration-test/sample-var: "hello world"')
             package_resource.should be_updated_by_last_action
           end
 
-          context "and the preseed file exists and is up-to-date" do
+          context 'and the preseed file exists and is up-to-date' do
 
             before do
               # Code here is duplicated from the implementation. Not great, but
               # it should at least fail if the code gets out of sync.
-              source = File.join(CHEF_SPEC_DATA, "cookbooks/preseed/files/default/preseed-file.seed")
-              file_cache_dir = Chef::FileCache.create_cache_path("preseed/preseed")
+              source = File.join(CHEF_SPEC_DATA, 'cookbooks/preseed/files/default/preseed-file.seed')
+              file_cache_dir = Chef::FileCache.create_cache_path('preseed/preseed')
               dest = "#{file_cache_dir}/chef-integration-test-1.1-1.seed"
               FileUtils.cp(source, dest)
             end
 
-            it "does not update the package configuration" do
+            it 'does not update the package configuration' do
               package_resource.run_action(:install)
-              cmd = shell_out!("debconf-show chef-integration-test")
+              cmd = shell_out!('debconf-show chef-integration-test')
               cmd.stdout.should include('chef-integration-test/sample-var: INVALID')
               package_resource.should be_updated_by_last_action
             end
@@ -249,7 +248,7 @@ describe Chef::Resource::Package, metadata do
 
         end
 
-        context "with a preseed template" do
+        context 'with a preseed template' do
 
           # NOTE: in the fixtures, there is also a cookbook_file named
           # "preseed-template.seed". This implicitly tests that templates are
@@ -257,34 +256,34 @@ describe Chef::Resource::Package, metadata do
 
           let(:package_resource) do
             r = base_resource
-            r.cookbook_name = "preseed"
-            r.response_file("preseed-template.seed")
+            r.cookbook_name = 'preseed'
+            r.response_file('preseed-template.seed')
             r
           end
 
           before do
-            node.set[:preseed_value] = "FROM TEMPLATE"
+            node.set[:preseed_value] = 'FROM TEMPLATE'
           end
 
-          it "preseeds the package, then installs it" do
+          it 'preseeds the package, then installs it' do
             package_resource.run_action(:install)
-            cmd = shell_out!("debconf-show chef-integration-test")
+            cmd = shell_out!('debconf-show chef-integration-test')
             cmd.stdout.should include('chef-integration-test/sample-var: "FROM TEMPLATE"')
             package_resource.should be_updated_by_last_action
           end
 
-          context "with variables" do
+          context 'with variables' do
             let(:package_resource) do
               r = base_resource
-              r.cookbook_name = "preseed"
-              r.response_file("preseed-template-variables.seed")
-              r.response_file_variables({ :template_variable => 'SUPPORTS VARIABLES' })
+              r.cookbook_name = 'preseed'
+              r.response_file('preseed-template-variables.seed')
+              r.response_file_variables(:template_variable => 'SUPPORTS VARIABLES')
               r
             end
 
-            it "preseeds the package, then installs it" do
+            it 'preseeds the package, then installs it' do
               package_resource.run_action(:install)
-              cmd = shell_out!("debconf-show chef-integration-test")
+              cmd = shell_out!('debconf-show chef-integration-test')
               cmd.stdout.should include('chef-integration-test/sample-var: "SUPPORTS VARIABLES"')
               package_resource.should be_updated_by_last_action
             end
@@ -294,22 +293,22 @@ describe Chef::Resource::Package, metadata do
       end # installing w/ preseed
     end # when package not installed
 
-    context "and the desired version of the package is installed" do
+    context 'and the desired version of the package is installed' do
 
       before do
-        v_1_1_package = File.expand_path("apt/chef-integration-test_1.1-1_amd64.deb", CHEF_SPEC_DATA)
+        v_1_1_package = File.expand_path('apt/chef-integration-test_1.1-1_amd64.deb', CHEF_SPEC_DATA)
         shell_out!("dpkg -i #{v_1_1_package}")
       end
 
-      it "does nothing for action :install" do
+      it 'does nothing for action :install' do
         package_resource.run_action(:install)
-        shell_out!("dpkg -l chef-integration-test", :returns => [0])
+        shell_out!('dpkg -l chef-integration-test', :returns => [0])
         package_resource.should_not be_updated_by_last_action
       end
 
-      it "does nothing for action :upgrade" do
+      it 'does nothing for action :upgrade' do
         package_resource.run_action(:upgrade)
-        shell_out!("dpkg -l chef-integration-test", :returns => [0])
+        shell_out!('dpkg -l chef-integration-test', :returns => [0])
         package_resource.should_not be_updated_by_last_action
       end
 
@@ -327,21 +326,20 @@ describe Chef::Resource::Package, metadata do
       # un  chef-integration-test             <none>                                    (no description available)
       def pkg_should_be_removed
         # will raise if exit code != 0,1
-        pkg_check = shell_out!("dpkg -l chef-integration-test", :returns => [0,1])
+        pkg_check = shell_out!('dpkg -l chef-integration-test', :returns => [0, 1])
 
         if pkg_check.exitstatus == 0
           pkg_check.stdout.should =~ /un[\s]+chef-integration-test/
         end
       end
 
-
-      it "removes the package for action :remove" do
+      it 'removes the package for action :remove' do
         package_resource.run_action(:remove)
         pkg_should_be_removed
         package_resource.should be_updated_by_last_action
       end
 
-      it "removes the package for action :purge" do
+      it 'removes the package for action :purge' do
         package_resource.run_action(:purge)
         pkg_should_be_removed
         package_resource.should be_updated_by_last_action
@@ -349,35 +347,35 @@ describe Chef::Resource::Package, metadata do
 
     end
 
-    context "and an older version of the package is installed" do
+    context 'and an older version of the package is installed' do
       before do
-        v_1_0_package = File.expand_path("apt/chef-integration-test_1.0-1_amd64.deb", CHEF_SPEC_DATA)
+        v_1_0_package = File.expand_path('apt/chef-integration-test_1.0-1_amd64.deb', CHEF_SPEC_DATA)
         shell_out!("dpkg -i #{v_1_0_package}")
       end
 
-      it "does nothing for action :install" do
+      it 'does nothing for action :install' do
         package_resource.run_action(:install)
-        shell_out!("dpkg -l chef-integration-test", :returns => [0])
+        shell_out!('dpkg -l chef-integration-test', :returns => [0])
         package_resource.should_not be_updated_by_last_action
       end
 
-      it "upgrades the package for action :upgrade" do
+      it 'upgrades the package for action :upgrade' do
         package_resource.run_action(:upgrade)
-        dpkg_l = shell_out!("dpkg -l chef-integration-test", :returns => [0])
+        dpkg_l = shell_out!('dpkg -l chef-integration-test', :returns => [0])
         dpkg_l.stdout.should =~ /chef\-integration\-test[\s]+1\.1\-1/
         package_resource.should be_updated_by_last_action
       end
 
-      context "and the resource specifies the new version" do
+      context 'and the resource specifies the new version' do
         let(:package_resource) do
           r = base_resource
-          r.version("1.1-1")
+          r.version('1.1-1')
           r
         end
 
-        it "upgrades the package for action :install" do
+        it 'upgrades the package for action :install' do
           package_resource.run_action(:install)
-          dpkg_l = shell_out!("dpkg -l chef-integration-test", :returns => [0])
+          dpkg_l = shell_out!('dpkg -l chef-integration-test', :returns => [0])
           dpkg_l.stdout.should =~ /chef\-integration\-test[\s]+1\.1\-1/
           package_resource.should be_updated_by_last_action
         end
@@ -388,5 +386,3 @@ describe Chef::Resource::Package, metadata do
   end
 
 end
-
-

@@ -21,25 +21,24 @@ require 'chef/knife'
 class Chef
   class Knife
     class UserReregister < Knife
-
       deps do
         require 'chef/user'
         require 'chef/json_compat'
       end
 
-      banner "knife user reregister USER (options)"
+      banner 'knife user reregister USER (options)'
 
       option :file,
-        :short => "-f FILE",
-        :long  => "--file FILE",
-        :description => "Write the private key to a file"
+             :short => '-f FILE',
+             :long  => '--file FILE',
+             :description => 'Write the private key to a file'
 
       def run
         @user_name = @name_args[0]
 
         if @user_name.nil?
           show_usage
-          ui.fatal("You must specify a user name")
+          ui.fatal('You must specify a user name')
           exit 1
         end
 
@@ -47,7 +46,7 @@ class Chef
         Chef::Log.debug("Updated user data: #{user.inspect}")
         key = user.private_key
         if config[:file]
-          File.open(config[:file], "w") do |f|
+          File.open(config[:file], 'w') do |f|
             f.print(key)
           end
         else

@@ -21,20 +21,19 @@ require 'chef/knife'
 class Chef
   class Knife
     class UserEdit < Knife
-
       deps do
         require 'chef/user'
         require 'chef/json_compat'
       end
 
-      banner "knife user edit USER (options)"
+      banner 'knife user edit USER (options)'
 
       def run
         @user_name = @name_args[0]
 
         if @user_name.nil?
           show_usage
-          ui.fatal("You must specify a user name")
+          ui.fatal('You must specify a user name')
           exit 1
         end
 
@@ -45,7 +44,7 @@ class Chef
           user.update
           ui.msg("Saved #{user}.")
         else
-          ui.msg("User unchaged, not saving.")
+          ui.msg('User unchaged, not saving.')
         end
       end
     end

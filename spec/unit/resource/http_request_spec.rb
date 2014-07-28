@@ -22,37 +22,37 @@ require 'spec_helper'
 describe Chef::Resource::HttpRequest do
 
   before(:each) do
-    @resource = Chef::Resource::HttpRequest.new("fakey_fakerton")
+    @resource = Chef::Resource::HttpRequest.new('fakey_fakerton')
   end
 
-  it "should create a new Chef::Resource::HttpRequest" do
+  it 'should create a new Chef::Resource::HttpRequest' do
     @resource.should be_a_kind_of(Chef::Resource)
     @resource.should be_a_kind_of(Chef::Resource::HttpRequest)
   end
 
-  it "should set url to a string" do
-    @resource.url "http://slashdot.org"
-    @resource.url.should eql("http://slashdot.org")
+  it 'should set url to a string' do
+    @resource.url 'http://slashdot.org'
+    @resource.url.should eql('http://slashdot.org')
   end
 
-  it "should set the message to the name by default" do
-    @resource.message.should eql("fakey_fakerton")
+  it 'should set the message to the name by default' do
+    @resource.message.should eql('fakey_fakerton')
   end
 
-  it "should set message to a string" do
-    @resource.message "monkeybars"
-    @resource.message.should eql("monkeybars")
+  it 'should set message to a string' do
+    @resource.message 'monkeybars'
+    @resource.message.should eql('monkeybars')
   end
 
-  describe "when it has a message and headers" do
+  describe 'when it has a message and headers' do
     before do
-      @resource.url("http://www.trololol.net")
-      @resource.message("Get sum post brah.")
-      @resource.headers({"head" => "tail"})
+      @resource.url('http://www.trololol.net')
+      @resource.message('Get sum post brah.')
+      @resource.headers('head' => 'tail')
     end
 
-    it "returns the url as its identity" do
-      @resource.identity.should == "http://www.trololol.net"
+    it 'returns the url as its identity' do
+      @resource.identity.should == 'http://www.trololol.net'
     end
   end
 

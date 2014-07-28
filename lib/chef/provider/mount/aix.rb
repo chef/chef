@@ -22,15 +22,14 @@ class Chef
   class Provider
     class Mount
       class Aix < Chef::Provider::Mount::Mount
-
         # Override for aix specific handling
         def initialize(new_resource, run_context)
           super
           # options and fstype are set to "defaults" and "auto" respectively in the Mount Resource class. These options are not valid for AIX, override them.
-          if @new_resource.options[0] == "defaults"
+          if @new_resource.options[0] == 'defaults'
             @new_resource.options.clear
           end
-          if @new_resource.fstype == "auto"
+          if @new_resource.fstype == 'auto'
             @new_resource.fstype = nil
           end
         end
@@ -48,19 +47,19 @@ class Chef
             when /^#{Regexp.escape(@new_resource.mount_point)}:#{device_fstab_regex}:(\S+):(\[\S+\])?:(\S+)?:(\S+):(\S+):(\S+):(\S+)/
               # mount point entry with ipv6 address for nodename (ipv6 address use ':')
               enabled = true
-              @current_resource.fstype($1)
-              @current_resource.options($5)
+              @current_resource.fstype(Regexp.last_match[1])
+              @current_resource.options(Regexp.last_match[5])
               Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/filesystems")
               next
             when /^#{Regexp.escape(@new_resource.mount_point)}:#{device_fstab_regex}::(\S+):(\S+)?:(\S+)?:(\S+):(\S+):(\S+):(\S+)/
               # mount point entry with hostname or ipv4 address
               enabled = true
-              @current_resource.fstype($1)
-              @current_resource.options($5)
+              @current_resource.fstype(Regexp.last_match[1])
+              @current_resource.options(Regexp.last_match[5])
               Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/filesystems")
               next
             when /^#{Regexp.escape(@new_resource.mount_point)}/
-              enabled=false
+              enabled = false
               Chef::Log.debug("Found conflicting mount point #{@new_resource.mount_point} in /etc/filesystems")
             end
           end
@@ -69,9 +68,9 @@ class Chef
 
         def mounted?
           mounted = false
-          shell_out!("mount").stdout.each_line do |line|
+          shell_out!('mount').stdout.each_line do |line|
             if network_device?
-              device_details = device_fstab.split(":")
+              device_details = device_fstab.split(':')
               search_device = device_details[1]
             else
               search_device = device_fstab_regex
@@ -93,7 +92,7 @@ class Chef
             mountable?
             command = "mount -v #{@new_resource.fstype}"
 
-            if !(@new_resource.options.nil? || @new_resource.options.empty?)
+            unless @new_resource.options.nil? || @new_resource.options.empty?
               command << " -o #{@new_resource.options.join(',')}"
             end
 
@@ -132,10 +131,10 @@ class Chef
             # disable, then enable.
             disable_fs
           end
-          ::File.open("/etc/filesystems", "a") do |fstab|
+          ::File.open('/etc/filesystems', 'a') do |fstab|
             fstab.puts("#{@new_resource.mount_point}:")
             if network_device?
-              device_details = device_fstab.split(":")
+              device_details = device_fstab.split(':')
               fstab.puts("\tdev\t\t= #{device_details[1]}")
               fstab.puts("\tnodename\t\t= #{device_details[0]}")
             else
@@ -152,7 +151,7 @@ class Chef
           contents = []
           if @current_resource.enabled
             found_device = false
-            ::File.open("/etc/filesystems", "r").each_line do |line|
+            ::File.open('/etc/filesystems', 'r').each_line do |line|
               case line
               when /^\/.+:\s*$/
                 if line =~ /#{Regexp.escape(@new_resource.mount_point)}+:/
@@ -161,18 +160,17 @@ class Chef
                   found_device = false
                 end
               end
-              if !found_device
+              unless found_device
                 contents << line
               end
             end
-            ::File.open("/etc/filesystems", "w") do |fstab|
-              contents.each { |line| fstab.puts line}
+            ::File.open('/etc/filesystems', 'w') do |fstab|
+              contents.each { |line| fstab.puts line }
             end
           else
             Chef::Log.debug("#{@new_resource} is not enabled - nothing to do")
           end
         end
-
     end
    end
   end

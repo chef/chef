@@ -20,24 +20,24 @@ require 'spec_helper'
 
 describe Chef::Resource::ConditionalActionNotNothing do
 
-  describe "after running a :nothing action" do
+  describe 'after running a :nothing action' do
     before do
       @action = :nothing
       @conditional = Chef::Resource::ConditionalActionNotNothing.new(@action)
     end
 
-    it "indicates that resource convergence should not continue" do
+    it 'indicates that resource convergence should not continue' do
       @conditional.continue?.should be_false
     end
   end
 
-  describe "after running an action different to :nothing" do
+  describe 'after running an action different to :nothing' do
     before do
       @action = :something
       @conditional = Chef::Resource::ConditionalActionNotNothing.new(@action)
     end
 
-    it "indicates that resource convergence should continue" do
+    it 'indicates that resource convergence should continue' do
       @conditional.continue?.should be_true
     end
   end

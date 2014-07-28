@@ -57,14 +57,14 @@
 
 require 'uri'
 
-unless URI::Generic.instance_methods.map {|m| m.to_s}.include?("hostname")
+unless URI::Generic.instance_methods.map { |m| m.to_s }.include?('hostname')
 
   class URI::Generic
     # Copied from the MRI source for Ruby 1.9.3
     # File lib/uri/generic.rb, line 659
     def hostname
-      v = self.host
-      /\A\[(.*)\]\z/ =~ v ? $1 : v
+      v = host
+      /\A\[(.*)\]\z/ =~ v ? Regexp.last_match[1] : v
     end
   end
 end

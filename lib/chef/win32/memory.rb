@@ -35,7 +35,7 @@ class Chef
           Chef::ReservedNames::Win32::Error.raise!
         end
         # If a block is passed, handle freeing the memory at the end
-        if block != nil
+        if !block.nil?
           begin
             yield result
           ensure
@@ -60,14 +60,14 @@ class Chef
         if result == LMEM_INVALID_HANDLE
           Chef::ReservedNames::Win32::Error.raise!
         end
-        [ result & ~LMEM_LOCKCOUNT, result & LMEM_LOCKCOUNT ]
+        [result & ~LMEM_LOCKCOUNT, result & LMEM_LOCKCOUNT]
       end
 
       # local_free(pointer)
       # Free memory allocated using local_alloc
       def self.local_free(pointer)
         result = LocalFree(pointer)
-        if !result.null?
+        unless result.null?
           Chef::ReservedNames::Win32::Error.raise!
         end
       end
@@ -95,7 +95,6 @@ class Chef
       def self.local_free_finalizer(pointer)
         proc { local_free(pointer) }
       end
-
     end
   end
 end

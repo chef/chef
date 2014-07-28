@@ -20,22 +20,21 @@ require 'chef/knife'
 class Chef
   class Knife
     class CookbookSiteSearch < Knife
-
-      banner "knife cookbook site search QUERY (options)"
-      category "cookbook site"
+      banner 'knife cookbook site search QUERY (options)'
+      category 'cookbook site'
 
       def run
         output(search_cookbook(name_args[0]))
       end
 
-      def search_cookbook(query, items=10, start=0, cookbook_collection={})
+      def search_cookbook(query, items = 10, start = 0, cookbook_collection = {})
         cookbooks_url = "http://cookbooks.opscode.com/api/v1/search?q=#{query}&items=#{items}&start=#{start}"
         cr = noauth_rest.get_rest(cookbooks_url)
-        cr["items"].each do |cookbook|
-          cookbook_collection[cookbook["cookbook_name"]] = cookbook
+        cr['items'].each do |cookbook|
+          cookbook_collection[cookbook['cookbook_name']] = cookbook
         end
-        new_start = start + cr["items"].length
-        if new_start < cr["total"]
+        new_start = start + cr['items'].length
+        if new_start < cr['total']
           search_cookbook(query, items, new_start, cookbook_collection)
         else
           cookbook_collection
@@ -44,8 +43,3 @@ class Chef
     end
   end
 end
-
-
-
-
-

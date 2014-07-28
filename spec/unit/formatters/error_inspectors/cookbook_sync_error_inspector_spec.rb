@@ -20,22 +20,22 @@ require 'spec_helper'
 
 describe Chef::Formatters::ErrorInspectors::CookbookSyncErrorInspector do
   before do
-    @description = Chef::Formatters::ErrorDescription.new("Error Expanding RunList:")
+    @description = Chef::Formatters::ErrorDescription.new('Error Expanding RunList:')
     @outputter = Chef::Formatters::IndentableOutputStream.new(StringIO.new, STDERR)
-    #@outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
+    # @outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
   end
 
-  describe "when explaining a 502 error" do
+  describe 'when explaining a 502 error' do
     before do
-      @response_body = "sad trombone orchestra"
-      @response = Net::HTTPBadGateway.new("1.1", "502", "(response) bad gateway")
+      @response_body = 'sad trombone orchestra'
+      @response = Net::HTTPBadGateway.new('1.1', '502', '(response) bad gateway')
       @response.stub(:body).and_return(@response_body)
-      @exception = Net::HTTPFatalError.new("(exception) bad gateway", @response)
+      @exception = Net::HTTPFatalError.new('(exception) bad gateway', @response)
       @inspector = described_class.new({}, @exception)
       @inspector.add_explanation(@description)
     end
 
-    it "prints a nice message" do
+    it 'prints a nice message' do
       @description.display(@outputter)
     end
 
