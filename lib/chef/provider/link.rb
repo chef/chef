@@ -18,7 +18,6 @@
 
 require 'chef/config'
 require 'chef/log'
-require 'chef/mixin/shell_out'
 require 'chef/mixin/file_class'
 require 'chef/resource/link'
 require 'chef/provider'
@@ -29,7 +28,6 @@ class Chef
     class Link < Chef::Provider
 
       include Chef::Mixin::EnforceOwnershipAndPermissions
-      include Chef::Mixin::ShellOut
       include Chef::Mixin::FileClass
 
       def negative_complement(big)

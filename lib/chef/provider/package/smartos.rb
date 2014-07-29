@@ -20,7 +20,6 @@
 #
 
 require 'chef/provider/package'
-require 'chef/mixin/shell_out'
 require 'chef/resource/package'
 require 'chef/mixin/get_source_from_package'
 
@@ -28,9 +27,7 @@ class Chef
   class Provider
     class Package
       class SmartOS < Chef::Provider::Package
-        include Chef::Mixin::ShellOut
         attr_accessor :is_virtual_package
-
 
         def load_current_resource
           Chef::Log.debug("#{@new_resource} loading current resource")

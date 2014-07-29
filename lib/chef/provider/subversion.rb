@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 #TODO subversion and git should both extend from a base SCM provider.
 
 require 'chef/log'
@@ -198,7 +197,6 @@ class Chef
       def scm(*args)
         ['svn', *args].compact.join(" ")
       end
-
 
       def target_dir_non_existent_or_empty?
         !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == ['.','..']

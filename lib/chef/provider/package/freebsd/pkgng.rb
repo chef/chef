@@ -52,8 +52,6 @@ class Chef
             @new_resource.source ? file_candidate_version : repo_candidate_version
           end
 
-
-
           private
 
           def file_candidate_version

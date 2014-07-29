@@ -22,11 +22,13 @@ require 'chef/mixin/convert_to_class_name'
 require 'chef/dsl/recipe'
 require 'chef/mixin/enforce_ownership_and_permissions'
 require 'chef/mixin/why_run'
+require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
     include Chef::DSL::Recipe
     include Chef::Mixin::WhyRun
+    include Chef::Mixin::ShellOut
 
     attr_accessor :new_resource
     attr_accessor :current_resource
