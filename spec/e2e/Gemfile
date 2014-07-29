@@ -4,5 +4,5 @@ gem 'berkshelf'
 gem 'test-kitchen', :github => 'mcquin/test-kitchen',
                     :branch => 'mcquin/chef_base_git_install'
 
-#gem 'kitchen-vagrant'
+gem 'kitchen-vagrant'
 gem 'kitchen-ec2'

@@ -7,8 +7,13 @@ driver_config:
 
 provisioner:
   name: chef_solo
+<<<<<<< HEAD
   github: <%= ENV['TRAVIS_REPO_SLUG'] %>
   branch: <%= ENV['TRAVIS_COMMIT'] %>
+=======
+  chef_git_sha: <%= ENV['TRAVIS_COMMIT'] %>
+  chef_git_url: github.com/<%= ENV['TRAVIS_REPO_SLUG'] %>
+>>>>>>> 6cbc5b3... Separate .kitchen.ymls for local TK (vagrant) and travis TK (ec2) runs
   require_chef_omnibus: true
 
 platforms:
@@ -17,11 +22,19 @@ platforms:
     driver_config:
       region: "us-west-2"
       availability_zone: "us-west-2b"
+<<<<<<< HEAD
       ssh_key: ~/<%= ENV['EC2_SSH_KEY_PATH'] %>
+=======
+      ssh_key: <%= ENV['EC2_SSH_KEY_PATH'] %>
+>>>>>>> 6cbc5b3... Separate .kitchen.ymls for local TK (vagrant) and travis TK (ec2) runs
       security_group_ids: ["travis-ci"]
 
 suites:
   - name: default
     run_list:
+<<<<<<< HEAD
       - recipe[git-cookbook::default]
+=======
+      - recipe[example::default]
+>>>>>>> 6cbc5b3... Separate .kitchen.ymls for local TK (vagrant) and travis TK (ec2) runs
     attributes:
