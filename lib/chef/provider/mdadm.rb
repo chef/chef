@@ -17,14 +17,11 @@
 #
 
 require 'chef/log'
-require 'chef/mixin/shell_out'
 require 'chef/provider'
 
 class Chef
   class Provider
     class Mdadm < Chef::Provider
-
-      include Chef::Mixin::ShellOut
 
       def popen4
         raise Exception, "deprecated"

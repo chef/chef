@@ -61,6 +61,18 @@ describe Chef::Provider do
     @provider = Chef::Provider.new(@resource, @run_context)
   end
 
+  it "should mixin shell_out" do
+    expect(@provider.respond_to?(:shell_out)).to be true
+  end
+
+  it "should mixin shell_out!" do
+    expect(@provider.respond_to?(:shell_out!)).to be true
+  end
+
+  it "should mixin shell_out_with_systems_locale" do
+    expect(@provider.respond_to?(:shell_out_with_systems_locale)).to be true
+  end
+
   it "should store the resource passed to new as new_resource" do
     @provider.new_resource.should eql(@resource)
   end

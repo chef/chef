@@ -18,7 +18,6 @@
 
 # TODO: Allow @new_resource.source to be a Product Code as a GUID for uninstall / network install
 
-require 'chef/mixin/shell_out'
 require 'chef/win32/api/installer' if RUBY_PLATFORM =~ /mswin|mingw32|windows/
 
 class Chef
@@ -27,7 +26,6 @@ class Chef
       class Windows
         class MSI
           include Chef::ReservedNames::Win32::API::Installer if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-          include Chef::Mixin::ShellOut
 
           def initialize(resource)
             @new_resource = resource

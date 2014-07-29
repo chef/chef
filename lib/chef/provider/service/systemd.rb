@@ -18,7 +18,6 @@
 
 require 'chef/resource/service'
 require 'chef/provider/service/simple'
-require 'chef/mixin/shell_out'
 
 class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   def load_current_resource

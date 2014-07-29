@@ -18,13 +18,11 @@
 
 require 'chef/provider/mount'
 require 'chef/log'
-require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
     class Mount
       class Mount < Chef::Provider::Mount
-        include Chef::Mixin::ShellOut
 
         def initialize(new_resource, run_context)
           super

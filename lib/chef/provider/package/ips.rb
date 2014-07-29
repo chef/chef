@@ -21,14 +21,12 @@ require 'open3'
 require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
-require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
     class Package
       class Ips < Chef::Provider::Package
 
-        include Chef::Mixin::ShellOut
         attr_accessor :virtual
 
         def define_resource_requirements
@@ -98,4 +96,3 @@ class Chef
     end
   end
 end
-
