@@ -125,6 +125,7 @@ class Chef
       end
 
       def action_create
+        do_generate_content
         do_unlink
         do_create_file
         do_contents_changes
@@ -302,6 +303,10 @@ class Chef
         end
       end
 
+      def do_generate_content
+        tempfile
+      end
+
       def do_unlink
         if @new_resource.force_unlink
           if needs_unlinking?
@@ -404,7 +409,7 @@ class Chef
       end
 
       def tempfile
-        content.tempfile
+        @tempfile ||= content.tempfile
       end
 
       def short_cksum(checksum)
