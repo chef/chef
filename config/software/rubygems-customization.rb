@@ -19,7 +19,7 @@ name "rubygems-customization"
 
 default_version "0.1.0"
 
-if platform == 'windows'
+if windows?
   dependency "ruby-windows"
 else
   dependency "ruby"
@@ -41,7 +41,7 @@ build do
   sitelibdir_cmd = %Q{#{install_dir}/embedded/bin/ruby -rrbconfig -e "puts RbConfig::CONFIG['sitelibdir']"}
 
   # TODO: use +windows_safe_path+
-  sitelibdir_cmd.gsub!('/', '\\') if platform == "windows"
+  sitelibdir_cmd.gsub!('/', '\\') if windows?
 
   block do
     source_customization_file = if platform == 'windows'

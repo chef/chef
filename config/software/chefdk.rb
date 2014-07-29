@@ -21,7 +21,7 @@ source :git => "git://github.com/opscode/chef-dk"
 
 relative_path "chef-dk"
 
-if platform == 'windows'
+if windows?
   dependency "chef-windows"
 else
   dependency "chef"
@@ -80,7 +80,7 @@ build do
 
   appbundler_apps = %w[chef berkshelf test-kitchen chef-dk chef-vault ohai]
   appbundler_apps.each do |app_name|
-    copy("#{source_dir}/#{app_name}", "#{install_dir}/embedded/apps/")
+    copy("#{Config.source_dir}/#{app_name}", "#{install_dir}/embedded/apps/")
     delete("#{install_dir}/embedded/apps/#{app_name}/.git")
     appbundle("#{install_dir}/embedded/apps/#{app_name}", "#{install_dir}/bin")
   end
