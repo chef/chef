@@ -27,6 +27,7 @@ matrix:
   - rvm: 2.1.1
     gemfile: pedant.gemfile
     script: bundle exec rake pedant
+    ### START TEST KITCHEN ONLY ###
   - rvm: 2.1.1
     gemfile: spec/e2e/Gemfile
     before_install:
@@ -70,7 +71,7 @@ matrix:
     - secure: QHuMdtFCvttiIOx6iS+lH4bKXZMwsgVQ6FPsUW5zJ7uw6mAEWKEil9xNk4aYV9FywinwUs4fnFlnIW/Gj1gLkUjm4DtxdmRZIlRXIbgsNch6H916TCPg4Q2oPsW2nVdXPjW/2jhkfLUiSnuhL+ylami1NF8Up7vokXknh/jFNZU=
     - secure: GTfrUVmMQSxho3Ia4Y1ONqKvVMD34GHF2/TJb8UdQV7iH+nVxVXpy3nWaCXa9ri7lRzMefkoVLy0gKK13YoVd7w3d2S3/IfNakC85XfN6VuOzK/FDkA0WoPrgKjcQ64I+3dQ6cgrMWWTieKwRZy+Ve24iRbnN055Hk+VRMu6OGw=
     - secure: SOMYGVfHLkHsH6koxpw68YQ4ydEo6YXPhHbrYGQbehUbFa6+OZzBcAJRJbKjyhD2AZRvNr2jB8XnjYKvVyDGQRpkWhGYZ7CpHqINpDsqKBsbiMe3/+KmKQqS+UKxNGefquoOvyQ1N8Xy77dkWYokRtGMEuR12RkZLonxiDW8Qyg=
-
+    ### END TEST KITCHEN ONLY ###
 notifications:
   on_success: change
   on_failure: always
