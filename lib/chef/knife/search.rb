@@ -105,7 +105,9 @@ class Chef
           q.search(@type, escaped_query, search_args) do |item|
             formatted_item = Hash.new
             if item.is_a?(Hash)
-              formatted_item[item["url"]] = item["data"]
+              # doing a little magic here to set the correct name
+              formatted_item[item["data"]["__display_name"]] = item["data"]
+              formatted_item[item["data"]["__display_name"]].delete("__display_name")
             else
               formatted_item = format_for_display(item)
             end
@@ -130,10 +132,6 @@ class Chef
             end
           end
         end
-      end
-
-      def munge_return_data(item)
-
       end
 
       def read_cli_args
@@ -192,8 +190,10 @@ class Chef
       def create_result_filter_from_attributes(filter_array)
         final_filter = Hash.new
         filter_array.each do |f|
-          final_filter[f.to_sym] = f.split(".")
+          final_filter[f] = f.split(".")
         end
+        # adding magic filter so we can actually pull the name as before
+        final_filter["__display_name"] = [ "name" ]
         return final_filter
       end
 
