@@ -1,5 +1,10 @@
 # Chef Client Release Notes:
 
+## Added Chef::Mixin::ShellOut methods to Recipe DSL
+
+Added the ability to use shell_out, shell_out! and shell_out_with_systems_locale in the Recipe
+DSL without needing to explicitly extend/include the mixin.
+
 ## Cookbook Synchronizer Cleans Deleted Files
 
 At the start of the Chef client run any files which are in active cookbooks, but are no longer in the
