@@ -1,1 +1,3 @@
 source "https://supermarket.getchef.com"
+
+cookbook 'git-cookbook', :path => 'cookbooks/git-cookbook'

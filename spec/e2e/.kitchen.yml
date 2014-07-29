@@ -12,5 +12,5 @@ platforms:
 suites:
   - name: default
     run_list:
-      - recipe[example::default]
+      - recipe[git-cookbook::default]
     attributes:
