@@ -58,6 +58,9 @@ class Chef
 
       attr_reader :deployment_strategy
 
+      attr_accessor :needs_creating
+      attr_accessor :needs_unlinking
+
       def initialize(new_resource, run_context)
         @content_class ||= Chef::Provider::File::Content
         if new_resource.respond_to?(:atomic_update)
@@ -82,11 +85,17 @@ class Chef
           load_resource_attributes_from_file(@current_resource)
         end
         @current_resource
+
+        # true if there is a non-file thing in the way that we need to unlink first
+        @needs_unlinking = @new_resource.force_unlink && l_exist?(@new_resource.path) && !real_file?(@new_resource.path)
+        # true if we are going to be creating a new file
+        @needs_creating  = !::File.exist?(@new_resource.path)
       end
 
       def define_resource_requirements
         # deep inside FAC we have to assert requirements, so call FACs hook to set that up
         access_controls.define_resource_requirements
+
         # Make sure the parent directory exists, otherwise fail.  For why-run assume it would have been created.
         requirements.assert(:create, :create_if_missing, :touch) do |a|
           parent_directory = ::File.dirname(@new_resource.path)
@@ -96,7 +105,7 @@ class Chef
         end
 
         # Make sure the file is deletable if it exists, otherwise fail.
-        if ::File.exists?(@new_resource.path)
+        if ::File.exist?(@new_resource.path)
           requirements.assert(:delete) do |a|
             a.assertion { ::File.writable?(@new_resource.path) }
             a.failure_message(Chef::Exceptions::InsufficientPermissions,"File #{@new_resource.path} exists but is not writable so it cannot be deleted")
@@ -125,10 +134,10 @@ class Chef
       end
 
       def action_create_if_missing
-        if ::File.exists?(@new_resource.path)
-          Chef::Log.debug("#{@new_resource} exists at #{@new_resource.path} taking no action.")
-        else
+        if needs_creating?
           action_create
+        else
+          Chef::Log.debug("#{@new_resource} exists at #{@new_resource.path} taking no action.")
         end
       end
 
@@ -294,38 +303,25 @@ class Chef
       end
 
       def do_unlink
-        @file_unlinked = false
         if @new_resource.force_unlink
-          if l_exist?(@new_resource.path) && !real_file?(@new_resource.path)
+          if needs_unlinking?
             # unlink things that aren't normal files
             description = "unlink #{file_type_string(@new_resource.path)} at #{@new_resource.path}"
             converge_by(description) do
               unlink(@new_resource.path)
             end
             @current_resource.checksum = nil
-            @file_unlinked = true
           end
         end
       end
 
-      def file_unlinked?
-        @file_unlinked == true
-      end
-
       def do_create_file
-        @file_created = false
-        if !::File.exists?(@new_resource.path) || file_unlinked?
+        if needs_creating? || needs_unlinking?
           converge_by("create new file #{@new_resource.path}") do
             deployment_strategy.create(@new_resource.path)
             Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
           end
-          @file_created = true
         end
-      end
-
-      # do_contents_changes needs to know if do_create_file created a file or not
-      def file_created?
-        @file_created == true
       end
 
       def do_backup(file = nil)
@@ -337,7 +333,7 @@ class Chef
       end
 
       def update_file_contents
-        do_backup unless file_created?
+        do_backup unless needs_creating? || needs_unlinking?
         deployment_strategy.deploy(tempfile.path, ::File.realpath(@new_resource.path))
         Chef::Log.info("#{@new_resource} updated file contents #{@new_resource.path}")
         if managing_content?
@@ -364,7 +360,7 @@ class Chef
             description << "suppressed sensitive resource"
           else
             diff.diff(@current_resource.path, tempfile.path)
-            @new_resource.diff( diff.for_reporting ) unless file_created?
+            @new_resource.diff( diff.for_reporting ) unless needs_creating? || needs_unlinking?
             description << diff.for_output
           end
 
@@ -417,7 +413,6 @@ class Chef
       end
 
       def load_resource_attributes_from_file(resource)
-
         if Chef::Platform.windows?
           # This is a work around for CHEF-3554.
           # OC-6534: is tracking the real fix for this workaround.
@@ -429,6 +424,13 @@ class Chef
         acl_scanner.set_all!
       end
 
+      def needs_creating?
+        !!@needs_creating
+      end
+
+      def needs_unlinking?
+        !!@needs_unlinking
+      end
     end
   end
 end
