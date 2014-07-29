@@ -273,7 +273,6 @@ class Chef
             @platform_cache ||= {}
           end
 
-
           attr_reader :gem_binary_location
 
           def initialize(gem_binary_location)
@@ -350,7 +349,6 @@ class Chef
           end
 
         end
-
 
         attr_reader :gem_env
         attr_reader :cleanup_gem_env

@@ -23,7 +23,6 @@ require 'chef/resource/package'
 require 'singleton'
 require 'chef/mixin/get_source_from_package'
 
-
 class Chef
   class Provider
     class Package

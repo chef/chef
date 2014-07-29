@@ -25,7 +25,6 @@ end
 
 class Chef::Provider::Service::Windows < Chef::Provider::Service
 
-
   #Win32::Service.get_start_type
   AUTO_START = 'auto start'
   DISABLED = 'disabled'

@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 require 'chef/exceptions'
 require 'chef/log'
 require 'chef/provider'
@@ -25,7 +24,6 @@ require 'fileutils'
 class Chef
   class Provider
     class Git < Chef::Provider
-
 
       def whyrun_supported?
         true
@@ -48,7 +46,6 @@ class Chef
           a.failure_message(Chef::Exceptions::MissingParentDirectory,
             "Cannot clone #{@new_resource} to #{@new_resource.destination}, the enclosing directory #{dirname} does not exist")
         end
-
 
         requirements.assert(:all_actions) do |a|
           a.assertion { !(@new_resource.revision =~ /^origin\//) }
@@ -104,7 +101,6 @@ class Chef
           action_checkout
         end
       end
-
 
       def existing_git_clone?
         ::File.exist?(::File.join(@new_resource.destination, ".git"))

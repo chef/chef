@@ -245,7 +245,6 @@ class Chef
           "Assuming symlink source would be created by a previous resource" ]
       end
 
-
       def content
         @content ||= begin
           load_current_resource if @current_resource.nil?

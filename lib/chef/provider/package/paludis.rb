@@ -24,7 +24,6 @@ class Chef
     class Package
       class Paludis < Chef::Provider::Package
 
-
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.package_name)
           @current_resource.package_name(@new_resource.package_name)

@@ -16,12 +16,10 @@
 # limitations under the License.
 #
 
-
 class Chef
   class Provider
     class Group
       class Groupmod < Chef::Provider::Group
-
 
         def load_current_resource
           super

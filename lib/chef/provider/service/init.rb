@@ -24,7 +24,6 @@ class Chef
     class Service
       class Init < Chef::Provider::Service::Simple
 
-
         def initialize(new_resource, run_context)
           super
           @init_command = "/etc/init.d/#{@new_resource.service_name}"

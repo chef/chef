@@ -23,7 +23,6 @@ class Chef
   class Provider
     class Execute < Chef::Provider
 
-
       def load_current_resource
         true
       end

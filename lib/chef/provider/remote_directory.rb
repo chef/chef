@@ -40,7 +40,6 @@ class Chef
                                    name !~ /(?:^|#{Regexp.escape(::File::SEPARATOR)})\.\.?$/
                                  end)
 
-
         files_to_transfer.each do |cookbook_file_relative_path|
           create_cookbook_file(cookbook_file_relative_path)
           # the file is removed from the purge list

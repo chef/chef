@@ -24,7 +24,6 @@ class Chef
     class User
       class Useradd < Chef::Provider::User
 
-
         UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:password, "-p"], [:shell, "-s"], [:uid, "-u"]]
 
         def create_user

@@ -85,7 +85,6 @@ class Chef
             end
           end
 
-
           @current_resource
         end
 

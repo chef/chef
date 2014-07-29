@@ -22,7 +22,6 @@ require 'chef/provider/file'
 require 'chef/deprecation/provider/template'
 require 'chef/deprecation/warnings'
 
-
 class Chef
   class Provider
     class Template < Chef::Provider::File

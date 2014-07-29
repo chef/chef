@@ -23,7 +23,6 @@ class Chef
     class Group
       class Gpasswd < Chef::Provider::Group::Groupadd
 
-
         def load_current_resource
           super
         end

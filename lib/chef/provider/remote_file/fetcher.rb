@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-
 class Chef
   class Provider
     class RemoteFile

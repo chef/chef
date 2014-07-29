@@ -62,7 +62,6 @@ class Chef
           end
         end
 
-
         class Base < Chef::Provider::Package
           include Chef::Mixin::GetSourceFromPackage
 
