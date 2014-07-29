@@ -16,14 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
     class Group
       class Groupmod < Chef::Provider::Group
 
-        include Chef::Mixin::ShellOut
 
         def load_current_resource
           super

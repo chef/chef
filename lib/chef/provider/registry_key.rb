@@ -25,7 +25,6 @@ require 'chef/provider'
 require 'etc'
 require 'fileutils'
 require 'chef/scan_access_control'
-require 'chef/mixin/shell_out'
 require 'chef/win32/registry'
 
 class Chef
@@ -33,7 +32,6 @@ class Chef
   class Provider
     class RegistryKey < Chef::Provider
       include Chef::Mixin::Checksum
-      include Chef::Mixin::ShellOut
 
       def whyrun_supported?
         true

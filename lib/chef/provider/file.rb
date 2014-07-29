@@ -25,7 +25,6 @@ require 'etc'
 require 'fileutils'
 require 'chef/scan_access_control'
 require 'chef/mixin/checksum'
-require 'chef/mixin/shell_out'
 require 'chef/mixin/file_class'
 require 'chef/util/backup'
 require 'chef/util/diff'
@@ -48,7 +47,6 @@ class Chef
     class File < Chef::Provider
       include Chef::Mixin::EnforceOwnershipAndPermissions
       include Chef::Mixin::Checksum
-      include Chef::Mixin::ShellOut
       include Chef::Util::Selinux
       include Chef::Mixin::FileClass
 

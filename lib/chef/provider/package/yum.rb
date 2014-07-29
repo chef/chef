@@ -19,7 +19,6 @@
 require 'chef/config'
 require 'chef/provider/package'
 require 'chef/mixin/command'
-require 'chef/mixin/shell_out'
 require 'chef/resource/package'
 require 'singleton'
 require 'chef/mixin/get_source_from_package'
@@ -647,7 +646,6 @@ class Chef
         # Cache for our installed and available packages, pulled in from yum-dump.py
         class YumCache
           include Chef::Mixin::Command
-          include Chef::Mixin::ShellOut
           include Singleton
 
           def initialize
@@ -949,7 +947,6 @@ class Chef
         end # YumCache
 
         include Chef::Mixin::GetSourceFromPackage
-        include Chef::Mixin::ShellOut
 
         def initialize(new_resource, run_context)
           super

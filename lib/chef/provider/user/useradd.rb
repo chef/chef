@@ -17,7 +17,6 @@
 #
 
 require 'pathname'
-require 'chef/mixin/shell_out'
 require 'chef/provider/user'
 
 class Chef
@@ -25,7 +24,6 @@ class Chef
     class User
       class Useradd < Chef::Provider::User
 
-        include Chef::Mixin::ShellOut
 
         UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:password, "-p"], [:shell, "-s"], [:uid, "-u"]]
 

@@ -18,7 +18,6 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
 require 'chef/provider/service/simple'
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require 'win32/service'
@@ -26,7 +25,6 @@ end
 
 class Chef::Provider::Service::Windows < Chef::Provider::Service
 
-  include Chef::Mixin::ShellOut
 
   #Win32::Service.get_start_type
   AUTO_START = 'auto start'

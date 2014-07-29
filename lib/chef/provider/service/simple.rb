@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
 require 'chef/provider/service'
 require 'chef/resource/service'
 require 'chef/mixin/command'
@@ -26,7 +25,6 @@ class Chef
     class Service
       class Simple < Chef::Provider::Service
 
-        include Chef::Mixin::ShellOut
 
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)

@@ -22,7 +22,6 @@
 require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
-require 'chef/mixin/shell_out'
 require 'singleton'
 
 class Chef
@@ -30,7 +29,6 @@ class Chef
     class Package
       class Zypper < Chef::Provider::Package
 
-        include Chef::Mixin::ShellOut
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)

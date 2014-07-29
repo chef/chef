@@ -20,14 +20,12 @@
 
 require 'chef/provider/mount'
 require 'chef/log'
-require 'chef/mixin/shell_out'
 require 'forwardable'
 
 class Chef
   class Provider
     class Mount
       class Solaris < Chef::Provider::Mount
-        include Chef::Mixin::ShellOut
         extend Forwardable
 
         VFSTAB = "/etc/vfstab".freeze

@@ -20,14 +20,12 @@
 require 'chef/exceptions'
 require 'chef/log'
 require 'chef/provider'
-require 'chef/mixin/shell_out'
 require 'fileutils'
 
 class Chef
   class Provider
     class Git < Chef::Provider
 
-      include Chef::Mixin::ShellOut
 
       def whyrun_supported?
         true

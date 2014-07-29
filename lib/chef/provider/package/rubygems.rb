@@ -273,7 +273,6 @@ class Chef
             @platform_cache ||= {}
           end
 
-          include Chef::Mixin::ShellOut
 
           attr_reader :gem_binary_location
 
@@ -352,7 +351,6 @@ class Chef
 
         end
 
-        include Chef::Mixin::ShellOut
 
         attr_reader :gem_env
         attr_reader :cleanup_gem_env

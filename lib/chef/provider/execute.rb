@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
 require 'chef/log'
 require 'chef/provider'
 
@@ -24,7 +23,6 @@ class Chef
   class Provider
     class Execute < Chef::Provider
 
-      include Chef::Mixin::ShellOut
 
       def load_current_resource
         true

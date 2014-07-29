@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
 require 'chef/provider/service'
 require 'chef/resource/service'
 require 'chef/mixin/command'
@@ -25,7 +24,6 @@ class Chef
   class Provider
     class Service
       class Solaris < Chef::Provider::Service
-        include Chef::Mixin::ShellOut
         attr_reader :maintenance
 
         def initialize(new_resource, run_context=nil)
