@@ -74,7 +74,7 @@ class Chef
       option :filter_result,
         :short => "-f FILTER",
         :long => "--filter-result FILTER",
-        :description => "Only bring back specific attributes of the matching objects"
+        :description => "Only bring back specific attributes of the matching objects; for example: \"ServerName=name, Kernel=kernel.version\""
 
       def run
         read_cli_args
@@ -83,7 +83,6 @@ class Chef
         if @type == 'node'
           ui.use_presenter Knife::Core::NodePresenter
         end
-
 
         q = Chef::Search::Query.new
         escaped_query = URI.escape(@query,
@@ -98,15 +97,18 @@ class Chef
         search_args[:rows] = config[:rows]
         if config[:filter_result]
           search_args[:filter_result] = create_result_filter(config[:filter_result])
+        elsif (not ui.config[:attribute].nil?) && (not ui.config[:attribute].empty?)
+          search_args[:filter_result] = create_result_filter_from_attributes(ui.config[:attribute])
         end
 
         begin
-          # TODO - fix formatting for filtered results
           q.search(@type, escaped_query, search_args) do |item|
-            formatted_item = format_for_display(item)
-            # if formatted_item.respond_to?(:has_key?) && !formatted_item.has_key?('id')
-            #   formatted_item['id'] = item.has_key?('id') ? item['id'] : item.name
-            # end
+            formatted_item = Hash.new
+            if item.is_a?(Hash)
+              formatted_item[item["url"]] = item["data"]
+            else
+              formatted_item = format_for_display(item)
+            end
             result_items << formatted_item
             result_count += 1
           end
@@ -128,6 +130,10 @@ class Chef
             end
           end
         end
+      end
+
+      def munge_return_data(item)
+
       end
 
       def read_cli_args
@@ -183,10 +189,14 @@ class Chef
         return final_filter
       end
 
+      def create_result_filter_from_attributes(filter_array)
+        final_filter = Hash.new
+        filter_array.each do |f|
+          final_filter[f.to_sym] = f.split(".")
+        end
+        return final_filter
+      end
+
     end
   end
 end
-
-
-
-
