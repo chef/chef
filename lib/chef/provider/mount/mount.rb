@@ -167,7 +167,7 @@ class Chef
 
             found = false
             ::File.readlines("/etc/fstab").reverse_each do |line|
-              if !found && line =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}/
+              if !found && line =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}\s/
                 found = true
                 Chef::Log.debug("#{@new_resource} is removed from fstab")
                 next
