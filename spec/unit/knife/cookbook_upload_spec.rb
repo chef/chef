@@ -61,8 +61,9 @@ describe Chef::Knife::CookbookUpload do
       test_cookbook = Chef::CookbookVersion.new('test_cookbook', '/tmp/blah')
       cookbook_loader.stub(:each).and_yield("test_cookbook", test_cookbook)
       cookbook_loader.stub(:cookbook_names).and_return(["test_cookbook"])
-      Chef::CookbookUploader.should_receive(:new).with( kind_of(Array),  kind_of(Array),
-        {:force=>nil, :concurrency => 3}).and_return(double("Chef::CookbookUploader", :upload_cookbooks=> true))
+      Chef::CookbookUploader.should_receive(:new).
+        with( kind_of(Array), { :force => nil, :concurrency => 3}).
+        and_return(double("Chef::CookbookUploader", :upload_cookbooks=> true))
       knife.run
     end
   end

@@ -35,8 +35,8 @@ class Chef
     #           in Chef::Config.
     # * :concurrency   An integer that decided how many threads will be used to
     #           perform concurrent uploads
-    def initialize(cookbooks, path, opts={})
-      @path, @opts = path, opts
+    def initialize(cookbooks, opts={})
+      @opts = opts
       @cookbooks = Array(cookbooks)
       @rest = opts[:rest] || Chef::REST.new(Chef::Config[:chef_server_url])
       @concurrency = opts[:concurrency] || 10
@@ -133,7 +133,7 @@ class Chef
 
     def validate_cookbooks
       cookbooks.each do |cb|
-        syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cb.name, @user_cookbook_path)
+        syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cb.name)
         Chef::Log.info("Validating ruby files")
         exit(1) unless syntax_checker.validate_ruby_files
         Chef::Log.info("Validating templates")

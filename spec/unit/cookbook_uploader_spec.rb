@@ -22,9 +22,6 @@ describe Chef::CookbookUploader do
 
   let(:http_client) { double("Chef::REST") }
 
-  # Path is unused
-  let(:path) { double("Object") }
-
   let(:cookbook_loader) do
     loader = Chef::CookbookLoader.new(File.join(CHEF_SPEC_DATA, "cookbooks"))
     loader.load_cookbooks
@@ -48,20 +45,16 @@ describe Chef::CookbookUploader do
 
   let(:sandbox_commit_uri) { "https://chef.example.org/sandboxes/abc123" }
 
-  let(:uploader) { described_class.new(cookbooks_to_upload, path, :rest => http_client) }
+  let(:uploader) { described_class.new(cookbooks_to_upload, :rest => http_client) }
 
   it "has a list of cookbooks to upload" do
     expect(uploader.cookbooks).to eq(cookbooks_to_upload)
   end
 
-  it "has an unused `path` attribute (TODO: remove this)" do
-    expect(uploader.path).to eq(path)
-  end
-
   it "creates an HTTP client with default configuration when not initialized with one" do
     default_http_client = double("Chef::REST")
     expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(default_http_client)
-    uploader = described_class.new(cookbooks_to_upload, path)
+    uploader = described_class.new(cookbooks_to_upload)
     expect(uploader.rest).to eq(default_http_client)
   end
 

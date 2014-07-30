@@ -240,7 +240,7 @@ WARNING
           check_for_broken_links!(cb)
           check_for_dependencies!(cb)
         end
-        Chef::CookbookUploader.new(cookbooks, config[:cookbook_path], :force => config[:force], :concurrency => config[:concurrency]).upload_cookbooks
+        Chef::CookbookUploader.new(cookbooks, :force => config[:force], :concurrency => config[:concurrency]).upload_cookbooks
       rescue Chef::Exceptions::CookbookFrozen => e
         ui.error e
         raise
