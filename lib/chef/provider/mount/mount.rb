@@ -85,7 +85,7 @@ class Chef
 
           shell_out!("mount").stdout.each_line do |line|
             case line
-            when /^#{device_mount_regex}\s+on\s+#{Regexp.escape(real_mount_point)}/
+            when /^#{device_mount_regex}\s+on\s+#{Regexp.escape(real_mount_point)}\s/
               mounted = true
               Chef::Log.debug("Special device #{device_logstring} mounted as #{real_mount_point}")
             when /^([\/\w])+\son\s#{Regexp.escape(real_mount_point)}\s+/
