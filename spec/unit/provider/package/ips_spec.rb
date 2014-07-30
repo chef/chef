@@ -30,9 +30,6 @@ describe Chef::Provider::Package::Ips do
     @current_resource = Chef::Resource::Package.new("crypto/gnupg", @run_context)
     Chef::Resource::Package.stub(:new).and_return(@current_resource)
     @provider = Chef::Provider::Package::Ips.new(@new_resource, @run_context)
-
-    @local = local_output
-    @remote = remote_output
   end
 
   def local_output
@@ -117,7 +114,7 @@ INSTALLED
       @current_resource.version.should == "2.0.17"
     end
 
-    it "should return the current resouce" do
+    it "should return the current resource" do
       @provider.should_receive(:shell_out!).with("pkg info #{@new_resource.package_name}").and_return(local_output)
       @provider.should_receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote_output)
       @provider.load_current_resource.should eql(@current_resource)
