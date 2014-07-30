@@ -35,7 +35,7 @@ metadata = { :unix_only => true,
   :provider => {:user => user_provider_for_platform}
 }
 
-describe Chef::Resource::User, metadata do
+describe Chef::Provider::User::Useradd, metadata do
 
   include Chef::Mixin::ShellOut
 

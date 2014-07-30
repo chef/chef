@@ -83,6 +83,7 @@ class Chef
     class RequestedUIDUnavailable < RuntimeError; end
     class InvalidHomeDirectory < ArgumentError; end
     class DsclCommandFailed < RuntimeError; end
+    class PlutilCommandFailed < RuntimeError; end
     class UserIDNotFound < ArgumentError; end
     class GroupIDNotFound < ArgumentError; end
     class ConflictingMembersInGroup < ArgumentError; end

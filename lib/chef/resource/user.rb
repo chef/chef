@@ -45,6 +45,8 @@ class Chef
           :manage_home => false,
           :non_unique => false
         }
+        @iterations = 27855
+        @salt = nil
         @allowed_actions.push(:create, :remove, :modify, :manage, :lock, :unlock)
       end
 
@@ -103,6 +105,22 @@ class Chef
           :password,
           arg,
           :kind_of => [ String ]
+        )
+      end
+
+      def salt(arg=nil)
+        set_or_return(
+          :salt,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def iterations(arg=nil)
+        set_or_return(
+          :iterations,
+          arg,
+          :kind_of => [ Integer ]
         )
       end
 
