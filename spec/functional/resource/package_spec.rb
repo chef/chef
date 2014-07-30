@@ -135,9 +135,7 @@ describe Chef::Resource::Package, metadata do
       cookbook_path = File.join(CHEF_SPEC_DATA, "cookbooks")
       cl = Chef::CookbookLoader.new(cookbook_path)
       cl.load_cookbooks
-      Chef::Cookbook::FileVendor.on_create do |manifest|
-        Chef::Cookbook::FileSystemFileVendor.new(manifest, cookbook_path)
-      end
+      Chef::Cookbook::FileVendor.fetch_from_disk(cookbook_path)
       Chef::CookbookCollection.new(cl)
     end
 

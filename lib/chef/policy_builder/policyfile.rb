@@ -154,10 +154,7 @@ class Chef
       end
 
       def setup_run_context(specific_recipes=nil)
-        # TODO: This file vendor stuff is duplicated and initializing it with a
-        # block traps a reference to this object in a global context which will
-        # prevent it from getting GC'd. Simplify it.
-        Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, api_service) }
+        Chef::Cookbook::FileVendor.fetch_from_remote(http_api)
         sync_cookbooks
         cookbook_collection = Chef::CookbookCollection.new(cookbooks_to_sync)
         run_context = Chef::RunContext.new(node, cookbook_collection, events)

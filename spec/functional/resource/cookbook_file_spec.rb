@@ -40,7 +40,7 @@ describe Chef::Resource::CookbookFile do
     # set up cookbook collection for this run to use, based on our
     # spec data.
     cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, 'cookbooks'))
-    Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, cookbook_repo) }
+    Chef::Cookbook::FileVendor.fetch_from_disk(cookbook_repo)
     loader = Chef::CookbookLoader.new(cookbook_repo)
     loader.load_cookbooks
     cookbook_collection = Chef::CookbookCollection.new(loader)
