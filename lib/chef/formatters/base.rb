@@ -94,6 +94,8 @@ class Chef
       def indent_by(amount)
         @output.indent += amount
         if @output.indent < 0
+          # This is left commented out for now.  We need to uncomment it and fix at least one bug in
+          # the formatter, and then leave this line uncommented in the future.
           #Chef::Log.warn "Internal Formatter Error -- Attempt to indent by negative number of spaces"
           @output.indent = 0
         end
