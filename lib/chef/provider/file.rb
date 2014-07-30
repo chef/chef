@@ -304,6 +304,7 @@ class Chef
       end
 
       def do_generate_content
+        # referencing the tempfile magically causes content to be generated
         tempfile
       end
 
