@@ -50,6 +50,7 @@ end
 describe Shell::ClientSession do
   before do
     Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new('shell::override')] }
+    @chef_rest = double("Chef::REST")
     @session = Shell::ClientSession.instance
     @node = Chef::Node.build("foo")
     @session.node = @node
@@ -66,6 +67,7 @@ describe Shell::ClientSession do
     @expansion = Chef::RunList::RunListExpansion.new(@node.chef_environment, [])
 
     @node.run_list.should_receive(:expand).with(@node.chef_environment).and_return(@expansion)
+    Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url]).and_return(@chef_rest)
     @session.rebuild_context
   end
 
