@@ -73,7 +73,6 @@ describe Chef::Resource::RemoteFile do
       it "does not fetch the file" do
         resource.run_action(:create)
       end
-
     end
 
     context "when using normal encoding" do
@@ -225,5 +224,17 @@ describe Chef::Resource::RemoteFile do
       end
     end
 
+    describe "when the download of the source raises an exception" do
+      let(:source) { 'http://localhost:0000/seattle_capo.png' }
+
+      before do
+        File.should_not exist(path)
+      end
+
+      it "should not create the file" do
+        expect{ resource.run_action(:create) }.to raise_error(Errno::EADDRNOTAVAIL)
+        File.should_not exist(path)
+      end
+    end
   end
 end
