@@ -75,8 +75,7 @@ class Chef
         end
 
         def levels
-          (@run_levels.nil? or @run_levels.empty?) ? levels = "" : levels = "--level #{@run_levels.join('')} "
-          levels
+          @run_levels.nil? ? "" : "--level #{@run_levels.join('')} "
         end
 
         def enable_service()
