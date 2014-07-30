@@ -53,7 +53,7 @@ class Chef
       end
 
       checksums = checksum_files.inject({}){|memo,elt| memo[elt.first]=nil ; memo}
-      new_sandbox = rest.post_rest("sandboxes", { :checksums => checksums })
+      new_sandbox = rest.post("sandboxes", { :checksums => checksums })
 
       Chef::Log.info("Uploading files")
 
@@ -80,7 +80,7 @@ class Chef
       # in eventual consistency)
       retries = 0
       begin
-        rest.put_rest(sandbox_url, {:is_completed => true})
+        rest.put(sandbox_url, {:is_completed => true})
       rescue Net::HTTPServerException => e
         if e.message =~ /^400/ && (retries += 1) <= 5
           sleep 2
@@ -94,7 +94,7 @@ class Chef
       cookbooks.each do |cb|
         save_url = opts[:force] ? cb.force_save_url : cb.save_url
         begin
-          rest.put_rest(save_url, cb)
+          rest.put(save_url, cb)
         rescue Net::HTTPServerException => e
           case e.response.code
           when "409"
@@ -108,32 +108,19 @@ class Chef
       Chef::Log.info("Upload complete!")
     end
 
-    def worker_thread(work_queue)
-    end
-
     def uploader_function_for(file, checksum, url, checksums_to_upload)
       lambda do
         # Checksum is the hexadecimal representation of the md5,
         # but we need the base64 encoding for the content-md5
         # header
         checksum64 = Base64.encode64([checksum].pack("H*")).strip
-        timestamp = Time.now.utc.iso8601
         file_contents = File.open(file, "rb") {|f| f.read}
-        # TODO - 5/28/2010, cw: make signing and sending the request streaming
+
+        # Custom headers. 'content-type' disables JSON serialization of the request body.
         headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, "accept" => 'application/json' }
-        if rest.signing_key
-          sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
-                                                                             :http_method => :put,
-                                                                             :path        => URI.parse(url).path,
-                                                                             :body        => file_contents,
-                                                                             :timestamp   => timestamp,
-                                                                             :user_id     => rest.client_name
-                                                                             )
-          headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(rest.signing_key)))
-        end
 
         begin
-          Chef::HTTP::Simple.new(url, :headers=>headers).put(url, file_contents)
+          rest.put(url, file_contents, headers)
           checksums_to_upload.delete(checksum)
         rescue Net::HTTPServerException, Net::HTTPFatalError, Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError => e
           error_message = "Failed to upload #{file} (#{checksum}) to #{url} : #{e.message}"
