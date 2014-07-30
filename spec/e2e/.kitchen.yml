@@ -1,8 +1,8 @@
 ---
 provisioner:
   name: chef_solo
-  chef_git_sha: <%= %x(git rev-parse HEAD) %>
-  chef_git_url: "github.com/opscode/chef"
+  github: "opscode/chef"
+  branch: <%= %x(git rev-parse HEAD) %>
   require_chef_omnibus: true
 
 platforms:
