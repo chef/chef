@@ -162,24 +162,57 @@ PKG_STATUS
       @provider.candidate_version.should eql("1.8.4.1")
     end
 
-    context "using the ips_package resource" do
+    it "should not upgrade the package if it is already installed" do
+      local = local_output
+      local.stdout = <<-INSTALLED
+          Name: crypto/gnupg
+       Summary: GNU Privacy Guard
+   Description: A complete and free implementation of the OpenPGP Standard as
+                defined by RFC4880.
+      Category: Applications/System Utilities
+         State: Installed
+     Publisher: solaris
+       Version: 2.0.17
+ Build Release: 5.11
+        Branch: 0.175.0.0.0.2.537
+Packaging Date: October 19, 2011 09:14:50 AM
+          Size: 8.07 MB
+          FMRI: pkg://solaris/crypto/gnupg@2.0.17,5.11-0.175.0.0.0.2.537:20111019T091450Z
+INSTALLED
+      remote = remote_output
+      remote.stdout = <<-REMOTE
+          Name: crypto/gnupg
+       Summary: GNU Privacy Guard
+   Description: A complete and free implementation of the OpenPGP Standard as
+                defined by RFC4880.
+      Category: Applications/System Utilities
+         State: Not Installed
+     Publisher: solaris
+       Version: 2.0.18
+ Build Release: 5.11
+        Branch: 0.175.0.0.0.2.537
+Packaging Date: October 19, 2011 09:14:50 AM
+          Size: 8.07 MB
+          FMRI: pkg://solaris/crypto/gnupg@2.0.18,5.11-0.175.0.0.0.2.537:20111019T091450Z
+REMOTE
+
+      @provider.should_receive(:shell_out!).with("pkg info #{@new_resource.package_name}").and_return(local)
+      @provider.should_receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote)
+      @provider.load_current_resource
+      @provider.should_receive(:install_package).exactly(0).times
+      @provider.action_install
+    end
+
+    context "when accept_license is true" do
       before do
-        @new_resource = Chef::Resource::IpsPackage.new("crypto/gnupg", @run_context)
-        @current_resource = Chef::Resource::IpsPackage.new("crypto/gnupg", @run_context)
-        @provider = Chef::Provider::Package::Ips.new(@new_resource, @run_context)
+        @new_resource.stub(:accept_license).and_return(true)
       end
 
-      context "when accept_license is true" do
-        before do
-          @new_resource.stub(:accept_license).and_return(true)
-        end
-
-        it "should run pkg install with the --accept flag" do
-          @provider.should_receive(:run_command_with_systems_locale).with({
-            :command => "pkg install -q --accept crypto/gnupg@2.0.17"
-          })
-          @provider.install_package("crypto/gnupg", "2.0.17")
-        end
+      it "should run pkg install with the --accept flag" do
+        @provider.should_receive(:run_command_with_systems_locale).with({
+          :command => "pkg install -q --accept crypto/gnupg@2.0.17"
+        })
+        @provider.install_package("crypto/gnupg", "2.0.17")
       end
     end
   end
