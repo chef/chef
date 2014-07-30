@@ -1,6 +1,12 @@
 # Chef Client Changelog
 
 ## Unreleased:
+
+* Fix a bug in the experimental Policyfile mode that caused errors when
+  using templates.
+* Disable JSON encoding of request body when non-JSON content type is
+  specified.
+* Clean up FileVendor and CookbookUploader internal APIs
 * [**Vasiliy Tolstov**](https://github.com/vtolstov):
   Reload systemd service only if it's running, otherwise start.
 * [**Chris Jerdonek**](https://github.com/cjerdonek):

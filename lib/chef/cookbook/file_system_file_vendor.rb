@@ -31,6 +31,9 @@ class Chef
     # non-sensical.
     class FileSystemFileVendor < FileVendor
 
+      attr_reader :cookbook_name
+      attr_reader :repo_paths
+
       def initialize(manifest, *repo_paths)
         @cookbook_name = manifest[:cookbook_name]
         @repo_paths = repo_paths.flatten

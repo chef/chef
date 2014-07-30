@@ -34,7 +34,7 @@ describe Chef::Knife::CookbookSiteShare do
     @cookbook_loader.stub(:[]).and_return(@cookbook)
     Chef::CookbookLoader.stub(:new).and_return(@cookbook_loader)
 
-    @cookbook_uploader = Chef::CookbookUploader.new('herpderp', File.join(CHEF_SPEC_DATA, 'cookbooks'), :rest => "norest")
+    @cookbook_uploader = Chef::CookbookUploader.new('herpderp', :rest => "norest")
     Chef::CookbookUploader.stub(:new).and_return(@cookbook_uploader)
     @cookbook_uploader.stub(:validate_cookbooks).and_return(true)
     Chef::CookbookSiteStreamingUploader.stub(:create_build_dir).and_return(Dir.mktmpdir)
@@ -77,7 +77,7 @@ describe Chef::Knife::CookbookSiteShare do
 
     it 'should make a tarball of the cookbook' do
       @knife.should_receive(:shell_out!) do |args|
-        args.to_s.should match /tar -czf/
+        args.to_s.should match(/tar -czf/)
       end
       @knife.run
     end

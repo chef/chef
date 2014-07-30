@@ -36,7 +36,7 @@ describe Chef::Provider::Template::Content do
 
   let(:run_context) do
     cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
-    Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, cookbook_repo) }
+    Chef::Cookbook::FileVendor.fetch_from_disk(cookbook_repo)
     cl = Chef::CookbookLoader.new(cookbook_repo)
     cl.load_cookbooks
     cookbook_collection = Chef::CookbookCollection.new(cl)

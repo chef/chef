@@ -35,7 +35,7 @@ describe Chef::Provider::RemoteDirectory do
     @resource.cookbook('openldap')
 
     @cookbook_repo = ::File.expand_path(::File.join(CHEF_SPEC_DATA, "cookbooks"))
-    Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, @cookbook_repo) }
+    Chef::Cookbook::FileVendor.fetch_from_disk(@cookbook_repo)
 
     @node = Chef::Node.new
     cl = Chef::CookbookLoader.new(@cookbook_repo)

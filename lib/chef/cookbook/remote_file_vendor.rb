@@ -25,6 +25,9 @@ class Chef
     # if not available, loading them from the remote server.
     class RemoteFileVendor < FileVendor
 
+      attr_reader :rest
+      attr_reader :cookbook_name
+
       def initialize(manifest, rest)
         @manifest = manifest
         @cookbook_name = @manifest[:cookbook_name]

@@ -184,7 +184,7 @@ class Chef
 
       def cookbook_repo
         @cookbook_loader ||= begin
-          Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, config[:cookbook_path]) }
+          Chef::Cookbook::FileVendor.fetch_from_disk(config[:cookbook_path])
           Chef::CookbookLoader.new(config[:cookbook_path])
         end
       end
@@ -240,7 +240,7 @@ WARNING
           check_for_broken_links!(cb)
           check_for_dependencies!(cb)
         end
-        Chef::CookbookUploader.new(cookbooks, config[:cookbook_path], :force => config[:force], :concurrency => config[:concurrency]).upload_cookbooks
+        Chef::CookbookUploader.new(cookbooks, :force => config[:force], :concurrency => config[:concurrency]).upload_cookbooks
       rescue Chef::Exceptions::CookbookFrozen => e
         ui.error e
         raise
