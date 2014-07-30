@@ -25,6 +25,7 @@ require 'chef/cookbook/metadata'
 require 'chef/version_class'
 require 'pathname'
 require 'chef/monkey_patches/pathname'
+require 'chef/digester'
 
 class Chef
 
