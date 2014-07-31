@@ -174,6 +174,21 @@ describe Chef::DataBag do
         }.should raise_error Chef::Exceptions::InvalidDataBagPath, "Data bag path '/var/chef/data_bags' is invalid"
       end
 
+      describe "if data_bag_path is array" do
+        before do
+          Chef::Config[:data_bag_path] = ['/var/chef/data_bags']
+        end
+
+        after do
+          Chef::Config[:data_bag_path] = '/var/chef/data_bags'
+        end
+
+        it "should get the data bag from the data_bag_path" do
+          File.should_receive(:directory?).with('/var/chef/data_bags').and_return(true)
+          Dir.should_receive(:glob).with('/var/chef/data_bags/foo/*.json').and_return([])
+          Chef::DataBag.load('foo')
+        end
+      end
     end
   end
 
