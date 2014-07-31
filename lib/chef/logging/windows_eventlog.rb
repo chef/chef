@@ -15,10 +15,10 @@ class Chef
       LOG_CATEGORY_ID = 11001
 
       # Since we must install the event logger, this is not really configurable
-      SOURCE = 'RubyMsg'
+      SOURCE = 'Chef'
 
       def initialize
-        @eventlog = EventLog::open('EventWriter')
+        @eventlog = EventLog::open('Application')
       end
 
       def run_start(version)
