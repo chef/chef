@@ -83,12 +83,15 @@ class Chef
 
     def self.list(inflate=false)
       if Chef::Config[:solo]
-        unless File.directory?(Chef::Config[:data_bag_path])
+        paths = Array(Chef::Config[:data_bag_path]).select {|path| File.directory?(path)}
+        if paths.empty?
           raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{Chef::Config[:data_bag_path]}' is invalid"
         end
 
-        names = Dir.glob(File.join(Chef::Config[:data_bag_path], "*")).map{|f|File.basename(f)}.sort
-        names.inject({}) {|h, n| h[n] = n; h}
+        names = paths.map do |path|
+          Dir.glob(File.join(path, "*")).map{|f|File.basename(f)}
+        end
+        names.flatten.sort.inject({}) {|h, n| h[n] = n; h}
       else
         if inflate
           # Can't search for all data bags like other objects, fall back to N+1 :(
@@ -105,11 +108,15 @@ class Chef
     # Load a Data Bag by name via either the RESTful API or local data_bag_path if run in solo mode
     def self.load(name)
       if Chef::Config[:solo]
-        unless File.directory?(Chef::Config[:data_bag_path])
+        paths = Array(Chef::Config[:data_bag_path]).select {|path| File.directory?(path)}
+        if paths.empty?
           raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{Chef::Config[:data_bag_path]}' is invalid"
         end
 
-        Dir.glob(File.join(Chef::Config[:data_bag_path], "#{name}", "*.json")).inject({}) do |bag, f|
+        names = paths.map do |path|
+          Dir.glob(File.join(path, "#{name}", "*.json"))
+        end
+        names.flatten.inject({}) do |bag, f|
           item = Chef::JSONCompat.from_json(IO.read(f))
           bag[item['id']] = item
           bag
