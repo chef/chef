@@ -60,6 +60,7 @@ class Chef
 
       attr_accessor :needs_creating
       attr_accessor :needs_unlinking
+      attr_accessor :managing_symlink
 
       def initialize(new_resource, run_context)
         @content_class ||= Chef::Provider::File::Content
@@ -145,6 +146,7 @@ class Chef
 
       def action_create
         do_generate_content
+        do_validate_content
         do_unlink
         do_create_file
         do_contents_changes
@@ -336,6 +338,16 @@ class Chef
         tempfile
       end
 
+      def tempfile_checksum
+        @tempfile_checksum ||= checksum(tempfile.path)
+      end
+
+      def do_validate_content
+        if new_resource.checksum && tempfile && ( new_resource.checksum != tempfile_checksum )
+          raise Chef::Exceptions::ChecksumMismatch.new(short_cksum(new_resource.checksum), short_cksum(tempfile_checksum))
+        end
+      end
+
       def do_unlink
         if @new_resource.force_unlink
           if needs_unlinking?
@@ -433,7 +445,7 @@ class Chef
 
       def contents_changed?
         Chef::Log.debug "calculating checksum of #{tempfile.path} to compare with #{@current_resource.checksum}"
-        checksum(tempfile.path) != @current_resource.checksum
+        tempfile_checksum != @current_resource.checksum
       end
 
       def tempfile

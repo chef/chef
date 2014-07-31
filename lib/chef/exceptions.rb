@@ -331,6 +331,12 @@ class Chef
       end
     end
 
+    class ChecksumMismatch < RuntimeError
+      def initialize(res_cksum, cont_cksum)
+        super "Checksum on resource (#{res_cksum}) does not match checksum on content (#{cont_cksum})"
+      end
+    end
+
     class BadProxyURI < RuntimeError; end
   end
 end
