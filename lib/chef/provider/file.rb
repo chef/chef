@@ -75,10 +75,6 @@ class Chef
       end
 
       def load_current_resource
-        # Let children resources override constructing the @current_resource
-        @current_resource ||= Chef::Resource::File.new(new_resource.name)
-        current_resource.path(new_resource.path)
-
         # true if there is a symlink and we need to manage what it points at
         @managing_symlink = file_class.symlink?(new_resource.path) && ( new_resource.manage_symlink_source || new_resource.manage_symlink_source.nil? )
 
@@ -96,6 +92,10 @@ class Chef
 
         # true if we are going to be creating a new file
         @needs_creating  = !::File.exist?(new_resource.path) || needs_unlinking?
+
+        # Let children resources override constructing the @current_resource
+        @current_resource ||= Chef::Resource::File.new(new_resource.name)
+        current_resource.path(new_resource.path)
 
         if !needs_creating?
           # we are updating an existing file
@@ -397,7 +397,7 @@ class Chef
         # the file? on the next line suppresses the case in why-run when we have a not-file here that would have otherwise been removed
         if ::File.file?(@new_resource.path) && contents_changed?
           description = [ "update content in file #{@new_resource.path} from \
-#{short_cksum(@current_resource.checksum)} to #{short_cksum(checksum(tempfile.path))}" ]
+#{short_cksum(@current_resource.checksum)} to #{short_cksum(tempfile_checksum)}" ]
 
           # Hide the diff output if the resource is marked as a sensitive resource
           if @new_resource.sensitive
