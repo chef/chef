@@ -28,6 +28,7 @@ shared_examples_for "a platform introspector" do
       }
     end
     @platform_hash["debian"] = {["5", "6"] => "debian-5/6", "default" => "debian"}
+    @platform_hash["centos"] = {"~> 6.0" => "centos-6", ">= 7.0" => "centos-7", "6.5" => "centos-6.5" }
     @platform_hash["default"] = "default"
 
     @platform_family_hash = {
@@ -90,6 +91,16 @@ shared_examples_for "a platform introspector" do
       node.automatic_attrs[:platform] = "debian"
       node.automatic_attrs[:platform_version] = "0.0.0"
       platform_introspector.value_for_platform(@platform_hash).should == "debian"
+    end
+    it "returns a value when given a version constraint key" do
+      node.automatic_attrs[:platform] = "centos"
+      node.automatic_attrs[:platform_version] = "7.0.1406"
+      platform_introspector.value_for_platform(@platform_hash).should == "centos-7"
+    end
+    it "returns the value for a specific key over a constrained key" do
+      node.automatic_attrs[:platform] = "centos"
+      node.automatic_attrs[:platform_version] = "6.5"
+      platform_introspector.value_for_platform(@platform_hash).should == "centos-6.5"
     end
   end
 
