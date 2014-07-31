@@ -14,7 +14,6 @@
 * [**Xabier de Zuazo**](https://github.com/zuazo):
   Remove the unused StreamingCookbookUploader class (CHEF-4586)
 
-* http_request no longer appends "?message=" query string to GET and HEAD requests
 * added shell_out commands directly to the recipe DSL
 * cookbook synchronizer deletes old files from cookbooks
 * do not clear file cache when override run list is set (CHEF-3684)

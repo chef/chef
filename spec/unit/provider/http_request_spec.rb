@@ -53,13 +53,13 @@ describe Chef::Provider::HttpRequest do
 
       it "should inflate a message block at runtime" do
         @new_resource.message { "return" }
-        @http.should_receive(:get).with("http://www.opscode.com/", {})
+        @http.should_receive(:get).with("http://www.opscode.com/?message=return", {})
         @provider.run_action(:get)
         @new_resource.should be_updated
       end
 
       it "should run a GET request" do
-        @http.should_receive(:get).with("http://www.opscode.com/", {})
+        @http.should_receive(:get).with("http://www.opscode.com/?message=is cool", {})
         @provider.run_action(:get)
         @new_resource.should be_updated
       end
@@ -112,25 +112,25 @@ describe Chef::Provider::HttpRequest do
 
       it "should inflate a message block at runtime" do
         @new_resource.message { "return" }
-        @http.should_receive(:head).with("http://www.opscode.com/", {}).and_return(nil)
+        @http.should_receive(:head).with("http://www.opscode.com/?message=return", {}).and_return(nil)
         @provider.run_action(:head)
         @new_resource.should be_updated
       end
 
       it "should run a HEAD request" do
-        @http.should_receive(:head).with("http://www.opscode.com/", {}).and_return(nil)
+        @http.should_receive(:head).with("http://www.opscode.com/?message=is cool", {}).and_return(nil)
         @provider.run_action(:head)
         @new_resource.should be_updated
       end
 
       it "should update a HEAD request with empty string response body (CHEF-4762)" do
-        @http.should_receive(:head).with("http://www.opscode.com/", {}).and_return("")
+        @http.should_receive(:head).with("http://www.opscode.com/?message=is cool", {}).and_return("")
         @provider.run_action(:head)
         @new_resource.should be_updated
       end
 
       it "should update a HEAD request with nil response body (CHEF-4762)" do
-        @http.should_receive(:head).with("http://www.opscode.com/", {}).and_return(nil)
+        @http.should_receive(:head).with("http://www.opscode.com/?message=is cool", {}).and_return(nil)
         @provider.run_action(:head)
         @new_resource.should be_updated
       end
@@ -138,14 +138,14 @@ describe Chef::Provider::HttpRequest do
       it "should not update a HEAD request if a not modified response (CHEF-4762)" do
         if_modified_since = File.mtime(__FILE__).httpdate
         @new_resource.headers "If-Modified-Since" => if_modified_since
-        @http.should_receive(:head).with("http://www.opscode.com/", {"If-Modified-Since" => if_modified_since}).and_return(false)
+        @http.should_receive(:head).with("http://www.opscode.com/?message=is cool", {"If-Modified-Since" => if_modified_since}).and_return(false)
         @provider.run_action(:head)
         @new_resource.should_not be_updated
       end
 
       it "should run a HEAD request with If-Modified-Since header" do
         @new_resource.headers "If-Modified-Since" => File.mtime(__FILE__).httpdate
-        @http.should_receive(:head).with("http://www.opscode.com/", @new_resource.headers)
+        @http.should_receive(:head).with("http://www.opscode.com/?message=is cool", @new_resource.headers)
         @provider.run_action(:head)
       end
 
