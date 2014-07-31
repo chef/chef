@@ -25,6 +25,10 @@ class Chef
       # Chef log provider, allows logging to chef's logs from recipes
       class ChefLog < Chef::Provider
 
+        def whyrun_supported?
+          true
+        end
+
         # ordered array of the log levels
         @@levels = [ :debug, :info, :warn, :error, :fatal ]
 
