@@ -50,8 +50,12 @@ class Chef
 
         def value_for_node(node)
           platform, version = node[:platform].to_s, node[:platform_version].to_s
+          # Check if we match a version constraint via Gem::Requirement and Gem::Version
+          matched_value = match_versions(node)
           if @values.key?(platform) && @values[platform].key?(version)
             @values[platform][version]
+          elsif matched_value
+            matched_value
           elsif @values.key?(platform) && @values[platform].key?("default")
             @values[platform]["default"]
           elsif @values.key?("default")
@@ -62,6 +66,25 @@ class Chef
         end
 
         private
+
+        def match_versions(node)
+          begin
+            platform, version = node[:platform].to_s, node[:platform_version].to_s
+            return unless @values.key?(platform)
+            node_version = Gem::Version.new(version)
+            keys = @values[platform].keys
+            keys.each do |k|
+              if Gem::Requirement.new(k).satisfied_by?(node_version)
+                return @values[platform][k]
+                break
+              end
+            end
+            return nil
+          rescue ArgumentError
+            # Lets not break because someone passes a weird string like 'default' :)
+            return
+          end
+        end
 
         def set(platforms, value)
           if platforms.to_s == 'default'
