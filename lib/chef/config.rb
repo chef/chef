@@ -78,6 +78,11 @@ class Chef
       formatters << [name, file_path]
     end
 
+    # 
+    def self.add_event_logger(logger)
+      event_handlers << logger
+    end
+
     # Config file to load (client.rb, knife.rb, etc. defaults set differently in knife, chef-client, etc.)
     configurable(:config_file)
 
