@@ -232,7 +232,7 @@ describe Chef::Resource::RemoteFile do
       end
 
       it "should not create the file" do
-        expect{ resource.run_action(:create) }.to raise_error(Errno::EADDRNOTAVAIL)
+        expect{ resource.run_action(:create) }.to raise_error
         File.should_not exist(path)
       end
     end
