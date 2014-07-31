@@ -75,21 +75,40 @@ class Chef
 
       def load_current_resource
         # Let children resources override constructing the @current_resource
-        @current_resource ||= Chef::Resource::File.new(@new_resource.name)
-        @current_resource.path(@new_resource.path)
-        if ::File.exists?(@current_resource.path) && ::File.file?(::File.realpath(@current_resource.path))
-          if managing_content?
-            Chef::Log.debug("#{@new_resource} checksumming file at #{@new_resource.path}.")
-            @current_resource.checksum(checksum(@current_resource.path))
-          end
-          load_resource_attributes_from_file(@current_resource)
-        end
-        @current_resource
+        @current_resource ||= Chef::Resource::File.new(new_resource.name)
+        current_resource.path(new_resource.path)
+
+        # true if there is a symlink and we need to manage what it points at
+        @managing_symlink = file_class.symlink?(new_resource.path) && ( new_resource.manage_symlink_source || new_resource.manage_symlink_source.nil? )
 
         # true if there is a non-file thing in the way that we need to unlink first
-        @needs_unlinking = @new_resource.force_unlink && l_exist?(@new_resource.path) && !real_file?(@new_resource.path)
+        @needs_unlinking =
+          if ::File.exist?(new_resource.path)
+            if managing_symlink?
+              !symlink_to_real_file?(new_resource.path)
+            else
+              !real_file?(new_resource.path)
+            end
+          else
+            false
+          end
+
         # true if we are going to be creating a new file
-        @needs_creating  = !::File.exist?(@new_resource.path)
+        @needs_creating  = !::File.exist?(new_resource.path) || needs_unlinking?
+
+        if !needs_creating?
+          # we are updating an existing file
+          if managing_content?
+            Chef::Log.debug("#{new_resource} checksumming file at #{new_resource.path}.")
+            current_resource.checksum(checksum(current_resource.path))
+          else
+            # if the file does not exist or is not a file, then the checksum is invalid/pointless
+            current_resource.checksum(nil)
+          end
+          load_resource_attributes_from_file(current_resource)
+        end
+
+        current_resource
       end
 
       def define_resource_requirements
@@ -135,7 +154,7 @@ class Chef
       end
 
       def action_create_if_missing
-        if needs_creating?
+        unless ::File.exist?(@new_resource.path)
           action_create
         else
           Chef::Log.debug("#{@new_resource} exists at #{@new_resource.path} taking no action.")
@@ -288,6 +307,15 @@ class Chef
         !file_class.symlink?(path) && ::File.file?(path)
       end
 
+      # like real_file? that follows (sane) symlinks
+      def symlink_to_real_file?(path)
+        begin
+          real_file?(::File.realpath(path))
+        rescue Errno::ELOOP, Errno::ENOENT
+          false
+        end
+      end
+
       # Similar to File.exist?, but also returns true in the case that the
       # named file is a broken symlink.
       def l_exist?(path)
@@ -316,13 +344,12 @@ class Chef
             converge_by(description) do
               unlink(@new_resource.path)
             end
-            @current_resource.checksum = nil
           end
         end
       end
 
       def do_create_file
-        if needs_creating? || needs_unlinking?
+        if needs_creating?
           converge_by("create new file #{@new_resource.path}") do
             deployment_strategy.create(@new_resource.path)
             Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
@@ -339,7 +366,7 @@ class Chef
       end
 
       def update_file_contents
-        do_backup unless needs_creating? || needs_unlinking?
+        do_backup unless needs_creating?
         deployment_strategy.deploy(tempfile.path, ::File.realpath(@new_resource.path))
         Chef::Log.info("#{@new_resource} updated file contents #{@new_resource.path}")
         if managing_content?
@@ -366,7 +393,7 @@ class Chef
             description << "suppressed sensitive resource"
           else
             diff.diff(@current_resource.path, tempfile.path)
-            @new_resource.diff( diff.for_reporting ) unless needs_creating? || needs_unlinking?
+            @new_resource.diff( diff.for_reporting ) unless needs_creating?
             description << diff.for_output
           end
 
@@ -428,6 +455,10 @@ class Chef
         end
         acl_scanner = ScanAccessControl.new(@new_resource, resource)
         acl_scanner.set_all!
+      end
+
+      def managing_symlink?
+        !!@managing_symlink
       end
 
       def needs_creating?
