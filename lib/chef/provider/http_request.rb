@@ -33,13 +33,13 @@ class Chef
         @http = Chef::HTTP::Simple.new(@new_resource.url)
       end
 
-      # Send a HEAD request to @new_resource.url, with ?message=@new_resource.message
+      # Send a HEAD request to @new_resource.url
       def action_head
         message = check_message(@new_resource.message)
         # CHEF-4762: we expect a nil return value from Chef::HTTP for a "200 Success" response
         # and false for a "304 Not Modified" response
         modified = @http.head(
-          "#{@new_resource.url}?message=#{message}",
+          "#{@new_resource.url}",
           @new_resource.headers
         )
         Chef::Log.info("#{@new_resource} HEAD to #{@new_resource.url} successful")
@@ -50,13 +50,13 @@ class Chef
         end
       end
 
-      # Send a GET request to @new_resource.url, with ?message=@new_resource.message
+      # Send a GET request to @new_resource.url
       def action_get
         converge_by("#{@new_resource} GET to #{@new_resource.url}") do
 
           message = check_message(@new_resource.message)
           body = @http.get(
-            "#{@new_resource.url}?message=#{message}",
+            "#{@new_resource.url}",
             @new_resource.headers
           )
           Chef::Log.info("#{@new_resource} GET to #{@new_resource.url} successful")
