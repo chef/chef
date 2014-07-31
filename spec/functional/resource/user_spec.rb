@@ -84,7 +84,7 @@ describe Chef::Resource::User, metadata do
   after do
     begin
       pw_entry # will raise if the user doesn't exist
-      shell_out!("userdel", "-f", "-r", username, :returns => [0,12])
+      shell_out!("userdel", "-r", username, :returns => [0,12])
     rescue UserNotFound
       # nothing to remove
     end
