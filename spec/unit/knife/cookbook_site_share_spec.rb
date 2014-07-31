@@ -82,6 +82,16 @@ describe Chef::Knife::CookbookSiteShare do
       @knife.run
     end
 
+    it 'should list files in tarball' do
+      @knife.config = { :prevew_archive => true }
+      @knife.stub_chain(:shell_out!, :stdout).and_return('file')
+      @knife.ui.should_receive(:warn)
+      @knife.ui.should_receive(:info)
+      @knife.ui.should_receive(:info).with('file')
+      @knife.should_receive(:shell_out!).twice
+      @knife.run
+    end
+
     it 'should exit and log to error when the tarball creation fails' do
       @knife.stub(:shell_out!).and_raise(Chef::Exceptions::Exec)
       @knife.ui.should_receive(:error)

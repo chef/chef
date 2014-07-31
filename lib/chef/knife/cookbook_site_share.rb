@@ -40,6 +40,11 @@ class Chef
         :description => "A colon-separated path to look for cookbooks in",
         :proc => lambda { |o| Chef::Config.cookbook_path = o.split(":") }
 
+      option :prevew_archive,
+        :long => "--prevew-archive",
+        :description => "Only preview archived files. (Don't upload.)",
+        :boolean => true
+
       def run
         if @name_args.length < 2
           show_usage
@@ -64,6 +69,14 @@ class Chef
             ui.error("Error making tarball #{cookbook_name}.tgz: #{e.message}. Increase log verbosity (-VV) for more information.")
             Chef::Log.debug("\n#{e.backtrace.join("\n")}")
             exit(1)
+          end
+
+          if config[:prevew_archive]
+            ui.warn("These files will upload to supermarket. Be careful.")
+            result = shell_out!("tar -tzf #{cookbook_name}.tgz", :cwd => tmp_cookbook_dir)
+            ui.info(result.stdout)
+            FileUtils.rm_rf tmp_cookbook_dir
+            return
           end
 
           begin
