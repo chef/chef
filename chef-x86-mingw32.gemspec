@@ -15,5 +15,7 @@ gemspec.add_dependency "win32-service", "0.8.2"
 gemspec.add_dependency "win32-mmap", "0.4.0"
 gemspec.add_dependency "wmi-lite", "~> 1.0"
 gemspec.add_dependency "win32-eventlog", "0.6.1"
+gemspec.extensions << "ext/win32-eventlog/Rakefile"
+gemspec.files += %w(ext/win32-eventlog/Rakefile ext/win32-eventlog/chef-log.man)
 
 gemspec
