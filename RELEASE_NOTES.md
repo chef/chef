@@ -1,4 +1,4 @@
-# Chef Client Release Notes 11.14.0:
+# Chef Client Release Notes 11.14.2:
 
 ## Known Issues
 
