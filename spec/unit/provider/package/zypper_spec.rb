@@ -166,6 +166,12 @@ describe Chef::Provider::Package::Zypper do
 
       @provider.remove_package("emacs", "1.0")
     end
+    it "should run zypper remove with without version argument" do
+      @provider.should_receive(:shell_out!).with(
+        "zypper --non-interactive --no-gpg-checks remove emacs")
+
+      @provider.remove_package("emacs", nil)
+    end
   end
 
   describe "purge_package" do
