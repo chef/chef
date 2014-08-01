@@ -1,9 +1,8 @@
 # Chef Client Changelog
 
 ## Unreleased:
-* Fix knife cookbook site share on windows (CHEF-4994)
 
-## Last Release: 11.14.0
+## Last Release: 11.14.2
 
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
@@ -48,8 +47,6 @@
   Add Code Climate badge to README.
 * [**Phil Sturgeon**](https://github.com/philsturgeon):
   Documentation that -E is not respected by knife ssh [search]. (CHEF-4778)
-* [**kaustubh**](https://github.com/kaustubh-d):
-  Use 'guest' user on AIX for RSpec tests. (OC-9954)
 * [**Stephan Renatus**](https://github.com/srenatus):
   Fix resource_spec.rb.
 * [**Sander van Harmelen**](https://github.com/svanharmelen):
@@ -94,13 +91,10 @@
   knife[:attribute] in knife.rb should not override --attribute (CHEF-5158)
 * [**Vasiliy Tolstov**](https://github.com/vtolstov):
   Added the initial exherbo linux support for Chef providers.
-* [**Seth Vargo**](https://github.com/sethvargo):
-  Added DelayedEvaluator support in LWRP using the `lazy {}` key
-* [**Seth Vargo**](https://github.com/sethvargo):
-  Fixed a bug where nested resources that inherited from Resource::LWRPBase
-  would not share the same actions/default_action as their parent
 
 
+
+* Fix knife cookbook site share on windows (CHEF-4994)
 * YAJL Allows Invalid JSON File Sending To The Server (CHEF-4899)
 * YAJL Silently Ingesting Invalid JSON and "Normalizing" Incorrectly (CHEF-4565)
 * Update rpm provider checking regex to allow for special characters (CHEF-4893)
@@ -135,7 +129,10 @@
 * Send md5 checksummed data for registry key if data type is binary, dword, or qword. (Chef-5323)
 * Add warning if host resembles winrm command and knife-windows is not present.
 * Use FFI binders to attach :SendMessageTimeout to avoid DL deprecation warning. (ChefDK Issues 69)
-
+* Use 'guest' user on AIX for RSpec tests. (OC-9954)
+* Added DelayedEvaluator support in LWRP using the `lazy {}` key
+* Fixed a bug where nested resources that inherited from Resource::LWRPBase
+  would not share the same actions/default_action as their parent
 
 ## Last Release: 11.12.8
 * Fix OS X service provider actions that don't require the service label
