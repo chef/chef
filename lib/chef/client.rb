@@ -39,7 +39,6 @@ require 'chef/event_dispatch/dispatcher'
 require 'chef/formatters/base'
 require 'chef/formatters/doc'
 require 'chef/formatters/minimal'
-require 'chef/logging/windows_eventlog'
 require 'chef/version'
 require 'chef/resource_reporter'
 require 'chef/run_lock'
@@ -156,7 +155,6 @@ class Chef
       event_handlers += Array(Chef::Config[:event_handlers])
 
       @events = EventDispatch::Dispatcher.new(*event_handlers)
-      @events.register(Logging::WindowsEventLogger.new)
       @override_runlist = args.delete(:override_runlist)
       @specific_recipes = args.delete(:specific_recipes)
 
