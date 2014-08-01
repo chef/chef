@@ -27,7 +27,7 @@
 * chef-repo rake tasks are deprecated; print relevant information for
   each one.
 
-## Last Release: 11.14.0
+## Last Release: 11.14.2
 
 * [**Jess Mink**](https://github.com/jmink):
   Symlinks to directories should be swingable on windows (CHEF-3960)
@@ -74,8 +74,6 @@
   Add Code Climate badge to README.
 * [**Phil Sturgeon**](https://github.com/philsturgeon):
   Documentation that -E is not respected by knife ssh [search]. (CHEF-4778)
-* [**kaustubh**](https://github.com/kaustubh-d):
-  Use 'guest' user on AIX for RSpec tests. (OC-9954)
 * [**Stephan Renatus**](https://github.com/srenatus):
   Fix resource_spec.rb.
 * [**Sander van Harmelen**](https://github.com/svanharmelen):
@@ -121,8 +119,9 @@
 * [**Vasiliy Tolstov**](https://github.com/vtolstov):
   Added the initial exherbo linux support for Chef providers.
 
-
-
+* Fix knife cookbook site share on windows (CHEF-4994)
+* YAJL Allows Invalid JSON File Sending To The Server (CHEF-4899)
+* YAJL Silently Ingesting Invalid JSON and "Normalizing" Incorrectly (CHEF-4565)
 * Update rpm provider checking regex to allow for special characters (CHEF-4893)
 * Allow for spaces in selinux controlled directories (CHEF-5095)
 * Windows batch resource run action fails: " TypeError: can't convert nil into String" (CHEF-5287)
@@ -155,7 +154,10 @@
 * Send md5 checksummed data for registry key if data type is binary, dword, or qword. (Chef-5323)
 * Add warning if host resembles winrm command and knife-windows is not present.
 * Use FFI binders to attach :SendMessageTimeout to avoid DL deprecation warning. (ChefDK Issues 69)
-
+* Use 'guest' user on AIX for RSpec tests. (OC-9954)
+* Added DelayedEvaluator support in LWRP using the `lazy {}` key
+* Fixed a bug where nested resources that inherited from Resource::LWRPBase
+  would not share the same actions/default_action as their parent
 
 ## Previous Release: 11.12.8
 * Fix OS X service provider actions that don't require the service label

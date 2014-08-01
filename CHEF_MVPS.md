@@ -17,6 +17,7 @@ After receiving three MVP awards, we add someone to the hall of fame. We want to
 
 | Release | Date | MVP |
 |---------|------|-----|
+| [Client 11.12.0](http://www.getchef.com/blog/2014/04/08/release-chef-client-11-12-0-10-32-2/) | 2014-04-08 | Chris Bandy |
 | [Client 11.10.4](http://www.getchef.com/blog/2014/02/20/chef-client-patch-release-11-10-4/) | 2014-02-20 | Jon Cowie |
 | [Client 11.10.2](http://www.getchef.com/blog/2014/02/18/chef-client-release-11-10-2-10-30-4/) | 2014-02-18 | Eric Tucker |
 | [Client 11.10.0](http://www.getchef.com/blog/2014/02/06/chef-client-11-10-0-release/) | 2014-02-06 | Nikhil Benesch |
@@ -27,6 +28,7 @@ After receiving three MVP awards, we add someone to the hall of fame. We want to
 | [Client 11.4.0](http://www.opscode.com/blog/2013/02/13/chef-client-11-4-0-10-22-0-released/) | 2013-02-13 | Vaidas Jablonskis |
 | [Client 11.2.0](http://www.opscode.com/blog/2013/02/07/chef-client-11-2-0-10-20-0-released/) | 2013-02-06 | Mike Javorski |
 | [Chef 11.0.0](http://www.opscode.com/blog/2013/02/04/chef-11-released/) | 2013-02-04 | Andrea Campi, Bryan Berry |
+| [Chef 10.32.2](http://www.getchef.com/blog/2014/04/08/release-chef-client-11-12-0-10-32-2/) | 2014-04-08 | Phil Dibowitz |
 | [Chef 10.30.4](http://www.getchef.com/blog/2014/02/18/chef-client-release-11-10-2-10-30-4/) | 2014-02-18 | Christopher Laco |
 | [Chef 10.30.2](http://www.getchef.com/blog/2013/12/06/release-chef-client-10-30-2-11-8-2-mixlib-shellout-1-3-0/) | 2013-12-06 | Phil Dibowitz |
 | [Chef 10.28.2](http://www.getchef.com/blog/2013/10/08/release-chef-client-11-6-2-10-28-2/) | 2013-10-08 | Jeff Blaine |
@@ -81,4 +83,3 @@ After receiving three MVP awards, we add someone to the hall of fame. We want to
 | [Chef 0.5.6](http://www.opscode.com/blog/2009/03/06/chef-0-5-6/) | 2009-03-06 | Sean Cribbs |
 | [Chef 0.5.4](http://www.opscode.com/blog/2009/02/13/chef-0-5-4/) | 2009-02-13 | Arjuna Christensen |
 | [Chef 0.5.2](http://www.opscode.com/blog/2009/02/01/chef-0-5-2-and-ohai-0-1-4/) | 2009-02-01 | Bryan McLellan |
-
