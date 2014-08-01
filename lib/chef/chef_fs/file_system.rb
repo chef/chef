@@ -369,7 +369,7 @@ class Chef
               end
             else
               if dest_entry.dir?
-                ui.error("File #{src_path} is a directory while file #{dest_path} is a regular file\n") if ui
+                ui.error("File #{src_path} is a regular file while file #{dest_path} is a directory\n") if ui
                 return
               else
 
