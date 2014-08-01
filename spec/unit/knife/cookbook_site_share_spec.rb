@@ -83,12 +83,14 @@ describe Chef::Knife::CookbookSiteShare do
     end
 
     it 'should list files in tarball' do
-      @knife.config = { :prevew_archive => true }
+      Chef::CookbookSiteStreamingUploader.stub(:create_build_dir).and_return("/var/tmp/dummy")
+      @knife.config = { :preview_archive => true }
       @knife.stub_chain(:shell_out!, :stdout).and_return('file')
-      @knife.ui.should_receive(:warn)
-      @knife.ui.should_receive(:info)
+      @knife.ui.should_receive(:info).with("Notice: These files will upload to supermarket. Be careful.")
+      @knife.ui.should_receive(:info).with("Making tarball cookbook_name.tgz")
       @knife.ui.should_receive(:info).with('file')
-      @knife.should_receive(:shell_out!).twice
+      @knife.should_receive(:shell_out!).with("tar -czf #{@cookbook.name}.tgz #{@cookbook.name}", {:cwd => "/var/tmp/dummy"})
+      @knife.should_receive(:shell_out!).with("tar -tzf #{@cookbook.name}.tgz", {:cwd => "/var/tmp/dummy"})
       @knife.run
     end
 

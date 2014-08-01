@@ -40,8 +40,8 @@ class Chef
         :description => "A colon-separated path to look for cookbooks in",
         :proc => lambda { |o| Chef::Config.cookbook_path = o.split(":") }
 
-      option :prevew_archive,
-        :long => "--prevew-archive",
+      option :preview_archive,
+        :long => "--preview-archive",
         :description => "Only preview archived files. (Don't upload.)",
         :boolean => true
 
@@ -71,8 +71,8 @@ class Chef
             exit(1)
           end
 
-          if config[:prevew_archive]
-            ui.warn("These files will upload to supermarket. Be careful.")
+          if config[:preview_archive]
+            ui.info("Notice: These files will upload to supermarket. Be careful.")
             result = shell_out!("tar -tzf #{cookbook_name}.tgz", :cwd => tmp_cookbook_dir)
             ui.info(result.stdout)
             FileUtils.rm_rf tmp_cookbook_dir
