@@ -17,6 +17,7 @@ After receiving three MVP awards, we add someone to the hall of fame. We want to
 
 | Release | Date | MVP |
 |---------|------|-----|
+| [Client 11.14.2](http://www.getchef.com/blog/2014/04/08/release-chef-client-11-12-0-10-32-2/) | 2014-08-01 | Nikhil Benesch |
 | [Client 11.12.0](http://www.getchef.com/blog/2014/04/08/release-chef-client-11-12-0-10-32-2/) | 2014-04-08 | Chris Bandy |
 | [Client 11.10.4](http://www.getchef.com/blog/2014/02/20/chef-client-patch-release-11-10-4/) | 2014-02-20 | Jon Cowie |
 | [Client 11.10.2](http://www.getchef.com/blog/2014/02/18/chef-client-release-11-10-2-10-30-4/) | 2014-02-18 | Eric Tucker |
