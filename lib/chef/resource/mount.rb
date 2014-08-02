@@ -33,6 +33,7 @@ class Chef
         @mount_point = name
         @device = nil
         @device_type = :device
+        @fsck_device = '-'
         @fstype = "auto"
         @options = ["defaults"]
         @dump = 0
@@ -74,6 +75,14 @@ class Chef
           :device_type,
           real_arg,
           :equal_to => valid_devices
+        )
+      end
+
+      def fsck_device(arg=nil)
+        set_or_return(
+          :fsck_device,
+          arg,
+          :kind_of => [ String ]
         )
       end
 

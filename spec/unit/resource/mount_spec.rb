@@ -53,6 +53,15 @@ describe Chef::Resource::Mount do
     @resource.device.should eql("/dev/sdb3")
   end
 
+  it "should set fsck_device to '-' by default" do
+    @resource.fsck_device.should eql('-')
+  end
+
+  it "should allow you to set the fsck_device attribute" do
+    @resource.fsck_device "/dev/rdsk/sdb3"
+    @resource.fsck_device.should eql("/dev/rdsk/sdb3")
+  end
+
   it "should allow you to set the fstype attribute" do
     @resource.fstype "nfs"
     @resource.fstype.should eql("nfs")

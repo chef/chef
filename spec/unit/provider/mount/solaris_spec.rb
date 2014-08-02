@@ -34,6 +34,8 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
   let(:device) { "/dev/dsk/c0t2d0s7" }
 
+  let(:fsck_device) { "/dev/rdsk/c0t2d0s7" }
+
   let(:mountpoint) { "/mnt/foo" }
 
   let(:options) { nil }
@@ -165,6 +167,10 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
       it "should set the device on the current_resource" do
         provider.current_resource.device.should == device
+      end
+
+      it "should set the fsck_device on the current_resource" do
+        provider.current_resource.fsck_device.should == fsck_device
       end
 
       it "should set the device_type on the current_resource" do
