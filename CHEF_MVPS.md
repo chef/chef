@@ -12,6 +12,7 @@ After receiving three MVP awards, we add someone to the hall of fame. We want to
 * Thom May
 * Bryan Berry
 * Bryan McLellan
+* Jeff Blaine
 
 #### The MVP recipients
 
