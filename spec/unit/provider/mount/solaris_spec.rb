@@ -21,15 +21,7 @@ require 'ostruct'
 
 # Do not run these tests on windows because some path handling
 # code is not implemented to handle windows paths.
-#
-# nfs mount
-# ufs mount
-# vxfs mount
-# tmp mount
-# cross product with auto, noauto
-# try with reasonable options
-# see if the correct vfstable entry gets generated
-#
+
 describe Chef::Provider::Mount::Solaris, :unix_only do
   let(:node) { Chef::Node.new }
 
