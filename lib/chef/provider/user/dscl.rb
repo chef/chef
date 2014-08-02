@@ -45,11 +45,13 @@ class Chef
         #   !! ( users =~ Regexp.new("\n#{user}\n") )
         # end
 
-        # get a free UID greater than 200
+        # get a free UID greater than 200 if a system user, 500 if a non-system user
         def get_free_uid(search_limit=1000)
-          uid = nil; next_uid_guess = 200
+          uid = nil
+          base_uid = @new_resource.system ? 200 : 500
+          next_uid_guess = base_uid
           users_uids = safe_dscl("list /Users uid")
-          while(next_uid_guess < search_limit + 200)
+          while(next_uid_guess < search_limit + base_uid)
             if users_uids =~ Regexp.new("#{Regexp.escape(next_uid_guess.to_s)}\n")
               next_uid_guess += 1
             else
