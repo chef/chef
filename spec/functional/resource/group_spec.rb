@@ -248,7 +248,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     end
   end
 
-  let(:group_name) { "cheftest-#{SecureRandom.random_number(9999)}" }
+  let(:group_name) { "t-#{SecureRandom.random_number(9999)}" }
   let(:included_members) { nil }
   let(:excluded_members) { nil }
   let(:group_resource) {
@@ -330,7 +330,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group modify action", :not_supported_on_solaris do
-    let(:spec_members){ ["spec-Gordon", "spec-Eric", "spec-Anthony"] }
+    let(:spec_members){ ["Gordon", "Eric", "Anthony"] }
     let(:included_members) { [spec_members[0], spec_members[1]] }
     let(:excluded_members) { [spec_members[2]] }
     let(:tested_action) { :modify }
@@ -358,7 +358,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group manage action", :not_supported_on_solaris do
-    let(:spec_members){ ["spec-Gordon", "spec-Eric", "spec-Anthony"] }
+    let(:spec_members){ ["Gordon", "Eric", "Anthony"] }
     let(:included_members) { [spec_members[0], spec_members[1]] }
     let(:excluded_members) { [spec_members[2]] }
     let(:tested_action) { :manage }
@@ -388,7 +388,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
 
   describe "group resource with Usermod provider", :solaris_only do
     describe "when excluded_members is set" do
-      let(:excluded_members) { ["spec-Anthony"] }
+      let(:excluded_members) { ["Anthony"] }
 
       it ":manage should raise an error" do
         lambda {group_resource.run_action(:manage) }.should raise_error
@@ -404,7 +404,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     end
 
     describe "when append is not set" do
-      let(:included_members) { ["spec-Gordon", "spec-Eric"] }
+      let(:included_members) { ["Gordon", "Eric"] }
 
       before(:each) do
         group_resource.append(false)
@@ -420,4 +420,6 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     end
   end
 end
+
+
 

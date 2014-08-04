@@ -18,11 +18,21 @@
 #
 
 require 'spec_helper'
+require 'functional/resource/base'
 require 'chef/mixin/shell_out'
+
+def user_provider_for_platform
+  case ohai[:platform]
+  when "aix"
+    Chef::Provider::User::Aix
+  else
+    Chef::Provider::User::Useradd
+  end
+end
 
 metadata = { :unix_only => true,
   :requires_root => true,
-  :provider => {:user => Chef::Provider::User::Useradd}
+  :provider => {:user => user_provider_for_platform}
 }
 
 describe Chef::Resource::User, metadata do
@@ -46,15 +56,27 @@ describe Chef::Resource::User, metadata do
   end
 
   def etc_shadow
-    File.open("/etc/shadow") {|f| f.read }
+    case ohai[:platform]
+    when "aix"
+      File.open("/etc/security/passwd") {|f| f.read }
+    else
+      File.open("/etc/shadow") {|f| f.read }
+    end
   end
 
   def supports_quote_in_username?
     OHAI_SYSTEM["platform_family"] == "debian"
   end
 
+  def password_should_be_set
+    if ohai[:platform] == "aix"
+      pw_entry.passwd.should == "!"
+    else
+      pw_entry.passwd.should == "x"
+    end
+  end
+
   before do
-    pending "porting implementation for user provider in aix" if OHAI_SYSTEM[:platform] == 'aix'
     # Silence shell_out live stream
     Chef::Log.level = :warn
   end
@@ -62,7 +84,7 @@ describe Chef::Resource::User, metadata do
   after do
     begin
       pw_entry # will raise if the user doesn't exist
-      shell_out!("userdel", "-f", "-r", username, :returns => [0,12])
+      shell_out!("userdel", "-r", username, :returns => [0,12])
     rescue UserNotFound
       # nothing to remove
     end
@@ -83,7 +105,7 @@ describe Chef::Resource::User, metadata do
   end
 
   let(:username) do
-    "chef-functional-test"
+    "cf-test"
   end
 
   let(:uid) { nil }
@@ -103,6 +125,14 @@ describe Chef::Resource::User, metadata do
     r.password(password)
     r.system(system)
     r
+  end
+
+  let(:expected_shadow) do
+    if ohai[:platform] == "aix"
+      expected_shadow = "cf-test"  # For aix just check user entry in shadow file
+    else
+      expected_shadow = "cf-test:$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+    end
   end
 
   let(:skip) { false }
@@ -218,10 +248,17 @@ describe Chef::Resource::User, metadata do
 
       context "when a password is specified" do
         # openssl passwd -1 "secretpassword"
-        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        let(:password) do
+          case ohai[:platform]
+          when "aix"
+            "eL5qfEVznSNss"
+          else
+            "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          end
+        end
+
         it "sets the user's shadow password" do
-          pw_entry.passwd.should == "x"
-          expected_shadow = "chef-functional-test:$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          password_should_be_set
           etc_shadow.should include(expected_shadow)
         end
       end
@@ -229,14 +266,21 @@ describe Chef::Resource::User, metadata do
       context "when a system user is specified" do
         let(:system) { true }
         let(:uid_min) do
-          # from `man useradd`, login user means uid will be between
-          # UID_SYS_MIN and UID_SYS_MAX defined in /etc/login.defs. On my
-          # Ubuntu 13.04 system, these are commented out, so we'll look at
-          # UID_MIN to find the lower limit of the non-system-user range, and
-          # use that value in our assertions.
-          login_defs = File.open("/etc/login.defs", "rb") {|f| f.read }
-          uid_min_scan = /^UID_MIN\s+(\d+)/
-          login_defs.match(uid_min_scan)[1]
+          case ohai[:platform]
+          when "aix"
+            # UIDs and GIDs below 100 are typically reserved for system accounts and services
+            # http://www.ibm.com/developerworks/aix/library/au-satuidgid/
+            100
+          else
+            # from `man useradd`, login user means uid will be between
+            # UID_SYS_MIN and UID_SYS_MAX defined in /etc/login.defs. On my
+            # Ubuntu 13.04 system, these are commented out, so we'll look at
+            # UID_MIN to find the lower limit of the non-system-user range, and
+            # use that value in our assertions.
+            login_defs = File.open("/etc/login.defs", "rb") {|f| f.read }
+            uid_min_scan = /^UID_MIN\s+(\d+)/
+            login_defs.match(uid_min_scan)[1]
+          end
         end
 
         it "ensures the user has the properties of a system user" do
@@ -284,7 +328,15 @@ describe Chef::Resource::User, metadata do
         let(:home) { "/home/bobo" }
         let(:manage_home) { true }
         # openssl passwd -1 "secretpassword"
-        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        let(:password) do
+          case ohai[:platform]
+          when "aix"
+            "eL5qfEVznSNss"
+          else
+            "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          end
+        end
+
         let(:system) { false }
         let(:comment) { "hello this is dog" }
 
@@ -347,6 +399,11 @@ describe Chef::Resource::User, metadata do
               File.should_not exist("/home/foo")
               File.should exist("/home/bar")
             end
+          elsif ohai[:platform] == "aix"
+            it "creates the home dir in the desired location" do
+              File.should_not exist("/home/foo")
+              File.should exist("/home/bar")
+            end
           else
             it "does not create the home dir in the desired location (XXX)" do
               # This behavior seems contrary to expectation and non-convergent.
@@ -370,11 +427,18 @@ describe Chef::Resource::User, metadata do
 
       context "and a password is added" do
         # openssl passwd -1 "secretpassword"
-        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        let(:password) do
+          case ohai[:platform]
+          when "aix"
+            "eL5qfEVznSNss"
+          else
+            "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          end
+        end
+
 
         it "ensures the password is set" do
-          pw_entry.passwd.should == "x"
-          expected_shadow = "chef-functional-test:$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          password_should_be_set
           etc_shadow.should include(expected_shadow)
         end
 
@@ -382,13 +446,28 @@ describe Chef::Resource::User, metadata do
 
       context "and the password is updated" do
         # openssl passwd -1 "OLDpassword"
-        let(:existing_password) { "$1$1dVmwm4z$CftsFn8eBDjDRUytYKkXB." }
+        let(:existing_password) do
+          case ohai[:platform]
+          when "aix"
+            "jkzG6MvUxjk2g"
+          else
+            "$1$1dVmwm4z$CftsFn8eBDjDRUytYKkXB."
+          end
+        end
+
         # openssl passwd -1 "secretpassword"
-        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        let(:password) do
+          case ohai[:platform]
+          when "aix"
+            "eL5qfEVznSNss"
+          else
+            "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          end
+        end
+
 
         it "ensures the password is set to the desired value" do
-          pw_entry.passwd.should == "x"
-          expected_shadow = "chef-functional-test:$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          password_should_be_set
           etc_shadow.should include(expected_shadow)
         end
       end
@@ -427,15 +506,47 @@ describe Chef::Resource::User, metadata do
       shadow_entry.split(':')[1]
     end
 
+    def aix_user_lock_status
+      lock_info = shell_out!("lsuser -a account_locked #{username}")
+      status = /\S+\s+account_locked=(\S+)/.match(lock_info.stdout)[1]
+    end
+
+    def user_account_should_be_locked
+      case ohai[:platform]
+      when "aix"
+        aix_user_lock_status.should == "true"
+      else
+        shadow_password.should include("!")
+      end
+    end
+
+    def user_account_should_be_unlocked
+      case ohai[:platform]
+      when "aix"
+        aix_user_lock_status.should == "false"
+      else
+        shadow_password.should_not include("!")
+      end
+    end
+
+    def lock_user_account
+      case ohai[:platform]
+      when "aix"
+        shell_out!("chuser account_locked=true #{username}")
+      else
+        shell_out!("usermod -L #{username}")
+      end
+    end
+
     before do
       # create user and setup locked/unlocked state
       user_resource.dup.run_action(:create)
 
       if user_locked_context?
-        shell_out!("usermod -L #{username}")
-        shadow_password.should include("!")
+        lock_user_account
+        user_account_should_be_locked
       elsif password
-        shadow_password.should_not include("!")
+        user_account_should_be_unlocked
       end
     end
   end
@@ -457,16 +568,32 @@ describe Chef::Resource::User, metadata do
 
       context "and the user is not locked" do
         # user will be locked if it has no password
-        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        let(:password) do
+          case ohai[:platform]
+          when "aix"
+            "eL5qfEVznSNss"
+          else
+            "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          end
+        end
+
 
         it "locks the user's password" do
-          shadow_password.should include("!")
+          user_account_should_be_locked
         end
       end
 
       context "and the user is locked" do
         # user will be locked if it has no password
-        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        let(:password) do
+          case ohai[:platform]
+          when "aix"
+            "eL5qfEVznSNss"
+          else
+            "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          end
+        end
+
         let(:user_locked_context?) { true }
         it "does not update the user" do
           user_resource.should_not be_updated_by_last_action
@@ -518,14 +645,26 @@ describe Chef::Resource::User, metadata do
             # DEBUG: ---- End output of usermod -U chef-functional-test ----
             # DEBUG: Ran usermod -U chef-functional-test returned 0
             @error.should be_nil
-            pw_entry.passwd.should == 'x'
-            shadow_password.should == "!"
+            if ohai[:platform] == "aix"
+              pw_entry.passwd.should == '*'
+            else
+              pw_entry.passwd.should == 'x'
+            end
+            user_account_should_be_unlocked
           end
         end
       end
 
       context "and has a password" do
-        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        let(:password) do
+          case ohai[:platform]
+          when "aix"
+            "eL5qfEVznSNss"
+          else
+            "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          end
+        end
+
         context "and the user is not locked" do
           it "does not update the user" do
             user_resource.should_not be_updated_by_last_action
@@ -536,9 +675,7 @@ describe Chef::Resource::User, metadata do
           let(:user_locked_context?) { true }
 
           it "unlocks the user's password" do
-            shadow_entry = etc_shadow.lines.select {|l| l.include?(username) }.first
-            shadow_password = shadow_entry.split(':')[1]
-            shadow_password.should_not include("!")
+            user_account_should_be_unlocked
           end
         end
       end
