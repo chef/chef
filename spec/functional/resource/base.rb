@@ -16,16 +16,6 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-
-def ohai
-  # provider is platform-dependent, we need platform ohai data:
-  @OHAI_SYSTEM ||= begin
-    ohai = Ohai::System.new
-    ohai.all_plugins("platform")
-    ohai
-  end
-end
 
 def run_context
   @run_context ||= begin

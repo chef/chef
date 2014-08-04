@@ -78,22 +78,4 @@ describe Chef::Provider::Log::ChefLog do
       @provider.action_write
   end
 
-  it "should not update the resource if the message was not written to the log" do
-      Chef::Log.level = :fatal
-      @new_resource = Chef::Resource::Log.new(@log_str)
-      @new_resource.level :info
-      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context)
-      @provider.action_write
-      @new_resource.updated.should be_false
-  end
-
-  it "should update the resource if the message has been written to the log" do
-      Chef::Log.level = :debug
-      @new_resource = Chef::Resource::Log.new(@log_str)
-      @new_resource.level :info
-      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context)
-      @provider.action_write
-      @new_resource.updated.should be_true
-  end
-
 end

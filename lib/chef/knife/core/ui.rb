@@ -73,10 +73,8 @@ class Chef
         end
       end
 
-      alias :info :msg
-
-      # Prints a msg to stderr. Used for warn, error, and fatal.
-      def err(message)
+      # Prints a msg to stderr. Used for info, warn, error, and fatal.
+      def log(message)
         begin
           stderr.puts message
         rescue Errno::EPIPE => e
@@ -85,19 +83,22 @@ class Chef
         end
       end
 
+      alias :info :log
+      alias :err :log
+
       # Print a warning message
       def warn(message)
-        err("#{color('WARNING:', :yellow, :bold)} #{message}")
+        log("#{color('WARNING:', :yellow, :bold)} #{message}")
       end
 
       # Print an error message
       def error(message)
-        err("#{color('ERROR:', :red, :bold)} #{message}")
+        log("#{color('ERROR:', :red, :bold)} #{message}")
       end
 
       # Print a message describing a fatal error.
       def fatal(message)
-        err("#{color('FATAL:', :red, :bold)} #{message}")
+        log("#{color('FATAL:', :red, :bold)} #{message}")
       end
 
       def color(string, *colors)

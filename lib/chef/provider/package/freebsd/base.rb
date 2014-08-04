@@ -21,7 +21,6 @@
 
 require 'chef/resource/package'
 require 'chef/provider/package'
-require 'chef/mixin/shell_out'
 require 'chef/mixin/get_source_from_package'
 
 class Chef
@@ -63,9 +62,7 @@ class Chef
           end
         end
 
-
         class Base < Chef::Provider::Package
-          include Chef::Mixin::ShellOut
           include Chef::Mixin::GetSourceFromPackage
 
           def initialize(*args)

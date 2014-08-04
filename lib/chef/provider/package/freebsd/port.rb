@@ -54,8 +54,6 @@ class Chef
             super(@new_resource.package_name)
           end
 
-
-
           private
 
           def supports_pkgng?

@@ -119,7 +119,7 @@ describe Chef::Knife::CookbookMetadata do
       Chef::JSONCompat.should_receive(:to_json_pretty).with(@metadata_mock).
                                                        and_return(@json_data)
       @knife.generate_metadata_from_file('foobar', "#{@cookbook_dir}/foobar/metadata.rb")
-      @stdout.string.should match /generating metadata for foobar from #{@cookbook_dir}\/foobar\/metadata\.rb/im
+      @stderr.string.should match /generating metadata for foobar from #{@cookbook_dir}\/foobar\/metadata\.rb/im
     end
 
     { Chef::Exceptions::ObsoleteDependencySyntax => 'obsolote dependency',

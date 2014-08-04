@@ -567,7 +567,7 @@ class Chef
     # If false file staging is will be done via tempfiles that are
     # created under ENV['TMP'] otherwise tempfiles will be created in
     # the directory that files are going to reside.
-    default :file_staging_uses_destdir, false
+    default :file_staging_uses_destdir, true
 
     # Exit if another run is in progress and the chef-client is unable to
     # get the lock before time expires. If nil, no timeout is enforced. (Exits
@@ -579,6 +579,30 @@ class Chef
     # If you are seeing this behavior while using the default setting, reducing
     # the number of threads will help.
     default :cookbook_sync_threads, 10
+
+    # At the beginning of the Chef Client run, the cookbook manifests are downloaded which
+    # contain URLs for every file in every relevant cookbook.  Most of the files
+    # (recipes, resources, providers, libraries, etc) are immediately synchronized
+    # at the start of the run.  The handling of "files" and "templates" directories,
+    # however, have two modes of operation.  They can either all be downloaded immediately
+    # at the start of the run (no_lazy_load==true) or else they can be lazily loaded as
+    # cookbook_file or template resources are converged which require them (no_lazy_load==false).
+    #
+    # The advantage of lazily loading these files is that unnecessary files are not
+    # synchronized.  This may be useful to users with large files checked into cookbooks which
+    # are only selectively downloaded to a subset of clients which use the cookbook.  However,
+    # better solutions are to either isolate large files into individual cookbooks and only
+    # include those cookbooks in the run lists of the servers that need them -- or move to
+    # using remote_file and a more appropriate backing store like S3 for large file
+    # distribution.
+    #
+    # The disadvantages of lazily loading files are that users some time find it
+    # confusing that their cookbooks are not fully synchronzied to the cache initially,
+    # and more importantly the time-sensitive URLs which are in the manifest may time
+    # out on long Chef runs before the resource that uses the file is converged
+    # (leading to many confusing 403 errors on template/cookbook_file resources).
+    #
+    default :no_lazy_load, true
 
     # A whitelisted array of attributes you want sent over the wire when node
     # data is saved.

@@ -24,7 +24,6 @@ class Chef
   class Provider
     class Service
       class Macosx < Chef::Provider::Service::Simple
-        include Chef::Mixin::ShellOut
 
         def self.gather_plist_dirs
           locations = %w{/Library/LaunchAgents

@@ -55,7 +55,6 @@ class Chef
           @current_resource
         end
 
-
         def parse_emerge(package, txt)
           availables = {}
           found_package_name = nil
@@ -102,7 +101,6 @@ class Chef
           @candidate_version
 
         end
-
 
         def install_package(name, version)
           pkg = "=#{name}-#{version}"

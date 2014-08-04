@@ -12,12 +12,14 @@ Gem::Specification.new do |s|
   s.email = "adam@getchef.com"
   s.homepage = "http://www.getchef.com"
 
+  s.required_ruby_version = ">= 1.9.3"
+
   s.add_dependency "mixlib-config", "~> 2.0"
   s.add_dependency "mixlib-cli", "~> 1.4"
   s.add_dependency "mixlib-log", "~> 1.3"
   s.add_dependency "mixlib-authentication", "~> 1.3"
   s.add_dependency "mixlib-shellout", "~> 1.4"
-  s.add_dependency "ohai", "= 7.2.0.rc.1"
+  s.add_dependency "ohai", "~> 7.2"
 
   s.add_dependency "ffi-yajl", "~> 1.0"
   s.add_dependency "net-ssh", "~> 2.6"

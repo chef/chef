@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
 require 'chef/resource/service'
 require 'chef/provider/service/init'
 require 'chef/mixin/command'
@@ -25,8 +24,6 @@ class Chef
   class Provider
     class Service
       class Freebsd < Chef::Provider::Service::Init
-
-        include Chef::Mixin::ShellOut
 
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)

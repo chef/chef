@@ -141,7 +141,7 @@ EOM
       end
 
       it 'knife cookbook upload works' do
-        knife("cookbook upload -z --cookbook-path #{path_to('cookbooks_to_upload')} x").should_succeed <<EOM
+        knife("cookbook upload -z --cookbook-path #{path_to('cookbooks_to_upload')} x").should_succeed :stderr => <<EOM
 Uploading x              [1.0.0]
 Uploaded 1 cookbook.
 EOM
@@ -199,7 +199,7 @@ EOM
       end
 
       it 'knife cookbook upload works' do
-        knife("cookbook upload -z --cookbook-path #{path_to('cookbooks_to_upload')} z").should_succeed <<EOM
+        knife("cookbook upload -z --cookbook-path #{path_to('cookbooks_to_upload')} z").should_succeed :stderr => <<EOM
 Uploading z            [1.0.0]
 Uploaded 1 cookbook.
 EOM
