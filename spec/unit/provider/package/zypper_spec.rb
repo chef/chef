@@ -146,25 +146,37 @@ describe Chef::Provider::Package::Zypper do
   end
 
   describe "remove_package" do
-    it "should run zypper remove with the package name" do
-      Chef::Config.stub(:[]).with(:zypper_check_gpg).and_return(true)
-      @provider.should_receive(:shell_out!).with(
-        "zypper --non-interactive remove emacs=1.0")
-      @provider.remove_package("emacs", "1.0")
-    end
-    it "should run zypper remove without gpg checks" do
-      Chef::Config.stub(:[]).with(:zypper_check_gpg).and_return(false)
-      @provider.should_receive(:shell_out!).with(
-          "zypper --non-interactive --no-gpg-checks remove emacs=1.0")
-      @provider.remove_package("emacs", "1.0")
-    end
-    it "should warn about gpg checks on zypper remove" do
-      Chef::Log.should_receive(:warn).with(
-        /All packages will be installed without gpg signature checks/)
-      @provider.should_receive(:shell_out!).with(
-        "zypper --non-interactive --no-gpg-checks remove emacs=1.0")
 
-      @provider.remove_package("emacs", "1.0")
+    context "when package version is not explicitly specified" do
+      it "should run zypper remove with the package name" do
+        Chef::Config.stub(:[]).with(:zypper_check_gpg).and_return(true)
+        @provider.should_receive(:shell_out!).with(
+            "zypper --non-interactive remove emacs")
+        @provider.remove_package("emacs", nil)
+      end
+    end
+
+    context "when package version is explicitly specified" do
+      it "should run zypper remove with the package name" do
+        Chef::Config.stub(:[]).with(:zypper_check_gpg).and_return(true)
+        @provider.should_receive(:shell_out!).with(
+          "zypper --non-interactive remove emacs=1.0")
+        @provider.remove_package("emacs", "1.0")
+      end
+      it "should run zypper remove without gpg checks" do
+        Chef::Config.stub(:[]).with(:zypper_check_gpg).and_return(false)
+        @provider.should_receive(:shell_out!).with(
+            "zypper --non-interactive --no-gpg-checks remove emacs=1.0")
+        @provider.remove_package("emacs", "1.0")
+      end
+      it "should warn about gpg checks on zypper remove" do
+        Chef::Log.should_receive(:warn).with(
+          /All packages will be installed without gpg signature checks/)
+        @provider.should_receive(:shell_out!).with(
+          "zypper --non-interactive --no-gpg-checks remove emacs=1.0")
+
+        @provider.remove_package("emacs", "1.0")
+      end
     end
   end
 
