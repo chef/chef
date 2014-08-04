@@ -13,7 +13,6 @@
   knife diagnostic messages sent to stdout instead of stderr
 * [**Xabier de Zuazo**](https://github.com/zuazo):
   Remove the unused StreamingCookbookUploader class (CHEF-4586)
-
 * http_request no longer appends "?message=" query string to GET and HEAD requests
 * added shell_out commands directly to the recipe DSL
 * cookbook synchronizer deletes old files from cookbooks
@@ -26,6 +25,8 @@
 * Fix knife cookbook site share on windows (CHEF-4994)
 * chef-repo rake tasks are deprecated; print relevant information for
   each one.
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  'group' provider on OSX properly uses 'dscl' to determine existing groups
 
 ## Last Release: 11.14.0
 
