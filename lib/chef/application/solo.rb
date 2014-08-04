@@ -191,7 +191,7 @@ class Chef::Application::Solo < Chef::Application
     end
 
     if Chef::Config[:recipe_url]
-      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
+      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /#{Chef::Config.platform_path_separator}cookbooks#{Chef::Config.platform_path_separator}*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
 
       Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
