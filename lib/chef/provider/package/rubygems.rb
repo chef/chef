@@ -273,6 +273,8 @@ class Chef
             @platform_cache ||= {}
           end
 
+          include Chef::Mixin::ShellOut
+
           attr_reader :gem_binary_location
 
           def initialize(gem_binary_location)

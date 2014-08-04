@@ -1,5 +1,12 @@
 # Chef Client Release Notes:
 
+## http_request resource no longer appends query string
+
+Previously the http_request GET and HEAD requests appended a hard-coded "?message=resource_name" 
+query parameter that could not be overridden.  That feature has been dropped.  Cookbooks that
+actually relied on that should manually add the message query string to the URL they pass to
+the resource.
+
 ## Added Chef::Mixin::ShellOut methods to Recipe DSL
 
 Added the ability to use shell_out, shell_out! and shell_out_with_systems_locale in the Recipe
