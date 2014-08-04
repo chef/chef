@@ -39,11 +39,33 @@ class Chef
           return result[2]
         end
         
-        # This is handled in providers/group.rb by Etc.getgrnam()
-        # def group_exists?(group)
-        #   groups = safe_dscl("list /Groups")
-        #   !! ( groups =~ Regexp.new("\n#{group}\n") )
-        # end
+        def load_current_resource
+          @current_resource = Chef::Resource::Group.new(@new_resource.name)
+          @current_resource.group_name(@new_resource.name)
+          group_info = nil
+          begin
+            group_info = safe_dscl("read /Groups/#{@new_resource.name}")
+          rescue Chef::Exceptions::Group
+            @group_exists = false
+            Chef::Log.debug("#{@new_resource} group does not exist")
+          end
+
+          if group_info
+            group_info.each_line do |line|
+              key, val = line.split(': ')
+              val.strip! if val
+              case key.downcase
+              when 'primarygroupid'
+                @new_resource.gid(val) unless @new_resource.gid
+                @current_resource.gid(val)
+              when 'groupmembership'
+                @current_resource.members(val.split(' '))
+              end
+            end
+          end
+
+          @current_resource
+        end
 
         # get a free GID greater than 200
         def get_free_gid(search_limit=1000)
@@ -115,10 +137,6 @@ class Chef
           end
         end
 
-        def load_current_resource
-          super
-        end
-        
         def create_group
           dscl_create_group
           set_gid

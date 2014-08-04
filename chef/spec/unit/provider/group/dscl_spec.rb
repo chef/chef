@@ -293,3 +293,38 @@ describe Chef::Provider::Group::Dscl do
     end
   end
 end
+
+describe 'Test DSCL loading' do
+  before do
+    @node = Chef::Node.new
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
+    @new_resource = Chef::Resource::Group.new("aj")
+    @provider = Chef::Provider::Group::Dscl.new(@new_resource, @run_context)
+    @output = <<-EOF
+AppleMetaNodeLocation: /Local/Default
+Comment:
+ Test Group
+GeneratedUID: AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA
+NestedGroups: AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAB
+Password: *
+PrimaryGroupID: 999
+RealName:
+ TestGroup
+RecordName: com.apple.aj
+RecordType: dsRecTypeStandard:Groups
+GroupMembership: waka bar
+EOF
+    @provider.stub(:safe_dscl).with("read /Groups/aj").and_return(@output)
+    @current_resource = @provider.load_current_resource
+  end
+
+  it 'should parse gid properly' do
+    File.stub(:exists?).and_return(true)
+    @current_resource.gid.should eq("999")
+  end
+  it 'should parse members properly' do
+    File.stub(:exists?).and_return(true)
+    @current_resource.members.should eq(['waka', 'bar'])
+  end
+end
