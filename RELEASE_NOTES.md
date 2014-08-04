@@ -1,4 +1,4 @@
-# Chef Client Release Notes:
+# Chef Client Release Notes 11.14.2:
 
 ## http_request resource no longer appends query string
 
