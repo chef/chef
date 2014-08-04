@@ -29,6 +29,7 @@ shared_examples_for "a platform introspector" do
     end
     @platform_hash["debian"] = {["5", "6"] => "debian-5/6", "default" => "debian"}
     @platform_hash["centos"] = {"~> 6.0" => "centos-6", ">= 7.0" => "centos-7", "6.5" => "centos-6.5" }
+    @platform_hash["pessimistic"] = {"~> 1.2.3" => "12", "~> 1.2" => "1", "default" => "2"}
     @platform_hash["default"] = "default"
 
     @platform_family_hash = {
@@ -101,6 +102,21 @@ shared_examples_for "a platform introspector" do
       node.automatic_attrs[:platform] = "centos"
       node.automatic_attrs[:platform_version] = "6.5"
       platform_introspector.value_for_platform(@platform_hash).should == "centos-6.5"
+    end
+    it "pessimistic depends on x.y.z looks at x.y" do
+      node.automatic_attrs[:platform] = "pessimistic"
+      node.automatic_attrs[:platform_version] = "1.2.17"
+      platform_introspector.value_for_platform(@platform_hash).should == "12"
+    end
+    it "pessismistic depends on x.y looks at x" do
+      node.automatic_attrs[:platform] = "pessimistic"
+      node.automatic_attrs[:platform_version] = "1.8.14"
+      platform_introspector.value_for_platform(@platform_hash).should == "1"
+    end
+    it "pessismistic depends on x.y won't match x+1" do
+      node.automatic_attrs[:platform] = "pessimistic"
+      node.automatic_attrs[:platform_version] = "2.8.14"
+      platform_introspector.value_for_platform(@platform_hash).should == "2"
     end
   end
 
