@@ -1,14 +1,36 @@
 # Chef Client Changelog
 
 ## Unreleased:
+
+* Fix a bug in the experimental Policyfile mode that caused errors when
+  using templates.
+* Disable JSON encoding of request body when non-JSON content type is
+  specified.
+* Clean up FileVendor and CookbookUploader internal APIs
 * [**Vasiliy Tolstov**](https://github.com/vtolstov):
   Reload systemd service only if it's running, otherwise start.
+* [**Chris Jerdonek**](https://github.com/cjerdonek):
+  knife diagnostic messages sent to stdout instead of stderr
+* [**Xabier de Zuazo**](https://github.com/zuazo):
+  Remove the unused StreamingCookbookUploader class (CHEF-4586)
 
+* http_request no longer appends "?message=" query string to GET and HEAD requests
+* added shell_out commands directly to the recipe DSL
+* cookbook synchronizer deletes old files from cookbooks
+* do not clear file cache when override run list is set (CHEF-3684)
+* ruby 1.8.7/1.9.1/1.9.2 support is dropped
+* set no_lazy_load to true (CHEF-4961)
+* set file_stating_uses_destdir config option default to true (CHEF-5040)
+* remove dependency on rest-client gem
 * Add method shell_out_with_systems_locale to ShellOut.
 * Fix knife cookbook site share on windows (CHEF-4994)
+* chef-repo rake tasks are deprecated; print relevant information for
+  each one.
 
 ## Last Release: 11.14.0
 
+* [**Jess Mink**](https://github.com/jmink):
+  Symlinks to directories should be swingable on windows (CHEF-3960)
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
 * [**Pierre Ynard**](https://github.com/linkfanel):

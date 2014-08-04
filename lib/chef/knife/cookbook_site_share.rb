@@ -54,7 +54,7 @@ class Chef
         cl = Chef::CookbookLoader.new(config[:cookbook_path])
         if cl.cookbook_exists?(cookbook_name)
           cookbook = cl[cookbook_name]
-          Chef::CookbookUploader.new(cookbook,config[:cookbook_path]).validate_cookbooks
+          Chef::CookbookUploader.new(cookbook).validate_cookbooks
           tmp_cookbook_dir = Chef::CookbookSiteStreamingUploader.create_build_dir(cookbook)
           begin
             Chef::Log.debug("Temp cookbook directory is #{tmp_cookbook_dir.inspect}")

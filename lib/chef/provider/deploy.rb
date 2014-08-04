@@ -174,7 +174,6 @@ class Chef
         restart
       end
 
-
       def callback(what, callback_code=nil)
         @collection = Chef::ResourceCollection.new
         case callback_code

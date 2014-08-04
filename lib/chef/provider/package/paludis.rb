@@ -18,14 +18,11 @@
 
 require 'chef/provider/package'
 require 'chef/resource/package'
-require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
     class Package
       class Paludis < Chef::Provider::Package
-
-        include Chef::Mixin::ShellOut
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.package_name)
@@ -87,5 +84,3 @@ class Chef
     end
   end
 end
-
-

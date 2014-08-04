@@ -81,7 +81,6 @@ class Chef
           @filename
         end
 
-
         def fetch
           with_connection do
             get

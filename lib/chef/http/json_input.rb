@@ -29,7 +29,8 @@ class Chef
       end
 
       def handle_request(method, url, headers={}, data=false)
-        if data
+        if data && should_encode_as_json?(headers)
+          headers.delete_if { |key, _value| key.downcase == 'content-type' }
           headers["Content-Type"] = 'application/json'
           data = Chef::JSONCompat.to_json(data)
           # Force encoding to binary to fix SSL related EOFErrors
@@ -50,6 +51,16 @@ class Chef
 
       def handle_stream_complete(http_response, rest_request, return_value)
         [http_response, rest_request, return_value]
+      end
+
+      private
+
+      def should_encode_as_json?(headers)
+        # ruby/Net::HTTP don't enforce capitalized headers (it normalizes them
+        # for you before sending the request), so we have to account for all
+        # the variations we might find
+        requested_content_type = headers.find {|k, v| k.downcase == "content-type" }
+        requested_content_type.nil? || requested_content_type.last.include?("json")
       end
 
     end

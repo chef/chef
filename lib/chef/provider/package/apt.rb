@@ -19,15 +19,12 @@
 require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
-require 'chef/mixin/shell_out'
-
 
 class Chef
   class Provider
     class Package
       class Apt < Chef::Provider::Package
 
-        include Chef::Mixin::ShellOut
         attr_accessor :is_virtual_package
 
         def load_current_resource

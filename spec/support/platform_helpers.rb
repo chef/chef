@@ -27,6 +27,11 @@ def windows?
   !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
 end
 
+def ohai
+  # This is defined in spec_helper; it has the `platform` populated.
+  OHAI_SYSTEM
+end
+
 require 'wmi-lite/wmi' if windows?
 
 def windows_domain_joined?

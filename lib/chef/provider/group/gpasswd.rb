@@ -17,14 +17,11 @@
 #
 
 require 'chef/provider/group/groupadd'
-require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
     class Group
       class Gpasswd < Chef::Provider::Group::Groupadd
-
-        include Chef::Mixin::ShellOut
 
         def load_current_resource
           super

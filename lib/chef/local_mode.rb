@@ -60,10 +60,9 @@ class Chef
         server_options[:log_level] = Chef::Log.level
         server_options[:host] = Chef::Config.chef_zero.host
         server_options[:port] = parse_port(Chef::Config.chef_zero.port)
-        Chef::Log.info("Starting chef-zero on host #{Chef::Config.chef_zero.host}, port #{Chef::Config.chef_zero.port} with repository at #{chef_fs.fs_description}")
         @chef_zero_server = ChefZero::Server.new(server_options)
         @chef_zero_server.start_background
-        Chef::Log.info("chef-zero started at #{@chef_zero_server.url}")
+        Chef::Log.info("Started chef-zero at #{@chef_zero_server.url} with #{chef_fs.fs_description}")
         Chef::Config.chef_server_url = @chef_zero_server.url
       end
     end

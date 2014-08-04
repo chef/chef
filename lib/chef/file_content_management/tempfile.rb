@@ -54,7 +54,14 @@ class Chef
       end
 
       def tempfile_dirname
-        Chef::Config[:file_staging_uses_destdir] ? ::File.dirname(@new_resource.path) : Dir::tmpdir
+        # in why-run mode we need to create a Tempfile to compare against, which we will never
+        # wind up deploying, but our enclosing directory for the destdir may not exist yet, so
+        # instead we can reliably always create a Tempfile to compare against in Dir::tmpdir
+        if Chef::Config[:file_staging_uses_destdir] && !Chef::Config[:why_run]
+          ::File.dirname(@new_resource.path)
+        else
+          Dir::tmpdir
+        end
       end
     end
   end

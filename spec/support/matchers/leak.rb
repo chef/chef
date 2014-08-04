@@ -23,7 +23,7 @@ module Matchers
     def initialize(opts={}, &block)
       @warmup = opts[:warmup] || 5
       @iterations = opts[:iterations] || 100
-      @variance = opts[:variance] || 1000
+      @variance = opts[:variance] || 5000
     end
 
     def failure_message_for_should

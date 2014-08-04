@@ -198,7 +198,6 @@ class Chef
 
         Chef::Log.debug("#{@new_resource} fetching preseed file to #{cache_seed_to}")
 
-
         if template_available?(@new_resource.response_file)
           Chef::Log.debug("#{@new_resource} fetching preseed file via Template")
           remote_file = Chef::Resource::Template.new(cache_seed_to, run_context)

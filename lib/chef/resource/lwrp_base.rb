@@ -92,9 +92,16 @@ class Chef
       # Sets the default action
       def self.default_action(action_name=NULL_ARG)
         unless action_name.equal?(NULL_ARG)
-          action = action_name.to_sym
-          actions.push(action) unless actions.include?(action)
-          @default_action = action
+          @actions ||= []
+          if action_name.is_a?(Array)
+            action = action_name.map { |arg| arg.to_sym }
+            @actions = actions | action
+            @default_action = action
+          else
+            action = action_name.to_sym
+            @actions.push(action) unless @actions.include?(action)
+            @default_action = action
+          end
         end
 
         @default_action ||= from_superclass(:default_action)
@@ -105,19 +112,8 @@ class Chef
         if action_names.empty?
           defined?(@actions) ? @actions : from_superclass(:actions, []).dup
         else
-          # BC-compat way for checking if actions have already been defined
-          if defined?(@actions)
-            @actions.push(*action_names)
-          else
-            @actions = action_names
-          end
+          @actions = action_names
         end
-      end
-
-      # @deprecated
-      def self.valid_actions(*args)
-        Chef::Log.warn("`valid_actions' is deprecated, please use actions `instead'!")
-        actions(*args)
       end
 
       # Set the run context on the class. Used to provide access to the node

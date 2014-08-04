@@ -17,13 +17,11 @@
 #
 
 require 'chef/provider/service/init'
-require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
     class Service
       class Redhat < Chef::Provider::Service::Init
-        include Chef::Mixin::ShellOut
 
         CHKCONFIG_ON = /\d:on/
         CHKCONFIG_MISSING = /No such/

@@ -18,15 +18,12 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
 require 'chef/provider/service/simple'
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require 'win32/service'
 end
 
 class Chef::Provider::Service::Windows < Chef::Provider::Service
-
-  include Chef::Mixin::ShellOut
 
   #Win32::Service.get_start_type
   AUTO_START = 'auto start'
@@ -64,9 +61,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
         Chef::Log.debug "#{@new_resource} already started - nothing to do"
       elsif state == START_PENDING
         Chef::Log.debug "#{@new_resource} already sent start signal - waiting for start"
-        spawn_command_thread do
-          wait_for_state(RUNNING)
-        end
+        wait_for_state(RUNNING)
       elsif state == STOPPED
         if @new_resource.start_command
           Chef::Log.debug "#{@new_resource} starting service using the given start_command"
@@ -74,8 +69,8 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
         else
           spawn_command_thread do
             Win32::Service.start(@new_resource.service_name)
-            wait_for_state(RUNNING)
           end
+          wait_for_state(RUNNING)
         end
         @new_resource.updated_by_last_action(true)
       else
@@ -96,17 +91,15 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
         else
           spawn_command_thread do
             Win32::Service.stop(@new_resource.service_name)
-            wait_for_state(STOPPED)
           end
+          wait_for_state(STOPPED)
         end
         @new_resource.updated_by_last_action(true)
       elsif state == STOPPED
         Chef::Log.debug "#{@new_resource} already stopped - nothing to do"
       elsif state == STOP_PENDING
         Chef::Log.debug "#{@new_resource} already sent stop signal - waiting for stop"
-        spawn_command_thread do
-          wait_for_state(STOPPED)
-        end
+        wait_for_state(STOPPED)
       else
         raise Chef::Exceptions::Service, "Service #{@new_resource} can't be stopped from state [#{state}]"
       end
@@ -174,7 +167,16 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   # Helper method that waits for a status to change its state since state
   # changes aren't usually instantaneous.
   def wait_for_state(desired_state)
-    sleep 1 until current_state == desired_state
+    retries = 0
+    loop do
+      break if current_state == desired_state
+      raise Timeout::Error if ( retries += 1 ) > resource_timeout
+      sleep 1
+    end
+  end
+
+  def resource_timeout
+    @resource_timeout ||= @new_resource.timeout || TIMEOUT
   end
 
   def spawn_command_thread
@@ -182,8 +184,6 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
       yield
     end
 
-    resource_timeout = @new_resource.timeout if @new_resource.timeout
-    resource_timeout ||= TIMEOUT
     Timeout.timeout(resource_timeout) do
       worker.join
     end

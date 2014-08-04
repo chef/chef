@@ -41,7 +41,7 @@ describe Chef::Knife do
       Chef::Log.stub(level_sym)
     end
     Chef::Knife.stub(:puts)
-    @stdout = StringIO.new
+    @stderr = StringIO.new
   end
 
   describe "selecting a config file" do
@@ -241,7 +241,7 @@ describe Chef::Knife do
     end
 
     it "exits if no subcommand matches the CLI args" do
-      Chef::Knife.ui.stub(:stdout).and_return(@stdout)
+      Chef::Knife.ui.stub(:stderr).and_return(@stderr)
       Chef::Knife.ui.should_receive(:fatal)
       lambda {Chef::Knife.run(%w{fuuu uuuu fuuuu})}.should raise_error(SystemExit) { |e| e.status.should_not == 0 }
     end
@@ -326,7 +326,7 @@ describe Chef::Knife do
       @knife.stub(:run).and_raise(Net::HTTPServerException.new("401 Unauthorized", response))
       @knife.run_with_pretty_exceptions
       @stderr.string.should match(/ERROR: Failed to authenticate to/)
-      @stdout.string.should match(/Response:  y u no syncronize your clock\?/)
+      @stderr.string.should match(/Response:  y u no syncronize your clock\?/)
     end
 
     it "formats 403s nicely" do
@@ -337,7 +337,7 @@ describe Chef::Knife do
       @knife.stub(:username).and_return("sadpanda")
       @knife.run_with_pretty_exceptions
       @stderr.string.should match(%r[ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action])
-      @stdout.string.should match(%r[Response:  y u no administrator])
+      @stderr.string.should match(%r[Response:  y u no administrator])
     end
 
     it "formats 400s nicely" do
@@ -347,7 +347,7 @@ describe Chef::Knife do
       @knife.stub(:run).and_raise(Net::HTTPServerException.new("400 Bad Request", response))
       @knife.run_with_pretty_exceptions
       @stderr.string.should match(%r[ERROR: The data in your request was invalid])
-      @stdout.string.should match(%r[Response: y u search wrong])
+      @stderr.string.should match(%r[Response: y u search wrong])
     end
 
     it "formats 404s nicely" do
@@ -357,7 +357,7 @@ describe Chef::Knife do
       @knife.stub(:run).and_raise(Net::HTTPServerException.new("404 Not Found", response))
       @knife.run_with_pretty_exceptions
       @stderr.string.should match(%r[ERROR: The object you are looking for could not be found])
-      @stdout.string.should match(%r[Response: nothing to see here])
+      @stderr.string.should match(%r[Response: nothing to see here])
     end
 
     it "formats 500s nicely" do
@@ -367,7 +367,7 @@ describe Chef::Knife do
       @knife.stub(:run).and_raise(Net::HTTPFatalError.new("500 Internal Server Error", response))
       @knife.run_with_pretty_exceptions
       @stderr.string.should match(%r[ERROR: internal server error])
-      @stdout.string.should match(%r[Response: sad trombone])
+      @stderr.string.should match(%r[Response: sad trombone])
     end
 
     it "formats 502s nicely" do
@@ -377,7 +377,7 @@ describe Chef::Knife do
       @knife.stub(:run).and_raise(Net::HTTPFatalError.new("502 Bad Gateway", response))
       @knife.run_with_pretty_exceptions
       @stderr.string.should match(%r[ERROR: bad gateway])
-      @stdout.string.should match(%r[Response: sadder trombone])
+      @stderr.string.should match(%r[Response: sadder trombone])
     end
 
     it "formats 503s nicely" do
@@ -387,7 +387,7 @@ describe Chef::Knife do
       @knife.stub(:run).and_raise(Net::HTTPFatalError.new("503 Service Unavailable", response))
       @knife.run_with_pretty_exceptions
       @stderr.string.should match(%r[ERROR: Service temporarily unavailable])
-      @stdout.string.should match(%r[Response: saddest trombone])
+      @stderr.string.should match(%r[Response: saddest trombone])
     end
 
     it "formats other HTTP errors nicely" do
@@ -397,15 +397,15 @@ describe Chef::Knife do
       @knife.stub(:run).and_raise(Net::HTTPServerException.new("402 Payment Required", response))
       @knife.run_with_pretty_exceptions
       @stderr.string.should match(%r[ERROR: Payment Required])
-      @stdout.string.should match(%r[Response: nobugfixtillyoubuy])
+      @stderr.string.should match(%r[Response: nobugfixtillyoubuy])
     end
 
     it "formats NameError and NoMethodError nicely" do
       @knife.stub(:run).and_raise(NameError.new("Undefined constant FUUU"))
       @knife.run_with_pretty_exceptions
       @stderr.string.should match(%r[ERROR: knife encountered an unexpected error])
-      @stdout.string.should match(%r[This may be a bug in the 'knife' knife command or plugin])
-      @stdout.string.should match(%r[Exception: NameError: Undefined constant FUUU])
+      @stderr.string.should match(%r[This may be a bug in the 'knife' knife command or plugin])
+      @stderr.string.should match(%r[Exception: NameError: Undefined constant FUUU])
     end
 
     it "formats missing private key errors nicely" do
@@ -413,7 +413,7 @@ describe Chef::Knife do
       @knife.stub(:api_key).and_return("/home/root/.chef/no-key-here.pem")
       @knife.run_with_pretty_exceptions
       @stderr.string.should match(%r[ERROR: Your private key could not be loaded from /home/root/.chef/no-key-here.pem])
-      @stdout.string.should match(%r[Check your configuration file and ensure that your private key is readable])
+      @stderr.string.should match(%r[Check your configuration file and ensure that your private key is readable])
     end
 
     it "formats connection refused errors nicely" do
@@ -423,7 +423,7 @@ describe Chef::Knife do
       # *nix = Errno::ECONNREFUSED: Connection refused
       # win32: Errno::ECONNREFUSED: No connection could be made because the target machine actively refused it.
       @stderr.string.should match(%r[ERROR: Network Error: .* - y u no shut up])
-      @stdout.string.should match(%r[Check your knife configuration and network settings])
+      @stderr.string.should match(%r[Check your knife configuration and network settings])
     end
   end
 
