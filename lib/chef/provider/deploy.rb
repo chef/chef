@@ -21,7 +21,7 @@ require "chef/mixin/from_file"
 require "chef/monkey_patches/fileutils"
 require "chef/provider/git"
 require "chef/provider/subversion"
-require 'chef/dsl/recipe'
+require "chef/dsl/recipe"
 
 class Chef
   class Provider
