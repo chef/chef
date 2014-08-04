@@ -50,7 +50,7 @@ class Chef
 
         def value_for_node(node)
           platform, version = node[:platform].to_s, node[:platform_version].to_s
-          # Check if we match a version constraint via Gem::Requirement and Gem::Version
+          # Check if we match a version constraint via Chef::VersionConstraint and Chef::Version::Platform
           matched_value = match_versions(node)
           if @values.key?(platform) && @values[platform].key?(version)
             @values[platform][version]
