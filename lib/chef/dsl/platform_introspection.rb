@@ -71,18 +71,28 @@ class Chef
           begin
             platform, version = node[:platform].to_s, node[:platform_version].to_s
             return unless @values.key?(platform)
-            node_version = Gem::Version.new(version)
+            node_version = Chef::Version::Platform.new(version)
             keys = @values[platform].keys
             keys.each do |k|
-              if Gem::Requirement.new(k).satisfied_by?(node_version)
+              begin
+              if Chef::VersionConstraint.new(k).include?(node_version)
                 return @values[platform][k]
-                break
+              end
+              rescue Chef::Exceptions::InvalidVersionConstraint => e
+                Chef::Log.debug "Caught InvalidVersionConstraint. This means that a key in value_for_platform cannot be interpreted as a Chef::VersionConstraint."
+                Chef::Log.debug(e)
               end
             end
             return nil
-          rescue ArgumentError
+          rescue Chef::Exceptions::InvalidCookbookVersion => e
             # Lets not break because someone passes a weird string like 'default' :)
-            return
+            Chef::Log.debug(e)
+            Chef::Log.debug "InvalidCookbookVersion exceptions are common and expected here: the generic constraint matcher attempted to match something which is not a constraint. Moving on to next version or constraint"
+            return nil
+          rescue Chef::Exceptions::InvalidPlatformVersion => e
+            Chef::Log.debug "Caught InvalidPlatformVersion, this means that Chef::Version::Platform does not know how to turn #{node_version} into an x.y.z format"
+            Chef::Log.debug(e)
+            return nil
           end
         end
 
