@@ -24,6 +24,9 @@ class Chef
       attr_reader :frozen
       attr_reader :uploaded_cookbook_version_file
 
+      # TODO: use this in preference to @cookbook_path internally
+      attr_reader :cookbook_path
+
       def initialize(path, chefignore=nil)
         @cookbook_path = File.expand_path( path ) # cookbook_path from which this was loaded
         # We keep a list of all cookbook paths that have been merged in

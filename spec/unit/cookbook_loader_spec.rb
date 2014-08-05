@@ -29,7 +29,25 @@ describe Chef::CookbookLoader do
 
   let(:cookbook_loader) { Chef::CookbookLoader.new(repo_paths) }
 
-  describe "loading all cookbooks" do
+  it "checks each directory only once when loading (CHEF-3487)" do
+    cookbook_paths = []
+    repo_paths.each do |repo_path|
+      cookbook_paths |= Dir[File.join(repo_path, "*")]
+    end
+
+    cookbook_paths.delete_if { |path| File.basename(path) == "chefignore" }
+
+    cookbook_paths.each do |cookbook_path|
+      Chef::Cookbook::CookbookVersionLoader.should_receive(:new).
+        with(cookbook_path, anything).
+        once.
+        and_call_original
+    end
+    cookbook_loader.load_cookbooks
+  end
+
+
+  context "after loading all cookbooks" do
     before(:each) do
       cookbook_loader.load_cookbooks
     end
@@ -77,7 +95,7 @@ describe Chef::CookbookLoader do
       end
     end
 
-    describe "load_cookbooks" do
+    describe "referencing cookbook files" do
       it "should find all the cookbooks in the cookbook path" do
         cookbook_loader.load_cookbooks
         cookbook_loader.should have_key(:openldap)
@@ -149,17 +167,7 @@ describe Chef::CookbookLoader do
         cookbook_loader.metadata[:openldap].should be_a_kind_of(Chef::Cookbook::Metadata)
       end
 
-      it "should check each cookbook directory only once (CHEF-3487)" do
-        cookbooks = []
-        repo_paths.each do |repo_path|
-          cookbooks |= Dir[File.join(repo_path, "*")]
-        end
-        cookbooks.each do |cookbook|
-            File.should_receive(:directory?).with(cookbook).once;
-        end
-        cookbook_loader.load_cookbooks
-      end
-    end # load_cookbooks
+    end # after loading cookbooks
 
   end # loading all cookbooks
 
@@ -209,6 +217,7 @@ describe Chef::CookbookLoader do
       cookbook_loader["apache2"].should be_a_kind_of(Chef::CookbookVersion)
     end
 
+
     describe "loading all cookbooks after loading only one cookbook" do
       before(:each) do
         cookbook_loader.load_cookbooks
@@ -224,4 +233,18 @@ describe Chef::CookbookLoader do
       end
     end
   end # loading only one cookbook
+
+  describe "loading a single cookbook with a different name than basename" do
+
+    before(:each) do
+      cookbook_loader.load_cookbook("name-mismatch")
+    end
+
+    it "loads the correct cookbook" do
+      cookbook_version = cookbook_loader["name-mismatch"]
+      cookbook_version.should be_a_kind_of(Chef::CookbookVersion)
+      cookbook_version.name.should == :"name-mismatch"
+    end
+
+  end
 end
