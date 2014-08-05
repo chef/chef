@@ -20,7 +20,7 @@ require 'spec_helper'
 
 describe Chef::Cookbook::CookbookVersionLoader do
 
-  describe "loading a simple cookbook" do
+  describe "loading a cookbook" do
 
     let(:chefignore) { nil }
 
@@ -29,7 +29,7 @@ describe Chef::Cookbook::CookbookVersionLoader do
     let(:cookbook_loader) { Chef::Cookbook::CookbookVersionLoader.new(cookbook_path, chefignore) }
 
     let(:loaded_cookbook) do
-      cookbook_loader.load_cookbooks
+      cookbook_loader.load!
       cookbook_loader.cookbook_version
     end
 
@@ -80,6 +80,30 @@ describe Chef::Cookbook::CookbookVersionLoader do
         expect(loaded_cookbook.recipe_filenames).to include(full_path("recipes/gigantor.rb"))
         expect(loaded_cookbook.recipe_filenames).to include(full_path("recipes/woot.rb"))
         expect(loaded_cookbook.recipe_filenames).to_not include(full_path("recipes/ignoreme.rb"))
+      end
+
+    end
+
+    context "when the given path is not actually a cookbook" do
+
+      let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "cookbooks/NOTHING_HERE_FOLKS") }
+
+      it "raises an error when loading with #load!" do
+        expect { cookbook_loader.load! }.to raise_error(Chef::Exceptions::CookbookNotFoundInRepo)
+      end
+
+      it "skips the cookbook when called with #load" do
+        expect { cookbook_loader.load }.to_not raise_error
+      end
+
+    end
+
+    context "when a cookbook has a metadata name different than directory basename" do
+
+      let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "cookbooks/name-mismatch-versionnumber") }
+
+      it "prefers the metadata name to the directory basename" do
+        expect(loaded_cookbook.name).to eq(:"name-mismatch")
       end
 
     end

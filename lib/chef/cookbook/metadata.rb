@@ -92,7 +92,7 @@ class Chef
       # metadata<Chef::Cookbook::Metadata>
       def initialize(cookbook=nil, maintainer='YOUR_COMPANY_NAME', maintainer_email='YOUR_EMAIL', license='none')
         @cookbook = cookbook
-        @name = cookbook ? cookbook.name : ""
+        @name = cookbook ? cookbook.name : nil
         @long_description = ""
         self.maintainer(maintainer)
         self.maintainer_email(maintainer_email)
@@ -110,12 +110,7 @@ class Chef
         @recipes = Mash.new
         @version = Version.new "0.0.0"
         if cookbook
-          @recipes = cookbook.fully_qualified_recipe_names.inject({}) do |r, e|
-            e = self.name.to_s if e =~ /::default$/
-            r[e] ||= ""
-            self.provides e
-            r
-          end
+          recipes_from_cookbook_version(cookbook)
         end
       end
 
@@ -363,6 +358,32 @@ class Chef
       # description<String>:: Returns the current description
       def recipe(name, description)
         @recipes[name] = description
+      end
+
+      # Sets the cookbook's recipes to the list of recipes in the given
+      # +cookbook+. Any recipe that already has a description (if set by the
+      # #recipe method) will not be updated.
+      #
+      # === Parameters
+      # cookbook<CookbookVersion>:: CookbookVersion object representing the cookbook
+      # description<String>:: The description of the recipe
+      #
+      # === Returns
+      # recipe_unqualified_names<Array>:: An array of the recipe names given by the cookbook
+      def recipes_from_cookbook_version(cookbook)
+        cookbook.fully_qualified_recipe_names.map do |recipe_name|
+          unqualified_name =
+            if recipe_name =~ /::default$/
+              self.name.to_s
+            else
+              recipe_name
+            end
+
+          @recipes[unqualified_name] ||= ""
+          provides(unqualified_name)
+
+          unqualified_name
+        end
       end
 
       # Adds an attribute )hat a user needs to configure for this cookbook. Takes

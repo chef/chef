@@ -18,7 +18,6 @@ class Chef
 
       UPLOADED_COOKBOOK_VERSION_FILE = ".uploaded-cookbook-version.json".freeze
 
-      attr_reader :cookbook_name
       attr_reader :cookbook_settings
       attr_reader :cookbook_paths
       attr_reader :metadata_filenames
@@ -29,10 +28,13 @@ class Chef
         @cookbook_path = File.expand_path( path ) # cookbook_path from which this was loaded
         # We keep a list of all cookbook paths that have been merged in
         @cookbook_paths = [ @cookbook_path ]
+
+        # TODO: Add a "strict mode" setting, use this when not in strict mode
         @cookbook_name = File.basename( path )
         @chefignore = chefignore
-        @metadata = Hash.new
+        @metadata = nil
         @relative_path = /#{Regexp.escape(@cookbook_path)}\/(.+)$/
+        @metadata_loaded = false
         @cookbook_settings = {
           :attribute_filenames  => {},
           :definition_filenames => {},
@@ -48,7 +50,16 @@ class Chef
         @metadata_filenames = []
       end
 
-      def load_cookbooks
+      def load!
+        file_paths_map = load
+
+        if empty?
+          raise Exceptions::CookbookNotFoundInRepo, "The directory #{@cookbook_path} does not contain a cookbook"
+        end
+        file_paths_map
+      end
+
+      def load
         load_as(:attribute_filenames, 'attributes', '*.rb')
         load_as(:definition_filenames, 'definitions', '*.rb')
         load_as(:recipe_filenames, 'recipes', '*.rb')
@@ -61,6 +72,16 @@ class Chef
 
         remove_ignored_files
 
+        if empty?
+          Chef::Log.warn "found a directory #{cookbook_name} in the cookbook path, but it contains no cookbook files. skipping."
+        end
+        @cookbook_settings
+      end
+
+      alias :load_cookbooks :load
+
+      def metadata_filenames
+        return @metadata_filenames unless @metadata_filenames.empty?
         if File.exists?(File.join(@cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE))
           @uploaded_cookbook_version_file = File.join(@cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE)
         end
@@ -75,17 +96,13 @@ class Chef
 
         # Set frozen based on .uploaded-cookbook-version.json
         set_frozen
-
-        if empty?
-          Chef::Log.warn "found a directory #{cookbook_name} in the cookbook path, but it contains no cookbook files. skipping."
-        end
-        @cookbook_settings
+        @metadata_filenames
       end
 
       def cookbook_version
         return nil if empty?
 
-        Chef::CookbookVersion.new(@cookbook_name.to_sym, *@cookbook_paths).tap do |c|
+        Chef::CookbookVersion.new(cookbook_name, *@cookbook_paths).tap do |c|
           c.attribute_filenames  = cookbook_settings[:attribute_filenames].values
           c.definition_filenames = cookbook_settings[:definition_filenames].values
           c.recipe_filenames     = cookbook_settings[:recipe_filenames].values
@@ -96,15 +113,23 @@ class Chef
           c.provider_filenames   = cookbook_settings[:provider_filenames].values
           c.root_filenames       = cookbook_settings[:root_filenames].values
           c.metadata_filenames   = @metadata_filenames
-          c.metadata             = metadata(c)
+          c.metadata             = metadata
+
           c.freeze_version if @frozen
         end
       end
 
+      def cookbook_name
+        (metadata.name || @cookbook_name).to_sym
+      end
+
       # Generates the Cookbook::Metadata object
-      def metadata(cookbook_version)
-        @metadata = Chef::Cookbook::Metadata.new(cookbook_version)
-        @metadata_filenames.each do |metadata_file|
+      def metadata
+        return @metadata unless @metadata.nil?
+
+        @metadata = Chef::Cookbook::Metadata.new
+
+        metadata_filenames.each do |metadata_file|
           case metadata_file
           when /\.rb$/
             apply_ruby_metadata(metadata_file)
@@ -116,6 +141,13 @@ class Chef
             raise RuntimeError, "Invalid metadata file: #{metadata_file} for cookbook: #{cookbook_version}"
           end
         end
+
+        # Compatibility if metadata is missing the name attribute:
+        # TODO: probably should live elsewhere.
+        if @metadata.name.nil?
+          @metadata.name(@cookbook_name)
+        end
+
         @metadata
       end
 
@@ -131,6 +163,8 @@ class Chef
         @metadata_filenames.concat(other_cookbook_loader.metadata_filenames)
         @cookbook_paths += other_cookbook_loader.cookbook_paths
         @frozen = true if other_cookbook_loader.frozen
+        @metadata = nil # reset metadata so it gets reloaded and all metadata files applied.
+        self
       end
 
       def chefignore
