@@ -122,6 +122,7 @@ automatic_attribute_whitelist = ["network/interfaces/eth0"]
 ````
 then the entire `filesystem` and `eth1` subtrees will not be saved by the node. To save the `/dev/disk0s2` subtree, you must write `automatic_attribute_whitelist = [ ["filesystem", "/dev/disk0s2"] ]`.
 
+<<<<<<< HEAD
 If your config file looks like `automatic_attribute_whitelist = []`, then none of your automatic attribute data will be saved by the node.
 
 The default behavior is for the node to save all the attribute data. This can be ensured by setting your whitelist filter to `nil`.
@@ -183,3 +184,27 @@ attribute :home, default: lazy do |new_resource|
   end
 end
 ```
+
+These changes do not impact any cookbook code, but may impact tools that
+use the code base as a library. Authors of tools that rely on Chef
+internals should review these changes carefully and update their
+applications.
+
+## Changes to CookbookUpload
+
+`Chef::CookbookUpload.new` previously took a path as the second
+argument, but due to internal changes, this parameter was not used, and
+it has been removed. See: https://github.com/opscode/chef/commit/12c9bed3a5a7ab86ff78cb660d96f8b77ad6395d
+
+## Changes to FileVendor
+
+`Chef::Cookbook::FileVendor` was previously configured by passing a
+block to the `on_create` method; it is now configured by calling either
+`fetch_from_remote` or `fetch_from_disk`. See: https://github.com/opscode/chef/commit/3b2b4de8e7f0d55524f2a0ccaf3e1aa9f2d371eb
+
+## 'group' provider on OSX properly uses 'dscl' to determine existing groups
+
+On OSX, the 'group' provider would use 'etc' to determine existing groups,
+but 'dscl' to add groups, causing broken idempotency if something existed
+in /etc/group. The provider now uses 'dscl' for both idempotenty checks and
+modifications.

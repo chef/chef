@@ -2,7 +2,12 @@
 
 ## 11.14.4:
 
+
 * Fix RPM package version detection (Issue 1554)
+
+
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  'group' provider on OSX properly uses 'dscl' to determine existing groups
 
 
 ## Last Release: 11.14.2
