@@ -8,7 +8,8 @@
 * Set Net::HTTP open_timeout. (backport Chef-1585)
 * Fix RPM package version detection (backport Issue 1554)
 * Support for single letter environments.
-*
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  'group' provider on OSX properly uses 'dscl' to determine existing groups
 
 ## 10.32.2
 

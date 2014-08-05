@@ -9,5 +9,6 @@ Details about the thing that changed that needs to get included in the Release N
 # Chef Client 10.x Release Notes:
 
 * Backport CHEF-5223 Fix to 10-stable
+* 'group' provider on OSX properly uses 'dscl' to determine existing groups
 
 # Chef Client 10.x Breaking Changes:
