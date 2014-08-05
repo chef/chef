@@ -26,13 +26,16 @@ class Chef
 
       attr_reader :cookbook_path
 
+      # The cookbook's name as inferred from its directory.
+      attr_reader :inferred_cookbook_name
+
       def initialize(path, chefignore=nil)
         @cookbook_path = File.expand_path( path ) # cookbook_path from which this was loaded
         # We keep a list of all cookbook paths that have been merged in
         @cookbook_paths = [ cookbook_path ]
 
         # TODO: Add a "strict mode" setting, use this when not in strict mode
-        @cookbook_name = File.basename( path )
+        @inferred_cookbook_name = File.basename( path )
         @chefignore = chefignore
         @metadata = nil
         @relative_path = /#{Regexp.escape(@cookbook_path)}\/(.+)$/
@@ -122,7 +125,7 @@ class Chef
       end
 
       def cookbook_name
-        (metadata.name || @cookbook_name).to_sym
+        (metadata.name || @inferred_cookbook_name).to_sym
       end
 
       # Generates the Cookbook::Metadata object
@@ -147,7 +150,7 @@ class Chef
         # Compatibility if metadata is missing the name attribute:
         # TODO: probably should live elsewhere.
         if @metadata.name.nil?
-          @metadata.name(@cookbook_name)
+          @metadata.name(@inferred_cookbook_name)
         end
 
         @metadata
@@ -207,7 +210,7 @@ class Chef
         begin
           @metadata.from_file(file)
         rescue Chef::Exceptions::JSON::ParseError
-          Chef::Log.error("Error evaluating metadata.rb for #@cookbook_name in " + file)
+          Chef::Log.error("Error evaluating metadata.rb for #@inferred_cookbook_name in " + file)
           raise
         end
       end
@@ -216,7 +219,7 @@ class Chef
         begin
           @metadata.from_json(IO.read(file))
         rescue Chef::Exceptions::JSON::ParseError
-          Chef::Log.error("Couldn't parse cookbook metadata JSON for #@cookbook_name in " + file)
+          Chef::Log.error("Couldn't parse cookbook metadata JSON for #@inferred_cookbook_name in " + file)
           raise
         end
       end
@@ -226,7 +229,7 @@ class Chef
           data = Chef::JSONCompat.from_json(IO.read(file), :create_additions => false)
           @metadata.from_hash(data['metadata'])
         rescue Chef::Exceptions::JSON::ParseError
-          Chef::Log.error("Couldn't parse cookbook metadata JSON for #@cookbook_name in " + file)
+          Chef::Log.error("Couldn't parse cookbook metadata JSON for #@inferred_cookbook_name in " + file)
           raise
         end
       end
@@ -237,7 +240,7 @@ class Chef
             data = Chef::JSONCompat.from_json(IO.read(uploaded_cookbook_version_file), :create_additions => false)
             @frozen = data['frozen?']
           rescue Chef::Exceptions::JSON::ParseError
-            Chef::Log.error("Couldn't parse cookbook metadata JSON for #@cookbook_name in #{uploaded_cookbook_version_file}")
+            Chef::Log.error("Couldn't parse cookbook metadata JSON for #@inferred_cookbook_name in #{uploaded_cookbook_version_file}")
             raise
           end
         end
