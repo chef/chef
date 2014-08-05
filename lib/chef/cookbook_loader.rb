@@ -79,7 +79,7 @@ class Chef
 
       return nil unless @loaders_by_name.key?(cookbook_name.to_s)
 
-      @loaders_by_name[cookbook_name.to_s].each do |loader|
+      cookbook_loaders_for(cookbook_name).each do |loader|
         loader.load
 
         next if loader.empty?
@@ -149,12 +149,7 @@ class Chef
       repo_path = File.dirname(cookbook_path)
       @chefignores[repo_path] ||= Cookbook::Chefignore.new(repo_path)
       loader = Cookbook::CookbookVersionLoader.new(cookbook_path, @chefignores[repo_path])
-
-      cookbook_name = loader.cookbook_name
-
-      # TODO: wrap @loaders_by_name so string keys are encapsulated
-      @loaders_by_name[cookbook_name.to_s] ||= []
-      @loaders_by_name[cookbook_name.to_s] << loader
+      add_cookbook_loader(loader)
     end
 
     def all_directories_in_repo_paths
@@ -169,6 +164,18 @@ class Chef
             all_children += Dir[File.join(repo_path, "*")]
           end
         end
+    end
+
+    def add_cookbook_loader(loader)
+      cookbook_name = loader.cookbook_name
+
+      @loaders_by_name[cookbook_name.to_s] ||= []
+      @loaders_by_name[cookbook_name.to_s] << loader
+      loader
+    end
+
+    def cookbook_loaders_for(cookbook_name)
+      @loaders_by_name[cookbook_name.to_s]
     end
 
   end
