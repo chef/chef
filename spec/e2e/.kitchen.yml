@@ -4,13 +4,15 @@ provisioner:
   github: "opscode/chef"
   branch: <%= %x(git rev-parse HEAD) %>
   require_chef_omnibus: true
+  data_path: test/fixtures
 
 platforms:
   - name: ubuntu-12.04
     driver_plugin: vagrant
 
 suites:
-  - name: default
+  - name: webapp
     run_list:
-      - recipe[git-cookbook::default]
+      - recipe[apt::default]
+      - recipe[webapp::default]
     attributes:

@@ -1,8 +1,10 @@
 source "https://rubygems.org"
 
-gem 'berkshelf'
-gem 'test-kitchen', :github => 'mcquin/test-kitchen',
-                    :branch => 'mcquin/install_chef_from_github'
+group :end_to_end do
+  gem 'berkshelf'
+  gem 'test-kitchen', :github => 'mcquin/test-kitchen',
+                      :branch => 'mcquin/install_chef_from_github'
 
-gem 'kitchen-vagrant'
-gem 'kitchen-ec2'
+  gem 'kitchen-vagrant'
+  gem 'kitchen-ec2'
+end
