@@ -108,6 +108,22 @@ describe Chef::Cookbook::CookbookVersionLoader do
 
     end
 
+    context "when a cookbook has an invalid metadata file [CHEF-2923]" do
+
+      it "raises an error when loading with #load!" do
+        pending
+      end
+
+      it "skips the cookbook when called with #load" do
+        pending
+      end
+
+      it "sets an error flag containing error information" do
+        pending
+      end
+
+    end
+
   end
 
 end
