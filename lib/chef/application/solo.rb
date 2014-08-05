@@ -191,7 +191,7 @@ class Chef::Application::Solo < Chef::Application
     end
 
     if Chef::Config[:recipe_url]
-      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /#{Chef::Config.platform_path_separator}cookbooks#{Chef::Config.platform_path_separator}*$/ }
+      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /#{Chef::Config.platform_path_separator_escaped}cookbooks#{Chef::Config.platform_path_separator_escaped}*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
 
       Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
@@ -202,7 +202,7 @@ class Chef::Application::Solo < Chef::Application
           f.write(r.read)
         end
       end
-      Chef::Mixin::Command.run_command(:command => "tar zxvf #{path} -C #{recipes_path}")
+      Chef::Mixin::ShellOut.shell_out!("tar zxvf #{path} -C #{recipes_path}")
     end
   end
 

@@ -72,6 +72,14 @@ class Chef
       end
     end
 
+    def self.platform_path_separator_escaped
+      if on_windows?
+        "#{platform_path_separator}#{platform_path_separator}"
+      else
+        platform_path_separator
+      end
+    end
+
     def self.path_join(*args)
       args = args.flatten
       args.inject do |joined_path, component|
