@@ -167,9 +167,25 @@ describe Chef::CookbookLoader do
         cookbook_loader.metadata[:openldap].should be_a_kind_of(Chef::Cookbook::Metadata)
       end
 
-    end # after loading cookbooks
+    end # referencing cookbook files
 
   end # loading all cookbooks
+
+  context "loading all cookbooks when one has invalid metadata" do
+
+    let(:repo_paths) do
+      [
+        File.join(CHEF_SPEC_DATA, "kitchen"),
+        File.join(CHEF_SPEC_DATA, "cookbooks"),
+        File.join(CHEF_SPEC_DATA, "invalid-metadata-chef-repo")
+      ]
+    end
+
+    it "does not squelch the exception" do
+      expect { cookbook_loader.load_cookbooks }.to raise_error("THIS METADATA HAS A BUG")
+    end
+
+  end
 
   describe "loading only one cookbook" do
     before(:each) do
@@ -217,6 +233,25 @@ describe Chef::CookbookLoader do
       cookbook_loader["apache2"].should be_a_kind_of(Chef::CookbookVersion)
     end
 
+    context "when an unrelated cookbook has invalid metadata" do
+
+      let(:repo_paths) do
+        [
+          File.join(CHEF_SPEC_DATA, "kitchen"),
+          File.join(CHEF_SPEC_DATA, "cookbooks"),
+          File.join(CHEF_SPEC_DATA, "invalid-metadata-chef-repo")
+        ]
+      end
+
+      it "ignores the invalid cookbook" do
+        expect { cookbook_loader["openldap"] }.to_not raise_error
+      end
+
+      it "surfaces the exception if the cookbook is loaded later" do
+        expect { cookbook_loader["invalid-metadata"] }.to raise_error("THIS METADATA HAS A BUG")
+      end
+
+    end
 
     describe "loading all cookbooks after loading only one cookbook" do
       before(:each) do

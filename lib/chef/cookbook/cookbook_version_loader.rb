@@ -29,6 +29,8 @@ class Chef
       # The cookbook's name as inferred from its directory.
       attr_reader :inferred_cookbook_name
 
+      attr_reader :metadata_error
+
       def initialize(path, chefignore=nil)
         @cookbook_path = File.expand_path( path ) # cookbook_path from which this was loaded
         # We keep a list of all cookbook paths that have been merged in
@@ -53,8 +55,11 @@ class Chef
         }
 
         @metadata_filenames = []
+        @metadata_error = nil
       end
 
+      # Load the cookbook. Raises an error if the cookbook_path given to the
+      # constructor doesn't point to a valid cookbook.
       def load!
         file_paths_map = load
 
@@ -64,7 +69,15 @@ class Chef
         file_paths_map
       end
 
+      # Load the cookbook. Does not raise an error if given a non-cookbook
+      # directory as the cookbook_path. This behavior is provided for
+      # compatibility, it is recommended to use #load! instead.
       def load
+        metadata # force lazy evaluation to occur
+
+        # re-raise any exception that occurred when reading the metadata
+        raise_metadata_error!
+
         load_as(:attribute_filenames, 'attributes', '*.rb')
         load_as(:definition_filenames, 'definitions', '*.rb')
         load_as(:recipe_filenames, 'recipes', '*.rb')
@@ -134,6 +147,12 @@ class Chef
 
         @metadata = Chef::Cookbook::Metadata.new
 
+        # Compatibility if metadata is missing the name attribute:
+        # TODO: Metadata should distinguish between inferred name and actual.
+        if @metadata.name.nil?
+          @metadata.name(@inferred_cookbook_name)
+        end
+
         metadata_filenames.each do |metadata_file|
           case metadata_file
           when /\.rb$/
@@ -147,13 +166,21 @@ class Chef
           end
         end
 
-        # Compatibility if metadata is missing the name attribute:
-        # TODO: probably should live elsewhere.
-        if @metadata.name.nil?
-          @metadata.name(@inferred_cookbook_name)
-        end
 
         @metadata
+
+        # Rescue errors so that users can upload cookbooks via `knife cookbook
+        # upload` even if some cookbooks in their chef-repo have errors in
+        # their metadata. We only rescue StandardError because you have to be
+        # doing something *really* terrible to raise an exception that inherits
+        # directly from Exception in your metadata.rb file.
+      rescue StandardError => e
+        @metadata_error = e
+        @metadata
+      end
+
+      def raise_metadata_error!
+        raise @metadata_error unless @metadata_error.nil?
       end
 
       def empty?

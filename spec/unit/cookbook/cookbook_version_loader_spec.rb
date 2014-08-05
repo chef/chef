@@ -110,16 +110,28 @@ describe Chef::Cookbook::CookbookVersionLoader do
 
     context "when a cookbook has an invalid metadata file [CHEF-2923]" do
 
+      let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "invalid-metadata-chef-repo/invalid-metadata") }
+
       it "raises an error when loading with #load!" do
-        pending
+        expect { cookbook_loader.load! }.to raise_error("THIS METADATA HAS A BUG")
       end
 
-      it "skips the cookbook when called with #load" do
-        pending
+      it "raises an error when called with #load" do
+        expect { cookbook_loader.load }.to raise_error("THIS METADATA HAS A BUG")
+      end
+
+      it "doesn't raise an error when determining the cookbook name" do
+        expect { cookbook_loader.cookbook_name }.to_not raise_error
+      end
+
+      it "doesn't raise an error when metadata is first generated" do
+        expect { cookbook_loader.metadata }.to_not raise_error
       end
 
       it "sets an error flag containing error information" do
-        pending
+        cookbook_loader.metadata
+        expect(cookbook_loader.metadata_error).to be_a(StandardError)
+        expect(cookbook_loader.metadata_error.message).to eq("THIS METADATA HAS A BUG")
       end
 
     end
