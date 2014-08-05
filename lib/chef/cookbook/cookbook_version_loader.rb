@@ -24,13 +24,12 @@ class Chef
       attr_reader :frozen
       attr_reader :uploaded_cookbook_version_file
 
-      # TODO: use this in preference to @cookbook_path internally
       attr_reader :cookbook_path
 
       def initialize(path, chefignore=nil)
         @cookbook_path = File.expand_path( path ) # cookbook_path from which this was loaded
         # We keep a list of all cookbook paths that have been merged in
-        @cookbook_paths = [ @cookbook_path ]
+        @cookbook_paths = [ cookbook_path ]
 
         # TODO: Add a "strict mode" setting, use this when not in strict mode
         @cookbook_name = File.basename( path )
@@ -57,7 +56,7 @@ class Chef
         file_paths_map = load
 
         if empty?
-          raise Exceptions::CookbookNotFoundInRepo, "The directory #{@cookbook_path} does not contain a cookbook"
+          raise Exceptions::CookbookNotFoundInRepo, "The directory #{cookbook_path} does not contain a cookbook"
         end
         file_paths_map
       end
@@ -85,14 +84,14 @@ class Chef
 
       def metadata_filenames
         return @metadata_filenames unless @metadata_filenames.empty?
-        if File.exists?(File.join(@cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE))
-          @uploaded_cookbook_version_file = File.join(@cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE)
+        if File.exists?(File.join(cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE))
+          @uploaded_cookbook_version_file = File.join(cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE)
         end
 
-        if File.exists?(File.join(@cookbook_path, "metadata.rb"))
-          @metadata_filenames << File.join(@cookbook_path, "metadata.rb")
-        elsif File.exists?(File.join(@cookbook_path, "metadata.json"))
-          @metadata_filenames << File.join(@cookbook_path, "metadata.json")
+        if File.exists?(File.join(cookbook_path, "metadata.rb"))
+          @metadata_filenames << File.join(cookbook_path, "metadata.rb")
+        elsif File.exists?(File.join(cookbook_path, "metadata.json"))
+          @metadata_filenames << File.join(cookbook_path, "metadata.json")
         elsif @uploaded_cookbook_version_file
           @metadata_filenames << @uploaded_cookbook_version_file
         end
@@ -105,7 +104,7 @@ class Chef
       def cookbook_version
         return nil if empty?
 
-        Chef::CookbookVersion.new(cookbook_name, *@cookbook_paths).tap do |c|
+        Chef::CookbookVersion.new(cookbook_name, *cookbook_paths).tap do |c|
           c.attribute_filenames  = cookbook_settings[:attribute_filenames].values
           c.definition_filenames = cookbook_settings[:definition_filenames].values
           c.recipe_filenames     = cookbook_settings[:recipe_filenames].values
@@ -115,7 +114,7 @@ class Chef
           c.resource_filenames   = cookbook_settings[:resource_filenames].values
           c.provider_filenames   = cookbook_settings[:provider_filenames].values
           c.root_filenames       = cookbook_settings[:root_filenames].values
-          c.metadata_filenames   = @metadata_filenames
+          c.metadata_filenames   = metadata_filenames
           c.metadata             = metadata
 
           c.freeze_version if @frozen
@@ -155,15 +154,15 @@ class Chef
       end
 
       def empty?
-        @cookbook_settings.values.all? { |files_hash| files_hash.empty? } && @metadata_filenames.size == 0
+        cookbook_settings.values.all? { |files_hash| files_hash.empty? } && metadata_filenames.size == 0
       end
 
       def merge!(other_cookbook_loader)
         other_cookbook_settings = other_cookbook_loader.cookbook_settings
-        @cookbook_settings.each do |file_type, file_list|
+        cookbook_settings.each do |file_type, file_list|
           file_list.merge!(other_cookbook_settings[file_type])
         end
-        @metadata_filenames.concat(other_cookbook_loader.metadata_filenames)
+        metadata_filenames.concat(other_cookbook_loader.metadata_filenames)
         @cookbook_paths += other_cookbook_loader.cookbook_paths
         @frozen = true if other_cookbook_loader.frozen
         @metadata = nil # reset metadata so it gets reloaded and all metadata files applied.
@@ -171,33 +170,33 @@ class Chef
       end
 
       def chefignore
-        @chefignore ||= Chefignore.new(File.basename(@cookbook_path))
+        @chefignore ||= Chefignore.new(File.basename(cookbook_path))
       end
 
       def load_root_files
-        Dir.glob(File.join(@cookbook_path, '*'), File::FNM_DOTMATCH).each do |file|
+        Dir.glob(File.join(cookbook_path, '*'), File::FNM_DOTMATCH).each do |file|
           next if File.directory?(file)
           next if File.basename(file) == UPLOADED_COOKBOOK_VERSION_FILE
-          @cookbook_settings[:root_filenames][file[@relative_path, 1]] = file
+          cookbook_settings[:root_filenames][file[@relative_path, 1]] = file
         end
       end
 
       def load_recursively_as(category, category_dir, glob)
-        file_spec = File.join(@cookbook_path, category_dir, '**', glob)
+        file_spec = File.join(cookbook_path, category_dir, '**', glob)
         Dir.glob(file_spec, File::FNM_DOTMATCH).each do |file|
           next if File.directory?(file)
-          @cookbook_settings[category][file[@relative_path, 1]] = file
+          cookbook_settings[category][file[@relative_path, 1]] = file
         end
       end
 
       def load_as(category, *path_glob)
-        Dir[File.join(@cookbook_path, *path_glob)].each do |file|
-          @cookbook_settings[category][file[@relative_path, 1]] = file
+        Dir[File.join(cookbook_path, *path_glob)].each do |file|
+          cookbook_settings[category][file[@relative_path, 1]] = file
         end
       end
 
       def remove_ignored_files
-        @cookbook_settings.each_value do |file_list|
+        cookbook_settings.each_value do |file_list|
           file_list.reject! do |relative_path, full_path|
             chefignore.ignored?(relative_path)
           end
