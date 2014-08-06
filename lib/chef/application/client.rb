@@ -275,11 +275,22 @@ class Chef::Application::Client < Chef::Application
   def load_config_file
     Chef::Config.config_file_jail = config[:config_file_jail] if config[:config_file_jail]
     if !config.has_key?(:config_file)
+      # If config_file is not specified in the command line, check to see if the default
+      # config file exists
+      default_config_path = Chef::Config.platform_specific_path("/etc/chef/client.rb")
+      config_fetcher = Chef::ConfigFetcher.new(default_config_path, Chef::Config.config_file_jail)
+
+      # If the default config doesn't exist and if server is not specified in the command line
+      # options, switch local mode on.
+      if config_fetcher.config_missing? && config[:chef_server_url].nil?
+        config[:local_mode] = true
+      end
+
       if config[:local_mode]
         require 'chef/knife'
         config[:config_file] = Chef::Knife.locate_config_file
       else
-        config[:config_file] = Chef::Config.platform_specific_path("/etc/chef/client.rb")
+        config[:config_file] = default_config_path
       end
     end
     super
