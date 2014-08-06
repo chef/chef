@@ -29,11 +29,11 @@ matrix:
     script: bundle exec rake pedant
     ### START TEST KITCHEN ONLY ###
   - rvm: 2.1.1
-    gemfile: spec/e2e/Gemfile
+    gemfile: kitchen-tests/Gemfile
     before_install:
     - echo -n $DO_KEY_CHUNK_{0..30} >> ~/.ssh/id_aws.base64
     - cat ~/.ssh/id_aws.base64 | tr -d ' ' | base64 --decode > ~/.ssh/id_aws.pem
-    before_script: cd spec/e2e
+    before_script: cd kitchen-tests
     script:
     - bundle exec kitchen test
     after_script:

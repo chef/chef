@@ -4,7 +4,8 @@ require "uri"
 
 require "#{ENV['BUSSER_ROOT']}/../kitchen/data/serverspec_helper"
 
-describe "webapp::default" do
+describe "webapp::default", :end_to_end => true do
+
   describe "installed packages" do
     shared_examples_for "a package" do
       it "is installed" do
