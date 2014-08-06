@@ -28,30 +28,8 @@ class Chef
 
       attr_reader :map
 
-      def initialize(map={:default => {}})
+      def initialize(map={})
         @map = map
-      end
-
-      def filter(platform, version)
-        resource_map = map[:default].clone
-        platform_sym = platform
-        if platform.kind_of?(String)
-          platform.downcase!
-          platform.gsub!(/\s/, "_")
-          platform_sym = platform.to_sym
-        end
-
-        if map.has_key?(platform_sym)
-          if map[platform_sym].has_key?(version)
-            if map[platform_sym].has_key?(:default)
-              resource_map.merge!(map[platform_sym][:default])
-            end
-            resource_map.merge!(map[platform_sym][version])
-          elsif map[platform_sym].has_key?(:default)
-            resource_map.merge!(map[platform_sym][:default])
-          end
-        end
-        resource_map
       end
 
       def set(args)
@@ -76,47 +54,11 @@ class Chef
             }
           }
         )
-        if args.has_key?(:platform)
-          if args.has_key?(:version)
-            if map.has_key?(args[:platform])
-              if map[args[:platform]].has_key?(args[:version])
-                map[args[:platform]][args[:version]][args[:short_name].to_sym] = args[:resource]
-              else
-                map[args[:platform]][args[:version]] = {
-                  args[:short_name].to_sym => args[:resource]
-                }
-              end
-            else
-              map[args[:platform]] = {
-                args[:version] => {
-                  args[:short_name].to_sym => args[:resource]
-                }
-              }
-            end
-          else
-            if map.has_key?(args[:platform])
-              if map[args[:platform]].has_key?(:default)
-                map[args[:platform]][:default][args[:short_name].to_sym] = args[:resource]
-              else
-                map[args[:platform]] = { :default => { args[:short_name].to_sym => args[:resource] } }
-              end
-            else
-              map[args[:platform]] = {
-                :default => {
-                  args[:short_name].to_sym => args[:resource]
-                }
-              }
-            end
-          end
-        else
-          if map.has_key?(:default)
-            map[:default][args[:short_name].to_sym] = args[:resource]
-          else
-            map[:default] = {
-              args[:short_name].to_sym => args[:resource]
-            }
-          end
-        end
+        platform = args[:platform] || :default
+        version = args[:version] || :default
+        map[platform] = {} if !map[platform]
+        map[platform][version] = {} if !map[platform][version]
+        map[platform][version][args[:short_name].to_sym] = args[:resource]
       end
 
       def get(short_name, platform=nil, version=nil)
@@ -131,10 +73,28 @@ class Chef
       private
 
       def platform_resource(short_name, platform, version)
-        pmap = filter(platform, version)
+        platform_sym = platform
+        if platform.kind_of?(String)
+          platform.downcase!
+          platform.gsub!(/\s/, "_")
+          platform_sym = platform.to_sym
+        end
+
         rtkey = short_name.kind_of?(Chef::Resource) ? short_name.resource_name.to_sym : short_name
 
-        pmap.has_key?(rtkey) ? pmap[rtkey] : nil
+        [ platform_sym, :default ].each do |platform_key|
+          if map.has_key?(platform_key)
+            [ version, :default ].each do |version_key|
+              if map[platform_key].has_key?(version_key)
+                if map[platform_key][version_key].has_key?(rtkey)
+                  return map[platform_key][version_key][rtkey]
+                end
+              end
+            end
+          end
+        end
+
+        nil
       end
 
       def resource_matching_short_name(short_name)

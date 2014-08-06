@@ -661,26 +661,67 @@ describe Chef::Resource do
 
   describe "building the platform map" do
 
+    before :each do
+      @original_platform_map = Chef::Resource.platform_map.map
+    end
+
+    after :each do
+      Chef::Resource.platform_map.map.clear
+      Chef::Resource.platform_map.map.merge!(@original_platform_map)
+    end
+
     it 'adds mappings for a single platform' do
       klz = Class.new(Chef::Resource)
-      Chef::Resource.platform_map.should_receive(:set).with(
-        :platform => :autobots, :short_name => :dinobot, :resource => klz
-      )
       klz.provides :dinobot, :on_platforms => ['autobots']
+      lambda { Chef::Resource.resource_for_platform(:dinobot) }.should raise_error
+      Chef::Resource.resource_for_platform(:dinobot, 'autobots').should == klz
+      Chef::Resource.resource_for_platform(:dinobot, 'autobots', '1.0').should == klz
+      lambda {Chef::Resource.resource_for_platform(:dinobot, 'decepticons') }.should raise_error
     end
 
     it 'adds mappings for multiple platforms' do
       klz = Class.new(Chef::Resource)
-      Chef::Resource.platform_map.should_receive(:set).twice
       klz.provides :energy, :on_platforms => ['autobots','decepticons']
+      lambda { Chef::Resource.resource_for_platform(:energy) }.should raise_error
+      Chef::Resource.resource_for_platform(:energy, 'autobots').should == klz
+      Chef::Resource.resource_for_platform(:energy, 'autobots', '1.0').should == klz
+      Chef::Resource.resource_for_platform(:energy, 'decepticons').should == klz
+      Chef::Resource.resource_for_platform(:energy, 'decepticons', '1.0').should == klz
+      lambda { Chef::Resource.resource_for_platform(:energy, 'humans') }.should raise_error
     end
 
     it 'adds mappings for all platforms' do
       klz = Class.new(Chef::Resource)
-      Chef::Resource.platform_map.should_receive(:set).with(
-        :short_name => :tape_deck, :resource => klz
-      )
       klz.provides :tape_deck
+      Chef::Resource.resource_for_platform(:tape_deck).should == klz
+      Chef::Resource.resource_for_platform(:tape_deck, 'hi').should == klz
+      Chef::Resource.resource_for_platform(:tape_deck, 'hi', 'lo').should == klz
+    end
+
+    it 'adds mappings for all platforms with :all' do
+      klz = Class.new(Chef::Resource)
+      klz.provides :tape_deck, :on_platforms => :all
+      Chef::Resource.resource_for_platform(:tape_deck).should == klz
+      Chef::Resource.resource_for_platform(:tape_deck, 'hi').should == klz
+      Chef::Resource.resource_for_platform(:tape_deck, 'hi', 'lo').should == klz
+    end
+
+    it 'adds multiple mappings for the same short name' do
+      klz = Class.new(Chef::Resource)
+      klz.provides :tape_deck
+      klz2 = Class.new(Chef::Resource)
+      klz2.provides :tape_deck, :on_platforms => ['autobots']
+      Chef::Resource.resource_for_platform(:tape_deck).should == klz
+      Chef::Resource.resource_for_platform(:tape_deck, 'hi').should == klz
+      Chef::Resource.resource_for_platform(:tape_deck, 'autobots').should == klz2
+    end
+
+    it 'adds multiple mappings for the same resource class' do
+      klz = Class.new(Chef::Resource)
+      klz.provides :tape_deck
+      klz.provides :air_conditioning
+      Chef::Resource.resource_for_platform(:tape_deck).should == klz
+      Chef::Resource.resource_for_platform(:air_conditioning).should == klz
     end
 
   end
