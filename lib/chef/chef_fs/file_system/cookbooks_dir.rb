@@ -38,7 +38,7 @@ class Chef
 
         def child(name)
           if @children
-            result = self.children.select { |child| child.name == name }.first
+            result = children.select { |child| child.name == name }.first
             if result
               result
             else

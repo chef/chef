@@ -88,7 +88,7 @@ class Chef
         end
 
         def to_s
-          "[#{self.collect { |ace| ace.to_s }.join(", ")}]"
+          "[#{collect { |ace| ace.to_s }.join(", ")}]"
         end
         private
 

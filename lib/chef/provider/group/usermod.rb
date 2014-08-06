@@ -38,13 +38,13 @@ class Chef
 
           requirements.assert(:modify, :manage) do |a|
             a.assertion { @new_resource.members.empty? || @new_resource.append }
-            a.failure_message Chef::Exceptions::Group, "setting group members directly is not supported by #{self.to_s}, must set append true in group"
+            a.failure_message Chef::Exceptions::Group, "setting group members directly is not supported by #{to_s}, must set append true in group"
             # No whyrun alternative - this action is simply not supported.
           end
 
           requirements.assert(:all_actions) do |a|
             a.assertion { @new_resource.excluded_members.empty? }
-            a.failure_message Chef::Exceptions::Group, "excluded_members is not supported by #{self.to_s}"
+            a.failure_message Chef::Exceptions::Group, "excluded_members is not supported by #{to_s}"
             # No whyrun alternative - this action is simply not supported.
           end
         end
@@ -59,7 +59,7 @@ class Chef
               add_member(member)
             end
           else
-            raise Chef::Exceptions::UnsupportedAction, "Setting members directly is not supported by #{self.to_s}"
+            raise Chef::Exceptions::UnsupportedAction, "Setting members directly is not supported by #{to_s}"
           end
         end
 
@@ -70,7 +70,7 @@ class Chef
         def remove_member(member)
           # This provider only supports adding members with
           # append. This function should never be called.
-          raise Chef::Exceptions::UnsupportedAction, "Removing members members is not supported by #{self.to_s}"
+          raise Chef::Exceptions::UnsupportedAction, "Removing members members is not supported by #{to_s}"
         end
 
         def append_flags

@@ -34,7 +34,7 @@ class Chef
 
     def <=>(v)
       [:major, :minor, :patch].each do |method|
-        ans = (self.send(method) <=> v.send(method))
+        ans = (send(method) <=> v.send(method))
         return ans if ans != 0
       end
       0

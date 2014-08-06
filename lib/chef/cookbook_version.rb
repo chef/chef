@@ -458,7 +458,7 @@ class Chef
     end
 
     def to_json(*a)
-      result = self.to_hash
+      result = to_hash
       result['json_class'] = self.class.name
       result.to_json(*a)
     end
@@ -572,11 +572,11 @@ class Chef
     end
 
     def <=>(o)
-      raise Chef::Exceptions::CookbookVersionNameMismatch if self.name != o.name
+      raise Chef::Exceptions::CookbookVersionNameMismatch if name != o.name
       # FIXME: can we change the interface to the Metadata class such
       # that metadata.version returns a Chef::Version instance instead
       # of a string?
-      Chef::Version.new(self.version) <=> Chef::Version.new(o.version)
+      Chef::Version.new(version) <=> Chef::Version.new(o.version)
     end
 
     private

@@ -120,8 +120,8 @@ class Chef::EncryptedDataBagItem
   #
   def self.load(data_bag, name, secret = nil)
     raw_hash = Chef::DataBagItem.load(data_bag, name)
-    secret = secret || self.load_secret
-    self.new(raw_hash, secret)
+    secret = secret || load_secret
+    new(raw_hash, secret)
   end
 
   def self.load_secret(path=nil)

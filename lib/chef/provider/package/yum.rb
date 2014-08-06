@@ -246,7 +246,7 @@ class Chef
           alias :release :r
 
           def self.parse(*args)
-            self.new(*args)
+            new(*args)
           end
 
           def <=>(y)
@@ -449,10 +449,10 @@ class Chef
               end
               version = $3
 
-              return self.new(name, version, flag)
+              return new(name, version, flag)
             else
               name = string
-              return self.new(name, nil, nil)
+              return new(name, nil, nil)
             end
           end
 
@@ -522,7 +522,7 @@ class Chef
           end
 
           def [](package_name)
-            self.lookup(package_name)
+            lookup(package_name)
           end
 
           # Lookup package_name and return a descending array of package objects
@@ -580,7 +580,7 @@ class Chef
           end
 
           def <<(*args)
-            self.push(args)
+            push(args)
           end
 
           def clear

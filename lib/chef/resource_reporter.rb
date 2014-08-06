@@ -87,7 +87,7 @@ class Chef
       end
 
       def success?
-        !self.exception
+        !exception
       end
 
       def state(r)

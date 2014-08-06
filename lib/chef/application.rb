@@ -177,12 +177,12 @@ class Chef::Application
 
   # Called prior to starting the application, by the run method
   def setup_application
-    raise Chef::Exceptions::Application, "#{self.to_s}: you must override setup_application"
+    raise Chef::Exceptions::Application, "#{to_s}: you must override setup_application"
   end
 
   # Actually run the application
   def run_application
-    raise Chef::Exceptions::Application, "#{self.to_s}: you must override run_application"
+    raise Chef::Exceptions::Application, "#{to_s}: you must override run_application"
   end
 
   # Initializes Chef::Client instance and runs it

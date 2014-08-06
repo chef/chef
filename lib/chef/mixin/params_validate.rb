@@ -67,7 +67,7 @@ class Chef
             validation.each do |check, carg|
               check_method = "_pv_#{check.to_s}"
               if self.respond_to?(check_method, true)
-                self.send(check_method, opts, key, carg)
+                send(check_method, opts, key, carg)
               else
                 raise ArgumentError, "Validation map has unknown check: #{check}"
               end
@@ -84,7 +84,7 @@ class Chef
       def set_or_return(symbol, arg, validation)
         iv_symbol = "@#{symbol.to_s}".to_sym
         if arg == nil && self.instance_variable_defined?(iv_symbol) == true
-          ivar = self.instance_variable_get(iv_symbol)
+          ivar = instance_variable_get(iv_symbol)
           if(ivar.is_a?(DelayedEvaluator))
             validate({ symbol => ivar.call }, { symbol => validation })[symbol]
           else
@@ -103,7 +103,7 @@ class Chef
               val = val.call(self)
             end
           end
-          self.instance_variable_set(iv_symbol, val)
+          instance_variable_set(iv_symbol, val)
         end
       end
 
@@ -232,7 +232,7 @@ class Chef
         def _pv_name_attribute(opts, key, is_name_attribute=true)
           if is_name_attribute
             if opts[key] == nil
-              opts[key] = self.instance_variable_get("@name")
+              opts[key] = instance_variable_get("@name")
             end
           end
         end

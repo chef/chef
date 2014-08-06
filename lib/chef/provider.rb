@@ -77,7 +77,7 @@ class Chef
     end
 
     def load_current_resource
-      raise Chef::Exceptions::Override, "You must override load_current_resource in #{self.to_s}"
+      raise Chef::Exceptions::Override, "You must override load_current_resource in #{to_s}"
     end
 
     def define_resource_requirements

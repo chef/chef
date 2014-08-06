@@ -186,11 +186,11 @@ class Chef::Application::Knife < Chef::Application
     Chef::Log.error(fatal_message) if fatal_message
 
     begin
-      self.parse_options
+      parse_options
     rescue OptionParser::InvalidOption => e
       puts "#{e}\n"
     end
-    puts self.opt_parser
+    puts opt_parser
     puts
     Chef::Knife.list_commands
     exit exitcode

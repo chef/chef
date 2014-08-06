@@ -32,7 +32,7 @@ class Chef
 
       new_data = {}
       whitelist.each do |item|
-        self.add_data(data, new_data, item)
+        add_data(data, new_data, item)
       end
       new_data
     end
@@ -42,7 +42,7 @@ class Chef
     # Walk the data has according to the keys provided by the whitelisted item
     # and add the data to the whitelisting result.
     def self.add_data(data, new_data, item)
-      parts = self.to_array(item)
+      parts = to_array(item)
 
       all_data = data
       filtered_data = new_data

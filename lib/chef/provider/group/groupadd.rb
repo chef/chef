@@ -96,15 +96,15 @@ class Chef
         end
 
         def add_member(member)
-          raise Chef::Exceptions::Group, "you must override add_member in #{self.to_s}"
+          raise Chef::Exceptions::Group, "you must override add_member in #{to_s}"
         end
 
         def remove_member(member)
-          raise Chef::Exceptions::Group, "you must override remove_member in #{self.to_s}"
+          raise Chef::Exceptions::Group, "you must override remove_member in #{to_s}"
         end
 
         def set_members(members)
-          raise Chef::Exceptions::Group, "you must override set_members in #{self.to_s}"
+          raise Chef::Exceptions::Group, "you must override set_members in #{to_s}"
         end
 
         # Little bit of magic as per Adam's useradd provider to pull the assign the command line flags

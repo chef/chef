@@ -82,7 +82,7 @@ class Chef
 
       def ==(other)
         if other.kind_of?(String)
-          self.to_s == other.to_s
+          to_s == other.to_s
         else
           other.respond_to?(:type) && other.respond_to?(:name) && other.respond_to?(:version) && other.type == @type && other.name == @name && other.version == @version
         end

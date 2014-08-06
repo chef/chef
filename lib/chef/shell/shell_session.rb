@@ -127,7 +127,7 @@ module Shell
 
     def shorten_node_inspect
       def @node.inspect
-        "<Chef::Node:0x#{self.object_id.to_s(16)} @name=\"#{self.name}\">"
+        "<Chef::Node:0x#{object_id.to_s(16)} @name=\"#{name}\">"
       end
     end
 

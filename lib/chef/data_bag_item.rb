@@ -103,20 +103,20 @@ class Chef
     end
 
     def to_hash
-      result = self.raw_data
+      result = raw_data
       result["chef_type"] = "data_bag_item"
-      result["data_bag"] = self.data_bag
+      result["data_bag"] = data_bag
       result
     end
 
     # Serialize this object as a hash
     def to_json(*a)
       result = {
-        "name" => self.object_name,
+        "name" => object_name,
         "json_class" => self.class.name,
         "chef_type" => "data_bag_item",
-        "data_bag" => self.data_bag,
-        "raw_data" => self.raw_data
+        "data_bag" => data_bag,
+        "raw_data" => raw_data
       }
       result.to_json(*a)
     end
@@ -201,7 +201,7 @@ class Chef
     end
 
     def pretty_print(pretty_printer)
-      pretty_printer.pp({"data_bag_item('#{data_bag}', '#{id}')" => self.to_hash})
+      pretty_printer.pp({"data_bag_item('#{data_bag}', '#{id}')" => to_hash})
     end
 
     def id

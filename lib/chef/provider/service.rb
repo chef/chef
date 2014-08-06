@@ -51,7 +51,7 @@ class Chef
       def define_resource_requirements
        requirements.assert(:reload) do |a|
          a.assertion { @new_resource.supports[:reload] || @new_resource.reload_command }
-         a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
+         a.failure_message Chef::Exceptions::UnsupportedAction, "#{to_s} does not support :reload"
          # if a service is not declared to support reload, that won't
          # typically change during the course of a run - so no whyrun
          # alternative here.
@@ -130,27 +130,27 @@ class Chef
       end
 
       def enable_service
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :enable"
+        raise Chef::Exceptions::UnsupportedAction, "#{to_s} does not support :enable"
       end
 
       def disable_service
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :disable"
+        raise Chef::Exceptions::UnsupportedAction, "#{to_s} does not support :disable"
       end
 
       def start_service
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :start"
+        raise Chef::Exceptions::UnsupportedAction, "#{to_s} does not support :start"
       end
 
       def stop_service
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :stop"
+        raise Chef::Exceptions::UnsupportedAction, "#{to_s} does not support :stop"
       end
 
       def restart_service
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :restart"
+        raise Chef::Exceptions::UnsupportedAction, "#{to_s} does not support :restart"
       end
 
       def reload_service
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :restart"
+        raise Chef::Exceptions::UnsupportedAction, "#{to_s} does not support :restart"
       end
 
       protected

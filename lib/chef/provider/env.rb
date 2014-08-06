@@ -46,7 +46,7 @@ class Chef
       end
 
       def env_value(key_name)
-        raise Chef::Exceptions::Env, "#{self.to_s} provider does not implement env_value!"
+        raise Chef::Exceptions::Env, "#{to_s} provider does not implement env_value!"
       end
 
       def env_key_exists(key_name)
@@ -133,11 +133,11 @@ class Chef
       end
 
       def create_env
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :#{@new_resource.action}"
+        raise Chef::Exceptions::UnsupportedAction, "#{to_s} does not support :#{@new_resource.action}"
       end
 
       def delete_env
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :delete"
+        raise Chef::Exceptions::UnsupportedAction, "#{to_s} does not support :delete"
       end
 
       def modify_env
