@@ -222,6 +222,12 @@ class Chef::Application::Solo < Chef::Application
           Chef::Log.debug("Splay sleep #{splay} seconds")
           sleep splay
         end
+        
+        trap("HUP") do
+          Chef::Log.info("Caught SIGHUP, reloading resources")
+          reconfigure
+          Chef::Log.info("Logging restarted because of SIGHUP")
+        end
 
         run_chef_client
         if Chef::Config[:interval]
