@@ -501,9 +501,9 @@ class Chef
       def self.validate_json(json_str)
         o = Chef::JSONCompat.from_json(json_str)
         metadata = new()
-        VERSION_CONSTRAINTS.each do |method_name, hash_key|
-          if constraints = o[hash_key]
-           constraints.each do |cb_name, constraints|
+        VERSION_CONSTRAINTS.each do |dependency_type, hash_key|
+          if dependency_group = o[hash_key]
+           dependency_group.each do |cb_name, constraints|
              metadata.send(method_name, cb_name, *Array(constraints))
            end
           end
