@@ -1,6 +1,9 @@
 # Chef Client Changelog
 
-## Unreleased:
+## 11.14.4:
+
+* Fix RPM package version detection (Issue 1554)
+
 
 ## Last Release: 11.14.2
 
