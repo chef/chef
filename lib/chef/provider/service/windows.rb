@@ -50,7 +50,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     @current_resource.service_name(@new_resource.service_name)
     @current_resource.running(current_state == RUNNING)
     Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
-    case start_type
+    case current_start_type
     when AUTO_START
       @current_resource.enabled(true)
     when DISABLED
@@ -146,7 +146,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   end
 
   def action_enable
-    if start_type != AUTO_START
+    if current_start_type != AUTO_START
       converge_by("enable service #{@new_resource}") do
         enable_service
         Chef::Log.info("#{@new_resource} enabled")
@@ -159,7 +159,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   end
 
   def action_disable
-    if start_type != DISABLED
+    if current_start_type != DISABLED
       converge_by("disable service #{@new_resource}") do
         disable_service
         Chef::Log.info("#{@new_resource} disabled")
@@ -174,7 +174,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   def action_configure_startup
     case @new_resource.startup_type
     when :automatic
-      if start_type != AUTO_START
+      if current_start_type != AUTO_START
         converge_by("set service #{@new_resource} startup type to automatic") do
           set_startup_type(:automatic)
         end
@@ -182,7 +182,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
         Chef::Log.debug("#{@new_resource} startup_type already automatic - nothing to do")
       end
     when :manual
-      if start_type != MANUAL
+      if current_start_type != MANUAL
         converge_by("set service #{@new_resource} startup type to manual") do
           set_startup_type(:manual)
         end
@@ -190,7 +190,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
         Chef::Log.debug("#{@new_resource} startup_type already manual - nothing to do")
       end
     when :disabled
-      if start_type != DISABLED
+      if current_start_type != DISABLED
         converge_by("set service #{@new_resource} startup type to disabled") do
           set_startup_type(:disabled)
         end
@@ -208,7 +208,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     Win32::Service.status(@new_resource.service_name).current_state
   end
 
-  def start_type
+  def current_start_type
     Win32::Service.config_info(@new_resource.service_name).start_type
   end
 
