@@ -67,18 +67,17 @@ class Chef
       include Chef::Mixin::ParamsValidate
       include Chef::Mixin::FromFile
 
-      attr_reader   :cookbook,
-                    :platforms,
-                    :dependencies,
-                    :recommendations,
-                    :suggestions,
-                    :conflicting,
-                    :providing,
-                    :replacing,
-                    :attributes,
-                    :groupings,
-                    :recipes,
-                    :version
+      attr_reader :platforms
+      attr_reader :dependencies
+      attr_reader :recommendations
+      attr_reader :suggestions
+      attr_reader :conflicting
+      attr_reader :providing
+      attr_reader :replacing
+      attr_reader :attributes
+      attr_reader :groupings
+      attr_reader :recipes
+      attr_reader :version
 
       # Builds a new Chef::Cookbook::Metadata object.
       #
@@ -90,14 +89,16 @@ class Chef
       #
       # === Returns
       # metadata<Chef::Cookbook::Metadata>
-      def initialize(cookbook=nil, maintainer='YOUR_COMPANY_NAME', maintainer_email='YOUR_EMAIL', license='none')
-        @cookbook = cookbook
-        @name = cookbook ? cookbook.name : nil
-        @long_description = ""
-        self.maintainer(maintainer)
-        self.maintainer_email(maintainer_email)
-        self.license(license)
-        self.description('A fabulous new cookbook')
+      def initialize
+        @name =  nil
+
+        @description = ''
+        @long_description = ''
+        @license = 'All rights reserved'
+
+        @maintainer = nil
+        @maintainer_email = nil
+
         @platforms = Mash.new
         @dependencies = Mash.new
         @recommendations = Mash.new
@@ -108,10 +109,7 @@ class Chef
         @attributes = Mash.new
         @groupings = Mash.new
         @recipes = Mash.new
-        @version = Version.new "0.0.0"
-        if cookbook
-          recipes_from_cookbook_version(cookbook)
-        end
+        @version = Version.new("0.0.0")
       end
 
       def ==(other)

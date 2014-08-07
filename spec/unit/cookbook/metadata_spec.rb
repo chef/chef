@@ -22,9 +22,7 @@ require 'chef/cookbook/metadata'
 
 describe Chef::Cookbook::Metadata do
 
-  let(:metadata) { Chef::Cookbook::Metadata.new(cookbook) }
-
-  let(:cookbook) { Chef::CookbookVersion.new('test_cookbook') }
+  let(:metadata) { Chef::Cookbook::Metadata.new }
 
   describe "when comparing for equality" do
     before do
@@ -81,58 +79,67 @@ describe Chef::Cookbook::Metadata do
   end
 
   describe "when first created" do
-    it "should return a Chef::Cookbook::Metadata object" do
-      metadata.should be_a_kind_of(Chef::Cookbook::Metadata)
+
+    it "has no name" do
+      metadata.name.should eq(nil)
     end
 
-    it "should allow a cookbook as the first argument" do
-      lambda { Chef::Cookbook::Metadata.new(cookbook) }.should_not raise_error
+    it "has an empty description" do
+      metadata.description.should eq("")
     end
 
-    it "should allow an maintainer name for the second argument" do
-      lambda { Chef::Cookbook::Metadata.new(cookbook, 'Bobo T. Clown') }.should_not raise_error
+    it "has an empty long description" do
+      metadata.long_description.should eq("")
     end
 
-    it "should set the maintainer name from the second argument" do
-      md = Chef::Cookbook::Metadata.new(cookbook, 'Bobo T. Clown')
-      md.maintainer.should == 'Bobo T. Clown'
+    it "defaults to 'all rights reserved' license" do
+      metadata.license.should eq("All rights reserved")
     end
 
-    it "should allow an maintainer email for the third argument" do
-      lambda { Chef::Cookbook::Metadata.new(cookbook, 'Bobo T. Clown', 'bobo@clown.co') }.should_not raise_error
+    it "has an empty maintainer field" do
+      metadata.maintainer.should eq(nil)
     end
 
-    it "should set the maintainer email from the third argument" do
-      md = Chef::Cookbook::Metadata.new(cookbook, 'Bobo T. Clown', 'bobo@clown.co')
-      md.maintainer_email.should == 'bobo@clown.co'
+    it "has an empty maintainer_email field" do
+      metadata.maintainer.should eq(nil)
     end
 
-    it "should allow a license for the fourth argument" do
-      lambda { Chef::Cookbook::Metadata.new(cookbook, 'Bobo T. Clown', 'bobo@clown.co', 'Clown License v1') }.should_not raise_error
+    it "has an empty platforms list" do
+      metadata.platforms.should eq(Mash.new)
     end
 
-    it "should set the license from the fourth argument" do
-      md = Chef::Cookbook::Metadata.new(cookbook, 'Bobo T. Clown', 'bobo@clown.co', 'Clown License v1')
-      md.license.should == 'Clown License v1'
+    it "has an empty dependencies list" do
+      metadata.dependencies.should eq(Mash.new)
     end
-  end
 
-  describe "cookbook" do
-    it "should return the cookbook we were initialized with" do
-      metadata.cookbook.should eql(cookbook)
+    it "has an empty recommends list" do
+      metadata.recommendations.should eq(Mash.new)
     end
-  end
 
-  describe "name" do
-    it "should return the name of the cookbook" do
-      metadata.name.should eql(cookbook.name)
+    it "has an empty suggestions list" do
+      metadata.suggestions.should eq(Mash.new)
     end
-  end
 
-  describe "platforms" do
-    it "should return the current platform hash" do
-      metadata.platforms.should be_a_kind_of(Hash)
+    it "has an empty conflicts list" do
+      metadata.conflicting.should eq(Mash.new)
     end
+
+    it "has an empty replaces list" do
+      metadata.replacing.should eq(Mash.new)
+    end
+
+    it "has an empty attributes list" do
+      metadata.attributes.should eq(Mash.new)
+    end
+
+    it "has an empty groupings list" do
+      metadata.groupings.should eq(Mash.new)
+    end
+
+    it "has an empty recipes list" do
+      metadata.recipes.should eq(Mash.new)
+    end
+
   end
 
   describe "adding a supported platform" do
@@ -535,8 +542,15 @@ describe Chef::Cookbook::Metadata do
   end
 
   describe "recipes" do
+    let(:cookbook) do
+      c = Chef::CookbookVersion.new('test_cookbook')
+      c.recipe_files = [ "default.rb", "enlighten.rb" ]
+      c
+    end
+
     before(:each) do
-      cookbook.recipe_files = [ "default.rb", "enlighten.rb" ]
+      metadata.name("test_cookbook")
+      metadata.recipes_from_cookbook_version(cookbook)
     end
 
     it "should have the names of the recipes" do
@@ -558,8 +572,6 @@ describe Chef::Cookbook::Metadata do
 
   describe "json" do
     before(:each) do
-      cookbook.recipe_files = [ "default.rb", "enlighten.rb" ]
-      metadata = Chef::Cookbook::Metadata.new(cookbook)
       metadata.version "1.0"
       metadata.maintainer "Bobo T. Clown"
       metadata.maintainer_email "bobo@example.com"
