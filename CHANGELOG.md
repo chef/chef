@@ -25,8 +25,12 @@
 * Fix knife cookbook site share on windows (CHEF-4994)
 * chef-repo rake tasks are deprecated; print relevant information for
   each one.
+* Fix RPM package version detection (Issue 1554)
+
+
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   'group' provider on OSX properly uses 'dscl' to determine existing groups
+
 
 ## Last Release: 11.14.2
 
