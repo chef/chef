@@ -142,11 +142,14 @@ class Chef
             },
             :centos   => {
               :default => {
-                :service => Chef::Provider::Service::Redhat,
+                :service => Chef::Provider::Service::Systemd,
                 :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
                 :mdadm => Chef::Provider::Mdadm,
                 :ifconfig => Chef::Provider::Ifconfig::Redhat
+              },
+              "< 7" => {
+                :service => Chef::Provider::Service::Redhat
               }
             },
             :amazon   => {
@@ -159,19 +162,25 @@ class Chef
             },
             :scientific => {
               :default => {
-                :service => Chef::Provider::Service::Redhat,
+                :service => Chef::Provider::Service::Systemd,
                 :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
                 :mdadm => Chef::Provider::Mdadm
+              },
+              "< 7" => {
+                :service => Chef::Provider::Service::Redhat
               }
             },
             :fedora   => {
               :default => {
-                :service => Chef::Provider::Service::Redhat,
+                :service => Chef::Provider::Service::Systemd,
                 :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
                 :mdadm => Chef::Provider::Mdadm,
                 :ifconfig => Chef::Provider::Ifconfig::Redhat
+              },
+              "< 15" => {
+                :service => Chef::Provider::Service::Redhat
               }
             },
             :opensuse     => {
@@ -196,19 +205,25 @@ class Chef
             },
             :oracle  => {
               :default => {
-                :service => Chef::Provider::Service::Redhat,
+                :service => Chef::Provider::Service::Systemd,
                 :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
                 :mdadm => Chef::Provider::Mdadm
+              },
+              "< 7" => {
+                :service => Chef::Provider::Service::Redhat
               }
             },
             :redhat   => {
               :default => {
-                :service => Chef::Provider::Service::Redhat,
+                :service => Chef::Provider::Service::Systemd,
                 :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Yum,
                 :mdadm => Chef::Provider::Mdadm,
                 :ifconfig => Chef::Provider::Ifconfig::Redhat
+              },
+              "< 7" => {
+                :service => Chef::Provider::Service::Systemd
               }
             },
             :ibm_powerkvm   => {
