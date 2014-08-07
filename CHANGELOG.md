@@ -30,6 +30,10 @@
 
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   'group' provider on OSX properly uses 'dscl' to determine existing groups
+* [**Hugo Lopes Tavares**](https://github.com/hltbra):
+  Catch StandardError in Chef::ResourceReporter#post_reporting_data (Issue 1550).
+* [**Daniel O'Connor**](https://github.com/CloCkWeRX):
+  Fix regex causing DuplicateRole error (Issue 1739).
 
 
 ## Last Release: 11.14.2
