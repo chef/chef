@@ -142,6 +142,38 @@ describe Chef::Cookbook::Metadata do
 
   end
 
+  describe "validation" do
+
+    context "when no required fields are set" do
+
+      it "is not valid" do
+        metadata.should_not be_valid
+      end
+
+      it "has a list of validation errors" do
+        expected_errors = ["The `name' attribute is required in cookbook metadata"]
+        metadata.errors.should eq(expected_errors)
+      end
+
+    end
+
+    context "when all required fields are set" do
+      before do
+        metadata.name "a-valid-name"
+      end
+
+      it "is valid" do
+        metadata.should be_valid
+      end
+
+      it "has no validation errors" do
+        metadata.errors.should be_empty
+      end
+
+    end
+
+  end
+
   describe "adding a supported platform" do
     it "should support adding a supported platform with a single expression" do
       metadata.supports("ubuntu", ">= 8.04")

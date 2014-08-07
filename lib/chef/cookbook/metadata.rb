@@ -110,12 +110,40 @@ class Chef
         @groupings = Mash.new
         @recipes = Mash.new
         @version = Version.new("0.0.0")
+
+        @errors = []
       end
 
       def ==(other)
         COMPARISON_FIELDS.inject(true) do |equal_so_far, field|
           equal_so_far && other.respond_to?(field) && (other.send(field) == send(field))
         end
+      end
+
+      # Whether this metadata is valid. In order to be valid, all required
+      # fields must be set. Chef's validation implementation checks the content
+      # of a given field when setting (and raises an error if the content does
+      # not meet the criteria), so the content of the fields is not considered
+      # when checking validity.
+      #
+      # === Returns
+      # valid<Boolean>:: Whether this metadata object is valid
+      def valid?
+        run_validation
+        @errors.empty?
+      end
+
+      # A list of validation errors for this metadata object. See #valid? for
+      # comments about the validation criteria.
+      #
+      # If there are any validation errors, one or more error strings will be
+      # returned. Otherwise an empty array is returned.
+      #
+      # === Returns
+      # error messages<Array>:: Whether this metadata object is valid
+      def errors
+        run_validation
+        @errors
       end
 
       # Sets the cookbooks maintainer, or returns it.
@@ -515,6 +543,12 @@ class Chef
       end
 
     private
+
+      def run_validation
+        if name.nil?
+          @errors = ["The `name' attribute is required in cookbook metadata"]
+        end
+      end
 
       def new_args_format(caller_name, dep_name, version_constraints)
         if version_constraints.empty?
