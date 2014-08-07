@@ -26,6 +26,7 @@
 * chef-repo rake tasks are deprecated; print relevant information for
   each one.
 * Fix RPM package version detection (Issue 1554)
+* Don't override :default provider map if :default passed as platform (OC-11667).
 
 
 * [**Phil Dibowitz**](https://github.com/jaymzh):
@@ -34,6 +35,30 @@
   Catch StandardError in Chef::ResourceReporter#post_reporting_data (Issue 1550).
 * [**Daniel O'Connor**](https://github.com/CloCkWeRX):
   Fix regex causing DuplicateRole error (Issue 1739).
+* [**Xeron**](https://github.com/xeron):
+  Ability to specify an array for data_bag_path. (CHEF-3399, CHEF-4753)
+* [**Jordan**](https://github.com/jordane):
+  Use Systemd for recent Fedora and RHEL 7.
+* [**Xabier de Zuazo**](https://github.com/zuazo):
+  Encrypted data bags should use different HMAC key and include the IV in the HMAC (CHEF-5356).
+* [**Pierre Ynard**](https://github.com/linkfanel):
+  Don't modify variable passed to env resource when updating.
+* [**Chris Aumann**](https://github.com/chr4):
+  Add "force" attribute to resource/user, pass "-f" to userdel. (Issue 1601)
+* [**Brian Cobb**](https://github.com/bcobb):
+  Chef::VersionConstraint#to_s should accurately reflect constraint's behavior.
+* [**Kevin Graham**](https://github.com/kgraham):
+  Do not override ShellOut:live_stream if already set.
+* [**Mike Heijmans**](https://github.com/parabuzzle):
+  Change knife option --force to --delete-validators. (Issue 1652)
+* [**Pavel Yudin**](https://github.com/Kasen):
+  Add Parallels Cloud Server (PCS) platform support.
+* [**tbe**](https://github.com/tbe):
+  Minor fixes for the Paludis package provider:
+  * only search for non-masked packages,
+  * increase command timeout length for package installation.
+* [**sawanoboly**](https://github.com/sawanoboly):
+  Use shared_path for deploy resource.
 
 
 ## Last Release: 11.14.2
