@@ -244,6 +244,15 @@ class Chef
                 :ifconfig => Chef::Provider::Ifconfig::Redhat
               }
             },
+            :parallels   => {
+                :default => {
+                    :service => Chef::Provider::Service::Redhat,
+                    :cron => Chef::Provider::Cron,
+                    :package => Chef::Provider::Package::Yum,
+                    :mdadm => Chef::Provider::Mdadm,
+                    :ifconfig => Chef::Provider::Ifconfig::Redhat
+                }
+            },
             :gentoo   => {
               :default => {
                 :package => Chef::Provider::Package::Portage,
