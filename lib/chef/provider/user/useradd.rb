@@ -46,6 +46,7 @@ class Chef
         def remove_user
           command = [ "userdel" ]
           command << "-r" if managing_home_dir?
+          command << "-f" if new_resource.force
           command << new_resource.username
           shell_out!(*command)
         end

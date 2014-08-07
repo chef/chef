@@ -38,6 +38,7 @@ class Chef
         @password = nil
         @system = false
         @manage_home = false
+        @force = false
         @non_unique = false
         @action = :create
         @supports = {
@@ -116,6 +117,14 @@ class Chef
       def manage_home(arg=nil)
         set_or_return(
           :manage_home,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      def force(arg=nil)
+        set_or_return(
+          :force,
           arg,
           :kind_of => [ TrueClass, FalseClass ]
         )
