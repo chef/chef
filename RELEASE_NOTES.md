@@ -122,7 +122,6 @@ automatic_attribute_whitelist = ["network/interfaces/eth0"]
 ````
 then the entire `filesystem` and `eth1` subtrees will not be saved by the node. To save the `/dev/disk0s2` subtree, you must write `automatic_attribute_whitelist = [ ["filesystem", "/dev/disk0s2"] ]`.
 
-<<<<<<< HEAD
 If your config file looks like `automatic_attribute_whitelist = []`, then none of your automatic attribute data will be saved by the node.
 
 The default behavior is for the node to save all the attribute data. This can be ensured by setting your whitelist filter to `nil`.
