@@ -51,7 +51,7 @@ describe Chef::Resource::Env, :windows_only do
         expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
       end
 
-      it "should modify an existing variable's value to a new value and preserve the original name and preseve the original variable's name" do
+      it "should modify an existing variable's value to a new value" do
         test_resource.key_name(chef_env_test_lower_case)
         test_resource.value(env_value1)
         test_resource.run_action(:create)
