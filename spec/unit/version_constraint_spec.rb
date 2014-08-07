@@ -148,4 +148,32 @@ describe Chef::VersionConstraint do
       vc.should_not include "0.3.0"
     end
   end
+
+  describe 'to_s' do
+    it 'shows a patch-level if one is given' do
+      vc = Chef::VersionConstraint.new '~> 1.2.0'
+
+      vc.to_s.should == '~> 1.2.0'
+    end
+
+    it 'shows no patch-level if one is not given' do
+      vc = Chef::VersionConstraint.new '~> 1.2'
+
+      vc.to_s.should == '~> 1.2'
+    end
+  end
+
+  describe 'inspect' do
+    it 'shows a patch-level if one is given' do
+      vc = Chef::VersionConstraint.new '~> 1.2.0'
+
+      vc.inspect.should == '(~> 1.2.0)'
+    end
+
+    it 'shows no patch-level if one is not given' do
+      vc = Chef::VersionConstraint.new '~> 1.2'
+
+      vc.inspect.should == '(~> 1.2)'
+    end
+  end
 end

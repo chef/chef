@@ -24,7 +24,7 @@ class Chef
     PATTERN = /^(#{OPS.join('|')}) *([0-9].*)$/
     VERSION_CLASS = Chef::Version
 
-    attr_reader :op, :version, :raw_version
+    attr_reader :op, :version
 
     def initialize(constraint_spec=DEFAULT_CONSTRAINT)
       case constraint_spec
@@ -50,11 +50,11 @@ class Chef
     end
 
     def inspect
-      "(#{@op} #{@version})"
+      "(#{to_s})"
     end
 
     def to_s
-      "#{@op} #{@version}"
+      "#{@op} #{@raw_version}"
     end
 
     def eql?(o)
@@ -106,7 +106,7 @@ class Chef
         @op = $1
         @raw_version = $2
         @version = self.class::VERSION_CLASS.new(@raw_version)
-        if raw_version.split('.').size <= 2
+        if @raw_version.split('.').size <= 2
           @missing_patch_level = true
         end
       else
