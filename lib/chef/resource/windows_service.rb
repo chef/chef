@@ -32,6 +32,7 @@ class Chef
         super
         @resource_name = :windows_service
         @provider = Chef::Provider::Service::Windows
+        @allowed_actions.push(:configure_startup)
         @startup_type = :automatic
       end
 
@@ -42,7 +43,7 @@ class Chef
         set_or_return(
           :startup_type,
           arg,
-          :equal_to => [ :automatic, :manual ]
+          :equal_to => [ :automatic, :manual, :disabled ]
         )
       end
     end

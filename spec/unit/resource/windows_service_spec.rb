@@ -38,4 +38,9 @@ describe Chef::Resource::WindowsService, "initialize", :windows_only do
     resource.startup_type(:manual)
     expect(resource.startup_type).to eql(:manual)
   end
+
+  it "allows the action to be 'configure_startup'" do
+    resource.action :configure_startup
+    resource.action.should == [:configure_startup]
+  end
 end
