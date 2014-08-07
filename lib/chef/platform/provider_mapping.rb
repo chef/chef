@@ -524,6 +524,8 @@ class Chef
             if platforms.has_key?(args[:platform])
               if platforms[args[:platform]].has_key?(:default)
                 platforms[args[:platform]][:default][args[:resource].to_sym] = args[:provider]
+              elsif args[:platform] == :default
+                platforms[:default][args[:resource].to_sym] = args[:provider]
               else
                 platforms[args[:platform]] = { :default => { args[:resource].to_sym => args[:provider] } }
               end
