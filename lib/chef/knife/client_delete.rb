@@ -47,7 +47,7 @@ class Chef
           object = Chef::ApiClient.load(@client_name)
           if object.validator
             unless config[:delete_validators]
-              ui.fatal("You must specify --force to delete the validator client #{@client_name}")
+              ui.fatal("You must specify --delete-validators to delete the validator client #{@client_name}")
               exit 2
             end
           end

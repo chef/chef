@@ -50,7 +50,7 @@ describe Chef::Knife::ClientDelete do
       Chef::ApiClient.should_receive(:load).and_return(@client)
     end
 
-    it 'should delete non-validator client if --force is not set' do
+    it 'should delete non-validator client if --delete-validators is not set' do
       @knife.config[:delete_validators] = false
       @client.should_receive(:destroy).and_return(@client)
       @knife.should_receive(:msg)
@@ -58,7 +58,7 @@ describe Chef::Knife::ClientDelete do
       @knife.run
     end
 
-    it 'should delete non-validator client if --force is set' do
+    it 'should delete non-validator client if --delete-validators is set' do
       @knife.config[:delete_validators] = true
       @client.should_receive(:destroy).and_return(@client)
       @knife.should_receive(:msg)
@@ -66,13 +66,13 @@ describe Chef::Knife::ClientDelete do
       @knife.run
     end
 
-    it 'should not delete validator client if --force is not set' do
+    it 'should not delete validator client if --delete-validators is not set' do
       @client.validator(true)
       @knife.ui.should_receive(:fatal)
       lambda { @knife.run}.should raise_error(SystemExit)
     end
 
-    it 'should delete validator client if --force is set' do
+    it 'should delete validator client if --delete-validators is set' do
       @knife.config[:delete_validators] = true
       @client.should_receive(:destroy).and_return(@client)
       @knife.should_receive(:msg)
