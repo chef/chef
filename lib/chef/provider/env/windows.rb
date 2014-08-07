@@ -60,7 +60,7 @@ class Chef
         def env_obj(key_name)
           wmi = WmiLite::Wmi.new
           environment_variables = wmi.instances_of('Win32_Environment')
-          existing_variable = find_env(environment_variables, key_name)
+          existing_variable = find_env(environment_variables, key_name.downcase)
           existing_variable.nil? ? nil : existing_variable.wmi_ole_object
         end
 
