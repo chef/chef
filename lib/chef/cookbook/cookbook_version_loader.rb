@@ -147,12 +147,6 @@ class Chef
 
         @metadata = Chef::Cookbook::Metadata.new
 
-        # Compatibility if metadata is missing the name attribute:
-        # TODO: Metadata should distinguish between inferred name and actual.
-        if @metadata.name.nil?
-          @metadata.name(@inferred_cookbook_name)
-        end
-
         metadata_filenames.each do |metadata_file|
           case metadata_file
           when /\.rb$/
@@ -165,7 +159,6 @@ class Chef
             raise RuntimeError, "Invalid metadata file: #{metadata_file} for cookbook: #{cookbook_version}"
           end
         end
-
 
         @metadata
 
@@ -181,6 +174,14 @@ class Chef
 
       def raise_metadata_error!
         raise @metadata_error unless @metadata_error.nil?
+        # Metadata won't be valid if the cookbook is empty. If the cookbook is
+        # actually empty, a metadata error here would be misleading, so don't
+        # raise it (if called by #load!, a different error is raised).
+        if !empty? && !metadata.valid?
+          message = "Cookbook loaded at path(s) [#{@cookbook_paths.join(', ')}] has invalid metadata: #{metadata.errors.join('; ')}"
+          raise Exceptions::MetadataNotValid, message
+        end
+        false
       end
 
       def empty?

@@ -108,7 +108,7 @@ describe Chef::Cookbook::CookbookVersionLoader do
 
     end
 
-    context "when a cookbook has an invalid metadata file [CHEF-2923]" do
+    context "when a cookbook has a metadata file with a ruby error [CHEF-2923]" do
 
       let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "invalid-metadata-chef-repo/invalid-metadata") }
 
@@ -132,6 +132,43 @@ describe Chef::Cookbook::CookbookVersionLoader do
         cookbook_loader.metadata
         expect(cookbook_loader.metadata_error).to be_a(StandardError)
         expect(cookbook_loader.metadata_error.message).to eq("THIS METADATA HAS A BUG")
+      end
+
+    end
+
+    context "when a cookbook has a metadata file with invalid metadata" do
+
+      let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "incomplete-metadata-chef-repo/incomplete-metadata") }
+
+      let(:error_message) do
+        "Cookbook loaded at path(s) [#{cookbook_path}] has invalid metadata: The `name' attribute is required in cookbook metadata"
+      end
+
+      it "raises an error when loading with #load!" do
+        expect { cookbook_loader.load! }.to raise_error(Chef::Exceptions::MetadataNotValid, error_message)
+      end
+
+      it "raises an error when called with #load" do
+        expect { cookbook_loader.load }.to raise_error(Chef::Exceptions::MetadataNotValid, error_message)
+      end
+
+      it "uses the inferred cookbook name [CHEF-2923]" do
+        # This behavior is intended to support the CHEF-2923 feature where
+        # invalid metadata doesn't prevent you from uploading other cookbooks.
+        #
+        # The metadata is the definitive source of the cookbook name, but if
+        # the metadata is incomplete/invalid, we can't read the name from it.
+        #
+        # The CookbookLoader stores CookbookVersionLoaders in a Hash with
+        # cookbook names as the keys, and finds the loader in this Hash to call
+        # #load on it when the user runs a command like `knife cookbook upload specific-cookbook`
+        #
+        # Most of the time this will work, but if the user tries to upload a
+        # specific cookbook by name, has customized that cookbook's name (so it
+        # doesn't match the inferred name), and that metadata file has a syntax
+        # error, we might report a "cookbook not found" error instead of the
+        # metadata syntax error that is the actual cause.
+        expect(cookbook_loader.cookbook_name).to eq(:"incomplete-metadata")
       end
 
     end
