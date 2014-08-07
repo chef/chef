@@ -128,10 +128,19 @@ describe Chef::DataBag do
       end
     end
 
-    describe "in solo mode" do
+    def file_dir_stub(path, returns = true)
+      File.should_receive(:directory?).with(path).and_return(returns)
+    end
+
+    def dir_glob_stub(path, returns = [])
+      Dir.should_receive(:glob).with(File.join(path, 'foo/*.json')).and_return(returns)
+    end
+
+    shared_examples_for "data bag in solo mode" do |data_bag_path|
       before do
         Chef::Config[:solo] = true
-        Chef::Config[:data_bag_path] = '/var/chef/data_bags'
+        Chef::Config[:data_bag_path] = data_bag_path
+        @paths = Array(data_bag_path)
       end
 
       after do
@@ -139,41 +148,107 @@ describe Chef::DataBag do
       end
 
       it "should get the data bag from the data_bag_path" do
-        File.should_receive(:directory?).with('/var/chef/data_bags').and_return(true)
-        Dir.should_receive(:glob).with('/var/chef/data_bags/foo/*.json').and_return([])
+        @paths.each do |path|
+          file_dir_stub(path)
+          dir_glob_stub(path)
+        end
         Chef::DataBag.load('foo')
       end
 
       it "should get the data bag from the data_bag_path by symbolic name" do
-        File.should_receive(:directory?).with('/var/chef/data_bags').and_return(true)
-        Dir.should_receive(:glob).with('/var/chef/data_bags/foo/*.json').and_return([])
+        @paths.each do |path|
+          file_dir_stub(path)
+          dir_glob_stub(path)
+        end
         Chef::DataBag.load(:foo)
       end
 
       it "should return the data bag" do
-        File.should_receive(:directory?).with('/var/chef/data_bags').and_return(true)
-        Dir.stub(:glob).and_return(["/var/chef/data_bags/foo/bar.json", "/var/chef/data_bags/foo/baz.json"])
-        IO.should_receive(:read).with('/var/chef/data_bags/foo/bar.json').and_return('{"id": "bar", "name": "Bob Bar" }')
-        IO.should_receive(:read).with('/var/chef/data_bags/foo/baz.json').and_return('{"id": "baz", "name": "John Baz" }')
+        @paths.each do |path|
+          file_dir_stub(path)
+          if path == @paths.first
+            dir_glob_stub(path, [File.join(path, 'foo/bar.json'), File.join(path, 'foo/baz.json')])
+          else
+            dir_glob_stub(path)
+          end
+        end
+        IO.should_receive(:read).with(File.join(@paths.first, 'foo/bar.json')).and_return('{"id": "bar", "name": "Bob Bar" }')
+        IO.should_receive(:read).with(File.join(@paths.first, 'foo/baz.json')).and_return('{"id": "baz", "name": "John Baz" }')
         data_bag = Chef::DataBag.load('foo')
         data_bag.should == { 'bar' => { 'id' => 'bar', 'name' => 'Bob Bar' }, 'baz' => { 'id' => 'baz', 'name' => 'John Baz' }}
       end
 
+      it "should raise if data bag has items with similar names but different content" do
+        @paths.each do |path|
+          file_dir_stub(path)
+          item_with_different_content = "{\"id\": \"bar\", \"name\": \"Bob Bar\", \"path\": \"#{path}\"}"
+          IO.should_receive(:read).with(File.join(path, 'foo/bar.json')).and_return(item_with_different_content)
+          if data_bag_path.is_a?(String)
+            dir_glob_stub(path, [File.join(path, 'foo/bar.json'), File.join(path, 'foo/baz.json')])
+            item_2_with_different_content = '{"id": "bar", "name": "John Baz"}'
+            IO.should_receive(:read).with(File.join(path, 'foo/baz.json')).and_return(item_2_with_different_content)
+          else
+            dir_glob_stub(path, [File.join(path, 'foo/bar.json')])
+          end
+        end
+        expect { Chef::DataBag.load('foo') }.to raise_error(Chef::Exceptions::DuplicateDataBagItem)
+      end
+
+      it "should return data bag if it has items with similar names and the same content" do
+        @paths.each do |path|
+          file_dir_stub(path)
+          dir_glob_stub(path, [File.join(path, 'foo/bar.json'), File.join(path, 'foo/baz.json')])
+          item_with_same_content = '{"id": "bar", "name": "Bob Bar"}'
+          IO.should_receive(:read).with(File.join(path, 'foo/bar.json')).and_return(item_with_same_content)
+          IO.should_receive(:read).with(File.join(path, 'foo/baz.json')).and_return(item_with_same_content)
+        end
+        data_bag = Chef::DataBag.load('foo')
+        test_data_bag = { 'bar' => { 'id' => 'bar', 'name' => 'Bob Bar'} }
+        data_bag.should == test_data_bag
+      end
+
+      it "should merge data bag items if there are no conflicts" do
+        @paths.each_with_index do |path, index|
+          file_dir_stub(path)
+          dir_glob_stub(path, [File.join(path, 'foo/bar.json'), File.join(path, 'foo/baz.json')])
+          test_item_with_same_content = '{"id": "bar", "name": "Bob Bar"}'
+          IO.should_receive(:read).with(File.join(path, 'foo/bar.json')).and_return(test_item_with_same_content)
+          test_uniq_item = "{\"id\": \"baz_#{index}\", \"name\": \"John Baz\", \"path\": \"#{path}\"}"
+          IO.should_receive(:read).with(File.join(path, 'foo/baz.json')).and_return(test_uniq_item)
+        end
+        data_bag = Chef::DataBag.load('foo')
+        test_data_bag = { 'bar' => { 'id' => 'bar', 'name' => 'Bob Bar'} }
+        @paths.each_with_index do |path, index|
+          test_data_bag["baz_#{index}"] = { "id" => "baz_#{index}", "name" => "John Baz", "path" => path }
+        end
+        data_bag.should == test_data_bag
+      end
+
       it "should return the data bag list" do
-        File.should_receive(:directory?).with('/var/chef/data_bags').and_return(true)
-        Dir.should_receive(:glob).and_return(["/var/chef/data_bags/foo", "/var/chef/data_bags/bar"])
+        @paths.each do |path|
+          file_dir_stub(path)
+          Dir.should_receive(:glob).and_return([File.join(path, 'foo'), File.join(path, 'bar')])
+        end
         data_bag_list = Chef::DataBag.list
         data_bag_list.should == { 'bar' => 'bar', 'foo' => 'foo' }
       end
 
       it 'should raise an error if the configured data_bag_path is invalid' do
-        File.should_receive(:directory?).with('/var/chef/data_bags').and_return(false)
+        file_dir_stub(@paths.first, false)
 
         lambda {
           Chef::DataBag.load('foo')
         }.should raise_error Chef::Exceptions::InvalidDataBagPath, "Data bag path '/var/chef/data_bags' is invalid"
       end
 
+    end
+
+    describe "data bag with string path" do
+      it_should_behave_like "data bag in solo mode", "/var/chef/data_bags"
+    end
+
+    describe "data bag with array path" do
+      it_should_behave_like "data bag in solo mode", ["/var/chef/data_bags", "/var/chef/data_bags_2"]
     end
   end
 
