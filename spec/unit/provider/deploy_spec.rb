@@ -192,6 +192,7 @@ describe Chef::Provider::Deploy do
       FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/5")
       @provider.run_action(:rollback)
       @provider.release_path.should eql("/my/deploy/dir/releases/3")
+      @provider.shared_path.should eql("/my/deploy/dir/shared")
     end
 
     it "sets the release path to the specified release, symlinks, and rm's any newer releases on rollback" do
@@ -203,6 +204,7 @@ describe Chef::Provider::Deploy do
       FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
       @provider.run_action(:rollback)
       @provider.release_path.should eql("/my/deploy/dir/releases/20040700000000")
+      @provider.shared_path.should eql("/my/deploy/dir/shared")
     end
 
     it "sets the release path to the penultimate release, symlinks, and rm's the last release on rollback" do
@@ -216,6 +218,7 @@ describe Chef::Provider::Deploy do
       FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
       @provider.run_action(:rollback)
       @provider.release_path.should eql("/my/deploy/dir/releases/20040700000000")
+      @provider.shared_path.should eql("/my/deploy/dir/shared")
     end
 
     describe "if there are no releases to fallback to" do
@@ -255,6 +258,7 @@ describe Chef::Provider::Deploy do
       FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
       @provider.run_action(:rollback)
       @provider.release_path.should eql("/my/deploy/dir/releases/20040700000000")
+      @provider.shared_path.should eql("/my/deploy/dir/shared")
     end
   end
 
