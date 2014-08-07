@@ -21,6 +21,7 @@
 
 require File.expand_path("../../spec_helper", __FILE__)
 require 'chef/resource_reporter'
+require 'socket'
 
 describe Chef::ResourceReporter do
   before(:all) do
@@ -705,6 +706,53 @@ describe Chef::ResourceReporter do
         end
 
         @resource_reporter.run_completed(@node)
+      end
+    end
+
+    context "when data report post is enabled and the server response fails" do
+      before do
+        @enable_reporting_url_fatals = Chef::Config[:enable_reporting_url_fatals]
+        Chef::Config[:enable_reporting_url_fatals] = true
+        # this call doesn't matter for this context
+        @rest_client.stub(:create_url)
+      end
+
+      after do
+        Chef::Config[:enable_reporting_url_fatals] = @enable_reporting_url_fatals
+      end
+
+      it "should log 4xx errors" do
+        response = Net::HTTPClientError.new("forbidden", "403", "Forbidden")
+        error = Net::HTTPServerException.new("403 message", response)
+        @rest_client.stub(:raw_http_request).and_raise(error)
+        Chef::Log.should_receive(:error).with(/403/)
+
+        @resource_reporter.post_reporting_data
+      end
+
+      it "should log error 5xx errors" do
+        response = Net::HTTPServerError.new("internal error", "500", "Internal Server Error")
+        error = Net::HTTPFatalError.new("500 message", response)
+        @rest_client.stub(:raw_http_request).and_raise(error)
+        Chef::Log.should_receive(:error).with(/500/)
+
+        @resource_reporter.post_reporting_data
+      end
+
+      it "should log if a socket error happens" do
+        @rest_client.stub(:raw_http_request).and_raise(SocketError.new("test socket error"))
+        Chef::Log.should_receive(:error).with(/test socket error/)
+
+        @resource_reporter.post_reporting_data
+
+      end
+
+      it "should raise if an unkwown error happens" do
+        @rest_client.stub(:raw_http_request).and_raise(Exception.new)
+
+        lambda {
+          @resource_reporter.post_reporting_data
+        }.should raise_error(Exception)
       end
     end
   end
