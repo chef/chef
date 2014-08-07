@@ -73,8 +73,6 @@ describe Chef::Cookbook::Metadata do
           duck_type.send(setter, metadata_value)
         end
 
-        field_to_change
-
         duck_type.send("#{field_to_change}=".to_sym, :epic_fail)
         @meta.should_not == duck_type
       end
