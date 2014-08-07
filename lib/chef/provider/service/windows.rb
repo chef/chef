@@ -50,7 +50,12 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     @current_resource.service_name(@new_resource.service_name)
     @current_resource.running(current_state == RUNNING)
     Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
-    @current_resource.enabled(start_type != DISABLED)
+    case start_type
+    when AUTO_START
+      @current_resource.enabled(true)
+    when DISABLED
+      @current_resource.enabled(false)
+    end
     Chef::Log.debug "#{@new_resource} enabled: #{@current_resource.enabled}"
     @current_resource
   end

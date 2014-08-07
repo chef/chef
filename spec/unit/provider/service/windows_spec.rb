@@ -59,6 +59,13 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
     @provider.current_resource.enabled.should be_true
   end
 
+  it "does not set the current resources start type if it is neither AUTO START or DISABLED" do
+    Win32::Service.stub(:config_info).with(@new_resource.service_name).and_return(
+      double("ConfigStruct", :start_type => "manual"))
+    @provider.load_current_resource
+    @provider.current_resource.enabled.should be_nil
+  end
+
   describe Chef::Provider::Service::Windows, "start_service" do
     before(:each) do
       Win32::Service.stub(:status).with(@new_resource.service_name).and_return(
