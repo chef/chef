@@ -296,6 +296,12 @@ EOR
       File.should_not_receive(:exists?)
       lambda {@role.class.from_disk("lolcat")}.should raise_error(Chef::Exceptions::DuplicateRole)
     end
+
+    it "should not raise an exception if two files exist with a similar name" do
+      Dir.should_receive(:glob).and_return(["#{Chef::Config[:role_path]}/memes/lolcat.rb", "#{Chef::Config[:role_path]}/super_lolcat.rb"])
+      File.should_not_receive(:exists?)
+      lambda {@role.class.from_disk("lolcat")}.should_not raise_error(Chef::Exceptions::DuplicateRole)
+    end    
   end
 
   describe "when loading from disk and role_path is an array" do
