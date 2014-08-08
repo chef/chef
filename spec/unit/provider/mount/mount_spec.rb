@@ -347,7 +347,7 @@ describe Chef::Provider::Mount::Mount do
       it "should use mount -o remount if remount is supported" do
         @new_resource.supports({:remount => true})
         @current_resource.mounted(true)
-        @provider.should_receive(:shell_out!).with("mount -o remount #{@new_resource.mount_point}")
+        @provider.should_receive(:shell_out!).with("mount -o remount,defaults #{@new_resource.mount_point}")
         @provider.remount_fs
       end
 
