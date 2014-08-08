@@ -117,6 +117,8 @@ class Chef
     class ObsoleteDependencySyntax < ArgumentError; end
     class InvalidDataBagPath < ArgumentError; end
 
+    class PowershellCmdletException < RuntimeError; end
+
     # A different version of a cookbook was added to a
     # VersionedRecipeList than the one already there.
     class CookbookVersionConflict < ArgumentError ; end
