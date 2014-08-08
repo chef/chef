@@ -167,7 +167,7 @@ module Mixlib
           begin
             next_chunk = stderr_read.readpartial(READ_SIZE)
             @stderr << next_chunk
-            @live_stream << next_chunk if @live_stream
+            @live_stderr << next_chunk if @live_stderr
           rescue EOFError
             stderr_read.close
             open_streams.delete(stderr_read)

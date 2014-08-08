@@ -53,10 +53,13 @@ module Mixlib
     # to determine if the command was successful. Normally set via options to new
     attr_accessor :valid_exit_codes
 
-    # When live_stream is set, stdout and stderr of the subprocess will be
-    # copied to it as the subprocess is running. For example, if live_stream is
-    # set to STDOUT, the command's output will be echoed to STDOUT.
-    attr_accessor :live_stream
+    # When live_stdout is set, the stdout of the subprocess will be copied to it
+    # as the subprocess is running.
+    attr_accessor :live_stdout
+
+    # When live_stderr is set, the stderr of the subprocess will be copied to it
+    # as the subprocess is running.
+    attr_accessor :live_stderr
 
     # ShellOut will push data from :input down the stdin of the subprocss.
     # Normally set via options passed to new.
@@ -147,7 +150,7 @@ module Mixlib
     #   cmd.run_command # etc.
     def initialize(*command_args)
       @stdout, @stderr = '', ''
-      @live_stream = nil
+      @live_stdout = @live_stderr = nil
       @input = nil
       @log_level = :debug
       @log_tag = nil
@@ -161,6 +164,18 @@ module Mixlib
       end
 
       @command = command_args.size == 1 ? command_args.first : command_args
+    end
+
+    # Returns the stream that both is being used by both live_stdout and live_stderr, or nil
+    def live_stream
+      live_stdout == live_stderr ? live_stdout : nil
+    end
+
+    # A shortcut for setting both live_stdout and live_stderr, so that both the
+    # stdout and stderr from the subprocess will be copied to the same stream as
+    # the subprocess is running.
+    def live_stream=(stream)
+      @live_stdout = @live_stderr = stream
     end
 
     # Set the umask that the subprocess will have. If given as a string, it
@@ -286,7 +301,11 @@ module Mixlib
         when 'returns'
           self.valid_exit_codes = Array(setting)
         when 'live_stream'
-          self.live_stream = setting
+          self.live_stdout = self.live_stderr = setting
+        when 'live_stdout'
+          self.live_stdout = setting
+        when 'live_stderr'
+          self.live_stderr = setting
         when 'input'
           self.input = setting
         when 'logger'
