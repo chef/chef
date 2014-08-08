@@ -359,7 +359,6 @@ describe Chef::Provider::Mount::Mount do
         @provider.should_receive(:shell_out!).with("mount -o remount,rw,noexec,noauto #{@new_resource.mount_point}")
         @provider.remount_fs
       end
-    end
 
       it "should umount and mount if remount is not supported" do
         @new_resource.supports({:remount => false})
