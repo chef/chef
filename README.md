@@ -1,4 +1,4 @@
-# Chef [![Code Climate](https://codeclimate.com/github/opscode/chef.png)](https://codeclimate.com/github/opscode/chef)
+# Chef [![Code Climate](https://codeclimate.com/github/byggztryng/chef/badges/gpa.svg)](https://codeclimate.com/github/byggztryng/chef)[![Test Coverage](https://codeclimate.com/github/byggztryng/chef/badges/coverage.svg)](https://codeclimate.com/github/byggztryng/chef)
 
 Want to try Chef? Get started with [learnchef](https://learnchef.opscode.com)
 

@@ -18,6 +18,9 @@
 # If you need to add anything in here, don't.
 # Add it to one of the files in spec/support
 
+require 'codeclimate-test-reporter'
+CodeClimate::TestReporter.start
+
 # Configure this first so it doesn't trigger annoying warning when we use it.
 # Main rspec configuration comes later
 RSpec.configure do |config|
