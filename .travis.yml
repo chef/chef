@@ -26,6 +26,7 @@ branches:
     - 10-stable
     - 11-stable
 
+env: CODECLIMATE_REPO_TOKEN=cb12324ab41e2d75d393ada2ea01c26c6b4861192e68ae94dd1604bc5c3b411b
 script: bundle exec rspec --color --format progress
 
 notifications:
