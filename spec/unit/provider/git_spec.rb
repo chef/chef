@@ -224,8 +224,8 @@ SHAS
     @provider.clone
   end
 
-  it "runs a checkout command with default options" do
-    expected_cmd = 'git checkout -b deploy d35af14d41ae22b19da05d7d03a0bafc321b244c'
+  it "runs a checkout command with default options and uses -B to reset branches if necessary" do
+    expected_cmd = 'git checkout -B deploy d35af14d41ae22b19da05d7d03a0bafc321b244c'
     @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir",
                                                              :log_tag => "git[web2.0 app]")
     @provider.checkout

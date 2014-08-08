@@ -27,6 +27,7 @@
   each one.
 * Fix RPM package version detection (Issue 1554)
 * Don't override :default provider map if :default passed as platform (OC-11667).
+* Fix SuSE package removal failure (Issue 1732).
 
 
 * [**Phil Dibowitz**](https://github.com/jaymzh):
@@ -59,6 +60,12 @@
   * increase command timeout length for package installation.
 * [**sawanoboly**](https://github.com/sawanoboly):
   Use shared_path for deploy resource.
+* [**Victor Hahn**](https://github.com/victorhahncastell):
+  Add template syntax check to files in the templates/ dir only.
+* [**Jordan**](https://github.com/jordane):
+  Allow git provider to checkout existing branch names.
+* [**Eric Herot**](https://github.com/eherot):
+  Add whitespace boundaries to some mount point references in mount provider.
 
 
 ## Last Release: 11.14.2

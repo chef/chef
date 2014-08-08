@@ -85,7 +85,7 @@ class Chef
 
           shell_out!("mount").stdout.each_line do |line|
             case line
-            when /^#{device_mount_regex}\s+on\s+#{Regexp.escape(real_mount_point)}/
+            when /^#{device_mount_regex}\s+on\s+#{Regexp.escape(real_mount_point)}\s/
               mounted = true
               Chef::Log.debug("Special device #{device_logstring} mounted as #{real_mount_point}")
             when /^([\/\w])+\son\s#{Regexp.escape(real_mount_point)}\s+/
@@ -167,7 +167,7 @@ class Chef
 
             found = false
             ::File.readlines("/etc/fstab").reverse_each do |line|
-              if !found && line =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}/
+              if !found && line =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}\s/
                 found = true
                 Chef::Log.debug("#{@new_resource} is removed from fstab")
                 next
