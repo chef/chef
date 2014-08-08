@@ -103,7 +103,7 @@ class Chef
 
         private
         def zypper_package(command, pkgname, version)
-          version = "=#{version}" unless version.empty?
+          version = "=#{version}" unless version.nil? || version.empty?
           if zypper_version < 1.0
             shell_out!("zypper#{gpg_checks} #{command} -y #{pkgname}")
           else
