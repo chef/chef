@@ -19,7 +19,7 @@ require 'support/shared/integration/integration_helper'
 require 'chef/mixin/shell_out'
 
 describe "Knife cookbook API integration with IPv6" do
-  extend IntegrationSupport
+  include IntegrationSupport
   include Chef::Mixin::ShellOut
 
   when_the_chef_server "is bound to IPv6" do
@@ -100,7 +100,7 @@ END_CLIENT_RB
           end
 
           it "downloads the cookbook" do
-            s = shell_out!("knife cookbook download apache2 #{knife_config_flag} -d #{cache_path}", :cwd => chef_dir)
+            shell_out!("knife cookbook download apache2 #{knife_config_flag} -d #{cache_path}", :cwd => chef_dir)
             Dir["#{cache_path}/*"].map {|entry| File.basename(entry)}.should include("apache2-0.0.0")
           end
         end

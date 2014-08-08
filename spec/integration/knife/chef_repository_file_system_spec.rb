@@ -20,14 +20,16 @@ require 'chef/knife/list'
 require 'chef/knife/show'
 
 describe 'General chef_repo file system checks' do
-  extend IntegrationSupport
+  include IntegrationSupport
   include KnifeSupport
 
   context 'directories and files that should/should not be ignored' do
     when_the_repository "has empty roles, environments and data bag item directories" do
-      directory "roles"
-      directory "environments"
-      directory "data_bags/bag1"
+      before do
+        directory "roles"
+        directory "environments"
+        directory "data_bags/bag1"
+      end
 
       it "knife list --local -Rfp / returns them" do
         knife('list --local -Rfp /').should_succeed <<EOM
@@ -40,7 +42,7 @@ EOM
     end
 
     when_the_repository "has an empty data_bags directory" do
-      directory "data_bags"
+      before { directory "data_bags" }
 
       it "knife list --local / returns it" do
         knife('list --local /').should_succeed "/data_bags\n"
@@ -48,7 +50,7 @@ EOM
     end
 
     when_the_repository "has an empty cookbook directory" do
-      directory 'cookbooks/cookbook1'
+      before { directory 'cookbooks/cookbook1' }
 
       it "knife list --local -Rfp / does not return it" do
         knife('list --local -Rfp /').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
@@ -58,7 +60,7 @@ EOM
     end
 
     when_the_repository "has only empty cookbook subdirectories" do
-      directory 'cookbooks/cookbook1/recipes'
+      before { directory 'cookbooks/cookbook1/recipes' }
 
       it "knife list --local -Rfp / does not return it" do
         knife('list --local -Rfp /').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
@@ -68,8 +70,10 @@ EOM
     end
 
     when_the_repository "has empty and non-empty cookbook subdirectories" do
-      directory 'cookbooks/cookbook1/recipes'
-      file 'cookbooks/cookbook1/templates/default/x.txt', ''
+      before do
+        directory 'cookbooks/cookbook1/recipes'
+        file 'cookbooks/cookbook1/templates/default/x.txt', ''
+      end
 
       it "knife list --local -Rfp / does not return the empty ones" do
         knife('list --local -Rfp /').should_succeed <<EOM
@@ -83,7 +87,7 @@ EOM
     end
 
     when_the_repository "has only empty cookbook sub-sub-directories" do
-      directory 'cookbooks/cookbook1/templates/default'
+      before { directory 'cookbooks/cookbook1/templates/default' }
 
       it "knife list --local -Rfp / does not return it" do
         knife('list --local -Rfp /').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
@@ -93,9 +97,11 @@ EOM
     end
 
     when_the_repository "has empty cookbook sub-sub-directories alongside non-empty ones" do
-      file 'cookbooks/cookbook1/templates/default/x.txt', ''
-      directory 'cookbooks/cookbook1/templates/rhel'
-      directory 'cookbooks/cookbook1/files/default'
+      before do
+        file 'cookbooks/cookbook1/templates/default/x.txt', ''
+        directory 'cookbooks/cookbook1/templates/rhel'
+        directory 'cookbooks/cookbook1/files/default'
+      end
 
       it "knife list --local -Rfp / does not return the empty ones" do
         knife('list --local -Rfp /').should_succeed <<EOM
@@ -109,8 +115,10 @@ EOM
     end
 
     when_the_repository "has an extra schmenvironments directory" do
-      directory "schmenvironments" do
-        file "_default.json", {}
+      before do
+        directory "schmenvironments" do
+          file "_default.json", {}
+        end
       end
 
       it "knife list --local -Rfp / should NOT return it" do
@@ -119,20 +127,22 @@ EOM
     end
 
     when_the_repository "has extra subdirectories and files under data bag items, roles, and environments" do
-      directory "data_bags/bag1" do
-        file "item1.json", {}
-        file "item2.xml", ""
-        file "another_subdir/item.json", {}
-      end
-      directory "roles" do
-        file "role1.json", {}
-        file "role2.xml", ""
-        file "subdir/role.json", {}
-      end
-      directory "environments" do
-        file "environment1.json", {}
-        file "environment2.xml", ""
-        file "subdir/environment.json", {}
+      before do
+        directory "data_bags/bag1" do
+          file "item1.json", {}
+          file "item2.xml", ""
+          file "another_subdir/item.json", {}
+        end
+        directory "roles" do
+          file "role1.json", {}
+          file "role2.xml", ""
+          file "subdir/role.json", {}
+        end
+        directory "environments" do
+          file "environment1.json", {}
+          file "environment2.xml", ""
+          file "subdir/environment.json", {}
+        end
       end
 
       it "knife list --local -Rfp / should NOT return them" do
@@ -149,56 +159,58 @@ EOM
     end
 
     when_the_repository "has extraneous subdirectories and files under a cookbook" do
-      directory 'cookbooks/cookbook1' do
-        file 'a.rb', ''
-        file 'blarghle/blah.rb', ''
-        directory 'attributes' do
+      before do
+        directory 'cookbooks/cookbook1' do
           file 'a.rb', ''
-          file 'b.json', {}
-          file 'c/d.rb', ''
-          file 'c/e.json', {}
-        end
-        directory 'definitions' do
-          file 'a.rb', ''
-          file 'b.json', {}
-          file 'c/d.rb', ''
-          file 'c/e.json', {}
-        end
-        directory 'recipes' do
-          file 'a.rb', ''
-          file 'b.json', {}
-          file 'c/d.rb', ''
-          file 'c/e.json', {}
-        end
-        directory 'libraries' do
-          file 'a.rb', ''
-          file 'b.json', {}
-          file 'c/d.rb', ''
-          file 'c/e.json', {}
-        end
-        directory 'templates' do
-          file 'a.rb', ''
-          file 'b.json', {}
-          file 'c/d.rb', ''
-          file 'c/e.json', {}
-        end
-        directory 'files' do
-          file 'a.rb', ''
-          file 'b.json', {}
-          file 'c/d.rb', ''
-          file 'c/e.json', {}
-        end
-        directory 'resources' do
-          file 'a.rb', ''
-          file 'b.json', {}
-          file 'c/d.rb', ''
-          file 'c/e.json', {}
-        end
-        directory 'providers' do
-          file 'a.rb', ''
-          file 'b.json', {}
-          file 'c/d.rb', ''
-          file 'c/e.json', {}
+          file 'blarghle/blah.rb', ''
+          directory 'attributes' do
+            file 'a.rb', ''
+            file 'b.json', {}
+            file 'c/d.rb', ''
+            file 'c/e.json', {}
+          end
+          directory 'definitions' do
+            file 'a.rb', ''
+            file 'b.json', {}
+            file 'c/d.rb', ''
+            file 'c/e.json', {}
+          end
+          directory 'recipes' do
+            file 'a.rb', ''
+            file 'b.json', {}
+            file 'c/d.rb', ''
+            file 'c/e.json', {}
+          end
+          directory 'libraries' do
+            file 'a.rb', ''
+            file 'b.json', {}
+            file 'c/d.rb', ''
+            file 'c/e.json', {}
+          end
+          directory 'templates' do
+            file 'a.rb', ''
+            file 'b.json', {}
+            file 'c/d.rb', ''
+            file 'c/e.json', {}
+          end
+          directory 'files' do
+            file 'a.rb', ''
+            file 'b.json', {}
+            file 'c/d.rb', ''
+            file 'c/e.json', {}
+          end
+          directory 'resources' do
+            file 'a.rb', ''
+            file 'b.json', {}
+            file 'c/d.rb', ''
+            file 'c/e.json', {}
+          end
+          directory 'providers' do
+            file 'a.rb', ''
+            file 'b.json', {}
+            file 'c/d.rb', ''
+            file 'c/e.json', {}
+          end
         end
       end
 
@@ -240,7 +252,7 @@ EOM
     end
 
     when_the_repository "has a file in cookbooks/" do
-      file 'cookbooks/file', ''
+      before { file 'cookbooks/file', '' }
       it 'does not show up in list -Rfp' do
         knife('list --local -Rfp /').should_succeed <<EOM
 /cookbooks/
@@ -249,7 +261,7 @@ EOM
     end
 
     when_the_repository "has a file in data_bags/" do
-      file 'data_bags/file', ''
+      before { file 'data_bags/file', '' }
       it 'does not show up in list -Rfp' do
         knife('list --local -Rfp /').should_succeed <<EOM
 /data_bags/
@@ -259,16 +271,20 @@ EOM
   end
 
   when_the_repository 'has a cookbook starting with .' do
-    file 'cookbooks/.svn/metadata.rb', ''
-    file 'cookbooks/a.b/metadata.rb', ''
+    before do
+      file 'cookbooks/.svn/metadata.rb', ''
+      file 'cookbooks/a.b/metadata.rb', ''
+    end
     it 'knife list does not show it' do
       knife('list --local -fp /cookbooks').should_succeed "/cookbooks/a.b/\n"
     end
   end
 
   when_the_repository 'has a data bag starting with .' do
-    file 'data_bags/.svn/x.json', {}
-    file 'data_bags/a.b/x.json', {}
+    before do
+      file 'data_bags/.svn/x.json', {}
+      file 'data_bags/a.b/x.json', {}
+    end
     it 'knife list does not show it' do
       knife('list --local -fp /data_bags').should_succeed "/data_bags/a.b/\n"
     end
