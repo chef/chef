@@ -26,7 +26,7 @@ require 'chef/config'
 #require 'chef_zero/rspec'
 require 'support/shared/integration/chef_zero_support'
 
-require 'json'
+require 'chef/json_compat'
 require 'support/shared/integration/knife_support'
 require 'support/shared/integration/app_server_support'
 require 'spec_helper'

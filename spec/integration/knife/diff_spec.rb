@@ -309,7 +309,9 @@ EOM
       when_the_repository 'has an environment with bad JSON' do
         before { file 'environments/x.json', '{' }
         it 'knife diff reports an error and does a textual diff' do
-          knife('diff /environments/x.json').should_succeed(/-  "name": "x"/, :stderr => "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n")
+          error_text = "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF"
+          error_match = Regexp.new(Regexp.escape(error_text))
+          knife('diff /environments/x.json').should_succeed(/-  "name": "x"/, :stderr => error_match)
         end
       end
     end
@@ -590,7 +592,9 @@ EOM
       when_the_repository 'has an environment with bad JSON' do
         before { file 'environments/x.json', '{' }
         it 'knife diff reports an error and does a textual diff' do
-          knife('diff /environments/x.json').should_succeed(/-  "name": "x"/, :stderr => "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n")
+          error_text = "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF"
+          error_match = Regexp.new(Regexp.escape(error_text))
+          knife('diff /environments/x.json').should_succeed(/-  "name": "x"/, :stderr => error_match)
         end
       end
     end

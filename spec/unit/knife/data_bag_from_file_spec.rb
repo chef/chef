@@ -21,7 +21,6 @@ require 'spec_helper'
 require 'chef/data_bag_item'
 require 'chef/encrypted_data_bag_item'
 require 'tempfile'
-require 'json'
 
 Chef::Knife::DataBagFromFile.load_deps
 
@@ -86,7 +85,6 @@ describe Chef::Knife::DataBagFromFile do
   end
 
   it "loads all from a folder and saves" do
-    dir = File.dirname(@db_file.path)
     @knife.name_args = [ 'bag_name', @db_folder ]
     @knife.loader.should_receive(:load_from).with("data_bags", 'bag_name', @db_file.path).and_return(@plain_data)
     @knife.loader.should_receive(:load_from).with("data_bags", 'bag_name', @db_file2.path).and_return(@plain_data)
