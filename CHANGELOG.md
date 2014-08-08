@@ -8,6 +8,8 @@
   Added the functionality to reflect $stderr when using live_stream.
 * [**Tyler Cipriani**:](https://github.com/thcipriani)
   Fixed typos in the code.
+* [**Max Lincoln**](https://github.com/maxlinc):
+  Support separate live stream for stderr.
 
 ## Last Release: 1.4.0 (08/04/2014)
 
