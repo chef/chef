@@ -13,6 +13,8 @@
   knife diagnostic messages sent to stdout instead of stderr
 * [**Xabier de Zuazo**](https://github.com/zuazo):
   Remove the unused StreamingCookbookUploader class (CHEF-4586)
+
+* log resource now marks itself as supporting why-run
 * http_request no longer appends "?message=" query string to GET and HEAD requests
 * added shell_out commands directly to the recipe DSL
 * cookbook synchronizer deletes old files from cookbooks
