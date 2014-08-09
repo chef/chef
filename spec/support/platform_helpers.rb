@@ -52,7 +52,12 @@ def windows_2008r2_or_later?
   return false unless windows?
   wmi = WmiLite::Wmi.new
   host = wmi.first_of('Win32_OperatingSystem')
-  (host['version'] && host['version'].to_f) > 6.0
+  version = host['version']
+  return nil unless version
+  components = version.split('.').map do | component |
+    component.to_i
+  end
+  components.length >=2 && components[0] >= 6 && components[1] >= 1
 end
 
 def mac_osx_106?
