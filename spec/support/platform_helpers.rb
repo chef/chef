@@ -53,7 +53,7 @@ def windows_2008r2_or_later?
   wmi = WmiLite::Wmi.new
   host = wmi.first_of('Win32_OperatingSystem')
   version = host['version']
-  return nil unless version
+  return false unless version
   components = version.split('.').map do | component |
     component.to_i
   end
