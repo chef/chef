@@ -24,6 +24,7 @@ require 'chef/mixin/params_validate'
 require 'chef/log'
 require 'chef/version_class'
 require 'chef/version_constraint'
+require 'chef/json_compat'
 
 class Chef
   class Cookbook
@@ -441,7 +442,7 @@ class Chef
       end
 
       def to_json(*a)
-        self.to_hash.to_json(*a)
+        ::Chef::JSONCompat.to_json(to_hash, *a)
       end
 
       def self.from_hash(o)
@@ -650,7 +651,6 @@ INVALID
         from_hash(params)
       end
     end
-
 
   end
 end

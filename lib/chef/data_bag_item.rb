@@ -112,13 +112,13 @@ class Chef
     # Serialize this object as a hash
     def to_json(*a)
       result = {
-        "name" => self.object_name,
+        "name"       => object_name,
         "json_class" => self.class.name,
-        "chef_type" => "data_bag_item",
-        "data_bag" => self.data_bag,
-        "raw_data" => self.raw_data
+        "chef_type"  => "data_bag_item",
+        "data_bag"   => data_bag,
+        "raw_data"   => raw_data
       }
-      result.to_json(*a)
+      ::Chef::JSONCompat.to_json(result, *a)
     end
 
     def self.from_hash(h)
@@ -210,5 +210,3 @@ class Chef
 
   end
 end
-
-

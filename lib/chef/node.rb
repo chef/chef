@@ -181,7 +181,6 @@ class Chef
       attributes.override
     end
 
-
     def override_attrs
      attributes.override
     end
@@ -416,7 +415,7 @@ class Chef
 
     # Serialize this object as a hash
     def to_json(*a)
-      for_json.to_json(*a)
+      ::Chef::JSONCompat.to_json(for_json, *a)
     end
 
     def for_json

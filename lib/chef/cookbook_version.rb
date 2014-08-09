@@ -405,7 +405,6 @@ class Chef
       records_by_pref[best_pref]
     end
 
-
     # Given a node, segment and path (filename or directory name),
     # return the priority-ordered list of preference locations to
     # look.
@@ -458,9 +457,9 @@ class Chef
     end
 
     def to_json(*a)
-      result = self.to_hash
+      result = to_hash
       result['json_class'] = self.class.name
-      result.to_json(*a)
+      ::Chef::JSONCompat.to_json(result, *a)
     end
 
     def self.json_create(o)
