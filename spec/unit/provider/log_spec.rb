@@ -20,62 +20,60 @@ require 'spec_helper'
 
 describe Chef::Provider::Log::ChefLog do
 
-  before(:each) do
-    @log_str = "this is my test string to log"
-    @node = Chef::Node.new
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, {}, @events)
-  end
+  let(:log_str) { "this is my test string to log" }
+
+  let(:node) { Chef::Node.new }
+
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+
+  let(:new_resource) { Chef::Resource::Log.new(log_str) }
+
+  let(:provider) { Chef::Provider::Log::ChefLog.new(new_resource, run_context) }
 
   it "should be registered with the default platform hash" do
-    Chef::Platform.platforms[:default][:log].should_not be_nil
+    expect(Chef::Platform.platforms[:default][:log]).not_to be_nil
   end
 
   it "should write the string to the Chef::Log object at default level (info)" do
-      @new_resource = Chef::Resource::Log.new(@log_str)
-      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context)
-      Chef::Log.should_receive(:info).with(@log_str).and_return(true)
-      @provider.action_write
+    expect(Chef::Log).to receive(:info).with(log_str).and_return(true)
+    provider.run_action(:write)
   end
 
   it "should write the string to the Chef::Log object at debug level" do
-      @new_resource = Chef::Resource::Log.new(@log_str)
-      @new_resource.level :debug
-      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context)
-      Chef::Log.should_receive(:debug).with(@log_str).and_return(true)
-      @provider.action_write
+    new_resource.level :debug
+    expect(Chef::Log).to receive(:debug).with(log_str).and_return(true)
+    provider.run_action(:write)
   end
 
   it "should write the string to the Chef::Log object at info level" do
-      @new_resource = Chef::Resource::Log.new(@log_str)
-      @new_resource.level :info
-      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context)
-      Chef::Log.should_receive(:info).with(@log_str).and_return(true)
-      @provider.action_write
+    new_resource.level :info
+    expect(Chef::Log).to receive(:info).with(log_str).and_return(true)
+    provider.run_action(:write)
   end
 
   it "should write the string to the Chef::Log object at warn level" do
-      @new_resource = Chef::Resource::Log.new(@log_str)
-      @new_resource.level :warn
-      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context)
-      Chef::Log.should_receive(:warn).with(@log_str).and_return(true)
-      @provider.action_write
+    new_resource.level :warn
+    expect(Chef::Log).to receive(:warn).with(log_str).and_return(true)
+    provider.run_action(:write)
   end
 
   it "should write the string to the Chef::Log object at error level" do
-      @new_resource = Chef::Resource::Log.new(@log_str)
-      @new_resource.level :error
-      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context)
-      Chef::Log.should_receive(:error).with(@log_str).and_return(true)
-      @provider.action_write
+    new_resource.level :error
+    expect(Chef::Log).to receive(:error).with(log_str).and_return(true)
+    provider.run_action(:write)
   end
 
   it "should write the string to the Chef::Log object at fatal level" do
-      @new_resource = Chef::Resource::Log.new(@log_str)
-      @new_resource.level :fatal
-      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context)
-      Chef::Log.should_receive(:fatal).with(@log_str).and_return(true)
-      @provider.action_write
+    new_resource.level :fatal
+    expect(Chef::Log).to receive(:fatal).with(log_str).and_return(true)
+    provider.run_action(:write)
   end
 
+  it "should print the string in why-run mode" do
+    Chef::Config[:why_run] = true
+    expect(Chef::Log).to receive(:info).with(log_str).and_return(true)
+    provider.run_action(:write)
+  end
 end
