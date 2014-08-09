@@ -48,6 +48,13 @@ def windows_win2k3?
   (host['version'] && host['version'].start_with?("5.2"))
 end
 
+def windows_2008r2_or_later?
+  return false unless windows?
+  wmi = WmiLite::Wmi.new
+  host = wmi.first_of('Win32_OperatingSystem')
+  (host['version'] && host['version'].to_f) > 6.0
+end
+
 def mac_osx_106?
   if File.exists? "/usr/bin/sw_vers"
     result = shell_out("/usr/bin/sw_vers")
