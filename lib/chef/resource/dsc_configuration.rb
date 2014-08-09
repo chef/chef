@@ -34,7 +34,7 @@ class Chef
         provider(Chef::Provider::DscConfiguration)
       end
 
-      def configuration(arg=nil)
+      def code(arg=nil)
         if arg && @path
           raise ArgumentError, "Only one of 'configuration' and 'path' properties may be specified"
         end
@@ -59,7 +59,7 @@ class Chef
         )
       end
 
-      def path(arg=nil)
+      def command(arg=nil)
         if arg && @configuration 
           raise ArgumentError, "Only one of 'configuration' and 'path' properties may be specified"
         end

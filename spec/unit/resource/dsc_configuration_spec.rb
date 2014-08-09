@@ -33,13 +33,13 @@ describe Chef::Resource::DscConfiguration do
   let(:configuration_name) { 'formatme' }
 
   it "allows the configuration attribute to be set" do
-    dsc_test_resource.configuration(configuration_code)
-    expect(dsc_test_resource.configuration).to eq(configuration_code)
+    dsc_test_resource.code(configuration_code)
+    expect(dsc_test_resource.code).to eq(configuration_code)
   end
 
   it "allows the path attribute to be set" do
-    dsc_test_resource.path(configuration_path)
-    expect(dsc_test_resource.path).to eq(configuration_path)
+    dsc_test_resource.command(configuration_path)
+    expect(dsc_test_resource.command).to eq(configuration_path)
   end
 
   it "allows the configuration_name attribute to be set" do
@@ -48,22 +48,22 @@ describe Chef::Resource::DscConfiguration do
   end
 
   it "raises an ArgumentError exception if an attempt is made to set the configuration attribute when the path attribute is already set" do
-    dsc_test_resource.path(configuration_path)
-    expect { dsc_test_resource.configuration(configuration_code) }.to raise_error(ArgumentError)
+    dsc_test_resource.command(configuration_path)
+    expect { dsc_test_resource.code(configuration_code) }.to raise_error(ArgumentError)
   end
 
   it "raises an ArgumentError exception if an attempt is made to set the path attribute when the configuration attribute is already set" do
-    dsc_test_resource.configuration(configuration_code)
-    expect { dsc_test_resource.path(configuration_path) }.to raise_error(ArgumentError)
+    dsc_test_resource.code(configuration_code)
+    expect { dsc_test_resource.command(configuration_path) }.to raise_error(ArgumentError)
   end
 
   it "raises an ArgumentError exception if an attempt is made to set the configuration_name attribute when the configuration attribute is already set" do
-    dsc_test_resource.configuration(configuration_code)
+    dsc_test_resource.code(configuration_code)
     expect { dsc_test_resource.configuration_name(configuration_name) }.to raise_error(ArgumentError)
   end
 
   it "raises an ArgumentError exception if an attempt is made to set the configuration attribute when the configuration_name attribute is already set" do
     dsc_test_resource.configuration_name(configuration_name)
-    expect { dsc_test_resource.configuration(configuration_code) }.to raise_error(ArgumentError)
+    expect { dsc_test_resource.code(configuration_code) }.to raise_error(ArgumentError)
   end
 end

@@ -72,11 +72,11 @@ EOH
     dsc_test_resource_base.name
   }
   let(:dsc_resource_from_code) {
-    dsc_test_resource_base.configuration(dsc_code)
+    dsc_test_resource_base.code(dsc_code)
     dsc_test_resource_base
   }
   let(:dsc_resource_from_path) {
-    dsc_test_resource_base.path(create_config_script_from_code(dsc_code, dsc_test_resource_base.name))
+    dsc_test_resource_base.command(create_config_script_from_code(dsc_code, dsc_test_resource_base.name))
     dsc_test_resource_base
   }
 

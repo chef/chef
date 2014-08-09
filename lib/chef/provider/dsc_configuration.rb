@@ -76,8 +76,8 @@ class Chef
 
         Chef::Log.debug("DSC: DSC code:\n '#{configuration_code}'")
 
-        generated_script_path = write_document_generation_script(config_directory) if @dsc_resource.path.nil?
-        script_path = @dsc_resource.path || generated_script_path
+        generated_script_path = write_document_generation_script(config_directory) if @dsc_resource.command.nil?
+        script_path = @dsc_resource.command || generated_script_path
         configuration_document_location = nil
         document_generation_cmdlet = Chef::Util::Powershell::Cmdlet.new(configuration_document_generation_code(script_path, configuration_name))
 
@@ -106,7 +106,7 @@ class Chef
       end
 
       def configuration_name
-        if @dsc_resource.configuration
+        if @dsc_resource.code
           'chef_dsc'
         else
           @dsc_resource.configuration_name || @dsc_resource.name
@@ -114,7 +114,7 @@ class Chef
       end
 
       def configuration_friendly_name
-        if @dsc_resource.configuration
+        if @dsc_resource.code
           @dsc_resource.name
         else
           configuration_name
@@ -122,7 +122,7 @@ class Chef
       end
 
       def configuration_code
-        "$ProgressPreference = 'SilentlyContinue';Configuration '#{configuration_name}'\n{\n\t#{@dsc_resource.configuration}\n}\n"
+        "$ProgressPreference = 'SilentlyContinue';Configuration '#{configuration_name}'\n{\n\t#{@dsc_resource.code}\n}\n"
       end
 
       def configuration_document_generation_code(configuration_script, configuration_name)
