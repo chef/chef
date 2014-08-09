@@ -85,12 +85,8 @@ class Chef
       @run_list_items.join(", ")
     end
 
-    def for_json
-      to_a.map { |item| item.to_s }
-    end
-
-    def to_json(*a)
-      ::Chef::JSONCompat.to_json(for_json, *a)
+    def to_json(*args)
+      to_a.map { |item| item.to_s}.to_json(*args)
     end
 
     def empty?
@@ -161,6 +157,7 @@ class Chef
         RunListExpansionFromAPI.new(environment, @run_list_items, opts[:rest])
       end
     end
+
 
   end
 end

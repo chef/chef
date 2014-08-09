@@ -18,6 +18,7 @@
 # Wrapper class for interacting with JSON.
 
 require 'ffi_yajl'
+require 'ffi_yajl/json_gem'  # XXX: parts of chef require JSON gem's Hash#to_json monkeypatch
 
 class Chef
   class JSONCompat
@@ -87,16 +88,13 @@ class Chef
       end
 
       def to_json(obj, opts = nil)
-        ::FFI_Yajl::Encoder.encode(obj, opts)
+        obj.to_json(opts)
       end
 
       def to_json_pretty(obj, opts = nil)
-        opts ||= {}
-        options_map = {}
-        options_map[:pretty] = true
-        options_map[:indent] = opts[:indent] if opts.has_key?(:indent)
-        ::FFI_Yajl::Encoder.encode(obj, options_map).chomp
+        ::JSON.pretty_generate(obj, opts)
       end
+
 
       # Map +json_class+ to a Class object. We use a +case+ instead of a Hash
       # assigned to a constant because otherwise this file could not be loaded

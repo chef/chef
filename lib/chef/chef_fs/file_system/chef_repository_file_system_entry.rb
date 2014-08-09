@@ -41,7 +41,6 @@ class Chef
 
         def chef_object
           begin
-            # FIXME: FFI_Yajl needs to support :create_additions and this needs to use it
             return data_handler.chef_object(JSON.parse(read, :create_additions => false))
           rescue
             Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{$!}")

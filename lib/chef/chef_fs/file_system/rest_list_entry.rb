@@ -128,7 +128,6 @@ class Chef
           value = minimize_value(value)
           value_json = Chef::JSONCompat.to_json_pretty(value)
           begin
-            # FIXME: replace with FFI_Yajl when it supports :create_additions
             other_value = JSON.parse(other_value_json, :create_additions => false)
           rescue JSON::ParserError => e
             Chef::Log.warn("Parse error reading #{other.path_for_printing} as JSON: #{e}")
@@ -146,7 +145,6 @@ class Chef
 
         def write(file_contents)
           begin
-            # FIXME: replace with FFI_Yajl when it supports :create_additions
             object = JSON.parse(file_contents, :create_additions => false)
           rescue JSON::ParserError => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "Parse error reading JSON: #{e}"

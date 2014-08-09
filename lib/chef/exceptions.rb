@@ -195,6 +195,7 @@ class Chef
         end
       end
 
+
     end
     # Exception class for collecting multiple failures. Used when running
     # delayed notifications so that chef can process each delayed
@@ -262,7 +263,7 @@ class Chef
             "non_existent_cookbooks" => non_existent_cookbooks,
             "cookbooks_with_no_versions" => cookbooks_with_no_matching_versions
           }
-          ::Chef::JSONCompat.to_json(result, *a)
+          result.to_json(*a)
         end
       end
 
@@ -297,7 +298,7 @@ class Chef
             "non_existent_cookbooks" => non_existent_cookbooks,
             "most_constrained_cookbooks" => most_constrained_cookbooks
           }
-          ::Chef::JSONCompat.to_json(result, *a)
+          result.to_json(*a)
         end
       end
 

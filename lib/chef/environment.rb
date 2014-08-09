@@ -129,7 +129,7 @@ class Chef
     end
 
     def to_json(*a)
-      ::Chef::JSONCompat.to_json(to_hash, *a)
+      to_hash.to_json(*a)
     end
 
     def update_from!(o)
@@ -139,6 +139,7 @@ class Chef
       override_attributes(o.override_attributes)
       self
     end
+
 
     def update_attributes_from_params(params)
       unless params[:default_attributes].nil? || params[:default_attributes].size == 0
@@ -211,6 +212,7 @@ class Chef
         true
       end
     end
+
 
     def self.json_create(o)
       environment = new

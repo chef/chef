@@ -143,7 +143,7 @@ class Chef
 
     # Serialize this object as a hash
     def to_json(*a)
-      ::Chef::JSONCompat.to_json(to_hash, *a)
+      to_hash.to_json(*a)
     end
 
     def update_from!(o)

@@ -134,6 +134,7 @@ F
 
     extend Chef::Mixin::ConvertToClassName
 
+
     if Module.method(:const_defined?).arity == 1
       def self.strict_const_defined?(const)
         const_defined?(const)
@@ -275,6 +276,7 @@ F
         name
       end
     end
+
 
     def updated=(true_or_false)
       Chef::Log.warn("Chef::Resource#updated=(true|false) is deprecated. Please call #updated_by_last_action(true|false) instead.")
@@ -542,7 +544,7 @@ F
     # Serialize this object as a hash
     def to_json(*a)
       results = as_json
-      ::Chef::JSONCompat.to_json(results, *a)
+      results.to_json(*a)
     end
 
     def to_hash

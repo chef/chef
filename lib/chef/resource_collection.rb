@@ -158,6 +158,7 @@ class Chef
     # compat.
     alias_method :resources, :find
 
+
     # Returns true if +query_object+ is a valid string for looking up a
     # resource, or raises InvalidResourceSpecification if not.
     # === Arguments
@@ -188,19 +189,16 @@ class Chef
     end
 
     # Serialize this object as a hash
-    def to_hash
+    def to_json(*a)
       instance_vars = Hash.new
       self.instance_variables.each do |iv|
         instance_vars[iv] = self.instance_variable_get(iv)
       end
-      {
+      results = {
         'json_class' => self.class.name,
         'instance_vars' => instance_vars
       }
-    end
-
-    def to_json(*a)
-      ::Chef::JSONCompat.to_json(to_hash, *a)
+      results.to_json(*a)
     end
 
     def self.json_create(o)
