@@ -28,7 +28,7 @@ class Chef
 
         def file_for_provider
           cookbook = run_context.cookbook_collection[resource_cookbook]
-          file_cache_location = cookbook.preferred_filename_on_disk_location(run_context.node, :files, @new_resource.source, @new_resource.path)
+          file_cache_location = cookbook.preferred_filename_on_disk_location(run_context.node, :files, @new_resource.source)
           if file_cache_location.nil?
             nil
           else
