@@ -64,7 +64,7 @@ describe Chef::Provider::User::Dscl do
 
   describe "get_free_uid" do
     before do
-      @provider.stub(:safe_dscl).and_return("\nwheel      200\nstaff      201\n")
+      @provider.stub(:safe_dscl).and_return("\nwheel      200\nstaff      201\nholoway      500\n")
     end
 
     it "should run safe_dscl with list /Users uid" do
@@ -72,8 +72,17 @@ describe Chef::Provider::User::Dscl do
       @provider.get_free_uid
     end
 
-    it "should return the first unused uid number on or above 200" do
-      @provider.get_free_uid.should == 202
+    describe "when creating a non-system user" do
+      it "should return the first unused uid number on or above 500" do
+        @provider.get_free_uid.should == 501
+      end
+    end
+
+    describe "when creating a system user" do
+      it "should return the first unused uid number on or above 200" do
+        @new_resource.system(true)
+        @provider.get_free_uid.should == 202
+      end
     end
 
     it "should raise an exception when the search limit is exhausted" do
