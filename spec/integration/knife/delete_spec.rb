@@ -21,7 +21,7 @@ require 'chef/knife/list'
 require 'chef/knife/raw'
 
 describe 'knife delete' do
-  extend IntegrationSupport
+  include IntegrationSupport
   include KnifeSupport
 
   let :everything do
@@ -99,23 +99,27 @@ EOM
   end
 
   when_the_chef_server "has one of each thing" do
-    client 'x', '{}'
-    cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
-    data_bag 'x', { 'y' => '{}' }
-    environment 'x', '{}'
-    node 'x', '{}'
-    role 'x', '{}'
-    user 'x', '{}'
+    before do
+      client 'x', '{}'
+      cookbook 'x', '1.0.0'
+      data_bag 'x', { 'y' => '{}' }
+      environment 'x', '{}'
+      node 'x', '{}'
+      role 'x', '{}'
+      user 'x', '{}'
+    end
 
     when_the_repository 'also has one of each thing' do
-      file 'clients/x.json', {}
-      file 'cookbooks/x/metadata.rb', ''
-      file 'data_bags/x/y.json', {}
-      file 'environments/_default.json', {}
-      file 'environments/x.json', {}
-      file 'nodes/x.json', {}
-      file 'roles/x.json', {}
-      file 'users/x.json', {}
+      before do
+        file 'clients/x.json', {}
+        file 'cookbooks/x/metadata.rb', ''
+        file 'data_bags/x/y.json', {}
+        file 'environments/_default.json', {}
+        file 'environments/x.json', {}
+        file 'nodes/x.json', {}
+        file 'roles/x.json', {}
+        file 'users/x.json', {}
+      end
 
       it 'knife delete --both /cookbooks/x fails' do
         knife('delete --both /cookbooks/x').should_fail <<EOM
@@ -216,8 +220,11 @@ EOM
 
       # TODO delete empty data bag (particularly different on local side)
       context 'with an empty data bag on both' do
-        data_bag 'empty', {}
-        directory 'data_bags/empty'
+        before do
+          data_bag 'empty', {}
+          directory 'data_bags/empty'
+        end
+
         it 'knife delete --both /data_bags/empty fails but deletes local version' do
           knife('delete --both /data_bags/empty').should_fail <<EOM
 ERROR: /data_bags/empty (remote) must be deleted recursively!  Pass -r to knife delete.
@@ -468,13 +475,15 @@ EOM
     end
 
     when_the_repository 'has only top-level directories' do
-      directory 'clients'
-      directory 'cookbooks'
-      directory 'data_bags'
-      directory 'environments'
-      directory 'nodes'
-      directory 'roles'
-      directory 'users'
+      before do
+        directory 'clients'
+        directory 'cookbooks'
+        directory 'data_bags'
+        directory 'environments'
+        directory 'nodes'
+        directory 'roles'
+        directory 'users'
+      end
 
       it 'knife delete --both /cookbooks/x fails' do
         knife('delete --both /cookbooks/x').should_fail "ERROR: /cookbooks/x (remote) must be deleted recursively!  Pass -r to knife delete.\n"
@@ -632,7 +641,7 @@ EOM
       end
 
       context 'and cwd is at the top level' do
-        cwd '.'
+        before { cwd '.' }
         it 'knife delete fails' do
           knife('delete').should_fail "FATAL: Must specify at least one argument.  If you want to delete everything in this directory, type \"knife delete --recurse .\"\n", :stdout => /USAGE/
           knife('list -Rf /').should_succeed <<EOM
@@ -673,14 +682,16 @@ EOM
 
   when_the_chef_server 'is empty' do
     when_the_repository 'has one of each thing' do
-      file 'clients/x.json', {}
-      file 'cookbooks/x/metadata.rb', ''
-      file 'data_bags/x/y.json', {}
-      file 'environments/_default.json', {}
-      file 'environments/x.json', {}
-      file 'nodes/x.json', {}
-      file 'roles/x.json', {}
-      file 'users/x.json', {}
+      before do
+        file 'clients/x.json', {}
+        file 'cookbooks/x/metadata.rb', ''
+        file 'data_bags/x/y.json', {}
+        file 'environments/_default.json', {}
+        file 'environments/x.json', {}
+        file 'nodes/x.json', {}
+        file 'roles/x.json', {}
+        file 'users/x.json', {}
+      end
 
       it 'knife delete --both /cookbooks/x fails' do
         knife('delete --both /cookbooks/x').should_fail "ERROR: /cookbooks/x (local) must be deleted recursively!  Pass -r to knife delete.\n"
@@ -843,7 +854,7 @@ EOM
       end
 
       context 'and cwd is at the top level' do
-        cwd '.'
+        before { cwd '.' }
         it 'knife delete fails' do
           knife('delete').should_fail "FATAL: Must specify at least one argument.  If you want to delete everything in this directory, type \"knife delete --recurse .\"\n", :stdout => /USAGE/
           knife('list -Rf /').should_succeed <<EOM
@@ -884,12 +895,16 @@ EOM
   end
 
   when_the_repository 'has a cookbook' do
-    file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
-    file 'cookbooks/x/onlyin1.0.0.rb', 'old_text'
+    before do
+      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/x/onlyin1.0.0.rb', 'old_text'
+    end
 
     when_the_chef_server 'has a later version for the cookbook' do
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => '' }
-      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi' }
+      before do
+        cookbook 'x', '1.0.0', { 'onlyin1.0.0.rb' => '' }
+        cookbook 'x', '1.0.1', { 'onlyin1.0.1.rb' => 'hi' }
+      end
 
       # TODO this seems wrong
       it 'knife delete --both -r /cookbooks/x deletes the latest version on the server and the local version' do
@@ -900,8 +915,10 @@ EOM
     end
 
     when_the_chef_server 'has an earlier version for the cookbook' do
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''}
-      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi' }
+      before do
+        cookbook 'x', '1.0.0', { 'onlyin1.0.0.rb' => ''}
+        cookbook 'x', '0.9.9', { 'onlyin0.9.9.rb' => 'hi' }
+      end
 
       it 'knife delete --both /cookbooks/x deletes the latest version on the server and the local version' do
         knife('delete --both -r /cookbooks/x').should_succeed "Deleted /cookbooks/x\n"
@@ -911,7 +928,7 @@ EOM
     end
 
     when_the_chef_server 'has a later version for the cookbook, and no current version' do
-      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi' }
+      before { cookbook 'x', '1.0.1', { 'onlyin1.0.1.rb' => 'hi' } }
 
       it 'knife delete --both /cookbooks/x deletes the server and client version of the cookbook' do
         knife('delete --both -r /cookbooks/x').should_succeed "Deleted /cookbooks/x\n"
@@ -921,7 +938,7 @@ EOM
     end
 
     when_the_chef_server 'has an earlier version for the cookbook, and no current version' do
-      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi' }
+      before { cookbook 'x', '0.9.9', { 'onlyin0.9.9.rb' => 'hi' } }
 
       it 'knife delete --both /cookbooks/x deletes the server and client version of the cookbook' do
         knife('delete --both -r /cookbooks/x').should_succeed "Deleted /cookbooks/x\n"
@@ -933,11 +950,14 @@ EOM
 
   when_the_repository 'is empty' do
     when_the_chef_server 'has two versions of a cookbook' do
-      cookbook 'x', '2.0.11', { 'metadata.rb' => 'version "2.0.11"' }
-      cookbook 'x', '11.0.0', { 'metadata.rb' => 'version "11.0.0"' }
+      before do
+        cookbook 'x', '2.0.11'
+        cookbook 'x', '11.0.0'
+      end
+
       it 'knife delete deletes the latest version' do
         knife('delete --both -r /cookbooks/x').should_succeed "Deleted /cookbooks/x\n"
-        knife('raw /cookbooks/x').should_succeed /2.0.11/
+        knife('raw /cookbooks/x').should_succeed( /2.0.11/ )
       end
     end
   end

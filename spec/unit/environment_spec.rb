@@ -420,7 +420,7 @@ describe Chef::Environment do
           "description" => "desc",
           "chef_type" => "environment"
         }
-        IO.should_receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(JSON.dump(environment_hash))
+        IO.should_receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(Chef::JSONCompat.to_json(environment_hash))
         environment = Chef::Environment.load('foo')
 
         environment.should be_a_kind_of(Chef::Environment)

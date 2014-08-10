@@ -20,14 +20,14 @@ require 'support/shared/context/config'
 require 'chef/knife/list'
 
 describe 'redirection' do
-  extend IntegrationSupport
+  include IntegrationSupport
   include KnifeSupport
   include AppServerSupport
 
   include_context "default config options"
 
   when_the_chef_server 'has a role' do
-    role 'x', {}
+    before { role 'x', {} }
 
     context 'and another server redirects to it with 302' do
       before :each do

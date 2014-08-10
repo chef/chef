@@ -21,20 +21,22 @@ require 'chef/knife/raw'
 require 'chef/knife/show'
 
 describe 'knife raw' do
-  extend IntegrationSupport
+  include IntegrationSupport
   include KnifeSupport
   include AppServerSupport
 
   include_context "default config options"
 
   when_the_chef_server "has one of each thing" do
-    client 'x', '{}'
-    cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
-    data_bag 'x', { 'y' => '{}' }
-    environment 'x', '{}'
-    node 'x', '{}'
-    role 'x', '{}'
-    user 'x', '{}'
+    before do
+      client 'x', '{}'
+      cookbook 'x', '1.0.0'
+      data_bag 'x', { 'y' => '{}' }
+      environment 'x', '{}'
+      node 'x', '{}'
+      role 'x', '{}'
+      user 'x', '{}'
+    end
 
     it 'knife raw /nodes/x returns the node', :pending => (RUBY_VERSION < "1.9") do
       knife('raw /nodes/x').should_succeed <<EOM
@@ -44,12 +46,16 @@ describe 'knife raw' do
   "chef_type": "node",
   "chef_environment": "_default",
   "override": {
+
   },
   "normal": {
+
   },
   "default": {
+
   },
   "automatic": {
+
   },
   "run_list": [
 
@@ -70,13 +76,16 @@ EOM
   "json_class": "Chef::Role",
   "chef_type": "role",
   "default_attributes": {
+
   },
   "override_attributes": {
+
   },
   "run_list": [
 
   ],
   "env_run_lists": {
+
   }
 }
 EOM
@@ -92,13 +101,16 @@ EOM
   "json_class": "Chef::Role",
   "chef_type": "role",
   "default_attributes": {
+
   },
   "override_attributes": {
+
   },
   "run_list": [
 
   ],
   "env_run_lists": {
+
   }
 }
 EOM
@@ -111,13 +123,16 @@ EOM
   "json_class": "Chef::Role",
   "chef_type": "role",
   "default_attributes": {
+
   },
   "override_attributes": {
+
   },
   "run_list": [
 
   ],
   "env_run_lists": {
+
   }
 }
 EOM
@@ -154,7 +169,7 @@ EOM
 
         knife("raw -m POST -i #{file.path} /roles").should_succeed <<EOM
 {
-  "uri": "#{ChefZero::RSpec.server.url}/roles/y"
+  "uri": "#{ChefZeroSupport::Server.server.url}/roles/y"
 }
 EOM
         knife('show /roles/y.json').should_succeed <<EOM

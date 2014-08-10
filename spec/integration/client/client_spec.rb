@@ -2,7 +2,7 @@ require 'support/shared/integration/integration_helper'
 require 'chef/mixin/shell_out'
 
 describe "chef-client" do
-  extend IntegrationSupport
+  include IntegrationSupport
   include Chef::Mixin::ShellOut
 
   let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
@@ -19,7 +19,7 @@ describe "chef-client" do
   let(:chef_client) { "ruby #{chef_dir}/chef-client" }
 
   when_the_repository "has a cookbook with a no-op recipe" do
-    file 'cookbooks/x/recipes/default.rb', ''
+    before { file 'cookbooks/x/recipes/default.rb', '' }
 
     it "should complete with success" do
       file 'config/client.rb', <<EOM
@@ -49,7 +49,7 @@ EOM
     end
 
     context 'and a config file under .chef/knife.rb' do
-      file '.chef/knife.rb', 'xxx.xxx'
+      before { file '.chef/knife.rb', 'xxx.xxx' }
 
       it 'should load .chef/knife.rb when -z is specified' do
         result = shell_out("#{chef_client} -z -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to(''))
@@ -74,7 +74,8 @@ EOM
     end
 
     context 'and a private key' do
-      file 'mykey.pem', <<EOM
+      before do
+        file 'mykey.pem', <<EOM
 -----BEGIN RSA PRIVATE KEY-----
 MIIEogIBAAKCAQEApubutqtYYQ5UiA9QhWP7UvSmsfHsAoPKEVVPdVW/e8Svwpyf
 0Xef6OFWVmBE+W442ZjLOe2y6p2nSnaq4y7dg99NFz6X+16mcKiCbj0RCiGqCvCk
@@ -103,6 +104,7 @@ syHLXYFNy0OxMtH/bBAXBGNHd9gf5uOnqh0pYcbe/uRAxumC7Rl0cL509eURiA2T
 +vFmf54y9YdnLXaqv+FhJT6B6V7WX7IpU9BMqJY1cJYXHuHG2KA=
 -----END RSA PRIVATE KEY-----
 EOM
+      end
 
       it "should complete with success even with a client key" do
         file 'config/client.rb', <<EOM
