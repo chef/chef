@@ -528,7 +528,8 @@ describe Chef::Resource do
     end
 
     it "reports 0 elapsed time if actual elapsed time is < 0" do
-      Time.stub(:now).and_return(1, 0)
+      expected = Time.now
+      Time.stub(:now).and_return(expected, expected - 1)
       @resource.run_action(:purr)
       @resource.elapsed_time.should == 0
     end
