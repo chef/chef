@@ -40,7 +40,7 @@ class Chef
         end
 
         def get_current_version
-          shell_out!("pkg info #{@new_resource.package_name}").stdout.each_line do |line|
+          shell_out("pkg info #{@new_resource.package_name}").stdout.each_line do |line|
             return $1.split[0] if line =~ /^\s+Version: (.*)/
           end
           return nil
