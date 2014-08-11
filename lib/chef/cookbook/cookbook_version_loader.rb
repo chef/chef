@@ -36,7 +36,6 @@ class Chef
         # We keep a list of all cookbook paths that have been merged in
         @cookbook_paths = [ cookbook_path ]
 
-        # TODO: Add a "strict mode" setting, use this when not in strict mode
         @inferred_cookbook_name = File.basename( path )
         @chefignore = chefignore
         @metadata = nil
@@ -138,6 +137,14 @@ class Chef
       end
 
       def cookbook_name
+        # The `name` attribute is now required in metadata, so
+        # inferred_cookbook_name generally should not be used. Per CHEF-2923,
+        # we have to not raise errors in cookbook metadata immediately, so that
+        # users can still `knife cookbook upload some-cookbook` when an
+        # unrelated cookbook has an error in its metadata.  This situation
+        # could prevent us from reading the `name` attribute from the metadata
+        # entirely, but the name is used as a hash key in CookbookLoader, so we
+        # fall back to the inferred name here.
         (metadata.name || @inferred_cookbook_name).to_sym
       end
 
