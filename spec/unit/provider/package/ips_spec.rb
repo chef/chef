@@ -65,27 +65,27 @@ PKG_STATUS
 
   context "when loading current resource" do
     it "should create a current resource with the name of the new_resource" do
-      @provider.should_receive(:shell_out!).with("pkg info #{@new_resource.package_name}").and_return(local_output)
+      @provider.should_receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local_output)
       @provider.should_receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote_output)
       Chef::Resource::Package.should_receive(:new).and_return(@current_resource)
       @provider.load_current_resource
     end
 
     it "should set the current resources package name to the new resources package name" do
-      @provider.should_receive(:shell_out!).with("pkg info #{@new_resource.package_name}").and_return(local_output)
+      @provider.should_receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local_output)
       @provider.should_receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote_output)
       @provider.load_current_resource
       @current_resource.package_name.should == @new_resource.package_name
     end
 
     it "should run pkg info with the package name" do
-      @provider.should_receive(:shell_out!).with("pkg info #{@new_resource.package_name}").and_return(local_output)
+      @provider.should_receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local_output)
       @provider.should_receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote_output)
       @provider.load_current_resource
     end
 
     it "should set the installed version to nil on the current resource if package state is not installed" do
-      @provider.should_receive(:shell_out!).with("pkg info #{@new_resource.package_name}").and_return(local_output)
+      @provider.should_receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local_output)
       @provider.should_receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote_output)
       @provider.load_current_resource
       @current_resource.version.should be_nil
@@ -108,14 +108,14 @@ Packaging Date: October 19, 2011 09:14:50 AM
           Size: 8.07 MB
           FMRI: pkg://solaris/crypto/gnupg@2.0.17,5.11-0.175.0.0.0.2.537:20111019T091450Z
 INSTALLED
-      @provider.should_receive(:shell_out!).with("pkg info #{@new_resource.package_name}").and_return(local)
+      @provider.should_receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local)
       @provider.should_receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote_output)
       @provider.load_current_resource
       @current_resource.version.should == "2.0.17"
     end
 
     it "should return the current resource" do
-      @provider.should_receive(:shell_out!).with("pkg info #{@new_resource.package_name}").and_return(local_output)
+      @provider.should_receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local_output)
       @provider.should_receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote_output)
       @provider.load_current_resource.should eql(@current_resource)
     end
@@ -152,7 +152,7 @@ Packaging Date: April  1, 2012 05:55:52 PM
           Size: 2.57 MB
           FMRI: pkg://omnios/security/sudo@1.8.4.1,5.11-0.151002:20120401T175552Z
 PKG_STATUS
-      @provider.should_receive(:shell_out!).with("pkg info #{@new_resource.package_name}").and_return(local_output)
+      @provider.should_receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local_output)
       @provider.should_receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote)
       @provider.load_current_resource
       @current_resource.version.should be_nil
@@ -193,7 +193,7 @@ Packaging Date: October 19, 2011 09:14:50 AM
           FMRI: pkg://solaris/crypto/gnupg@2.0.18,5.11-0.175.0.0.0.2.537:20111019T091450Z
 REMOTE
 
-      @provider.should_receive(:shell_out!).with("pkg info #{@new_resource.package_name}").and_return(local)
+      @provider.should_receive(:shell_out).with("pkg info #{@new_resource.package_name}").and_return(local)
       @provider.should_receive(:shell_out!).with("pkg info -r #{@new_resource.package_name}").and_return(remote)
       @provider.load_current_resource
       @provider.should_receive(:install_package).exactly(0).times
