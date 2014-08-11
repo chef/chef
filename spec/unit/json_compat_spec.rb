@@ -48,7 +48,7 @@ describe Chef::JSONCompat do
 
     it "should work" do
       f = Foo.new
-      expect(Chef::JSONCompat.to_json_pretty(f)).to eql("{\n  \"foo\": 1234\n}")
+      expect(Chef::JSONCompat.to_json_pretty(f)).to eql("{\n  \"foo\": 1234\n}\n")
     end
   end
 
