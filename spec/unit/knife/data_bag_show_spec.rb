@@ -30,9 +30,9 @@ describe Chef::Knife::DataBagShow do
     @knife = Chef::Knife::DataBagShow.new
     @knife.config[:format] = 'json'
     @rest = double("Chef::REST")
-    @knife.stub(:rest).and_return(@rest)
+    allow(@knife).to receive(:rest).and_return(@rest)
     @stdout = StringIO.new
-    @knife.ui.stub(:stdout).and_return(@stdout)
+    allow(@knife.ui).to receive(:stdout).and_return(@stdout)
   end
 
 
@@ -40,24 +40,33 @@ describe Chef::Knife::DataBagShow do
     @knife.instance_variable_set(:@name_args, ['bag_o_data'])
     data_bag_contents = { "baz"=>"http://localhost:4000/data/bag_o_data/baz",
       "qux"=>"http://localhost:4000/data/bag_o_data/qux"}
-    Chef::DataBag.should_receive(:load).and_return(data_bag_contents)
+    expect(Chef::DataBag).to receive(:load).and_return(data_bag_contents)
     expected = %q|[
   "baz",
   "qux"
 ]|
     @knife.run
-    @stdout.string.strip.should == expected
+    expect(@stdout.string.strip).to eq(expected)
   end
 
   it "prints the contents of the data bag item when given a bag and item name" do
     @knife.instance_variable_set(:@name_args, ['bag_o_data', 'an_item'])
     data_item = Chef::DataBagItem.new.tap {|item| item.raw_data = {"id" => "an_item", "zsh" => "victory_through_tabbing"}}
 
-    Chef::DataBagItem.should_receive(:load).with('bag_o_data', 'an_item').and_return(data_item)
+    expect(Chef::DataBagItem).to receive(:load).with('bag_o_data', 'an_item').and_return(data_item)
 
     @knife.run
-    Chef::JSONCompat.from_json(@stdout.string).should == data_item.raw_data
+    expect(Chef::JSONCompat.from_json(@stdout.string)).to eq(data_item.raw_data)
+  end
 
+  it "should pretty print the data bag contents" do
+    @knife.instance_variable_set(:@name_args, ['bag_o_data', 'an_item'])
+    data_item = Chef::DataBagItem.new.tap {|item| item.raw_data = {"id" => "an_item", "zsh" => "victory_through_tabbing"}}
+
+    expect(Chef::DataBagItem).to receive(:load).with('bag_o_data', 'an_item').and_return(data_item)
+
+    @knife.run
+    expect(@stdout.string).to eql("{\n  \"id\": \"an_item\",\n  \"zsh\": \"victory_through_tabbing\"\n}\n")
   end
 
   describe "encrypted data bag items" do
@@ -83,29 +92,29 @@ describe Chef::Knife::DataBagShow do
     end
 
     it "prints the decrypted contents of an item when given --secret" do
-      @knife.stub(:config).and_return({:secret => @secret})
-      Chef::EncryptedDataBagItem.should_receive(:load).
+      allow(@knife).to receive(:config).and_return({:secret => @secret})
+      expect(Chef::EncryptedDataBagItem).to receive(:load).
         with('bag_name', 'item_name', @secret).
         and_return(Chef::EncryptedDataBagItem.new(@enc_data, @secret))
       @knife.run
-      Chef::JSONCompat.from_json(@stdout.string).should == @plain_data
+      expect(Chef::JSONCompat.from_json(@stdout.string)).to eq(@plain_data)
     end
 
     it "prints the decrypted contents of an item when given --secret_file" do
-      @knife.stub(:config).and_return({:secret_file => @secret_file.path})
-      Chef::EncryptedDataBagItem.should_receive(:load).
+      allow(@knife).to receive(:config).and_return({:secret_file => @secret_file.path})
+      expect(Chef::EncryptedDataBagItem).to receive(:load).
         with('bag_name', 'item_name', @secret).
         and_return(Chef::EncryptedDataBagItem.new(@enc_data, @secret))
       @knife.run
-      Chef::JSONCompat.from_json(@stdout.string).should == @plain_data
+      expect(Chef::JSONCompat.from_json(@stdout.string)).to eq(@plain_data)
     end
   end
 
   describe "command line parsing" do
     it "prints help if given no arguments" do
       @knife.instance_variable_set(:@name_args, [])
-      lambda { @knife.run }.should raise_error(SystemExit)
-      @stdout.string.should match(/^knife data bag show BAG \[ITEM\] \(options\)/)
+      expect { @knife.run }.to raise_error(SystemExit)
+      expect(@stdout.string).to match(/^knife data bag show BAG \[ITEM\] \(options\)/)
     end
   end
 
