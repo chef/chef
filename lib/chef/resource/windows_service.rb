@@ -22,7 +22,10 @@ class Chef
   class Resource
     class WindowsService < Chef::Resource::Service
 
-      provides :service, :on_platforms => ["windows"]
+      # Until #1773 is resolved, you need to manually specify the windows_service resource
+      # to use action :configure_startup and attribute startup_type
+
+      # provides :service, :on_platforms => ["windows"]
       
       identity_attr :service_name
 
