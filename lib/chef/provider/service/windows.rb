@@ -157,11 +157,11 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   private
   def current_state
-    Win32::Service.status(@new_resource.service_name).current_state
+    Win32::Service.exists?(@new_resource.service_name) && Win32::Service.status(@new_resource.service_name).current_state
   end
 
   def start_type
-    Win32::Service.config_info(@new_resource.service_name).start_type
+    Win32::Service.exists?(@new_resource.service_name) && Win32::Service.config_info(@new_resource.service_name).start_type
   end
 
   # Helper method that waits for a status to change its state since state
