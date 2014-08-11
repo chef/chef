@@ -59,7 +59,7 @@ describe Chef::Knife::NodeShow do
       allow(knife.ui).to receive(:stdout).and_return(stdout)
       expect(Chef::Node).to receive(:load).with('adam').and_return(node)
       knife.run
-      expect(stdout.string).to eql("{\n  \"name\": \"adam\",\n  \"chef_environment\": \"_default\",\n  \"run_list\": [\n\n  ],\n  \"normal\": {\n  }\n}\n")
+      expect(stdout.string).to eql("{\n  \"name\": \"adam\",\n  \"chef_environment\": \"_default\",\n  \"run_list\": [\n\n]\n,\n  \"normal\": {\n\n  }\n}\n")
     end
   end
 end
