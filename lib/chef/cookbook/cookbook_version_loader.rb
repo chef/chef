@@ -187,7 +187,7 @@ class Chef
 
       def apply_json_cookbook_version_metadata(file)
         begin
-          data = Chef::JSONCompat.from_json(IO.read(file), :create_additions => false)
+          data = Chef::JSONCompat.parse(IO.read(file))
           @metadata.from_hash(data['metadata'])
         rescue Chef::Exceptions::JSON::ParseError
           Chef::Log.error("Couldn't parse cookbook metadata JSON for #@cookbook_name in " + file)
@@ -198,7 +198,7 @@ class Chef
       def set_frozen
         if uploaded_cookbook_version_file
           begin
-            data = Chef::JSONCompat.from_json(IO.read(uploaded_cookbook_version_file), :create_additions => false)
+            data = Chef::JSONCompat.parse(IO.read(uploaded_cookbook_version_file))
             @frozen = data['frozen?']
           rescue Chef::Exceptions::JSON::ParseError
             Chef::Log.error("Couldn't parse cookbook metadata JSON for #@cookbook_name in #{uploaded_cookbook_version_file}")

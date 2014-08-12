@@ -50,7 +50,7 @@ class Chef
             if @inflate_json_class
               return_value = Chef::JSONCompat.from_json(http_response.body.chomp)
             else
-              return_value = Chef::JSONCompat.from_json(http_response.body.chomp, :create_additions => false)
+              return_value = Chef::JSONCompat.parse(http_response.body.chomp)
             end
           end
           [http_response, rest_request, return_value]

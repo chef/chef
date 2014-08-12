@@ -42,8 +42,8 @@ class Chef
       end
 
       def updated?
-        pristine_copy = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(node), :create_additions => false)
-        updated_copy  = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@updated_node), :create_additions => false)
+        pristine_copy = Chef::JSONCompat.parse(Chef::JSONCompat.to_json(node))
+        updated_copy  = Chef::JSONCompat.parse(Chef::JSONCompat.to_json(@updated_node))
         unless pristine_copy == updated_copy
           updated_properties = %w{name normal chef_environment run_list default override automatic}.reject do |key|
              pristine_copy[key] == updated_copy[key]
@@ -107,4 +107,3 @@ class Chef
     end
   end
 end
-
