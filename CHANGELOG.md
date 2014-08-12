@@ -2,7 +2,7 @@
 
 ## 11.14.4:
 
-
+* Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
 * Fix RPM package version detection (Issue 1554)
 
 
