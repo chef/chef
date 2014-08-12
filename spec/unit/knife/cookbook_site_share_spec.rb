@@ -25,6 +25,8 @@ describe Chef::Knife::CookbookSiteShare do
 
   before(:each) do
     @knife = Chef::Knife::CookbookSiteShare.new
+    # Merge default settings in.
+    @knife.merge_configs
     @knife.name_args = ['cookbook_name', 'AwesomeSausage']
 
     @cookbook = Chef::CookbookVersion.new('cookbook_name')
@@ -48,6 +50,10 @@ describe Chef::Knife::CookbookSiteShare do
 
     before(:each) do
       @knife.stub(:do_upload).and_return(true)
+    end
+
+    it 'should set true to config[:upload] as default' do
+      @knife.config[:upload].should be_true
     end
 
     it 'should should print usage and exit when given no arguments' do
@@ -84,9 +90,9 @@ describe Chef::Knife::CookbookSiteShare do
 
     it 'should list files in tarball' do
       Chef::CookbookSiteStreamingUploader.stub(:create_build_dir).and_return("/var/tmp/dummy")
-      @knife.config = { :preview_archive => true }
+      @knife.config = { :upload => false }
       @knife.stub_chain(:shell_out!, :stdout).and_return('file')
-      @knife.ui.should_receive(:info).with("Notice: These files will upload to supermarket. Be careful.")
+      @knife.ui.should_receive(:info).with("Not uploading #{@cookbook.name}.tgz due to --no-upload flag.")
       @knife.ui.should_receive(:info).with("Making tarball cookbook_name.tgz")
       @knife.ui.should_receive(:info).with('file')
       @knife.should_receive(:shell_out!).with("tar -czf #{@cookbook.name}.tgz #{@cookbook.name}", {:cwd => "/var/tmp/dummy"})

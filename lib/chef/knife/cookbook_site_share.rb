@@ -40,10 +40,11 @@ class Chef
         :description => "A colon-separated path to look for cookbooks in",
         :proc => lambda { |o| Chef::Config.cookbook_path = o.split(":") }
 
-      option :preview_archive,
-        :long => "--preview-archive",
-        :description => "Only preview archived files. (Don't upload.)",
-        :boolean => true
+      option :upload,
+        :long => "--[no-]upload",
+        :description => "Upload cookbook to SuperMacket, defaults is true. If given --no-upload, only show list of archived files",
+        :boolean => true,
+        :default => true
 
       def run
         if @name_args.length < 2
@@ -71,8 +72,8 @@ class Chef
             exit(1)
           end
 
-          if config[:preview_archive]
-            ui.info("Notice: These files will upload to supermarket. Be careful.")
+          unless config[:upload]
+            ui.info("Not uploading #{cookbook_name}.tgz due to --no-upload flag.")
             result = shell_out!("tar -tzf #{cookbook_name}.tgz", :cwd => tmp_cookbook_dir)
             ui.info(result.stdout)
             FileUtils.rm_rf tmp_cookbook_dir
