@@ -18,39 +18,32 @@
 
 class Chef
   class Resource
-    class DscConfiguration < Chef::Resource
+    class DscScript < Chef::Resource
 
-      provides :dsc_configuration, :on_platforms => ["windows"]
+      provides :dsc_script, :on_platforms => ["windows"]
 
       def initialize(name, run_context=nil)
         super
-
-        @allowed_actions.push(:set)
-        @action = :set
-
-        @configuration = nil
-        @configuration_name = nil
-        @path = nil
-        provider(Chef::Provider::DscConfiguration)
+        provider(Chef::Provider::DscScript)
       end
 
       def code(arg=nil)
-        if arg && @path
-          raise ArgumentError, "Only one of 'configuration' and 'path' properties may be specified"
+        if arg && command
+          raise ArgumentError, "Only one of 'code' and 'command' properties may be specified"
         end
-        if arg && @configuration_name
-          raise ArgumentError, "Attribute `configuration` may not be set if `configuration_name` is set"
+        if arg && configuration_name
+          raise ArgumentError, "Attribute `code` may not be set if `configuration_name` is set"
         end
         set_or_return(
-          :configuration,
+          :code,
           arg,
           :kind_of => [ String ]
         )
       end
 
       def configuration_name(arg=nil)
-        if arg && @configuration
-          raise ArgumentError, "Attribute `configuration_name` may not be set if `configuration` is set"
+        if arg && code
+          raise ArgumentError, "Attribute `configuration_name` may not be set if `code` is set"
         end
         set_or_return(
           :configuration_name,
@@ -60,16 +53,47 @@ class Chef
       end
 
       def command(arg=nil)
-        if arg && @configuration 
-          raise ArgumentError, "Only one of 'configuration' and 'path' properties may be specified"
+        if arg && code
+          raise ArgumentError, "Only one of 'code' and 'command' properties may be specified"
         end
         set_or_return(
-          :path,
+          :command,
           arg,
           :kind_of => [ String ]
         )
       end
-      
+
+      def flags(arg=nil)
+        set_or_return(
+          :flags,
+          arg,
+          :kind_of => [ Hash ]
+        )
+      end
+
+      def cwd(arg=nil)
+        set_or_return(
+          :cwd,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def environment(arg=nil)
+        set_or_return(
+          :environment,
+          arg,
+          :kind_of => [ Hash ]
+        )
+      end
+
+      def timeout(arg=nil)
+        set_or_return(
+          :timeout,
+          arg,
+          :kind_of => [ Integer ]
+        )
+      end
     end
   end
 end

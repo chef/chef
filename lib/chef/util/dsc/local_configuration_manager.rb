@@ -19,8 +19,9 @@
 require 'chef/util/powershell/cmdlet'
 
 class Chef::Util::DSC
-  class DscLocalConfigManager
-    def initialize(configuration_path)
+  class LocalConfigurationManager
+    def initialize(node, configuration_path)
+      @node = node
       @configuration_path = configuration_path
       clear_execution_time
     end
@@ -52,7 +53,7 @@ class Chef::Util::DSC
 
       begin
         save_configuration_document(configuration_document)
-        cmdlet = ::Chef::Util::Powershell::Cmdlet.new("#{command_code}")
+        cmdlet = ::Chef::Util::Powershell::Cmdlet.new(@node, "#{command_code}")
         status = cmdlet.run
       ensure
         end_operation_timing
