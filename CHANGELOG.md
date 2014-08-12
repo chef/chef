@@ -2,6 +2,8 @@
 
 ## Unreleased:
 
+* chef/json_compat now throws its own exceptions not JSON gem exceptions
+* Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
 * Fix a bug in the experimental Policyfile mode that caused errors when
   using templates.
 * Disable JSON encoding of request body when non-JSON content type is
@@ -14,6 +16,7 @@
 * [**Xabier de Zuazo**](https://github.com/zuazo):
   Remove the unused StreamingCookbookUploader class (CHEF-4586)
 
+* log resource now marks itself as supporting why-run
 * http_request no longer appends "?message=" query string to GET and HEAD requests
 * added shell_out commands directly to the recipe DSL
 * cookbook synchronizer deletes old files from cookbooks
@@ -26,8 +29,50 @@
 * Fix knife cookbook site share on windows (CHEF-4994)
 * chef-repo rake tasks are deprecated; print relevant information for
   each one.
+* Fix RPM package version detection (Issue 1554)
+* Don't override :default provider map if :default passed as platform (OC-11667).
+* Fix SuSE package removal failure (Issue 1732).
 
-## Last Release: 11.14.0
+
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  'group' provider on OSX properly uses 'dscl' to determine existing groups
+* [**Hugo Lopes Tavares**](https://github.com/hltbra):
+  Catch StandardError in Chef::ResourceReporter#post_reporting_data (Issue 1550).
+* [**Daniel O'Connor**](https://github.com/CloCkWeRX):
+  Fix regex causing DuplicateRole error (Issue 1739).
+* [**Xeron**](https://github.com/xeron):
+  Ability to specify an array for data_bag_path. (CHEF-3399, CHEF-4753)
+* [**Jordan**](https://github.com/jordane):
+  Use Systemd for recent Fedora and RHEL 7.
+* [**Xabier de Zuazo**](https://github.com/zuazo):
+  Encrypted data bags should use different HMAC key and include the IV in the HMAC (CHEF-5356).
+* [**Pierre Ynard**](https://github.com/linkfanel):
+  Don't modify variable passed to env resource when updating.
+* [**Chris Aumann**](https://github.com/chr4):
+  Add "force" attribute to resource/user, pass "-f" to userdel. (Issue 1601)
+* [**Brian Cobb**](https://github.com/bcobb):
+  Chef::VersionConstraint#to_s should accurately reflect constraint's behavior.
+* [**Kevin Graham**](https://github.com/kgraham):
+  Do not override ShellOut:live_stream if already set.
+* [**Mike Heijmans**](https://github.com/parabuzzle):
+  Change knife option --force to --delete-validators. (Issue 1652)
+* [**Pavel Yudin**](https://github.com/Kasen):
+  Add Parallels Cloud Server (PCS) platform support.
+* [**tbe**](https://github.com/tbe):
+  Minor fixes for the Paludis package provider:
+  * only search for non-masked packages,
+  * increase command timeout length for package installation.
+* [**sawanoboly**](https://github.com/sawanoboly):
+  Use shared_path for deploy resource.
+* [**Victor Hahn**](https://github.com/victorhahncastell):
+  Add template syntax check to files in the templates/ dir only.
+* [**Jordan**](https://github.com/jordane):
+  Allow git provider to checkout existing branch names.
+* [**Eric Herot**](https://github.com/eherot):
+  Add whitespace boundaries to some mount point references in mount provider.
+
+
+## Last Release: 11.14.2
 
 * [**Jess Mink**](https://github.com/jmink):
   Symlinks to directories should be swingable on windows (CHEF-3960)
@@ -74,8 +119,6 @@
   Add Code Climate badge to README.
 * [**Phil Sturgeon**](https://github.com/philsturgeon):
   Documentation that -E is not respected by knife ssh [search]. (CHEF-4778)
-* [**kaustubh**](https://github.com/kaustubh-d):
-  Use 'guest' user on AIX for RSpec tests. (OC-9954)
 * [**Stephan Renatus**](https://github.com/srenatus):
   Fix resource_spec.rb.
 * [**Sander van Harmelen**](https://github.com/svanharmelen):
@@ -121,8 +164,9 @@
 * [**Vasiliy Tolstov**](https://github.com/vtolstov):
   Added the initial exherbo linux support for Chef providers.
 
-
-
+* Fix knife cookbook site share on windows (CHEF-4994)
+* YAJL Allows Invalid JSON File Sending To The Server (CHEF-4899)
+* YAJL Silently Ingesting Invalid JSON and "Normalizing" Incorrectly (CHEF-4565)
 * Update rpm provider checking regex to allow for special characters (CHEF-4893)
 * Allow for spaces in selinux controlled directories (CHEF-5095)
 * Windows batch resource run action fails: " TypeError: can't convert nil into String" (CHEF-5287)
@@ -155,7 +199,10 @@
 * Send md5 checksummed data for registry key if data type is binary, dword, or qword. (Chef-5323)
 * Add warning if host resembles winrm command and knife-windows is not present.
 * Use FFI binders to attach :SendMessageTimeout to avoid DL deprecation warning. (ChefDK Issues 69)
-
+* Use 'guest' user on AIX for RSpec tests. (OC-9954)
+* Added DelayedEvaluator support in LWRP using the `lazy {}` key
+* Fixed a bug where nested resources that inherited from Resource::LWRPBase
+  would not share the same actions/default_action as their parent
 
 ## Previous Release: 11.12.8
 * Fix OS X service provider actions that don't require the service label

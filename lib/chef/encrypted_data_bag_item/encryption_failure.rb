@@ -1,6 +1,6 @@
 #
-# Author:: Vasiliy Tolstov (<v.tolstov@selfip.ru>)
-# Copyright:: Copyright (c) 2014 Opscode, Inc.
+# Author:: Xabier de Zuazo (<xabier@onddo.com>)
+# Copyright:: Copyright (c) 2014 Onddo Labs, SL.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/paludis'
-
-class Chef
-  class Resource
-    class PaludisPackage < Chef::Resource::Package
-      def initialize(name, run_context=nil)
-        super(name, run_context)
-        @resource_name = :paludis_package
-        @provider = Chef::Provider::Package::Paludis
-        @allowed_actions = [ :install, :remove, :upgrade ]
-        @timeout = 3600
-      end
-    end
+class Chef::EncryptedDataBagItem
+  class EncryptionFailure < StandardError
   end
 end

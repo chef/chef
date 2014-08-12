@@ -20,12 +20,12 @@ require 'chef/knife/serve'
 require 'chef/server_api'
 
 describe 'knife serve' do
-  extend IntegrationSupport
+  include IntegrationSupport
   include KnifeSupport
   include AppServerSupport
 
   when_the_repository 'also has one of each thing' do
-    file 'nodes/x.json', { 'foo' => 'bar' }
+    before { file 'nodes/x.json', { 'foo' => 'bar' } }
 
     it 'knife serve serves up /nodes/x' do
       exception = nil

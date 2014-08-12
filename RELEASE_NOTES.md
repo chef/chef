@@ -1,4 +1,4 @@
-# Chef Client Release Notes:
+# Chef Client Release Notes 11.14.2:
 
 ## http_request resource no longer appends query string
 
@@ -82,3 +82,10 @@ it has been removed. See: https://github.com/opscode/chef/commit/12c9bed3a5a7ab8
 `Chef::Cookbook::FileVendor` was previously configured by passing a
 block to the `on_create` method; it is now configured by calling either
 `fetch_from_remote` or `fetch_from_disk`. See: https://github.com/opscode/chef/commit/3b2b4de8e7f0d55524f2a0ccaf3e1aa9f2d371eb
+
+## 'group' provider on OSX properly uses 'dscl' to determine existing groups
+
+On OSX, the 'group' provider would use 'etc' to determine existing groups,
+but 'dscl' to add groups, causing broken idempotency if something existed
+in /etc/group. The provider now uses 'dscl' for both idempotenty checks and
+modifications.

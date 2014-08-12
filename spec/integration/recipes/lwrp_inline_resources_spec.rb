@@ -2,7 +2,7 @@ require 'support/shared/integration/integration_helper'
 require 'chef/mixin/shell_out'
 
 describe "LWRPs with inline resources" do
-  extend IntegrationSupport
+  include IntegrationSupport
   include Chef::Mixin::ShellOut
 
   let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
@@ -19,22 +19,23 @@ describe "LWRPs with inline resources" do
   let(:chef_client) { "ruby #{chef_dir}/chef-client" }
 
   when_the_repository "has a cookbook with a nested LWRP" do
-  	directory 'cookbooks/x' do
+    before do
+      directory 'cookbooks/x' do
 
-      file 'resources/do_nothing.rb', <<EOM
+        file 'resources/do_nothing.rb', <<EOM
 actions :create, :nothing
 default_action :create
 EOM
-      file 'providers/do_nothing.rb', <<EOM
+        file 'providers/do_nothing.rb', <<EOM
 action :create do
 end
 EOM
 
-  	  file 'resources/my_machine.rb', <<EOM
+        file 'resources/my_machine.rb', <<EOM
 actions :create, :nothing
 default_action :create
 EOM
-      file 'providers/my_machine.rb', <<EOM
+        file 'providers/my_machine.rb', <<EOM
 use_inline_resources
 action :create do
   x_do_nothing 'a'
@@ -42,12 +43,13 @@ action :create do
 end
 EOM
 
-  	  file 'recipes/default.rb', <<EOM
+        file 'recipes/default.rb', <<EOM
 x_my_machine "me"
 x_my_machine "you"
 EOM
 
-  	end # directory 'cookbooks/x'
+      end # directory 'cookbooks/x'
+    end
 
     it "should complete with success" do
       file 'config/client.rb', <<EOM

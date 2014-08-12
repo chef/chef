@@ -96,6 +96,16 @@ shared_examples_for "a file with the wrong content" do
           selinux_security_context_restored?(path).should be_true
         end
       end
+
+      context "with a checksum that does not match the content to deploy" do
+        before do
+          resource.checksum("aAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaA")
+        end
+
+        it "raises an exception" do
+          expect{ resource.run_action(:create) }.to raise_error(Chef::Exceptions::ChecksumMismatch)
+        end
+      end
     end
 
     describe "when running action :create_if_missing" do

@@ -58,7 +58,6 @@ class Chef
         end
       end
 
-
     end
   end
 end

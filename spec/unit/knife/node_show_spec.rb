@@ -19,30 +19,47 @@
 require 'spec_helper'
 
 describe Chef::Knife::NodeShow do
+
+  let(:node) do
+    node = Chef::Node.new()
+    node.name("adam")
+    node.run_list = ['role[base]']
+    node
+  end
+
+  let(:knife) do
+    knife = Chef::Knife::NodeShow.new
+    knife.name_args = [ "adam" ]
+    knife
+  end
+
   before(:each) do
     Chef::Config[:node_name]  = "webmonkey.example.com"
-    @knife = Chef::Knife::NodeShow.new
-    @knife.config = {
-      :attribute => nil,
-      :run_list => nil,
-      :environment => nil
-    }
-    @knife.name_args = [ "adam" ]
-    @knife.stub(:output).and_return(true)
-    @node = Chef::Node.new()
-    Chef::Node.stub(:load).and_return(@node)
   end
 
   describe "run" do
     it "should load the node" do
-      Chef::Node.should_receive(:load).with("adam").and_return(@node)
-      @knife.run
+      expect(Chef::Node).to receive(:load).with("adam").and_return(node)
+      allow(knife).to receive(:output).and_return(true)
+      knife.run
     end
 
     it "should pretty print the node, formatted for display" do
-      @knife.should_receive(:format_for_display).with(@node).and_return("poop")
-      @knife.should_receive(:output).with("poop")
-      @knife.run
+      knife.config[:format] = nil
+      stdout = StringIO.new
+      allow(knife.ui).to receive(:stdout).and_return(stdout)
+      allow(Chef::Node).to receive(:load).and_return(node)
+      knife.run
+      expect(stdout.string).to eql("Node Name:   adam\nEnvironment: _default\nFQDN:        \nIP:          \nRun List:    \nRoles:       \nRecipes:     \nPlatform:     \nTags:        \n")
+    end
+
+    it "should pretty print json" do
+      knife.config[:format] = 'json'
+      stdout = StringIO.new
+      allow(knife.ui).to receive(:stdout).and_return(stdout)
+      expect(Chef::Node).to receive(:load).with('adam').and_return(node)
+      knife.run
+      expect(stdout.string).to eql("{\n  \"name\": \"adam\",\n  \"chef_environment\": \"_default\",\n  \"run_list\": [\n\n]\n,\n  \"normal\": {\n\n  }\n}\n")
     end
   end
 end

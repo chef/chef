@@ -121,7 +121,7 @@ class Chef
     #
     # @return [String] the JSON string.
     def to_json(*a)
-      to_hash.to_json(*a)
+      Chef::JSONCompat.to_json(to_hash, *a)
     end
 
     def self.json_create(o)

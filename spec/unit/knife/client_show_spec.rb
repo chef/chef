@@ -27,16 +27,26 @@ describe Chef::Knife::ClientShow do
 
   describe 'run' do
     it 'should list the client' do
-      Chef::ApiClient.should_receive(:load).with('adam').and_return(@client_mock)
-      @knife.should_receive(:format_for_display).with(@client_mock)
+      expect(Chef::ApiClient).to receive(:load).with('adam').and_return(@client_mock)
+      expect(@knife).to receive(:format_for_display).with(@client_mock)
       @knife.run
+    end
+
+    it 'should pretty print json' do
+      @knife.config[:format] = 'json'
+      @stdout = StringIO.new
+      allow(@knife.ui).to receive(:stdout).and_return(@stdout)
+      fake_client_contents = {"foo"=>"bar", "baz"=>"qux"}
+      expect(Chef::ApiClient).to receive(:load).with('adam').and_return(fake_client_contents)
+      @knife.run
+      expect(@stdout.string).to eql("{\n  \"foo\": \"bar\",\n  \"baz\": \"qux\"\n}\n")
     end
 
     it 'should print usage and exit when a client name is not provided' do
       @knife.name_args = []
-      @knife.should_receive(:show_usage)
-      @knife.ui.should_receive(:fatal)
-      lambda { @knife.run }.should raise_error(SystemExit)
+      expect(@knife).to receive(:show_usage)
+      expect(@knife.ui).to receive(:fatal)
+      expect { @knife.run }.to raise_error(SystemExit)
     end
   end
 end

@@ -20,7 +20,7 @@ require 'support/shared/context/config'
 require 'chef/knife/list'
 
 describe 'knife list' do
-  extend IntegrationSupport
+  include IntegrationSupport
   include KnifeSupport
 
   include_context "default config options"
@@ -71,20 +71,22 @@ EOM
   end
 
   when_the_chef_server "has plenty of stuff in it" do
-    client 'client1', {}
-    client 'client2', {}
-    cookbook 'cookbook1', '1.0.0', { 'metadata.rb' => '' }
-    cookbook 'cookbook2', '1.0.1', { 'metadata.rb' => '', 'recipes' => { 'default.rb' => '' } }
-    data_bag 'bag1', { 'item1' => {}, 'item2' => {} }
-    data_bag 'bag2', { 'item1' => {}, 'item2' => {} }
-    environment 'environment1', {}
-    environment 'environment2', {}
-    node 'node1', {}
-    node 'node2', {}
-    role 'role1', {}
-    role 'role2', {}
-    user 'user1', {}
-    user 'user2', {}
+    before do
+      client 'client1', {}
+      client 'client2', {}
+      cookbook 'cookbook1', '1.0.0'
+      cookbook 'cookbook2', '1.0.1', { 'recipes' => { 'default.rb' => '' } }
+      data_bag 'bag1', { 'item1' => {}, 'item2' => {} }
+      data_bag 'bag2', { 'item1' => {}, 'item2' => {} }
+      environment 'environment1', {}
+      environment 'environment2', {}
+      node 'node1', {}
+      node 'node2', {}
+      role 'role1', {}
+      role 'role2', {}
+      user 'user1', {}
+      user 'user2', {}
+    end
 
     it "knife list / returns all top level directories" do
       knife('list /').should_succeed <<EOM
@@ -317,7 +319,7 @@ EOM
     context 'symlink tests' do
       when_the_repository 'is empty' do
         context 'when cwd is at the top of the repository' do
-          cwd '.'
+          before { cwd '.' }
 
           it "knife list -Rfp returns everything" do
             knife('list -Rfp').should_succeed <<EOM
@@ -360,9 +362,9 @@ EOM
       end
 
       when_the_repository 'has a cookbooks directory' do
-        directory 'cookbooks'
+        before { directory 'cookbooks' }
         context 'when cwd is in cookbooks/' do
-          cwd 'cookbooks'
+          before { cwd 'cookbooks' }
 
           it "knife list -Rfp / returns everything" do
             knife('list -Rfp /').should_succeed <<EOM
@@ -454,10 +456,10 @@ EOM
       end
 
       when_the_repository 'has a cookbooks/cookbook2 directory' do
-        directory 'cookbooks/cookbook2'
+        before { directory 'cookbooks/cookbook2' }
 
         context 'when cwd is in cookbooks/cookbook2' do
-          cwd 'cookbooks/cookbook2'
+          before { cwd 'cookbooks/cookbook2' }
 
           it "knife list -Rfp returns cookbooks" do
             knife('list -Rfp').should_succeed <<EOM
@@ -470,11 +472,13 @@ EOM
       end
 
       when_the_repository 'has a cookbooks directory and a symlinked cookbooks directory', :pending => (Chef::Platform.windows?) do
-        directory 'cookbooks'
-        symlink 'symlinked', 'cookbooks'
+        before do
+          directory 'cookbooks'
+          symlink 'symlinked', 'cookbooks'
+        end
 
         context 'when cwd is in cookbooks/' do
-          cwd 'cookbooks'
+          before { cwd 'cookbooks' }
 
           it "knife list -Rfp returns cookbooks" do
             knife('list -Rfp').should_succeed <<EOM
@@ -489,7 +493,7 @@ EOM
         end
 
         context 'when cwd is in symlinked/' do
-          cwd 'symlinked'
+          before { cwd 'symlinked' }
 
           it "knife list -Rfp returns cookbooks" do
             knife('list -Rfp').should_succeed <<EOM
@@ -505,11 +509,13 @@ EOM
       end
 
       when_the_repository 'has a real_cookbooks directory and a cookbooks symlink to it', :pending => (Chef::Platform.windows?) do
-        directory 'real_cookbooks'
-        symlink 'cookbooks', 'real_cookbooks'
+        before do
+          directory 'real_cookbooks'
+          symlink 'cookbooks', 'real_cookbooks'
+        end
 
         context 'when cwd is in real_cookbooks/' do
-          cwd 'real_cookbooks'
+          before { cwd 'real_cookbooks' }
 
           it "knife list -Rfp returns cookbooks" do
             knife('list -Rfp').should_succeed <<EOM
@@ -524,7 +530,7 @@ EOM
         end
 
         context 'when cwd is in cookbooks/' do
-          cwd 'cookbooks'
+          before { cwd 'cookbooks' }
 
           it "knife list -Rfp returns cookbooks" do
             knife('list -Rfp').should_succeed <<EOM
@@ -553,36 +559,38 @@ EOM
     end
 
     when_the_repository "has a bunch of stuff" do
-      file 'clients/client1.json', {}
-      file 'clients/client2.json', {}
+      before do
+        file 'clients/client1.json', {}
+        file 'clients/client2.json', {}
 
-      directory 'cookbooks/cookbook1' do
-        file 'metadata.rb', ''
-      end
-      directory 'cookbooks/cookbook2' do
-        file 'metadata.rb', ''
-        file 'recipes/default.rb', ''
-      end
-
-      directory 'data_bags' do
-        directory 'bag1' do
-          file 'item1.json', {}
-          file 'item2.json', {}
+        directory 'cookbooks/cookbook1' do
+          file 'metadata.rb', cb_metadata("cookbook1", "1.0.0")
         end
-        directory 'bag2' do
-          file 'item1.json', {}
-          file 'item2.json', {}
+        directory 'cookbooks/cookbook2' do
+          file 'metadata.rb', cb_metadata("cookbook2", "2.0.0")
+          file 'recipes/default.rb', ''
         end
-      end
 
-      file 'environments/environment1.json', {}
-      file 'environments/environment2.json', {}
-      file 'nodes/node1.json', {}
-      file 'nodes/node2.json', {}
-      file 'roles/role1.json', {}
-      file 'roles/role2.json', {}
-      file 'users/user1.json', {}
-      file 'users/user2.json', {}
+        directory 'data_bags' do
+          directory 'bag1' do
+            file 'item1.json', {}
+            file 'item2.json', {}
+          end
+          directory 'bag2' do
+            file 'item1.json', {}
+            file 'item2.json', {}
+          end
+        end
+
+        file 'environments/environment1.json', {}
+        file 'environments/environment2.json', {}
+        file 'nodes/node1.json', {}
+        file 'nodes/node2.json', {}
+        file 'roles/role1.json', {}
+        file 'roles/role2.json', {}
+        file 'users/user1.json', {}
+        file 'users/user2.json', {}
+      end
 
       it "knife list -Rfp / returns everything" do
         knife('list -Rp --local --flat /').should_succeed <<EOM

@@ -6,14 +6,16 @@ require 'timeout'
 require 'fileutils'
 
 describe "chef-solo" do
-  extend IntegrationSupport
+  include IntegrationSupport
   include Chef::Mixin::ShellOut
 
   let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..") }
 
   when_the_repository "has a cookbook with a basic recipe" do
-    file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
-    file 'cookbooks/x/recipes/default.rb', 'puts "ITWORKS"'
+    before do
+      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/x/recipes/default.rb', 'puts "ITWORKS"'
+    end
 
     it "should complete with success" do
       file 'config/solo.rb', <<EOM
@@ -43,11 +45,13 @@ E
   end
 
   when_the_repository "has a cookbook with an undeclared dependency" do
-    file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
-    file 'cookbooks/x/recipes/default.rb', 'include_recipe "ancient::aliens"'
+    before do
+      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/x/recipes/default.rb', 'include_recipe "ancient::aliens"'
 
-    file 'cookbooks/ancient/metadata.rb', 'version "1.0.0"'
-    file 'cookbooks/ancient/recipes/aliens.rb', 'print "it was aliens"'
+      file 'cookbooks/ancient/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/ancient/recipes/aliens.rb', 'print "it was aliens"'
+    end
 
     it "should exit with an error" do
       file 'config/solo.rb', <<EOM
@@ -62,16 +66,19 @@ EOM
 
 
   when_the_repository "has a cookbook with a recipe with sleep" do
-    directory 'logs'
-    file 'logs/runs.log', ''
-    file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
-    file 'cookbooks/x/recipes/default.rb', <<EOM
+    before do
+      directory 'logs'
+      file 'logs/runs.log', ''
+      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/x/recipes/default.rb', <<EOM
 ruby_block "sleeping" do
   block do
     sleep 5
   end
 end
 EOM
+    end
+
     # Ruby 1.8.7 doesn't have Process.spawn :(
     it "while running solo concurrently", :ruby_gte_19_only => true do
       file 'config/solo.rb', <<EOM

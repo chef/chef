@@ -20,23 +20,27 @@ require 'chef/knife/list'
 require 'chef/knife/show'
 
 describe 'chefignore tests' do
-  extend IntegrationSupport
+  include IntegrationSupport
   include KnifeSupport
 
   when_the_repository "has lots of stuff in it" do
-    file 'roles/x.json', {}
-    file 'environments/x.json', {}
-    file 'data_bags/bag1/x.json', {}
-    file 'cookbooks/cookbook1/x.json', {}
+    before do
+      file 'roles/x.json', {}
+      file 'environments/x.json', {}
+      file 'data_bags/bag1/x.json', {}
+      file 'cookbooks/cookbook1/x.json', {}
+    end
 
     context "and has a chefignore everywhere except cookbooks" do
-      chefignore = "x.json\nroles/x.json\nenvironments/x.json\ndata_bags/bag1/x.json\nbag1/x.json\ncookbooks/cookbook1/x.json\ncookbook1/x.json\n"
-      file 'chefignore', chefignore
-      file 'roles/chefignore', chefignore
-      file 'environments/chefignore', chefignore
-      file 'data_bags/chefignore', chefignore
-      file 'data_bags/bag1/chefignore', chefignore
-      file 'cookbooks/cookbook1/chefignore', chefignore
+      before do
+        chefignore = "x.json\nroles/x.json\nenvironments/x.json\ndata_bags/bag1/x.json\nbag1/x.json\ncookbooks/cookbook1/x.json\ncookbook1/x.json\n"
+        file 'chefignore', chefignore
+        file 'roles/chefignore', chefignore
+        file 'environments/chefignore', chefignore
+        file 'data_bags/chefignore', chefignore
+        file 'data_bags/bag1/chefignore', chefignore
+        file 'cookbooks/cookbook1/chefignore', chefignore
+      end
 
       it 'matching files and directories get ignored' do
         # NOTE: many of the "chefignore" files should probably not show up
@@ -58,9 +62,11 @@ EOM
   end
 
   when_the_repository 'has a cookbook with only chefignored files' do
-    file 'cookbooks/cookbook1/templates/default/x.rb', ''
-    file 'cookbooks/cookbook1/libraries/x.rb', ''
-    file 'cookbooks/chefignore', "libraries/x.rb\ntemplates/default/x.rb\n"
+    before do
+      file 'cookbooks/cookbook1/templates/default/x.rb', ''
+      file 'cookbooks/cookbook1/libraries/x.rb', ''
+      file 'cookbooks/chefignore', "libraries/x.rb\ntemplates/default/x.rb\n"
+    end
 
     it 'the cookbook is not listed' do
       knife('list --local -Rfp /').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
@@ -70,13 +76,15 @@ EOM
   end
 
   when_the_repository "has multiple cookbooks" do
-    file 'cookbooks/cookbook1/x.json', {}
-    file 'cookbooks/cookbook1/y.json', {}
-    file 'cookbooks/cookbook2/x.json', {}
-    file 'cookbooks/cookbook2/y.json', {}
+    before do
+      file 'cookbooks/cookbook1/x.json', {}
+      file 'cookbooks/cookbook1/y.json', {}
+      file 'cookbooks/cookbook2/x.json', {}
+      file 'cookbooks/cookbook2/y.json', {}
+    end
 
     context 'and has a chefignore with filenames' do
-      file 'cookbooks/chefignore', "x.json\n"
+      before { file 'cookbooks/chefignore', "x.json\n" }
 
       it 'matching files and directories get ignored in all cookbooks' do
         knife('list --local -Rfp /').should_succeed <<EOM
@@ -90,8 +98,10 @@ EOM
     end
 
     context "and has a chefignore with wildcards" do
-      file 'cookbooks/chefignore', "x.*\n"
-      file 'cookbooks/cookbook1/x.rb', ''
+      before do
+        file 'cookbooks/chefignore', "x.*\n"
+        file 'cookbooks/cookbook1/x.rb', ''
+      end
 
       it 'matching files and directories get ignored in all cookbooks' do
         knife('list --local -Rfp /').should_succeed <<EOM
@@ -105,9 +115,11 @@ EOM
     end
 
     context "and has a chefignore with relative paths" do
-      file 'cookbooks/cookbook1/recipes/x.rb', ''
-      file 'cookbooks/cookbook2/recipes/y.rb', ''
-      file 'cookbooks/chefignore', "recipes/x.rb\n"
+      before do
+        file 'cookbooks/cookbook1/recipes/x.rb', ''
+        file 'cookbooks/cookbook2/recipes/y.rb', ''
+        file 'cookbooks/chefignore', "recipes/x.rb\n"
+      end
 
       it 'matching directories get ignored' do
         knife('list --local -Rfp /').should_succeed <<EOM
@@ -125,8 +137,10 @@ EOM
     end
 
     context "and has a chefignore with subdirectories" do
-      file 'cookbooks/cookbook1/recipes/y.rb', ''
-      file 'cookbooks/chefignore', "recipes\nrecipes/\n"
+      before do
+        file 'cookbooks/cookbook1/recipes/y.rb', ''
+        file 'cookbooks/chefignore', "recipes\nrecipes/\n"
+      end
 
       it 'matching directories do NOT get ignored' do
         knife('list --local -Rfp /').should_succeed <<EOM
@@ -144,9 +158,11 @@ EOM
     end
 
     context "and has a chefignore that ignores all files in a subdirectory" do
-      file 'cookbooks/cookbook1/templates/default/x.rb', ''
-      file 'cookbooks/cookbook1/libraries/x.rb', ''
-      file 'cookbooks/chefignore', "libraries/x.rb\ntemplates/default/x.rb\n"
+      before do
+        file 'cookbooks/cookbook1/templates/default/x.rb', ''
+        file 'cookbooks/cookbook1/libraries/x.rb', ''
+        file 'cookbooks/chefignore', "libraries/x.rb\ntemplates/default/x.rb\n"
+      end
 
       it 'ignores the subdirectory entirely' do
         knife('list --local -Rfp /').should_succeed <<EOM
@@ -162,7 +178,9 @@ EOM
     end
 
     context "and has an empty chefignore" do
-      file 'cookbooks/chefignore', "\n"
+      before do
+        file 'cookbooks/chefignore', "\n"
+      end
 
       it 'nothing is ignored' do
         knife('list --local -Rfp /').should_succeed <<EOM
@@ -178,7 +196,9 @@ EOM
     end
 
     context "and has a chefignore with comments and empty lines" do
-      file 'cookbooks/chefignore', "\n\n # blah\n#\nx.json\n\n"
+      before do
+        file 'cookbooks/chefignore', "\n\n # blah\n#\nx.json\n\n"
+      end
 
       it 'matching files and directories get ignored in all cookbooks' do
         knife('list --local -Rfp /').should_succeed <<EOM
@@ -200,14 +220,18 @@ EOM
       ]
     end
 
-    file 'cookbooks1/mycookbook/metadata.rb', ''
-    file 'cookbooks1/mycookbook/x.json', {}
-    file 'cookbooks2/yourcookbook/metadata.rb', ''
-    file 'cookbooks2/yourcookbook/x.json', ''
+    before do
+      file 'cookbooks1/mycookbook/metadata.rb', ''
+      file 'cookbooks1/mycookbook/x.json', {}
+      file 'cookbooks2/yourcookbook/metadata.rb', ''
+      file 'cookbooks2/yourcookbook/x.json', ''
+    end
 
     context "and multiple chefignores" do
-      file 'cookbooks1/chefignore', "metadata.rb\n"
-      file 'cookbooks2/chefignore', "x.json\n"
+      before do
+        file 'cookbooks1/chefignore', "metadata.rb\n"
+        file 'cookbooks2/chefignore', "x.json\n"
+      end
       it "chefignores apply only to the directories they are in" do
         knife('list --local -Rfp /').should_succeed <<EOM
 /cookbooks/
@@ -219,10 +243,12 @@ EOM
       end
 
       context "and conflicting cookbooks" do
-        file 'cookbooks1/yourcookbook/metadata.rb', ''
-        file 'cookbooks1/yourcookbook/x.json', ''
-        file 'cookbooks1/yourcookbook/onlyincookbooks1.rb', ''
-        file 'cookbooks2/yourcookbook/onlyincookbooks2.rb', ''
+        before do
+          file 'cookbooks1/yourcookbook/metadata.rb', ''
+          file 'cookbooks1/yourcookbook/x.json', ''
+          file 'cookbooks1/yourcookbook/onlyincookbooks1.rb', ''
+          file 'cookbooks2/yourcookbook/onlyincookbooks2.rb', ''
+        end
 
         it "chefignores apply only to the winning cookbook" do
           knife('list --local -Rfp /').should_succeed(<<EOM, :stderr => "WARN: Child with name 'yourcookbook' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks1/yourcookbook and #{Chef::Config.chef_repo_path}/cookbooks2/yourcookbook\n")
@@ -239,7 +265,9 @@ EOM
   end
 
   when_the_repository 'has a cookbook named chefignore' do
-    file 'cookbooks/chefignore/metadata.rb', {}
+    before do
+      file 'cookbooks/chefignore/metadata.rb', {}
+    end
     it 'knife list -Rfp /cookbooks shows it' do
       knife('list --local -Rfp /cookbooks').should_succeed <<EOM
 /cookbooks/chefignore/
@@ -249,9 +277,11 @@ EOM
   end
 
   when_the_repository 'has multiple cookbook paths, one with a chefignore file and the other with a cookbook named chefignore' do
-    file 'cookbooks1/chefignore', ''
-    file 'cookbooks1/blah/metadata.rb', ''
-    file 'cookbooks2/chefignore/metadata.rb', ''
+    before do
+      file 'cookbooks1/chefignore', ''
+      file 'cookbooks1/blah/metadata.rb', ''
+      file 'cookbooks2/chefignore/metadata.rb', ''
+    end
     before :each do
       Chef::Config.cookbook_path = [
         File.join(Chef::Config.chef_repo_path, 'cookbooks1'),

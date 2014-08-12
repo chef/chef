@@ -24,6 +24,7 @@ require 'chef/mixin/params_validate'
 require 'chef/log'
 require 'chef/version_class'
 require 'chef/version_constraint'
+require 'chef/json_compat'
 
 class Chef
   class Cookbook
@@ -242,8 +243,8 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def supports(platform, *version_args)
         version = new_args_format(:supports, platform, version_args)
-        normalized_version = normalize_version_constraint(:supports, platform, version)
-        @platforms[platform] = normalized_version
+        constraint = validate_version_constraint(:supports, platform, version)
+        @platforms[platform] = constraint.to_s
         @platforms[platform]
       end
 
@@ -259,8 +260,8 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def depends(cookbook, *version_args)
         version = new_args_format(:depends, cookbook, version_args)
-        normalized_version = normalize_version_constraint(:depends, cookbook, version)
-        @dependencies[cookbook] = normalized_version
+        constraint = validate_version_constraint(:depends, cookbook, version)
+        @dependencies[cookbook] = constraint.to_s
         @dependencies[cookbook]
       end
 
@@ -276,8 +277,8 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def recommends(cookbook, *version_args)
         version = new_args_format(:recommends, cookbook,  version_args)
-        normalized_version = normalize_version_constraint(:recommends, cookbook, version)
-        @recommendations[cookbook] = normalized_version
+        constraint = validate_version_constraint(:recommends, cookbook, version)
+        @recommendations[cookbook] = constraint.to_s
         @recommendations[cookbook]
       end
 
@@ -293,8 +294,8 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def suggests(cookbook, *version_args)
         version = new_args_format(:suggests, cookbook, version_args)
-        normalized_version = normalize_version_constraint(:suggests, cookbook, version)
-        @suggestions[cookbook] = normalized_version
+        constraint = validate_version_constraint(:suggests, cookbook, version)
+        @suggestions[cookbook] = constraint.to_s
         @suggestions[cookbook]
       end
 
@@ -310,8 +311,8 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def conflicts(cookbook, *version_args)
         version = new_args_format(:conflicts, cookbook, version_args)
-        normalized_version = normalize_version_constraint(:conflicts, cookbook, version)
-        @conflicting[cookbook] = normalized_version
+        constraint = validate_version_constraint(:conflicts, cookbook, version)
+        @conflicting[cookbook] = constraint.to_s
         @conflicting[cookbook]
       end
 
@@ -331,8 +332,8 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def provides(cookbook, *version_args)
         version = new_args_format(:provides, cookbook, version_args)
-        normalized_version = normalize_version_constraint(:provides, cookbook, version)
-        @providing[cookbook] = normalized_version
+        constraint = validate_version_constraint(:provides, cookbook, version)
+        @providing[cookbook] = constraint.to_s
         @providing[cookbook]
       end
 
@@ -347,8 +348,8 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def replaces(cookbook, *version_args)
         version = new_args_format(:replaces, cookbook, version_args)
-        normalized_version = normalize_version_constraint(:replaces, cookbook, version)
-        @replacing[cookbook] = normalized_version
+        constraint = validate_version_constraint(:replaces, cookbook, version)
+        @replacing[cookbook] = constraint.to_s
         @replacing[cookbook]
       end
 
@@ -441,7 +442,7 @@ class Chef
       end
 
       def to_json(*a)
-        self.to_hash.to_json(*a)
+        Chef::JSONCompat.to_json(to_hash, *a)
       end
 
       def self.from_hash(o)
@@ -531,11 +532,6 @@ Called from:
 #{caller[0...5].map {|line| "  " + line}.join("\n")}
 INVALID
         raise Exceptions::InvalidVersionConstraint, msg
-      end
-
-      def normalize_version_constraint(caller_name, dep_name, constraint_str)
-        version_constraint = validate_version_constraint(caller_name, dep_name, constraint_str)
-        "#{version_constraint.op} #{version_constraint.raw_version}"
       end
 
       # Verify that the given array is an array of strings
@@ -655,7 +651,6 @@ INVALID
         from_hash(params)
       end
     end
-
 
   end
 end

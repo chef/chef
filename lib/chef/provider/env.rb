@@ -143,7 +143,7 @@ class Chef
       def modify_env
         if @new_resource.delim
           #e.g. add to PATH
-          @new_resource.value << @new_resource.delim << @current_resource.value
+          @new_resource.value(@new_resource.value + @new_resource.delim + @current_resource.value)
         end
         create_env
       end

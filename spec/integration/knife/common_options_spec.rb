@@ -19,18 +19,11 @@ require 'support/shared/integration/integration_helper'
 require 'chef/knife/raw'
 
 describe 'knife common options' do
-  extend IntegrationSupport
+  include IntegrationSupport
   include KnifeSupport
 
   when_the_repository "has a node" do
-    file 'nodes/x.json', {}
-
-    before(:each) do
-      if ChefZero::RSpec.server
-        ChefZero::RSpec.server.stop
-        ChefZero::RSpec.server = nil
-      end
-    end
+    before { file 'nodes/x.json', {} }
 
     context 'When chef_zero.enabled is true' do
       before(:each) do
@@ -38,14 +31,14 @@ describe 'knife common options' do
       end
 
       it 'knife raw /nodes/x should retrieve the node' do
-        knife('raw /nodes/x').should_succeed /"name": "x"/
+        knife('raw /nodes/x').should_succeed( /"name": "x"/ )
       end
 
       context 'And chef_zero.port is 9999' do
         before(:each) { Chef::Config.chef_zero.port = 9999 }
 
         it 'knife raw /nodes/x should retrieve the node' do
-          knife('raw /nodes/x').should_succeed /"name": "x"/
+          knife('raw /nodes/x').should_succeed( /"name": "x"/ )
           Chef::Config.chef_server_url.should == 'http://localhost:9999'
         end
       end
@@ -55,12 +48,13 @@ describe 'knife common options' do
         before(:each) { Chef::Config.chef_zero.host = '0.0.0.0' }
 
         it 'knife raw /nodes/x should retrieve the role' do
-          knife('raw /nodes/x').should_succeed /"name": "x"/
+          knife('raw /nodes/x').should_succeed( /"name": "x"/ )
         end
       end
 
       context 'and there is a private key' do
-        file 'mykey.pem', <<EOM
+        before do
+          file 'mykey.pem', <<EOM
 -----BEGIN RSA PRIVATE KEY-----
 MIIEogIBAAKCAQEApubutqtYYQ5UiA9QhWP7UvSmsfHsAoPKEVVPdVW/e8Svwpyf
 0Xef6OFWVmBE+W442ZjLOe2y6p2nSnaq4y7dg99NFz6X+16mcKiCbj0RCiGqCvCk
@@ -89,23 +83,24 @@ syHLXYFNy0OxMtH/bBAXBGNHd9gf5uOnqh0pYcbe/uRAxumC7Rl0cL509eURiA2T
 +vFmf54y9YdnLXaqv+FhJT6B6V7WX7IpU9BMqJY1cJYXHuHG2KA=
 -----END RSA PRIVATE KEY-----
 EOM
+        end
 
         it 'knife raw /nodes/x should retrieve the node' do
-          knife('raw /nodes/x').should_succeed /"name": "x"/
+          knife('raw /nodes/x').should_succeed( /"name": "x"/ )
         end
       end
     end
 
     it 'knife raw -z /nodes/x retrieves the node' do
-      knife('raw -z /nodes/x').should_succeed /"name": "x"/
+      knife('raw -z /nodes/x').should_succeed( /"name": "x"/ )
     end
 
     it 'knife raw --local-mode /nodes/x retrieves the node' do
-      knife('raw --local-mode /nodes/x').should_succeed /"name": "x"/
+      knife('raw --local-mode /nodes/x').should_succeed( /"name": "x"/ )
     end
 
     it 'knife raw -z --chef-zero-port=9999 /nodes/x retrieves the node' do
-      knife('raw -z --chef-zero-port=9999 /nodes/x').should_succeed /"name": "x"/
+      knife('raw -z --chef-zero-port=9999 /nodes/x').should_succeed( /"name": "x"/ )
       Chef::Config.chef_server_url.should == 'http://localhost:9999'
     end
 
@@ -123,7 +118,7 @@ EOM
       end
 
       it 'knife raw -z /nodes/x retrieves the node' do
-        knife('raw -z /nodes/x').should_succeed /"name": "x"/
+        knife('raw -z /nodes/x').should_succeed( /"name": "x"/ )
         expect(URI(Chef::Config.chef_server_url).port).to be > 8889
       end
     end
@@ -142,18 +137,18 @@ EOM
       end
 
       it 'knife raw -z --chef-zero-port=9999-20000 /nodes/x' do
-        knife('raw -z --chef-zero-port=9999-20000 /nodes/x').should_succeed /"name": "x"/
+        knife('raw -z --chef-zero-port=9999-20000 /nodes/x').should_succeed( /"name": "x"/ )
         expect(URI(Chef::Config.chef_server_url).port).to be > 9999
       end
 
       it 'knife raw -z --chef-zero-port=9999-9999,19423' do
-        knife('raw -z --chef-zero-port=9999-9999,19423 /nodes/x').should_succeed /"name": "x"/
+        knife('raw -z --chef-zero-port=9999-9999,19423 /nodes/x').should_succeed( /"name": "x"/ )
         expect(URI(Chef::Config.chef_server_url).port).to be == 19423
       end
     end
 
     it 'knife raw -z --chef-zero-port=9999 /nodes/x retrieves the node' do
-      knife('raw -z --chef-zero-port=9999 /nodes/x').should_succeed /"name": "x"/
+      knife('raw -z --chef-zero-port=9999 /nodes/x').should_succeed( /"name": "x"/ )
       Chef::Config.chef_server_url.should == 'http://localhost:9999'
     end
   end

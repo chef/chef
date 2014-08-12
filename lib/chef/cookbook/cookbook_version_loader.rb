@@ -170,7 +170,7 @@ class Chef
       def apply_ruby_metadata(file)
         begin
           @metadata.from_file(file)
-        rescue JSON::ParserError
+        rescue Chef::Exceptions::JSON::ParseError
           Chef::Log.error("Error evaluating metadata.rb for #@cookbook_name in " + file)
           raise
         end
@@ -179,7 +179,7 @@ class Chef
       def apply_json_metadata(file)
         begin
           @metadata.from_json(IO.read(file))
-        rescue JSON::ParserError
+        rescue Chef::Exceptions::JSON::ParseError
           Chef::Log.error("Couldn't parse cookbook metadata JSON for #@cookbook_name in " + file)
           raise
         end
@@ -189,7 +189,7 @@ class Chef
         begin
           data = Chef::JSONCompat.from_json(IO.read(file), :create_additions => false)
           @metadata.from_hash(data['metadata'])
-        rescue JSON::ParserError
+        rescue Chef::Exceptions::JSON::ParseError
           Chef::Log.error("Couldn't parse cookbook metadata JSON for #@cookbook_name in " + file)
           raise
         end
@@ -200,7 +200,7 @@ class Chef
           begin
             data = Chef::JSONCompat.from_json(IO.read(uploaded_cookbook_version_file), :create_additions => false)
             @frozen = data['frozen?']
-          rescue JSON::ParserError
+          rescue Chef::Exceptions::JSON::ParseError
             Chef::Log.error("Couldn't parse cookbook metadata JSON for #@cookbook_name in #{uploaded_cookbook_version_file}")
             raise
           end

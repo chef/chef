@@ -20,7 +20,7 @@ require 'functional/resource/base'
 require 'chef/mixin/shell_out'
 
 # Run the test only for AIX platform.
-describe Chef::Resource::BffPackage, :external => ohai[:platform] != 'aix' do
+describe Chef::Resource::BffPackage, :requires_root, :external => ohai[:platform] != 'aix' do
   include Chef::Mixin::ShellOut
 
   let(:new_resource) do
