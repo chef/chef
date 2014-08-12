@@ -97,3 +97,20 @@ On OSX, the 'group' provider would use 'etc' to determine existing groups,
 but 'dscl' to add groups, causing broken idempotency if something existed
 in /etc/group. The provider now uses 'dscl' for both idempotenty checks and
 modifications.
+
+## Windows Service Startup Type
+
+When a Windows service is running and Chef stops it, the startup type will change from automatic to manual. A bug previously existed
+that prevented you from changing the startup type to disabled from manual. Using the enable and disable actions will now correctly set
+the service startup type to automatic and disabled, respectively. A new `windows_service` resource has been added that allows you to 
+specify the startup type as manual:
+
+```
+windows_service "BITS" do
+  action :configure_startup
+  startup_type :manual
+end
+```
+
+You must use the windows_service resource to utilize the `:configure_startup` action and `startup_type` attribute. The service resource
+does not support them.

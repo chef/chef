@@ -24,12 +24,14 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::Service.new("chef")
+    @new_resource = Chef::Resource::WindowsService.new("chef")
     @provider = Chef::Provider::Service::Windows.new(@new_resource, @run_context)
+    @provider.current_resource = Chef::Resource::WindowsService.new("current-chef")
     Object.send(:remove_const, 'Win32') if defined?(Win32)
     Win32 = Module.new
     Win32::Service = Class.new
     Win32::Service::AUTO_START = 0x00000002
+    Win32::Service::DEMAND_START = 0x00000003
     Win32::Service::DISABLED = 0x00000004
     Win32::Service.stub(:status).with(@new_resource.service_name).and_return(
       double("StatusStruct", :current_state => "running"))
@@ -55,6 +57,13 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
   it "should set the current resources start type" do
     @provider.load_current_resource
     @provider.current_resource.enabled.should be_true
+  end
+
+  it "does not set the current resources start type if it is neither AUTO START or DISABLED" do
+    Win32::Service.stub(:config_info).with(@new_resource.service_name).and_return(
+      double("ConfigStruct", :start_type => "manual"))
+    @provider.load_current_resource
+    @provider.current_resource.enabled.should be_nil
   end
 
   describe Chef::Provider::Service::Windows, "start_service" do
@@ -192,8 +201,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
     end
 
     it "should pass custom timeout to the stop command if provided" do
-      Win32::Service.stub!(:status).with(@new_resource.service_name).and_return(
-        mock("StatusStruct", :current_state => "running"))
+      Win32::Service.stub(:status).with(@new_resource.service_name).and_return(
+        double("StatusStruct", :current_state => "running"))
       @new_resource.timeout 1
       Win32::Service.should_receive(:stop).with(@new_resource.service_name)
       Timeout.timeout(2) do
@@ -246,7 +255,6 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
   end
 
   describe Chef::Provider::Service::Windows, "enable_service" do
-
     before(:each) do
       Win32::Service.stub(:config_info).with(@new_resource.service_name).and_return(
         double("ConfigStruct", :start_type => "disabled"))
@@ -264,25 +272,48 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       @provider.enable_service
       @new_resource.updated_by_last_action?.should be_false
     end
+  end
 
-    it "should do nothing if the service is enabled" do
+  describe Chef::Provider::Service::Windows, "action_enable" do
+    it "does nothing if the service is enabled" do
       Win32::Service.stub(:config_info).with(@new_resource.service_name).and_return(
         double("ConfigStruct", :start_type => "auto start"))
-      Win32::Service.should_not_receive(:configure)
-      @provider.enable_service
-      @new_resource.updated_by_last_action?.should be_false
+      @provider.should_not_receive(:enable_service)
+      @provider.action_enable
+    end
+
+    it "enables the service if it is not set to automatic start" do
+      Win32::Service.stub(:config_info).with(@new_resource.service_name).and_return(
+        double("ConfigStruct", :start_type => "disabled"))
+      @provider.should_receive(:enable_service)
+      @provider.action_enable
+    end
+  end
+
+  describe Chef::Provider::Service::Windows, "action_disable" do
+    it "does nothing if the service is disabled" do
+      Win32::Service.stub(:config_info).with(@new_resource.service_name).and_return(
+        double("ConfigStruct", :start_type => "disabled"))
+      @provider.should_not_receive(:disable_service)
+      @provider.action_disable
+    end
+
+    it "disables the service if it is not set to disabled" do
+      Win32::Service.stub(:config_info).with(@new_resource.service_name).and_return(
+        double("ConfigStruct", :start_type => "auto start"))
+      @provider.should_receive(:disable_service)
+      @provider.action_disable
     end
   end
 
   describe Chef::Provider::Service::Windows, "disable_service" do
-
     before(:each) do
       Win32::Service.stub(:config_info).with(@new_resource.service_name).and_return(
         double("ConfigStruct", :start_type => "auto start"))
     end
 
     it "should disable service" do
-      Win32::Service.should_receive(:configure).with(:service_name => @new_resource.service_name, :start_type => Win32::Service::DISABLED)
+      Win32::Service.should_receive(:configure)
       @provider.disable_service
       @new_resource.updated_by_last_action?.should be_true
     end
@@ -293,15 +324,39 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       @provider.disable_service
       @new_resource.updated_by_last_action?.should be_false
     end
+  end
 
-    it "should do nothing if the service is disabled" do
-      Win32::Service.stub(:config_info).with(@new_resource.service_name).and_return(
-        double("ConfigStruct", :start_type => "disabled"))
-      @provider.load_current_resource
-      Win32::Service.should_not_receive(:configure)
-      @provider.disable_service
-      @new_resource.updated_by_last_action?.should be_false
+  describe Chef::Provider::Service::Windows, "action_configure_startup" do
+    { :automatic => "auto start", :manual => "demand start", :disabled => "disabled" }.each do |type,win32|
+      it "sets the startup type to #{type} if it is something else" do
+        @new_resource.startup_type(type)
+        @provider.stub(:current_start_type).and_return("fire")
+        @provider.should_receive(:set_startup_type).with(type)
+        @provider.action_configure_startup
+      end
+
+      it "leaves the startup type as #{type} if it is already set" do
+        @new_resource.startup_type(type)
+        @provider.stub(:current_start_type).and_return(win32)
+        @provider.should_not_receive(:set_startup_type).with(type)
+        @provider.action_configure_startup
+      end
+    end
+  end
+
+  describe Chef::Provider::Service::Windows, "set_start_type" do
+    allowed_types = { :automatic => Win32::Service::AUTO_START,
+                      :manual    => Win32::Service::DEMAND_START,
+                      :disabled  => Win32::Service::DISABLED }
+    allowed_types.each do |arg,win32_constant|
+      it "when called with #{arg} it calls Win32::Service#configure with #{win32_constant}" do
+        Win32::Service.should_receive(:configure).with(:service_name => @new_resource.service_name, :start_type => win32_constant)
+        @provider.send(:set_startup_type, arg)
+      end
     end
 
+    it "raises an exception when given an unknown start type" do
+      expect { @provider.send(:set_startup_type, :fire_truck) }.to raise_error(Chef::Exceptions::ConfigurationError)
+    end
   end
 end
