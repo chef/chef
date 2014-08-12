@@ -147,7 +147,8 @@ describe Chef::Cookbook::SyntaxCheck do
 
         it "does not remove the invalid file from the list of untested files" do
           syntax_check.untested_ruby_files.should include(File.join(cookbook_path, 'recipes', 'default.rb'))
-          lambda { syntax_check.validate_ruby_files }.should_not change(syntax_check, :untested_ruby_files)
+          syntax_check.validate_ruby_files
+          syntax_check.untested_ruby_files.should include(File.join(cookbook_path, 'recipes', 'default.rb'))
         end
 
         it "indicates that a template file has a syntax error" do
@@ -166,7 +167,7 @@ describe Chef::Cookbook::SyntaxCheck do
           cookbook_path = File.join(CHEF_SPEC_DATA, 'cookbooks', 'ignorken')
           Chef::Config[:cookbook_path] = File.dirname(cookbook_path)
           syntax_check.cookbook_path.replace(cookbook_path)
-          @ruby_files = [File.join(cookbook_path, 'recipes/default.rb')]
+          @ruby_files = [File.join(cookbook_path, 'metadata.rb'), File.join(cookbook_path, 'recipes/default.rb')]
         end
 
         it "shows that ignored ruby files do not require a syntax check" do

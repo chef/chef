@@ -101,7 +101,7 @@ END_CLIENT_RB
 
           it "downloads the cookbook" do
             shell_out!("knife cookbook download apache2 #{knife_config_flag} -d #{cache_path}", :cwd => chef_dir)
-            Dir["#{cache_path}/*"].map {|entry| File.basename(entry)}.should include("apache2-0.0.0")
+            Dir["#{cache_path}/*"].map {|entry| File.basename(entry)}.should include("apache2-0.0.1")
           end
         end
 

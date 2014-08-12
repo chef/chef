@@ -26,10 +26,13 @@ describe 'ChefFSDataStore tests' do
   include IntegrationSupport
   include KnifeSupport
 
+  let(:cookbook_x_100_metadata_rb) { cb_metadata("x", "1.0.0") }
+  let(:cookbook_z_100_metadata_rb) { cb_metadata("z", "1.0.0") }
+
   when_the_repository "has one of each thing" do
     before do
       file 'clients/x.json', {}
-      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/x/metadata.rb', cookbook_x_100_metadata_rb
       file 'data_bags/x/y.json', {}
       file 'environments/x.json', {}
       file 'nodes/x.json', {}
@@ -108,7 +111,7 @@ EOM
       end
 
       it 'knife show -z /cookbooks/x/metadata.rb works' do
-        knife('show -z /cookbooks/x/metadata.rb').should_succeed "/cookbooks/x/metadata.rb:\nversion \"1.0.0\"\n"
+        knife('show -z /cookbooks/x/metadata.rb').should_succeed "/cookbooks/x/metadata.rb:\n#{cookbook_x_100_metadata_rb}\n"
       end
 
       it 'knife show -z /data_bags/x/y.json works' do
@@ -136,7 +139,7 @@ EOM
       before do
         file 'empty.json', {}
         file 'rolestuff.json', '{"description":"hi there","name":"x"}'
-        file 'cookbooks_to_upload/x/metadata.rb', "version '1.0.0'\n\n"
+        file 'cookbooks_to_upload/x/metadata.rb', cookbook_x_100_metadata_rb
       end
 
       it 'knife raw -z -i empty.json -m PUT /clients/x' do
@@ -196,7 +199,7 @@ EOM
         file 'empty_x.json', { 'name' => 'x' }
         file 'empty_id.json', { 'id' => 'z' }
         file 'rolestuff.json', '{"description":"hi there","name":"x"}'
-        file 'cookbooks_to_upload/z/metadata.rb', "version '1.0.0'"
+        file 'cookbooks_to_upload/z/metadata.rb', cookbook_z_100_metadata_rb
       end
 
       it 'knife raw -z -i empty.json -m POST /clients' do
