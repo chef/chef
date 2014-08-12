@@ -85,10 +85,10 @@ class Chef
         end
 
         def remount_fs
+          # FIXME: Should remount always do the remount or only if the options change?
           actual_options = options || []
           actual_options.delete('noauto')
           mount_options = actual_options.empty? ? '' : ",#{actual_options.join(',')}" 
-          # FIXME: Should remount always do the remount or only if the options change?
           shell_out!("mount -o remount#{mount_options} #{mount_point}")
         end
 
@@ -121,14 +121,13 @@ class Chef
         def mount_options_unchanged?
           new_options = options_remove_noauto(options)
           current_options = options_remove_noauto(current_resource.nil? ? nil : current_resource.options)
-          auto = mount_at_boot?
 
           current_resource.fsck_device == fsck_device &&
             current_resource.fstype == fstype &&
             current_options == new_options &&
             current_resource.dump == dump &&
             current_resource.pass == pass &&
-            current_resource.options.include?('noauto') == !auto
+            current_resource.options.include?('noauto') == !mount_at_boot?
         end
 
         def update_current_resource_state
