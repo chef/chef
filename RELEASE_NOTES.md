@@ -1,5 +1,13 @@
 # Chef Client Release Notes 12.0.0:
 
+## `name` Attribute is Required in Metadata
+
+Previously, the `name` attribute in metadata had no effect on the name
+of an uploaded cookbook, instead the name was always inferred from the
+directory basename of the cookbook. The `name` attribute is now
+respected when determining the name of a cookbook. Furthermore, the
+`name` attribute is required when loading/uploading cookbooks.
+
 ## http_request resource no longer appends query string
 
 Previously the http_request GET and HEAD requests appended a hard-coded "?message=resource_name" 
