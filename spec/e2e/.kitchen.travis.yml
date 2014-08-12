@@ -28,7 +28,7 @@ platforms:
       security_group_ids: ["travis-ci"]
       image_id: ami-77d7a747
       flavor_id: m3.medium
-      username: root
+      username: ec2-user
 
 suites:
   - name: default
