@@ -278,3 +278,4 @@
 * guard_interpreter attribute: use powershell\_script, other script resources in guards (CHEF-4553)
 * Fix for CHEF-5169: add require for chef/config_fetcher
 * SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
+* Fix Windows services getting stuck in manual startup_type (CHEF-5022)

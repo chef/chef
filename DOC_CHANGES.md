@@ -23,3 +23,12 @@ rt string, an enumerable of ports, or a single port number.
 ### Encrypted Data Bags Version 3
 
 Encrypted Data Bag version 3 uses [GCM](http://en.wikipedia.org/wiki/Galois/Counter_Mode) internally. Ruby 2 and OpenSSL version 1.0.1 or higher are required to use it.
+
+### New windows_service resource
+
+The windows_service resource inherits from the service resource and has all the same options but adds an action and attribute.
+
+action :configure_startup - sets the startup type on the resource to the value of the `startup_type` attribute
+attribute startup_type - the value as a symbol that the startup type should be set to on the service, valid options :automatic, :manual, :disabled
+
+Note that the service resource will also continue to set the startup type to automatic or disabled, respectively, when the enabled or disabled actions are used.
