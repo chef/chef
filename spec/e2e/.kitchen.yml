@@ -1,0 +1,16 @@
+---
+provisioner:
+  name: chef_solo
+  github: "opscode/chef"
+  branch: <%= %x(git rev-parse HEAD) %>
+  require_chef_omnibus: true
+
+platforms:
+  - name: ubuntu-12.04
+    driver_plugin: vagrant
+
+suites:
+  - name: default
+    run_list:
+      - recipe[git-cookbook::default]
+    attributes:
