@@ -32,6 +32,7 @@
 * Fix RPM package version detection (Issue 1554)
 * Don't override :default provider map if :default passed as platform (OC-11667).
 * Fix SuSE package removal failure (Issue 1732).
+* Enable Travis to run Test Kitchen with Kitchen EC2.
 
 
 * [**Phil Dibowitz**](https://github.com/jaymzh):
