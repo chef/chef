@@ -1,13 +1,10 @@
 # Chef Client Changelog
 
-## 11.14.4:
+## Unreleased: 11.14.4:
 
 * Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
 * Fix RPM package version detection (Issue 1554)
-
-
-* [**Phil Dibowitz**](https://github.com/jaymzh):
-  'group' provider on OSX properly uses 'dscl' to determine existing groups
+* Fix a bug in reporting not to post negative duration values.
 
 
 ## Last Release: 11.14.2

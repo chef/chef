@@ -662,6 +662,9 @@ F
         end
       ensure
         @elapsed_time = Time.now - start_time
+        # Reporting endpoint doesn't accept a negative resource duration so set it to 0.
+        # A negative value can occur when a resource changes the system time backwards
+        @elapsed_time = 0 if @elapsed_time < 0
         events.resource_completed(self)
       end
     end
