@@ -289,7 +289,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       @provider.action_enable
     end
   end
-  
+
   describe Chef::Provider::Service::Windows, "action_disable" do
     it "does nothing if the service is disabled" do
       Win32::Service.stub(:config_info).with(@new_resource.service_name).and_return(
@@ -326,7 +326,6 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
     end
   end
 
-  # FIXME
   describe Chef::Provider::Service::Windows, "action_configure_startup" do
     { :automatic => "auto start", :manual => "demand start", :disabled => "disabled" }.each do |type,win32|
       it "sets the startup type to #{type} if it is something else" do
@@ -344,7 +343,20 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       end
     end
   end
+
   describe Chef::Provider::Service::Windows, "set_start_type" do
-    #FIXME
+    allowed_types = { :automatic => Win32::Service::AUTO_START,
+                      :manual    => Win32::Service::DEMAND_START,
+                      :disabled  => Win32::Service::DISABLED }
+    allowed_types.each do |arg,win32_constant|
+      it "when called with #{arg} it calls Win32::Service#configure with #{win32_constant}" do
+        Win32::Service.should_receive(:configure).with(:service_name => @new_resource.service_name, :start_type => win32_constant)
+        @provider.send(:set_startup_type, arg)
+      end
+    end
+
+    it "raises an exception when given an unknown start type" do
+      expect { @provider.send(:set_startup_type, :fire_truck) }.to raise_error(Chef::Exceptions::ConfigurationError)
+    end
   end
 end

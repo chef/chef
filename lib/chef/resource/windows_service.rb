@@ -26,7 +26,7 @@ class Chef
       # to use action :configure_startup and attribute startup_type
 
       # provides :service, :on_platforms => ["windows"]
-      
+
       identity_attr :service_name
 
       state_attrs :enabled, :running
@@ -39,7 +39,6 @@ class Chef
         @startup_type = :automatic
       end
 
-    
       def startup_type(arg=nil)
         # Set-Service arguments are automatic and manual
         # Win32::Service returns 'auto start' or 'demand start' respectively, which the provider currently uses
