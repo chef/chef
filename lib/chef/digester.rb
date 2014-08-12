@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-require 'digest'
+require 'openssl'
 
 class Chef
   class Digester
@@ -37,7 +37,7 @@ class Chef
     end
 
     def generate_checksum(file)
-      checksum_file(file, Digest::SHA256.new)
+      checksum_file(file, OpenSSL::Digest::SHA256.new)
     end
 
     def self.generate_md5_checksum_for_file(*args)
@@ -45,11 +45,11 @@ class Chef
     end
 
     def generate_md5_checksum_for_file(file)
-      checksum_file(file, Digest::MD5.new)
+      checksum_file(file, OpenSSL::Digest::MD5.new)
     end
 
     def generate_md5_checksum(io)
-      checksum_io(io, Digest::MD5.new)
+      checksum_io(io, OpenSSL::Digest::MD5.new)
     end
 
     private
