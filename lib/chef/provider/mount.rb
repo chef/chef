@@ -47,22 +47,7 @@ class Chef
           if mount_options_unchanged?
             Chef::Log.debug("#{new_resource} is already mounted")
           else
-            if new_resource.supports[:remount]
-              converge_by("remount #{current_resource.device}") do
-                remount_fs
-                Chef::Log.info("#{new_resource} remounted")
-              end
-            else
-              converge_by("unmount #{current_resource.device}") do
-                umount_fs
-                Chef::Log.info("#{new_resource} unmounted")
-              end
-              wait_until_unmounted(unmount_retries)
-              converge_by("mount #{current_resource.device}") do
-                mount_fs
-                Chef::Log.info("#{new_resource} mounted")
-              end
-            end
+            action_remount
           end
         else
           converge_by("mount #{current_resource.device} to #{current_resource.mount_point}") do
