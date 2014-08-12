@@ -1,40 +1,13 @@
 # Chef Client Changelog
 
-## Unreleased:
+## Unreleased: 12.0.0
 
-* chef/json_compat now throws its own exceptions not JSON gem exceptions
-* Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
-* Fix a bug in the experimental Policyfile mode that caused errors when
-  using templates.
-* Disable JSON encoding of request body when non-JSON content type is
-  specified.
-* Clean up FileVendor and CookbookUploader internal APIs
 * [**Vasiliy Tolstov**](https://github.com/vtolstov):
   Reload systemd service only if it's running, otherwise start.
 * [**Chris Jerdonek**](https://github.com/cjerdonek):
   knife diagnostic messages sent to stdout instead of stderr
 * [**Xabier de Zuazo**](https://github.com/zuazo):
   Remove the unused StreamingCookbookUploader class (CHEF-4586)
-
-* log resource now marks itself as supporting why-run
-* http_request no longer appends "?message=" query string to GET and HEAD requests
-* added shell_out commands directly to the recipe DSL
-* cookbook synchronizer deletes old files from cookbooks
-* do not clear file cache when override run list is set (CHEF-3684)
-* ruby 1.8.7/1.9.1/1.9.2 support is dropped
-* set no_lazy_load to true (CHEF-4961)
-* set file_stating_uses_destdir config option default to true (CHEF-5040)
-* remove dependency on rest-client gem
-* Add method shell_out_with_systems_locale to ShellOut.
-* Fix knife cookbook site share on windows (CHEF-4994)
-* chef-repo rake tasks are deprecated; print relevant information for
-  each one.
-* Fix RPM package version detection (Issue 1554)
-* Don't override :default provider map if :default passed as platform (OC-11667).
-* Fix SuSE package removal failure (Issue 1732).
-* Enable Travis to run Test Kitchen with Kitchen EC2.
-
-
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   'group' provider on OSX properly uses 'dscl' to determine existing groups
 * [**Hugo Lopes Tavares**](https://github.com/hltbra):
@@ -71,6 +44,34 @@
   Allow git provider to checkout existing branch names.
 * [**Eric Herot**](https://github.com/eherot):
   Add whitespace boundaries to some mount point references in mount provider.
+
+
+
+* chef/json_compat now throws its own exceptions not JSON gem exceptions
+* Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
+* Fix a bug in the experimental Policyfile mode that caused errors when
+  using templates.
+* Disable JSON encoding of request body when non-JSON content type is
+  specified.
+* Clean up FileVendor and CookbookUploader internal APIs
+* log resource now marks itself as supporting why-run
+* http_request no longer appends "?message=" query string to GET and HEAD requests
+* added shell_out commands directly to the recipe DSL
+* cookbook synchronizer deletes old files from cookbooks
+* do not clear file cache when override run list is set (CHEF-3684)
+* ruby 1.8.7/1.9.1/1.9.2 support is dropped
+* set no_lazy_load to true (CHEF-4961)
+* set file_stating_uses_destdir config option default to true (CHEF-5040)
+* remove dependency on rest-client gem
+* Add method shell_out_with_systems_locale to ShellOut.
+* Fix knife cookbook site share on windows (CHEF-4994)
+* chef-repo rake tasks are deprecated; print relevant information for
+  each one.
+* Fix RPM package version detection (Issue 1554)
+* Don't override :default provider map if :default passed as platform (OC-11667).
+* Fix SuSE package removal failure (Issue 1732).
+* Enable Travis to run Test Kitchen with Kitchen EC2.
+* Fix a bug in reporting not to post negative duration values.
 
 
 ## Last Release: 11.14.2
