@@ -37,7 +37,7 @@ class Chef
 
         def write(file_contents)
           # ACL writes are fun.
-          acls = data_handler.normalize(JSON.parse(file_contents, :create_additions => false), self)
+          acls = data_handler.normalize(Chef::JSONCompat.parse(file_contents), self)
           PERMISSIONS.each do |permission|
             begin
               rest.put("#{api_path}/#{permission}", { permission => acls[permission] })

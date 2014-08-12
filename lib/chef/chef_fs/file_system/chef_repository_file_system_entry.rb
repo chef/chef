@@ -41,7 +41,7 @@ class Chef
 
         def chef_object
           begin
-            return data_handler.chef_object(JSON.parse(read, :create_additions => false))
+            return data_handler.chef_object(Chef::JSONCompat.parse(read))
           rescue
             Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{$!}")
           end
@@ -60,10 +60,10 @@ class Chef
         end
 
         def minimize(file_contents, entry)
-          object = JSONCompat.from_json(file_contents, :create_additions => false)
+          object = Chef::JSONCompat.from_json(file_contents)
           object = data_handler.normalize(object, entry)
           object = data_handler.minimize(object, entry)
-          JSONCompat.to_json_pretty(object)
+          Chef::JSONCompat.to_json_pretty(object)
         end
 
         def children

@@ -17,7 +17,7 @@
 #
 
 require 'yaml'
-require 'ffi_yajl'
+require 'chef/json_compat'
 require 'openssl'
 require 'base64'
 require 'digest/sha2'
@@ -121,8 +121,8 @@ class Chef::EncryptedDataBagItem
       end
 
       def for_decrypted_item
-        FFI_Yajl::Parser.parse(decrypted_data)["json_wrapper"]
-      rescue FFI_Yajl::ParseError
+        Chef::JSONCompat.parse(decrypted_data)["json_wrapper"]
+      rescue Chef::Exceptions::JSON::ParseError
         # convert to a DecryptionFailure error because the most likely scenario
         # here is that the decryption step was unsuccessful but returned bad
         # data rather than raising an error.
@@ -196,7 +196,6 @@ class Chef::EncryptedDataBagItem
         super
         assert_aead_requirements_met!(algorithm)
       end
-
 
       # Returns the used decryption algorithm
       def algorithm

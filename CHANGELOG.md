@@ -2,6 +2,7 @@
 
 ## Unreleased:
 
+* chef/json_compat now throws its own exceptions not JSON gem exceptions
 * Fix a bug in the experimental Policyfile mode that caused errors when
   using templates.
 * Disable JSON encoding of request body when non-JSON content type is
