@@ -1,4 +1,6 @@
 {
+  /* thing that we support c-style comments */
+  // testing that we support c++-style comments as well
   "name": "test",
   "environment": "prod",
   "run_list": []
