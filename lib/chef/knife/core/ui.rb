@@ -195,8 +195,8 @@ class Chef
         # We wouldn't have to do these shenanigans if all the editable objects
         # implemented to_hash, or if to_json against a hash returned a string
         # with stable key order.
-        object_parsed_again = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(object), :create_additions => false)
-        output_parsed_again = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(output), :create_additions => false)
+        object_parsed_again = Chef::JSONCompat.parse(Chef::JSONCompat.to_json(object))
+        output_parsed_again = Chef::JSONCompat.parse(Chef::JSONCompat.to_json(output))
         if object_parsed_again != output_parsed_again
           output.save
           self.msg("Saved #{output}")
