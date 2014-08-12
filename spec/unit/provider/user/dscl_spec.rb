@@ -430,7 +430,6 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
           it "diverged_password? should report false" do
             provider.load_current_resource
-            pending
             provider.diverged_password?.should be_false
           end
         end
@@ -440,7 +439,6 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
           it "diverged_password? should report true" do
             provider.load_current_resource
-            pending
             provider.diverged_password?.should be_true
           end
         end
@@ -644,7 +642,6 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
         let(:password) { "vagrant" }
 
         it "password_shadow_info should have salted-sha-512 format" do
-          pending
           shadow_info = provider.prepare_password_shadow_info
           shadow_info.should have_key("SALTED-SHA512")
           info = shadow_info["SALTED-SHA512"].string.unpack('H*').first

@@ -62,31 +62,47 @@ class Chef
           end
 
           requirements.assert(:create, :modify, :manage) do |a|
-            # Password Requirements
             a.assertion do
-              if @new_resource.password
-                if mac_osx_version_greater_than_10_7?
-                  if salted_sha512?(@new_resource.password)
-                    # SALTED-SHA512 password shadow hashes are not supported
-                    false
-                  elsif salted_sha512_pbkdf2?(@new_resource.password)
-                    # salt and iterations should be specified when
-                    # SALTED-SHA512-PBKDF2 password shadow hash is given
-                    @new_resource.salt && @new_resource.iterations
-                  else
-                    true
-                  end
-                else
-                  # On 10.7 SALTED-SHA512-PBKDF2 is not supported
-                  !salted_sha512_pbkdf2?(@new_resource.password)
-                end
+              if @new_resource.password && mac_osx_version_greater_than_10_7?
+                # SALTED-SHA512 password shadow hashes are not supported on 10.8 and above.
+                !salted_sha512?(@new_resource.password)
               else
                 true
               end
             end
-            a.failure_message(Chef::Exceptions::User, "Requirements for password is not achieved. Check \
-              http://docs.getchef.com/resource_user.html#attributes for more information!")
+            a.failure_message(Chef::Exceptions::User, "SALTED-SHA512 passwords are not supported on Mac 10.8 and above. \
+If you want to set the user password using shadow info make sure you specify a SALTED-SHA512-PBKDF2 shadow hash \
+in 'password', with the associated 'salt' and 'iterations'.")
           end
+
+          requirements.assert(:create, :modify, :manage) do |a|
+            a.assertion do
+              if @new_resource.password && mac_osx_version_greater_than_10_7? && salted_sha512_pbkdf2?(@new_resource.password)
+                # salt and iterations should be specified when
+                # SALTED-SHA512-PBKDF2 password shadow hash is given
+                !@new_resource.salt.nil? && !@new_resource.iterations.nil?
+              else
+                true
+              end
+            end
+            a.failure_message(Chef::Exceptions::User, "SALTED-SHA512-PBKDF2 shadow hash is given without associated \
+'salt' and 'iterations'. Please specify 'salt' and 'iterations' in order to set the user password using shadow hash.")
+          end
+
+          requirements.assert(:create, :modify, :manage) do |a|
+            a.assertion do
+              if @new_resource.password && !mac_osx_version_greater_than_10_7?
+                # On 10.7 SALTED-SHA512-PBKDF2 is not supported
+                !salted_sha512_pbkdf2?(@new_resource.password)
+              else
+                true
+              end
+            end
+            a.failure_message(Chef::Exceptions::User, "SALTED-SHA512-PBKDF2 shadow hashes are not supported on \
+Mac OS X version 10.7. Please specify a SALTED-SHA512 shadow hash in 'password' attribute to set the \
+user password using shadow hash.")
+          end
+
         end
 
         def load_current_resource
@@ -542,7 +558,7 @@ class Chef
             user_plist_file = "#{USER_PLIST_DIRECTORY}/#{@new_resource.username}.plist"
             user_plist_info = run_plutil("convert xml1 -o - #{user_plist_file}")
             user_info = Plist::parse_xml(user_plist_info)
-          rescue Chef::Exceptions::PlutilCommandFailed
+          rescue Chef::Exceptions::PlistUtilCommandFailed
           end
 
           user_info
@@ -613,7 +629,7 @@ class Chef
 
         def run_plutil(*args)
           result = shell_out("plutil -#{args.join(' ')}")
-          raise(Chef::Exceptions::PlutilCommandFailed,"plutil error: #{result.inspect}") unless result.exitstatus == 0
+          raise(Chef::Exceptions::PlistUtilCommandFailed,"plutil error: #{result.inspect}") unless result.exitstatus == 0
           result.stdout
         end
 
