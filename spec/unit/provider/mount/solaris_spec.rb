@@ -564,8 +564,33 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
     end
 
-    describe "remount_fs" do
+    describe "remount_fs without options and do not mount at boot" do
       it "should use mount -o remount" do
+        new_resource.options(%w{noauto})
+        provider.should_receive(:shell_out!).with("mount -o remount #{new_resource.mount_point}")
+        provider.remount_fs
+      end
+    end
+
+    describe "remount_fs with options and do not mount at boot" do
+      it "should use mount -o remount,rw" do
+        new_resource.options(%w{rw noauto})
+        provider.should_receive(:shell_out!).with("mount -o remount,rw #{new_resource.mount_point}")
+        provider.remount_fs
+      end
+    end
+
+    describe "remount_fs with options and mount at boot" do
+      it "should use mount -o remount,rw" do
+        new_resource.options(%w{rw})
+        provider.should_receive(:shell_out!).with("mount -o remount,rw #{new_resource.mount_point}")
+        provider.remount_fs
+      end
+    end
+
+    describe "remount_fs without options and mount at boot" do
+      it "should use mount -o remount" do
+        new_resource.options([])
         provider.should_receive(:shell_out!).with("mount -o remount #{new_resource.mount_point}")
         provider.remount_fs
       end
@@ -619,7 +644,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
 
       context "when the new mount has options of noauto and the existing mount has mount at boot yes" do
-        let(:existing_mount) { "/dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo         ufs     2       yes     -" }
+        let(:existing_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tyes\t-" }
 
         let(:this_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tno\t-\n" }
 
@@ -644,7 +669,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
 
       context "when the new mount has options of - and the existing mount has mount at boot no" do
-        let(:existing_mount) { "/dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo         ufs     2       no     -" }
+        let(:existing_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tno\t-" }
 
         let(:this_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tyes\t-\n" }
 
@@ -669,7 +694,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
 
       context "when the new mount has options of noauto and the existing mount has mount at boot no" do
-        let(:existing_mount) { "/dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo         ufs     2       no     -" }
+        let(:existing_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tno\t-" }
 
         let(:this_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tno\t-\n" }
 
@@ -694,7 +719,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
 
       context "when the new mount has options of - and the existing mount has mount at boot yes" do
-        let(:existing_mount) { "/dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo         ufs     2       yes     -" }
+        let(:existing_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tyes\t-" }
 
         let(:this_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tyes\t-\n" }
 
