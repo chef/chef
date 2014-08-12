@@ -230,7 +230,7 @@ class Chef
         resource_history_url = "reports/nodes/#{node_name}/runs/#{run_id}"
         Chef::Log.info("Sending resource update report (run-id: #{run_id})")
         Chef::Log.debug run_data.inspect
-        compressed_data = encode_gzip(run_data.to_json)
+        compressed_data = encode_gzip(Chef::JSONCompat.to_json(run_data))
         Chef::Log.debug("Sending compressed run data...")
         # Since we're posting compressed data we can not directly call post_rest which expects JSON
         reporting_url = @rest_client.create_url(resource_history_url)
@@ -273,7 +273,7 @@ class Chef
         resource_record.for_json
       end
       run_data["status"] = @status
-      run_data["run_list"] = @run_status.node.run_list.to_json
+      run_data["run_list"] = Chef::JSONCompat.to_json(@run_status.node.run_list)
       run_data["total_res_count"] = @total_res_count.to_s
       run_data["data"] = {}
       run_data["start_time"] = start_time.to_s
@@ -283,7 +283,7 @@ class Chef
         exception_data = {}
         exception_data["class"] = exception.inspect
         exception_data["message"] = exception.message
-        exception_data["backtrace"] = exception.backtrace.to_json
+        exception_data["backtrace"] = Chef::JSONCompat.to_json(exception.backtrace)
         exception_data["description"] =  @error_descriptions
         run_data["data"]["exception"] = exception_data
       end

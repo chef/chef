@@ -251,7 +251,7 @@ class Chef
       end
 
       def self.canonicalize_json(json_text)
-        parsed_json = JSON.parse(json_text, :create_additions => false)
+        parsed_json = Chef::JSONCompat.parse(json_text)
         sorted_json = sort_keys(parsed_json)
         JSON.pretty_generate(sorted_json)
       end

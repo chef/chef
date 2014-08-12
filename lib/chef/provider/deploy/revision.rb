@@ -97,7 +97,7 @@ class Chef
         end
 
         def save_cache(cache)
-          Chef::FileCache.store("revision-deploys/#{new_resource.name}", cache.to_json)
+          Chef::FileCache.store("revision-deploys/#{new_resource.name}", Chef::JSONCompat.to_json(cache))
           cache
         end
 
