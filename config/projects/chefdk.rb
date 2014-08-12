@@ -27,7 +27,7 @@ build_version do
   # Use chefdk to determine the build version
   source :git, from_dependency: 'chefdk'
 
-  # Set a Rubygems style version
+  # Output a SemVer compliant version string
   output_format :semver
 end
 
