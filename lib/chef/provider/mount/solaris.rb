@@ -87,9 +87,11 @@ class Chef
         end
 
         def remount_fs
-          # FIXME: what about options like "-o remount,logging" to enable logging on a UFS device?
+          actual_options = options || []
+          actual_options.delete('noauto')
+          mount_options = actual_options.empty? ? '' : ",#{actual_options.join(',')}" 
           # FIXME: Should remount always do the remount or only if the options change?
-          shell_out!("mount -o remount #{mount_point}")
+          shell_out!("mount -o remount#{mount_options} #{mount_point}")
         end
 
         def enable_fs
@@ -128,7 +130,7 @@ class Chef
             current_options == new_options &&
             current_resource.dump == dump &&
             current_resource.pass == pass &&
-            @current_resource.options.include?('noauto') == !auto
+            current_resource.options.include?('noauto') == !auto
         end
 
         def update_current_resource_state
@@ -219,13 +221,12 @@ class Chef
         end
 
         def vfstab_entry
-          auto = mount_at_boot?
           actual_options = unless options.nil?
             tempops = options.dup
             tempops.delete('noauto')
             tempops
           end
-          autostr = auto ? 'yes' : 'no'
+          autostr = mount_at_boot? ? 'yes' : 'no'
           passstr = pass == 0 ? '-' : pass
           optstr = (actual_options.nil? || actual_options.empty?) ? '-' : actual_options.join(',')
           "\n#{device}\t#{fsck_device}\t#{mount_point}\t#{fstype}\t#{passstr}\t#{autostr}\t#{optstr}\n"
