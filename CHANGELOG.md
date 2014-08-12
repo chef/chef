@@ -81,7 +81,7 @@
   SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
 * [**Pierre Ynard**](https://github.com/linkfanel):
   chef-service-manager should run as a non-interactive service (CHEF-5150)
-* [**Paul Russell**](https://github.com/Tensibai):
+* [**Tensibai Zhaoying**](https://github.com/Tensibai):
   Fix file:// URI support in remote\_file on windows (CHEF-4472)
 * [**John Dyer**](https://github.com/johntdyer):
   Catch HTTPServerException for 404 in remote_file retry (CHEF-5116)
