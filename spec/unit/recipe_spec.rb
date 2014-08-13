@@ -182,7 +182,48 @@ describe Chef::Recipe do
         zm_resource # force let binding evaluation
         run_context.resource_collection.resources(:zen_master => "klopp").should == zm_resource
       end
+    end
 
+    describe "creating a resource with short name" do
+      # zen_follower resource has this:
+      # provides :follower, :on_platforms => ["zen"]
+      before do
+        node.stub(:[]) do |key|
+          case key
+          when :platform
+            :zen
+          when :platform_version
+            "1.0.0"
+          else
+            nil
+          end
+        end
+      end
+
+      let(:resource_follower) do
+        recipe.declare_resource(:follower, "srst") do
+          master "none"
+        end
+      end
+
+      it "defines the resource using the declaration name with short name" do
+        resource_follower
+        run_context.resource_collection.lookup("follower[srst]").should_not be_nil
+      end
+    end
+
+    describe "creating a resource with a long name" do
+      let(:resource_zn_follower) do
+        recipe.declare_resource(:zen_follower, "srst") do
+          master "none"
+        end
+      end
+
+
+      it "defines the resource using the declaration name with long name" do
+        resource_zn_follower
+        run_context.resource_collection.lookup("zen_follower[srst]").should_not be_nil
+      end
     end
 
     describe "when attempting to create a resource of an invalid type" do
