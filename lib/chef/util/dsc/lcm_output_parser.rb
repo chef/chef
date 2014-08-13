@@ -21,7 +21,11 @@ class Chef
     class DSC
       class LocalConfigurationManager
         class DscResourceInfo
+          # The name is the text following [Start Set]
           attr_reader :name
+
+          # A list of all log messages between [Start Set] and [End Set].
+          # Each line is an element in the list.
           attr_reader :change_log
 
           def initialize(name, sets, change_log)
@@ -71,6 +75,34 @@ class Chef
             end
           end
 
+          # Parses the output from LCM and returns a list of DscResourceInfo objects
+          # that describe how the resources affected the system
+          # 
+          # Example:
+          #   parse <<-EOF
+          #   What if: [Machine]: LCM: [Start Set      ]
+          #   What if: [Machine]: LCM: [Start Resource ] [[File]FileToNotBeThere]
+          #   What if: [Machine]: LCM: [Start Set      ] [[File]FileToNotBeThere]
+          #   What if:                                   [C:\ShouldNotExist.txt] removed
+          #   What if: [Machine]: LCM: [End Set        ] [[File]FileToNotBeThere] in 0.1 seconds
+          #   What if: [Machine]: LCM: [End Resource   ] [[File]FileToNotBeThere]
+          #   What if: [Machine]: LCM: [End Set        ]
+          #   EOF
+          #
+          #   would return
+          #
+          #   [
+          #     DscResourceInfo.new(
+          #       '[[File]FileToNotBeThere]', 
+          #       true, 
+          #       [
+          #         '[[File]FileToNotBeThere]', 
+          #         '[C:\Shouldnotexist.txt]', 
+          #         '[[File]FileToNotBeThere] in 0.1 seconds'
+          #       ]
+          #     )
+          #   ]
+          #
           def self.parse(lcm_output)
             return [] unless lcm_output
 
@@ -78,15 +110,25 @@ class Chef
             popped_op = nil
             lcm_output.lines.each do |line|
               if match = line.match(/^.*?:.*?:\s*LCM:\s*\[(.*?)\](.*)/)
+                # If the line looks like
+                # x: [y]: LCM: [op_action op_type] message
+                # extract op_action, op_type, and message
                 operation, info = match.captures
                 op_action, op_type = operation.strip.split(' ').map {|m| m.downcase.to_sym}
               else
+                # If the line looks like
+                # x: [y]: message
+                # extract message
                 match = line.match(/^.*?:.*?: \s+(.*)/)
                 op_action = op_type = :info
                 info = match.captures[0]
               end
-              info.strip!
 
+              info.strip! # Because this was formatted for humans
+
+              # The rules:
+              # - For each `start` action, there must be a matching `end` action
+              # - `skip` actions do not not do anything (They don't add to the stack)
               case op_action
               when :start
                 new_op = Operation.new(op_type, info)
@@ -98,7 +140,7 @@ class Chef
                 when :resource
                   stack[-1].add_resource(new_op)
                 else
-                  # Warn ? Its fine as long as it pops off
+                  Chef::Log.warn("Unknown op_action #{op_action}: Read line #{line}")
                 end
                 stack.push(new_op)
               when :end
@@ -112,7 +154,7 @@ class Chef
               when :info
                 stack[-1].add_info(info) if stack[-1]
               else
-                # Keep calm and carry on
+                stack[-1].add_info(line) if stack[-1]
               end
             end
 
