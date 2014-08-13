@@ -5,6 +5,17 @@
 # Copyright (C) 2014
 #
 
+# RHEL7 comes with MariaDB instead of MySQL, rather than use MariaDB, just setup
+# MySQLs repos to install MySQL
+if node['platform_family'] == 'rhel'
+  yum_repository 'mysql56-community' do
+    mirrorlist 'http://repo.mysql.com/yum/mysql56-community/el/$releasever/$basearch/'
+    description ''
+    enabled true
+    gpgcheck true
+  end
+end
+
 include_recipe "apache2"
 include_recipe "database::mysql"
 include_recipe "php"
