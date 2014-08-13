@@ -5,7 +5,7 @@
 * Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
 * Fix RPM package version detection (Issue 1554)
 * Fix a bug in reporting not to post negative duration values.
-
+* Add password setting support for Mac 10.7, 10.8 and 10.9 to the dscl user provider.
 
 ## Last Release: 11.14.2
 
