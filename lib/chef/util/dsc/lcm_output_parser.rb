@@ -60,17 +60,17 @@ class Chef
             end
 
             def add_set(set)
-              raise RuntimeError, "add_set is not allowed in this context. Found #{@op_type}" unless [:resource, :set]
+              raise LCMOutputParseException, "add_set is not allowed in this context. Found #{@op_type}" unless [:resource, :set]
               @sets << set
             end
 
             def add_test(test)
-              raise RuntimeError, "add_test is not allowed in this context. Found #{@op_type}" unless [:resource, :set]
+              raise LCMOutputParseException, "add_test is not allowed in this context. Found #{@op_type}" unless [:resource, :set]
               @tests << test
             end
 
             def add_resource(resource)
-              raise RuntimeError, 'add_resource is only allowed to be added to the set op_type' unless @op_type == :set
+              raise LCMOutputParseException, 'add_resource is only allowed to be added to the set op_type' unless @op_type == :set
               @resources << resource
             end
           end
@@ -133,7 +133,7 @@ class Chef
                 popped_op = stack.pop
                 popped_op.add_info(info)
                 if popped_op.op_type != op_type
-                  raise RuntimeError, "Unmatching end for op_type. Expected op_type=#{op_type}, found op_type=#{popped_op.op_type}"
+                  raise LCMOutputParseException, "Unmatching end for op_type. Expected op_type=#{op_type}, found op_type=#{popped_op.op_type}"
                 end
               when :skip
                 # We don't really have anything to do here
