@@ -84,6 +84,20 @@ class Chef
 
         resource = build_resource(type, name, created_at, &resource_attrs_block)
 
+        # Some resources (freebsd_package) can be invoked with multiple names
+        # (package || freebsd_package).
+        # https://github.com/opscode/chef/issues/1773
+        # For these resources we want to make sure
+        # their key in resource collection is same as the name they are declared
+        # as. Since this might be a breaking change for resources that define
+        # customer to_s methods, we are working around the issue by letting
+        # resources know of their created_as_type until this issue is fixed in
+        # Chef 12:
+        # https://github.com/opscode/chef/issues/1817
+        if resource.respond_to?(:created_as_type=)
+          resource.created_as_type = type
+        end
+
         run_context.resource_collection.insert(resource)
         resource
       end
