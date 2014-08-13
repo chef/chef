@@ -33,7 +33,7 @@ class Chef
             @sets = sets
             @change_log = change_log || []
           end
-          
+
           def changes_state?
             @sets
           end
@@ -109,21 +109,7 @@ class Chef
             stack = Array.new
             popped_op = nil
             lcm_output.lines.each do |line|
-              if match = line.match(/^.*?:.*?:\s*LCM:\s*\[(.*?)\](.*)/)
-                # If the line looks like
-                # x: [y]: LCM: [op_action op_type] message
-                # extract op_action, op_type, and message
-                operation, info = match.captures
-                op_action, op_type = operation.strip.split(' ').map {|m| m.downcase.to_sym}
-              else
-                # If the line looks like
-                # x: [y]: message
-                # extract message
-                match = line.match(/^.*?:.*?: \s+(.*)/)
-                op_action = op_type = :info
-                info = match.captures[0]
-              end
-
+              op_action, op_type, info = parse_line(line)
               info.strip! # Because this was formatted for humans
 
               # The rules:
@@ -158,7 +144,31 @@ class Chef
               end
             end
 
-            resources = popped_op ? popped_op.resources : []
+            op_to_resource_infos(popped_op)
+          end
+
+          def self.parse_line(line)
+            if match = line.match(/^.*?:.*?:\s*LCM:\s*\[(.*?)\](.*)/)
+                # If the line looks like
+                # x: [y]: LCM: [op_action op_type] message
+                # extract op_action, op_type, and message
+                operation, info = match.captures
+                op_action, op_type = operation.strip.split(' ').map {|m| m.downcase.to_sym}
+            else
+              # If the line looks like
+              # x: [y]: message
+              # extract message
+              match = line.match(/^.*?:.*?: \s+(.*)/)
+              op_action = op_type = :info
+              info = match.captures[0]
+            end
+            info.strip! # Because this was formatted for humans
+            return [op_action, op_type, info]
+          end
+          private_class_method :parse_line
+
+          def self.op_to_resource_infos(op)
+            resources = op ? op.resources : []
 
             resources.map do |r|
               name = r.info[0]
@@ -167,6 +177,8 @@ class Chef
               DscResourceInfo.new(name, sets, change_log)
             end
           end
+          private_class_method :op_to_resource_infos
+
         end
       end
     end
