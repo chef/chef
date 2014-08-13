@@ -91,7 +91,7 @@ class Chef
             when 1
               return @values[platform][key_matches.first]
             else
-              fail "Multiple matches detected for #{platform} with values #{@values}. The matches are: #{key_matches}"
+              raise "Multiple matches detected for #{platform} with values #{@values}. The matches are: #{key_matches}"
             end
           rescue Chef::Exceptions::InvalidCookbookVersion => e
             # Lets not break because someone passes a weird string like 'default' :)
