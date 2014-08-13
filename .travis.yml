@@ -33,7 +33,11 @@ matrix:
     before_install:
     - echo -n $DO_KEY_CHUNK_{0..30} >> ~/.ssh/id_aws.base64
     - cat ~/.ssh/id_aws.base64 | tr -d ' ' | base64 --decode > ~/.ssh/id_aws.pem
-    before_script: cd kitchen-tests
+    before_script: 
+    - echo $TRAVIS_REPO_SLUG
+    - echo $TRAVIS_PULL_REQUEST
+    - echo $TRAVIS_SECURE_ENV_VARS
+    - cd kitchen-tests
     script:
     - bundle exec kitchen test
     after_script:
