@@ -2,14 +2,19 @@
 
 ## 10.34.0
 
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  'group' provider on OSX properly uses 'dscl' to determine existing groups
+
+
+
 * `options` attribute of mount resource now supports lazy evaluation. (CHEF-5163)
 * Fix OS X service provider actions that don't require the service label
   to work when there is no plist. (backport CHEF-5223)
 * Set Net::HTTP open_timeout. (backport Chef-1585)
 * Fix RPM package version detection (backport Issue 1554)
 * Support for single letter environments.
-* [**Phil Dibowitz**](https://github.com/jaymzh):
-  'group' provider on OSX properly uses 'dscl' to determine existing groups
+* Add password setting support for Mac 10.7, 10.8 and 10.9 to the dscl user provider.
+
 
 ## 10.32.2
 
