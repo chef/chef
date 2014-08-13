@@ -20,31 +20,29 @@ require 'json'
 require File.expand_path('../../../../spec_helper', __FILE__)
 
 describe Chef::Util::Powershell::Cmdlet, :windows_only do
+  before(:all) do
+    ohai = Ohai::System.new
+    ohai.load_plugins
+    ohai.run_plugins(true, ['platform', 'kernel'])
+    @node = Chef::Node.new
+    @node.consume_external_attrs(ohai.data, {})
+  end
   let(:cmd_output_format) { :text }
-  let(:simple_cmdlet) { Chef::Util::Powershell::Cmdlet.new('get-childitem', cmd_output_format, {:depth => 2}) }
-  let(:invalid_cmdlet) { Chef::Util::Powershell::Cmdlet.new('get-idontexist', cmd_output_format) }
-  let(:cmdlet_get_item_requires_switch_or_argument) { Chef::Util::Powershell::Cmdlet.new('get-item', cmd_output_format, {:depth => 2}) }
-  let(:cmdlet_alias_requires_switch_or_argument) { Chef::Util::Powershell::Cmdlet.new('alias', cmd_output_format, {:depth => 2}) }
+  let(:simple_cmdlet) { Chef::Util::Powershell::Cmdlet.new(@node, 'get-childitem', cmd_output_format, {:depth => 2}) }
+  let(:invalid_cmdlet) { Chef::Util::Powershell::Cmdlet.new(@node, 'get-idontexist', cmd_output_format) }
+  let(:cmdlet_get_item_requires_switch_or_argument) { Chef::Util::Powershell::Cmdlet.new(@node, 'get-item', cmd_output_format, {:depth => 2}) }
+  let(:cmdlet_alias_requires_switch_or_argument) { Chef::Util::Powershell::Cmdlet.new(@node, 'alias', cmd_output_format, {:depth => 2}) }
   let(:etc_directory) { "#{ENV['systemroot']}\\system32\\drivers\\etc" }
-  let(:architecture_cmdlet) { Chef::Util::Powershell::Cmdlet.new("$env:PROCESSOR_ARCHITECTURE")}
+  let(:architecture_cmdlet) { Chef::Util::Powershell::Cmdlet.new(@node, "$env:PROCESSOR_ARCHITECTURE")}
+
   it "executes a simple process" do
     result = simple_cmdlet.run
     expect(result.succeeded?).to eq(true)
   end
 
   it "returns a PowershellCmdletException exception if the command cannot be executed" do
-    exception_occurred = nil
-    
-    begin
-      invalid_cmdlet.run
-      exception_occurred = false
-    rescue Chef::Util::Powershell::CmdletException => e
-      exception_occurred = true
-      expect(e.cmdlet_result.succeeded?).to eq(false)
-    end
-
-    expect(exception_occurred).to eq(true)
-    end
+    expect {invalid_cmdlet.run}.to raise_error(Chef::Exceptions::PowershellCmdletException)
+  end
 
   it "executes a 64-bit command on a 64-bit OS, 32-bit otherwise" do
     os_arch = ENV['PROCESSOR_ARCHITEW6432']
