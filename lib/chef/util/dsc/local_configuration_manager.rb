@@ -17,6 +17,7 @@
 #
 
 require 'chef/util/powershell/cmdlet'
+require 'chef/util/dsc/lcm_output_parser'
 
 class Chef::Util::DSC
   class LocalConfigurationManager
@@ -68,7 +69,8 @@ class Chef::Util::DSC
 
     def configuration_update_required?(what_if_output)
       Chef::Log.debug("DSC: DSC returned the following '-whatif' output from test operation:\n#{what_if_output}")
-      parse_what_if_output(what_if_output)
+      #parse_what_if_output(what_if_output)
+      Parser::parse(what_if_output)
     end
 
     def save_configuration_document(configuration_document)

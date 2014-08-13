@@ -38,7 +38,10 @@ class Chef
 
       def action_run
         if ! @resource_converged
-          converge_by("DSC resource script for configuration '#{configuration_friendly_name}'") do
+          
+          description = ["DSC resource script for configuration '#{configuration_friendly_name}'"] + 
+            @dsc_resources_info.map {|resource| resource.change_log[0..-2].map {|c| c.sub(/^#{Regexp.escape(resource.name)}/, '')}.find_all{ |c| c.strip != ''}.join("\n")}
+          converge_by(description) do
             run_configuration(:set)
             Chef::Log.info("DSC resource configuration completed successfully")
           end
@@ -46,7 +49,10 @@ class Chef
       end
 
       def load_current_resource
-        @resource_converged = ! run_configuration(:test)
+        @dsc_resources_info = run_configuration(:test)
+        @resource_converged = @dsc_resources_info.all? do |resource|
+          !resource.changes_state?
+        end
       end
 
       def whyrun_supported?
