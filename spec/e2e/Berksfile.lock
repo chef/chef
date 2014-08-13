@@ -1,6 +1,0 @@
-DEPENDENCIES
-  git-cookbook
-    path: cookbooks/git-cookbook
-
-GRAPH
-  git-cookbook (0.1.0)
