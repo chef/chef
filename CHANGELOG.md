@@ -73,6 +73,7 @@
 * Enable Travis to run Test Kitchen with Kitchen EC2.
 * Fix a bug in reporting not to post negative duration values.
 * Add password setting support for Mac 10.7, 10.8 and 10.9 to the dscl user provider.
+* ChefSpec can find freebsd_package resource correctly when a package resource is declared on Freebsd.
 
 ## Last Release: 11.14.2
 
