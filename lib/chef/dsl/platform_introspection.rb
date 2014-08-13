@@ -70,20 +70,29 @@ class Chef
         def match_versions(node)
           begin
             platform, version = node[:platform].to_s, node[:platform_version].to_s
-            return unless @values.key?(platform)
+            return nil unless @values.key?(platform)
             node_version = Chef::Version::Platform.new(version)
+            key_matches = []
             keys = @values[platform].keys
             keys.each do |k|
               begin
-              if Chef::VersionConstraint.new(k).include?(node_version)
-                return @values[platform][k]
-              end
+                if Chef::VersionConstraint.new(k).include?(node_version)
+                  key_matches << k
+                end
               rescue Chef::Exceptions::InvalidVersionConstraint => e
                 Chef::Log.debug "Caught InvalidVersionConstraint. This means that a key in value_for_platform cannot be interpreted as a Chef::VersionConstraint."
                 Chef::Log.debug(e)
               end
             end
-            return nil
+            return @values[platform][version] if key_matches.include?(version)
+            case key_matches.length
+            when 0
+              return nil
+            when 1
+              return @values[platform][key_matches.first]
+            else
+              fail "Multiple matches detected for #{platform} with values #{@values}. The matches are: #{key_matches}"
+            end
           rescue Chef::Exceptions::InvalidCookbookVersion => e
             # Lets not break because someone passes a weird string like 'default' :)
             Chef::Log.debug(e)
