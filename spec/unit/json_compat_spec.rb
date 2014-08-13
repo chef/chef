@@ -21,11 +21,27 @@ require 'chef/json_compat'
 
 describe Chef::JSONCompat do
 
-  describe "with JSON containing an existing class" do
+  describe "#from_json with JSON containing an existing class" do
     let(:json) { '{"json_class": "Chef::Role"}' }
 
     it "returns an instance of the class instead of a Hash" do
       expect(Chef::JSONCompat.from_json(json).class).to eq Chef::Role
+    end
+  end
+
+  describe "#from_json with JSON containing comments" do
+    let(:json) { %Q{{\n/* comment */\n// comment 2\n"json_class": "Chef::Role"}} }
+
+    it "returns an instance of the class instead of a Hash" do
+      expect(Chef::JSONCompat.from_json(json).class).to eq Chef::Role
+    end
+  end
+
+  describe "#parse with JSON containing comments" do
+    let(:json) { %Q{{\n/* comment */\n// comment 2\n"json_class": "Chef::Role"}} }
+
+    it "returns a Hash" do
+      expect(Chef::JSONCompat.parse(json).class).to eq Hash
     end
   end
 
