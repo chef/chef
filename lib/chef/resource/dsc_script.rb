@@ -24,6 +24,8 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
+        @allowed_actions.push(:run)
+        @action = 'run'
         provider(Chef::Provider::DscScript)
       end
 
