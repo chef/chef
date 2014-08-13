@@ -19,6 +19,16 @@ platforms:
       availability_zone: "us-west-2b"
       ssh_key: <%= ENV['EC2_SSH_KEY_PATH'] %>
       security_group_ids: ["travis-ci"]
+  - name: rhel-7.0
+    driver_plugin: ec2
+    driver_config:
+      region: "us-west-2"
+      availability_zone: "us-west-2b"
+      ssh_key: <%= ENV['EC2_SSH_KEY_PATH'] %>
+      security_group_ids: ["travis-ci"]
+      image_id: ami-77d7a747
+      flavor_id: m3.medium
+      username: ec2-user
 
 suites:
   - name: default
