@@ -72,7 +72,7 @@
 * Fix SuSE package removal failure (Issue 1732).
 * Enable Travis to run Test Kitchen with Kitchen EC2.
 * Fix a bug in reporting not to post negative duration values.
-
+* Add password setting support for Mac 10.7, 10.8 and 10.9 to the dscl user provider.
 
 ## Last Release: 11.14.2
 

@@ -19,6 +19,7 @@
 #
 
 require 'spec_helper'
+require 'chef/provider/user/useradd'
 
 describe Chef::Provider::User::Useradd do
 
