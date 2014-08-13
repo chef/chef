@@ -31,17 +31,26 @@ class Chef
 
       provides :package, :on_platforms => ["freebsd"]
 
+      attr_accessor :created_as_type
 
       def initialize(name, run_context=nil)
         super
         @resource_name = :freebsd_package
+        @created_as_type = "freebsd_package"
       end
 
       def after_created
         assign_provider
       end
 
-
+      # This resource can be invoked with multiple names package & freebsd_package.
+      # We override the to_s method to ensure the key in resource collection
+      # matches the type resource is declared as using created_as_type. This
+      # logic can be removed once Chef does this for all resource in Chef 12:
+      # https://github.com/opscode/chef/issues/1817
+      def to_s
+        "#{created_as_type}[#{name}]"
+      end
 
       private
 
@@ -68,4 +77,3 @@ class Chef
     end
   end
 end
-
