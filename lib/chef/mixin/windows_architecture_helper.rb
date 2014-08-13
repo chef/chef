@@ -18,6 +18,7 @@
 
 
 require 'chef/exceptions'
+require 'chef/platform'
 require 'win32/api' if Chef::Platform.windows?
 require 'chef/win32/api/process' if Chef::Platform.windows?
 require 'chef/win32/api/error' if Chef::Platform.windows?
