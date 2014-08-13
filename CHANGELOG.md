@@ -28,6 +28,7 @@
 * Fix SuSE package removal failure (Issue 1732).
 * Enable Travis to run Test Kitchen with Kitchen EC2.
 * End-to-end tests for Ubuntu 12.04
+* Enable client-side key generation by default. (Issue 1711)
 
 
 * [**Phil Dibowitz**](https://github.com/jaymzh):
