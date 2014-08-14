@@ -36,12 +36,9 @@ matrix:
     before_script: 
     - cd kitchen-tests
     script:
-    - echo $TRAVIS_REPO_SLUG
-    - echo $TRAVIS_PULL_REQUEST
-    - echo $TRAVIS_SECURE_ENV_VARS
-    - bundle exec kitchen test
+    - '[ "$TRAVIS_SECURE_ENV_VARS" = "true" ] && bundle exec kitchen test'
     after_script:
-    - bundle exec kitchen destroy
+    - '[ "$TRAVIS_SECURE_ENV_VARS" = "true" ] && bundle exec kitchen destroy'
     env:
     - KITCHEN_YAML=.kitchen.travis.yml
     - EC2_SSH_KEY_PATH=~/.ssh/id_aws.pem
