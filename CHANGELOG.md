@@ -28,7 +28,7 @@
 * Fix SuSE package removal failure (Issue 1732).
 * Enable Travis to run Test Kitchen with Kitchen EC2.
 * End-to-end tests for Ubuntu 12.04
-
+* Only run end-to-end tests when secure environment variables are present.
 
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   'group' provider on OSX properly uses 'dscl' to determine existing groups
