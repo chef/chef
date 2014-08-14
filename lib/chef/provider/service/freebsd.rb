@@ -47,7 +47,7 @@ class Chef
           if ::File.exists?("/etc/rc.conf") && var_name
             read_rc_conf.each do |line|
               case line
-              when /#{Regexp.escape(var_name)}="(\w+)"/
+              when /^#{Regexp.escape(var_name)}="(\w+)"/
                 @enabled_state_found = true
                 if $1 =~ /[Yy][Ee][Ss]/
                   @current_resource.enabled true
