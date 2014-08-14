@@ -117,7 +117,6 @@ class Chef
     class InvalidDataBagPath < ArgumentError; end
 
     class PowershellCmdletException < RuntimeError; end
-    class LCMOutputParseException < RuntimeError; end
 
     # A different version of a cookbook was added to a
     # VersionedRecipeList than the one already there.

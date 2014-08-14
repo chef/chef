@@ -23,6 +23,8 @@ class Chef
     class DSC
       class LocalConfigurationManager
         module Parser
+          class ParseException < RuntimeError; end
+
           class Operation
             attr_reader :op_type
             attr_reader :resources
@@ -44,17 +46,17 @@ class Chef
             end
 
             def add_set(set)
-              raise LCMOutputParseException, "add_set is not allowed in this context. Found #{@op_type}" unless [:resource, :set]
+              raise ParseException, "add_set is not allowed in this context. Found #{@op_type}" unless [:resource, :set].include?(@op_type)
               @sets << set
             end
 
             def add_test(test)
-              raise LCMOutputParseException, "add_test is not allowed in this context. Found #{@op_type}" unless [:resource, :set]
+              raise ParseException, "add_test is not allowed in this context. Found #{@op_type}" unless [:resource, :set].include?(@op_type)
               @tests << test
             end
 
             def add_resource(resource)
-              raise LCMOutputParseException, 'add_resource is only allowed to be added to the set op_type' unless @op_type == :set
+              raise ParseException, 'add_resource is only allowed to be added to the set op_type' unless @op_type == :set
               @resources << resource
             end
           end

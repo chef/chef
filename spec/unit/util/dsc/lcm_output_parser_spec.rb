@@ -17,39 +17,41 @@
 #
 
 require 'chef/util/dsc/lcm_output_parser'
-#require 'spec_helper'
 
 describe Chef::Util::DSC::LocalConfigurationManager::Parser do
-  it 'returns an emtpy array for a 0 length string' do
-    Chef::Util::DSC::LocalConfigurationManager::Parser::parse('').should be_empty
+  context 'empty input parameter' do
+    it 'returns an emtpy array for a 0 length string' do
+      Chef::Util::DSC::LocalConfigurationManager::Parser::parse('').should be_empty
+    end
+
+    it 'returns an emtpy array for a nil input' do
+      Chef::Util::DSC::LocalConfigurationManager::Parser::parse('').should be_empty
+    end
   end
 
-  it 'returns an emtpy array for a nil input' do
-    Chef::Util::DSC::LocalConfigurationManager::Parser::parse('').should be_empty
-  end
-
-  it 'returns an empty array for a log with no resources' do
-    str = <<EOF
+  context 'correctly formatted output from lcm' do
+    it 'returns an empty array for a log with no resources' do
+      str = <<EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
-    Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str).should be_empty
-  end
+      Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str).should be_empty
+    end
 
-  it 'returns a single resource when only 1 logged with the correct name' do
-    str = <<EOF
+    it 'returns a single resource when only 1 logged with the correct name' do
+      str = <<EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]
 logtype: [machinename]: LCM:  [ Start  Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
-    resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
-    resources.length.should eq(1)
-    resources[0].name.should eq('[name]')
-  end
+      resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
+      resources.length.should eq(1)
+      resources[0].name.should eq('[name]')
+    end
 
-  it 'identifies when a resource changes the state of the system' do
-    str = <<EOF
+    it 'identifies when a resource changes the state of the system' do
+      str = <<EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]
 logtype: [machinename]: LCM:  [ Start  Resource ] [name]
 logtype: [machinename]: LCM:  [ Start  Set      ] [name]
@@ -57,12 +59,12 @@ logtype: [machinename]: LCM:  [ End    Set      ] [name]
 logtype: [machinename]: LCM:  [ End    Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
-    resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
-    resources[0].changes_state?.should be_true
-  end
+      resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
+      resources[0].changes_state?.should be_true
+    end
 
-  it 'preserves the log provided for how the system changed the state' do
-    str = <<EOF
+    it 'preserves the log provided for how the system changed the state' do
+      str = <<EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]
 logtype: [machinename]: LCM:  [ Start  Resource ] [name]
 logtype: [machinename]: LCM:  [ Start  Set      ] [name]
@@ -71,32 +73,94 @@ logtype: [machinename]: LCM:  [ End    Set      ] [name]
 logtype: [machinename]: LCM:  [ End    Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
-    resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
-    resources[0].change_log.should match_array(["[name]","[message]","[name]"])
-  end
+      resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
+      resources[0].change_log.should match_array(["[name]","[message]","[name]"])
+    end
 
-  it 'should return false for changes_state?' do
-    str = <<EOF
+    it 'should return false for changes_state?' do
+      str = <<EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]
 logtype: [machinename]: LCM:  [ Start  Resource ] [name]
 logtype: [machinename]: LCM:  [ Skip   Set      ] [name]
 logtype: [machinename]: LCM:  [ End    Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
-    resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
-    resources[0].changes_state?.should be_false
-  end
+      resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
+      resources[0].changes_state?.should be_false
+    end
 
-  it 'should return an empty array for change_log if changes_state? is false' do
-    str = <<EOF
+    it 'should return an empty array for change_log if changes_state? is false' do
+      str = <<EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]
 logtype: [machinename]: LCM:  [ Start  Resource ] [name]
 logtype: [machinename]: LCM:  [ Skip   Set      ] [name]
 logtype: [machinename]: LCM:  [ End    Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
-    resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
-    resources[0].change_log.should be_empty
+      resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
+      resources[0].change_log.should be_empty
+    end
+  end
+
+  context 'Incorrectly formatted output from LCM' do
+    it 'should raise an exception if a set is found inside a test' do
+      str = <<EOF
+logtype: [machinename]: LCM:  [ Start  Set      ]
+logtype: [machinename]: LCM:  [ Start  Resource ] [name]
+logtype: [machinename]: LCM:  [ Start  Test     ]
+logtype: [machinename]: LCM:  [ Start  Set      ]
+logtype: [machinename]: LCM:  [ End    Set      ]
+logtype: [machinename]: LCM:  [ End    Test     ]
+logtype: [machinename]: LCM:  [ End    Resource ] [name]
+logtype: [machinename]: LCM:  [ End    Set      ]
+EOF
+      expect { Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str) }.to(raise_error(
+        Chef::Util::DSC::LocalConfigurationManager::Parser::ParseException))
+    end
+
+    it 'should raise an exception if a test is found inside a test' do
+      str = <<EOF
+logtype: [machinename]: LCM:  [ Start  Set      ]
+logtype: [machinename]: LCM:  [ Start  Resource ] [name]
+logtype: [machinename]: LCM:  [ Start  Test     ]
+logtype: [machinename]: LCM:  [ Start  Test     ]
+logtype: [machinename]: LCM:  [ End    Test     ]
+logtype: [machinename]: LCM:  [ End    Test     ]
+logtype: [machinename]: LCM:  [ End    Resource ] [name]
+logtype: [machinename]: LCM:  [ End    Set      ]
+EOF
+      expect { Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str) }.to(raise_error(
+        Chef::Util::DSC::LocalConfigurationManager::Parser::ParseException))
+    end
+
+    it 'should raise an exception if a resource is found inside a test' do
+      str = <<EOF
+logtype: [machinename]: LCM:  [ Start  Set      ]
+logtype: [machinename]: LCM:  [ Start  Resource ] [name]
+logtype: [machinename]: LCM:  [ Start  Test     ]
+logtype: [machinename]: LCM:  [ Start  Resource ]
+logtype: [machinename]: LCM:  [ End    Resource  ]
+logtype: [machinename]: LCM:  [ End    Test     ]
+logtype: [machinename]: LCM:  [ End    Resource ] [name]
+logtype: [machinename]: LCM:  [ End    Set      ]
+EOF
+      expect { Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str) }.to(raise_error(
+        Chef::Util::DSC::LocalConfigurationManager::Parser::ParseException))
+    end
+
+    it 'should raise an exception if a resource is found inside a resource' do
+      str = <<EOF
+logtype: [machinename]: LCM:  [ Start  Set      ]
+logtype: [machinename]: LCM:  [ Start  Resource ] [name]
+logtype: [machinename]: LCM:  [ Start  Resource ]
+logtype: [machinename]: LCM:  [ End    Resource  ]
+logtype: [machinename]: LCM:  [ End    Resource ] [name]
+logtype: [machinename]: LCM:  [ End    Set      ]
+EOF
+      expect { Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str) }.to(raise_error(
+        Chef::Util::DSC::LocalConfigurationManager::Parser::ParseException))
+    end
+
   end
 
 end
