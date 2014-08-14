@@ -72,7 +72,6 @@ class Chef::Application
     end
   end
 
-
   # Parse configuration (options and config file)
   def configure_chef
     parse_options
@@ -254,30 +253,39 @@ class Chef::Application
   # Set ENV['http_proxy']
   def configure_http_proxy
     if http_proxy = Chef::Config[:http_proxy]
-      env['http_proxy'] = configure_proxy("http", http_proxy,
-        Chef::Config[:http_proxy_user], Chef::Config[:http_proxy_pass])
+      http_proxy_string = configure_proxy("http", http_proxy,
+          Chef::Config[:http_proxy_user], Chef::Config[:http_proxy_pass])
+      env['http_proxy'] = http_proxy_string unless env['http_proxy']
+      env['HTTP_PROXY'] = http_proxy_string unless env['HTTP_PROXY']
     end
   end
 
   # Set ENV['https_proxy']
   def configure_https_proxy
     if https_proxy = Chef::Config[:https_proxy]
-      env['https_proxy'] = configure_proxy("https", https_proxy,
-        Chef::Config[:https_proxy_user], Chef::Config[:https_proxy_pass])
+      https_proxy_string = configure_proxy("https", https_proxy,
+          Chef::Config[:https_proxy_user], Chef::Config[:https_proxy_pass])
+      env['https_proxy'] = https_proxy_string unless env['https_proxy']
+      env['HTTPS_PROXY'] = https_proxy_string unless env['HTTPS_PROXY']
     end
   end
 
   # Set ENV['ftp_proxy']
   def configure_ftp_proxy
     if ftp_proxy = Chef::Config[:ftp_proxy]
-      env['ftp_proxy'] = configure_proxy("ftp", ftp_proxy,
+      ftp_proxy_string = configure_proxy("ftp", ftp_proxy,
         Chef::Config[:ftp_proxy_user], Chef::Config[:ftp_proxy_pass])
+      env['ftp_proxy'] = ftp_proxy_string unless env['ftp_proxy']
+      env['FTP_PROXY'] = ftp_proxy_string unless env['FTP_PROXY']
     end
   end
 
   # Set ENV['no_proxy']
   def configure_no_proxy
-    env['no_proxy'] = Chef::Config[:no_proxy] if Chef::Config[:no_proxy]
+    if Chef::Config[:no_proxy]
+      env['no_proxy'] = Chef::Config[:no_proxy] unless env['no_proxy']
+      env['NO_PROXY'] = Chef::Config[:no_proxy] unless env['NO_PROXY']
+    end
   end
 
   # Builds a proxy uri. Examples:
@@ -291,7 +299,7 @@ class Chef::Application
   #   pass = password
   def configure_proxy(scheme, path, user, pass)
     begin
-      path = "#{scheme}://#{path}" unless path.start_with?(scheme)
+      path = "#{scheme}://#{path}" unless path.include?('://')
       # URI.split returns the following parts:
       # [scheme, userinfo, host, port, registry, path, opaque, query, fragment]
       parts = URI.split(URI.encode(path))

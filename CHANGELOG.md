@@ -1,14 +1,17 @@
 # Chef Client Changelog
 
-## Unreleased: 11.14.4:
+## Last Releasee: 11.14.4:
 
 * Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
 * Fix RPM package version detection (Issue 1554)
 * Fix a bug in reporting not to post negative duration values.
 * Add password setting support for Mac 10.7, 10.8 and 10.9 to the dscl user provider.
 * ChefSpec can find freebsd_package resource correctly when a package resource is declared on Freebsd.
+* http_proxy and related config vars no longer clobber already set ENV vars
+* all http_proxy configs now set lowercase + uppercase versions of ENV vars
+* https_proxy/ftp_proxy support setting `http://` URLs (and whatever mix and match makes sense)
 
-## Last Release: 11.14.2
+## Release: 11.14.2
 
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
