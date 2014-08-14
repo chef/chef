@@ -38,11 +38,11 @@ describe Chef::ApiClient::Registration do
   let(:http_mock) { double("Chef::REST mock") }
 
   let(:expected_post_data) do
-    { :name => client_name, :admin => false }
+    { :name => client_name, :admin => false, :public_key => generated_public_key.to_pem }
   end
 
   let(:expected_put_data) do
-    { :name => client_name, :admin => false, :private_key => true }
+    { :name => client_name, :admin => false, :public_key => generated_public_key.to_pem }
   end
 
   let(:server_v10_response) do
@@ -61,9 +61,31 @@ describe Chef::ApiClient::Registration do
   let(:response_409) { Net::HTTPConflict.new("1.1", "409", "Conflict") }
   let(:exception_409) { Net::HTTPServerException.new("409 conflict", response_409) }
 
+  let(:generated_private_key_pem) { IO.read(File.expand_path('ssl/private_key.pem', CHEF_SPEC_DATA)) }
+  let(:generated_private_key) { OpenSSL::PKey::RSA.new(generated_private_key_pem) }
+  let(:generated_public_key) { generated_private_key.public_key }
+
+
+  let(:create_with_pkey_response) do
+    {
+      "uri" => "",
+      "public_key" => generated_public_key.to_pem
+    }
+  end
+
+  let(:update_with_pkey_response) do
+    {"name"=>client_name,
+     "admin"=>false,
+     "public_key"=> generated_public_key,
+     "validator"=>false,
+     "private_key"=>false,
+     "clientname"=>client_name}
+  end
+
   before do
     Chef::Config[:validation_client_name] = "test-validator"
     Chef::Config[:validation_key] = File.expand_path('ssl/private_key.pem', CHEF_SPEC_DATA)
+    OpenSSL::PKey::RSA.stub(:generate).with(2048).and_return(generated_private_key)
   end
 
   after do
@@ -79,74 +101,6 @@ describe Chef::ApiClient::Registration do
   describe "when creating/updating the client on the server" do
     before do
       registration.stub(:http_api).and_return(http_mock)
-    end
-
-    it "creates a new ApiClient on the server using the validator identity" do
-      http_mock.should_receive(:post).
-        with("clients", expected_post_data).
-        and_return(server_v10_response)
-      registration.create_or_update.should == server_v10_response
-      registration.private_key.should == "--begin rsa key etc--"
-    end
-
-    context "and the client already exists on a Chef 10 server" do
-      it "requests a new key from the server and saves it" do
-        http_mock.should_receive(:post).with("clients", expected_post_data).
-          and_raise(exception_409)
-        http_mock.should_receive(:put).
-          with("clients/#{client_name}", expected_put_data).
-          and_return(server_v10_response)
-        registration.create_or_update.should == server_v10_response
-        registration.private_key.should == "--begin rsa key etc--"
-      end
-    end
-
-    context "and the client already exists on a Chef 11 server" do
-      it "requests a new key from the server and saves it" do
-        http_mock.should_receive(:post).and_raise(exception_409)
-        http_mock.should_receive(:put).
-          with("clients/#{client_name}", expected_put_data).
-          and_return(server_v11_response)
-        registration.create_or_update.should == server_v11_response
-        registration.private_key.should == "--begin rsa key etc--"
-      end
-    end
-  end
-
-  context "when local key generation is enabled", :nofocus do
-    let(:generated_private_key_pem) { IO.read(File.expand_path('ssl/private_key.pem', CHEF_SPEC_DATA)) }
-    let(:generated_private_key) { OpenSSL::PKey::RSA.new(generated_private_key_pem) }
-    let(:generated_public_key) { generated_private_key.public_key }
-
-    let(:expected_post_data) do
-      { :name => client_name, :admin => false, :public_key => generated_public_key.to_pem }
-    end
-
-    let(:expected_put_data) do
-      { :name => client_name, :admin => false, :public_key => generated_public_key.to_pem }
-    end
-
-    let(:create_with_pkey_response) do
-      {
-        "uri" => "",
-        "public_key" => generated_public_key.to_pem
-      }
-    end
-
-    let(:update_with_pkey_response) do
-      {"name"=>client_name,
-       "admin"=>false,
-       "public_key"=> generated_public_key,
-       "validator"=>false,
-       "private_key"=>false,
-       "clientname"=>client_name}
-    end
-
-
-    before do
-      registration.stub(:http_api).and_return(http_mock)
-      Chef::Config.local_key_generation = true
-      OpenSSL::PKey::RSA.should_receive(:generate).with(2048).and_return(generated_private_key)
     end
 
     it "posts a locally generated public key to the server to create a client" do
@@ -176,6 +130,63 @@ describe Chef::ApiClient::Registration do
       IO.read(key_location).should == generated_private_key_pem
     end
 
+    context "and the client already exists on a Chef 11 server" do
+      it "requests a new key from the server and saves it" do
+        http_mock.should_receive(:post).and_raise(exception_409)
+        http_mock.should_receive(:put).
+          with("clients/#{client_name}", expected_put_data).
+          and_return(update_with_pkey_response)
+        registration.create_or_update.should == update_with_pkey_response
+        registration.private_key.should == generated_private_key_pem
+      end
+    end
+
+    context "when local key generation is disabled" do
+
+      let(:expected_post_data) do
+        { :name => client_name, :admin => false }
+      end
+
+      let(:expected_put_data) do
+        { :name => client_name, :admin => false, :private_key => true }
+      end
+
+      before do
+        Chef::Config[:local_key_generation] = false
+        OpenSSL::PKey::RSA.should_not_receive(:generate)
+      end
+
+      it "creates a new ApiClient on the server using the validator identity" do
+        http_mock.should_receive(:post).
+          with("clients", expected_post_data).
+          and_return(server_v10_response)
+        registration.create_or_update.should == server_v10_response
+        registration.private_key.should == "--begin rsa key etc--"
+      end
+
+      context "and the client already exists on a Chef 11 server" do
+        it "requests a new key from the server and saves it" do
+          http_mock.should_receive(:post).and_raise(exception_409)
+          http_mock.should_receive(:put).
+            with("clients/#{client_name}", expected_put_data).
+            and_return(server_v11_response)
+          registration.create_or_update.should == server_v11_response
+          registration.private_key.should == "--begin rsa key etc--"
+        end
+      end
+
+      context "and the client already exists on a Chef 10 server" do
+        it "requests a new key from the server and saves it" do
+          http_mock.should_receive(:post).with("clients", expected_post_data).
+            and_raise(exception_409)
+          http_mock.should_receive(:put).
+            with("clients/#{client_name}", expected_put_data).
+            and_return(server_v10_response)
+          registration.create_or_update.should == server_v10_response
+          registration.private_key.should == "--begin rsa key etc--"
+        end
+      end
+    end
   end
 
   describe "when writing the private key to disk" do
@@ -209,7 +220,7 @@ describe Chef::ApiClient::Registration do
     it "creates the client on the server and writes the key" do
       http_mock.should_receive(:post).ordered.and_return(server_v10_response)
       registration.run
-      IO.read(key_location).should == "--begin rsa key etc--"
+      IO.read(key_location).should == generated_private_key_pem
     end
 
     it "retries up to 5 times" do
@@ -224,7 +235,7 @@ describe Chef::ApiClient::Registration do
 
       http_mock.should_receive(:post).ordered.and_return(server_v10_response)
       registration.run
-      IO.read(key_location).should == "--begin rsa key etc--"
+      IO.read(key_location).should == generated_private_key_pem
     end
 
     it "gives up retrying after the max attempts" do
@@ -239,5 +250,3 @@ describe Chef::ApiClient::Registration do
   end
 
 end
-
-
