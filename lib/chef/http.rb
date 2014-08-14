@@ -208,6 +208,9 @@ class Chef
         URI.parse(path)
       elsif path.nil? or path.empty?
         URI.parse(@url)
+      elsif @url.is_a?(URI)
+        @url.path = path
+        return @url
       else
         # The regular expressions used here are to make sure '@url' does not have
         # any trailing slashes and 'path' does not have any leading slashes. This

@@ -44,6 +44,11 @@ describe Chef::HTTP do
       http.create_url('///api/endpoint?url=http://foo.bar').should eql(URI.parse('http://www.getchef.com/organization/org/api/endpoint?url=http://foo.bar'))
     end
 
+    it 'should return a correctly formatted url when @url is a URI' do
+      http = Chef::HTTP.new(URI.parse('http://www.getchef.com/index.html'))
+      http.create_url('/some/redirected/location/index.html').should eql(URI.parse('http://www.getchef.com/some/redirected/location/index.html'))
+    end
+
   end # create_url
 
   describe "head" do
