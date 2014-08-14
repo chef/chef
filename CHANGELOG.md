@@ -32,6 +32,8 @@
 * Enable Travis to run Test Kitchen with Kitchen EC2.
 * End-to-end tests for Ubuntu 12.04
 * Only run end-to-end tests when secure environment variables are present.
+* Remove recipe DSL from base provisioner (Issue 1446).
+
 
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   'group' provider on OSX properly uses 'dscl' to determine existing groups
