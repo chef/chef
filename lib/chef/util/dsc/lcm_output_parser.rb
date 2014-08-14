@@ -16,28 +16,12 @@
 # limitations under the License.
 #
 
+require 'chef/util/dsc/resource_info'
+
 class Chef
   class Util
     class DSC
       class LocalConfigurationManager
-        class DscResourceInfo
-          # The name is the text following [Start Set]
-          attr_reader :name
-
-          # A list of all log messages between [Start Set] and [End Set].
-          # Each line is an element in the list.
-          attr_reader :change_log
-
-          def initialize(name, sets, change_log)
-            @name = name
-            @sets = sets
-            @change_log = change_log || []
-          end
-
-          def changes_state?
-            @sets
-          end
-        end
         module Parser
           class Operation
             attr_reader :op_type
@@ -75,7 +59,7 @@ class Chef
             end
           end
 
-          # Parses the output from LCM and returns a list of DscResourceInfo objects
+          # Parses the output from LCM and returns a list of Chef::Util::DSC::ResourceInfo objects
           # that describe how the resources affected the system
           # 
           # Example:
@@ -92,7 +76,7 @@ class Chef
           #   would return
           #
           #   [
-          #     DscResourceInfo.new(
+          #     Chef::Util::DSC::ResourceInfo.new(
           #       '[[File]FileToNotBeThere]', 
           #       true, 
           #       [
@@ -174,7 +158,7 @@ class Chef
               name = r.info[0]
               sets = r.sets.length > 0
               change_log = r.sets[-1].info if sets
-              DscResourceInfo.new(name, sets, change_log)
+              Chef::Util::DSC::ResourceInfo.new(name, sets, change_log)
             end
           end
           private_class_method :op_to_resource_infos
