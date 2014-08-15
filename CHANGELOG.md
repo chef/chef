@@ -34,6 +34,7 @@
 * Only run end-to-end tests when secure environment variables are present.
 * Remove recipe DSL from base provisioner (Issue 1446).
 * Enable client-side key generation by default. (Issue 1711)
+* CookbookSiteStreamingUploader now uses ssl_verify_mode config option (Issue 1518).
 
 
 * [**Phil Dibowitz**](https://github.com/jaymzh):
