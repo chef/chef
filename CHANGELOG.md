@@ -28,6 +28,7 @@
 * Fix SuSE package removal failure (Issue 1732).
 * Enable Travis to run Test Kitchen with Kitchen EC2.
 * End-to-end tests for Ubuntu 12.04
+* CookbookSiteStreamingUploader now uses ssl_verify_mode config option (Issue 1518).
 
 
 * [**Phil Dibowitz**](https://github.com/jaymzh):
