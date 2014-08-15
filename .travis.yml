@@ -74,9 +74,10 @@ matrix:
     - secure: SOMYGVfHLkHsH6koxpw68YQ4ydEo6YXPhHbrYGQbehUbFa6+OZzBcAJRJbKjyhD2AZRvNr2jB8XnjYKvVyDGQRpkWhGYZ7CpHqINpDsqKBsbiMe3/+KmKQqS+UKxNGefquoOvyQ1N8Xy77dkWYokRtGMEuR12RkZLonxiDW8Qyg=
     ### END TEST KITCHEN ONLY ###
 notifications:
+  on_change: true
+  on_failure: true
   on_success: change
-  on_failure: always
-  on_start: false
+  on_pull_requests: false
   irc:
     channels:
     - chat.freenode.net#chef-hacking
