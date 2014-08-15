@@ -128,8 +128,9 @@ class Chef::EncryptedDataBagItem
   def self.load_secret(path=nil)
     path ||= Chef::Config[:encrypted_data_bag_secret]
     if !path
-      raise ArgumentError, "No secret specified to load_secret and no secret found at" \
-        " #{Chef::Config[:encrypted_data_bag_secret] || Chef::Config.platform_specific_path('/etc/chef/encrypted_data_bag_secret')}"
+      raise ArgumentError, "No secret specified to load_secret and no secret found at" +
+        " #{Chef::Config[:encrypted_data_bag_secret] ||
+        Chef::Config.platform_specific_path('/etc/chef/encrypted_data_bag_secret')}"
     end
     secret = case path
              when /^\w+:\/\//
