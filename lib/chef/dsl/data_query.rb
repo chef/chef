@@ -61,6 +61,15 @@ class Chef
         Log.error("Failed to load data bag item: #{bag.inspect} #{item.inspect}")
         raise
       end
+
+      def encrypted_data_bag_item(bag, item, secret = nil)
+        DataBag.validate_name!(bag.to_s)
+        DataBagItem.validate_id!(item)
+        EncryptedDataBagItem.load(bag, item, secret)
+      rescue Exception
+        Log.error("Failed to load encrypted data bag item: #{bag.inspect} #{item.inspect}")
+        raise
+      end
     end
   end
 end
@@ -68,4 +77,3 @@ end
 # **DEPRECATED**
 # This used to be part of chef/mixin/language. Load the file to activate the deprecation code.
 require 'chef/mixin/language'
-
