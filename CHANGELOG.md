@@ -10,6 +10,9 @@
   Remove the unused StreamingCookbookUploader class (CHEF-4586)
 
 
+* http_proxy and related config vars no longer clobber already set ENV vars
+* all http_proxy configs now set lowercase + uppercase versions of ENV vars
+* https_proxy/ftp_proxy support setting `http://` URLs (and whatever mix and match makes sense)
 * log resource now marks itself as supporting why-run
 * http_request no longer appends "?message=" query string to GET and HEAD requests
 * added shell_out commands directly to the recipe DSL
@@ -28,6 +31,9 @@
 * Fix SuSE package removal failure (Issue 1732).
 * Enable Travis to run Test Kitchen with Kitchen EC2.
 * End-to-end tests for Ubuntu 12.04
+* Only run end-to-end tests when secure environment variables are present.
+* Remove recipe DSL from base provisioner (Issue 1446).
+* Enable client-side key generation by default. (Issue 1711)
 * CookbookSiteStreamingUploader now uses ssl_verify_mode config option (Issue 1518).
 
 
