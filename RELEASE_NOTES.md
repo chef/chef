@@ -165,3 +165,8 @@ end
 
 You must use the windows_service resource to utilize the `:configure_startup` action and `startup_type` attribute. The service resource
 does not support them.
+
+## Client-side key generation enabled by default
+When creating a new client via the validation_client account, Chef 11 servers allow the client to generate a key pair locally
+and send the public key to the server, enhancing scalability. This was disabled by default, since client registration would not
+work properly if the remote server implemented only the Chef 10 API.
