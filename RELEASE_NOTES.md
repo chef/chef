@@ -170,3 +170,7 @@ does not support them.
 When creating a new client via the validation_client account, Chef 11 servers allow the client to generate a key pair locally
 and send the public key to the server, enhancing scalability. This was disabled by default, since client registration would not
 work properly if the remote server implemented only the Chef 10 API.
+
+## CookbookSiteStreamingUploader now uses ssl_verify_mode config option
+The CookbookSiteStreamingUploader now obeys the setting of ssl_verify_mode in the client config. Was previously ignoring the
+config setting and always set to VERIFY_NONE.
