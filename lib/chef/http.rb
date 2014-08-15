@@ -62,7 +62,6 @@ class Chef
 
     end
 
-
     def self.middlewares
       @middlewares ||= []
     end
@@ -87,6 +86,8 @@ class Chef
       @sign_on_redirect = true
       @redirects_followed = 0
       @redirect_limit = 10
+
+      @client_cache = options[:client_cache]
 
       @middlewares = []
       self.class.middlewares.each do |middleware_class|
@@ -197,7 +198,11 @@ class Chef
 
     def http_client(base_url=nil)
       base_url ||= url
-      BasicClient.new(base_url)
+      if @client_cache
+        @client_cache.client_for(base_url)
+      else
+        BasicClient.new(base_url)
+      end
     end
 
     protected
@@ -281,7 +286,6 @@ class Chef
         end
       end
     end
-
 
     # Wraps an HTTP request with retry logic.
     # === Arguments
@@ -379,7 +383,6 @@ class Chef
       tf.close!
       raise
     end
-
 
     public
 

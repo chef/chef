@@ -55,6 +55,7 @@ class Chef
       end
 
       def request(method, url, req_body, base_headers={})
+        tries ||= 3
         http_request = HTTPRequest.new(method, url, req_body, base_headers).http_request
         Chef::Log.debug("Initiating #{method} to #{url}")
         Chef::Log.debug("---- HTTP Request Header Data: ----")
@@ -75,6 +76,13 @@ class Chef
           # http_client.request may not have the return signature we want, so
           # force the issue:
           return [http_request, response]
+        end
+      rescue EOFError => e
+        # closed keepalive connections will throw EOFError, we can retry
+        if (tries -= 1) > 0
+          retry
+        else
+          raise
         end
       rescue OpenSSL::SSL::SSLError => e
         Chef::Log.error("SSL Validation failure connecting to host: #{host} - #{e.message}")
@@ -105,7 +113,8 @@ class Chef
 
         http_client.read_timeout = config[:rest_timeout]
         http_client.open_timeout = config[:rest_timeout]
-        http_client
+        # call #start to allow keepalives
+        http_client.start
       end
 
       def config

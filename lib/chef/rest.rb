@@ -190,7 +190,11 @@ class Chef
 
     def http_client(base_url=nil)
       base_url ||= url
-      BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
+      if @client_cache
+        @client_cache.client_for(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
+      else
+        BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
+      end
     end
 
     ############################################################################
