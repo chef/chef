@@ -25,6 +25,17 @@ require 'chef/config'
 class Chef
   module Mixin
     module ShellOut
+      class Wrapper
+        extend Chef::Mixin::ShellOut
+      end
+
+      def self.shell_out(*command_args)
+        Chef::Mixin::ShellOut::Wrapper.new.shell_out(*command_args)
+      end
+
+      def self.shell_out!(*command_args)
+        Chef::Mixin::ShellOut::Wrapper.new.shell_out!(*command_args)
+      end
 
       # shell_out! runs a command on the system and will raise an error if the command fails, which is what you want
       # for debugging, shell_out and shell_out! both will display command output to the tty when the log level is debug

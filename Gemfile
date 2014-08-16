@@ -10,8 +10,10 @@ end
 group(:development, :test) do
   gem "simplecov"
   gem 'rack', "~> 1.5.1"
-
   gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
+  gem 'guard'
+  gem 'guard-rspec'
+  gem 'ruby_gntp'
 end
 
 # If you want to load debugging tools into the bundle exec sandbox,
