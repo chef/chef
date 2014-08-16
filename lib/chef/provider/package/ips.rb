@@ -55,7 +55,7 @@ class Chef
             case line
             when /^\s+State: Installed/
               installed = true
-            when /^\s+Version: (.*)/
+            when /^\s+Version: ([0-9,\.]+)\s/
               @candidate_version = $1.split[0]
               if installed
                 @current_resource.version($1)
