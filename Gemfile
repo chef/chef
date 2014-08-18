@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'omnibus-software', :github => 'opscode/omnibus-software',
-  :branch => 'master'
+  :branch => 'omnibus/3.2-stable'
 
 gem 'omnibus', :github => 'opscode/omnibus-ruby',
-  :branch => 'master'
+  :branch => '3.0-stable'
