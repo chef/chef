@@ -647,10 +647,11 @@ describe Chef::Provider::User::Useradd, metadata do
             @error.should be_nil
             if ohai[:platform] == "aix"
               pw_entry.passwd.should == '*'
+              user_account_should_be_unlocked
             else
               pw_entry.passwd.should == 'x'
+              shadow_password.should include("!")
             end
-            user_account_should_be_unlocked
           end
         end
       end
