@@ -51,3 +51,7 @@ binstubs/
 # RVM and RBENV ruby version files
 .rbenv-version
 .rvmrc
+
+# Vagrant
+Vagrantfile
+.vagrant/
