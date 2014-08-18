@@ -8,7 +8,12 @@
   knife diagnostic messages sent to stdout instead of stderr
 * [**Xabier de Zuazo**](https://github.com/zuazo):
   Remove the unused StreamingCookbookUploader class (CHEF-4586)
-
+* [**Jacob Vosmaer**](https://github.com/jacobvosmaer):
+  Fix creation of non-empty FreeBSD groups (#1698)
+* [**Nathan Huff**](https://github.com/nhuff):
+  Check local repository for ips package installs (#1703)
+* [**Sean Clemmer**](https://github.com/sczizzo):
+  Fix "cron" resource handling of special strings (e.g. @reboot, @yearly) (#1708)
 
 * http_proxy and related config vars no longer clobber already set ENV vars
 * all http_proxy configs now set lowercase + uppercase versions of ENV vars
