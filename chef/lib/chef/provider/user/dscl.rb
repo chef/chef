@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/shell_out'
 require 'mixlib/shellout'
 require 'chef/provider/user'
 require 'openssl'
@@ -24,6 +25,8 @@ require 'plist'
 class Chef
   class Provider
     class User
+      include Chef::Mixin::ShellOut
+
       #
       # The most tricky bit of this provider is the way it deals with user passwords.
       # Mac OS X has different password shadow calculations based on the version.
