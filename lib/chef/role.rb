@@ -236,8 +236,8 @@ class Chef
       paths = Array(Chef::Config[:role_path])
       paths.each do |path|
         roles_files = Dir.glob(File.join(path, "**", "**"))
-        js_files = roles_files.select { |file| file.match /#{name}\.json$/ }
-        rb_files = roles_files.select { |file| file.match /#{name}\.rb$/ }
+        js_files = roles_files.select { |file| file.match /\/#{name}\.json$/ }
+        rb_files = roles_files.select { |file| file.match /\/#{name}\.rb$/ }
         if js_files.count > 1 or rb_files.count > 1
           raise Chef::Exceptions::DuplicateRole, "Multiple roles of same type found named #{name}"
         end
