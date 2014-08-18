@@ -62,7 +62,11 @@ describe Chef::DSL::DataQuery do
 
     let(:raw_data) {{
       "id" => item_name,
-      "FUU" => "FUU"
+      "greeting" => "hello",
+      "nested" => {
+        "a1" => [1, 2, 3],
+        "a2" => { "b1" => true }
+      }
     }}
 
     let(:item) do
@@ -79,6 +83,58 @@ describe Chef::DSL::DataQuery do
 
     include_examples "a data bag item" do
       let(:method_name) { :data_bag_item }
+    end
+
+    context "when the item is encrypted" do
+
+      let(:secret) { "abc123SECRET" }
+
+      let(:encoded_data) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(raw_data, secret) }
+
+      let(:item) do
+        item = Chef::DataBagItem.new
+        item.data_bag(bag_name)
+        item.raw_data = encoded_data
+        item
+      end
+
+      it "detects v1 encrypted data bag items" do
+        Chef::Config[:data_bag_encrypt_version] = 1
+      end
+
+      it "detects v2 encrypted data bag items" do
+        Chef::Config[:data_bag_encrypt_version] = 2
+      end
+
+      it "detects v3 encrypted data bag items" do
+        Chef::Config[:data_bag_encrypt_version] = 3
+      end
+
+      shared_examples_for "an encrypted data bag item" do
+        it "returns an encrypted data bag item" do
+
+        end
+      end
+
+      context "when a secret is supplied" do
+        include_examples "an encrypted data bag item" do
+
+        end
+      end
+
+      context "when a secret is not supplied" do
+        context "when a secret is located at Chef::Config[:encrypted_data_bag_secret]" do
+          include_examples "an encrypted data bag item" do
+
+          end
+        end
+
+        context "when a secret is not located at Chef::Config[:encrypted_data_bag_secret]" do
+          it "should fail to load the data bag item" do
+
+          end
+        end
+      end
     end
   end
 end
