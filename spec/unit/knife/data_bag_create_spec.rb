@@ -72,6 +72,37 @@ describe Chef::Knife::DataBagCreate do
     @knife.run
   end
 
+  it "should not create an encrypted data bag item via --secret" do
+    @knife.name_args = ['sudoing_admins', 'ME']
+    plain_data = {'login_name' => 'alphaomega', 'id' => 'ME'}
+    data_bag_item = Chef::DataBagItem.from_hash(plain_data)
+    data_bag_item.data_bag('sudoing_admins')
+    @knife.should_receive(:create_object).and_yield(plain_data)
+    @rest.should_receive(:post_rest).with('data', {'name' => 'sudoing_admins'}).ordered
+    @rest.should_receive(:post_rest).with('data/sudoing_admins', data_bag_item).ordered
+    secret = 'abc123SECRET'
+    @knife.stub(:config).and_return({:secret => secret})
+    @knife.run
+  end
+
+  it "should not create an encrypted data bag item via --secret_file " do
+    secret = 'abc123SECRET'
+    secret_file = Tempfile.new('encrypted_data_bag_secret_file_test')
+    secret_file.puts(secret)
+    secret_file.flush
+    @knife.name_args = ['sudoing_admins', 'ME']
+    plain_data = {'login_name' => 'alphaomega', 'id' => 'ME'}
+    data_bag_item = Chef::DataBagItem.from_hash(plain_data)
+    data_bag_item.data_bag("sudoing_admins")
+    @knife.should_receive(:create_object).and_yield(plain_data)
+    @knife.stub(:config).and_return({:secret_file => secret_file.path})
+    @rest.should_receive(:post_rest).with('data', {'name' => 'sudoing_admins'}).ordered
+    @rest.should_receive(:post_rest).with('data/sudoing_admins', data_bag_item).ordered
+    @knife.run
+    secret_file.close
+    secret_file.unlink
+  end
+
   describe "encrypted data bag items" do
     before(:each) do
       @secret = "abc123SECRET"
