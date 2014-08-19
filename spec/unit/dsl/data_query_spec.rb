@@ -97,37 +97,46 @@ describe Chef::DSL::DataQuery do
         item
       end
 
-      shared_examples_for "encryption detected" do |version|
+      before do
+        allow( Chef::DataBagItem ).to receive(:load).with(bag_name, item_name).and_return(item)
+      end
+
+      shared_examples_for "encryption detected" do
         let(:encoded_data) do
           Chef::Config[:data_bag_encrypt_version] = version_number
           Chef::EncryptedDataBagItem.encrypt_data_bag_item(raw_data, default_secret)
         end
 
         before do
-          allow( Chef::DataBagItem ).to receive(:load).with(bag_name, item_name).and_return(item)
           allow( Chef::EncryptedDataBagItem ).to receive(:load_secret).and_return(default_secret)
         end
 
-        it "detects #{version} encrypted data bag items" do
+        it "detects encrypted data bag" do
           expect( language ).to receive(encryptor_keys).at_least(:once).and_call_original
           expect( Chef::Log ).to receive(:debug).with(/Data bag item looks encrypted/)
           language.data_bag_item(bag_name, item_name)
         end
       end
 
-      include_examples "encryption detected", "v1" do
-        let(:version_number) { 1 }
-        let(:encryptor_keys) { :version_1_encryptor_keys }
+      context "when encryption version is 1" do
+        include_examples "encryption detected" do
+          let(:version_number) { 1 }
+          let(:encryptor_keys) { :version_1_encryptor_keys }
+        end
       end
 
-      include_examples "encryption detected", "v2" do
-        let(:version_number) { 2 }
-        let(:encryptor_keys) { :version_2_encryptor_keys }
+      context "when encryption version is 2" do
+        include_examples "encryption detected" do
+          let(:version_number) { 2 }
+          let(:encryptor_keys) { :version_2_encryptor_keys }
+        end
       end
 
-      include_examples "encryption detected", "v3" do
-        let(:version_number) { 3 }
-        let(:encryptor_keys) { :version_3_encryptor_keys }
+      context "when encryption version is 3" do
+        include_examples "encryption detected", "v3" do
+          let(:version_number) { 3 }
+          let(:encryptor_keys) { :version_3_encryptor_keys }
+        end
       end
 
       shared_examples_for "an encrypted data bag item" do
