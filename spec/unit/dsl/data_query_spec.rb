@@ -35,8 +35,8 @@ describe Chef::DSL::DataQuery do
   describe "::data_bag" do
     it "lists the items in a data bag" do
       allow(Chef::DataBag).to receive(:load)
-        .with("bag_name")
-        .and_return("item_1" => "http://url_for/item_1", "item_2" => "http://url_for/item_2")
+      .with("bag_name")
+      .and_return("item_1" => "http://url_for/item_1", "item_2" => "http://url_for/item_2")
       expect( language.data_bag("bag_name").sort ).to eql %w(item_1 item_2)
     end
   end
@@ -86,10 +86,9 @@ describe Chef::DSL::DataQuery do
     end
 
     context "when the item is encrypted" do
+      let(:default_secret) { "abc123SECRET" }
 
-      let(:secret) { "abc123SECRET" }
-
-      let(:encoded_data) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(raw_data, secret) }
+      let(:encoded_data) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(raw_data, default_secret) }
 
       let(:item) do
         item = Chef::DataBagItem.new
@@ -98,40 +97,92 @@ describe Chef::DSL::DataQuery do
         item
       end
 
-      it "detects v1 encrypted data bag items" do
-        Chef::Config[:data_bag_encrypt_version] = 1
+      shared_examples_for "encryption detected" do |version|
+        let(:encoded_data) do
+          Chef::Config[:data_bag_encrypt_version] = version_number
+          Chef::EncryptedDataBagItem.encrypt_data_bag_item(raw_data, default_secret)
+        end
+
+        before do
+          allow( Chef::DataBagItem ).to receive(:load).with(bag_name, item_name).and_return(item)
+          allow( Chef::EncryptedDataBagItem ).to receive(:load_secret).and_return(default_secret)
+        end
+
+        it "detects #{version} encrypted data bag items" do
+          expect( language ).to receive(encryptor_keys).at_least(:once).and_call_original
+          expect( Chef::Log ).to receive(:debug).with(/Data bag item looks encrypted/)
+          language.data_bag_item(bag_name, item_name)
+        end
       end
 
-      it "detects v2 encrypted data bag items" do
-        Chef::Config[:data_bag_encrypt_version] = 2
+      include_examples "encryption detected", "v1" do
+        let(:version_number) { 1 }
+        let(:encryptor_keys) { :version_1_encryptor_keys }
       end
 
-      it "detects v3 encrypted data bag items" do
-        Chef::Config[:data_bag_encrypt_version] = 3
+      include_examples "encryption detected", "v2" do
+        let(:version_number) { 2 }
+        let(:encryptor_keys) { :version_2_encryptor_keys }
+      end
+
+      include_examples "encryption detected", "v3" do
+        let(:version_number) { 3 }
+        let(:encryptor_keys) { :version_3_encryptor_keys }
       end
 
       shared_examples_for "an encrypted data bag item" do
         it "returns an encrypted data bag item" do
+          expect( language.data_bag_item(bag_name, item_name, secret) ).to be_a_kind_of(Chef::EncryptedDataBagItem)
+        end
 
+        it "decrypts the contents of the data bag item" do
+          expect( language.data_bag_item(bag_name, item_name, secret).to_hash ).to eql raw_data
         end
       end
 
       context "when a secret is supplied" do
         include_examples "an encrypted data bag item" do
-
+          let(:secret) { default_secret }
         end
       end
 
       context "when a secret is not supplied" do
-        context "when a secret is located at Chef::Config[:encrypted_data_bag_secret]" do
-          include_examples "an encrypted data bag item" do
+        before do
+          allow( Chef::Config ).to receive(:[]).and_call_original
+          expect( Chef::Config ).to receive(:[]).with(:encrypted_data_bag_secret).and_return(path)
+          expect( Chef::EncryptedDataBagItem ).to receive(:load_secret).and_call_original
+        end
 
+        context "when a secret is located at Chef::Config[:encrypted_data_bag_secret]" do
+          let(:path) { "/tmp/my_secret" }
+
+          before do
+            expect( File ).to receive(:exist?).with(path).and_return(true)
+            expect( IO ).to receive(:read).with(path).and_return(default_secret)
+          end
+
+          include_examples "an encrypted data bag item" do
+            let(:secret) { nil }
           end
         end
 
-        context "when a secret is not located at Chef::Config[:encrypted_data_bag_secret]" do
-          it "should fail to load the data bag item" do
+        context "when Chef::Config[:encrypted_data_bag_secret] is not configured" do
+          let(:path) { nil }
 
+          it "should fail to load the data bag item" do
+            expect{ language.data_bag_item(bag_name, item_name) }.to raise_error(ArgumentError, /No secret specified and no secret found/)
+          end
+        end
+
+        context "when Chef::Config[:encrypted_data_bag_secret] does not exist" do
+          let(:path) { "/tmp/my_secret" }
+
+          before do
+            expect( File ).to receive(:exist?).with(path).and_return(false)
+          end
+
+          it "should fail to load the data bag item" do
+            expect{ language.data_bag_item(bag_name, item_name) }.to raise_error(Errno::ENOENT, /file not found/)
           end
         end
       end

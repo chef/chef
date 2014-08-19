@@ -53,14 +53,73 @@ class Chef
         raise
       end
 
-      def data_bag_item(bag, item)
+      def data_bag_item(bag, item, secret=nil)
         DataBag.validate_name!(bag.to_s)
         DataBagItem.validate_id!(item)
-        DataBagItem.load(bag, item)
-      rescue Exception
+        item = DataBagItem.load(bag, item)
+        if encrypted?(item.raw_data)
+          Log.debug("Data bag item looks encrypted: #{bag.inspect} #{item.inspect}")
+          secret ||= EncryptedDataBagItem.load_secret
+          item = EncryptedDataBagItem.new(item.raw_data, secret)
+        end
+        item
+      rescue Exception => e
         Log.error("Failed to load data bag item: #{bag.inspect} #{item.inspect}")
         raise
       end
+
+      private
+
+      # Tries to autodetect if the item's raw hash appears to be encrypted.
+      def encrypted?(data)
+        data.each do |key, value|
+          next if key == "id"
+          return false unless looks_like_encrypted?(value)
+        end
+        true
+      end
+
+      # Checks if data looks like it has been encrypted by
+      # Chef::EncryptedDataBagItem::Encryptor::VersionXEncryptor. Returns
+      # true only when there is an exact match between the VersionXEncryptor
+      # keys and the hash's keys.
+      def looks_like_encrypted?(data)
+        return false unless data.is_a?(Hash) && data.has_key?("version")
+        case data["version"]
+        when 1
+          version_1_encryptor_keys == data.keys.sort
+        when 2
+          version_2_encryptor_keys == data.keys.sort
+        when 3
+          version_3_encryptor_keys == data.keys.sort
+        else
+          false # version means something else... assume not encrypted.
+        end
+      end
+
+      ###
+      # The below methods return arrays of keys that are assigned to encrypted
+      # data hashes when a data bag item gets encrypted.
+      ###
+
+      # Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor#for_encrypted_item
+      # Keys added to the encrypted data hash.
+      def version_1_encryptor_keys
+        %w(encrypted_data iv cipher version).sort
+      end
+
+      # Chef::EncryptedDataBagItem::Encryptor::Version2Encryptor#for_encrypted_item
+      # Keys added to the encrypted data hash.
+      def version_2_encryptor_keys
+        %w(encrypted_data hmac iv cipher version).sort
+      end
+
+      # Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor#for_encrypted_item
+      # Keys added to the encrypted data hash.
+      def version_3_encryptor_keys
+        %w(encrypted_data auth_tag iv cipher version).sort
+      end
+
     end
   end
 end
@@ -68,4 +127,3 @@ end
 # **DEPRECATED**
 # This used to be part of chef/mixin/language. Load the file to activate the deprecation code.
 require 'chef/mixin/language'
-
