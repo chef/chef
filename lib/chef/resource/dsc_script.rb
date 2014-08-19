@@ -65,6 +65,14 @@ class Chef
         )
       end
 
+      def configuration_data(arg=nil)
+        set_or_return(
+          :configuration_data,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
       def flags(arg=nil)
         set_or_return(
           :flags,

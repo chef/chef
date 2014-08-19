@@ -59,12 +59,13 @@ class Chef
       protected
 
       def run_configuration(operation)
-        config_directory = ::Dir.mktmpdir("dsc-script")
+        configuration_flags = get_augmented_configuration_flags(@dsc_resource.flags)
+        config_directory = ::Dir.mktmpdir("chef-dsc-script")
 
         config_manager = Chef::Util::DSC::LocalConfigurationManager.new(@run_context.node, config_directory)
 
         begin
-          configuration_document = generate_configuration_document(config_directory, @dsc_resource.flags)
+          configuration_document = generate_configuration_document(config_directory, configuration_flags)
           @operations[operation].call(config_manager, configuration_document)
         rescue Exception => e
           Chef::Log.error("DSC operation failed: #{e.message.to_s}")
@@ -72,6 +73,16 @@ class Chef
         ensure
           ::FileUtils.rm_rf(config_directory)
         end
+      end
+
+      def get_augmented_configuration_flags(flags)
+        updated_flags = nil
+        if @dsc_resource.configuration_data
+          updated_flags = flags.nil? ? {} : flags.dup
+          Chef::Util::PathHelper.validate_path(@dsc_resource.configuration_data)
+          updated_flags[:configurationdata] = @dsc_resource.configuration_data
+        end
+        updated_flags
       end
 
       def generate_configuration_document(config_directory, configuration_flags)
