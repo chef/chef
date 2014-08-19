@@ -100,16 +100,16 @@ describe Chef::Knife::DataBagCreate do
       @secret_file.unlink
     end
 
-    it "creates an encrypted data bag item via --secret" do
-      @knife.stub(:config).and_return({:secret => @secret})
+    it "creates an encrypted data bag item via --secret and --encrypted" do
+      @knife.stub(:config).and_return({:secret => @secret, :encrypted => true})
       @knife.run
     end
 
-    it "creates an encrypted data bag item via --secret_file" do
+    it "creates an encrypted data bag item via --secret_file and --encrypted" do
       secret_file = Tempfile.new("encrypted_data_bag_secret_file_test")
       secret_file.puts(@secret)
       secret_file.flush
-      @knife.stub(:config).and_return({:secret_file => secret_file.path})
+      @knife.stub(:config).and_return({:secret_file => secret_file.path, :encrypted => true})
       @knife.run
     end
   end

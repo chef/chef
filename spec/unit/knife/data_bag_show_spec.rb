@@ -91,8 +91,8 @@ describe Chef::Knife::DataBagShow do
       @secret_file.unlink
     end
 
-    it "prints the decrypted contents of an item when given --secret" do
-      allow(@knife).to receive(:config).and_return({:secret => @secret})
+    it "prints the decrypted contents of an item when given --secret and --encrypted" do
+      allow(@knife).to receive(:config).and_return({:secret => @secret, :encrypted => true})
       expect(Chef::EncryptedDataBagItem).to receive(:load).
         with('bag_name', 'item_name', @secret).
         and_return(Chef::EncryptedDataBagItem.new(@enc_data, @secret))
@@ -100,8 +100,8 @@ describe Chef::Knife::DataBagShow do
       expect(Chef::JSONCompat.from_json(@stdout.string)).to eq(@plain_data)
     end
 
-    it "prints the decrypted contents of an item when given --secret_file" do
-      allow(@knife).to receive(:config).and_return({:secret_file => @secret_file.path})
+    it "prints the decrypted contents of an item when given --secret_file and --encrypted" do
+      allow(@knife).to receive(:config).and_return({:secret_file => @secret_file.path, :encrypted => true})
       expect(Chef::EncryptedDataBagItem).to receive(:load).
         with('bag_name', 'item_name', @secret).
         and_return(Chef::EncryptedDataBagItem.new(@enc_data, @secret))

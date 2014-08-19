@@ -42,6 +42,11 @@ class Chef
         :description => "A file containing the secret key to use to decrypt data bag item values",
         :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
 
+      option :encrypted,
+        :long => "--encrypted",
+        :description => "Only encrypt data bag when specified.",
+        :proc => Proc.new { |e| Chef::Config[:knife][:encrypted] = e }
+
       def read_secret
         if config[:secret]
           config[:secret]
@@ -51,11 +56,15 @@ class Chef
       end
 
       def use_encryption
-        if config[:secret] && config[:secret_file]
-          stdout.puts "please specify only one of --secret, --secret-file"
-          exit(1)
+        if config[:encrypted]
+          if config[:secret] && config[:secret_file]
+            ui.fatal("please specify only one of --secret, --secret-file")
+            exit(1)
+          end
+          config[:secret] || config[:secret_file]
+        else
+          false
         end
-        config[:secret] || config[:secret_file]
       end
 
       def run
@@ -80,4 +89,3 @@ class Chef
     end
   end
 end
-
