@@ -81,7 +81,7 @@ class Chef::Util::DSC
     end
 
     def configuration_code(code, configuration_name)
-      "$ProgressPreference = 'SilentlyContinue';Configuration '#{configuration_name}'\n{\n\t#{code}\n}\n"
+      "$ProgressPreference = 'SilentlyContinue';Configuration '#{configuration_name}'\n{\n\tnode 'localhost'\n{\n\t#{code}\n}}\n"
     end
 
     def configuration_document_generation_code(configuration_script, configuration_name)

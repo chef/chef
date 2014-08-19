@@ -31,13 +31,23 @@ describe Chef::Resource::DscScript do
   let(:configuration_code) {'echo "This is supposed to create a configuration document."'}
   let(:configuration_path) {'c:/myconfigs/formatc.ps1'}
   let(:configuration_name) { 'formatme' }
+  let(:configuration_data) { '@{AllNodes = @( @{ NodeName = "localhost"; PSDscAllowPlainTextPassword = $true })}' }
+  let(:configuration_data_script) { 'c:/myconfigs/data/safedata.psd1' }
 
-  it "allows the configuration attribute to be set" do
+  it "has a default action of `:run`" do
+    expect(dsc_test_resource.action).to eq(:run)
+  end
+
+  it "has an allowed_actions attribute with only the `:run` and `:nothing` attributes" do
+    expect(dsc_test_resource.allowed_actions.to_set).to eq([:run,:nothing].to_set)
+  end
+
+  it "allows the code attribute to be set" do
     dsc_test_resource.code(configuration_code)
     expect(dsc_test_resource.code).to eq(configuration_code)
   end
 
-  it "allows the path attribute to be set" do
+  it "allows the command attribute to be set" do
     dsc_test_resource.command(configuration_path)
     expect(dsc_test_resource.command).to eq(configuration_path)
   end
@@ -47,23 +57,38 @@ describe Chef::Resource::DscScript do
     expect(dsc_test_resource.configuration_name).to eq(configuration_name)
   end
 
-  it "raises an ArgumentError exception if an attempt is made to set the configuration attribute when the path attribute is already set" do
+  it "allows the configuration_data attribute to be set" do
+    dsc_test_resource.configuration_data(configuration_data)
+    expect(dsc_test_resource.configuration_data).to eq(configuration_data)
+  end
+
+  it "allows the configuration_data_script attribute to be set" do
+    dsc_test_resource.configuration_data_script(configuration_data_script)
+    expect(dsc_test_resource.configuration_data_script).to eq(configuration_data_script)
+  end
+
+  it "raises an ArgumentError exception if an attempt is made to set the code attribute when the command attribute is already set" do
     dsc_test_resource.command(configuration_path)
     expect { dsc_test_resource.code(configuration_code) }.to raise_error(ArgumentError)
   end
 
-  it "raises an ArgumentError exception if an attempt is made to set the path attribute when the configuration attribute is already set" do
+  it "raises an ArgumentError exception if an attempt is made to set the command attribute when the code attribute is already set" do
     dsc_test_resource.code(configuration_code)
     expect { dsc_test_resource.command(configuration_path) }.to raise_error(ArgumentError)
   end
 
-  it "raises an ArgumentError exception if an attempt is made to set the configuration_name attribute when the configuration attribute is already set" do
+  it "raises an ArgumentError exception if an attempt is made to set the configuration_name attribute when the code attribute is already set" do
     dsc_test_resource.code(configuration_code)
     expect { dsc_test_resource.configuration_name(configuration_name) }.to raise_error(ArgumentError)
   end
 
-  it "raises an ArgumentError exception if an attempt is made to set the configuration attribute when the configuration_name attribute is already set" do
-    dsc_test_resource.configuration_name(configuration_name)
-    expect { dsc_test_resource.code(configuration_code) }.to raise_error(ArgumentError)
+  it "raises an ArgumentError exception if an attempt is made to set the configuration_data attribute when the configuration_data_script attribute is already set" do
+    dsc_test_resource.configuration_data_script(configuration_data_script)
+    expect { dsc_test_resource.configuration_data(configuration_data) }.to raise_error(ArgumentError)
+  end
+
+  it "raises an ArgumentError exception if an attempt is made to set the configuration_data_script attribute when the configuration_data attribute is already set" do
+    dsc_test_resource.configuration_data(configuration_data)
+    expect { dsc_test_resource.configuration_data_script(configuration_data_script) }.to raise_error(ArgumentError)
   end
 end
