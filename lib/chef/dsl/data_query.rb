@@ -87,39 +87,15 @@ class Chef
         return false unless data.is_a?(Hash) && data.has_key?("version")
         case data["version"]
         when 1
-          version_1_encryptor_keys == data.keys.sort
+          Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor.encryptor_keys.sort == data.keys.sort
         when 2
-          version_2_encryptor_keys == data.keys.sort
+          Chef::EncryptedDataBagItem::Encryptor::Version2Encryptor.encryptor_keys.sort == data.keys.sort
         when 3
-          version_3_encryptor_keys == data.keys.sort
+          Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor.encryptor_keys.sort == data.keys.sort
         else
           false # version means something else... assume not encrypted.
         end
       end
-
-      ###
-      # The below methods return arrays of keys that are assigned to encrypted
-      # data hashes when a data bag item gets encrypted.
-      ###
-
-      # Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor#for_encrypted_item
-      # Keys added to the encrypted data hash.
-      def version_1_encryptor_keys
-        %w(encrypted_data iv cipher version).sort
-      end
-
-      # Chef::EncryptedDataBagItem::Encryptor::Version2Encryptor#for_encrypted_item
-      # Keys added to the encrypted data hash.
-      def version_2_encryptor_keys
-        %w(encrypted_data hmac iv cipher version).sort
-      end
-
-      # Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor#for_encrypted_item
-      # Keys added to the encrypted data hash.
-      def version_3_encryptor_keys
-        %w(encrypted_data auth_tag iv cipher version).sort
-      end
-
     end
   end
 end

@@ -103,7 +103,7 @@ describe Chef::DSL::DataQuery do
 
       shared_examples_for "encryption detected" do
         let(:encoded_data) do
-          Chef::Config[:data_bag_encrypt_version] = version_number
+          Chef::Config[:data_bag_encrypt_version] = version
           Chef::EncryptedDataBagItem.encrypt_data_bag_item(raw_data, default_secret)
         end
 
@@ -112,7 +112,7 @@ describe Chef::DSL::DataQuery do
         end
 
         it "detects encrypted data bag" do
-          expect( language ).to receive(encryptor_keys).at_least(:once).and_call_original
+          expect( encryptor ).to receive(:encryptor_keys).at_least(:once).and_call_original
           expect( Chef::Log ).to receive(:debug).with(/Data bag item looks encrypted/)
           language.data_bag_item(bag_name, item_name)
         end
@@ -120,22 +120,22 @@ describe Chef::DSL::DataQuery do
 
       context "when encryption version is 1" do
         include_examples "encryption detected" do
-          let(:version_number) { 1 }
-          let(:encryptor_keys) { :version_1_encryptor_keys }
+          let(:version) { 1 }
+          let(:encryptor) { Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor }
         end
       end
 
       context "when encryption version is 2" do
         include_examples "encryption detected" do
-          let(:version_number) { 2 }
-          let(:encryptor_keys) { :version_2_encryptor_keys }
+          let(:version) { 2 }
+          let(:encryptor) { Chef::EncryptedDataBagItem::Encryptor::Version2Encryptor }
         end
       end
 
       context "when encryption version is 3" do
-        include_examples "encryption detected", "v3" do
-          let(:version_number) { 3 }
-          let(:encryptor_keys) { :version_3_encryptor_keys }
+        include_examples "encryption detected" do
+          let(:version) { 3 }
+          let(:encryptor) { Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor }
         end
       end
 
