@@ -25,16 +25,16 @@ class Chef
       def initialize(name, run_context=nil)
         super
         @allowed_actions.push(:run)
-        @action = 'run'
+        @action = :run
         provider(Chef::Provider::DscScript)
       end
 
       def code(arg=nil)
         if arg && command
-          raise ArgumentError, "Only one of 'code' and 'command' properties may be specified"
+          raise ArgumentError, "Only one of 'code' and 'command' attributes may be specified"
         end
         if arg && configuration_name
-          raise ArgumentError, "Attribute `code` may not be set if `configuration_name` is set"
+          raise ArgumentError, "The 'code' and 'command' attributes may not be used together"
         end
         set_or_return(
           :code,
@@ -56,10 +56,32 @@ class Chef
 
       def command(arg=nil)
         if arg && code
-          raise ArgumentError, "Only one of 'code' and 'command' properties may be specified"
+          raise ArgumentError, "The 'code' and 'command' attributes may not be used together"
         end
         set_or_return(
           :command,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def configuration_data(arg=nil)
+        if arg && configuration_data_script
+          raise ArgumentError, "The 'configuration_data' and 'configuration_data_script' attributes may not be used together"
+        end
+        set_or_return(
+          :configuration_data,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def configuration_data_script(arg=nil)
+        if arg && configuration_data
+          raise ArgumentError, "The 'configuration_data' and 'configuration_data_script' attributes may not be used together"
+        end
+        set_or_return(
+          :configuration_data_script,
           arg,
           :kind_of => [ String ]
         )
