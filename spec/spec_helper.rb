@@ -19,6 +19,7 @@ RSpec.configure do |config|
   # Add jruby filters here
   config.filter_run_excluding :windows_only => true unless windows?
   config.filter_run_excluding :unix_only => true unless unix?
+  config.filter_run_excluding :requires_root => true unless root?
 
   config.run_all_when_everything_filtered = true
   config.treat_symbols_as_metadata_keys_with_true_values = true

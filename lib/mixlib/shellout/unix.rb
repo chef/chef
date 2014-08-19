@@ -121,8 +121,8 @@ module Mixlib
 
       def set_user
         if user
-          Process.euid = uid
           Process.uid = uid
+          Process.euid = uid
         end
       end
 

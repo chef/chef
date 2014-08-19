@@ -24,3 +24,8 @@ else
   LINE_ENDING = "\n"
   ECHO_LC_ALL = "echo $LC_ALL"
 end
+
+def root?
+  return false if windows?
+  Process.euid == 0
+end

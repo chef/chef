@@ -1319,4 +1319,25 @@ describe Mixlib::ShellOut do
       end
     end
   end
+
+  context "when running under *nix", :requires_root, :unix_only do
+    let(:cmd) { 'whoami' }
+    let(:running_user) { shell_cmd.run_command.stdout.chomp }
+
+    context "when no user is set" do
+      it "should run as current user" do
+        running_user.should eql(ENV["USER"])
+      end
+    end
+
+    context "when user is specified" do
+      let(:user) { 'nobody' }
+
+      let(:options) { { :user => user } }
+
+      it "should run as specified user" do
+        running_user.should eql("#{user}")
+      end
+    end
+  end
 end
