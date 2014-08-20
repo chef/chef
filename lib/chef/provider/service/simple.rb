@@ -25,6 +25,8 @@ class Chef
     class Service
       class Simple < Chef::Provider::Service
 
+        attr_reader :status_load_success
+
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)

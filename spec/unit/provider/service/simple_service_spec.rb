@@ -104,8 +104,6 @@ NOMOCKINGSTRINGSPLZ
     @provider.load_current_resource.should eql(@current_resource)
   end
 
-
-
   describe "when starting the service" do
     it "should call the start command if one is specified" do
       @new_resource.stub(:start_command).and_return("#{@new_resource.start_command}")
