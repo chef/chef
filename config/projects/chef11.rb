@@ -34,9 +34,10 @@ install_dir    "/opt/chef"
 resources_path File.join(files_path, "chef")
 mac_pkg_identifier "com.getchef.pkg.chef"
 
-override :bundler,  version: "1.7.0"
-override :ruby,     version: "2.1.2"
-override :rubygems, version: "2.2.1"
+override :chef,     version: "11-stable"
+override :bundler,  version: "1.5.2"
+override :ruby,     version: "1.9.3-p547"
+override :rubygems, version: "1.8.29"
 
 dependency "preparation"
 dependency "chef"
