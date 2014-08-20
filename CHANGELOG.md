@@ -2,6 +2,8 @@
 
 ## Unreleased: 12.0.0
 
+* knife cookbook site download/list/search/share/show/unshare now uses
+  supermerket.getchef.com urls
 * chef/json_compat now throws its own exceptions not JSON gem exceptions
 * Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
 * Fix a bug in the experimental Policyfile mode that caused errors when
