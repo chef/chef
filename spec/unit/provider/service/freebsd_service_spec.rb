@@ -531,6 +531,13 @@ EOF
       provider.enable_service()
     end
 
+    it "should not partial match an already enabled service" do
+      allow(current_resource).to receive(:enabled).and_return(false)
+      expect(provider).to receive(:read_rc_conf).and_return([ "foo", "thing_#{new_resource.service_name}_enable=\"NO\"", "bar" ])
+      expect(provider).to receive(:write_rc_conf).with(["foo", "thing_#{new_resource.service_name}_enable=\"NO\"", "bar", "#{new_resource.service_name}_enable=\"YES\""])
+      provider.enable_service()
+    end
+
     it "should enable the service if it is not enabled and not already specified in the rc.conf file" do
       allow(current_resource).to receive(:enabled).and_return(false)
       expect(provider).to receive(:read_rc_conf).and_return([ "foo", "bar" ])
@@ -551,10 +558,17 @@ EOF
       allow(provider).to receive(:service_enable_variable_name).and_return("#{new_resource.service_name}_enable")
     end
 
-    it "should should disable the service if it is not disabled" do
+    it "should disable the service if it is not disabled" do
       allow(current_resource).to receive(:enabled).and_return(true)
       expect(provider).to receive(:read_rc_conf).and_return([ "foo", "#{new_resource.service_name}_enable=\"YES\"", "bar" ])
       expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"NO\""])
+      provider.disable_service()
+    end
+
+    it "should not disable an enabled service that partially matches" do
+      allow(current_resource).to receive(:enabled).and_return(true)
+      expect(provider).to receive(:read_rc_conf).and_return([ "foo", "thing_#{new_resource.service_name}_enable=\"YES\"", "bar" ])
+      expect(provider).to receive(:write_rc_conf).with(["foo", "thing_#{new_resource.service_name}_enable=\"YES\"", "bar", "#{new_resource.service_name}_enable=\"NO\""])
       provider.disable_service()
     end
 
