@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@getchef.com>)
-# Copyright:: Copyright (c) 2014 Opscode, Inc.
+# Copyright:: Copyright (c) 2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@
 require 'spec_helper'
 require 'chef/mixin/windows_architecture_helper'
 
-describe Chef::Resource::DscConfiguration, :windows_2008r2_or_later do
+describe Chef::Resource::DscScript, :windows_2008r2_or_later do
   include Chef::Mixin::WindowsArchitectureHelper
   before(:all) do
     @temp_dir = ::Dir.mktmpdir("dsc-functional-test")
@@ -52,9 +52,9 @@ describe Chef::Resource::DscConfiguration, :windows_2008r2_or_later do
   }
   let(:dsc_test_resource_name) { 'DSCTest' }
   let(:dsc_test_resource_base) {
-    Chef::Resource::DscConfiguration.new(dsc_test_resource_name, dsc_test_run_context) 
+    Chef::Resource::DscScript.new(dsc_test_resource_name, dsc_test_run_context) 
   }
-  let(:test_registry_key) { 'HKEY_LOCAL_MACHINE\Software\Chef\Spec\Functional\Resource\dsc_configuration_spec' }
+  let(:test_registry_key) { 'HKEY_LOCAL_MACHINE\Software\Chef\Spec\Functional\Resource\dsc_script_spec' }
   let(:test_registry_value) { 'Registration' }
   let(:test_registry_data1) { 'LL927' }
   let(:test_registry_data2) { 'LL928' }
@@ -92,11 +92,11 @@ EOH
     test_key_resource.run_action(:delete_key)
   end
 
-  shared_examples_for 'a dsc_configuration resource with specified PowerShell configuration code' do
+  shared_examples_for 'a dsc_script resource with specified PowerShell configuration code' do
     let(:test_registry_data) { test_registry_data1 }
     it 'should create a registry key with a specific registry value and data' do
       expect(dsc_test_resource.registry_key_exists?(test_registry_key)).to eq(false)
-      dsc_test_resource.run_action(:set)
+      dsc_test_resource.run_action(:run)
       expect(dsc_test_resource.registry_key_exists?(test_registry_key)).to eq(true)
       expect(dsc_test_resource.registry_value_exists?(test_registry_key, {:name => test_registry_value, :type => :string, :data => test_registry_data})).to eq(true)
     end
@@ -104,12 +104,12 @@ EOH
 
   context 'when supplying configuration through the configuration attribute' do
     let(:dsc_test_resource) { dsc_resource_from_code }
-    it_behaves_like 'a dsc_configuration resource with specified PowerShell configuration code'
+    it_behaves_like 'a dsc_script resource with specified PowerShell configuration code'
   end
   
   context 'when supplying configuration using the path attribute' do
     let(:dsc_test_resource) { dsc_resource_from_path }
-    it_behaves_like 'a dsc_configuration resource with specified PowerShell configuration code'
+    it_behaves_like 'a dsc_script resource with specified PowerShell configuration code'
   end
 
 end

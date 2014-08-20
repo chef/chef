@@ -17,10 +17,12 @@
 #
 
 require 'chef/util/powershell/cmdlet'
+require 'chef/util/dsc/lcm_output_parser'
 
 class Chef::Util::DSC
-  class DscLocalConfigManager
-    def initialize(configuration_path)
+  class LocalConfigurationManager
+    def initialize(node, configuration_path)
+      @node = node
       @configuration_path = configuration_path
       clear_execution_time
     end
@@ -52,7 +54,7 @@ class Chef::Util::DSC
 
       begin
         save_configuration_document(configuration_document)
-        cmdlet = ::Chef::Util::Powershell::Cmdlet.new("#{command_code}")
+        cmdlet = ::Chef::Util::Powershell::Cmdlet.new(@node, "#{command_code}")
         status = cmdlet.run
       ensure
         end_operation_timing
@@ -67,7 +69,8 @@ class Chef::Util::DSC
 
     def configuration_update_required?(what_if_output)
       Chef::Log.debug("DSC: DSC returned the following '-whatif' output from test operation:\n#{what_if_output}")
-      parse_what_if_output(what_if_output)
+      #parse_what_if_output(what_if_output)
+      Parser::parse(what_if_output)
     end
 
     def save_configuration_document(configuration_document)
@@ -83,28 +86,6 @@ class Chef::Util::DSC
 
     def configuration_document_path
       File.join(@configuration_path,'..mof')
-    end
-
-    def parse_what_if_output(what_if_output)
-
-      # What-if output for start-dscconfiguration contains lines that look like one of the following:
-      #
-      # What if: [SEA-ADAMED1]: LCM:  [ Start  Set      ]  [[Group]chef_dsc]
-      # What if: [SEA-ADAMED1]:                            [[Group]chef_dsc] Performing the operation "Add" on target "Group: demo1"
-      # 
-      # The second line lacking the 'LCM:' is what happens if there is a change required to make the system consistent with the resource.
-      # Such a line without LCM is only present if an update to the system is required. Therefore, we test each line below
-      # to see if it is missing the LCM, and declare that an update is needed if so.
-      has_change_line = false
-      
-      what_if_output.lines.each do |line|
-        if (line =~ /.+\:\s+\[\S*\]\:\s+LCM\:/).nil?
-          has_change_line = true
-          break
-        end
-      end
-      
-      has_change_line
     end
 
     def clear_execution_time

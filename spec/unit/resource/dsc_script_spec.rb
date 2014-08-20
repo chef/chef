@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@getchef.com>)
-# Copyright:: Copyright (c) 2014 Opscode, Inc.
+# Copyright:: Copyright (c) 2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::DscConfiguration do
+describe Chef::Resource::DscScript do
   let(:dsc_test_run_context) {
     node = Chef::Node.new
     empty_events = Chef::EventDispatch::Dispatcher.new
@@ -26,7 +26,7 @@ describe Chef::Resource::DscConfiguration do
   }
   let(:dsc_test_resource_name) { 'DSCTest' }
   let(:dsc_test_resource) {
-    Chef::Resource::DscConfiguration.new(dsc_test_resource_name, dsc_test_run_context) 
+    Chef::Resource::DscScript.new(dsc_test_resource_name, dsc_test_run_context) 
   }
   let(:configuration_code) {'echo "This is supposed to create a configuration document."'}
   let(:configuration_path) {'c:/myconfigs/formatc.ps1'}
