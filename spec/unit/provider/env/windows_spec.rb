@@ -52,6 +52,23 @@ describe Chef::Provider::Env::Windows, :windows_only do
       @provider.action_modify
       expect(ENV['CHEF_WINDOWS_ENV_TEST']).to eql('foobar')
     end
+
+    describe "for PATH" do
+      before do
+        stub_const('ENV', {'SystemRoot' => 'D:\\Windows', 'Path' => 'D:\\Path'})
+        @new_resource = Chef::Resource::Env.new('Path')
+        @new_resource.value("%SystemRoot%")
+
+        @provider = Chef::Provider::Env::Windows.new(@new_resource, @run_context)
+        @provider.stub(:env_obj).and_return(double('null object').as_null_object)
+      end
+
+      it "replaces Windows system variables" do
+        @provider.should_receive(:compare_value).and_return(true)
+        @provider.action_modify
+        expect(ENV['Path']).to eql('D:\\Windows')
+      end
+    end
   end
 
   describe "action_delete" do
