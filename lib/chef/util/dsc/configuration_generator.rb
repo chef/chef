@@ -99,7 +99,7 @@ class Chef::Util::DSC
     def find_configuration_document(configuration_name)
       document_directory = configuration_document_directory(configuration_name)
       document_file_name = ::Dir.entries(document_directory).find { | path | path =~ /.*.mof/ }
-      ::File.join(document_directory, document_file_name)
+      ::File.join(document_directory, document_file_name) if document_file_name
     end
 
     def configuration_document_directory(configuration_name)
