@@ -18,12 +18,14 @@
 # limitations under the License.
 #
 
+require 'chef/exceptions'
 require 'chef/mash'
 require 'chef/mixin/from_file'
 require 'chef/mixin/params_validate'
 require 'chef/log'
 require 'chef/version_class'
 require 'chef/version_constraint'
+require 'chef/json_compat'
 
 class Chef
   class Cookbook
@@ -66,18 +68,17 @@ class Chef
       include Chef::Mixin::ParamsValidate
       include Chef::Mixin::FromFile
 
-      attr_reader   :cookbook,
-                    :platforms,
-                    :dependencies,
-                    :recommendations,
-                    :suggestions,
-                    :conflicting,
-                    :providing,
-                    :replacing,
-                    :attributes,
-                    :groupings,
-                    :recipes,
-                    :version
+      attr_reader :platforms
+      attr_reader :dependencies
+      attr_reader :recommendations
+      attr_reader :suggestions
+      attr_reader :conflicting
+      attr_reader :providing
+      attr_reader :replacing
+      attr_reader :attributes
+      attr_reader :groupings
+      attr_reader :recipes
+      attr_reader :version
 
       # Builds a new Chef::Cookbook::Metadata object.
       #
@@ -89,14 +90,16 @@ class Chef
       #
       # === Returns
       # metadata<Chef::Cookbook::Metadata>
-      def initialize(cookbook=nil, maintainer='YOUR_COMPANY_NAME', maintainer_email='YOUR_EMAIL', license='none')
-        @cookbook = cookbook
-        @name = cookbook ? cookbook.name : ""
-        @long_description = ""
-        self.maintainer(maintainer)
-        self.maintainer_email(maintainer_email)
-        self.license(license)
-        self.description('A fabulous new cookbook')
+      def initialize
+        @name =  nil
+
+        @description = ''
+        @long_description = ''
+        @license = 'All rights reserved'
+
+        @maintainer = nil
+        @maintainer_email = nil
+
         @platforms = Mash.new
         @dependencies = Mash.new
         @recommendations = Mash.new
@@ -107,21 +110,41 @@ class Chef
         @attributes = Mash.new
         @groupings = Mash.new
         @recipes = Mash.new
-        @version = Version.new "0.0.0"
-        if cookbook
-          @recipes = cookbook.fully_qualified_recipe_names.inject({}) do |r, e|
-            e = self.name.to_s if e =~ /::default$/
-            r[e] ||= ""
-            self.provides e
-            r
-          end
-        end
+        @version = Version.new("0.0.0")
+
+        @errors = []
       end
 
       def ==(other)
         COMPARISON_FIELDS.inject(true) do |equal_so_far, field|
           equal_so_far && other.respond_to?(field) && (other.send(field) == send(field))
         end
+      end
+
+      # Whether this metadata is valid. In order to be valid, all required
+      # fields must be set. Chef's validation implementation checks the content
+      # of a given field when setting (and raises an error if the content does
+      # not meet the criteria), so the content of the fields is not considered
+      # when checking validity.
+      #
+      # === Returns
+      # valid<Boolean>:: Whether this metadata object is valid
+      def valid?
+        run_validation
+        @errors.empty?
+      end
+
+      # A list of validation errors for this metadata object. See #valid? for
+      # comments about the validation criteria.
+      #
+      # If there are any validation errors, one or more error strings will be
+      # returned. Otherwise an empty array is returned.
+      #
+      # === Returns
+      # error messages<Array>:: Whether this metadata object is valid
+      def errors
+        run_validation
+        @errors
       end
 
       # Sets the cookbooks maintainer, or returns it.
@@ -242,8 +265,8 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def supports(platform, *version_args)
         version = new_args_format(:supports, platform, version_args)
-        normalized_version = normalize_version_constraint(:supports, platform, version)
-        @platforms[platform] = normalized_version
+        constraint = validate_version_constraint(:supports, platform, version)
+        @platforms[platform] = constraint.to_s
         @platforms[platform]
       end
 
@@ -259,8 +282,8 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def depends(cookbook, *version_args)
         version = new_args_format(:depends, cookbook, version_args)
-        normalized_version = normalize_version_constraint(:depends, cookbook, version)
-        @dependencies[cookbook] = normalized_version
+        constraint = validate_version_constraint(:depends, cookbook, version)
+        @dependencies[cookbook] = constraint.to_s
         @dependencies[cookbook]
       end
 
@@ -276,8 +299,8 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def recommends(cookbook, *version_args)
         version = new_args_format(:recommends, cookbook,  version_args)
-        normalized_version = normalize_version_constraint(:recommends, cookbook, version)
-        @recommendations[cookbook] = normalized_version
+        constraint = validate_version_constraint(:recommends, cookbook, version)
+        @recommendations[cookbook] = constraint.to_s
         @recommendations[cookbook]
       end
 
@@ -293,8 +316,8 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def suggests(cookbook, *version_args)
         version = new_args_format(:suggests, cookbook, version_args)
-        normalized_version = normalize_version_constraint(:suggests, cookbook, version)
-        @suggestions[cookbook] = normalized_version
+        constraint = validate_version_constraint(:suggests, cookbook, version)
+        @suggestions[cookbook] = constraint.to_s
         @suggestions[cookbook]
       end
 
@@ -310,8 +333,8 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def conflicts(cookbook, *version_args)
         version = new_args_format(:conflicts, cookbook, version_args)
-        normalized_version = normalize_version_constraint(:conflicts, cookbook, version)
-        @conflicting[cookbook] = normalized_version
+        constraint = validate_version_constraint(:conflicts, cookbook, version)
+        @conflicting[cookbook] = constraint.to_s
         @conflicting[cookbook]
       end
 
@@ -331,8 +354,8 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def provides(cookbook, *version_args)
         version = new_args_format(:provides, cookbook, version_args)
-        normalized_version = normalize_version_constraint(:provides, cookbook, version)
-        @providing[cookbook] = normalized_version
+        constraint = validate_version_constraint(:provides, cookbook, version)
+        @providing[cookbook] = constraint.to_s
         @providing[cookbook]
       end
 
@@ -347,8 +370,8 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def replaces(cookbook, *version_args)
         version = new_args_format(:replaces, cookbook, version_args)
-        normalized_version = normalize_version_constraint(:replaces, cookbook, version)
-        @replacing[cookbook] = normalized_version
+        constraint = validate_version_constraint(:replaces, cookbook, version)
+        @replacing[cookbook] = constraint.to_s
         @replacing[cookbook]
       end
 
@@ -362,6 +385,32 @@ class Chef
       # description<String>:: Returns the current description
       def recipe(name, description)
         @recipes[name] = description
+      end
+
+      # Sets the cookbook's recipes to the list of recipes in the given
+      # +cookbook+. Any recipe that already has a description (if set by the
+      # #recipe method) will not be updated.
+      #
+      # === Parameters
+      # cookbook<CookbookVersion>:: CookbookVersion object representing the cookbook
+      # description<String>:: The description of the recipe
+      #
+      # === Returns
+      # recipe_unqualified_names<Array>:: An array of the recipe names given by the cookbook
+      def recipes_from_cookbook_version(cookbook)
+        cookbook.fully_qualified_recipe_names.map do |recipe_name|
+          unqualified_name =
+            if recipe_name =~ /::default$/
+              self.name.to_s
+            else
+              recipe_name
+            end
+
+          @recipes[unqualified_name] ||= ""
+          provides(unqualified_name)
+
+          unqualified_name
+        end
       end
 
       # Adds an attribute )hat a user needs to configure for this cookbook. Takes
@@ -441,7 +490,7 @@ class Chef
       end
 
       def to_json(*a)
-        self.to_hash.to_json(*a)
+        Chef::JSONCompat.to_json(to_hash, *a)
       end
 
       def self.from_hash(o)
@@ -479,9 +528,9 @@ class Chef
       def self.validate_json(json_str)
         o = Chef::JSONCompat.from_json(json_str)
         metadata = new()
-        VERSION_CONSTRAINTS.each do |method_name, hash_key|
-          if constraints = o[hash_key]
-           constraints.each do |cb_name, constraints|
+        VERSION_CONSTRAINTS.each do |dependency_type, hash_key|
+          if dependency_group = o[hash_key]
+           dependency_group.each do |cb_name, constraints|
              metadata.send(method_name, cb_name, *Array(constraints))
            end
           end
@@ -495,6 +544,12 @@ class Chef
       end
 
     private
+
+      def run_validation
+        if name.nil?
+          @errors = ["The `name' attribute is required in cookbook metadata"]
+        end
+      end
 
       def new_args_format(caller_name, dep_name, version_constraints)
         if version_constraints.empty?
@@ -531,11 +586,6 @@ Called from:
 #{caller[0...5].map {|line| "  " + line}.join("\n")}
 INVALID
         raise Exceptions::InvalidVersionConstraint, msg
-      end
-
-      def normalize_version_constraint(caller_name, dep_name, constraint_str)
-        version_constraint = validate_version_constraint(caller_name, dep_name, constraint_str)
-        "#{version_constraint.op} #{version_constraint.raw_version}"
       end
 
       # Verify that the given array is an array of strings
@@ -655,7 +705,6 @@ INVALID
         from_hash(params)
       end
     end
-
 
   end
 end

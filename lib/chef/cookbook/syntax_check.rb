@@ -125,7 +125,7 @@ class Chef
       end
 
       def template_files
-        remove_ignored_files Dir[File.join(cookbook_path, '**', '*.erb')]
+        remove_ignored_files Dir[File.join(cookbook_path, '**/templates/**', '*.erb')]
       end
 
       def untested_template_files

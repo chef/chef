@@ -432,7 +432,8 @@ class Chef
     # format. Version "2" is available which adds encrypt-then-mac protection.
     # To maintain compatibility, versions other than 1 must be opt-in.
     #
-    # Set this to `2` if you have chef-client 11.6.0+ in your infrastructure:
+    # Set this to `2` if you have chef-client 11.6.0+ in your infrastructure.
+    # Set this to `3` if you have chef-client 11.?.0+, ruby 2 and OpenSSL >= 1.0.1 in your infrastructure. (TODO)
     default :data_bag_encrypt_version, 1
 
     # When reading data bag items, any supported version is accepted. However,
@@ -455,15 +456,15 @@ class Chef
     default :validation_client_name, "chef-validator"
 
     # When creating a new client via the validation_client account, Chef 11
-    # servers allow the client to generate a key pair locally and sent the
+    # servers allow the client to generate a key pair locally and send the
     # public key to the server. This is more secure and helps offload work from
     # the server, enhancing scalability. If enabled and the remote server
     # implements only the Chef 10 API, client registration will not work
     # properly.
     #
-    # The default value is `false` (Server generates client keys). Set to
-    # `true` to enable client-side key generation.
-    default(:local_key_generation) { false }
+    # The default value is `true`. Set to `false` to disable client-side key
+    # generation (server generates client keys).
+    default(:local_key_generation) { true }
 
     # Zypper package provider gpg checks. Set to true to enable package
     # gpg signature checking. This will be default in the

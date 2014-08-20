@@ -33,6 +33,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     @new_resource.password "abracadabra"
     @new_resource.system false
     @new_resource.manage_home false
+    @new_resource.force false
     @new_resource.non_unique false
     @current_resource = Chef::Resource::User.new("adam", @run_context)
     @current_resource.comment "Adam Jacob"
@@ -43,6 +44,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     @current_resource.password "abracadabra"
     @current_resource.system false
     @current_resource.manage_home false
+    @current_resource.force false
     @current_resource.non_unique false
     @current_resource.supports({:manage_home => false, :non_unique => false})
   end
@@ -70,6 +72,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not nil, without homedir management (using real attributes)" do
         @new_resource.stub(:manage_home).and_return(false)
+        @new_resource.stub(:non_unique).and_return(false)
         @new_resource.stub(:non_unique).and_return(false)
         @new_resource.stub(attribute).and_return("hola")
         provider.universal_options.should eql([option, 'hola'])
@@ -255,6 +258,12 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       provider.should_receive(:shell_out!).with("userdel", @new_resource.username).and_return(true)
       provider.remove_user
     end
+
+    it "should run userdel with the new resources user name and -f if force is true" do
+      @new_resource.force(true)
+      provider.should_receive(:shell_out!).with("userdel", "-f", @new_resource.username).and_return(true)
+      provider.remove_user
+    end
   end
 
   describe "when checking the lock" do
@@ -344,7 +353,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
           and_return(passwd_status)
         Chef::Config[:why_run] = true
       end
-  
+
       it "should return false if the user does not exist" do
         provider.check_lock.should eql(false)
       end

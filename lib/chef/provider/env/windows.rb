@@ -51,17 +51,13 @@ class Chef
           return obj ? obj.variablevalue : nil
         end
 
-        def find_env(environment_variables, key_name)
-          environment_variables.find do | environment_variable |
-            environment_variable['name'].downcase == key_name
-          end
-        end
-
         def env_obj(key_name)
           wmi = WmiLite::Wmi.new
-          environment_variables = wmi.instances_of('Win32_Environment')
-          existing_variable = find_env(environment_variables, key_name)
-          existing_variable.nil? ? nil : existing_variable.wmi_ole_object
+          # Note that by design this query is case insensitive with regard to key_name
+          environment_variables = wmi.query("select * from Win32_Environment where name = '#{key_name}'")
+          if environment_variables && environment_variables.length > 0
+            environment_variables[0].wmi_ole_object
+          end
         end
 
         #see: http://msdn.microsoft.com/en-us/library/ms682653%28VS.85%29.aspx

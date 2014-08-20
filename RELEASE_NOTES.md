@@ -1,8 +1,67 @@
-# Chef Client Release Notes:
+# Chef Client Release Notes 12.0.0:
+
+## DSCL user provider now supports Mac OS X 10.7 and above.
+
+DSCL user provider in Chef has supported setting passwords only on Mac OS X 10.6. In this release, Mac OS X versions 10.7 and above are now supported. Support for Mac OS X 10.6 is dropped from the dscl provider since this version is EOLed by Apple.
+
+In order to support configuring passwords for the users using shadow hashes two new attributes `salt` & `iterations` are added to the user resource. These attributes are required to make the new [SALTED-SHA512-PBKDF2](http://en.wikipedia.org/wiki/PBKDF2) style shadow hashes used in Mac OS X versions 10.8 and above.
+
+User resource on Mac supports setting password both using plain-text password or using the shadow hash. You can simply set the `password` attribute to the plain text password to configure the password for the user. However this is not ideal since including plain text passwords in cookbooks (even if they are private) is not a good idea. In order to set passwords using shadow hash you can follow the instructions below based on your Mac OS X version.
+
+### Mac OS X 10.7
+
+10.7 calculates the password hash using **SALTED-SHA512**. Stored shadow hash length is 68 bytes; first 4 bytes being salt and the next 64 bytes being the shadow hash itself. You can use below code in order to calculate password hashes to be used in `password` attribute on Mac OS X 10.7:
+
+```
+password = "my_awesome_password"
+salt = OpenSSL::Random.random_bytes(4)
+encoded_password = OpenSSL::Digest::SHA512.hexdigest(salt + password)
+shadow_hash = salt.unpack('H*').first + encoded_password
+
+# You can use this value in your recipes as below:
+
+user "my_awesome_user" do
+  password "c9b3bd....d843"  # Length: 136
+end
+```
+### Mac OS X 10.8 and above
+
+10.7 calculates the password hash using **SALTED-SHA512-PBKDF2**. Stored shadow hash length is 128 bytes. In addition to the shadow hash value, `salt` (32 bytes) and `iterations` (integer) is stored on the system. You can use below code in order to calculate password hashes on Mac OS X 10.8 and above:
+
+```
+password = "my_awesome_password"
+salt = OpenSSL::Random.random_bytes(32)
+iterations = 25000 # Any value above 20k should be fine.
+
+shadow_hash = OpenSSL::PKCS5::pbkdf2_hmac(
+  password,
+  salt,
+  iterations,
+  128,
+  OpenSSL::Digest::SHA512.new
+).unpack('H*').first
+salt_value = salt.unpack('H*').first
+
+# You can use this value in your recipes as below:
+
+user "my_awesome_user" do
+  password "cbd1a....fc843"  # Length: 256
+  salt "bd1a....fc83"        # Length: 64
+  iterations 25000
+end
+```
+
+## `name` Attribute is Required in Metadata
+
+Previously, the `name` attribute in metadata had no effect on the name
+of an uploaded cookbook, instead the name was always inferred from the
+directory basename of the cookbook. The `name` attribute is now
+respected when determining the name of a cookbook. Furthermore, the
+`name` attribute is required when loading/uploading cookbooks.
 
 ## http_request resource no longer appends query string
 
-Previously the http_request GET and HEAD requests appended a hard-coded "?message=resource_name" 
+Previously the http_request GET and HEAD requests appended a hard-coded "?message=resource_name"
 query parameter that could not be overridden.  That feature has been dropped.  Cookbooks that
 actually relied on that should manually add the message query string to the URL they pass to
 the resource.
@@ -82,3 +141,36 @@ it has been removed. See: https://github.com/opscode/chef/commit/12c9bed3a5a7ab8
 `Chef::Cookbook::FileVendor` was previously configured by passing a
 block to the `on_create` method; it is now configured by calling either
 `fetch_from_remote` or `fetch_from_disk`. See: https://github.com/opscode/chef/commit/3b2b4de8e7f0d55524f2a0ccaf3e1aa9f2d371eb
+
+## 'group' provider on OSX properly uses 'dscl' to determine existing groups
+
+On OSX, the 'group' provider would use 'etc' to determine existing groups,
+but 'dscl' to add groups, causing broken idempotency if something existed
+in /etc/group. The provider now uses 'dscl' for both idempotenty checks and
+modifications.
+
+## Windows Service Startup Type
+
+When a Windows service is running and Chef stops it, the startup type will change from automatic to manual. A bug previously existed
+that prevented you from changing the startup type to disabled from manual. Using the enable and disable actions will now correctly set
+the service startup type to automatic and disabled, respectively. A new `windows_service` resource has been added that allows you to
+specify the startup type as manual:
+
+```
+windows_service "BITS" do
+  action :configure_startup
+  startup_type :manual
+end
+```
+
+You must use the windows_service resource to utilize the `:configure_startup` action and `startup_type` attribute. The service resource
+does not support them.
+
+## Client-side key generation enabled by default
+When creating a new client via the validation_client account, Chef 11 servers allow the client to generate a key pair locally
+and send the public key to the server, enhancing scalability. This was disabled by default, since client registration would not
+work properly if the remote server implemented only the Chef 10 API.
+
+## CookbookSiteStreamingUploader now uses ssl_verify_mode config option
+The CookbookSiteStreamingUploader now obeys the setting of ssl_verify_mode in the client config. Was previously ignoring the
+config setting and always set to VERIFY_NONE.

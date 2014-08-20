@@ -23,17 +23,22 @@ require 'chef/knife/raw'
 require 'chef/knife/cookbook_upload'
 
 describe 'ChefFSDataStore tests' do
-  extend IntegrationSupport
+  include IntegrationSupport
   include KnifeSupport
 
+  let(:cookbook_x_100_metadata_rb) { cb_metadata("x", "1.0.0") }
+  let(:cookbook_z_100_metadata_rb) { cb_metadata("z", "1.0.0") }
+
   when_the_repository "has one of each thing" do
-    file 'clients/x.json', {}
-    file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
-    file 'data_bags/x/y.json', {}
-    file 'environments/x.json', {}
-    file 'nodes/x.json', {}
-    file 'roles/x.json', {}
-    file 'users/x.json', {}
+    before do
+      file 'clients/x.json', {}
+      file 'cookbooks/x/metadata.rb', cookbook_x_100_metadata_rb
+      file 'data_bags/x/y.json', {}
+      file 'environments/x.json', {}
+      file 'nodes/x.json', {}
+      file 'roles/x.json', {}
+      file 'users/x.json', {}
+    end
 
     context 'GET /TYPE' do
       it 'knife list -z -R returns everything' do
@@ -102,41 +107,43 @@ EOM
 
     context 'GET /TYPE/NAME' do
       it 'knife show -z /clients/x.json works' do
-        knife('show -z /clients/x.json').should_succeed /"x"/
+        knife('show -z /clients/x.json').should_succeed( /"x"/ )
       end
 
       it 'knife show -z /cookbooks/x/metadata.rb works' do
-        knife('show -z /cookbooks/x/metadata.rb').should_succeed "/cookbooks/x/metadata.rb:\nversion \"1.0.0\"\n"
+        knife('show -z /cookbooks/x/metadata.rb').should_succeed "/cookbooks/x/metadata.rb:\n#{cookbook_x_100_metadata_rb}\n"
       end
 
       it 'knife show -z /data_bags/x/y.json works' do
-        knife('show -z /data_bags/x/y.json').should_succeed /"y"/
+        knife('show -z /data_bags/x/y.json').should_succeed( /"y"/ )
       end
 
       it 'knife show -z /environments/x.json works' do
-        knife('show -z /environments/x.json').should_succeed /"x"/
+        knife('show -z /environments/x.json').should_succeed( /"x"/ )
       end
 
       it 'knife show -z /nodes/x.json works' do
-        knife('show -z /nodes/x.json').should_succeed /"x"/
+        knife('show -z /nodes/x.json').should_succeed( /"x"/ )
       end
 
       it 'knife show -z /roles/x.json works' do
-        knife('show -z /roles/x.json').should_succeed /"x"/
+        knife('show -z /roles/x.json').should_succeed( /"x"/ )
       end
 
       it 'knife show -z /users/x.json works' do
-        knife('show -z /users/x.json').should_succeed /"x"/
+        knife('show -z /users/x.json').should_succeed( /"x"/ )
       end
     end
 
     context 'PUT /TYPE/NAME' do
-      file 'empty.json', {}
-      file 'rolestuff.json', '{"description":"hi there","name":"x"}'
-      file 'cookbooks_to_upload/x/metadata.rb', "version '1.0.0'\n\n"
+      before do
+        file 'empty.json', {}
+        file 'rolestuff.json', '{"description":"hi there","name":"x"}'
+        file 'cookbooks_to_upload/x/metadata.rb', cookbook_x_100_metadata_rb
+      end
 
       it 'knife raw -z -i empty.json -m PUT /clients/x' do
-        knife("raw -z -i #{path_to('empty.json')} -m PUT /clients/x").should_succeed /"x"/
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /clients/x").should_succeed( /"x"/ )
         knife('list --local /clients').should_succeed "/clients/x.json\n"
       end
 
@@ -149,32 +156,32 @@ EOM
       end
 
       it 'knife raw -z -i empty.json -m PUT /data/x/y' do
-        knife("raw -z -i #{path_to('empty.json')} -m PUT /data/x/y").should_succeed /"y"/
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /data/x/y").should_succeed( /"y"/ )
         knife('list --local -Rfp /data_bags').should_succeed "/data_bags/x/\n/data_bags/x/y.json\n"
       end
 
       it 'knife raw -z -i empty.json -m PUT /environments/x' do
-        knife("raw -z -i #{path_to('empty.json')} -m PUT /environments/x").should_succeed /"x"/
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /environments/x").should_succeed( /"x"/ )
         knife('list --local /environments').should_succeed "/environments/x.json\n"
       end
 
       it 'knife raw -z -i empty.json -m PUT /nodes/x' do
-        knife("raw -z -i #{path_to('empty.json')} -m PUT /nodes/x").should_succeed /"x"/
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /nodes/x").should_succeed( /"x"/ )
         knife('list --local /nodes').should_succeed "/nodes/x.json\n"
       end
 
       it 'knife raw -z -i empty.json -m PUT /roles/x' do
-        knife("raw -z -i #{path_to('empty.json')} -m PUT /roles/x").should_succeed /"x"/
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /roles/x").should_succeed( /"x"/ )
         knife('list --local /roles').should_succeed "/roles/x.json\n"
       end
 
       it 'knife raw -z -i empty.json -m PUT /users/x' do
-        knife("raw -z -i #{path_to('empty.json')} -m PUT /users/x").should_succeed /"x"/
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /users/x").should_succeed( /"x"/ )
         knife('list --local /users').should_succeed "/users/x.json\n"
       end
 
       it 'After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty', :pending => (RUBY_VERSION < "1.9") do
-        knife("raw -z -i #{path_to('rolestuff.json')} -m PUT /roles/x").should_succeed /"x"/
+        knife("raw -z -i #{path_to('rolestuff.json')} -m PUT /roles/x").should_succeed( /"x"/ )
         IO.read(path_to('roles/x.json')).should == <<EOM.strip
 {
   "name": "x",
@@ -187,14 +194,16 @@ EOM
 
   when_the_repository 'is empty' do
     context 'POST /TYPE/NAME' do
-      file 'empty.json', { 'name' => 'z' }
-      file 'empty_x.json', { 'name' => 'x' }
-      file 'empty_id.json', { 'id' => 'z' }
-      file 'rolestuff.json', '{"description":"hi there","name":"x"}'
-      file 'cookbooks_to_upload/z/metadata.rb', "version '1.0.0'"
+      before do
+        file 'empty.json', { 'name' => 'z' }
+        file 'empty_x.json', { 'name' => 'x' }
+        file 'empty_id.json', { 'id' => 'z' }
+        file 'rolestuff.json', '{"description":"hi there","name":"x"}'
+        file 'cookbooks_to_upload/z/metadata.rb', cookbook_z_100_metadata_rb
+      end
 
       it 'knife raw -z -i empty.json -m POST /clients' do
-        knife("raw -z -i #{path_to('empty.json')} -m POST /clients").should_succeed /uri/
+        knife("raw -z -i #{path_to('empty.json')} -m POST /clients").should_succeed( /uri/ )
         knife('list --local /clients').should_succeed "/clients/z.json\n"
       end
 
@@ -207,38 +216,38 @@ EOM
       end
 
       it 'knife raw -z -i empty.json -m POST /data' do
-        knife("raw -z -i #{path_to('empty.json')} -m POST /data").should_succeed /uri/
+        knife("raw -z -i #{path_to('empty.json')} -m POST /data").should_succeed( /uri/ )
         knife('list --local -Rfp /data_bags').should_succeed "/data_bags/z/\n"
       end
 
       it 'knife raw -z -i empty.json -m POST /data/x' do
-        knife("raw -z -i #{path_to('empty_x.json')} -m POST /data").should_succeed /uri/
-        knife("raw -z -i #{path_to('empty_id.json')} -m POST /data/x").should_succeed /"z"/
+        knife("raw -z -i #{path_to('empty_x.json')} -m POST /data").should_succeed( /uri/ )
+        knife("raw -z -i #{path_to('empty_id.json')} -m POST /data/x").should_succeed( /"z"/ )
         knife('list --local -Rfp /data_bags').should_succeed "/data_bags/x/\n/data_bags/x/z.json\n"
       end
 
       it 'knife raw -z -i empty.json -m POST /environments' do
-        knife("raw -z -i #{path_to('empty.json')} -m POST /environments").should_succeed /uri/
+        knife("raw -z -i #{path_to('empty.json')} -m POST /environments").should_succeed( /uri/ )
         knife('list --local /environments').should_succeed "/environments/z.json\n"
       end
 
       it 'knife raw -z -i empty.json -m POST /nodes' do
-        knife("raw -z -i #{path_to('empty.json')} -m POST /nodes").should_succeed /uri/
+        knife("raw -z -i #{path_to('empty.json')} -m POST /nodes").should_succeed( /uri/ )
         knife('list --local /nodes').should_succeed "/nodes/z.json\n"
       end
 
       it 'knife raw -z -i empty.json -m POST /roles' do
-        knife("raw -z -i #{path_to('empty.json')} -m POST /roles").should_succeed /uri/
+        knife("raw -z -i #{path_to('empty.json')} -m POST /roles").should_succeed( /uri/ )
         knife('list --local /roles').should_succeed "/roles/z.json\n"
       end
 
       it 'knife raw -z -i empty.json -m POST /users' do
-        knife("raw -z -i #{path_to('empty.json')} -m POST /users").should_succeed /uri/
+        knife("raw -z -i #{path_to('empty.json')} -m POST /users").should_succeed( /uri/ )
         knife('list --local /users').should_succeed "/users/z.json\n"
       end
 
       it 'After knife raw -z -i rolestuff.json -m POST /roles, the output is pretty', :pending => (RUBY_VERSION < "1.9") do
-        knife("raw -z -i #{path_to('rolestuff.json')} -m POST /roles").should_succeed /uri/
+        knife("raw -z -i #{path_to('rolestuff.json')} -m POST /roles").should_succeed( /uri/ )
         IO.read(path_to('roles/x.json')).should == <<EOM.strip
 {
   "name": "x",
@@ -325,30 +334,32 @@ EOM
     end
 
     context 'PUT /TYPE/NAME' do
-      file 'empty.json', {}
+      before do
+        file 'empty.json', {}
+      end
 
       it 'knife raw -z -i empty.json -m PUT /clients/x fails with 404' do
-        knife("raw -z -i #{path_to('empty.json')} -m PUT /clients/x").should_fail /404/
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /clients/x").should_fail( /404/ )
       end
 
       it 'knife raw -z -i empty.json -m PUT /data/x/y fails with 404' do
-        knife("raw -z -i #{path_to('empty.json')} -m PUT /data/x/y").should_fail /404/
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /data/x/y").should_fail( /404/ )
       end
 
       it 'knife raw -z -i empty.json -m PUT /environments/x fails with 404' do
-        knife("raw -z -i #{path_to('empty.json')} -m PUT /environments/x").should_fail /404/
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /environments/x").should_fail( /404/ )
       end
 
       it 'knife raw -z -i empty.json -m PUT /nodes/x fails with 404' do
-        knife("raw -z -i #{path_to('empty.json')} -m PUT /nodes/x").should_fail /404/
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /nodes/x").should_fail( /404/ )
       end
 
       it 'knife raw -z -i empty.json -m PUT /roles/x fails with 404' do
-        knife("raw -z -i #{path_to('empty.json')} -m PUT /roles/x").should_fail /404/
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /roles/x").should_fail( /404/ )
       end
 
       it 'knife raw -z -i empty.json -m PUT /users/x fails with 404' do
-        knife("raw -z -i #{path_to('empty.json')} -m PUT /users/x").should_fail /404/
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /users/x").should_fail( /404/ )
       end
     end
   end

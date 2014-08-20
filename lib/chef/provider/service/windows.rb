@@ -27,6 +27,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   #Win32::Service.get_start_type
   AUTO_START = 'auto start'
+  MANUAL = 'demand start'
   DISABLED = 'disabled'
 
   #Win32::Service.get_current_state
@@ -45,11 +46,16 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   end
 
   def load_current_resource
-    @current_resource = Chef::Resource::Service.new(@new_resource.name)
+    @current_resource = Chef::Resource::WindowsService.new(@new_resource.name)
     @current_resource.service_name(@new_resource.service_name)
     @current_resource.running(current_state == RUNNING)
     Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
-    @current_resource.enabled(start_type == AUTO_START)
+    case current_start_type
+    when AUTO_START
+      @current_resource.enabled(true)
+    when DISABLED
+      @current_resource.enabled(false)
+    end
     Chef::Log.debug "#{@new_resource} enabled: #{@current_resource.enabled}"
     @current_resource
   end
@@ -125,15 +131,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   def enable_service
     if Win32::Service.exists?(@new_resource.service_name)
-      if start_type == AUTO_START
-        Chef::Log.debug "#{@new_resource} already enabled - nothing to do"
-      else
-        Win32::Service.configure(
-          :service_name => @new_resource.service_name,
-          :start_type => Win32::Service::AUTO_START
-        )
-        @new_resource.updated_by_last_action(true)
-      end
+      set_startup_type(:automatic)
     else
       Chef::Log.debug "#{@new_resource} does not exist - nothing to do"
     end
@@ -141,18 +139,68 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   def disable_service
     if Win32::Service.exists?(@new_resource.service_name)
-      if start_type == AUTO_START
-        Win32::Service.configure(
-          :service_name => @new_resource.service_name,
-          :start_type => Win32::Service::DISABLED
-        )
-        @new_resource.updated_by_last_action(true)
-      else
-        Chef::Log.debug "#{@new_resource} already disabled - nothing to do"
-      end
+      set_startup_type(:disabled)
     else
       Chef::Log.debug "#{@new_resource} does not exist - nothing to do"
     end
+  end
+
+  def action_enable
+    if current_start_type != AUTO_START
+      converge_by("enable service #{@new_resource}") do
+        enable_service
+        Chef::Log.info("#{@new_resource} enabled")
+      end
+    else
+      Chef::Log.debug("#{@new_resource} already enabled - nothing to do")
+    end
+    load_new_resource_state
+    @new_resource.enabled(true)
+  end
+
+  def action_disable
+    if current_start_type != DISABLED
+      converge_by("disable service #{@new_resource}") do
+        disable_service
+        Chef::Log.info("#{@new_resource} disabled")
+      end
+    else
+      Chef::Log.debug("#{@new_resource} already disabled - nothing to do")
+    end
+    load_new_resource_state
+    @new_resource.enabled(false)
+  end
+
+  def action_configure_startup
+    case @new_resource.startup_type
+    when :automatic
+      if current_start_type != AUTO_START
+        converge_by("set service #{@new_resource} startup type to automatic") do
+          set_startup_type(:automatic)
+        end
+      else
+        Chef::Log.debug("#{@new_resource} startup_type already automatic - nothing to do")
+      end
+    when :manual
+      if current_start_type != MANUAL
+        converge_by("set service #{@new_resource} startup type to manual") do
+          set_startup_type(:manual)
+        end
+      else
+        Chef::Log.debug("#{@new_resource} startup_type already manual - nothing to do")
+      end
+    when :disabled
+      if current_start_type != DISABLED
+        converge_by("set service #{@new_resource} startup type to disabled") do
+          set_startup_type(:disabled)
+        end
+      else
+        Chef::Log.debug("#{@new_resource} startup_type already disabled - nothing to do")
+      end
+    end
+
+    # Avoid changing enabled from true/false for now
+    @new_resource.enabled(nil)
   end
 
   private
@@ -160,7 +208,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     Win32::Service.status(@new_resource.service_name).current_state
   end
 
-  def start_type
+  def current_start_type
     Win32::Service.config_info(@new_resource.service_name).start_type
   end
 
@@ -187,5 +235,23 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     Timeout.timeout(resource_timeout) do
       worker.join
     end
+  end
+
+  # Takes Win32::Service start_types
+  def set_startup_type(type)
+    # Set-Service Startup Type => Win32::Service Constant
+    allowed_types = { :automatic => Win32::Service::AUTO_START,
+                      :manual    => Win32::Service::DEMAND_START,
+                      :disabled  => Win32::Service::DISABLED }
+    unless allowed_types.keys.include?(type)
+      raise Chef::Exceptions::ConfigurationError, "#{@new_resource.name}: Startup type '#{type}' is not supported"
+    end
+
+    Chef::Log.debug "#{@new_resource.name} setting start_type to #{type}"
+    Win32::Service.configure(
+      :service_name => @new_resource.service_name,
+      :start_type => allowed_types[type]
+    )
+    @new_resource.updated_by_last_action(true)
   end
 end

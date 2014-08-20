@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+        <key>SALTED-SHA512-PBKDF2</key>
+        <dict>
+                <key>entropy</key>
+                <data>
+                EmAakNsXy/i6SAjmOC+w07nYpsGhkEd79oCrIa+2BlRnE25VzCCKb3QVbj2v
+                IPsTNp70t7r6BH2ANZ+0akikrczVSOuzOFGwk0fMqENBp/k6JxRzQ/ifuEP7
+                RsABfSZK+kl2uqz5QbkVvR7ByiTDCz51ngJAPgL1n+f/WTinY2w=
+                </data>
+                <key>iterations</key>
+                <integer>34482</integer>
+                <key>salt</key>
+                <data>
+                7pVL5HL9xg3fiUhHgUM5k2JfAGr27IEMCPSafkE5RqE=
+                </data>
+        </dict>
+</dict>
+</plist>

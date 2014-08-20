@@ -460,17 +460,19 @@ shared_examples_for Chef::Provider::File do
       context "when the file exists" do
         before { setup_normal_file }
         it "should not create the file" do
+          provider.load_current_resource
           provider.deployment_strategy.should_not_receive(:create).with(resource_path)
           provider.send(:do_create_file)
-          provider.send(:file_created?).should == false
+          provider.send(:needs_creating?).should == false
         end
       end
       context "when the file does not exist" do
         before { setup_missing_file }
         it "should create the file" do
+          provider.load_current_resource
           provider.deployment_strategy.should_receive(:create).with(resource_path)
           provider.send(:do_create_file)
-          provider.send(:file_created?).should == true
+          provider.send(:needs_creating?).should == true
         end
       end
     end
@@ -503,7 +505,7 @@ shared_examples_for Chef::Provider::File do
             provider.deployment_strategy.should_receive(:deploy).with(tempfile_path, normalized_path)
           end
           context "when the file was created" do
-            before { provider.should_receive(:file_created?).at_least(:once).and_return(true) }
+            before { provider.should_receive(:needs_creating?).at_least(:once).and_return(true) }
             it "does not backup the file and does not produce a diff for reporting" do
               provider.should_not_receive(:do_backup)
               provider.send(:do_contents_changes)
@@ -511,7 +513,7 @@ shared_examples_for Chef::Provider::File do
             end
           end
           context "when the file was not created" do
-            before { provider.should_receive(:file_created?).at_least(:once).and_return(false) }
+            before { provider.should_receive(:needs_creating?).at_least(:once).and_return(false) }
             it "backs up the file and produces a diff for reporting" do
               provider.should_receive(:do_backup)
               provider.send(:do_contents_changes)

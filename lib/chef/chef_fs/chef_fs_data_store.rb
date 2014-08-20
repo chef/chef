@@ -269,7 +269,7 @@ class Chef
 
         # Create a little Chef::ChefFS memory filesystem with the data
         cookbook_fs = Chef::ChefFS::FileSystem::MemoryRoot.new('uploading')
-        cookbook = JSON.parse(data, :create_additions => false)
+        cookbook = Chef::JSONCompat.parse(data)
         cookbook.each_pair do |key, value|
           if value.is_a?(Array)
             value.each do |file|

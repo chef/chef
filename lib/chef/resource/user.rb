@@ -38,12 +38,15 @@ class Chef
         @password = nil
         @system = false
         @manage_home = false
+        @force = false
         @non_unique = false
         @action = :create
         @supports = {
           :manage_home => false,
           :non_unique => false
         }
+        @iterations = 27855
+        @salt = nil
         @allowed_actions.push(:create, :remove, :modify, :manage, :lock, :unlock)
       end
 
@@ -105,6 +108,22 @@ class Chef
         )
       end
 
+      def salt(arg=nil)
+        set_or_return(
+          :salt,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def iterations(arg=nil)
+        set_or_return(
+          :iterations,
+          arg,
+          :kind_of => [ Integer ]
+        )
+      end
+
       def system(arg=nil)
         set_or_return(
           :system,
@@ -116,6 +135,14 @@ class Chef
       def manage_home(arg=nil)
         set_or_return(
           :manage_home,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      def force(arg=nil)
+        set_or_return(
+          :force,
           arg,
           :kind_of => [ TrueClass, FalseClass ]
         )

@@ -124,6 +124,9 @@ RSpec.configure do |config|
   config.filter_run_excluding :requires_root_or_running_windows => true unless (root? || windows?)
   config.filter_run_excluding :requires_unprivileged_user => true if root?
   config.filter_run_excluding :uses_diff => true unless has_diff?
+  config.filter_run_excluding :ruby_gte_20_and_openssl_gte_101 => true unless (ruby_gte_20? && openssl_gte_101?)
+  config.filter_run_excluding :openssl_lt_101 => true unless openssl_lt_101?
+  config.filter_run_excluding :ruby_lt_20 => true unless ruby_lt_20?
 
   running_platform_arch = `uname -m`.strip
 

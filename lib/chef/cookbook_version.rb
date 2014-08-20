@@ -51,9 +51,13 @@ class Chef
     attr_accessor :provider_filenames
     attr_accessor :root_filenames
     attr_accessor :name
-    attr_accessor :metadata
     attr_accessor :metadata_filenames
     attr_accessor :status
+
+    # A Chef::Cookbook::Metadata object. It has a setter that fixes up the
+    # metadata to add descriptions of the recipes contained in this
+    # CookbookVersion.
+    attr_reader :metadata
 
     # attribute_filenames also has a setter that has non-default
     # functionality.
@@ -193,6 +197,12 @@ class Chef
       @attribute_filenames = filenames.flatten
       @attribute_filenames_by_short_filename = filenames_by_name(attribute_filenames)
       attribute_filenames
+    end
+
+    def metadata=(metadata)
+      @metadata = metadata
+      @metadata.recipes_from_cookbook_version(self)
+      @metadata
     end
 
     ## BACKCOMPAT/DEPRECATED - Remove these and fix breakage before release [DAN - 5/20/2010]##
@@ -405,7 +415,6 @@ class Chef
       records_by_pref[best_pref]
     end
 
-
     # Given a node, segment and path (filename or directory name),
     # return the priority-ordered list of preference locations to
     # look.
@@ -458,9 +467,9 @@ class Chef
     end
 
     def to_json(*a)
-      result = self.to_hash
+      result = to_hash
       result['json_class'] = self.class.name
-      result.to_json(*a)
+      Chef::JSONCompat.to_json(result, *a)
     end
 
     def self.json_create(o)

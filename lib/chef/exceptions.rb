@@ -83,6 +83,7 @@ class Chef
     class RequestedUIDUnavailable < RuntimeError; end
     class InvalidHomeDirectory < ArgumentError; end
     class DsclCommandFailed < RuntimeError; end
+    class PlistUtilCommandFailed < RuntimeError; end
     class UserIDNotFound < ArgumentError; end
     class GroupIDNotFound < ArgumentError; end
     class ConflictingMembersInGroup < ArgumentError; end
@@ -115,6 +116,7 @@ class Chef
     class Win32ArchitectureIncorrect < RuntimeError; end
     class ObsoleteDependencySyntax < ArgumentError; end
     class InvalidDataBagPath < ArgumentError; end
+    class DuplicateDataBagItem < RuntimeError; end
 
     # A different version of a cookbook was added to a
     # VersionedRecipeList than the one already there.
@@ -130,6 +132,8 @@ class Chef
 
     # Version constraints are not allowed in chef-solo
     class IllegalVersionConstraint < NotImplementedError; end
+
+    class MetadataNotValid < StandardError; end
 
     # File operation attempted but no permissions to perform it
     class InsufficientPermissions < RuntimeError; end
@@ -193,7 +197,6 @@ class Chef
           super("The expanded run list includes nonexistent roles: #{missing_roles}")
         end
       end
-
 
     end
     # Exception class for collecting multiple failures. Used when running
@@ -262,7 +265,7 @@ class Chef
             "non_existent_cookbooks" => non_existent_cookbooks,
             "cookbooks_with_no_versions" => cookbooks_with_no_matching_versions
           }
-          result.to_json(*a)
+          Chef::JSONCompat.to_json(result, *a)
         end
       end
 
@@ -297,7 +300,7 @@ class Chef
             "non_existent_cookbooks" => non_existent_cookbooks,
             "most_constrained_cookbooks" => most_constrained_cookbooks
           }
-          result.to_json(*a)
+          Chef::JSONCompat.to_json(result, *a)
         end
       end
 
@@ -331,6 +334,18 @@ class Chef
       end
     end
 
+    class ChecksumMismatch < RuntimeError
+      def initialize(res_cksum, cont_cksum)
+        super "Checksum on resource (#{res_cksum}) does not match checksum on content (#{cont_cksum})"
+      end
+    end
+
     class BadProxyURI < RuntimeError; end
+
+    # Raised by Chef::JSONCompat
+    class JSON
+      class EncodeError < RuntimeError; end
+      class ParseError < RuntimeError; end
+    end
   end
 end

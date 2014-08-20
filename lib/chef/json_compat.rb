@@ -18,7 +18,9 @@
 # Wrapper class for interacting with JSON.
 
 require 'ffi_yajl'
+require 'json'
 require 'ffi_yajl/json_gem'  # XXX: parts of chef require JSON gem's Hash#to_json monkeypatch
+require 'chef/exceptions'
 
 class Chef
   class JSONCompat
@@ -40,15 +42,24 @@ class Chef
 
     class <<self
 
+      # API to use to avoid create_addtions
+      def parse(source, opts = {})
+        begin
+          FFI_Yajl::Parser.parse(source, opts)
+        rescue FFI_Yajl::ParseError => e
+          raise Chef::Exceptions::JSON::ParseError, e.message
+        end
+      end
+
       # Just call the JSON gem's parse method with a modified :max_nesting field
       def from_json(source, opts = {})
-        obj = ::FFI_Yajl::Parser.parse(source)
+        obj = parse(source, opts)
 
         # JSON gem requires top level object to be a Hash or Array (otherwise
         # you get the "must contain two octets" error). Yajl doesn't impose the
         # same limitation. For compatibility, we re-impose this condition.
         unless obj.kind_of?(Hash) or obj.kind_of?(Array)
-          raise JSON::ParserError, "Top level JSON object must be a Hash or Array. (actual: #{obj.class})"
+          raise Chef::Exceptions::JSON::ParseError, "Top level JSON object must be a Hash or Array. (actual: #{obj.class})"
         end
 
         # The old default in the json gem (which we are mimicing because we
@@ -88,13 +99,20 @@ class Chef
       end
 
       def to_json(obj, opts = nil)
-        obj.to_json(opts)
+        begin
+          FFI_Yajl::Encoder.encode(obj, opts)
+        rescue FFI_Yajl::EncodeError => e
+          raise Chef::Exceptions::JSON::EncodeError, e.message
+        end
       end
 
       def to_json_pretty(obj, opts = nil)
-        ::JSON.pretty_generate(obj, opts)
+        opts ||= {}
+        options_map = {}
+        options_map[:pretty] = true
+        options_map[:indent] = opts[:indent] if opts.has_key?(:indent)
+        to_json(obj, options_map).chomp
       end
-
 
       # Map +json_class+ to a Class object. We use a +case+ instead of a Hash
       # assigned to a constant because otherwise this file could not be loaded
@@ -130,7 +148,7 @@ class Chef
         when /^Chef::Resource/
           Chef::Resource.find_subclass_by_name(json_class)
         else
-          raise JSON::ParserError, "Unsupported `json_class` type '#{json_class}'"
+          raise Chef::Exceptions::JSON::ParseError, "Unsupported `json_class` type '#{json_class}'"
         end
       end
 

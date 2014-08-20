@@ -18,7 +18,7 @@ class Chef
       config_data = read_config
       begin
         Chef::JSONCompat.from_json(config_data)
-      rescue FFI_Yajl::ParseError => error
+      rescue Chef::Exceptions::JSON::ParseError => error
         Chef::Application.fatal!("Could not parse the provided JSON file (#{config_location}): " + error.message, 2)
       end
     end

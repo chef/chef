@@ -125,9 +125,15 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should set mounted true if the mount point is found in the mounts list" do
-      @provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => '/dev/sdz1 on /tmp/foo'))
+      @provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => "/dev/sdz1 on /tmp/foo type ext3 (rw)\n"))
       @provider.load_current_resource()
       @provider.current_resource.mounted.should be_true
+    end
+
+    it "should set mounted false if another mount point beginning with the same path is found in the mounts list" do
+      @provider.stub(:shell_out!).and_return(OpenStruct.new(:stdout => "/dev/sdz1 on /tmp/foobar type ext3 (rw)\n"))
+      @provider.load_current_resource()
+      @provider.current_resource.mounted.should be_false
     end
 
     it "should set mounted true if the symlink target of the device is found in the mounts list" do
@@ -437,14 +443,17 @@ describe Chef::Provider::Mount::Mount do
         @current_resource.stub(:enabled).and_return(true)
         fstab_read = ["/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n",
                       "/dev/sdy1 /tmp/foo  ext3  defaults  1 2\n",
-                      "/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n"]
+                      "/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n",
+                      "/dev/sdz1 /tmp/foobar  ext3  defaults  1 2\n"]
 
         fstab_write = StringIO.new
         ::File.stub(:readlines).with("/etc/fstab").and_return(fstab_read)
         ::File.stub(:open).with("/etc/fstab", "w").and_yield(fstab_write)
 
         @provider.disable_fs
-        fstab_write.string.should == "/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n/dev/sdy1 /tmp/foo  ext3  defaults  1 2\n"
+        fstab_write.string.should == "/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n" +
+          "/dev/sdy1 /tmp/foo  ext3  defaults  1 2\n" +
+          "/dev/sdz1 /tmp/foobar  ext3  defaults  1 2\n"
       end
 
       it "should not disable if enabled is false" do

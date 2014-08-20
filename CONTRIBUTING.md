@@ -11,9 +11,7 @@ We utilize **Github Issues** for issue tracking and contributions. You can contr
 
 We have a 3 step process that utilizes **Github Issues**:
 
-1. Sign our
-  [Individual Contributor License Agreement (CLA)](https://secure.echosign.com/public/hostedForm?formid=PJIF5694K6L)
-  or [Corporate CLA](https://secure.echosign.com/public/hostedForm?formid=PIE6C7AX856) online once.
+1. Sign or be added to an existing [Contributor License Agreement (CLA)](https://supermarket.getchef.com/become-a-contributor).
 2. Create a Github Pull Request.
 3. Do [Code Review](#cr) with the **Chef Engineering Team** or **Chef Core Committers** on the pull request.
 
@@ -83,10 +81,10 @@ To make a good faith effort to ensure these criteria are met, Chef requires an I
 It only takes a few minutes to complete a CLA, and you retain the copyright to your contribution.
 
 You can complete our
-  [Individual CLA](https://secure.echosign.com/public/hostedForm?formid=PJIF5694K6L) online.
+  [Individual CLA](https://supermarket.getchef.com/icla-signatures/new) online.
   If you're contributing on behalf of your employer and they retain the copyright for your works,
   have your employer fill out our
-  [Corporate CLA](https://secure.echosign.com/public/hostedForm?formid=PIE6C7AX856) instead.
+  [Corporate CLA](https://supermarket.getchef.com/ccla-signatures/new) instead.
 
 ### Chef Obvious Fix Policy
 

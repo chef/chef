@@ -2,7 +2,7 @@ source "https://rubygems.org"
 gemspec :name => "chef"
 
 gem 'rest-client', :github => 'opscode/rest-client', :branch => 'lcg/1.6.7-version-lying'
-gem 'chef-pedant', :github => 'opscode/chef-pedant', :ref => 'd12864964a18994b467908daa91811eee1f1bf68'
+gem 'chef-pedant', :github => 'opscode/chef-pedant', :branch => "metadata-name-fix"
 
 # TODO figure out how to grab this stuff from the main Gemfile
 gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"

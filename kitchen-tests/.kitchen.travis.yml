@@ -1,0 +1,29 @@
+---
+driver_config:
+  aws_access_key_id: <%= ENV['AWS_ACCESS_KEY_ID'] %>
+  aws_secret_access_key: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+  aws_ssh_key_id: <%= ENV['AWS_KEYPAIR_NAME'] %>
+  iam_profile_name: <%= ENV['IAM_PROFILE_NAME'] %>
+
+provisioner:
+  name: chef_solo
+  github: <%= ENV['TRAVIS_REPO_SLUG'] %>
+  branch: <%= ENV['TRAVIS_COMMIT'] %>
+  require_chef_omnibus: true
+  data_path: test/fixtures
+
+platforms:
+  - name: ubuntu-12.04
+    driver_plugin: ec2
+    driver_config:
+      region: "us-west-2"
+      availability_zone: "us-west-2b"
+      ssh_key: <%= ENV['EC2_SSH_KEY_PATH'] %>
+      security_group_ids: ["travis-ci"]
+
+suites:
+  - name: webapp
+    run_list:
+      - recipe[apt::default]
+      - recipe[webapp::default]
+    attributes:

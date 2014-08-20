@@ -126,7 +126,7 @@ class Chef
         :short => "-j JSON_ATTRIBS",
         :long => "--json-attributes",
         :description => "A JSON string to be added to the first run of chef-client",
-        :proc => lambda { |o| JSON.parse(o) },
+        :proc => lambda { |o| Chef::JSONCompat.parse(o) },
         :default => {}
 
       option :host_key_verify,
@@ -141,7 +141,7 @@ class Chef
         :proc => Proc.new { |h|
           Chef::Config[:knife][:hints] ||= Hash.new
           name, path = h.split("=")
-          Chef::Config[:knife][:hints][name] = path ? JSON.parse(::File.read(path)) : Hash.new  }
+          Chef::Config[:knife][:hints][name] = path ? Chef::JSONCompat.parse(::File.read(path)) : Hash.new  }
 
       option :secret,
         :short => "-s SECRET",
