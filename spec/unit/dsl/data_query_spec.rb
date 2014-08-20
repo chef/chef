@@ -132,7 +132,7 @@ describe Chef::DSL::DataQuery do
         end
       end
 
-      context "when encryption version is 3" do
+      context "when encryption version is 3", :ruby_20_only do
         include_examples "encryption detected" do
           let(:version) { 3 }
           let(:encryptor) { Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor }
