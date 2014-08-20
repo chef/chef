@@ -71,12 +71,13 @@ class Chef
       private
 
       # Tries to autodetect if the item's raw hash appears to be encrypted.
-      def encrypted?(data)
-        data.each do |key, value|
-          next if key == "id"
-          return false unless looks_like_encrypted?(value)
-        end
-        true
+      def encrypted?(raw_data)
+        data = raw_data.reject { |k, _| k == "id" } # Remove the "id" key.
+        # Assume hashes containing only the "id" key are not encrypted.
+        # Otherwise, remove the keys that don't appear to be encrypted and compare
+        # the result with the hash. If some entry has been removed, then some entry
+        # doesn't appear to be encrypted and we assume the entire hash is not encrypted.
+        data.empty? ? false : data.reject { |_, v| !looks_like_encrypted?(v) } == data
       end
 
       # Checks if data looks like it has been encrypted by
