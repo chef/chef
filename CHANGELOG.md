@@ -2,6 +2,8 @@
 
 ## Unreleased: 12.0.0
 
+* [**Grzesiek Kolodziejczyk**](https://github.com/grk):
+  Use thread-safe OpenSSL::Digest instead of Digest
 * knife cookbook site download/list/search/share/show/unshare now uses
   supermerket.getchef.com urls
 * chef/json_compat now throws its own exceptions not JSON gem exceptions
