@@ -197,7 +197,7 @@ SHAS
     end
     context "with a specific home" do
       let (:override_home) do
-        {"OVERRIDE_HOME" => "/home/masterNinja"}
+        {"HOME" => "/home/masterNinja"}
       end
       let(:overrided_options) do
         {
