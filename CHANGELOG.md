@@ -2,6 +2,15 @@
 
 ## Unreleased: 12.0.0
 
+* chef/json_compat now throws its own exceptions not JSON gem exceptions
+* Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
+* Fix a bug in the experimental Policyfile mode that caused errors when
+  using templates.
+* Disable JSON encoding of request body when non-JSON content type is
+  specified.
+* Clean up FileVendor and CookbookUploader internal APIs
+* [**Grzesiek Kolodziejczyk**](https://github.com/grk):
+  Chef::Digester converted to thread-safe Singleton mixin.
 * [**Vasiliy Tolstov**](https://github.com/vtolstov):
   Reload systemd service only if it's running, otherwise start.
 * [**Chris Jerdonek**](https://github.com/cjerdonek):
