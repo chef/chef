@@ -268,7 +268,7 @@ PS_SAMPLE
         end
       end
 
-      context "when the enable variable partial matches some other service and we are disabled" do
+      context "when the enable variable partial matches (left) some other service and we are disabled" do
         let(:lines) { [
           %Q{thing_#{new_resource.service_name}_enable="YES"},
           %Q{#{new_resource.service_name}_enable="NO"},
@@ -279,7 +279,18 @@ PS_SAMPLE
         end
       end
 
-      context "when the enable variable partial matches some other disabled service and we are enabled" do
+      context "when the enable variable partial matches (right) some other service and we are disabled" do
+        let(:lines) { [
+          %Q{#{new_resource.service_name}_thing_enable="YES"},
+          %Q{#{new_resource.service_name}_enable="NO"},
+        ] }
+        it "sets enabled to false" do
+          provider.determine_enabled_status!
+          expect(current_resource.enabled).to be false
+        end
+      end
+
+      context "when the enable variable partial matches (left) some other disabled service and we are enabled" do
         let(:lines) { [
           %Q{thing_#{new_resource.service_name}_enable="NO"},
           %Q{#{new_resource.service_name}_enable="YES"},
@@ -290,8 +301,27 @@ PS_SAMPLE
         end
       end
 
-      context "when the enable variable only partial matches some other enabled service" do
+      context "when the enable variable partial matches (right) some other disabled service and we are enabled" do
+        let(:lines) { [
+          %Q{#{new_resource.service_name}_thing_enable="NO"},
+          %Q{#{new_resource.service_name}_enable="YES"},
+        ] }
+        it "sets enabled to true" do
+          provider.determine_enabled_status!
+          expect(current_resource.enabled).to be true
+        end
+      end
+
+      context "when the enable variable only partial matches (left) some other enabled service" do
         let(:lines) { [ %Q{thing_#{new_resource.service_name}_enable="YES"} ] }
+        it "sets enabled to false" do
+          provider.determine_enabled_status!
+          expect(current_resource.enabled).to be false
+        end
+      end
+
+      context "when the enable variable only partial matches (right) some other enabled service" do
+        let(:lines) { [ %Q{#{new_resource.service_name}_thing_enable="YES"} ] }
         it "sets enabled to false" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
