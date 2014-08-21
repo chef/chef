@@ -6,6 +6,21 @@ Example Doc Change:
 Description of the required change.
 -->
 
+### environment attribute to git provider
+
+Similar to other environment options:
+
+```
+environment     Hash of environment variables in the form of {"ENV_VARIABLE" => "VALUE"}.
+```
+
+Also the `user` attribute should mention the setting of the HOME env var:
+
+```
+user      The system user that is responsible for the checked-out code.  The HOME environment variable will automatically be
+set to the home directory of this user when using this option.
+```
+
 ### Metadata `name` Attribute is Required.
 
 Current documentation states:
