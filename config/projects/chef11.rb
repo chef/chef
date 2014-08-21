@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Chef Software, Inc.
+# Copyright:: Copyright (c) 2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +15,8 @@
 # limitations under the License.
 #
 
-# This is a clone of chef that we can install on build and test machines
-# without interfering with the regular build/test.
-
-name "angrychef"
-friendly_name "Angry Chef Client"
+name "chef11"
+friendly_name "Chef Client"
 maintainer "Chef Software, Inc."
 homepage "http://www.getchef.com"
 
@@ -32,10 +29,15 @@ build_version do
   output_format :semver
 end
 
-install_dir "/opt/angrychef"
+install_dir    "/opt/chef"
 
 resources_path File.join(files_path, "chef")
-mac_pkg_identifier "com.getchef.pkg.angrychef"
+mac_pkg_identifier "com.getchef.pkg.chef"
+
+override :chef,     version: "11-stable"
+override :bundler,  version: "1.5.2"
+override :ruby,     version: "1.9.3-p547"
+override :rubygems, version: "1.8.29"
 
 dependency "preparation"
 dependency "chef"

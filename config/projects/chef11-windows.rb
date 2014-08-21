@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Chef Software, Inc.
+# Copyright:: Copyright (c) 2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name "chef-windows"
+name "chef11-windows"
 friendly_name "Chef Client"
 maintainer "Chef Software, Inc."
 homepage "http://www.getchef.com"
@@ -36,9 +36,10 @@ end
 
 package_name    "chef-client"
 
-override :bundler,  version: "1.7.0"
-override :ruby,     version: "2.1.2"
-override :rubygems, version: "2.2.1"
+override :chef,     version: "11-stable"
+override :bundler,  version: "1.5.2"
+override :ruby,     version: "1.9.3-p547"
+override :rubygems, version: "1.8.29"
 
 dependency "preparation"
 dependency "chef-windows"

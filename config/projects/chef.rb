@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2012 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,9 @@ install_dir    "/opt/chef"
 resources_path File.join(files_path, "chef")
 mac_pkg_identifier "com.getchef.pkg.chef"
 
-override :rubygems, version: "1.8.29"
+override :bundler,  version: "1.7.0"
+override :ruby,     version: "2.1.2"
+override :rubygems, version: "2.2.1"
 
 dependency "preparation"
 dependency "chef"
