@@ -226,7 +226,6 @@ class Chef
 
       def run
         validate_name_args!
-        warn_chef_config_secret_key
         @template_file = find_template
         @node_name = Array(@name_args).first
         # back compat--templates may use this setting:
@@ -292,28 +291,6 @@ class Chef
         end
 
         command
-      end
-
-      def warn_chef_config_secret_key
-        unless Chef::Config[:encrypted_data_bag_secret].nil?
-          ui.warn "* " * 40
-          ui.warn(<<-WARNING)
-Specifying the encrypted data bag secret key using an 'encrypted_data_bag_secret'
-entry in 'knife.rb' is deprecated. Please see CHEF-4011 for more details. You
-can supress this warning and still distribute the secret key to all bootstrapped
-machines by adding the following to your 'knife.rb' file:
-
-  knife[:secret_file] = "/path/to/your/secret"
-
-If you would like to selectively distribute a secret key during bootstrap
-please use the '--secret' or '--secret-file' options of this command instead.
-
-#{ui.color('IMPORTANT:', :red, :bold)} In a future version of Chef, this
-behavior will be removed and any 'encrypted_data_bag_secret' entries in
-'knife.rb' will be ignored completely.
-WARNING
-          ui.warn "* " * 40
-        end
       end
 
     end

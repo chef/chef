@@ -136,13 +136,6 @@ EXPECTED
     it "sets the @run_list instance variable" do
       bootstrap_context.instance_variable_get(:@run_list).should eq run_list
     end
-
-    describe "accepts encrypted_data_bag_secret via Chef::Config" do
-      let(:chef_config) { {:encrypted_data_bag_secret => secret_file }}
-      it "reads the encrypted_data_bag_secret" do
-        bootstrap_context.encrypted_data_bag_secret.should eq IO.read(secret_file)
-      end
-    end
   end
 
   describe "when a bootstrap_version is specified" do

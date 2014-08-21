@@ -197,18 +197,6 @@ describe Chef::Knife::Bootstrap do
       end
     end
 
-    context "via Chef::Config[:encrypted_data_bag_secret]" do
-      before(:each) { Chef::Config[:encrypted_data_bag_secret] = secret_file }
-      let(:secret) { IO.read(secret_file) }
-
-      it "creates a secret file" do
-        rendered_template.should match(%r{#{secret}})
-      end
-
-      it "renders the client.rb with an encrypted_data_bag_secret entry" do
-        rendered_template.should match(%r{encrypted_data_bag_secret\s*"/etc/chef/encrypted_data_bag_secret"})
-      end
-    end
   end
 
   describe "when configuring the underlying knife ssh command" do
@@ -378,17 +366,6 @@ describe Chef::Knife::Bootstrap do
       @knife.config[:ssh_password] = "password"
       @knife_ssh.should_receive(:run).and_raise(Net::SSH::AuthenticationFailed)
       lambda { @knife.run }.should raise_error(Net::SSH::AuthenticationFailed)
-    end
-
-    context "Chef::Config[:encrypted_data_bag_secret] is set" do
-      let(:secret_file) { File.join(CHEF_SPEC_DATA, 'bootstrap', 'encrypted_data_bag_secret') }
-      before { Chef::Config[:encrypted_data_bag_secret] = secret_file }
-
-      it "warns the configuration option is deprecated" do
-        @knife_ssh.should_receive(:run)
-        @knife.ui.should_receive(:warn).at_least(3).times
-        @knife.run
-      end
     end
 
   end

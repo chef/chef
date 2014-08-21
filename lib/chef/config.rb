@@ -417,10 +417,6 @@ class Chef
 
     # This secret is used to decrypt encrypted data bag items.
     default(:encrypted_data_bag_secret) do
-      # We have to check for the existence of the default file before setting it
-      # since +Chef::Config[:encrypted_data_bag_secret]+ is read by older
-      # bootstrap templates to determine if the local secret should be uploaded to
-      # node being bootstrapped. This should be removed in Chef 12.
       if File.exist?(platform_specific_path("/etc/chef/encrypted_data_bag_secret"))
         platform_specific_path("/etc/chef/encrypted_data_bag_secret")
       else
@@ -506,6 +502,8 @@ class Chef
       default :bootstrap_version, nil
       default :bootstrap_proxy, nil
       default :bootstrap_template, "chef-full"
+      default :secret, nil
+      default :secret_file, nil
       default :identity_file, nil
       default :host_key_verify, nil
       default :forward_agent, nil
