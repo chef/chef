@@ -2,6 +2,8 @@
 
 ## Unreleased: 12.0.0
 
+* [**Mark Gibbons**](https://github.com/MarkGibbons):
+  Fix noauto support in Solaris Mount Provider
 * [**Jordan Evans**](https://github.com/jordane):
   support version constraints in value_for_platform
 * [**Yukihiko Sawanobori**](https://github.com/sawanoboly):
