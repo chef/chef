@@ -34,6 +34,14 @@ describe Chef::Resource::DscScript do
   let(:configuration_data) { '@{AllNodes = @( @{ NodeName = "localhost"; PSDscAllowPlainTextPassword = $true })}' }
   let(:configuration_data_script) { 'c:/myconfigs/data/safedata.psd1' }
 
+  it "has a default action of `:run`" do
+    expect(dsc_test_resource.action).to eq(:run)
+  end
+
+  it "has an allowed_actions attribute with only the `:run` and `:nothing` attributes" do
+    expect(dsc_test_resource.allowed_actions.to_set).to eq([:run,:nothing].to_set)
+  end
+
   it "allows the code attribute to be set" do
     dsc_test_resource.code(configuration_code)
     expect(dsc_test_resource.code).to eq(configuration_code)
