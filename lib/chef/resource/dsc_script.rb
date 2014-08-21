@@ -31,7 +31,7 @@ class Chef
 
       def code(arg=nil)
         if arg && command
-          raise ArgumentError, "Only one of 'code' and 'command' properties may be specified"
+          raise ArgumentError, "Only one of 'code' and 'command' attributes may be specified"
         end
         if arg && configuration_name
           raise ArgumentError, "Attribute `code` may not be set if `configuration_name` is set"
@@ -56,7 +56,7 @@ class Chef
 
       def command(arg=nil)
         if arg && code
-          raise ArgumentError, "Only one of 'code' and 'command' properties may be specified"
+          raise ArgumentError, "Only one of 'code' and 'command' attributes may be specified"
         end
         set_or_return(
           :command,
@@ -66,8 +66,22 @@ class Chef
       end
 
       def configuration_data(arg=nil)
+        if arg && configuration_data_script
+          raise ArgumentError, "Only one of 'configuration_data' and 'configuration_script' attributes may be specified"
+        end
         set_or_return(
           :configuration_data,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def configuration_data_script(arg=nil)
+        if arg && configuration_data
+          raise ArgumentError, "Only one of 'configuration_data' and 'configuration_script' attributes may be specified"
+        end
+        set_or_return(
+          :configuration_data_script,
           arg,
           :kind_of => [ String ]
         )

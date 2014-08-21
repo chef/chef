@@ -59,8 +59,9 @@ class Chef
       protected
 
       def run_configuration(operation)
-        configuration_flags = get_augmented_configuration_flags(@dsc_resource.flags)
         config_directory = ::Dir.mktmpdir("chef-dsc-script")
+        configuration_data_path = get_configuration_data_path(config_directory)
+        configuration_flags = get_augmented_configuration_flags(configuration_data_path)
 
         config_manager = Chef::Util::DSC::LocalConfigurationManager.new(@run_context.node, config_directory)
 
@@ -75,12 +76,12 @@ class Chef
         end
       end
 
-      def get_augmented_configuration_flags(flags)
+      def get_augmented_configuration_flags(configuration_data_path)
         updated_flags = nil
-        if @dsc_resource.configuration_data
-          updated_flags = flags.nil? ? {} : flags.dup
-          Chef::Util::PathHelper.validate_path(@dsc_resource.configuration_data)
-          updated_flags[:configurationdata] = @dsc_resource.configuration_data
+        if configuration_data_path
+          updated_flags = @dsc_resource.flags.nil? ? {} : @dsc_resource.flags.dup
+          Chef::Util::PathHelper.validate_path(configuration_data_path)
+          updated_flags[:configurationdata] = configuration_data_path
         end
         updated_flags
       end
@@ -98,6 +99,18 @@ class Chef
           generator.configuration_document_from_script_path(@dsc_resource.command, configuration_name, configuration_flags, shellout_flags)
         else
           generator.configuration_document_from_script_code(@dsc_resource.code, configuration_flags, shellout_flags)
+        end
+      end
+
+      def get_configuration_data_path(config_directory)
+        if @dsc_resource.configuration_data_script
+          @dsc_resource.configuration_data_script
+        elsif @dsc_resource.configuration_data
+          configuration_data_path = "#{config_directory}/chef_dsc_config_data.psd1"
+          ::File.open(configuration_data_path, 'wt') do | script |
+            script.write(@dsc_resource.configuration_data)
+          end
+          configuration_data_path
         end
       end
 
