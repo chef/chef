@@ -1,5 +1,9 @@
 # Chef Client Release Notes 12.0.0:
 
+## Solaris Mount Provider
+
+The Solaris provider now supports specifying the fsck_device attribute (which defaults to '-' for backwards compat).
+
 ## Version Constraints in value_for_platform
 
 The `value_for_platform` helper can now take version constraints like `>=` and `~>`.  This is particularly useful for users
