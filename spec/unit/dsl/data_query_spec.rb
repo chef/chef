@@ -175,23 +175,31 @@ describe Chef::DSL::DataQuery do
           end
         end
 
-        context "when Chef::Config[:encrypted_data_bag_secret] is not configured" do
-          let(:path) { nil }
-
+        shared_examples_for "no secret file" do
           it "should fail to load the data bag item" do
-            expect{ language.data_bag_item(bag_name, item_name) }.to raise_error(ArgumentError, /No secret specified and no secret found/)
+            expect( Chef::Log ).to receive(:error).with(/Failed to load secret for encrypted data bag item/)
+            expect( Chef::Log ).to receive(:error).with(/Failed to load data bag item/)
+            expect{ language.data_bag_item(bag_name, item_name) }.to raise_error(error_type, error_message)
+          end
+        end
+
+        context "when Chef::Config[:encrypted_data_bag_secret] is not configured" do
+          include_examples "no secret file" do
+            let(:path) { nil }
+            let(:error_type) { ArgumentError }
+            let(:error_message) { /No secret specified and no secret found/ }
           end
         end
 
         context "when Chef::Config[:encrypted_data_bag_secret] does not exist" do
-          let(:path) { "/tmp/my_secret" }
+          include_examples "no secret file" do
+            before do
+              expect( File ).to receive(:exist?).with(path).and_return(false)
+            end
 
-          before do
-            expect( File ).to receive(:exist?).with(path).and_return(false)
-          end
-
-          it "should fail to load the data bag item" do
-            expect{ language.data_bag_item(bag_name, item_name) }.to raise_error(Errno::ENOENT, /file not found/)
+            let(:path) { "/tmp/my_secret" }
+            let(:error_type) { Errno::ENOENT }
+            let(:error_message) { /file not found/ }
           end
         end
       end

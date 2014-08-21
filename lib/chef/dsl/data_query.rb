@@ -56,14 +56,24 @@ class Chef
       def data_bag_item(bag, item, secret=nil)
         DataBag.validate_name!(bag.to_s)
         DataBagItem.validate_id!(item)
+
         item = DataBagItem.load(bag, item)
         if encrypted?(item.raw_data)
           Log.debug("Data bag item looks encrypted: #{bag.inspect} #{item.inspect}")
-          secret ||= EncryptedDataBagItem.load_secret
-          item = EncryptedDataBagItem.new(item.raw_data, secret)
+
+          # Try to load the data bag item secret, if secret is not provided.
+          # Chef::EncryptedDataBagItem.load_secret may throw a variety of errors.
+          begin
+            secret ||= EncryptedDataBagItem.load_secret
+            item = EncryptedDataBagItem.new(item.raw_data, secret)
+          rescue Exception
+            Log.error("Failed to load secret for encrypted data bag item: #{bag.inspect} #{item.inspect}")
+            raise
+          end
         end
+        
         item
-      rescue Exception => e
+      rescue Exception
         Log.error("Failed to load data bag item: #{bag.inspect} #{item.inspect}")
         raise
       end
