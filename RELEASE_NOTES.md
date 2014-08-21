@@ -1,5 +1,21 @@
 # Chef Client Release Notes 12.0.0:
 
+## Git SCM provider now support environment attribute
+
+You can now pass in a hash of environment variables into the git provider:
+
+```ruby
+git "/opt/mysources/couch" do
+  repository "git://git.apache.org/couchdb.git"
+  revision "master"
+  environment  { 'VAR' => 'whatever' }
+  action :sync
+end
+```
+
+The git provider already automatically sets `ENV['HOME']` and `ENV['GIT_SSH']` but those can both be overridden
+by passing them into the environment hash if the defaults are not appropriate.
+
 ## DSCL user provider now supports Mac OS X 10.7 and above.
 
 DSCL user provider in Chef has supported setting passwords only on Mac OS X 10.6. In this release, Mac OS X versions 10.7 and above are now supported. Support for Mac OS X 10.6 is dropped from the dscl provider since this version is EOLed by Apple.

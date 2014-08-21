@@ -2,6 +2,8 @@
 
 ## Unreleased: 12.0.0
 
+* [**Yukihiko Sawanobori**](https://github.com/sawanoboly):
+  Add environment resource attribute to scm resources
 * added Chef::ResourceCollection#insert_at API to the ResourceCollection
 * [**Grzesiek Kolodziejczyk**](https://github.com/grk):
   Use thread-safe OpenSSL::Digest instead of Digest

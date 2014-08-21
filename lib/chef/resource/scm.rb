@@ -40,6 +40,7 @@ class Chef
         @allowed_actions.push(:checkout, :export, :sync, :diff, :log)
         @action = [:sync]
         @checkout_branch = "deploy"
+        @environment = nil
       end
 
       def destination(arg=nil)
@@ -172,6 +173,15 @@ class Chef
         )
       end
 
+      def environment(arg=nil)
+        set_or_return(
+          :environment,
+          arg,
+          :kind_of => [ Hash ]
+        )
+      end
+
+      alias :env :environment
     end
   end
 end
