@@ -90,7 +90,7 @@ class Chef::Util::Powershell
     end
 
     def escape_parameter_value(parameter_value)
-      parameter_value.gsub(/\`|\'|\"/,'`\1')
+      parameter_value.gsub(/(`|'|"|#)/,'`\1')
     end
 
     def escape_string_parameter_value(parameter_value)
@@ -122,7 +122,7 @@ class Chef::Util::Powershell
           raise ArgumentError, "Invalid argument type `#{switch_value.class}` specified for PowerShell switch `:#{switch_name.to_s}`. Arguments to PowerShell must be of type `String`, `Numeric`, `Float`, `FalseClass`, or `TrueClass`"
         end
 
-        switch_present ? ["-#{switch_name.to_s.downcase}", switch_argument].join(' ') : ''
+        switch_present ? ["-#{switch_name.to_s.downcase}", switch_argument].join(' ').strip : ''
       end
 
       command_switches.join(' ')
