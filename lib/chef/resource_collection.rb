@@ -258,7 +258,7 @@ class Chef
 
       def is_chef_resource(arg)
         unless arg.kind_of?(Chef::Resource)
-          raise ArgumentError, "Cannot insert a #{arg.class} into a resource collection: must be a Chef::Resource or descendant thereof"
+          raise ArgumentError, "Cannot insert a #{arg.class} into a resource collection: must be a subclass of Chef::Resource"
         end
         true
       end
