@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name "chef"
+name "chef11"
 friendly_name "Chef Client"
 maintainer "Chef Software, Inc."
 homepage "http://www.getchef.com"
