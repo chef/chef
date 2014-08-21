@@ -50,8 +50,12 @@ class Chef
 
         def value_for_node(node)
           platform, version = node[:platform].to_s, node[:platform_version].to_s
+          # Check if we match a version constraint via Chef::VersionConstraint and Chef::Version::Platform
+          matched_value = match_versions(node)
           if @values.key?(platform) && @values[platform].key?(version)
             @values[platform][version]
+          elsif matched_value
+            matched_value
           elsif @values.key?(platform) && @values[platform].key?("default")
             @values[platform]["default"]
           elsif @values.key?("default")
@@ -62,6 +66,44 @@ class Chef
         end
 
         private
+
+        def match_versions(node)
+          begin
+            platform, version = node[:platform].to_s, node[:platform_version].to_s
+            return nil unless @values.key?(platform)
+            node_version = Chef::Version::Platform.new(version)
+            key_matches = []
+            keys = @values[platform].keys
+            keys.each do |k|
+              begin
+                if Chef::VersionConstraint.new(k).include?(node_version)
+                  key_matches << k
+                end
+              rescue Chef::Exceptions::InvalidVersionConstraint => e
+                Chef::Log.debug "Caught InvalidVersionConstraint. This means that a key in value_for_platform cannot be interpreted as a Chef::VersionConstraint."
+                Chef::Log.debug(e)
+              end
+            end
+            return @values[platform][version] if key_matches.include?(version)
+            case key_matches.length
+            when 0
+              return nil
+            when 1
+              return @values[platform][key_matches.first]
+            else
+              raise "Multiple matches detected for #{platform} with values #{@values}. The matches are: #{key_matches}"
+            end
+          rescue Chef::Exceptions::InvalidCookbookVersion => e
+            # Lets not break because someone passes a weird string like 'default' :)
+            Chef::Log.debug(e)
+            Chef::Log.debug "InvalidCookbookVersion exceptions are common and expected here: the generic constraint matcher attempted to match something which is not a constraint. Moving on to next version or constraint"
+            return nil
+          rescue Chef::Exceptions::InvalidPlatformVersion => e
+            Chef::Log.debug "Caught InvalidPlatformVersion, this means that Chef::Version::Platform does not know how to turn #{node_version} into an x.y.z format"
+            Chef::Log.debug(e)
+            return nil
+          end
+        end
 
         def set(platforms, value)
           if platforms.to_s == 'default'

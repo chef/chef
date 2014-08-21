@@ -2,6 +2,8 @@
 
 ## Unreleased: 12.0.0
 
+* [**Jordan Evans**](https://github.com/jordane):
+  support version constraints in value_for_platform
 * [**Yukihiko Sawanobori**](https://github.com/sawanoboly):
   Add environment resource attribute to scm resources
 * added Chef::ResourceCollection#insert_at API to the ResourceCollection
