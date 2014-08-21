@@ -67,21 +67,30 @@ class Chef
     alias_method :push, :<<
 
     def insert(resource)
-      is_chef_resource(resource)
       if @insert_after_idx
         # in the middle of executing a run, so any resources inserted now should
         # be placed after the most recent addition done by the currently executing
         # resource
-        @resources.insert(@insert_after_idx + 1, resource)
-        # update name -> location mappings and register new resource
-        @resources_by_name.each_key do |key|
-          @resources_by_name[key] += 1 if @resources_by_name[key] > @insert_after_idx
-        end
-        @resources_by_name[resource.to_s] = @insert_after_idx + 1
+        insert_at(@insert_after_idx + 1, resource)
         @insert_after_idx += 1
       else
+        is_chef_resource(resource)
         @resources << resource
         @resources_by_name[resource.to_s] = @resources.length - 1
+      end
+    end
+
+    def insert_at(insert_at_index, *resources)
+      resources.each do |resource|
+        is_chef_resource(resource)
+      end
+      @resources.insert(insert_at_index, *resources)
+      # update name -> location mappings and register new resource
+      @resources_by_name.each_key do |key|
+        @resources_by_name[key] += resources.size if @resources_by_name[key] >= insert_at_index
+      end
+      resources.each_with_index do |resource, i|
+        @resources_by_name[resource.to_s] = insert_at_index + i
       end
     end
 
@@ -249,7 +258,7 @@ class Chef
 
       def is_chef_resource(arg)
         unless arg.kind_of?(Chef::Resource)
-          raise ArgumentError, "Members must be Chef::Resource's"
+          raise ArgumentError, "Cannot insert a #{arg.class} into a resource collection: must be a Chef::Resource or descendant thereof"
         end
         true
       end
