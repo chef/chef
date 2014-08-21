@@ -60,7 +60,7 @@ build do
   auxiliary_gems['foodcritic']      = '4.0.0'
   auxiliary_gems['chefspec']        = '4.0.1'
   auxiliary_gems['rubocop']         = '0.18.1'
-  auxiliary_gems['knife-spork']     = '1.3.4'
+  auxiliary_gems['knife-spork']     = '1.4.1'
   auxiliary_gems['kitchen-vagrant'] = '0.15.0'
   # Strainer build is hosed on windows
   # auxiliary_gems['strainer'] = '3.3.0'
