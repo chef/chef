@@ -127,7 +127,7 @@ class Chef
         end
 
         def remount_command
-           return "mount -o remount #{@new_resource.mount_point}"
+          return "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.mount_point}"
         end
 
         def remount_fs
