@@ -1,5 +1,22 @@
 # Chef Client Release Notes 12.0.0:
 
+## Version Constraints in value_for_platform
+
+The `value_for_platform` helper can now take version constraints like `>=` and `~>`.  This is particularly useful for users
+of RHEL 7 where the version numbers now look like `7.0.<buildnumber>`, so that they can do:
+
+```ruby
+value_for_platform(
+  "redhat" => {
+    "~> 7.0" => "version 7.x.y"
+    ">= 8.0" => "version 8.0.0 and greater"
+  }
+}
+```
+
+Note that if two version constraints match it is considered ambiguous and will raise an Exception.  An exact match, however, will
+always take precedence over a version constraint.
+
 ## Git SCM provider now support environment attribute
 
 You can now pass in a hash of environment variables into the git provider:
