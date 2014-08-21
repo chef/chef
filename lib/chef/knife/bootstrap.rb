@@ -75,6 +75,10 @@ class Chef
         :long => "--node-name NAME",
         :description => "The Chef node name for your new node"
 
+      option :prerelease,
+        :long => "--prerelease",
+        :description => "Install the pre-release chef gems"
+
       option :bootstrap_version,
         :long => "--bootstrap-version VERSION",
         :description => "The version of Chef to install",
@@ -189,7 +193,10 @@ class Chef
         template = Chef::Config[:knife][:bootstrap_template]
 
         # Use the template directly if it's a path to an actual file
-        return template if File.exists?(template)
+        if File.exists?(template)
+          Chef::Log.debug("Using the specified bootstrap template: #{File.dirname(bootstrap_template)}")
+          return template
+        end
 
         # Otherwise search the template directories until we find the right one
 

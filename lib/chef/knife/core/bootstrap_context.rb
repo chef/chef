@@ -98,17 +98,18 @@ CONFIG
         # If user is on X.Y.Z bootstrap will use the latest X release
         # X here can be 10 or 11
         def latest_current_chef_version_string
-          chef_version_string = if knife_config[:bootstrap_version]
-            knife_config[:bootstrap_version]
+          installer_version_string = nil
+          if config[:prerelease]
+            installer_version_string = "-p"
           else
             Chef::VERSION.split(".").first
           end
+            installer_version_string = ["-v", chef_version_string]
 
-          installer_version_string = ["-v", chef_version_string]
-
-          # If bootstrapping a pre-release version add -p to the installer string
-          if chef_version_string.split(".").length > 3
-            installer_version_string << "-p"
+            # If bootstrapping a pre-release version add -p to the installer string
+            if chef_version_string.split(".").length > 3
+              installer_version_string << "-p"
+            end
           end
 
           installer_version_string.join(" ")
