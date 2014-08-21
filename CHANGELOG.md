@@ -1,6 +1,6 @@
 # Chef Client Changelog
 
-## Last Releasee: 11.14.4:
+## Last Release: 11.14.6:
 
 * Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
 * Fix RPM package version detection (Issue 1554)
