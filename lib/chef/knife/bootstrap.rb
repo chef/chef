@@ -75,10 +75,6 @@ class Chef
         :long => "--node-name NAME",
         :description => "The Chef node name for your new node"
 
-      option :prerelease,
-        :long => "--prerelease",
-        :description => "Install the pre-release chef gems"
-
       option :bootstrap_version,
         :long => "--bootstrap-version VERSION",
         :description => "The version of Chef to install",

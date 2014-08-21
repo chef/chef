@@ -33,10 +33,6 @@ describe Chef::Knife::Core::BootstrapContext do
 
   subject(:bootstrap_context) { described_class.new(config, run_list, chef_config) }
 
-  it "installs the same version of chef on the remote host" do
-    bootstrap_context.bootstrap_version_string.should eq "--version #{Chef::VERSION}"
-  end
-
   it "runs chef with the first-boot.json in the _default environment" do
     bootstrap_context.start_chef.should eq "chef-client -j /etc/chef/first-boot.json -E _default"
   end
@@ -92,24 +88,6 @@ EXPECTED
     let(:chef_config){ {:environment => "prodtastic"} }
     it "starts chef in the configured environment" do
       bootstrap_context.start_chef.should == 'chef-client -j /etc/chef/first-boot.json -E prodtastic'
-    end
-  end
-
-  describe "when installing a prerelease version of chef" do
-    let(:config){ {:prerelease => true }}
-    it "supplies --prerelease as the version string" do
-      bootstrap_context.bootstrap_version_string.should eq '--prerelease'
-    end
-  end
-
-  describe "when installing an explicit version of chef" do
-    let(:chef_config) do
-      {
-        :knife => { :bootstrap_version => '123.45.678' }
-      }
-    end
-    it "gives --version $VERSION as the version string" do
-      bootstrap_context.bootstrap_version_string.should eq '--version 123.45.678'
     end
   end
 

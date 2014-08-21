@@ -34,14 +34,6 @@ class Chef
           @chef_config  = chef_config
         end
 
-        def bootstrap_version_string
-          if @config[:prerelease]
-            "--prerelease"
-          else
-            "--version #{chef_version}"
-          end
-        end
-
         def bootstrap_environment
           @chef_config[:environment] || '_default'
         end
@@ -93,20 +85,12 @@ CONFIG
           client_path = @chef_config[:chef_client_path] || 'chef-client'
           s = "#{client_path} -j /etc/chef/first-boot.json"
           s << ' -l debug' if @config[:verbosity] and @config[:verbosity] >= 2
-          s << " -E #{bootstrap_environment}" if chef_version.to_f != 0.9 # only use the -E option on Chef 0.10+
+          s << " -E #{bootstrap_environment}"
           s
         end
 
         def knife_config
           @chef_config.key?(:knife) ? @chef_config[:knife] : {}
-        end
-
-        #
-        # This function is used by older bootstrap templates other than chef-full
-        # and potentially by custom templates as well hence it's logic needs to be
-        # preserved for backwards compatibility reasons until we hit Chef 12.
-        def chef_version
-          knife_config[:bootstrap_version] || Chef::VERSION
         end
 
         #
