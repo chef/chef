@@ -18,7 +18,7 @@
 
 require 'chef/chef_fs/file_system/base_fs_object'
 require 'chef/http/simple'
-require 'digest/md5'
+require 'openssl'
 
 class Chef
   module ChefFS
@@ -74,7 +74,7 @@ class Chef
         private
 
         def calc_checksum(value)
-          Digest::MD5.hexdigest(value)
+          OpenSSL::Digest::MD5.hexdigest(value)
         end
       end
     end
