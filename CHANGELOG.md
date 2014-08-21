@@ -1,6 +1,6 @@
-# Chef Client Changelog
-
 ## Unreleased: 12.0.0
+
+### Community Contributions
 
 * [**James Belchamber**](https://github.com/JamesBelchamber):
   Mount provider remount action now honours options
@@ -10,18 +10,8 @@
   support version constraints in value_for_platform
 * [**Yukihiko Sawanobori**](https://github.com/sawanoboly):
   Add environment resource attribute to scm resources
-* added Chef::ResourceCollection#insert_at API to the ResourceCollection
 * [**Grzesiek Kolodziejczyk**](https://github.com/grk):
   Use thread-safe OpenSSL::Digest instead of Digest
-* knife cookbook site download/list/search/share/show/unshare now uses
-  supermerket.getchef.com urls
-* chef/json_compat now throws its own exceptions not JSON gem exceptions
-* Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
-* Fix a bug in the experimental Policyfile mode that caused errors when
-  using templates.
-* Disable JSON encoding of request body when non-JSON content type is
-  specified.
-* Clean up FileVendor and CookbookUploader internal APIs
 * [**Grzesiek Kolodziejczyk**](https://github.com/grk):
   Chef::Digester converted to thread-safe Singleton mixin.
 * [**Vasiliy Tolstov**](https://github.com/vtolstov):
@@ -36,34 +26,6 @@
   Check local repository for ips package installs (#1703)
 * [**Sean Clemmer**](https://github.com/sczizzo):
   Fix "cron" resource handling of special strings (e.g. @reboot, @yearly) (#1708)
-
-* http_proxy and related config vars no longer clobber already set ENV vars
-* all http_proxy configs now set lowercase + uppercase versions of ENV vars
-* https_proxy/ftp_proxy support setting `http://` URLs (and whatever mix and match makes sense)
-* log resource now marks itself as supporting why-run
-* http_request no longer appends "?message=" query string to GET and HEAD requests
-* added shell_out commands directly to the recipe DSL
-* cookbook synchronizer deletes old files from cookbooks
-* do not clear file cache when override run list is set (CHEF-3684)
-* ruby 1.8.7/1.9.1/1.9.2 support is dropped
-* set no_lazy_load to true (CHEF-4961)
-* set file_stating_uses_destdir config option default to true (CHEF-5040)
-* remove dependency on rest-client gem
-* Add method shell_out_with_systems_locale to ShellOut.
-* Fix knife cookbook site share on windows (CHEF-4994)
-* chef-repo rake tasks are deprecated; print relevant information for
-  each one.
-* Fix RPM package version detection (Issue 1554)
-* Don't override :default provider map if :default passed as platform (OC-11667).
-* Fix SuSE package removal failure (Issue 1732).
-* Enable Travis to run Test Kitchen with Kitchen EC2.
-* End-to-end tests for Ubuntu 12.04
-* Only run end-to-end tests when secure environment variables are present.
-* Remove recipe DSL from base provisioner (Issue 1446).
-* Enable client-side key generation by default. (Issue 1711)
-* CookbookSiteStreamingUploader now uses ssl_verify_mode config option (Issue 1518).
-
-
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   'group' provider on OSX properly uses 'dscl' to determine existing groups
 * [**Hugo Lopes Tavares**](https://github.com/hltbra):
@@ -101,8 +63,19 @@
 * [**Eric Herot**](https://github.com/eherot):
   Add whitespace boundaries to some mount point references in mount provider.
 
+### Chef Contributions
 
-
+* knife cookbook site download/list/search/share/show/unshare now uses
+  supermerket.getchef.com urls
+* added Chef::ResourceCollection#insert_at API to the ResourceCollection
+* http_proxy and related config vars no longer clobber already set ENV vars
+* all http_proxy configs now set lowercase + uppercase versions of ENV vars
+* https_proxy/ftp_proxy support setting `http://` URLs (and whatever mix and match makes sense)
+* End-to-end tests for Ubuntu 12.04
+* Only run end-to-end tests when secure environment variables are present.
+* Remove recipe DSL from base provisioner (Issue 1446).
+* Enable client-side key generation by default. (Issue 1711)
+* CookbookSiteStreamingUploader now uses ssl_verify_mode config option (Issue 1518).
 * chef/json_compat now throws its own exceptions not JSON gem exceptions
 * Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
 * Fix a bug in the experimental Policyfile mode that caused errors when
@@ -120,7 +93,6 @@
 * set file_stating_uses_destdir config option default to true (CHEF-5040)
 * remove dependency on rest-client gem
 * Add method shell_out_with_systems_locale to ShellOut.
-* Fix knife cookbook site share on windows (CHEF-4994)
 * chef-repo rake tasks are deprecated; print relevant information for
   each one.
 * Fix RPM package version detection (Issue 1554)
@@ -239,8 +211,6 @@
 * Wrap code in block context when syntax checking so `return` is valid
   (CHEF-5199)
 * Quote git resource rev\_pattern to prevent glob matching files (CHEF-4940)
-* Fix OS X service provider actions that don't require the service label
-  to work when there is no plist. (CHEF-5223)
 * User resource now only prints the name during why-run runs. (CHEF-5180)
 * Set --run-lock-timeout to wait/bail if another client has the runlock (CHEF-5074)
 * remote\_file's source attribute does not support DelayedEvaluators (CHEF-5162)
