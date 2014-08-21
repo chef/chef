@@ -90,11 +90,21 @@ class Chef
         :description => "Do not proxy locations for the node being bootstrapped; this option is used internally by Opscode",
         :proc => Proc.new { |np| Chef::Config[:knife][:bootstrap_no_proxy] = np }
 
+      # DEPR: Remove this option in Chef 13
       option :distro,
         :short => "-d DISTRO",
         :long => "--distro DISTRO",
-        :description => "Bootstrap a distro using a template",
-        :default => "chef-full"
+        :description => "Bootstrap a distro using a template. [DEPRECATED] Use -t / --template option instead.",
+        :proc => Proc.new { |t|
+          Chef::Log.warn("[DEPRECATED] -d / --distro option is deprecated. Use -t / --template option instead.")
+          Chef::Config[:knife][:bootstrap_template] = t
+        }
+
+      option :template,
+        :short => "-t TEMPLATE",
+        :long => "--template TEMPLATE",
+        :description => "Bootstrap Chef using a built-in or custom template. Set to the full path of an erb template or use one of the built-in templates.",
+        :proc => Proc.new { |t| Chef::Config[:knife][:bootstrap_template] = t }
 
       option :use_sudo,
         :long => "--sudo",
@@ -106,10 +116,14 @@ class Chef
         :description => "Execute the bootstrap via sudo with password",
         :boolean => false
 
+      # DEPR: Remove this option in Chef 13
       option :template_file,
         :long => "--template-file TEMPLATE",
-        :description => "Full path to location of template to use",
-        :default => false
+        :description => "Full path to location of template to use. [DEPRECATED] Use -t / --template option instead.",
+        :proc => Proc.new { |t|
+          Chef::Log.warn("[DEPRECATED] --template-file option is deprecated. Use -t / --template option instead.")
+          Chef::Config[:knife][:bootstrap_template] = t
+        }
 
       option :run_list,
         :short => "-r RUN_LIST",
@@ -137,7 +151,8 @@ class Chef
         :proc => Proc.new { |h|
           Chef::Config[:knife][:hints] ||= Hash.new
           name, path = h.split("=")
-          Chef::Config[:knife][:hints][name] = path ? Chef::JSONCompat.parse(::File.read(path)) : Hash.new  }
+          Chef::Config[:knife][:hints][name] = path ? Chef::JSONCompat.parse(::File.read(path)) : Hash.new
+        }
 
       option :secret,
         :short => "-s SECRET",
@@ -170,32 +185,34 @@ class Chef
         :description => "Add options to curl when install chef-client",
         :proc        => Proc.new { |co| Chef::Config[:knife][:bootstrap_curl_options] = co }
 
-      def find_template(template=nil)
-        # Are we bootstrapping using an already shipped template?
-        if config[:template_file]
-          bootstrap_files = config[:template_file]
-        else
-          bootstrap_files = []
-          bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{config[:distro]}.erb")
-          bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{config[:distro]}.erb") if Knife.chef_config_dir
-          bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{config[:distro]}.erb") if ENV['HOME']
-          bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{config[:distro]}.erb"))
-          bootstrap_files.flatten!
-        end
+      def find_template
+        template = Chef::Config[:knife][:bootstrap_template]
 
-        template = Array(bootstrap_files).find do |bootstrap_template|
+        # Use the template directly if it's a path to an actual file
+        return template if File.exists?(template)
+
+        # Otherwise search the template directories until we find the right one
+
+        bootstrap_files = []
+        bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{template}.erb")
+        bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{template}.erb") if Knife.chef_config_dir
+        bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{template}.erb") if ENV['HOME']
+        bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{template}.erb"))
+        bootstrap_files.flatten!
+
+        template_file = Array(bootstrap_files).find do |bootstrap_template|
           Chef::Log.debug("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
           File.exists?(bootstrap_template)
         end
 
-        unless template
-          ui.info("Can not find bootstrap definition for #{config[:distro]}")
+        unless template_file
+          ui.info("Can not find bootstrap definition for #{config[:template]}")
           raise Errno::ENOENT
         end
 
         Chef::Log.debug("Found bootstrap template in #{File.dirname(template)}")
 
-        template
+        template_file
       end
 
       def render_template(template=nil)
@@ -210,7 +227,7 @@ class Chef
       def run
         validate_name_args!
         warn_chef_config_secret_key
-        @template_file = find_template(config[:bootstrap_template])
+        @template_file = find_template
         @node_name = Array(@name_args).first
         # back compat--templates may use this setting:
         config[:server_name] = @node_name

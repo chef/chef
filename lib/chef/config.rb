@@ -505,6 +505,7 @@ class Chef
       default :ssh_gateway, nil
       default :bootstrap_version, nil
       default :bootstrap_proxy, nil
+      default :bootstrap_template, "chef-full"
       default :identity_file, nil
       default :host_key_verify, nil
       default :forward_agent, nil

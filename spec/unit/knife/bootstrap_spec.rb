@@ -39,8 +39,7 @@ describe Chef::Knife::Bootstrap do
   end
 
   it "should error if template can not be found" do
-    @knife.config[:template_file] = false
-    @knife.config[:distro] = 'penultimate'
+    Chef::Config[:knife][:bootstrap_template] = 'penultimate'
     lambda { @knife.find_template }.should raise_error
   end
 
@@ -57,7 +56,7 @@ describe Chef::Knife::Bootstrap do
   end
 
   it "should load the specified template" do
-    @knife.config[:distro] = 'fedora13-gems'
+    @knife.config[:template] = 'fedora13-gems'
     lambda { @knife.find_template }.should_not raise_error
   end
 
@@ -66,7 +65,7 @@ describe Chef::Knife::Bootstrap do
     Gem.stub(:find_files).and_return(["/Users/schisamo/.rvm/gems/ruby-1.9.2-p180@chef-0.10/gems/knife-windows-0.5.4/lib/chef/knife/bootstrap/fake-bootstrap-template.erb"])
     File.stub(:exists?).and_return(true)
     IO.stub(:read).and_return('random content')
-    @knife.config[:distro] = 'fake-bootstrap-template'
+    @knife.config[:template] = 'fake-bootstrap-template'
     lambda { @knife.find_template }.should_not raise_error
   end
 
@@ -253,9 +252,8 @@ describe Chef::Knife::Bootstrap do
     end
     context "validating use_sudo_password" do
       before do
-        @knife.config[:distro] = "ubuntu"
         @knife.config[:ssh_password] = "password"
-        @knife.stub(:read_template).and_return(IO.read(@knife.find_template).chomp)
+        @knife.stub(:read_template).and_return("This is the template contents.")
       end
 
       it "use_sudo_password contains description and long params for help" do
