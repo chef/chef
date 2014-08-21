@@ -2,6 +2,7 @@
 
 ## Unreleased: 12.0.0
 
+* added Chef::ResourceCollection#insert_at API to the ResourceCollection
 * [**Grzesiek Kolodziejczyk**](https://github.com/grk):
   Use thread-safe OpenSSL::Digest instead of Digest
 * knife cookbook site download/list/search/share/show/unshare now uses
