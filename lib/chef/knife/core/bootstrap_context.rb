@@ -64,6 +64,14 @@ CONFIG
             client_rb << "# Using default node name (fqdn)\n"
           end
 
+          unless @config[:verify_api_cert].nil?
+            client_rb << %Q{verify_api_cert #{@config[:verify_api_cert]}\n}
+          end
+
+          if knife_config[:ssl_verify_mode]
+            client_rb << %Q{ssl_verify_mode :#{knife_config[:ssl_verify_mode]}\n}
+          end
+
           if knife_config[:bootstrap_proxy]
             client_rb << %Q{http_proxy        "#{knife_config[:bootstrap_proxy]}"\n}
             client_rb << %Q{https_proxy       "#{knife_config[:bootstrap_proxy]}"\n}

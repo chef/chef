@@ -168,4 +168,32 @@ EXPECTED
       bootstrap_context.latest_current_chef_version_string.should eq("-v #{Chef::VERSION.to_i}")
     end
   end
+
+  describe "via --ssl-verify-mode is specified" do
+    let(:chef_config) do
+      {
+        :knife => {:ssl_verify_mode => :verify_peer}
+      }
+    end
+
+    it "should set ssl_verify_mode in the config" do
+      bootstrap_context.config_content.should include("ssl_verify_mode :verify_peer")
+    end
+  end
+
+  describe "via --no-verify-api-cert" do
+    let(:config) {{:verify_api_cert => false}}
+
+    it "should set verify_api_cert to false in the config" do
+      bootstrap_context.config_content.should include("verify_api_cert false")
+    end
+  end
+
+  describe "via --verify-api-cert" do
+    let(:config) {{:verify_api_cert => true}}
+
+    it "should set verify_api_cert to true in the config" do
+      bootstrap_context.config_content.should include("verify_api_cert true")
+    end
+  end
 end

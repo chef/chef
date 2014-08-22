@@ -248,6 +248,55 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
+  describe "specifying ssl verification" do
+    subject(:knife) do
+      k = described_class.new
+      k.instance_variable_set("@template_file", template_file)
+      k.parse_options(options)
+      k.merge_configs
+      k
+    end
+
+    let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "no_proxy.erb")) }
+
+    let(:rendered_template) do
+      template_string = knife.read_template
+      knife.render_template(template_string)
+    end
+
+    context "via --ssl-verify-mode none" do
+      let(:options) { ["--ssl-verify-mode", "none"] }
+
+      it "renders the client.rb with ssl_verify_mode set to :verify_none" do
+        rendered_template.should match(/ssl_verify_mode :verify_none/)
+      end
+    end
+
+    context "via --ssl-verify-mode verify-all" do
+      let(:options) { ["--ssl-verify-mode", "all"] }
+
+      it "renders the client.rb with ssl_verify_mode set to :verify_peer" do
+        rendered_template.should match(/ssl_verify_mode :verify_peer/)
+      end
+    end
+
+    context "via --verify-api-cert" do
+      let(:options) { ["--verify-api-cert"] }
+
+      it "renders the client.rb with verify_api_cert set to true" do
+        rendered_template.should match(/verify_api_cert true/)
+      end
+    end
+
+    context "via --no-verify-api-cert" do
+      let(:options) { ["--no-verify-api-cert"] }
+
+      it "renders the client.rb with verify_api_cert set to false" do
+        rendered_template.should match(/verify_api_cert false/)
+      end
+    end
+  end
+
   describe "specifying the encrypted data bag secret key" do
     let(:secret) { "supersekret" }
     let(:secret_file) { File.join(CHEF_SPEC_DATA, 'bootstrap', 'encrypted_data_bag_secret') }
@@ -483,6 +532,9 @@ describe Chef::Knife::Bootstrap do
       knife_ssh.should_receive(:run).and_raise(Net::SSH::AuthenticationFailed)
       lambda { knife.run }.should raise_error(Net::SSH::AuthenticationFailed)
     end
+  end
+
+  describe "specifying ssl verification" do
 
   end
 
