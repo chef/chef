@@ -42,28 +42,49 @@ class Chef
         :description => "A file containing the secret key to use to encrypt data bag item values",
         :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
 
-      option :encrypted,
-        :long => "--encrypted",
+      option :encrypt,
+        :long => "--encrypt",
         :description => "Only encrypt data bag when specified.",
-        :proc => Proc.new { |e| Chef::Config[:knife][:encrypted] = e }
+        :boolean => true,
+        :default => false
 
       def read_secret
-        if config[:secret]
-          config[:secret]
+        if secret = config[:secret] || knife_config[:secret] || Chef::Config[:secret]
+          secret
         else
-          Chef::EncryptedDataBagItem.load_secret(config[:secret_file])
+          secret_file = config[:secret_file] || knife_config[:secret_file] || Chef::Config[:secret_file]
+          Chef::EncryptedDataBagItem.load_secret(secret_file)
         end
       end
 
+      def knife_config
+        Chef::Config.key?(:knife) ? Chef::Config[:knife] : {}
+      end
+
+      def has_secret?
+        knife_config[:secret] || Chef::Config[:secret]
+      end
+
+      def has_secret_file?
+        knife_config[:secret_file] || Chef::Config[:secret_file]
+      end
+
       def use_encryption
+        # Ensure only one of --secret and --secret-file has been given.
+        if config[:secret] && config[:secret_file]
+          ui.fatal("Please specify only one of --secret, --secret-file")
+          exit(1)
+        end
+
+        return true if config[:secret] || config[:secret_file]
         if config[:encrypted]
-          if config[:secret] && config[:secret_file]
-            ui.fatal("please specify only one of --secret, --secret-file")
+          unless has_secret? || has_secret_file?
+            ui.fatal("No secret or secret_file specified in config, unable to encrypt item.")
             exit(1)
           end
-          config[:secret] || config[:secret_file]
+          return true
         else
-          false
+          return false
         end
       end
 
