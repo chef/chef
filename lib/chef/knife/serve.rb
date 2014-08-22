@@ -33,7 +33,7 @@ class Chef
       def run
         server = Chef::LocalMode.chef_zero_server
         begin
-          output "Serving files from:\n#{server.options[:data_store].chef_fs.fs_description}"
+          output "Serving files from:\n#{Chef::LocalMode.chef_fs.fs_description}"
           server.stop
           server.start(stdout) # to print header
         ensure
