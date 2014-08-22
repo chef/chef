@@ -2,6 +2,7 @@
 
 ## Unreleased: 12.0.0
 
+* Updated chef-zero to 3.0.
 * [**Mark Gibbons**](https://github.com/MarkGibbons):
   Fix noauto support in Solaris Mount Provider
 * [**Jordan Evans**](https://github.com/jordane):
