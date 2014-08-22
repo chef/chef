@@ -2,6 +2,8 @@
 
 ## Unreleased: 12.0.0
 
+* [**James Belchamber**](https://github.com/JamesBelchamber):
+  Mount provider remount action now honours options
 * [**Mark Gibbons**](https://github.com/MarkGibbons):
   Fix noauto support in Solaris Mount Provider
 * [**Jordan Evans**](https://github.com/jordane):
