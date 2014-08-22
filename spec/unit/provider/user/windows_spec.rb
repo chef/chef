@@ -42,6 +42,12 @@ describe Chef::Provider::User::Windows do
     @provider.current_resource = @current_resource
   end
 
+  it "creates a net_user object with the provided username" do
+    @new_resource.username "not-monkey"
+    expect(Chef::Util::Windows::NetUser).to receive(:new).with("not-monkey")
+    @provider = Chef::Provider::User::Windows.new(@new_resource, @run_context)
+  end
+
   describe "when comparing the user's current attributes to the desired attributes" do
     before do
       @new_resource.comment   "Adam Jacob"
@@ -53,6 +59,7 @@ describe Chef::Provider::User::Windows do
 
       @provider.current_resource = @new_resource.clone
     end
+
     describe "and the attributes match" do
       it "doesn't set the comment field to be updated" do
         @provider.set_options.should_not have_key(:full_name)

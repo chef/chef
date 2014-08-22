@@ -28,7 +28,7 @@ class Chef
 
         def initialize(new_resource,run_context)
           super
-          @net_user = Chef::Util::Windows::NetUser.new(@new_resource.name)
+          @net_user = Chef::Util::Windows::NetUser.new(@new_resource.username)
         end
 
         def load_current_resource
