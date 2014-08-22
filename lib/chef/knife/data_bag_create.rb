@@ -49,10 +49,14 @@ class Chef
         :default => false
 
       def read_secret
-        if secret = config[:secret] || knife_config[:secret] || Chef::Config[:secret]
+        if config[:secret]
+          config[:secret]
+        elsif config[:secret_file]
+          Chef::EncryptedDataBagItem.load_secret(config[:secret_file])
+        elsif secret = knife_config[:secret] || Chef::Config[:secret]
           secret
         else
-          secret_file = config[:secret_file] || knife_config[:secret_file] || Chef::Config[:secret_file]
+          secret_file = knife_config[:secret_file] || Chef::Config[:secret_file]
           Chef::EncryptedDataBagItem.load_secret(secret_file)
         end
       end
@@ -77,7 +81,7 @@ class Chef
         end
 
         return true if config[:secret] || config[:secret_file]
-        if config[:encrypted]
+        if config[:encrypt]
           unless has_secret? || has_secret_file?
             ui.fatal("No secret or secret_file specified in config, unable to encrypt item.")
             exit(1)
