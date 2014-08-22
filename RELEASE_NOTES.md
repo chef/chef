@@ -160,6 +160,11 @@ directory will also be inherited correctly.
 
 Informational messages from knife are now sent to stderr, allowing you to pipe the output of knife to other commands without having to filter these messages out.
 
+## Enhance `data_bag_item` to interact with encrypted data bag items
+
+The `data_bag_item` dsl method can be used to load encrypted data bag items when an additional `secret` String parameter is included.
+If no `secret` is provided but the data bag item is encrypted, `Chef::Config[:encrypted_data_bag_secret]` will be checked.
+
 # Internal API Changes in this Release
 
 These changes do not impact any cookbook code, but may impact tools that

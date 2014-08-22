@@ -14,9 +14,9 @@ Description of the required change.
 + *  Exact matches take precedence no matter what, and should never throw exceptions.
 + *  Matching multiple constraints raises a <code>RuntimeError</code>.
 + *  The following constraints are allowed: <code><,<=,>,>=,~></code>.
-+ 
++
 + The following is an example of using the method with constraints:
-+ 
++
 + ```ruby
 + value_for_platform(
 +   "os1" => {
@@ -71,3 +71,8 @@ action :configure_startup - sets the startup type on the resource to the value o
 attribute startup_type - the value as a symbol that the startup type should be set to on the service, valid options :automatic, :manual, :disabled
 
 Note that the service resource will also continue to set the startup type to automatic or disabled, respectively, when the enabled or disabled actions are used.
+
+### Fetch encrypted data bag items with dsl method
+DSL method `data_bag_item` now takes an optional String parameter `secret`, which is used to interact with encrypted data bag items.
+If the data bag item being fetched is encrypted and no `secret` is provided, Chef looks for a secret at `Chef::Config[:encrypted_data_bag_secret]`.
+If `secret` is provided, but the data bag item is not encrypted, then a regular data bag item is returned (no decryption is attempted).

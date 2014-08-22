@@ -53,13 +53,59 @@ class Chef
         raise
       end
 
-      def data_bag_item(bag, item)
+      def data_bag_item(bag, item, secret=nil)
         DataBag.validate_name!(bag.to_s)
         DataBagItem.validate_id!(item)
-        DataBagItem.load(bag, item)
+
+        item = DataBagItem.load(bag, item)
+        if encrypted?(item.raw_data)
+          Log.debug("Data bag item looks encrypted: #{bag.inspect} #{item.inspect}")
+
+          # Try to load the data bag item secret, if secret is not provided.
+          # Chef::EncryptedDataBagItem.load_secret may throw a variety of errors.
+          begin
+            secret ||= EncryptedDataBagItem.load_secret
+            item = EncryptedDataBagItem.new(item.raw_data, secret)
+          rescue Exception
+            Log.error("Failed to load secret for encrypted data bag item: #{bag.inspect} #{item.inspect}")
+            raise
+          end
+        end
+        
+        item
       rescue Exception
         Log.error("Failed to load data bag item: #{bag.inspect} #{item.inspect}")
         raise
+      end
+
+      private
+
+      # Tries to autodetect if the item's raw hash appears to be encrypted.
+      def encrypted?(raw_data)
+        data = raw_data.reject { |k, _| k == "id" } # Remove the "id" key.
+        # Assume hashes containing only the "id" key are not encrypted.
+        # Otherwise, remove the keys that don't appear to be encrypted and compare
+        # the result with the hash. If some entry has been removed, then some entry
+        # doesn't appear to be encrypted and we assume the entire hash is not encrypted.
+        data.empty? ? false : data.reject { |_, v| !looks_like_encrypted?(v) } == data
+      end
+
+      # Checks if data looks like it has been encrypted by
+      # Chef::EncryptedDataBagItem::Encryptor::VersionXEncryptor. Returns
+      # true only when there is an exact match between the VersionXEncryptor
+      # keys and the hash's keys.
+      def looks_like_encrypted?(data)
+        return false unless data.is_a?(Hash) && data.has_key?("version")
+        case data["version"]
+        when 1
+          Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor.encryptor_keys.sort == data.keys.sort
+        when 2
+          Chef::EncryptedDataBagItem::Encryptor::Version2Encryptor.encryptor_keys.sort == data.keys.sort
+        when 3
+          Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor.encryptor_keys.sort == data.keys.sort
+        else
+          false # version means something else... assume not encrypted.
+        end
       end
     end
   end
@@ -68,4 +114,3 @@ end
 # **DEPRECATED**
 # This used to be part of chef/mixin/language. Load the file to activate the deprecation code.
 require 'chef/mixin/language'
-

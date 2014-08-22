@@ -125,6 +125,10 @@ class Chef::EncryptedDataBagItem
       def serialized_data
         FFI_Yajl::Encoder.encode(:json_wrapper => plaintext_data)
       end
+
+      def self.encryptor_keys
+        %w( encrypted_data iv version cipher )
+      end
     end
 
     class Version2Encryptor < Version1Encryptor
@@ -148,6 +152,10 @@ class Chef::EncryptedDataBagItem
           raw_hmac = OpenSSL::HMAC.digest(digest, key, encrypted_data)
           Base64.encode64(raw_hmac)
         end
+      end
+
+      def self.encryptor_keys
+        super + %w( hmac )
       end
     end
 
@@ -205,6 +213,10 @@ class Chef::EncryptedDataBagItem
           @auth_tag = openssl_encryptor.auth_tag
           enc_data_b64
         end
+      end
+
+      def self.encryptor_keys
+        super + %w( auth_tag )
       end
 
     end
