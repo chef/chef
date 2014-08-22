@@ -138,8 +138,11 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
     ptr  = 0.chr * PTR_SIZE
     rc = NetUserGetInfo.call(nil, @name, 3, ptr)
 
-    raise Chef::Exceptions::UserIDNotFound, get_last_error(rc) if rc == NERR_UserNotFound
-    raise ArgumentError, get_last_error(rc) if rc != NERR_Success
+    if rc == NERR_UserNotFound
+      raise Chef::Exceptions::UserIDNotFound, get_last_error(rc)
+    elsif rc != NERR_Success
+      raise ArgumentError, get_last_error(rc)
+    end
 
     ptr = ptr.unpack('L')[0]
     buffer = 0.chr * SIZEOF_USER_INFO_3
