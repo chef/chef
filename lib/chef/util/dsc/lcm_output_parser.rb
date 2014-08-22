@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/log'
 require 'chef/util/dsc/resource_info'
 
 class Chef
@@ -110,6 +111,10 @@ class Chef
                 when :test
                   stack[-1].add_test(new_op)
                 when :resource
+                  while stack[-1].op_type != :set
+                    Chef::Log.warn("Can't add resource to set...popping until it is allowed.")
+                    popped_op = stack.pop
+                  end
                   stack[-1].add_resource(new_op)
                 else
                   Chef::Log.warn("Unknown op_action #{op_action}: Read line #{line}")
@@ -118,8 +123,9 @@ class Chef
               when :end
                 popped_op = stack.pop
                 popped_op.add_info(info)
-                if popped_op.op_type != op_type
-                  raise LCMOutputParseException, "Unmatching end for op_type. Expected op_type=#{op_type}, found op_type=#{popped_op.op_type}"
+                while popped_op.op_type != op_type
+                  Chef::Log::warn("Unmatching end for op_type. Expected op_type=#{op_type}, found op_type=#{popped_op.op_type}. From output:\n#{lcm_output}")
+                  popped_op = stack.pop
                 end
               when :skip
                 # We don't really have anything to do here

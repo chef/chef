@@ -44,7 +44,7 @@ class Chef::Util::DSC
 
       merged_configuration_flags = get_merged_configuration_flags!(configuration_flags, configuration_name)
 
-      document_generation_cmdlet.run(merged_configuration_flags, shellout_flags)
+      document_generation_cmdlet.run!(merged_configuration_flags, shellout_flags)
       configuration_document_location = find_configuration_document(configuration_name)
 
       if ! configuration_document_location
