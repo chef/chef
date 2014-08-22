@@ -194,15 +194,14 @@ class Chef
 
         # Use the template directly if it's a path to an actual file
         if File.exists?(template)
-          Chef::Log.debug("Using the specified bootstrap template: #{File.dirname(bootstrap_template)}")
+          Chef::Log.debug("Using the specified bootstrap template: #{File.dirname(template)}")
           return template
         end
 
         # Otherwise search the template directories until we find the right one
-
         bootstrap_files = []
         bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{template}.erb")
-        bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{template}.erb") if Knife.chef_config_dir
+        bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{template}.erb") if Chef::Knife.chef_config_dir
         bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{template}.erb") if ENV['HOME']
         bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{template}.erb"))
         bootstrap_files.flatten!
@@ -213,33 +212,27 @@ class Chef
         end
 
         unless template_file
-          ui.info("Can not find bootstrap definition for #{config[:template]}")
+          ui.info("Can not find bootstrap definition for #{template}")
           raise Errno::ENOENT
         end
 
-        Chef::Log.debug("Found bootstrap template in #{File.dirname(template)}")
+        Chef::Log.debug("Found bootstrap template in #{File.dirname(template_file)}")
 
         template_file
       end
 
-      def render_template(template=nil)
+      def render_template
+        template_file = find_template
+        template = IO.read(template_file).chomp
         context = Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config)
         Erubis::Eruby.new(template).evaluate(context)
       end
 
-      def read_template
-        IO.read(@template_file).chomp
-      end
-
       def run
         validate_name_args!
-        @template_file = find_template
         @node_name = Array(@name_args).first
-        # back compat--templates may use this setting:
-        config[:server_name] = @node_name
 
         $stdout.sync = true
-
         ui.info("Connecting to #{ui.color(@node_name, :bold)}")
 
         begin
@@ -291,7 +284,7 @@ class Chef
       end
 
       def ssh_command
-        command = render_template(read_template)
+        command = render_template
 
         if config[:use_sudo]
           command = config[:use_sudo_password] ? "echo '#{config[:ssh_password]}' | sudo -S #{command}" : "sudo #{command}"

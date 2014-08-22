@@ -99,11 +99,15 @@ CONFIG
         # X here can be 10 or 11
         def latest_current_chef_version_string
           installer_version_string = nil
-          if config[:prerelease]
+          if @config[:prerelease]
             installer_version_string = "-p"
           else
-            Chef::VERSION.split(".").first
-          end
+            chef_version_string = if knife_config[:bootstrap_version]
+              knife_config[:bootstrap_version]
+            else
+              Chef::VERSION.split(".").first
+            end
+
             installer_version_string = ["-v", chef_version_string]
 
             # If bootstrapping a pre-release version add -p to the installer string
