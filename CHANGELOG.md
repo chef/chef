@@ -2,6 +2,7 @@
 
 ### Community Contributions
 
+* Updated chef-zero to 3.0.
 * [**James Belchamber**](https://github.com/JamesBelchamber):
   Mount provider remount action now honours options
 * [**Mark Gibbons**](https://github.com/MarkGibbons):
