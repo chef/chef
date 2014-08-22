@@ -102,6 +102,7 @@
 * Fix a bug in reporting not to post negative duration values.
 * Add password setting support for Mac 10.7, 10.8 and 10.9 to the dscl user provider.
 * ChefSpec can find freebsd_package resource correctly when a package resource is declared on Freebsd.
+* Autodetect/decrypt encrypted data bag items with data_bag_item dsl method. (Issue 1837, Issue 1849)
 
 ## Last Release: 11.14.2
 
@@ -232,4 +233,3 @@
 * Added DelayedEvaluator support in LWRP using the `lazy {}` key
 * Fixed a bug where nested resources that inherited from Resource::LWRPBase
   would not share the same actions/default_action as their parent
-
