@@ -26,12 +26,20 @@ class Chef::Util::DSC
       @configuration_path = configuration_path
       clear_execution_time
     end
-    
+
     def test_configuration(configuration_document)
       status = run_configuration_cmdlet(configuration_document)
+      unless status.succeeded?
+        # LCM returns an error if any of the resources do not support the opptional What-If
+        if status.stderr.gsub(/\s+/, ' ') =~ /A parameter cannot be found that matches parameter name 'Whatif'/
+          Chef::Log::warn("Received error while testing configuration due to resource not supporting 'WhatIf'")
+        else
+          raise Chef::Exceptions::PowershellCmdletException, "Powershell Cmdlet failed: #{status.stderr.gsub(/\s+/, ' ')}"
+        end
+      end
       configuration_update_required?(status.return_value)
     end
-    
+
     def set_configuration(configuration_document)
       run_configuration_cmdlet(configuration_document, true)
     end
@@ -55,7 +63,11 @@ class Chef::Util::DSC
       begin
         save_configuration_document(configuration_document)
         cmdlet = ::Chef::Util::Powershell::Cmdlet.new(@node, "#{command_code}")
-        status = cmdlet.run
+        if apply_configuration
+          status = cmdlet.run!
+        else
+          status = cmdlet.run
+        end
       ensure
         end_operation_timing
         remove_configuration_document
@@ -69,8 +81,12 @@ class Chef::Util::DSC
 
     def configuration_update_required?(what_if_output)
       Chef::Log.debug("DSC: DSC returned the following '-whatif' output from test operation:\n#{what_if_output}")
-      #parse_what_if_output(what_if_output)
-      Parser::parse(what_if_output)
+      begin
+        Parser::parse(what_if_output)
+      rescue Chef::Util::DSC::LocalConfigurationManager::Parser => e
+        Chef::Log::warn("Could not parse parse LCM output: #{e}")
+        [Chef::Util::DSC::ResourceInfo.new('Unknown DSC Resources', true, ['Unknown changes because LCM output was not parsable.'])]
+      end
     end
 
     def save_configuration_document(configuration_document)
