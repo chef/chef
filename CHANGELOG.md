@@ -104,6 +104,7 @@
 * Add password setting support for Mac 10.7, 10.8 and 10.9 to the dscl user provider.
 * ChefSpec can find freebsd_package resource correctly when a package resource is declared on Freebsd.
 * Autodetect/decrypt encrypted data bag items with data_bag_item dsl method. (Issue 1837, Issue 1849)
+* windows_user: look up username instead of resource name (Issue #1705)
 
 ## Last Release: 11.14.2
 
