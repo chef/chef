@@ -134,8 +134,13 @@ class Chef::Application::Apply < Chef::Application
       @recipe_text = STDIN.read
       temp_recipe_file
     else
-      @recipe_filename = ARGV[0]
-      @recipe_text,@recipe_fh = read_recipe_file @recipe_filename
+      if ARGV[0]
+        @recipe_filename = ARGV[0]
+        @recipe_text,@recipe_fh = read_recipe_file @recipe_filename
+      else
+        puts opt_parser
+        Chef::Application.exit! "No recipe file provided", 1
+      end
     end
     recipe,run_context = get_recipe_and_run_context
     recipe.instance_eval(@recipe_text, @recipe_filename, 1)
