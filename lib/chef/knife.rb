@@ -255,7 +255,6 @@ class Chef
 
     reset_config_path!
 
-
     # search upward from current_dir until .chef directory is found
     def self.chef_config_dir
       if @@chef_config_dir.nil? # share this with subclasses
@@ -271,7 +270,6 @@ class Chef
       end
       @@chef_config_dir
     end
-
 
     public
 

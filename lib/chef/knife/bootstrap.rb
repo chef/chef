@@ -26,6 +26,8 @@ class Chef
       deps do
         require 'chef/knife/core/bootstrap_context'
         require 'chef/json_compat'
+        require 'chef/api_client/registration'
+        require 'chef/node'
         require 'tempfile'
         require 'highline'
         require 'net/ssh'
@@ -174,6 +176,12 @@ class Chef
         :description => "Add options to curl when install chef-client",
         :proc        => Proc.new { |co| Chef::Config[:knife][:bootstrap_curl_options] = co }
 
+      option :bootstrap_uses_validator,
+        :long        => "--[no-]bootstrap-uses-validator",
+        :description => "Force bootstrap to use validation.pem instead of users client key",
+        :boolean     => true,
+        :default     => false
+
       def find_template(template=nil)
         # Are we bootstrapping using an already shipped template?
         if config[:template_file]
@@ -211,6 +219,36 @@ class Chef
         IO.read(@template_file).chomp
       end
 
+      def normalized_run_list
+        case config[:run_list]
+        when nil
+          []
+        when String
+          config[:run_list].split(/\s*,\s*/)
+        when Array
+          config[:run_list]
+        end
+      end
+
+      def generate_client_pem(node_name)
+        tmpdir = Dir.mktmpdir
+        client_path = File.join(tmpdir, "#{node_name}.pem")
+        ui.info("Generating client.pem for #{node_name} and registering client on server")
+        Chef::ApiClient::Registration.new(node_name, client_path, http_api: rest, update: false).run
+        ui.info("Creating node for #{node_name}")
+        node = Chef::Node.new
+        node.run_list(normalized_run_list)
+        node.name(node_name)
+        node.environment(config[:environment])
+        client_rest = Chef::REST.new(
+          Chef::Config.chef_server_url,
+          node_name,
+          client_path,
+        )
+        client_rest.post_rest("nodes", node)
+        config[:client_pem] = client_path
+      end
+
       def run
         validate_name_args!
         warn_chef_config_secret_key
@@ -220,6 +258,10 @@ class Chef
         config[:server_name] = @node_name
 
         $stdout.sync = true
+
+        unless Chef::Config[:knife][:bootstrap_uses_validator] || config[:bootstrap_uses_validator]
+          generate_client_pem(config[:chef_node_name])
+        end
 
         ui.info("Connecting to #{ui.color(@node_name, :bold)}")
 
