@@ -1,7 +1,7 @@
 ## Unreleased: 12.0.0
 
-### Community Contributions
-
+* [**Malte Swart**](https://github.com/mswart):
+  [CHEF-4101] DeepMerge - support overwriting hash values with nil
 * [**James Belchamber**](https://github.com/JamesBelchamber):
   Mount provider remount action now honours options
 * [**Mark Gibbons**](https://github.com/MarkGibbons):
