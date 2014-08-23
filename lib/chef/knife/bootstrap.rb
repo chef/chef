@@ -182,6 +182,12 @@ class Chef
         :boolean     => true,
         :default     => false
 
+      option :bootstrap_overwrite_client_node,
+        :long        => "--[no-]bootstrap-overwrite-client-node",
+        :description => "When bootstrapping (without validation.pem) overwrite existing client and node",
+        :boolean     => true,
+        :default     => false
+
       def find_template(template=nil)
         # Are we bootstrapping using an already shipped template?
         if config[:template_file]
@@ -233,9 +239,9 @@ class Chef
       def generate_client_pem(node_name)
         tmpdir = Dir.mktmpdir
         client_path = File.join(tmpdir, "#{node_name}.pem")
-        ui.info("Generating client.pem for #{node_name} and registering client on server")
-        Chef::ApiClient::Registration.new(node_name, client_path, http_api: rest, update: false).run
-        ui.info("Creating node for #{node_name}")
+        update_flag = Chef::Config[:knife][:bootstrap_overwrite_client_node] || config[:bootstrap_overwrite_client_node]
+        ui.info("Creating client for #{node_name} on server#{ "(will replace existing client)" if update_flag}")
+        Chef::ApiClient::Registration.new(node_name, client_path, http_api: rest, update: update_flag).run
         node = Chef::Node.new
         node.run_list(normalized_run_list)
         node.name(node_name)
@@ -245,6 +251,17 @@ class Chef
           node_name,
           client_path,
         )
+        if update_flag
+          # delete the node instead of updating to make sure we re-create with the client key and get the ACLs right
+          ui.info("Deleting node for #{node_name}")
+          begin
+            rest.delete_rest("nodes/#{node_name}")
+          rescue Net::HTTPServerException => e
+            ui.info("No existing node was found to delete")
+            raise unless e.response.code == "404"
+          end
+        end
+        ui.info("Creating node for #{node_name}")
         client_rest.post_rest("nodes", node)
         config[:client_pem] = client_path
       end
