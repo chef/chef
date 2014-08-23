@@ -2,7 +2,6 @@
 
 ### Community Contributions
 
-* Updated chef-zero to 3.0.
 * [**James Belchamber**](https://github.com/JamesBelchamber):
   Mount provider remount action now honours options
 * [**Mark Gibbons**](https://github.com/MarkGibbons):
@@ -66,6 +65,8 @@
 
 ### Chef Contributions
 
+* Fixed Config[:cache_path] to use path_join()
+* Updated chef-zero to 3.0.
 * knife cookbook site download/list/search/share/show/unshare now uses
   supermerket.getchef.com urls
 * added Chef::ResourceCollection#insert_at API to the ResourceCollection
