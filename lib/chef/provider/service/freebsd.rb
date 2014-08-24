@@ -156,9 +156,9 @@ class Chef
               case line
               when /^#{Regexp.escape(var_name)}="(\w+)"/
                 enabled_state_found!
-                if $1 =~ /[Yy][Ee][Ss]/ # FIXME: anchors?
+                if $1 =~ /^yes$/i
                   current_resource.enabled true
-                elsif $1 =~ /[Nn][Oo][Nn]?[Oo]?[Nn]?[Ee]?/  # FIXME: anchors? and wtf is this supposed to match?
+                elsif $1 =~ /^(no|none)$/i
                   current_resource.enabled false
                 end
               end
