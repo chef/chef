@@ -56,9 +56,14 @@ class Chef
 
           private
 
+          def ships_with_pkgng?
+            # It was not until __FreeBSD_version 1000017 that pkgng became
+            # the default binary package manager. See '/usr/ports/Mk/bsd.port.mk'.
+            node[:os_version].to_i >= 1000017
+          end
+
           def supports_pkgng?
-            with_pkgng = makefile_variable_value('WITH_PKGNG')
-            with_pkgng && with_pkgng =~ /yes/i
+            ships_with_pkgng? || !!shell_out!("make -V WITH_PKGNG", :env => nil).stdout.match(/yes/i)
           end
 
         end

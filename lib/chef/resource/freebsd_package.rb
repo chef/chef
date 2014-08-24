@@ -57,7 +57,7 @@ class Chef
       def assign_provider
         @provider = if @source.to_s =~ /^ports$/i
                       Chef::Provider::Package::Freebsd::Port
-                    elsif ships_with_pkgng? || supports_pkgng?
+                    elsif supports_pkgng?
                       Chef::Provider::Package::Freebsd::Pkgng
                     else
                       Chef::Provider::Package::Freebsd::Pkg
@@ -71,7 +71,7 @@ class Chef
       end
 
       def supports_pkgng?
-        !!shell_out!("make -V WITH_PKGNG", :env => nil).stdout.match(/yes/i)
+        ships_with_pkgng? || !!shell_out!("make -V WITH_PKGNG", :env => nil).stdout.match(/yes/i)
       end
 
     end
