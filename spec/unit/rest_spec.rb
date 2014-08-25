@@ -526,9 +526,11 @@ describe Chef::REST do
             http_response.stub(:read_body)
             http_response
           end
-          it "throws an exception" do
+
+          it "retries 5 times and throws an exception" do
             rest.stub(:sleep)
             expect {rest.request(:GET, url)}.to raise_error(Net::HTTPFatalError)
+            expect(log_stringio.string).to match(Regexp.escape("ERROR: Server returned error for #{url}, retrying 5/5"))
           end
         end
       end

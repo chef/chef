@@ -289,11 +289,26 @@ class Chef
     def retrying_http_errors(url)
       http_attempts = 0
       begin
-        http_attempts += 1
-
-        yield
-
+        loop do
+          http_attempts += 1
+          response, request, return_value = yield
+          # handle HTTP 50X Error
+          if response.kind_of?(Net::HTTPServerError)
+            if http_retry_count - http_attempts + 1 > 0
+              sleep_time = 1 + (2 ** http_attempts) + rand(2 ** http_attempts)
+              Chef::Log.error("Server returned error for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
+              sleep(sleep_time)
+              redo
+            end
+          end
+          return [response, request, return_value]
+        end
       rescue SocketError, Errno::ETIMEDOUT => e
+        if http_retry_count - http_attempts + 1 > 0
+          Chef::Log.error("Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
+          sleep(http_retry_delay)
+          retry
+        end
         e.message.replace "Error connecting to #{url} - #{e.message}"
         raise e
       rescue Errno::ECONNREFUSED
@@ -310,14 +325,6 @@ class Chef
           retry
         end
         raise Timeout::Error, "Timeout connecting to #{url}, giving up"
-      rescue Net::HTTPFatalError => e
-        if http_retry_count - http_attempts + 1 > 0
-          sleep_time = 1 + (2 ** http_attempts) + rand(2 ** http_attempts)
-          Chef::Log.error("Server returned error for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
-          sleep(sleep_time)
-          retry
-        end
-        raise
       end
     end
 
