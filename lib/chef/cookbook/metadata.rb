@@ -35,23 +35,24 @@ class Chef
     # about Chef Cookbooks.
     class Metadata
 
-      NAME              = 'name'.freeze
-      DESCRIPTION       = 'description'.freeze
-      LONG_DESCRIPTION  = 'long_description'.freeze
-      MAINTAINER        = 'maintainer'.freeze
-      MAINTAINER_EMAIL  = 'maintainer_email'.freeze
-      LICENSE           = 'license'.freeze
-      PLATFORMS         = 'platforms'.freeze
-      DEPENDENCIES      = 'dependencies'.freeze
-      RECOMMENDATIONS   = 'recommendations'.freeze
-      SUGGESTIONS       = 'suggestions'.freeze
-      CONFLICTING       = 'conflicting'.freeze
-      PROVIDING         = 'providing'.freeze
-      REPLACING         = 'replacing'.freeze
-      ATTRIBUTES        = 'attributes'.freeze
-      GROUPINGS         = 'groupings'.freeze
-      RECIPES           = 'recipes'.freeze
-      VERSION           = 'version'.freeze
+      NAME                   = 'name'.freeze
+      DESCRIPTION            = 'description'.freeze
+      LONG_DESCRIPTION       = 'long_description'.freeze
+      MAINTAINER             = 'maintainer'.freeze
+      MAINTAINER_EMAIL       = 'maintainer_email'.freeze
+      LICENSE                = 'license'.freeze
+      PLATFORMS              = 'platforms'.freeze
+      DEPENDENCIES           = 'dependencies'.freeze
+      RECOMMENDATIONS        = 'recommendations'.freeze
+      SUGGESTIONS            = 'suggestions'.freeze
+      CONFLICTING            = 'conflicting'.freeze
+      PROVIDING              = 'providing'.freeze
+      REPLACING              = 'replacing'.freeze
+      ATTRIBUTES             = 'attributes'.freeze
+      GROUPINGS              = 'groupings'.freeze
+      RECIPES                = 'recipes'.freeze
+      VERSION                = 'version'.freeze
+      SUPERMARKET_ATTRIBUTES = 'supermarket_attributes'.freeze
 
       COMPARISON_FIELDS = [ :name, :description, :long_description, :maintainer,
                             :maintainer_email, :license, :platforms, :dependencies,
@@ -111,6 +112,7 @@ class Chef
         @groupings = Mash.new
         @recipes = Mash.new
         @version = Version.new("0.0.0")
+        @supermarket_attributes = Hash.new
 
         @errors = []
       end
@@ -469,23 +471,24 @@ class Chef
 
       def to_hash
         {
-          NAME             => self.name,
-          DESCRIPTION      => self.description,
-          LONG_DESCRIPTION => self.long_description,
-          MAINTAINER       => self.maintainer,
-          MAINTAINER_EMAIL => self.maintainer_email,
-          LICENSE          => self.license,
-          PLATFORMS        => self.platforms,
-          DEPENDENCIES     => self.dependencies,
-          RECOMMENDATIONS  => self.recommendations,
-          SUGGESTIONS      => self.suggestions,
-          CONFLICTING      => self.conflicting,
-          PROVIDING        => self.providing,
-          REPLACING        => self.replacing,
-          ATTRIBUTES       => self.attributes,
-          GROUPINGS        => self.groupings,
-          RECIPES          => self.recipes,
-          VERSION          => self.version
+          NAME                   => self.name,
+          DESCRIPTION            => self.description,
+          LONG_DESCRIPTION       => self.long_description,
+          MAINTAINER             => self.maintainer,
+          MAINTAINER_EMAIL       => self.maintainer_email,
+          LICENSE                => self.license,
+          PLATFORMS              => self.platforms,
+          DEPENDENCIES           => self.dependencies,
+          RECOMMENDATIONS        => self.recommendations,
+          SUGGESTIONS            => self.suggestions,
+          CONFLICTING            => self.conflicting,
+          PROVIDING              => self.providing,
+          REPLACING              => self.replacing,
+          ATTRIBUTES             => self.attributes,
+          GROUPINGS              => self.groupings,
+          RECIPES                => self.recipes,
+          VERSION                => self.version,
+          SUPERMARKET_ATTRIBUTES => self.supermarket_attributes
         }
       end
 
@@ -517,6 +520,7 @@ class Chef
         @groupings                    = o[GROUPINGS] if o.has_key?(GROUPINGS)
         @recipes                      = o[RECIPES] if o.has_key?(RECIPES)
         @version                      = o[VERSION] if o.has_key?(VERSION)
+        @supermarket_attributes       = o[SUPERMARKET_ATTRIBUTES] if o.has_key?(SUPERMARKET_ATTRIBUTES)
         self
       end
 
@@ -541,6 +545,22 @@ class Chef
       def from_json(string)
         o = Chef::JSONCompat.from_json(string)
         from_hash(o)
+      end
+
+      # Sets the cookbooks supermarket_attributes, or returns it.
+      #
+      # === Parameters
+      # supermarket_attributes<Hash>:: Attributes specific to Supermarket
+      #
+      # === Returns
+      # supermarket_attributes<Hash>:: Returns the current Supermarket
+      # attributes
+      def supermarket_attributes(arg=nil)
+        set_or_return(
+          :supermarket_attributes,
+          arg,
+          :kind_of => [ Hash ]
+        )
       end
 
     private

@@ -140,6 +140,9 @@ describe Chef::Cookbook::Metadata do
       metadata.recipes.should eq(Mash.new)
     end
 
+    it "has an empty supermarket_attributes list" do
+      metadata.supermarket_attributes.should eq(Mash.new)
+    end
   end
 
   describe "validation" do
@@ -730,6 +733,20 @@ describe Chef::Cookbook::Metadata do
       end
     end
 
+  end
+
+  describe "supermarket_attributes" do
+    it "should set supermarket_attributes equal to a given hash" do
+      attrs = Mash.new(
+        :source_url => "https://github.com/opscode-cookbooks/supermarket",
+        :issues_url => "https://github.com/opscode-cookbooks/supermarket/issues"
+      )
+
+      metadata.supermarket_attributes(attrs)
+
+      metadata.supermarket_attributes[:source_url].should == attrs[:source_url]
+      metadata.supermarket_attributes[:issues_url].should == attrs[:issues_url]
+    end
   end
 
 end
