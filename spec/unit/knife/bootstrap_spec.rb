@@ -246,50 +246,41 @@ describe Chef::Knife::Bootstrap do
         rendered_template.should match(%r{.*no_proxy\s*"api.opscode.com,172.16.10.\*".*})
       end
     end
-  end
-
-  describe "specifying ssl verification" do
-    subject(:knife) do
-      k = described_class.new
-      k.instance_variable_set("@template_file", template_file)
-      k.parse_options(options)
-      k.merge_configs
-      k
-    end
-
-    let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "no_proxy.erb")) }
-
-    let(:rendered_template) do
-      template_string = knife.read_template
-      knife.render_template(template_string)
-    end
 
     context "via --ssl-verify-mode none" do
-      let(:options) { ["--ssl-verify-mode", "none"] }
+      let(:options) { ["--node-ssl-verify-mode", "none"] }
 
       it "renders the client.rb with ssl_verify_mode set to :verify_none" do
         rendered_template.should match(/ssl_verify_mode :verify_none/)
       end
     end
 
-    context "via --ssl-verify-mode verify-all" do
-      let(:options) { ["--ssl-verify-mode", "all"] }
+    context "via --node-ssl-verify-mode peer" do
+      let(:options) { ["--node-ssl-verify-mode", "peer"] }
 
       it "renders the client.rb with ssl_verify_mode set to :verify_peer" do
         rendered_template.should match(/ssl_verify_mode :verify_peer/)
       end
     end
 
-    context "via --verify-api-cert" do
-      let(:options) { ["--verify-api-cert"] }
+    context "via --node-ssl-verify-mode all" do
+      let(:options) { ["--node-ssl-verify-mode", "all"] }
+
+      it "raises error" do
+        lambda{ rendered_template }.should raise_error
+      end
+    end
+
+    context "via --node-verify-api-cert" do
+      let(:options) { ["--node-verify-api-cert"] }
 
       it "renders the client.rb with verify_api_cert set to true" do
         rendered_template.should match(/verify_api_cert true/)
       end
     end
 
-    context "via --no-verify-api-cert" do
-      let(:options) { ["--no-verify-api-cert"] }
+    context "via --no-node-verify-api-cert" do
+      let(:options) { ["--no-node-verify-api-cert"] }
 
       it "renders the client.rb with verify_api_cert set to false" do
         rendered_template.should match(/verify_api_cert false/)

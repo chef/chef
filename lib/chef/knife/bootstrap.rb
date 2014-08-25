@@ -188,20 +188,18 @@ class Chef
         :description => "Add options to curl when install chef-client",
         :proc        => Proc.new { |co| Chef::Config[:knife][:bootstrap_curl_options] = co }
 
-      option :ssl_verify_mode,
-        :long        => "--ssl-verify-mode [none|all]",
+      option :node_ssl_verify_mode,
+        :long        => "--node-ssl-verify-mode [peer|none]",
         :description => "Whether or not to verify the SSL cert for all HTTPS requests.",
-        :proc        => Proc.new { |verify_mode|
-          if verify_mode == "all"
-            mode = :verify_peer
-          elsif verify_mode == "none"
-            mode = :verify_none
+        :proc        => Proc.new { |v|
+          valid_values = ["none", "peer"]
+          unless valid_values.include?(v)
+            raise "Invalid value '#{v}' for --node-ssl-verify-mode. Valid values are: #{valid_values.join(", ")}"
           end
-          Chef::Config[:knife][:ssl_verify_mode] = mode
         }
 
-      option :verify_api_cert,
-        :long        => "--[no-]verify-api-cert",
+      option :node_verify_api_cert,
+        :long        => "--[no-]node-verify-api-cert",
         :description => "Verify the SSL cert for HTTPS requests to the Chef server API.",
         :boolean     => true
 
