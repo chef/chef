@@ -33,9 +33,12 @@ class Chef
       attr_reader :destination
       attr_reader :name
 
-      def initialize(name, destination)
-        @name = name
-        @destination = destination
+      def initialize(name, destination, opts = {})
+        opts ||= {}
+        @name                         = name
+        @destination                  = destination
+        @http_api_as_validator        = opts[:http_api]
+        @update                       = opts[:update].nil? ? true : opts[:update]
         @server_generated_private_key = nil
       end
 
@@ -53,7 +56,7 @@ class Chef
         assert_destination_writable!
         retries = Config[:client_registration_retries] || 5
         begin
-          create_or_update
+          should_update? ? create_or_update : create
         rescue Net::HTTPFatalError => e
           # HTTPFatalError implies 5xx.
           raise if retries <= 0
@@ -120,7 +123,6 @@ class Chef
         post_data
       end
 
-
       def http_api
         @http_api_as_validator ||= Chef::REST.new(Chef::Config[:chef_server_url],
                                                   Chef::Config[:validation_client_name],
@@ -156,8 +158,12 @@ class Chef
         base_flags |= File::NOFOLLOW if defined?(File::NOFOLLOW)
         base_flags
       end
+
+      private
+
+      def should_update?
+        !!@update
+      end
     end
   end
 end
-
-

@@ -26,6 +26,8 @@ class Chef
       deps do
         require 'chef/knife/core/bootstrap_context'
         require 'chef/json_compat'
+        require 'chef/api_client/registration'
+        require 'chef/node'
         require 'tempfile'
         require 'highline'
         require 'net/ssh'
@@ -174,6 +176,18 @@ class Chef
         :description => "Add options to curl when install chef-client",
         :proc        => Proc.new { |co| Chef::Config[:knife][:bootstrap_curl_options] = co }
 
+      option :bootstrap_uses_validator,
+        :long        => "--[no-]bootstrap-uses-validator",
+        :description => "Force bootstrap to use validation.pem instead of users client key",
+        :boolean     => true,
+        :default     => false
+
+      option :bootstrap_overwrite_client_node,
+        :long        => "--[no-]bootstrap-overwrite-client-node",
+        :description => "When bootstrapping (without validation.pem) overwrite existing client and node",
+        :boolean     => true,
+        :default     => false
+
       def find_template(template=nil)
         # Are we bootstrapping using an already shipped template?
         if config[:template_file]
@@ -211,6 +225,47 @@ class Chef
         IO.read(@template_file).chomp
       end
 
+      def normalized_run_list
+        case config[:run_list]
+        when nil
+          []
+        when String
+          config[:run_list].split(/\s*,\s*/)
+        when Array
+          config[:run_list]
+        end
+      end
+
+      def generate_client_pem(node_name)
+        tmpdir = Dir.mktmpdir
+        client_path = File.join(tmpdir, "#{node_name}.pem")
+        update_flag = Chef::Config[:knife][:bootstrap_overwrite_client_node] || config[:bootstrap_overwrite_client_node]
+        ui.info("Creating client for #{node_name} on server#{ "(will replace existing client)" if update_flag}")
+        Chef::ApiClient::Registration.new(node_name, client_path, http_api: rest, update: update_flag).run
+        node = Chef::Node.new
+        node.run_list(normalized_run_list)
+        node.name(node_name)
+        node.environment(config[:environment])
+        client_rest = Chef::REST.new(
+          Chef::Config.chef_server_url,
+          node_name,
+          client_path,
+        )
+        if update_flag
+          # delete the node instead of updating to make sure we re-create with the client key and get the ACLs right
+          ui.info("Deleting node for #{node_name}")
+          begin
+            rest.delete_rest("nodes/#{node_name}")
+          rescue Net::HTTPServerException => e
+            ui.info("No existing node was found to delete")
+            raise unless e.response.code == "404"
+          end
+        end
+        ui.info("Creating node for #{node_name}")
+        client_rest.post_rest("nodes", node)
+        config[:client_pem] = client_path
+      end
+
       def run
         validate_name_args!
         warn_chef_config_secret_key
@@ -220,6 +275,10 @@ class Chef
         config[:server_name] = @node_name
 
         $stdout.sync = true
+
+        unless Chef::Config[:knife][:bootstrap_uses_validator] || config[:bootstrap_uses_validator]
+          generate_client_pem(config[:chef_node_name])
+        end
 
         ui.info("Connecting to #{ui.color(@node_name, :bold)}")
 

@@ -39,10 +39,17 @@ exists() {
 
 mkdir -p /etc/chef
 
+<% if knife_config[:bootstrap_uses_validator] -%>
 cat > /etc/chef/validation.pem <<'EOP'
 <%= validation_key %>
 EOP
 chmod 0600 /etc/chef/validation.pem
+<% else %>
+cat > /etc/chef/client.pem <<'EOP'
+<%= ::File.read(::File.expand_path(@config[:client_pem])) %>
+EOP
+chmod 0600 /etc/chef/client.pem
+<% end -%>
 
 <% if encrypted_data_bag_secret -%>
 cat > /etc/chef/encrypted_data_bag_secret <<'EOP'
