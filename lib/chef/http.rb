@@ -293,7 +293,7 @@ class Chef
 
         yield
 
-      rescue SocketError, Errno::ETIMEDOUT => e
+      rescue SocketError => e
         e.message.replace "Error connecting to #{url} - #{e.message}"
         raise e
       rescue Errno::ECONNREFUSED
@@ -303,7 +303,7 @@ class Chef
           retry
         end
         raise Errno::ECONNREFUSED, "Connection refused connecting to #{url}, giving up"
-      rescue Timeout::Error
+      rescue Timeout::Error, Errno::ETIMEDOUT
         if http_retry_count - http_attempts + 1 > 0
           Chef::Log.error("Timeout connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
