@@ -31,9 +31,9 @@ class Chef
         @cookbook_version = options[:cookbook_version]
 
         if @chef_config[:repo_mode] == 'everything' && is_hosted? && !ui.nil?
-
-          ui.warn %Q{You have repo_mode set to 'everything', but your chef_server_url looks like it might be a hosted setup.
-If this is the case please use hosted_everything or allow repo_mode to default}
+          ui.warn %Q{You have repo_mode set to 'everything', but your chef_server_url
+              looks like it might be a hosted setup.  If this is the case please use
+              hosted_everything or allow repo_mode to default}
         end
         # Default to getting *everything* from the server.
         if !@chef_config[:repo_mode]

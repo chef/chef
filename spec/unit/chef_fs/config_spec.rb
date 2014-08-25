@@ -43,5 +43,16 @@ describe Chef::ChefFS::Config do
 
       Chef::ChefFS::Config.new(base_config, Dir.pwd, {}, ui)
     end
+
+    it "doesn't warn when non-hosted setups use 'everything'" do
+      base_config = Hash.new()
+      base_config[:repo_mode] = 'everything'
+      base_config[:chef_server_url] = 'http://foo.com/'
+
+      ui = double("ui")
+      expect(ui).to receive(:warn).exactly(0).times
+
+      Chef::ChefFS::Config.new(base_config, Dir.pwd, {}, ui)
+    end
   end
 end
