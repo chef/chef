@@ -25,14 +25,19 @@ class Chef
     # Helpers to take Chef::Config and create chef_fs and local_fs from it
     #
     class Config
-      def initialize(chef_config = Chef::Config, cwd = Dir.pwd, options = {})
+      def initialize(chef_config = Chef::Config, cwd = Dir.pwd, options = {}, ui = nil)
         @chef_config = chef_config
         @cwd = cwd
         @cookbook_version = options[:cookbook_version]
 
+        if @chef_config[:repo_mode] == 'everything' && is_hosted? && !ui.nil?
+          ui.warn %Q{You have repo_mode set to 'everything', but your chef_server_url
+              looks like it might be a hosted setup.  If this is the case please use
+              hosted_everything or allow repo_mode to default}
+        end
         # Default to getting *everything* from the server.
         if !@chef_config[:repo_mode]
-          if @chef_config[:chef_server_url] =~ /\/+organizations\/.+/
+          if is_hosted?
             @chef_config[:repo_mode] = 'hosted_everything'
           else
             @chef_config[:repo_mode] = 'everything'
@@ -43,6 +48,10 @@ class Chef
       attr_reader :chef_config
       attr_reader :cwd
       attr_reader :cookbook_version
+
+      def is_hosted?
+        @chef_config[:chef_server_url] =~ /\/+organizations\/.+/
+      end
 
       def chef_fs
         @chef_fs ||= create_chef_fs
