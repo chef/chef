@@ -415,7 +415,7 @@ class Chef
         end
       end
 
-      # Adds an attribute )hat a user needs to configure for this cookbook. Takes
+      # Adds an attribute that a user needs to configure for this cookbook. Takes
       # a name (with the / notation for a nested attribute), followed by any of
       # these options
       #
