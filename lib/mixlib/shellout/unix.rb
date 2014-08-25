@@ -318,7 +318,7 @@ module Mixlib
           set_cwd
 
           begin
-            command.kind_of?(Array) ? exec(*command) : exec(command)
+            command.kind_of?(Array) ? exec(*command, :close_others=>true) : exec(command, :close_others=>true)
 
             raise 'forty-two' # Should never get here
           rescue Exception => e
