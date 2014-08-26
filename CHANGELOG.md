@@ -106,6 +106,9 @@
 * ChefSpec can find freebsd_package resource correctly when a package resource is declared on Freebsd.
 * Autodetect/decrypt encrypted data bag items with data_bag_item dsl method. (Issue 1837, Issue 1849)
 * windows_user: look up username instead of resource name (Issue #1705)
+* Remove the unused bootstrap templates that install chef from rubygems
+* Remove the Chef 10 functionality from bootstrap.
+* Deprecate --distro / --template_file options in favor of --boostrap-template
 
 ## Last Release: 11.14.2
 

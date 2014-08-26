@@ -1,5 +1,13 @@
 # Chef Client Release Notes 12.0.0:
 
+## Boostrap Changes
+
+Chef Client 12 introduces a set of changes to `knife bootstrap`. Here is the list of changes:
+
+* Unused / untested bootstrap templates that install Chef Client from rubygems are removed. The recommended installation path for Chef Client is to use the omnibus packages. `chef-full` template (which is the default) installs Chef Client using omnibus packages on all the supported platforms.
+* `--distro` & `--template-file` options are deprecated in Chef 12 in favor of `--boostrap-template` option. This option can take a boostrap template name (e.g. 'chef-full') or the full path to a bootstrap template.
+
+
 ## Solaris Mount Provider
 
 The Solaris provider now supports specifying the fsck_device attribute (which defaults to '-' for backwards compat).
