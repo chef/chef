@@ -1,0 +1,4 @@
+{ 
+  "secure": "vault", 
+  "many_vaults": ["vault2", "vault3", "vault4"] 
+}

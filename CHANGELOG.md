@@ -1,5 +1,6 @@
 ## Unreleased: 12.0.0
 
+* [**Salim Afiune**](https://github.com/afiune): Implement Chef Vault support for knife bootstrap (#1887)
 * [**Malte Swart**](https://github.com/mswart):
   [CHEF-4101] DeepMerge - support overwriting hash values with nil
 * [**James Belchamber**](https://github.com/JamesBelchamber):
