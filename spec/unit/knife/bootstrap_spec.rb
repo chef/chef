@@ -38,8 +38,8 @@ describe Chef::Knife::Bootstrap do
   let(:bootstrap_template) { nil }
 
   it "should use chef-full as default template" do
-    knife.find_template.should be_a_kind_of(String)
-    File.basename(knife.find_template).should eq("chef-full.erb")
+    knife.bootstrap_template.should be_a_kind_of(String)
+    File.basename(knife.bootstrap_template).should eq("chef-full")
   end
 
   context "when finding templates" do
@@ -157,11 +157,12 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
-  ["-d", "--distro", "-t", "--template", "--template-file"].each do |t|
+  ["-d", "--distro", "-t", "--bootstrap-template", "--template-file"].each do |t|
     context "when #{t} option is given in the command line" do
       it "sets the knife :bootstrap_template config" do
         knife.parse_options([t,"blahblah"])
-        Chef::Config[:knife][:bootstrap_template].should eq("blahblah")
+        knife.merge_configs
+        knife.bootstrap_template.should eq("blahblah")
       end
     end
   end
@@ -175,16 +176,19 @@ describe Chef::Knife::Bootstrap do
 
     it "should have role[base] in the run_list" do
       knife.parse_options(["-r","role[base]"])
+      knife.merge_configs
       knife.render_template.should == '{"run_list":["role[base]"]}'
     end
 
     it "should have role[base] and recipe[cupcakes] in the run_list" do
       knife.parse_options(["-r", "role[base],recipe[cupcakes]"])
+      knife.merge_configs
       knife.render_template.should == '{"run_list":["role[base]","recipe[cupcakes]"]}'
     end
 
     it "should have foo => {bar => baz} in the first_boot" do
       knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
+      knife.merge_configs
       expected_hash = FFI_Yajl::Parser.new.parse('{"foo":{"bar":"baz"},"run_list":[]}')
       actual_hash = FFI_Yajl::Parser.new.parse(knife.render_template)
       actual_hash.should == expected_hash
@@ -196,12 +200,14 @@ describe Chef::Knife::Bootstrap do
 
     it "should create a hint file when told to" do
       knife.parse_options(["--hint", "openstack"])
+      knife.merge_configs
       knife.render_template.should match /\/etc\/chef\/ohai\/hints\/openstack.json/
     end
 
     it "should populate a hint file with JSON when given a file to read" do
       ::File.stub(:read).and_return('{ "foo" : "bar" }')
       knife.parse_options(["--hint", "openstack=hints/openstack.json"])
+      knife.merge_configs
       knife.render_template.should match /\{\"foo\":\"bar\"\}/
     end
   end
@@ -249,6 +255,7 @@ describe Chef::Knife::Bootstrap do
     let(:bootstrap_template) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "secret.erb")) }
     let(:rendered_template) do
       knife.parse_options(options)
+      knife.merge_configs
       knife.render_template
     end
 

@@ -98,17 +98,16 @@ class Chef
       option :distro,
         :short => "-d DISTRO",
         :long => "--distro DISTRO",
-        :description => "Bootstrap a distro using a template. [DEPRECATED] Use -t / --template option instead.",
-        :proc => Proc.new { |t|
-          Chef::Log.warn("[DEPRECATED] -d / --distro option is deprecated. Use -t / --template option instead.")
-          Chef::Config[:knife][:bootstrap_template] = t
+        :description => "Bootstrap a distro using a template. [DEPRECATED] Use -t / --bootstrap-template option instead.",
+        :proc        => Proc.new { |v|
+          Chef::Log.warn("[DEPRECATED] -d / --distro option is deprecated. Use -t / --bootstrap-template option instead.")
+          v
         }
 
-      option :template,
+      option :bootstrap_template,
         :short => "-t TEMPLATE",
-        :long => "--template TEMPLATE",
-        :description => "Bootstrap Chef using a built-in or custom template. Set to the full path of an erb template or use one of the built-in templates.",
-        :proc => Proc.new { |t| Chef::Config[:knife][:bootstrap_template] = t }
+        :long => "--bootstrap-template TEMPLATE",
+        :description => "Bootstrap Chef using a built-in or custom template. Set to the full path of an erb template or use one of the built-in templates."
 
       option :use_sudo,
         :long => "--sudo",
@@ -123,10 +122,10 @@ class Chef
       # DEPR: Remove this option in Chef 13
       option :template_file,
         :long => "--template-file TEMPLATE",
-        :description => "Full path to location of template to use. [DEPRECATED] Use -t / --template option instead.",
-        :proc => Proc.new { |t|
-          Chef::Log.warn("[DEPRECATED] --template-file option is deprecated. Use -t / --template option instead.")
-          Chef::Config[:knife][:bootstrap_template] = t
+        :description => "Full path to location of template to use. [DEPRECATED] Use -t / --bootstrap-template option instead.",
+        :proc        => Proc.new { |v|
+          Chef::Log.warn("[DEPRECATED] --template-file option is deprecated. Use -t / --bootstrap-template option instead.")
+          v
         }
 
       option :run_list,
@@ -189,8 +188,17 @@ class Chef
         :description => "Add options to curl when install chef-client",
         :proc        => Proc.new { |co| Chef::Config[:knife][:bootstrap_curl_options] = co }
 
+      def bootstrap_template
+        # For some reason knife.merge_configs doesn't pick up the default values from
+        # Chef::Config[:knife][:bootstrap_template] unless Chef::Config[:knife][:bootstrap_template]
+        # is forced to pick up the values before calling merge_configs.
+        # We therefore have Chef::Config[:knife][:bootstrap_template] to pick up the defaults
+        # if no option is specified.
+        config[:bootstrap_template] || config[:distro] || config[:template_file] || Chef::Config[:knife][:bootstrap_template]
+      end
+
       def find_template
-        template = Chef::Config[:knife][:bootstrap_template]
+        template = bootstrap_template
 
         # Use the template directly if it's a path to an actual file
         if File.exists?(template)
