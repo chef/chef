@@ -69,6 +69,7 @@ build do
   auxiliary_gems.each do |name, version|
     gem "install #{name}" \
         " --version '#{version}'" \
+        " --no-user-install" \
         " --bindir '#{install_dir}/bin'" \
         " --no-ri --no-rdoc" \
         " --verbose", env: env
