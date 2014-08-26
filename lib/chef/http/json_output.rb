@@ -26,6 +26,9 @@ class Chef
     # Middleware that takes an HTTP response, parses it as JSON if possible.
     class JSONOutput
 
+      attr_accessor :raw_output
+      attr_accessor :inflate_json_class
+
       def initialize(opts={})
         @raw_output = opts[:raw_output]
         @inflate_json_class = opts[:inflate_json_class]
@@ -44,10 +47,12 @@ class Chef
         # needed to keep conditional get stuff working correctly.
         return [http_response, rest_request, return_value] if return_value == false
         if http_response['content-type'] =~ /json/
-          if @raw_output
+          if http_response.body.nil?
+            return_value = nil
+          elsif raw_output
             return_value = http_response.body.to_s
           else
-            if @inflate_json_class
+            if inflate_json_class
               return_value = Chef::JSONCompat.from_json(http_response.body.chomp)
             else
               return_value = Chef::JSONCompat.parse(http_response.body.chomp)
