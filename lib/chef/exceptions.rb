@@ -118,6 +118,8 @@ class Chef
     class InvalidDataBagPath < ArgumentError; end
     class DuplicateDataBagItem < RuntimeError; end
 
+    class CannotDetermineHomebrewOwner < Package; end
+
     # A different version of a cookbook was added to a
     # VersionedRecipeList than the one already there.
     class CookbookVersionConflict < ArgumentError ; end

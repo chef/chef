@@ -116,7 +116,7 @@
 * Remove the Chef 10 functionality from bootstrap.
 * Deprecate --distro / --template_file options in favor of --boostrap-template
 * Add `:node_ssl_verify_mode` & `:node_verify_api_cert` options to bootstrap
-  to be able to configure these settings on the bootstrapped node.
+* Add homebrew provider for package resource, use it by default on OS X (Issue #1709)
 
 ## Last Release: 11.14.2
 
