@@ -24,6 +24,13 @@ fi
 
 mkdir -p /etc/chef
 
+<% if @config[:client_pem] -%>
+cat > /etc/chef/client.pem <<'EOP'
+<%= ::File.read(::File.expand_path(@config[:client_pem])) %>
+EOP
+chmod 0600 /etc/chef/client.pem
+<% end -%>
+
 cat > /etc/chef/validation.pem <<'EOP'
 <%= validation_key %>
 EOP

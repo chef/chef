@@ -34,6 +34,13 @@ EOP
 <% end -%>
 <% end -%>
 
+<% if @config[:client_pem] -%>
+cat > /etc/chef/client.pem <<'EOP'
+<%= ::File.read(::File.expand_path(@config[:client_pem])) %>
+EOP
+chmod 0600 /etc/chef/client.pem
+<% end -%>
+
 cat > /etc/chef/client.rb <<'EOP'
 log_level        :info
 log_location     STDOUT

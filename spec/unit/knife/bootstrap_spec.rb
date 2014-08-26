@@ -28,6 +28,8 @@ describe Chef::Knife::Bootstrap do
     # Merge default settings in.
     @knife.merge_configs
     @knife.config[:template_file] = File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "test.erb"))
+    # stub the retrieve_hostname method
+    @knife.stub(:retrieve_hostname).and_return "hostname"
     @stdout = StringIO.new
     @knife.ui.stub(:stdout).and_return(@stdout)
     @stderr = StringIO.new
@@ -121,6 +123,33 @@ describe Chef::Knife::Bootstrap do
   it "should take the node name from ARGV" do
     @knife.name_args = ['barf']
     @knife.name_args.first.should == "barf"
+  end
+
+  describe "when a chef-vault JSON file is provided" do
+    subject(:knife) { described_class.new }
+    let(:vault_list) { '{"secure": "vault5"}' }
+    let(:vault_file) { File.join(CHEF_SPEC_DATA, 'bootstrap', 'vault_file') }
+    let(:options) { [] }
+    let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "client_pem.erb")) }
+    let(:rendered_template) do
+      knife.instance_variable_set("@template_file", template_file)
+      knife.parse_options(options)
+      template_string = knife.read_template
+      knife.config[:client_pem] = File.join(CHEF_SPEC_DATA, 'bootstrap', 'client_pem')
+      knife.render_template(template_string)
+    end
+
+    it "vault_file should be translated into a HASH" do
+      Chef::JSONCompat.from_json(IO.read(vault_file)).class == Hash
+    end
+
+    it "vault_list should be translated into a HASH" do
+      Chef::JSONCompat.from_json(vault_list).class == Hash
+    end
+
+    it "renders the client.pem with an RSA PRIVATE KEY" do
+      rendered_template.should match(%r{RSA PRIVATE KEY})
+    end
   end
 
   describe "specifying no_proxy with various entries" do
