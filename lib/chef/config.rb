@@ -127,6 +127,10 @@ class Chef
     # properly.
     configurable(:daemonize).writes_value { |v| v }
 
+    # There is no reason to couple node_name to client name during chef-client runs.
+    # This allows to configure the client name for authentication purposes.
+    configurable(:client_name).writes_value { |v| v }
+    
     # The root where all local chef object data is stored.  cookbooks, data bags,
     # environments are all assumed to be in separate directories under this.
     # chef-solo uses these directories for input data.  knife commands
