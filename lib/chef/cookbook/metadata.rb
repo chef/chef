@@ -52,12 +52,14 @@ class Chef
       GROUPINGS              = 'groupings'.freeze
       RECIPES                = 'recipes'.freeze
       VERSION                = 'version'.freeze
-      SUPERMARKET_ATTRIBUTES = 'supermarket_attributes'.freeze
+      SOURCE_URL             = 'source_url'.freeze
+      ISSUES_URL             = 'issues_url'.freeze
 
       COMPARISON_FIELDS = [ :name, :description, :long_description, :maintainer,
                             :maintainer_email, :license, :platforms, :dependencies,
                             :recommendations, :suggestions, :conflicting, :providing,
-                            :replacing, :attributes, :groupings, :recipes, :version]
+                            :replacing, :attributes, :groupings, :recipes, :version,
+                            :source_url, :issues_url ]
 
       VERSION_CONSTRAINTS = {:depends     => DEPENDENCIES,
                              :recommends  => RECOMMENDATIONS,
@@ -112,7 +114,8 @@ class Chef
         @groupings = Mash.new
         @recipes = Mash.new
         @version = Version.new("0.0.0")
-        @supermarket_attributes = Hash.new
+        @source_url = ''
+        @issues_url = ''
 
         @errors = []
       end
@@ -445,7 +448,9 @@ class Chef
             :type => { :equal_to => [ "string", "array", "hash", "symbol", "boolean", "numeric" ], :default => "string" },
             :required => { :equal_to => [ "required", "recommended", "optional", true, false ], :default => "optional" },
             :recipes => { :kind_of => [ Array ], :default => [] },
-            :default => { :kind_of => [ String, Array, Hash, Symbol, Numeric, TrueClass, FalseClass ] }
+            :default => { :kind_of => [ String, Array, Hash, Symbol, Numeric, TrueClass, FalseClass ] },
+            :source_url => { :kind_of => String },
+            :issues_url => { :kind_of => String }
           }
         )
         options[:required] = remap_required_attribute(options[:required]) unless options[:required].nil?
@@ -488,7 +493,8 @@ class Chef
           GROUPINGS              => self.groupings,
           RECIPES                => self.recipes,
           VERSION                => self.version,
-          SUPERMARKET_ATTRIBUTES => self.supermarket_attributes
+          SOURCE_URL             => self.source_url,
+          ISSUES_URL             => self.issues_url
         }
       end
 
@@ -520,7 +526,8 @@ class Chef
         @groupings                    = o[GROUPINGS] if o.has_key?(GROUPINGS)
         @recipes                      = o[RECIPES] if o.has_key?(RECIPES)
         @version                      = o[VERSION] if o.has_key?(VERSION)
-        @supermarket_attributes       = o[SUPERMARKET_ATTRIBUTES] if o.has_key?(SUPERMARKET_ATTRIBUTES)
+        @source_url                   = o[SOURCE_URL] if o.has_key?(SOURCE_URL)
+        @issues_url                   = o[ISSUES_URL] if o.has_key?(ISSUES_URL)
         self
       end
 
@@ -547,19 +554,33 @@ class Chef
         from_hash(o)
       end
 
-      # Sets the cookbooks supermarket_attributes, or returns it.
+      # Sets the cookbook's source URL, or returns it.
       #
       # === Parameters
-      # supermarket_attributes<Hash>:: Attributes specific to Supermarket
+      # maintainer<String>:: The source URL
       #
       # === Returns
-      # supermarket_attributes<Hash>:: Returns the current Supermarket
-      # attributes
-      def supermarket_attributes(arg=nil)
+      # source_url<String>:: Returns the current source URL.
+      def source_url(arg=nil)
         set_or_return(
-          :supermarket_attributes,
+          :source_url,
           arg,
-          :kind_of => [ Hash ]
+          :kind_of => [ String ]
+        )
+      end
+
+      # Sets the cookbook's issues URL, or returns it.
+      #
+      # === Parameters
+      # issues_url<String>:: The issues URL
+      #
+      # === Returns
+      # issues_url<String>:: Returns the current issues URL.
+      def issues_url(arg=nil)
+        set_or_return(
+          :issues_url,
+          arg,
+          :kind_of => [ String ]
         )
       end
 

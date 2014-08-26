@@ -29,7 +29,8 @@ describe Chef::Cookbook::Metadata do
       @fields = [ :name, :description, :long_description, :maintainer,
                   :maintainer_email, :license, :platforms, :dependencies,
                   :recommendations, :suggestions, :conflicting, :providing,
-                  :replacing, :attributes, :groupings, :recipes, :version]
+                  :replacing, :attributes, :groupings, :recipes, :version,
+                  :source_url, :issues_url ]
     end
 
     it "does not depend on object identity for equality" do
@@ -140,8 +141,12 @@ describe Chef::Cookbook::Metadata do
       metadata.recipes.should eq(Mash.new)
     end
 
-    it "has an empty supermarket_attributes list" do
-      metadata.supermarket_attributes.should eq(Mash.new)
+    it "has an empty source_url string" do
+      metadata.source_url.should eq('')
+    end
+
+    it "has an empty issues_url string" do
+      metadata.issues_url.should eq('')
     end
   end
 
@@ -191,7 +196,9 @@ describe Chef::Cookbook::Metadata do
       :license => "Apache v2.0",
       :description => "Foobar!",
       :long_description => "Much Longer\nSeriously",
-      :version => "0.6.0"
+      :version => "0.6.0",
+      :source_url => "http://example.com",
+      :issues_url => "http://example.com/issues"
     }
     params.sort { |a,b| a.to_s <=> b.to_s }.each do |field, field_value|
       describe field do
@@ -336,7 +343,9 @@ describe Chef::Cookbook::Metadata do
         "type" => 'string',
         "required" => 'recommended',
         "recipes" => [ "mysql::server", "mysql::master" ],
-        "default" => [ ]
+        "default" => [ ],
+        "source_url" => "http://example.com",
+        "issues_url" => "http://example.com/issues"
       }
       metadata.attribute("/db/mysql/databases", attrs).should == attrs
     end
@@ -356,6 +365,24 @@ describe Chef::Cookbook::Metadata do
       }.should_not raise_error
       lambda {
         metadata.attribute("db/mysql/databases", :description => Hash.new)
+      }.should raise_error(ArgumentError)
+    end
+
+    it "should not accept anything but a string for the source_url" do
+      lambda {
+        metadata.attribute("db/mysql/databases", :source_url => "foo")
+      }.should_not raise_error
+      lambda {
+        metadata.attribute("db/mysql/databases", :source_url => Hash.new)
+      }.should raise_error(ArgumentError)
+    end
+
+    it "should not accept anything but a string for the issues_url" do
+      lambda {
+        metadata.attribute("db/mysql/databases", :issues_url => "foo")
+      }.should_not raise_error
+      lambda {
+        metadata.attribute("db/mysql/databases", :issues_url => Hash.new)
       }.should raise_error(ArgumentError)
     end
 
@@ -651,6 +678,8 @@ describe Chef::Cookbook::Metadata do
         attributes
         recipes
         version
+        source_url
+        issues_url
       }.each do |t|
         it "should include '#{t}'" do
           deserialized_metadata[t].should == metadata.send(t.to_sym)
@@ -684,6 +713,8 @@ describe Chef::Cookbook::Metadata do
         attributes
         recipes
         version
+        source_url
+        issues_url
       }.each do |t|
         it "should match '#{t}'" do
           deserialized_metadata.send(t.to_sym).should == metadata.send(t.to_sym)
@@ -734,19 +765,4 @@ describe Chef::Cookbook::Metadata do
     end
 
   end
-
-  describe "supermarket_attributes" do
-    it "should set supermarket_attributes equal to a given hash" do
-      attrs = Mash.new(
-        :source_url => "https://github.com/opscode-cookbooks/supermarket",
-        :issues_url => "https://github.com/opscode-cookbooks/supermarket/issues"
-      )
-
-      metadata.supermarket_attributes(attrs)
-
-      metadata.supermarket_attributes[:source_url].should == attrs[:source_url]
-      metadata.supermarket_attributes[:issues_url].should == attrs[:issues_url]
-    end
-  end
-
 end
