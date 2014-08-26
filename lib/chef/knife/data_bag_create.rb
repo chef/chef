@@ -42,6 +42,11 @@ class Chef
         :description => "A file containing the secret key to use to encrypt data bag item values",
         :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
 
+      option :encrypted,
+        :long => "--encrypted",
+        :description => "Only encrypt data bag when specified.",
+        :proc => Proc.new { |e| Chef::Config[:knife][:encrypted] = e }
+
       def read_secret
         if config[:secret]
           config[:secret]
@@ -51,11 +56,15 @@ class Chef
       end
 
       def use_encryption
-        if config[:secret] && config[:secret_file]
-          ui.fatal("please specify only one of --secret, --secret-file")
-          exit(1)
+        if config[:encrypted]
+          if config[:secret] && config[:secret_file]
+            ui.fatal("please specify only one of --secret, --secret-file")
+            exit(1)
+          end
+          config[:secret] || config[:secret_file]
+        else
+          false
         end
-        config[:secret] || config[:secret_file]
       end
 
       def run
@@ -87,11 +96,11 @@ class Chef
         if @data_bag_item_name
           create_object({ "id" => @data_bag_item_name }, "data_bag_item[#{@data_bag_item_name}]") do |output|
             item = Chef::DataBagItem.from_hash(
-                     if use_encryption
-                       Chef::EncryptedDataBagItem.encrypt_data_bag_item(output, read_secret)
-                     else
-                       output
-                     end)
+              if use_encryption
+                Chef::EncryptedDataBagItem.encrypt_data_bag_item(output, read_secret)
+              else
+                output
+            end)
             item.data_bag(@data_bag_name)
             rest.post_rest("data/#{@data_bag_name}", item)
           end
