@@ -51,11 +51,10 @@ override :zlib,      version: "1.2.8"
 
 dependency "preparation"
 dependency "ruby-windows"
-dependency "rubygems-customization"
-# The devkit has to be installed after rubygems-customization so the file it installs gets patched
 dependency "ruby-windows-devkit"
 dependency "chef-windows"
 dependency "chefdk"
+dependency "rubygems-customization"
 dependency "version-manifest"
 
 resources_path File.join(files_path, "chefdk")
