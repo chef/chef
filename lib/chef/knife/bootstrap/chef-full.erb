@@ -23,7 +23,6 @@ exists() {
   <%= knife_config[:bootstrap_install_command] %>
 <% else %>
   install_sh="<%= knife_config[:bootstrap_url] ? knife_config[:bootstrap_url] : "https://www.opscode.com/chef/install.sh" %>"
-  version_string="-v <%= chef_version %>"
   if ! exists /usr/bin/chef-client; then
     echo "Installing Chef Client..."
     if exists wget; then

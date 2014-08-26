@@ -6,7 +6,7 @@ if [ ! -f /usr/bin/chef-client ]; then
   pacman -S --noconfirm ruby ntp base-devel
   ntpdate -u pool.ntp.org
   gem install ohai --no-user-install --no-document --verbose
-  gem install chef --no-user-install --no-document --verbose <%= bootstrap_version_string %>
+  gem install chef --no-user-install --no-document --verbose <%= Chef::VERSION %>
 fi
 
 mkdir -p /etc/chef

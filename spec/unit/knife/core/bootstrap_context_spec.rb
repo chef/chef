@@ -33,10 +33,6 @@ describe Chef::Knife::Core::BootstrapContext do
 
   subject(:bootstrap_context) { described_class.new(config, run_list, chef_config) }
 
-  it "installs the same version of chef on the remote host" do
-    bootstrap_context.bootstrap_version_string.should eq "--version #{Chef::VERSION}"
-  end
-
   it "runs chef with the first-boot.json in the _default environment" do
     bootstrap_context.start_chef.should eq "chef-client -j /etc/chef/first-boot.json -E _default"
   end
@@ -95,24 +91,6 @@ EXPECTED
     end
   end
 
-  describe "when installing a prerelease version of chef" do
-    let(:config){ {:prerelease => true }}
-    it "supplies --prerelease as the version string" do
-      bootstrap_context.bootstrap_version_string.should eq '--prerelease'
-    end
-  end
-
-  describe "when installing an explicit version of chef" do
-    let(:chef_config) do
-      {
-        :knife => { :bootstrap_version => '123.45.678' }
-      }
-    end
-    it "gives --version $VERSION as the version string" do
-      bootstrap_context.bootstrap_version_string.should eq '--version 123.45.678'
-    end
-  end
-
   describe "when JSON attributes are given" do
     let(:config) { {:first_boot_attributes => {:baz => :quux}} }
     it "adds the attributes to first_boot" do
@@ -157,13 +135,6 @@ EXPECTED
 
     it "sets the @run_list instance variable" do
       bootstrap_context.instance_variable_get(:@run_list).should eq run_list
-    end
-
-    describe "accepts encrypted_data_bag_secret via Chef::Config" do
-      let(:chef_config) { {:encrypted_data_bag_secret => secret_file }}
-      it "reads the encrypted_data_bag_secret" do
-        bootstrap_context.encrypted_data_bag_secret.should eq IO.read(secret_file)
-      end
     end
   end
 

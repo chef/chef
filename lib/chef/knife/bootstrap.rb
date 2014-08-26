@@ -94,11 +94,20 @@ class Chef
         :description => "Do not proxy locations for the node being bootstrapped; this option is used internally by Opscode",
         :proc => Proc.new { |np| Chef::Config[:knife][:bootstrap_no_proxy] = np }
 
+      # DEPR: Remove this option in Chef 13
       option :distro,
         :short => "-d DISTRO",
         :long => "--distro DISTRO",
-        :description => "Bootstrap a distro using a template",
-        :default => "chef-full"
+        :description => "Bootstrap a distro using a template. [DEPRECATED] Use -t / --bootstrap-template option instead.",
+        :proc        => Proc.new { |v|
+          Chef::Log.warn("[DEPRECATED] -d / --distro option is deprecated. Use -t / --bootstrap-template option instead.")
+          v
+        }
+
+      option :bootstrap_template,
+        :short => "-t TEMPLATE",
+        :long => "--bootstrap-template TEMPLATE",
+        :description => "Bootstrap Chef using a built-in or custom template. Set to the full path of an erb template or use one of the built-in templates."
 
       option :use_sudo,
         :long => "--sudo",
@@ -110,10 +119,14 @@ class Chef
         :description => "Execute the bootstrap via sudo with password",
         :boolean => false
 
+      # DEPR: Remove this option in Chef 13
       option :template_file,
         :long => "--template-file TEMPLATE",
-        :description => "Full path to location of template to use",
-        :default => false
+        :description => "Full path to location of template to use. [DEPRECATED] Use -t / --bootstrap-template option instead.",
+        :proc        => Proc.new { |v|
+          Chef::Log.warn("[DEPRECATED] --template-file option is deprecated. Use -t / --bootstrap-template option instead.")
+          v
+        }
 
       option :run_list,
         :short => "-r RUN_LIST",
@@ -141,7 +154,8 @@ class Chef
         :proc => Proc.new { |h|
           Chef::Config[:knife][:hints] ||= Hash.new
           name, path = h.split("=")
-          Chef::Config[:knife][:hints][name] = path ? Chef::JSONCompat.parse(::File.read(path)) : Hash.new  }
+          Chef::Config[:knife][:hints][name] = path ? Chef::JSONCompat.parse(::File.read(path)) : Hash.new
+        }
 
       option :secret,
         :short => "-s SECRET",
@@ -174,53 +188,59 @@ class Chef
         :description => "Add options to curl when install chef-client",
         :proc        => Proc.new { |co| Chef::Config[:knife][:bootstrap_curl_options] = co }
 
-      def find_template(template=nil)
-        # Are we bootstrapping using an already shipped template?
-        if config[:template_file]
-          bootstrap_files = config[:template_file]
-        else
-          bootstrap_files = []
-          bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{config[:distro]}.erb")
-          bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{config[:distro]}.erb") if Knife.chef_config_dir
-          bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{config[:distro]}.erb") if ENV['HOME']
-          bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{config[:distro]}.erb"))
-          bootstrap_files.flatten!
+      def bootstrap_template
+        # For some reason knife.merge_configs doesn't pick up the default values from
+        # Chef::Config[:knife][:bootstrap_template] unless Chef::Config[:knife][:bootstrap_template]
+        # is forced to pick up the values before calling merge_configs.
+        # We therefore have Chef::Config[:knife][:bootstrap_template] to pick up the defaults
+        # if no option is specified.
+        config[:bootstrap_template] || config[:distro] || config[:template_file] || Chef::Config[:knife][:bootstrap_template]
+      end
+
+      def find_template
+        template = bootstrap_template
+
+        # Use the template directly if it's a path to an actual file
+        if File.exists?(template)
+          Chef::Log.debug("Using the specified bootstrap template: #{File.dirname(template)}")
+          return template
         end
 
-        template = Array(bootstrap_files).find do |bootstrap_template|
+        # Otherwise search the template directories until we find the right one
+        bootstrap_files = []
+        bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{template}.erb")
+        bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{template}.erb") if Chef::Knife.chef_config_dir
+        bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{template}.erb") if ENV['HOME']
+        bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{template}.erb"))
+        bootstrap_files.flatten!
+
+        template_file = Array(bootstrap_files).find do |bootstrap_template|
           Chef::Log.debug("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
           File.exists?(bootstrap_template)
         end
 
-        unless template
-          ui.info("Can not find bootstrap definition for #{config[:distro]}")
+        unless template_file
+          ui.info("Can not find bootstrap definition for #{template}")
           raise Errno::ENOENT
         end
 
-        Chef::Log.debug("Found bootstrap template in #{File.dirname(template)}")
+        Chef::Log.debug("Found bootstrap template in #{File.dirname(template_file)}")
 
-        template
+        template_file
       end
 
-      def render_template(template=nil)
+      def render_template
+        template_file = find_template
+        template = IO.read(template_file).chomp
         context = Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config)
         Erubis::Eruby.new(template).evaluate(context)
       end
 
-      def read_template
-        IO.read(@template_file).chomp
-      end
-
       def run
         validate_name_args!
-        warn_chef_config_secret_key
-        @template_file = find_template(config[:bootstrap_template])
         @node_name = Array(@name_args).first
-        # back compat--templates may use this setting:
-        config[:server_name] = @node_name
 
         $stdout.sync = true
-
         ui.info("Connecting to #{ui.color(@node_name, :bold)}")
 
         begin
@@ -272,35 +292,13 @@ class Chef
       end
 
       def ssh_command
-        command = render_template(read_template)
+        command = render_template
 
         if config[:use_sudo]
           command = config[:use_sudo_password] ? "echo '#{config[:ssh_password]}' | sudo -S #{command}" : "sudo #{command}"
         end
 
         command
-      end
-
-      def warn_chef_config_secret_key
-        unless Chef::Config[:encrypted_data_bag_secret].nil?
-          ui.warn "* " * 40
-          ui.warn(<<-WARNING)
-Specifying the encrypted data bag secret key using an 'encrypted_data_bag_secret'
-entry in 'knife.rb' is deprecated. Please see CHEF-4011 for more details. You
-can supress this warning and still distribute the secret key to all bootstrapped
-machines by adding the following to your 'knife.rb' file:
-
-  knife[:secret_file] = "/path/to/your/secret"
-
-If you would like to selectively distribute a secret key during bootstrap
-please use the '--secret' or '--secret-file' options of this command instead.
-
-#{ui.color('IMPORTANT:', :red, :bold)} In a future version of Chef, this
-behavior will be removed and any 'encrypted_data_bag_secret' entries in
-'knife.rb' will be ignored completely.
-WARNING
-          ui.warn "* " * 40
-        end
       end
 
     end
