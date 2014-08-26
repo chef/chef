@@ -542,7 +542,9 @@ class Chef
         VERSION_CONSTRAINTS.each do |dependency_type, hash_key|
           if dependency_group = o[hash_key]
            dependency_group.each do |cb_name, constraints|
-             metadata.send(method_name, cb_name, *Array(constraints))
+             if metadata.respond_to?(method_name)
+               metadata.public_send(method_name, cb_name, *Array(constraints))
+             end
            end
           end
         end
