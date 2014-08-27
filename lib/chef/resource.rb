@@ -23,7 +23,7 @@ require 'chef/dsl/data_query'
 require 'chef/dsl/registry_helper'
 require 'chef/dsl/reboot_pending'
 require 'chef/mixin/convert_to_class_name'
-require 'chef//guard_interpreter/resource_guard_interpreter'
+require 'chef/guard_interpreter/resource_guard_interpreter'
 require 'chef/resource/conditional'
 require 'chef/resource/conditional_action_not_nothing'
 require 'chef/resource_collection'
@@ -121,8 +121,8 @@ F
 
     end
 
-    FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if, :@enclosing_provider]
-    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider]
+    FORBIDDEN_IVARS = [:@run_context, :@not_if, :@only_if, :@enclosing_provider]
+    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider]
 
     include Chef::DSL::DataQuery
     include Chef::Mixin::ParamsValidate
@@ -253,8 +253,6 @@ F
       @guard_interpreter = :default
       @elapsed_time = 0
       @sensitive = false
-
-      @node = run_context ? deprecated_ivar(run_context.node, :node, :warn) : nil
     end
 
     # Returns a Hash of attribute => value for the state attributes declared in
