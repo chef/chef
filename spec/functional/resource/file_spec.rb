@@ -30,7 +30,6 @@ describe Chef::Resource::File do
     run_context = Chef::RunContext.new(node, {}, events)
 
     use_path = if opts[:use_relative_path]
-      Dir.chdir(test_file_dir)
       File.basename(path)
     else
       path
