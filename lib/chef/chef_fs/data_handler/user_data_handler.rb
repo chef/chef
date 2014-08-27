@@ -7,6 +7,7 @@ class Chef
         def normalize(user, entry)
           normalize_hash(user, {
             'name' => remove_dot_json(entry.name),
+            'username' => remove_dot_json(entry.name),
             'admin' => false,
             'json_class' => 'Chef::WebUIUser',
             'chef_type' => 'webui_user',
