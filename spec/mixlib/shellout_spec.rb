@@ -1076,7 +1076,7 @@ describe Mixlib::ShellOut do
 
               kill_return_val = Process.kill(:INT, child_pgid) # should raise ESRCH
               # AIX - kill returns code > 0 for error, where as other platforms return -1. Ruby code signal.c treats < 0 as error and raises exception and hence fails on AIX. So we check the return code for assertions since ruby wont raise an error here.
-              raise "ESRCH error in AIX" if kill_return_val != 0
+              raise Errno::ESRCH if kill_return_val != 0
 
               # Debug the failure:
               puts "child pgid=#{child_pgid.inspect}"
