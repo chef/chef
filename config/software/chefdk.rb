@@ -59,6 +59,7 @@ build do
   auxiliary_gems = {}
   auxiliary_gems['foodcritic']      = '4.0.0'
   auxiliary_gems['chefspec']        = '4.0.1'
+  auxiliary_gems['fauxhai']         = '2.2.0'
   auxiliary_gems['rubocop']         = '0.18.1'
   auxiliary_gems['knife-spork']     = '1.4.1'
   auxiliary_gems['kitchen-vagrant'] = '0.15.0'
@@ -69,6 +70,7 @@ build do
   auxiliary_gems.each do |name, version|
     gem "install #{name}" \
         " --version '#{version}'" \
+        " --no-user-install" \
         " --bindir '#{install_dir}/bin'" \
         " --no-ri --no-rdoc" \
         " --verbose", env: env
