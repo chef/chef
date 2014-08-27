@@ -79,7 +79,6 @@ describe Chef::Resource::FreebsdPackage do
         @resource.stub(:shell_out!).with("make -V WITH_PKGNG", :env => nil).and_return(pkg_enabled)
 
         [1000016, 1000000, 901503, 902506, 802511].each do |__freebsd_version|
-          @node[:os_version] == __freebsd_version
           @node.normal[:os_version] = __freebsd_version
           @resource.after_created
           @resource.provider.should == Chef::Provider::Package::Freebsd::Pkg

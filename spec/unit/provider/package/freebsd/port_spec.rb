@@ -85,7 +85,6 @@ describe Chef::Provider::Package::Freebsd::Port do
 
     it "should check 'pkg info' if the freebsd version is greater than or equal to 1000017" do
       __freebsd_version = 1000017
-      @node[:os_version] == __freebsd_version
       @node.normal[:os_version] = __freebsd_version
       @provider.should_receive(:shell_out!).with('pkg info "zsh"', :env => nil, :returns => [0,70]).and_return(@pkg_info)
       @provider.current_installed_version.should == "3.1.7"
