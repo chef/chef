@@ -342,17 +342,6 @@ user password using shadow hash.")
           user_info = read_user_info
           dscl_set(user_info, :shadow_hash, shadow_info_binary)
 
-          #
-          # Before saving the user's plist file we need to wait for dscl to
-          # update its caches and flush them to disk. In order to achieve this
-          # we need to wait first for our changes to get into the dscl cache
-          # and then flush the cache to disk before saving password into the
-          # plist file. 3 seconds is the minimum experimental value for dscl
-          # cache to be updated. We can get rid of this sleep when we find a
-          # trigger to update dscl cache.
-          #
-          sleep 3
-          shell_out("dscacheutil '-flushcache'")
           save_user_info(user_info)
         end
 
@@ -554,6 +543,11 @@ user password using shadow hash.")
         def read_user_info
           user_info = nil
 
+          # We are about to read the plist directly - we have to make sure
+          # any changes in the dscl cache have been flushed to the backing
+          # plist files otherwise we will read stale data and then update it
+          # and write partially stale data back.
+          shell_out("dscacheutil '-flushcache'")
           begin
             user_plist_file = "#{USER_PLIST_DIRECTORY}/#{@new_resource.username}.plist"
             user_plist_info = run_plutil("convert xml1 -o - #{user_plist_file}")

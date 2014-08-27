@@ -62,6 +62,8 @@
   Allow git provider to checkout existing branch names.
 * [**Eric Herot**](https://github.com/eherot):
   Add whitespace boundaries to some mount point references in mount provider.
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  Fix 'dscl' provider for "user" resource to handle dscl caching properly
 
 ### Chef Contributions
 
