@@ -1,12 +1,15 @@
 # Chef Client 10.x Changelog
 
+## Unreleased
+
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  Fix 'dscl' provider for "user" resource to handle dscl caching properly
+
+
 ## 10.34.0
 
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   'group' provider on OSX properly uses 'dscl' to determine existing groups
-
-
-
 * `options` attribute of mount resource now supports lazy evaluation. (CHEF-5163)
 * Fix OS X service provider actions that don't require the service label
   to work when there is no plist. (backport CHEF-5223)

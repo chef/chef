@@ -376,6 +376,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     let(:user_plist_file) { nil }
 
     before do
+      provider.should_receive(:shell_out).with("dscacheutil '-flushcache'")
       provider.should_receive(:shell_out).with("plutil -convert xml1 -o - /var/db/dslocal/nodes/Default/users/toor.plist") do
         if user_plist_file.nil?
           ShellCmdResult.new('Can not find the file', 'Sorry!!', 1)
@@ -707,15 +708,13 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
       new_resource.password("something")
     end
 
-    it "should sleep and flush the dscl cache before saving the password" do
+    it "should flush the dscl cache before reading the password" do
       provider.should_receive(:prepare_password_shadow_info).and_return({ })
       mock_shellout = double("Mock::Shellout")
       mock_shellout.stub(:run_command)
       Mixlib::ShellOut.should_receive(:new).and_return(mock_shellout)
       provider.should_receive(:read_user_info)
       provider.should_receive(:dscl_set)
-      provider.should_receive(:sleep).with(3)
-      provider.should_receive(:shell_out).with("dscacheutil '-flushcache'")
       provider.should_receive(:save_user_info)
       provider.set_password
     end
@@ -822,6 +821,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
   describe "when the user exists" do
     before do
+      provider.should_receive(:shell_out).with("dscacheutil '-flushcache'")
       provider.should_receive(:shell_out).with("plutil -convert xml1 -o - /var/db/dslocal/nodes/Default/users/toor.plist") do
         ShellCmdResult.new(File.read(File.join(CHEF_SPEC_DATA, "mac_users/10.9.plist.xml")), "", 0)
       end
