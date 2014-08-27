@@ -1,7 +1,11 @@
 # Chef Client Changelog
 
-## Last Release: 11.14.6:
+## Unrelease Changes:
 
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  Fix 'dscl' provider for "user" resource to handle dscl caching properly
+
+## Last Release: 11.14.6:
 * Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
 * Fix RPM package version detection (Issue 1554)
 * Fix a bug in reporting not to post negative duration values.
