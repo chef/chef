@@ -1,5 +1,5 @@
 #
-# Author:: Bryan McLellan <btm@loftninjas.org>
+# Author:: Jay Mundrawala <jmundrawala@getchef.com>
 # Copyright:: Copyright (c) 2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -163,7 +163,7 @@ describe Chef::Util::DSC::ConfigurationGenerator do
       dsc = @conf_man.send(:configuration_code, 'archive{}', 'hello')
       found_configuration = false
       dsc.split(';').each do |command|
-        if command.downcase =~ /\s*configuration\s+'hello'\s*\{\s*archive\s*\{\s*\}\s*\}\s*/
+        if command.downcase =~ /\s*configuration\s+'hello'\s*\{\s*node\s+'localhost'\s*\{\s*archive\s*\{\s*\}\s*\}\s*\}\s*/
           found_configuration = true
         end
       end
