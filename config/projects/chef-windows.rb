@@ -17,7 +17,7 @@
 name "chef-windows"
 friendly_name "Chef Client"
 maintainer "Chef Software, Inc."
-homepage "http://www.getchef.com"
+homepage "https://www.getchef.com"
 
 # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
 #       Native gems will use gcc which will barf on files with spaces,

@@ -22,7 +22,7 @@
 name "angrychef"
 friendly_name "Angry Chef Client"
 maintainer "Chef Software, Inc."
-homepage "http://www.getchef.com"
+homepage "https://www.getchef.com"
 
 build_iteration 1
 build_version do

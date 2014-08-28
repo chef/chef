@@ -17,7 +17,7 @@
 name "chef-container"
 friendly_name "Chef Container"
 maintainer "Chef Software, Inc"
-homepage "http://www.getchef.com"
+homepage "https://www.getchef.com"
 
 build_iteration  1
 build_version do

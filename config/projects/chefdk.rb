@@ -14,10 +14,10 @@
 # limitations under the License.
 #
 
-name       "chefdk"
+name "chefdk"
 friendly_name "Chef Development Kit"
 maintainer "Chef Software, Inc."
-homepage   "http://www.getchef.com"
+homepage "https://www.getchef.com"
 
 install_dir    "/opt/chefdk"
 
