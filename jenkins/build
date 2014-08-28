@@ -162,13 +162,6 @@ else
   bundle exec omnibus build $OMNIBUS_PROJECT_NAME -l debug
 fi
 
-# Sign the package on some platforms:
-if [ "x$os" != "xAIX" ]; then
-  if exists rpm; then
-    sudo -i `pwd`/jenkins/sign-rpm "foo" `pwd`/pkg/*rpm
-  fi
-fi
-
 # Dump the build-generated version so the Omnitruck release script uses the
 # correct version string format.
 echo "`awk -v p=$OMNIBUS_PROJECT_NAME '$1 == p {print $2}' /opt/${OMNIBUS_PROJECT_NAME}/version-manifest.txt`" > pkg/BUILD_VERSION
