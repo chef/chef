@@ -27,7 +27,6 @@ module Mixlib
     READ_WAIT_TIME = 0.01
     READ_SIZE = 4096
     DEFAULT_READ_TIMEOUT = 600
-    DEFAULT_ENVIRONMENT = {'LC_ALL' => 'C'}
 
     if RUBY_PLATFORM =~ /mswin|mingw32|windows/
       require 'mixlib/shellout/windows'
@@ -84,7 +83,7 @@ module Mixlib
 
     # Environment variables that will be set for the subcommand. Refer to the
     # documentation of new to understand how ShellOut interprets this.
-    attr_reader :environment
+    attr_accessor :environment
 
     # The maximum time this command is allowed to run. Usually set via options
     # to new
@@ -125,11 +124,7 @@ module Mixlib
     #   subprocess. This only has an effect if you call +error!+ after
     #   +run_command+.
     # * +environment+: a Hash of environment variables to set before the command
-    #   is run. By default, the environment will *always* be set to 'LC_ALL' => 'C'
-    #   to prevent issues with multibyte characters in Ruby 1.8. To avoid this,
-    #   use :environment => nil for *no* extra environment settings, or
-    #   :environment => {'LC_ALL'=>nil, ...} to set other environment settings
-    #   without changing the locale.
+    #   is run.
     # * +timeout+: a Numeric value for the number of seconds to wait on the
     #   child process before raising an Exception. This is calculated as the
     #   total amount of time that ShellOut waited on the child process without
@@ -154,7 +149,7 @@ module Mixlib
       @input = nil
       @log_level = :debug
       @log_tag = nil
-      @environment = DEFAULT_ENVIRONMENT
+      @environment = {}
       @cwd = nil
       @valid_exit_codes = [0]
       @terminate_reason = nil
@@ -315,13 +310,7 @@ module Mixlib
         when 'log_tag'
           self.log_tag = setting
         when 'environment', 'env'
-          # Set the LC_ALL from the parent process if the user wanted
-          # to use the default.
-          if setting && setting.has_key?("LC_ALL") && setting['LC_ALL'].nil?
-            setting['LC_ALL'] = ENV['LC_ALL']
-          end
-          # passing :environment => nil means don't set any new ENV vars
-          @environment = setting.nil? ? {} : @environment.dup.merge!(setting)
+          self.environment = setting || {}
 
         else
           raise InvalidCommandOption, "option '#{option.inspect}' is not a valid option for #{self.class.name}"
