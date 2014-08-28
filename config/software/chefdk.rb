@@ -17,37 +17,42 @@
 name "chefdk"
 default_version "master"
 
-source :git => "git://github.com/opscode/chef-dk"
+source git: "git://github.com/opscode/chef-dk"
 
 relative_path "chef-dk"
 
-if windows?
-  dependency "chef-windows"
-else
-  dependency "chef"
-end
-
 dependency "libffi" if debian?
-dependency "test-kitchen"
+
 dependency "appbundler"
 dependency "berkshelf"
-dependency "ohai"
 dependency "chef-vault"
+dependency "ohai"
+dependency "test-kitchen"
+
+if windows?
+  dependency "chef-windows"
+  dependency "rubygems-customization"
+  # The devkit has to be installed after rubygems-customization so the
+  # file it installs gets patched.
+  dependency "ruby-windows-devkit"
+else
+  dependency "chef"
+  dependency "rubygems-customization"
+end
 
 build do
-  env = {
-    # rubocop pulls in nokogiri 1.5.11, so needs PKG_CONFIG_PATH and
-    # NOKOGIRI_USE_SYSTEM_LIBRARIES until rubocop stops doing that
-    "PKG_CONFIG_PATH" => "#{install_dir}/embedded/lib/pkgconfig",
-    "NOKOGIRI_USE_SYSTEM_LIBRARIES" => "true",
-  }
-  env = with_embedded_path(env)
-
   def appbundle(app_path, bin_path)
     gemfile = File.join(app_path, "Gemfile.lock")
     env = with_embedded_path.merge("BUNDLE_GEMFILE" => gemfile)
-    command("#{install_dir}/embedded/bin/appbundler '#{app_path}' '#{bin_path}'", env: env)
+    command "#{install_dir}/embedded/bin/appbundler '#{app_path}' '#{bin_path}'", env: env
   end
+
+  env = with_standard_compiler_flags(with_embedded_path).merge(
+    # Rubocop pulls in nokogiri 1.5.11, so needs PKG_CONFIG_PATH and
+    # NOKOGIRI_USE_SYSTEM_LIBRARIES until rubocop stops doing that
+    "PKG_CONFIG_PATH" => "#{install_dir}/embedded/lib/pkgconfig",
+    "NOKOGIRI_USE_SYSTEM_LIBRARIES" => "true",
+  )
 
   bundle "install", env: env
   rake "build", env: env
@@ -56,18 +61,17 @@ build do
       " --no-ri --no-rdoc" \
       " --verbose", env: env
 
-  auxiliary_gems = {}
-  auxiliary_gems['foodcritic']      = '4.0.0'
-  auxiliary_gems['chefspec']        = '4.0.1'
-  auxiliary_gems['fauxhai']         = '2.2.0'
-  auxiliary_gems['rubocop']         = '0.18.1'
-  auxiliary_gems['knife-spork']     = '1.4.1'
-  auxiliary_gems['kitchen-vagrant'] = '0.15.0'
-  # Strainer build is hosed on windows
-  # auxiliary_gems['strainer'] = '3.3.0'
-
   # Perform multiple gem installs to better isolate/debug failures
-  auxiliary_gems.each do |name, version|
+  {
+    'foodcritic'      => '4.0.0',
+    'chefspec'        => '4.0.1',
+    'fauxhai'         => '2.2.0',
+    'rubocop'         => '0.18.1',
+    'knife-spork'     => '1.4.1',
+    'kitchen-vagrant' => '0.15.0',
+    # Strainer build is hosed on windows
+    # 'strainer'        => '0.15.0',
+  }.each do |name, version|
     gem "install #{name}" \
         " --version '#{version}'" \
         " --no-user-install" \
@@ -76,12 +80,11 @@ build do
         " --verbose", env: env
   end
 
-  mkdir("#{install_dir}/embedded/apps")
+  mkdir "#{install_dir}/embedded/apps"
 
-  appbundler_apps = %w[chef berkshelf test-kitchen chef-dk chef-vault ohai]
-  appbundler_apps.each do |app_name|
-    copy("#{Config.source_dir}/#{app_name}", "#{install_dir}/embedded/apps/")
-    delete("#{install_dir}/embedded/apps/#{app_name}/.git")
-    appbundle("#{install_dir}/embedded/apps/#{app_name}", "#{install_dir}/bin")
+  %w(chef berkshelf test-kitchen chef-dk chef-vault ohai).each do |app_name|
+    copy "#{Omnibus::Config.source_dir}/#{app_name}", "#{install_dir}/embedded/apps/"
+    delete "#{install_dir}/embedded/apps/#{app_name}/.git"
+    appbundle "#{install_dir}/embedded/apps/#{app_name}", "#{install_dir}/bin"
   end
 end
