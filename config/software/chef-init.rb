@@ -17,19 +17,20 @@
 name "chef-init"
 default_version "master"
 
-source :git => "https://github.com/opscode/chef-init"
+source git: "https://github.com/opscode/chef-init"
 
 relative_path "chef-init"
 
 dependency "runit"
 dependency "chef"
 
-env = with_standard_compiler_flags(with_embedded_path)
-
 build do
+  env = with_standard_compiler_flags(with_embedded_path)
+
   bundle "install", env: env
-  rake "build", env: env
-  gem "install pkg/chef-init*.gem " \
-    "--bindir '#{install_dir}/bin' " \
-    "--no-ri --no-rdoc", env: env
+
+  gem "build chef-init.gemspec", env: env
+  gem "install pkg/chef-init*.gem" \
+      " --bindir '#{install_dir}/bin'" \
+      " --no-ri --no-rdoc", env: env
 end
