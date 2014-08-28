@@ -24,7 +24,7 @@ dependency "appbundler"
 
 default_version "master"
 
-source :git => "git://github.com/opscode/chef"
+source git: "git://github.com/opscode/chef"
 
 relative_path "chef"
 
@@ -51,14 +51,14 @@ build do
   rake "gem", env: env
 
   # Delete the windows gem
-  command "rm -f pkg/chef-*-x86-mingw32.gem"
+  delete "pkg/chef-*-x86-mingw32.gem"
 
   # Don't use -n #{install_dir}/bin. Appbundler will take care of them later
   gem "install pkg/chef-*.gem " \
       " --no-ri --no-rdoc", env: env
 
   auxiliary_gems = {}
-  auxiliary_gems['ruby-shadow'] = '>= 0.0.0' unless Ohai['platform'] == 'aix'
+  auxiliary_gems['ruby-shadow'] = '>= 0.0.0' unless aix?
 
   auxiliary_gems.each do |name, version|
     gem "install #{name}" \
@@ -74,18 +74,18 @@ build do
 
     appbundler_apps = %w[chef]
     appbundler_apps.each do |app_name|
-      copy("#{source_dir}/#{app_name}", "#{install_dir}/embedded/apps/")
+      copy("#{Omnibus::Config.source_dir}/#{app_name}", "#{install_dir}/embedded/apps/")
       delete("#{install_dir}/embedded/apps/#{app_name}/.git")
       appbundle("#{install_dir}/embedded/apps/#{app_name}", "#{install_dir}/bin")
     end
   end
 
   # Clean up
-  delete("#{install_dir}/embedded/docs")
-  delete("#{install_dir}/embedded/share/man")
-  delete("#{install_dir}/embedded/share/doc")
-  delete("#{install_dir}/embedded/share/gtk-doc")
-  delete("#{install_dir}/embedded/ssl/man")
-  delete("#{install_dir}/embedded/man")
-  delete("#{install_dir}/embedded/info")
+  delete "#{install_dir}/embedded/docs"
+  delete "#{install_dir}/embedded/share/man"
+  delete "#{install_dir}/embedded/share/doc"
+  delete "#{install_dir}/embedded/share/gtk-doc"
+  delete "#{install_dir}/embedded/ssl/man"
+  delete "#{install_dir}/embedded/man"
+  delete "#{install_dir}/embedded/info"
 end
