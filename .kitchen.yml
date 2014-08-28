@@ -1,18 +1,23 @@
-# NOTE: this runs the omnibus cookbook, but doens't mount filesystems or
-# run omnibus yet.  Use 'kichen converge' to setup the virt and install
-# omnibus cookbooks and then be able to login to it
+#
+# NOTE: this runs the omnibus cookbook, but does not actually run Omnibus. Use
+# 'kichen converge' to setup the virtual machine and then `kitchen login` to
+# SSH into the machine and run Omnibus.
+#
 
 driver:
   name: vagrant
+  forward_agent: yes
   customize:
-    memory: 2048
     cpus: 4
+    memory: 4096
   synced_folders:
-    - ['.', '/home/vagrant/omnibus-chef', type: 'rsync']
+    - ['.', '/home/vagrant/omnibus-chef']
+    - ['../omnibus', '/home/vagrant/omnibus']
+    - ['../omnibus-software', '/home/vagrant/omnibus-software']
 
 provisioner:
   name: chef_zero
-  require_chef_omnibus: true
+  require_chef_omnibus: 11.14.6
 
 platforms:
   - name: centos-5.10
@@ -39,25 +44,34 @@ platforms:
     run_list: apt::default
   - name: ubuntu-14.04
     run_list: apt::default
+  - name: windows-7-professional
+    provisioner:
+      name: windows_chef_zero
+  - name: windows-8.1-professional
+    provisioner:
+      name: windows_chef_zero
 
 suites:
   - name: chef
+    run_list: omnibus::default
     attributes:
       omnibus:
-        build_user: vagrant
+        build_user:  vagrant
+        build_dir:   /home/vagrant/chef
         install_dir: /opt/chef
-    run_list: omnibus::default
   - name: chefdk
-    attributes:
-      omnibus:
-        build_user: vagrant
-        install_dir: /opt/chefdk
     run_list: omnibus::default
-  - name: chef-container
     attributes:
       omnibus:
-        build_user: vagrant
-        install_dir: /opt/chef
+        build_user:  vagrant
+        build_dir:   /home/vagrant/chefdk
+        install_dir: /opt/chefdk
+  - name: chef-container
     run_list:
       - omnibus::default
       - docker::default
+    attributes:
+      omnibus:
+        build_user:  vagrant
+        build_dir:   /home/vagrant/chef-container
+        install_dir: /opt/chef-container
