@@ -36,8 +36,14 @@ end
 install_dir "#{default_root}/angrychef"
 
 resources_path File.join(files_path, "chef")
-mac_pkg_identifier "com.getchef.pkg.angrychef"
 
 dependency "preparation"
 dependency "chef"
 dependency "version-manifest"
+
+package :pkg do
+  identifier "com.getchef.pkg.angrychef"
+  signing_identity "Developer ID Installer: Opscode Inc. (9NBR9JL2R2)"
+end
+
+compress :dmg

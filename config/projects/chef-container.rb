@@ -31,7 +31,6 @@ end
 install_dir "#{default_root}/chef"
 
 resources_path File.join(files_path, "chef")
-mac_pkg_identifier "com.getchef.pkg.chef-container"
 
 # use the same rubygems as the chef project
 override :rubygems, version: "1.8.29"
@@ -43,3 +42,10 @@ dependency "preparation"
 dependency "chef"
 dependency "chef-init"
 dependency "version-manifest"
+
+package :pkg do
+  identifier "com.getchef.pkg.chef-container"
+  signing_identity "Developer ID Installer: Opscode Inc. (9NBR9JL2R2)"
+end
+
+compress :dmg

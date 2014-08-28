@@ -30,7 +30,6 @@ build_version do
   output_format :semver
 end
 
-mac_pkg_identifier "com.getchef.pkg.chefdk"
 resources_path File.join(files_path, "chefdk")
 
 override :berkshelf, version: "master"
@@ -51,3 +50,14 @@ dependency "preparation"
 dependency "chefdk"
 dependency "rubygems-customization"
 dependency "version-manifest"
+
+package :pkg do
+  identifier "com.getchef.pkg.chefdk"
+  signing_identity "Developer ID Installer: Opscode Inc. (9NBR9JL2R2)"
+end
+
+package :msi do
+  upgrade_code "AB1D6FBD-F9DC-4395-BDAD-26C4541168E7"
+end
+
+compress :dmg

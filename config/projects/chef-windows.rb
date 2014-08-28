@@ -44,7 +44,9 @@ dependency "chef-windows"
 
 resources_path File.join(files_path, "chef")
 
-msi_parameters do
+package :msi do
+  upgrade_code "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
+
   # Find path in which chef gem is installed to.
   # Note that install_dir is something like: c:/opscode/chef
   search_pattern = "#{install_dir}/**/gems/chef-[0-9]*"
@@ -61,12 +63,10 @@ msi_parameters do
     .relative_path_from(Pathname.new(install_dir))
     .to_s
 
-  # Return the result as a hash
-  {
+  parameters {
     # We are going to use this path in the startup command of chef
     # service. So we need to change file seperators to make windows
     # happy.
     chef_gem_path: relative_path.gsub(File::SEPARATOR, File::ALT_SEPARATOR),
-    upgrade_code:  'D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5',
   }
 end
