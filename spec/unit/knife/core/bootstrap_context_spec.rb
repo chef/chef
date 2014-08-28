@@ -168,4 +168,57 @@ EXPECTED
       bootstrap_context.latest_current_chef_version_string.should eq("-v #{Chef::VERSION.to_i}")
     end
   end
+
+  describe "ssl_verify_mode" do
+    it "isn't set in the config_content by default" do
+      bootstrap_context.config_content.should_not include("ssl_verify_mode")
+    end
+
+    describe "when configured in config" do
+      let(:chef_config) do
+        {
+          :knife => {:ssl_verify_mode => :verify_peer}
+        }
+      end
+
+      it "uses the config value" do
+        bootstrap_context.config_content.should include("ssl_verify_mode :verify_peer")
+      end
+
+      describe "when configured via CLI" do
+        let(:config) {{:node_ssl_verify_mode => "none"}}
+
+        it "uses CLI value" do
+          bootstrap_context.config_content.should include("ssl_verify_mode :verify_none")
+        end
+      end
+    end
+  end
+
+  describe "verify_api_cert" do
+    it "isn't set in the config_content by default" do
+      bootstrap_context.config_content.should_not include("verify_api_cert")
+    end
+
+    describe "when configured in config" do
+      let(:chef_config) do
+        {
+          :knife => {:verify_api_cert => :false}
+        }
+      end
+
+      it "uses the config value" do
+        bootstrap_context.config_content.should include("verify_api_cert false")
+      end
+
+      describe "when configured via CLI" do
+        let(:config) {{:node_verify_api_cert => true}}
+
+        it "uses CLI value" do
+          bootstrap_context.config_content.should include("verify_api_cert true")
+        end
+      end
+    end
+  end
+
 end

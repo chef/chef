@@ -188,6 +188,21 @@ class Chef
         :description => "Add options to curl when install chef-client",
         :proc        => Proc.new { |co| Chef::Config[:knife][:bootstrap_curl_options] = co }
 
+      option :node_ssl_verify_mode,
+        :long        => "--node-ssl-verify-mode [peer|none]",
+        :description => "Whether or not to verify the SSL cert for all HTTPS requests.",
+        :proc        => Proc.new { |v|
+          valid_values = ["none", "peer"]
+          unless valid_values.include?(v)
+            raise "Invalid value '#{v}' for --node-ssl-verify-mode. Valid values are: #{valid_values.join(", ")}"
+          end
+        }
+
+      option :node_verify_api_cert,
+        :long        => "--[no-]node-verify-api-cert",
+        :description => "Verify the SSL cert for HTTPS requests to the Chef server API.",
+        :boolean     => true
+
       def bootstrap_template
         # For some reason knife.merge_configs doesn't pick up the default values from
         # Chef::Config[:knife][:bootstrap_template] unless Chef::Config[:knife][:bootstrap_template]
@@ -204,6 +219,7 @@ class Chef
         if File.exists?(template)
           Chef::Log.debug("Using the specified bootstrap template: #{File.dirname(template)}")
           return template
+
         end
 
         # Otherwise search the template directories until we find the right one

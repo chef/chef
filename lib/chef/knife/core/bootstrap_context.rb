@@ -64,6 +64,36 @@ CONFIG
             client_rb << "# Using default node name (fqdn)\n"
           end
 
+          # We configure :verify_api_cert only when it's overridden on the CLI
+          # or when specified in the knife config.
+          if !@config[:node_verify_api_cert].nil? || knife_config.has_key?(:verify_api_cert)
+            value = @config[:node_verify_api_cert].nil? ? knife_config[:verify_api_cert] : @config[:node_verify_api_cert]
+            client_rb << %Q{verify_api_cert #{value}\n}
+          end
+
+          # We configure :ssl_verify_mode only when it's overridden on the CLI
+          # or when specified in the knife config.
+          if @config[:node_ssl_verify_mode] || knife_config.has_key?(:ssl_verify_mode)
+            value = case @config[:node_ssl_verify_mode]
+            when "peer"
+              :verify_peer
+            when "none"
+              :verify_none
+            when nil
+              knife_config[:ssl_verify_mode]
+            else
+              nil
+            end
+
+            if value
+              client_rb << %Q{ssl_verify_mode :#{value}\n}
+            end
+          end
+
+          if @config[:ssl_verify_mode]
+            client_rb << %Q{ssl_verify_mode :#{knife_config[:ssl_verify_mode]}\n}
+          end
+
           if knife_config[:bootstrap_proxy]
             client_rb << %Q{http_proxy        "#{knife_config[:bootstrap_proxy]}"\n}
             client_rb << %Q{https_proxy       "#{knife_config[:bootstrap_proxy]}"\n}

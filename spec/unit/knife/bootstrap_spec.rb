@@ -246,6 +246,46 @@ describe Chef::Knife::Bootstrap do
         rendered_template.should match(%r{.*no_proxy\s*"api.opscode.com,172.16.10.\*".*})
       end
     end
+
+    context "via --ssl-verify-mode none" do
+      let(:options) { ["--node-ssl-verify-mode", "none"] }
+
+      it "renders the client.rb with ssl_verify_mode set to :verify_none" do
+        rendered_template.should match(/ssl_verify_mode :verify_none/)
+      end
+    end
+
+    context "via --node-ssl-verify-mode peer" do
+      let(:options) { ["--node-ssl-verify-mode", "peer"] }
+
+      it "renders the client.rb with ssl_verify_mode set to :verify_peer" do
+        rendered_template.should match(/ssl_verify_mode :verify_peer/)
+      end
+    end
+
+    context "via --node-ssl-verify-mode all" do
+      let(:options) { ["--node-ssl-verify-mode", "all"] }
+
+      it "raises error" do
+        lambda{ rendered_template }.should raise_error
+      end
+    end
+
+    context "via --node-verify-api-cert" do
+      let(:options) { ["--node-verify-api-cert"] }
+
+      it "renders the client.rb with verify_api_cert set to true" do
+        rendered_template.should match(/verify_api_cert true/)
+      end
+    end
+
+    context "via --no-node-verify-api-cert" do
+      let(:options) { ["--no-node-verify-api-cert"] }
+
+      it "renders the client.rb with verify_api_cert set to false" do
+        rendered_template.should match(/verify_api_cert false/)
+      end
+    end
   end
 
   describe "specifying the encrypted data bag secret key" do
@@ -483,6 +523,9 @@ describe Chef::Knife::Bootstrap do
       knife_ssh.should_receive(:run).and_raise(Net::SSH::AuthenticationFailed)
       lambda { knife.run }.should raise_error(Net::SSH::AuthenticationFailed)
     end
+  end
+
+  describe "specifying ssl verification" do
 
   end
 

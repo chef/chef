@@ -6,7 +6,7 @@ Chef Client 12 introduces a set of changes to `knife bootstrap`. Here is the lis
 
 * Unused / untested bootstrap templates that install Chef Client from rubygems are removed. The recommended installation path for Chef Client is to use the omnibus packages. `chef-full` template (which is the default) installs Chef Client using omnibus packages on all the supported platforms.
 * `--distro` & `--template-file` options are deprecated in Chef 12 in favor of `--boostrap-template` option. This option can take a boostrap template name (e.g. 'chef-full') or the full path to a bootstrap template.
-
+* Chef now configures `:ssl_verify_mode` & `:verify_api_cert` config options on the node that is being bootstrapped. This setting can be controlled by `:node_ssl_verify_mode` & `:node_verify_api_cert` CLI options. If these are not specified the configured value will be inferred from knife config.
 
 ## Solaris Mount Provider
 
