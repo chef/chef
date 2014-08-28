@@ -129,11 +129,11 @@ class Chef
       private
 
       def generate_description
-        ["DSC resource script for configuration '#{configuration_friendly_name}'"] + 
+        ["converge DSC configuration '#{configuration_friendly_name}'"] + 
           @dsc_resources_info.map do |resource|
             # We ignore the last log message because it only contains the time it took, which looks weird
             cleaned_messages = resource.change_log[0..-2].map { |c| c.sub(/^#{Regexp.escape(resource.name)}/, '').strip }
-            cleaned_messages.find_all{ |c| c != ''}.join("\n")
+            "converge DSC resource #{resource.name} by #{cleaned_messages.find_all{ |c| c != ''}.join("\n")}"
           end
       end
     end

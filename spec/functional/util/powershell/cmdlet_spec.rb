@@ -40,8 +40,12 @@ describe Chef::Util::Powershell::Cmdlet, :windows_only do
     expect(result.succeeded?).to eq(true)
   end
 
-  it "returns a PowershellCmdletException exception if the command cannot be executed" do
-    expect {invalid_cmdlet.run}.to raise_error(Chef::Exceptions::PowershellCmdletException)
+  it "#run does not raise a PowershellCmdletException exception if the command cannot be executed" do
+    expect {invalid_cmdlet.run}.not_to raise_error
+  end
+
+  it "#run! raises a PowershellCmdletException exception if the command cannot be executed" do
+    expect {invalid_cmdlet.run!}.to raise_error(Chef::Exceptions::PowershellCmdletException)
   end
 
   it "executes a 64-bit command on a 64-bit OS, 32-bit otherwise" do

@@ -133,34 +133,46 @@ EOF
         Chef::Util::DSC::LocalConfigurationManager::Parser::ParseException))
     end
 
-    it 'should raise an exception if a resource is found inside a test' do
-      str = <<EOF
+    it 'should allow missing a [End Resource] when its the last one and still find all the resource' do
+      str = <<-EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]
-logtype: [machinename]: LCM:  [ Start  Resource ] [name]
+logtype: [machinename]: LCM:  [ Start  Resource ]  [name]
 logtype: [machinename]: LCM:  [ Start  Test     ]
-logtype: [machinename]: LCM:  [ Start  Resource ]
-logtype: [machinename]: LCM:  [ End    Resource  ]
 logtype: [machinename]: LCM:  [ End    Test     ]
-logtype: [machinename]: LCM:  [ End    Resource ] [name]
-logtype: [machinename]: LCM:  [ End    Set      ]
-EOF
-      expect { Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str) }.to(raise_error(
-        Chef::Util::DSC::LocalConfigurationManager::Parser::ParseException))
-    end
-
-    it 'should raise an exception if a resource is found inside a resource' do
-      str = <<EOF
+logtype: [machinename]: LCM:  [ Skip   Set      ]
+logtype: [machinename]: LCM:  [ End    Resource ]
+logtype: [machinename]: LCM:  [ Start  Resource ]  [name2]
+logtype: [machinename]: LCM:  [ Start  Test     ]
+logtype: [machinename]: LCM:  [ End    Test     ]
 logtype: [machinename]: LCM:  [ Start  Set      ]
-logtype: [machinename]: LCM:  [ Start  Resource ] [name]
-logtype: [machinename]: LCM:  [ Start  Resource ]
-logtype: [machinename]: LCM:  [ End    Resource  ]
-logtype: [machinename]: LCM:  [ End    Resource ] [name]
+logtype: [machinename]: LCM:  [ End    Set      ]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
-      expect { Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str) }.to(raise_error(
-        Chef::Util::DSC::LocalConfigurationManager::Parser::ParseException))
+
+      resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
+      resources[0].changes_state?.should be_false
+      resources[1].changes_state?.should be_true
     end
 
-  end
+    it 'should allow missing a [End Resource] when its the first one and still find all the resource' do
+      str = <<-EOF
+logtype: [machinename]: LCM:  [ Start  Set      ]
+logtype: [machinename]: LCM:  [ Start  Resource ]  [name]
+logtype: [machinename]: LCM:  [ Start  Test     ]
+logtype: [machinename]: LCM:  [ End    Test     ]
+logtype: [machinename]: LCM:  [ Skip   Set      ]
+logtype: [machinename]: LCM:  [ Start  Resource ]  [name2]
+logtype: [machinename]: LCM:  [ Start  Test     ]
+logtype: [machinename]: LCM:  [ End    Test     ]
+logtype: [machinename]: LCM:  [ Start  Set      ]
+logtype: [machinename]: LCM:  [ End    Set      ]
+logtype: [machinename]: LCM:  [ End    Resource ]
+logtype: [machinename]: LCM:  [ End    Set      ]
+EOF
 
+      resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
+      resources[0].changes_state?.should be_false
+      resources[1].changes_state?.should be_true
+    end
+  end
 end
