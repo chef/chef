@@ -1,33 +1,30 @@
-# Chef Omnibus project
-
+chef Omnibus project
+====================
 This project creates full-stack platform-specific packages for `chef`!
 
-__PLEASE NOTE__ - The `chef-server` Omnibus project has been moved to:
-https://github.com/opscode/omnibus-chef-server
-
-## Installation
-
-We'll assume you have Ruby 1.9+ and Bundler installed. First ensure all
-required gems are installed and ready to use:
+Installation
+------------
+You must have a sane Ruby 1.9+ environment with Bundler installed. Ensure all
+the required gems are installed:
 
 ```shell
 $ bundle install --binstubs
 ```
 
-## Usage
-
+Usage
+-----
 ### Build
 
-You create a platform-specific package using the `build` command:
+You create a platform-specific package using the `build project` command:
 
 ```shell
 $ bin/omnibus build chef
 ```
 
 The platform/architecture type of the package created will match the platform
-where the `build` command is invoked. So running this command on say a
-MacBook Pro will generate a Mac OS X specific package. After the build
-completes packages will be available in `pkg/`.
+where the `build project` command is invoked. For example, running this command
+on a MacBook Pro will generate a Mac OS X package. After the build completes
+packages will be available in the `pkg/` folder.
 
 ### Clean
 
@@ -35,29 +32,25 @@ You can clean up all temporary files generated during the build process with
 the `clean` command:
 
 ```shell
-$ bin/omnibus clean
+$ bin/omnibus clean chef
 ```
 
 Adding the `--purge` purge option removes __ALL__ files generated during the
-build including the project install directory (`/opt/opscode`) and
+build including the project install directory (`/opt/chef`) and
 the package cache directory (`/var/cache/omnibus/pkg`):
 
 ```shell
-$ bin/omnibus clean --purge
+$ bin/omnibus clean chef --purge
 ```
 
-### Cache
+### Publish
 
-Lists source packages that are required but not yet cached:
-
-```shell
-$ bin/omnibus cache missing
-```
-
-Populate the S3 Cache:
+Omnibus has a built-in mechanism for releasing to a variety of "backends", such
+as Amazon S3. You must set the proper credentials in your `omnibus.rb` config
+file or specify them via the command line.
 
 ```shell
-$ bin/omnibus cache populate
+$ bin/omnibus publish path/to/*.deb --backend s3
 ```
 
 ### Help
@@ -69,25 +62,10 @@ Full help for the Omnibus command line interface can be accessed with the
 $ bin/omnibus help
 ```
 
-## Specifying a Chef version
-
-By default, the package you build will be based on master branch HEAD of the
-[opscode/chef](https://github.com/opscode/chef) git repository. You can build
-packages for a specific version of Chef by overriding the version of chef in
-Chef project definition.
-
-```ruby
-# config/projects/chef.rb
-override :chef,   version: "11.10.0"
-```
-
-The value of version can be any valid git reference (e.g., tag,
-branch name, or SHA).
-
 Kitchen-based Build Environment
 -------------------------------
-Every Omnibus project ships will a project-specific [Berksfile](http://berkshelf.com/)
-that will allow you to build your omnibus projects on all of the projects listed
+Every Omnibus project ships will a project-specific
+[Berksfile](http://berkshelf.com/) that will allow you to build your omnibus projects on all of the projects listed
 in the `.kitchen.yml`. You can add/remove additional platforms as needed by
 changing the list found in the `.kitchen.yml` `platforms` YAML stanza.
 
@@ -97,50 +75,36 @@ the [omnibus cookbook](https://github.com/opscode-cookbooks/omnibus) to setup
 your desired platform and execute the build steps listed above.
 
 The default build environment requires Test Kitchen and VirtualBox for local
-development. If you don't have Test Kitchen installed on your workstation we
-recommend installing the
-[latest version of ChefDK package for your platform](http://www.getchef.com/downloads/chef-dk/mac/).
-Test Kitchen also exposes the ability to provision instances using various cloud
-providers like AWS, DigitalOcean, or OpenStack. For more information, please see
-the [Test Kitchen documentation](http://kitchen.ci).
+development. Test Kitchen also exposes the ability to provision instances using
+various cloud providers like AWS, DigitalOcean, or OpenStack. For more
+information, please see the [Test Kitchen documentation](http://kitchen.ci).
 
 Once you have tweaked your `.kitchen.yml` (or `.kitchen.local.yml`) to your
 liking, you can bring up an individual build environment using the `kitchen`
 command.
 
 ```shell
-$ kitchen converge <PROJECT>-ubuntu-12.04
+$ bin/kitchen converge ubuntu-1204
 ```
 
 Then login to the instance and build the project as described in the Usage
 section:
 
 ```shell
-$ kitchen login ubuntu-12.04
-[vagrant@ubuntu...] $ cd omnbius-chef
-[vagrant@ubuntu...] $ bundle install --binstubs
+$ bundle exec kitchen login ubuntu-1204
+[vagrant@ubuntu...] $ cd chef
+[vagrant@ubuntu...] $ bundle install
 [vagrant@ubuntu...] $ ...
-[vagrant@ubuntu...] $ bundle exec omnibus build <PROJECT NAME>
-```
-
-If you are building the Chef project you will need to purge the Chef package
-that was used to provision the VM:
-
-```shell
-[vagrant@ubuntu...] $ sudo rm -rf /opt/chef
-[vagrant@ubuntu...] $ sudo mkdir -p /opt/chef
-[vagrant@ubuntu...] $ sudo chown vagrant /opt/chef
+[vagrant@ubuntu...] $ bin/omnibus build chef
 ```
 
 For a complete list of all commands and platforms, run `kitchen list` or
 `kitchen help`.
 
-## License
-
-See the LICENSE file for details.
-
-Copyright (c) 2012 Chef Software, Inc.
-License: Apache License, Version 2.0
+License
+-------
+```text
+Copyright 2012-2014 Chef Software, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -153,3 +117,4 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+```
