@@ -16,7 +16,7 @@
 
 name "chef-windows"
 
-dependency "ruby-windows" #includes rubygems
+dependency "ruby-windows" # includes rubygems
 dependency "libyaml-windows"
 dependency "openssl-windows"
 dependency "ruby-windows-devkit"
@@ -26,7 +26,7 @@ dependency "cacerts"
 
 default_version "master"
 
-source :git => "git://github.com/opscode/chef"
+source git: "git://github.com/opscode/chef"
 
 relative_path "chef"
 
@@ -56,9 +56,7 @@ build do
     'libbz2-2.dll'     => 'libbz2-2.dll',
     'libz-1.dll'       => 'libz-1.dll',
   }.each do |target, to|
-    source = "#{install_dir}/embedded/mingw/bin/#{to}"
-    target = "#{install_dir}/bin/#{target}"
-    copy(source, target)
+    copy "#{install_dir}/embedded/mingw/bin/#{to}", "#{install_dir}/bin/#{target}"
   end
 
   rake "gem"
