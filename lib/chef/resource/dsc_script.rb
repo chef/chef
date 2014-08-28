@@ -34,7 +34,7 @@ class Chef
           raise ArgumentError, "Only one of 'code' and 'command' attributes may be specified"
         end
         if arg && configuration_name
-          raise ArgumentError, "Attribute `code` may not be set if `configuration_name` is set"
+          raise ArgumentError, "The 'code' and 'command' attributes may not be used together"
         end
         set_or_return(
           :code,
@@ -56,7 +56,7 @@ class Chef
 
       def command(arg=nil)
         if arg && code
-          raise ArgumentError, "Only one of 'code' and 'command' attributes may be specified"
+          raise ArgumentError, "The 'code' and 'command' attributes may not be used together"
         end
         set_or_return(
           :command,
@@ -67,7 +67,7 @@ class Chef
 
       def configuration_data(arg=nil)
         if arg && configuration_data_script
-          raise ArgumentError, "Only one of 'configuration_data' and 'configuration_script' attributes may be specified"
+          raise ArgumentError, "The 'configuration_data' and 'configuration_data_script' attributes may not be used together"
         end
         set_or_return(
           :configuration_data,
@@ -78,7 +78,7 @@ class Chef
 
       def configuration_data_script(arg=nil)
         if arg && configuration_data
-          raise ArgumentError, "Only one of 'configuration_data' and 'configuration_script' attributes may be specified"
+          raise ArgumentError, "The 'configuration_data' and 'configuration_data_script' attributes may not be used together"
         end
         set_or_return(
           :configuration_data_script,
