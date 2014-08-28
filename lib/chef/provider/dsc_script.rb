@@ -133,9 +133,14 @@ class Chef
       def generate_description
         ["converge DSC configuration '#{configuration_friendly_name}'"] + 
           @dsc_resources_info.map do |resource|
-            # We ignore the last log message because it only contains the time it took, which looks weird
-            cleaned_messages = resource.change_log[0..-2].map { |c| c.sub(/^#{Regexp.escape(resource.name)}/, '').strip }
-            "converge DSC resource #{resource.name} by #{cleaned_messages.find_all{ |c| c != ''}.join("\n")}"
+            if resource.changes_state?
+              # We ignore the last log message because it only contains the time it took, which looks weird
+              cleaned_messages = resource.change_log[0..-2].map { |c| c.sub(/^#{Regexp.escape(resource.name)}/, '').strip }
+              "converge DSC resource #{resource.name} by #{cleaned_messages.find_all{ |c| c != ''}.join("\n")}"
+            else
+              # This is needed because a dsc script can have resouces that are both converged and not
+              "converge DSC resource #{resource.name} by doing nothing because it is already converged"
+            end
           end
       end
     end
