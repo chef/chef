@@ -109,6 +109,8 @@
 * Remove the unused bootstrap templates that install chef from rubygems
 * Remove the Chef 10 functionality from bootstrap.
 * Deprecate --distro / --template_file options in favor of --boostrap-template
+* Add `:node_ssl_verify_mode` & `:node_verify_api_cert` options to bootstrap
+  to be able to configure these settings on the bootstrapped node.
 
 ## Last Release: 11.14.2
 
