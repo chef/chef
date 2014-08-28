@@ -52,7 +52,17 @@ class Chef
         "#{created_as_type}[#{name}]"
       end
 
+      def supports_pkgng?
+        ships_with_pkgng? || !!shell_out!("make -V WITH_PKGNG", :env => nil).stdout.match(/yes/i)
+      end
+
       private
+
+      def ships_with_pkgng?
+        # It was not until __FreeBSD_version 1000017 that pkgng became
+        # the default binary package manager. See '/usr/ports/Mk/bsd.port.mk'.
+        node.automatic[:os_version].to_i >= 1000017
+      end
 
       def assign_provider
         @provider = if @source.to_s =~ /^ports$/i
@@ -63,17 +73,6 @@ class Chef
                       Chef::Provider::Package::Freebsd::Pkg
                     end
       end
-
-      def ships_with_pkgng?
-        # It was not until __FreeBSD_version 1000017 that pkgng became
-        # the default binary package manager. See '/usr/ports/Mk/bsd.port.mk'.
-        node[:os_version].to_i >= 1000017
-      end
-
-      def supports_pkgng?
-        ships_with_pkgng? || !!shell_out!("make -V WITH_PKGNG", :env => nil).stdout.match(/yes/i)
-      end
-
     end
   end
 end

@@ -34,7 +34,7 @@ class Chef
           end
 
           def current_installed_version
-            pkg_info = if supports_pkgng?
+            pkg_info = if @new_resource.supports_pkgng?
                          shell_out!("pkg info \"#{@new_resource.package_name}\"", :env => nil, :returns => [0,70])
                        else
                          shell_out!("pkg_info -E \"#{@new_resource.package_name}*\"", :env => nil, :returns => [0,1])
@@ -53,19 +53,6 @@ class Chef
           def port_dir
             super(@new_resource.package_name)
           end
-
-          private
-
-          def ships_with_pkgng?
-            # It was not until __FreeBSD_version 1000017 that pkgng became
-            # the default binary package manager. See '/usr/ports/Mk/bsd.port.mk'.
-            node[:os_version].to_i >= 1000017
-          end
-
-          def supports_pkgng?
-            ships_with_pkgng? || !!shell_out!("make -V WITH_PKGNG", :env => nil).stdout.match(/yes/i)
-          end
-
         end
       end
     end
