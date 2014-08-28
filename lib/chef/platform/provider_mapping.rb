@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/config'
 require 'chef/log'
+require 'chef/exceptions'
 require 'chef/mixin/params_validate'
 require 'chef/version_constraint/platform'
 
