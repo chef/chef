@@ -23,10 +23,7 @@ install_dir "#{default_root}/chefdk"
 
 build_iteration 1
 build_version do
-  # Use chefdk to determine the build version
   source :git, from_dependency: 'chefdk'
-
-  # Output a SemVer compliant version string
   output_format :semver
 end
 
