@@ -19,7 +19,7 @@ friendly_name "Chef Development Kit"
 maintainer "Chef Software, Inc."
 homepage "https://www.getchef.com"
 
-install_dir    "/opt/chefdk"
+install_dir "#{default_root}/chefdk"
 
 build_iteration 1
 build_version do

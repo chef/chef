@@ -28,7 +28,7 @@ build_version do
   output_format :semver
 end
 
-install_dir    "/opt/chef"
+install_dir "#{default_root}/chef"
 
 resources_path File.join(files_path, "chef")
 mac_pkg_identifier "com.getchef.pkg.chef"
