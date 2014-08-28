@@ -37,6 +37,11 @@ require 'rubygems'
 require 'json'
 require 'mixlib/shellout'
 
+# required for Artifactory publishing
+require 'artifactory'
+require 'omnibus'
+require 'tempfile'
+
 # Represnts the collection of artifacts on disk that we plan to upload. Handles
 # finding the artifacts and dealing with the mapping between build platform and
 # install platforms.
@@ -220,6 +225,13 @@ class ShipIt
     artifacts.each do |artifact|
       artifact.add_to_v2_release_manifest!(v2_metadata)
       upload_package(artifact.path, artifact.relpath)
+
+      # Optionally publish to the new Artifactory infrastructure
+      if options[:publish_to_artifactory]
+        Omnibus.load_configuration(options[:omnibus_config])
+        publish_to_artifactory(artifact)
+      end
+
     end
     upload_v2_platform_name_map(artifact_collection.platform_name_map_path)
     upload_v2_manifest(v2_metadata)
@@ -257,6 +269,16 @@ class ShipIt
               "indicates the release should continue if any build packages are missing") do |missing|
         options[:ignore_missing_packages] = missing
       end
+
+      opts.on("--publish-to-artifactory",
+              "indicates the release should be published to Artifactory") do |artifactory|
+        options[:publish_to_artifactory] = artifactory
+      end
+
+      opts.on("--omnibus-config OMNIBUS_CONFIG_FILE",
+              "path to the Omnibus config file which is required for Artifactory publishing") do |config_path|
+        options[:omnibus_config] = config_path
+      end
     end
   end
 
@@ -271,6 +293,10 @@ class ShipIt
     end
 
     required = [:project, :version, :bucket, :metadata_bucket, :metadata_s3_config_file]
+
+    # If --publish-to-artifactory was provided then --omnibus-config is required
+    required << :omnibus_config if options[:publish_to_artifactory]
+
     missing = required.select {|param| options[param].nil?}
     if !missing.empty?
       puts "Missing required options: #{missing.join(', ')}"
@@ -340,6 +366,125 @@ class ShipIt
 
   def upload_v2_manifest?
     !options[:metadata_bucket].nil?
+  end
+
+  def publish_to_artifactory(artifact)
+
+    metadata_json = "#{artifact.path}.metadata.json"
+
+    if File.exist?(metadata_json)
+      metadata = JSON.parse(IO.read(metadata_json), :symbolize_names => true)
+
+      # Historically we name our Windows-specific project definitions
+      # PROJECT_NAME-windows. We want to publish this project under
+      # PROJECT_NAME though. Luckily we are moving to a place where the
+      # Windows-specific project definition will just become part of the
+      # regular *nix project definition. Until then we need to modify the
+      # the artifact's associated `*.metadata.json` file as the Omnibus
+      # publisher uses this metadata when publishing to Artifactory.
+      if match = metadata[:name].match(/^(?<project_basename>.*)-windows$/)
+        metadata[:name] = match[:project_basename]
+
+        File.open(metadata_json, 'w+')  do |f|
+          f.write(JSON.pretty_generate(metadata))
+        end
+      end
+    end
+
+    # Publish artifact under each tested platform, platform version and arch!
+    artifact.platforms.each do |distro, version, arch|
+
+      # We only really care about publishing for Windows 64-bit so ignore
+      # the 32-bit mappings
+      next if (distro == 'windows') && (arch == 'i686')
+
+      tries = 3
+
+      begin
+        # Apply various 'fixes' to the metadata before uploading
+        fix_metadata(artifact.path)
+
+        publisher = Omnibus::ArtifactoryPublisher.new(
+                    artifact.path,
+                    repository: 'omnibus-current-local',
+                    platform: distro,
+                    platform_version: version,
+                  )
+
+
+        publisher.publish do |package|
+          puts "Uploaded '#{package.name}'"
+        end
+
+      rescue Omnibus::NoPackageMetadataFile => e
+
+        puts "Could not locate package metadata file '#{artifact.path}.metadata.json'...skipping publish."
+
+      rescue Artifactory::Error::ArtifactoryError => e
+        puts "\nError during publishing: #{e.message}"
+        puts "Backtrace:\n\t#{e.backtrace.join("\n\t")}"
+
+        if (tries -= 1) != 0
+          puts "\nRetrying failed publish #{tries} more time(s)..."
+          retry
+        else
+          raise
+        end
+      end
+    end
+  end
+
+  # Attempts to fix an out-of-date `*.metadata.json` file produced by an
+  # an older version of Omnibus. The data contained in this file is very
+  # important in publishing activities.
+  def fix_metadata(package_local_path)
+    package = Omnibus::Package.new(package_local_path)
+
+    old_metadata = JSON.parse(File.read(package.metadata.path), symbolize_names: true)
+    new_metadata = old_metadata.dup
+
+    # OLD Omnibus does not include a project name!!!! O_o
+    unless new_metadata[:name]
+      match = package.name.match(/^(?<project_name>[a-z].*)(_|-)\d\.\d\.\d/)
+      new_metadata[:name] = match[:project_name]
+    end
+
+    # Historically we name our Windows-specific project definitions
+    # PROJECT_NAME-windows. We want to publish this project under
+    # PROJECT_NAME though. Luckily we are moving to a place where the
+    # Windows-specific project definition will just become part of the
+    # regular *nix project definition. Until then we need to modify the
+    # the artifact's associated `*.metadata.json` file as the Omnibus
+    # publisher uses this metadata when publishing to Artifactory.
+    match = new_metadata[:name].match(/^(?<project_basename>.*)-windows$/)
+    new_metadata[:name] = match[:project_basename] if match
+
+    # In pre-4.0 Omnibus packages are signed outside of the Omnibus
+    # build process which means Omnibus's generated checksums are wrong.
+    # As we use the Omnibus-generated metadata when publishing to
+    # Artifactory checksum mismatches are OK until Omnibus 4.0 is in
+    # general use.
+    if new_metadata[:platform] == 'el'
+      new_metadata[:md5]    = package.md5
+      new_metadata[:sha1]   = package.sha1
+      new_metadata[:sha256] = package.sha256
+      new_metadata[:sha512] = package.sha512
+    end
+
+    # OLD Omnibus does not generate all checksum types
+    new_metadata[:sha256] = package.sha256 unless new_metadata[:sha256]
+    new_metadata[:sha512] = package.sha512 unless new_metadata[:sha512]
+
+    # If the metadata has changed write the file
+    if new_metadata != old_metadata
+      metadata = if Omnibus.const_defined?('Metadata')
+        Omnibus::Metadata.new(package, new_metadata)
+      else
+        Omnibus::Package::Metadata.new(package, new_metadata)
+      end
+      puts "\nMetadata has changed...updating '#{metadata.path}'"
+      metadata.save
+    end
   end
 end
 
