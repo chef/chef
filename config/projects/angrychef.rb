@@ -35,7 +35,7 @@ end
 
 install_dir "#{default_root}/angrychef"
 
-resources_path File.join(files_path, "chef")
+resources_path "#{Config.project_root}/files/chef"
 
 dependency "preparation"
 dependency "chef"

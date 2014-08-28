@@ -42,7 +42,7 @@ override :rubygems, version: "2.2.1"
 dependency "preparation"
 dependency "chef-windows"
 
-resources_path File.join(files_path, "chef")
+resources_path "#{Config.project_root}/files/chef"
 
 package :msi do
   upgrade_code "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"

@@ -30,8 +30,6 @@ end
 
 install_dir "#{default_root}/#{name}"
 
-resources_path File.join(files_path, "chef")
-
 override :bundler,  version: "1.7.0"
 override :ruby,     version: "2.1.2"
 override :rubygems, version: "2.2.1"

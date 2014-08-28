@@ -30,8 +30,6 @@ end
 
 install_dir "#{default_root}/chef"
 
-resources_path File.join(files_path, "chef")
-
 # use the same rubygems as the chef project
 override :rubygems, version: "1.8.29"
 
