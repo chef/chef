@@ -19,8 +19,9 @@
 
 require 'spec_helper'
 require 'chef/exceptions'
+require 'chef/util/path_helper'
 
-describe Chef::Config do
+describe Chef::Config, :focus do
   describe "config attribute writer: chef_server_url" do
     before do
       Chef::Config.chef_server_url = "https://junglist.gen.nz"
@@ -125,11 +126,7 @@ describe Chef::Config do
       end
 
       before :each do
-        if is_windows
-          Chef::Config.stub(:on_windows?).and_return(true)
-        else
-          Chef::Config.stub(:on_windows?).and_return(false)
-        end
+        Chef::Platform.stub(:windows?).and_return(is_windows)
       end
 
       describe "class method: platform_specific_path" do
@@ -272,27 +269,6 @@ describe Chef::Config do
           Chef::Config[:environment_path].should == environment_path
         end
 
-        describe "joining platform specific paths" do
-          it "joins components when some end with separators" do
-            expected = to_platform("/foo/bar/baz")
-            expected = "C:#{expected}" if is_windows
-            Chef::Config.path_join(is_windows ? 'C:\\foo\\' : "/foo/", "bar", "baz").should == expected
-          end
-
-          if is_windows
-            it "joins components on Windows when some end with unix separators" do
-              expected = 'C:\\foo/bar\\baz'
-              Chef::Config.path_join('C:\\foo/', "bar", "baz").should == expected
-            end
-          end
-
-          it "joins components that don't end in separators" do
-            expected = to_platform("/foo/bar/baz")
-            expected = "C:#{expected}" if is_windows
-            Chef::Config.path_join(is_windows ? 'C:\\foo' : "/foo", "bar", "baz").should == expected
-          end
-        end
-
         describe "setting the config dir" do
 
           context "when the config file is /etc/chef/client.rb" do
@@ -301,7 +277,7 @@ describe Chef::Config do
               Chef::Config.config_file = to_platform("/etc/chef/client.rb")
             end
 
-            it "config_dir is /etc/chef", :focus do
+            it "config_dir is /etc/chef" do
               Chef::Config.config_dir.should == to_platform("/etc/chef")
             end
 
@@ -327,13 +303,13 @@ describe Chef::Config do
 
           end
 
-          context "when the user's home dir is /home/charlie" do
+          context "when the user's home dir is /home/charlie/" do
             before do
               Chef::Config.user_home = to_platform("/home/charlie")
             end
 
-            it "config_dir is /home/charlie/.chef" do
-              Chef::Config.config_dir.should == to_platform("/home/charlie/.chef/")
+            it "config_dir is /home/charlie/.chef/" do
+              Chef::Config.config_dir.should == Chef::Util::PathHelper.join(to_platform("/home/charlie/.chef"), '')
             end
 
             context "and chef is running in local mode" do
@@ -341,8 +317,8 @@ describe Chef::Config do
                 Chef::Config.local_mode = true
               end
 
-              it "config_dir is /home/charlie/.chef" do
-                Chef::Config.config_dir.should == to_platform("/home/charlie/.chef/")
+              it "config_dir is /home/charlie/.chef/" do
+                Chef::Config.config_dir.should == Chef::Util::PathHelper.join(to_platform("/home/charlie/.chef"), '')
               end
             end
           end

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/platform/provider_mapping'
 require 'chef/platform/query_helpers'
+require 'chef/platform/provider_mapping'
 
 class Chef
   class Platform
