@@ -75,7 +75,7 @@ class Chef
     def self.path_join(*args)
       args = args.flatten
       args.inject do |joined_path, component|
-        unless joined_path[-1,1] == platform_path_separator
+        unless [ File::SEPARATOR, File::ALT_SEPARATOR, platform_path_separator ].include?(joined_path[-1,1])
           joined_path += platform_path_separator
         end
         joined_path += component
@@ -85,12 +85,28 @@ class Chef
     def self.platform_specific_path(path)
       if on_windows?
         # turns /etc/chef/client.rb into C:/chef/client.rb
-        system_drive = env['SYSTEMDRIVE'] ? env['SYSTEMDRIVE'] : ""
-        path = File.join(system_drive, path.split('/')[2..-1])
+        if env['SYSTEMDRIVE'] && path[0] == '/' && path.split('/')[2] == 'chef'
+          path = File.join(env['SYSTEMDRIVE'], path.split('/')[2..-1])
+        end
         # ensure all forward slashes are backslashes
-        path.gsub!(File::SEPARATOR, (File::ALT_SEPARATOR || '\\'))
+        path = path.gsub(File::SEPARATOR, (File::ALT_SEPARATOR || BACKSLASH))
       end
       path
+    end
+
+    def self.platform_dirname(path)
+      if on_windows?
+        slash = path.rindex(/[\\#{platform_separator}\\#{File::SEPARATOR}]/)
+        if slash.nil?
+          '.'
+        elsif slash == 0
+          '/'
+        else
+          path[0..slash-1]
+        end
+      else
+        ::File.dirname(path)
+      end
     end
 
     def self.add_formatter(name, file_path=nil)
@@ -101,8 +117,9 @@ class Chef
     configurable(:config_file)
 
     default(:config_dir) do
+      puts "Default config_dir: '#{config_file}'"
       if config_file
-        ::File.dirname(config_file)
+        platform_dirname(config_file)
       else
         path_join(user_home, ".chef#{platform_path_separator}")
       end
