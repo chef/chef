@@ -51,13 +51,13 @@ describe 'knife show' do
       it 'knife show /cookbooks/x/metadata.rb shows the remote version' do
         knife('show /cookbooks/x/metadata.rb').should_succeed <<EOM
 /cookbooks/x/metadata.rb:
-name 'x'; version '1.0.0'
+name "x"; version "1.0.0"
 EOM
       end
       it 'knife show --local /cookbooks/x/metadata.rb shows the local version' do
         knife('show --local /cookbooks/x/metadata.rb').should_succeed <<EOM
 /cookbooks/x/metadata.rb:
-name 'x'; version '1.0.0'
+name "x"; version "1.0.0"
 EOM
       end
       it 'knife show /data_bags/x/y.json shows the remote version' do

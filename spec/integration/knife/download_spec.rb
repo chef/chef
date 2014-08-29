@@ -903,7 +903,7 @@ EOM
 
     when_the_repository 'has a cookbook' do
       before do
-        file 'cookbooks/x-1.0.0/metadata.rb', 'name "x"; version "1.0.0"'
+        file 'cookbooks/x-1.0.0/metadata.rb', 'name "x"; version "1.0.0"#unmodified'
         file 'cookbooks/x-1.0.0/z.rb', ''
       end
 

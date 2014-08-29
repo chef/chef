@@ -641,4 +641,118 @@ EOM
       end
     end
   end
+
+  when_the_chef_server "is in Enterprise mode", :osc_compat => false, :single_org => false do
+    before do
+      organization 'foo'
+    end
+
+    before :each do
+      Chef::Config.chef_server_url = URI.join(Chef::Config.chef_server_url, '/organizations/foo')
+    end
+
+    context 'and has plenty of stuff in it' do
+      it "knife list / returns all top level directories" do
+        knife('list /').should_succeed <<EOM
+/acls
+/clients
+/containers
+/cookbooks
+/data_bags
+/environments
+/groups
+/nodes
+/roles
+EOM
+      end
+
+      it "knife list -R / returns everything" do
+        knife('list -R /').should_succeed <<EOM
+/:
+acls
+clients
+containers
+cookbooks
+data_bags
+environments
+groups
+nodes
+roles
+
+/acls:
+clients
+containers
+cookbooks
+data_bags
+environments
+groups
+nodes
+organization.json
+roles
+
+/acls/clients:
+foo-validator.json
+
+/acls/containers:
+clients.json
+containers.json
+cookbooks.json
+data.json
+environments.json
+groups.json
+nodes.json
+roles.json
+sandboxes.json
+
+/acls/cookbooks:
+
+/acls/data_bags:
+
+/acls/environments:
+_default.json
+
+/acls/groups:
+admins.json
+billing-admins.json
+clients.json
+users.json
+
+/acls/nodes:
+
+/acls/roles:
+
+/clients:
+foo-validator.json
+
+/containers:
+clients.json
+containers.json
+cookbooks.json
+data.json
+environments.json
+groups.json
+nodes.json
+roles.json
+sandboxes.json
+
+/cookbooks:
+
+/data_bags:
+
+/environments:
+_default.json
+
+/groups:
+admins.json
+billing-admins.json
+clients.json
+users.json
+
+/nodes:
+
+/roles:
+EOM
+      end
+    end
+  end
 end

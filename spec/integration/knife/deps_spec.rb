@@ -114,7 +114,8 @@ EOM
     when_the_repository 'has a cookbook with dependencies' do
       before do
         file 'cookbooks/kettle/metadata.rb', 'name "kettle"'
-        file 'cookbooks/quiche/metadata.rb', "name 'quiche'\ndepends 'kettle'\n"
+        file 'cookbooks/quiche/metadata.rb', 'name "quiche"
+depends "kettle"'
         file 'cookbooks/quiche/recipes/default.rb', ''
       end
       it 'knife deps reports just the cookbook' do
@@ -204,10 +205,14 @@ EOM
     context 'circular dependencies' do
       when_the_repository 'has cookbooks with circular dependencies' do
         before do
-          file 'cookbooks/foo/metadata.rb', "name 'foo'\ndepends 'bar'\n"
-          file 'cookbooks/bar/metadata.rb', "name 'bar'\ndepends 'baz'\n"
-          file 'cookbooks/baz/metadata.rb', "name 'baz'\ndepends 'foo'\n"
-          file 'cookbooks/self/metadata.rb', "name 'self'\ndepends 'self'\n"
+          file 'cookbooks/foo/metadata.rb', 'name "foo"
+depends "bar"'
+          file 'cookbooks/bar/metadata.rb', 'name "bar"
+depends "baz"'
+          file 'cookbooks/baz/metadata.rb', 'name "baz"
+depends "foo"'
+          file 'cookbooks/self/metadata.rb', 'name "self"
+depends "self"'
         end
 
         it 'knife deps prints each once' do
@@ -379,8 +384,8 @@ EOM
       before do
         role 'starring', { 'run_list' => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
         role 'minor', {}
-        cookbook 'quiche', '1.0.0', { 'metadata.rb' => "name 'quiche'\nversion '1.0.0'\n", 'recipes' => { 'default.rb' => '' } }
-        cookbook 'soup', '1.0.0', { 'metadata.rb' => "name 'soup'\nversion '1.0.0'\n", 'recipes' => { 'chicken.rb' => '' } }
+        cookbook 'quiche', '1.0.0', { 'metadata.rb' => %Q{name "quiche"\nversion "1.0.0"\n}, 'recipes' => { 'default.rb' => '' } }
+        cookbook 'soup', '1.0.0', { 'metadata.rb' => %Q{name "soup"\nversion "1.0.0"\n}, 'recipes' => { 'chicken.rb' => '' } }
       end
       it 'knife deps reports all dependencies' do
         knife('deps --remote /roles/starring.json').should_succeed <<EOM
@@ -396,8 +401,8 @@ EOM
       before do
         role 'starring', { 'env_run_lists' => { 'desert' => %w(role[minor] recipe[quiche] recipe[soup::chicken]) } }
         role 'minor', {}
-        cookbook 'quiche', '1.0.0', { 'metadata.rb' => "name 'quiche'\nversion '1.0.0'\n", 'recipes' => { 'default.rb' => '' } }
-        cookbook 'soup', '1.0.0', { 'metadata.rb' =>   "name 'soup'\nversion '1.0.0'\n", 'recipes' => { 'chicken.rb' => '' } }
+        cookbook 'quiche', '1.0.0', { 'metadata.rb' => %Q{name "quiche"\nversion "1.0.0"\n}, 'recipes' => { 'default.rb' => '' } }
+        cookbook 'soup', '1.0.0', { 'metadata.rb' =>   %Q{name "soup"\nversion "1.0.0"\n}, 'recipes' => { 'chicken.rb' => '' } }
       end
       it 'knife deps reports all dependencies' do
         knife('deps --remote /roles/starring.json').should_succeed <<EOM
@@ -427,8 +432,8 @@ EOM
     when_the_chef_server 'has a node with roles and recipes in its run_list' do
       before do
         role 'minor', {}
-        cookbook 'quiche', '1.0.0', { 'metadata.rb' => "name 'quiche'\nversion '1.0.0'\n", 'recipes' => { 'default.rb' => '' } }
-        cookbook 'soup', '1.0.0', { 'metadata.rb' =>   "name 'soup'\nversion '1.0.0'\n", 'recipes' => { 'chicken.rb' => '' } }
+        cookbook 'quiche', '1.0.0', { 'metadata.rb' => %Q{name "quiche"\nversion "1.0.0"\n}, 'recipes' => { 'default.rb' => '' } }
+        cookbook 'soup', '1.0.0', { 'metadata.rb' =>   %Q{name "soup"\nversion "1.0.0"\n}, 'recipes' => { 'chicken.rb' => '' } }
         node 'mort', { 'run_list' => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
       end
       it 'knife deps reports just the node' do
@@ -442,7 +447,7 @@ EOM
     end
     when_the_chef_server 'has a cookbook with no dependencies' do
       before do
-        cookbook 'quiche', '1.0.0', { 'metadata.rb' => "name 'quiche'\nversion '1.0.0'\n", 'recipes' => { 'default.rb' => '' } }
+        cookbook 'quiche', '1.0.0', { 'metadata.rb' => %Q{name "quiche"\nversion "1.0.0"\n}, 'recipes' => { 'default.rb' => '' } }
       end
       it 'knife deps reports just the cookbook' do
         knife('deps --remote /cookbooks/quiche').should_succeed "/cookbooks/quiche\n"
@@ -450,8 +455,9 @@ EOM
     end
     when_the_chef_server 'has a cookbook with dependencies' do
       before do
-        cookbook 'kettle', '1.0.0', { 'metadata.rb' => "name 'kettle'\nversion '1.0.0'\n" }
-        cookbook 'quiche', '1.0.0', { 'metadata.rb' => "name 'quiche'\ndepends 'kettle'\n", 'recipes' => { 'default.rb' => '' } }
+        cookbook 'kettle', '1.0.0', { 'metadata.rb' => %Q{name "kettle"\nversion "1.0.0"\n} }
+        cookbook 'quiche', '1.0.0', { 'metadata.rb' => 'name "quiche"
+depends "kettle"', 'recipes' => { 'default.rb' => '' } }
       end
       it 'knife deps reports the cookbook and its dependencies' do
         knife('deps --remote /cookbooks/quiche').should_succeed "/cookbooks/kettle\n/cookbooks/quiche\n"
@@ -473,8 +479,8 @@ EOM
       before do
         role 'starring', { 'run_list' => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
         role 'minor', {}
-        cookbook 'quiche', '1.0.0', { 'metadata.rb' => "name 'quiche'\nversion '1.0.0'\n", 'recipes' => { 'default.rb' => '' } }
-        cookbook 'soup', '1.0.0', { 'metadata.rb' =>   "name 'soup'\nversion '1.0.0'\n", 'recipes' => { 'chicken.rb' => '' } }
+        cookbook 'quiche', '1.0.0', { 'metadata.rb' => %Q{name "quiche"\nversion "1.0.0"\n}, 'recipes' => { 'default.rb' => '' } }
+        cookbook 'soup', '1.0.0', { 'metadata.rb' =>   %Q{name "soup"\nversion "1.0.0"\n}, 'recipes' => { 'chicken.rb' => '' } }
         environment 'desert', {}
         node 'mort', { 'chef_environment' => 'desert', 'run_list' => [ 'role[starring]' ] }
         node 'bart', { 'run_list' => [ 'role[minor]' ] }
@@ -538,10 +544,14 @@ EOM
     context 'circular dependencies' do
       when_the_chef_server 'has cookbooks with circular dependencies' do
         before do
-          cookbook 'foo', '1.0.0', { 'metadata.rb'  => "name 'foo'\ndepends 'bar'\n" }
-          cookbook 'bar', '1.0.0', { 'metadata.rb'  => "name 'bar'\ndepends 'baz'\n" }
-          cookbook 'baz', '1.0.0', { 'metadata.rb'  => "name 'baz'\ndepends 'foo'\n" }
-          cookbook 'self', '1.0.0', { 'metadata.rb' => "name 'self'\ndepends 'self'\n" }
+          cookbook 'foo', '1.0.0', { 'metadata.rb'  => 'name "foo"
+depends "bar"' }
+          cookbook 'bar', '1.0.0', { 'metadata.rb'  => 'name "bar"
+depends "baz"' }
+          cookbook 'baz', '1.0.0', { 'metadata.rb'  => 'name "baz"
+depends "foo"' }
+          cookbook 'self', '1.0.0', { 'metadata.rb' => 'name "self"
+depends "self"' }
         end
         it 'knife deps prints each once' do
           knife('deps --remote /cookbooks/foo /cookbooks/self').should_succeed <<EOM

@@ -487,7 +487,7 @@ EOM
 Updated /cookbooks/x
 EOM
           # Modify a file and attempt to upload
-          file 'cookbooks/x/metadata.rb', "name 'x'; version '1.0.0'#different"
+          file 'cookbooks/x/metadata.rb', 'name "x"; version "1.0.0"#different'
           knife('upload /cookbooks/x').should_fail "ERROR: /cookbooks failed to write: Cookbook x is frozen\n"
         end
       end

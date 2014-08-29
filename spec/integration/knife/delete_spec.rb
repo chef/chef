@@ -961,4 +961,18 @@ EOM
       end
     end
   end
+
+  when_the_chef_server "is in Enterprise mode", :osc_compat => false, :single_org => false do
+    before do
+      organization 'foo'
+    end
+
+    before :each do
+      Chef::Config.chef_server_url = URI.join(Chef::Config.chef_server_url, '/organizations/foo')
+    end
+
+    it 'knife delete /acls/containers/environments.json fails with a reasonable error' do
+      knife('delete /acls/containers/environments.json').should_fail "ERROR: /acls/containers/environments.json (remote) cannot be deleted.\n"
+    end
+  end
 end

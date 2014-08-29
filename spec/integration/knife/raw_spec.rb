@@ -169,7 +169,7 @@ EOM
 
         knife("raw -m POST -i #{file.path} /roles").should_succeed <<EOM
 {
-  "uri": "#{ChefZeroSupport::Server.server.url}/roles/y"
+  "uri": "#{Chef::Config.chef_server_url}/roles/y"
 }
 EOM
         knife('show /roles/y.json').should_succeed <<EOM
