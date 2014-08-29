@@ -25,9 +25,9 @@ describe "webapp::default", :end_to_end => true do
       end
     end
 
-    describe "mysql-client package" do
+    describe "mysql-client-5.5 package" do
       include_examples "a package" do
-        let(:package_name) { "mysql-client" }
+        let(:package_name) { "mysql-client-5.5" }
       end
     end
 
