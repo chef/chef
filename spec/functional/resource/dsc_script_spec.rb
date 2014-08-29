@@ -19,7 +19,7 @@
 require 'spec_helper'
 require 'chef/mixin/windows_architecture_helper'
 
-describe Chef::Resource::DscScript, :windows_2008r2_or_later do
+describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
   include Chef::Mixin::WindowsArchitectureHelper
   before(:all) do
     @temp_dir = ::Dir.mktmpdir("dsc-functional-test")
