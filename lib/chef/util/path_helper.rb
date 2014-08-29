@@ -53,10 +53,10 @@ class Chef
 
       def self.join(*args)
         args.flatten.inject do |joined_path, component|
-          unless [ File::SEPARATOR, path_separator ].include?(joined_path[-1])
-            joined_path += path_separator
-          end
-          joined_path += component
+          # Joined path ends with /
+          joined_path = joined_path.sub(/[#{Regexp.escape(File::SEPARATOR)}#{Regexp.escape(path_separator)}]+$/, '')
+          component = component.sub(/^[#{Regexp.escape(File::SEPARATOR)}#{Regexp.escape(path_separator)}]+/, '')
+          joined_path += "#{path_separator}#{component}"
         end
       end
 

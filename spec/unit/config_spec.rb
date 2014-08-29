@@ -21,7 +21,7 @@ require 'spec_helper'
 require 'chef/exceptions'
 require 'chef/util/path_helper'
 
-describe Chef::Config, :focus do
+describe Chef::Config do
   describe "config attribute writer: chef_server_url" do
     before do
       Chef::Config.chef_server_url = "https://junglist.gen.nz"
