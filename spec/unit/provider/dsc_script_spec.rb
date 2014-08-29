@@ -117,5 +117,25 @@ describe Chef::Provider::DscScript do
       resource.should_not be_updated
     end
   end
+
+  describe '#generate_description' do
+    it 'removes the resource name from the beginning of any log line from the LCM' do
+      dsc_resource_info = Chef::Util::DSC::ResourceInfo.new('resourcename', true, ['resourcename doing something', 'lastline'])
+      provider.instance_variable_set('@dsc_resources_info', [dsc_resource_info])
+      provider.send(:generate_description)[1].should match(/converge DSC resource resourcename by doing something/)
+    end
+
+    it 'ignores the last line' do
+      dsc_resource_info = Chef::Util::DSC::ResourceInfo.new('resourcename', true, ['resourcename doing something', 'lastline'])
+      provider.instance_variable_set('@dsc_resources_info', [dsc_resource_info])
+      provider.send(:generate_description)[1].should_not match(/lastline/)
+    end
+
+    it 'reports a dsc resource has not been changed if the LCM reported no change was required' do
+      dsc_resource_info = Chef::Util::DSC::ResourceInfo.new('resourcename', false, ['resourcename does nothing', 'lastline'])
+      provider.instance_variable_set('@dsc_resources_info', [dsc_resource_info])
+      provider.send(:generate_description)[1].should match(/converge DSC resource resourcename by doing nothing/)
+    end
+  end
 end
 
