@@ -62,6 +62,8 @@
   Allow git provider to checkout existing branch names.
 * [**Eric Herot**](https://github.com/eherot):
   Add whitespace boundaries to some mount point references in mount provider.
+* [**Dave Eddy**](https://github.com/bahamas10):
+  Improve the regex for /etc/rc.conf for the FreeBSD service provider
 
 ### Chef Contributions
 
