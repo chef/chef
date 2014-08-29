@@ -35,6 +35,12 @@ describe Chef::Util::PathHelper do
           PathHelper.join(is_windows ? 'C:\\foo\\' : "/foo/", "bar", "baz").should == expected
         end
 
+        it "joins components when some end and start with separators" do
+          expected = PathHelper.cleanpath("/foo/bar/baz")
+          expected = "C:#{expected}" if is_windows
+          PathHelper.join(is_windows ? 'C:\\foo\\' : "/foo/", "bar/", "/baz").should == expected
+        end
+
         it "joins components that don't end in separators" do
           expected = PathHelper.cleanpath("/foo/bar/baz")
           expected = "C:#{expected}" if is_windows
@@ -51,8 +57,7 @@ describe Chef::Util::PathHelper do
 
         if is_windows
           it "joins components on Windows when some end with unix separators" do
-            expected = 'C:\\foo/bar\\baz'
-            PathHelper.join('C:\\foo/', "bar", "baz").should == expected
+            PathHelper.join('C:\\foo/', "bar", "baz").should == 'C:\\foo\\bar\\baz'
           end
         end
       end
