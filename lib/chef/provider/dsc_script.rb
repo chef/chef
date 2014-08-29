@@ -98,7 +98,9 @@ class Chef
         if @dsc_resource.command
           generator.configuration_document_from_script_path(@dsc_resource.command, configuration_name, configuration_flags, shellout_flags)
         else
-          generator.configuration_document_from_script_code(@dsc_resource.code, configuration_flags, shellout_flags)
+          # If code is also not provided, we mimic what the other script resources do (execute nothing)
+          Chef::Log.warn("Neither code or command were provided for dsc_resource[#{@dsc_resource.name}].") unless @dsc_resource.code
+          generator.configuration_document_from_script_code(@dsc_resource.code || '', configuration_flags, shellout_flags)
         end
       end
 
@@ -129,11 +131,11 @@ class Chef
       private
 
       def generate_description
-        ["DSC resource script for configuration '#{configuration_friendly_name}'"] + 
+        ["converge DSC configuration '#{configuration_friendly_name}'"] + 
           @dsc_resources_info.map do |resource|
             # We ignore the last log message because it only contains the time it took, which looks weird
             cleaned_messages = resource.change_log[0..-2].map { |c| c.sub(/^#{Regexp.escape(resource.name)}/, '').strip }
-            cleaned_messages.find_all{ |c| c != ''}.join("\n")
+            "converge DSC resource #{resource.name} by #{cleaned_messages.find_all{ |c| c != ''}.join("\n")}"
           end
       end
     end

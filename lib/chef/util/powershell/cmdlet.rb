@@ -25,7 +25,7 @@ class Chef::Util::Powershell
     def initialize(node, cmdlet, output_format=nil, output_format_options={})
       @output_format = output_format
       @node = node
-      
+
       case output_format
       when nil
         @json_format = false
@@ -55,7 +55,7 @@ class Chef::Util::Powershell
       if @json_format && @output_format_options.has_key?(:depth)
         json_depth = @output_format_options[:depth]
       end
-      
+
       json_command = @json_format ? " | convertto-json -compress -depth #{json_depth}" : ""
       command_string = "powershell.exe -executionpolicy bypass -noprofile -noninteractive -command \"trap [Exception] {write-error -exception ($_.Exception.Message);exit 1};#{@cmdlet} #{switches_string} #{arguments_string}#{json_command}\";if ( ! $? ) { exit 1 }"
 
@@ -65,13 +65,17 @@ class Chef::Util::Powershell
       os_architecture = "#{ENV['PROCESSOR_ARCHITEW6432']}" == 'AMD64' ? :x86_64 : :i386
 
       status = nil
-      
+
       with_os_architecture(@node) do
-        status = command.run_command      
+        status = command.run_command
       end
-      
-      result = CmdletResult.new(status, @output_format)
-      
+
+      CmdletResult.new(status, @output_format)
+    end
+
+    def run!(switches={}, execution_options={}, *arguments)
+      result = run(switches, execution_options, arguments)
+
       if ! result.succeeded?
         raise Chef::Exceptions::PowershellCmdletException, "Powershell Cmdlet failed: #{result.stderr}"
       end
@@ -90,7 +94,7 @@ class Chef::Util::Powershell
     end
 
     def escape_parameter_value(parameter_value)
-      parameter_value.gsub(/\`|\'|\"/,'`\1')
+      parameter_value.gsub(/(`|'|"|#)/,'`\1')
     end
 
     def escape_string_parameter_value(parameter_value)
@@ -122,7 +126,7 @@ class Chef::Util::Powershell
           raise ArgumentError, "Invalid argument type `#{switch_value.class}` specified for PowerShell switch `:#{switch_name.to_s}`. Arguments to PowerShell must be of type `String`, `Numeric`, `Float`, `FalseClass`, or `TrueClass`"
         end
 
-        switch_present ? ["-#{switch_name.to_s.downcase}", switch_argument].join(' ') : ''
+        switch_present ? ["-#{switch_name.to_s.downcase}", switch_argument].join(' ').strip : ''
       end
 
       command_switches.join(' ')

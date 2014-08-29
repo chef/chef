@@ -44,7 +44,7 @@ class Chef::Util::DSC
 
       merged_configuration_flags = get_merged_configuration_flags!(configuration_flags, configuration_name)
 
-      document_generation_cmdlet.run(merged_configuration_flags, shellout_flags)
+      document_generation_cmdlet.run!(merged_configuration_flags, shellout_flags)
       configuration_document_location = find_configuration_document(configuration_name)
 
       if ! configuration_document_location
@@ -99,7 +99,7 @@ class Chef::Util::DSC
     def find_configuration_document(configuration_name)
       document_directory = configuration_document_directory(configuration_name)
       document_file_name = ::Dir.entries(document_directory).find { | path | path =~ /.*.mof/ }
-      ::File.join(document_directory, document_file_name)
+      ::File.join(document_directory, document_file_name) if document_file_name
     end
 
     def configuration_document_directory(configuration_name)
