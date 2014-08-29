@@ -3,6 +3,10 @@ gemspec :name => "chef"
 
 gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
 
+# Pointing to commit with Powhershell plugin
+# TODO: Remove when gem is released
+gem "ohai", :git => "git://github.com/opscode/ohai", :ref => 'f4ac76fe2'
+
 group(:docgen) do
   gem "yard"
 end
