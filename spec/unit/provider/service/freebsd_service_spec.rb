@@ -250,17 +250,7 @@ PS_SAMPLE
         end
       end
 
-      %w{No NO no}.each do |setting|
-        context "when the enable variable is set to #{setting}" do
-          let(:lines) { [ %Q{#{new_resource.service_name}_enable="#{setting}"} ] }
-          it "sets enabled to false" do
-            provider.determine_enabled_status!
-            expect(current_resource.enabled).to be false
-          end
-        end
-      end
-
-      %w{None NONE none}.each do |setting|
+      %w{No NO no nO None NONE none nOnE}.each do |setting|
         context "when the enable variable is set to #{setting}" do
           let(:lines) { [ %Q{#{new_resource.service_name}_enable="#{setting}"} ] }
           it "sets enabled to false" do
