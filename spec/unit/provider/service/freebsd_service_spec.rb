@@ -283,7 +283,7 @@ PS_SAMPLE
           %Q{thing_#{new_resource.service_name}_enable="YES"},
           %Q{#{new_resource.service_name}_enable="NO"},
         ] }
-        it "sets enabled to false" do
+        it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
         end
@@ -294,7 +294,7 @@ PS_SAMPLE
           %Q{#{new_resource.service_name}_thing_enable="YES"},
           %Q{#{new_resource.service_name}_enable="NO"},
         ] }
-        it "sets enabled to false" do
+        it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
         end
@@ -305,7 +305,7 @@ PS_SAMPLE
           %Q{thing_#{new_resource.service_name}_enable="NO"},
           %Q{#{new_resource.service_name}_enable="YES"},
         ] }
-        it "sets enabled to true" do
+        it "sets enabled based on the exact match (true)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be true
         end
@@ -316,7 +316,7 @@ PS_SAMPLE
           %Q{#{new_resource.service_name}_thing_enable="NO"},
           %Q{#{new_resource.service_name}_enable="YES"},
         ] }
-        it "sets enabled to true" do
+        it "sets enabled based on the exact match (true)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be true
         end
