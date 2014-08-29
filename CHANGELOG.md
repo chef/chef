@@ -64,6 +64,8 @@
   Add whitespace boundaries to some mount point references in mount provider.
 * [**Dave Eddy**](https://github.com/bahamas10):
   Improve the regex for /etc/rc.conf for the FreeBSD service provider
+* [**Stanislav Bogatyrev**](https://github.com/realloc):
+  Fetch recipe_url before loading json_attribs in chef-solo (CHEF-5075)
 
 ### Chef Contributions
 
