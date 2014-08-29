@@ -29,7 +29,7 @@ describe Chef::Mixin::ShellOut do
           shell_out_with_systems_locale('echo $LC_ALL')
         end
 
-        cmd.stdout.chomp.should match_environment_variable('LC_ALL')
+        expect(cmd.stdout.chomp).to match_environment_variable('LC_ALL')
       end
     end
 
@@ -41,7 +41,7 @@ describe Chef::Mixin::ShellOut do
           shell_out_with_systems_locale('echo $LC_ALL', :environment => {'LC_ALL' => 'POSIX'})
         end
 
-        cmd.stdout.chomp.should eq 'POSIX'
+        expect(cmd.stdout.chomp).to eq 'POSIX'
       end
     end
   end
