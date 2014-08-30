@@ -23,12 +23,15 @@ require 'chef/log'
 require 'chef/exceptions'
 require 'mixlib/config'
 require 'chef/util/selinux'
+require 'chef/util/path_helper'
 require 'pathname'
 
 class Chef
   class Config
 
     extend Mixlib::Config
+
+    PathHelper = Chef::Util::PathHelper
 
     # Evaluates the given string as config.
     #
@@ -58,37 +61,13 @@ class Chef
       configuration.inspect
     end
 
-    def self.on_windows?
-      RUBY_PLATFORM =~ /mswin|mingw|windows/
-    end
-
-    BACKSLASH = '\\'.freeze
-
-    def self.platform_path_separator
-      if on_windows?
-        File::ALT_SEPARATOR || BACKSLASH
-      else
-        File::SEPARATOR
-      end
-    end
-
-    def self.path_join(*args)
-      args = args.flatten
-      args.inject do |joined_path, component|
-        unless joined_path[-1,1] == platform_path_separator
-          joined_path += platform_path_separator
-        end
-        joined_path += component
-      end
-    end
-
     def self.platform_specific_path(path)
-      if on_windows?
-        # turns /etc/chef/client.rb into C:/chef/client.rb
-        system_drive = env['SYSTEMDRIVE'] ? env['SYSTEMDRIVE'] : ""
-        path = File.join(system_drive, path.split('/')[2..-1])
-        # ensure all forward slashes are backslashes
-        path.gsub!(File::SEPARATOR, (File::ALT_SEPARATOR || '\\'))
+      path = PathHelper.cleanpath(path)
+      if Chef::Platform.windows?
+        # turns \etc\chef\client.rb and \var\chef\client.rb into C:/chef/client.rb
+        if env['SYSTEMDRIVE'] && path[0] == '\\' && path.split('\\')[2] == 'chef'
+          path = PathHelper.join(env['SYSTEMDRIVE'], path.split('\\', 3)[2])
+        end
       end
       path
     end
@@ -102,9 +81,9 @@ class Chef
 
     default(:config_dir) do
       if config_file
-        ::File.dirname(config_file)
+        PathHelper.dirname(config_file)
       else
-        path_join(user_home, ".chef#{platform_path_separator}")
+        PathHelper.join(user_home, ".chef", "")
       end
     end
 
@@ -150,7 +129,7 @@ class Chef
       # In local mode, we auto-discover the repo root by looking for a path with "cookbooks" under it.
       # This allows us to run config-free.
       path = cwd
-      until File.directory?(path_join(path, "cookbooks"))
+      until File.directory?(PathHelper.join(path, "cookbooks"))
         new_path = File.expand_path('..', path)
         if new_path == path
           Chef::Log.warn("No cookbooks directory found at or above current directory.  Assuming #{Dir.pwd}.")
@@ -164,9 +143,9 @@ class Chef
 
     def self.derive_path_from_chef_repo_path(child_path)
       if chef_repo_path.kind_of?(String)
-        path_join(chef_repo_path, child_path)
+        PathHelper.join(chef_repo_path, child_path)
       else
-        chef_repo_path.map { |path| path_join(path, child_path)}
+        chef_repo_path.map { |path| PathHelper.join(path, child_path)}
       end
     end
 
@@ -238,7 +217,7 @@ class Chef
     # this is under the user's home directory.
     default(:cache_path) do
       if local_mode
-        path_join(config_dir, 'local-mode-cache')
+        PathHelper.join(config_dir, 'local-mode-cache')
       else
         primary_cache_root = platform_specific_path("/var")
         primary_cache_path = platform_specific_path("/var/chef")
@@ -247,8 +226,7 @@ class Chef
         # Otherwise, we'll create .chef under the user's home directory and use that as
         # the cache path.
         unless path_accessible?(primary_cache_path) || path_accessible?(primary_cache_root)
-          secondary_cache_path = File.join(user_home, '.chef')
-          secondary_cache_path.gsub!(File::SEPARATOR, platform_path_separator) # Safety, mainly for Windows...
+          secondary_cache_path = PathHelper.join(user_home, '.chef')
           Chef::Log.info("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
           secondary_cache_path
         else
@@ -263,20 +241,20 @@ class Chef
     end
 
     # Where cookbook files are stored on the server (by content checksum)
-    default(:checksum_path) { path_join(cache_path, "checksums") }
+    default(:checksum_path) { PathHelper.join(cache_path, "checksums") }
 
     # Where chef's cache files should be stored
-    default(:file_cache_path) { path_join(cache_path, "cache") }
+    default(:file_cache_path) { PathHelper.join(cache_path, "cache") }
 
     # Where backups of chef-managed files should go
-    default(:file_backup_path) { path_join(cache_path, "backup") }
+    default(:file_backup_path) { PathHelper.join(cache_path, "backup") }
 
     # The chef-client (or solo) lockfile.
     #
     # If your `file_cache_path` resides on a NFS (or non-flock()-supporting
     # fs), it's recommended to set this to something like
     # '/tmp/chef-client-running.pid'
-    default(:lockfile) { path_join(file_cache_path, "chef-client-running.pid") }
+    default(:lockfile) { PathHelper.join(file_cache_path, "chef-client-running.pid") }
 
     ## Daemonization Settings ##
     # What user should Chef run as?
@@ -372,7 +350,7 @@ class Chef
     # Path to the default CA bundle files.
     default :ssl_ca_path, nil
     default(:ssl_ca_file) do
-      if on_windows? and embedded_path = embedded_dir
+      if Chef::Platform.windows? and embedded_path = embedded_dir
         cacert_path = File.join(embedded_path, "ssl/certs/cacert.pem")
         cacert_path if File.exist?(cacert_path)
       else
@@ -384,7 +362,7 @@ class Chef
     # certificates in this directory will be added to whatever CA bundle ruby
     # is using. Use this to add self-signed certs for your Chef Server or local
     # HTTP file servers.
-    default(:trusted_certs_dir) { path_join(config_dir, "trusted_certs") }
+    default(:trusted_certs_dir) { PathHelper.join(config_dir, "trusted_certs") }
 
     # Where should chef-solo download recipes from?
     default :recipe_url, nil
@@ -488,7 +466,7 @@ class Chef
     default(:syntax_check_cache_path) { cache_options[:path] }
 
     # Deprecated:
-    default(:cache_options) { { :path => path_join(file_cache_path, "checksums") } }
+    default(:cache_options) { { :path => PathHelper.join(file_cache_path, "checksums") } }
 
     # Set to false to silence Chef 11 deprecation warnings:
     default :chef11_deprecation_warnings, true
@@ -536,7 +514,7 @@ class Chef
 
     # Those lists of regular expressions define what chef considers a
     # valid user and group name
-    if on_windows?
+    if Chef::Platform.windows?
       set_defaults_for_windows
     else
       set_defaults_for_nix
