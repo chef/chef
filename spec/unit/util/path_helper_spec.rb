@@ -81,7 +81,7 @@ describe Chef::Util::PathHelper do
         end
       else
         it "cleanpath removes extra slashes alone" do
-          PathHelper.cleanpath('//a///b/c/d/').should == '/a/b/c/d'
+          PathHelper.cleanpath('/a///b/c/d/').should == '/a/b/c/d'
         end
       end
 
