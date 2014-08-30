@@ -119,7 +119,7 @@ class Chef
     # === Parameters
     # url<String>:: String to be set for all of the chef-server-api URL's
     #
-    configurable(:chef_server_url).writes_value { |url| url.strip }
+    configurable(:chef_server_url).writes_value { |url| url.to_s.strip }
 
     # When you are using ActiveSupport, they monkey-patch 'daemonize' into Kernel.
     # So while this is basically identical to what method_missing would do, we pull
