@@ -33,7 +33,7 @@ class Chef::Util::DSC
       status = run_configuration_cmdlet(configuration_document)
       command_output = status.return_value
       unless status.succeeded?
-        if status.status.exitstatus == LCM_MODULE_NOT_INSTALLED_ERROR_CODE
+        if status.exit_code == LCM_MODULE_NOT_INSTALLED_ERROR_CODE
           Chef::Log::warn('Unable to test configuration because a required DSC PowerShell module may not be installed.')
           command_output = ''
         end
