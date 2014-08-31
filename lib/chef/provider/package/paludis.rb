@@ -34,7 +34,6 @@ class Chef
           installed = false
           re = Regexp.new('(.*)[[:blank:]](.*)[[:blank:]](.*)$')
 
-
           shell_out!("cave -L warning print-ids -M none -m \"#{@new_resource.package_name}\" -f \"%c/%p %v %r\n\"").stdout.each_line do |line|
             res = re.match(line)
             unless res.nil?
