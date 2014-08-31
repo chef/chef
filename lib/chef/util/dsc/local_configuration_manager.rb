@@ -27,17 +27,24 @@ class Chef::Util::DSC
       clear_execution_time
     end
 
+    LCM_MODULE_NOT_INSTALLED_ERROR_CODE = 0x80131500
+
     def test_configuration(configuration_document)
       status = run_configuration_cmdlet(configuration_document)
+      command_output = status.return_value
       unless status.succeeded?
-        # LCM returns an error if any of the resources do not support the opptional What-If
+        if status.exitcode == LCM_MODULE_NOT_INSTALLED_ERROR_CODE
+          Chef::Log::warn('Unable to test configuration because a required DSC PowerShell module may not be installed.')
+          command_output = ''
+        end
         if status.stderr.gsub(/\s+/, ' ') =~ /A parameter cannot be found that matches parameter name 'Whatif'/
+          # LCM returns an error if any of the resources do not support the opptional What-If
           Chef::Log::warn("Received error while testing configuration due to resource not supporting 'WhatIf'")
         else
           raise Chef::Exceptions::PowershellCmdletException, "Powershell Cmdlet failed: #{status.stderr.gsub(/\s+/, ' ')}"
         end
       end
-      configuration_update_required?(status.return_value)
+      configuration_update_required?(command_output)
     end
 
     def set_configuration(configuration_document)
@@ -105,7 +112,7 @@ EOH
       begin
         Parser::parse(what_if_output)
       rescue Chef::Util::DSC::LocalConfigurationManager::Parser => e
-        Chef::Log::warn("Could not parse parse LCM output: #{e}")
+        Chef::Log::warn("Could not parse LCM output: #{e}")
         [Chef::Util::DSC::ResourceInfo.new('Unknown DSC Resources', true, ['Unknown changes because LCM output was not parsable.'])]
       end
     end
