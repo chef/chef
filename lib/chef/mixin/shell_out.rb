@@ -20,7 +20,6 @@
 require 'chef/shell_out'
 
 require 'mixlib/shellout'
-require 'chef/config'
 
 class Chef
   module Mixin
@@ -97,3 +96,6 @@ class Chef
     end
   end
 end
+
+# Break circular dep
+require 'chef/config'
