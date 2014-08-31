@@ -23,6 +23,9 @@ require 'chef/chef_fs/file_system/rest_list_dir'
 require 'chef/chef_fs/file_system/cookbooks_dir'
 require 'chef/chef_fs/file_system/data_bags_dir'
 require 'chef/chef_fs/file_system/nodes_dir'
+require 'chef/chef_fs/file_system/org_entry'
+require 'chef/chef_fs/file_system/organization_invites_entry'
+require 'chef/chef_fs/file_system/organization_members_entry'
 require 'chef/chef_fs/file_system/environments_dir'
 require 'chef/chef_fs/data_handler/client_data_handler'
 require 'chef/chef_fs/data_handler/role_data_handler'
@@ -81,10 +84,13 @@ class Chef
         end
 
         def org
-          @org ||= if URI.parse(chef_server_url).path =~ /^\/+organizations\/+([^\/]+)$/
-            $1
-          else
-            nil
+          @org ||= begin
+            path = Pathname.new(URI.parse(chef_server_url).path).cleanpath
+            if File.dirname(path) == '/organizations'
+              File.basename(path)
+            else
+              nil
+            end
           end
         end
 
@@ -102,7 +108,10 @@ class Chef
                 RestListDir.new("clients", self, nil, Chef::ChefFS::DataHandler::ClientDataHandler.new),
                 RestListDir.new("containers", self, nil, Chef::ChefFS::DataHandler::ContainerDataHandler.new),
                 RestListDir.new("groups", self, nil, Chef::ChefFS::DataHandler::GroupDataHandler.new),
-                NodesDir.new(self)
+                NodesDir.new(self),
+                OrgEntry.new("org.json", self),
+                OrganizationMembersEntry.new("members.json", self),
+                OrganizationInvitesEntry.new("invitations.json", self)
               ]
             elsif repo_mode != 'static'
               result += [
