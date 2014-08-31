@@ -29,14 +29,7 @@ class Chef::Util::DSC
 
     def test_configuration(configuration_document)
       status = run_configuration_cmdlet(configuration_document)
-      unless status.succeeded?
-        # LCM returns an error if any of the resources do not support the opptional What-If
-        if status.stderr.gsub(/\s+/, ' ') =~ /A parameter cannot be found that matches parameter name 'Whatif'/
-          Chef::Log::warn("Received error while testing configuration due to resource not supporting 'WhatIf'")
-        else
-          raise Chef::Exceptions::PowershellCmdletException, "Powershell Cmdlet failed: #{status.stderr.gsub(/\s+/, ' ')}"
-        end
-      end
+      handle_what_if_exception!(status.stderr) unless status.succeeded?
       configuration_update_required?(status.return_value)
     end
 
@@ -57,7 +50,7 @@ class Chef::Util::DSC
       test_only_parameters = ! apply_configuration ? '-whatif; if (! $?) { exit 1 }' : ''
 
       start_operation_timing
-      command_code = "$ProgressPreference = 'SilentlyContinue';start-dscconfiguration -path #{@configuration_path} -wait -force #{test_only_parameters}"
+      command_code = lcm_command_code(@configuration_path, test_only_parameters)
       status = nil
 
       begin
@@ -79,12 +72,35 @@ class Chef::Util::DSC
       status
     end
 
+    def lcm_command_code(configuration_path, test_only_parameters)
+      <<-EOH
+$ProgressPreference = 'SilentlyContinue';start-dscconfiguration -path #{@configuration_path} -wait -force #{test_only_parameters}
+EOH
+    end
+
+    def handle_what_if_exception!(what_if_exception_output)
+        if what_if_exception_output.gsub(/\s+/, ' ') =~ /A parameter cannot be found that matches parameter name 'Whatif'/i
+          # LCM returns an error if any of the resources do not support the opptional What-If
+          Chef::Log::warn("Received error while testing configuration due to resource not supporting 'WhatIf'")
+        elsif output_has_dsc_module_failure?(what_if_exception_output)
+          Chef::Log::warn("Received error while testing configuration due to a module for an imported resource possibly not being fully installed:\n#{what_if_exception_output.gsub(/\s+/, ' ')}")
+        else
+          raise Chef::Exceptions::PowershellCmdletException, "Powershell Cmdlet failed: #{what_if_exception_output.gsub(/\s+/, ' ')}"
+        end
+    end
+
+    def output_has_dsc_module_failure?(what_if_output)
+      !! (what_if_output.match(/\sCimException/) &&
+        what_if_output =~ /ProviderOperationExecutionFailure/ &&
+        what_if_output =~ /\smodule\s+is\s+installed/)
+    end
+
     def configuration_update_required?(what_if_output)
       Chef::Log.debug("DSC: DSC returned the following '-whatif' output from test operation:\n#{what_if_output}")
       begin
         Parser::parse(what_if_output)
       rescue Chef::Util::DSC::LocalConfigurationManager::Parser => e
-        Chef::Log::warn("Could not parse parse LCM output: #{e}")
+        Chef::Log::warn("Could not parse LCM output: #{e}")
         [Chef::Util::DSC::ResourceInfo.new('Unknown DSC Resources', true, ['Unknown changes because LCM output was not parsable.'])]
       end
     end
