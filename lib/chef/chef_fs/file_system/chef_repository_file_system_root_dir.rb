@@ -34,31 +34,50 @@ class Chef
   module ChefFS
     module FileSystem
       class ChefRepositoryFileSystemRootDir < BaseFSDir
-        def initialize(child_paths)
+        def initialize(child_paths, root_paths=nil)
           super("", nil)
           @child_paths = child_paths
+          @root_paths = root_paths
         end
 
         attr_accessor :write_pretty_json
 
+        attr_reader :root_paths
         attr_reader :child_paths
 
+        CHILDREN = %w(invitations.json members.json org.json)
+
         def children
-          @children ||= child_paths.keys.sort.map { |name| make_child_entry(name) }.select { |child| !child.nil? }
+          @children ||= begin
+            result = child_paths.keys.sort.map { |name| make_child_entry(name) }.select { |child| !child.nil? }
+            result += root_dir.children.select { |c| CHILDREN.include?(c.name) } if root_dir
+            result.sort_by { |c| c.name }
+          end
         end
 
         def can_have_child?(name, is_dir)
-          child_paths.has_key?(name) && is_dir
+          if is_dir
+            child_paths.has_key?(name)
+          elsif root_paths
+            CHILDREN.include?(name)
+          else
+            false
+          end
         end
 
         def create_child(name, file_contents = nil)
-          child_paths[name].each do |path|
-            begin
-              Dir.mkdir(path)
-            rescue Errno::EEXIST
+          if file_contents
+            d = root_dir
+            child = root_dir.create_child(name, file_contents)
+          else
+            child_paths[name].each do |path|
+              begin
+                Dir.mkdir(path)
+              rescue Errno::EEXIST
+              end
             end
+            child = make_child_entry(name)
           end
-          child = make_child_entry(name)
           @children = nil
           child
         end
@@ -69,15 +88,15 @@ class Chef
 
         # Used to print out the filesystem
         def fs_description
-          repo_path = File.dirname(child_paths['cookbooks'][0])
-          result = "repository at #{repo_path}\n"
+          repo_paths = root_paths || [ File.dirname(child_paths['cookbooks'][0]) ]
+          result = "repository at #{repo_paths.join(', ')}\n"
           if Chef::Config[:versioned_cookbooks]
             result << "  Multiple versions per cookbook\n"
           else
             result << "  One version per cookbook\n"
           end
           child_paths.each_pair do |name, paths|
-            if paths.any? { |path| File.dirname(path) != repo_path }
+            if paths.any? { |path| !repo_paths.include?(File.dirname(path)) }
               result << "  #{name} at #{paths.join(', ')}\n"
             end
           end
@@ -85,6 +104,14 @@ class Chef
         end
 
         private
+
+        def root_dir
+          MultiplexedDir.new(root_paths.select { |path| File.exists?(path) }.map do |path|
+            dir = ChefRepositoryFileSystemEntry.new(name, parent, path)
+            dir.write_pretty_json = !!write_pretty_json
+            dir
+          end)
+        end
 
         def make_child_entry(name)
           paths = child_paths[name].select do |path|

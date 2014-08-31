@@ -1216,4 +1216,157 @@ EOM
       end
     end
   end
+
+  when_the_chef_server "is in Enterprise mode", :osc_compat => false, :single_org => false do
+    before do
+      user 'foo', {}
+      user 'bar', {}
+      user 'foobar', {}
+      organization 'foo', { 'full_name' => 'Something'}
+    end
+
+    before :each do
+      Chef::Config.chef_server_url = URI.join(Chef::Config.chef_server_url, '/organizations/foo')
+    end
+
+    context 'and has nothing but a single group named blah' do
+      group 'blah', {}
+
+      when_the_repository 'has one of each thing' do
+
+        before do
+          # TODO We have to upload acls for an existing group due to a lack of
+          # dependency detection during upload.  Fix that!
+          file 'acls/groups/blah.json', {}
+          file 'clients/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+          file 'containers/x.json', {}
+          file 'cookbooks/x/metadata.rb', cb_metadata("x", "1.0.0")
+          file 'data_bags/x/y.json', {}
+          file 'environments/x.json', {}
+          file 'groups/x.json', {}
+          file 'invitations.json', [ 'foo' ]
+          file 'members.json', [ 'bar' ]
+          file 'nodes/x.json', {}
+          file 'org.json', { 'full_name' => 'wootles' }
+          file 'roles/x.json', {}
+        end
+
+        it 'knife upload / uploads everything' do
+          knife('upload /').should_succeed <<EOM
+Updated /acls/groups/blah.json
+Created /clients/x.json
+Created /containers/x.json
+Created /cookbooks/x
+Created /data_bags/x
+Created /data_bags/x/y.json
+Created /environments/x.json
+Created /groups/x.json
+Updated /invitations.json
+Updated /members.json
+Created /nodes/x.json
+Updated /org.json
+Created /roles/x.json
+EOM
+          api.get('association_requests').map { |a| a['username'] }.should == [ 'foo' ]
+          api.get('users').map { |a| a['user']['username'] }.should == [ 'bar' ]
+        end
+      end
+
+      when_the_repository 'has an org.json that does not change full_name' do
+        before do
+          file 'org.json', { 'full_name' => 'Something' }
+        end
+
+        it 'knife upload / emits a warning for bar and adds foo and foobar' do
+          knife('upload /').should_succeed ''
+          api.get('/')['full_name'].should == 'Something'
+        end
+      end
+
+      when_the_repository 'has an org.json that changes full_name' do
+        before do
+          file 'org.json', { 'full_name' => 'Something Else'}
+        end
+
+        it 'knife upload / emits a warning for bar and adds foo and foobar' do
+          knife('upload /').should_succeed "Updated /org.json\n"
+          api.get('/')['full_name'].should == 'Something Else'
+        end
+      end
+
+      context 'and has invited foo and bar is already a member' do
+        org_invite 'foo'
+        org_member 'bar'
+
+        when_the_repository 'wants to invite foo, bar and foobar' do
+          before do
+            file 'invitations.json', [ 'foo', 'bar', 'foobar' ]
+          end
+
+          it 'knife upload / emits a warning for bar and invites foobar' do
+            knife('upload /').should_succeed "Updated /invitations.json\n", :stderr => "WARN: Could not invite bar to organization foo: User bar is already in organization foo\n"
+            api.get('association_requests').map { |a| a['username'] }.should == [ 'foo', 'foobar' ]
+            api.get('users').map { |a| a['user']['username'] }.should == [ 'bar' ]
+          end
+        end
+
+        when_the_repository 'wants to make foo, bar and foobar members' do
+          before do
+            file 'members.json', [ 'foo', 'bar', 'foobar' ]
+          end
+
+          it 'knife upload / emits a warning for bar and adds foo and foobar' do
+            knife('upload /').should_succeed "Updated /members.json\n"
+            api.get('association_requests').map { |a| a['username'] }.should == [ ]
+            api.get('users').map { |a| a['user']['username'] }.should == [ 'bar', 'foo', 'foobar' ]
+          end
+        end
+
+        when_the_repository 'wants to invite foo and have bar as a member' do
+          before do
+            file 'invitations.json', [ 'foo' ]
+            file 'members.json', [ 'bar' ]
+          end
+
+          it 'knife upload / does nothing' do
+            knife('upload /').should_succeed ''
+            api.get('association_requests').map { |a| a['username'] }.should == [ 'foo' ]
+            api.get('users').map { |a| a['user']['username'] }.should == [ 'bar' ]
+          end
+        end
+      end
+
+      context 'and has invited bar and foo' do
+        org_invite 'bar', 'foo'
+
+        when_the_repository 'wants to invite foo and bar (different order)' do
+          before do
+            file 'invitations.json', [ 'foo', 'bar' ]
+          end
+
+          it 'knife upload / does nothing' do
+            knife('upload /').should_succeed ''
+            api.get('association_requests').map { |a| a['username'] }.should == [ 'bar', 'foo' ]
+            api.get('users').map { |a| a['user']['username'] }.should == [ ]
+          end
+        end
+      end
+
+      context 'and has already added bar and foo as members of the org' do
+        org_member 'bar', 'foo'
+
+        when_the_repository 'wants to add foo and bar (different order)' do
+          before do
+            file 'members.json', [ 'foo', 'bar' ]
+          end
+
+          it 'knife upload / does nothing' do
+            knife('upload /').should_succeed ''
+            api.get('association_requests').map { |a| a['username'] }.should == [ ]
+            api.get('users').map { |a| a['user']['username'] }.should == [ 'bar', 'foo' ]
+          end
+        end
+      end
+    end
+  end
 end

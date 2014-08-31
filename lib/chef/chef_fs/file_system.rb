@@ -273,7 +273,6 @@ class Chef
         # case we shouldn't waste time trying PUT if we know the file doesn't
         # exist.
         # Will need to decide how that works with checksums, though.
-
         error = false
         begin
           dest_path = format_path.call(dest_entry) if ui
