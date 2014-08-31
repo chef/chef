@@ -218,6 +218,13 @@ class Chef
       results
     end
 
+    def url_for_checksum(checksum)
+      COOKBOOK_SEGMENTS.each do |segment|
+        f = manifest[segment].find {|c| c["checksum"] == checksum }
+        return f["url"] if f
+      end
+    end
+
     def recipe_filenames=(*filenames)
       @recipe_filenames = filenames.flatten
       @recipe_filenames_by_name = filenames_by_name(recipe_filenames)

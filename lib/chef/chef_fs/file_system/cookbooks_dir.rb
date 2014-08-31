@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/chef_fs/parallelizer'
 require 'chef/chef_fs/file_system/rest_list_dir'
 require 'chef/chef_fs/file_system/cookbook_dir'
 require 'chef/chef_fs/file_system/operation_failed_error'
@@ -71,7 +72,12 @@ class Chef
         end
 
         def upload_cookbook_from(other, options = {})
-          Chef::Config[:versioned_cookbooks] ? upload_versioned_cookbook(other, options) : upload_unversioned_cookbook(other, options)
+          case other
+          when Chef::ChefFS::FileSystem::CookbookDir
+            streaming_upload_from(other, options)
+          when Chef::ChefFS::FileSystem::ChefRepositoryFileSystemCookbookDir
+            Chef::Config[:versioned_cookbooks] ? upload_versioned_cookbook(other, options) : upload_unversioned_cookbook(other, options)
+          end
         rescue Timeout::Error => e
           raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "Timeout writing: #{e}"
         rescue Net::HTTPServerException => e
@@ -83,6 +89,36 @@ class Chef
           end
         rescue Chef::Exceptions::CookbookFrozen => e
           raise Chef::ChefFS::FileSystem::CookbookFrozenError.new(:write, self, e), "Cookbook #{other.name} is frozen"
+        end
+
+        def streaming_upload_from(other, options = {})
+          new_sandbox = root.chef_rest.post("sandboxes", {:checksums => other.chef_object.checksums})
+          Chef::ChefFS::Parallelizer.parallelize(new_sandbox['checksums']) do |checksum, info|
+            if info['needs_upload']
+              url = other.chef_object.url_for_checksum(checksum)
+              tmpfile = other.root.chef_rest.get_rest(url, true)
+              upload_checksum(checksum, info['url'], tmpfile)
+              ::File.unlink(tmpfile)
+            end
+          end.to_a
+          root.chef_rest.put_rest(new_sandbox['uri'], {:is_completed => true})
+          root.chef_rest.put_rest(other.chef_object.save_url, other.chef_object)
+        end
+
+        def upload_checksum(checksum, url, file_path)
+          checksum64 = Base64.encode64([checksum].pack("H*")).strip
+          timestamp = Time.now.utc.iso8601
+          file_contents = File.open(file_path) {|f| f.read}
+          headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, "accept" => 'application/json' }
+          if root.chef_rest.signing_key
+            sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(:http_method => :put,
+                                                                               :path        => URI.parse(url).path,
+                                                                               :body        => file_contents,
+                                                                               :timestamp   => timestamp,
+                                                                               :user_id     => root.chef_rest.client_name)
+            headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(root.chef_rest.signing_key)))
+          end
+          Chef::HTTP::Simple.new(url, :headers=>headers).put(url, file_contents)
         end
 
         # Knife currently does not understand versioned cookbooks
