@@ -57,7 +57,7 @@ class Chef::Util::DSC
       test_only_parameters = ! apply_configuration ? '-whatif; if (! $?) { exit 1 }' : ''
 
       start_operation_timing
-      command_code = "$ProgressPreference = 'SilentlyContinue';start-dscconfiguration -path #{@configuration_path} -wait -force #{test_only_parameters}"
+      command_code = lcm_command_code(@configuration_path, test_only_parameters)
       status = nil
 
       begin
@@ -77,6 +77,27 @@ class Chef::Util::DSC
       end
       Chef::Log.debug("DSC: Completed call to DSC Local Config Manager")
       status
+    end
+
+    def lcm_command_code(configuration_path, test_only_parameters)
+      <<-EOH
+try
+{
+  $ProgressPreference = 'SilentlyContinue';start-dscconfiguration -path #{@configuration_path} -wait -force #{test_only_parameters} -erroraction 'Stop'
+}
+catch [Microsoft.Management.Infrastructure.CimException]
+{
+  $exception = $_.Exception
+  write-error -Exception $exception
+  $StatusCode = 1
+  if ( $exception.HResult -ne 0 )
+  {
+    $StatusCode = $exception.HResult
+  }
+  $exception | format-table -property * -force
+  exit $StatusCode
+}
+EOH
     end
 
     def configuration_update_required?(what_if_output)
