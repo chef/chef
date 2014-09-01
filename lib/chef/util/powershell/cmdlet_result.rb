@@ -39,10 +39,6 @@ class Chef::Util::Powershell
       end
     end
 
-    def exit_code
-      @status.status.exitstatus
-    end
-    
     def succeeded?
       @succeeded = @status.status.exitstatus == 0
     end

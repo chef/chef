@@ -27,24 +27,10 @@ class Chef::Util::DSC
       clear_execution_time
     end
 
-    LCM_MODULE_NOT_INSTALLED_ERROR_CODE = 0x80131500
-
     def test_configuration(configuration_document)
       status = run_configuration_cmdlet(configuration_document)
-      command_output = status.return_value
-      unless status.succeeded?
-        if status.exit_code == LCM_MODULE_NOT_INSTALLED_ERROR_CODE
-          Chef::Log::warn('Unable to test configuration because a required DSC PowerShell module may not be installed.')
-          command_output = ''
-        end
-        if status.stderr.gsub(/\s+/, ' ') =~ /A parameter cannot be found that matches parameter name 'Whatif'/
-          # LCM returns an error if any of the resources do not support the opptional What-If
-          Chef::Log::warn("Received error while testing configuration due to resource not supporting 'WhatIf'")
-        else
-          raise Chef::Exceptions::PowershellCmdletException, "Powershell Cmdlet failed: #{status.stderr.gsub(/\s+/, ' ')}"
-        end
-      end
-      configuration_update_required?(command_output)
+      handle_what_if_exception!(status.stderr) unless status.succeeded?
+      configuration_update_required?(status.return_value)
     end
 
     def set_configuration(configuration_document)
@@ -88,23 +74,25 @@ class Chef::Util::DSC
 
     def lcm_command_code(configuration_path, test_only_parameters)
       <<-EOH
-try
-{
-  $ProgressPreference = 'SilentlyContinue';start-dscconfiguration -path #{@configuration_path} -wait -force #{test_only_parameters} -erroraction 'Stop'
-}
-catch [Microsoft.Management.Infrastructure.CimException]
-{
-  $exception = $_.Exception
-  write-error -Exception $exception
-  $StatusCode = 1
-  if ( $exception.HResult -ne 0 )
-  {
-    $StatusCode = $exception.HResult
-  }
-  $exception | format-table -property * -force
-  exit $StatusCode
-}
+$ProgressPreference = 'SilentlyContinue';start-dscconfiguration -path #{@configuration_path} -wait -force -erroraction 'stop' #{test_only_parameters}
 EOH
+    end
+
+    def handle_what_if_exception!(what_if_exception_output)
+        if what_if_exception_output.gsub(/\s+/, ' ') =~ /A parameter cannot be found that matches parameter name 'Whatif'/i
+          # LCM returns an error if any of the resources do not support the opptional What-If
+          Chef::Log::warn("Received error while testing configuration due to resource not supporting 'WhatIf'")
+        elsif output_has_dsc_module_failure?(what_if_exception_output)
+          Chef::Log::warn('Received error while testing configuration due to a module for an imported resource possibly not being fully installed:\n#{what_if_exception_output.gsub(/\s+/, ' ')}')
+        else
+          raise Chef::Exceptions::PowershellCmdletException, "Powershell Cmdlet failed: #{what_if_exception_output.gsub(/\s+/, ' ')}"
+        end
+    end
+
+    def output_has_dsc_module_failure?(what_if_output)
+      !! (what_if_output.match(/\sCimException/) &&
+        what_if_output =~ /ProviderOperationExecutionFailure/ &&
+        what_if_output =~ /\smodule is installed/)
     end
 
     def configuration_update_required?(what_if_output)
