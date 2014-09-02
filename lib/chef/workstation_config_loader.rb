@@ -18,6 +18,7 @@
 
 require 'chef/config_fetcher'
 require 'chef/config'
+require 'chef/null_logger'
 
 class Chef
 
@@ -26,9 +27,11 @@ class Chef
     # Path to a config file requested by user, (e.g., via command line option). Can be nil
     attr_reader :explicit_config_file
 
-    def initialize(explicit_config_file)
+    # TODO: initialize this with a logger for Chef and Knife
+    def initialize(explicit_config_file, logger=nil)
       @explicit_config_file = explicit_config_file
       @config_location = nil
+      @logger = logger || NullLogger.new
     end
 
     def no_config_found?
@@ -80,6 +83,16 @@ class Chef
 
     private
 
+    def have_config?(path)
+      if path_exists?(path)
+        logger.info("Using config at #{path}")
+        true
+      else
+        logger.debug("Config not found at #{path}, trying next option")
+        false
+      end
+    end
+
     def locate_local_config
       candidate_configs = []
 
@@ -105,7 +118,7 @@ class Chef
       end
 
       candidate_configs.find do | candidate_config |
-        path_exists?(candidate_config)
+        have_config?(candidate_config)
       end
     end
 
@@ -154,6 +167,10 @@ class Chef
         lines = config_file_lines[Range.new(line - 2, line)]
       end
       "Relevant file content:\n" + lines.join("\n") + "\n"
+    end
+
+    def logger
+      @logger
     end
 
   end

@@ -163,7 +163,7 @@ class Chef
     @@chef_config_dir = nil
 
     def self.load_config(explicit_config_file)
-      config_loader = WorkstationConfigLoader.new(explicit_config_file)
+      config_loader = WorkstationConfigLoader.new(explicit_config_file, Chef::Log)
       Chef::Log.debug("Using configuration from #{config_loader.config_location}")
       config_loader.load
 
@@ -187,6 +187,16 @@ class Chef
     # options::: A Mixlib::CLI option parser hash. These +options+ are how
     # subcommands know about global knife CLI options
     def self.run(args, options={})
+      # Fallback debug logging. Normally the logger isn't configured until we
+      # read the config, but this means any logging that happens before the
+      # config file is read may be lost. If the KNIFE_DEBUG variable is set, we
+      # setup the logger for debug logging to stderr immediately to catch info
+      # from early in the setup process.
+      if ENV['KNIFE_DEBUG']
+        Chef::Log.init($stderr)
+        Chef::Log.level(:debug)
+      end
+
       load_commands
       subcommand_class = subcommand_class_from(args)
       subcommand_class.options = options.merge!(subcommand_class.options)
@@ -345,6 +355,8 @@ class Chef
       else
         Chef::Config[:log_level] = :debug
       end
+
+      Chef::Config[:log_level] = :debug if ENV['KNIFE_DEBUG']
 
       Chef::Config[:node_name]         = config[:node_name]       if config[:node_name]
       Chef::Config[:client_key]        = config[:client_key]      if config[:client_key]

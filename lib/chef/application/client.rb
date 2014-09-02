@@ -277,7 +277,7 @@ class Chef::Application::Client < Chef::Application
   def load_config_file
     if !config.has_key?(:config_file) && !config[:disable_config]
       if config[:local_mode]
-        config[:config_file] = Chef::WorkstationConfigLoader.new(nil).config_location
+        config[:config_file] = Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
       else
         config[:config_file] = Chef::Config.platform_specific_path("/etc/chef/client.rb")
       end
