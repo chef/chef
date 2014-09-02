@@ -38,9 +38,9 @@ class Chef
           options = args.last
           env_key = options.has_key?(:env) ? :env : :environment
           options[env_key] ||= {}
-          options[env_key]['LC_ALL'] ||= 'en_US.UTF-8' unless options[env_key].has_key?('LC_ALL')
+          options[env_key]['LC_ALL'] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?('LC_ALL')
         else
-          args << { :environment => { 'LC_ALL' => 'en_US.UTF-8' } }
+          args << { :environment => { 'LC_ALL' => Chef::Config[:internal_locale] } }
         end
 
         shell_out_command(*args)

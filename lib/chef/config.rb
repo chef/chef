@@ -587,6 +587,42 @@ class Chef
     default :normal_attribute_whitelist, nil
     default :override_attribute_whitelist, nil
 
+    # Chef requires an English-language UTF-8 locale to function properly.  We attempt
+    # to use the 'locale -a' command and search through a list of preferences until we
+    # find one that we can use.  On Ubuntu systems we should find 'C.UTF-8' and be
+    # able to use that even if there is no English locale on the server, but Mac, Solaris,
+    # AIX, etc do not have that locale.  We then try to find an English locale and fall
+    # back to 'C' if we do not.  The choice of fallback is pick-your-poison.  If we try
+    # to do the work to return a non-US UTF-8 locale then we fail inside of providers when
+    # things like 'svn info' return Japanese and we can't parse them.  OTOH, if we pick 'C' then
+    # we will blow up on UTF-8 characters.  Between the warn we throw and the Encoding
+    # exception that ruby will throw it is more obvious what is broken if we drop UTF-8 by
+    # default rather than drop English.
+    #
+    # If there is no 'locale -a' then we return 'en_US.UTF-8' since that is the most commonly
+    # available English UTF-8 locale.  However, all modern POSIXen should support 'locale -a'.
+    default :internal_locale do
+      begin
+        locales = `locale -a`.split
+        case
+        when locales.include?('C.UTF-8')
+          'C.UTF-8'
+        when locales.include?('en_US.UTF-8')
+          'en_US.UTF-8'
+        when locales.include?('en.UTF-8')
+          'en.UTF-8'
+        when guesses = locales.select { |l| l =~ /^en_.*UTF-8$'/ }
+          guesses.first
+        else
+          Chef::Log.warn "Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support."
+          'C'
+        end
+      rescue
+        Chef::Log.warn "No usable locale -a command found, assuming you have en_US.UTF-8 installed."
+        'en_US.UTF-8'
+      end
+    end
+
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with
     # omnibus. This is used to locate the cacert.pem file on windows.
