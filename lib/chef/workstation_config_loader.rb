@@ -85,18 +85,22 @@ class Chef
 
       # Look for $KNIFE_HOME/knife.rb (allow multiple knives config on same machine)
       if env['KNIFE_HOME']
+        candidate_configs << File.join(env['KNIFE_HOME'], 'config.rb')
         candidate_configs << File.join(env['KNIFE_HOME'], 'knife.rb')
       end
       # Look for $PWD/knife.rb
       if Dir.pwd
+        candidate_configs << File.join(Dir.pwd, 'config.rb')
         candidate_configs << File.join(Dir.pwd, 'knife.rb')
       end
       # Look for $UPWARD/.chef/knife.rb
       if chef_config_dir
+        candidate_configs << File.join(chef_config_dir, 'config.rb')
         candidate_configs << File.join(chef_config_dir, 'knife.rb')
       end
       # Look for $HOME/.chef/knife.rb
       if env['HOME']
+        candidate_configs << File.join(env['HOME'], '.chef', 'config.rb')
         candidate_configs << File.join(env['HOME'], '.chef', 'knife.rb')
       end
 

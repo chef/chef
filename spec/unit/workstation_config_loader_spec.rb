@@ -73,47 +73,93 @@ describe Chef::WorkstationConfigLoader do
           expect(config_loader.config_location).to eq("#{home}/.chef/knife.rb")
         end
 
-        context "and/or a parent dir contains a .chef dir" do
-
-          let(:env_pwd) { "/path/to/cwd" }
+        context "and has a config.rb" do
 
           before do
-            env["PWD"] = env_pwd
-            allow(config_loader).to receive(:path_exists?).with("#{env_pwd}/.chef/knife.rb").and_return(true)
-            allow(File).to receive(:exist?).with("#{env_pwd}/.chef").and_return(true)
-            allow(File).to receive(:directory?).with("#{env_pwd}/.chef").and_return(true)
+            allow(config_loader).to receive(:path_exists?).with("#{home}/.chef/config.rb").and_return(true)
           end
 
-          it "prefers the config from parent_dir/.chef" do
-            expect(config_loader.config_location).to eq("#{env_pwd}/.chef/knife.rb")
+          it "uses the config in HOME/.chef/config.rb" do
+            expect(config_loader.config_location).to eq("#{home}/.chef/config.rb")
           end
 
-          context "and/or the current working directory contains a .chef dir" do
+          context "and/or a parent dir contains a .chef dir" do
 
-            let(:cwd) { Dir.pwd }
+            let(:env_pwd) { "/path/to/cwd" }
 
             before do
-              allow(config_loader).to receive(:path_exists?).with("#{cwd}/knife.rb").and_return(true)
+              env["PWD"] = env_pwd
+              allow(config_loader).to receive(:path_exists?).with("#{env_pwd}/.chef/knife.rb").and_return(true)
+              allow(File).to receive(:exist?).with("#{env_pwd}/.chef").and_return(true)
+              allow(File).to receive(:directory?).with("#{env_pwd}/.chef").and_return(true)
             end
 
-            it "prefers a config located in the cwd" do
-              expect(config_loader.config_location).to eq("#{cwd}/knife.rb")
+            it "prefers the config from parent_dir/.chef" do
+              expect(config_loader.config_location).to eq("#{env_pwd}/.chef/knife.rb")
             end
 
-
-            context "and/or KNIFE_HOME is set" do
-
-              let(:knife_home) { "/path/to/knife/home" }
+            context "and the parent dir's .chef dir has a config.rb" do
 
               before do
-                env["KNIFE_HOME"] = knife_home
-                allow(config_loader).to receive(:path_exists?).with("#{knife_home}/knife.rb").and_return(true)
+                allow(config_loader).to receive(:path_exists?).with("#{env_pwd}/.chef/config.rb").and_return(true)
               end
 
-              it "prefers a config located in KNIFE_HOME" do
-                expect(config_loader.config_location).to eq("/path/to/knife/home/knife.rb")
+              it "prefers the config from parent_dir/.chef" do
+                expect(config_loader.config_location).to eq("#{env_pwd}/.chef/config.rb")
               end
 
+              context "and/or the current working directory contains a .chef dir" do
+
+                let(:cwd) { Dir.pwd }
+
+                before do
+                  allow(config_loader).to receive(:path_exists?).with("#{cwd}/knife.rb").and_return(true)
+                end
+
+                it "prefers a knife.rb located in the cwd" do
+                  expect(config_loader.config_location).to eq("#{cwd}/knife.rb")
+                end
+
+                context "and the CWD's .chef dir has a config.rb" do
+
+                  before do
+                    allow(config_loader).to receive(:path_exists?).with("#{cwd}/config.rb").and_return(true)
+                  end
+
+                  it "prefers a config located in the cwd" do
+                    expect(config_loader.config_location).to eq("#{cwd}/config.rb")
+                  end
+
+
+                  context "and/or KNIFE_HOME is set" do
+
+                    let(:knife_home) { "/path/to/knife/home" }
+
+                    before do
+                      env["KNIFE_HOME"] = knife_home
+                      allow(config_loader).to receive(:path_exists?).with("#{knife_home}/knife.rb").and_return(true)
+                    end
+
+                    it "prefers a knife located in KNIFE_HOME" do
+                      expect(config_loader.config_location).to eq("/path/to/knife/home/knife.rb")
+                    end
+
+                    context "and KNIFE_HOME contains a config.rb" do
+
+                      before do
+                        env["KNIFE_HOME"] = knife_home
+                        allow(config_loader).to receive(:path_exists?).with("#{knife_home}/config.rb").and_return(true)
+                      end
+
+                      it "prefers a config.rb located in KNIFE_HOME" do
+                        expect(config_loader.config_location).to eq("/path/to/knife/home/config.rb")
+                      end
+
+                    end
+
+                  end
+                end
+              end
             end
           end
         end
