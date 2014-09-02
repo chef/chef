@@ -74,7 +74,7 @@ class Chef::Util::DSC
 
     def lcm_command_code(configuration_path, test_only_parameters)
       <<-EOH
-$ProgressPreference = 'SilentlyContinue';start-dscconfiguration -path #{@configuration_path} -wait -force #{test_only_parameters}
+$ProgressPreference = 'SilentlyContinue';start-dscconfiguration -path #{@configuration_path} -wait -erroraction 'continue' -force #{test_only_parameters}
 EOH
     end
 
@@ -90,7 +90,7 @@ EOH
     end
 
     def output_has_dsc_module_failure?(what_if_output)
-      !! (what_if_output.match(/\sCimException/) &&
+      !! (what_if_output =~ /\sCimException/ &&
         what_if_output =~ /ProviderOperationExecutionFailure/ &&
         what_if_output =~ /\smodule\s+is\s+installed/)
     end
