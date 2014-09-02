@@ -41,6 +41,8 @@ class Chef::Application
     # from failing due to permissions when launched as a less privileged user.
   end
 
+  attr_reader :local_mode
+
   # Reconfigure the application. You'll want to override and super this method.
   def reconfigure
     configure_chef
@@ -186,7 +188,8 @@ class Chef::Application
 
   # Initializes Chef::Client instance and runs it
   def run_chef_client(specific_recipes = [])
-    Chef::LocalMode.with_server_connectivity do
+    Chef::LocalMode.start do |local_mode|
+      @local_mode = local_mode
       override_runlist = config[:override_runlist]
       if specific_recipes.size > 0
         override_runlist ||= []
@@ -201,6 +204,7 @@ class Chef::Application
 
       @chef_client.run
       @chef_client = nil
+      @local_mode = nil
     end
   end
 

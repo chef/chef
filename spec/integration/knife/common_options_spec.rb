@@ -39,7 +39,6 @@ describe 'knife common options' do
 
         it 'knife raw /nodes/x should retrieve the node' do
           knife('raw /nodes/x').should_succeed( /"name": "x"/ )
-          Chef::Config.chef_server_url.should == 'http://localhost:9999'
         end
       end
 
@@ -101,7 +100,6 @@ EOM
 
     it 'knife raw -z --chef-zero-port=9999 /nodes/x retrieves the node' do
       knife('raw -z --chef-zero-port=9999 /nodes/x').should_succeed( /"name": "x"/ )
-      Chef::Config.chef_server_url.should == 'http://localhost:9999'
     end
 
     context 'when the default port (8889) is already bound' do
@@ -119,7 +117,6 @@ EOM
 
       it 'knife raw -z /nodes/x retrieves the node' do
         knife('raw -z /nodes/x').should_succeed( /"name": "x"/ )
-        expect(URI(Chef::Config.chef_server_url).port).to be > 8889
       end
     end
 
@@ -138,18 +135,15 @@ EOM
 
       it 'knife raw -z --chef-zero-port=9999-20000 /nodes/x' do
         knife('raw -z --chef-zero-port=9999-20000 /nodes/x').should_succeed( /"name": "x"/ )
-        expect(URI(Chef::Config.chef_server_url).port).to be > 9999
       end
 
       it 'knife raw -z --chef-zero-port=9999-9999,19423' do
         knife('raw -z --chef-zero-port=9999-9999,19423 /nodes/x').should_succeed( /"name": "x"/ )
-        expect(URI(Chef::Config.chef_server_url).port).to be == 19423
       end
     end
 
     it 'knife raw -z --chef-zero-port=9999 /nodes/x retrieves the node' do
       knife('raw -z --chef-zero-port=9999 /nodes/x').should_succeed( /"name": "x"/ )
-      Chef::Config.chef_server_url.should == 'http://localhost:9999'
     end
   end
 end

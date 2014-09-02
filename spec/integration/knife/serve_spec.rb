@@ -24,10 +24,10 @@ describe 'knife serve' do
   include KnifeSupport
   include AppServerSupport
 
-  when_the_repository 'also has one of each thing' do
+  when_the_repository 'has a node named x' do
     before { file 'nodes/x.json', { 'foo' => 'bar' } }
 
-    it 'knife serve serves up /nodes/x' do
+    it 'knife serve serves up /organizations/chef/nodes/x' do
       exception = nil
       t = Thread.new do
         begin
@@ -38,7 +38,7 @@ describe 'knife serve' do
       end
       begin
         Chef::Config.log_level = :debug
-        Chef::Config.chef_server_url = 'http://localhost:8889'
+        Chef::Config.chef_server_url = 'http://localhost:8889/organizations/chef'
         Chef::Config.node_name = nil
         Chef::Config.client_key = nil
         api = Chef::ServerAPI.new
@@ -51,6 +51,72 @@ describe 'knife serve' do
         end
       ensure
         t.kill
+      end
+    end
+
+    context 'and organization = foo' do
+      before do
+        Chef::Config.organization = 'foo'
+      end
+
+      it 'knife serve serves up /organizations/foo/nodes/x' do
+        exception = nil
+        t = Thread.new do
+          begin
+            knife('serve --chef-zero-port=8889')
+          rescue
+            exception = $!
+          end
+        end
+        begin
+          Chef::Config.log_level = :debug
+          Chef::Config.chef_server_url = 'http://localhost:8889/organizations/foo'
+          Chef::Config.node_name = nil
+          Chef::Config.client_key = nil
+          api = Chef::ServerAPI.new
+          api.get('nodes/x')['name'].should == 'x'
+        rescue
+          if exception
+            raise exception
+          else
+            raise
+          end
+        ensure
+          t.kill
+        end
+      end
+    end
+
+    context 'and chef_zero.chef_11_osc_compat = true' do
+      before do
+        Chef::Config.chef_zero.chef_11_osc_compat = true
+      end
+
+      it 'knife serve serves up /nodes/x' do
+        exception = nil
+        t = Thread.new do
+          begin
+            knife('serve --chef-zero-port=8889')
+          rescue
+            exception = $!
+          end
+        end
+        begin
+          Chef::Config.log_level = :debug
+          Chef::Config.chef_server_url = 'http://localhost:8889'
+          Chef::Config.node_name = nil
+          Chef::Config.client_key = nil
+          api = Chef::ServerAPI.new
+          api.get('nodes/x')['name'].should == 'x'
+        rescue
+          if exception
+            raise exception
+          else
+            raise
+          end
+        ensure
+          t.kill
+        end
       end
     end
   end

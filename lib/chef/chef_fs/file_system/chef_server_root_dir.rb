@@ -81,10 +81,13 @@ class Chef
         end
 
         def org
-          @org ||= if URI.parse(chef_server_url).path =~ /^\/+organizations\/+([^\/]+)$/
-            $1
-          else
-            nil
+          @org ||= begin
+            path = Pathname.new(URI.parse(chef_server_url).path).cleanpath
+            if File.basename(File.dirname(path)) == 'organizations'
+              File.basename(path)
+            else
+              nil
+            end
           end
         end
 

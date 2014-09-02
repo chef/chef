@@ -31,13 +31,13 @@ class Chef
       end
 
       def run
-        server = Chef::LocalMode.chef_zero_server
+        server = local_mode.chef_zero_server
         begin
-          output "Serving files from:\n#{Chef::LocalMode.chef_fs.fs_description}"
-          server.stop
-          server.start(stdout) # to print header
+          output "Serving files from:\n#{local_mode.chef_fs.fs_description}"
+          local_mode.chef_zero_server.stop
+          local_mode.chef_zero_server.start(stdout) # to print header
         ensure
-          server.stop
+          local_mode.chef_zero_server.stop
         end
       end
     end

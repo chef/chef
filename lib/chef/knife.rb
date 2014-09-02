@@ -58,6 +58,7 @@ class Chef
 
     attr_accessor :name_args
     attr_accessor :ui
+    attr_reader :local_mode
 
     # Configure mixlib-cli to always separate defaults from user-supplied CLI options
     def self.use_separate_defaults?
@@ -489,8 +490,13 @@ class Chef
         ui.error "You need to add a #run method to your knife command before you can use it"
       end
       enforce_path_sanity
-      Chef::LocalMode.with_server_connectivity do
-        run
+      Chef::LocalMode.start do |local_mode|
+        @local_mode = local_mode
+        begin
+          run
+        ensure
+          @local_mode = nil
+        end
       end
     rescue Exception => e
       raise if raise_exception || Chef::Config[:verbosity] == 2

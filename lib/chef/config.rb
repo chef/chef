@@ -25,6 +25,7 @@ require 'mixlib/config'
 require 'chef/util/selinux'
 require 'chef/util/path_helper'
 require 'pathname'
+require 'uri'
 
 class Chef
   class Config
@@ -126,8 +127,8 @@ class Chef
     end
 
     def self.find_chef_repo_path(cwd)
-      # In local mode, we auto-discover the repo root by looking for a path with "cookbooks" under it.
-      # This allows us to run config-free.
+      # In local mode, we auto-discover the repo root by looking for a path with
+      # "cookbooks" under it.  This allows us to run config-free.
       path = cwd
       until File.directory?(PathHelper.join(path, "cookbooks"))
         new_path = File.expand_path('..', path)
@@ -272,7 +273,7 @@ class Chef
     # context. When a tty is available (usually becase the user is running chef
     # in a console), the log level is set to :warn, and output formatters are
     # used as the primary mode of output. When a tty is not available, the
-    # logger is the primary mode of output, and the log level is set to :info
+    # logger is the primary mode of output, and the log level is set to :info.
     default :log_level, :auto
 
     # Logging location as either an IO stream or string representing log file path
@@ -295,17 +296,123 @@ class Chef
     default :diff_disabled,           false
     default :diff_filesize_threshold, 10000000
     default :diff_output_threshold,   1000000
+
+    # Local mode (-z).  When this is on, two major things happen:
+    # 1. A local Chef server (chef-zero) starts up, serving up the files in your
+    #    local Chef repository directory.
+    # 2. The chef repository directory is *inferred* from your current directory
+    #    by crawling up the directory tree until a cookbooks/ directory is found.
+    #    If one is not found, the chef repository is assumed to be "."
+    # Default: false
     default :local_mode, false
 
     default :pid_file, nil
 
+    # The set of parameters for chef-zero in local mode.
     config_context :chef_zero do
       config_strict_mode true
+      # Whether chef_zero should run.  If this is true, chef_zero will be started
+      # with the parameters in the chef_zero config, and the chef_server_root
+      # or chef_server_url will be replaced according to it.
+      # Defaults to true if local_mode is true.
       default(:enabled) { Chef::Config.local_mode }
+      # The host chef_zero will listen on.  Defaults to localhost.
       default :host, 'localhost'
+      # The port for chef_zero to run on.  If set to an array or enumerable like
+      # [100,105,110] or 100.upto(200), it will try each port until it finds an
+      # open one.  Defaults to 8889.upto(9999)
       default :port, 8889.upto(9999) # Will try ports from 8889-9999 until one works
+      # Whether to run with Chef 11 OSC compatibility on.  Defaults to false;
+      # it will run in Enterprise mode with the following changes:
+      # - organization will default to "chef"
+      # - Chef::Config.organization will automatically be created
+      # - chef_server_root will be set to https://#{chef_zero.host}:#{chef_zero.port}
+      # - chef_server_url will be set to #{chef_server_root}/organizations/#{organization}
+      default :chef_11_osc_compat, false
     end
-    default :chef_server_url,   "https://localhost:443"
+
+    # The URL to the Chef Server / organization (the location under which most
+    # objects like nodes, cookbooks and roles will be found).
+    #
+    # Default:
+    # - if organization is set, this is #{chef_server_root}/organizations/#{organization}.
+    # - if chef_zero.enabled = true, this will be set to the chef-zero server url
+    #   when it starts.
+    # - otherwise, it is "https://localhost:443".
+    default :chef_server_url do
+      if chef_server_root
+        if has_key?(:organization)
+          File.join(chef_server_root, 'organizations', organization)
+        end
+      elsif chef_zero.enabled
+        # If chef-zero is enabled, we wait until local mode gives us a value
+        # instead of reporting a false one like localhost:443
+        nil
+      else
+        'https://localhost:443'
+      end
+    end
+
+    # The URL to the top of the Chef Server, under which /organizations and
+    # /users can be found.  Typically chef_server_url is the URL that will be
+    # used for client operations, but this is a convenient way to work in a
+    # multi-org environment (defined your root url once and set
+    # Chef::Config.organization, and chef_server_url will be automatically set
+    # to #{chef_server_root}/organizations/#{organization}).
+    #
+    # Default:
+    # - if chef_server_url is set, we try to infer chef_server_root from it:
+    #   when chef_server_url = https://blah.com/organizations/orgname,
+    #   chef_server_root = https://blah.com.
+    # - if chef_zero is enabled, this will be set when chef-zero starts.
+    # - if organization is set, chef_server_root is https://api.opscode.com
+    # - otherwise, chef_server_root = nil.
+    #
+    default(:chef_server_root) do
+      if has_key?(:chef_server_url)
+        # https://blah.com/organizations/foo -> https://blah.com
+        path = Pathname.new(URI.parse(chef_server_url).path).cleanpath
+        if !has_key?(:organization) || path.basename.to_s == organization
+          path = path.dirname
+          if path.basename.to_s == 'organizations'
+            URI.join(chef_server_url, path.dirname.to_s).to_s.chomp('/')
+          end
+        end
+      elsif chef_zero.enabled
+        nil
+      elsif has_key?(:organization)
+        # If the user has not defined chef_server_url or chef_server_root,
+        # assume they meant Hosted Chef.  This way, if they define
+        # Chef::Config.organization, chef_server_url will turn out to be
+        # https://api.opscode.com/organizations/#{Chef::Config.organization}.
+        "https://api.opscode.com"
+      end
+    end
+
+    # The organization the user is working with in Hosted or Enterprise Chef.
+    # If this is not set, the user is assumed to be working with Open Source Chef
+    # 10 or 11.
+    #
+    # Default:
+    # - If chef_zero.enabled is true and chef_zero.chef_11_osc_compat is false,
+    #   the default is "chef".
+    # - If chef_server_url is set, we try to infer organization from it:
+    #   when chef_server_url = https://blah.com/organizations/orgname,
+    #   organization = orgname.
+    default(:organization) do
+      if chef_zero.enabled
+        unless chef_zero.chef_11_osc_compat
+          'chef'
+        end
+
+      elsif has_key?(:chef_server_url)
+        # https://blah.com/organizations/foo -> foo
+        path = Pathname.new(URI.parse(chef_server_url).path).cleanpath
+        if path.dirname.basename.to_s == 'organizations'
+          path.basename.to_s
+        end
+      end
+    end
 
     default :rest_timeout, 300
     default :yum_timeout, 900

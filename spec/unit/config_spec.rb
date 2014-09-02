@@ -27,8 +27,10 @@ describe Chef::Config do
       Chef::Config.chef_server_url = "https://junglist.gen.nz"
     end
 
-    it "sets the server url" do
+    it "sets chef_server_url, and leaves chef_server_root and organization blank" do
       Chef::Config.chef_server_url.should == "https://junglist.gen.nz"
+      Chef::Config.organization.should == nil
+      Chef::Config.chef_server_root.should == nil
     end
 
     context "when the url has a leading space" do
@@ -52,6 +54,106 @@ describe Chef::Config do
       end
     end
 
+    context "when the url is https://api.blah.com:9000/organizations/foo" do
+      before do
+        Chef::Config.chef_server_url = "https://api.blah.com:9000/organizations/foo"
+      end
+
+      it "sets organization to foo and chef_server_root to https://api.blah.com:9000" do
+        Chef::Config.chef_server_root.should == "https://api.blah.com:9000"
+        Chef::Config.organization.should == "foo"
+      end
+    end
+
+    context "when the url is https://api.blah.com:9000/organizations/foo/" do
+      before do
+        Chef::Config.chef_server_url = "https://api.blah.com:9000/organizations/foo/"
+      end
+
+      it "sets organization to foo and chef_server_root to https://api.blah.com:9000" do
+        Chef::Config.chef_server_root.should == "https://api.blah.com:9000"
+        Chef::Config.organization.should == "foo"
+      end
+    end
+
+    context "when the url is https://api.blah.com:9000/supercool/organizations/foo" do
+      before do
+        Chef::Config.chef_server_url = "https://api.blah.com:9000/supercool/organizations/foo"
+      end
+
+      it "sets organization to foo and chef_server_root to https://api.blah.com:9000/supercool" do
+        Chef::Config.chef_server_root.should == "https://api.blah.com:9000/supercool"
+        Chef::Config.organization.should == "foo"
+      end
+    end
+
+    context "when the url is https://api.blah.com:9000/organization/foo" do
+      before do
+        Chef::Config.chef_server_url = "https://api.blah.com:9000/organization/foo"
+      end
+
+      it "leaves chef_server_root and organization nil" do
+        Chef::Config.chef_server_root.should == nil
+        Chef::Config.organization.should == nil
+      end
+    end
+  end
+
+  describe "chef_server_root and organization" do
+    context "when organization is foo" do
+      before do
+        Chef::Config.organization = 'foo'
+      end
+
+      it "sets chef_server_root to api.opscode.com and chef_server_url to root/organizations/foo" do
+        Chef::Config.chef_server_root.should == 'https://api.opscode.com'
+        Chef::Config.chef_server_url.should == 'https://api.opscode.com/organizations/foo'
+      end
+    end
+
+    context "when chef_server_root is http://a.b.com:9000 and organization is foo" do
+      before do
+        Chef::Config.chef_server_root = 'http://a.b.com:9000'
+        Chef::Config.organization = 'foo'
+      end
+
+      it "sets chef_server_url to http://a.b.com:9000/organizations/foo" do
+        Chef::Config.chef_server_url.should == 'http://a.b.com:9000/organizations/foo'
+      end
+    end
+
+    context "when chef_server_root is http://a.b.com:9000/supercool and organization is foo" do
+      before do
+        Chef::Config.chef_server_root = 'http://a.b.com:9000/supercool'
+        Chef::Config.organization = 'foo'
+      end
+
+      it "sets chef_server_url to http://a.b.com:9000/supercool/organizations/foo" do
+        Chef::Config.chef_server_url.should == 'http://a.b.com:9000/supercool/organizations/foo'
+      end
+    end
+
+    context "when chef_server_root is http://a.b.com:9000/supercool/ and organization is foo" do
+      before do
+        Chef::Config.chef_server_root = 'http://a.b.com:9000/supercool/'
+        Chef::Config.organization = 'foo'
+      end
+
+      it "sets chef_server_url to http://a.b.com:9000/supercool/organizations/foo" do
+        Chef::Config.chef_server_url.should == 'http://a.b.com:9000/supercool/organizations/foo'
+      end
+    end
+
+    context "when chef_server_root is http://a.b.com:9000 and organization is not set" do
+      before do
+        Chef::Config.chef_server_root = 'http://a.b.com:9000'
+      end
+
+      it "sets chef_server_url and organization to nil" do
+        Chef::Config.chef_server_url.should == nil
+        Chef::Config.organization.should == nil
+      end
+    end
   end
 
   describe "when configuring formatters" do
