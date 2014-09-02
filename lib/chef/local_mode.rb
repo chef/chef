@@ -51,7 +51,6 @@ class Chef
         require 'chef_zero/server'
         require 'chef/chef_fs/chef_fs_data_store'
         require 'chef/chef_fs/config'
-
         @chef_fs = Chef::ChefFS::Config.new.local_fs
         @chef_fs.write_pretty_json = true
         data_store = Chef::ChefFS::ChefFSDataStore.new(@chef_fs)

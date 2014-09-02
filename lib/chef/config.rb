@@ -297,7 +297,7 @@ class Chef
     default :diff_disabled,           false
     default :diff_filesize_threshold, 10000000
     default :diff_output_threshold,   1000000
-    default :local_mode, false
+    default(:local_mode) { !chef_server_url }
 
     default :pid_file, nil
 
@@ -307,7 +307,7 @@ class Chef
       default :host, 'localhost'
       default :port, 8889.upto(9999) # Will try ports from 8889-9999 until one works
     end
-    default :chef_server_url,   "https://localhost:443"
+    configurable(:chef_server_url)
 
     default :rest_timeout, 300
     default :yum_timeout, 900

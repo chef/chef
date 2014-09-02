@@ -841,16 +841,16 @@ EOM
 
         it 'knife list --local -Rfp / lists data bags' do
           knife('list --local -Rfp /').should_succeed <<EOM
-/data_bags/
-/data_bags/bag/
-/data_bags/bag/item.json
+data_bags/
+data_bags/bag/
+data_bags/bag/item.json
 EOM
         end
 
         it 'knife list --local -Rfp /data_bags lists data bags' do
           knife('list --local -Rfp /data_bags').should_succeed <<EOM
-/data_bags/bag/
-/data_bags/bag/item.json
+data_bags/bag/
+data_bags/bag/item.json
 EOM
         end
 
