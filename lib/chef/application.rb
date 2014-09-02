@@ -81,10 +81,11 @@ class Chef::Application
 
   # Parse the config file
   def load_config_file
-    config_fetcher = Chef::ConfigFetcher.new(config[:config_file], Chef::Config.config_file_jail)
+    config_fetcher = Chef::ConfigFetcher.new(config[:config_file])
     if config[:config_file].nil?
       Chef::Log.warn("No config file found or specified on command line, using command line options.")
     elsif config_fetcher.config_missing?
+      pp config_missing: true
       Chef::Log.warn("*****************************************")
       Chef::Log.warn("Did not find config file: #{config[:config_file]}, using command line options.")
       Chef::Log.warn("*****************************************")

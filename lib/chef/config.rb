@@ -87,10 +87,6 @@ class Chef
       end
     end
 
-    # No config file (client.rb / knife.rb / etc.) will be loaded outside this path.
-    # Major use case is tests, where we don't want to load the user's config files.
-    configurable(:config_file_jail)
-
     default :formatters, []
 
     # Override the config dispatch to set the value of multiple server options simultaneously
@@ -527,7 +523,7 @@ class Chef
     end
 
     def self.windows_home_path
-      windows_home_path = env['SYSTEMDRIVE'] + env['HOMEPATH'] if env['SYSTEMDRIVE'] && env['HOMEPATH']
+      env['SYSTEMDRIVE'] + env['HOMEPATH'] if env['SYSTEMDRIVE'] && env['HOMEPATH']
     end
 
     # returns a platform specific path to the user home dir if set, otherwise default to current directory.

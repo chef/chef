@@ -220,10 +220,6 @@ class Chef::Application::Client < Chef::Application
     :long         => "--chef-zero-port PORT",
     :description  => "Port (or port range) to start chef-zero on.  Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works."
 
-  option :config_file_jail,
-    :long         => "--config-file-jail PATH",
-    :description  => "Directory under which config files are allowed to be loaded (no client.rb or knife.rb outside this path will be loaded)."
-
   option :dont_load_config,
     :long         => "--dont-load-config",
     :description  => "Refuse to load a config file and use defaults. This is for development and not a stable API",
@@ -279,7 +275,6 @@ class Chef::Application::Client < Chef::Application
   end
 
   def load_config_file
-    Chef::Config.config_file_jail = config[:config_file_jail] if config[:config_file_jail]
     if !config.has_key?(:config_file) && !config[:dont_load_config]
       if config[:local_mode]
         config[:config_file] = Chef::WorkstationConfigLoader.new(nil).config_location
