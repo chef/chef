@@ -33,17 +33,17 @@ EOM
 
     context 'and no config file' do
       it 'should complete with success when cwd is just above cookbooks and paths are not specified' do
-        result = shell_out("#{chef_client} -z -o 'x::default' --dont-load-config", :cwd => path_to(''))
+        result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", :cwd => path_to(''))
         result.error!
       end
 
       it 'should complete with success when cwd is below cookbooks and paths are not specified' do
-        result = shell_out("#{chef_client} -z -o 'x::default' --dont-load-config", :cwd => path_to('cookbooks/x'))
+        result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", :cwd => path_to('cookbooks/x'))
         result.error!
       end
 
       it 'should fail when cwd is below high above and paths are not specified' do
-        result = shell_out("#{chef_client} -z -o 'x::default' --dont-load-config", :cwd => File.expand_path('..', path_to('')))
+        result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", :cwd => File.expand_path('..', path_to('')))
         result.exitstatus.should == 1
       end
     end

@@ -220,8 +220,8 @@ class Chef::Application::Client < Chef::Application
     :long         => "--chef-zero-port PORT",
     :description  => "Port (or port range) to start chef-zero on.  Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works."
 
-  option :dont_load_config,
-    :long         => "--dont-load-config",
+  option :disable_config,
+    :long         => "--disable-config",
     :description  => "Refuse to load a config file and use defaults. This is for development and not a stable API",
     :boolean      => true
 
@@ -275,7 +275,7 @@ class Chef::Application::Client < Chef::Application
   end
 
   def load_config_file
-    if !config.has_key?(:config_file) && !config[:dont_load_config]
+    if !config.has_key?(:config_file) && !config[:disable_config]
       if config[:local_mode]
         config[:config_file] = Chef::WorkstationConfigLoader.new(nil).config_location
       else
