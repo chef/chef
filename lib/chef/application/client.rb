@@ -24,6 +24,7 @@ require 'chef/daemon'
 require 'chef/log'
 require 'chef/config_fetcher'
 require 'chef/handler/error_report'
+require 'chef/workstation_config_loader'
 
 class Chef::Application::Client < Chef::Application
 
@@ -223,6 +224,11 @@ class Chef::Application::Client < Chef::Application
     :long         => "--config-file-jail PATH",
     :description  => "Directory under which config files are allowed to be loaded (no client.rb or knife.rb outside this path will be loaded)."
 
+  option :dont_load_config,
+    :long         => "--dont-load-config",
+    :description  => "Refuse to load a config file and use defaults. This is for development and not a stable API",
+    :boolean      => true
+
   option :run_lock_timeout,
     :long         => "--run-lock-timeout SECONDS",
     :description  => "Set maximum duration to wait for another client run to finish, default is indefinitely.",
@@ -274,10 +280,9 @@ class Chef::Application::Client < Chef::Application
 
   def load_config_file
     Chef::Config.config_file_jail = config[:config_file_jail] if config[:config_file_jail]
-    if !config.has_key?(:config_file)
+    if !config.has_key?(:config_file) && !config[:dont_load_config]
       if config[:local_mode]
-        require 'chef/knife'
-        config[:config_file] = Chef::Knife.locate_config_file
+        config[:config_file] = Chef::WorkstationConfigLoader.new(nil).config_location
       else
         config[:config_file] = Chef::Config.platform_specific_path("/etc/chef/client.rb")
       end

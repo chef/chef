@@ -20,7 +20,7 @@
 require 'forwardable'
 require 'chef/version'
 require 'mixlib/cli'
-require 'chef/config_fetcher'
+require 'chef/workstation_config_loader'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/path_sanity'
 require 'chef/knife/core/subcommand_loader'
@@ -159,6 +159,27 @@ class Chef
       end
     end
 
+    # Shared with subclasses
+    @@chef_config_dir = nil
+
+    def self.load_config(explicit_config_file)
+      config_loader = WorkstationConfigLoader.new(explicit_config_file)
+      Chef::Log.debug("Using configuration from #{config_loader.config_location}")
+      config_loader.load
+
+      ui.warn("No knife configuration file found") if config_loader.no_config_found?
+      @@chef_config_dir = config_loader.chef_config_dir
+
+      config_loader
+    rescue Exceptions::ConfigurationError => e
+      ui.error(ui.color("CONFIGURATION ERROR:", :red) + e.message)
+      exit 1
+    end
+
+    def self.chef_config_dir
+      @@chef_config_dir
+    end
+
     # Run knife for the given +args+ (ARGV), adding +options+ to the list of
     # CLI options that the subcommand knows how to handle.
     # ===Arguments
@@ -239,39 +260,11 @@ class Chef
       exit 10
     end
 
-    def self.working_directory
-      a = if Chef::Platform.windows?
-            ENV['CD']
-          else
-            ENV['PWD']
-          end || Dir.pwd
-
-      a
-    end
-
     def self.reset_config_path!
       @@chef_config_dir = nil
     end
 
     reset_config_path!
-
-
-    # search upward from current_dir until .chef directory is found
-    def self.chef_config_dir
-      if @@chef_config_dir.nil? # share this with subclasses
-        @@chef_config_dir = false
-        full_path = working_directory.split(File::SEPARATOR)
-        (full_path.length - 1).downto(0) do |i|
-          candidate_directory = File.join(full_path[0..i] + [".chef" ])
-          if File.exist?(candidate_directory) && File.directory?(candidate_directory)
-            @@chef_config_dir = candidate_directory
-            break
-          end
-        end
-      end
-      @@chef_config_dir
-    end
-
 
     public
 
@@ -320,39 +313,6 @@ class Chef
         config_file_settings[key] = Chef::Config[:knife][key] if Chef::Config[:knife].has_key?(key)
       end
       config_file_settings
-    end
-
-    def self.config_fetcher(candidate_config)
-      Chef::ConfigFetcher.new(candidate_config, Chef::Config.config_file_jail)
-    end
-
-    def self.locate_config_file
-      candidate_configs = []
-
-      # Look for $KNIFE_HOME/knife.rb (allow multiple knives config on same machine)
-      if ENV['KNIFE_HOME']
-        candidate_configs << File.join(ENV['KNIFE_HOME'], 'knife.rb')
-      end
-      # Look for $PWD/knife.rb
-      if Dir.pwd
-        candidate_configs << File.join(Dir.pwd, 'knife.rb')
-      end
-      # Look for $UPWARD/.chef/knife.rb
-      if chef_config_dir
-        candidate_configs << File.join(chef_config_dir, 'knife.rb')
-      end
-      # Look for $HOME/.chef/knife.rb
-      if ENV['HOME']
-        candidate_configs << File.join(ENV['HOME'], '.chef', 'knife.rb')
-      end
-
-      candidate_configs.each do | candidate_config |
-        fetcher = config_fetcher(candidate_config)
-        if !fetcher.config_missing?
-          return candidate_config
-        end
-      end
-      return nil
     end
 
     # Apply Config in this order:
@@ -416,68 +376,11 @@ class Chef
     end
 
     def configure_chef
-      if !config[:config_file]
-        located_config_file = self.class.locate_config_file
-        config[:config_file] = located_config_file if located_config_file
-      end
-
-      # Don't try to load a knife.rb if it wasn't specified.
-      if config[:config_file]
-        Chef::Config.config_file = config[:config_file]
-        fetcher = Chef::ConfigFetcher.new(config[:config_file], Chef::Config.config_file_jail)
-        if fetcher.config_missing?
-          ui.error("Specified config file #{config[:config_file]} does not exist#{Chef::Config.config_file_jail ? " or is not under config file jail #{Chef::Config.config_file_jail}" : ""}!")
-          exit 1
-        end
-        Chef::Log.debug("Using configuration from #{config[:config_file]}")
-        read_config(fetcher.read_config, config[:config_file])
-      else
-        # ...but do log a message if no config was found.
-        Chef::Config[:color] = config[:color]
-        ui.warn("No knife configuration file found")
-      end
+      config_loader = self.class.load_config(config[:config_file])
+      config[:config_file] = config_loader.config_location
 
       merge_configs
       apply_computed_config
-    end
-
-    def read_config(config_content, config_file_path)
-      Chef::Config.from_string(config_content, config_file_path)
-    rescue SyntaxError => e
-      ui.error "You have invalid ruby syntax in your config file #{config_file_path}"
-      ui.info(ui.color(e.message, :red))
-      if file_line = e.message[/#{Regexp.escape(config_file_path)}:[\d]+/]
-        line = file_line[/:([\d]+)$/, 1].to_i
-        highlight_config_error(config_file_path, line)
-      end
-      exit 1
-    rescue Exception => e
-      ui.error "You have an error in your config file #{config_file_path}"
-      ui.info "#{e.class.name}: #{e.message}"
-      filtered_trace = e.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
-      filtered_trace.each {|line| ui.msg("  " + ui.color(line, :red))}
-      if !filtered_trace.empty?
-        line_nr = filtered_trace.first[/#{Regexp.escape(config_file_path)}:([\d]+)/, 1]
-        highlight_config_error(config_file_path, line_nr.to_i)
-      end
-
-      exit 1
-    end
-
-    def highlight_config_error(file, line)
-      config_file_lines = []
-      IO.readlines(file).each_with_index {|l, i| config_file_lines << "#{(i + 1).to_s.rjust(3)}: #{l.chomp}"}
-      if line == 1
-        lines = config_file_lines[0..3]
-        lines[0] = ui.color(lines[0], :red)
-      else
-        lines = config_file_lines[Range.new(line - 2, line)]
-        lines[1] = ui.color(lines[1], :red)
-      end
-      ui.msg ""
-      ui.msg ui.color("     # #{file}", :white)
-      lines.each {|l| ui.msg(l)}
-      ui.msg ""
     end
 
     def show_usage
