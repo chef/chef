@@ -44,6 +44,7 @@ require 'chef/resource_reporter'
 require 'chef/run_lock'
 require 'chef/policy_builder'
 require 'chef/request_id'
+require 'chef/rebooter'
 require 'ohai'
 require 'rbconfig'
 
@@ -435,6 +436,10 @@ class Chef
         Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
         @events.run_completed(node)
+
+        # rebooting has to be the last thing we do, no exceptions.
+        Chef::Rebooter.reboot_if_needed!(node)
+
         true
       rescue Exception => e
         # CHEF-3336: Send the error first in case something goes wrong below and we don't know why
