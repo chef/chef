@@ -62,7 +62,6 @@ class Chef
 
     end
 
-
     def self.middlewares
       @middlewares ||= []
     end
@@ -282,18 +281,34 @@ class Chef
       end
     end
 
-
     # Wraps an HTTP request with retry logic.
     # === Arguments
     # url:: URL of the request, used for error messages
     def retrying_http_errors(url)
       http_attempts = 0
       begin
-        http_attempts += 1
+        loop do
+          http_attempts += 1
 
-        yield
+          response, request, return_value = yield
+
+          if response.kind_of?(Net::HTTPServerError)
+            if http_retry_count >= http_attempts
+              Chef::Log.error("Error connecting to #{url} - #{response.code}, retry #{http_attempts}/#{http_retry_count}")
+              sleep(http_retry_delay)
+              redo
+            end
+          end
+
+          return [response, request, return_value]
+        end
 
       rescue SocketError, Errno::ETIMEDOUT => e
+        if http_retry_count - http_attempts + 1 > 0
+          Chef::Log.error("Error connecting to #{url} - #{e.message}, retry #{http_attempts}/#{http_retry_count}")
+          sleep(http_retry_delay)
+          retry
+        end
         e.message.replace "Error connecting to #{url} - #{e.message}"
         raise e
       rescue Errno::ECONNREFUSED
@@ -379,7 +394,6 @@ class Chef
       tf.close!
       raise
     end
-
 
     public
 
