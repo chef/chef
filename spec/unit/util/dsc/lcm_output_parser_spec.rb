@@ -20,11 +20,11 @@ require 'chef/util/dsc/lcm_output_parser'
 
 describe Chef::Util::DSC::LocalConfigurationManager::Parser do
   context 'empty input parameter' do
-    it 'returns an emtpy array for a 0 length string' do
+    it 'returns an empty array for a 0 length string' do
       Chef::Util::DSC::LocalConfigurationManager::Parser::parse('').should be_empty
     end
 
-    it 'returns an emtpy array for a nil input' do
+    it 'returns an empty array for a nil input' do
       Chef::Util::DSC::LocalConfigurationManager::Parser::parse('').should be_empty
     end
   end

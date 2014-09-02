@@ -38,7 +38,7 @@ class Chef::Util::Powershell
         @status.stdout
       end
     end
-    
+
     def succeeded?
       @succeeded = @status.status.exitstatus == 0
     end
