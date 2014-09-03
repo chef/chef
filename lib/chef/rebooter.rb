@@ -18,6 +18,7 @@
 
 require 'chef/dsl/reboot_pending'
 require 'chef/log'
+require 'chef/platform'
 
 # this encapsulates any and all gnarly stuff needed to reboot the server.
 
@@ -26,6 +27,7 @@ class Chef
   class Rebooter
     # below are awkward contortions to re-use the RebootPending code.
     include Chef::DSL::RebootPending
+    include Chef::Mixin::ShellOut
 
     attr_reader :node, :reboot_info
 
@@ -36,6 +38,14 @@ class Chef
 
     def reboot!
       Chef::Log.warn "Totally would have rebooted here. #{@reboot_info.inspect}"
+      cmd = if Chef::Platform.windows?
+        "shutdown /r /t #{reboot_info[:timeout]} /c \"#{reboot_info[:reason]}\""
+      else
+        shutdown_time = reboot_info[:reboot_timeout] > 0 ? reboot_info[:reboot_timeout] : "now"
+        "shutdown -h #{shutdown_time}"
+      end
+      # shell_out!(cmd)
+      Chef::Log.warn "Shutdown command: '#{cmd}'"
     end
 
     def self.reboot_if_needed!(node)
