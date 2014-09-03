@@ -69,6 +69,8 @@
 
 ### Chef Contributions
 
+* `knife` now prefers to load `config.rb` in preference to `knife.rb`;
+`knife.rb` will be used if `config.rb` is not found.
 * Fixed Config[:cache_path] to use path_join()
 * Updated chef-zero to 3.0.
 * knife cookbook site download/list/search/share/show/unshare now uses

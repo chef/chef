@@ -1,5 +1,18 @@
 # Chef Client Release Notes 12.0.0:
 
+## Knife Prefers `config.rb` to `knife.rb`.
+
+Knife will now look for `config.rb` in preference to `knife.rb` for its
+configuration file. The syntax and configuration options available in
+`config.rb` are identical to `knife.rb`. Also, the search path for
+configuration files is unchanged.
+
+At this time, it is _recommended_ that users use `config.rb` instead of
+`knife.rb`, but `knife.rb` is not deprecated; no warning will be emitted
+when using `knife.rb`. Once third-party application developers have had
+sufficient time to adapt to the change, `knife.rb` will become
+deprecated and config.rb will be preferred.
+
 ## Boostrap Changes
 
 Chef Client 12 introduces a set of changes to `knife bootstrap`. Here is the list of changes:
