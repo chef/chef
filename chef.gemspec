@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = ["README.md", "CONTRIBUTING.md", "LICENSE" ]
   s.summary = "A systems integration framework, built to bring the benefits of configuration management to your entire infrastructure."
   s.description = s.summary
-  s.license = "Apache"
+  s.license = "Apache-2.0"
   s.author = "Adam Jacob"
   s.email = "adam@getchef.com"
   s.homepage = "http://www.getchef.com"
