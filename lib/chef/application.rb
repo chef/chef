@@ -104,9 +104,6 @@ class Chef
       end
     end
 
-    def load_single_config_file(file)
-    end
-
     # Initialize and configure the logger.
     # === Loggers and Formatters
     # In Chef 10.x and previous, the Logger was the primary/only way that Chef
