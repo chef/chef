@@ -40,6 +40,11 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     when "windows"
       user_sid = sid_string_from_user(user)
       user_sid.nil? ? false : Chef::Util::Windows::NetGroup.new(group_name).local_get_members.include?(user_sid)
+    when "mac_os_x"
+      membership_info = shell_out("dscl . -read /Groups/#{group_name}").stdout
+      members = membership_info.split(" ")
+      members.shift # Get rid of GroupMembership: string
+      members.include?(user)
     else
       Etc::getgrnam(group_name).mem.include?(user)
     end
@@ -420,6 +425,3 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     end
   end
 end
-
-
-
