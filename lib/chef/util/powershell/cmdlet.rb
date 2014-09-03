@@ -88,7 +88,7 @@ class Chef::Util::Powershell
     include Chef::Mixin::WindowsArchitectureHelper
 
     def validate_switch_name!(switch_parameter_name)
-      if !!(switch_parameter_name =~ /\A[A-Za-z]+[_a-zA-Z0-9]*\Z/) == false
+      if !!(switch_parameter_name.to_s =~ /\A[A-Za-z]+[_a-zA-Z0-9]*\Z/) == false
         raise ArgumentError, "`#{switch_parameter_name}` is not a valid PowerShell cmdlet switch parameter name"
       end
     end

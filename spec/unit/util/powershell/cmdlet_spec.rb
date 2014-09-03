@@ -80,27 +80,27 @@ describe Chef::Util::Powershell::Cmdlet do
     end
 
     it 'ignores switches with a false value' do
-      @cmdlet.send(:command_switches_string, {foo: false}).should eql('')
+      @cmdlet.send(:command_switches_string, {:foo => false}).should eql('')
     end
 
     it 'should correctly handle a value type of string' do
-      @cmdlet.send(:command_switches_string, {foo: 'bar'}).should eql("-foo 'bar'")
+      @cmdlet.send(:command_switches_string, {:foo => 'bar'}).should eql("-foo 'bar'")
     end
 
     it 'should correctly handle a value type of string even when it is 0 length' do
-      @cmdlet.send(:command_switches_string, {foo: ''}).should eql("-foo ''")
+      @cmdlet.send(:command_switches_string, {:foo => ''}).should eql("-foo ''")
     end
 
     it 'should not quote integers' do
-      @cmdlet.send(:command_switches_string, {foo: 1}).should eql("-foo 1")
+      @cmdlet.send(:command_switches_string, {:foo => 1}).should eql("-foo 1")
     end
 
     it 'should not quote floats' do
-      @cmdlet.send(:command_switches_string, {foo: 1.0}).should eql("-foo 1.0")
+      @cmdlet.send(:command_switches_string, {:foo => 1.0}).should eql("-foo 1.0")
     end
 
     it 'has just the switch when the value is true' do
-      @cmdlet.send(:command_switches_string, {foo: true}).should eql("-foo")
+      @cmdlet.send(:command_switches_string, {:foo => true}).should eql("-foo")
     end
   end
 end
