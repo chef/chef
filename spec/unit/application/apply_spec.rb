@@ -20,7 +20,7 @@ require 'spec_helper'
 describe Chef::Application::Apply do
 
   before do
-    @app = Chef::Application::Recipe.new
+    @app = Chef::Application::Apply.new
     @app.stub(:configure_logging).and_return(true)
     @recipe_text = "package 'nyancat'"
     Chef::Config[:solo] = true
@@ -41,18 +41,25 @@ describe Chef::Application::Apply do
       File.stub(:exist?).with("foo.rb").and_return(true)
       Chef::Application.stub(:fatal!).and_return(true)
     end
+
     it "should read text properly" do
       @app.read_recipe_file(@recipe_file_name)[0].should == @recipe_text
     end
     it "should return a file_handle" do
       @app.read_recipe_file(@recipe_file_name)[1].should be_instance_of(RSpec::Mocks::Mock)
     end
+    describe "when recipe is nil" do
+      it "should raise a fatal with the missing filename message" do
+        Chef::Application.should_receive(:fatal!).with("No recipe file was provided", 1)
+        @app.read_recipe_file(nil)
+      end
+    end
     describe "when recipe doesn't exist" do
       before do
         File.stub(:exist?).with(@recipe_file_name).and_return(false)
       end
-      it "should raise a fatal" do
-        Chef::Application.should_receive(:fatal!)
+      it "should raise a fatal with the file doesn't exist message" do
+        Chef::Application.should_receive(:fatal!).with(/^No file exists at/, 1)
         @app.read_recipe_file(@recipe_file_name)
       end
     end

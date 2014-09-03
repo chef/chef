@@ -92,14 +92,18 @@ class Chef::Application::Apply < Chef::Application
   end
 
   def read_recipe_file(file_name)
-    recipe_path = file_name.to_s
-    unless File.exist?(recipe_path)
-      Chef::Application.fatal!("No file exists at #{recipe_path}", 1)
+    if file_name.nil?
+      Chef::Application.fatal!("No recipe file was provided", 1)
+    else
+      recipe_path = file_name
+      unless File.exist?(recipe_path)
+        Chef::Application.fatal!("No file exists at #{recipe_path}", 1)
+      end
+      recipe_path = File.expand_path(recipe_path)
+      recipe_fh = open(recipe_path)
+      recipe_text = recipe_fh.read
+      [recipe_text, recipe_fh]
     end
-    recipe_path = File.expand_path(recipe_path)
-    recipe_fh = open(recipe_path)
-    recipe_text = recipe_fh.read
-    [recipe_text, recipe_fh]
   end
 
   def get_recipe_and_run_context
