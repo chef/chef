@@ -24,44 +24,6 @@ class Chef
     class DSC
       class LocalConfigurationManager
         module Parser
-          class ParseException < RuntimeError; end
-
-          class Operation
-            attr_reader :op_type
-            attr_reader :resources
-            attr_reader :info
-            attr_reader :sets
-            attr_reader :tests
-
-            def initialize(op_type, info)
-              @op_type = op_type
-              @info = []
-              @sets = []
-              @tests = []
-              @resources = []
-              add_info(info)
-            end
-
-            def add_info(info)
-              @info << info
-            end
-
-            def add_set(set)
-              raise ParseException, "add_set is not allowed in this context. Found #{@op_type}" unless [:resource, :set].include?(@op_type)
-              @sets << set
-            end
-
-            def add_test(test)
-              raise ParseException, "add_test is not allowed in this context. Found #{@op_type}" unless [:resource, :set].include?(@op_type)
-              @tests << test
-            end
-
-            def add_resource(resource)
-              raise ParseException, 'add_resource is only allowed to be added to the set op_type' unless @op_type == :set
-              @resources << resource
-            end
-          end
-
           # Parses the output from LCM and returns a list of Chef::Util::DSC::ResourceInfo objects
           # that describe how the resources affected the system
           # 
@@ -93,83 +55,76 @@ class Chef
           def self.parse(lcm_output)
             return [] unless lcm_output
 
-            stack = Array.new
-            popped_op = nil
+            current_resource = Hash.new
+
+            resources = []
             lcm_output.lines.each do |line|
               op_action, op_type, info = parse_line(line)
-              info.strip! # Because this was formatted for humans
 
-              # The rules:
-              # - For each `start` action, there must be a matching `end` action
-              # - `skip` actions do not not do anything (They don't add to the stack)
               case op_action
               when :start
-                new_op = Operation.new(op_type, info)
                 case op_type
                 when :set
-                  stack[-1].add_set(new_op) if stack[-1]
-                when :test
-                  stack[-1].add_test(new_op)
-                when :resource
-                  while stack[-1].op_type != :set
-                    Chef::Log.warn("Can't add resource to set...popping until it is allowed.")
-                    popped_op = stack.pop
+                  if current_resource[:name]
+                    current_resource[:context] = :logging
+                    current_resource[:logs] = [info]
                   end
-                  stack[-1].add_resource(new_op)
+                when :resource
+                  if current_resource[:name]
+                    resources.push(current_resource)
+                  end
+                  current_resource = {:name => info}
                 else
-                  Chef::Log.warn("Unknown op_action #{op_action}: Read line #{line}")
+                  Chef::Log.debug("Ignoring op_action #{op_action}: Read line #{line}")
                 end
-                stack.push(new_op)
               when :end
-                popped_op = stack.pop
-                popped_op.add_info(info)
-                while popped_op.op_type != op_type
-                  Chef::Log::warn("Unmatching end for op_type. Expected op_type=#{op_type}, found op_type=#{popped_op.op_type}. From output:\n#{lcm_output}")
-                  popped_op = stack.pop
+                # Make sure we log the last line
+                if current_resource[:context] == :logging and info.include? current_resource[:name]
+                  current_resource[:logs].push(info)
                 end
+                current_resource[:context] = nil
               when :skip
-                # We don't really have anything to do here
+                current_resource[:skipped] = true
               when :info
-                stack[-1].add_info(info) if stack[-1]
-              else
-                stack[-1].add_info(line) if stack[-1]
+                if current_resource[:context] == :logging
+                  current_resource[:logs].push(info)
+                end
               end
             end
 
-            op_to_resource_infos(popped_op)
+            if current_resource[:name]
+              resources.push(current_resource)
+            end
+
+            build_resource_info(resources)
           end
 
           def self.parse_line(line)
             if match = line.match(/^.*?:.*?:\s*LCM:\s*\[(.*?)\](.*)/)
                 # If the line looks like
-                # x: [y]: LCM: [op_action op_type] message
+                # What If: [machinename]: LCM: [op_action op_type] message
                 # extract op_action, op_type, and message
                 operation, info = match.captures
                 op_action, op_type = operation.strip.split(' ').map {|m| m.downcase.to_sym}
             else
-              # If the line looks like
-              # x: [y]: message
-              # extract message
-              match = line.match(/^.*?:.*?: \s+(.*)/)
               op_action = op_type = :info
-              info = match.captures[0]
+              if match = line.match(/^.*?:.*?: \s+(.*)/)
+                info = match.captures[0]
+              else
+                info = line
+              end
             end
             info.strip! # Because this was formatted for humans
             return [op_action, op_type, info]
           end
           private_class_method :parse_line
 
-          def self.op_to_resource_infos(op)
-            resources = op ? op.resources : []
-
+          def self.build_resource_info(resources)
             resources.map do |r|
-              name = r.info[0]
-              sets = r.sets.length > 0
-              change_log = r.sets[-1].info if sets
-              Chef::Util::DSC::ResourceInfo.new(name, sets, change_log)
+              Chef::Util::DSC::ResourceInfo.new(r[:name], !r[:skipped], r[:logs])
             end
           end
-          private_class_method :op_to_resource_infos
+          private_class_method :build_resource_info
 
         end
       end
