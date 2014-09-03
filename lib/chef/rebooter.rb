@@ -49,6 +49,7 @@ class Chef
         "shutdown -h #{shutdown_time}"
       end
       Chef::Log.warn "Shutdown command: '#{cmd}'"
+      # for ease of testing we are not yet actually rebooting.
       #shell_out!(cmd)
     end
 

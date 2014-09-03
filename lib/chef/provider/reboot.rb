@@ -19,13 +19,6 @@
 require 'chef/log'
 require 'chef/provider'
 
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require 'win32/registry'
-end
-
-# require 'chef/mixin/shell_out'
-# require 'chef/mixin/command'
-
 class Chef
   class Provider
     class Reboot < Chef::Provider

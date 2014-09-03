@@ -44,7 +44,7 @@ describe Chef::Resource::Reboot do
 
   # TODO: decide on a behavior for multiple :request and/or :cancel calls, and test for it.
 
-  describe "the request action" do
+  describe 'the request action' do
     before do
       resource.run_action(:request)
     end
@@ -59,6 +59,8 @@ describe Chef::Resource::Reboot do
       expect(reboot_info[:delay_mins]).to eq(expected[:delay_mins])
       expect(reboot_info[:reason]).to eq(expected[:reason])
       expect(reboot_info[:requested_by]).to eq(expected[:requested_by])
+
+      expect(resource.run_context.reboot_requested?).to be_true
     end
   end
 
@@ -68,8 +70,10 @@ describe Chef::Resource::Reboot do
       resource.run_action(:cancel)
     end
 
-    it 'should have cleared the run context reboot data' do
+    it 'should have cleared the reboot request' do
+      # arguably we shouldn't be querying RunContext's internal data directly.
       expect(resource.run_context.reboot_info).to eq({})
+      expect(resource.run_context.reboot_requested?).to be_false
     end
   end
 end
