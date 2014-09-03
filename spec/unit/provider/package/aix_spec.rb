@@ -59,7 +59,6 @@ describe Chef::Provider::Package::Aix do
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Package)
     end
 
-
     it "should get the source package version from lslpp if provided" do
       @stdout = StringIO.new(@bffinfo)
       @stdin, @stderr = StringIO.new, StringIO.new
@@ -125,9 +124,7 @@ describe Chef::Provider::Package::Aix do
 
   describe "install and upgrade" do
     it "should run installp -aYF -d with the package source to install" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "installp -aYF -d /tmp/samba.base samba.base"
-      })
+      @provider.should_receive(:shell_out!).with("installp -aYF -d /tmp/samba.base samba.base")
       @provider.install_package("samba.base", "3.3.12.0")
     end
 
@@ -135,37 +132,28 @@ describe Chef::Provider::Package::Aix do
       @new_resource = Chef::Resource::Package.new("/tmp/samba.base")
       @provider = Chef::Provider::Package::Aix.new(@new_resource, @run_context)
       @new_resource.source.should == "/tmp/samba.base"
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "installp -aYF -d /tmp/samba.base /tmp/samba.base"
-      })
+      @provider.should_receive(:shell_out!).with("installp -aYF -d /tmp/samba.base /tmp/samba.base")
       @provider.install_package("/tmp/samba.base", "3.3.12.0")
     end
 
     it "should run installp with -eLogfile option." do
       @new_resource.stub(:options).and_return("-e/tmp/installp.log")
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "installp -aYF  -e/tmp/installp.log -d /tmp/samba.base samba.base"
-      })
+      @provider.should_receive(:shell_out!).with("installp -aYF  -e/tmp/installp.log -d /tmp/samba.base samba.base")
       @provider.install_package("samba.base", "3.3.12.0")
     end
   end
 
   describe "remove" do
     it "should run installp -u samba.base to remove the package" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "installp -u samba.base"
-      })
+      @provider.should_receive(:shell_out!).with("installp -u samba.base")
       @provider.remove_package("samba.base", "3.3.12.0")
     end
 
     it "should run installp -u -e/tmp/installp.log  with options -e/tmp/installp.log" do
       @new_resource.stub(:options).and_return("-e/tmp/installp.log")
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "installp -u  -e/tmp/installp.log samba.base"
-      })
+      @provider.should_receive(:shell_out!).with("installp -u  -e/tmp/installp.log samba.base")
       @provider.remove_package("samba.base", "3.3.12.0")
     end
 
   end
 end
-
