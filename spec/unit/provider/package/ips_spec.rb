@@ -39,7 +39,7 @@ describe Chef::Provider::Package::Ips do
 pkg: info: no packages matching the following patterns you specified are
 installed on the system.  Try specifying -r to query remotely:
 
-   crypto/gnupg 
+   crypto/gnupg
 PKG_STATUS
     return OpenStruct.new(:stdout => stdout,:stdin => stdin,:stderr => stderr,:status => @status,:exitstatus => 1)
   end
@@ -59,7 +59,7 @@ Packaging Date: April  1, 2012 05:55:52 PM
           FMRI: pkg://omnios/security/sudo@1.8.4.1,5.11-0.151002:20120401T175552Z
 PKG_STATUS
   stdin = StringIO.new
-  stderr = '' 
+  stderr = ''
   return OpenStruct.new(:stdout => stdout,:stdin => stdin,:stderr => stderr,:status => @status,:exitstatus => 0)
   end
 
@@ -123,17 +123,12 @@ INSTALLED
 
   context "when installing a package" do
     it "should run pkg install with the package name and version" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkg install -q crypto/gnupg@2.0.17"
-      })
+      @provider.should_receive(:shell_out).with("pkg install -q crypto/gnupg@2.0.17")
       @provider.install_package("crypto/gnupg", "2.0.17")
     end
 
-
     it "should run pkg install with the package name and version and options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkg --no-refresh install -q crypto/gnupg@2.0.17"
-      })
+      @provider.should_receive(:shell_out).with("pkg --no-refresh install -q crypto/gnupg@2.0.17")
       @new_resource.stub(:options).and_return("--no-refresh")
       @provider.install_package("crypto/gnupg", "2.0.17")
     end
@@ -206,9 +201,7 @@ REMOTE
       end
 
       it "should run pkg install with the --accept flag" do
-        @provider.should_receive(:run_command_with_systems_locale).with({
-          :command => "pkg install -q --accept crypto/gnupg@2.0.17"
-        })
+        @provider.should_receive(:shell_out).with("pkg install -q --accept crypto/gnupg@2.0.17")
         @provider.install_package("crypto/gnupg", "2.0.17")
       end
     end
@@ -216,25 +209,19 @@ REMOTE
 
   context "when upgrading a package" do
     it "should run pkg install with the package name and version" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkg install -q crypto/gnupg@2.0.17"
-      })
+      @provider.should_receive(:shell_out).with("pkg install -q crypto/gnupg@2.0.17")
       @provider.upgrade_package("crypto/gnupg", "2.0.17")
     end
   end
 
   context "when uninstalling a package" do
     it "should run pkg uninstall with the package name and version" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkg uninstall -q crypto/gnupg@2.0.17"
-      })
+      @provider.should_receive(:shell_out!).with("pkg uninstall -q crypto/gnupg@2.0.17")
       @provider.remove_package("crypto/gnupg", "2.0.17")
     end
 
     it "should run pkg uninstall with the package name and version and options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkg --no-refresh uninstall -q crypto/gnupg@2.0.17"
-      })
+      @provider.should_receive(:shell_out!).with("pkg --no-refresh uninstall -q crypto/gnupg@2.0.17")
       @new_resource.stub(:options).and_return("--no-refresh")
       @provider.remove_package("crypto/gnupg", "2.0.17")
     end
