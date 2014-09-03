@@ -100,7 +100,7 @@ class Chef
               if shell_out!(@new_resource.status_command) == 0
                 @current_resource.running true
               end
-            rescue Chef::Exceptions::Exec
+            rescue
               @command_success = false
               @current_resource.running false
               nil
