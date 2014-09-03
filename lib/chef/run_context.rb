@@ -288,6 +288,7 @@ ERROR_MESSAGE
     end
 
     def cancel_reboot
+      Chef::Log::warn "Changing reboot status from #{@reboot_info.inspect} to {}"
       @reboot_info = {}
     end
 

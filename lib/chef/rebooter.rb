@@ -29,23 +29,27 @@ class Chef
     include Chef::DSL::RebootPending
     include Chef::Mixin::ShellOut
 
-    attr_reader :node, :reboot_info
+    attr_reader :reboot_info
+
+    # shims for RebootPending.
+    attr_reader :node, :run_context
 
     def initialize(node)
       @node = node
+      @run_context = node.run_context
       @reboot_info = node.run_context.reboot_info
     end
 
     def reboot!
       Chef::Log.warn "Totally would have rebooted here. #{@reboot_info.inspect}"
       cmd = if Chef::Platform.windows?
-        "shutdown /r /t #{reboot_info[:timeout]} /c \"#{reboot_info[:reason]}\""
+        "shutdown /r /t #{reboot_info[:delay_mins]} /c \"#{reboot_info[:reason]}\""
       else
-        shutdown_time = reboot_info[:reboot_timeout] > 0 ? reboot_info[:reboot_timeout] : "now"
+        shutdown_time = reboot_info[:delay_mins] > 0 ? reboot_info[:reboot_timeout] : "now"
         "shutdown -h #{shutdown_time}"
       end
-      # shell_out!(cmd)
       Chef::Log.warn "Shutdown command: '#{cmd}'"
+      #shell_out!(cmd)
     end
 
     def self.reboot_if_needed!(node)

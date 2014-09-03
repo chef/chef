@@ -35,7 +35,7 @@ class Chef
       def load_current_resource
         @current_resource ||= Chef::Resource::Reboot.new(@new_resource.name)
         @current_resource.reason(@new_resource.reason)
-        @current_resource.timeout(@new_resource.timeout)
+        @current_resource.delay_mins(@new_resource.delay_mins)
         @current_resource.timestamp(@new_resource.timestamp)
         @current_resource
       end
@@ -43,8 +43,8 @@ class Chef
       def action_request
         Chef::Log.warn "Reboot requested:'#{@new_resource.name}'"
         node.run_context.request_reboot(
-          :reboot_timeout => @new_resource.timeout,
-          :reboot_reason => @new_resource.reason,
+          :delay_mins => @new_resource.delay_mins,
+          :reason => @new_resource.reason,
           :timestamp => Time.now,
           :requested_by => @new_resource.name
         )

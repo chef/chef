@@ -28,7 +28,7 @@ class Chef
         @allowed_actions = [:request, :cancel]
 
         @reason = "Reboot by Chef"
-        @timeout = 0
+        @delay_mins = 0
 
         # no default action just now.
       end
@@ -37,8 +37,8 @@ class Chef
         set_or_return(:reason, arg, :kind_of => String)
       end
 
-      def timeout(arg=nil)
-        set_or_return(:timeout, arg, :kind_of => Fixnum)
+      def delay_mins(arg=nil)
+        set_or_return(:delay_mins, arg, :kind_of => Fixnum)
       end
 
       def timestamp(arg=nil)
