@@ -20,13 +20,13 @@ require 'json'
 
 class Chef::Util::Powershell
   class CmdletResult
-    attr_reader :output_format 
+    attr_reader :output_format
 
     def initialize(status, output_format)
       @status = status
       @output_format = output_format
     end
-    
+
     def stderr
       @status.stderr
     end
