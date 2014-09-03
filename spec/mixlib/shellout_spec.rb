@@ -425,6 +425,14 @@ describe Mixlib::ShellOut do
     end
 
     context 'when handling locale' do
+      before do
+        @original_lc_all = ENV['LC_ALL']
+        ENV['LC_ALL'] = "en_US.UTF-8"
+      end
+      after do
+        ENV['LC_ALL'] = @original_lc_all
+      end
+
       subject { stripped_stdout }
       let(:cmd) { ECHO_LC_ALL }
       let(:options) { { :environment => { 'LC_ALL' => locale } } }
@@ -432,7 +440,7 @@ describe Mixlib::ShellOut do
       context 'without specifying environment' do
         let(:options) { nil }
         it "should no longer use the C locale by default" do
-          should eql("")
+          should eql("en_US.UTF-8")
         end
       end
 
@@ -446,15 +454,6 @@ describe Mixlib::ShellOut do
 
       context 'with LC_ALL set to nil' do
         let(:locale) { nil }
-
-        before do
-          @original_lc_all = ENV['LC_ALL']
-          ENV['LC_ALL'] = "en_US.UTF-8"
-        end
-
-        after do
-          ENV['LC_ALL'] = @original_lc_all
-        end
 
         context 'when running under Unix', :unix_only do
           let(:parent_locale) { ENV['LC_ALL'].to_s.strip }
