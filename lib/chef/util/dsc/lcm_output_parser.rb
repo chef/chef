@@ -64,7 +64,7 @@ class Chef
 
           # Parses the output from LCM and returns a list of Chef::Util::DSC::ResourceInfo objects
           # that describe how the resources affected the system
-          # 
+          #
           # Example:
           #   parse <<-EOF
           #   What if: [Machine]: LCM: [Start Set      ]
@@ -80,11 +80,11 @@ class Chef
           #
           #   [
           #     Chef::Util::DSC::ResourceInfo.new(
-          #       '[[File]FileToNotBeThere]', 
-          #       true, 
+          #       '[[File]FileToNotBeThere]',
+          #       true,
           #       [
-          #         '[[File]FileToNotBeThere]', 
-          #         '[C:\Shouldnotexist.txt]', 
+          #         '[[File]FileToNotBeThere]',
+          #         '[C:\Shouldnotexist.txt]',
           #         '[[File]FileToNotBeThere] in 0.1 seconds'
           #       ]
           #     )

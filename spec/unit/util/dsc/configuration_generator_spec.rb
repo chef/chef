@@ -141,7 +141,7 @@ describe Chef::Util::DSC::ConfigurationGenerator do
     it "should find the mof file" do
       # These tests seem way too implementation specific. Unfortunatly, File and Dir
       # need to be mocked because they are OS specific
-      
+
       File.stub(:join) do |a, b|
         [a,b].join("++")
       end

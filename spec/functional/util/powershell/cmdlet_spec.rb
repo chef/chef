@@ -96,7 +96,7 @@ describe Chef::Util::Powershell::Cmdlet, :windows_only do
   end
 
   context "when returning Ruby objects" do
-    let(:cmd_output_format) { :object }    
+    let(:cmd_output_format) { :object }
     it "returns object format data", :windows_powershell_dsc_only do
       result = simple_cmdlet.run({},{:cwd => etc_directory}, 'hosts')
       expect(result.succeeded?).to eq(true)
@@ -104,9 +104,9 @@ describe Chef::Util::Powershell::Cmdlet, :windows_only do
       expect(data['Name']).to eq('hosts')
     end
   end
-  
+
   context "when constructor is given invalid arguments" do
-    let(:cmd_output_format) { :invalid }    
+    let(:cmd_output_format) { :invalid }
     it "throws an exception if an invalid format is passed to the constructor" do
       expect(lambda{simple_cmdlet}).to raise_error
     end
