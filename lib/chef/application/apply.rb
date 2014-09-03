@@ -92,7 +92,7 @@ class Chef::Application::Apply < Chef::Application
   end
 
   def read_recipe_file(file_name)
-    recipe_path = file_name
+    recipe_path = file_name.to_s
     unless File.exist?(recipe_path)
       Chef::Application.fatal!("No file exists at #{recipe_path}", 1)
     end
