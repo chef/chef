@@ -131,6 +131,6 @@ class Chef::Util::Powershell
 
       command_switches.join(' ')
     end
-  end  
+  end
 end
 
