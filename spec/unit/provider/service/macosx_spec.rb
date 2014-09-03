@@ -226,7 +226,7 @@ SVC_LIST
           it "calls the start command if one is specified and service is not running" do
             new_resource.stub(:start_command).and_return("cowsay dirty")
 
-            provider.should_receive(:shell_out!).with("cowsay dirty")
+            provider.should_receive(:shell_out_with_systems_locale!).with("cowsay dirty")
             provider.start_service
           end
 
@@ -238,7 +238,7 @@ SVC_LIST
           end
 
           it "starts service via launchctl if service found" do
-            provider.should_receive(:shell_out!).
+            provider.should_receive(:shell_out_with_systems_locale!).
                      with("launchctl load -w '/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist'",
                            :group => 1001, :user => 101).
                      and_return(0)
@@ -258,7 +258,7 @@ SVC_LIST
           it "calls the stop command if one is specified and service is running" do
             new_resource.stub(:stop_command).and_return("kill -9 123")
 
-            provider.should_receive(:shell_out!).with("kill -9 123")
+            provider.should_receive(:shell_out_with_systems_locale!).with("kill -9 123")
             provider.stop_service
           end
 
@@ -270,7 +270,7 @@ SVC_LIST
           end
 
           it "stops the service via launchctl if service found" do
-            provider.should_receive(:shell_out!).
+            provider.should_receive(:shell_out_with_systems_locale!).
                      with("launchctl unload '/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist'",
                           :group => 1001, :user => 101).
                      and_return(0)
@@ -291,7 +291,7 @@ SVC_LIST
           it "issues a command if given" do
             new_resource.stub(:restart_command).and_return("reload that thing")
 
-            provider.should_receive(:shell_out!).with("reload that thing")
+            provider.should_receive(:shell_out_with_systems_locale!).with("reload that thing")
             provider.restart_service
           end
 
