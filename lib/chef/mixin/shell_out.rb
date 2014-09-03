@@ -33,12 +33,14 @@ class Chef
       # we use 'en_US.UTF-8' by default because we parse localized strings in English as an API and
       # generally must support UTF-8 unicode.
       def shell_out(*command_args)
-        args = Marshal.load( Marshal.dump(command_args) )  # we need a deep clone
+        args = command_args.dup
         if args.last.is_a?(Hash)
-          options = args.last
+          options = args.pop.dup
           env_key = options.has_key?(:env) ? :env : :environment
           options[env_key] ||= {}
+          options[env_key] = options[env_key].dup
           options[env_key]['LC_ALL'] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?('LC_ALL')
+          args << options
         else
           args << { :environment => { 'LC_ALL' => Chef::Config[:internal_locale] } }
         end
