@@ -31,11 +31,11 @@ class Chef
 
     def initialize(node)
       @node = node
-      @reboot_info = node.run_state[:reboot_info]
+      @reboot_info = node.run_context.reboot_info
     end
 
     def reboot!
-      Chef::Log.warn "Totally would have rebooted here."
+      Chef::Log.warn "Totally would have rebooted here. #{@reboot_info.inspect}"
     end
 
     def self.reboot_if_needed!(node)

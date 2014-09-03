@@ -1,5 +1,4 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
 # Author:: Chris Doherty <cdoherty@getchef.com>)
 # Copyright:: Copyright (c) 2014 Chef, Inc.
 # License:: Apache License, Version 2.0
@@ -31,9 +30,7 @@ class Chef
   class Provider
     class Reboot < Chef::Provider
 
-      # def whyrun_supported?
-      #   true
-      # end
+      # TODO: support whyrun?
 
       def load_current_resource
         @current_resource ||= Chef::Resource::Reboot.new(@new_resource.name)
@@ -44,21 +41,18 @@ class Chef
       end
 
       def action_request
-        Chef::Log.warn "Reboot requested: #{@new_resource.name}"
-        node.run_state[:reboot_requested] = true
-        node.run_state[:reboot_timeout] = @new_resource.timeout
-        node.run_state[:reboot_reason] = @new_resource.reason
-        node.run_state[:timestamp] = Time.now
-        node.run_state[:requested_by] = @new_resource.name
+        Chef::Log.warn "Reboot requested:'#{@new_resource.name}'"
+        node.run_context.request_reboot(
+          :reboot_timeout => @new_resource.timeout,
+          :reboot_reason => @new_resource.reason,
+          :timestamp => Time.now,
+          :requested_by => @new_resource.name
+        )
       end
 
       def action_cancel
-        Chef::Log.warn "Reboot cancel: #{@new_resource.name}"
-        node.run_state.delete(:reboot_requested)
-        node.run_state.delete(:reboot_timeout)
-        node.run_state.delete(:reboot_reason)
-        node.run_state.delete(:timestamp)
-        node.run_state.delete(:requested_by)
+        Chef::Log.warn "Reboot canceled: '#{@new_resource.name}'"
+        node.run_context.cancel_reboot
       end
     end
   end

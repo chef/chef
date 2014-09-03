@@ -30,7 +30,7 @@ class Chef
       # Note that we will silently miss any other platform-specific reboot notices besides Windows+Ubuntu.
       def reboot_pending?
 
-        if node.run_state[:reboot_requested]
+        if node.run_context.reboot_requested?
           true
         elsif platform?("windows")
           # PendingFileRenameOperations contains pairs (REG_MULTI_SZ) of filenames that cannot be updated
