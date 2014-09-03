@@ -372,7 +372,7 @@ class Chef
 
       Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
       if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
-        Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
+        assumed_cwd = Chef::Config.find_chef_repo_path(Dir.pwd)
       end
       Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
       Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]

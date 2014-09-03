@@ -128,19 +128,35 @@ class Chef
     end
 
     def self.find_chef_repo_path(cwd)
+      # If there is a config_file_jail, don't auto-set chef_repo_path outside of it
+      if Chef::Config.config_file_jail
+        begin
+          real_config_file_jail = Pathname.new(Chef::Config.config_file_jail).realpath.to_s
+        rescue Errno::ENOENT
+          return false
+        end
+
+        real_cwd = Pathname.new(cwd).realpath.to_s
+        if !Chef::ChefFS::PathUtils.descendant_of?(real_cwd, real_config_file_jail)
+          return false
+        end
+      end
+
       # In local mode, we auto-discover the repo root by looking for a path with "cookbooks" under it.
       # This allows us to run config-free.
       path = cwd
-      until File.directory?(PathHelper.join(path, "cookbooks"))
+      until File.directory?(PathHelper.join(path, "cookbooks")) || File.directory?(PathHelper.join(path, "clients"))
         new_path = File.expand_path('..', path)
         if new_path == path
-          Chef::Log.warn("No cookbooks directory found at or above current directory.  Assuming #{Dir.pwd}.")
-          return Dir.pwd
+          Chef::Log.warn("No cookbooks or clients directory found at or above current directory.  Assuming #{Dir.pwd}.")
+          Chef::Config.chef_repo_path = Dir.pwd
+          return true
         end
         path = new_path
       end
       Chef::Log.info("Auto-discovered chef repository at #{path}")
-      path
+      Chef::Config.chef_repo_path = path
+      return false
     end
 
     def self.derive_path_from_chef_repo_path(child_path)

@@ -62,7 +62,7 @@ EOM
       end
 
       it 'fails to load .chef/knife.rb when --config-file-jail does not include the .chef/knife.rb' do
-        result = shell_out("#{chef_client} -o 'x::default' --config-file-jail \"#{path_to('roles')}\"", :cwd => path_to(''))
+        result = shell_out("#{chef_client} --config-file-jail \"#{path_to('roles')}\"", :cwd => path_to(''))
         result.error!
       end
     end
