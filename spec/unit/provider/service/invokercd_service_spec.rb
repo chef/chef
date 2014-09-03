@@ -110,7 +110,6 @@ PS
 
   end
 
-
   describe "when we have a 'ps' attribute" do
     it "should shell_out! the node's ps command" do
       @status = double("Status", :exitstatus => 0, :stdout => @stdout)
@@ -152,12 +151,12 @@ RUNNING_PS
   describe "when starting the service" do
     it "should call the start command if one is specified" do
       @new_resource.start_command("/usr/sbin/invoke-rc.d chef startyousillysally")
-      @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef startyousillysally")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d chef startyousillysally")
       @provider.start_service()
     end
 
     it "should call '/usr/sbin/invoke-rc.d service_name start' if no start command is specified" do
-      @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} start")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} start")
       @provider.start_service()
     end
   end
@@ -165,12 +164,12 @@ RUNNING_PS
   describe Chef::Provider::Service::Invokercd, "stop_service" do
     it "should call the stop command if one is specified" do
       @new_resource.stop_command("/usr/sbin/invoke-rc.d chef itoldyoutostop")
-      @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef itoldyoutostop")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d chef itoldyoutostop")
       @provider.stop_service()
     end
 
     it "should call '/usr/sbin/invoke-rc.d service_name stop' if no stop command is specified" do
-      @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} stop")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} stop")
       @provider.stop_service()
     end
   end
@@ -178,13 +177,13 @@ RUNNING_PS
   describe "when restarting a service" do
     it "should call 'restart' on the service_name if the resource supports it" do
       @new_resource.supports({:restart => true})
-      @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} restart")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} restart")
       @provider.restart_service()
     end
 
     it "should call the restart_command if one has been specified" do
       @new_resource.restart_command("/usr/sbin/invoke-rc.d chef restartinafire")
-      @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} restartinafire")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} restartinafire")
       @provider.restart_service()
     end
 
@@ -199,13 +198,13 @@ RUNNING_PS
   describe "when reloading a service" do
     it "should call 'reload' on the service if it supports it" do
       @new_resource.supports({:reload => true})
-      @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef reload")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d chef reload")
       @provider.reload_service()
     end
 
     it "should should run the user specified reload command if one is specified and the service doesn't support reload" do
       @new_resource.reload_command("/usr/sbin/invoke-rc.d chef lollerpants")
-      @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef lollerpants")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d chef lollerpants")
       @provider.reload_service()
     end
   end
