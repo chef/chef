@@ -46,6 +46,7 @@ class Chef::Application
     configure_chef
     configure_logging
     configure_proxy_environment_variables
+    configure_encoding
   end
 
   # Get this party started
@@ -173,6 +174,12 @@ class Chef::Application
     configure_https_proxy
     configure_ftp_proxy
     configure_no_proxy
+  end
+
+  # Sets the default external encoding to UTF-8 (users can change this, but they shouldn't)
+  def configure_encoding
+    Encoding.default_external = Chef::Config[:ruby_encoding]
+    Encoding.default_internal = Chef::Config[:ruby_encoding]
   end
 
   # Called prior to starting the application, by the run method

@@ -623,6 +623,15 @@ class Chef
       end
     end
 
+    # Force UTF-8 Encoding, for when we fire up in the 'C' locale or other strange locales (e.g.
+    # japanese windows encodings).  If we do not do this, then knife upload will fail when a cookbook's
+    # README.md has UTF-8 characters that do not encode in whatever surrounding encoding we have been
+    # passed.  Effectively, the Chef Ecosystem is globally UTF-8 by default.  Anyone who wants to be
+    # able to upload Shift_JIS or ISO-8859-1 files needs to mark *those* files explicitly with
+    # magic tags to make ruby correctly identify the encoding being used.  Changing this default will
+    # break Chef community cookbooks and is very highly discouraged.
+    default :ruby_encoding, Encoding::UTF_8
+
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with
     # omnibus. This is used to locate the cacert.pem file on windows.
