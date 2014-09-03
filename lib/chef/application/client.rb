@@ -296,18 +296,38 @@ class Chef::Application::Client < Chef::Application
   end
 
   def load_config_file
-    if !config.has_key?(:config_file) && !config[:disable_config]
-      if config[:local_mode]
-        config[:config_file] = Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
-      else
+    Chef::Config.config_file_jail = config[:config_file_jail] if config[:config_file_jail]
+    if config.has_key?(:config_file)
+      super
+    else
+
+      # We don't have a config file.  Read /etc/chef/client.rb or find knife.rb.
+
+      # Try to get /etc/chef/client.rb unless we're in local mode
+      fetcher = nil
+      unless config[:local_mode]
         config[:config_file] = Chef::Config.platform_specific_path("/etc/chef/client.rb")
-        if Chef::ConfigFetcher.new(config[:config_file], Chef::Config[:config_file_jail]).config_missing?
-          require 'chef/knife'
-          config[:config_file] = Chef::Knife.locate_config_file
+        fetcher = Chef::ConfigFetcher.new(config[:config_file], Chef::Config[:config_file_jail])
+        if fetcher.config_missing?
+          fetcher = nil
+          config[:config_file] = nil
         end
       end
+
+      # Grab knife.rb
+      if !fetcher
+        require 'chef/knife'
+        config[:config_file] = Chef::Knife.locate_config_file
+        if config[:config_file]
+          fetcher = Chef::ConfigFetcher.new(config[:config_file], Chef::Config[:config_file_jail])
+        end
+      end
+
+      # Read the config file we found.
+      if fetcher
+        apply_config(fetcher.read_config, config[:config_file])
+      end
     end
-    super
   end
 
   def configure_logging
