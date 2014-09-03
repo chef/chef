@@ -179,7 +179,6 @@ class Chef::Application
   # Sets the default external encoding to UTF-8 (users can change this, but they shouldn't)
   def configure_encoding
     Encoding.default_external = Chef::Config[:ruby_encoding]
-    Encoding.default_internal = Chef::Config[:ruby_encoding]
   end
 
   # Called prior to starting the application, by the run method
