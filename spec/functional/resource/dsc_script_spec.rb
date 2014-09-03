@@ -74,7 +74,7 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
   }
   let(:dsc_test_resource_name) { 'DSCTest' }
   let(:dsc_test_resource_base) {
-    Chef::Resource::DscScript.new(dsc_test_resource_name, dsc_test_run_context) 
+    Chef::Resource::DscScript.new(dsc_test_resource_name, dsc_test_run_context)
   }
   let(:test_registry_key) { 'HKEY_LOCAL_MACHINE\Software\Chef\Spec\Functional\Resource\dsc_script_spec' }
   let(:test_registry_value) { 'Registration' }
@@ -82,7 +82,7 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
   let(:test_registry_data2) { 'LL928' }
   let(:dsc_code) { <<-EOH
   Registry "ChefRegKey"
-  { 
+  {
      Key = '#{test_registry_key}'
      ValueName = '#{test_registry_value}'
      ValueData = '#{test_registry_data}'
@@ -314,7 +314,7 @@ EOH
     let(:dsc_test_resource) { dsc_resource_from_code }
     it_behaves_like 'a dsc_script resource with specified PowerShell configuration code'
   end
-  
+
   context 'when supplying configuration using the path attribute' do
     let(:dsc_test_resource) { dsc_resource_from_path }
     it_behaves_like 'a dsc_script resource with specified PowerShell configuration code'

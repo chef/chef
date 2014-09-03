@@ -37,7 +37,7 @@ class Chef::Util::DSC
 
     def configuration_document_from_script_path(script_path, configuration_name, configuration_flags, shellout_flags)
       validate_configuration_name!(configuration_name)
-      
+
       document_generation_cmdlet = Chef::Util::Powershell::Cmdlet.new(
         @node,
         configuration_document_generation_code(script_path, configuration_name))

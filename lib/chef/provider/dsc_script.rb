@@ -28,10 +28,10 @@ class Chef
         @dsc_resource = dsc_resource
         @resource_converged = false
         @operations = {
-          :set => Proc.new { |config_manager, document| 
+          :set => Proc.new { |config_manager, document|
             config_manager.set_configuration(document)
           },
-          :test => Proc.new { |config_manager, document| 
+          :test => Proc.new { |config_manager, document|
             config_manager.test_configuration(document)
           }}
       end
@@ -131,7 +131,7 @@ class Chef
       private
 
       def generate_description
-        ["converge DSC configuration '#{configuration_friendly_name}'"] + 
+        ["converge DSC configuration '#{configuration_friendly_name}'"] +
           @dsc_resources_info.map do |resource|
             if resource.changes_state?
               # We ignore the last log message because it only contains the time it took, which looks weird
