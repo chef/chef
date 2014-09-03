@@ -6,6 +6,19 @@ Example Doc Change:
 Description of the required change.
 -->
 
+### Knife now prefers to use `config.rb` rather than `knife.rb`
+
+Knife will now look for `config.rb` in preference to `knife.rb` for its
+configuration file. The syntax and configuration options available in
+`config.rb` are identical to `knife.rb`. Also, the search path for
+configuration files is unchanged.
+
+At this time, it is _recommended_ that users use `config.rb` instead of
+`knife.rb`, but `knife.rb` is not deprecated; no warning will be emitted
+when using `knife.rb`. Once third-party application developers have had
+sufficient time to adapt to the change, `knife.rb` will become
+deprecated and config.rb will be preferred.
+
 ### value_for_platform Method
 
 - where <code>"platform"</code> can be a comma-separated list, each specifying a platform, such as Red Hat, openSUSE, or Fedora, <code>version</code> specifies the version of that platform, and <code>value</code> specifies the value that will be used if the node's platform matches the <code>value_for_platform</code> method. If each value only has a single platform, then the syntax is like the following:

@@ -24,6 +24,7 @@ require 'chef/daemon'
 require 'chef/log'
 require 'chef/config_fetcher'
 require 'chef/handler/error_report'
+require 'chef/workstation_config_loader'
 
 class Chef::Application::Client < Chef::Application
 
@@ -219,9 +220,10 @@ class Chef::Application::Client < Chef::Application
     :long         => "--chef-zero-port PORT",
     :description  => "Port (or port range) to start chef-zero on.  Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works."
 
-  option :config_file_jail,
-    :long         => "--config-file-jail PATH",
-    :description  => "Directory under which config files are allowed to be loaded (no client.rb or knife.rb outside this path will be loaded)."
+  option :disable_config,
+    :long         => "--disable-config",
+    :description  => "Refuse to load a config file and use defaults. This is for development and not a stable API",
+    :boolean      => true
 
   option :run_lock_timeout,
     :long         => "--run-lock-timeout SECONDS",
@@ -273,11 +275,9 @@ class Chef::Application::Client < Chef::Application
   end
 
   def load_config_file
-    Chef::Config.config_file_jail = config[:config_file_jail] if config[:config_file_jail]
-    if !config.has_key?(:config_file)
+    if !config.has_key?(:config_file) && !config[:disable_config]
       if config[:local_mode]
-        require 'chef/knife'
-        config[:config_file] = Chef::Knife.locate_config_file
+        config[:config_file] = Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
       else
         config[:config_file] = Chef::Config.platform_specific_path("/etc/chef/client.rb")
       end

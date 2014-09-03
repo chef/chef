@@ -8,9 +8,7 @@ describe Chef::ConfigFetcher do
   let(:config_location_regex) { Regexp.escape(config_location) }
   let(:invalid_json_error_regex) { %r[Could not parse the provided JSON file \(#{config_location_regex}\)] }
 
-  let(:config_jail_path) { nil }
-
-  let(:fetcher) { Chef::ConfigFetcher.new(config_location, config_jail_path) }
+  let(:fetcher) { Chef::ConfigFetcher.new(config_location) }
 
   context "when loading a local file" do
     let(:config_location) { "/etc/chef/client.rb" }

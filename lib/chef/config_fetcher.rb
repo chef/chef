@@ -7,11 +7,9 @@ class Chef
   class ConfigFetcher
 
     attr_reader :config_location
-    attr_reader :config_file_jail
 
-    def initialize(config_location, config_file_jail=nil)
+    def initialize(config_location)
       @config_location = config_location
-      @config_file_jail = config_file_jail
     end
 
     def fetch_json
@@ -48,24 +46,11 @@ class Chef
     def config_missing?
       return false if remote_config?
 
-      # Check if the config file exists, and check if it is underneath the config file jail
-      begin
-        real_config_file = Pathname.new(config_location).realpath.to_s
-      rescue Errno::ENOENT
-        return true
-      end
-
-      # If realpath succeeded, the file exists
-      return false if !config_file_jail
-
-      begin
-        real_jail = Pathname.new(config_file_jail).realpath.to_s
-      rescue Errno::ENOENT
-        Chef::Log.warn("Config file jail #{config_file_jail} does not exist: will not load any config file.")
-        return true
-      end
-
-      !Chef::ChefFS::PathUtils.descendant_of?(real_config_file, real_jail)
+      # Check if the config file exists
+      Pathname.new(config_location).realpath.to_s
+      false
+    rescue Errno::ENOENT
+      return true
     end
 
     def http

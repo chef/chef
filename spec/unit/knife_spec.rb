@@ -44,34 +44,6 @@ describe Chef::Knife do
     @stderr = StringIO.new
   end
 
-  describe "selecting a config file" do
-    context "when the current working dir is inside a symlinked directory" do
-      before do
-        Chef::Knife.reset_config_path!
-        # pwd according to your shell is /home/someuser/prod/chef-repo, but
-        # chef-repo is a symlink to /home/someuser/codes/chef-repo
-        if Chef::Platform.windows?
-          ENV.should_receive(:[]).with("CD").and_return("/home/someuser/prod/chef-repo")
-        else
-          ENV.should_receive(:[]).with("PWD").and_return("/home/someuser/prod/chef-repo")
-        end
-
-        Dir.stub(:pwd).and_return("/home/someuser/codes/chef-repo")
-      end
-
-      after do
-        Chef::Knife.reset_config_path!
-      end
-
-      it "loads the config from the non-dereferenced directory path" do
-        File.should_receive(:exist?).with("/home/someuser/prod/chef-repo/.chef").and_return(false)
-        File.should_receive(:exist?).with("/home/someuser/prod/.chef").and_return(true)
-        File.should_receive(:directory?).with("/home/someuser/prod/.chef").and_return(true)
-        Chef::Knife.chef_config_dir.should == "/home/someuser/prod/.chef"
-      end
-    end
-  end
-
   describe "after loading a subcommand" do
     before do
       Chef::Knife.reset_subcommands!
@@ -247,7 +219,7 @@ describe Chef::Knife do
     end
 
     it "loads lazy dependencies" do
-      command = Chef::Knife.run(%w{test yourself})
+      Chef::Knife.run(%w{test yourself})
       KnifeSpecs::TestYourself.test_deps_loaded.should be_true
     end
 
@@ -256,7 +228,8 @@ describe Chef::Knife do
       KnifeSpecs::TestYourself.class_eval do
         deps { other_deps_loaded = true }
       end
-      command = Chef::Knife.run(%w{test yourself})
+
+      Chef::Knife.run(%w{test yourself})
       KnifeSpecs::TestYourself.test_deps_loaded.should be_true
       other_deps_loaded.should be_true
     end
