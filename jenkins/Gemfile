@@ -1,3 +1,5 @@
 source 'https://rubygems.org'
 
 gem 'mixlib-shellout', '~> 1.4'
+gem 'artifactory',     '~> 2.1'
+gem 'omnibus',         '~> 3.0'
