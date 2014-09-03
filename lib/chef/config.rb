@@ -106,7 +106,7 @@ class Chef
     # So while this is basically identical to what method_missing would do, we pull
     # it up here and get a real method written so that things get dispatched
     # properly.
-    configurable(:daemonize).writes_value { |v| v }
+    configurable(:daemonize)
 
     # The root where all local chef object data is stored.  cookbooks, data bags,
     # environments are all assumed to be in separate directories under this.
@@ -216,24 +216,27 @@ class Chef
     default :script_path, []
 
     # The root of all caches (checksums, cache and backup).  If local mode is on,
-    # this is under the user's home directory.
+    # or the cache is inaccessible to the user, this is under the user's home
+    # directory.
     default(:cache_path) do
       if local_mode
-        PathHelper.join(config_dir, 'local-mode-cache')
+        primary_cache_root = config_dir
+        primary_cache_path = PathHelper.join(config_dir, 'local-mode-cache')
       else
         primary_cache_root = platform_specific_path("/var")
         primary_cache_path = platform_specific_path("/var/chef")
-        # Use /var/chef as the cache path only if that folder exists and we can read and write
-        # into it, or /var exists and we can read and write into it (we'll create /var/chef later).
-        # Otherwise, we'll create .chef under the user's home directory and use that as
-        # the cache path.
-        unless path_accessible?(primary_cache_path) || path_accessible?(primary_cache_root)
-          secondary_cache_path = PathHelper.join(user_home, '.chef')
-          Chef::Log.info("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
-          secondary_cache_path
-        else
-          primary_cache_path
-        end
+      end
+
+      # Use /var/chef as the cache path only if that folder exists and we can read and write
+      # into it, or /var exists and we can read and write into it (we'll create /var/chef later).
+      # Otherwise, we'll create .chef under the user's home directory and use that as
+      # the cache path.
+      unless path_accessible?(primary_cache_path) || (!File.exists?(primary_cache_path) && path_accessible?(primary_cache_root))
+        secondary_cache_path = PathHelper.join(user_home, '.chef')
+        Chef::Log.info("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
+        secondary_cache_path
+      else
+        primary_cache_path
       end
     end
 

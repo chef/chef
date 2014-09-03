@@ -256,6 +256,55 @@ describe Chef::Application::Client, "configure_chef" do
   end
 end
 
+describe Chef::Application::Client, "load_config_file" do
+  before do
+    Chef::Application.stub(:load_config_file)
+    Chef::Knife.stub(:locate_config_file).and_return("/x/y/knife.rb")
+  end
+
+  before do
+    @original_argv = ARGV.dup
+    ARGV.clear
+    @app = Chef::Application::Client.new
+  end
+
+  after do
+    ARGV.replace(@original_argv)
+  end
+
+  let(:client_rb) { Chef::Config.platform_specific_path("/etc/chef/client.rb") }
+  context "when a config file is specified" do
+    before { @app.config[:config_file] = "/a/b/specified.rb"}
+    it "load_config_file chooses the specified file" do
+      @app.load_config_file
+      @app.config[:config_file].should == "/a/b/specified.rb"
+    end
+  end
+  context "when in local mode" do
+    before { @app.config[:local_mode] = true }
+    it "load_config_file chooses knife.rb" do
+      @app.load_config_file
+      @app.config[:config_file].should == "/x/y/knife.rb"
+    end
+  end
+  context "when /etc/chef/client.rb does not exist" do
+    before { Chef::ConfigFetcher.any_instance.stub(:config_missing?).and_return(true) }
+    before { Chef::ConfigFetcher.any_instance.stub(:read_config).and_return('') }
+    it "load_config_file chooses knife.rb" do
+      @app.load_config_file
+      @app.config[:config_file].should == "/x/y/knife.rb"
+    end
+  end
+  context "when /etc/chef/client.rb exists" do
+    before { Chef::ConfigFetcher.any_instance.stub(:config_missing?).and_return(false) }
+    before { Chef::ConfigFetcher.any_instance.stub(:read_config).and_return('') }
+    it "load_config_file chooses /etc/chef/client.rb" do
+      @app.load_config_file
+      @app.config[:config_file].should == client_rb
+    end
+  end
+end
+
 describe Chef::Application::Client, "run_application", :unix_only do
   before(:each) do
     Chef::Config[:specific_recipes] = [] # normally gets set in @app.reconfigure

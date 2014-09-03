@@ -343,22 +343,13 @@ describe Chef::Knife do
     it "formats 403s nicely" do
       response = Net::HTTPForbidden.new("1.1", "403", "Forbidden")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-<<<<<<< HEAD
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "y u no administrator"))
+      Chef::Config[:chef_server_url] = 'http://a.b.com'
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("403 Forbidden", response))
       allow(knife).to receive(:username).and_return("sadpanda")
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(%r[ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action])
       expect(stderr.string).to match(%r[Response:  y u no administrator])
-=======
-      response.stub(:body).and_return(Chef::JSONCompat.to_json(:error => "y u no administrator"))
-      Chef::Config[:chef_server_url] = 'http://a.b.com'
-      @knife.stub(:run).and_raise(Net::HTTPServerException.new("403 Forbidden", response))
-      @knife.stub(:username).and_return("sadpanda")
-      @knife.run_with_pretty_exceptions
-      @stderr.string.should match(%r[ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action])
-      @stderr.string.should match(%r[Response:  y u no administrator])
->>>>>>> Turn local mode on by default unless chef_server_url is specified
     end
 
     it "formats 400s nicely" do

@@ -301,6 +301,10 @@ class Chef::Application::Client < Chef::Application
         config[:config_file] = Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
       else
         config[:config_file] = Chef::Config.platform_specific_path("/etc/chef/client.rb")
+        if Chef::ConfigFetcher.new(config[:config_file], Chef::Config[:config_file_jail]).config_missing?
+          require 'chef/knife'
+          config[:config_file] = Chef::Knife.locate_config_file
+        end
       end
     end
     super

@@ -91,6 +91,10 @@ EOM
       end
     end
 
+    it 'knife raw /nodes/x retrieves the node' do
+      knife('raw /nodes/x').should_succeed( /"name": "x"/ )
+    end
+
     it 'knife raw -z /nodes/x retrieves the node' do
       knife('raw -z /nodes/x').should_succeed( /"name": "x"/ )
     end
@@ -99,8 +103,8 @@ EOM
       knife('raw --local-mode /nodes/x').should_succeed( /"name": "x"/ )
     end
 
-    it 'knife raw -z --chef-zero-port=9999 /nodes/x retrieves the node' do
-      knife('raw -z --chef-zero-port=9999 /nodes/x').should_succeed( /"name": "x"/ )
+    it 'knife raw --chef-zero-port=9999 /nodes/x retrieves the node' do
+      knife('raw --chef-zero-port=9999 /nodes/x').should_succeed( /"name": "x"/ )
       expect(Chef::Config.chef_server_url).to eq('http://localhost:9999')
     end
 
@@ -136,19 +140,19 @@ EOM
         @server.stop if @server
       end
 
-      it 'knife raw -z --chef-zero-port=9999-20000 /nodes/x' do
-        knife('raw -z --chef-zero-port=9999-20000 /nodes/x').should_succeed( /"name": "x"/ )
+      it 'knife raw --chef-zero-port=9999-20000 /nodes/x' do
+        knife('raw --chef-zero-port=9999-20000 /nodes/x').should_succeed( /"name": "x"/ )
         expect(URI(Chef::Config.chef_server_url).port).to be > 9999
       end
 
-      it 'knife raw -z --chef-zero-port=9999-9999,19423' do
-        knife('raw -z --chef-zero-port=9999-9999,19423 /nodes/x').should_succeed( /"name": "x"/ )
+      it 'knife raw --chef-zero-port=9999-9999,19423' do
+        knife('raw --chef-zero-port=9999-9999,19423 /nodes/x').should_succeed( /"name": "x"/ )
         expect(URI(Chef::Config.chef_server_url).port).to be == 19423
       end
     end
 
-    it 'knife raw -z --chef-zero-port=9999 /nodes/x retrieves the node' do
-      knife('raw -z --chef-zero-port=9999 /nodes/x').should_succeed( /"name": "x"/ )
+    it 'knife raw --chef-zero-port=9999 /nodes/x retrieves the node' do
+      knife('raw --chef-zero-port=9999 /nodes/x').should_succeed( /"name": "x"/ )
       expect(Chef::Config.chef_server_url).to eq('http://localhost:9999')
     end
   end

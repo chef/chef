@@ -63,6 +63,9 @@ class Chef
         @chef_zero_server = ChefZero::Server.new(server_options)
         @chef_zero_server.start_background
         Chef::Log.info("Started chef-zero at #{@chef_zero_server.url} with #{@chef_fs.fs_description}")
+        # If it was defaulted before, it's set for real now.  Otherwise local_mode
+        # will flip back to false when we set chef_server_url.
+        Chef::Config.local_mode = true
         Chef::Config.chef_server_url = @chef_zero_server.url
       end
     end

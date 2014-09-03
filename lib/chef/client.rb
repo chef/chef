@@ -530,7 +530,7 @@ class Chef
     end
 
     def check_ssl_config
-      if Chef::Config[:ssl_verify_mode] == :verify_none and !Chef::Config[:verify_api_cert]
+      if Chef::Config[:ssl_verify_mode] == :verify_none && !Chef::Config[:verify_api_cert]
         Chef::Log.warn(<<-WARN)
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
