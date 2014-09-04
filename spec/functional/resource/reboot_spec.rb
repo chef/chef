@@ -42,7 +42,7 @@ describe Chef::Resource::Reboot do
     create_resource
   end
 
-  # TODO: decide on a behavior for multiple :request and/or :cancel calls, and test for it.
+  # the currently defined behavior for multiple calls to this resource is "last one wins."
 
   describe 'the request action' do
     before do
