@@ -135,7 +135,7 @@ describe Chef::Search::Query do
     it "should accept a type as the first argument" do
       lambda { query.search("node") }.should_not raise_error
       lambda { query.search(:node) }.should_not raise_error
-      lambda { query.search(Hash.new) }.should raise_error(ArgumentError)
+      lambda { query.search(Hash.new) }.should raise_error(Chef::Exceptions::InvalidSearchQuery, /(Hash)/)
     end
 
     it "should query for every object of a type by default" do
@@ -164,7 +164,8 @@ describe Chef::Search::Query do
     end
 
     it "should throw an exception if you pass to many options" do
-      lambda { query.search(:node, "platform:rhel", "id desc", 2, 40, "wrong") }.should raise_error(ArgumentError)
+      lambda { query.search(:node, "platform:rhel", "id desc", 2, 40, "wrong") }
+        .should raise_error(Chef::Exceptions::InvalidSearchQuery, "Too many arguments! (4 for <= 3)")
     end
 
     it "should return the raw rows, start, and total if no block is passed" do

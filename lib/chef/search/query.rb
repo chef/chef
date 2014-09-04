@@ -23,6 +23,7 @@ require 'chef/node'
 require 'chef/role'
 require 'chef/data_bag'
 require 'chef/data_bag_item'
+require 'chef/exceptions'
 
 class Chef
   class Search
@@ -85,8 +86,8 @@ class Chef
       # {"ip_address":"127.0.0.1", "ruby_version": "1.9.3"}
       #
       def search(type, query='*:*', *args, &block)
-        raise ArgumentError, "Type must be a string or a symbol!" unless (type.kind_of?(String) || type.kind_of?(Symbol))
-        raise ArgumentError, "Invalid number of arguments!" if (args.size > 3)
+        validate_type(type)
+        validate_args(args)
 
         scrubbed_args = Hash.new
 
@@ -111,6 +112,20 @@ class Chef
       end
 
       private
+      def validate_type(t)
+        unless t.kind_of?(String) || t.kind_of?(Symbol)
+          msg = "Invalid search object type #{t.inspect} (#{t.class}), must be a String or Symbol." +
+            "Useage: search(:node, QUERY, [OPTIONAL_ARGS])" +
+            "        `knife search environment QUERY (options)`"
+          raise Chef::Exceptions::InvalidSearchQuery, msg
+        end
+      end
+
+      def validate_args(a)
+        max_args = 3
+        raise Chef::Exceptions::InvalidSearchQuery, "Too many arguments! (#{a.size} for <= #{max_args})" if a.size > max_args
+      end
+
       def escape(s)
         s && URI.escape(s.to_s)
       end
@@ -119,8 +134,6 @@ class Chef
       # (formerly known as 'partial search').
       # Also args should never be nil, but that is required for Ruby 1.8 compatibility
       def do_search(type, query="*:*", args=nil, &block)
-        raise ArgumentError, "Type must be a string or a symbol!" unless (type.kind_of?(String) || type.kind_of?(Symbol))
-
         query_string = create_query_string(type, query, args)
         response = call_rest_service(query_string, args)
         unless block.nil?

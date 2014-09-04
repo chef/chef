@@ -347,5 +347,7 @@ class Chef
       class EncodeError < RuntimeError; end
       class ParseError < RuntimeError; end
     end
+
+    class InvalidSearchQuery < ArgumentError; end
   end
 end
