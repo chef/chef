@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'chef/exceptions'
+
 class Chef
   class Resource
     class DscScript < Chef::Resource
@@ -26,7 +28,12 @@ class Chef
         super
         @allowed_actions.push(:run)
         @action = :run
-        provider(Chef::Provider::DscScript)
+        if(run_context && Chef::Platform.supports_dsc?(run_context.node))
+          @provider = Chef::Provider::DscScript
+        else
+          raise Chef::Exceptions::NoProviderAvailable,
+            "#{powershell_info_str(run_context)}\nPowershell 4.0 or higher was not detected on your system and is required to use the dsc_script resource."
+        end
       end
 
       def code(arg=nil)
@@ -117,6 +124,16 @@ class Chef
           arg,
           :kind_of => [ Integer ]
         )
+      end
+
+      private
+
+      def powershell_info_str(run_context)
+        if run_context && run_context.node[:languages] && run_context.node[:languages][:powershell]
+            install_info = "Powershell #{run_context.node[:languages][:powershell][:version]} was found on the system."
+          else
+            install_info = 'Powershell was not found.'
+          end
       end
     end
   end
