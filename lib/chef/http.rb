@@ -296,7 +296,7 @@ class Chef
           if response.kind_of?(Net::HTTPServerError)
             if http_retry_count - http_attempts + 1 > 0
               sleep_time = 1 + (2 ** http_attempts) + rand(2 ** http_attempts)
-              Chef::Log.error("Server returned error for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
+              Chef::Log.error("Server returned error #{response.code} for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
               sleep(sleep_time)
               redo
             end
