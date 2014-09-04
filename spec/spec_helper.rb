@@ -107,8 +107,11 @@ RSpec.configure do |config|
   config.filter_run_excluding :not_supported_on_win2k3 => true if windows_win2k3?
   config.filter_run_excluding :not_supported_on_solaris => true if solaris?
   config.filter_run_excluding :win2k3_only => true unless windows_win2k3?
+  config.filter_run_excluding :windows_2008r2_or_later => true unless windows_2008r2_or_later?
   config.filter_run_excluding :windows64_only => true unless windows64?
   config.filter_run_excluding :windows32_only => true unless windows32?
+  config.filter_run_excluding :windows_powershell_dsc_only => true unless windows_powershell_dsc?
+  config.filter_run_excluding :windows_powershell_no_dsc_only => true unless ! windows_powershell_dsc?
   config.filter_run_excluding :windows_domain_joined_only => true unless windows_domain_joined?
   config.filter_run_excluding :solaris_only => true unless solaris?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?

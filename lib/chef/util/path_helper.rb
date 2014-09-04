@@ -32,7 +32,7 @@ class Chef
             Chef::Log.error(msg)
             raise Chef::Exceptions::ValidationFailed, msg
           end
-            
+
           if windows_max_length_exceeded?(path)
             Chef::Log.debug("Path '#{path}' is longer than #{WIN_MAX_PATH}, prefixing with'\\\\?\\'")
             path.insert(0, "\\\\?\\")
@@ -50,7 +50,7 @@ class Chef
             return true
           end
         end
-        
+
         false
       end
 
