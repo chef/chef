@@ -110,18 +110,18 @@ user password using shadow hash.")
           @current_resource = Chef::Resource::User.new(@new_resource.username)
           @current_resource.username(@new_resource.username)
 
-          user_info = read_user_info
-          if user_info
-            @current_resource.uid(dscl_get(user_info, :uid))
-            @current_resource.gid(dscl_get(user_info, :gid))
-            @current_resource.home(dscl_get(user_info, :home))
-            @current_resource.shell(dscl_get(user_info, :shell))
-            @current_resource.comment(dscl_get(user_info, :comment))
-            @authentication_authority = dscl_get(user_info, :auth_authority)
+          @user_info = read_user_info
+          if @user_info
+            @current_resource.uid(dscl_get(@user_info, :uid))
+            @current_resource.gid(dscl_get(@user_info, :gid))
+            @current_resource.home(dscl_get(@user_info, :home))
+            @current_resource.shell(dscl_get(@user_info, :shell))
+            @current_resource.comment(dscl_get(@user_info, :comment))
+            @authentication_authority = dscl_get(@user_info, :auth_authority)
 
-            if @new_resource.password && dscl_get(user_info, :password) == "********"
+            if @new_resource.password && dscl_get(@user_info, :password) == "********"
               # A password is set. Let's get the password information from shadow file
-              shadow_hash_binary = dscl_get(user_info, :shadow_hash)
+              shadow_hash_binary = dscl_get(@user_info, :shadow_hash)
 
               # Calling shell_out directly since we want to give an input stream
               shadow_hash_xml = convert_binary_plist_to_xml(shadow_hash_binary.string)
@@ -158,22 +158,26 @@ user password using shadow hash.")
 
         def create_user
           dscl_create_user
+          # set_password modifies the plist file of the user directly. So update
+          # the password first before making any modifications to the user.
+          set_password
           dscl_create_comment
           dscl_set_uid
           dscl_set_gid
           dscl_set_home
           dscl_set_shell
-          set_password
         end
 
         def manage_user
+          # set_password modifies the plist file of the user directly. So update
+          # the password first before making any modifications to the user.
+          set_password        if diverged_password?
           dscl_create_user    if diverged?(:username)
           dscl_create_comment if diverged?(:comment)
           dscl_set_uid        if diverged?(:uid)
           dscl_set_gid        if diverged?(:gid)
           dscl_set_home       if diverged?(:home)
           dscl_set_shell      if diverged?(:shell)
-          set_password        if diverged_password?
         end
 
         #
@@ -339,22 +343,18 @@ user password using shadow hash.")
             :input => shadow_info.to_plist, :live_stream => shadow_info_binary)
           command.run_command
 
-          # Replace the shadow info in user's plist
-          user_info = read_user_info
-          dscl_set(user_info, :shadow_hash, shadow_info_binary)
+          if @user_info.nil?
+            # User is  just created. read_user_info() will read the fresh information
+            # for the user with a cache flush. However with experimentation we've seen
+            # that dscl cache is not immediately updated after the creation of the user
+            # This is odd and needs to be investigated further.
+            sleep 3
+            @user_info = read_user_info
+          end
 
-          #
-          # Before saving the user's plist file we need to wait for dscl to
-          # update its caches and flush them to disk. In order to achieve this
-          # we need to wait first for our changes to get into the dscl cache
-          # and then flush the cache to disk before saving password into the
-          # plist file. 3 seconds is the minimum experimental value for dscl
-          # cache to be updated. We can get rid of this sleep when we find a
-          # trigger to update dscl cache.
-          #
-          sleep 3
-          shell_out("dscacheutil '-flushcache'")
-          save_user_info(user_info)
+          # Replace the shadow info in user's plist
+          dscl_set(@user_info, :shadow_hash, shadow_info_binary)
+          save_user_info(@user_info)
         end
 
         #
@@ -554,6 +554,10 @@ user password using shadow hash.")
         #
         def read_user_info
           user_info = nil
+
+          # We flush the cache here in order to make sure that we read fresh information
+          # for the user. 
+          shell_out("dscacheutil '-flushcache'")
 
           begin
             user_plist_file = "#{USER_PLIST_DIRECTORY}/#{@new_resource.username}.plist"
