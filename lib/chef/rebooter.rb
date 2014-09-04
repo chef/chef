@@ -46,7 +46,7 @@ class Chef
         "shutdown /r /t #{reboot_info[:delay_mins]} /c \"#{reboot_info[:reason]}\""
       else
         shutdown_time = reboot_info[:delay_mins] > 0 ? reboot_info[:reboot_timeout] : "now"
-        "shutdown -h #{shutdown_time}"
+        "shutdown -r #{shutdown_time}"
       end
       Chef::Log.warn "Shutdown command: '#{cmd}'"
       # for ease of testing we are not yet actually rebooting.
