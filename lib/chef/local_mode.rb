@@ -15,6 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 require 'chef/config'
+require 'chef/log'
+require 'chef/server_api'
 
 class Chef
   class LocalMode
@@ -100,6 +102,7 @@ class Chef
         require 'chef_zero/server'
         require 'chef/chef_fs/chef_fs_data_store'
         require 'chef/chef_fs/config'
+        require 'chef_zero/data_store/v1_to_v2_adapter'
 
         @saved_config = config.save
 
@@ -111,12 +114,13 @@ class Chef
         data_store = Chef::ChefFS::ChefFSDataStore.new(@chef_fs)
         # If the data store already has an org.json, grab an org name
         # from that.
+        organization = nil
         if !config.has_key?(:organization) && data_store.exists?([ 'org' ])
           org = JSON.parse(data_store.get([ 'org' ]), :create_additions => false)
-          config[:organization] = org['name'] if org.is_a?(Hash)
+          organization = org['name'] if org.is_a?(Hash)
         end
-        config[:organization] ||= 'chef'
-        data_store = ChefZero::DataStore::V1ToV2Adapter.new(data_store, config[:organization] || 'chef')
+        organization ||= config[:organization] || 'chef'
+        data_store = ChefZero::DataStore::V1ToV2Adapter.new(data_store, organization)
 
         #
         # Start the chef-zero server
@@ -128,7 +132,7 @@ class Chef
         server_options[:port] = parse_port(config[:chef_zero][:port])
         if config[:chef_zero][:chef_11_osc_compat]
           server_options[:osc_compat] = true
-          server_options[:single_org] = config[:organization]
+          server_options[:single_org] = organization
         else
           server_options[:osc_compat] = false
           server_options[:single_org] = false
@@ -145,6 +149,7 @@ class Chef
           config.delete(:organization)
         else
           config[:chef_server_root] = @chef_zero_server.url
+          config[:organization] = organization
           config.delete(:chef_server_url) # Default will do us just fine, thanks.
           begin
             root.post('/organizations', { 'name' => config[:organization] })
@@ -158,7 +163,9 @@ class Chef
     end
 
     def root
-      Chef::ServerAPI.new(config[:chef_server_root], :client_name => config[:node_name], :signing_key_filename => config[:client_key])
+      Chef::ServerAPI.new(config[:chef_server_root],
+                          :client_name => config[:node_name],
+                          :signing_key_filename => config[:client_key])
     end
 
     # Return the current chef-zero server set up by start.

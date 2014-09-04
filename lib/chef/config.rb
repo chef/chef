@@ -341,7 +341,7 @@ class Chef
     # - otherwise, it is "https://localhost:443".
     default :chef_server_url do
       if chef_server_root
-        if has_key?(:organization)
+        if organization
           File.join(chef_server_root, 'organizations', organization)
         end
       elsif chef_zero.enabled
@@ -372,7 +372,7 @@ class Chef
       if has_key?(:chef_server_url)
         # https://blah.com/organizations/foo -> https://blah.com
         path = Pathname.new(URI.parse(chef_server_url).path).cleanpath
-        if !has_key?(:organization) || path.basename.to_s == organization
+        if path.basename.to_s == organization
           path = path.dirname
           if path.basename.to_s == 'organizations'
             URI.join(chef_server_url, path.dirname.to_s).to_s.chomp('/')
@@ -400,12 +400,7 @@ class Chef
     #   when chef_server_url = https://blah.com/organizations/orgname,
     #   organization = orgname.
     default(:organization) do
-      if chef_zero.enabled
-        unless chef_zero.chef_11_osc_compat
-          'chef'
-        end
-
-      elsif has_key?(:chef_server_url)
+      if has_key?(:chef_server_url)
         # https://blah.com/organizations/foo -> foo
         path = Pathname.new(URI.parse(chef_server_url).path).cleanpath
         if path.dirname.basename.to_s == 'organizations'
