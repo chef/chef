@@ -49,7 +49,7 @@ class Chef
         # - root_paths - an array of paths representing the top level, where
         #   org.json, members.json, and invites.json will be stored.
         #
-        def initialize(child_paths, root_paths=nil)
+        def initialize(child_paths, root_paths=[])
           super("", nil)
           @child_paths = child_paths
           @root_paths = root_paths
@@ -73,7 +73,7 @@ class Chef
         def can_have_child?(name, is_dir)
           if is_dir
             child_paths.has_key?(name)
-          elsif root_paths
+          elsif root_dir
             CHILDREN.include?(name)
           else
             false
@@ -124,11 +124,14 @@ class Chef
         # members.json and org.json may be found.
         #
         def root_dir
-          MultiplexedDir.new(root_paths.select { |path| File.exists?(path) }.map do |path|
-            dir = ChefRepositoryFileSystemEntry.new(name, parent, path)
-            dir.write_pretty_json = !!write_pretty_json
-            dir
-          end)
+          existing_paths = root_paths.select { |path| File.exists?(path) }
+          if existing_paths.size > 0
+            MultiplexedDir.new(existing_paths.map do |path|
+              dir = ChefRepositoryFileSystemEntry.new(name, parent, path)
+              dir.write_pretty_json = !!write_pretty_json
+              dir
+            end)
+          end
         end
 
         #

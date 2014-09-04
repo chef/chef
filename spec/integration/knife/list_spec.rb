@@ -661,7 +661,10 @@ EOM
 /data_bags
 /environments
 /groups
+/invitations.json
+/members.json
 /nodes
+/org.json
 /roles
 EOM
       end
@@ -676,7 +679,10 @@ cookbooks
 data_bags
 environments
 groups
+invitations.json
+members.json
 nodes
+org.json
 roles
 
 /acls:
