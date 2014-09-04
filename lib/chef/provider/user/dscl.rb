@@ -343,9 +343,11 @@ user password using shadow hash.")
           command.run_command
 
           if @user_info.nil?
-            # User is just created. Flush the dscl cache for changes to be persisted.
+            # User is  just created. read_user_info() will read the fresh information
+            # for the user with a cache flush. However with experimentation we've seen
+            # that dscl cache is not immediately updated after the creation of the user
+            # This is odd and needs to be investigated further.
             sleep 3
-            shell_out("dscacheutil '-flushcache'")
             @user_info = read_user_info
           end
 
@@ -552,6 +554,8 @@ user password using shadow hash.")
         def read_user_info
           user_info = nil
 
+          # We flush the cache here in order to make sure that we read fresh information
+          # for the user. 
           shell_out("dscacheutil '-flushcache'")
 
           begin
