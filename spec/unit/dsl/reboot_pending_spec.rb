@@ -21,7 +21,7 @@ require "spec_helper"
 
 describe Chef::DSL::RebootPending do
   describe "reboot_pending?" do
-    describe "in isoloation" do
+    describe "in isolation" do
       let(:recipe) { Object.new.extend(Chef::DSL::RebootPending) }
 
       before do
@@ -74,12 +74,6 @@ describe Chef::DSL::RebootPending do
         end
       end
 
-      context "platform is not supported" do
-        it 'should raise an exception' do
-          recipe.stub_chain(:node, :[]).with(:platform).and_return('msdos')
-          expect { recipe.reboot_pending? }.to raise_error(Chef::Exceptions::UnsupportedPlatform)
-        end
-      end
     end # describe in isolation
 
     describe "in a recipe" do
