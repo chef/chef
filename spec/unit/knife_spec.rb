@@ -427,4 +427,33 @@ describe Chef::Knife do
     end
   end
 
+  describe "rest" do
+    context "When chef_server_url, node_name and client_key are set" do
+      before do
+        Chef::Config.chef_server_url = "https://a.b.com:50/organizations/blah"
+        Chef::Config.node_name = 'foo'
+        Chef::Config.client_key = '/foo.pem'
+        Chef::HTTP::Authenticator.any_instance.stub(:load_signing_key)
+      end
+
+      it "knife.rest has those properties" do
+        @knife.rest.url.should == "https://a.b.com:50/organizations/blah"
+        @knife.rest.client_name.should == 'foo'
+        @knife.rest.signing_key_filename.should == '/foo.pem'
+      end
+
+      it "knife.noauth_rest has the url but not the username/key" do
+        @knife.noauth_rest.url.should == "https://a.b.com:50/organizations/blah"
+        @knife.noauth_rest.client_name.should == false
+        @knife.noauth_rest.signing_key_filename.should == false
+      end
+
+      it "knife.rest_root has the root url and the same username/key" do
+        @knife.rest_root.url.should == "https://a.b.com:50"
+        @knife.rest_root.client_name.should == 'foo'
+        @knife.rest_root.signing_key_filename.should == '/foo.pem'
+      end
+    end
+  end
+
 end

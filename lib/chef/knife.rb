@@ -611,15 +611,28 @@ class Chef
 
     def rest
       @rest ||= begin
-        require 'chef/rest'
-        Chef::REST.new(Chef::Config[:chef_server_url])
+        if Chef::Config[:chef_server_url]
+          require 'chef/rest'
+          Chef::REST.new(Chef::Config[:chef_server_url])
+        end
+      end
+    end
+
+    def rest_root
+      @rest_root ||= begin
+        if Chef::Config[:chef_server_root]
+          require 'chef/rest'
+          Chef::REST.new(Chef::Config[:chef_server_root])
+        end
       end
     end
 
     def noauth_rest
-      @rest ||= begin
-        require 'chef/rest'
-        Chef::REST.new(Chef::Config[:chef_server_url], false, false)
+      @noauth_rest ||= begin
+        if Chef::Config[:chef_server_url]
+          require 'chef/rest'
+          Chef::REST.new(Chef::Config[:chef_server_url], false, false)
+        end
       end
     end
 
