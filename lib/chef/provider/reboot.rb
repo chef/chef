@@ -29,7 +29,6 @@ class Chef
         @current_resource ||= Chef::Resource::Reboot.new(@new_resource.name)
         @current_resource.reason(@new_resource.reason)
         @current_resource.delay_mins(@new_resource.delay_mins)
-        @current_resource.timestamp(@new_resource.timestamp)
         @current_resource
       end
 

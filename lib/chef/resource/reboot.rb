@@ -40,10 +40,6 @@ class Chef
       def delay_mins(arg=nil)
         set_or_return(:delay_mins, arg, :kind_of => Fixnum)
       end
-
-      def timestamp(arg=nil)
-        set_or_return(:timestamp, arg, :kind_of => Time)
-      end
     end
   end
 end
