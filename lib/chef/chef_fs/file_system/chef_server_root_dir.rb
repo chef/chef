@@ -36,7 +36,29 @@ require 'chef/chef_fs/data_handler/container_data_handler'
 class Chef
   module ChefFS
     module FileSystem
+      #
+      # Represents the root of a Chef server (or organization), under which
+      # nodes, roles, cookbooks, etc. can be found.
+      #
       class ChefServerRootDir < BaseFSDir
+        #
+        # Create a new Chef server root.
+        #
+        # == Parameters
+        #
+        # - root_name - a friendly name for the root, for printing--like "remote" or "chef_central".
+        # - chef_config - a hash with options that look suspiciously like Chef::Config, including the
+        #                 following keys:
+        #   - :chef_server_url - the URL to the Chef server or top of the organization
+        #   - :node_name - the username to authenticate to the Chef server with
+        #   - :client_key - the private key for the user for authentication
+        #   - :environment - the environment in which you are presently working
+        #   - :repo_mode - the repository mode, :hosted_everything, :everything or :static.
+        #                  This determines the set of subdirectories the Chef server
+        #                  will offer up.
+        # - options - other options:
+        #   - :cookbook_version - when cookbooks are retrieved, grab this version for them.
+        #
         def initialize(root_name, chef_config, options = {})
           super("", nil)
           @chef_server_url = chef_config[:chef_server_url]

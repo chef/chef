@@ -962,7 +962,7 @@ EOM
     end
   end
 
-  when_the_chef_server "is in Enterprise mode", :focus, :osc_compat => false, :single_org => false do
+  when_the_chef_server "is in Enterprise mode", :osc_compat => false, :single_org => false do
     before do
       organization 'foo' do
         container 'x', {}

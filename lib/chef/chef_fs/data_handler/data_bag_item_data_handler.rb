@@ -34,7 +34,7 @@ class Chef
           normalize_for_post(data_bag_item, entry)
         end
 
-        def preserve_key(key)
+        def preserve_key?(key)
           return key == 'id'
         end
 
