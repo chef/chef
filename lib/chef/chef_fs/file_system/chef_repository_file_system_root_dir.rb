@@ -33,7 +33,22 @@ require 'chef/chef_fs/data_handler/container_data_handler'
 class Chef
   module ChefFS
     module FileSystem
+      #
+      # Represents the root of a local Chef repository, with directories for
+      # nodes, cookbooks, roles, etc. under it.
+      #
       class ChefRepositoryFileSystemRootDir < BaseFSDir
+        #
+        # Create a new Chef Repository File System root.
+        #
+        # == Parameters
+        # - child_paths - a hash of child paths, e.g.:
+        #   "nodes" => [ '/var/nodes', '/home/jkeiser/nodes' ],
+        #   "roles" => [ '/var/roles' ],
+        #   ...
+        # - root_paths - an array of paths representing the top level, where
+        #   org.json, members.json, and invites.json will be stored.
+        #
         def initialize(child_paths, root_paths=nil)
           super("", nil)
           @child_paths = child_paths
@@ -67,7 +82,6 @@ class Chef
 
         def create_child(name, file_contents = nil)
           if file_contents
-            d = root_dir
             child = root_dir.create_child(name, file_contents)
           else
             child_paths[name].each do |path|
@@ -86,7 +100,7 @@ class Chef
           nil
         end
 
-        # Used to print out the filesystem
+        # Used to print out a human-readable file system description
         def fs_description
           repo_paths = root_paths || [ File.dirname(child_paths['cookbooks'][0]) ]
           result = "repository at #{repo_paths.join(', ')}\n"
@@ -105,6 +119,10 @@ class Chef
 
         private
 
+        #
+        # A FileSystemEntry representing the root path where invites.json,
+        # members.json and org.json may be found.
+        #
         def root_dir
           MultiplexedDir.new(root_paths.select { |path| File.exists?(path) }.map do |path|
             dir = ChefRepositoryFileSystemEntry.new(name, parent, path)
@@ -113,6 +131,12 @@ class Chef
           end)
         end
 
+        #
+        # Create a child entry of the appropriate type:
+        # cookbooks, data_bags, acls, etc.  All will be multiplexed (i.e. if
+        # you have multiple paths for cookbooks, the multiplexed dir will grab
+        # cookbooks from all of them when you list or grab them).
+        #
         def make_child_entry(name)
           paths = child_paths[name].select do |path|
             File.exists?(path)

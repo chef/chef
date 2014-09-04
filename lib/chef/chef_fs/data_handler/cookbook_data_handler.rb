@@ -23,7 +23,7 @@ class Chef
           })
         end
 
-        def preserve_key(key)
+        def preserve_key?(key)
           return key == 'cookbook_name' || key == 'version'
         end
 

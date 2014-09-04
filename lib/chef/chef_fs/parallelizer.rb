@@ -53,7 +53,6 @@ class Chef
       end
 
       def resize(to_threads, wait = true, timeout = nil)
-        to_threads = 0
         if to_threads < num_threads
           threads_to_stop = @threads[to_threads..num_threads-1]
           @threads = @threads.slice(0, to_threads)
@@ -90,7 +89,6 @@ class Chef
         begin
           while !@stop_thread[Thread.current]
             begin
-              puts "Got a task!"
               task = @tasks.pop
               task.call
             rescue

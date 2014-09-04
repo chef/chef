@@ -5,10 +5,9 @@ class Chef
   module ChefFS
     module FileSystem
       # /organizations/NAME/members.json
-      # Represents the actual data at
-      # read:
+      # reads data from:
       # - GET /organizations/NAME/users
-      # write:
+      # writes data to:
       # - remove from list: DELETE /organizations/NAME/users/name
       # - add to list: POST /organizations/NAME/users/name
       class OrganizationMembersEntry < RestListEntry

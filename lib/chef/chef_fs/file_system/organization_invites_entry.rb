@@ -5,10 +5,9 @@ class Chef
   module ChefFS
     module FileSystem
       # /organizations/NAME/invitations.json
-      # Represents the actual data at
-      # read:
+      # read data from:
       # - GET /organizations/NAME/association_requests
-      # write:
+      # write data to:
       # - remove from list: DELETE /organizations/NAME/association_requests/id
       # - add to list: POST /organizations/NAME/association_requests
       class OrganizationInvitesEntry < RestListEntry
