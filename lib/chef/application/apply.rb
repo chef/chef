@@ -31,7 +31,6 @@ class Chef::Application::Apply < Chef::Application
 
   banner "Usage: chef-apply [RECIPE_FILE] [-e RECIPE_TEXT] [-s]"
 
-
   option :execute,
     :short        => "-e RECIPE_TEXT",
     :long         => "--execute RECIPE_TEXT",
