@@ -1,5 +1,10 @@
 # Chef Client Changelog
 
+
+## Unreleased: 11.16.0
+
+* Add `dsc_script` resource to Chef for PowerShell DSC support on Windows
+
 ## Last Release: 11.14.6:
 
 * Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
