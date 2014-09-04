@@ -36,12 +36,12 @@ class Chef
           "shutdown -r #{shutdown_time}"
         end
         Chef::Log.warn "Shutdown command (not running): '#{cmd}'"
-        # for ease of testing we are not yet actually rebooting.
-        #shell_out!(cmd)
+
+        Sheller.shell_out!(cmd)
       end
 
-      def reboot_if_needed!(node)
-        @node = node
+      def reboot_if_needed!(this_node)
+        @node = this_node
         @reboot_info = node.run_context.reboot_info
 
         if node.run_context.reboot_requested?
@@ -49,5 +49,13 @@ class Chef
         end
       end
     end   # end class instance stuff.
+
+    # this lets us stub #shell_out! in specs, while still calling the actual other functions.
+    class Sheller
+      # for ease of testing, we are not yet actually rebooting.
+      def self.shell_out!(cmd)
+        #shell_out!(cmd)
+      end
+    end
   end
 end
