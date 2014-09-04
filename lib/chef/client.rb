@@ -23,6 +23,7 @@ require 'chef/mixin/params_validate'
 require 'chef/mixin/path_sanity'
 require 'chef/log'
 require 'chef/rest'
+require 'chef/local_mode'
 require 'chef/api_client'
 require 'chef/api_client/registration'
 require 'chef/node'
@@ -411,30 +412,34 @@ class Chef
         Chef::Log.debug("Chef-client request_id: #{request_id}")
         enforce_path_sanity
         run_ohai
-        @events.ohai_completed(node)
-        register unless Chef::Config[:solo]
+        # Pull on node_name to ensure we have a name
+        node_name
+        Chef::LocalMode.start do |local_mode|
+          @events.ohai_completed(node)
+          register unless Chef::Config[:solo]
 
-        load_node
+          load_node
 
-        build_node
+          build_node
 
-        run_status.run_id = request_id
-        run_status.start_clock
-        Chef::Log.info("Starting Chef Run for #{node.name}")
-        run_started
+          run_status.run_id = request_id
+          run_status.start_clock
+          Chef::Log.info("Starting Chef Run for #{node.name}")
+          run_started
 
-        do_windows_admin_check
+          do_windows_admin_check
 
-        run_context = setup_run_context
+          run_context = setup_run_context
 
-        converge(run_context)
+          converge(run_context)
 
-        save_updated_node
+          save_updated_node
 
-        run_status.stop_clock
-        Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
-        run_completed_successfully
-        @events.run_completed(node)
+          run_status.stop_clock
+          Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
+          run_completed_successfully
+          @events.run_completed(node)
+        end
         true
       rescue Exception => e
         # CHEF-3336: Send the error first in case something goes wrong below and we don't know why

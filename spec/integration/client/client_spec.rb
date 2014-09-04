@@ -27,7 +27,7 @@ local_mode true
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
       result.error!
     end
 

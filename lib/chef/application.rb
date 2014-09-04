@@ -21,7 +21,6 @@ require 'socket'
 require 'chef/config'
 require 'chef/config_fetcher'
 require 'chef/exceptions'
-require 'chef/local_mode'
 require 'chef/log'
 require 'chef/platform'
 require 'mixlib/cli'
@@ -40,8 +39,6 @@ class Chef::Application
     # Always switch to a readable directory. Keeps subsequent Dir.chdir() {}
     # from failing due to permissions when launched as a less privileged user.
   end
-
-  attr_reader :local_mode
 
   # Reconfigure the application. You'll want to override and super this method.
   def reconfigure
@@ -188,24 +185,20 @@ class Chef::Application
 
   # Initializes Chef::Client instance and runs it
   def run_chef_client(specific_recipes = [])
-    Chef::LocalMode.start do |local_mode|
-      @local_mode = local_mode
-      override_runlist = config[:override_runlist]
-      if specific_recipes.size > 0
-        override_runlist ||= []
-      end
-      @chef_client = Chef::Client.new(
-        @chef_client_json,
-        :override_runlist => config[:override_runlist],
-        :specific_recipes => specific_recipes,
-        :runlist => config[:runlist]
-      )
-      @chef_client_json = nil
-
-      @chef_client.run
-      @chef_client = nil
-      @local_mode = nil
+    override_runlist = config[:override_runlist]
+    if specific_recipes.size > 0
+      override_runlist ||= []
     end
+    @chef_client = Chef::Client.new(
+      @chef_client_json,
+      :override_runlist => config[:override_runlist],
+      :specific_recipes => specific_recipes,
+      :runlist => config[:runlist]
+    )
+    @chef_client_json = nil
+
+    @chef_client.run
+    @chef_client = nil
   end
 
   private
