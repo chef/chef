@@ -28,8 +28,14 @@ class Chef
   class ServerAPI < Chef::HTTP
 
     def initialize(url = Chef::Config[:chef_server_url], options = {})
-      options[:client_name] ||= Chef::Config[:node_name]
-      options[:signing_key_filename] ||= Chef::Config[:client_key]
+      # merge will allow even nil keys to overwrite the defaults.
+      # If you *don't* specify :signing_key_filename, we want to grab it from
+      # Chef::Config.  If you specify :signing_key_filename => nil, we want to
+      # leave it nil.
+      options = {
+        :client_name => Chef::Config[:node_name],
+        :signing_key_filename => Chef::Config[:client_key]
+      }.merge(options)
       super(url, options)
     end
 
