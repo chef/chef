@@ -65,10 +65,11 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
   let(:env_value2) { 'value2' }
   let(:dsc_test_run_context) {
     node = Chef::Node.new
-    node.default['platform'] = 'windows'
-    node.default['platform_version'] = '6.1'
-    node.default['kernel'][:machine] =
+    node.automatic['platform'] = 'windows'
+    node.automatic['platform_version'] = '6.1'
+    node.automatic['kernel'][:machine] =
       is_i386_process_on_x86_64_windows? ? :x86_64 : :i386
+    node.automatic[:languages][:powershell][:version] = '4.0'
     empty_events = Chef::EventDispatch::Dispatcher.new
     Chef::RunContext.new(node, {}, empty_events)
   }

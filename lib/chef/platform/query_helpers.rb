@@ -45,7 +45,11 @@ class Chef
 
         is_server_2003
       end
-    end
 
+      def supports_dsc?(node)
+        node[:languages] && node[:languages][:powershell] &&
+          node[:languages][:powershell][:version].to_i >= 4
+      end
+    end
   end
 end

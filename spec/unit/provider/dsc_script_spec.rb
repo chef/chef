@@ -22,7 +22,11 @@ require 'chef/util/dsc/resource_info'
 require 'spec_helper'
 
 describe Chef::Provider::DscScript do
-  let (:node) { Chef::Node.new }
+  let (:node) {
+    node = Chef::Node.new
+    node.automatic[:languages][:powershell][:version] = '4.0'
+    node
+  }
   let (:events) { Chef::EventDispatch::Dispatcher.new }
   let (:run_context) { Chef::RunContext.new(node, {}, events) }
   let (:resource) { Chef::Resource::DscScript.new("script", run_context) }

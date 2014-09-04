@@ -30,3 +30,26 @@ describe "Chef::Platform#windows_server_2003?" do
     expect { Thread.fork { Chef::Platform.windows_server_2003? }.join }.not_to raise_error
   end
 end
+
+describe 'Chef::Platform#supports_dsc?' do 
+  it 'returns false if powershell is not present' do
+    node = Chef::Node.new
+    Chef::Platform.supports_dsc?(node).should be_false
+  end
+
+  ['1.0', '2.0', '3.0'].each do |version|
+    it "returns false for Powershell #{version}" do
+      node = Chef::Node.new
+      node.automatic[:languages][:powershell][:version] = version
+      Chef::Platform.supports_dsc?(node).should be_false
+    end
+  end
+
+  ['4.0', '5.0'].each do |version|
+    it "returns true for Powershell #{version}" do
+      node = Chef::Node.new
+      node.automatic[:languages][:powershell][:version] = version
+      Chef::Platform.supports_dsc?(node).should be_true
+    end
+  end
+end
