@@ -16,9 +16,13 @@ class Chef
         :long => '--chef-zero-host IP',
         :description => 'Overrides the host upon which chef-zero listens. Default is 127.0.0.1.'
 
+      def initialize(*args)
+        super(*args)
+        config[:local_mode] = true
+      end
+
       def configure_chef
         super
-        Chef::Config.local_mode = true
         Chef::Config[:repo_mode] = config[:repo_mode] if config[:repo_mode]
 
         # --chef-repo-path forcibly overrides all other paths
@@ -37,7 +41,7 @@ class Chef
           local_mode.chef_zero_server.stop
           local_mode.chef_zero_server.start(stdout) # to print header
         ensure
-          local_mode.chef_zero_server.stop
+          local_mode.chef_zero_server.stop if local_mode && local_mode.chef_zero_server
         end
       end
     end

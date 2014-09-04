@@ -29,19 +29,20 @@ describe 'knife serve' do
 
     it 'knife serve serves up /organizations/chef/nodes/x' do
       exception = nil
+      instance = nil
       t = Thread.new do
         begin
-          knife('serve --chef-zero-port=8889')
+          knife('serve --chef-zero-port=8889') { |i| instance = i }
         rescue
+          puts $!
+          puts $!.backtrace.join("\n")
           exception = $!
         end
       end
+      sleep(0.05) until instance && instance.local_mode
       begin
-        Chef::Config.log_level = :debug
-        Chef::Config.chef_server_url = 'http://localhost:8889/organizations/chef'
-        Chef::Config.node_name = nil
-        Chef::Config.client_key = nil
-        api = Chef::ServerAPI.new
+        api = Chef::ServerAPI.new('http://localhost:8889/organizations/chef',
+                                  :client_name => nil, :signing_key_filename => nil)
         api.get('nodes/x')['name'].should == 'x'
       rescue
         if exception
@@ -50,6 +51,7 @@ describe 'knife serve' do
           raise
         end
       ensure
+        instance.local_mode.stop if instance && instance.local_mode
         t.kill
       end
     end
@@ -61,19 +63,18 @@ describe 'knife serve' do
 
       it 'knife serve serves up /organizations/foo/nodes/x' do
         exception = nil
+        instance = nil
         t = Thread.new do
           begin
-            knife('serve --chef-zero-port=8889')
+            knife('serve --chef-zero-port=8889') { |i| instance = i }
           rescue
             exception = $!
           end
         end
+        sleep(0.05) until instance && instance.local_mode
         begin
-          Chef::Config.log_level = :debug
-          Chef::Config.chef_server_url = 'http://localhost:8889/organizations/foo'
-          Chef::Config.node_name = nil
-          Chef::Config.client_key = nil
-          api = Chef::ServerAPI.new
+          api = Chef::ServerAPI.new('http://localhost:8889/organizations/foo',
+                                    :client_name => nil, :signing_key_filename => nil)
           api.get('nodes/x')['name'].should == 'x'
         rescue
           if exception
@@ -82,6 +83,7 @@ describe 'knife serve' do
             raise
           end
         ensure
+          instance.local_mode.stop if instance && instance.local_mode
           t.kill
         end
       end
@@ -94,19 +96,18 @@ describe 'knife serve' do
 
       it 'knife serve serves up /nodes/x' do
         exception = nil
+        instance = nil
         t = Thread.new do
           begin
-            knife('serve --chef-zero-port=8889')
+            knife('serve --chef-zero-port=8889') { |i| instance = i }
           rescue
             exception = $!
           end
         end
+        sleep(0.05) until instance && instance.local_mode
         begin
-          Chef::Config.log_level = :debug
-          Chef::Config.chef_server_url = 'http://localhost:8889'
-          Chef::Config.node_name = nil
-          Chef::Config.client_key = nil
-          api = Chef::ServerAPI.new
+          api = Chef::ServerAPI.new('http://localhost:8889',
+                                    :client_name => nil, :signing_key_filename => nil)
           api.get('nodes/x')['name'].should == 'x'
         rescue
           if exception
@@ -115,6 +116,7 @@ describe 'knife serve' do
             raise
           end
         ensure
+          instance.local_mode.stop if instance && instance.local_mode
           t.kill
         end
       end
