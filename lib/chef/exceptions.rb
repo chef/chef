@@ -181,6 +181,8 @@ class Chef
 
     class ChildConvergeError < RuntimeError; end
 
+    class NoProviderAvailable < RuntimeError; end
+
     class MissingRole < RuntimeError
       NULL = Object.new
 
