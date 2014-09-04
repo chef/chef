@@ -283,12 +283,12 @@ ERROR_MESSAGE
     # 5. raise an exception on any second call.
     # 6. ?
     def request_reboot(reboot_info)
-      Chef::Log::warn "Changing reboot status from #{@reboot_info.inspect} to #{reboot_info.inspect}"
+      Chef::Log::info "Changing reboot status from #{@reboot_info.inspect} to #{reboot_info.inspect}"
       @reboot_info = reboot_info
     end
 
     def cancel_reboot
-      Chef::Log::warn "Changing reboot status from #{@reboot_info.inspect} to {}"
+      Chef::Log::info "Changing reboot status from #{@reboot_info.inspect} to {}"
       @reboot_info = {}
     end
 
