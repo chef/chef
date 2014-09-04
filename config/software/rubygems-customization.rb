@@ -44,7 +44,11 @@ build do
   sitelibdir_cmd.gsub!('/', '\\') if platform == "windows"
 
   block do
-    source_customization_file = File.join(project.files_path, "rubygems_customization", "operating_system.rb")
+    source_customization_file = if platform == 'windows'
+      File.join(project.files_path, "rubygems_customization", "windows", "operating_system.rb")
+    else
+      File.join(project.files_path, "rubygems_customization", "default", "operating_system.rb")
+    end
     embedded_ruby_site_dir = ""
     Bundler.with_clean_env do
       embedded_ruby_site_dir = %x{#{sitelibdir_cmd}}.strip
@@ -64,4 +68,3 @@ build do
     FileUtils.cp source_customization_file, destination
   end
 end
-
