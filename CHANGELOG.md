@@ -69,6 +69,7 @@
 
 ### Chef Contributions
 
+* Add `dsc_script` resource to Chef for PowerShell DSC support on Windows
 * Fixed Config[:cache_path] to use path_join()
 * Updated chef-zero to 3.0.
 * knife cookbook site download/list/search/share/show/unshare now uses
