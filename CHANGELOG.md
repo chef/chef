@@ -133,6 +133,11 @@
   to be able to configure these settings on the bootstrapped node.
 * Add partial_search dsl method to Chef::Search::Query, add result filtering to search.
 
+## Last Release: 11.16.0
+* Add `dsc_script` resource to Chef for PowerShell DSC support on Windows
+* Update OpenSSL for Windows to 1.0.0n, for all other platforms 1.0.1i.
+* Fix dscl user provider to be able to manage home and password at the same time (Issue #1982)
+
 ## Last Release: 11.14.2
 
 * [**Jess Mink**](https://github.com/jmink):
