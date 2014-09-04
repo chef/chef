@@ -1,10 +1,15 @@
 # Chef Client 10.x Changelog
 
-## 10.34.0
+## Unreleased:
+
+* Fix a bug in user dscl provider to enable managing password and other properties at the same time.
+
+## 10.34.2
 
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   'group' provider on OSX properly uses 'dscl' to determine existing groups
 
+----------------------
 
 
 * `options` attribute of mount resource now supports lazy evaluation. (CHEF-5163)
