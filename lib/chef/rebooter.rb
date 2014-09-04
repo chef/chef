@@ -26,7 +26,6 @@ require 'chef/platform'
 class Chef
   class Rebooter
     # below are awkward contortions to re-use the RebootPending code.
-    include Chef::DSL::RebootPending
     include Chef::Mixin::ShellOut
 
     attr_reader :reboot_info
@@ -55,7 +54,7 @@ class Chef
 
     def self.reboot_if_needed!(node)
       @@rebooter ||= self.new(node)
-      if @@rebooter.reboot_pending?
+      if node.run_context.reboot_requested?
         @@rebooter.reboot!
       end
     end
