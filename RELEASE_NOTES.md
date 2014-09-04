@@ -224,3 +224,16 @@ work properly if the remote server implemented only the Chef 10 API.
 ## CookbookSiteStreamingUploader now uses ssl_verify_mode config option
 The CookbookSiteStreamingUploader now obeys the setting of ssl_verify_mode in the client config. Was previously ignoring the
 config setting and always set to VERIFY_NONE.
+
+## New dsc\_script resource for PowerShell DSC on Windows
+The `dsc_script` resource is new in Chef with this release. `dsc_script`
+allows the invocation of
+[PowerShell Desired State Configuration]((http://technet.microsoft.com/en-us/library/dn249912.aspx) (DSC) scripts
+from Chef recipes. The `dsc_script` resource is only available for systems
+running the Windows operating systtem with **PowerShell version 4.0 or later** installed. Windows systems may be
+updated to PowerShell version 4.0 or later using the [PowerShell cookbook](https://supermarket.getchef.com/cookbooks/powershell)
+available at [Chef Supermarket](http://supermarket.getchef.com). 
+
+The **WinRM** service required by PowerShell DSC must be enabled on the system as well in order to use
+the `dsc_script` resource -- this can be accomplished using the Windows OS `winrm quickconfig` command.
+
