@@ -133,6 +133,7 @@
   to be able to configure these settings on the bootstrapped node.
 * Add partial_search dsl method to Chef::Search::Query, add result filtering to search.
 * Transfer trusted certificates under :trusted_certs_dir during bootstrap.
+* Set :ssl_verify_mode to :verify_peer by default.
 
 ## Last Release: 11.14.2
 
