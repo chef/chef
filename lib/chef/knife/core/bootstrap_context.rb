@@ -54,8 +54,8 @@ class Chef
 
         def trusted_certs_dir
           # Check that the directory exists and is non empty
-          certs_dir = knife_config[:trusted_certs_dir].to_s # may convert nil to ""
-          if Dir.exist?(certs_dir) && !Dir[File.join(certs_dir, "*")].empty?
+          certs_dir = Chef::Config[:trusted_certs_dir].to_s # may convert nil to ""
+          if Dir.exist?(certs_dir) && !Dir[File.join(certs_dir, "*.{crt,pem}")].empty?
             certs_dir
           else
             nil

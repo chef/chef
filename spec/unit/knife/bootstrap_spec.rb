@@ -364,7 +364,7 @@ describe Chef::Knife::Bootstrap do
     end
 
     before do
-      Chef::Config[:knife][:trusted_certs_dir] = trusted_certs_dir
+      Chef::Config[:trusted_certs_dir] = trusted_certs_dir
     end
 
     it "creates /etc/chef/trusted_certs" do
