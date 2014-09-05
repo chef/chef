@@ -540,7 +540,7 @@ describe Chef::REST do
       let(:request_mock) { {} }
 
       let(:http_response) do
-        http_response = Net::HTTPSuccess.new("1.1",200, "it-works")
+        http_response = Net::HTTPSuccess.new("1.1",'200', "it-works")
 
         http_response.stub(:read_body)
         http_response.should_not_receive(:body)

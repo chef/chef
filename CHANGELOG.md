@@ -69,10 +69,18 @@
 
 ### Chef Contributions
 
+* Report the request and response when a non-200 error code happens
+* [FEATURE] Upgrade `knife upload` and `knife download` to download
+  **everything** in an organization, now including the organization definition
+  itself (`knife download /org.json`) and the invitations and member list
+  (`knife download /invitations.json` and `knife download /members.json`).
+  Should be compatible with knife-ec-backup.
+* Make default Windows paths more backslashy
 * `knife` now prefers to load `config.rb` in preference to `knife.rb`;
 `knife.rb` will be used if `config.rb` is not found.
 * Fixed Config[:cache_path] to use path_join()
-* Updated chef-zero to 3.0.
+* Updated chef-zero to 3.0, so that client tests can be run against Enterprise
+  Chef as well as Open Source.
 * knife cookbook site download/list/search/share/show/unshare now uses
   supermerket.getchef.com urls
 * added Chef::ResourceCollection#insert_at API to the ResourceCollection

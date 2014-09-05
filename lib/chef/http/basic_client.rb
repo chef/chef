@@ -71,6 +71,20 @@ class Chef
           end
           Chef::Log.debug("---- End HTTP Status/Header Data ----")
 
+          # For non-400's, log the request and response bodies
+          if !response.code || !response.code.start_with?('2')
+            if response.body
+              Chef::Log.debug("---- HTTP Response Body ----")
+              Chef::Log.debug(response.body)
+              Chef::Log.debug("---- End HTTP Response Body -----")
+            end
+            if req_body
+              Chef::Log.debug("---- HTTP Request Body ----")
+              Chef::Log.debug(req_body)
+              Chef::Log.debug("---- End HTTP Request Body ----")
+            end
+          end
+
           yield response if block_given?
           # http_client.request may not have the return signature we want, so
           # force the issue:
