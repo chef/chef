@@ -50,6 +50,15 @@ EOP
 chmod 0600 /etc/chef/encrypted_data_bag_secret
 <% end -%>
 
+<% if trusted_certs_dir -%>
+mkdir -p /etc/chef/trusted_certs
+<% Dir[File.join(trusted_certs_dir, "*")].each do |entry| %>
+cat > <%= File.join("/etc/chef/trusted_certs", File.basename(entry)) %> <<'EOP'
+<%= IO.read(File.expand_path(entry)) %>
+EOP
+<% end %>
+<% end -%>
+
 <%# Generate Ohai Hints -%>
 <% unless @chef_config[:knife][:hints].nil? || @chef_config[:knife][:hints].empty? -%>
 mkdir -p /etc/chef/ohai/hints

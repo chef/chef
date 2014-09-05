@@ -52,6 +52,16 @@ class Chef
           end
         end
 
+        def trusted_certs_dir
+          # Check that the directory exists and is non empty
+          certs_dir = knife_config[:trusted_certs_dir].to_s # may convert nil to ""
+          if Dir.exist?(certs_dir) && !Dir[File.join(certs_dir, "*")].empty?
+            certs_dir
+          else
+            nil
+          end
+        end
+
         def config_content
           client_rb = <<-CONFIG
 log_location     STDOUT
