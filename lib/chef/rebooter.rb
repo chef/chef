@@ -22,8 +22,8 @@ require 'chef/platform'
 
 # this has whatever's needed to reboot the server, on whichever platform.
 class Chef
-  class Rebooter
-    include Chef::Mixin::ShellOut
+  module Rebooter
+    extend Chef::Mixin::ShellOut
 
     class << self
       attr_reader :node, :reboot_info
