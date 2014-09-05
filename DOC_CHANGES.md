@@ -90,9 +90,6 @@ DSL method `data_bag_item` now takes an optional String parameter `secret`, whic
 If the data bag item being fetched is encrypted and no `secret` is provided, Chef looks for a secret at `Chef::Config[:encrypted_data_bag_secret]`.
 If `secret` is provided, but the data bag item is not encrypted, then a regular data bag item is returned (no decryption is attempted).
 
-### New configurable option :yum-lock-timeout
-You can now set the timeout for receiving the yum lock in `config.rb` by adding `yum-lock-timeout SECONDS` (default is 30 seconds).
-
 ### Enhanced search functionality: result filtering
 #### Use in recipes
 `Chef::Search::Query#search` can take an optional `:filter_result` argument which returns search data in the form of the Hash specified. Suppose your data looks like
