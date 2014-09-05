@@ -89,3 +89,59 @@ Note that the service resource will also continue to set the startup type to aut
 DSL method `data_bag_item` now takes an optional String parameter `secret`, which is used to interact with encrypted data bag items.
 If the data bag item being fetched is encrypted and no `secret` is provided, Chef looks for a secret at `Chef::Config[:encrypted_data_bag_secret]`.
 If `secret` is provided, but the data bag item is not encrypted, then a regular data bag item is returned (no decryption is attempted).
+
+### Enhanced search functionality: result filtering
+#### Use in recipes
+`Chef::Search::Query#search` can take an optional `:filter_result` argument which returns search data in the form of the Hash specified. Suppose your data looks like
+```json
+{"languages": {
+  "c": {
+    "gcc": {
+      "version": "4.6.3",
+      "description": "gcc version 4.6.3 (Ubuntu/Linaro 4.6.3-1ubuntu5) "
+    }
+  },
+  "ruby": {
+    "platform": "x86_64-linux",
+    "version": "1.9.3",
+    "release_date": "2013-11-22"
+  },
+  "perl": {
+    "version": "5.14.2",
+    "archname": "x86_64-linux-gnu-thread-multi"
+  },
+  "python": {
+    "version": "2.7.3",
+    "builddate": "Feb 27 2014, 19:58:35"
+  }
+}}
+```
+for a node running Ubuntu named `node01`, and you want to get back only information on which versions of c and ruby you have. In a recipe you would write
+```ruby
+search(:node, "platform:ubuntu", :filter_result => {"c_version" => ["languages", "c", "gcc", "version"],
+                                                    "ruby_version" => ["languages", "ruby", "version"]})
+```
+and receive
+```ruby
+[
+  {"url" => "https://api.opscode.com/organization/YOUR_ORG/nodes/node01",
+   "data" => {"c_version" => "4.6.3", "ruby_version" => "1.9.3"},
+  # snip other Ubuntu nodes
+]
+```
+If instead you wanted all the languages data (remember, `"languages"` is only one tiny piece of information the Chef Server stores about your node), you would have `:filter_result => {"languages" => ["laguages"]}` in your search query.
+
+For backwards compatibility, a `partial_search` method has been added to `Chef::Search::Query` which can be used in the same way as the `partial_search` method from the [partial_search cookbook](https://supermarket.getchef.com/cookbooks/partial_search). Note that this method has been deprecated and will be removed in future versions of Chef.
+
+#### Use in knife
+Search results can likewise be filtered by adding the `--filter-result` (or `-f`) option. Considering the node data above, you can use `knife search` with filtering to extract the c and ruby versions on your Ubuntu platforms:
+```bash
+$ knife search node "platform:ubuntu" --filter-result "c_version:languages.c.gcc.version, ruby_version:languages.ruby.version"
+1 items found
+
+:
+  c_version: 4.6.3
+  ruby_version: 1.9.3
+
+$
+```

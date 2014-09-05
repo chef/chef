@@ -237,3 +237,9 @@ work properly if the remote server implemented only the Chef 10 API.
 ## CookbookSiteStreamingUploader now uses ssl_verify_mode config option
 The CookbookSiteStreamingUploader now obeys the setting of ssl_verify_mode in the client config. Was previously ignoring the
 config setting and always set to VERIFY_NONE.
+
+## Result filtering on `search` API.
+`search` can take an optional `:filter_result`, which returns search data in the form specified
+by the given Hash. This works analogously to the partial_search method from the [partial_search cookbook](https://supermarket.getchef.com/cookbooks/partial_search),
+with `:filter_result` replacing `:keys`. You can also filter `knife search` results by supplying the `--filter-result`
+or `-f` option and a comma-separated string representation of the filter hash.
