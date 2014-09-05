@@ -331,10 +331,11 @@ class Chef
     default :ssl_client_cert, nil
     default :ssl_client_key, nil
 
-    # Whether or not to verify the SSL cert for all HTTPS requests. If set to
-    # :verify_peer, all HTTPS requests will be validated regardless of other
-    # SSL verification settings.
-    default :ssl_verify_mode, :verify_none
+    # Whether or not to verify the SSL cert for all HTTPS requests. When set to
+    # :verify_peer (default), all HTTPS requests will be validated regardless of other
+    # SSL verification settings. When set to :verify_none no HTTPS requests will
+    # be validated.
+    default :ssl_verify_mode, :verify_peer
 
     # Whether or not to verify the SSL cert for HTTPS requests to the Chef
     # server API. If set to `true`, the server's cert will be validated
