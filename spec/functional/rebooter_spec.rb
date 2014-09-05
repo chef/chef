@@ -43,21 +43,23 @@ describe Chef::Rebooter do
 
   let(:rebooter) { Chef::Rebooter }
 
-  let(:sheller) { Chef::Rebooter::Sheller }
+  let(:sheller) { Chef::Rebooter }
 
   describe '#reboot_if_needed!' do
 
     it 'should call #shell_out! when reboot has been requested' do
       run_context.request_reboot(reboot_info)
 
-      expect(sheller).to receive(:shell_out!).once
+      expect(rebooter).to receive(:shell_out!).once
+      expect(rebooter).to receive(:reboot_if_needed!).once.and_call_original
       rebooter.reboot_if_needed!(run_context.node)
 
       run_context.cancel_reboot
     end
 
     it 'should not call #shell_out! when reboot has not been requested' do
-      expect(sheller).to receive(:shell_out!).exactly(0).times
+      expect(rebooter).to receive(:shell_out!).exactly(0).times
+      expect(rebooter).to receive(:reboot_if_needed!).once.and_call_original
       rebooter.reboot_if_needed!(run_context.node)
     end
   end
