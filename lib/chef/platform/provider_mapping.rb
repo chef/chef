@@ -26,7 +26,6 @@ require 'chef/version_constraint/platform'
 # Therefore, we do the includes inline rather than up top.
 require 'chef/provider'
 
-
 class Chef
   class Platform
 
@@ -65,7 +64,7 @@ class Chef
             :ubuntu   => {
               :default => {
                 :package => Chef::Provider::Package::Apt,
-                :service => Chef::Provider::Service::Debian,
+                :service => Chef::Provider::Service::Ubuntu,
                 :cron => Chef::Provider::Cron,
                 :mdadm => Chef::Provider::Mdadm
               },
