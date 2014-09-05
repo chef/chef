@@ -18,7 +18,7 @@
 
 require 'spec_helper'
 
-describe Chef::Rebooter do
+describe Chef::Platform::Rebooter do
 
   let(:reboot_info) do
     {
@@ -41,12 +41,11 @@ describe Chef::Rebooter do
     Chef::RunContext.new(node, {}, events)
   end
 
-  let(:rebooter) { Chef::Rebooter }
-
-  let(:sheller) { Chef::Rebooter }
+  let(:rebooter) { Chef::Platform::Rebooter }
 
   describe '#reboot_if_needed!' do
 
+    # test that it's producing the correct commands.
     it 'should call #shell_out! when reboot has been requested' do
       run_context.request_reboot(reboot_info)
 

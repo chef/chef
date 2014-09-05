@@ -44,7 +44,7 @@ require 'chef/resource_reporter'
 require 'chef/run_lock'
 require 'chef/policy_builder'
 require 'chef/request_id'
-require 'chef/rebooter'
+require 'chef/platform/rebooter'
 require 'ohai'
 require 'rbconfig'
 
@@ -438,7 +438,7 @@ class Chef
         @events.run_completed(node)
 
         # rebooting has to be the last thing we do, no exceptions.
-        Chef::Rebooter.reboot_if_needed!(node)
+        Chef::Platform::Rebooter.reboot_if_needed!(node)
 
         true
       rescue Exception => e

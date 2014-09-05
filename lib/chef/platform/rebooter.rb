@@ -22,32 +22,34 @@ require 'chef/platform'
 
 # this has whatever's needed to reboot the server, on whichever platform.
 class Chef
-  module Rebooter
-    extend Chef::Mixin::ShellOut
+  class Platform
+    module Rebooter
+      extend Chef::Mixin::ShellOut
 
-    class << self
-      attr_reader :node, :reboot_info
+      class << self
+        attr_reader :node, :reboot_info
 
-      def reboot!
-        cmd = if Chef::Platform.windows?
-          "shutdown /r /t #{reboot_info[:delay_mins]} /c \"#{reboot_info[:reason]}\""
-        else
-          shutdown_time = reboot_info[:delay_mins] > 0 ? reboot_info[:reboot_timeout] : "now"
-          "shutdown -r #{shutdown_time}"
+        def reboot!
+          cmd = if Chef::Platform.windows?
+            "shutdown /r /t #{reboot_info[:delay_mins]} /c \"#{reboot_info[:reason]}\""
+          else
+            shutdown_time = reboot_info[:delay_mins] > 0 ? reboot_info[:reboot_timeout] : "now"
+            "shutdown -r #{shutdown_time}"
+          end
+          Chef::Log.warn "Shutdown command (not running): '#{cmd}'"
+
+          shell_out!(cmd)
         end
-        Chef::Log.warn "Shutdown command (not running): '#{cmd}'"
 
-        shell_out!(cmd)
-      end
+        def reboot_if_needed!(this_node)
+          @node = this_node
+          @reboot_info = node.run_context.reboot_info
 
-      def reboot_if_needed!(this_node)
-        @node = this_node
-        @reboot_info = node.run_context.reboot_info
-
-        if node.run_context.reboot_requested?
-          reboot!
+          if node.run_context.reboot_requested?
+            reboot!
+          end
         end
-      end
-    end   # end class instance stuff.
+      end   # end class instance stuff.
+    end
   end
 end
