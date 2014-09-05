@@ -376,6 +376,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     let(:user_plist_file) { nil }
 
     before do
+      provider.should_receive(:shell_out).with("dscacheutil '-flushcache'")
       provider.should_receive(:shell_out).with("plutil -convert xml1 -o - /var/db/dslocal/nodes/Default/users/toor.plist") do
         if user_plist_file.nil?
           ShellCmdResult.new('Can not find the file', 'Sorry!!', 1)
@@ -715,7 +716,6 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
       provider.should_receive(:read_user_info)
       provider.should_receive(:dscl_set)
       provider.should_receive(:sleep).with(3)
-      provider.should_receive(:shell_out).with("dscacheutil '-flushcache'")
       provider.should_receive(:save_user_info)
       provider.set_password
     end
@@ -822,6 +822,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
   describe "when the user exists" do
     before do
+      provider.should_receive(:shell_out).with("dscacheutil '-flushcache'")
       provider.should_receive(:shell_out).with("plutil -convert xml1 -o - /var/db/dslocal/nodes/Default/users/toor.plist") do
         ShellCmdResult.new(File.read(File.join(CHEF_SPEC_DATA, "mac_users/10.9.plist.xml")), "", 0)
       end
