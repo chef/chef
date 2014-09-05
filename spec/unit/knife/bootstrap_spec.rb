@@ -380,6 +380,11 @@ describe Chef::Knife::Bootstrap do
       end
       rendered_template.should include(match_str)
     end
+
+    it "doesn't create /etc/chef/trusted_certs if :trusted_certs_dir is empty" do
+      Dir.should_receive(:glob).with(File.join(trusted_certs_dir, "*.{crt,pem}")).and_return([])
+      rendered_template.should_not match(%r{mkdir -p /etc/chef/trusted_certs})
+    end
   end
 
   describe "when configuring the underlying knife ssh command" do

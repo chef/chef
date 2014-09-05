@@ -52,14 +52,8 @@ class Chef
           end
         end
 
-        def trusted_certs_dir
-          # Check that the directory exists and is non empty
-          certs_dir = Chef::Config[:trusted_certs_dir].to_s # may convert nil to ""
-          if Dir.exist?(certs_dir) && !Dir[File.join(certs_dir, "*.{crt,pem}")].empty?
-            certs_dir
-          else
-            nil
-          end
+        def trusted_certs
+          @trusted_certs ||= trusted_certs_content
         end
 
         def config_content
@@ -117,7 +111,7 @@ CONFIG
             client_rb << %Q{encrypted_data_bag_secret "/etc/chef/encrypted_data_bag_secret"\n}
           end
 
-          if trusted_certs_dir
+          unless trusted_certs.empty?
             client_rb << %Q{trusted_certs_dir "/etc/chef/trusted_certs"\n}
           end
 
@@ -165,6 +159,16 @@ CONFIG
 
         def first_boot
           (@config[:first_boot_attributes] || {}).merge(:run_list => @run_list)
+        end
+
+        private
+        def trusted_certs_content
+          content = ""
+          Dir.glob(File.join(@chef_config[:trusted_certs_dir], "*.{crt,pem}")).each do |cert|
+            content << "cat > /etc/chef/trusted_certs/#{File.basename(cert)} <<'EOP'\n" +
+                       IO.read(File.expand_path(cert)) + "\nEOP\n"
+          end
+          content
         end
 
       end
