@@ -44,6 +44,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec_junit_formatter", "~> 0.1.0"
 
   s.add_development_dependency 'rubocop', '~> 0.26.0'
+  s.add_development_dependency 'rubocop-rspec', '~> 1.2'
 
   %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 2.14.0" }
 
