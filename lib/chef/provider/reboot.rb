@@ -23,7 +23,9 @@ class Chef
   class Provider
     class Reboot < Chef::Provider
 
-      # TODO: support whyrun?
+      def whyrun_supported?
+        true
+      end
 
       def load_current_resource
         @current_resource ||= Chef::Resource::Reboot.new(@new_resource.name)
@@ -33,18 +35,22 @@ class Chef
       end
 
       def action_request
-        Chef::Log.warn "Reboot requested:'#{@new_resource.name}'"
-        node.run_context.request_reboot(
-          :delay_mins => @new_resource.delay_mins,
-          :reason => @new_resource.reason,
-          :timestamp => Time.now,
-          :requested_by => @new_resource.name
-        )
+        converge_by("request a system reboot to occur if the run succeeds") do
+          Chef::Log.warn "Reboot requested:'#{@new_resource.name}'"
+          node.run_context.request_reboot(
+            :delay_mins => @new_resource.delay_mins,
+            :reason => @new_resource.reason,
+            :timestamp => Time.now,
+            :requested_by => @new_resource.name
+            )
+        end
       end
 
       def action_cancel
-        Chef::Log.warn "Reboot canceled: '#{@new_resource.name}'"
-        node.run_context.cancel_reboot
+        converge_by("cancel any existing system reboot request") do
+          Chef::Log.warn "Reboot canceled: '#{@new_resource.name}'"
+          node.run_context.cancel_reboot
+        end
       end
     end
   end
