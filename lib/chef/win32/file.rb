@@ -55,7 +55,7 @@ class Chef
         # TODO do a check for CreateSymbolicLinkW and
         # raise NotImplemented exception on older Windows
         flags = ::File.directory?(old_name) ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0
-        old_name = encode_path(old_name)
+        old_name = encode_path(old_name, true)
         new_name = encode_path(new_name)
         unless CreateSymbolicLinkW(new_name, old_name, flags)
           Chef::ReservedNames::Win32::Error.raise!
