@@ -87,6 +87,7 @@ class Chef
     #
     def initialize(config)
       @config = config
+      @stop_mutex = Mutex.new
     end
 
     attr_reader :config
@@ -180,25 +181,27 @@ class Chef
 
     # If chef_zero_server is non-nil, stop it and remove references to it.
     def stop
-      if @chef_zero_server
-        @chef_zero_server.stop
-        @chef_zero_server = nil
-      end
-      # Restore config
-      if @saved_config
-        # We are trying to be surgical with our restore, and only restore
-        # values that we put there.
-        [:chef_server_url, :chef_server_root, :organization].each do |key|
-          # TODO give mixlib-config a better restore method that is willing
-          # to delete keys that are not saved
-          if @saved_config.has_key?(key)
-            config[:chef_server_url] = @saved_config[key]
-          else
-            config.delete(key)
-          end
+      @stop_mutex.synchronize do
+        if @chef_zero_server
+          @chef_zero_server.stop
+          @chef_zero_server = nil
         end
+        # Restore config
+        if @saved_config
+          # We are trying to be surgical with our restore, and only restore
+          # values that we put there.
+          [:chef_server_url, :chef_server_root, :organization].each do |key|
+            # TODO give mixlib-config a better restore method that is willing
+            # to delete keys that are not saved
+            if @saved_config.has_key?(key)
+              config[:chef_server_url] = @saved_config[key]
+            else
+              config.delete(key)
+            end
+          end
 
-        @saved_config = nil
+          @saved_config = nil
+        end
       end
     end
 
