@@ -117,6 +117,10 @@ CONFIG
             client_rb << %Q{encrypted_data_bag_secret "/etc/chef/encrypted_data_bag_secret"\n}
           end
 
+          if trusted_certs_dir
+            client_rb << %Q{trusted_certs_dir "/etc/chef/trusted_certs"\n}
+          end
+
           client_rb
         end
 
