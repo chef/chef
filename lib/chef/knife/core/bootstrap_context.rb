@@ -164,9 +164,11 @@ CONFIG
         private
         def trusted_certs_content
           content = ""
-          Dir.glob(File.join(@chef_config[:trusted_certs_dir], "*.{crt,pem}")).each do |cert|
-            content << "cat > /etc/chef/trusted_certs/#{File.basename(cert)} <<'EOP'\n" +
-                       IO.read(File.expand_path(cert)) + "\nEOP\n"
+          if @chef_config[:trusted_certs_dir]
+            Dir.glob(File.join(@chef_config[:trusted_certs_dir], "*.{crt,pem}")).each do |cert|
+              content << "cat > /etc/chef/trusted_certs/#{File.basename(cert)} <<'EOP'\n" +
+                         IO.read(File.expand_path(cert)) + "\nEOP\n"
+            end
           end
           content
         end
