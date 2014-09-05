@@ -69,9 +69,17 @@ class Chef
                 :cron => Chef::Provider::Cron,
                 :mdadm => Chef::Provider::Mdadm
               },
-              ">= 11.10" => {
+              ">= 13.10" => {
                 :ifconfig => Chef::Provider::Ifconfig::Debian
-              }
+              },
+              "= 14.04" => {
+                :service => Chef::Provider::Service::Upstart
+              },
+              # "> 14.04" => {
+              #   :service => Chef::Provider::Service::Systemd
+              # },
+              # Commenting out > 14.04 to see what the Canonical decides to do
+              # after 14.04.
               # Chef::Provider::Service::Upstart is a candidate to be used in
               # ubuntu versions >= 13.10 but it currently requires all the
               # services to have an entry under /etc/init. We need to update it
