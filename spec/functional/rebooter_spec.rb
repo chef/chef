@@ -49,7 +49,7 @@ describe Chef::Platform::Rebooter do
     it 'should call #shell_out! when reboot has been requested' do
       run_context.request_reboot(reboot_info)
 
-      expect(rebooter).to receive(:shell_out!).once
+      expect(rebooter).to receive(:shell_out!).once.with('shutdown /r /t 5 /c "reboot resource spec test"')
       expect(rebooter).to receive(:reboot_if_needed!).once.and_call_original
       rebooter.reboot_if_needed!(run_context.node)
 
