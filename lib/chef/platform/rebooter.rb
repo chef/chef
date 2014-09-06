@@ -20,7 +20,6 @@ require 'chef/dsl/reboot_pending'
 require 'chef/log'
 require 'chef/platform'
 
-# this has whatever's needed to reboot the server, on whichever platform.
 class Chef
   class Platform
     module Rebooter
@@ -33,10 +32,9 @@ class Chef
           cmd = if Chef::Platform.windows?
             "shutdown /r /t #{reboot_info[:delay_mins]} /c \"#{reboot_info[:reason]}\""
           else
-            shutdown_time = reboot_info[:delay_mins] > 0 ? reboot_info[:reboot_timeout] : "now"
-            "shutdown -r #{shutdown_time}"
+            # probably Linux-only.
+            "shutdown -r +#{reboot_info[:delay_mins]} \"#{reboot_info[:reason]}\""
           end
-          Chef::Log.warn "Shutdown command (not running): '#{cmd}'"
 
           shell_out!(cmd)
         end
@@ -49,7 +47,7 @@ class Chef
             reboot!
           end
         end
-      end   # end class instance stuff.
+      end
     end
   end
 end

@@ -24,7 +24,7 @@ describe Chef::Platform::Rebooter do
     {
       :delay_mins => 5,
       :requested_by => "reboot resource functional test",
-      :reason => "reboot resource spec test"
+      :reason => "rebooter spec test"
     }
   end
 
@@ -45,21 +45,35 @@ describe Chef::Platform::Rebooter do
 
   describe '#reboot_if_needed!' do
 
-    # test that it's producing the correct commands.
-    it 'should call #shell_out! when reboot has been requested' do
-      run_context.request_reboot(reboot_info)
-
-      expect(rebooter).to receive(:shell_out!).once.with('shutdown /r /t 5 /c "reboot resource spec test"')
-      expect(rebooter).to receive(:reboot_if_needed!).once.and_call_original
-      rebooter.reboot_if_needed!(run_context.node)
-
-      run_context.cancel_reboot
-    end
-
     it 'should not call #shell_out! when reboot has not been requested' do
       expect(rebooter).to receive(:shell_out!).exactly(0).times
       expect(rebooter).to receive(:reboot_if_needed!).once.and_call_original
       rebooter.reboot_if_needed!(run_context.node)
+    end
+
+    describe 'calling #shell_out! when reboot has been requested' do
+
+      before(:each) do
+        run_context.request_reboot(reboot_info)
+      end
+
+      after(:each) do
+        run_context.cancel_reboot
+      end
+
+      it 'should produce the correct string on Windows' do
+        Chef::Platform.stub(:windows?).and_return(true)
+        expect(rebooter).to receive(:shell_out!).once.with('shutdown /r /t 5 /c "rebooter spec test"')
+        expect(rebooter).to receive(:reboot_if_needed!).once.and_call_original
+        rebooter.reboot_if_needed!(run_context.node)
+      end
+
+      it 'should produce the correct (Linux-specific) string on non-Windows' do
+        Chef::Platform.stub(:windows?).and_return(false)
+        expect(rebooter).to receive(:shell_out!).once.with('shutdown -r +5 "rebooter spec test"')
+        expect(rebooter).to receive(:reboot_if_needed!).once.and_call_original
+        rebooter.reboot_if_needed!(run_context.node)
+      end
     end
   end
 end
