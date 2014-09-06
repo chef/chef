@@ -47,6 +47,10 @@ class Chef
           end
         end
 
+        def child(name)
+          make_child(name)
+        end
+
         def create_child(child_name, file_contents=nil)
           child = make_child(child_name)
           if child.exists?

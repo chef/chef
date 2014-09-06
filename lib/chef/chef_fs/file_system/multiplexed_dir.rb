@@ -24,7 +24,7 @@ class Chef
             multiplexed_dirs.each do |dir|
               dir.children.each do |child|
                 if seen[child.name]
-                  Chef::Log.warn("Child with name '#{child.name}' found in multiple directories: #{seen[child.name].path_for_printing} and #{child.path_for_printing}")
+                  Chef::Log.warn("Child with name '#{child.name}' found in multiple directories: #{seen[child.name].path_for_printing} and #{dir.path_for_printing}")
                 else
                   result << child
                   seen[child.name] = child
@@ -33,6 +33,21 @@ class Chef
             end
             result
           end
+        end
+
+        def child(name)
+          result = nil
+          multiplexed_dirs.each do |dir|
+            child_entry = dir.child(name)
+            if child_entry.exists?
+              if result
+                Chef::Log.warn("Child with name '#{child.name}' found in multiple directories: #{result.parent.path_for_printing} and #{child.parent.path_for_printing}")
+              else
+                result = child_entry
+              end
+            end
+          end
+          result || NonexistentFSObject.new(name, self)
         end
 
         def can_have_child?(name, is_dir)
