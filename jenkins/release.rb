@@ -80,6 +80,7 @@ class ArtifactCollection
 
   def package_paths
     @package_paths ||= Dir['**/pkg/*'].
+      sort.
       reject {|path| path.include?("BUILD_VERSION") }.
       reject {|path| path.include?("metadata.json") }
   end
