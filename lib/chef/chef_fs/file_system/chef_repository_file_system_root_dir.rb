@@ -48,17 +48,21 @@ class Chef
         #   ...
         # - root_paths - an array of paths representing the top level, where
         #   org.json, members.json, and invites.json will be stored.
-        #
-        def initialize(child_paths, root_paths=[])
+        # - chef_config - a hash of options that looks suspiciously like the ones
+        #   stored in Chef::Config, containing at least these keys:
+        #   - :versioned_cookbooks - whether to include versions in cookbook names
+        def initialize(child_paths, root_paths=[], chef_config=Chef::Config)
           super("", nil)
           @child_paths = child_paths
           @root_paths = root_paths
+          @versioned_cookbooks = chef_config[:versioned_cookbooks]
         end
 
         attr_accessor :write_pretty_json
 
         attr_reader :root_paths
         attr_reader :child_paths
+        attr_reader :versioned_cookbooks
 
         CHILDREN = %w(invitations.json members.json org.json)
 
@@ -104,7 +108,7 @@ class Chef
         def fs_description
           repo_paths = root_paths || [ File.dirname(child_paths['cookbooks'][0]) ]
           result = "repository at #{repo_paths.join(', ')}\n"
-          if Chef::Config[:versioned_cookbooks]
+          if versioned_cookbooks
             result << "  Multiple versions per cookbook\n"
           else
             result << "  One version per cookbook\n"

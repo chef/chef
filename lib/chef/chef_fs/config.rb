@@ -68,7 +68,7 @@ class Chef
 
       def create_local_fs
         require 'chef/chef_fs/file_system/chef_repository_file_system_root_dir'
-        Chef::ChefFS::FileSystem::ChefRepositoryFileSystemRootDir.new(object_paths, Array(chef_config[:chef_repo_path]).flatten)
+        Chef::ChefFS::FileSystem::ChefRepositoryFileSystemRootDir.new(object_paths, Array(chef_config[:chef_repo_path]).flatten, @chef_config)
       end
 
       # Returns the given real path's location relative to the server root.

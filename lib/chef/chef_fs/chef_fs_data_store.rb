@@ -103,7 +103,7 @@ class Chef
                   value.each do |file|
                     if file.is_a?(Hash) && file.has_key?('checksum')
                       relative = ['file_store', 'repo', 'cookbooks']
-                      if Chef::Config.versioned_cookbooks
+                      if chef_fs.versioned_cookbooks
                         relative << "#{path[1]}-#{path[2]}"
                       else
                         relative << path[1]
@@ -190,7 +190,7 @@ class Chef
         elsif path[0] == 'cookbooks' && path.length == 1
           with_entry(path) do |entry|
             begin
-              if Chef::Config.versioned_cookbooks
+              if chef_fs.versioned_cookbooks
                 # /cookbooks/name-version -> /cookbooks/name
                 entry.children.map { |child| split_name_version(child.name)[0] }.uniq
               else
@@ -203,7 +203,7 @@ class Chef
           end
 
         elsif path[0] == 'cookbooks' && path.length == 2
-          if Chef::Config.versioned_cookbooks
+          if chef_fs.versioned_cookbooks
             result = with_entry([ 'cookbooks' ]) do |entry|
               # list /cookbooks/name = filter /cookbooks/name-version down to name
               entry.children.map { |child| split_name_version(child.name) }.
@@ -261,7 +261,7 @@ class Chef
       end
 
       def write_cookbook(path, data, *options)
-        if Chef::Config.versioned_cookbooks
+        if chef_fs.versioned_cookbooks
           cookbook_path = File.join('cookbooks', "#{path[1]}-#{path[2]}")
         else
           cookbook_path = File.join('cookbooks', path[1])
@@ -318,7 +318,7 @@ class Chef
         elsif path[0] == 'cookbooks'
           if path.length == 2
             raise ChefZero::DataStore::DataNotFoundError.new(path)
-          elsif Chef::Config.versioned_cookbooks
+          elsif chef_fs.versioned_cookbooks
             if path.length >= 3
               # cookbooks/name/version -> cookbooks/name-version
               path = [ path[0], "#{path[1]}-#{path[2]}" ] + path[3..-1]
@@ -351,7 +351,7 @@ class Chef
           end
 
         elsif path[0] == 'cookbooks'
-          if Chef::Config.versioned_cookbooks
+          if chef_fs.versioned_cookbooks
             # cookbooks/name-version/... -> cookbooks/name/version/...
             if path.length >= 2
               name, version = split_name_version(path[1])

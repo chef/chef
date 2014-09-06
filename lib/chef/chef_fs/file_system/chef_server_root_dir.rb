@@ -56,6 +56,7 @@ class Chef
         #   - :repo_mode - the repository mode, :hosted_everything, :everything or :static.
         #                  This determines the set of subdirectories the Chef server
         #                  will offer up.
+        #   - :versioned_cookbooks - whether or not to include versions in cookbook names
         # - options - other options:
         #   - :cookbook_version - when cookbooks are retrieved, grab this version for them.
         #
@@ -66,6 +67,7 @@ class Chef
           @chef_private_key = chef_config[:client_key]
           @environment = chef_config[:environment]
           @repo_mode = chef_config[:repo_mode]
+          @versioned_cookbooks = chef_config[:versioned_cookbooks]
           @root_name = root_name
           @cookbook_version = options[:cookbook_version] # Used in knife diff and download for server cookbook version
         end
@@ -76,6 +78,7 @@ class Chef
         attr_reader :environment
         attr_reader :repo_mode
         attr_reader :cookbook_version
+        attr_reader :versioned_cookbooks
 
         def fs_description
           "Chef server at #{chef_server_url} (user #{chef_username}), repo_mode = #{repo_mode}"
