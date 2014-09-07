@@ -42,8 +42,8 @@ describe Mixlib::ShellOut do
       its(:live_stream) { should be_nil }
       its(:input) { should be_nil }
 
-      it "should set default environmental variables" do
-        shell_cmd.environment.should == {"LC_ALL" => "C"}
+      it "should not set any default environmental variables" do
+        shell_cmd.environment.should == {}
       end
     end
 
@@ -314,7 +314,7 @@ describe Mixlib::ShellOut do
       end
 
       it "should add environment settings to the default" do
-        shell_cmd.environment.should eql({'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'})
+        shell_cmd.environment.should eql({'RUBY_OPTS' => '-w'})
       end
 
       context 'when setting custom environments' do
@@ -322,7 +322,7 @@ describe Mixlib::ShellOut do
           let(:options) { { :env => environment } }
 
           it "should also set the enviroment" do
-            shell_cmd.environment.should eql({'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'})
+            shell_cmd.environment.should eql({'RUBY_OPTS' => '-w'})
           end
         end
 
@@ -425,14 +425,22 @@ describe Mixlib::ShellOut do
     end
 
     context 'when handling locale' do
+      before do
+        @original_lc_all = ENV['LC_ALL']
+        ENV['LC_ALL'] = "en_US.UTF-8"
+      end
+      after do
+        ENV['LC_ALL'] = @original_lc_all
+      end
+
       subject { stripped_stdout }
       let(:cmd) { ECHO_LC_ALL }
       let(:options) { { :environment => { 'LC_ALL' => locale } } }
 
       context 'without specifying environment' do
         let(:options) { nil }
-        it "should use the C locale by default" do
-          should eql('C')
+        it "should no longer use the C locale by default" do
+          should eql("en_US.UTF-8")
         end
       end
 
@@ -447,20 +455,11 @@ describe Mixlib::ShellOut do
       context 'with LC_ALL set to nil' do
         let(:locale) { nil }
 
-        before do
-          @original_lc_all = ENV['LC_ALL']
-          ENV['LC_ALL'] = "en_US.UTF-8"
-        end
-
-        after do
-          ENV['LC_ALL'] = @original_lc_all
-        end
-
         context 'when running under Unix', :unix_only do
           let(:parent_locale) { ENV['LC_ALL'].to_s.strip }
 
-          it "should use the parent process's locale" do
-            should eql(parent_locale)
+          it "should unset the parent process's locale" do
+            should eql("")
           end
         end
 
@@ -574,7 +573,6 @@ describe Mixlib::ShellOut do
         subject { chomped_stdout }
         let(:cmd) { script_name }
 
-
         context 'when running under Unix', :unix_only do
           let(:script_content) { 'echo blah' }
 
@@ -620,7 +618,6 @@ describe Mixlib::ShellOut do
         end
       end
 
-
       context 'with lots of long arguments' do
         subject { chomped_stdout }
 
@@ -644,7 +641,6 @@ describe Mixlib::ShellOut do
           should eql(special_characters)
         end
       end
-
 
       context 'with backslashes' do
         subject { stdout }
@@ -919,7 +915,6 @@ describe Mixlib::ShellOut do
         end
       end
 
-
       context 'with open files for parent process' do
         before do
           @test_file = Tempfile.new('fd_test')
@@ -1055,7 +1050,6 @@ describe Mixlib::ShellOut do
               sleep 10
             CODE
           end
-
 
           it "should TERM the wayward child and grandchild, then KILL whoever is left" do
             # note: let blocks don't correctly memoize if an exception is raised,

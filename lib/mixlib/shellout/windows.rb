@@ -200,7 +200,6 @@ module Mixlib
         end
       end
 
-
       # cmd does not parse multiple quotes well unless the whole thing is wrapped up in quotes.
       # https://github.com/opscode/mixlib-shellout/pull/2#issuecomment-4837859
       # http://ss64.com/nt/syntax-esc.html
