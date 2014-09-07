@@ -63,10 +63,10 @@ package :msi do
     .relative_path_from(Pathname.new(install_dir))
     .to_s
 
-  parameters {
+  parameters(
     # We are going to use this path in the startup command of chef
     # service. So we need to change file seperators to make windows
     # happy.
-    chef_gem_path: relative_path.gsub(File::SEPARATOR, File::ALT_SEPARATOR),
-  }
+    'ChefGemPath' => relative_path.gsub(File::SEPARATOR, File::ALT_SEPARATOR),
+  )
 end
