@@ -30,8 +30,6 @@ source git: "git://github.com/opscode/chef"
 
 relative_path "chef"
 
-always_build (self.project.name == "chef-windows")
-
 build do
   block do
     if File.exist?("#{project_dir}/chef")
