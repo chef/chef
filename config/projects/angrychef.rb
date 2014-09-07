@@ -33,7 +33,14 @@ build_version do
   output_format :semver
 end
 
-install_dir "#{default_root}/angrychef"
+if windows?
+  # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
+  #       Native gems will use gcc which will barf on files with spaces,
+  #       which is only fixable if everyone in the world fixes their Makefiles
+  install_dir "#{default_root}/opscode/#{name}"
+else
+  install_dir "#{default_root}/#{name}"
+end
 
 resources_path "#{Config.project_root}/files/chef"
 

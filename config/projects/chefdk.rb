@@ -19,7 +19,14 @@ friendly_name "Chef Development Kit"
 maintainer "Chef Software, Inc."
 homepage "https://www.getchef.com"
 
-install_dir "#{default_root}/chefdk"
+if windows?
+  # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
+  #       Native gems will use gcc which will barf on files with spaces,
+  #       which is only fixable if everyone in the world fixes their Makefiles
+  install_dir "#{default_root}/opscode/#{name}"
+else
+  install_dir "#{default_root}/#{name}"
+end
 
 build_iteration 1
 build_version do
