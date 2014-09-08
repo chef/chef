@@ -323,20 +323,9 @@ class Chef
         @events.registration_completed
       end
       # Checks for config server url.
-      if(!config[:chef_server_url] || config[:chef_server_url].to_s.empty?)
-        @events.skipping_registration(client_name, config)
-        Chef::Log.debug("Client server url is unspecified - cannot connect to server")
-      elsif (!URI.parse(config[:chef_server_url]).scheme || URI.parse(config[:chef_server_url]).scheme.to_s.empty?)
-        @events.skipping_registration(client_name, config)
-        Chef::Log.debug("Client server cannot be parsed or url schema is unspecified - cannot connect to server")
-      else
-        @rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
-        @resource_reporter = Chef::ResourceReporter.new(@rest)
-        @events.register(@resource_reporter)
-      end
-    rescue URI::Error => e
-        @events.registration_failed(node_name, e, config)
-        raise
+      @rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
+      @resource_reporter = Chef::ResourceReporter.new(@rest)
+      @events.register(@resource_reporter)
     rescue Exception => e
       # TODO: munge exception so a semantic failure message can be given to the
       # user
