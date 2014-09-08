@@ -366,7 +366,11 @@ describe Chef::Knife::Bootstrap do
     before do
       Chef::Config[:trusted_certs_dir] = trusted_certs_dir
       IO.stub(:read).and_call_original
-      IO.stub(:read).with("/etc/chef/validation.pem").and_return("-----BEGIN...")
+      IO.stub(:read).with("/etc/chef/validation.pem").and_return("")
+    end
+
+    def certificates
+      Dir[File.join(trusted_certs_dir, "*.{crt,pem}")]
     end
 
     it "creates /etc/chef/trusted_certs" do
@@ -374,13 +378,13 @@ describe Chef::Knife::Bootstrap do
     end
 
     it "copies the certificates in the directory" do
-      match_str = ""
-      Dir[File.join(trusted_certs_dir, '*')].each do |cert|
-        match_str << "cat > /etc/chef/trusted_certs/#{File.basename(cert)} <<'EOP'\n" +
-                     "#{IO.read(File.expand_path(cert))}\n" +
-                     "EOP\n"
+      certificates.each do |cert|
+        IO.should_receive(:read).with(File.expand_path(cert))
       end
-      rendered_template.should include(match_str)
+
+      certificates.each do |cert|
+        rendered_template.should match(%r{cat > /etc/chef/trusted_certs/#{File.basename(cert)} <<'EOP'})
+      end
     end
 
     it "doesn't create /etc/chef/trusted_certs if :trusted_certs_dir is empty" do
