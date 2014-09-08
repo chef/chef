@@ -44,9 +44,9 @@ describe Chef::Resource::Reboot do
 
   # the currently defined behavior for multiple calls to this resource is "last one wins."
 
-  describe 'the request action' do
+  describe 'the request_reboot_on_successful_run action' do
     before do
-      resource.run_action(:request)
+      resource.run_action(:request_reboot_on_successful_run)
     end
 
     after do
@@ -61,6 +61,13 @@ describe Chef::Resource::Reboot do
       expect(reboot_info[:requested_by]).to eq(expected[:requested_by])
 
       expect(resource.run_context.reboot_requested?).to be_true
+    end
+  end
+
+  describe 'the reboot_interrupt_run action' do
+    it 'should have attempted to reboot the server' do
+      expect(Chef::Platform::Rebooter).to receive(:reboot!).once
+      resource.run_action(:reboot_interrupt_run)
     end
   end
 

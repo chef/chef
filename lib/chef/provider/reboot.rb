@@ -34,20 +34,32 @@ class Chef
         @current_resource
       end
 
-      def action_request
+      def request_reboot
+        node.run_context.request_reboot(
+          :delay_mins => @new_resource.delay_mins,
+          :reason => @new_resource.reason,
+          :timestamp => Time.now,
+          :requested_by => @new_resource.name
+          )
+      end
+
+      def action_request_reboot_on_successful_run
         converge_by("request a system reboot to occur if the run succeeds") do
           Chef::Log.warn "Reboot requested:'#{@new_resource.name}'"
-          node.run_context.request_reboot(
-            :delay_mins => @new_resource.delay_mins,
-            :reason => @new_resource.reason,
-            :timestamp => Time.now,
-            :requested_by => @new_resource.name
-            )
+          request_reboot
+        end
+      end
+
+      def action_reboot_interrupt_run
+        converge_by("rebooting the system immediately") do
+          Chef::Log.warn "Rebooting system immediately, requested by '#{@new_resource.name}'"
+          request_reboot
+          Chef::Platform::Rebooter.reboot!(node)
         end
       end
 
       def action_cancel
-        converge_by("cancel any existing system reboot request") do
+        converge_by("cancel any existing end-of-run reboot request") do
           Chef::Log.warn "Reboot canceled: '#{@new_resource.name}'"
           node.run_context.cancel_reboot
         end

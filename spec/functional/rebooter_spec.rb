@@ -54,6 +54,7 @@ describe Chef::Platform::Rebooter do
     describe 'calling #shell_out! when reboot has been requested' do
 
       before(:each) do
+        Chef::Platform.stub(:node).and_return(run_context.node)
         run_context.request_reboot(reboot_info)
       end
 
