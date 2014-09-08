@@ -22,6 +22,7 @@ require 'chef/knife'
 class Chef
   class Knife
     class DataBagEdit < Knife
+      include DataBagSecretOptions
 
       deps do
         require 'chef/data_bag_item'
@@ -31,46 +32,15 @@ class Chef
       banner "knife data bag edit BAG ITEM (options)"
       category "data bag"
 
-      option :secret,
-        :short => "-s SECRET",
-        :long  => "--secret ",
-        :description => "The secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
-
-      option :secret_file,
-        :long => "--secret-file SECRET_FILE",
-        :description => "A file containing the secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
-
-      option :encrypted,
-        :long => "--encrypted",
-        :description => "Only encrypt data bag when specified.",
-        :proc => Proc.new { |e| Chef::Config[:knife][:encrypted] = e }
-
-      def read_secret
-        if config[:secret]
-          config[:secret]
-        else
-          Chef::EncryptedDataBagItem.load_secret(config[:secret_file])
-        end
-      end
-
-      def use_encryption
-        if config[:encrypted]
-          if config[:secret] && config[:secret_file]
-            ui.fatal("please specify only one of --secret, --secret-file")
-            exit(1)
-          end
-          config[:secret] || config[:secret_file]
-        else
-          false
-        end
-      end
-
       def load_item(bag, item_name)
         item = Chef::DataBagItem.load(bag, item_name)
-        if use_encryption
-          Chef::EncryptedDataBagItem.new(item, read_secret).to_hash
+        if encrypted?(item.raw_data)
+          if encryption_secret_provided?
+            Chef::EncryptedDataBagItem.new(item, read_secret).to_hash
+          else
+            ui.fatal("You cannot edit an encrypted data bag without providing the secret.")
+            exit(1)
+          end
         else
           item
         end
@@ -78,9 +48,11 @@ class Chef
 
       def edit_item(item)
         output = edit_data(item)
-        if use_encryption
+        if encryption_secret_provided?
+          ui.info("Encrypting data bag using provided secret.")
           Chef::EncryptedDataBagItem.encrypt_data_bag_item(output, read_secret)
         else
+          ui.info("Saving data bag unencrypted.  To encrypt it, provide an appropriate secret.")
           output
         end
       end
@@ -95,6 +67,7 @@ class Chef
         output = edit_item(item)
         rest.put_rest("data/#{@name_args[0]}/#{@name_args[1]}", output)
         stdout.puts("Saved data_bag_item[#{@name_args[1]}]")
+        # TODO this is trying to read :print_after from the CLI, not the knife.rb
         ui.output(output) if config[:print_after]
       end
     end

@@ -23,6 +23,7 @@ require 'chef/util/path_helper'
 class Chef
   class Knife
     class DataBagFromFile < Knife
+      include DataBagSecretOptions
 
       deps do
         require 'chef/data_bag'
@@ -35,37 +36,10 @@ class Chef
       banner "knife data bag from file BAG FILE|FOLDER [FILE|FOLDER..] (options)"
       category "data bag"
 
-      option :secret,
-        :short => "-s SECRET",
-        :long  => "--secret ",
-        :description => "The secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
-
-      option :secret_file,
-        :long => "--secret-file SECRET_FILE",
-        :description => "A file containing the secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
-
       option :all,
         :short => "-a",
         :long  => "--all",
         :description => "Upload all data bags or all items for specified data bags"
-
-      def read_secret
-        if config[:secret]
-          config[:secret]
-        else
-          Chef::EncryptedDataBagItem.load_secret(config[:secret_file])
-        end
-      end
-
-      def use_encryption
-        if config[:secret] && config[:secret_file]
-          ui.fatal("please specify only one of --secret, --secret-file")
-          exit(1)
-        end
-        config[:secret] || config[:secret_file]
-      end
 
       def loader
         @loader ||= Knife::Core::ObjectLoader.new(DataBagItem, ui)
@@ -109,9 +83,8 @@ class Chef
         item_paths = normalize_item_paths(items)
         item_paths.each do |item_path|
           item = loader.load_from("#{data_bags_path}", data_bag, item_path)
-          item = if use_encryption
-                   secret = read_secret
-                   Chef::EncryptedDataBagItem.encrypt_data_bag_item(item, secret)
+          item = if encryption_secret_provided?
+                   Chef::EncryptedDataBagItem.encrypt_data_bag_item(item, read_secret)
                  else
                    item
                  end
