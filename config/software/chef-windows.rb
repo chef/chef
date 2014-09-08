@@ -20,6 +20,7 @@ dependency "ruby-windows" #includes rubygems
 dependency "libyaml-windows"
 dependency "openssl-windows"
 dependency "ruby-windows-devkit"
+dependency "openssl-customization"
 dependency "bundler"
 dependency "cacerts"
 

@@ -54,6 +54,7 @@ dependency "ruby-windows"
 dependency "ruby-windows-devkit"
 dependency "chef-windows"
 dependency "chefdk"
+dependency "openssl-customization"
 dependency "rubygems-customization"
 dependency "version-manifest"
 
