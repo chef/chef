@@ -19,8 +19,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-cli", "~> 1.4"
   s.add_dependency "mixlib-log", "~> 1.3"
   s.add_dependency "mixlib-authentication", "~> 1.3"
-  # FIXME: needs to be bumped to ~> 2.0 once 2.0 is released
-  s.add_dependency "mixlib-shellout", "~> 1.4"
+  s.add_dependency "mixlib-shellout", ">= 2.0.0.rc.0", "< 3.0"
   s.add_dependency "ohai", "~> 7.2"
 
   s.add_dependency "ffi-yajl", "~> 1.0", ">= 1.0.2"

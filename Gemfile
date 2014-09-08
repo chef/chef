@@ -3,7 +3,7 @@ gemspec :name => "chef"
 
 gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
 
-gem "mixlib-shellout", github: "opscode/mixlib-shellout", branch: "lcg/remove-lc-all-hack"
+gem "mixlib-shellout", github: "opscode/mixlib-shellout", branch: "master"
 gem "ohai", github: "opscode/ohai", branch: "master"
 
 group(:docgen) do
