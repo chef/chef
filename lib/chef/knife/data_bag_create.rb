@@ -22,7 +22,9 @@ require 'chef/knife'
 class Chef
   class Knife
     class DataBagCreate < Knife
+      include DataBagSecretOptions
 
+      # TODO duplicating deps here and in the DataBagSecretOptions module
       deps do
         require 'chef/data_bag'
         require 'chef/encrypted_data_bag_item'
@@ -30,73 +32,6 @@ class Chef
 
       banner "knife data bag create BAG [ITEM] (options)"
       category "data bag"
-
-      option :secret,
-        :short => "-s SECRET",
-        :long  => "--secret ",
-        :description => "The secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
-
-      option :secret_file,
-        :long => "--secret-file SECRET_FILE",
-        :description => "A file containing the secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
-
-      option :encrypt,
-        :long => "--encrypt",
-        :description => "Only encrypt data bag when specified.",
-        :boolean => true,
-        :default => false
-
-      def read_secret
-        if config[:secret]
-          config[:secret]
-        elsif config[:secret_file]
-          Chef::EncryptedDataBagItem.load_secret(config[:secret_file])
-        elsif secret = knife_config[:secret] || Chef::Config[:secret]
-          secret
-        else
-          secret_file = knife_config[:secret_file] || Chef::Config[:secret_file]
-          Chef::EncryptedDataBagItem.load_secret(secret_file)
-        end
-      end
-
-      def knife_config
-        Chef::Config.key?(:knife) ? Chef::Config[:knife] : {}
-      end
-
-      def has_secret?
-        knife_config[:secret] || Chef::Config[:secret]
-      end
-
-      def has_secret_file?
-        knife_config[:secret_file] || Chef::Config[:secret_file]
-      end
-
-      def use_encryption
-        # Ensure only one of --secret and --secret-file has been given.
-        if config[:secret] && config[:secret_file]
-          ui.fatal("Please specify only one of --secret, --secret-file")
-          exit(1)
-        end
-
-        # TODO is there validation on the config schema?  If so, this validation should go there
-        if has_secret? && has_secret_file?
-          ui.fatal("Please specify only one of 'secret' or 'secret_file' in your config")
-          exit(1)
-        end
-
-        return true if config[:secret] || config[:secret_file]
-        if config[:encrypt]
-          unless has_secret? || has_secret_file?
-            ui.fatal("No secret or secret_file specified in config, unable to encrypt item.")
-            exit(1)
-          else
-            return true
-          end
-        end
-        return false
-      end
 
       def run
         @data_bag_name, @data_bag_item_name = @name_args
@@ -127,7 +62,7 @@ class Chef
         if @data_bag_item_name
           create_object({ "id" => @data_bag_item_name }, "data_bag_item[#{@data_bag_item_name}]") do |output|
             item = Chef::DataBagItem.from_hash(
-              if use_encryption
+              if encryption_secret_provided?
                 Chef::EncryptedDataBagItem.encrypt_data_bag_item(output, read_secret)
               else
                 output
