@@ -41,6 +41,10 @@ dependency "chef"
 dependency "chef-init"
 dependency "version-manifest"
 
+package :rpm do
+  signing_passphrase ENV['OMNIBUS_RPM_SIGNING_PASSPHRASE']
+end
+
 package :pkg do
   identifier "com.getchef.pkg.chef-container"
   signing_identity "Developer ID Installer: Opscode Inc. (9NBR9JL2R2)"
