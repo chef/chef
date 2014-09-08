@@ -129,6 +129,48 @@ describe Chef::Knife::DataBagCreate do
     include_examples "a data bag item"
   end
 
+  context "when provided --secret and --secret-file" do
+
+    let(:config) {{ :secret_file => secret_file.path, :secret => secret }}
+
+    it "throws an error" do
+      expect(knife).to receive(:create_object).and_yield(raw_hash)
+      expect(knife).to receive(:exit).with(1)
+      expect(knife.ui).to receive(:fatal).with("Please specify only one of --secret, --secret-file")
+
+      knife.run
+    end
+
+  end
+
+  context "when provided with `secret` and `secret_file` in knife.rb" do
+    before do
+      Chef::Config[:knife][:secret] = secret
+      Chef::Config[:knife][:secret_file] = secret_file.path
+    end
+
+    it "throws an error" do
+      expect(knife).to receive(:create_object).and_yield(raw_hash)
+      expect(knife).to receive(:exit).with(1)
+      expect(knife.ui).to receive(:fatal).with("Please specify only one of 'secret' or 'secret_file' in your config")
+
+      knife.run
+    end
+
+  end
+
+  context "when --encrypt is provided without a secret" do
+    let(:config) {{ :encrypt => true }}
+
+    it "throws an error" do
+      expect(knife).to receive(:create_object).and_yield(raw_hash)
+      expect(knife).to receive(:exit).with(1)
+      expect(knife.ui).to receive(:fatal).with("No secret or secret_file specified in config, unable to encrypt item.")
+
+      knife.run
+    end
+  end
+
   context "with secret in knife.rb" do
     before do
       Chef::Config[:knife][:secret] = config_secret
@@ -187,6 +229,23 @@ describe Chef::Knife::DataBagCreate do
       include_examples "an encrypted data bag item" do
         let(:config) {{ :secret_file => secret_file.path }}
         let(:config_secret_file) { "/etc/chef/encrypted_data_bag_secret" }
+      end
+    end
+  end
+
+  context "no secret in knife.rb" do
+
+    include_examples "a data bag item"
+
+    context "with --secret" do
+      include_examples "an encrypted data bag item" do
+        let(:config) {{ :secret => secret }}
+      end
+    end
+
+    context "with --secret-file" do
+      include_examples "an encrypted data bag item" do
+        let(:config) {{ :secret_file => secret_file.path }}
       end
     end
   end

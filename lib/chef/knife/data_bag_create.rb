@@ -80,16 +80,22 @@ class Chef
           exit(1)
         end
 
+        # TODO is there validation on the config schema?  If so, this validation should go there
+        if has_secret? && has_secret_file?
+          ui.fatal("Please specify only one of 'secret' or 'secret_file' in your config")
+          exit(1)
+        end
+
         return true if config[:secret] || config[:secret_file]
         if config[:encrypt]
           unless has_secret? || has_secret_file?
             ui.fatal("No secret or secret_file specified in config, unable to encrypt item.")
             exit(1)
+          else
+            return true
           end
-          return true
-        else
-          return false
         end
+        return false
       end
 
       def run
