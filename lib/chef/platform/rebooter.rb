@@ -26,9 +26,10 @@ class Chef
       extend Chef::Mixin::ShellOut
 
       class << self
-        attr_reader :node, :reboot_info
 
-        def reboot!
+        def reboot!(node)
+          reboot_info = node.run_context.reboot_info
+
           cmd = if Chef::Platform.windows?
             "shutdown /r /t #{reboot_info[:delay_mins]} /c \"#{reboot_info[:reason]}\""
           else
@@ -36,15 +37,13 @@ class Chef
             "shutdown -r +#{reboot_info[:delay_mins]} \"#{reboot_info[:reason]}\""
           end
 
+          Chef::Log.warn "Rebooting server at a recipe's request. Details: #{reboot_info.inspect}"
           shell_out!(cmd)
         end
 
-        def reboot_if_needed!(this_node)
-          @node = this_node
-          @reboot_info = node.run_context.reboot_info
-
+        def reboot_if_needed!(node)
           if node.run_context.reboot_requested?
-            reboot!
+            reboot!(node)
           end
         end
       end
