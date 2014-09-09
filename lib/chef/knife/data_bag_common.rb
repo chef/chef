@@ -97,7 +97,7 @@ class Chef
         knife_config[:secret_file] || Chef::Config[:secret_file]
       end
 
-      # TODO duplicated from data_query.rb
+      # TODO duplicated from data_query.rb, also needs test coverage when it is extracted
       # Tries to autodetect if the item's raw hash appears to be encrypted.
       def encrypted?(raw_data)
         data = raw_data.reject { |k, _| k == "id" } # Remove the "id" key.
