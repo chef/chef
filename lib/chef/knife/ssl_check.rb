@@ -106,6 +106,54 @@ class Chef
         end
       end
 
+      def verify_X509
+        cert_debug_msg = ""
+        if configuration.trusted_certs_dir && Dir.exist?(configuration.trusted_certs_dir)
+          # Check each trusted certificate to ensure that it meets X509 standard.
+          Dir.glob(File.join(configuration.trusted_certs_dir, "*.{crt,pem}")).each do |cert_name|
+            store = OpenSSL::X509::Store.new
+            cert = OpenSSL::X509::Certificate.new(IO.read(File.expand_path(cert)))
+            begin
+              store.add(cert)
+              # test if the store can verify the cert we just added
+              unless store.verify(cert) # true if verified, false if not
+                cert_debug_msg << "#{File.expand_path(cert_name)}: #{store.error_string}\n"
+              end
+            rescue OpenSSL::X509::StoreError
+              cert_debug_msg << "#{File.expand_path(cert_name)}: #{store.error_string}\n"
+            end
+          end
+        end
+
+        unless cert_debug_msg.empty?
+          ui.msg("\n#{ui.color("Configuration Info:", :bold)}\n\n")
+          debug_ssl_settings
+          debug_chef_ssl_config
+
+          ui.warn(<<-BAD_CERTS
+There are invalid certificates in your trusted_certs_dir.
+Although Chef may be configured to trust these certificates,
+OpenSSL may not use the following certificates when verifying SSL connections:
+
+#{cert_debug_msg}
+
+#{ui.color("TO FIX THESE WARNINGS:", :bold)}
+
+We are working on documentation for generating self-signed certificates with Subject
+Alternative Names (SANs). For now, please refer to the discussion on GitHub Issue 1700
+
+     https://github.com/opscode/chef/issues/1700
+
+and direct any further questions to github.com/opscode/chef/issues or the chef
+mailing lists.
+
+BAD_CERTS
+          # @TODO: ^ needs URL
+          return false
+        end
+        return true
+      end
+
       def verify_cert
         ui.msg("Connecting to host #{host}:#{port}")
         verify_peer_socket.connect
@@ -148,7 +196,7 @@ where your chef-server runs:
 
   /var/opt/chef-server/nginx/ca/SERVER_HOSTNAME.crt
 
-Copy that file to you trusted_certs_dir (currently: #{configuration.trusted_certs_dir})
+Copy that file to your trusted_certs_dir (currently: #{configuration.trusted_certs_dir})
 using SSH/SCP or some other secure method, then re-run this command to confirm
 that the server's certificate is now trusted.
 
@@ -197,7 +245,7 @@ ADVICE
 
       def run
         validate_uri
-        if verify_cert && verify_cert_host
+        if verify_X509 && verify_cert && verify_cert_host
           ui.msg "Successfully verified certificates from `#{host}'"
         else
           exit 1
@@ -207,7 +255,3 @@ ADVICE
     end
   end
 end
-
-
-
-
