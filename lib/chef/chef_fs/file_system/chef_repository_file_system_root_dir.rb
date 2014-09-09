@@ -42,15 +42,17 @@ class Chef
         # Create a new Chef Repository File System root.
         #
         # == Parameters
-        # - child_paths - a hash of child paths, e.g.:
-        #   "nodes" => [ '/var/nodes', '/home/jkeiser/nodes' ],
-        #   "roles" => [ '/var/roles' ],
-        #   ...
-        # - root_paths - an array of paths representing the top level, where
-        #   org.json, members.json, and invites.json will be stored.
-        # - chef_config - a hash of options that looks suspiciously like the ones
+        # [child_paths]
+        #   A hash of child paths, e.g.:
+        #     "nodes" => [ '/var/nodes', '/home/jkeiser/nodes' ],
+        #     "roles" => [ '/var/roles' ],
+        #     ...
+        # [root_paths]
+        #   An array of paths representing the top level, where
+        #   +org.json+, +members.json+, and +invites.json+ will be stored.
+        # [chef_config] - a hash of options that looks suspiciously like the ones
         #   stored in Chef::Config, containing at least these keys:
-        #   - :versioned_cookbooks - whether to include versions in cookbook names
+        #   :versioned_cookbooks:: whether to include versions in cookbook names
         def initialize(child_paths, root_paths=[], chef_config=Chef::Config)
           super("", nil)
           @child_paths = child_paths
