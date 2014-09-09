@@ -20,19 +20,6 @@
 require 'spec_helper'
 require 'tempfile'
 
-module ChefSpecs
-  class ChefRest
-    attr_reader :args_received
-    def initialize
-      @args_received = []
-    end
-
-    def post_rest(*args)
-      @args_received << args
-    end
-  end
-end
-
 describe Chef::Knife::DataBagCreate do
   let(:knife) do
     k = Chef::Knife::DataBagCreate.new
@@ -41,7 +28,7 @@ describe Chef::Knife::DataBagCreate do
     k
   end
 
-  let(:rest) { ChefSpecs::ChefRest.new }
+  let(:rest) { double("ChefSpecs::ChefRest") }
   let(:stdout) { StringIO.new }
 
   let(:bag_name) { "sudoing_admins" }
@@ -61,8 +48,8 @@ describe Chef::Knife::DataBagCreate do
 
   it "tries to create a data bag with an invalid name when given one argument" do
     knife.name_args = ['invalid&char']
-    expect(knife).to receive(:exit).with(1)
-    knife.run
+    expect(Chef::DataBag).to receive(:validate_name!).with(knife.name_args[0]).and_raise(Chef::Exceptions::InvalidDataBagName)
+    expect {knife.run}.to exit_with_code(1)
   end
 
   context "when given one argument" do
@@ -83,10 +70,6 @@ describe Chef::Knife::DataBagCreate do
       item = Chef::DataBagItem.from_hash(raw_hash)
       item.data_bag(bag_name)
       item
-    end
-
-    before do
-      knife.name_args = [bag_name, item_name]
     end
 
     it "creates a data bag item" do
