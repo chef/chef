@@ -53,13 +53,8 @@ class Chef
         if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info? && !@new_resource.sensitive
           opts[:live_stream] = STDOUT
         end
-
-        if @new_resource.sensitive
-          command = "sensitive resource"
-        else
-          command = @new_resource.command
-        end
-        converge_by("execute #{command}") do
+        description = @new_resource.sensitive ? "sensitive resource" : @new_resource.command
+        converge_by("execute #{description}") do
           result = shell_out!(@new_resource.command, opts)
           Chef::Log.info("#{@new_resource} ran successfully")
         end
