@@ -4,6 +4,7 @@ vendor/bundle
 pkg/*
 .vagrant
 .kitchen
+.kitchen.local.yml
 bin/*
 files/chef-server-cookbooks/cache/
 files/msi/ChefClient-Config.wxi
