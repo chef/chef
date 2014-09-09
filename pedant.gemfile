@@ -7,6 +7,9 @@ gem 'chef-pedant', :github => 'opscode/chef-pedant', :branch => "metadata-name-f
 # TODO figure out how to grab this stuff from the main Gemfile
 gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
 
+gem "mixlib-shellout", github: "opscode/mixlib-shellout", branch: "master"
+gem "ohai", github: "opscode/ohai", branch: "master"
+
 group(:docgen) do
   gem "yard"
 end
