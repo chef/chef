@@ -78,8 +78,8 @@ class Chef
       # because the order of middlewares is reversed when handling
       # responses.
       @middlewares << ValidateContentLength.new(options)
-      rescue URI::InvalidURIError => e
-	raise e,"Please provide a correctly formatted url value"
+      rescue URI::Error => e
+	raise
     end
     
     def signing_key_filename
