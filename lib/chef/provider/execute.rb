@@ -53,6 +53,7 @@ class Chef
         if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info? && !@new_resource.sensitive
           opts[:live_stream] = STDOUT
         end
+
         if @new_resource.sensitive
           command = "sensitive resource"
         else
