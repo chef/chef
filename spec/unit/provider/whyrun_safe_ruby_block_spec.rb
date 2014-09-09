@@ -30,14 +30,14 @@ describe Chef::Provider::WhyrunSafeRubyBlock, "initialize" do
   end
 
   it "should call the block and flag the resource as updated" do
-    @provider.run_action(:create)
+    @provider.run_action(:run)
     $evil_global_evil_laugh.should == :mwahahaha
     @new_resource.should be_updated
   end
 
   it "should call the block and flat the resource as updated - even in whyrun" do
     Chef::Config[:why_run] = true
-    @provider.run_action(:create)
+    @provider.run_action(:run)
     $evil_global_evil_laugh.should == :mwahahaha
     @new_resource.should be_updated
     Chef::Config[:why_run] = false
