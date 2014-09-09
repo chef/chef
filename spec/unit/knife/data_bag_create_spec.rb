@@ -48,11 +48,6 @@ describe Chef::Knife::DataBagCreate do
   let(:item_name) { "ME" }
 
   let(:secret) { "abc123SECRET" }
-  let(:secret_file) do
-    sfile = Tempfile.new("encrypted_data_bag_secret")
-    sfile.puts(secret)
-    sfile.flush
-  end
 
   let(:raw_hash)  {{ "login_name" => "alphaomega", "id" => item_name }}
 
@@ -83,7 +78,7 @@ describe Chef::Knife::DataBagCreate do
     end
   end
 
-  shared_examples_for "a data bag item" do
+  context "no secret is specified for encryption" do
     let(:item) do
       item = Chef::DataBagItem.from_hash(raw_hash)
       item.data_bag(bag_name)
@@ -96,6 +91,7 @@ describe Chef::Knife::DataBagCreate do
 
     it "creates a data bag item" do
       expect(knife).to receive(:create_object).and_yield(raw_hash)
+      expect(knife).to receive(:encryption_secret_provided?).and_return(false)
       expect(rest).to receive(:post_rest).with("data", {'name' => bag_name}).ordered
       expect(rest).to receive(:post_rest).with("data/#{bag_name}", item).ordered
 
@@ -103,7 +99,7 @@ describe Chef::Knife::DataBagCreate do
     end
   end
 
-  shared_examples_for "an encrypted data bag item" do
+  context "a secret is specified for encryption" do
     let(:encoded_data) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(raw_hash, secret) }
 
     let(:item) do
@@ -114,6 +110,8 @@ describe Chef::Knife::DataBagCreate do
 
     it "creates an encrypted data bag item" do
       expect(knife).to receive(:create_object).and_yield(raw_hash)
+      expect(knife).to receive(:encryption_secret_provided?).and_return(true)
+      expect(knife).to receive(:read_secret).and_return(secret)
       expect(Chef::EncryptedDataBagItem)
         .to receive(:encrypt_data_bag_item)
         .with(raw_hash, secret)
@@ -125,128 +123,4 @@ describe Chef::Knife::DataBagCreate do
     end
   end
 
-  context "when given two arguments" do
-    include_examples "a data bag item"
-  end
-
-  context "when provided --secret and --secret-file" do
-
-    let(:config) {{ :secret_file => secret_file.path, :secret => secret }}
-
-    it "throws an error" do
-      expect(knife).to receive(:create_object).and_yield(raw_hash)
-      expect(knife).to receive(:exit).with(1)
-      expect(knife.ui).to receive(:fatal).with("Please specify only one of --secret, --secret-file")
-
-      knife.run
-    end
-
-  end
-
-  context "when provided with `secret` and `secret_file` in knife.rb" do
-    before do
-      Chef::Config[:knife][:secret] = secret
-      Chef::Config[:knife][:secret_file] = secret_file.path
-    end
-
-    it "throws an error" do
-      expect(knife).to receive(:create_object).and_yield(raw_hash)
-      expect(knife).to receive(:exit).with(1)
-      expect(knife.ui).to receive(:fatal).with("Please specify only one of 'secret' or 'secret_file' in your config")
-
-      knife.run
-    end
-
-  end
-
-  context "when --encrypt is provided without a secret" do
-    let(:config) {{ :encrypt => true }}
-
-    it "throws an error" do
-      expect(knife).to receive(:create_object).and_yield(raw_hash)
-      expect(knife).to receive(:exit).with(1)
-      expect(knife.ui).to receive(:fatal).with("No secret or secret_file specified in config, unable to encrypt item.")
-
-      knife.run
-    end
-  end
-
-  context "with secret in knife.rb" do
-    before do
-      Chef::Config[:knife][:secret] = config_secret
-    end
-
-    include_examples "a data bag item" do
-      let(:config_secret) { secret }
-    end
-
-    context "with --encrypt" do
-      include_examples "an encrypted data bag item" do
-        let(:config) {{ :encrypt => true }}
-        let(:config_secret) { secret }
-      end
-    end
-
-    context "with --secret" do
-      include_examples "an encrypted data bag item" do
-        let(:config) {{ :secret => secret }}
-        let(:config_secret) { "TERCES321cba" }
-      end
-    end
-
-    context "with --secret-file" do
-      include_examples "an encrypted data bag item" do
-        let(:config) {{ :secret_file => secret_file.path }}
-        let(:config_secret) { "TERCES321cba" }
-      end
-    end
-  end
-
-  context "with secret_file in knife.rb" do
-    before do
-      Chef::Config[:knife][:secret_file] = config_secret_file
-    end
-
-    include_examples "a data bag item" do
-      let(:config_secret_file) { secret_file.path }
-    end
-
-    context "with --encrypt" do
-      include_examples "an encrypted data bag item" do
-        let(:config) {{ :encrypt => true }}
-        let(:config_secret_file) { secret_file.path }
-      end
-    end
-
-    context "with --secret" do
-      include_examples "an encrypted data bag item" do
-        let(:config) {{ :secret => secret }}
-        let(:config_secret_file) { "/etc/chef/encrypted_data_bag_secret" }
-      end
-    end
-
-    context "with --secret-file" do
-      include_examples "an encrypted data bag item" do
-        let(:config) {{ :secret_file => secret_file.path }}
-        let(:config_secret_file) { "/etc/chef/encrypted_data_bag_secret" }
-      end
-    end
-  end
-
-  context "no secret in knife.rb" do
-
-    include_examples "a data bag item"
-
-    context "with --secret" do
-      include_examples "an encrypted data bag item" do
-        let(:config) {{ :secret => secret }}
-      end
-    end
-
-    context "with --secret-file" do
-      include_examples "an encrypted data bag item" do
-        let(:config) {{ :secret_file => secret_file.path }}
-      end
-    end
-  end
 end
