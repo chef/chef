@@ -99,17 +99,17 @@ E
     let(:name_args) { %w{https://foo.example.com:8443} }
 
     let(:trusted_certs_dir) { File.join(CHEF_SPEC_DATA, "trusted_certs") }
-    let(:trusted_certs) { [File.join(trusted_certs_dir, "example.crt")] }
+    let(:trusted_cert_file) { File.join(trusted_certs_dir, "example.crt") }
 
     let(:store) { OpenSSL::X509::Store.new }
-    let(:certificate) { OpenSSL::X509::Certificate.new(IO.read(trusted_certs[0])) }
+    let(:certificate) { OpenSSL::X509::Certificate.new(IO.read(trusted_cert_file)) }
 
     before do
       Chef::Config[:trusted_certs_dir] = trusted_certs_dir
-      Dir.stub(:glob).with(File.join(trusted_certs_dir, "*.{crt,pem}")).and_return(trusted_certs)
-      store.stub(:add).with(certificate)
+      ssl_check.stub(:trusted_certificates).and_return([trusted_cert_file])
+      store.stub(:add_cert).with(certificate)
       OpenSSL::X509::Store.stub(:new).and_return(store)
-      OpenSSL::X509::Certificate.stub(:new).with(IO.read(trusted_certs[0])).and_return(certificate)
+      OpenSSL::X509::Certificate.stub(:new).with(IO.read(trusted_cert_file)).and_return(certificate)
       ssl_check.stub(:verify_cert).and_return(true)
       ssl_check.stub(:verify_cert_host).and_return(true)
     end
@@ -132,7 +132,7 @@ E
       end
 
       it "generates a warning message with invalid certificate file names" do
-        expect(ssl_check.ui).to receive(:warn).with(/#{trusted_certs[0]}: unable to get local issuer certificate/)
+        expect(ssl_check.ui).to receive(:warn).with(/#{trusted_cert_file}: unable to get local issuer certificate/)
         ssl_check.run
       end
     end
