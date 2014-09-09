@@ -74,25 +74,25 @@ describe Chef::Provider::Service::Systemd do
       end
 
       it "should run the services status command if one has been specified" do
-        @provider.stub(:shell_out_with_systems_locale).and_return(@shell_out_success)
+        @provider.stub(:shell_out).and_return(@shell_out_success)
         @current_resource.should_receive(:running).with(true)
         @provider.load_current_resource
       end
 
       it "should run the services status command if one has been specified and properly set status check state" do
-        @provider.stub(:shell_out_with_systems_locale).with("/bin/chefhasmonkeypants status").and_return(@shell_out_success)
+        @provider.stub(:shell_out).with("/bin/chefhasmonkeypants status").and_return(@shell_out_success)
         @provider.load_current_resource
         @provider.instance_variable_get("@status_check_success").should be_true
       end
 
       it "should set running to false if a status command fails" do
-        @provider.stub(:shell_out_with_systems_locale).and_return(@shell_out_failure)
+        @provider.stub(:shell_out).and_return(@shell_out_failure)
         @current_resource.should_receive(:running).with(false)
         @provider.load_current_resource
       end
 
       it "should update state to indicate status check failed when a status command fails" do
-        @provider.stub(:shell_out_with_systems_locale).and_return(@shell_out_failure)
+        @provider.stub(:shell_out).and_return(@shell_out_failure)
         @provider.load_current_resource
         @provider.instance_variable_get("@status_check_success").should be_false
       end
@@ -129,31 +129,31 @@ describe Chef::Provider::Service::Systemd do
 
     it "should call the start command if one is specified" do
       @new_resource.stub(:start_command).and_return("/sbin/rsyslog startyousillysally")
-      @provider.should_receive(:shell_out!).with("/sbin/rsyslog startyousillysally")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog startyousillysally")
       @provider.start_service
     end
 
     it "should call '/bin/systemctl start service_name' if no start command is specified" do
-      @provider.should_receive(:shell_out_with_systems_locale).with("/bin/systemctl start #{@new_resource.service_name}").and_return(@shell_out_success)
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/bin/systemctl start #{@new_resource.service_name}").and_return(@shell_out_success)
       @provider.start_service
     end
 
     it "should not call '/bin/systemctl start service_name' if it is already running" do
       @current_resource.stub(:running).and_return(true)
-      @provider.should_not_receive(:shell_out_with_systems_locale).with("/bin/systemctl start #{@new_resource.service_name}")
+      @provider.should_not_receive(:shell_out_with_systems_locale!).with("/bin/systemctl start #{@new_resource.service_name}")
       @provider.start_service
     end
 
     it "should call the restart command if one is specified" do
       @current_resource.stub(:running).and_return(true)
       @new_resource.stub(:restart_command).and_return("/sbin/rsyslog restartyousillysally")
-      @provider.should_receive(:shell_out!).with("/sbin/rsyslog restartyousillysally")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog restartyousillysally")
       @provider.restart_service
     end
 
     it "should call '/bin/systemctl restart service_name' if no restart command is specified" do
       @current_resource.stub(:running).and_return(true)
-      @provider.should_receive(:shell_out_with_systems_locale).with("/bin/systemctl restart #{@new_resource.service_name}").and_return(@shell_out_success)
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/bin/systemctl restart #{@new_resource.service_name}").and_return(@shell_out_success)
       @provider.restart_service
     end
 
@@ -162,7 +162,7 @@ describe Chef::Provider::Service::Systemd do
         it "should call the reload command" do
           @current_resource.stub(:running).and_return(true)
           @new_resource.stub(:reload_command).and_return("/sbin/rsyslog reloadyousillysally")
-          @provider.should_receive(:shell_out!).with("/sbin/rsyslog reloadyousillysally")
+          @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog reloadyousillysally")
           @provider.reload_service
         end
       end
@@ -170,7 +170,7 @@ describe Chef::Provider::Service::Systemd do
       context "when a reload command is not specified" do
         it "should call '/bin/systemctl reload service_name' if the service is running" do
           @current_resource.stub(:running).and_return(true)
-          @provider.should_receive(:shell_out_with_systems_locale).with("/bin/systemctl reload #{@new_resource.service_name}").and_return(@shell_out_success)
+          @provider.should_receive(:shell_out_with_systems_locale!).with("/bin/systemctl reload #{@new_resource.service_name}").and_return(@shell_out_success)
           @provider.reload_service
         end
 
@@ -185,19 +185,19 @@ describe Chef::Provider::Service::Systemd do
     it "should call the stop command if one is specified" do
       @current_resource.stub(:running).and_return(true)
       @new_resource.stub(:stop_command).and_return("/sbin/rsyslog stopyousillysally")
-      @provider.should_receive(:shell_out!).with("/sbin/rsyslog stopyousillysally")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog stopyousillysally")
       @provider.stop_service
     end
 
     it "should call '/bin/systemctl stop service_name' if no stop command is specified" do
       @current_resource.stub(:running).and_return(true)
-      @provider.should_receive(:shell_out_with_systems_locale).with("/bin/systemctl stop #{@new_resource.service_name}").and_return(@shell_out_success)
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/bin/systemctl stop #{@new_resource.service_name}").and_return(@shell_out_success)
       @provider.stop_service
     end
 
     it "should not call '/bin/systemctl stop service_name' if it is already stopped" do
       @current_resource.stub(:running).and_return(false)
-      @provider.should_not_receive(:shell_out_with_systems_locale).with("/bin/systemctl stop #{@new_resource.service_name}")
+      @provider.should_not_receive(:shell_out_with_systems_locale!).with("/bin/systemctl stop #{@new_resource.service_name}")
       @provider.stop_service
     end
   end
@@ -210,12 +210,12 @@ describe Chef::Provider::Service::Systemd do
     end
 
     it "should call '/bin/systemctl enable service_name' to enable the service" do
-      @provider.should_receive(:shell_out_with_systems_locale).with("/bin/systemctl enable #{@new_resource.service_name}").and_return(@shell_out_success)
+      @provider.should_receive(:shell_out!).with("/bin/systemctl enable #{@new_resource.service_name}").and_return(@shell_out_success)
       @provider.enable_service
     end
 
     it "should call '/bin/systemctl disable service_name' to disable the service" do
-      @provider.should_receive(:shell_out_with_systems_locale).with("/bin/systemctl disable #{@new_resource.service_name}").and_return(@shell_out_success)
+      @provider.should_receive(:shell_out!).with("/bin/systemctl disable #{@new_resource.service_name}").and_return(@shell_out_success)
       @provider.disable_service
     end
   end
@@ -227,12 +227,12 @@ describe Chef::Provider::Service::Systemd do
     end
 
     it "should return true if '/bin/systemctl is-active service_name' returns 0" do
-      @provider.should_receive(:shell_out_with_systems_locale).with('/bin/systemctl is-active rsyslog.service --quiet').and_return(@shell_out_success)
+      @provider.should_receive(:shell_out).with('/bin/systemctl is-active rsyslog.service --quiet').and_return(@shell_out_success)
       @provider.is_active?.should be_true
     end
 
     it "should return false if '/bin/systemctl is-active service_name' returns anything except 0" do
-      @provider.should_receive(:shell_out_with_systems_locale).with('/bin/systemctl is-active rsyslog.service --quiet').and_return(@shell_out_failure)
+      @provider.should_receive(:shell_out).with('/bin/systemctl is-active rsyslog.service --quiet').and_return(@shell_out_failure)
       @provider.is_active?.should be_false
     end
   end
@@ -244,12 +244,12 @@ describe Chef::Provider::Service::Systemd do
     end
 
     it "should return true if '/bin/systemctl is-enabled service_name' returns 0" do
-      @provider.should_receive(:shell_out_with_systems_locale).with('/bin/systemctl is-enabled rsyslog.service --quiet').and_return(@shell_out_success)
+      @provider.should_receive(:shell_out).with('/bin/systemctl is-enabled rsyslog.service --quiet').and_return(@shell_out_success)
       @provider.is_enabled?.should be_true
     end
 
     it "should return false if '/bin/systemctl is-enabled service_name' returns anything except 0" do
-      @provider.should_receive(:shell_out_with_systems_locale).with('/bin/systemctl is-enabled rsyslog.service --quiet').and_return(@shell_out_failure)
+      @provider.should_receive(:shell_out).with('/bin/systemctl is-enabled rsyslog.service --quiet').and_return(@shell_out_failure)
       @provider.is_enabled?.should be_false
     end
   end

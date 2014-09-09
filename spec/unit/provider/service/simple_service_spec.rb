@@ -107,7 +107,7 @@ NOMOCKINGSTRINGSPLZ
   describe "when starting the service" do
     it "should call the start command if one is specified" do
       @new_resource.stub(:start_command).and_return("#{@new_resource.start_command}")
-      @provider.should_receive(:shell_out!).with("#{@new_resource.start_command}")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("#{@new_resource.start_command}")
       @provider.start_service()
     end
 
@@ -121,7 +121,7 @@ NOMOCKINGSTRINGSPLZ
   describe "when stopping a service" do
     it "should call the stop command if one is specified" do
       @new_resource.stop_command("/etc/init.d/themadness stop")
-      @provider.should_receive(:shell_out!).with("/etc/init.d/themadness stop")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/etc/init.d/themadness stop")
       @provider.stop_service()
     end
 
@@ -135,7 +135,7 @@ NOMOCKINGSTRINGSPLZ
   describe Chef::Provider::Service::Simple, "restart_service" do
     it "should call the restart command if one has been specified" do
       @new_resource.restart_command("/etc/init.d/foo restart")
-      @provider.should_receive(:shell_out!).with("/etc/init.d/foo restart")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/etc/init.d/foo restart")
       @provider.restart_service()
     end
 
@@ -162,7 +162,7 @@ NOMOCKINGSTRINGSPLZ
 
     it "should should run the user specified reload command if one is specified" do
       @new_resource.reload_command("kill -9 1")
-      @provider.should_receive(:shell_out!).with("kill -9 1")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("kill -9 1")
       @provider.reload_service()
     end
   end
