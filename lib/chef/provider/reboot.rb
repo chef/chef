@@ -54,7 +54,7 @@ class Chef
         converge_by("rebooting the system immediately") do
           Chef::Log.warn "Rebooting system immediately, requested by '#{@new_resource.name}'"
           request_reboot
-          Chef::Platform::Rebooter.reboot!(node)
+          throw :interrupt_run_and_reboot
         end
       end
 

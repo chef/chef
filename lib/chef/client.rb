@@ -428,7 +428,9 @@ class Chef
 
         run_context = setup_run_context
 
-        converge(run_context)
+        catch (:interrupt_run_and_reboot) do
+          converge(run_context)
+        end
 
         save_updated_node
 

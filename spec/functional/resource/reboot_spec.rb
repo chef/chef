@@ -42,18 +42,8 @@ describe Chef::Resource::Reboot do
     create_resource
   end
 
-  # the currently defined behavior for multiple calls to this resource is "last one wins."
-
-  describe 'the request_reboot_on_successful_run action' do
-    before do
-      resource.run_action(:request_reboot_on_successful_run)
-    end
-
-    after do
-      resource.run_context.cancel_reboot
-    end
-
-    it 'should have modified the run context correctly' do
+  shared_context 'testing run context modification' do
+    def test_reboot_action(resource)
       reboot_info = resource.run_context.reboot_info
       expect(reboot_info.keys.sort).to eq([:delay_mins, :reason, :requested_by, :timestamp])
       expect(reboot_info[:delay_mins]).to eq(expected[:delay_mins])
@@ -64,10 +54,37 @@ describe Chef::Resource::Reboot do
     end
   end
 
+  # the currently defined behavior for multiple calls to this resource is "last one wins."
+  describe 'the request_reboot_on_successful_run action' do
+    include_context 'testing run context modification'
+
+    before do
+      resource.run_action(:request_reboot_on_successful_run)
+    end
+
+    after do
+      resource.run_context.cancel_reboot
+    end
+
+    it 'should have modified the run context correctly' do
+      test_reboot_action(resource)
+    end
+  end
+
   describe 'the reboot_interrupt_run action' do
-    it 'should have attempted to reboot the server' do
-      expect(Chef::Platform::Rebooter).to receive(:reboot!).once
-      resource.run_action(:reboot_interrupt_run)
+    include_context 'testing run context modification'
+
+    after do
+      resource.run_context.cancel_reboot
+    end
+
+    it 'should have modified the run context correctly' do
+      # this doesn't actually test the flow of Chef::Client#do_run, unfortunately.
+      expect {
+        resource.run_action(:reboot_interrupt_run)
+      }.to throw_symbol(:interrupt_run_and_reboot)
+
+      test_reboot_action(resource)
     end
   end
 
