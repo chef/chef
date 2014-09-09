@@ -19,6 +19,8 @@ name "rubygems-customization"
 
 default_version "0.1.0"
 
+source path: "#{project.files_path}/#{name}"
+
 if windows?
   dependency "ruby-windows"
 else
@@ -26,45 +28,26 @@ else
   dependency "rubygems"
 end
 
-
-
-#/opt/chefdk/embedded/bin/ruby -e 'puts Gem.dir'
-# => /opt/chefdk/embedded/lib/ruby/gems/2.1.0
-#
-# /opt/chefdk/embedded/bin/ruby -rrbconfig -e "puts RbConfig::CONFIG['sitelibdir']"
-# => /opt/chefdk/embedded/lib/ruby/site_ruby/2.1.0
-
-# result should be /opt/chefdk/embedded/lib/ruby/site_ruby/2.1.0/rubygems/defaults/operating_system.rb
-
-
 build do
-  sitelibdir_cmd = %Q{#{install_dir}/embedded/bin/ruby -rrbconfig -e "puts RbConfig::CONFIG['sitelibdir']"}
-
-  # TODO: use +windows_safe_path+
-  sitelibdir_cmd.gsub!('/', '\\') if windows?
-
-  block do
-    source_customization_file = if platform == 'windows'
-      File.join(project.files_path, "rubygems_customization", "windows", "operating_system.rb")
+  block "Add Rubygems customization file" do
+    source_customization_file = if windows?
+      "#{project_dir}/windows/operating_system.rb"
     else
-      File.join(project.files_path, "rubygems_customization", "default", "operating_system.rb")
-    end
-    embedded_ruby_site_dir = ""
-    Bundler.with_clean_env do
-      embedded_ruby_site_dir = %x{#{sitelibdir_cmd}}.strip
+      "#{project_dir}/default/operating_system.rb"
     end
 
-    raise "could not determine embedded ruby's site dir" if embedded_ruby_site_dir.empty?
-
-    if sysdrive = ENV['SYSTEMDRIVE']
-      match_drive = Regexp.new(Regexp.escape(sysdrive), Regexp::IGNORECASE)
-      embedded_ruby_site_dir.sub!(match_drive, '')
+    site_ruby = Bundler.with_clean_env do
+      ruby = windows_safe_path("#{install_dir}/embedded/bin/ruby")
+      %x|#{ruby} -rrbconfig -e "puts RbConfig::CONFIG['sitelibdir']"|.strip
     end
 
-    destination_dir = File.join(embedded_ruby_site_dir, 'rubygems', 'defaults')
-    destination = File.join(destination_dir, "operating_system.rb")
+    if site_ruby.nil? || site_ruby.empty?
+      raise "Could not determine embedded Ruby's site directory, aborting!"
+    end
 
-    FileUtils.mkdir_p destination_dir
+    destination = "#{site_ruby}/rubygems/defaults"
+
+    FileUtils.mkdir_p destination
     FileUtils.cp source_customization_file, destination
   end
 end
