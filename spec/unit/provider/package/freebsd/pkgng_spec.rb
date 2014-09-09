@@ -67,7 +67,7 @@ describe Chef::Provider::Package::Freebsd::Port do
   describe "determining current installed version" do
     before(:each) do
       @provider.stub(:supports_pkgng?)
-      @pkg_info = OpenStruct.new(:stdout => "zsh-3.1.7\n")
+      @pkg_info = OpenStruct.new(:stdout => "zsh-3.1.7\nVersion             : 3.1.7\n")
     end
 
     it "should query pkg database" do
