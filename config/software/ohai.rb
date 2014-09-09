@@ -16,6 +16,9 @@
 #
 
 name "ohai"
+default_version "master"
+
+source git: "git://github.com/opscode/ohai"
 
 if windows?
   dependency "ruby-windows"
@@ -27,10 +30,6 @@ else
 end
 
 dependency "bundler"
-
-default_version "master"
-
-source :git => "git://github.com/opscode/ohai"
 
 relative_path "ohai"
 
