@@ -45,7 +45,7 @@ override :rubygems,  version: "2.2.1"
 override :yajl,      version: "1.2.0"
 override :zlib,      version: "1.2.8"
 override :chef,      version: "11.14.6"
-override :"chef-windows",      version: "11.14.6"
+override :"chef-windows",      version: "11.16.0"
 override :"test-kitchen",      version: "v1.2.1"
 
 dependency "preparation"

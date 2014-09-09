@@ -41,11 +41,6 @@ build do
 
         raise "could not determine embedded ruby's RbConfig::CONFIG['#{config}']" if config_dir.empty?
 
-        if sysdrive = ENV['SYSTEMDRIVE']
-          match_drive = Regexp.new(Regexp.escape(sysdrive), Regexp::IGNORECASE)
-          config_dir.sub!(match_drive, '')
-        end
-
         config_dir
       end
 
@@ -65,9 +60,8 @@ build do
       # to pick up our script which find the CA bundle in omnibus installations and points SSL_CERT_FILE to it
       # if it's not already set
       source_openssl_rb = File.join(embedded_ruby_lib_dir, "openssl.rb")
-      original_openssl_rb = File.read(source_openssl_rb)
-      File.open(source_openssl_rb, "w") do |f|
-        f.write(original_openssl_rb + "\nrequire 'ssl_env_hack'\n")
+      File.open(source_openssl_rb, "a") do |f|
+        f.write("\nrequire 'ssl_env_hack'\n")
       end
     end
   end
