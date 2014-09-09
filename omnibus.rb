@@ -38,7 +38,7 @@ s3_bucket      'opscode-omnibus-cache'
 # Customize compiler bits
 # ------------------------------
 solaris_compiler 'gcc'
-# build_retries 5
+build_retries 3
 
 # Load additional software
 # ------------------------------
