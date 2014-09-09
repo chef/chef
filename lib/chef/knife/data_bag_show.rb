@@ -22,7 +22,7 @@ require 'chef/knife'
 class Chef
   class Knife
     class DataBagShow < Knife
-      include DataBagSecretOptions
+      include DataBagCommon
 
       deps do
         require 'chef/data_bag'

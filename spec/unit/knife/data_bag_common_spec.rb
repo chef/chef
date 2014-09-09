@@ -22,13 +22,13 @@ require 'chef/config'
 require 'tempfile'
 
 class ExampleDataBag < Chef::Knife
-  include Chef::Knife::DataBagSecretOptions
+  include Chef::Knife::DataBagCommon
 
   #banner "you must provide a banner"
   #category "data bag"
 end
 
-describe Chef::Knife::DataBagSecretOptions do
+describe Chef::Knife::DataBagCommon do
   let(:example_db) do
     k = ExampleDataBag.new
     allow(k.ui).to receive(:stdout).and_return(stdout)
@@ -42,10 +42,13 @@ describe Chef::Knife::DataBagSecretOptions do
     sfile = Tempfile.new("encrypted_data_bag_secret")
     sfile.puts(secret)
     sfile.flush
+    sfile
   end
 
   after do
     Chef::Config.reset
+    secret_file.close
+    secret_file.unlink
   end
 
   describe "#validate_secrets" do

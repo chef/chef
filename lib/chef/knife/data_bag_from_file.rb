@@ -23,7 +23,7 @@ require 'chef/util/path_helper'
 class Chef
   class Knife
     class DataBagFromFile < Knife
-      include DataBagSecretOptions
+      include DataBagCommon
 
       deps do
         require 'chef/data_bag'

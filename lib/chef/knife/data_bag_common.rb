@@ -17,32 +17,34 @@
 #
 
 require 'mixlib/cli'
-# TODO these were in a `deps` call before - okay that they aren't anymore?
 require 'chef/config'
-#require 'chef/data_bag'
 require 'chef/encrypted_data_bag_item'
 
 class Chef
   class Knife
-    module DataBagSecretOptions
+    module DataBagCommon
       include Mixlib::CLI
 
-      option :secret,
-             :short => "-s SECRET",
-             :long  => "--secret ",
-             :description => "The secret key to use to encrypt data bag item values",
-             :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
+      # TODO when https://github.com/opscode/mixlib-cli/pull/13 is fixed, we can make this a base class
+      # instead of a module
+      def self.included(base)
+        base.option :secret,
+               :short => "-s SECRET",
+               :long  => "--secret ",
+               :description => "The secret key to use to encrypt data bag item values",
+               :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
 
-      option :secret_file,
-             :long => "--secret-file SECRET_FILE",
-             :description => "A file containing the secret key to use to encrypt data bag item values",
-             :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
+        base.option :secret_file,
+               :long => "--secret-file SECRET_FILE",
+               :description => "A file containing the secret key to use to encrypt data bag item values",
+               :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
 
-      option :encrypt,
-             :long => "--encrypt",
-             :description => "Only use the secret configured in knife.rb when this is true",
-             :boolean => true,
-             :default => false
+        base.option :encrypt,
+               :long => "--encrypt",
+               :description => "Only use the secret configured in knife.rb when this is true",
+               :boolean => true,
+               :default => false
+      end
 
       ##
       # Determine if the user has specified an appropriate secret for encrypting data bag items.

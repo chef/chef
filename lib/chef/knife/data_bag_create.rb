@@ -22,9 +22,9 @@ require 'chef/knife'
 class Chef
   class Knife
     class DataBagCreate < Knife
-      include DataBagSecretOptions
+      include DataBagCommon
 
-      # TODO duplicating deps here and in the DataBagSecretOptions module
+      # TODO duplicating deps here and in the DataBagCommon module
       deps do
         require 'chef/data_bag'
         require 'chef/encrypted_data_bag_item'
