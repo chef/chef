@@ -15,6 +15,12 @@
 # limitations under the License.
 #
 
+# This script sets the SSL_CERT_FILE environment variable to the CA cert bundle
+# that ships with omnibus packages of Chef and Chef DK. If this environment
+# variable is already configured, this script is a no-op.
+#
+# This is required to make Chef tools use https URLs out of the box.
+
 unless ENV.key?("SSL_CERT_FILE")
   base_dirs = File.dirname(__FILE__).split(File::SEPARATOR)
 
