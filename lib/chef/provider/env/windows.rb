@@ -33,10 +33,9 @@ class Chef
           end
           obj.variablevalue = @new_resource.value
           obj.put_
-          value =  @new_resource.value
+          value = @new_resource.value
           value = expand_path(value) if @new_resource.key_name.upcase == 'PATH'
           ENV[@new_resource.key_name] = value
-
           broadcast_env_change
         end
 
@@ -78,10 +77,11 @@ class Chef
         private
 
         def expand_path(path)
-          system_vars = %w(HomeDrive HomePath ProgramFiles SystemDirectory SystemDrive SystemRoot Temp Tmp UserProfile WinDir)
-          system_vars.each_with_object(path) do |variable, new_path|
-            new_path.gsub!(/%#{variable}%/i, ENV[variable]) if ENV[variable]
+          buf = 0.chr * 32 * (1 << 10) # http://msdn.microsoft.com/en-us/library/windows/desktop/ms724265%28v=vs.85%29.aspx
+          if ExpandEnvironmentStringsA(path, buf, buf.length) == 0
+            Chef::ReservedNames::Win32::Error.raise!
           end
+          buf.strip
         end
       end
     end
