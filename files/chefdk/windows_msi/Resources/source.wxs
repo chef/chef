@@ -39,7 +39,7 @@
               <Directory Id="EMBEDDEDBIN" Name="bin" >
                 <Component Id="ChefDkPath" Guid="{AEA5727E-DAD2-48CC-ADB8-38DD0EB46C62}" >
                   <Environment Id="Environment"
-                               Name="PATH" Action="set" Part="last" System="yes" Value="[PROJECTLOCATION]bin" />
+                               Name="PATH" Action="set" Part="last" System="yes" Value="[PROJECTLOCATION]bin;[PROJECTLOCATION]embedded\bin" />
                 </Component>
               </Directory>
             </Directory>

@@ -44,7 +44,7 @@
               <Directory Id="EMBEDDEDBIN" Name="bin" >
                 <Component Id="ChefClientPath" Guid="{7F663F88-55A2-4E20-82BF-8BD2E60BB83A}" >
                   <Environment Id="Environment"
-                               Name="PATH" Action="set" Part="last" System="yes" Value="[PROJECTLOCATION]bin" />
+                               Name="PATH" Action="set" Part="last" System="yes" Value="[PROJECTLOCATION]bin;[PROJECTLOCATION]embedded\bin" />
                 </Component>
                 <Component Id="ChefClientService" Guid="{69B2D8BE-4A47-4BE3-AEE8-83FAEB6E2FAF}" >
                   <File Id="RubyExecutable" Source="$(var.ProjectSourceDir)\embedded\bin\ruby.exe" KeyPath="yes" />
