@@ -150,7 +150,7 @@ class Chef
 
         ui.warn(<<-BAD_CERTS)
 There are invalid certificates in your trusted_certs_dir.
-OpenSSL may not use the following certificates when verifying SSL connections:
+OpenSSL will not use the following certificates when verifying SSL connections:
 
 #{cert_debug_msg}
 
