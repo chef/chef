@@ -29,6 +29,7 @@ dependency "chef-vault"
 dependency "ohai"
 dependency "test-kitchen"
 dependency "chef"
+dependency "openssl-customization"
 dependency "rubygems-customization"
 
 # The devkit has to be installed after rubygems-customization so the

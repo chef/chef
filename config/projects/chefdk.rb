@@ -51,7 +51,6 @@ override :zlib,           version: "1.2.8"
 
 dependency "preparation"
 dependency "chefdk"
-dependency "rubygems-customization"
 dependency "version-manifest"
 
 package :rpm do
