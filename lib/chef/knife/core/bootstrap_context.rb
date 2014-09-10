@@ -44,8 +44,10 @@ class Chef
 
         def encrypted_data_bag_secret
           knife_config[:secret] || begin
-            if knife_config[:secret_file] && File.exist?(knife_config[:secret_file])
-              IO.read(File.expand_path(knife_config[:secret_file]))
+            secret_file_path = knife_config[:secret_file]
+            expanded_secret_file_path = File.expand_path(secret_file_path.to_s)
+            if secret_file_path && File.exist?(expanded_secret_file_path)
+              IO.read(expanded_secret_file_path)
             else
               nil
             end
