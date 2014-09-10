@@ -15,18 +15,27 @@
 #
 
 name "chef"
-
-dependency "ruby"
-dependency "rubygems"
-dependency "libffi"
-dependency "bundler"
-dependency "appbundler"
-
 default_version "master"
 
 source git: "git://github.com/opscode/chef"
 
 relative_path "chef"
+
+if windows?
+  dependency "ruby-windows" # includes rubygems
+  dependency "libyaml-windows"
+  dependency "openssl-windows"
+  dependency "ruby-windows-devkit"
+  dependency "openssl-customization"
+  dependency "cacerts"
+else
+  dependency "ruby"
+  dependency "rubygems"
+  dependency "libffi"
+end
+
+dependency "bundler"
+dependency "appbundler"
 
 build do
   env = with_standard_compiler_flags(with_embedded_path)
@@ -46,19 +55,62 @@ build do
     end
   end
 
-  # install the whole bundle first
-  bundle "install --without server docgen", env: env
-  rake "gem", env: env
+  if windows?
+    # Normally we would symlink the required unix tools.
+    # However with the introduction of git-cache to speed up omnibus builds,
+    # we can't do that anymore since git on windows doesn't support symlinks.
+    # https://groups.google.com/forum/#!topic/msysgit/arTTH5GmHRk
+    # Therefore we copy the tools to the necessary places.
+    # We need tar for 'knife cookbook site install' to function correctly
+    {
+      'tar.exe'          => 'bsdtar.exe',
+      'libarchive-2.dll' => 'libarchive-2.dll',
+      'libexpat-1.dll'   => 'libexpat-1.dll',
+      'liblzma-1.dll'    => 'liblzma-1.dll',
+      'libbz2-2.dll'     => 'libbz2-2.dll',
+      'libz-1.dll'       => 'libz-1.dll',
+    }.each do |target, to|
+      copy "#{install_dir}/embedded/mingw/bin/#{to}", "#{install_dir}/bin/#{target}"
+    end
 
-  # Delete the windows gem
-  delete "pkg/chef-*-x86-mingw32.gem"
+    gem "build chef-x86-mingw32.gemspec", env: env
+    gem "install chef*mingw32.gem" \
+        " --bindir '#{install_dir}/bin'" \
+        " --no-ri --no-rdoc" \
+        " --verbose"
 
-  # Don't use -n #{install_dir}/bin. Appbundler will take care of them later
-  gem "install pkg/chef-*.gem " \
-      " --no-ri --no-rdoc", env: env
+    # Depending on which shell is being used, the path environment variable can
+    # be "PATH" or "Path". If *both* are set, only one is honored.
+    path_key = ENV.keys.grep(/\Apath\Z/i).first
+
+    bundle "install", env: {
+      path_key => [
+        windows_safe_path(install_dir, 'embedded', 'bin'),
+        windows_safe_path(install_dir, 'embedded', 'mingw', 'bin'),
+        windows_safe_path('C:/Windows/system32'),
+        windows_safe_path('C:/Windows'),
+        windows_safe_path('C:/Windows/System32/Wbem'),
+      ].join(File::PATH_SEPARATOR)
+    }
+
+  else
+
+    # install the whole bundle first
+    bundle "install --without server docgen", env: env
+
+    gem "build chef.gemspec", env: env
+
+    # Delete the windows gem
+    delete "chef-*-x86-mingw32.gem"
+
+    # Don't use -n #{install_dir}/bin. Appbundler will take care of them later
+    gem "install chef*.gem " \
+        " --no-ri --no-rdoc", env: env
+
+  end
 
   auxiliary_gems = {}
-  auxiliary_gems['ruby-shadow'] = '>= 0.0.0' unless aix?
+  auxiliary_gems['ruby-shadow'] = '>= 0.0.0' unless aix? || windows?
 
   auxiliary_gems.each do |name, version|
     gem "install #{name}" \

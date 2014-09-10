@@ -28,17 +28,12 @@ dependency "berkshelf"
 dependency "chef-vault"
 dependency "ohai"
 dependency "test-kitchen"
+dependency "chef"
+dependency "rubygems-customization"
 
-if windows?
-  dependency "chef-windows"
-  dependency "rubygems-customization"
-  # The devkit has to be installed after rubygems-customization so the
-  # file it installs gets patched.
-  dependency "ruby-windows-devkit"
-else
-  dependency "chef"
-  dependency "rubygems-customization"
-end
+# The devkit has to be installed after rubygems-customization so the
+# file it installs gets patched.
+dependency "ruby-windows-devkit" if windows?
 
 build do
   def appbundle(app_path, bin_path)
@@ -55,9 +50,8 @@ build do
   )
 
   bundle "install", env: env
-  rake "build", env: env
-
-  gem "install pkg/chef-dk*.gem" \
+  gem "build chef-dk.gemspec", env: env
+  gem "install chef-dk*.gem" \
       " --no-ri --no-rdoc" \
       " --verbose", env: env
 

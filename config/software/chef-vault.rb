@@ -24,12 +24,12 @@ relative_path "chef-vault"
 if windows?
   dependency "ruby-windows"
   dependency "ruby-windows-devkit"
-  dependency "chef-windows"
 else
   dependency "ruby"
   dependency "rubygems"
-  dependency "chef"
 end
+
+dependency "chef"
 
 build do
   env = with_standard_compiler_flags(with_embedded_path)

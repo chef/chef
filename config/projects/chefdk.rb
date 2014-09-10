@@ -19,6 +19,12 @@ friendly_name "Chef Development Kit"
 maintainer "Chef Software, Inc."
 homepage "https://www.getchef.com"
 
+build_iteration 1
+build_version do
+  source :git, from_dependency: 'chefdk'
+  output_format :semver
+end
+
 if windows?
   # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
   #       Native gems will use gcc which will barf on files with spaces,
@@ -28,16 +34,9 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
-build_iteration 1
-build_version do
-  source :git, from_dependency: 'chefdk'
-  output_format :semver
-end
-
 override :berkshelf,      version: "master"
 override :bundler,        version: "1.5.2"
 override :chef,           version: "11.16.0"
-override :'chef-windows', version: "11.16.0"
 override :libedit,        version: "20130712-3.1"
 override :libtool,        version: "2.4.2"
 override :libxml2,        version: "2.9.1"
