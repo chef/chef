@@ -42,7 +42,7 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
-resources_path "#{Config.project_root}/files/chef"
+resources_path "#{Omnibus::Config.project_root}/files/chef"
 
 dependency "preparation"
 dependency "chef"
