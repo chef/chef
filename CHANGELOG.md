@@ -1,5 +1,7 @@
 ## Unreleased: 12.0.0
 
+* [**Kirill Shirinkin**](https://github.com/Fodoj):
+  The knife bootstrap command expands the path of the secret-file
 * [**Malte Swart**](https://github.com/mswart):
   [CHEF-4101] DeepMerge - support overwriting hash values with nil
 * [**James Belchamber**](https://github.com/JamesBelchamber):
