@@ -49,53 +49,8 @@ if [ ! -f build_timestamp ]; then
   echo "$BUILD_TAG / $BUILD_ID" > build_timestamp
 fi
 
-mkdir -p jenkins/chef-solo/cache/remote_file
-
 PATH=/opt/ruby1.9/bin:/usr/local/bin:$PATH
 export PATH
-
-# if not_exists chef-solo; then
-  # sudo gem install chef --no-ri --no-rdoc
-# fi
-
-# ensure bundler is installed
-# if not_exists bundle; then
-  # sudo gem install bundler --no-ri --no-rdoc
-# fi
-
-# TEMPORARY: can't install berks on AIX
-if [ "x$os" != "xAIX" ]; then
-  # ensure berkshelf is installed
-  # if not_exists berks; then
-    # sudo gem install berkshelf --no-ri --no-rdoc
-  # fi
-
-  # install omnibus cookbook and dependencies
-  # Disable berks install since we don't need it anymore
-  # berks install --path=vendor/cookbooks
-
-  if [ -f "/etc/release" ] && [ -n "`cat /etc/release | grep -i solaris`" ]; then
-    dna=`pwd`/jenkins/dna-solaris2.json
-  else
-    dna=`pwd`/jenkins/dna.json
-  fi
-  # Omnibus build server prep tasks, including build ruby
-  # TEMPORARY: Temporarily disable chef-solo runs.
-  # Can be reverted when https://github.com/opscode-cookbooks/omnibus/pull/12
-  # is merged and released.
-  # Note that currently this functionality is not needed since we are far away
-  # from rebuilding slaves using cookbooks in ci.opscode.us.
-  # sudo -i env PATH=$PATH chef-solo -c `pwd`/jenkins/solo.rb -j $dna -l debug
-  # END of temporary change.
-  # Fix root-owned perms left over from running chef-solo (cache turds, etc)
-  set +e
-  if [ "x$os" = "xAIX" ]; then
-    sudo chown -R root `pwd`
-  else
-    sudo chown -R jenkins-node `pwd` || sudo chown -R jenkins `pwd`
-  fi
-  set -e
-fi
 
 if [ "x$os" = "xAIX" ]; then
   # AIX is hateful and requires a bunch of root stuff to build BFF packages
@@ -138,10 +93,6 @@ else
   sudo chown -R jenkins-node "/var/cache/omnibus" || sudo chown -R jenkins "/var/cache/omnibus"
 fi
 
-# Aaand.. new ruby
-PATH=/usr/local/bin:$PATH
-export PATH
-
 # horrible hack for solaris 9 to get ffi to compile in the bundle
 if [ -f "/etc/release" ]; then
   # solaris /bin/sh needs the stupid || true or set -x bombs here
@@ -154,7 +105,7 @@ if [ -f "/etc/release" ]; then
 fi
 
 # docs do not install on solaris 9
-bundle install --without docs
+bundle install --without development
 
 if [ "$RELEASE_BUILD" = "true" ]; then
   bundle exec omnibus build $OMNIBUS_PROJECT_NAME -l internal --override append_timestamp:false
