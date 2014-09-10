@@ -39,6 +39,7 @@ s3_bucket      'opscode-omnibus-cache'
 # ------------------------------
 solaris_compiler 'gcc'
 build_retries 3
+fetcher_read_timeout 120
 
 # Load additional software
 # ------------------------------
