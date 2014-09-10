@@ -1,5 +1,7 @@
 ## Unreleased: 12.0.0
 
+* [**Nolan Davidson**](https://github.com/nsdavidson):
+  The chef-apply command now prints usage information when called without arguments
 * [**Kazuki Saito**](https://github.com/sakazuki):
   CHEF-4933: idempotency fixes for ifconfig provider
 * [**Kirill Shirinkin**](https://github.com/Fodoj):
