@@ -235,7 +235,7 @@ describe Chef::WorkstationConfigLoader do
 
       let(:explicit_config_location) do
         # could use described_class, but remove all ':' from the path if so.
-        t = Tempfile.new("Chef::WorkstationConfigLoader-rspec-test")
+        t = Tempfile.new("Chef-WorkstationConfigLoader-rspec-test")
         t.print(config_content)
         t.close
         t.path
