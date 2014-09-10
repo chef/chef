@@ -157,9 +157,9 @@ fi
 bundle install --without docs
 
 if [ "$RELEASE_BUILD" = "true" ]; then
-  bundle exec omnibus build $OMNIBUS_PROJECT_NAME -l debug --no-timestamp
+  bundle exec omnibus build $OMNIBUS_PROJECT_NAME -l internal --override append_timestamp:false
 else
-  bundle exec omnibus build $OMNIBUS_PROJECT_NAME -l debug
+  bundle exec omnibus build $OMNIBUS_PROJECT_NAME -l internal
 fi
 
 # Dump the build-generated version so the Omnitruck release script uses the
