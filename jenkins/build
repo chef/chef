@@ -49,7 +49,7 @@ if [ ! -f build_timestamp ]; then
   echo "$BUILD_TAG / $BUILD_ID" > build_timestamp
 fi
 
-PATH=/opt/ruby1.9/bin:/usr/local/bin:$PATH
+PATH=/opt/ruby-2.1.2/bin:/opt/ruby1.9/bin:/usr/local/bin:$PATH
 export PATH
 
 if [ "x$os" = "xAIX" ]; then
