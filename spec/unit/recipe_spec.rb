@@ -362,11 +362,11 @@ describe Chef::Recipe do
   end
 
   describe "handle exec calls" do
-    it "should raise NoSuchResourceType error if exec is used" do
+    it "should raise ResourceNotFound error if exec is used" do
       code = <<-CODE
       exec 'do_not_try_to_exec'
       CODE
-      lambda { recipe.instance_eval(code) }.should raise_error(Chef::Exceptions::NoSuchResourceType)
+      lambda { recipe.instance_eval(code) }.should raise_error(Chef::Exceptions::ResourceNotFound)
     end
   end
 
