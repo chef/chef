@@ -935,7 +935,7 @@ describe Mixlib::ShellOut do
         let(:cmd) { [ 'exit' ] }
 
         it "handles ESRCH from getpgid of a zombie", :unix_only do
-          Process.stub(:setsid) { exit!(4) }
+          Process.stub(:setpgrp) { exit!(4) }
 
           # there is a small race condition here if the child doesn't get
           # scheduled and call exit! before the parent can call getpgid, so run
@@ -1068,16 +1068,19 @@ describe Mixlib::ShellOut do
               shell_cmd.stdout.should include("got term in child")
               shell_cmd.stdout.should include("got term in grandchild")
 
-              Process.kill(:INT, child_pgid) # should raise ESRCH
+              kill_return_val = Process.kill(:INT, child_pgid) # should raise ESRCH
+              # AIX - kill returns code > 0 for error, where as other platforms return -1. Ruby code signal.c treats < 0 as error and raises exception and hence fails on AIX. So we check the return code for assertions since ruby wont raise an error here.
 
-              # Debug the failure:
-              puts "child pgid=#{child_pgid.inspect}"
-              Process.wait
-              puts "collected process: #{$?.inspect}"
-              puts "initial process listing:\n#{initial_process_listing}"
-              puts "current process listing:"
-              puts `ps -j`
-              raise "Failed to kill all expected processes"
+              if(kill_return_val == 0)
+                # Debug the failure:
+                puts "child pgid=#{child_pgid.inspect}"
+                Process.wait
+                puts "collected process: #{$?.inspect}"
+                puts "initial process listing:\n#{initial_process_listing}"
+                puts "current process listing:"
+                puts `ps -j`
+                raise "Failed to kill all expected processes"
+              end
             rescue Errno::ESRCH
               # this is what we want
             end
