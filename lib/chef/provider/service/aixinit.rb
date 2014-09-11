@@ -22,7 +22,7 @@ class Chef
   class Provider
     class Service
       class AixInit < Chef::Provider::Service::Init
-        RC_D_SCRIPT_NAME = /\/etc\/rc.d\/rc2.d\/([SK])(\d\d)/i
+        RC_D_SCRIPT_NAME = /\/etc\/rc.d\/rc2.d\/([SK])(\d\d|)/i
 
         def initialize(new_resource, run_context)
           super
@@ -57,22 +57,22 @@ class Chef
         end
 
         def enable_service
-          Dir.glob("/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}*").each { |f| File.delete(f)}
+          Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).each { |f| File.delete(f)}
 
           if @new_resource.priority.is_a? Integer
-            create_symlink(2,'S',@new_resource.priority)
+            create_symlink(2, 'S', @new_resource.priority)
 
           elsif @new_resource.priority.is_a? Hash
             @new_resource.priority.each do |level,o|
               create_symlink(level,(o[0] == :start ? 'S' : 'K'),o[1])
             end
           else
-            create_symlink(2,'S',20)
+            create_symlink(2, 'S', '')
           end
         end
 
         def disable_service
-          Dir.glob("/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}*").each { |f| File.delete(f) }
+          Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).each { |f| File.delete(f) }
 
           if @new_resource.priority.is_a? Integer
             create_symlink(2, 'K',100 - @new_resource.priority)
@@ -81,7 +81,7 @@ class Chef
               create_symlink(level, 'K', 100 - o[1]) if o[0] == :stop
             end
           else
-            create_symlink(2, 'K', 20)
+            create_symlink(2, 'K', '')
           end
         end
 
@@ -92,13 +92,13 @@ class Chef
         def set_current_resource_attributes
           # assuming run level 2 for aix
           is_enabled = false
-          files = Dir.glob("/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}*")
+          files = Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"])
 
           priority = {}
 
           files.each do |file|
-            if RC_D_SCRIPT_NAME =~ file
-              priority[2] = [($1 == "S" ? :start : :stop), $2]
+            if (RC_D_SCRIPT_NAME =~ file)
+              priority[2] = [($1 == "S" ? :start : :stop), ($2.empty? ? '' : $2.to_i)]
               if $1 == "S"
                 is_enabled = true
               end
@@ -106,7 +106,7 @@ class Chef
           end
 
           if is_enabled && files.length == 1
-            priority = priority[2][:start]
+            priority = priority[2][1]
           end
           @current_resource.enabled(is_enabled)
           @current_resource.priority(priority)
