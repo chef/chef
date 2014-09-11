@@ -20,7 +20,7 @@ require 'spec_helper'
 describe Chef::Application::Apply do
 
   before do
-    @app = Chef::Application::Recipe.new
+    @app = Chef::Application::Apply.new
     @app.stub(:configure_logging).and_return(true)
     @recipe_text = "package 'nyancat'"
     Chef::Config[:solo] = true
@@ -72,5 +72,15 @@ describe Chef::Application::Apply do
     it "should save the filename for later use" do
       @recipe_fh.path.should == @app.instance_variable_get(:@recipe_filename)
     end
+  end
+  describe "recipe_file_arg" do
+    before do
+      ARGV.clear
+    end
+    it "should exit and log message" do
+      Chef::Log.should_receive(:debug).with(/^No recipe file provided/)
+      lambda { @app.run }.should raise_error(SystemExit) { |e| e.status.should == 1 }
+    end
+
   end
 end
