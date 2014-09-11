@@ -29,7 +29,7 @@ describe Chef::Knife::DataBagEdit do
   let(:knife) do
     k = Chef::Knife::DataBagEdit.new
     allow(k).to receive(:rest).and_return(rest)
-    allow(k).to receive(:stdout).and_return(stdout)
+    allow(k.ui).to receive(:stdout).and_return(stdout)
     k
   end
 
@@ -38,7 +38,7 @@ describe Chef::Knife::DataBagEdit do
   let(:edited_hash) { {"login_name" => "rho", "id" => "item_name", "new_key" => "new_value"} }
   let(:edited_db) {Chef::DataBagItem.from_hash(edited_hash)}
 
-  let(:rest) { double("ChefSpecs::ChefRest") }
+  let(:rest) { double("Chef::REST") }
   let(:stdout) { StringIO.new }
 
   let(:bag_name) { "sudoing_admins" }
@@ -46,14 +46,13 @@ describe Chef::Knife::DataBagEdit do
 
   let(:secret) { "abc123SECRET" }
 
-  let(:raw_hash)  {{ "login_name" => "alphaomega", "id" => item_name }}
-
   let(:config) { {} }
 
   it "requires data bag and item arguments" do
     knife.name_args = []
     expect(stdout).to receive(:puts).twice.with(anything)
     expect {knife.run}.to exit_with_code(1)
+    expect(stdout.string).to eq("")
   end
 
   it "saves edits on a data bag item" do

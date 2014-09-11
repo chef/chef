@@ -35,7 +35,7 @@ class Chef
       def run
         display = case @name_args.length
         when 2 # Bag and Item names provided
-          secret = read_secret
+          secret = encryption_secret_provided? ? read_secret : nil
           raw_data = Chef::DataBagItem.load(@name_args[0], @name_args[1]).raw_data
           encrypted = encrypted?(raw_data)
 
