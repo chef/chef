@@ -95,33 +95,4 @@ describe Chef::Resource::DscScript do
       expect { dsc_test_resource.configuration_data_script(configuration_data_script) }.to raise_error(ArgumentError)
     end
   end
-
-  context 'when Powershell does not supported Dsc' do
-    ['1.0', '2.0', '3.0'].each do |version|
-      it "raises an exception for powershell version '#{version}'" do
-        node = Chef::Node.new
-        node.automatic[:languages][:powershell][:version] = version
-        empty_events = Chef::EventDispatch::Dispatcher.new
-        dsc_test_run_context = Chef::RunContext.new(node, {}, empty_events)
-
-        expect {
-          Chef::Resource::DscScript.new(dsc_test_resource_name, dsc_test_run_context)
-        }.to raise_error(Chef::Exceptions::NoProviderAvailable)
-      end
-    end
-  end
-
-  context 'when Powershell is not present' do
-    let (:dsc_test_run_context) {
-      node = Chef::Node.new
-      empty_events = Chef::EventDispatch::Dispatcher.new
-      dsc_test_run_context = Chef::RunContext.new(node, {}, empty_events)
-    }
-
-    it 'raises an exception if powershell is not present' do
-        expect {
-          Chef::Resource::DscScript.new(dsc_test_resource_name, dsc_test_run_context)
-        }.to raise_error(Chef::Exceptions::NoProviderAvailable)
-      end
-  end
 end
