@@ -18,27 +18,29 @@
 
 require 'mixlib/cli'
 require 'chef/config'
+require 'chef/encrypted_data_bag_item/check_encrypted'
 
 class Chef
   class Knife
     module DataBagSecretOptions
       include Mixlib::CLI
+      include Chef::EncryptedDataBagItem::CheckEncrypted
 
       def self.included(base)
         base.option :secret,
                :short => "-s SECRET",
                :long  => "--secret ",
-               :description => "The secret key to use to encrypt data bag item values.  Can also be defaulted in your knife.rb with the key 'secret'",
+               :description => "The secret key to use to encrypt data bag item values.  Can also be defaulted in your config with the key 'secret'",
                :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
 
         base.option :secret_file,
                :long => "--secret-file SECRET_FILE",
-               :description => "A file containing the secret key to use to encrypt data bag item values.  Can also be defaulted in your knife.rb with the key 'secret_file'",
+               :description => "A file containing the secret key to use to encrypt data bag item values.  Can also be defaulted in your config with the key 'secret_file'",
                :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
 
         base.option :encrypt,
                :long => "--encrypt",
-               :description => "If 'secret' or 'secret_file' is present in your knife.rb, then encrypt data bags using it",
+               :description => "If 'secret' or 'secret_file' is present in your config, then encrypt data bags using it",
                :boolean => true,
                :default => false
       end
@@ -99,39 +101,10 @@ class Chef
         knife_config[:secret_file] || Chef::Config[:secret_file]
       end
 
-      # TODO duplicated from data_query.rb, also needs test coverage when it is extracted
-      # Tries to autodetect if the item's raw hash appears to be encrypted.
-      def encrypted?(raw_data)
-        data = raw_data.reject { |k, _| k == "id" } # Remove the "id" key.
-        # Assume hashes containing only the "id" key are not encrypted.
-        # Otherwise, remove the keys that don't appear to be encrypted and compare
-        # the result with the hash. If some entry has been removed, then some entry
-        # doesn't appear to be encrypted and we assume the entire hash is not encrypted.
-        data.empty? ? false : data.reject { |_, v| !looks_like_encrypted?(v) } == data
-      end
-
       private
 
       def knife_config
         Chef::Config.key?(:knife) ? Chef::Config[:knife] : {}
-      end
-
-      # Checks if data looks like it has been encrypted by
-      # Chef::EncryptedDataBagItem::Encryptor::VersionXEncryptor. Returns
-      # true only when there is an exact match between the VersionXEncryptor
-      # keys and the hash's keys.
-      def looks_like_encrypted?(data)
-        return false unless data.is_a?(Hash) && data.has_key?("version")
-        case data["version"]
-          when 1
-            Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor.encryptor_keys.sort == data.keys.sort
-          when 2
-            Chef::EncryptedDataBagItem::Encryptor::Version2Encryptor.encryptor_keys.sort == data.keys.sort
-          when 3
-            Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor.encryptor_keys.sort == data.keys.sort
-          else
-            false # version means something else... assume not encrypted.
-        end
       end
 
     end
