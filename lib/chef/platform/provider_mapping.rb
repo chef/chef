@@ -390,7 +390,8 @@ class Chef
                 :ifconfig => Chef::Provider::Ifconfig::Aix,
                 :cron => Chef::Provider::Cron::Aix,
                 :package => Chef::Provider::Package::Aix,
-                :user => Chef::Provider::User::Aix
+                :user => Chef::Provider::User::Aix,
+                :service => Chef::Provider::Service::Aix
               }
             },
             :exherbo => {
