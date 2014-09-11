@@ -1,6 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
-# License:: Apache License, Version 2.0
+# Copyright 2012-2014 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,22 +23,17 @@ dependency "automake"
 dependency "libtool"
 dependency "libuuid"
 
-source :git => "git://github.com/zeromq/zeromq2-x.git"
+source git: "git://github.com/zeromq/zeromq2-x.git"
 
 relative_path "zeromq2-x"
 
 build do
-  env = {
-    "PATH" => "#{install_dir}/embedded/bin:#{ENV["PATH"]}",
-    "LDFLAGS" => "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include",
-    "CXXFLAGS" => "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include",
-    "LD_RUN_PATH" => "#{install_dir}/embedded/lib"
-  }
-  command "./autogen.sh", :env => env
-  command ["./configure",
-           "--prefix=#{install_dir}/embedded",
-           ].join(" "),
-          :env => env
-  command "make -j #{max_build_jobs}", :env => {"LD_RUN_PATH" => "#{install_dir}/embedded/bin"}
-  command "make install", :env => {"LD_RUN_PATH" => "#{install_dir}/embedded/bin"}
+  env = with_standard_compiler_flags(with_embedded_path)
+  env['CXXFLAGS'] = "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include"
+
+  command "./autogen.sh", env: env
+  command "./configure --prefix=#{install_dir}/embedded", env: env
+
+  make "-j #{workers}", env: env
+  make "-j #{workers} install", env: env
 end
