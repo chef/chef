@@ -341,7 +341,7 @@ class Chef
     end
 
     # Raised by Chef::HTTP
-    class BadURI < RunTimeError; end
+    class BadURI < RuntimeError; end
 
     class BadProxyURI < RuntimeError; end
 
