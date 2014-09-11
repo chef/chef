@@ -21,8 +21,9 @@ source git: "https://github.com/opscode/chef-init"
 
 relative_path "chef-init"
 
-dependency "runit"
+dependency "bundler"
 dependency "chef"
+dependency "runit"
 
 build do
   env = with_standard_compiler_flags(with_embedded_path)

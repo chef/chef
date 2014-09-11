@@ -34,8 +34,8 @@ else
   dependency "libffi"
 end
 
-dependency "ohai"
 dependency "bundler"
+dependency "ohai"
 dependency "appbundler"
 
 build do

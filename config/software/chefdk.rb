@@ -23,6 +23,7 @@ relative_path "chef-dk"
 
 dependency "libffi" if debian?
 
+dependency "bundler"
 dependency "appbundler"
 dependency "berkshelf"
 dependency "chef-vault"

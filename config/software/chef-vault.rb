@@ -29,6 +29,7 @@ else
   dependency "rubygems"
 end
 
+dependency "bundler"
 dependency "chef"
 
 build do
