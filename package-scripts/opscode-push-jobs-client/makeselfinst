@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+# Install a full push-jobs-client
+#
+
+PROGNAME=`basename $0`
+INSTALLER_DIR=`dirname $0`
+DEST_DIR=/opt/push-jobs-client
+CONFIG_DIR=/etc/push-jobs-client
+USAGE="usage: $0"
+
+error_exit()
+{
+  echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+  exit 1
+}
+
+# move the actual files into place
+rm -rf $DEST_DIR/* || error_exit "Cannot remove contents of $DEST_DIR"
+mkdir -p $DEST_DIR || error_exit "Cannot create $DEST_DIR"
+cp -R $INSTALLER_DIR $DEST_DIR || error_exit "Cannot install to $DEST_DIR"
+rm -f $DEST_DIR/$PROGNAME
+
+# You may want to symlink your packages bin files into /usr/bin
+# ln -sf $DEST_DIR/bin/push-jobs-client /usr/bin || error_exit "Cannot link push-jobs-client to /usr/bin"
+
+exit 0
