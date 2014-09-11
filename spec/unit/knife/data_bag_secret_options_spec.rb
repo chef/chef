@@ -21,16 +21,13 @@ require 'chef/knife'
 require 'chef/config'
 require 'tempfile'
 
-class ExampleDataBag < Chef::Knife
-  include Chef::Knife::DataBagCommon
-
-  #banner "you must provide a banner"
-  #category "data bag"
+class ExampleDataBagCommand < Chef::Knife
+  include Chef::Knife::DataBagSecretOptions
 end
 
-describe Chef::Knife::DataBagCommon do
+describe Chef::Knife::DataBagSecretOptions do
   let(:example_db) do
-    k = ExampleDataBag.new
+    k = ExampleDataBagCommand.new
     allow(k.ui).to receive(:stdout).and_return(stdout)
     k
   end

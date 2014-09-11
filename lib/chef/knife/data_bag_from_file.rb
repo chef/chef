@@ -18,11 +18,12 @@
 #
 
 require 'chef/knife'
+require 'chef/knife/data_bag_secret_options'
 
 class Chef
   class Knife
     class DataBagFromFile < Knife
-      include DataBagCommon
+      include DataBagSecretOptions
 
       deps do
         require 'chef/data_bag'
