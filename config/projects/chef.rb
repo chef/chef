@@ -56,32 +56,30 @@ package :pkg do
   identifier "com.getchef.pkg.chef"
   signing_identity "Developer ID Installer: Opscode Inc. (9NBR9JL2R2)"
 end
+compress :dmg
 
 package :msi do
   upgrade_code "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
 
-  # Find path in which chef gem is installed to.
-  # Note that install_dir is something like: c:/opscode/chef
-  search_pattern = "#{install_dir}/**/gems/chef-[0-9]*"
-  chef_gem_path  = Dir.glob(search_pattern).find do |path|
-    File.directory?(path)
-  end
+  #######################################################################
+  # Locate the Chef gem's path relative to the installation directory
+  #######################################################################
+  install_path = Pathname.new(install_dir)
+
+  # Find path in which the Chef gem is installed
+  search_pattern = "#{install_path}/**/gems/chef-[0-9]*"
+  chef_gem_path  = Pathname.glob(search_pattern).find { |path| path.directory? }
 
   if chef_gem_path.nil?
     raise "Could not find a chef gem in `#{search_pattern}'!"
+  else
+    relative_path = chef_gem_path.relative_path_from(install_path)
   end
-
-  # Convert the chef gem path to a relative path based on install_dir
-  relative_path = Pathname.new(chef_gem_path)
-    .relative_path_from(Pathname.new(install_dir))
-    .to_s
 
   parameters(
     # We are going to use this path in the startup command of chef
     # service. So we need to change file seperators to make windows
     # happy.
-    'ChefGemPath' => relative_path.gsub(File::SEPARATOR, File::ALT_SEPARATOR),
+    'ChefGemPath' => windows_safe_path(relative_path.to_s),
   )
 end
-
-compress :dmg
