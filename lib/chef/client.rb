@@ -322,7 +322,7 @@ class Chef
         Chef::ApiClient::Registration.new(node_name, config[:client_key]).run
         @events.registration_completed
       end
-      # Checks for config server url.
+      # We now have the client key, and should use it from now on.
       @rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
       @resource_reporter = Chef::ResourceReporter.new(@rest)
       @events.register(@resource_reporter)
