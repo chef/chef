@@ -39,7 +39,8 @@ else
 end
 
 override :bundler,        version: "1.7.2"
-override :ruby,           version: "2.1.2"
+# TODO: bump this to 2.1.2 when we can sort out the Solaris compile issues
+override :ruby,           version: "1.9.3-p547"
 override :'ruby-windows', version: "2.0.0-p451"
 override :rubygems,       version: "2.4.1"
 
