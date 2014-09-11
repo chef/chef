@@ -1,6 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
-# License:: Apache License, Version 2.0
+# Copyright 2012-2014 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,22 +19,22 @@ default_version "2.2.0"
 
 zmq_installer = "ZeroMQ-#{version}~miru1.0-win32.exe"
 
-
-source :url => "http://miru.hk/archive/ZeroMQ-#{version}~miru1.0-win32.exe",
-       :md5 => "207a322228f90f61bfb67e3f335db06e"
+source url: "http://miru.hk/archive/#{zmq_installer}",
+       md5: "207a322228f90f61bfb67e3f335db06e"
 
 build do
+  env = with_standard_compiler_flags(with_embedded_path)
 
-  command "ZeroMQ-#{version}~miru1.0-win32.exe /S /D=%CD%\\zeromq", :returns => [0]
+  tmpdir = File.join(Omnibus::Config.cache_dir, "libzmq-cache")
 
-  # Robocopy's return code is 1 if it succesfully copies over the
-  # files and 0 if the files are already existing at the destination
+  command "#{zmq_installer} /S /D=#{windows_safe_path(tmpdir)}", env: env
 
-  command "robocopy .\\zeromq #{install_dir}\\embedded\\lib\\zeromq /MIR", :returns => [0, 1]
+  copy "#{tmpdir}/bin/*", "#{install_dir}/embedded/bin"
+  copy "#{tmpdir}/include/*", "#{install_dir}/embedded/include"
+  copy "#{tmpdir}/lib/*", "#{install_dir}/embedded/lib"
 
-  command ".\\zeromq\\uninstall /S", :returns => [0]
+  # Ensure the main DLL is available under a well known name.
+  copy "#{tmpdir}/bin/libzmq-v100-mt.dll", "#{install_dir}/embedded/bin/libzmq.dll"
 
-  install_dir_native = install_dir.split(File::SEPARATOR).join(File::ALT_SEPARATOR)
-
-  command "copy /y #{install_dir_native}\\embedded\\lib\\zeromq\\bin\\libzmq-v100-mt.dll #{install_dir_native}\\embedded\\lib\\zeromq\\bin\\libzmq.dll", :returns => [0]
+  command "uninstall /S", cwd: tmpdir, env: env
 end
