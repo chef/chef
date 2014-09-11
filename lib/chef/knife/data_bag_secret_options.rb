@@ -18,30 +18,27 @@
 
 require 'mixlib/cli'
 require 'chef/config'
-require 'chef/encrypted_data_bag_item'
 
 class Chef
   class Knife
-    module DataBagCommon
+    module DataBagSecretOptions
       include Mixlib::CLI
 
-      # TODO when https://github.com/opscode/mixlib-cli/pull/13 is fixed, we can make this a base class
-      # instead of a module
       def self.included(base)
         base.option :secret,
                :short => "-s SECRET",
                :long  => "--secret ",
-               :description => "The secret key to use to encrypt data bag item values",
+               :description => "The secret key to use to encrypt data bag item values.  Can also be defaulted in your knife.rb with the key 'secret'",
                :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
 
         base.option :secret_file,
                :long => "--secret-file SECRET_FILE",
-               :description => "A file containing the secret key to use to encrypt data bag item values",
+               :description => "A file containing the secret key to use to encrypt data bag item values.  Can also be defaulted in your knife.rb with the key 'secret_file'",
                :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
 
         base.option :encrypt,
                :long => "--encrypt",
-               :description => "Only use the secret configured in knife.rb when this is true",
+               :description => "If 'secret' or 'secret_file' is present in your knife.rb, then encrypt data bags using it",
                :boolean => true,
                :default => false
       end
@@ -66,6 +63,10 @@ class Chef
       end
 
       def read_secret
+        # Moving the non 'compile-time' requires into here to speed up knife command loading
+        # IE, if we are not running 'knife data bag *' we don't need to load 'chef/encrypted_data_bag_item'
+        require 'chef/encrypted_data_bag_item'
+
         if config[:secret]
           config[:secret]
         elsif config[:secret_file]
@@ -84,7 +85,6 @@ class Chef
           exit(1)
         end
 
-        # TODO is there validation on the knife.rb schema?  If so, this validation should go there
         if has_secret? && has_secret_file?
           ui.fatal("Please specify only one of 'secret' or 'secret_file' in your config")
           exit(1)
