@@ -34,8 +34,10 @@ describe Chef::Provider::Execute do
     Chef::Log.level = :info
     # FIXME: There should be a test for how STDOUT.tty? changes the live_stream option being passed
     STDOUT.stub(:tty?).and_return(true)
+  end
 
-    @opts = {
+  let(:opts) do
+    {
       timeout:	@new_resource.timeout,
       returns:	@new_resource.returns,
       log_level: :info,
@@ -46,7 +48,7 @@ describe Chef::Provider::Execute do
 
   it "should execute foo_resource" do
     @provider.stub(:load_current_resource)
-    @provider.should_receive(:shell_out!).with(@new_resource.command, @opts)
+    @provider.should_receive(:shell_out!).with(@new_resource.command, opts)
     @provider.should_receive(:converge_by).with("execute foo_resource").and_call_original
     Chef::Log.should_not_receive(:warn)
 
@@ -59,7 +61,7 @@ describe Chef::Provider::Execute do
     @provider = Chef::Provider::Execute.new(@new_resource, @run_context)
     @provider.stub(:load_current_resource)
     # Since the resource is sensitive, it should not have :live_stream set
-    @provider.should_receive(:shell_out!).with(@new_resource.command, @opts.reject { |k| k == :live_stream })
+    @provider.should_receive(:shell_out!).with(@new_resource.command, opts.reject { |k| k == :live_stream })
     Chef::Log.should_not_receive(:warn)
     @provider.should_receive(:converge_by).with("execute sensitive resource").and_call_original
     @provider.run_action(:run)
