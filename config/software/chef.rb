@@ -34,6 +34,7 @@ else
   dependency "libffi"
 end
 
+dependency "ohai"
 dependency "bundler"
 dependency "appbundler"
 
@@ -124,7 +125,7 @@ build do
   unless project.name == "chefdk"
     mkdir("#{install_dir}/embedded/apps")
 
-    appbundler_apps = %w[chef]
+    appbundler_apps = %w(chef ohai)
     appbundler_apps.each do |app_name|
       copy("#{Omnibus::Config.source_dir}/#{app_name}", "#{install_dir}/embedded/apps/")
       delete("#{install_dir}/embedded/apps/#{app_name}/.git")

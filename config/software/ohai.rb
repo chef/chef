@@ -38,6 +38,5 @@ build do
 
   gem "build ohai.gemspec", env: env
   gem "install ohai*.gem" \
-      " --bindir '#{install_dir}/bin'" \
       " --no-ri --no-rdoc", env: env
 end
