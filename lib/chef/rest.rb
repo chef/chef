@@ -60,7 +60,6 @@ class Chef
       options = options.dup
       options[:client_name] = client_name
       options[:signing_key_filename] = signing_key_filename
-      url = URI.parse(url)      
       super(url, options)
 
       @decompressor = Decompressor.new(options)
@@ -78,8 +77,6 @@ class Chef
       # because the order of middlewares is reversed when handling
       # responses.
       @middlewares << ValidateContentLength.new(options)
-      rescue URI::Error => e
-	raise
     end
     
     def signing_key_filename

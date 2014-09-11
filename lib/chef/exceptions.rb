@@ -340,6 +340,9 @@ class Chef
       end
     end
 
+    # Raised by Chef::HTTP
+    class BadURI < RunTimeError; end
+
     class BadProxyURI < RuntimeError; end
 
     # Raised by Chef::JSONCompat

@@ -83,6 +83,7 @@ class Chef
     # HTTP GET request to http://localhost:4000/nodes
     def initialize(url, options={})
       @url = url
+      validate_uri! (url)
       @default_headers = options[:headers] || {}
       @sign_on_redirect = true
       @redirects_followed = 0
@@ -92,6 +93,12 @@ class Chef
       self.class.middlewares.each do |middleware_class|
         @middlewares << middleware_class.new(options)
       end
+    end
+    
+    def validate_uri!(url)
+      URI.parse(url) unless url.is_a?(URI)
+    rescue URI::Error => e
+      raise Chef::Exceptions::BadURI, "Cannot configure url: #{url}. This is a badly formatted url. #{e.message}"
     end
 
     # Send an HTTP HEAD request to the path
