@@ -1,6 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
-# License:: Apache License, Version 2.0
+# Copyright 2012-2014 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,21 +21,16 @@ default_version "2.21"
 dependency "autoconf"
 dependency "automake"
 
-source :url => "ftp://ftp.kernel.org/pub/linux/utils/util-linux/v2.21/util-linux-2.21.tar.gz",
-       :md5 => "4222aa8c2a1b78889e959a4722f1881a"
+source url: "ftp://ftp.kernel.org/pub/linux/utils/util-linux/v2.21/util-linux-2.21.tar.gz",
+       md5: "4222aa8c2a1b78889e959a4722f1881a"
 
 relative_path "util-linux-2.21"
 
 build do
-  env = {
-    "LDFLAGS" => "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include",
-    "CFLAGS" => "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include",
-    "LD_RUN_PATH" => "#{install_dir}/embedded/lib"
-  }
-  command(["./configure",
-           "--prefix=#{install_dir}/embedded",
-           ].join(" "),
-          :env => env)
-  command "cd libuuid && make -j #{max_build_jobs}", :env => {"LD_RUN_PATH" => "#{install_dir}/embedded/bin"}
-  command "cd libuuid && make install", :env => {"LD_RUN_PATH" => "#{install_dir}/embedded/bin"}
+  env = with_standard_compiler_flags(with_embedded_path)
+
+  command "./configure --prefix=#{install_dir}/embedded", env: env
+
+  make "-j #{workers}", env: env, cwd: "#{project_dir}/libuuid"
+  make "-j #{workers} install", env: env, cwd: "#{project_dir}/libuuid"
 end
