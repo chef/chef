@@ -361,6 +361,15 @@ describe Chef::Recipe do
     end
   end
 
+  describe "handle exec calls" do
+    it "should raise NoSuchResourceType error if exec is used" do
+      code = <<-CODE
+      exec 'do_not_try_to_exec'
+      CODE
+      lambda { recipe.instance_eval(code) }.should raise_error(Chef::Exceptions::NoSuchResourceType)
+    end
+  end
+
   describe "from_file" do
     it "should load a resource from a ruby file" do
       recipe.from_file(File.join(CHEF_SPEC_DATA, "recipes", "test.rb"))

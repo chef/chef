@@ -162,6 +162,10 @@ class Chef
         end
       end
 
+      def exec(args)
+        raise Chef::Exceptions::NoSuchResourceType.new "exec was called, but you probably meant to use an execute resource.  If not, please call Kernel#exec explicitly"
+      end
+
     end
   end
 end
