@@ -1,5 +1,7 @@
 ## Unreleased: 12.0.0
 
+* [**Kazuki Saito**](https://github.com/sakazuki):
+  CHEF-4933: idempotency fixes for ifconfig provider
 * [**Kirill Shirinkin**](https://github.com/Fodoj):
   The knife bootstrap command expands the path of the secret-file
 * [**Malte Swart**](https://github.com/mswart):
