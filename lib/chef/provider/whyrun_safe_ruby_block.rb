@@ -19,7 +19,7 @@
 class Chef
   class Provider
     class WhyrunSafeRubyBlock < Chef::Provider::RubyBlock
-      def action_create
+      def action_run
         @new_resource.block.call
         @new_resource.updated_by_last_action(true)
         @run_context.events.resource_update_applied(@new_resource, :create, "execute the whyrun_safe_ruby_block #{@new_resource.name}")
