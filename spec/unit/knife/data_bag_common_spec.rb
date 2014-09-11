@@ -46,7 +46,6 @@ describe Chef::Knife::DataBagCommon do
   end
 
   after do
-    Chef::Config.reset
     secret_file.close
     secret_file.unlink
   end

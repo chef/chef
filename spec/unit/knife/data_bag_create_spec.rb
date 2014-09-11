@@ -28,7 +28,7 @@ describe Chef::Knife::DataBagCreate do
     k
   end
 
-  let(:rest) { double("ChefSpecs::ChefRest") }
+  let(:rest) { double("Chef::REST") }
   let(:stdout) { StringIO.new }
 
   let(:bag_name) { "sudoing_admins" }
