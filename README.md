@@ -1,6 +1,11 @@
-chef Omnibus project
-====================
-This project creates full-stack platform-specific packages for `chef`!
+Client Tools Omnibus project
+============================
+This project creates full-stack platform-specific packages for the following projects:
+
+* Chef
+* ChefDK
+* Chef Container
+* AngryChef
 
 Installation
 ------------
@@ -8,7 +13,7 @@ You must have a sane Ruby 1.9+ environment with Bundler installed. Ensure all
 the required gems are installed:
 
 ```shell
-$ bundle install --binstubs
+$ bundle install --without development
 ```
 
 Usage
@@ -18,7 +23,7 @@ Usage
 You create a platform-specific package using the `build project` command:
 
 ```shell
-$ bin/omnibus build chef
+$ bundle exec omnibus build <PROJECT>
 ```
 
 The platform/architecture type of the package created will match the platform
@@ -32,7 +37,7 @@ You can clean up all temporary files generated during the build process with
 the `clean` command:
 
 ```shell
-$ bin/omnibus clean chef
+$ bundle exec omnibus clean <PROJECT>
 ```
 
 Adding the `--purge` purge option removes __ALL__ files generated during the
@@ -40,17 +45,17 @@ build including the project install directory (`/opt/chef`) and
 the package cache directory (`/var/cache/omnibus/pkg`):
 
 ```shell
-$ bin/omnibus clean chef --purge
+$ bundle exec omnibus clean <PROJECT> --purge
 ```
 
 ### Publish
 
 Omnibus has a built-in mechanism for releasing to a variety of "backends", such
-as Amazon S3. You must set the proper credentials in your `omnibus.rb` config
-file or specify them via the command line.
+as Amazon S3 and Artifactory. You must set the proper credentials in your `omnibus.rb`
+config file or specify them via the command line.
 
 ```shell
-$ bin/omnibus publish path/to/*.deb --backend s3
+$ bundle exec omnibus publish path/to/*.deb --backend s3
 ```
 
 ### Help
@@ -59,7 +64,7 @@ Full help for the Omnibus command line interface can be accessed with the
 `help` command:
 
 ```shell
-$ bin/omnibus help
+$ bundle exec omnibus help
 ```
 
 Kitchen-based Build Environment
@@ -84,18 +89,18 @@ liking, you can bring up an individual build environment using the `kitchen`
 command.
 
 ```shell
-$ bin/kitchen converge ubuntu-1204
+$ bundle exec kitchen converge <PROJECT>-ubuntu-1204
 ```
 
 Then login to the instance and build the project as described in the Usage
 section:
 
 ```shell
-$ bundle exec kitchen login ubuntu-1204
-[vagrant@ubuntu...] $ cd chef
-[vagrant@ubuntu...] $ bundle install
+$ bundle exec kitchen login <PROJECT>-ubuntu-1204
+[vagrant@ubuntu...] $ cd omnibus-chef
+[vagrant@ubuntu...] $ bundle install --without development # Don't install dev tools!
 [vagrant@ubuntu...] $ ...
-[vagrant@ubuntu...] $ bin/omnibus build chef
+[vagrant@ubuntu...] $ bundle exec omnibus build <PROJECT>
 ```
 
 For a complete list of all commands and platforms, run `kitchen list` or
