@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/opscode/omnibus.git
-  revision: e1dd9cde1d21f2aae06a4cdef98e36c852f8d143
+  revision: 796e586c42436c3afce02182cd61ec1b024bd07e
   specs:
     omnibus (4.0.0.beta.1)
       chef-sugar (~> 2.2)
