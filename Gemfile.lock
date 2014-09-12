@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/opscode/omnibus.git
-  revision: 1526a357f87c68661e46e069657acafc0d47cbe1
+  revision: e1dd9cde1d21f2aae06a4cdef98e36c852f8d143
   specs:
     omnibus (4.0.0.beta.1)
       chef-sugar (~> 2.2)
@@ -12,7 +12,7 @@ GIT
 
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: 1229a2b0aa5eb6aae255ef647a0ad13e3c99c5c5
+  revision: 17482b914f4ee182e5ce95a9e978bd7d4b143906
   specs:
     omnibus-software (4.0.0)
 
@@ -60,7 +60,7 @@ GEM
     faraday (0.9.0)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.3)
-    ffi-yajl (1.0.2)
+    ffi-yajl (1.1.0)
       ffi (~> 1.5)
       libyajl2 (~> 1.0)
     hashie (2.1.2)
@@ -86,7 +86,7 @@ GEM
     nio4r (1.0.1)
     octokit (3.3.1)
       sawyer (~> 0.5.3)
-    ohai (7.2.4)
+    ohai (7.4.0)
       ffi (~> 1.9)
       ffi-yajl (~> 1.0)
       ipaddress
