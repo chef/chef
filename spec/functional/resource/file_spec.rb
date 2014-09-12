@@ -35,8 +35,7 @@ describe Chef::Resource::File do
       path
     end
 
-    resource = Chef::Resource::File.new(use_path, run_context)
-    resource
+    Chef::Resource::File.new(use_path, run_context)
   end
 
   let(:resource) do
