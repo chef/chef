@@ -38,8 +38,8 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
     result
   end
 
-  def canonicalize(path)
-    Chef::Platform.windows? ? path.gsub('/', '\\') : path
+  def paths_eql?(path1, path2)
+    Chef::Util::PathHelper.paths_eql?(path1, path2)
   end
 
   describe "when the target is a symlink" do
@@ -68,7 +68,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         provider.current_resource.link_type.should == :symbolic
       end
       it "should update the source of the existing link with the links target" do
-        provider.current_resource.to.should == canonicalize("#{CHEF_SPEC_DATA}/fofile")
+        paths_eql?(provider.current_resource.to, "#{CHEF_SPEC_DATA}/fofile").should be_true
       end
       it "should set the owner" do
         provider.current_resource.owner.should == 501
@@ -110,7 +110,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         provider.current_resource.link_type.should == :symbolic
       end
       it "should update the source of the existing link to the link's target" do
-        provider.current_resource.to.should == canonicalize("#{CHEF_SPEC_DATA}/fofile")
+        paths_eql?(provider.current_resource.to, "#{CHEF_SPEC_DATA}/fofile").should be_true
       end
       it "should not set the owner" do
         provider.current_resource.owner.should be_nil
@@ -221,7 +221,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         provider.current_resource.link_type.should == :hard
       end
       it "should update the source of the existing link to the link's target" do
-        provider.current_resource.to.should == canonicalize("#{CHEF_SPEC_DATA}/fofile")
+        paths_eql?(provider.current_resource.to, "#{CHEF_SPEC_DATA}/fofile").should be_true
       end
       it "should not set the owner" do
         provider.current_resource.owner.should == nil
