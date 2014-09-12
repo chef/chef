@@ -4,9 +4,9 @@ class Chef
   module ChefFS
     module DataHandler
       class AclDataHandler < DataHandlerBase
-        def normalize(node, entry)
+        def normalize(acl, entry)
           # Normalize the order of the keys for easier reading
-          result = normalize_hash(node, {
+          result = normalize_hash(acl, {
             'create' => {},
             'read' => {},
             'update' => {},

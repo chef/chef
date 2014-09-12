@@ -33,10 +33,6 @@ describe Chef::Knife::Core::BootstrapContext do
 
   subject(:bootstrap_context) { described_class.new(config, run_list, chef_config) }
 
-  it "installs the same version of chef on the remote host" do
-    bootstrap_context.bootstrap_version_string.should eq "--version #{Chef::VERSION}"
-  end
-
   it "runs chef with the first-boot.json in the _default environment" do
     bootstrap_context.start_chef.should eq "chef-client -j /etc/chef/first-boot.json -E _default"
   end
@@ -95,24 +91,6 @@ EXPECTED
     end
   end
 
-  describe "when installing a prerelease version of chef" do
-    let(:config){ {:prerelease => true }}
-    it "supplies --prerelease as the version string" do
-      bootstrap_context.bootstrap_version_string.should eq '--prerelease'
-    end
-  end
-
-  describe "when installing an explicit version of chef" do
-    let(:chef_config) do
-      {
-        :knife => { :bootstrap_version => '123.45.678' }
-      }
-    end
-    it "gives --version $VERSION as the version string" do
-      bootstrap_context.bootstrap_version_string.should eq '--version 123.45.678'
-    end
-  end
-
   describe "when JSON attributes are given" do
     let(:config) { {:first_boot_attributes => {:baz => :quux}} }
     it "adds the attributes to first_boot" do
@@ -141,7 +119,20 @@ EXPECTED
     context "via config[:secret_file]" do
       let(:chef_config) do
         {
-          :knife => {:secret_file =>  secret_file}
+          :knife => {:secret_file => secret_file}
+        }
+      end
+      it "reads the encrypted_data_bag_secret" do
+        bootstrap_context.encrypted_data_bag_secret.should eq IO.read(secret_file)
+      end
+    end
+
+    context "via config[:secret_file] with short home path" do
+      let(:chef_config) do
+        home_path = File.expand_path("~")
+        shorted_secret_file_path = secret_file.gsub(home_path, "~")
+        {
+          :knife => {:secret_file => shorted_secret_file_path}
         }
       end
       it "reads the encrypted_data_bag_secret" do
@@ -157,13 +148,6 @@ EXPECTED
 
     it "sets the @run_list instance variable" do
       bootstrap_context.instance_variable_get(:@run_list).should eq run_list
-    end
-
-    describe "accepts encrypted_data_bag_secret via Chef::Config" do
-      let(:chef_config) { {:encrypted_data_bag_secret => secret_file }}
-      it "reads the encrypted_data_bag_secret" do
-        bootstrap_context.encrypted_data_bag_secret.should eq IO.read(secret_file)
-      end
     end
   end
 
@@ -197,4 +181,57 @@ EXPECTED
       bootstrap_context.latest_current_chef_version_string.should eq("-v #{Chef::VERSION.to_i}")
     end
   end
+
+  describe "ssl_verify_mode" do
+    it "isn't set in the config_content by default" do
+      bootstrap_context.config_content.should_not include("ssl_verify_mode")
+    end
+
+    describe "when configured in config" do
+      let(:chef_config) do
+        {
+          :knife => {:ssl_verify_mode => :verify_peer}
+        }
+      end
+
+      it "uses the config value" do
+        bootstrap_context.config_content.should include("ssl_verify_mode :verify_peer")
+      end
+
+      describe "when configured via CLI" do
+        let(:config) {{:node_ssl_verify_mode => "none"}}
+
+        it "uses CLI value" do
+          bootstrap_context.config_content.should include("ssl_verify_mode :verify_none")
+        end
+      end
+    end
+  end
+
+  describe "verify_api_cert" do
+    it "isn't set in the config_content by default" do
+      bootstrap_context.config_content.should_not include("verify_api_cert")
+    end
+
+    describe "when configured in config" do
+      let(:chef_config) do
+        {
+          :knife => {:verify_api_cert => :false}
+        }
+      end
+
+      it "uses the config value" do
+        bootstrap_context.config_content.should include("verify_api_cert false")
+      end
+
+      describe "when configured via CLI" do
+        let(:config) {{:node_verify_api_cert => true}}
+
+        it "uses CLI value" do
+          bootstrap_context.config_content.should include("verify_api_cert true")
+        end
+      end
+    end
+  end
+
 end

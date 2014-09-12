@@ -45,27 +45,21 @@ class Chef
           unless @current_resource.version == version
             command = "port#{expand_options(@new_resource.options)} install #{name}"
             command << " @#{version}" if version and !version.empty?
-            run_command_with_systems_locale(
-              :command => command
-            )
+            shell_out!(command)
           end
         end
 
         def purge_package(name, version)
           command = "port#{expand_options(@new_resource.options)} uninstall #{name}"
           command << " @#{version}" if version and !version.empty?
-          run_command_with_systems_locale(
-            :command => command
-          )
+          shell_out!(command)
         end
 
         def remove_package(name, version)
           command = "port#{expand_options(@new_resource.options)} deactivate #{name}"
           command << " @#{version}" if version and !version.empty?
 
-          run_command_with_systems_locale(
-            :command => command
-          )
+          shell_out!(command)
         end
 
         def upgrade_package(name, version)
@@ -78,9 +72,7 @@ class Chef
             # that hasn't been installed.
             install_package(name, version)
           elsif current_version != version
-            run_command_with_systems_locale(
-              :command => "port#{expand_options(@new_resource.options)} upgrade #{name} @#{version}"
-            )
+            shell_out!( "port#{expand_options(@new_resource.options)} upgrade #{name} @#{version}" )
           end
         end
 

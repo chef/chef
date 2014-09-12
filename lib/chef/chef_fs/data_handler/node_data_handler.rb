@@ -21,7 +21,7 @@ class Chef
           result
         end
 
-        def preserve_key(key)
+        def preserve_key?(key)
           return key == 'name'
         end
 

@@ -344,7 +344,7 @@ describe Chef::Resource do
       expected_keys = [ :allowed_actions, :params, :provider, :updated,
         :updated_by_last_action, :before, :supports,
         :noop, :ignore_failure, :name, :source_line,
-        :action, :retries, :retry_delay, :elapsed_time, 
+        :action, :retries, :retry_delay, :elapsed_time,
         :guard_interpreter, :sensitive ]
       (hash.keys - expected_keys).should == []
       (expected_keys - hash.keys).should == []
@@ -419,10 +419,6 @@ describe Chef::Resource do
       ResourceTestHarness.provider_base.should == Chef::Provider::Package
     end
 
-  end
-
-  it "supports accessing the node via the @node instance variable [DEPRECATED]" do
-    @resource.instance_variable_get(:@node).inspect.should == @node.inspect
   end
 
   it "runs an action by finding its provider, loading the current resource and then running the action" do
@@ -525,6 +521,13 @@ describe Chef::Resource do
       @resource.run_action(:purr)
       snitch_var1.should be_nil
       snitch_var2.should be_false
+    end
+
+    it "reports 0 elapsed time if actual elapsed time is < 0" do
+      expected = Time.now
+      Time.stub(:now).and_return(expected, expected - 1)
+      @resource.run_action(:purr)
+      @resource.elapsed_time.should == 0
     end
 
     describe "guard_interpreter attribute" do
@@ -788,7 +791,7 @@ describe Chef::Resource do
     before(:each) do
        @resource_file = Chef::Resource::File.new("/nonexistent/CHEF-5098/file", @run_context)
        @action = :create
-    end 
+    end
 
     def compiled_resource_data(resource, action, err)
       error_inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(resource, action, err)

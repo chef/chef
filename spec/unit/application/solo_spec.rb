@@ -49,7 +49,6 @@ describe Chef::Application::Solo do
     end
 
     describe "when the json_attribs configuration option is specified" do
-
       let(:json_attribs) { {"a" => "b"} }
       let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
       let(:json_source) { "https://foo.com/foo.json" }
@@ -65,8 +64,6 @@ describe Chef::Application::Solo do
         @app.chef_client_json.should == json_attribs
       end
     end
-
-
 
     describe "when the recipe_url configuration option is specified" do
       before do
@@ -104,6 +101,25 @@ describe Chef::Application::Solo do
     end
   end
 
+  describe "when the json_attribs and recipe_url configuration options are both specified" do
+    let(:json_attribs) { {"a" => "b"} }
+    let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
+    let(:json_source) { "https://foo.com/foo.json" }
+
+    before do
+      Chef::Config[:json_attribs] = json_source
+      Chef::Config[:recipe_url] = "http://icanhas.cheezburger.com/lolcats"
+      Chef::Config[:cookbook_path] = "#{Dir.tmpdir}/chef-solo/cookbooks"
+      FileUtils.stub(:mkdir_p).and_return(true)
+      Chef::Mixin::Command.stub(:run_command).and_return(true)
+    end
+
+    it "should fetch the recipe_url first" do
+      @app.should_receive(:fetch_recipe_tarball).ordered
+      Chef::ConfigFetcher.should_receive(:new).ordered.and_return(config_fetcher)
+      @app.reconfigure
+    end
+  end
 
   describe "after the application has been configured" do
     before do

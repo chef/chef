@@ -35,7 +35,7 @@ metadata = { :unix_only => true,
   :provider => {:user => user_provider_for_platform}
 }
 
-describe Chef::Resource::User, metadata do
+describe Chef::Provider::User::Useradd, metadata do
 
   include Chef::Mixin::ShellOut
 
@@ -647,10 +647,11 @@ describe Chef::Resource::User, metadata do
             @error.should be_nil
             if ohai[:platform] == "aix"
               pw_entry.passwd.should == '*'
+              user_account_should_be_unlocked
             else
               pw_entry.passwd.should == 'x'
+              shadow_password.should include("!")
             end
-            user_account_should_be_unlocked
           end
         end
       end

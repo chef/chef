@@ -255,7 +255,12 @@ describe Chef::Application do
 
       it "should set ENV['http_proxy']" do
         @app.configure_proxy_environment_variables
-        @env['http_proxy'].should == "http://#{address}:#{port}"
+        @env['http_proxy'].should == "#{scheme}://#{address}:#{port}"
+      end
+
+      it "should set ENV['HTTP_PROXY']" do
+        @app.configure_proxy_environment_variables
+        @env['HTTP_PROXY'].should == "#{scheme}://#{address}:#{port}"
       end
 
       describe "when Chef::Config[:http_proxy_user] is set" do
@@ -265,7 +270,8 @@ describe Chef::Application do
 
         it "should set ENV['http_proxy'] with the username" do
           @app.configure_proxy_environment_variables
-          @env['http_proxy'].should == "http://username@#{address}:#{port}"
+          @env['http_proxy'].should == "#{scheme}://username@#{address}:#{port}"
+          @env['HTTP_PROXY'].should == "#{scheme}://username@#{address}:#{port}"
         end
 
         context "when :http_proxy_user contains '@' and/or ':'" do
@@ -275,7 +281,8 @@ describe Chef::Application do
 
           it "should set ENV['http_proxy'] with the escaped username" do
             @app.configure_proxy_environment_variables
-            @env['http_proxy'].should == "http://my%3Ausern%40me@#{address}:#{port}"
+            @env['http_proxy'].should == "#{scheme}://my%3Ausern%40me@#{address}:#{port}"
+            @env['HTTP_PROXY'].should == "#{scheme}://my%3Ausern%40me@#{address}:#{port}"
           end
         end
 
@@ -286,7 +293,8 @@ describe Chef::Application do
 
           it "should set ENV['http_proxy'] with the password" do
             @app.configure_proxy_environment_variables
-            @env['http_proxy'].should == "http://username:password@#{address}:#{port}"
+            @env['http_proxy'].should == "#{scheme}://username:password@#{address}:#{port}"
+            @env['HTTP_PROXY'].should == "#{scheme}://username:password@#{address}:#{port}"
           end
 
           context "when :http_proxy_pass contains '@' and/or ':'" do
@@ -296,7 +304,8 @@ describe Chef::Application do
 
             it "should set ENV['http_proxy'] with the escaped password" do
               @app.configure_proxy_environment_variables
-              @env['http_proxy'].should == "http://username:%3AP%40ssword101@#{address}:#{port}"
+              @env['http_proxy'].should == "#{scheme}://username:%3AP%40ssword101@#{address}:#{port}"
+              @env['HTTP_PROXY'].should == "#{scheme}://username:%3AP%40ssword101@#{address}:#{port}"
             end
           end
         end
@@ -310,7 +319,8 @@ describe Chef::Application do
 
         it "should set ENV['http_proxy']" do
           @app.configure_proxy_environment_variables
-          @env['http_proxy'].should == "http://#{address}:#{port}"
+          @env['http_proxy'].should == "#{scheme}://#{address}:#{port}"
+          @env['HTTP_PROXY'].should == "#{scheme}://#{address}:#{port}"
         end
       end
     end
@@ -338,30 +348,43 @@ describe Chef::Application do
 
       describe "when Chef::Config[:http_proxy] is set" do
         context "when given an FQDN" do
+          let(:scheme) { "http" }
           let(:address) { "proxy.example.org" }
           let(:port) { 8080 }
-          let(:http_proxy) { "http://#{address}:#{port}" }
+          let(:http_proxy) { "#{scheme}://#{address}:#{port}" }
+
+          it_should_behave_like "setting ENV['http_proxy']"
+        end
+
+        context "when given an HTTPS URL" do
+          let(:scheme) { "https" }
+          let(:address) { "proxy.example.org" }
+          let(:port) { 8080 }
+          let(:http_proxy) { "#{scheme}://#{address}:#{port}" }
 
           it_should_behave_like "setting ENV['http_proxy']"
         end
 
         context "when given an IP" do
+          let(:scheme) { "http" }
           let(:address) { "127.0.0.1" }
           let(:port) { 22 }
-          let(:http_proxy) { "http://#{address}:#{port}" }
+          let(:http_proxy) { "#{scheme}://#{address}:#{port}" }
 
           it_should_behave_like "setting ENV['http_proxy']"
         end
 
         context "when given an IPv6" do
+          let(:scheme) { "http" }
           let(:address) { "[2001:db8::1]" }
           let(:port) { 80 }
-          let(:http_proxy) { "http://#{address}:#{port}" }
+          let(:http_proxy) { "#{scheme}://#{address}:#{port}" }
 
           it_should_behave_like "setting ENV['http_proxy']"
         end
 
         context "when given without including http://" do
+          let(:scheme) { "http" }
           let(:address) { "proxy.example.org" }
           let(:port) { 8181 }
           let(:http_proxy) { "#{address}:#{port}" }

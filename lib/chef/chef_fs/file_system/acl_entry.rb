@@ -32,7 +32,7 @@ class Chef
         end
 
         def delete(recurse)
-          raise Chef::ChefFS::FileSystem::OperationNotAllowedError.new(:delete, self, e), "ACLs cannot be deleted."
+          raise Chef::ChefFS::FileSystem::OperationNotAllowedError.new(:delete, self), "ACLs cannot be deleted."
         end
 
         def write(file_contents)

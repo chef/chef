@@ -161,7 +161,6 @@ describe Chef::Provider::Service::Upstart do
       @provider.load_current_resource
     end
 
-
     it "should track state when the upstart configuration file fails to load" do
       File.should_receive(:exists?).and_return false
       @provider.load_current_resource
@@ -174,19 +173,19 @@ describe Chef::Provider::Service::Upstart do
       end
 
       it "should run the services status command if one has been specified" do
-        @provider.stub(:run_command_with_systems_locale).with({:command => "/bin/chefhasmonkeypants status"}).and_return(0)
+        @provider.stub(:shell_out!).with("/bin/chefhasmonkeypants status").and_return(0)
         @current_resource.should_receive(:running).with(true)
         @provider.load_current_resource
       end
 
       it "should track state when the user-provided status command fails" do
-        @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_raise(Chef::Exceptions::Exec)
+        @provider.stub(:shell_out!).and_raise(Errno::ENOENT)
         @provider.load_current_resource
         @provider.instance_variable_get("@command_success").should == false
       end
 
       it "should set running to false if it catches a Chef::Exceptions::Exec when using a status command" do
-        @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_raise(Chef::Exceptions::Exec)
+        @provider.stub(:shell_out!).and_raise(Errno::ENOENT)
         @current_resource.should_receive(:running).with(false)
         @provider.load_current_resource
       end
@@ -201,7 +200,6 @@ describe Chef::Provider::Service::Upstart do
     it "should return the current resource" do
       @provider.load_current_resource.should eql(@current_resource)
     end
-
 
   end
 
@@ -243,18 +241,18 @@ describe Chef::Provider::Service::Upstart do
 
     it "should call the start command if one is specified" do
       @new_resource.stub(:start_command).and_return("/sbin/rsyslog startyousillysally")
-      @provider.should_receive(:shell_out!).with("/sbin/rsyslog startyousillysally")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog startyousillysally")
       @provider.start_service()
     end
 
     it "should call '/sbin/start service_name' if no start command is specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({:command => "/sbin/start #{@new_resource.service_name}"}).and_return(0)
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/start #{@new_resource.service_name}").and_return(0)
       @provider.start_service()
     end
 
     it "should not call '/sbin/start service_name' if it is already running" do
       @current_resource.stub(:running).and_return(true)
-      @provider.should_not_receive(:run_command_with_systems_locale).with({:command => "/sbin/start #{@new_resource.service_name}"})
+      @provider.should_not_receive(:shell_out_with_systems_locale!)
       @provider.start_service()
     end
 
@@ -263,58 +261,58 @@ describe Chef::Provider::Service::Upstart do
       @new_resource.parameters({ "OSD_ID" => "2" })
       @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context)
       @provider.current_resource = @current_resource
-      @provider.should_receive(:run_command_with_systems_locale).with({:command => "/sbin/start rsyslog OSD_ID=2"}).and_return(0)
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/start rsyslog OSD_ID=2").and_return(0)
       @provider.start_service()
     end
 
     it "should call the restart command if one is specified" do
       @current_resource.stub(:running).and_return(true)
       @new_resource.stub(:restart_command).and_return("/sbin/rsyslog restartyousillysally")
-      @provider.should_receive(:shell_out!).with("/sbin/rsyslog restartyousillysally")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog restartyousillysally")
       @provider.restart_service()
     end
 
     it "should call '/sbin/restart service_name' if no restart command is specified" do
       @current_resource.stub(:running).and_return(true)
-      @provider.should_receive(:run_command_with_systems_locale).with({:command => "/sbin/restart #{@new_resource.service_name}"}).and_return(0)
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/restart #{@new_resource.service_name}").and_return(0)
       @provider.restart_service()
     end
 
     it "should call '/sbin/start service_name' if restart_service is called for a stopped service" do
       @current_resource.stub(:running).and_return(false)
-      @provider.should_receive(:run_command_with_systems_locale).with({:command => "/sbin/start #{@new_resource.service_name}"}).and_return(0)
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/start #{@new_resource.service_name}").and_return(0)
       @provider.restart_service()
     end
 
     it "should call the reload command if one is specified" do
       @current_resource.stub(:running).and_return(true)
       @new_resource.stub(:reload_command).and_return("/sbin/rsyslog reloadyousillysally")
-      @provider.should_receive(:shell_out!).with("/sbin/rsyslog reloadyousillysally")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog reloadyousillysally")
       @provider.reload_service()
     end
 
     it "should call '/sbin/reload service_name' if no reload command is specified" do
       @current_resource.stub(:running).and_return(true)
-      @provider.should_receive(:run_command_with_systems_locale).with({:command => "/sbin/reload #{@new_resource.service_name}"}).and_return(0)
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/reload #{@new_resource.service_name}").and_return(0)
       @provider.reload_service()
     end
 
     it "should call the stop command if one is specified" do
       @current_resource.stub(:running).and_return(true)
       @new_resource.stub(:stop_command).and_return("/sbin/rsyslog stopyousillysally")
-      @provider.should_receive(:shell_out!).with("/sbin/rsyslog stopyousillysally")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog stopyousillysally")
       @provider.stop_service()
     end
 
     it "should call '/sbin/stop service_name' if no stop command is specified" do
       @current_resource.stub(:running).and_return(true)
-      @provider.should_receive(:run_command_with_systems_locale).with({:command => "/sbin/stop #{@new_resource.service_name}"}).and_return(0)
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/stop #{@new_resource.service_name}").and_return(0)
       @provider.stop_service()
     end
 
     it "should not call '/sbin/stop service_name' if it is already stopped" do
       @current_resource.stub(:running).and_return(false)
-      @provider.should_not_receive(:run_command_with_systems_locale).with({:command => "/sbin/stop #{@new_resource.service_name}"})
+      @provider.should_not_receive(:shell_out_with_systems_locale!).with("/sbin/stop #{@new_resource.service_name}")
       @provider.stop_service()
     end
   end

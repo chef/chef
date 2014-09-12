@@ -50,6 +50,9 @@ class Chef
         repo_path = File.expand_path(repo_path)
       end
 
+      @preloaded_cookbooks = false
+      @loaders_by_name = {}
+
       # Used to track which cookbooks appear in multiple places in the cookbook repos
       # and are merged in to a single cookbook by file shadowing. This behavior is
       # deprecated, so users of this class may issue warnings to the user by checking
@@ -64,25 +67,25 @@ class Chef
     end
 
     def load_cookbooks
-      @repo_paths.each do |repo_path|
-        Dir[File.join(repo_path, "*")].each do |cookbook_path|
-          load_cookbook(File.basename(cookbook_path), [repo_path])
-        end
+      preload_cookbooks
+      @loaders_by_name.each do |cookbook_name, _loaders|
+        load_cookbook(cookbook_name)
       end
       @cookbooks_by_name
     end
 
-    def load_cookbook(cookbook_name, repo_paths=nil)
-      repo_paths ||= @repo_paths
-      repo_paths.each do |repo_path|
-        @chefignores[repo_path] ||= Cookbook::Chefignore.new(repo_path)
-        cookbook_path = File.join(repo_path, cookbook_name.to_s)
-        next unless File.directory?(cookbook_path) and Dir[File.join(repo_path, "*")].include?(cookbook_path)
-        loader = Cookbook::CookbookVersionLoader.new(cookbook_path, @chefignores[repo_path])
-        loader.load_cookbooks
+    def load_cookbook(cookbook_name)
+      preload_cookbooks
+
+      return nil unless @loaders_by_name.key?(cookbook_name.to_s)
+
+      cookbook_loaders_for(cookbook_name).each do |loader|
+        loader.load
+
         next if loader.empty?
-        cookbook_name = loader.cookbook_name
-        @cookbooks_paths[cookbook_name] << cookbook_path # for deprecation warnings
+
+        @cookbooks_paths[cookbook_name] << loader.cookbook_path # for deprecation warnings
+
         if @loaded_cookbooks.key?(cookbook_name)
           @merged_cookbooks << cookbook_name # for deprecation warnings
           @loaded_cookbooks[cookbook_name].merge!(loader)
@@ -129,6 +132,51 @@ class Chef
       @cookbooks_by_name.values
     end
     alias :cookbooks :values
+
+    private
+
+    def preload_cookbooks
+      return false if @preloaded_cookbooks
+
+      all_directories_in_repo_paths.each do |cookbook_path|
+        preload_cookbook(cookbook_path)
+      end
+      @preloaded_cookbooks = true
+      true
+    end
+
+    def preload_cookbook(cookbook_path)
+      repo_path = File.dirname(cookbook_path)
+      @chefignores[repo_path] ||= Cookbook::Chefignore.new(repo_path)
+      loader = Cookbook::CookbookVersionLoader.new(cookbook_path, @chefignores[repo_path])
+      add_cookbook_loader(loader)
+    end
+
+    def all_directories_in_repo_paths
+      @all_directories_in_repo_paths ||=
+        all_files_in_repo_paths.select { |path| File.directory?(path) }
+    end
+
+    def all_files_in_repo_paths
+      @all_files_in_repo_paths ||=
+        begin
+          @repo_paths.inject([]) do |all_children, repo_path|
+            all_children += Dir[File.join(repo_path, "*")]
+          end
+        end
+    end
+
+    def add_cookbook_loader(loader)
+      cookbook_name = loader.cookbook_name
+
+      @loaders_by_name[cookbook_name.to_s] ||= []
+      @loaders_by_name[cookbook_name.to_s] << loader
+      loader
+    end
+
+    def cookbook_loaders_for(cookbook_name)
+      @loaders_by_name[cookbook_name.to_s]
+    end
 
   end
 end

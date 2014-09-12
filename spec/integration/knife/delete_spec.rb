@@ -961,4 +961,43 @@ EOM
       end
     end
   end
+
+  when_the_chef_server "is in Enterprise mode", :osc_compat => false, :single_org => false do
+    before do
+      organization 'foo' do
+        container 'x', {}
+        group 'x', {}
+      end
+    end
+
+    before :each do
+      Chef::Config.chef_server_url = URI.join(Chef::Config.chef_server_url, '/organizations/foo')
+    end
+
+    it 'knife delete /acls/containers/environments.json fails with a reasonable error' do
+      knife('delete /acls/containers/environments.json').should_fail "ERROR: /acls/containers/environments.json (remote) cannot be deleted.\n"
+    end
+
+    it 'knife delete /containers/x.json succeeds' do
+      knife('delete /containers/x.json').should_succeed "Deleted /containers/x.json\n"
+      knife('raw /containers/x.json').should_fail(/404/)
+    end
+
+    it 'knife delete /groups/x.json succeeds' do
+      knife('delete /groups/x.json').should_succeed "Deleted /groups/x.json\n"
+      knife('raw /groups/x.json').should_fail(/404/)
+    end
+
+    it 'knife delete /org.json fails with a reasonable error' do
+      knife('delete /org.json').should_fail "ERROR: /org.json (remote) cannot be deleted.\n"
+    end
+
+    it 'knife delete /invitations.json fails with a reasonable error' do
+      knife('delete /invitations.json').should_fail "ERROR: /invitations.json (remote) cannot be deleted.\n"
+    end
+
+    it 'knife delete /members.json fails with a reasonable error' do
+      knife('delete /members.json').should_fail "ERROR: /members.json (remote) cannot be deleted.\n"
+    end
+  end
 end

@@ -451,7 +451,7 @@ describe Chef::EncryptedDataBagItem do
       end
 
       it "load_secret(nil) emits a reasonable error message" do
-        lambda { Chef::EncryptedDataBagItem.load_secret(nil) }.should raise_error(ArgumentError, "No secret specified to load_secret and no secret found at #{Chef::Config.platform_specific_path('/etc/chef/encrypted_data_bag_secret')}")
+        lambda { Chef::EncryptedDataBagItem.load_secret(nil) }.should raise_error(ArgumentError, /No secret specified and no secret found at #{Chef::Config[:encrypted_data_bag_secret]}/)
       end
     end
 

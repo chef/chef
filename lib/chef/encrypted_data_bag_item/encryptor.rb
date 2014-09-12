@@ -102,7 +102,7 @@ class Chef::EncryptedDataBagItem
           encryptor = OpenSSL::Cipher.new(algorithm)
           encryptor.encrypt
           # We must set key before iv: https://bugs.ruby-lang.org/issues/8221
-          encryptor.key = Digest::SHA256.digest(key)
+          encryptor.key = OpenSSL::Digest::SHA256.digest(key)
           @iv ||= encryptor.random_iv
           encryptor.iv = @iv
           encryptor
@@ -124,6 +124,10 @@ class Chef::EncryptedDataBagItem
       # wrapper.
       def serialized_data
         FFI_Yajl::Encoder.encode(:json_wrapper => plaintext_data)
+      end
+
+      def self.encryptor_keys
+        %w( encrypted_data iv version cipher )
       end
     end
 
@@ -148,6 +152,10 @@ class Chef::EncryptedDataBagItem
           raw_hmac = OpenSSL::HMAC.digest(digest, key, encrypted_data)
           Base64.encode64(raw_hmac)
         end
+      end
+
+      def self.encryptor_keys
+        super + %w( hmac )
       end
     end
 
@@ -205,6 +213,10 @@ class Chef::EncryptedDataBagItem
           @auth_tag = openssl_encryptor.auth_tag
           enc_data_b64
         end
+      end
+
+      def self.encryptor_keys
+        super + %w( auth_tag )
       end
 
     end

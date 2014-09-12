@@ -83,6 +83,7 @@ class Chef
     class RequestedUIDUnavailable < RuntimeError; end
     class InvalidHomeDirectory < ArgumentError; end
     class DsclCommandFailed < RuntimeError; end
+    class PlistUtilCommandFailed < RuntimeError; end
     class UserIDNotFound < ArgumentError; end
     class GroupIDNotFound < ArgumentError; end
     class ConflictingMembersInGroup < ArgumentError; end
@@ -131,6 +132,8 @@ class Chef
 
     # Version constraints are not allowed in chef-solo
     class IllegalVersionConstraint < NotImplementedError; end
+
+    class MetadataNotValid < StandardError; end
 
     # File operation attempted but no permissions to perform it
     class InsufficientPermissions < RuntimeError; end
@@ -344,5 +347,7 @@ class Chef
       class EncodeError < RuntimeError; end
       class ParseError < RuntimeError; end
     end
+
+    class InvalidSearchQuery < ArgumentError; end
   end
 end

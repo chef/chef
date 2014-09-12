@@ -16,8 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/platform/provider_mapping'
+# Order of these headers is important: query helpers is needed by many things
 require 'chef/platform/query_helpers'
+require 'chef/platform/provider_mapping'
 
 class Chef
   class Platform

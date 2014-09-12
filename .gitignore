@@ -30,3 +30,11 @@ binstubs/
 _site/*
 .yardoc/
 doc/
+
+# Test Kitchen
+.kitchen/
+Berksfile.lock
+
+# Vagrant
+Vagrantfile
+.vagrant/

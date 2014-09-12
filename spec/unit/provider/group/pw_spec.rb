@@ -49,7 +49,7 @@ describe Chef::Provider::Group::Pw do
   describe "when creating a group" do
     it "should run pw groupadd with the return of set_options and set_members_option" do
       @new_resource.gid(23)
-      @provider.should_receive(:run_command).with({ :command => "pw groupadd wheel -g '23'" }).and_return(true)
+      @provider.should_receive(:run_command).with({ :command => "pw groupadd wheel -g '23' -M root,aj" }).and_return(true)
       @provider.create_group
     end
   end
@@ -113,7 +113,7 @@ describe Chef::Provider::Group::Pw do
         @provider.set_members_options
       end
 
-      it "should set the -M option with the members joined by ','" do
+      it "should set the -m option with the members joined by ','" do
         @provider.set_members_options.should eql([ " -m all,your,base" ])
       end
     end

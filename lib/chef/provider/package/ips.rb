@@ -39,47 +39,39 @@ class Chef
           end
         end
 
-        def load_current_resource
-          @current_resource = Chef::Resource::Package.new(@new_resource.name)
-          @current_resource.package_name(@new_resource.name)
-          check_package_state(@new_resource.package_name)
-          @current_resource
+        def get_current_version
+          shell_out("pkg info #{@new_resource.package_name}").stdout.each_line do |line|
+            return $1.split[0] if line =~ /^\s+Version: (.*)/
+          end
+          return nil
         end
 
-        def check_package_state(package)
-          Chef::Log.debug("Checking package status for #{package}")
-          installed = false
-          depends = false
-
-          shell_out!("pkg info -r #{package}").stdout.each_line do |line|
-            case line
-            when /^\s+State: Installed/
-              installed = true
-            when /^\s+Version: (.*)/
-              @candidate_version = $1.split[0]
-              if installed
-                @current_resource.version($1)
-              else
-                @current_resource.version(nil)
-              end
-            end
+        def get_candidate_version
+          shell_out!("pkg info -r #{new_resource.package_name}").stdout.each_line do |line|
+            return $1.split[0] if line =~ /Version: (.*)/
           end
+          return nil
+        end
 
-          return installed
+        def load_current_resource
+          @current_resource = Chef::Resource::Package.new(@new_resource.name)
+          @current_resource.package_name(@new_resource.package_name)
+          Chef::Log.debug("Checking package status for #{@new_resource.name}")
+          @current_resource.version(get_current_version)
+          @candidate_version = get_candidate_version
+          @current_resource
         end
 
         def install_package(name, version)
           package_name = "#{name}@#{version}"
           normal_command = "pkg#{expand_options(@new_resource.options)} install -q #{package_name}"
-          if @new_resource.respond_to?(:accept_license) and @new_resource.accept_license
-            command = normal_command.gsub('-q', '-q --accept')
-          else
-            command = normal_command
-          end
-          begin
-            run_command_with_systems_locale(:command => command)
-          rescue
-          end
+          command =
+            if @new_resource.respond_to?(:accept_license) and @new_resource.accept_license
+              normal_command.gsub('-q', '-q --accept')
+            else
+              normal_command
+            end
+          shell_out(command)
         end
 
         def upgrade_package(name, version)
@@ -88,9 +80,7 @@ class Chef
 
         def remove_package(name, version)
           package_name = "#{name}@#{version}"
-          run_command_with_systems_locale(
-            :command => "pkg#{expand_options(@new_resource.options)} uninstall -q #{package_name}"
-          )
+          shell_out!( "pkg#{expand_options(@new_resource.options)} uninstall -q #{package_name}" )
         end
       end
     end

@@ -72,7 +72,7 @@ describe Chef::Provider::Ifconfig do
       @provider.stub(:load_current_resource)
       @provider.should_not_receive(:run_command)
       @current_resource.inet_addr "10.0.0.1"
-      @provider.should_not_receive(:generate_config)
+      @provider.should_receive(:generate_config)
 
       @provider.run_action(:add)
       @new_resource.should_not be_updated
@@ -123,7 +123,7 @@ describe Chef::Provider::Ifconfig do
     it "should not delete interface if it does not exist" do
       @provider.stub(:load_current_resource)
       @provider.should_not_receive(:run_command)
-      @provider.should_not_receive(:delete_config)
+      @provider.should_receive(:delete_config)
 
       @provider.run_action(:delete)
       @new_resource.should_not be_updated
@@ -171,7 +171,7 @@ describe Chef::Provider::Ifconfig do
       @provider.stub(:load_current_resource)
       # This is so that nothing actually runs
       @provider.should_not_receive(:run_command)
-      @provider.should_not_receive(:delete_config)
+      @provider.should_receive(:delete_config)
 
       @provider.run_action(:delete)
       @new_resource.should_not be_updated

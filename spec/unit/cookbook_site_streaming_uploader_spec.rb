@@ -121,6 +121,27 @@ describe Chef::CookbookSiteStreamingUploader do
       })
     end
 
+    describe "http verify mode" do
+      before do
+        @uri = "https://cookbooks.dummy.com/api/v1/cookbooks"
+        uri_info = URI.parse(@uri)
+        @http = Net::HTTP.new(uri_info.host, uri_info.port)
+        Net::HTTP.should_receive(:new).with(uri_info.host, uri_info.port).and_return(@http)
+      end
+
+      it "should be VERIFY_NONE when ssl_verify_mode is :verify_none" do
+        Chef::Config[:ssl_verify_mode] = :verify_none
+        Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
+        @http.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
+      end
+
+      it "should be VERIFY_PEER when ssl_verify_mode is :verify_peer" do
+        Chef::Config[:ssl_verify_mode] = :verify_peer
+        Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
+        @http.verify_mode.should == OpenSSL::SSL::VERIFY_PEER
+      end
+    end
+
   end # make_request
 
   describe "StreamPart" do
@@ -197,4 +218,3 @@ describe Chef::CookbookSiteStreamingUploader do
   end # MultipartStream
 
 end
-

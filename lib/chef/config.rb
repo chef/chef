@@ -23,12 +23,15 @@ require 'chef/log'
 require 'chef/exceptions'
 require 'mixlib/config'
 require 'chef/util/selinux'
+require 'chef/util/path_helper'
 require 'pathname'
 
 class Chef
   class Config
 
     extend Mixlib::Config
+
+    PathHelper = Chef::Util::PathHelper
 
     # Evaluates the given string as config.
     #
@@ -58,37 +61,13 @@ class Chef
       configuration.inspect
     end
 
-    def self.on_windows?
-      RUBY_PLATFORM =~ /mswin|mingw|windows/
-    end
-
-    BACKSLASH = '\\'.freeze
-
-    def self.platform_path_separator
-      if on_windows?
-        File::ALT_SEPARATOR || BACKSLASH
-      else
-        File::SEPARATOR
-      end
-    end
-
-    def self.path_join(*args)
-      args = args.flatten
-      args.inject do |joined_path, component|
-        unless joined_path[-1,1] == platform_path_separator
-          joined_path += platform_path_separator
-        end
-        joined_path += component
-      end
-    end
-
     def self.platform_specific_path(path)
-      if on_windows?
-        # turns /etc/chef/client.rb into C:/chef/client.rb
-        system_drive = env['SYSTEMDRIVE'] ? env['SYSTEMDRIVE'] : ""
-        path = File.join(system_drive, path.split('/')[2..-1])
-        # ensure all forward slashes are backslashes
-        path.gsub!(File::SEPARATOR, (File::ALT_SEPARATOR || '\\'))
+      path = PathHelper.cleanpath(path)
+      if Chef::Platform.windows?
+        # turns \etc\chef\client.rb and \var\chef\client.rb into C:/chef/client.rb
+        if env['SYSTEMDRIVE'] && path[0] == '\\' && path.split('\\')[2] == 'chef'
+          path = PathHelper.join(env['SYSTEMDRIVE'], path.split('\\', 3)[2])
+        end
       end
       path
     end
@@ -101,16 +80,12 @@ class Chef
     configurable(:config_file)
 
     default(:config_dir) do
-      if local_mode
-        path_join(user_home, ".chef#{platform_path_separator}")
+      if config_file
+        PathHelper.dirname(config_file)
       else
-        config_file && ::File.dirname(config_file)
+        PathHelper.join(user_home, ".chef", "")
       end
     end
-
-    # No config file (client.rb / knife.rb / etc.) will be loaded outside this path.
-    # Major use case is tests, where we don't want to load the user's config files.
-    configurable(:config_file_jail)
 
     default :formatters, []
 
@@ -119,7 +94,7 @@ class Chef
     # === Parameters
     # url<String>:: String to be set for all of the chef-server-api URL's
     #
-    configurable(:chef_server_url).writes_value { |url| url.strip }
+    configurable(:chef_server_url).writes_value { |url| url.to_s.strip }
 
     # When you are using ActiveSupport, they monkey-patch 'daemonize' into Kernel.
     # So while this is basically identical to what method_missing would do, we pull
@@ -150,7 +125,7 @@ class Chef
       # In local mode, we auto-discover the repo root by looking for a path with "cookbooks" under it.
       # This allows us to run config-free.
       path = cwd
-      until File.directory?(path_join(path, "cookbooks"))
+      until File.directory?(PathHelper.join(path, "cookbooks"))
         new_path = File.expand_path('..', path)
         if new_path == path
           Chef::Log.warn("No cookbooks directory found at or above current directory.  Assuming #{Dir.pwd}.")
@@ -164,9 +139,9 @@ class Chef
 
     def self.derive_path_from_chef_repo_path(child_path)
       if chef_repo_path.kind_of?(String)
-        path_join(chef_repo_path, child_path)
+        PathHelper.join(chef_repo_path, child_path)
       else
-        chef_repo_path.map { |path| path_join(path, child_path)}
+        chef_repo_path.map { |path| PathHelper.join(path, child_path)}
       end
     end
 
@@ -238,7 +213,7 @@ class Chef
     # this is under the user's home directory.
     default(:cache_path) do
       if local_mode
-        "#{config_dir}local-mode-cache"
+        PathHelper.join(config_dir, 'local-mode-cache')
       else
         primary_cache_root = platform_specific_path("/var")
         primary_cache_path = platform_specific_path("/var/chef")
@@ -247,8 +222,7 @@ class Chef
         # Otherwise, we'll create .chef under the user's home directory and use that as
         # the cache path.
         unless path_accessible?(primary_cache_path) || path_accessible?(primary_cache_root)
-          secondary_cache_path = File.join(user_home, '.chef')
-          secondary_cache_path.gsub!(File::SEPARATOR, platform_path_separator) # Safety, mainly for Windows...
+          secondary_cache_path = PathHelper.join(user_home, '.chef')
           Chef::Log.info("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
           secondary_cache_path
         else
@@ -263,20 +237,20 @@ class Chef
     end
 
     # Where cookbook files are stored on the server (by content checksum)
-    default(:checksum_path) { path_join(cache_path, "checksums") }
+    default(:checksum_path) { PathHelper.join(cache_path, "checksums") }
 
     # Where chef's cache files should be stored
-    default(:file_cache_path) { path_join(cache_path, "cache") }
+    default(:file_cache_path) { PathHelper.join(cache_path, "cache") }
 
     # Where backups of chef-managed files should go
-    default(:file_backup_path) { path_join(cache_path, "backup") }
+    default(:file_backup_path) { PathHelper.join(cache_path, "backup") }
 
     # The chef-client (or solo) lockfile.
     #
     # If your `file_cache_path` resides on a NFS (or non-flock()-supporting
     # fs), it's recommended to set this to something like
     # '/tmp/chef-client-running.pid'
-    default(:lockfile) { path_join(file_cache_path, "chef-client-running.pid") }
+    default(:lockfile) { PathHelper.join(file_cache_path, "chef-client-running.pid") }
 
     ## Daemonization Settings ##
     # What user should Chef run as?
@@ -372,7 +346,7 @@ class Chef
     # Path to the default CA bundle files.
     default :ssl_ca_path, nil
     default(:ssl_ca_file) do
-      if on_windows? and embedded_path = embedded_dir
+      if Chef::Platform.windows? and embedded_path = embedded_dir
         cacert_path = File.join(embedded_path, "ssl/certs/cacert.pem")
         cacert_path if File.exist?(cacert_path)
       else
@@ -384,7 +358,7 @@ class Chef
     # certificates in this directory will be added to whatever CA bundle ruby
     # is using. Use this to add self-signed certs for your Chef Server or local
     # HTTP file servers.
-    default(:trusted_certs_dir) { config_dir && path_join(config_dir, "trusted_certs") }
+    default(:trusted_certs_dir) { PathHelper.join(config_dir, "trusted_certs") }
 
     # Where should chef-solo download recipes from?
     default :recipe_url, nil
@@ -417,10 +391,6 @@ class Chef
 
     # This secret is used to decrypt encrypted data bag items.
     default(:encrypted_data_bag_secret) do
-      # We have to check for the existence of the default file before setting it
-      # since +Chef::Config[:encrypted_data_bag_secret]+ is read by older
-      # bootstrap templates to determine if the local secret should be uploaded to
-      # node being bootstrapped. This should be removed in Chef 12.
       if File.exist?(platform_specific_path("/etc/chef/encrypted_data_bag_secret"))
         platform_specific_path("/etc/chef/encrypted_data_bag_secret")
       else
@@ -456,15 +426,15 @@ class Chef
     default :validation_client_name, "chef-validator"
 
     # When creating a new client via the validation_client account, Chef 11
-    # servers allow the client to generate a key pair locally and sent the
+    # servers allow the client to generate a key pair locally and send the
     # public key to the server. This is more secure and helps offload work from
     # the server, enhancing scalability. If enabled and the remote server
     # implements only the Chef 10 API, client registration will not work
     # properly.
     #
-    # The default value is `false` (Server generates client keys). Set to
-    # `true` to enable client-side key generation.
-    default(:local_key_generation) { false }
+    # The default value is `true`. Set to `false` to disable client-side key
+    # generation (server generates client keys).
+    default(:local_key_generation) { true }
 
     # Zypper package provider gpg checks. Set to true to enable package
     # gpg signature checking. This will be default in the
@@ -492,7 +462,7 @@ class Chef
     default(:syntax_check_cache_path) { cache_options[:path] }
 
     # Deprecated:
-    default(:cache_options) { { :path => path_join(file_cache_path, "checksums") } }
+    default(:cache_options) { { :path => PathHelper.join(file_cache_path, "checksums") } }
 
     # Set to false to silence Chef 11 deprecation warnings:
     default :chef11_deprecation_warnings, true
@@ -505,6 +475,9 @@ class Chef
       default :ssh_gateway, nil
       default :bootstrap_version, nil
       default :bootstrap_proxy, nil
+      default :bootstrap_template, "chef-full"
+      default :secret, nil
+      default :secret_file, nil
       default :identity_file, nil
       default :host_key_verify, nil
       default :forward_agent, nil
@@ -537,7 +510,7 @@ class Chef
 
     # Those lists of regular expressions define what chef considers a
     # valid user and group name
-    if on_windows?
+    if Chef::Platform.windows?
       set_defaults_for_windows
     else
       set_defaults_for_nix
@@ -550,7 +523,7 @@ class Chef
     end
 
     def self.windows_home_path
-      windows_home_path = env['SYSTEMDRIVE'] + env['HOMEPATH'] if env['SYSTEMDRIVE'] && env['HOMEPATH']
+      env['SYSTEMDRIVE'] + env['HOMEPATH'] if env['SYSTEMDRIVE'] && env['HOMEPATH']
     end
 
     # returns a platform specific path to the user home dir if set, otherwise default to current directory.
@@ -613,6 +586,51 @@ class Chef
     default :default_attribute_whitelist, nil
     default :normal_attribute_whitelist, nil
     default :override_attribute_whitelist, nil
+
+    # Chef requires an English-language UTF-8 locale to function properly.  We attempt
+    # to use the 'locale -a' command and search through a list of preferences until we
+    # find one that we can use.  On Ubuntu systems we should find 'C.UTF-8' and be
+    # able to use that even if there is no English locale on the server, but Mac, Solaris,
+    # AIX, etc do not have that locale.  We then try to find an English locale and fall
+    # back to 'C' if we do not.  The choice of fallback is pick-your-poison.  If we try
+    # to do the work to return a non-US UTF-8 locale then we fail inside of providers when
+    # things like 'svn info' return Japanese and we can't parse them.  OTOH, if we pick 'C' then
+    # we will blow up on UTF-8 characters.  Between the warn we throw and the Encoding
+    # exception that ruby will throw it is more obvious what is broken if we drop UTF-8 by
+    # default rather than drop English.
+    #
+    # If there is no 'locale -a' then we return 'en_US.UTF-8' since that is the most commonly
+    # available English UTF-8 locale.  However, all modern POSIXen should support 'locale -a'.
+    default :internal_locale do
+      begin
+        locales = `locale -a`.split
+        case
+        when locales.include?('C.UTF-8')
+          'C.UTF-8'
+        when locales.include?('en_US.UTF-8')
+          'en_US.UTF-8'
+        when locales.include?('en.UTF-8')
+          'en.UTF-8'
+        when guesses = locales.select { |l| l =~ /^en_.*UTF-8$'/ }
+          guesses.first
+        else
+          Chef::Log.warn "Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support."
+          'C'
+        end
+      rescue
+        Chef::Log.warn "No usable locale -a command found, assuming you have en_US.UTF-8 installed."
+        'en_US.UTF-8'
+      end
+    end
+
+    # Force UTF-8 Encoding, for when we fire up in the 'C' locale or other strange locales (e.g.
+    # japanese windows encodings).  If we do not do this, then knife upload will fail when a cookbook's
+    # README.md has UTF-8 characters that do not encode in whatever surrounding encoding we have been
+    # passed.  Effectively, the Chef Ecosystem is globally UTF-8 by default.  Anyone who wants to be
+    # able to upload Shift_JIS or ISO-8859-1 files needs to mark *those* files explicitly with
+    # magic tags to make ruby correctly identify the encoding being used.  Changing this default will
+    # break Chef community cookbooks and is very highly discouraged.
+    default :ruby_encoding, Encoding::UTF_8
 
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with

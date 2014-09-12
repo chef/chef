@@ -28,7 +28,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     if @new_resource.status_command
       Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
 
-      unless shell_out_with_systems_locale(@new_resource.status_command).error?
+      unless shell_out(@new_resource.status_command).error?
         @current_resource.running(true)
       else
         @status_check_success = false
@@ -61,7 +61,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       if @new_resource.start_command
         super
       else
-        shell_out_with_systems_locale("/bin/systemctl start #{@new_resource.service_name}")
+        shell_out_with_systems_locale!("/bin/systemctl start #{@new_resource.service_name}")
       end
     end
   end
@@ -73,7 +73,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       if @new_resource.stop_command
         super
       else
-        shell_out_with_systems_locale("/bin/systemctl stop #{@new_resource.service_name}")
+        shell_out_with_systems_locale!("/bin/systemctl stop #{@new_resource.service_name}")
       end
     end
   end
@@ -82,7 +82,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     if @new_resource.restart_command
       super
     else
-      shell_out_with_systems_locale("/bin/systemctl restart #{@new_resource.service_name}")
+      shell_out_with_systems_locale!("/bin/systemctl restart #{@new_resource.service_name}")
     end
   end
 
@@ -91,7 +91,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       super
     else
       if @current_resource.running
-        shell_out_with_systems_locale("/bin/systemctl reload #{@new_resource.service_name}")
+        shell_out_with_systems_locale!("/bin/systemctl reload #{@new_resource.service_name}")
       else
         start_service
       end
@@ -99,18 +99,18 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   end
 
   def enable_service
-    shell_out_with_systems_locale("/bin/systemctl enable #{@new_resource.service_name}")
+    shell_out!("/bin/systemctl enable #{@new_resource.service_name}")
   end
 
   def disable_service
-    shell_out_with_systems_locale("/bin/systemctl disable #{@new_resource.service_name}")
+    shell_out!("/bin/systemctl disable #{@new_resource.service_name}")
   end
 
   def is_active?
-    shell_out_with_systems_locale("/bin/systemctl is-active #{@new_resource.service_name} --quiet").exitstatus == 0
+    shell_out("/bin/systemctl is-active #{@new_resource.service_name} --quiet").exitstatus == 0
   end
 
   def is_enabled?
-    shell_out_with_systems_locale("/bin/systemctl is-enabled #{@new_resource.service_name} --quiet").exitstatus == 0
+    shell_out("/bin/systemctl is-enabled #{@new_resource.service_name} --quiet").exitstatus == 0
   end
 end

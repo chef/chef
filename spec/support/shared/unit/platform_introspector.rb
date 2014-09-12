@@ -29,6 +29,10 @@ shared_examples_for "a platform introspector" do
     end
     @platform_hash["debian"] = {["5", "6"] => "debian-5/6", "default" => "debian"}
     @platform_hash["default"] = "default"
+    # The following @platform_hash keys are used for testing version constraints
+    @platform_hash['exact_match'] = { '1.2.3' => 'exact', '>= 1.0' => 'not exact'}
+    @platform_hash['multiple_matches'] = { '~> 2.3.4' => 'matched ~> 2.3.4', '>= 2.3' => 'matched >=2.3' }
+    @platform_hash['successful_matches'] = { '< 3.0' => 'matched < 3.0', '>= 3.0' => 'matched >= 3.0' }
 
     @platform_family_hash = {
       "debian" => "debian value",
@@ -77,6 +81,24 @@ shared_examples_for "a platform introspector" do
     node.automatic_attrs[:platform] = "openbsd"
     node.automatic_attrs[:platform_version] = "0.0.0"
     platform_introspector.value_for_platform(@platform_hash).should == "openbsd"
+  end
+
+  it 'returns the exact match' do
+    node.automatic_attrs[:platform] = 'exact_match'
+    node.automatic_attrs[:platform_version] = '1.2.3'
+    platform_introspector.value_for_platform(@platform_hash).should == 'exact'
+  end
+
+  it 'raises RuntimeError' do
+    node.automatic_attrs[:platform] = 'multiple_matches'
+    node.automatic_attrs[:platform_version] = '2.3.4'
+    expect {platform_introspector.value_for_platform(@platform_hash)}.to raise_error(RuntimeError)
+  end
+
+  it 'should return the value for that match' do
+    node.automatic_attrs[:platform] = 'successful_matches'
+    node.automatic_attrs[:platform_version] = '2.9'
+    platform_introspector.value_for_platform(@platform_hash).should == 'matched < 3.0'
   end
 
   describe "when platform versions is an array" do

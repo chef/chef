@@ -21,6 +21,7 @@ require 'ostruct'
 
 # Do not run these tests on windows because some path handling
 # code is not implemented to handle windows paths.
+
 describe Chef::Provider::Mount::Solaris, :unix_only do
   let(:node) { Chef::Node.new }
 
@@ -34,6 +35,8 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
   let(:device) { "/dev/dsk/c0t2d0s7" }
 
+  let(:fsck_device) { "/dev/rdsk/c0t2d0s7" }
+
   let(:mountpoint) { "/mnt/foo" }
 
   let(:options) { nil }
@@ -42,9 +45,9 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     new_resource = Chef::Resource::Mount.new(mountpoint)
     new_resource.device      device
     new_resource.device_type device_type
+    new_resource.fsck_device fsck_device
     new_resource.fstype      fstype
     new_resource.options     options
-
     new_resource.supports :remount => false
     new_resource
   }
@@ -123,9 +126,10 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       expect { provider.run_action(:remount) }.to raise_error(Chef::Exceptions::Mount)
     end
 
-    %w{tmpfs nfs ctfs proc mntfs objfs sharefs fd smbfs}.each do |ft|
+    %w{tmpfs nfs ctfs proc mntfs objfs sharefs fd smbfs vxfs}.each do |ft|
       context "when the device has a fstype of #{ft}" do
         let(:fstype) { ft }
+        let(:fsck_device) { "-" }
         let(:device) { "something_that_is_not_a_file" }
 
         before do
@@ -145,7 +149,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
   end
 
   describe "#load_current_resource" do
-    context "when loading a normal UFS filesystem" do
+    context "when loading a normal UFS filesystem with mount at boot" do
 
       before do
         provider.load_current_resource
@@ -167,6 +171,10 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         provider.current_resource.device.should == device
       end
 
+      it "should set the fsck_device on the current_resource" do
+        provider.current_resource.fsck_device.should == fsck_device
+      end
+
       it "should set the device_type on the current_resource" do
         provider.current_resource.device_type.should == device_type
       end
@@ -184,7 +192,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
 
       it "should set the options field on the current_resource" do
-        expect(provider.current_resource.options).to eql(["-", "noauto"])
+        expect(provider.current_resource.options).to eql(["-"])
       end
 
       it "should set the pass field on the current_resource" do
@@ -201,6 +209,39 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         expect { provider.load_current_resource }.to_not raise_error
       end
     end
+  end
+
+  describe "#load_current_resource" do
+    context "when loading a normal UFS filesystem with noauto, don't mount at boot" do
+
+      let(:vfstab_file_contents) {
+        <<-EOF.gsub /^\s*/, ''
+        #device         device          mount           FS      fsck    mount   mount
+        #to mount       to fsck         point           type    pass    at boot options
+        #
+        fd      -       /dev/fd fd      -       no      -
+        /proc   -       /proc   proc    -       no      -
+        # swap
+        /dev/dsk/c0t0d0s1       -       -       swap    -       no      -
+        # root
+        /dev/dsk/c0t0d0s0       /dev/rdsk/c0t0d0s0      /       ufs     1       no      -
+        # tmpfs
+        swap    -       /tmp    tmpfs   -       yes     -
+        # nfs
+        cartman:/share2         -                       /cartman        nfs     -       yes     rw,soft
+        # ufs
+        /dev/dsk/c0t2d0s7       /dev/rdsk/c0t2d0s7      /mnt/foo            ufs     2       no     -
+        EOF
+      }
+
+      before do
+        provider.load_current_resource
+      end
+
+      it "should set the options field on the current_resource" do
+        expect(provider.current_resource.options).to eql(["-", "noauto"])
+      end
+    end
 
     context "when the device is an smbfs mount" do
       let(:mount_output) {
@@ -213,6 +254,8 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         //WORKGROUP;username:password@host/share    -   /mountpoint smbfs   -   no  fileperms=0777,dirperms=0777
         EOF
       }
+
+      let(:fsck_device) { "-" }
 
       it "should work at some point in the future" do
         pending "SMBFS mounts on solaris look like they will need some future code work and more investigation"
@@ -231,6 +274,8 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         cartman:/share2         -                       /cartman        nfs     -       yes     rw,soft
         EOF
       }
+
+      let(:fsck_device) { "-" }
 
       let(:fstype) { "nfs" }
 
@@ -271,11 +316,15 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
 
       it "should set the options field on the current_resource" do
-        expect(provider.current_resource.options).to eql(["rw", "soft", "noauto"])
+        expect(provider.current_resource.options).to eql(["rw", "soft"])
       end
 
       it "should set the pass field on the current_resource" do
         # is this correct or should it be nil?
+        #
+        # vfstab man page says. 
+        # "A -  is used to indicate no entry in a field."
+        # 0 and - could mean different things for some file systems
         expect(provider.current_resource.pass).to eql(0)
       end
 
@@ -313,7 +362,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
 
       it "should have the correct mount options" do
-        expect(provider.current_resource.options).to eql(["-", "noauto"])
+        expect(provider.current_resource.options).to eql(["-"])
       end
     end
 
@@ -350,7 +399,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
 
       it "should have the correct mount options" do
-        expect(provider.current_resource.options).to eql(["-", "noauto"])
+        expect(provider.current_resource.options).to eql(["-"])
       end
     end
 
@@ -515,8 +564,33 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
     end
 
-    describe "remount_fs" do
+    describe "remount_fs without options and do not mount at boot" do
       it "should use mount -o remount" do
+        new_resource.options(%w{noauto})
+        provider.should_receive(:shell_out!).with("mount -o remount #{new_resource.mount_point}")
+        provider.remount_fs
+      end
+    end
+
+    describe "remount_fs with options and do not mount at boot" do
+      it "should use mount -o remount,rw" do
+        new_resource.options(%w{rw noauto})
+        provider.should_receive(:shell_out!).with("mount -o remount,rw #{new_resource.mount_point}")
+        provider.remount_fs
+      end
+    end
+
+    describe "remount_fs with options and mount at boot" do
+      it "should use mount -o remount,rw" do
+        new_resource.options(%w{rw})
+        provider.should_receive(:shell_out!).with("mount -o remount,rw #{new_resource.mount_point}")
+        provider.remount_fs
+      end
+    end
+
+    describe "remount_fs without options and mount at boot" do
+      it "should use mount -o remount" do
+        new_resource.options([])
         provider.should_receive(:shell_out!).with("mount -o remount #{new_resource.mount_point}")
         provider.remount_fs
       end
@@ -526,7 +600,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       context "in the typical case" do
         let(:other_mount) { "/dev/dsk/c0t2d0s0       /dev/rdsk/c0t2d0s0      /            ufs     2       yes     -" }
 
-        let(:this_mount) { "/dev/dsk/c0t2d0s7\t-\t/mnt/foo\tufs\t2\tyes\tdefaults\n" }
+        let(:this_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tyes\tdefaults\n" }
 
         let(:vfstab_file_contents) { [other_mount].join("\n") }
 
@@ -548,9 +622,9 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       context "when the mount has options=noauto" do
         let(:other_mount) { "/dev/dsk/c0t2d0s0       /dev/rdsk/c0t2d0s0      /            ufs     2       yes     -" }
 
-        let(:this_mount) { "/dev/dsk/c0t2d0s7\t-\t/mnt/foo\tufs\t2\tno\t-\n" }
+        let(:this_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tno\t-\n" }
 
-        let(:options) { [ "noauto" ] }
+        let(:options) { "noauto" }
 
         let(:vfstab_file_contents) { [other_mount].join("\n") }
 
@@ -566,6 +640,106 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
         it "should enable the mountpoint we care about" do
           IO.read(vfstab_file.path).should match(/^#{Regexp.escape(this_mount)}/)
+        end
+      end
+
+      context "when the new mount has options of noauto and the existing mount has mount at boot yes" do
+        let(:existing_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tyes\t-" }
+
+        let(:this_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tno\t-\n" }
+
+        let(:options) { "noauto" }
+
+        let(:vfstab_file_contents) { [existing_mount].join("\n") }
+
+        before do
+          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          provider.load_current_resource
+          provider.mount_options_unchanged?
+          provider.send(:vfstab_entry)
+        end
+
+        it "should detect a changed entry" do
+          provider.mount_options_unchanged?.should == false
+        end
+
+        it "should change mount at boot to no" do
+          provider.send(:vfstab_entry).should match(/^#{Regexp.escape(this_mount)}/)
+        end
+      end
+
+      context "when the new mount has options of - and the existing mount has mount at boot no" do
+        let(:existing_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tno\t-" }
+
+        let(:this_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tyes\t-\n" }
+
+        let(:options) { "-" }
+
+        let(:vfstab_file_contents) { [existing_mount].join("\n") }
+
+        before do
+          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          provider.load_current_resource
+          provider.mount_options_unchanged?
+          provider.send(:vfstab_entry)
+        end
+
+        it "should detect a changed entry" do
+          provider.mount_options_unchanged?.should == false
+        end
+
+        it "should change mount at boot to yes" do
+          provider.send(:vfstab_entry).should match(/^#{Regexp.escape(this_mount)}/)
+        end
+      end
+
+      context "when the new mount has options of noauto and the existing mount has mount at boot no" do
+        let(:existing_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tno\t-" }
+
+        let(:this_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tno\t-\n" }
+
+        let(:options) { "-,noauto" }
+
+        let(:vfstab_file_contents) { [existing_mount].join("\n") }
+
+        before do
+          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          provider.load_current_resource
+          provider.mount_options_unchanged?
+          provider.send(:vfstab_entry)
+        end
+
+        it "should detect an unchanged entry" do
+          provider.mount_options_unchanged?.should == true
+        end
+
+        it "should not change mount at boot" do
+          provider.send(:vfstab_entry).should match(/^#{Regexp.escape(this_mount)}/)
+        end
+      end
+
+      context "when the new mount has options of - and the existing mount has mount at boot yes" do
+        let(:existing_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tyes\t-" }
+
+        let(:this_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tyes\t-\n" }
+
+        let(:options) { "-" }
+
+        let(:vfstab_file_contents) { [existing_mount].join("\n") }
+
+        before do
+          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          provider.load_current_resource
+          provider.mount_options_unchanged?
+          provider.send(:vfstab_entry)
+        end
+
+        it "should detect an unchanged entry" do
+          provider.mount_options_unchanged?.should == true
+        end
+
+        it "should not change mount at boot" do
+          provider.send(:vfstab_entry).should match(/^#{Regexp.escape(this_mount)}/)
         end
       end
     end

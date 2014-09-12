@@ -139,7 +139,7 @@ class Chef
         end
 
         def load_data
-          Chef::JSONCompat.from_json(load_json_data)
+          Chef::JSONCompat.parse(load_json_data)
         rescue Chef::Exceptions::FileNotFound, Chef::Exceptions::JSON::ParseError
           false
         end

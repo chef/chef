@@ -80,5 +80,61 @@ describe Chef::HTTP::Simple do
   end
 
   it_behaves_like "downloading all the things"
-end
 
+  context "when Chef::Log.level = :debug" do
+    before do
+      Chef::Log.level = :debug
+      @debug_log = ''
+      Chef::Log.stub(:debug) { |str| @debug_log << str }
+    end
+
+    let(:source) { 'http://localhost:9000' }
+
+    it "Logs the request and response for 200's but not the body" do
+      http_client.get('http://localhost:9000/nyan_cat.png')
+      expect(@debug_log).to match(/200/)
+      expect(@debug_log).to match(/HTTP Request Header Data/)
+      expect(@debug_log).to match(/HTTP Status and Header Data/)
+      expect(@debug_log).not_to match(/HTTP Request Body/)
+      expect(@debug_log).not_to match(/HTTP Response Body/)
+      expect(@debug_log).not_to match(/Your request is just terrible./)
+    end
+
+    it "Logs the request and response for 200 POST, but not the body" do
+      http_client.post('http://localhost:9000/posty', 'hithere')
+      expect(@debug_log).to match(/200/)
+      expect(@debug_log).to match(/HTTP Request Header Data/)
+      expect(@debug_log).to match(/HTTP Status and Header Data/)
+      expect(@debug_log).not_to match(/HTTP Request Body/)
+      expect(@debug_log).not_to match(/hithere/)
+      expect(@debug_log).not_to match(/HTTP Response Body/)
+      expect(@debug_log).not_to match(/Your request is just terrible./)
+    end
+
+    it "Logs the request and response and bodies for 400 response" do
+      expect do
+        http_client.get('http://localhost:9000/bad_request')
+      end.to raise_error(Net::HTTPServerException)
+      expect(@debug_log).to match(/400/)
+      expect(@debug_log).to match(/HTTP Request Header Data/)
+      expect(@debug_log).to match(/HTTP Status and Header Data/)
+      expect(@debug_log).not_to match(/HTTP Request Body/)
+      expect(@debug_log).not_to match(/hithere/)
+      expect(@debug_log).to match(/HTTP Response Body/)
+      expect(@debug_log).to match(/Your request is just terrible./)
+    end
+
+    it "Logs the request and response and bodies for 400 POST response" do
+      expect do
+        http_client.post('http://localhost:9000/bad_request', 'hithere')
+      end.to raise_error(Net::HTTPServerException)
+      expect(@debug_log).to match(/400/)
+      expect(@debug_log).to match(/HTTP Request Header Data/)
+      expect(@debug_log).to match(/HTTP Status and Header Data/)
+      expect(@debug_log).to match(/HTTP Request Body/)
+      expect(@debug_log).to match(/hithere/)
+      expect(@debug_log).to match(/HTTP Response Body/)
+      expect(@debug_log).to match(/Your request is just terrible./)
+    end
+  end
+end

@@ -903,7 +903,7 @@ EOM
 
     when_the_repository 'has a cookbook' do
       before do
-        file 'cookbooks/x-1.0.0/metadata.rb', 'name "x"; version "1.0.0"'
+        file 'cookbooks/x-1.0.0/metadata.rb', 'name "x"; version "1.0.0"#unmodified'
         file 'cookbooks/x-1.0.0/z.rb', ''
       end
 
@@ -1088,6 +1088,82 @@ Created /cookbooks
 Created /cookbooks/x
 Created /cookbooks/x/metadata.rb
 EOM
+      end
+    end
+  end
+
+  when_the_chef_server "is in Enterprise mode", :osc_compat => false, :single_org => false do
+    before do
+      organization 'foo' do
+        container 'x', {}
+        group 'x', {}
+      end
+    end
+
+    before :each do
+      Chef::Config.chef_server_url = URI.join(Chef::Config.chef_server_url, '/organizations/foo')
+    end
+
+    when_the_repository 'is empty' do
+      it 'knife download / downloads everything' do
+        knife('download /').should_succeed <<EOM
+Created /acls
+Created /acls/clients
+Created /acls/clients/foo-validator.json
+Created /acls/containers
+Created /acls/containers/clients.json
+Created /acls/containers/containers.json
+Created /acls/containers/cookbooks.json
+Created /acls/containers/data.json
+Created /acls/containers/environments.json
+Created /acls/containers/groups.json
+Created /acls/containers/nodes.json
+Created /acls/containers/roles.json
+Created /acls/containers/sandboxes.json
+Created /acls/containers/x.json
+Created /acls/cookbooks
+Created /acls/data_bags
+Created /acls/environments
+Created /acls/environments/_default.json
+Created /acls/groups
+Created /acls/groups/admins.json
+Created /acls/groups/billing-admins.json
+Created /acls/groups/clients.json
+Created /acls/groups/users.json
+Created /acls/groups/x.json
+Created /acls/nodes
+Created /acls/roles
+Created /acls/organization.json
+Created /clients
+Created /clients/foo-validator.json
+Created /containers
+Created /containers/clients.json
+Created /containers/containers.json
+Created /containers/cookbooks.json
+Created /containers/data.json
+Created /containers/environments.json
+Created /containers/groups.json
+Created /containers/nodes.json
+Created /containers/roles.json
+Created /containers/sandboxes.json
+Created /containers/x.json
+Created /cookbooks
+Created /data_bags
+Created /environments
+Created /environments/_default.json
+Created /groups
+Created /groups/admins.json
+Created /groups/billing-admins.json
+Created /groups/clients.json
+Created /groups/users.json
+Created /groups/x.json
+Created /invitations.json
+Created /members.json
+Created /nodes
+Created /org.json
+Created /roles
+EOM
+        knife('diff --name-status /').should_succeed ''
       end
     end
   end

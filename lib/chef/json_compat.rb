@@ -101,7 +101,7 @@ class Chef
       def to_json(obj, opts = nil)
         begin
           FFI_Yajl::Encoder.encode(obj, opts)
-        rescue FFI_Yajl::EndodeError => e
+        rescue FFI_Yajl::EncodeError => e
           raise Chef::Exceptions::JSON::EncodeError, e.message
         end
       end

@@ -1,39 +1,37 @@
-# Chef Client Changelog
+## Unreleased: 12.0.0
 
-## Unreleased:
-
-* chef/json_compat now throws its own exceptions not JSON gem exceptions
-* Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
-* Fix a bug in the experimental Policyfile mode that caused errors when
-  using templates.
-* Disable JSON encoding of request body when non-JSON content type is
-  specified.
-* Clean up FileVendor and CookbookUploader internal APIs
+* [**Nolan Davidson**](https://github.com/nsdavidson):
+  The chef-apply command now prints usage information when called without arguments
+* [**Kazuki Saito**](https://github.com/sakazuki):
+  CHEF-4933: idempotency fixes for ifconfig provider
+* [**Kirill Shirinkin**](https://github.com/Fodoj):
+  The knife bootstrap command expands the path of the secret-file
+* [**Malte Swart**](https://github.com/mswart):
+  [CHEF-4101] DeepMerge - support overwriting hash values with nil
+* [**James Belchamber**](https://github.com/JamesBelchamber):
+  Mount provider remount action now honours options
+* [**Mark Gibbons**](https://github.com/MarkGibbons):
+  Fix noauto support in Solaris Mount Provider
+* [**Jordan Evans**](https://github.com/jordane):
+  support version constraints in value_for_platform
+* [**Yukihiko Sawanobori**](https://github.com/sawanoboly):
+  Add environment resource attribute to scm resources
+* [**Grzesiek Kolodziejczyk**](https://github.com/grk):
+  Use thread-safe OpenSSL::Digest instead of Digest
+* [**Grzesiek Kolodziejczyk**](https://github.com/grk):
+  Chef::Digester converted to thread-safe Singleton mixin.
 * [**Vasiliy Tolstov**](https://github.com/vtolstov):
   Reload systemd service only if it's running, otherwise start.
 * [**Chris Jerdonek**](https://github.com/cjerdonek):
   knife diagnostic messages sent to stdout instead of stderr
 * [**Xabier de Zuazo**](https://github.com/zuazo):
   Remove the unused StreamingCookbookUploader class (CHEF-4586)
-
-* log resource now marks itself as supporting why-run
-* http_request no longer appends "?message=" query string to GET and HEAD requests
-* added shell_out commands directly to the recipe DSL
-* cookbook synchronizer deletes old files from cookbooks
-* do not clear file cache when override run list is set (CHEF-3684)
-* ruby 1.8.7/1.9.1/1.9.2 support is dropped
-* set no_lazy_load to true (CHEF-4961)
-* set file_stating_uses_destdir config option default to true (CHEF-5040)
-* remove dependency on rest-client gem
-* Add method shell_out_with_systems_locale to ShellOut.
-* Fix knife cookbook site share on windows (CHEF-4994)
-* chef-repo rake tasks are deprecated; print relevant information for
-  each one.
-* Fix RPM package version detection (Issue 1554)
-* Don't override :default provider map if :default passed as platform (OC-11667).
-* Fix SuSE package removal failure (Issue 1732).
-
-
+* [**Jacob Vosmaer**](https://github.com/jacobvosmaer):
+  Fix creation of non-empty FreeBSD groups (#1698)
+* [**Nathan Huff**](https://github.com/nhuff):
+  Check local repository for ips package installs (#1703)
+* [**Sean Clemmer**](https://github.com/sczizzo):
+  Fix "cron" resource handling of special strings (e.g. @reboot, @yearly) (#1708)
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   'group' provider on OSX properly uses 'dscl' to determine existing groups
 * [**Hugo Lopes Tavares**](https://github.com/hltbra):
@@ -70,7 +68,70 @@
   Allow git provider to checkout existing branch names.
 * [**Eric Herot**](https://github.com/eherot):
   Add whitespace boundaries to some mount point references in mount provider.
+* [**Dave Eddy**](https://github.com/bahamas10):
+  Improve the regex for /etc/rc.conf for the FreeBSD service provider
+* [**Stanislav Bogatyrev**](https://github.com/realloc):
+  Fetch recipe_url before loading json_attribs in chef-solo (CHEF-5075)
 
+### Chef Contributions
+
+* Report the request and response when a non-200 error code happens
+* [FEATURE] Upgrade `knife upload` and `knife download` to download
+  **everything** in an organization, now including the organization definition
+  itself (`knife download /org.json`) and the invitations and member list
+  (`knife download /invitations.json` and `knife download /members.json`).
+  Should be compatible with knife-ec-backup.
+* Make default Windows paths more backslashy
+* `knife` now prefers to load `config.rb` in preference to `knife.rb`;
+`knife.rb` will be used if `config.rb` is not found.
+* Fixed Config[:cache_path] to use path_join()
+* Updated chef-zero to 3.0, so that client tests can be run against Enterprise
+  Chef as well as Open Source.
+* knife cookbook site download/list/search/share/show/unshare now uses
+  supermerket.getchef.com urls
+* added Chef::ResourceCollection#insert_at API to the ResourceCollection
+* http_proxy and related config vars no longer clobber already set ENV vars
+* all http_proxy configs now set lowercase + uppercase versions of ENV vars
+* https_proxy/ftp_proxy support setting `http://` URLs (and whatever mix and match makes sense)
+* End-to-end tests for Ubuntu 12.04
+* Only run end-to-end tests when secure environment variables are present.
+* Remove recipe DSL from base provisioner (Issue 1446).
+* Enable client-side key generation by default. (Issue 1711)
+* CookbookSiteStreamingUploader now uses ssl_verify_mode config option (Issue 1518).
+* chef/json_compat now throws its own exceptions not JSON gem exceptions
+* Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
+* Fix a bug in the experimental Policyfile mode that caused errors when
+  using templates.
+* Disable JSON encoding of request body when non-JSON content type is
+  specified.
+* Clean up FileVendor and CookbookUploader internal APIs
+* log resource now marks itself as supporting why-run
+* http_request no longer appends "?message=" query string to GET and HEAD requests
+* added shell_out commands directly to the recipe DSL
+* cookbook synchronizer deletes old files from cookbooks
+* do not clear file cache when override run list is set (CHEF-3684)
+* ruby 1.8.7/1.9.1/1.9.2 support is dropped
+* set no_lazy_load to true (CHEF-4961)
+* set file_stating_uses_destdir config option default to true (CHEF-5040)
+* remove dependency on rest-client gem
+* Add method shell_out_with_systems_locale to ShellOut.
+* chef-repo rake tasks are deprecated; print relevant information for
+  each one.
+* Fix RPM package version detection (Issue 1554)
+* Don't override :default provider map if :default passed as platform (OC-11667).
+* Fix SuSE package removal failure (Issue 1732).
+* Enable Travis to run Test Kitchen with Kitchen EC2.
+* Fix a bug in reporting not to post negative duration values.
+* Add password setting support for Mac 10.7, 10.8 and 10.9 to the dscl user provider.
+* ChefSpec can find freebsd_package resource correctly when a package resource is declared on Freebsd.
+* Autodetect/decrypt encrypted data bag items with data_bag_item dsl method. (Issue 1837, Issue 1849)
+* windows_user: look up username instead of resource name (Issue #1705)
+* Remove the unused bootstrap templates that install chef from rubygems
+* Remove the Chef 10 functionality from bootstrap.
+* Deprecate --distro / --template_file options in favor of --boostrap-template
+* Add `:node_ssl_verify_mode` & `:node_verify_api_cert` options to bootstrap
+  to be able to configure these settings on the bootstrapped node.
+* Add partial_search dsl method to Chef::Search::Query, add result filtering to search.
 
 ## Last Release: 11.14.2
 
@@ -80,7 +141,7 @@
   SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)
 * [**Pierre Ynard**](https://github.com/linkfanel):
   chef-service-manager should run as a non-interactive service (CHEF-5150)
-* [**Paul Russell**](https://github.com/Tensibai):
+* [**Tensibai Zhaoying**](https://github.com/Tensibai):
   Fix file:// URI support in remote\_file on windows (CHEF-4472)
 * [**John Dyer**](https://github.com/johntdyer):
   Catch HTTPServerException for 404 in remote_file retry (CHEF-5116)
@@ -180,8 +241,6 @@
 * Wrap code in block context when syntax checking so `return` is valid
   (CHEF-5199)
 * Quote git resource rev\_pattern to prevent glob matching files (CHEF-4940)
-* Fix OS X service provider actions that don't require the service label
-  to work when there is no plist. (CHEF-5223)
 * User resource now only prints the name during why-run runs. (CHEF-5180)
 * Set --run-lock-timeout to wait/bail if another client has the runlock (CHEF-5074)
 * remote\_file's source attribute does not support DelayedEvaluators (CHEF-5162)
@@ -203,76 +262,3 @@
 * Added DelayedEvaluator support in LWRP using the `lazy {}` key
 * Fixed a bug where nested resources that inherited from Resource::LWRPBase
   would not share the same actions/default_action as their parent
-
-## Previous Release: 11.12.8
-* Fix OS X service provider actions that don't require the service label
-  to work when there is no plist. (CHEF-5223)
-* CHEF-5211: 'knife configure --initial' fails to load 'os' and 'hostname'
-  ohai plugins properly
-* Fix the order of middlewares in HTTP::Simple (CHEF-5198).
-* Wrap code in block context when syntax checking so `return` is valid (CHEF-5199).
-* Including a recipe from a cookbook not in the dependency graph logs
-  a MissingCookbookDependency warning. Fixes CHEF-4367.
-* Improves syntax check speed for Ruby 1.9+, especially when using bundler.
-* Send X-Remote-Request-Id header in order to be able to correlate actions during a single run.
-* Fix for CHEF-5048.
-* Fix for CHEF-5052.
-* Fix for CHEF-5018.
-* Add --validator option to `knife client create` to be able to create validator clients via knife.
-* Add --delete-validators option to `knife client delete` in order to prevent accidental deletion of validator clients.
-* Add --delete-validators option to `knife client bulk delete` in order to prevent accidental deletion of validator clients.
-* Add -r / --runlist option to chef-client which permanently sets or changes the run_list of a node.
-* CHEF-5030: clean up debian ifconfig provider code
-* CHEF-5001: spec tests for multiple rollbacks
-* Added ohai7 'machinename' attribute as source of `node_name` information
-* CHEF-4773: add ruby-shadow support to Mac and FreeBSD distros
-* Service Provider for MacOSX now supports `enable` and `disable`
-* CHEF-5086: Add reboot_pending? helper to DSL
-* Upgrade ohai to 7.0.0.rc.0
-* Make the initial bootstrap message more user friendly (CHEF-5102)
-* Correctly handle exceptions in formatters when exception.message is nil (CHEF-4743)
-* Fix convergence message in deploy provider (CHEF-4929)
-* Make group resource idempotent when gid is specified as a string. (CHEF-4927)
-* Non-dupable elements are now handled when duping attribute arrays. (CHEF-4799)
-* ruby-shadow is not installed on cygwin platform anymore. (CHEF-4946)
-* Upgrade chef-zero to 2.0, remove native-compiled puma as chef dependency. (CHEF-4901/CHEF-5005)
-* Don't honor splay when sent USR1 signal.
-* Don't set log_level in client.rb by default (CHEF-3698)
-* Add IBM PowerKVM to Platform map. (CHEF-5135)
-* Cookbook metadata now allows boolean and numeric attributes. (CHEF-4075)
-* Knife ssh uses cloud port attribute when available. (CHEF-4962)
-* Client info and debug logs now contain cookbook versions in addition to cookbook names. (CHEF-4643)
-* ShellOut mixin now exposes a method to capture the live stream during command execution. (CHEF-5017)
-* Service provider is now aware of maintenance state on Solaris. (CHEF-4990)
-* Refactor Chef::Util::FileEdit to indicate the purpose of the former file_edited, now unwritten_changes?. (CHEF-3714)
-* Fixed FileEdit#insert_line_if_no_match to match multiple times. (CHEF-4173)
-* Hide passwords in error messages from the Subversion resource. (CHEF-4680)
-* The dpkg package provider now supports epoch versions. (CHEF-1752)
-* Multiple missing dependencies are now listed on knife cookbook upload. (CHEF-4851)
-* Add a public file_edited? method to Chef::Util::FileEdit. (CHEF-3714)
-* Package provider defaults to IPS provider on Solaris 5.11+ (CHEF-5037)
-* Chef::REST works with frozen options. (CHEF-5064)
-* Service provider now uses Systemd on ArchLinux. (CHEF-4905)
-* Support knife node run_list add --before. (CHEF-3812)
-* Don't destructively merge subhashes in hash_only_merge!. (CHEF-4918)
-* Display correct host name in knife ssh error message (CHEF-5029)
-* Knife::UI#confirm now has a default_choice option. (CHEF-5057)
-* Add knife 'ssl check' and 'ssl fetch' commands for debugging SSL errors. (CHEF-4711)
-* Usermod group provider is only used on OpenSuse. (OHAI-339)
-* Cron resource accepts a weekday attribute as a symbol. (CHEF-4848)
-* Cron resource accepts special strings, e.g. @reboot (CHEF-2816)
-* Call WIN32OLE.ole_initialize before using WMI (CHEF-4888)
-* Fix TypeError when calling dup on un-dupable objects in DeepMerge
-* Add optional client-side generation of client keys during registration (CHEF-4373)
-* Restore warning for the overlay feature in `knife cookbook upload`,
-  which was accidentally removed in 11.0.0.
-* Don't save the run_list during `node.save` when running with override run list. (CHEF-4443)
-* Enable Content-Length validation for Chef::HTTP::Simple and fix issues around it. (CHEF-5041, CHEF-5100)
-* Windows MSI Package Provider (CHEF-5087)
-* Fix mount resource when device is a relative symlink (CHEF-4957)
-* Increase bootstrap log_level when knife -V -V is set (CHEF-3610)
-* Knife cookbook test should honor chefignore (CHEF-4203)
-* Fix ImmutableMash and ImmutableArray to_hash and to_a methods (CHEF-5132)
-* guard_interpreter attribute: use powershell\_script, other script resources in guards (CHEF-4553)
-* Fix for CHEF-5169: add require for chef/config_fetcher
-* SIGTERM will once-more kill a non-daemonized chef-client (CHEF-5172)

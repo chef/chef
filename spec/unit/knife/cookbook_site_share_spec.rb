@@ -126,11 +126,11 @@ describe Chef::Knife::CookbookSiteShare do
       File.stub(:open).and_return(true)
     end
 
-    it 'should post the cookbook to "http://cookbooks.opscode.com"' do
-      response_text = {:uri => 'http://cookbooks.opscode.com/cookbooks/cookbook_name'}.to_json
+    it 'should post the cookbook to "https://supermarket.getchef.com"' do
+      response_text = {:uri => 'https://supermarket.getchef.com/cookbooks/cookbook_name'}.to_json
       @upload_response.stub(:body).and_return(response_text)
       @upload_response.stub(:code).and_return(201)
-      Chef::CookbookSiteStreamingUploader.should_receive(:post).with(/cookbooks\.opscode\.com/, anything(), anything(), anything())
+      Chef::CookbookSiteStreamingUploader.should_receive(:post).with(/supermarket\.getchef\.com/, anything(), anything(), anything())
       @knife.run
     end
 

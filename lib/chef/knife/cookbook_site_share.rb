@@ -99,7 +99,7 @@ class Chef
       end
 
       def do_upload(cookbook_filename, cookbook_category, user_id, user_secret_filename)
-         uri = "http://cookbooks.opscode.com/api/v1/cookbooks"
+         uri = "https://supermarket.getchef.com/api/v1/cookbooks"
 
          category_string = Chef::JSONCompat.to_json({ 'category'=>cookbook_category })
 

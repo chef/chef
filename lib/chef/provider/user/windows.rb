@@ -17,6 +17,7 @@
 #
 
 require 'chef/provider/user'
+require 'chef/exceptions'
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require 'chef/util/windows/net_user'
 end
@@ -28,7 +29,7 @@ class Chef
 
         def initialize(new_resource,run_context)
           super
-          @net_user = Chef::Util::Windows::NetUser.new(@new_resource.name)
+          @net_user = Chef::Util::Windows::NetUser.new(@new_resource.username)
         end
 
         def load_current_resource
@@ -37,17 +38,16 @@ class Chef
           user_info = nil
           begin
             user_info = @net_user.get_info
-          rescue
-            @user_exists = false
-            Chef::Log.debug("#{@new_resource} does not exist")
-          end
 
-          if user_info
             @current_resource.uid(user_info[:user_id])
             @current_resource.gid(user_info[:primary_group_id])
             @current_resource.comment(user_info[:full_name])
             @current_resource.home(user_info[:home_dir])
             @current_resource.shell(user_info[:script_path])
+          rescue Chef::Exceptions::UserIDNotFound => e
+            # e.message should be "The user name could not be found" but checking for that could cause a localization bug
+            @user_exists = false
+            Chef::Log.debug("#{@new_resource} does not exist (#{e.message})")
           end
 
           @current_resource

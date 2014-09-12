@@ -69,7 +69,6 @@ PKGINFO
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Package)
     end
 
-
     it "should get the source package version from pkginfo if provided" do
       @stdout = StringIO.new(@pkginfo)
       @stdin, @stderr = StringIO.new, StringIO.new
@@ -136,9 +135,7 @@ PKGINFO
 
   describe "install and upgrade" do
     it "should run pkgadd -n -d with the package source to install" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkgadd -n -d /tmp/bash.pkg all"
-      })
+      @provider.should_receive(:shell_out!).with("pkgadd -n -d /tmp/bash.pkg all")
       @provider.install_package("SUNWbash", "11.10.0,REV=2005.01.08.05.16")
     end
 
@@ -146,34 +143,26 @@ PKGINFO
       @new_resource = Chef::Resource::Package.new("/tmp/bash.pkg")
       @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context)
       @new_resource.source.should == "/tmp/bash.pkg"
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkgadd -n -d /tmp/bash.pkg all"
-      })
+      @provider.should_receive(:shell_out!).with("pkgadd -n -d /tmp/bash.pkg all")
       @provider.install_package("/tmp/bash.pkg", "11.10.0,REV=2005.01.08.05.16")
     end
 
     it "should run pkgadd -n -a /tmp/myadmin -d with the package options -a /tmp/myadmin" do
       @new_resource.stub(:options).and_return("-a /tmp/myadmin")
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkgadd -n -a /tmp/myadmin -d /tmp/bash.pkg all"
-      })
+      @provider.should_receive(:shell_out!).with("pkgadd -n -a /tmp/myadmin -d /tmp/bash.pkg all")
       @provider.install_package("SUNWbash", "11.10.0,REV=2005.01.08.05.16")
     end
   end
 
   describe "remove" do
     it "should run pkgrm -n to remove the package" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkgrm -n SUNWbash"
-      })
+      @provider.should_receive(:shell_out!).with("pkgrm -n SUNWbash")
       @provider.remove_package("SUNWbash", "11.10.0,REV=2005.01.08.05.16")
     end
 
     it "should run pkgrm -n -a /tmp/myadmin with options -a /tmp/myadmin" do
       @new_resource.stub(:options).and_return("-a /tmp/myadmin")
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkgrm -n -a /tmp/myadmin SUNWbash"
-      })
+      @provider.should_receive(:shell_out!).with("pkgrm -n -a /tmp/myadmin SUNWbash")
       @provider.remove_package("SUNWbash", "11.10.0,REV=2005.01.08.05.16")
     end
 

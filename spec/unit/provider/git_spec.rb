@@ -195,6 +195,26 @@ SHAS
         @provider.clone
       end
     end
+    context "with a specific home" do
+      let (:override_home) do
+        {"HOME" => "/home/masterNinja"}
+      end
+      let(:overrided_options) do
+        {
+          :user => deploy_user,
+          :environment => { "GIT_SSH" => wrapper, "HOME" => "/home/masterNinja" },
+          :log_tag => "git[web2.0 app]"
+        }
+      end
+      before do
+        @resource.environment(override_home)
+      end
+      before { @resource.environment(override_home) }
+      it "clones a repo with amended git options with specific home" do
+        @provider.should_receive(:shell_out!).with(expected_cmd, overrided_options)
+        @provider.clone
+      end
+    end
   end
 
   it "runs a clone command with escaped destination" do

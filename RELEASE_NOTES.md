@@ -1,8 +1,125 @@
-# Chef Client Release Notes 11.14.2:
+# Chef Client Release Notes 12.0.0:
+
+## Knife Prefers `config.rb` to `knife.rb`.
+
+Knife will now look for `config.rb` in preference to `knife.rb` for its
+configuration file. The syntax and configuration options available in
+`config.rb` are identical to `knife.rb`. Also, the search path for
+configuration files is unchanged.
+
+At this time, it is _recommended_ that users use `config.rb` instead of
+`knife.rb`, but `knife.rb` is not deprecated; no warning will be emitted
+when using `knife.rb`. Once third-party application developers have had
+sufficient time to adapt to the change, `knife.rb` will become
+deprecated and config.rb will be preferred.
+
+## Boostrap Changes
+
+Chef Client 12 introduces a set of changes to `knife bootstrap`. Here is the list of changes:
+
+* Unused / untested bootstrap templates that install Chef Client from rubygems are removed. The recommended installation path for Chef Client is to use the omnibus packages. `chef-full` template (which is the default) installs Chef Client using omnibus packages on all the supported platforms.
+* `--distro` & `--template-file` options are deprecated in Chef 12 in favor of `--boostrap-template` option. This option can take a boostrap template name (e.g. 'chef-full') or the full path to a bootstrap template.
+* Chef now configures `:ssl_verify_mode` & `:verify_api_cert` config options on the node that is being bootstrapped. This setting can be controlled by `:node_ssl_verify_mode` & `:node_verify_api_cert` CLI options. If these are not specified the configured value will be inferred from knife config.
+
+## Solaris Mount Provider
+
+The Solaris provider now supports specifying the fsck_device attribute (which defaults to '-' for backwards compat).
+
+## Version Constraints in value_for_platform
+
+The `value_for_platform` helper can now take version constraints like `>=` and `~>`.  This is particularly useful for users
+of RHEL 7 where the version numbers now look like `7.0.<buildnumber>`, so that they can do:
+
+```ruby
+value_for_platform(
+  "redhat" => {
+    "~> 7.0" => "version 7.x.y"
+    ">= 8.0" => "version 8.0.0 and greater"
+  }
+}
+```
+
+Note that if two version constraints match it is considered ambiguous and will raise an Exception.  An exact match, however, will
+always take precedence over a version constraint.
+
+## Git SCM provider now support environment attribute
+
+You can now pass in a hash of environment variables into the git provider:
+
+```ruby
+git "/opt/mysources/couch" do
+  repository "git://git.apache.org/couchdb.git"
+  revision "master"
+  environment  { 'VAR' => 'whatever' }
+  action :sync
+end
+```
+
+The git provider already automatically sets `ENV['HOME']` and `ENV['GIT_SSH']` but those can both be overridden
+by passing them into the environment hash if the defaults are not appropriate.
+
+## DSCL user provider now supports Mac OS X 10.7 and above.
+
+DSCL user provider in Chef has supported setting passwords only on Mac OS X 10.6. In this release, Mac OS X versions 10.7 and above are now supported. Support for Mac OS X 10.6 is dropped from the dscl provider since this version is EOLed by Apple.
+
+In order to support configuring passwords for the users using shadow hashes two new attributes `salt` & `iterations` are added to the user resource. These attributes are required to make the new [SALTED-SHA512-PBKDF2](http://en.wikipedia.org/wiki/PBKDF2) style shadow hashes used in Mac OS X versions 10.8 and above.
+
+User resource on Mac supports setting password both using plain-text password or using the shadow hash. You can simply set the `password` attribute to the plain text password to configure the password for the user. However this is not ideal since including plain text passwords in cookbooks (even if they are private) is not a good idea. In order to set passwords using shadow hash you can follow the instructions below based on your Mac OS X version.
+
+### Mac OS X 10.7
+
+10.7 calculates the password hash using **SALTED-SHA512**. Stored shadow hash length is 68 bytes; first 4 bytes being salt and the next 64 bytes being the shadow hash itself. You can use below code in order to calculate password hashes to be used in `password` attribute on Mac OS X 10.7:
+
+```
+password = "my_awesome_password"
+salt = OpenSSL::Random.random_bytes(4)
+encoded_password = OpenSSL::Digest::SHA512.hexdigest(salt + password)
+shadow_hash = salt.unpack('H*').first + encoded_password
+
+# You can use this value in your recipes as below:
+
+user "my_awesome_user" do
+  password "c9b3bd....d843"  # Length: 136
+end
+```
+### Mac OS X 10.8 and above
+
+10.7 calculates the password hash using **SALTED-SHA512-PBKDF2**. Stored shadow hash length is 128 bytes. In addition to the shadow hash value, `salt` (32 bytes) and `iterations` (integer) is stored on the system. You can use below code in order to calculate password hashes on Mac OS X 10.8 and above:
+
+```
+password = "my_awesome_password"
+salt = OpenSSL::Random.random_bytes(32)
+iterations = 25000 # Any value above 20k should be fine.
+
+shadow_hash = OpenSSL::PKCS5::pbkdf2_hmac(
+  password,
+  salt,
+  iterations,
+  128,
+  OpenSSL::Digest::SHA512.new
+).unpack('H*').first
+salt_value = salt.unpack('H*').first
+
+# You can use this value in your recipes as below:
+
+user "my_awesome_user" do
+  password "cbd1a....fc843"  # Length: 256
+  salt "bd1a....fc83"        # Length: 64
+  iterations 25000
+end
+```
+
+## `name` Attribute is Required in Metadata
+
+Previously, the `name` attribute in metadata had no effect on the name
+of an uploaded cookbook, instead the name was always inferred from the
+directory basename of the cookbook. The `name` attribute is now
+respected when determining the name of a cookbook. Furthermore, the
+`name` attribute is required when loading/uploading cookbooks.
 
 ## http_request resource no longer appends query string
 
-Previously the http_request GET and HEAD requests appended a hard-coded "?message=resource_name" 
+Previously the http_request GET and HEAD requests appended a hard-coded "?message=resource_name"
 query parameter that could not be overridden.  That feature has been dropped.  Cookbooks that
 actually relied on that should manually add the message query string to the URL they pass to
 the resource.
@@ -64,6 +181,11 @@ directory will also be inherited correctly.
 
 Informational messages from knife are now sent to stderr, allowing you to pipe the output of knife to other commands without having to filter these messages out.
 
+## Enhance `data_bag_item` to interact with encrypted data bag items
+
+The `data_bag_item` dsl method can be used to load encrypted data bag items when an additional `secret` String parameter is included.
+If no `secret` is provided but the data bag item is encrypted, `Chef::Config[:encrypted_data_bag_secret]` will be checked.
+
 # Internal API Changes in this Release
 
 These changes do not impact any cookbook code, but may impact tools that
@@ -89,3 +211,35 @@ On OSX, the 'group' provider would use 'etc' to determine existing groups,
 but 'dscl' to add groups, causing broken idempotency if something existed
 in /etc/group. The provider now uses 'dscl' for both idempotenty checks and
 modifications.
+
+## Windows Service Startup Type
+
+When a Windows service is running and Chef stops it, the startup type will change from automatic to manual. A bug previously existed
+that prevented you from changing the startup type to disabled from manual. Using the enable and disable actions will now correctly set
+the service startup type to automatic and disabled, respectively. A new `windows_service` resource has been added that allows you to
+specify the startup type as manual:
+
+```
+windows_service "BITS" do
+  action :configure_startup
+  startup_type :manual
+end
+```
+
+You must use the windows_service resource to utilize the `:configure_startup` action and `startup_type` attribute. The service resource
+does not support them.
+
+## Client-side key generation enabled by default
+When creating a new client via the validation_client account, Chef 11 servers allow the client to generate a key pair locally
+and send the public key to the server, enhancing scalability. This was disabled by default, since client registration would not
+work properly if the remote server implemented only the Chef 10 API.
+
+## CookbookSiteStreamingUploader now uses ssl_verify_mode config option
+The CookbookSiteStreamingUploader now obeys the setting of ssl_verify_mode in the client config. Was previously ignoring the
+config setting and always set to VERIFY_NONE.
+
+## Result filtering on `search` API.
+`search` can take an optional `:filter_result`, which returns search data in the form specified
+by the given Hash. This works analogously to the partial_search method from the [partial_search cookbook](https://supermarket.getchef.com/cookbooks/partial_search),
+with `:filter_result` replacing `:keys`. You can also filter `knife search` results by supplying the `--filter-result`
+or `-f` option and a comma-separated string representation of the filter hash.

@@ -11,9 +11,13 @@ describe "chef-solo" do
 
   let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..") }
 
+  let(:cookbook_x_100_metadata_rb) { cb_metadata("x", "1.0.0") }
+
+  let(:cookbook_ancient_100_metadata_rb) { cb_metadata("ancient", "1.0.0") }
+
   when_the_repository "has a cookbook with a basic recipe" do
     before do
-      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/x/metadata.rb', cookbook_x_100_metadata_rb
       file 'cookbooks/x/recipes/default.rb', 'puts "ITWORKS"'
     end
 
@@ -46,10 +50,10 @@ E
 
   when_the_repository "has a cookbook with an undeclared dependency" do
     before do
-      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/x/metadata.rb', cookbook_x_100_metadata_rb
       file 'cookbooks/x/recipes/default.rb', 'include_recipe "ancient::aliens"'
 
-      file 'cookbooks/ancient/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/ancient/metadata.rb', cookbook_ancient_100_metadata_rb
       file 'cookbooks/ancient/recipes/aliens.rb', 'print "it was aliens"'
     end
 
@@ -69,7 +73,7 @@ EOM
     before do
       directory 'logs'
       file 'logs/runs.log', ''
-      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/x/metadata.rb', cookbook_x_100_metadata_rb
       file 'cookbooks/x/recipes/default.rb', <<EOM
 ruby_block "sleeping" do
   block do

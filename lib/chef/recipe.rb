@@ -69,7 +69,6 @@ class Chef
       @run_context = run_context
       # TODO: 5/19/2010 cw/tim: determine whether this can be removed
       @params = Hash.new
-      @node = deprecated_ivar(run_context.node, :node, :warn)
     end
 
     # Used in DSL mixins

@@ -35,7 +35,7 @@ class Chef
             loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, parent.chefignore)
             # We need the canonical cookbook name if we are using versioned cookbooks, but we don't
             # want to spend a lot of time adding code to the main Chef libraries
-            if Chef::Config[:versioned_cookbooks]
+            if root.versioned_cookbooks
               _canonical_name = canonical_cookbook_name(File.basename(file_path))
               fail "When versioned_cookbooks mode is on, cookbook #{file_path} must match format <cookbook_name>-x.y.z"  unless _canonical_name
 

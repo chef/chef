@@ -31,8 +31,12 @@ class Chef
           @data_handler = data_handler
         end
 
+        def write_pretty_json=(value)
+          @write_pretty_json = value
+        end
+
         def write_pretty_json
-          root.write_pretty_json
+          @write_pretty_json.nil? ? root.write_pretty_json : @write_pretty_json
         end
 
         def data_handler

@@ -59,7 +59,6 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
   let(:event_dispatch) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, event_dispatch) }
 
-
   # These tests use git's bundle feature, which is a way to export an entire
   # git repo (or subset of commits) as a single file.
   #
@@ -799,7 +798,6 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
           deploy_to_latest_with_callback_tracking.run_action(:deploy)
         end
 
-
         let(:deploy_that_fails) do
           resource = deploy_to_latest_rev.dup
           errant_callback = lambda {|x| raise Exception, "I am a failed deploy" }
@@ -882,5 +880,3 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
 
   end
 end
-
-

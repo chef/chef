@@ -20,33 +20,23 @@
 require 'tmpdir'
 require 'fileutils'
 require 'chef/config'
-
-# Temporarily use our own copy of chef-zero rspec integration.
-# See support/shared/integration/chef_zero_support for details
-#require 'chef_zero/rspec'
-require 'support/shared/integration/chef_zero_support'
-
 require 'chef/json_compat'
+require 'chef/server_api'
+require 'chef_zero/rspec'
 require 'support/shared/integration/knife_support'
 require 'support/shared/integration/app_server_support'
 require 'spec_helper'
 
 module IntegrationSupport
-  include ChefZeroSupport
+  include ChefZero::RSpec
 
   module ClassMethods
-
-    def when_the_chef_server(desc, *tags, &block)
-      context("when the chef server #{desc}", *tags) do
-        #include ChefZero::RSpec::Fixtures
-        include_context "With chef-zero running"
-        module_eval(&block)
-      end
-    end
+    include ChefZero::RSpec
 
     def when_the_repository(desc, *tags, &block)
       context("when the chef repo #{desc}", *tags) do
         include_context "with a chef repo"
+
         module_eval(&block)
       end
     end
@@ -63,6 +53,10 @@ module IntegrationSupport
     includer_class.extend(ClassMethods)
   end
 
+  def api
+    Chef::ServerAPI.new
+  end
+
   def directory(relative_path, &block)
     old_parent_path = @parent_path
     @parent_path = path_to(relative_path)
@@ -77,10 +71,8 @@ module IntegrationSupport
     FileUtils.mkdir_p(dir) unless dir == '.'
     File.open(filename, 'w') do |file|
       raw = case contents
-            when Hash
+            when Hash, Array
               JSON.pretty_generate(contents)
-            when Array
-              contents.join("\n")
             else
               contents
             end
@@ -101,7 +93,7 @@ module IntegrationSupport
   end
 
   def cb_metadata(name, version, extra_text="")
-    "name '#{name}'; version '#{version}'#{extra_text}"
+    "name #{name.inspect}; version #{version.inspect}#{extra_text}"
   end
 
   def cwd(relative_path)

@@ -301,7 +301,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
 
   def expect_commands(provider, commands)
     commands.each do |command|
-      provider.should_receive(:run_command).with({:command => command})
+      provider.should_receive(:shell_out!).with(command)
     end
   end
 

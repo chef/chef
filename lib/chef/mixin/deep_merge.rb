@@ -29,7 +29,6 @@ class Chef
 
       class InvalidSubtractiveMerge < ArgumentError; end
 
-
       OLD_KNOCKOUT_PREFIX = "!merge:".freeze
 
       # Regex to match the "knockout prefix" that was used to indicate
@@ -86,8 +85,12 @@ class Chef
         when Hash
           if dest.kind_of?(Hash)
             source.each do |src_key, src_value|
-              if dest[src_key]
-                dest[src_key] = deep_merge!(src_value, dest[src_key])
+              if dest.has_key? src_key
+                if dest[src_key].nil?
+                  dest[src_key] = nil
+                else
+                  dest[src_key] = deep_merge!(src_value, dest[src_key])
+                end
               else # dest[src_key] doesn't exist so we take whatever source has
                 raise_if_knockout_used!(src_value)
                 dest[src_key] = src_value
