@@ -58,21 +58,23 @@ describe Chef::Knife::DataBagFromFile do
   let(:db_folder2) { File.join(tmp_dir, data_bags_path, bag_name2) }
   let(:db_file3) { Tempfile.new(["data_bag_from_file_test3", ".json"], db_folder2) }
 
-  def plain_bag(b = bag_name)
-    data_bag = double("Chef::DataBagItem")
+  def new_bag_expects(b = bag_name, d = plain_data)
+    data_bag = double
     expect(data_bag).to receive(:data_bag).with(b)
-    expect(data_bag).to receive(:raw_data=).with(plain_data)
+    expect(data_bag).to receive(:raw_data=).with(d)
     expect(data_bag).to receive(:save)
     expect(data_bag).to receive(:data_bag)
     expect(data_bag).to receive(:id)
     data_bag
   end
+
   let(:data_bags_path) { "data_bags" }
   let(:plain_data) { {
       "id" => "item_name",
       "greeting" => "hello",
       "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true }}
   } }
+  let(:enc_data) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(plain_data, secret) }
 
   let(:rest) { double("Chef::REST") }
   let(:stdout) { StringIO.new }
@@ -87,7 +89,7 @@ describe Chef::Knife::DataBagFromFile do
 
   it "loads from a file and saves" do
     expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name, db_file.path).and_return(plain_data)
-    expect(Chef::DataBagItem).to receive(:new).and_return(plain_bag)
+    expect(Chef::DataBagItem).to receive(:new).and_return(new_bag_expects)
 
     knife.run
   end
@@ -96,7 +98,7 @@ describe Chef::Knife::DataBagFromFile do
     knife.name_args = [ bag_name, db_file.path, db_file2.path ]
     expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name, db_file.path).and_return(plain_data)
     expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name, db_file2.path).and_return(plain_data)
-    expect(Chef::DataBagItem).to receive(:new).twice.and_return(plain_bag, plain_bag)
+    expect(Chef::DataBagItem).to receive(:new).twice.and_return(new_bag_expects, new_bag_expects)
 
     knife.run
   end
@@ -105,7 +107,7 @@ describe Chef::Knife::DataBagFromFile do
     knife.name_args = [ bag_name, db_folder ]
     expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name, db_file.path).and_return(plain_data)
     expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name, db_file2.path).and_return(plain_data)
-    expect(Chef::DataBagItem).to receive(:new).twice.and_return(plain_bag, plain_bag)
+    expect(Chef::DataBagItem).to receive(:new).twice.and_return(new_bag_expects, new_bag_expects)
 
     knife.run
   end
@@ -127,7 +129,7 @@ describe Chef::Knife::DataBagFromFile do
       expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name, File.basename(db_file.path)).and_return(plain_data)
       expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name, File.basename(db_file2.path)).and_return(plain_data)
       expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name2, File.basename(db_file3.path)).and_return(plain_data)
-      expect(Chef::DataBagItem).to receive(:new).exactly(3).times.and_return(plain_bag, plain_bag, plain_bag(bag_name2))
+      expect(Chef::DataBagItem).to receive(:new).exactly(3).times.and_return(new_bag_expects, new_bag_expects, new_bag_expects(bag_name2))
 
       knife.run
     end
@@ -136,7 +138,7 @@ describe Chef::Knife::DataBagFromFile do
       knife.name_args = [bag_name2]
       config[:all] = true
       expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name2, File.basename(db_file3.path)).and_return(plain_data)
-      expect(Chef::DataBagItem).to receive(:new).and_return(plain_bag(bag_name2))
+      expect(Chef::DataBagItem).to receive(:new).and_return(new_bag_expects(bag_name2))
 
       knife.run
     end
@@ -147,13 +149,12 @@ describe Chef::Knife::DataBagFromFile do
     before(:each) do
       expect(knife).to receive(:encryption_secret_provided?).and_return(true)
       expect(knife).to receive(:read_secret).and_return(secret)
-      # TODO this should return encrypted data
-      expect(Chef::EncryptedDataBagItem).to receive(:encrypt_data_bag_item).with(plain_data, secret).and_return(plain_data)
+      expect(Chef::EncryptedDataBagItem).to receive(:encrypt_data_bag_item).with(plain_data, secret).and_return(enc_data)
     end
 
     it "encrypts values when given --secret" do
       expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name, db_file.path).and_return(plain_data)
-      expect(Chef::DataBagItem).to receive(:new).and_return(plain_bag)
+      expect(Chef::DataBagItem).to receive(:new).and_return(new_bag_expects(bag_name, enc_data))
 
       knife.run
     end
