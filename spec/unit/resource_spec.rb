@@ -464,7 +464,8 @@ describe Chef::Resource do
     end
 
     it "does not run only_if if no only_if command is given" do
-      @resource.not_if.clear
+      expect_any_instance_of(Chef::Resource::Conditional).not_to receive(:evaluate)
+      @resource.only_if.clear
       @resource.run_action(:purr)
     end
 
@@ -506,6 +507,8 @@ describe Chef::Resource do
     end
 
     it "does not run not_if if no not_if command is given" do
+      expect_any_instance_of(Chef::Resource::Conditional).not_to receive(:evaluate)
+      @resource.not_if.clear
       @resource.run_action(:purr)
     end
 
@@ -551,7 +554,6 @@ describe Chef::Resource do
         expect { resource.guard_interpreter(:command_dot_com) }.not_to raise_error
       end
     end
-
   end
 
   describe "should_skip?" do
