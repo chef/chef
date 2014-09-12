@@ -13,4 +13,4 @@ do
   unset $ruby_env_var
 done
 
-sudo chef verify --unit --integration
+sudo chef verify --unit
