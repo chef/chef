@@ -24,12 +24,13 @@ relative_path "chef-vault"
 if windows?
   dependency "ruby-windows"
   dependency "ruby-windows-devkit"
-  dependency "chef-windows"
 else
   dependency "ruby"
   dependency "rubygems"
-  dependency "chef"
 end
+
+dependency "bundler"
+dependency "chef"
 
 build do
   env = with_standard_compiler_flags(with_embedded_path)
@@ -37,7 +38,6 @@ build do
   bundle "install", env: env
 
   gem "build chef-vault.gemspec", env: env
-
   gem "install chef-vault-*.gem" \
       " --no-ri --no-rdoc", env: env
 end

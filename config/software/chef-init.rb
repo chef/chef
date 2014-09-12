@@ -1,6 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012-2014 Chef Software, Inc.
-# License:: Apache License, Version 2.0
+# Copyright 2012-2014 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,19 +17,21 @@
 name "chef-init"
 default_version "master"
 
-source :git => "https://github.com/opscode/chef-init"
+source git: "https://github.com/opscode/chef-init"
 
 relative_path "chef-init"
 
-dependency "runit"
+dependency "bundler"
 dependency "chef"
-
-env = with_standard_compiler_flags(with_embedded_path)
+dependency "runit"
 
 build do
+  env = with_standard_compiler_flags(with_embedded_path)
+
   bundle "install", env: env
-  rake "build", env: env
-  gem "install pkg/chef-init*.gem " \
-    "--bindir '#{install_dir}/bin' " \
-    "--no-ri --no-rdoc", env: env
+
+  gem "build chef-init.gemspec", env: env
+  gem "install chef-init*.gem" \
+      " --bindir '#{install_dir}/bin'" \
+      " --no-ri --no-rdoc", env: env
 end

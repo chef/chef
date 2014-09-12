@@ -22,7 +22,9 @@ name "openssl-customization"
 
 default_version "0.1.0"
 
-if platform == 'windows'
+source path: "#{project.files_path}/#{name}"
+
+if windows?
   dependency "ruby-windows"
 else
   dependency "ruby"
@@ -30,34 +32,31 @@ else
 end
 
 build do
-  if platform == "windows"
-    block do
+  if windows?
+    block "Add OpenSSL customization file" do
       # gets directories for RbConfig::CONFIG and sanitizes them.
       def get_sanitized_rbconfig(config)
-        config_cmd = %Q{#{install_dir}/embedded/bin/ruby -rrbconfig -e "puts RbConfig::CONFIG['#{config}']"}
-        config_cmd.gsub!('/', '\\') if platform == "windows"
+        ruby = windows_safe_path("#{install_dir}/embedded/bin/ruby")
 
-        config_dir = ""
-        Bundler.with_clean_env do
-          config_dir = %x{#{config_cmd}}.strip
+        config_dir = Bundler.with_clean_env do
+          command_output = %x|#{ruby} -rrbconfig -e "puts RbConfig::CONFIG['#{config}']"|.strip
+          windows_safe_path(command_output)
         end
 
-        raise "could not determine embedded ruby's RbConfig::CONFIG['#{config}']" if config_dir.empty?
+        if config_dir.nil? || config_dir.empty?
+          raise "could not determine embedded ruby's RbConfig::CONFIG['#{config}']"
+        end
 
         config_dir
       end
 
-      def embedded_ruby_site_dir
-        get_sanitized_rbconfig('sitelibdir')
-      end
+      embedded_ruby_site_dir = get_sanitized_rbconfig('sitelibdir')
+      embedded_ruby_lib_dir  = get_sanitized_rbconfig('rubylibdir')
 
-      def embedded_ruby_lib_dir
-        get_sanitized_rbconfig('rubylibdir')
-      end
-
+      source_ssl_env_hack      = File.join(project_dir, "windows", "ssl_env_hack.rb")
       destination_ssl_env_hack = File.join(embedded_ruby_site_dir, "ssl_env_hack.rb")
-      source_ssl_env_hack = File.join(project.files_path, "openssl_customization", "windows", "ssl_env_hack.rb")
-      FileUtils.cp source_ssl_env_hack, destination_ssl_env_hack
+
+      copy(source_ssl_env_hack, destination_ssl_env_hack)
 
       # Unfortunately there is no patch on windows, but luckily we only need to append a line to the openssl.rb
       # to pick up our script which find the CA bundle in omnibus installations and points SSL_CERT_FILE to it

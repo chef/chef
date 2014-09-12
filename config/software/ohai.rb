@@ -16,30 +16,28 @@
 #
 
 name "ohai"
+default_version "master"
+
+source git: "git://github.com/opscode/ohai"
+
+relative_path "ohai"
 
 if windows?
   dependency "ruby-windows"
   dependency "ruby-windows-devkit"
 else
   dependency "ruby"
-  dependency "libffi"
   dependency "rubygems"
 end
 
 dependency "bundler"
 
-default_version "master"
-
-source :git => "git://github.com/opscode/ohai"
-
-relative_path "ohai"
-
-env = with_embedded_path()
-env = with_standard_compiler_flags(env)
-
 build do
-  bundle "install --without development",  :env => env
-  bundle "exec rake gem", :env => env
+  env = with_standard_compiler_flags(with_embedded_path)
 
-  gem "install pkg/ohai*.gem --no-rdoc --no-ri", :env => env
+  bundle "install --without development", env: env
+
+  gem "build ohai.gemspec", env: env
+  gem "install ohai*.gem" \
+      " --no-ri --no-rdoc", env: env
 end

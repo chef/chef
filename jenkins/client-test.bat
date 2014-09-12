@@ -35,7 +35,6 @@ IF NOT EXIST chef-client GOTO :error
 IF NOT EXIST chef-solo GOTO :error
 IF NOT EXIST knife GOTO :error
 IF NOT EXIST ohai GOTO :error
-IF NOT EXIST erubis GOTO :error
 
 rem # uninstall chef
 call msiexec /qb /x %TMP%\install.msi || GOTO :error

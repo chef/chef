@@ -140,11 +140,6 @@ if [ ! -f "/opt/chef/bin/ohai" ]; then
   exit 1
 fi
 
-if [ ! -f "/opt/chef/bin/erubis" ]; then
-  echo "/opt/chef/bin/erubis binary was not installed correctly, chef depends on this!"
-  exit 1
-fi
-
 # we test using the specs packaged in the gem
 cd /opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-[0-9]*
 

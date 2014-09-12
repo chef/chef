@@ -1,6 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Chef Software, Inc.
-# License:: Apache License, Version 2.0
+# Copyright 2012-2014 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,13 +14,15 @@
 # limitations under the License.
 #
 
+#
 # This is a clone of chef that we can install on build and test machines
 # without interfering with the regular build/test.
+#
 
 name "angrychef"
 friendly_name "Angry Chef Client"
 maintainer "Chef Software, Inc."
-homepage "http://www.getchef.com"
+homepage "https://www.getchef.com"
 
 build_iteration 1
 build_version do
@@ -32,11 +33,28 @@ build_version do
   output_format :semver
 end
 
-install_dir "/opt/angrychef"
+if windows?
+  # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
+  #       Native gems will use gcc which will barf on files with spaces,
+  #       which is only fixable if everyone in the world fixes their Makefiles
+  install_dir "#{default_root}/opscode/#{name}"
+else
+  install_dir "#{default_root}/#{name}"
+end
 
-resources_path File.join(files_path, "chef")
-mac_pkg_identifier "com.getchef.pkg.angrychef"
+resources_path "#{Omnibus::Config.project_root}/files/chef"
 
 dependency "preparation"
 dependency "chef"
 dependency "version-manifest"
+
+package :rpm do
+  signing_passphrase ENV['OMNIBUS_RPM_SIGNING_PASSPHRASE']
+end
+
+package :pkg do
+  identifier "com.getchef.pkg.angrychef"
+  signing_identity "Developer ID Installer: Opscode Inc. (9NBR9JL2R2)"
+end
+
+compress :dmg
