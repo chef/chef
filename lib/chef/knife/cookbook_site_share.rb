@@ -40,11 +40,12 @@ class Chef
         :description => "A colon-separated path to look for cookbooks in",
         :proc => lambda { |o| Chef::Config.cookbook_path = o.split(":") }
 
-      option :upload,
-        :long => "--[no-]upload",
-        :description => "Upload cookbook to SuperMacket, defaults is true. If given --no-upload, only show list of archived files",
+      option :dry_run,
+        :long => '--dry-run',
+        :short => '-n',
         :boolean => true,
-        :default => true
+        :default => false,
+        :description => "Don't take action, only print what files will be upload to SuperMarket."
 
       def run
         if @name_args.length < 2
@@ -72,10 +73,11 @@ class Chef
             exit(1)
           end
 
-          unless config[:upload]
-            ui.info("Not uploading #{cookbook_name}.tgz due to --no-upload flag.")
+          if config[:dry_run]
+            ui.info("Not uploading #{cookbook_name}.tgz due to --dry-run flag.")
             result = shell_out!("tar -tzf #{cookbook_name}.tgz", :cwd => tmp_cookbook_dir)
             ui.info(result.stdout)
+            puts `find #{tmp_cookbook_dir}`
             FileUtils.rm_rf tmp_cookbook_dir
             return
           end

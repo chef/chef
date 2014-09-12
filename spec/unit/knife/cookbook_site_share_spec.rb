@@ -52,8 +52,8 @@ describe Chef::Knife::CookbookSiteShare do
       @knife.stub(:do_upload).and_return(true)
     end
 
-    it 'should set true to config[:upload] as default' do
-      @knife.config[:upload].should be_true
+    it 'should set true to config[:dry_run] as default' do
+      @knife.config[:dry_run].should be_false
     end
 
     it 'should should print usage and exit when given no arguments' do
@@ -90,9 +90,9 @@ describe Chef::Knife::CookbookSiteShare do
 
     it 'should list files in tarball' do
       Chef::CookbookSiteStreamingUploader.stub(:create_build_dir).and_return("/var/tmp/dummy")
-      @knife.config = { :upload => false }
+      @knife.config = { :dry_run => true }
       @knife.stub_chain(:shell_out!, :stdout).and_return('file')
-      @knife.ui.should_receive(:info).with("Not uploading #{@cookbook.name}.tgz due to --no-upload flag.")
+      @knife.ui.should_receive(:info).with("Not uploading #{@cookbook.name}.tgz due to --dry-run flag.")
       @knife.ui.should_receive(:info).with("Making tarball cookbook_name.tgz")
       @knife.ui.should_receive(:info).with('file')
       @knife.should_receive(:shell_out!).with("tar -czf #{@cookbook.name}.tgz #{@cookbook.name}", {:cwd => "/var/tmp/dummy"})
