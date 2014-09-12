@@ -43,18 +43,18 @@ class Chef
           )
       end
 
-      def action_request_reboot_on_successful_run
+      def action_request_reboot
         converge_by("request a system reboot to occur if the run succeeds") do
           Chef::Log.warn "Reboot requested:'#{@new_resource.name}'"
           request_reboot
         end
       end
 
-      def action_reboot_interrupt_run
+      def action_reboot_now
         converge_by("rebooting the system immediately") do
           Chef::Log.warn "Rebooting system immediately, requested by '#{@new_resource.name}'"
           request_reboot
-          throw :interrupt_run_and_reboot
+          throw :end_client_run_early
         end
       end
 

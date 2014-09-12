@@ -59,7 +59,7 @@ describe Chef::Resource::Reboot do
     include_context 'testing run context modification'
 
     before do
-      resource.run_action(:request_reboot_on_successful_run)
+      resource.run_action(:request_reboot)
     end
 
     after do
@@ -81,8 +81,8 @@ describe Chef::Resource::Reboot do
     it 'should have modified the run context correctly' do
       # this doesn't actually test the flow of Chef::Client#do_run, unfortunately.
       expect {
-        resource.run_action(:reboot_interrupt_run)
-      }.to throw_symbol(:interrupt_run_and_reboot)
+        resource.run_action(:reboot_now)
+      }.to throw_symbol(:end_client_run_early)
 
       test_reboot_action(resource)
     end

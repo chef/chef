@@ -18,6 +18,9 @@
 
 require 'chef/resource'
 
+# In using this resource via notifications, it's important to *only* use
+# immediate notifications. Delayed notifications produce unintuitive and
+# probably undesired results.
 class Chef
   class Resource
     class Reboot < Chef::Resource
@@ -25,12 +28,12 @@ class Chef
         super
         @resource_name = :reboot
         @provider = Chef::Provider::Reboot
-        @allowed_actions = [:request_reboot_on_successful_run, :reboot_interrupt_run, :cancel]
+        @allowed_actions = [:request_reboot, :reboot_now, :cancel]
 
         @reason = "Reboot by Chef"
         @delay_mins = 0
 
-        # no default action just now.
+        # no default action.
       end
 
       def reason(arg=nil)
