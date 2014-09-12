@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service/init'
+require 'chef/provider/service'
 
 class Chef
   class Provider
@@ -47,9 +47,7 @@ class Chef
         end
 
         def start_service
-          if @new_resource.start_command
-            shell_out(@new_resource.start_command)
-          elsif @is_resource_group
+          if @is_resource_group
             shell_out!("startsrc -g #{@new_resource.service_name}")
           else
             shell_out!("startsrc -s #{@new_resource.service_name}")
@@ -57,9 +55,7 @@ class Chef
         end
 
         def stop_service
-          if @new_resource.stop_command
-            shell_out(@new_resource.start_command)
-          elsif @is_resource_group
+          if @is_resource_group
             shell_out!("stopsrc -g #{@new_resource.service_name}")
           else
             shell_out!("stopsrc -s #{@new_resource.service_name}")
@@ -72,9 +68,7 @@ class Chef
         end
 
         def reload_service
-          if @new_resource.reload_command
-            shell_out(@new_resource.start_command)
-          elsif @is_resource_group
+          if @is_resource_group
             shell_out!("refresh -g #{@new_resource.service_name}")
           else
             shell_out!("refresh -s #{@new_resource.service_name}")
@@ -113,48 +107,28 @@ class Chef
         end
 
         protected
-          def determine_current_status!
-            if @new_resource.status_command
-              Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
-
-              begin
-                if shell_out(@new_resource.status_command).exitstatus == 0
-                  @current_resource.running(true)
-                  Chef::Log.debug("#{@new_resource} is running")
-                end
-              rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError
-              # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
-              # Temporarily catching different types of exceptions here until we get Shellout fixed.
-              # TODO: Remove the line before one we get the ShellOut fix.
-                @status_load_success = false
-                @current_resource.running false
-                nil
-              end
+        def determine_current_status!
+          Chef::Log.debug "#{@new_resource} using lssrc to check the status "
+          begin
+            if shell_out!("lssrc -a | grep #{@new_resource.service_name}").stdout.split(' ').last == "active"
+              @current_resource.running(true)
             else
-              Chef::Log.debug "#{@new_resource} using lssrc to check the status "
-              begin
-                if shell_out!("lssrc -a | grep #{@new_resource}").stdout.split(' ')[3] == "active"
-                  @current_resource.runing(true)
-                else
-                  @current_resource.running false
-                end
-                Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
-              # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
-              # Temporarily catching different types of exceptions here until we get Shellout fixed.
-              # TODO: Remove the line before one we get the ShellOut fix.
-              rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError
-                @status_load_success = false
-                @current_resource.running false
-                nil
-              end
+              @current_resource.running false
             end
+            Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
+            # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
+            # Temporarily catching different types of exceptions here until we get Shellout fixed.
+            # TODO: Remove the line before one we get the ShellOut fix.
+          rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError
+            @status_load_success = false
+            @current_resource.running false
+            nil
           end
+        end
 
-          def is_resource_group?
-            if shell_out!("lssrc -a | grep #{@new_resource}").stdout.split(' ')[1] != ""
-              @is_resource_group = true
-            end
-          end
+        def is_resource_group?
+          args = shell_out!("lssrc -a | grep #{@new_resource.service_name}").stdout.split(' ')
+          @is_resource_group = true if (args[1] != "" && args.length > 3)
         end
       end
     end
