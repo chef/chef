@@ -173,7 +173,7 @@ post on Stack Overflow on how to generate these using OpenSSL:
 
   http://stackoverflow.com/a/21494483
 
-IMPORTANT: You do not need to change the value of 'keyUseage' under '[ v3_ca ]'.
+IMPORTANT: You do not need to change the value of 'keyUsage' under '[ v3_ca ]'.
 
 BAD_CERTS
         # @TODO: ^ needs URL once documentation is posted.
