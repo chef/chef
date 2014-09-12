@@ -88,18 +88,6 @@ describe Chef::Knife::CookbookSiteShare do
       @knife.run
     end
 
-    it 'should list files in tarball' do
-      Chef::CookbookSiteStreamingUploader.stub(:create_build_dir).and_return("/var/tmp/dummy")
-      @knife.config = { :dry_run => true }
-      @knife.stub_chain(:shell_out!, :stdout).and_return('file')
-      @knife.ui.should_receive(:info).with("Not uploading #{@cookbook.name}.tgz due to --dry-run flag.")
-      @knife.ui.should_receive(:info).with("Making tarball cookbook_name.tgz")
-      @knife.ui.should_receive(:info).with('file')
-      @knife.should_receive(:shell_out!).with("tar -czf #{@cookbook.name}.tgz #{@cookbook.name}", {:cwd => "/var/tmp/dummy"})
-      @knife.should_receive(:shell_out!).with("tar -tzf #{@cookbook.name}.tgz", {:cwd => "/var/tmp/dummy"})
-      @knife.run
-    end
-
     it 'should exit and log to error when the tarball creation fails' do
       @knife.stub(:shell_out!).and_raise(Chef::Exceptions::Exec)
       @knife.ui.should_receive(:error)
@@ -110,6 +98,26 @@ describe Chef::Knife::CookbookSiteShare do
       @knife.should_receive(:do_upload)
       FileUtils.should_receive(:rm_rf)
       @knife.run
+    end
+
+    context "when the --dry-run flag is specified" do
+      before do
+        Chef::CookbookSiteStreamingUploader.stub(:create_build_dir).and_return("/var/tmp/dummy")
+        @knife.config = { :dry_run => true }
+        @knife.stub_chain(:shell_out!, :stdout).and_return('file')
+      end
+
+      it "should list files in the tarball" do
+        expect(@knife).to receive(:shell_out!).with("tar -czf #{@cookbook.name}.tgz #{@cookbook.name}", {:cwd => "/var/tmp/dummy"})
+        expect(@knife).to receive(:shell_out!).with("tar -tzf #{@cookbook.name}.tgz", {:cwd => "/var/tmp/dummy"})
+        @knife.run
+      end
+
+      it "does not upload the cookbook" do
+        allow(@knife).to receive(:shell_out!).and_return(true)
+        expect(@knife).not_to receive(:do_upload)
+        @knife.run
+      end
     end
   end
 
