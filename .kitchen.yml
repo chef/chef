@@ -77,27 +77,31 @@ platforms:
     driver:
       box: chef/windows-server-2008r2-standard # private
 
+attribute_defaults: &attribute_defaults
+  build_user:          vagrant
+  build_user_group:    vagrant
+  build_user_password: vagrant
+
 suites:
   - name: chef
-    run_list: omnibus::default
     attributes:
       omnibus:
-        build_user:  vagrant
-        build_dir:   /home/vagrant/chef
+        <<: *attribute_defaults
         install_dir: /opt/chef
+    run_list:
+      - omnibus::default
   - name: chefdk
-    run_list: omnibus::default
     attributes:
       omnibus:
-        build_user:  vagrant
-        build_dir:   /home/vagrant/chefdk
+        <<: *attribute_defaults
         install_dir: /opt/chefdk
+    run_list:
+      - omnibus::default
   - name: chef-container
+    attributes:
+      omnibus:
+        <<: *attribute_defaults
+        install_dir: /opt/chef-container
     run_list:
       - omnibus::default
       - docker::default
-    attributes:
-      omnibus:
-        build_user:  vagrant
-        build_dir:   /home/vagrant/chef-container
-        install_dir: /opt/chef-container
