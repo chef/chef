@@ -55,7 +55,7 @@ class Chef
 
       def configure
         case @command
-        when String
+        when String,Array
           @guard_interpreter = new_guard_interpreter(@parent_resource, @command, @command_opts, &@block)
           @block = nil
         when nil
