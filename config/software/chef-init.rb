@@ -32,6 +32,7 @@ build do
 
   gem "build chef-init.gemspec", env: env
   gem "install chef-init*.gem" \
-      " --bindir '#{install_dir}/bin'" \
       " --no-ri --no-rdoc", env: env
+
+  appbundle 'chef-init'
 end

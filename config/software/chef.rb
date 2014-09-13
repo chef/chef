@@ -41,12 +41,6 @@ dependency "appbundler"
 build do
   env = with_standard_compiler_flags(with_embedded_path)
 
-  def appbundle(app_path, bin_path)
-    gemfile = File.join(app_path, "Gemfile.lock")
-    env = with_embedded_path.merge("BUNDLE_GEMFILE" => gemfile)
-    command("#{install_dir}/embedded/bin/appbundler '#{app_path}' '#{bin_path}'", env: env)
-  end
-
   block do
     if File.exist?("#{project_dir}/chef")
       # We are on Chef 10 and need to adjust the relative path. In Chef 10, the
@@ -76,7 +70,6 @@ build do
 
     gem "build chef-x86-mingw32.gemspec", env: env
     gem "install chef*mingw32.gem" \
-        " --bindir '#{install_dir}/bin'" \
         " --no-ri --no-rdoc" \
         " --verbose"
 
@@ -120,18 +113,8 @@ build do
         " --verbose", env: env
   end
 
-  # Appbundler is run by the main software in a project. If we are building chef
-  # for chefdk skip appbundler. chefdk will take care of this
-  unless project.name == "chefdk"
-    mkdir("#{install_dir}/embedded/apps")
-
-    appbundler_apps = %w(chef ohai)
-    appbundler_apps.each do |app_name|
-      copy("#{Omnibus::Config.source_dir}/#{app_name}", "#{install_dir}/embedded/apps/")
-      delete("#{install_dir}/embedded/apps/#{app_name}/.git")
-      appbundle("#{install_dir}/embedded/apps/#{app_name}", "#{install_dir}/bin")
-    end
-  end
+  appbundle 'chef'
+  appbundle 'ohai'
 
   # Clean up
   delete "#{install_dir}/embedded/docs"
