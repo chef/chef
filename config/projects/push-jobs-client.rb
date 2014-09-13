@@ -14,10 +14,14 @@
 # limitations under the License.
 #
 
-name          "opscode-push-jobs-client"
+name          "push-jobs-client"
 friendly_name "Push Jobs Client"
 maintainer    "Chef Software, Inc."
 homepage      "https://www.getchef.com"
+
+# Ensure we install over the top of the previous package name
+replace  "opscode-push-jobs-client"
+conflict "opscode-push-jobs-client"
 
 build_iteration 1
 build_version do
