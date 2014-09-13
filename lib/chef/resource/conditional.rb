@@ -46,7 +46,7 @@ class Chef
       def initialize(positivity, parent_resource, command=nil, command_opts={}, &block)
         @positivity = positivity
         case command
-        when String
+        when String, Array
           @guard_interpreter = new_guard_interpreter(parent_resource, command, command_opts, &block)
           @command, @command_opts = command, command_opts
           @block = nil
