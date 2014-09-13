@@ -50,6 +50,9 @@ build do
       " --no-ri --no-rdoc" \
       " --verbose", env: env
 
+  # TODO: These gems should have software definitions created and in turn
+  #       be properly appbundled.
+
   # Perform multiple gem installs to better isolate/debug failures
   {
     'foodcritic'      => '4.0.0',
