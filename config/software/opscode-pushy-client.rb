@@ -57,4 +57,6 @@ build do
   gem "install opscode-pushy-client*.gem" \
       " --no-ri --no-rdoc" \
       " --verbose", env: env
+
+  appbundle 'opscode-pushy-client'
 end
