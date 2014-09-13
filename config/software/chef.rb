@@ -82,9 +82,6 @@ build do
 
     gem "build chef.gemspec", env: env
 
-    # Delete the windows gem
-    delete "chef-*-x86-mingw32.gem"
-
     # Don't use -n #{install_dir}/bin. Appbundler will take care of them later
     gem "install chef*.gem " \
         " --no-ri --no-rdoc", env: env
