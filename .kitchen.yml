@@ -105,3 +105,10 @@ suites:
     run_list:
       - omnibus::default
       - docker::default
+  - name: opscode-push-jobs-client
+    attributes:
+      omnibus:
+        <<: *attribute_defaults
+        install_dir: /opt/opscode-push-jobs-client
+    run_list:
+      - omnibus::default
