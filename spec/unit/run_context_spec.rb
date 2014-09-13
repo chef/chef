@@ -134,4 +134,19 @@ describe Chef::RunContext do
     end
   end
 
+  describe "handling reboot requests" do
+    let(:expected) do
+      { :reason => "spec tests require a reboot" }
+    end
+
+    it "stores and deletes the reboot request" do
+      @run_context.request_reboot(expected)
+      expect(@run_context.reboot_info).to eq(expected)
+      expect(@run_context.reboot_requested?).to be_true
+
+      @run_context.cancel_reboot
+      expect(@run_context.reboot_info).to eq({})
+      expect(@run_context.reboot_requested?).to be_false
+    end
+  end
 end

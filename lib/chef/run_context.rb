@@ -61,6 +61,9 @@ class Chef
     # Event dispatcher for this run.
     attr_reader :events
 
+    # Hash of factoids for a reboot request.
+    attr_reader :reboot_info
+
     # Creates a new Chef::RunContext object and populates its fields. This object gets
     # used by the Chef Server to generate a fully compiled recipe list for a node.
     #
@@ -76,6 +79,7 @@ class Chef
       @loaded_recipes = {}
       @loaded_attributes = {}
       @events = events
+      @reboot_info = {}
 
       @node.run_context = self
 
@@ -269,6 +273,27 @@ ERROR_MESSAGE
       else
         stream
       end
+    end
+
+    # there are options for how to handle multiple calls to these functions:
+    # 1. first call always wins (never change @reboot_info once set).
+    # 2. last call always wins (happily change @reboot_info whenever).
+    # 3. raise an exception on the first conflict.
+    # 4. disable reboot after this run if anyone ever calls :cancel.
+    # 5. raise an exception on any second call.
+    # 6. ?
+    def request_reboot(reboot_info)
+      Chef::Log::info "Changing reboot status from #{@reboot_info.inspect} to #{reboot_info.inspect}"
+      @reboot_info = reboot_info
+    end
+
+    def cancel_reboot
+      Chef::Log::info "Changing reboot status from #{@reboot_info.inspect} to {}"
+      @reboot_info = {}
+    end
+
+    def reboot_requested?
+      @reboot_info.size > 0
     end
 
     private
