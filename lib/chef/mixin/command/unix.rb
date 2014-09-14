@@ -100,9 +100,9 @@ class Chef
 
               begin
                 if cmd.kind_of?(Array)
-                  exec(*cmd)
+                  Kernel.exec(*cmd)
                 else
-                  exec(cmd)
+                  Kernel.exec(cmd)
                 end
                 raise 'forty-two'
               rescue Exception => e
