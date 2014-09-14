@@ -156,6 +156,10 @@ RSpec.configure do |config|
   config.before(:each) do
     Chef::Config.reset
   end
+
+  config.before(:suite) do
+    ARGV.clear
+  end
 end
 
 require 'webrick/utils'

@@ -28,7 +28,6 @@ describe Chef::Application::Apply do
 
   describe "configuring the application" do
     it "should set solo mode to true" do
-      ARGV.clear
       @app.reconfigure
       Chef::Config[:solo].should be_true
     end
