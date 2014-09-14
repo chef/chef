@@ -1,6 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
-# License:: Apache License, Version 2.0
+# Copyright 2012-2014 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,19 +14,71 @@
 # limitations under the License.
 #
 
-name       "opscode-push-jobs-client"
-maintainer "CHEF, Inc."
-homepage   "http://www.getchef.com"
+name          "opscode-push-jobs-client"
+friendly_name "Push Jobs Client"
+maintainer    "Chef Software, Inc."
+homepage      "https://www.getchef.com"
 
-install_path    "/opt/opscode-push-jobs-client"
-build_version   Omnibus::BuildVersion.new.semver
 build_iteration 1
+build_version do
+  # Use chef to determine the build version
+  source :git, from_dependency: 'opscode-pushy-client'
+
+  # Output a SemVer compliant version string
+  output_format :semver
+end
+
+if windows?
+  # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
+  #       Native gems will use gcc which will barf on files with spaces,
+  #       which is only fixable if everyone in the world fixes their Makefiles
+  install_dir  "#{default_root}/opscode/#{name}"
+else
+  install_dir "#{default_root}/#{name}"
+end
+
+override :bundler,        version: "1.7.2"
+override :ruby,           version: "1.9.3-p547"
+override :'ruby-windows', version: "1.9.3-p484"
+override :rubygems,       version: "2.4.1"
 
 dependency "preparation"
-dependency "chef-gem"
-dependency "bundler"
 dependency "opscode-pushy-client"
 dependency "version-manifest"
 
-exclude '\.git*'
-exclude 'bundler\/git'
+package :rpm do
+  signing_passphrase ENV['OMNIBUS_RPM_SIGNING_PASSPHRASE']
+end
+
+package :pkg do
+  identifier "com.getchef.pkg.push-jobs-client"
+  signing_identity "Developer ID Installer: Opscode Inc. (9NBR9JL2R2)"
+end
+compress :dmg
+
+package :msi do
+  # Upgrade code for Chef MSI
+  upgrade_code "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
+
+  #######################################################################
+  # Locate the Chef gem's path relative to the installation directory
+  #######################################################################
+  install_path = Pathname.new(install_dir)
+
+  # Find path in which the Chef gem is installed
+  search_pattern = "#{install_path}/**/gems/opscode-pushy-client-[0-9]*"
+  gem_path  = Pathname.glob(search_pattern).find { |path| path.directory? }
+
+  if gem_path.nil?
+    raise "Could not find a gem in `#{search_pattern}'!"
+  else
+    relative_path = gem_path.relative_path_from(install_path)
+  end
+
+  parameters(
+    # We are going to use this path in the startup command of chef
+    # service. So we need to change file seperators to make windows
+    # happy.
+    'PushJobsGemPath' => windows_safe_path(relative_path.to_s),
+  )
+end
