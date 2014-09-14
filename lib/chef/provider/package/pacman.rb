@@ -66,7 +66,7 @@ class Chef
             stdout.each do |line|
               case line
                 when /^(#{package_repos}) #{Regexp.escape(@new_resource.package_name)} (.+)$/
-                  # $2 contains a string like "4.4.0-1 (kde kdenetwork)" or "3.10-4 (base)"
+                  # $2 contains a string like "4.4.0-1" or "3.10-4 [installed]"
                   # simply split by space and use first token
                   @candidate_version = $2.split(" ").first
               end
