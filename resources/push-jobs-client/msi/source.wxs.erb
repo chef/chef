@@ -42,11 +42,11 @@
           <Directory Id="PROJECTLOCATION" Name="push-jobs-client" >
             <Directory Id="EMBEDDED" Name="embedded" >
               <Directory Id="EMBEDDEDBIN" Name="bin" >
-                <Component Id="ChefClientPath" Guid="{7F663F88-55A2-4E20-82BF-8BD2E60BB83A}" >
+                <Component Id="PushJobsClientPath" Guid="{0F9F9EE6-CC96-463E-BE6C-1AA33266FD9F}" >
                   <Environment Id="Environment"
                                Name="PATH" Action="set" Part="last" System="yes" Value="[PROJECTLOCATION]bin" />
                 </Component>
-                <Component Id="PushJobsClientService" Guid="{69B2D8BE-4A47-4BE3-AEE8-83FAEB6E2FAF}" >
+                <Component Id="PushJobsClientService" Guid="{1E9F8C22-25A7-4084-9FD9-F1B4C10E62F9}" >
                   <File Id="RubyExecutable" Source="$(var.ProjectSourceDir)\embedded\bin\ruby.exe" KeyPath="yes" />
                   <ServiceInstall Name="push-jobs-client" Type="ownProcess"
                                   Start="auto" Vital="yes" ErrorControl="ignore"
