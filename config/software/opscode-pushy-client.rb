@@ -17,56 +17,44 @@
 
 name "opscode-pushy-client"
 
-dependency "ruby"
-dependency "rubygems"
-dependency "bundler"
-dependency "libzmq"
+default_version "master"
 
-default_version "1.1.3"
-
-# TODO - use public GIT URL when repo made public
-source :git => "git@github.com:opscode/opscode-pushy-client.git"
+source git: "git://github.com/opscode/opscode-pushy-client"
 
 relative_path "opscode-pushy-client"
 
+dependency "bundler"
+dependency "appbundler"
+dependency "chef"
+dependency "openssl-customization"
 
-env =
-  case platform
-  when "solaris2"
-    if Omnibus.config.solaris_compiler == "studio"
-    {
-      "CFLAGS" => "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include",
-      "LDFLAGS" => "-R#{install_dir}/embedded/lib -L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include"
-    }
-    elsif Omnibus.config.solaris_compiler == "gcc"
-    {
-      "CFLAGS" => "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include",
-      "LDFLAGS" => "-R#{install_dir}/embedded/lib -L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include -static-libgcc",
-      "LD_OPTIONS" => "-R#{install_dir}/embedded/lib"
-    }
-    else
-      raise "Sorry, #{Omnibus.config.solaris_compiler} is not a valid compiler selection."
-    end
-  else
-    {
-      "CFLAGS" => "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include",
-      "LDFLAGS" => "-Wl,-rpath #{install_dir}/embedded/lib -L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include"
-    }
-  end
+if windows?
+  dependency "libzmq-windows"
+else
+  dependency "libzmq"
+end
 
 build do
-  rake "gem", :env => env
+  env = with_standard_compiler_flags(with_embedded_path)
 
-  gem ["install pkg/opscode-pushy-client*.gem",
-      "-n #{install_dir}/bin",
-      "--no-rdoc --no-ri"].join(" "), :env => env
+  zmq_lib_dir = if windows?
+                  "#{install_dir}/embedded/bin"
+                else
+                  "#{install_dir}/embedded/lib"
+                end
 
-  auxiliary_gems = ["zmq"]
+  # Install the ZMQ gem separately so the native extenstion
+  # compiles correctly.
+  gem "install zmq" \
+      " --no-ri --no-rdoc" \
+      " --verbose" \
+      " --" \
+      " --with-zmq-dir=#{install_dir}/embedded" \
+      " --with-zmq-lib=#{zmq_lib_dir}", env: env
 
-  gem ["install",
-       auxiliary_gems.join(" "),
-       "-n #{install_dir}/bin",
-       "--no-rdoc --no-ri"].join(" "), :env => env
-
-
+  bundle "install", env: env
+  gem "build opscode-pushy-client.gemspec", env: env
+  gem "install opscode-pushy-client*.gem" \
+      " --no-ri --no-rdoc" \
+      " --verbose", env: env
 end
