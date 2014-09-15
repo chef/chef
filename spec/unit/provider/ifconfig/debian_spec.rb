@@ -19,7 +19,7 @@
 require 'spec_helper'
 require 'chef/exceptions'
 
-describe Chef::Provider::Ifconfig::Debian do
+describe Chef::Provider::Ifconfig::Debian, :debian_based_only do
 
   let(:run_context) do
     node = Chef::Node.new
