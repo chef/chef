@@ -54,6 +54,10 @@ class Chef
           end
         end
 
+        def trusted_certs
+          @trusted_certs ||= trusted_certs_content
+        end
+
         def config_content
           client_rb = <<-CONFIG
 log_location     STDOUT
@@ -109,6 +113,10 @@ CONFIG
             client_rb << %Q{encrypted_data_bag_secret "/etc/chef/encrypted_data_bag_secret"\n}
           end
 
+          unless trusted_certs.empty?
+            client_rb << %Q{trusted_certs_dir "/etc/chef/trusted_certs"\n}
+          end
+
           client_rb
         end
 
@@ -153,6 +161,18 @@ CONFIG
 
         def first_boot
           (@config[:first_boot_attributes] || {}).merge(:run_list => @run_list)
+        end
+
+        private
+        def trusted_certs_content
+          content = ""
+          if @chef_config[:trusted_certs_dir]
+            Dir.glob(File.join(@chef_config[:trusted_certs_dir], "*.{crt,pem}")).each do |cert|
+              content << "cat > /etc/chef/trusted_certs/#{File.basename(cert)} <<'EOP'\n" +
+                         IO.read(File.expand_path(cert)) + "\nEOP\n"
+            end
+          end
+          content
         end
 
       end
