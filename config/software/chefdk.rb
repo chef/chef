@@ -31,19 +31,12 @@ dependency "ohai"
 dependency "test-kitchen"
 dependency "chef"
 dependency "openssl-customization"
-dependency "rubygems-customization"
 
 # The devkit has to be installed after rubygems-customization so the
 # file it installs gets patched.
 dependency "ruby-windows-devkit" if windows?
 
 build do
-  def appbundle(app_path, bin_path)
-    gemfile = File.join(app_path, "Gemfile.lock")
-    env = with_embedded_path.merge("BUNDLE_GEMFILE" => gemfile)
-    command "#{install_dir}/embedded/bin/appbundler '#{app_path}' '#{bin_path}'", env: env
-  end
-
   env = with_standard_compiler_flags(with_embedded_path).merge(
     # Rubocop pulls in nokogiri 1.5.11, so needs PKG_CONFIG_PATH and
     # NOKOGIRI_USE_SYSTEM_LIBRARIES until rubocop stops doing that
@@ -56,6 +49,9 @@ build do
   gem "install chef-dk*.gem" \
       " --no-ri --no-rdoc" \
       " --verbose", env: env
+
+  # TODO: These gems should have software definitions created and in turn
+  #       be properly appbundled.
 
   # Perform multiple gem installs to better isolate/debug failures
   {
@@ -76,11 +72,8 @@ build do
         " --verbose", env: env
   end
 
-  mkdir "#{install_dir}/embedded/apps"
-
-  %w(chef berkshelf test-kitchen chef-dk chef-vault ohai).each do |app_name|
-    copy "#{Omnibus::Config.source_dir}/#{app_name}", "#{install_dir}/embedded/apps/"
-    delete "#{install_dir}/embedded/apps/#{app_name}/.git"
-    appbundle "#{install_dir}/embedded/apps/#{app_name}", "#{install_dir}/bin"
-  end
+  appbundle 'berkshelf'
+  appbundle 'chef-dk'
+  appbundle 'chef-vault'
+  appbundle 'test-kitchen'
 end
