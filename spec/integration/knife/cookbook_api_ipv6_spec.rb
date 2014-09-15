@@ -62,7 +62,7 @@ END_VALIDATION_PEM
     end
 
     let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
-    let(:knife) { "ruby #{chef_dir}/knife" }
+    let(:knife) { "ruby '#{chef_dir}/knife'" }
 
     let(:knife_config_flag) { "-c '#{path_to("config/knife.rb")}'" }
 
@@ -96,6 +96,7 @@ END_CLIENT_RB
         end
 
         context "and the cookbook has been uploaded to the server" do
+
           before do
             shell_out!("#{knife} cookbook upload apache2 #{knife_config_flag}", :cwd => chef_dir)
           end
