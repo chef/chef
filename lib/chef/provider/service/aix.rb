@@ -37,7 +37,6 @@ class Chef
           @is_resource_group = false
 
           determine_current_status!
-          is_resource_group?
 
           @current_resource
         end
@@ -86,32 +85,17 @@ class Chef
         def define_resource_requirements
           # FIXME? need reload from service.rb
           shared_resource_requirements
-          requirements.assert(:start) do |a|
-            a.assertion { @new_resource.start_command }
-            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that start_command be set"
-          end
-          requirements.assert(:stop) do |a|
-            a.assertion { @new_resource.stop_command }
-            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that stop_command be set"
-          end
-
-          requirements.assert(:restart) do |a|
-            a.assertion { @new_resource.restart_command  || ( @new_resource.start_command && @new_resource.stop_command ) }
-            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires a restart_command or both start_command and stop_command be set in order to perform a restart"
-          end
-
-          requirements.assert(:reload) do |a|
-            a.assertion { @new_resource.reload_command }
-            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} requires a reload_command be set in order to perform a reload"
-          end
         end
 
         protected
         def determine_current_status!
           Chef::Log.debug "#{@new_resource} using lssrc to check the status "
           begin
-            if shell_out!("lssrc -a | grep #{@new_resource.service_name}").stdout.split(' ').last == "active"
-              @current_resource.running(true)
+            services = shell_out!("lssrc -a | grep -w #{@new_resource.service_name}").stdout.split("\n")
+            is_resource_group?(services)
+
+            if services.length == 1 && services[0].split(' ').last == "active"
+              @current_resource.running true
             else
               @current_resource.running false
             end
@@ -126,9 +110,14 @@ class Chef
           end
         end
 
-        def is_resource_group?
-          args = shell_out!("lssrc -a | grep #{@new_resource.service_name}").stdout.split(' ')
-          @is_resource_group = true if (args[1] != "" && args.length > 3)
+        def is_resource_group? (services)
+          if services.length > 1
+            Chef::Log.debug("#{@new_resource.service_name} is a group")
+            @is_resource_group = true
+          elsif services[0].split(' ')[1] == @new_resource.service_name
+            Chef::Log.debug("#{@new_resource.service_name} is a group")
+            @is_resource_group = true
+          end
         end
       end
     end

@@ -39,11 +39,77 @@ describe Chef::Provider::Service::Aix do
       Chef::Resource::Service.should_receive(:new).and_return(@current_resource)
       @current_resource.should_receive(:service_name).with("chef")
       @provider.should_receive(:determine_current_status!)
-      @provider.should_receive(:is_resource_group?)
 
       @provider.load_current_resource
     end
+  end
 
+  describe "determine current status" do
+    context "when the service is active" do
+      before do
+        @status = double("Status", :exitstatus => 0, :stdout => "chef chef 12345 active\n")
+      end
+
+      it "current resource is running" do
+        @provider.should_receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
+        @provider.should_receive(:is_resource_group?).with(["chef chef 12345 active"])
+
+        @provider.load_current_resource
+        @current_resource.running.should be_true
+      end
+    end
+
+    context "when the service is inoprative" do
+      before do
+        @status = double("Status", :exitstatus => 0, :stdout => "chef chef inoperative\n")
+      end
+
+      it "current resource is not running" do
+        @provider.should_receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
+        @provider.should_receive(:is_resource_group?).with(["chef chef inoperative"])
+
+        @provider.load_current_resource
+        @current_resource.running.should be_false
+      end
+    end
+  end
+
+  describe "is resource group" do
+    context "when there are mutiple subsystems associated with group" do
+      before do
+        @status = double("Status", :exitstatus => 0, :stdout => "chef1 chef 12345 active\nchef2 chef 12334 active\nchef3 chef inoperative")
+      end
+
+      it "service is a group" do
+        @provider.should_receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
+        @provider.load_current_resource
+        @provider.instance_eval("@is_resource_group").should be_true
+      end
+    end
+
+    context "when there is a single subsystem in the group" do
+      before do
+        @status = double("Status", :exitstatus => 0, :stdout => "chef1 chef inoperative\n")
+      end
+
+      it "service is a group" do
+        @provider.should_receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
+        @provider.load_current_resource
+        @provider.instance_eval("@is_resource_group").should be_true
+      end
+    end
+
+    context "when there service is a subsytem" do
+      before do
+        @status = double("Status", :exitstatus => 0, :stdout => "chef chef123 inoperative\n")
+      end
+
+      it "service is a subsystem" do
+        @provider.should_receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
+        @provider.load_current_resource
+        @provider.instance_eval("@is_resource_group").should be_false
+      end
+    end
   end
 
   describe "when starting the service" do
