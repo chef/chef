@@ -1,5 +1,7 @@
 ## Unreleased: 12.0.0
 
+* [**Salim Afiune**](https://github.com/afiune):
+  New knife data bag download command that download every item within a data bag
 * [**Nolan Davidson**](https://github.com/nsdavidson):
   The chef-apply command now prints usage information when called without arguments
 * [**Kazuki Saito**](https://github.com/sakazuki):
