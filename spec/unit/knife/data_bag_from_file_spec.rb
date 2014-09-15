@@ -30,8 +30,8 @@ describe Chef::Knife::DataBagFromFile do
     FileUtils.mkdir_p([db_folder, db_folder2])
     db_file.write(plain_data.to_json)
     db_file.flush
-    knife.name_args = [bag_name, db_file.path]
     allow(knife).to receive(:config).and_return(config)
+    allow(Chef::Knife::Core::ObjectLoader).to receive(:new).and_return(loader)
   end
 
   # We have to explicitly clean up Tempfile on Windows because it said so.
@@ -68,6 +68,8 @@ describe Chef::Knife::DataBagFromFile do
     data_bag
   end
 
+  let(:loader) { double("Knife::Core::ObjectLoader") }
+
   let(:data_bags_path) { "data_bags" }
   let(:plain_data) { {
       "id" => "item_name",
@@ -88,7 +90,8 @@ describe Chef::Knife::DataBagFromFile do
   let(:config) { {} }
 
   it "loads from a file and saves" do
-    expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name, db_file.path).and_return(plain_data)
+    knife.name_args = [bag_name, db_file.path]
+    expect(loader).to receive(:load_from).with(data_bags_path, bag_name, db_file.path).and_return(plain_data)
     expect(Chef::DataBagItem).to receive(:new).and_return(new_bag_expects)
 
     knife.run
@@ -96,8 +99,8 @@ describe Chef::Knife::DataBagFromFile do
 
   it "loads all from multiple files and saves" do
     knife.name_args = [ bag_name, db_file.path, db_file2.path ]
-    expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name, db_file.path).and_return(plain_data)
-    expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name, db_file2.path).and_return(plain_data)
+    expect(loader).to receive(:load_from).with(data_bags_path, bag_name, db_file.path).and_return(plain_data)
+    expect(loader).to receive(:load_from).with(data_bags_path, bag_name, db_file2.path).and_return(plain_data)
     expect(Chef::DataBagItem).to receive(:new).twice.and_return(new_bag_expects, new_bag_expects)
 
     knife.run
@@ -105,8 +108,8 @@ describe Chef::Knife::DataBagFromFile do
 
   it "loads all from a folder and saves" do
     knife.name_args = [ bag_name, db_folder ]
-    expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name, db_file.path).and_return(plain_data)
-    expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name, db_file2.path).and_return(plain_data)
+    expect(loader).to receive(:load_from).with(data_bags_path, bag_name, db_file.path).and_return(plain_data)
+    expect(loader).to receive(:load_from).with(data_bags_path, bag_name, db_file2.path).and_return(plain_data)
     expect(Chef::DataBagItem).to receive(:new).twice.and_return(new_bag_expects, new_bag_expects)
 
     knife.run
@@ -114,21 +117,15 @@ describe Chef::Knife::DataBagFromFile do
 
   describe "loading all data bags" do
 
-    before do
-      @pwd = Dir.pwd
-      Dir.chdir(tmp_dir)
-    end
-
-    after do
-      Dir.chdir(@pwd)
-    end
-
     it "loads all data bags when -a or --all options is provided" do
       knife.name_args = []
       config[:all] = true
-      expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name, File.basename(db_file.path)).and_return(plain_data)
-      expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name, File.basename(db_file2.path)).and_return(plain_data)
-      expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name2, File.basename(db_file3.path)).and_return(plain_data)
+      expect(loader).to receive(:find_all_object_dirs).with("./#{data_bags_path}").and_return([bag_name, bag_name2])
+      expect(loader).to receive(:find_all_objects).with("./#{data_bags_path}/#{bag_name}").and_return([File.basename(db_file.path), File.basename(db_file2.path)])
+      expect(loader).to receive(:find_all_objects).with("./#{data_bags_path}/#{bag_name2}").and_return([File.basename(db_file3.path)])
+      expect(loader).to receive(:load_from).with(data_bags_path, bag_name, File.basename(db_file.path)).and_return(plain_data)
+      expect(loader).to receive(:load_from).with(data_bags_path, bag_name, File.basename(db_file2.path)).and_return(plain_data)
+      expect(loader).to receive(:load_from).with(data_bags_path, bag_name2, File.basename(db_file3.path)).and_return(plain_data)
       expect(Chef::DataBagItem).to receive(:new).exactly(3).times.and_return(new_bag_expects, new_bag_expects, new_bag_expects(bag_name2))
 
       knife.run
@@ -137,7 +134,8 @@ describe Chef::Knife::DataBagFromFile do
     it "loads all data bags items when -a or --all options is provided" do
       knife.name_args = [bag_name2]
       config[:all] = true
-      expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name2, File.basename(db_file3.path)).and_return(plain_data)
+      expect(loader).to receive(:find_all_objects).with("./#{data_bags_path}/#{bag_name2}").and_return([File.basename(db_file3.path)])
+      expect(loader).to receive(:load_from).with(data_bags_path, bag_name2, File.basename(db_file3.path)).and_return(plain_data)
       expect(Chef::DataBagItem).to receive(:new).and_return(new_bag_expects(bag_name2))
 
       knife.run
@@ -153,7 +151,8 @@ describe Chef::Knife::DataBagFromFile do
     end
 
     it "encrypts values when given --secret" do
-      expect(knife.loader).to receive(:load_from).with(data_bags_path, bag_name, db_file.path).and_return(plain_data)
+      knife.name_args = [bag_name, db_file.path]
+      expect(loader).to receive(:load_from).with(data_bags_path, bag_name, db_file.path).and_return(plain_data)
       expect(Chef::DataBagItem).to receive(:new).and_return(new_bag_expects(bag_name, enc_data))
 
       knife.run
