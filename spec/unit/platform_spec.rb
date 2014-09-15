@@ -278,6 +278,17 @@ describe Chef::Platform do
       pmap[:package].should eql(Chef::Provider::Package::Ips)
     end
 
+    it "should use the Redhat service provider on SLES11" do
+      1.upto(3) do |sp|
+        pmap = Chef::Platform.find("SUSE", "11.#{sp}")
+        pmap[:service].should eql(Chef::Provider::Service::Redhat)
+      end
+    end
+
+    it "should use the Systemd service provider on SLES12" do
+        pmap = Chef::Platform.find("SUSE", "12.0")
+        pmap[:service].should eql(Chef::Provider::Service::Systemd)
+    end
   end
 
 end

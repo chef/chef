@@ -197,10 +197,13 @@ class Chef
             },
             :suse     => {
               :default => {
-                :service => Chef::Provider::Service::Redhat,
+                :service => Chef::Provider::Service::Systemd,
                 :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Zypper,
                 :group => Chef::Provider::Group::Suse
+              },
+              "< 12.0" => {
+                :service => Chef::Provider::Service::Redhat
               }
             },
             :oracle  => {
