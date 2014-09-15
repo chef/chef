@@ -23,7 +23,7 @@ require "awesome_print"
 class Chef
   class RubyCompat
 
-  	def self.to_ruby(data)
+    def self.to_ruby(data)
 
       case data
       when Chef::Role
@@ -34,114 +34,114 @@ class Chef
         raise ArgumentError, "[#{data.class.name}] is not supported by ruby format"
       end
 
-  	end
+    end
 
-  	private
+    private
 
-  	def self.role_to_ruby(role)
+    def self.role_to_ruby(role)
       ruby = RubyIO.new
 
-      # Name 
-	    ruby.method("name", role.name)
-	    ruby.new_line
+      # Name
+      ruby.method("name", role.name)
+      ruby.new_line
 
-	    # Description
-	    ruby.method("description", role.description)
-	    ruby.new_line
+      # Description
+      ruby.method("description", role.description)
+      ruby.new_line
 
-	    # Default Attributes
-	    ruby.method("default_attributes", role.default_attributes)
-	    ruby.new_line
+      # Default Attributes
+      ruby.method("default_attributes", role.default_attributes)
+      ruby.new_line
 
-	    # Override Attributes
-	    ruby.method("override_attributes", role.override_attributes)
-	    ruby.new_line
+      # Override Attributes
+      ruby.method("override_attributes", role.override_attributes)
+      ruby.new_line
 
-	    # Run list
+      # Run list
       if role.env_run_lists.size <= 1
-	      ruby.method("run_list", *role.run_list.map{|val| val.to_s})
+        ruby.method("run_list", *role.run_list.map{|val| val.to_s})
       else
         ruby.method("env_run_lists", Hash[role.env_run_lists.map{|k, v| [k, v.map{|val| val.to_s}]}])
       end
-	    ruby.new_line
+      ruby.new_line
 
       ruby.string
-  	end
+    end
 
-  	def self.environment_to_ruby(environment)
-  	  ruby = RubyIO.new
+    def self.environment_to_ruby(environment)
+      ruby = RubyIO.new
 
-	    # Name 
-	    ruby.method("name",  environment.name)
-	    ruby.new_line
+      # Name
+      ruby.method("name",  environment.name)
+      ruby.new_line
 
-	    # Description
-	    ruby.method("description", environment.description)
-	    ruby.new_line
+      # Description
+      ruby.method("description", environment.description)
+      ruby.new_line
 
-	    # Cookbook versions
-	    environment.cookbook_versions.each do |cookbook, version_constraint|
-	    	ruby.method("cookbook", cookbook, version_constraint)
-	    end
-	    ruby.new_line
+      # Cookbook versions
+      environment.cookbook_versions.each do |cookbook, version_constraint|
+        ruby.method("cookbook", cookbook, version_constraint)
+      end
+      ruby.new_line
 
-	    # Default Attributes
-	    ruby.method("default_attributes", environment.default_attributes)
-	    ruby.new_line
+      # Default Attributes
+      ruby.method("default_attributes", environment.default_attributes)
+      ruby.new_line
 
-	    # Override Attributes
-	    ruby.method("override_attributes", environment.override_attributes)
-	    ruby.new_line
+      # Override Attributes
+      ruby.method("override_attributes", environment.override_attributes)
+      ruby.new_line
 
-	    ruby.string
-  	end
+      ruby.string
+    end
 
-  	class RubyIO
+    class RubyIO
 
-  	  @@inspector =AwesomePrint::Inspector.new :plain => true, :indent => 2, :index => false
+      @@inspector =AwesomePrint::Inspector.new :plain => true, :indent => 2, :index => false
 
-  	  def initialize
-  	  	@out = StringIO.new
-  	  end
+      def initialize
+        @out = StringIO.new
+      end
 
-  	  def method(method_name, *args)
-  	  	write method_name
-  	  	write("(")
+      def method(method_name, *args)
+        write method_name
+        write("(")
 
-  	  	arg_values = args.map do |arg|
-  	  	  if arg.is_a? String
-  	  	    arg.inspect
-  	  	  elsif arg.is_a? Hash
-  	  	    format(arg)
-  	  	  else
-  	        raise "Object type [#{arg.class.name}] is not supported"
-  	  	  end
-  	  	end
+        arg_values = args.map do |arg|
+          if arg.is_a? String
+            arg.inspect
+          elsif arg.is_a? Hash
+            format(arg)
+          else
+            raise "Object type [#{arg.class.name}] is not supported"
+          end
+        end
 
         write(arg_values.join(", "))
 
-  	  	write(")")
-  	    
-  	  	new_line
-  	  end
+        write(")")
 
-  	  def new_line
-  	  	write "\n"
-  	  end
+        new_line
+      end
 
-  	  def write(string)
-  	  	@out.write string
-  	  end
+      def new_line
+        write "\n"
+      end
 
-  	  def string
-  	  	@out.string
-  	  end
+      def write(string)
+        @out.write string
+      end
 
-  	  def format(obj)
+      def string
+        @out.string
+      end
+
+      def format(obj)
         @@inspector.awesome obj
-  	  end
+      end
 
-  	end
+    end
 
   end
 end

@@ -21,22 +21,22 @@ require 'chef/role'
 require 'chef/environment'
 
 describe Chef::RubyCompat do
-  
+
   describe "#to_ruby with Chef::Role" do
- 
-  	let(:role) do
-  	  role = Chef::Role.new
 
-  	  role.name "name"
-  	  role.description "a description"
+    let(:role) do
+      role = Chef::Role.new
 
-  	  role.default_attributes "attr1" => "val1", "attr2" => "val2"
-  	  role.override_attributes "attr3" => "val3", "attr4" => "val4"
+      role.name "name"
+      role.description "a description"
 
-  	  role.run_list "recipe[cookbook]", "role[role]"
+      role.default_attributes "attr1" => "val1", "attr2" => "val2"
+      role.override_attributes "attr3" => "val3", "attr4" => "val4"
 
-  	  role
-  	end
+      role.run_list "recipe[cookbook]", "role[role]"
+
+      role
+    end
 
     it "returns ruby code that evaluates to the same role" do
       new_role = Chef::Role.new
@@ -55,8 +55,8 @@ describe Chef::RubyCompat do
         role_env_runlists = Chef::Role.new.update_from! role
 
         # update_from! does not include the name
-		role_env_runlists.name "name"
-		
+        role_env_runlists.name "name"
+
         role_env_runlists.env_run_lists "_default" => ["recipe[cookbook1]", "recipe[cookbook2]"], "env1" => ["recipe[cookbook3]"], "env2" => ["recipe[cookbook4]"]
 
         role_env_runlists
@@ -81,16 +81,16 @@ describe Chef::RubyCompat do
   describe "#to_ruby with Chef::Environment" do
 
     let(:env) do
-      env = Chef::Environment.new 
+      env = Chef::Environment.new
 
       env.name "name"
       env.description "a description"
 
-	  env.default_attributes "attr1" => "val1", "attr2" => "val2"
-  	  env.override_attributes "attr3" => "val3", "attr4" => "val4"
+      env.default_attributes "attr1" => "val1", "attr2" => "val2"
+      env.override_attributes "attr3" => "val3", "attr4" => "val4"
 
-  	  env.cookbook "cookbook1", "= 1.0.0"
-  	  env.cookbook "cookbook2", ">= 2.0.0"
+      env.cookbook "cookbook1", "= 1.0.0"
+      env.cookbook "cookbook2", ">= 2.0.0"
 
       env
     end
