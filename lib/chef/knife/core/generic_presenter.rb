@@ -17,6 +17,7 @@
 #
 
 require 'chef/knife/core/text_formatter'
+require 'chef/ruby_compat'
 
 class Chef
   class Knife
@@ -82,6 +83,8 @@ class Chef
           when :yaml
             require 'yaml'
             YAML::dump(data)
+          when :ruby
+            Chef::RubyCompat.to_ruby(data)
           when :pp
             require 'stringio'
             # If you were looking for some attribute and there is only one match
@@ -115,6 +118,8 @@ class Chef
             :yaml
           when "pp", /^p/
             :pp
+          when "ruby", /^r/
+            :ruby
           else
             raise ArgumentError, "Unknown output format #{config[:format]}"
           end
