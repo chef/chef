@@ -168,13 +168,6 @@ Copy that file to your trusted_certs_dir (currently: #{configuration.trusted_cer
 using SSH/SCP or some other secure method, then re-run this command to confirm
 that the server's certificate is now trusted.
 
-* If generating self-signed certificates with Subject Alternative Names, check out this
-post on Stack Overflow on how to generate these using OpenSSL:
-
-  http://stackoverflow.com/a/21494483
-
-IMPORTANT: You do not need to change the value of 'keyUsage' under '[ v3_ca ]'.
-
 BAD_CERTS
         # @TODO: ^ needs URL once documentation is posted.
       end
