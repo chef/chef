@@ -366,7 +366,7 @@ describe Chef::Knife::Bootstrap do
     before do
       Chef::Config[:trusted_certs_dir] = trusted_certs_dir
       IO.stub(:read).and_call_original
-      IO.stub(:read).with("/etc/chef/validation.pem").and_return("")
+      IO.stub(:read).with(File.expand_path(Chef::Config[:validation_key])).and_return("")
     end
 
     def certificates
