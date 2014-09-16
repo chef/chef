@@ -17,11 +17,13 @@
 #
 
 require 'chef/knife'
+require 'chef/knife/data_bag_secret_options'
 require 'erubis'
 
 class Chef
   class Knife
     class Bootstrap < Knife
+      include DataBagSecretOptions
 
       deps do
         require 'chef/knife/core/bootstrap_context'
@@ -157,17 +159,6 @@ class Chef
           Chef::Config[:knife][:hints][name] = path ? Chef::JSONCompat.parse(::File.read(path)) : Hash.new
         }
 
-      option :secret,
-        :short => "-s SECRET",
-        :long  => "--secret ",
-        :description => "The secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
-
-      option :secret_file,
-        :long => "--secret-file SECRET_FILE",
-        :description => "A file containing the secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
-
       option :bootstrap_url,
         :long        => "--bootstrap-url URL",
         :description => "URL to a custom installation script",
@@ -248,7 +239,8 @@ class Chef
       def render_template
         template_file = find_template
         template = IO.read(template_file).chomp
-        context = Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config)
+        secret = encryption_secret_provided?(false) ? read_secret : nil
+        context = Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config, secret)
         Erubis::Eruby.new(template).evaluate(context)
       end
 

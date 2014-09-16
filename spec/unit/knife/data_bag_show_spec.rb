@@ -64,7 +64,7 @@ describe Chef::Knife::DataBagShow do
     end
 
     it "decrypts and displays the encrypted data bag when the secret is provided" do
-      expect(knife).to receive(:encryption_secret_provided?).and_return(true)
+      expect(knife).to receive(:encryption_secret_provided?).with(false).and_return(true)
       expect(knife).to receive(:read_secret).and_return(secret)
       expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(data_bag_with_encoded_hash)
       expect(knife.ui).to receive(:info).with("Encrypted data bag detected, decrypting with provided secret.")
@@ -78,7 +78,7 @@ qux: http://localhost:4000/data/bag_o_data/qux|
     end
 
     it "displays the encrypted data bag when the secret is not provided" do
-      expect(knife).to receive(:encryption_secret_provided?).and_return(false)
+      expect(knife).to receive(:encryption_secret_provided?).with(false).and_return(false)
       expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(data_bag_with_encoded_hash)
       expect(knife.ui).to receive(:warn).with("Encrypted data bag detected, but no secret provided for decoding.  Displaying encrypted data.")
 

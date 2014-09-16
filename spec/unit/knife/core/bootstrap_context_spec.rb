@@ -29,9 +29,10 @@ describe Chef::Knife::Core::BootstrapContext do
       :validation_client_name => 'chef-validator-testing'
     }
   end
-  let(:secret_file) { File.join(CHEF_SPEC_DATA, 'bootstrap', 'encrypted_data_bag_secret') }
 
-  subject(:bootstrap_context) { described_class.new(config, run_list, chef_config) }
+  let(:secret) { nil }
+
+  subject(:bootstrap_context) { described_class.new(config, run_list, chef_config, secret) }
 
   it "runs chef with the first-boot.json in the _default environment" do
     bootstrap_context.start_chef.should eq "chef-client -j /etc/chef/first-boot.json -E _default"
@@ -105,39 +106,9 @@ EXPECTED
   end
 
   describe "when an encrypted_data_bag_secret is provided" do
-    context "via config[:secret]" do
-      let(:chef_config) do
-        {
-          :knife => {:secret => "supersekret" }
-        }
-      end
-      it "reads the encrypted_data_bag_secret" do
-        bootstrap_context.encrypted_data_bag_secret.should eq "supersekret"
-      end
-    end
-
-    context "via config[:secret_file]" do
-      let(:chef_config) do
-        {
-          :knife => {:secret_file => secret_file}
-        }
-      end
-      it "reads the encrypted_data_bag_secret" do
-        bootstrap_context.encrypted_data_bag_secret.should eq IO.read(secret_file)
-      end
-    end
-
-    context "via config[:secret_file] with short home path" do
-      let(:chef_config) do
-        home_path = File.expand_path("~")
-        shorted_secret_file_path = secret_file.gsub(home_path, "~")
-        {
-          :knife => {:secret_file => shorted_secret_file_path}
-        }
-      end
-      it "reads the encrypted_data_bag_secret" do
-        bootstrap_context.encrypted_data_bag_secret.should eq IO.read(secret_file)
-      end
+    let(:secret) { "supersekret" }
+    it "reads the encrypted_data_bag_secret" do
+      bootstrap_context.encrypted_data_bag_secret.should eq "supersekret"
     end
   end
 

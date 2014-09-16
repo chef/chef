@@ -26,17 +26,26 @@ class Chef
       include Mixlib::CLI
       include Chef::EncryptedDataBagItem::CheckEncrypted
 
+      # The config object is populated by knife#merge_configs with knife.rb `knife[:*]` config values, but they do
+      # not overwrite the command line properties.  It does mean, however, that `knife[:secret]` and `--secret-file`
+      # passed at the same time populate both `config[:secret]` and `config[:secret_file]`.  We cannot differentiate
+      # the valid case (`knife[:secret]` in config file and `--secret-file` on CL) and the invalid case (`--secret`
+      # and `--secret-file` on the CL) - thats why I'm storing the CL options in a different config key if they
+      # are provided.
+
       def self.included(base)
         base.option :secret,
                :short => "-s SECRET",
                :long  => "--secret ",
                :description => "The secret key to use to encrypt data bag item values.  Can also be defaulted in your config with the key 'secret'",
-               :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
+               # Need to store value from command line in separate variable - knife#merge_configs populates same keys
+               # on config object from
+               :proc => Proc.new { |s| set_cl_secret(s) }
 
         base.option :secret_file,
                :long => "--secret-file SECRET_FILE",
                :description => "A file containing the secret key to use to encrypt data bag item values.  Can also be defaulted in your config with the key 'secret_file'",
-               :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
+               :proc => Proc.new { |sf| set_cl_secret_file(sf) }
 
         base.option :encrypt,
                :long => "--encrypt",
@@ -48,18 +57,23 @@ class Chef
       ##
       # Determine if the user has specified an appropriate secret for encrypting data bag items.
       # @returns boolean
-      def encryption_secret_provided?
+      def encryption_secret_provided?(need_encrypt_flag = true)
         validate_secrets
 
-        return true if config[:secret] || config[:secret_file]
+        return true if has_cl_secret? || has_cl_secret_file?
 
-        if config[:encrypt]
-          unless has_secret? || has_secret_file?
-            ui.fatal("No secret or secret_file specified in config, unable to encrypt item.")
-            exit(1)
-          else
+        if need_encrypt_flag
+          if config[:encrypt]
+            unless knife_config[:secret] || knife_config[:secret_file]
+              ui.fatal("No secret or secret_file specified in config, unable to encrypt item.")
+              exit(1)
+            end
             return true
           end
+          return false
+        elsif knife_config[:secret] || knife_config[:secret_file]
+          # Certain situations (show and bootstrap) don't need a --encrypt flag to use the config file secret
+          return true
         end
         return false
       end
@@ -69,39 +83,47 @@ class Chef
         # IE, if we are not running 'knife data bag *' we don't need to load 'chef/encrypted_data_bag_item'
         require 'chef/encrypted_data_bag_item'
 
-        if config[:secret]
+        if has_cl_secret?
           config[:secret]
-        elsif config[:secret_file]
+        elsif has_cl_secret_file?
           Chef::EncryptedDataBagItem.load_secret(config[:secret_file])
-        elsif secret = knife_config[:secret] || Chef::Config[:secret]
+        elsif secret = knife_config[:secret]
           secret
         else
-          secret_file = knife_config[:secret_file] || Chef::Config[:secret_file]
+          secret_file = knife_config[:secret_file]
           Chef::EncryptedDataBagItem.load_secret(secret_file)
         end
       end
 
       def validate_secrets
-        if config[:secret] && config[:secret_file]
+        if has_cl_secret? && has_cl_secret_file?
           ui.fatal("Please specify only one of --secret, --secret-file")
           exit(1)
         end
 
-        if has_secret? && has_secret_file?
-          ui.fatal("Please specify only one of 'secret' or 'secret_file' in your config")
+        if knife_config[:secret] && knife_config[:secret_file]
+          ui.fatal("Please specify only one of 'secret' or 'secret_file' in your config file")
           exit(1)
         end
       end
 
-      def has_secret?
-        knife_config[:secret] || Chef::Config[:secret]
-      end
-
-      def has_secret_file?
-        knife_config[:secret_file] || Chef::Config[:secret_file]
-      end
-
       private
+
+      def has_cl_secret?
+        Chef::Config[:knife].has_key?(:cl_secret)
+      end
+
+      def self.set_cl_secret(s)
+        Chef::Config[:knife][:cl_secret] = s
+      end
+
+      def has_cl_secret_file?
+        Chef::Config[:knife].has_key?(:cl_secret_file)
+      end
+
+      def self.set_cl_secret_file(sf)
+        Chef::Config[:knife][:cl_secret_file] = sf
+      end
 
       def knife_config
         Chef::Config.key?(:knife) ? Chef::Config[:knife] : {}

@@ -50,7 +50,8 @@ describe Chef::Knife::DataBagSecretOptions do
   describe "#validate_secrets" do
 
     it "throws an error when provided with both --secret and --secret-file on the CL" do
-      expect(example_db).to receive(:config).exactly(2).times.and_return({ :secret_file => secret_file.path, :secret => secret })
+      Chef::Config[:knife][:cl_secret_file] = secret_file.path
+      Chef::Config[:knife][:cl_secret] = secret
       expect(example_db).to receive(:exit).with(1)
       expect(example_db.ui).to receive(:fatal).with("Please specify only one of --secret, --secret-file")
 
@@ -61,7 +62,7 @@ describe Chef::Knife::DataBagSecretOptions do
       Chef::Config[:knife][:secret_file] = secret_file.path
       Chef::Config[:knife][:secret] = secret
       expect(example_db).to receive(:exit).with(1)
-      expect(example_db.ui).to receive(:fatal).with("Please specify only one of 'secret' or 'secret_file' in your config")
+      expect(example_db.ui).to receive(:fatal).with("Please specify only one of 'secret' or 'secret_file' in your config file")
 
       example_db.validate_secrets
     end
@@ -71,25 +72,25 @@ describe Chef::Knife::DataBagSecretOptions do
   describe "#read_secret" do
 
     it "returns the secret first" do
-      expect(example_db).to receive(:config).exactly(2).times.and_return({ :secret_file => secret_file.path, :secret => secret })
+      Chef::Config[:knife][:cl_secret] = secret
+      expect(example_db).to receive(:config).and_return({ :secret => secret })
       expect(example_db.read_secret).to eq(secret)
     end
 
     it "returns the secret_file only if secret does not exist" do
-      expect(example_db).to receive(:config).exactly(3).times.and_return({ :secret_file => secret_file.path })
+      Chef::Config[:knife][:cl_secret_file] = secret_file.path
+      expect(example_db).to receive(:config).and_return({ :secret_file => secret_file.path })
       expect(Chef::EncryptedDataBagItem).to receive(:load_secret).with(secret_file.path).and_return("secret file contents")
       expect(example_db.read_secret).to eq("secret file contents")
     end
 
     it "returns the secret from the knife.rb config" do
-      expect(example_db).to receive(:config).exactly(2).times.and_return({})
       Chef::Config[:knife][:secret_file] = secret_file.path
       Chef::Config[:knife][:secret] = secret
       expect(example_db.read_secret).to eq(secret)
     end
 
     it "returns the secret_file from the knife.rb config only if the secret does not exist" do
-      expect(example_db).to receive(:config).exactly(2).times.and_return({})
       Chef::Config[:knife][:secret_file] = secret_file.path
       expect(Chef::EncryptedDataBagItem).to receive(:load_secret).with(secret_file.path).and_return("secret file contents")
       expect(example_db.read_secret).to eq("secret file contents")
@@ -100,37 +101,63 @@ describe Chef::Knife::DataBagSecretOptions do
   describe "#encryption_secret_provided?" do
 
     it "returns true if the secret is passed on the CL" do
-      expect(example_db).to receive(:config).exactly(3).times.and_return({ :secret => secret })
+      Chef::Config[:knife][:cl_secret] = secret
       expect(example_db.encryption_secret_provided?).to eq(true)
     end
 
     it "returns true if the secret_file is passed on the CL" do
-      expect(example_db).to receive(:config).exactly(3).times.and_return({ :secret_file => secret_file.path })
+      Chef::Config[:knife][:cl_secret_file] = secret_file.path
       expect(example_db.encryption_secret_provided?).to eq(true)
     end
 
-    it "returns true if --encrypt is passed on the CL and :secret is in knife.rb" do
-      expect(example_db).to receive(:config).exactly(4).times.and_return({ :encrypt => true })
+    it "returns true if --encrypt is passed on the CL and :secret is in config" do
+      expect(example_db).to receive(:config).and_return({ :encrypt => true })
       Chef::Config[:knife][:secret] = secret
       expect(example_db.encryption_secret_provided?).to eq(true)
     end
 
-    it "returns true if --encrypt is passed on the CL and :secret_file is in knife.rb" do
-      expect(example_db).to receive(:config).exactly(4).times.and_return({ :encrypt => true })
+    it "returns true if --encrypt is passed on the CL and :secret_file is in config" do
+      expect(example_db).to receive(:config).and_return({ :encrypt => true })
       Chef::Config[:knife][:secret_file] = secret_file.path
       expect(example_db.encryption_secret_provided?).to eq(true)
     end
 
-    it "throws an error if --encrypt is passed and there is not :secret or :secret_file in the knife.rb" do
-      expect(example_db).to receive(:config).exactly(4).times.and_return({ :encrypt => true })
+    it "throws an error if --encrypt is passed and there is not :secret or :secret_file in the config" do
+      expect(example_db).to receive(:config).and_return({ :encrypt => true })
       expect(example_db).to receive(:exit).with(1)
       expect(example_db.ui).to receive(:fatal).with("No secret or secret_file specified in config, unable to encrypt item.")
       example_db.encryption_secret_provided?
     end
 
     it "returns false if no secret is passed" do
-      expect(example_db).to receive(:config).exactly(4).times.and_return({})
+      expect(example_db).to receive(:config).and_return({})
       expect(example_db.encryption_secret_provided?).to eq(false)
+    end
+
+    it "returns false if --encrypt is not provided and :secret is in the config" do
+      expect(example_db).to receive(:config).and_return({})
+      Chef::Config[:knife][:secret] = secret
+      expect(example_db.encryption_secret_provided?).to eq(false)
+    end
+
+    it "returns false if --encrypt is not provided and :secret_file is in the config" do
+      expect(example_db).to receive(:config).and_return({})
+      Chef::Config[:knife][:secret_file] = secret_file.path
+      expect(example_db.encryption_secret_provided?).to eq(false)
+    end
+
+    it "returns true if --encrypt is not provided, :secret is in the config and need_encrypt_flag is false" do
+      Chef::Config[:knife][:secret] = secret
+      expect(example_db.encryption_secret_provided?(false)).to eq(true)
+    end
+
+    it "returns true if --encrypt is not provided, :secret_file is in the config and need_encrypt_flag is false" do
+      Chef::Config[:knife][:secret_file] = secret_file.path
+      expect(example_db.encryption_secret_provided?(false)).to eq(true)
+    end
+
+    it "returns false if --encrypt is not provided and need_encrypt_flag is false" do
+      expect(example_db.encryption_secret_provided?(false)).to eq(false)
     end
 
   end
