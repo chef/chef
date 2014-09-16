@@ -96,7 +96,6 @@ END_CLIENT_RB
         end
 
         context "and the cookbook has been uploaded to the server" do
-
           before do
             shell_out!("#{knife} cookbook upload apache2 #{knife_config_flag}", :cwd => chef_dir)
           end
