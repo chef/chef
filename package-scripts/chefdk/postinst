@@ -39,6 +39,11 @@ for binary in $binaries; do
   ln -sf $INSTALLER_DIR/bin/$binary $PREFIX/bin || error_exit "Cannot link $binary to $PREFIX/bin"
 done
 
+# Ensure all files/directories in $INSTALLER_DIR are owned by root. This
+# has been fixed on new installs but upgrades from old installs need to
+# be manually fixed.
+chown -Rh 0:0 $INSTALLER_DIR
+
 echo "Thank you for installing Chef Development Kit!"
 
 exit 0
