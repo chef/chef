@@ -62,7 +62,7 @@ END_VALIDATION_PEM
     end
 
     let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
-    let(:knife) { "ruby #{chef_dir}/knife" }
+    let(:knife) { "ruby '#{chef_dir}/knife'" }
 
     let(:knife_config_flag) { "-c '#{path_to("config/knife.rb")}'" }
 
