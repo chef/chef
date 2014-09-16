@@ -118,7 +118,10 @@ module IntegrationSupport
             Chef::Config.delete("#{object_name}_path".to_sym)
           end
           Chef::Config.delete(:chef_repo_path)
-          FileUtils.remove_entry_secure(@repository_dir)
+          # TODO: "force" actually means "silence all exceptions". this
+          # silences a weird permissions error on Windows that we should track
+          # down, but for now there's no reason for it to blow up our CI.
+          FileUtils.remove_entry_secure(@repository_dir, force=Chef::Platform.windows?)
         ensure
           @repository_dir = nil
         end
