@@ -47,29 +47,27 @@ class Chef
         end
       end
 
-      def edit_item(item)
-        output = edit_data(item)
-        if encryption_secret_provided?
-          ui.info("Encrypting data bag using provided secret.")
-          Chef::EncryptedDataBagItem.encrypt_data_bag_item(output, read_secret)
-        else
-          ui.info("Saving data bag unencrypted.  To encrypt it, provide an appropriate secret.")
-          output
-        end
-      end
-
       def run
         if @name_args.length != 2
           stdout.puts "You must supply the data bag and an item to edit!"
           stdout.puts opt_parser
           exit 1
         end
+
         item = load_item(@name_args[0], @name_args[1])
-        output = edit_item(item)
-        rest.put_rest("data/#{@name_args[0]}/#{@name_args[1]}", output)
+        edited_item = edit_data(item)
+
+        if encryption_secret_provided?
+          ui.info("Encrypting data bag using provided secret.")
+          item_to_save = Chef::EncryptedDataBagItem.encrypt_data_bag_item(edited_item, read_secret)
+        else
+          ui.info("Saving data bag unencrypted.  To encrypt it, provide an appropriate secret.")
+          item_to_save = edited_item
+        end
+
+        rest.put_rest("data/#{@name_args[0]}/#{@name_args[1]}", item_to_save)
         stdout.puts("Saved data_bag_item[#{@name_args[1]}]")
-        # TODO this is trying to read :print_after from the CLI, not the knife.rb
-        ui.output(output) if config[:print_after]
+        ui.output(edited_item) if config[:print_after]
       end
     end
   end

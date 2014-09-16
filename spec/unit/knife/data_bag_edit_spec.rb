@@ -33,10 +33,9 @@ describe Chef::Knife::DataBagEdit do
     k
   end
 
-  let(:plain_hash) { {"login_name" => "alphaomega", "id" => "item_name"} }
-  let(:plain_db) {Chef::DataBagItem.from_hash(plain_hash)}
-  let(:edited_hash) { {"login_name" => "rho", "id" => "item_name", "new_key" => "new_value"} }
-  let(:edited_db) {Chef::DataBagItem.from_hash(edited_hash)}
+  let(:raw_hash) { {"login_name" => "alphaomega", "id" => "item_name"} }
+  let(:db) { Chef::DataBagItem.from_hash(raw_hash)}
+  let(:raw_edited_hash) { {"login_name" => "rho", "id" => "item_name", "new_key" => "new_value"} }
 
   let(:rest) { double("Chef::REST") }
   let(:stdout) { StringIO.new }
@@ -48,6 +47,21 @@ describe Chef::Knife::DataBagEdit do
 
   let(:config) { {} }
 
+  let(:is_encrypted?) { false }
+  let(:transmitted_hash) { raw_edited_hash }
+  let(:data_to_edit) { db }
+
+  shared_examples_for "editing a data bag" do
+    it "correctly edits then uploads the data bag" do
+      expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(db)
+      expect(knife).to receive(:encrypted?).with(db.raw_data).and_return(is_encrypted?)
+      expect(knife).to receive(:edit_data).with(data_to_edit).and_return(raw_edited_hash)
+      expect(rest).to receive(:put_rest).with("data/#{bag_name}/#{item_name}", transmitted_hash).ordered
+
+      knife.run
+    end
+  end
+
   it "requires data bag and item arguments" do
     knife.name_args = []
     expect(stdout).to receive(:puts).twice.with(anything)
@@ -55,51 +69,51 @@ describe Chef::Knife::DataBagEdit do
     expect(stdout.string).to eq("")
   end
 
-  it "saves edits on a data bag item" do
-    expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(plain_db)
-    expect(knife).to receive(:encrypted?) { false }
-    expect(knife).to receive(:edit_data).with(plain_db).and_return(edited_db.raw_data)
-    expect(rest).to receive(:put_rest).with("data/#{bag_name}/#{item_name}", edited_db.raw_data).ordered
-    knife.run
+  context "when no secret is provided" do
+    include_examples "editing a data bag"
   end
 
-  describe "encrypted data bag items" do
-    let(:enc_plain_hash) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(plain_hash, secret) }
-    let(:data_bag_with_encoded_hash) { Chef::DataBagItem.from_hash(enc_plain_hash) }
-    let(:enc_edited_hash) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(edited_hash, secret) }
+  context "when config[:print_after] is set" do
+    let(:config) { {:print_after => true} }
+    before do
+      expect(knife.ui).to receive(:output).with(raw_edited_hash)
+    end
+
+    include_examples "editing a data bag"
+  end
+
+  context "when a secret is provided" do
+    let!(:enc_raw_hash) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(raw_hash, secret) }
+    let!(:enc_edited_hash) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(raw_edited_hash, secret) }
+    let(:transmitted_hash) { enc_edited_hash }
 
     before(:each) do
-      allow(knife).to receive(:encrypted?) { true }
-      allow(knife).to receive(:encryption_secret_provided?) { true }
-      allow(knife).to receive(:read_secret).and_return(secret)
+      expect(knife).to receive(:encryption_secret_provided?).at_least(1).times.and_return(true)
+      expect(knife).to receive(:read_secret).at_least(1).times.and_return(secret)
+      expect(Chef::EncryptedDataBagItem).to receive(:encrypt_data_bag_item).with(raw_edited_hash, secret).and_return(enc_edited_hash)
     end
 
-    it "decrypts an encrypted data bag, edits it and rencrypts it" do
-      expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(data_bag_with_encoded_hash)
-      expect(knife).to receive(:edit_data).with(plain_hash).and_return(edited_hash)
-      expect(Chef::EncryptedDataBagItem).to receive(:encrypt_data_bag_item).with(edited_hash, secret).and_return(enc_edited_hash)
-      expect(rest).to receive(:put_rest).with("data/#{bag_name}/#{item_name}", enc_edited_hash).ordered
+    context "the data bag starts encrypted" do
+      let(:is_encrypted?) { true }
+      let(:db) { Chef::DataBagItem.from_hash(enc_raw_hash) }
+      # If the data bag is encrypted, it gets passed to `edit` as a hash.  Otherwise, it gets passed as a DataBag
+      let (:data_to_edit) { raw_hash }
 
-      knife.run
+      include_examples "editing a data bag"
     end
 
-    it "edits an unencrypted data bag and encrypts it" do
-      expect(knife).to receive(:encrypted?) { false }
-      expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(plain_db)
-      expect(knife).to receive(:edit_data).with(plain_db).and_return(edited_hash)
-      expect(Chef::EncryptedDataBagItem).to receive(:encrypt_data_bag_item).with(edited_hash, secret).and_return(enc_edited_hash)
-      expect(rest).to receive(:put_rest).with("data/#{bag_name}/#{item_name}", enc_edited_hash).ordered
-
-      knife.run
+    context "the data bag starts unencrypted" do
+      include_examples "editing a data bag"
     end
-
-    it "fails to edit an encrypted data bag if the secret is missing" do
-      allow(knife).to receive(:encryption_secret_provided?) { false }
-      expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(data_bag_with_encoded_hash)
-
-      expect(knife.ui).to receive(:fatal).with("You cannot edit an encrypted data bag without providing the secret.")
-      expect {knife.run}.to exit_with_code(1)
-    end
-
   end
+
+  it "fails to edit an encrypted data bag if the secret is missing" do
+    expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(db)
+    expect(knife).to receive(:encrypted?).with(db.raw_data).and_return(true)
+    expect(knife).to receive(:encryption_secret_provided?).and_return(false)
+
+    expect(knife.ui).to receive(:fatal).with("You cannot edit an encrypted data bag without providing the secret.")
+    expect {knife.run}.to exit_with_code(1)
+  end
+
 end
