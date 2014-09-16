@@ -36,12 +36,11 @@ class Chef
       def run
         display = case @name_args.length
         when 2 # Bag and Item names provided
-          secret = encryption_secret_provided? ? read_secret : nil
+          secret = encryption_secret_provided?(false) ? read_secret : nil
           raw_data = Chef::DataBagItem.load(@name_args[0], @name_args[1]).raw_data
           encrypted = encrypted?(raw_data)
 
           if encrypted && secret
-            # TODO If the decryption fails with provided secret, what does that look like?
             # Users do not need to pass --encrypt to read data, we simply try to use the provided secret
             ui.info("Encrypted data bag detected, decrypting with provided secret.")
             raw = Chef::EncryptedDataBagItem.load(@name_args[0],
