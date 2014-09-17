@@ -97,6 +97,11 @@ def aix?
   !!(RUBY_PLATFORM =~ /aix/)
 end
 
+def debian_based?
+  File.exists?("/etc/debian_version")
+end
+
+
 def supports_cloexec?
   Fcntl.const_defined?('F_SETFD') && Fcntl.const_defined?('FD_CLOEXEC')
 end
