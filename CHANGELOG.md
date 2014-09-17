@@ -1,11 +1,15 @@
 # Chef Client Changelog
 
-## Unreleased: 11.16.0
+## Unreleased: 11.16.2
+
+* This is a packaging-only release there are no code changes
+
+## Last Release: 11.16.0
 
 * Fix a bug in user dscl provider to enable managing password and other properties at the same time.
 * Add `dsc_script` resource to Chef for PowerShell DSC support on Windows
 
-## Last Release: 11.14.6:
+## Release: 11.14.6:
 
 * Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
 * Fix RPM package version detection (Issue 1554)
