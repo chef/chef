@@ -148,16 +148,16 @@ describe Chef::Knife::DataBagSecretOptions do
 
     it "returns true if --encrypt is not provided, :secret is in the config and need_encrypt_flag is false" do
       Chef::Config[:knife][:secret] = secret
-      expect(example_db.encryption_secret_provided?(false)).to eq(true)
+      expect(example_db.encryption_secret_provided_ignore_encrypt_flag?).to eq(true)
     end
 
     it "returns true if --encrypt is not provided, :secret_file is in the config and need_encrypt_flag is false" do
       Chef::Config[:knife][:secret_file] = secret_file.path
-      expect(example_db.encryption_secret_provided?(false)).to eq(true)
+      expect(example_db.encryption_secret_provided_ignore_encrypt_flag?).to eq(true)
     end
 
     it "returns false if --encrypt is not provided and need_encrypt_flag is false" do
-      expect(example_db.encryption_secret_provided?(false)).to eq(false)
+      expect(example_db.encryption_secret_provided_ignore_encrypt_flag?).to eq(false)
     end
 
   end

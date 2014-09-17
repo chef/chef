@@ -239,7 +239,7 @@ class Chef
       def render_template
         template_file = find_template
         template = IO.read(template_file).chomp
-        secret = encryption_secret_provided?(false) ? read_secret : nil
+        secret = encryption_secret_provided_ignore_encrypt_flag? ? read_secret : nil
         context = Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config, secret)
         Erubis::Eruby.new(template).evaluate(context)
       end
