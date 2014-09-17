@@ -317,21 +317,37 @@ source #{tempdir_path}/*
 
   describe "delete_config for action_delete" do
 
+    let(:tempfile) { Tempfile.new("rspec-chef-ifconfig-debian") }
+
+    let(:tempdir_path) { Dir.mktmpdir("rspec-chef-ifconfig-debian-dir") }
+
+    let(:config_filename_ifcfg) { "#{tempdir_path}/ifcfg-#{new_resource.device}" }
+
+    before do
+      stub_const("Chef::Provider::Ifconfig::Debian::INTERFACES_FILE", tempfile.path)
+      stub_const("Chef::Provider::Ifconfig::Debian::INTERFACES_DOT_D_DIR", tempdir_path)
+      File.open(config_filename_ifcfg, "w") do |fh|
+        fh.write "arbitrary text\n"
+        fh.close
+      end
+    end
+
+    after do
+      Dir.rmdir(tempdir_path)
+    end
+
     it "should delete network-script if it exists" do
       current_resource.device new_resource.device
 
-      [:exist?, :exists?, :writable?].each do |cmd|
-        # need to stub :writable? to make why_run? happy
-        allow(File).to receive(cmd).and_call_original
-        allow(File).to receive(cmd).with(config_filename_ifcfg).and_return(true)
-      end
+      # belt and suspenders testing?
+      Chef::Util::Backup.any_instance.should_receive(:do_backup).and_call_original
 
-      # stub for Chef::Util::Backup#do_backup
-      expect(FileUtils).to receive(:cp)
-        .with(config_filename_ifcfg, /#{Chef::Config[:file_backup_path]}/, :preserve => true)
-      expect(File).to receive(:delete).with(config_filename_ifcfg)
+      # internal implementation detail of Ifconfig.
+      Chef::Provider::File.any_instance.should_receive(:action_delete).and_call_original
 
+      expect(File.exist?(config_filename_ifcfg)).to be_true
       provider.run_action(:delete)
+      expect(File.exist?(config_filename_ifcfg)).to be_false
     end
   end
 
