@@ -246,24 +246,33 @@ class Chef
         refs = ref_lines.map { |line| line.split("\t") }
         # first try for ^{} indicating the commit pointed to by an
         # annotated tag
-        tagged_commit = refs.find { |m| m[1].end_with?("#{@new_resource.revision}^{}") }
+        tagged_commit = refs.find_all { |m| m[1].end_with?("#{@new_resource.revision}^{}") }
         # It is possible for a user to create a tag named 'HEAD'.
         # Using such a degenerate annotated tag would be very
         # confusing. We avoid the issue by disallowing the use of
         # annotated tags named 'HEAD'.
-        if tagged_commit && rev_pattern != 'HEAD'
-          tagged_commit[0]
+        if !tagged_commit.empty? && rev_pattern != 'HEAD'
+          found = tagged_commit
         else
-          found = refs.find { |m| m[1].end_with?(@new_resource.revision) }
-          if found
-            found[0]
-          else
-            nil
-          end
+          found = refs.find_all { |m| m[1].end_with?(@new_resource.revision) }
         end
+	pick_shortest_ref(found)
       end
 
       private
+
+      def pick_shortest_ref(refs=[])
+	if refs.empty?
+	  nil
+	else
+	  # refs is an Array of two-element Arrays: [SHA, TAG_NAME]: e.g,,
+	  # [['faceb423432...', 'refs/tags/2014.9.3'], ...]
+	  # Return the SHA of the shortest tag, since :find_all :end_with?
+	  # was used to build the list of refs.
+	  ref = refs.sort { |a, b| a[1].length <=> b[1].length }.first
+	  ref[0]
+	end
+      end
 
       def run_options(run_opts={})
         env = {}
