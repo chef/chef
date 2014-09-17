@@ -28,7 +28,7 @@ describe Chef::Resource::Conditional do
   end
 
   describe "when created as an `only_if`" do
-    describe "after running a successful command" do
+    describe "after running a successful command given as a string" do
       before do
         @conditional = Chef::Resource::Conditional.only_if(@parent_resource, "true")
       end
@@ -38,10 +38,31 @@ describe Chef::Resource::Conditional do
       end
     end
 
-    describe "after running a negative/false command" do
+    describe "after running a negative/false command given as a string" do
       before do
         @status.send("success?=", false)
         @conditional = Chef::Resource::Conditional.only_if(@parent_resource, "false")
+      end
+
+      it "indicates that resource convergence should not continue" do
+        @conditional.continue?.should be_false
+      end
+    end
+
+    describe "after running a successful command given as an array" do
+      before do
+        @conditional = Chef::Resource::Conditional.only_if(@parent_resource, ["true"])
+      end
+
+      it "indicates that resource convergence should continue" do
+        @conditional.continue?.should be_true
+      end
+    end
+
+    describe "after running a negative/false command given as an array" do
+      before do
+        @status.send("success?=", false)
+        @conditional = Chef::Resource::Conditional.only_if(@parent_resource, ["false"])
       end
 
       it "indicates that resource convergence should not continue" do
@@ -87,7 +108,7 @@ describe Chef::Resource::Conditional do
   end
 
   describe "when created as a `not_if`" do
-    describe "after running a successful/true command" do
+    describe "after running a successful/true command given as a string" do
       before do
         @conditional = Chef::Resource::Conditional.not_if(@parent_resource, "true")
       end
@@ -97,10 +118,31 @@ describe Chef::Resource::Conditional do
       end
     end
 
-    describe "after running a failed/false command" do
+    describe "after running a failed/false command given as a string" do
       before do
         @status.send("success?=", false)
         @conditional = Chef::Resource::Conditional.not_if(@parent_resource, "false")
+      end
+
+      it "indicates that resource convergence should continue" do
+        @conditional.continue?.should be_true
+      end
+    end
+
+    describe "after running a successful/true command given as an array" do
+      before do
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource, ["true"])
+      end
+
+      it "indicates that resource convergence should not continue" do
+        @conditional.continue?.should be_false
+      end
+    end
+
+    describe "after running a failed/false command given as an array" do
+      before do
+        @status.send("success?=", false)
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource, ["false"])
       end
 
       it "indicates that resource convergence should continue" do
