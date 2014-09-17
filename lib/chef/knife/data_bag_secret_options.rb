@@ -54,28 +54,12 @@ class Chef
                :default => false
       end
 
-      ##
-      # Determine if the user has specified an appropriate secret for encrypting data bag items.
-      # @returns boolean
-      def encryption_secret_provided?(need_encrypt_flag = true)
-        validate_secrets
+      def encryption_secret_provided?
+        base_encryption_secret_provided?
+      end
 
-        return true if has_cl_secret? || has_cl_secret_file?
-
-        if need_encrypt_flag
-          if config[:encrypt]
-            unless knife_config[:secret] || knife_config[:secret_file]
-              ui.fatal("No secret or secret_file specified in config, unable to encrypt item.")
-              exit(1)
-            end
-            return true
-          end
-          return false
-        elsif knife_config[:secret] || knife_config[:secret_file]
-          # Certain situations (show and bootstrap) don't need a --encrypt flag to use the config file secret
-          return true
-        end
-        return false
+      def encryption_secret_provided_ignore_encrypt_flag?
+        base_encryption_secret_provided?(false)
       end
 
       def read_secret
@@ -108,6 +92,30 @@ class Chef
       end
 
       private
+
+      ##
+      # Determine if the user has specified an appropriate secret for encrypting data bag items.
+      # @returns boolean
+      def base_encryption_secret_provided?(need_encrypt_flag = true)
+        validate_secrets
+
+        return true if has_cl_secret? || has_cl_secret_file?
+
+        if need_encrypt_flag
+          if config[:encrypt]
+            unless knife_config[:secret] || knife_config[:secret_file]
+              ui.fatal("No secret or secret_file specified in config, unable to encrypt item.")
+              exit(1)
+            end
+            return true
+          end
+          return false
+        elsif knife_config[:secret] || knife_config[:secret_file]
+          # Certain situations (show and bootstrap) don't need a --encrypt flag to use the config file secret
+          return true
+        end
+        return false
+      end
 
       def has_cl_secret?
         Chef::Config[:knife].has_key?(:cl_secret)

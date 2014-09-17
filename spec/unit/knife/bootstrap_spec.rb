@@ -30,7 +30,7 @@ describe Chef::Knife::Bootstrap do
     k.merge_configs
 
     k.ui.stub(:stderr).and_return(stderr)
-    allow(k).to receive(:encryption_secret_provided?).with(false).and_return(false)
+    allow(k).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(false)
     k
   end
 
@@ -296,13 +296,13 @@ describe Chef::Knife::Bootstrap do
     end
 
     it "creates a secret file" do
-      expect(knife).to receive(:encryption_secret_provided?).with(false).and_return(true)
+      expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(true)
       expect(knife).to receive(:read_secret).and_return(secret)
       rendered_template.should match(%r{#{secret}})
     end
 
     it "renders the client.rb with an encrypted_data_bag_secret entry" do
-      expect(knife).to receive(:encryption_secret_provided?).with(false).and_return(true)
+      expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(true)
       expect(knife).to receive(:read_secret).and_return(secret)
       rendered_template.should match(%r{encrypted_data_bag_secret\s*"/etc/chef/encrypted_data_bag_secret"})
     end
