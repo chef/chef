@@ -2,6 +2,8 @@
 
 ## Unreleased:
 
+## 10.34.4
+
 * Fix a bug in user dscl provider to enable managing password and other properties at the same time.
 
 ## 10.34.2
