@@ -42,26 +42,26 @@ class Chef
       ruby = RubyIO.new
 
       # Name
-      ruby.method("name", role.name)
+      ruby.write_method("name", role.name)
       ruby.new_line
 
       # Description
-      ruby.method("description", role.description)
+      ruby.write_method("description", role.description)
       ruby.new_line
 
       # Default Attributes
-      ruby.method("default_attributes", role.default_attributes)
+      ruby.write_method("default_attributes", role.default_attributes)
       ruby.new_line
 
       # Override Attributes
-      ruby.method("override_attributes", role.override_attributes)
+      ruby.write_method("override_attributes", role.override_attributes)
       ruby.new_line
 
       # Run list
       if role.env_run_lists.size <= 1
-        ruby.method("run_list", *role.run_list.map{|val| val.to_s})
+        ruby.write_method("run_list", *role.run_list.map{|val| val.to_s})
       else
-        ruby.method("env_run_lists", Hash[role.env_run_lists.map{|k, v| [k, v.map{|val| val.to_s}]}])
+        ruby.write_method("env_run_lists", Hash[role.env_run_lists.map{|k, v| [k, v.map{|val| val.to_s}]}])
       end
       ruby.new_line
 
@@ -72,25 +72,25 @@ class Chef
       ruby = RubyIO.new
 
       # Name
-      ruby.method("name",  environment.name)
+      ruby.write_method("name",  environment.name)
       ruby.new_line
 
       # Description
-      ruby.method("description", environment.description)
+      ruby.write_method("description", environment.description)
       ruby.new_line
 
       # Cookbook versions
       environment.cookbook_versions.each do |cookbook, version_constraint|
-        ruby.method("cookbook", cookbook, version_constraint)
+        ruby.write_method("cookbook", cookbook, version_constraint)
       end
       ruby.new_line
 
       # Default Attributes
-      ruby.method("default_attributes", environment.default_attributes)
+      ruby.write_method("default_attributes", environment.default_attributes)
       ruby.new_line
 
       # Override Attributes
-      ruby.method("override_attributes", environment.override_attributes)
+      ruby.write_method("override_attributes", environment.override_attributes)
       ruby.new_line
 
       ruby.string
@@ -104,7 +104,7 @@ class Chef
         @out = StringIO.new
       end
 
-      def method(method_name, *args)
+      def write_method(method_name, *args)
         write method_name
         write("(")
 
