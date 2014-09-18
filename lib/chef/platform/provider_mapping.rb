@@ -26,7 +26,6 @@ require 'chef/version_constraint/platform'
 # Therefore, we do the includes inline rather than up top.
 require 'chef/provider'
 
-
 class Chef
   class Platform
 
@@ -223,7 +222,7 @@ class Chef
                 :ifconfig => Chef::Provider::Ifconfig::Redhat
               },
               "< 7" => {
-                :service => Chef::Provider::Service::Systemd
+                :service => Chef::Provider::Service::Redhat
               }
             },
             :ibm_powerkvm   => {
