@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'chef/util/path_helper'
+
 class Chef
   class Util
     class Backup
@@ -77,9 +79,8 @@ class Chef
       end
 
       def sorted_backup_files
-        Dir[::File.join(prefix, ".#{path}.chef-*")].sort { |a,b| b <=> a }
+        Chef::Util::PathHelper.glob(::File.join(prefix, ".#{path}.chef-*")).sort { |a,b| b <=> a }
       end
     end
   end
 end
-
