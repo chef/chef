@@ -28,6 +28,7 @@ require 'chef/knife/core/ui'
 require 'chef/local_mode'
 require 'chef/rest'
 require 'pp'
+require 'chef/util/path_helper'
 
 class Chef
   class Knife
