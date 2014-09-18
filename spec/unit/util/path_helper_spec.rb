@@ -216,4 +216,11 @@ describe Chef::Util::PathHelper do
       expect(PathHelper.paths_eql?("bandit", "../bandit/bandit")).to be_false
      end
   end
+
+  describe "glob" do
+    it "escapes backslash characters in glob pattern" do
+      expect(Dir).to receive(:glob).with("C:\\\\foo")
+      PathHelper.glob("C:\\foo")
+    end
+  end
 end

@@ -133,6 +133,14 @@ class Chef
       def self.paths_eql?(path1, path2)
         canonical_path(path1) == canonical_path(path2)
       end
+
+      # Escape path characters that are reserved by Dir.glob
+      # and Dir[]
+      # http://stackoverflow.com/questions/14127343
+      def self.glob(pattern, *flags)
+        globsafe_pattern = pattern.gsub(/[\\]/) { |x| "\\"+x }
+        Dir.glob(globsafe_pattern, *flags)
+      end
     end
   end
 end
