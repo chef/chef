@@ -26,6 +26,7 @@ require 'uri'
 require 'tempfile'
 require 'net/https'
 require 'set'
+require 'chef/util/path_helper'
 
 class Chef
   class Provider
@@ -35,7 +36,7 @@ class Chef
 
       def action_create
         super
-        files_to_purge = Set.new(Dir.glob(::File.join(@new_resource.path, '**', '*'),
+        files_to_purge = Set.new(Chef::Util::PathHelper.glob(::File.join(@new_resource.path, '**', '*'),
                                           ::File::FNM_DOTMATCH).select do |name|
                                    name !~ /(?:^|#{Regexp.escape(::File::SEPARATOR)})\.\.?$/
                                  end)
