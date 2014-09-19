@@ -1,0 +1,17 @@
+#!/bin/ksh
+
+
+trap "" HUP INT QUIT TSTP STOP
+trap "shutdown_ss" TERM
+
+shutdown_ss ()
+{
+  echo "Shutting down script..." >> /tmp/testchefsubsystem.log
+  exit
+}
+
+while true
+do
+  echo "Iterating..."  >> /tmp/testchefsubsystem.log
+  sleep 10
+done
