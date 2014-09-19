@@ -138,7 +138,7 @@ class Chef
       # to be escaped before globbing can be done.
       # http://stackoverflow.com/questions/14127343
       def self.escape_glob(*parts)
-        path = join(parts)
+        path = cleanpath(join(parts))
         path.gsub(/[\\\{\}\[\]\*\?]/) { |x| "\\"+x }
       end
     end
