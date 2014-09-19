@@ -133,6 +133,14 @@ class Chef
       def self.paths_eql?(path1, path2)
         canonical_path(path1) == canonical_path(path2)
       end
+
+      # Paths which may contain glob-reserved characters need
+      # to be escaped before globbing can be done.
+      # http://stackoverflow.com/questions/14127343
+      def self.escape_glob(*parts)
+        path = join(parts)
+        path.gsub(/[\\\{\}\[\]\*\?]/) { |x| "\\"+x }
+      end
     end
   end
 end
