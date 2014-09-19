@@ -134,6 +134,7 @@
 * Add partial_search dsl method to Chef::Search::Query, add result filtering to search.
 * Transfer trusted certificates under :trusted_certs_dir during bootstrap.
 * Set :ssl_verify_mode to :verify_peer by default.
+* Add homebrew provider for package resource, use it by default on OS X (Issue #1709)
 
 ## Last Release: 11.14.2
 

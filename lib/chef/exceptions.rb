@@ -120,6 +120,8 @@ class Chef
 
     class PowershellCmdletException < RuntimeError; end
 
+    class CannotDetermineHomebrewOwner < Package; end
+
     # A different version of a cookbook was added to a
     # VersionedRecipeList than the one already there.
     class CookbookVersionConflict < ArgumentError ; end
@@ -180,8 +182,6 @@ class Chef
     class InvalidSymlink < RuntimeError; end
 
     class ChildConvergeError < RuntimeError; end
-
-    class NoProviderAvailable < RuntimeError; end
 
     class MissingRole < RuntimeError
       NULL = Object.new
