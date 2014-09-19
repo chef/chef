@@ -161,7 +161,7 @@ class Chef
       @all_files_in_repo_paths ||=
         begin
           @repo_paths.inject([]) do |all_children, repo_path|
-            all_children += Dir[File.join(repo_path, "*")]
+            all_children += Chef::Util::PathHelper.glob(File.join(repo_path, "*"))
           end
         end
     end

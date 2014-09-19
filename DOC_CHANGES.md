@@ -172,3 +172,7 @@ end
 # the `:immediate` is required for results to be defined.
 notifies :reboot_now, "reboot[now]", :immediate
 ```
+
+### New PlatformHelper method: `glob`
+File paths using the `"\\"` separator cannot be globbed without escaping. Use `Chef::Util::PlatformHelper.glob`
+instead of `Dir.glob` and `Dir[]` when the file path might contain `\` characters.

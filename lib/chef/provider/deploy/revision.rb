@@ -42,7 +42,7 @@ class Chef
 
           known_releases = sorted_releases
 
-          Dir["#{new_resource.deploy_to}/releases/*"].each do |release_dir|
+          Chef::Util::PathHelper.glob("#{new_resource.deploy_to}/releases/*").each do |release_dir|
             unless known_releases.include?(release_dir)
               converge_by("Remove unknown release in #{release_dir}") do
                 FileUtils.rm_rf(release_dir)
@@ -85,7 +85,7 @@ class Chef
         end
 
         def sorted_releases_from_filesystem
-          Dir.glob(new_resource.deploy_to + "/releases/*").sort_by { |d| ::File.ctime(d) }
+          Chef::Util::PathHelper.glob(new_resource.deploy_to + "/releases/*").sort_by { |d| ::File.ctime(d) }
         end
 
         def load_cache

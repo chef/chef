@@ -126,7 +126,7 @@ class Chef
         paths = Array.new
         args.each do |path|
           if File.directory?(path)
-            paths.concat(Dir.glob(File.join(path, "*.json")))
+            paths.concat(Chef::Util::PathHelper.glob(File.join(path, "*.json")))
           else
             paths << path
           end

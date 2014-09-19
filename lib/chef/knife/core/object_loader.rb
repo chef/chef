@@ -71,13 +71,13 @@ class Chef
         def find_all_objects(path)
           path = File.join(path, '*')
           path << '.{json,rb}'
-          objects = Dir.glob(File.expand_path(path))
+          objects = Chef::Util::PathHelper.glob(File.expand_path(path))
           objects.map { |o| File.basename(o) }
         end
 
         def find_all_object_dirs(path)
           path = File.join(path, '*')
-          objects = Dir.glob(File.expand_path(path))
+          objects = Chef::Util::PathHelper.glob(File.expand_path(path))
           objects.delete_if { |o| !File.directory?(o) }
           objects.map { |o| File.basename(o) }
         end
@@ -111,4 +111,3 @@ class Chef
     end
   end
 end
-

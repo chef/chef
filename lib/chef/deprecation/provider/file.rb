@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/util/path_helper'
 
 class Chef
   module Deprecation
@@ -180,7 +181,7 @@ class Chef
 
             # Clean up after the number of backups
             slice_number = @new_resource.backup
-            backup_files = Dir[::File.join(prefix, ".#{@new_resource.path}.chef-*")].sort { |a,b| b <=> a }
+            backup_files = Chef::Util::PathHelper.glob(::File.join(prefix, ".#{@new_resource.path}.chef-*")).sort { |a,b| b <=> a }
             if backup_files.length >= @new_resource.backup
               remainder = backup_files.slice(slice_number..-1)
               remainder.each do |backup_to_delete|

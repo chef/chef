@@ -21,6 +21,7 @@ require 'stringio'
 require 'erubis'
 require 'chef/mixin/shell_out'
 require 'chef/mixin/checksum'
+require 'chef/util/path_helper'
 
 class Chef
   class Cookbook
@@ -110,7 +111,7 @@ class Chef
       end
 
       def ruby_files
-        remove_ignored_files Dir[File.join(cookbook_path, '**', '*.rb')]
+        remove_ignored_files Chef::Util::PathHelper.glob(File.join(cookbook_path, '**', '*.rb'))
       end
 
       def untested_ruby_files
@@ -125,7 +126,7 @@ class Chef
       end
 
       def template_files
-        remove_ignored_files Dir[File.join(cookbook_path, '**/templates/**', '*.erb')]
+        remove_ignored_files Chef::Util::PathHelper.glob(File.join(cookbook_path, '**/templates/**', '*.erb'))
       end
 
       def untested_template_files
