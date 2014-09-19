@@ -118,6 +118,8 @@ class Chef
     class InvalidDataBagPath < ArgumentError; end
     class DuplicateDataBagItem < RuntimeError; end
 
+    class PowershellCmdletException < RuntimeError; end
+
     # A different version of a cookbook was added to a
     # VersionedRecipeList than the one already there.
     class CookbookVersionConflict < ArgumentError ; end
@@ -178,6 +180,8 @@ class Chef
     class InvalidSymlink < RuntimeError; end
 
     class ChildConvergeError < RuntimeError; end
+
+    class NoProviderAvailable < RuntimeError; end
 
     class MissingRole < RuntimeError
       NULL = Object.new
