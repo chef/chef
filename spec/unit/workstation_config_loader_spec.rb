@@ -241,7 +241,7 @@ describe Chef::WorkstationConfigLoader do
         t.path
       end
 
-      after { File.unlink(explicit_config_location) }
+      after { File.unlink(explicit_config_location) if File.exists?(explicit_config_location) }
 
       context "and is valid" do
 
