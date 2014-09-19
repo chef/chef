@@ -172,3 +172,22 @@ end
 # the `:immediate` is required for results to be defined.
 notifies :reboot_now, "reboot[now]", :immediate
 ```
+
+### Escape sensitive characters before globbing
+Some paths contain characters reserved by glob and must be escaped so that
+glob operations perform as expected. One common example is Windows file paths
+separated by `"\\"`. To ensure that your globs work correctly, it is recommended
+that you apply `Chef::Util::PathHelper::escape_glob` before globbing file paths.
+
+```ruby
+path = "C:\\Users\\me\\chef-repo\\cookbooks"
+Dir.exist?(path) # true
+Dir.entries(path) # [".", "..", "apache2", "apt", ...]
+
+Dir.glob(File.join(path, "*")) # []
+Dir[File.join(path, "*")] # []
+
+PathHelper = Chef::Util::PathHelper
+Dir.glob(File.join(PathHelper.escape_glob(path), "*")) # ["#{path}\\apache2", "#{path}\\apt", ...]
+Dir[PathHelper.escape_glob(path) + "/*"] # ["#{path}\\apache2", "#{path}\\apt", ...]
+```
