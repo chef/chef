@@ -194,7 +194,7 @@ class Chef
           plists = PLIST_DIRS.inject([]) do |results, dir|
             edir = ::File.expand_path(dir)
             entries = Dir.glob(
-              "#{edir}/*#{@current_resource.service_name}*.plist"
+              "#{edir}/*#{Chef::Util::PathHelper.escape_glob(@current_resource.service_name)}*.plist"
             )
             entries.any? ? results << entries : results
           end
