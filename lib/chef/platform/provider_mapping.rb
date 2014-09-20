@@ -40,7 +40,7 @@ class Chef
           {
             :mac_os_x => {
               :default => {
-                :package => Chef::Provider::Package::Macports,
+                :package => Chef::Provider::Package::Homebrew,
                 :service => Chef::Provider::Service::Macosx,
                 :user => Chef::Provider::User::Dscl,
                 :group => Chef::Provider::Group::Dscl
@@ -48,7 +48,7 @@ class Chef
             },
             :mac_os_x_server => {
               :default => {
-                :package => Chef::Provider::Package::Macports,
+                :package => Chef::Provider::Package::Homebrew,
                 :service => Chef::Provider::Service::Macosx,
                 :user => Chef::Provider::User::Dscl,
                 :group => Chef::Provider::Group::Dscl
