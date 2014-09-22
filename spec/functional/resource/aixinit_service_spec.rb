@@ -1,7 +1,7 @@
 # encoding: UTF-8
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
-# Copyright:: Copyright (c) 2014 Opscode, Inc.
+# Copyright:: Copyright (c) 2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ require 'functional/resource/base'
 require 'chef/mixin/shell_out'
 require 'fileutils'
 
-describe Chef::Resource::Service::Aixinit, :requires_root, :unix_only do
+describe Chef::Resource::Service::Aixinit, :requires_root, :aix_only do
 
   include Chef::Mixin::ShellOut
 
