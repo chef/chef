@@ -121,6 +121,7 @@ class Chef
     class PowershellCmdletException < RuntimeError; end
 
     class CannotDetermineHomebrewOwner < Package; end
+    class HomebrewOwnerIsRoot < ArgumentError; end
 
     # A different version of a cookbook was added to a
     # VersionedRecipeList than the one already there.

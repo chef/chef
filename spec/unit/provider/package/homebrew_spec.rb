@@ -28,6 +28,8 @@ describe Chef::Provider::Package::Homebrew do
     Chef::Provider::Package::Homebrew.new(new_resource, run_context)
   end
 
+  let(:homebrew_uid) { 1001 }
+
   let(:uninstalled_brew_info) do
     {
       'name' => 'emacs',
@@ -92,8 +94,7 @@ describe Chef::Provider::Package::Homebrew do
   end
 
   before(:each) do
-    node.default['homebrew']['owner'] = 'sid_vicious'
-    allow(Etc).to receive(:getpwnam).with('sid_vicious').and_return('/Users/sid_vicious')
+
   end
 
   describe 'load_current_resource' do
@@ -143,13 +144,18 @@ describe Chef::Provider::Package::Homebrew do
   end
 
   describe 'brew' do
+    before do
+      expect(provider).to receive(:find_homebrew_uid).and_return(homebrew_uid)
+      expect(Etc).to receive(:getpwuid).with(homebrew_uid).and_return(OpenStruct.new(:name => "name", :dir => "/"))
+    end
+
     it 'passes a single to the brew command and return stdout' do
-      allow(provider).to receive(:get_response_from_command).and_return('zombo')
+      allow(provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => 'zombo'))
       expect(provider.brew).to eql('zombo')
     end
 
     it 'takes multiple arguments as an array' do
-      allow(provider).to receive(:get_response_from_command).and_return('homestarrunner')
+      allow(provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => 'homestarrunner'))
       expect(provider.brew('info', 'opts', 'bananas')).to eql('homestarrunner')
     end
   end
