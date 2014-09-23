@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: 57e268a4b9d785dd893c15bc337dcac838b42b1f
+  revision: 4922b246253ff180a6c18ae4dd8122bc002d3e81
   specs:
     omnibus-software (4.0.0)
 
@@ -131,7 +131,7 @@ GEM
       safe_yaml (~> 1.0)
       thor (~> 0.18)
     thor (0.19.1)
-    timers (4.0.0)
+    timers (4.0.1)
       hitimes
     uber-s3 (0.2.4)
       mime-types (~> 1.17)

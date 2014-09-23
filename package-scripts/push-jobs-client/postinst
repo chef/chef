@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# Perform necessary push-jobs-client setup steps
+# after package is installed.
+#
+
+PROGNAME=`basename $0`
+
+error_exit()
+{
+  echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+  exit 1
+}
+
+echo "Thank you for installing Chef Push Jobs Client!"
+
+exit 0

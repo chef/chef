@@ -20,8 +20,6 @@
 # tools can be used with https URLs out of the box.
 name "openssl-customization"
 
-default_version "0.1.0"
-
 source path: "#{project.files_path}/#{name}"
 
 if windows?

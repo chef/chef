@@ -2,10 +2,11 @@ Client Tools Omnibus project
 ============================
 This project creates full-stack platform-specific packages for the following projects:
 
+* AngryChef
 * Chef
 * ChefDK
 * Chef Container
-* AngryChef
+* Push Jobs Client
 
 Installation
 ------------
