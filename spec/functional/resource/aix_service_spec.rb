@@ -17,18 +17,19 @@
 # limitations under the License.
 #
 
+require 'spec_helper'
 require 'functional/resource/base'
 require 'chef/mixin/shell_out'
 
-describe Chef::Resource::Service::Aix, :requires_root, :aix_only do
+shared_examples "src service" do
 
   include Chef::Mixin::ShellOut
 
-  def service_started?
+  def service_should_be_started
     expect(shell_out!("lssrc -a | grep #{new_resource.service_name}").stdout.split(' ').last).to eq("active")
   end
 
-  def service_stopped?
+  def service_should_be_stopped
     expect(shell_out!("lssrc -a | grep #{new_resource.service_name}").stdout.split(' ').last).to eq("inoperative")
   end
 
@@ -41,57 +42,95 @@ describe Chef::Resource::Service::Aix, :requires_root, :aix_only do
     end
   end
 
-  # Actual tests
-  let(:new_resource) do
-    new_resource = Chef::Resource::Service.new("testchefsubsys", run_context)
-    new_resource
-  end
-
-  let(:provider) do
-    provider = new_resource.provider_for_action(new_resource.action)
-    provider
-  end
-
-  before(:all) do
-    script_dir = File.join(File.dirname(__FILE__), "/../assets/")
-    shell_out!("mkssys -s testchefsubsys -p #{script_dir}/testchefsubsys -u 0 -S -n 15 -f 9 -R -Q")
-  end
-
-  after(:all) do
-    shell_out!("rmssys -s testchefsubsys")
-  end
-
   describe "start service" do
     it "should start the service" do
       new_resource.run_action(:start)
-      service_started?
+      service_should_be_started
     end
   end
 
   describe "stop service" do
-   it "should stop the service" do
+    before do
+      new_resource.run_action(:start)
+    end
+
+    it "should stop the service" do
       new_resource.run_action(:stop)
-      service_stopped?
+      service_should_be_stopped
     end
   end
 
   describe "restart service" do
-    it "should restart the service" do
-      new_resource.run_action(:restart)
-      service_started?
-    end
-  end
-
-  describe "reload service" do
     before do
       new_resource.run_action(:start)
-      @current_pid = get_service_pid
     end
 
-    it "should reload the service" do
-      new_resource.run_action(:reload)
-      service_started?
-      expect(get_service_pid).not_to eq(@current_pid)
+    it "should restart the service" do
+      new_resource.run_action(:restart)
+      service_should_be_started
     end
+  end
+end
+
+describe Chef::Resource::Service, :requires_root, :aix_only do
+  def get_user_id
+    shell_out("id -u #{ENV['USER']}").stdout.chomp
+  end
+
+  describe "When service is a subsystem" do
+    before(:all) do
+      script_dir = File.join(File.dirname(__FILE__), "/../assets/")
+      shell_out!("mkssys -s ctestsys -p #{script_dir}/testchefsubsys -u #{get_user_id} -S -n 15 -f 9 -R -Q")
+    end
+
+    after(:each) do
+      shell_out("stopsrc -s ctestsys")
+    end
+
+    after(:all) do
+      shell_out!("rmssys -s ctestsys")
+    end
+
+
+    let(:new_resource) do
+      new_resource = Chef::Resource::Service.new("ctestsys", run_context)
+      new_resource
+    end
+
+    let(:provider) do
+      provider = new_resource.provider_for_action(new_resource.action)
+      provider
+    end
+
+    it_behaves_like "src service"
+  end
+
+
+  describe "When service is a group" do
+    before(:all) do
+      script_dir = File.join(File.dirname(__FILE__), "/../assets/")
+      shell_out!("mkssys -s ctestsys -p #{script_dir}/testchefsubsys -u #{get_user_id} -S -n 15 -f 9 -R -Q -G ctestgrp")
+    end
+
+    after(:each) do
+      shell_out("stopsrc -g ctestgrp")
+    end
+
+    after(:all) do
+      # rmssys supports only -s option.
+      shell_out!("rmssys -s ctestsys")
+    end
+
+    let(:new_resource) do
+      new_resource = Chef::Resource::Service.new("ctestgrp", run_context)
+      new_resource
+    end
+
+    let(:provider) do
+      provider = new_resource.provider_for_action(new_resource.action)
+      provider
+    end
+
+    it_behaves_like "src service"
   end
 end

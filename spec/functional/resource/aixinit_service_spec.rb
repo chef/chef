@@ -17,46 +17,49 @@
 # limitations under the License.
 #
 
+require 'spec_helper'
 require 'functional/resource/base'
 require 'chef/mixin/shell_out'
 require 'fileutils'
 
-describe Chef::Resource::Service::Aixinit, :requires_root, :aix_only do
+describe Chef::Resource::Service, :requires_root, :aix_only do
 
   include Chef::Mixin::ShellOut
 
   # Platform specific validation routines.
   def service_should_be_started(file_name)
     # The existance of this file indicates that the service was started.
-    expect(File.exists("/tmp/#{file_name}").to be_true
+    expect(File.exists?("/tmp/#{file_name}")).to be_true
   end
 
   def service_should_be_stopped(file_name)
-    expect(File.exists("/tmp/#{file_name}").to be_false
+    expect(File.exists?("/tmp/#{file_name}")).to be_false
   end
 
-  def search_symlinks(run_level = nil, status = nil, priority = nil)
+  def valide_symlinks(expected_output, run_level = nil, status = nil, priority = nil)
     directory = []
     if priority.is_a?Hash
       priority.each do |level,o|
-        search_directory << "/etc/rc.d/rc#{level}.d/#{(o[0] == :start ? 'S' : 'K')}#{o[1]}#{new_resource.service_name}"
+        directory << "/etc/rc.d/rc#{level}.d/#{(o[0] == :start ? 'S' : 'K')}#{o[1]}#{new_resource.service_name}"
       end
       directory
     else
-      directory << "/etc/rc.d/rc#{run_level}.d/#{status}#{priority}#{new_resource.service_name}"]
+      directory << "/etc/rc.d/rc#{run_level}.d/#{status}#{priority}#{new_resource.service_name}"
     end
+    expect(Dir.glob(directory)).to eq(expected_output)
     File.delete(*directory)
-
   end
 
   def delete_test_files
-    files = Dir.glob(Dir.glob("/tmp/chefinittest[a-z_]*.txt"))
+    files = Dir.glob("/tmp/chefinit[a-z_]*.txt")
     File.delete(*files)
   end
 
   # Actual tests
   let(:new_resource) do
     new_resource = Chef::Resource::Service.new("chefinittest", run_context)
+    new_resource.provider Chef::Provider::Service::AixInit
+    new_resource.supports({:status => true, :restart => true, :reload => true})
     new_resource
   end
 
@@ -66,12 +69,12 @@ describe Chef::Resource::Service::Aixinit, :requires_root, :aix_only do
   end
 
   before(:all) do
-    File.delete("/etc/rc.d/init.d/chefinittest")
-    FileUtils.cp("../assets/chefinittest", "/etc/rc.d/init.d/chefinittest")
+    File.delete("/etc/rc.d/init.d/chefinittest") if File.exists?("/etc/rc.d/init.d/chefinittest")
+    FileUtils.cp("#{File.join(File.dirname(__FILE__), "/../assets/chefinittest")}",  "/etc/rc.d/init.d/chefinittest")
   end
 
   after(:all) do
-    File.delete("/etc/rc.d/init.d/chefinittest")
+    File.delete("/etc/rc.d/init.d/chefinittest") if File.exists?("/etc/rc.d/init.d/chefinittest")
   end
 
   before(:each) do
@@ -85,7 +88,7 @@ describe Chef::Resource::Service::Aixinit, :requires_root, :aix_only do
   describe "start service" do
     it "should start the service" do
       new_resource.run_action(:start)
-      service_started?("chef.txt")
+      service_should_be_started("chefinittest.txt")
     end
   end
 
@@ -96,34 +99,38 @@ describe Chef::Resource::Service::Aixinit, :requires_root, :aix_only do
 
     it "should stop the service" do
       new_resource.run_action(:stop)
-      service_stopped?("chef.txt")
+      service_should_be_stopped("chefinittest.txt")
     end
   end
 
   describe "restart service" do
+    before do
+      new_resource.run_action(:start)
+    end
+
     it "should restart the service" do
       new_resource.run_action(:restart)
-      service_started?("chef_restart.txt")
+      service_should_be_started("chefinittest_restart.txt")
     end
   end
 
   describe "reload service" do
+    before do
+      new_resource.run_action(:start)
+    end
+
     it "should reload the service" do
       new_resource.run_action(:reload)
-      service_started?("chef_reload.txt")
+      service_should_be_started("chefinittest_reload.txt")
     end
   end
 
   describe "enable service" do
 
     context "when the service doesn't set a priority" do
-      after do
-        delete_files(search_symlinks(2,'S'))
-      end
-
       it "creates symlink with status S" do
         new_resource.run_action(:enable)
-        expect(Dir.glob(search_symlinks(2,'S'))).to eq(["/etc/rc.d/rc2.d/Schef"])
+        valide_symlinks(["/etc/rc.d/rc2.d/Schefinittest"],2,'S')
       end
     end
 
@@ -132,13 +139,9 @@ describe Chef::Resource::Service::Aixinit, :requires_root, :aix_only do
         new_resource.priority(75)
       end
 
-      after do
-        delete_files(search_symlinks(2,'S',75))
-      end
-
       it "creates a symlink with status S and a priority" do
         new_resource.run_action(:enable)
-        expect(Dir.glob(search_symlinks(2,'S',75))).to eq(["/etc/rc.d/rc2.d/S75chef"])
+        valide_symlinks(["/etc/rc.d/rc2.d/S75chefinittest"], 2,'S',75)
       end
     end
 
@@ -148,57 +151,60 @@ describe Chef::Resource::Service::Aixinit, :requires_root, :aix_only do
         new_resource.priority(priority)
       end
 
-      after do
-        delete_files(search_symlinks(2,'S',new_resource.priority))
-      end
-
       it "create symlink with status start (S) or stop (K) and a priority " do
         new_resource.run_action(:enable)
-        expect(Dir.glob(search_symlinks(2,'S',new_resource.priority))).to eq(["/etc/rc.d/rc2.d/S20chef", "/etc/rc.d/rc3.d/K10chef"])
+        valide_symlinks(["/etc/rc.d/rc2.d/S20chefinittest", "/etc/rc.d/rc3.d/K10chefinittest"], 2,'S',new_resource.priority)
       end
     end
   end
 
   describe "disable_service" do
+
     context "when the service doesn't set a priority" do
-      after do
-        delete_files(search_symlinks(2,'S'))
+      before do
+        File.symlink("/etc/rc.d/init.d/chefinittest", "/etc/rc.d/rc2.d/Schefinittest")
       end
 
-      it "creates symlink with status S" do
+      after do
+        File.delete("/etc/rc.d/rc2.d/Schefinittest") if File.exists?("/etc/rc.d/rc2.d/chefinittest")
+      end
+
+      it "creates symlink with status K" do
         new_resource.run_action(:disable)
-        expect(Dir.glob(search_symlinks(2,'K'))).to eq(["/etc/rc.d/rc2.d/Kchef"])
+        valide_symlinks(["/etc/rc.d/rc2.d/Kchefinittest"], 2,'K')
       end
     end
 
     context "when the service sets a simple priority (integer)" do
       before do
-        @new_resource.priority(75)
+        new_resource.priority(75)
+        File.symlink("/etc/rc.d/init.d/chefinittest", "/etc/rc.d/rc2.d/Schefinittest")
       end
 
       after do
-        delete_files(search_symlinks(2,'K',25))
+        File.delete("/etc/rc.d/rc2.d/Schefinittest") if File.exists?("/etc/rc.d/rc2.d/chefinittest")
       end
 
       it "creates a symlink with status K and a priority" do
-        new_resource.run_action(:enable)
-        expect(Dir.glob(search_symlinks(2,'K',25))).to eq(["/etc/rc.d/rc2.d/K25chef"])
+        new_resource.run_action(:disable)
+        valide_symlinks(["/etc/rc.d/rc2.d/K25chefinittest"], 2,'K',25)
       end
     end
 
     context "when the service sets complex priorities (hash)" do
       before do
         @priority = {2 => [:stop, 20], 3 => [:start, 10]}
-        @new_resource.priority(@priority)
+        new_resource.priority(@priority)
+        File.symlink("/etc/rc.d/init.d/chefinittest", "/etc/rc.d/rc2.d/Schefinittest")
       end
 
       after do
-        delete_files(search_symlinks(2,'k',80))
+        File.delete("/etc/rc.d/rc2.d/Schefinittest") if File.exists?("/etc/rc.d/rc2.d/chefinittest")
       end
 
       it "create symlink with status stop (K) and a priority " do
-        new_resource.run_action(:enable)
-        expect(Dir.glob(search_symlinks(2,'K',80))).to eq(["/etc/rc.d/rc2.d/K80chef"])
+        new_resource.run_action(:disable)
+        valide_symlinks(["/etc/rc.d/rc2.d/K80chefinittest"], 2,'K',80)
       end
     end
   end

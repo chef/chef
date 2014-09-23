@@ -1,17 +1,11 @@
-#!/bin/ksh
+#!/bin/bash
+# trapchild
 
+sleep 120 &
 
-trap "" HUP INT QUIT TSTP STOP
-trap "shutdown_ss" TERM
+pid="$!"
 
-shutdown_ss ()
-{
-  echo "Shutting down script..." >> /tmp/testchefsubsystem.log
-  exit
-}
+trap 'echo I am going down, so killing off my processes..; kill $pid; exit' SIGHUP SIGINT
+ SIGQUIT SIGTERM
 
-while true
-do
-  echo "Iterating..."  >> /tmp/testchefsubsystem.log
-  sleep 10
-done
+wait
