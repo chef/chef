@@ -125,6 +125,26 @@ class Chef
         )
       end
 
+      def only_if(command=nil, opts={}, &block)
+        opts = conditional_options.merge(opts)
+        super
+      end
+
+      def not_if(command=nil, opts={}, &block)
+        opts = conditional_options.merge(opts)
+        super
+      end
+
+      private
+
+      def conditional_options
+        { :user => user,
+          :group => group,
+          :environment => environment,
+          :cwd => cwd,
+          :timeout => timeout
+        }.delete_if { |_, v| v.nil? }
+      end
     end
   end
 end
