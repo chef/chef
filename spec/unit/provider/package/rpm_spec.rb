@@ -102,25 +102,19 @@ describe Chef::Provider::Package::Rpm do
 
     describe "when installing or upgrading" do
       it "should run rpm -i with the package source to install" do
-        @provider.should_receive(:run_command_with_systems_locale).with({
-          :command => "rpm  -i /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm"
-        })
+        @provider.should_receive(:shell_out!).with("rpm  -i /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
         @provider.install_package("ImageMagick-c++", "6.5.4.7-7.el6_5")
       end
 
       it "should run rpm -U with the package source to upgrade" do
         @current_resource.version("21.4-19.el5")
-        @provider.should_receive(:run_command_with_systems_locale).with({
-          :command => "rpm  -U /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm"
-        })
+        @provider.should_receive(:shell_out!).with("rpm  -U /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
         @provider.upgrade_package("ImageMagick-c++", "6.5.4.7-7.el6_5")
       end
 
       it "should install package if missing and set to upgrade" do
         @current_resource.version("ImageMagick-c++")
-        @provider.should_receive(:run_command_with_systems_locale).with({
-          :command => "rpm  -U /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm"
-        })
+        @provider.should_receive(:shell_out!).with("rpm  -U /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
         @provider.upgrade_package("ImageMagick-c++", "6.5.4.7-7.el6_5")
       end
 
@@ -130,9 +124,7 @@ describe Chef::Provider::Package::Rpm do
         @new_resource.source.should == "/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm"
         @current_resource = Chef::Resource::Package.new("ImageMagick-c++")
         @provider.current_resource = @current_resource
-        @provider.should_receive(:run_command_with_systems_locale).with({
-          :command => "rpm  -i /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm"
-        })
+        @provider.should_receive(:shell_out!).with("rpm  -i /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
         @provider.install_package("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", "6.5.4.7-7.el6_5")
       end
 
@@ -143,30 +135,23 @@ describe Chef::Provider::Package::Rpm do
         @current_resource = Chef::Resource::Package.new("ImageMagick-c++")
         @current_resource.version("21.4-19.el5")
         @provider.current_resource = @current_resource
-        @provider.should_receive(:run_command_with_systems_locale).with({
-          :command => "rpm  -U /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm"
-        })
+        @provider.should_receive(:shell_out!).with("rpm  -U /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
         @provider.upgrade_package("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", "6.5.4.7-7.el6_5")
       end
 
       it "installs with custom options specified in the resource" do
         @provider.candidate_version = '11'
         @new_resource.options("--dbpath /var/lib/rpm")
-        @provider.should_receive(:run_command_with_systems_locale).with({
-          :command => "rpm --dbpath /var/lib/rpm -i /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm"
-        })
+        @provider.should_receive(:shell_out!).with("rpm --dbpath /var/lib/rpm -i /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
         @provider.install_package(@new_resource.name, @provider.candidate_version)
       end
     end
 
     describe "when removing the package" do
       it "should run rpm -e to remove the package" do
-        @provider.should_receive(:run_command_with_systems_locale).with({
-          :command => "rpm  -e ImageMagick-c++-6.5.4.7-7.el6_5"
-        })
+        @provider.should_receive(:shell_out!).with("rpm  -e ImageMagick-c++-6.5.4.7-7.el6_5")
         @provider.remove_package("ImageMagick-c++", "6.5.4.7-7.el6_5")
       end
     end
   end
 end
-

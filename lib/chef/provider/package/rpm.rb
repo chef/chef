@@ -90,13 +90,9 @@ class Chef
 
         def install_package(name, version)
           unless @current_resource.version
-            run_command_with_systems_locale(
-              :command => "rpm #{@new_resource.options} -i #{@new_resource.source}"
-            )
+            shell_out!( "rpm #{@new_resource.options} -i #{@new_resource.source}" )
           else
-            run_command_with_systems_locale(
-              :command => "rpm #{@new_resource.options} -U #{@new_resource.source}"
-            )
+            shell_out!( "rpm #{@new_resource.options} -U #{@new_resource.source}" )
           end
         end
 
@@ -104,13 +100,9 @@ class Chef
 
         def remove_package(name, version)
           if version
-            run_command_with_systems_locale(
-              :command => "rpm #{@new_resource.options} -e #{name}-#{version}"
-            )
+            shell_out!( "rpm #{@new_resource.options} -e #{name}-#{version}" )
           else
-            run_command_with_systems_locale(
-              :command => "rpm #{@new_resource.options} -e #{name}"
-            )
+            shell_out!( "rpm #{@new_resource.options} -e #{name}" )
           end
         end
 

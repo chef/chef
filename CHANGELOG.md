@@ -1,5 +1,11 @@
 ## Unreleased: 12.0.0
 
+* [**Nolan Davidson**](https://github.com/nsdavidson):
+  The chef-apply command now prints usage information when called without arguments
+* [**Kazuki Saito**](https://github.com/sakazuki):
+  CHEF-4933: idempotency fixes for ifconfig provider
+* [**Kirill Shirinkin**](https://github.com/Fodoj):
+  The knife bootstrap command expands the path of the secret-file
 * [**Malte Swart**](https://github.com/mswart):
   [CHEF-4101] DeepMerge - support overwriting hash values with nil
 * [**James Belchamber**](https://github.com/JamesBelchamber):
@@ -126,6 +132,9 @@
 * Add `:node_ssl_verify_mode` & `:node_verify_api_cert` options to bootstrap
   to be able to configure these settings on the bootstrapped node.
 * Add partial_search dsl method to Chef::Search::Query, add result filtering to search.
+* Transfer trusted certificates under :trusted_certs_dir during bootstrap.
+* Set :ssl_verify_mode to :verify_peer by default.
+* Add homebrew provider for package resource, use it by default on OS X (Issue #1709)
 
 ## Last Release: 11.14.2
 

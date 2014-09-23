@@ -367,3 +367,30 @@ DNS.3 = systems.example.net
 IP.1  = 192.168.1.1
 IP.2  = 192.168.69.14
 ```
+
+### Reboot resource in core
+The `reboot` resource will reboot the server, a necessary step in some installations, especially on Windows. If this resource is used with notifications, it must receive explicit `:immediate` notifications only: results of delayed notifications are undefined. Currently supported on Windows, Linux, and OS X; will work incidentally on some other Unixes.
+
+There are three actions:
+
+```ruby
+reboot "app_requires_reboot" do
+  action :request_reboot
+  reason "Need to reboot when the run completes successfully."
+  delay_mins 5
+end
+
+reboot "cancel_reboot_request" do
+  action :cancel
+  reason "Cancel a previous end-of-run reboot request."
+end
+
+reboot "now" do
+  action :reboot_now
+  reason "Cannot continue Chef run without a reboot."
+  delay_mins 2
+end
+
+# the `:immediate` is required for results to be defined.
+notifies :reboot_now, "reboot[now]", :immediate
+```

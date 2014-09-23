@@ -44,12 +44,18 @@ class Chef
 
         def encrypted_data_bag_secret
           knife_config[:secret] || begin
-            if knife_config[:secret_file] && File.exist?(knife_config[:secret_file])
-              IO.read(File.expand_path(knife_config[:secret_file]))
+            secret_file_path = knife_config[:secret_file]
+            expanded_secret_file_path = File.expand_path(secret_file_path.to_s)
+            if secret_file_path && File.exist?(expanded_secret_file_path)
+              IO.read(expanded_secret_file_path)
             else
               nil
             end
           end
+        end
+
+        def trusted_certs
+          @trusted_certs ||= trusted_certs_content
         end
 
         def config_content
@@ -107,6 +113,10 @@ CONFIG
             client_rb << %Q{encrypted_data_bag_secret "/etc/chef/encrypted_data_bag_secret"\n}
           end
 
+          unless trusted_certs.empty?
+            client_rb << %Q{trusted_certs_dir "/etc/chef/trusted_certs"\n}
+          end
+
           client_rb
         end
 
@@ -151,6 +161,18 @@ CONFIG
 
         def first_boot
           (@config[:first_boot_attributes] || {}).merge(:run_list => @run_list)
+        end
+
+        private
+        def trusted_certs_content
+          content = ""
+          if @chef_config[:trusted_certs_dir]
+            Dir.glob(File.join(@chef_config[:trusted_certs_dir], "*.{crt,pem}")).each do |cert|
+              content << "cat > /etc/chef/trusted_certs/#{File.basename(cert)} <<'EOP'\n" +
+                         IO.read(File.expand_path(cert)) + "\nEOP\n"
+            end
+          end
+          content
         end
 
       end

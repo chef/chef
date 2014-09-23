@@ -242,8 +242,8 @@ describe Chef::Config do
           Chef::Config[:file_backup_path].should == backup_path
         end
 
-        it "Chef::Config[:ssl_verify_mode] defaults to :verify_none" do
-          Chef::Config[:ssl_verify_mode].should == :verify_none
+        it "Chef::Config[:ssl_verify_mode] defaults to :verify_peer" do
+          Chef::Config[:ssl_verify_mode].should == :verify_peer
         end
 
         it "Chef::Config[:ssl_ca_path] defaults to nil" do

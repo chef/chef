@@ -36,6 +36,11 @@ EOP
 chmod 0600 /etc/chef/encrypted_data_bag_secret
 <% end -%>
 
+<% unless trusted_certs.empty? -%>
+mkdir -p /etc/chef/trusted_certs
+<%= trusted_certs %>
+<% end -%>
+
 <%# Generate Ohai Hints -%>
 <% unless @chef_config[:knife][:hints].nil? || @chef_config[:knife][:hints].empty? -%>
 mkdir -p /etc/chef/ohai/hints

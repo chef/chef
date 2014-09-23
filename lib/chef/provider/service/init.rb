@@ -50,7 +50,7 @@ class Chef
           if @new_resource.start_command
             super
           else
-            shell_out!("#{default_init_command} start")
+            shell_out_with_systems_locale!("#{default_init_command} start")
           end
         end
 
@@ -58,7 +58,7 @@ class Chef
           if @new_resource.stop_command
             super
           else
-            shell_out!("#{default_init_command} stop")
+            shell_out_with_systems_locale!("#{default_init_command} stop")
           end
         end
 
@@ -66,7 +66,7 @@ class Chef
           if @new_resource.restart_command
             super
           elsif @new_resource.supports[:restart]
-            shell_out!("#{default_init_command} restart")
+            shell_out_with_systems_locale!("#{default_init_command} restart")
           else
             stop_service
             sleep 1
@@ -78,7 +78,7 @@ class Chef
           if @new_resource.reload_command
             super
           elsif @new_resource.supports[:reload]
-            shell_out!("#{default_init_command} reload")
+            shell_out_with_systems_locale!("#{default_init_command} reload")
           end
         end
       end

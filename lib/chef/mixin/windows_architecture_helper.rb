@@ -42,6 +42,22 @@ class Chef
           is_i386_process_on_x86_64_windows?
       end
 
+      def with_os_architecture(node)
+        wow64_redirection_state = nil
+
+        if wow64_architecture_override_required?(node, node_windows_architecture(node))
+          wow64_redirection_state = disable_wow64_file_redirection(node)
+        end
+
+        begin
+          yield
+        ensure
+          if wow64_redirection_state
+            restore_wow64_file_redirection(node, wow64_redirection_state)
+          end
+        end
+      end
+
       def node_supports_windows_architecture?(node, desired_architecture)
         assert_valid_windows_architecture!(desired_architecture)
         return (node_windows_architecture(node) == :x86_64 ||

@@ -119,7 +119,20 @@ EXPECTED
     context "via config[:secret_file]" do
       let(:chef_config) do
         {
-          :knife => {:secret_file =>  secret_file}
+          :knife => {:secret_file => secret_file}
+        }
+      end
+      it "reads the encrypted_data_bag_secret" do
+        bootstrap_context.encrypted_data_bag_secret.should eq IO.read(secret_file)
+      end
+    end
+
+    context "via config[:secret_file] with short home path" do
+      let(:chef_config) do
+        home_path = File.expand_path("~")
+        shorted_secret_file_path = secret_file.gsub(home_path, "~")
+        {
+          :knife => {:secret_file => shorted_secret_file_path}
         }
       end
       it "reads the encrypted_data_bag_secret" do

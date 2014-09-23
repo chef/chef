@@ -56,8 +56,6 @@ describe Chef::Provider::Ifconfig::Debian do
   describe "generate_config" do
 
     context "when writing a file" do
-      let(:config_file_ifcfg) { StringIO.new }
-
       let(:tempfile) { Tempfile.new("rspec-chef-ifconfig-debian") }
 
       let(:tempdir_path) { Dir.mktmpdir("rspec-chef-ifconfig-debian-dir") }
@@ -67,14 +65,13 @@ describe Chef::Provider::Ifconfig::Debian do
       before do
         stub_const("Chef::Provider::Ifconfig::Debian::INTERFACES_FILE", tempfile.path)
         stub_const("Chef::Provider::Ifconfig::Debian::INTERFACES_DOT_D_DIR", tempdir_path)
-        expect(File).to receive(:new).with(config_filename_ifcfg, "w").and_return(config_file_ifcfg)
       end
 
       it "should write a network-script" do
         provider.run_action(:add)
-        expect(config_file_ifcfg.string).to match(/^iface eth0 inet static\s*$/)
-        expect(config_file_ifcfg.string).to match(/^\s+address 10\.0\.0\.1\s*$/)
-        expect(config_file_ifcfg.string).to match(/^\s+netmask 255\.255\.254\.0\s*$/)
+        expect(File.read(config_filename_ifcfg)).to match(/^iface eth0 inet static\s*$/)
+        expect(File.read(config_filename_ifcfg)).to match(/^\s+address 10\.0\.0\.1\s*$/)
+        expect(File.read(config_filename_ifcfg)).to match(/^\s+netmask 255\.255\.254\.0\s*$/)
       end
 
       context "when the interface_dot_d directory does not exist" do
@@ -123,7 +120,6 @@ iface eth0 inet static
   netmask 255.255.254.0
 EOF
         )
-        expect(File).to receive(:new).with(config_filename_ifcfg, "w").and_return(config_file_ifcfg)
         expect(File.exists?(tempdir_path)).to be_true  # since the file exists, the enclosing dir must also exist
       end
 
@@ -139,6 +135,8 @@ EOF
         before do
           tempfile.write(expected_string)
           tempfile.close
+
+          expect(provider).not_to receive(:converge_by).with(/modifying #{tempfile.path} to source #{tempdir_path}/)
         end
 
         it "should preserve all the contents" do
@@ -165,6 +163,9 @@ EOF
         before do
           tempfile.write("a line\nanother line\n")
           tempfile.close
+
+          allow(provider).to receive(:converge_by).and_call_original
+          expect(provider).to receive(:converge_by).with(/modifying #{tempfile.path} to source #{tempdir_path}/).and_call_original
         end
 
         it "should preserve the original contents and add the source line" do
@@ -316,12 +317,37 @@ source #{tempdir_path}/*
 
   describe "delete_config for action_delete" do
 
+    let(:tempfile) { Tempfile.new("rspec-chef-ifconfig-debian") }
+
+    let(:tempdir_path) { Dir.mktmpdir("rspec-chef-ifconfig-debian-dir") }
+
+    let(:config_filename_ifcfg) { "#{tempdir_path}/ifcfg-#{new_resource.device}" }
+
+    before do
+      stub_const("Chef::Provider::Ifconfig::Debian::INTERFACES_FILE", tempfile.path)
+      stub_const("Chef::Provider::Ifconfig::Debian::INTERFACES_DOT_D_DIR", tempdir_path)
+      File.open(config_filename_ifcfg, "w") do |fh|
+        fh.write "arbitrary text\n"
+        fh.close
+      end
+    end
+
+    after do
+      Dir.rmdir(tempdir_path)
+    end
+
     it "should delete network-script if it exists" do
       current_resource.device new_resource.device
-      expect(File).to receive(:exist?).with(config_filename_ifcfg).and_return(true)
-      expect(FileUtils).to receive(:rm_f).with(config_filename_ifcfg, :verbose => false)
 
+      # belt and suspenders testing?
+      Chef::Util::Backup.any_instance.should_receive(:do_backup).and_call_original
+
+      # internal implementation detail of Ifconfig.
+      Chef::Provider::File.any_instance.should_receive(:action_delete).and_call_original
+
+      expect(File.exist?(config_filename_ifcfg)).to be_true
       provider.run_action(:delete)
+      expect(File.exist?(config_filename_ifcfg)).to be_false
     end
   end
 

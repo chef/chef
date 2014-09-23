@@ -355,6 +355,44 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
+  describe "when transferring trusted certificates" do
+    let(:trusted_certs_dir) { File.join(CHEF_SPEC_DATA, 'trusted_certs') }
+
+    let(:rendered_template) do
+      knife.merge_configs
+      knife.render_template
+    end
+
+    before do
+      Chef::Config[:trusted_certs_dir] = trusted_certs_dir
+      IO.stub(:read).and_call_original
+      IO.stub(:read).with(File.expand_path(Chef::Config[:validation_key])).and_return("")
+    end
+
+    def certificates
+      Dir[File.join(trusted_certs_dir, "*.{crt,pem}")]
+    end
+
+    it "creates /etc/chef/trusted_certs" do
+      rendered_template.should match(%r{mkdir -p /etc/chef/trusted_certs})
+    end
+
+    it "copies the certificates in the directory" do
+      certificates.each do |cert|
+        IO.should_receive(:read).with(File.expand_path(cert))
+      end
+
+      certificates.each do |cert|
+        rendered_template.should match(%r{cat > /etc/chef/trusted_certs/#{File.basename(cert)} <<'EOP'})
+      end
+    end
+
+    it "doesn't create /etc/chef/trusted_certs if :trusted_certs_dir is empty" do
+      Dir.should_receive(:glob).with(File.join(trusted_certs_dir, "*.{crt,pem}")).and_return([])
+      rendered_template.should_not match(%r{mkdir -p /etc/chef/trusted_certs})
+    end
+  end
+
   describe "when configuring the underlying knife ssh command" do
     context "from the command line" do
       let(:knife_ssh) do

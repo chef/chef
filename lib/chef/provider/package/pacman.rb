@@ -86,9 +86,7 @@ class Chef
         end
 
         def install_package(name, version)
-          run_command_with_systems_locale(
-            :command => "pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}"
-          )
+          shell_out!( "pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}" )
         end
 
         def upgrade_package(name, version)
@@ -96,9 +94,7 @@ class Chef
         end
 
         def remove_package(name, version)
-          run_command_with_systems_locale(
-            :command => "pacman --remove --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}"
-          )
+          shell_out!( "pacman --remove --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}" )
         end
 
         def purge_package(name, version)

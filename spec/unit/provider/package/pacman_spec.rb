@@ -155,16 +155,12 @@ PACMAN_CONF
 
   describe Chef::Provider::Package::Pacman, "install_package" do
     it "should run pacman install with the package name and version" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pacman --sync --noconfirm --noprogressbar nano"
-      })
+      @provider.should_receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar nano")
       @provider.install_package("nano", "1.0")
     end
 
     it "should run pacman install with the package name and version and options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pacman --sync --noconfirm --noprogressbar --debug nano"
-      })
+      @provider.should_receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar --debug nano")
       @new_resource.stub(:options).and_return("--debug")
 
       @provider.install_package("nano", "1.0")
@@ -180,16 +176,12 @@ PACMAN_CONF
 
   describe Chef::Provider::Package::Pacman, "remove_package" do
     it "should run pacman remove with the package name" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pacman --remove --noconfirm --noprogressbar nano"
-      })
+      @provider.should_receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar nano")
       @provider.remove_package("nano", "1.0")
     end
 
     it "should run pacman remove with the package name and options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pacman --remove --noconfirm --noprogressbar --debug nano"
-      })
+      @provider.should_receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar --debug nano")
       @new_resource.stub(:options).and_return("--debug")
 
       @provider.remove_package("nano", "1.0")

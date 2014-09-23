@@ -46,19 +46,24 @@ class Chef
         #
         # == Parameters
         #
-        # - root_name - a friendly name for the root, for printing--like "remote" or "chef_central".
-        # - chef_config - a hash with options that look suspiciously like Chef::Config, including the
-        #                 following keys:
-        #   - :chef_server_url - the URL to the Chef server or top of the organization
-        #   - :node_name - the username to authenticate to the Chef server with
-        #   - :client_key - the private key for the user for authentication
-        #   - :environment - the environment in which you are presently working
-        #   - :repo_mode - the repository mode, :hosted_everything, :everything or :static.
-        #                  This determines the set of subdirectories the Chef server
-        #                  will offer up.
-        #   - :versioned_cookbooks - whether or not to include versions in cookbook names
-        # - options - other options:
-        #   - :cookbook_version - when cookbooks are retrieved, grab this version for them.
+        # [root_name]
+        #   A friendly name for the root, for printing--like "remote" or "chef_central".
+        # [chef_config]
+        #   A hash with options that look suspiciously like Chef::Config, including the
+        #   following keys:
+        #   :chef_server_url:: The URL to the Chef server or top of the organization
+        #   :node_name:: The username to authenticate to the Chef server with
+        #   :client_key:: The private key for the user for authentication
+        #   :environment:: The environment in which you are presently working
+        #   :repo_mode::
+        #     The repository mode, :hosted_everything, :everything or :static.
+        #     This determines the set of subdirectories the Chef server will
+        #     offer up.
+        #   :versioned_cookbooks:: whether or not to include versions in cookbook names
+        # [options]
+        #   Other options:
+        #   :cookbook_version:: when cookbooks are retrieved, grab this version for them.
+        #   :freeze:: freeze cookbooks on upload
         #
         def initialize(root_name, chef_config, options = {})
           super("", nil)

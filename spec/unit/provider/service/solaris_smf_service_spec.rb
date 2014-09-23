@@ -59,7 +59,6 @@ describe Chef::Provider::Service::Solaris do
         @provider.load_current_resource
       end
 
-
       it "should return the current resource" do
         @provider.stub(:shell_out!).with("/bin/svcs -l chef").and_return(@status)
         @provider.load_current_resource.should eql(@current_resource)
@@ -131,7 +130,6 @@ describe Chef::Provider::Service::Solaris do
       end
     end
 
-
     describe "when disabling the service" do
       before(:each) do
         @provider.current_resource = @current_resource
@@ -159,7 +157,7 @@ describe Chef::Provider::Service::Solaris do
       end
 
       it "should call svcadm refresh chef" do
-        @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm refresh chef").and_return(@status)
+        @provider.should_receive(:shell_out_with_systems_locale!).with("/usr/sbin/svcadm refresh chef").and_return(@status)
         @provider.reload_service
       end
 

@@ -78,7 +78,7 @@ class Chef
           if new_resource.start_command
             super
           else
-            shell_out!("#{init_command} faststart")
+            shell_out_with_systems_locale!("#{init_command} faststart")
           end
         end
 
@@ -86,7 +86,7 @@ class Chef
           if new_resource.stop_command
             super
           else
-            shell_out!("#{init_command} faststop")
+            shell_out_with_systems_locale!("#{init_command} faststop")
           end
         end
 
@@ -94,7 +94,7 @@ class Chef
           if new_resource.restart_command
             super
           elsif new_resource.supports[:restart]
-            shell_out!("#{init_command} fastrestart")
+            shell_out_with_systems_locale!("#{init_command} fastrestart")
           else
             stop_service
             sleep 1

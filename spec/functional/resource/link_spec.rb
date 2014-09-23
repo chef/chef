@@ -72,8 +72,8 @@ describe Chef::Resource::Link do
     end
   end
 
-  def canonicalize(path)
-    windows? ? path.gsub('/', '\\') : path
+  def paths_eql?(path1, path2)
+    Chef::Util::PathHelper.paths_eql?(path1, path2)
   end
 
   def symlink(a, b)
@@ -180,7 +180,7 @@ describe Chef::Resource::Link do
 
         it 'links to the target file' do
           symlink?(target_file).should be_true
-          readlink(target_file).should == canonicalize(to)
+          paths_eql?(readlink(target_file), to).should be_true
         end
         it 'marks the resource updated' do
           resource.should be_updated
@@ -201,7 +201,7 @@ describe Chef::Resource::Link do
 
         it 'leaves the file linked' do
           symlink?(target_file).should be_true
-          readlink(target_file).should == canonicalize(to)
+          paths_eql?(readlink(target_file), to).should be_true
         end
         it 'does not mark the resource updated' do
           resource.should_not be_updated
@@ -279,7 +279,7 @@ describe Chef::Resource::Link do
             before(:each) do
               symlink(to, target_file)
               symlink?(target_file).should be_true
-              readlink(target_file).should == canonicalize(to)
+              paths_eql?(readlink(target_file), to).should be_true
             end
             include_context 'create symbolic link is noop'
             include_context 'delete succeeds'
@@ -294,7 +294,7 @@ describe Chef::Resource::Link do
               File.open(@other_target, 'w') { |file| file.write('eek') }
               symlink(@other_target, target_file)
               symlink?(target_file).should be_true
-              readlink(target_file).should == canonicalize(@other_target)
+              paths_eql?(readlink(target_file), @other_target).should be_true
             end
             after(:each) do
               File.delete(@other_target)
@@ -311,7 +311,7 @@ describe Chef::Resource::Link do
               nonexistent = File.join(test_file_dir, make_tmpname('nonexistent_spec'))
               symlink(nonexistent, target_file)
               symlink?(target_file).should be_true
-              readlink(target_file).should == canonicalize(nonexistent)
+              paths_eql?(readlink(target_file), nonexistent).should be_true
             end
             include_context 'create symbolic link succeeds'
             include_context 'delete succeeds'
@@ -393,7 +393,7 @@ describe Chef::Resource::Link do
             File.open(@other_target, "w") { |file| file.write("eek") }
             symlink(@other_target, to)
             symlink?(to).should be_true
-            readlink(to).should == canonicalize(@other_target)
+            paths_eql?(readlink(to), @other_target).should be_true
           end
           after(:each) do
             File.delete(@other_target)
@@ -408,7 +408,7 @@ describe Chef::Resource::Link do
             @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
             symlink(@other_target, to)
             symlink?(to).should be_true
-            readlink(to).should == canonicalize(@other_target)
+            paths_eql?(readlink(to), @other_target).should be_true
           end
           context 'and the link does not yet exist' do
             include_context 'create symbolic link succeeds'
@@ -441,7 +441,7 @@ describe Chef::Resource::Link do
             before(:each) do
               symlink(to, target_file)
               symlink?(target_file).should be_true
-              readlink(target_file).should == canonicalize(to)
+              paths_eql?(readlink(target_file), to).should be_true
             end
             include_context 'create symbolic link is noop'
             include_context 'delete succeeds'
@@ -450,7 +450,7 @@ describe Chef::Resource::Link do
             before(:each) do
               symlink(absolute_to, target_file)
               symlink?(target_file).should be_true
-              readlink(target_file).should == canonicalize(absolute_to)
+              paths_eql?(readlink(target_file), absolute_to).should be_true
             end
             include_context 'create symbolic link succeeds'
             include_context 'delete succeeds'
@@ -478,7 +478,7 @@ describe Chef::Resource::Link do
           before(:each) do
             symlink(to, target_file)
             symlink?(target_file).should be_true
-            readlink(target_file).should == canonicalize(to)
+            paths_eql?(readlink(target_file), to).should be_true
           end
           include_context 'create hard link succeeds'
           it_behaves_like 'delete errors out'
@@ -552,7 +552,7 @@ describe Chef::Resource::Link do
             File.open(@other_target, "w") { |file| file.write("eek") }
             symlink(@other_target, to)
             symlink?(to).should be_true
-            readlink(to).should == canonicalize(@other_target)
+            paths_eql?(readlink(to), @other_target).should be_true
           end
           after(:each) do
             File.delete(@other_target)
@@ -564,7 +564,7 @@ describe Chef::Resource::Link do
               # OS X gets angry about this sort of link.  Bug in OS X, IMO.
               pending('OS X/FreeBSD/AIX symlink? and readlink working on hard links to symlinks', :if => (os_x? or freebsd? or aix?)) do
                 symlink?(target_file).should be_true
-                readlink(target_file).should == canonicalize(@other_target)
+                paths_eql?(readlink(target_file), @other_target).should be_true
               end
             end
             include_context 'delete is noop'
@@ -575,7 +575,7 @@ describe Chef::Resource::Link do
             @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
             symlink(@other_target, to)
             symlink?(to).should be_true
-            readlink(to).should == canonicalize(@other_target)
+            paths_eql?(readlink(to), @other_target).should be_true
           end
           context 'and the link does not yet exist' do
             it 'links to the target file' do
@@ -588,7 +588,7 @@ describe Chef::Resource::Link do
                   File.exists?(target_file).should be_false
                 end
                 symlink?(target_file).should be_true
-                readlink(target_file).should == canonicalize(@other_target)
+                paths_eql?(readlink(target_file), @other_target).should be_true
               end
             end
             include_context 'delete is noop'

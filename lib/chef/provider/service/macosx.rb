@@ -83,7 +83,7 @@ class Chef
             if @new_resource.start_command
               super
             else
-              shell_out!("launchctl load -w '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
+              shell_out_with_systems_locale!("launchctl load -w '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
             end
           end
         end
@@ -95,7 +95,7 @@ class Chef
             if @new_resource.stop_command
               super
             else
-              shell_out!("launchctl unload '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
+              shell_out_with_systems_locale!("launchctl unload '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
             end
           end
         end

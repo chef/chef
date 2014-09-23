@@ -20,7 +20,6 @@
 require 'spec_helper'
 require 'ostruct'
 
-
 # most of this code has been ripped from init_service_spec.rb
 # and is only slightly modified to match "arch" needs.
 
@@ -36,7 +35,6 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
     @new_resource.pattern("chef")
     @new_resource.supports({:status => false})
 
-
     @provider = Chef::Provider::Service::Arch.new(@new_resource, @run_context)
 
     ::File.stub(:exists?).with("/etc/rc.conf").and_return(true)
@@ -50,7 +48,6 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
       @provider.current_resource.service_name.should == 'chef'
     end
   end
-
 
   describe "when the service supports status" do
     before do
@@ -82,7 +79,6 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
 
   end
 
-
   describe "when a status command has been specified" do
     before do
       @new_resource.status_command("/etc/rc.d/chefhasmonkeypants status")
@@ -108,7 +104,6 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
     @provider.action = :start
     lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
   end
-
 
   it "should fail if file /etc/rc.conf does not exist" do
     ::File.stub(:exists?).with("/etc/rc.conf").and_return(false)
@@ -211,7 +206,6 @@ RUNNING_PS
       end
     end
 
-
     describe Chef::Provider::Service::Arch, "start_service" do
       # before(:each) do
       #   @new_resource = double("Chef::Resource::Service",
@@ -228,12 +222,12 @@ RUNNING_PS
 
       it "should call the start command if one is specified" do
         @new_resource.stub(:start_command).and_return("/etc/rc.d/chef startyousillysally")
-        @provider.should_receive(:shell_out!).with("/etc/rc.d/chef startyousillysally")
+        @provider.should_receive(:shell_out_with_systems_locale!).with("/etc/rc.d/chef startyousillysally")
         @provider.start_service()
       end
 
       it "should call '/etc/rc.d/service_name start' if no start command is specified" do
-        @provider.should_receive(:shell_out!).with("/etc/rc.d/#{@new_resource.service_name} start")
+        @provider.should_receive(:shell_out_with_systems_locale!).with("/etc/rc.d/#{@new_resource.service_name} start")
         @provider.start_service()
       end
     end
@@ -254,12 +248,12 @@ RUNNING_PS
 
       it "should call the stop command if one is specified" do
         @new_resource.stub(:stop_command).and_return("/etc/rc.d/chef itoldyoutostop")
-        @provider.should_receive(:shell_out!).with("/etc/rc.d/chef itoldyoutostop")
+        @provider.should_receive(:shell_out_with_systems_locale!).with("/etc/rc.d/chef itoldyoutostop")
         @provider.stop_service()
       end
 
       it "should call '/etc/rc.d/service_name stop' if no stop command is specified" do
-        @provider.should_receive(:shell_out!).with("/etc/rc.d/#{@new_resource.service_name} stop")
+        @provider.should_receive(:shell_out_with_systems_locale!).with("/etc/rc.d/#{@new_resource.service_name} stop")
         @provider.stop_service()
       end
     end
@@ -281,13 +275,13 @@ RUNNING_PS
 
       it "should call 'restart' on the service_name if the resource supports it" do
         @new_resource.stub(:supports).and_return({:restart => true})
-        @provider.should_receive(:shell_out!).with("/etc/rc.d/#{@new_resource.service_name} restart")
+        @provider.should_receive(:shell_out_with_systems_locale!).with("/etc/rc.d/#{@new_resource.service_name} restart")
         @provider.restart_service()
       end
 
       it "should call the restart_command if one has been specified" do
         @new_resource.stub(:restart_command).and_return("/etc/rc.d/chef restartinafire")
-        @provider.should_receive(:shell_out!).with("/etc/rc.d/#{@new_resource.service_name} restartinafire")
+        @provider.should_receive(:shell_out_with_systems_locale!).with("/etc/rc.d/#{@new_resource.service_name} restartinafire")
         @provider.restart_service()
       end
 
@@ -316,13 +310,13 @@ RUNNING_PS
 
       it "should call 'reload' on the service if it supports it" do
         @new_resource.stub(:supports).and_return({:reload => true})
-        @provider.should_receive(:shell_out!).with("/etc/rc.d/#{@new_resource.service_name} reload")
+        @provider.should_receive(:shell_out_with_systems_locale!).with("/etc/rc.d/#{@new_resource.service_name} reload")
         @provider.reload_service()
       end
 
       it "should should run the user specified reload command if one is specified and the service doesn't support reload" do
         @new_resource.stub(:reload_command).and_return("/etc/rc.d/chef lollerpants")
-        @provider.should_receive(:shell_out!).with("/etc/rc.d/#{@new_resource.service_name} lollerpants")
+        @provider.should_receive(:shell_out_with_systems_locale!).with("/etc/rc.d/#{@new_resource.service_name} lollerpants")
         @provider.reload_service()
       end
     end
