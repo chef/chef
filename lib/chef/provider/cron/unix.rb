@@ -29,14 +29,12 @@ class Chef
         private
 
         def read_crontab
-          crontab = nil
-          status = popen4("crontab -l #{@new_resource.user}") do |pid, stdin, stdout, stderr|
-            crontab = stdout.read
-          end
+          status, crontab, stderr = run_command_and_return_stdout_stderr(:command => "/usr/bin/crontab -l",:user => @new_resource.user)
           if status.exitstatus > 1
             raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
           end
-          crontab
+          return nil if status.exitstatus > 0
+          crontab.chomp << "\n"
         end
 
         def write_crontab(crontab)

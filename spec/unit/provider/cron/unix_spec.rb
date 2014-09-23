@@ -40,7 +40,7 @@ describe Chef::Provider::Cron::Unix do
   describe "read_crontab" do
     before :each do
       @status = double("Status", :exitstatus => 0)
-      @stdout = StringIO.new(<<-CRONTAB)
+      @stdout = String.new(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: something else
@@ -48,11 +48,11 @@ describe Chef::Provider::Cron::Unix do
 
 # Another comment
       CRONTAB
-      @provider.stub(:popen4).and_yield(1234, StringIO.new, @stdout, StringIO.new).and_return(@status)
+      @provider.stub(:run_command_and_return_stdout_stderr).and_return([@status, @stdout, StringIO.new])
     end
 
     it "should call crontab -l with the user" do
-      @provider.should_receive(:popen4).with("crontab -l #{@new_resource.user}").and_return(@status)
+      @provider.should_receive(:run_command_and_return_stdout_stderr).with(:command => "/usr/bin/crontab -l", :user => @new_resource.user).and_return([@status, @stdout, StringIO.new])
       @provider.send(:read_crontab)
     end
 
@@ -70,13 +70,13 @@ CRONTAB
 
     it "should return nil if the user has no crontab" do
       status = double("Status", :exitstatus => 1)
-      @provider.stub(:popen4).and_return(status)
+      @provider.stub(:run_command_and_return_stdout_stderr).and_return([status, @stdout, StringIO.new])
       @provider.send(:read_crontab).should == nil
     end
 
     it "should raise an exception if another error occurs" do
       status = double("Status", :exitstatus => 2)
-      @provider.stub(:popen4).and_return(status)
+      @provider.stub(:run_command_and_return_stdout_stderr).and_return([status, @stdout, StringIO.new])
       lambda do
         @provider.send(:read_crontab)
       end.should raise_error(Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: 2")
@@ -86,7 +86,7 @@ CRONTAB
   describe "write_crontab" do
     before :each do
       @status = double("Status", :exitstatus => 0)
-      @provider.stub(:run_command_and_return_stdout_stderr).and_return(@status, String.new, String.new)
+      @provider.stub(:run_command_and_return_stdout_stderr).and_return([@status, String.new, String.new])
       @tempfile = double("foo", :path => "/tmp/foo", :close => true)
       Tempfile.stub(:new).and_return(@tempfile)
       @tempfile.should_receive(:flush)
