@@ -22,7 +22,6 @@ require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/enforce_ownership_and_permissions'
 require 'chef/mixin/why_run'
 require 'chef/mixin/shell_out'
-require 'chef/util/path_helper'
 
 class Chef
   class Provider

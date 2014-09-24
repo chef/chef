@@ -20,6 +20,7 @@ require 'mixlib/shellout'
 require 'chef/provider/user'
 require 'openssl'
 require 'plist'
+require 'chef/util/path_helper'
 
 class Chef
   class Provider

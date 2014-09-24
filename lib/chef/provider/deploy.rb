@@ -22,6 +22,7 @@ require "chef/monkey_patches/fileutils"
 require "chef/provider/git"
 require "chef/provider/subversion"
 require "chef/dsl/recipe"
+require "chef/util/path_helper"
 
 class Chef
   class Provider
