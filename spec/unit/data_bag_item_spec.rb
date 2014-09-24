@@ -166,7 +166,7 @@ describe Chef::DataBagItem do
     before(:each) do
       @data_bag_item.data_bag('mars_volta')
       @data_bag_item.raw_data = { "id" => "octahedron", "snooze" => { "finally" => :world_will }}
-      @deserial = Chef::JSONCompat.from_json(@data_bag_item.to_json)
+      @deserial = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@data_bag_item))
     end
 
     it "should deserialize to a Chef::DataBagItem object" do
@@ -183,6 +183,10 @@ describe Chef::DataBagItem do
 
     it "should have a matching 'snooze' key" do
       @deserial["snooze"].should == { "finally" => "world_will" }
+    end
+
+    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+      let(:subject) { @data_bag_item }
     end
   end
 

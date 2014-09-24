@@ -196,7 +196,7 @@ describe Chef::Environment do
 
     %w{name description cookbook_versions}.each do |t|
       it "should include '#{t}'" do
-        @json.should =~ /"#{t}":#{Regexp.escape(@environment.send(t.to_sym).to_json)}/
+        @json.should =~ /"#{t}":#{Regexp.escape(Chef::JSONCompat.to_json(@environment.send(t.to_sym)))}/
       end
     end
 
@@ -206,6 +206,10 @@ describe Chef::Environment do
 
     it "should include 'chef_type'" do
       @json.should =~ /"chef_type":"environment"/
+    end
+
+    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+      let(:subject) { @environment }
     end
   end
 
@@ -222,7 +226,7 @@ describe Chef::Environment do
         "json_class" => "Chef::Environment",
         "chef_type" => "environment"
       }
-      @environment = Chef::JSONCompat.from_json(@data.to_json)
+      @environment = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@data))
     end
 
     it "should return a Chef::Environment" do

@@ -21,6 +21,7 @@ require 'chef/chef_fs/file_system/not_found_error'
 require 'chef/chef_fs/file_system/operation_failed_error'
 require 'chef/role'
 require 'chef/node'
+require 'chef/json_compat'
 
 class Chef
   module ChefFS
@@ -172,7 +173,7 @@ class Chef
 
         def api_error_text(response)
           begin
-            JSON.parse(response.body)['error'].join("\n")
+            Chef::JSONCompat.parse(response.body)['error'].join("\n")
           rescue
             response.body
           end

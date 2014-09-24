@@ -216,6 +216,10 @@ describe Chef::Role do
       end
 
     end
+
+    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+      let(:subject) { @role }
+    end
   end
 
   describe "when created from JSON", :json => true do

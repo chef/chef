@@ -59,7 +59,7 @@ describe Chef::DataBag do
   describe "deserialize" do
     before(:each) do
       @data_bag.name('mars_volta')
-      @deserial = Chef::JSONCompat.from_json(@data_bag.to_json)
+      @deserial = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@data_bag))
     end
 
     it "should deserialize to a Chef::DataBag object" do
@@ -71,6 +71,10 @@ describe Chef::DataBag do
     }.each do |t|
       it "should match '#{t}'" do
         @deserial.send(t.to_sym).should == @data_bag.send(t.to_sym)
+      end
+
+      include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+        let(:subject) { @data_bag }
       end
     end
 

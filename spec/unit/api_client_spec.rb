@@ -123,6 +123,10 @@ describe Chef::ApiClient do
     it "does not include the private key if not present" do
       @json.should_not include("private_key")
     end
+
+    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+      let(:subject) { @client }
+    end
   end
 
   describe "when deserializing from JSON" do
@@ -135,7 +139,7 @@ describe Chef::ApiClient do
       "validator" => true,
       "json_class" => "Chef::ApiClient"
       }
-      @client = Chef::JSONCompat.from_json(client.to_json)
+      @client = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(client))
     end
 
     it "should deserialize to a Chef::ApiClient object" do

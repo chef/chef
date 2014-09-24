@@ -185,3 +185,13 @@ module WEBrick
     end
   end
 end
+
+# We are no longer using the 'json' gem - deny all access to it!
+orig_require = Kernel.send(:instance_method, :require)
+Kernel.send(:remove_method, :require)
+Kernel.send(:define_method, :require) { |path|
+  raise LoadError, 'JSON gem is no longer allowed - use Chef::JSONCompat.to_json' if path == 'json'
+  orig_require.bind(Kernel).call(path)
+}
+# Enough stuff needs json serialization that I'm just adding it here for equality asserts
+require 'chef/json_compat'

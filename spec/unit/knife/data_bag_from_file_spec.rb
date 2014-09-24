@@ -29,7 +29,7 @@ describe Chef::Knife::DataBagFromFile do
     Chef::Platform.stub(:windows?) { false }
     Chef::Config[:node_name] = "webmonkey.example.com"
     FileUtils.mkdir_p([db_folder, db_folder2])
-    db_file.write(plain_data.to_json)
+    db_file.write(Chef::JSONCompat.to_json(plain_data))
     db_file.flush
     allow(knife).to receive(:config).and_return(config)
     allow(Chef::Knife::Core::ObjectLoader).to receive(:new).and_return(loader)

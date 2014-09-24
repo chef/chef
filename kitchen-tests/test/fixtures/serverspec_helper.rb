@@ -4,6 +4,7 @@
 
 require 'serverspec'
 require 'json'
+require 'ffi_yajl'
 
 set :backend, :exec
 
@@ -21,7 +22,7 @@ def load_nodestub
     platform = 'centos'
     platform_version = os[:release].to_i
   end
-  JSON.parse(IO.read("#{ENV['BUSSER_ROOT']}/../kitchen/data/platforms/#{platform}/#{platform_version}.json"), :symbolize_names => true)
+  FFI_Yajl::Encoder.parse(IO.read("#{ENV['BUSSER_ROOT']}/../kitchen/data/platforms/#{platform}/#{platform_version}.json"), :symbolize_names => true)
 end
 
 # centos-59 doesn't have /sbin in the default path,

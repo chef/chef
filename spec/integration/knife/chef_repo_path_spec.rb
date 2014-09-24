@@ -291,7 +291,6 @@ EOM
             knife('show --local /clients/blah.json').should_succeed <<EOM
 /clients/blah.json:
 {
-
 }
 EOM
           end
@@ -391,7 +390,6 @@ EOM
             knife('show --local /environments/blah.json').should_succeed <<EOM
 /environments/blah.json:
 {
-
 }
 EOM
           end
@@ -406,7 +404,6 @@ EOM
             knife('show --local /nodes/blah.json').should_succeed <<EOM
 /nodes/blah.json:
 {
-
 }
 EOM
           end
@@ -421,7 +418,6 @@ EOM
             knife('show --local /roles/blah.json').should_succeed <<EOM
 /roles/blah.json:
 {
-
 }
 EOM
           end
@@ -436,7 +432,6 @@ EOM
             knife('show --local /users/blah.json').should_succeed <<EOM
 /users/blah.json:
 {
-
 }
 EOM
           end

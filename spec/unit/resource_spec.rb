@@ -336,6 +336,10 @@ describe Chef::Resource do
       json.should =~ /json_class/
       json.should =~ /instance_vars/
     end
+
+    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+      let(:subject) { @resource }
+    end
   end
 
   describe "to_hash" do
@@ -354,7 +358,7 @@ describe Chef::Resource do
 
   describe "self.json_create" do
     it "should deserialize itself from json" do
-      json = @resource.to_json
+      json = Chef::JSONCompat.to_json(@resource)
       serialized_node = Chef::JSONCompat.from_json(json)
       serialized_node.should be_a_kind_of(Chef::Resource)
       serialized_node.name.should eql(@resource.name)

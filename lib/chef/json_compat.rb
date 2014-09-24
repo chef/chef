@@ -18,7 +18,7 @@
 # Wrapper class for interacting with JSON.
 
 require 'ffi_yajl'
-require 'json'
+#require 'json'
 require 'ffi_yajl/json_gem'  # XXX: parts of chef require JSON gem's Hash#to_json monkeypatch
 require 'chef/exceptions'
 

@@ -304,7 +304,11 @@ describe Chef::RunList do
     end
 
     it "converts to json by converting its array form" do
-      @run_list.to_json.should == ["recipe[nagios::client]", "role[production]", "recipe[apache2]"].to_json
+      Chef::JSONCompat.to_json(@run_list).should == Chef::JSONCompat.to_json(["recipe[nagios::client]", "role[production]", "recipe[apache2]"])
+    end
+
+    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+      let(:subject) { @run_list }
     end
 
   end

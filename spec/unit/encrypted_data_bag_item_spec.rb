@@ -168,6 +168,17 @@ describe Chef::EncryptedDataBagItem::Decryptor do
   let(:plaintext_data) { {"foo" => "bar"} }
   let(:encryption_key) { "passwd" }
   let(:decryption_key) { encryption_key }
+  let(:json_wrapped_data) {  Chef::JSONCompat.to_json({"json_wrapper" => plaintext_data}) }
+
+  shared_examples "decryption examples" do
+    it "decrypts the encrypted value" do
+      decryptor.decrypted_data.should eq(json_wrapped_data)
+    end
+
+    it "unwraps the encrypted data and returns it" do
+      decryptor.for_decrypted_item.should eq plaintext_data
+    end
+  end
 
   context "when decrypting a version 3 (JSON+aes-256-gcm+random iv+auth tag) encrypted value" do
 
@@ -179,13 +190,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
 
       let(:bogus_auth_tag) { "bogus_auth_tag" }
 
-      it "decrypts the encrypted value" do
-        decryptor.decrypted_data.should eq({"json_wrapper" => plaintext_data}.to_json)
-      end
-
-      it "unwraps the encrypted data and returns it" do
-        decryptor.for_decrypted_item.should eq plaintext_data
-      end
+      include_examples "decryption examples"
 
       it "rejects the data if the authentication tag is wrong" do
         encrypted_value["auth_tag"] = bogus_auth_tag
@@ -240,13 +245,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
       Base64.encode64(raw_hmac)
     end
 
-    it "decrypts the encrypted value" do
-      decryptor.decrypted_data.should eq({"json_wrapper" => plaintext_data}.to_json)
-    end
-
-    it "unwraps the encrypted data and returns it" do
-      decryptor.for_decrypted_item.should eq plaintext_data
-    end
+    include_examples "decryption examples"
 
     it "rejects the data if the hmac is wrong" do
       encrypted_value["hmac"] = bogus_hmac
@@ -270,13 +269,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
       decryptor.should be_a_instance_of Chef::EncryptedDataBagItem::Decryptor::Version1Decryptor
     end
 
-    it "decrypts the encrypted value" do
-      decryptor.decrypted_data.should eq({"json_wrapper" => plaintext_data}.to_json)
-    end
-
-    it "unwraps the encrypted data and returns it" do
-      decryptor.for_decrypted_item.should eq plaintext_data
-    end
+    include_examples "decryption examples"
 
     describe "and the decryption step returns invalid data" do
       it "raises a decryption failure error" do
