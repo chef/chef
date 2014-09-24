@@ -17,6 +17,7 @@
 #
 
 require 'ffi_yajl'
+require 'chef/util/path_helper'
 
 class Chef
   class Knife
@@ -69,15 +70,15 @@ class Chef
         #
         # @api public
         def find_all_objects(path)
-          path = File.join(path, '*')
+          path = File.join(Chef::Util::PathHelper.escape_glob(File.expand_path(path)), '*')
           path << '.{json,rb}'
-          objects = Dir.glob(File.expand_path(path))
+          objects = Dir.glob(path)
           objects.map { |o| File.basename(o) }
         end
 
         def find_all_object_dirs(path)
-          path = File.join(path, '*')
-          objects = Dir.glob(File.expand_path(path))
+          path = File.join(Chef::Util::PathHelper.escape_glob(File.expand_path(path)), '*')
+          objects = Dir.glob(path)
           objects.delete_if { |o| !File.directory?(o) }
           objects.map { |o| File.basename(o) }
         end
@@ -111,4 +112,3 @@ class Chef
     end
   end
 end
-

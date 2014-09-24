@@ -214,6 +214,28 @@ describe Chef::Util::PathHelper do
       PathHelper.stub(:canonical_path).with("bandit").and_return("c:/Bo/Bandit")
       PathHelper.stub(:canonical_path).with("../bandit/bandit").and_return("c:/bandit/bandit")
       expect(PathHelper.paths_eql?("bandit", "../bandit/bandit")).to be_false
-     end
+    end
+  end
+
+  describe "escape_glob" do
+    it "escapes characters reserved by glob" do
+      path = "C:\\this\\*path\\[needs]\\escaping?"
+      escaped_path = "C:\\\\this\\\\\\*path\\\\\\[needs\\]\\\\escaping\\?"
+      expect(PathHelper.escape_glob(path)).to eq(escaped_path)
+    end
+
+    context "when given more than one argument" do
+      it "joins, cleanpaths, and escapes characters reserved by glob" do
+        args = ["this/*path", "[needs]", "escaping?"]
+        escaped_path = if windows?
+          "this\\\\\\*path\\\\\\[needs\\]\\\\escaping\\?"
+        else
+          "this/\\*path/\\[needs\\]/escaping\\?"
+        end
+        expect(PathHelper).to receive(:join).with(*args).and_call_original
+        expect(PathHelper).to receive(:cleanpath).and_call_original
+        expect(PathHelper.escape_glob(*args)).to eq(escaped_path)
+      end
+    end
   end
 end

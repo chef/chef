@@ -17,6 +17,7 @@
 #
 
 require 'chef/version'
+require 'chef/util/path_helper'
 class Chef
   class Knife
     class SubcommandLoader
@@ -41,11 +42,11 @@ class Chef
         user_specific_files = []
 
         if chef_config_dir
-          user_specific_files.concat Dir.glob(File.expand_path("plugins/knife/*.rb", chef_config_dir))
+          user_specific_files.concat Dir.glob(File.expand_path("plugins/knife/*.rb", Chef::Util::PathHelper.escape_glob(chef_config_dir)))
         end
 
         # finally search ~/.chef/plugins/knife/*.rb
-        user_specific_files.concat Dir.glob(File.join(env['HOME'], '.chef', 'plugins', 'knife', '*.rb')) if env['HOME']
+        user_specific_files.concat Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(env['HOME'], '.chef', 'plugins', 'knife'), '*.rb')) if env['HOME']
 
         user_specific_files
       end
@@ -107,7 +108,7 @@ class Chef
 
       def find_subcommands_via_dirglob
         # The "require paths" of the core knife subcommands bundled with chef
-        files = Dir[File.expand_path('../../../knife/*.rb', __FILE__)]
+        files = Dir[File.join(Chef::Util::PathHelper.escape_glob(File.expand_path('../../../knife', __FILE__)), '*.rb')]
         subcommand_files = {}
         files.each do |knife_file|
           rel_path = knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/,1]
@@ -146,7 +147,7 @@ class Chef
 
         if check_load_path
           files = $LOAD_PATH.map { |load_path|
-            Dir["#{File.expand_path glob, load_path}#{Gem.suffix_pattern}"]
+            Dir["#{File.expand_path glob, Chef::Util::PathHelper.escape_glob(load_path)}#{Gem.suffix_pattern}"]
           }.flatten.select { |file| File.file? file.untaint }
         end
 
@@ -180,7 +181,7 @@ class Chef
           spec.require_paths.first
         end
 
-        glob = File.join("#{spec.full_gem_path}/#{dirs}", glob)
+        glob = File.join(Chef::Util::PathHelper.escape_glob(spec.full_gem_path, dirs), glob)
 
         Dir[glob].map { |f| f.untaint }
       end

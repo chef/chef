@@ -22,6 +22,7 @@ require "chef/monkey_patches/fileutils"
 require "chef/provider/git"
 require "chef/provider/subversion"
 require "chef/dsl/recipe"
+require "chef/util/path_helper"
 
 class Chef
   class Provider
@@ -243,7 +244,7 @@ class Chef
       end
 
       def all_releases
-        Dir.glob(@new_resource.deploy_to + "/releases/*").sort
+        Dir.glob(Chef::Util::PathHelper.escape_glob(@new_resource.deploy_to) + "/releases/*").sort
       end
 
       def update_cached_repo
