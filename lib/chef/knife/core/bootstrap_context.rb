@@ -28,10 +28,11 @@ class Chef
       #
       class BootstrapContext
 
-        def initialize(config, run_list, chef_config)
+        def initialize(config, run_list, chef_config, secret)
           @config       = config
           @run_list     = run_list
           @chef_config  = chef_config
+          @secret       = secret
         end
 
         def bootstrap_environment
@@ -43,15 +44,7 @@ class Chef
         end
 
         def encrypted_data_bag_secret
-          knife_config[:secret] || begin
-            secret_file_path = knife_config[:secret_file]
-            expanded_secret_file_path = File.expand_path(secret_file_path.to_s)
-            if secret_file_path && File.exist?(expanded_secret_file_path)
-              IO.read(expanded_secret_file_path)
-            else
-              nil
-            end
-          end
+          @secret
         end
 
         def trusted_certs

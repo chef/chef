@@ -18,10 +18,12 @@
 #
 
 require 'chef/knife'
+require 'chef/knife/data_bag_secret_options'
 
 class Chef
   class Knife
     class DataBagEdit < Knife
+      include DataBagSecretOptions
 
       deps do
         require 'chef/data_bag_item'
@@ -31,48 +33,17 @@ class Chef
       banner "knife data bag edit BAG ITEM (options)"
       category "data bag"
 
-      option :secret,
-        :short => "-s SECRET",
-        :long  => "--secret ",
-        :description => "The secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
-
-      option :secret_file,
-        :long => "--secret-file SECRET_FILE",
-        :description => "A file containing the secret key to use to encrypt data bag item values",
-        :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
-
-      def read_secret
-        if config[:secret]
-          config[:secret]
-        else
-          Chef::EncryptedDataBagItem.load_secret(config[:secret_file])
-        end
-      end
-
-      def use_encryption
-        if config[:secret] && config[:secret_file]
-          stdout.puts "please specify only one of --secret, --secret-file"
-          exit(1)
-        end
-        config[:secret] || config[:secret_file]
-      end
-
       def load_item(bag, item_name)
         item = Chef::DataBagItem.load(bag, item_name)
-        if use_encryption
-          Chef::EncryptedDataBagItem.new(item, read_secret).to_hash
+        if encrypted?(item.raw_data)
+          if encryption_secret_provided?
+            Chef::EncryptedDataBagItem.new(item, read_secret).to_hash
+          else
+            ui.fatal("You cannot edit an encrypted data bag without providing the secret.")
+            exit(1)
+          end
         else
           item
-        end
-      end
-
-      def edit_item(item)
-        output = edit_data(item)
-        if use_encryption
-          Chef::EncryptedDataBagItem.encrypt_data_bag_item(output, read_secret)
-        else
-          output
         end
       end
 
@@ -82,11 +53,21 @@ class Chef
           stdout.puts opt_parser
           exit 1
         end
+
         item = load_item(@name_args[0], @name_args[1])
-        output = edit_item(item)
-        rest.put_rest("data/#{@name_args[0]}/#{@name_args[1]}", output)
+        edited_item = edit_data(item)
+
+        if encryption_secret_provided?
+          ui.info("Encrypting data bag using provided secret.")
+          item_to_save = Chef::EncryptedDataBagItem.encrypt_data_bag_item(edited_item, read_secret)
+        else
+          ui.info("Saving data bag unencrypted.  To encrypt it, provide an appropriate secret.")
+          item_to_save = edited_item
+        end
+
+        rest.put_rest("data/#{@name_args[0]}/#{@name_args[1]}", item_to_save)
         stdout.puts("Saved data_bag_item[#{@name_args[1]}]")
-        ui.output(output) if config[:print_after]
+        ui.output(edited_item) if config[:print_after]
       end
     end
   end
