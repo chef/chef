@@ -11,4 +11,5 @@ group :end_to_end do
 
   gem 'kitchen-vagrant' # Used for local testing
   gem 'kitchen-ec2'     # Used for remote (Travis) testing
+  gem 'ffi-yajl', '~> 1.1' # Go away, JSON gem
 end
