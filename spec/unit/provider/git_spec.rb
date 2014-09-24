@@ -124,6 +124,16 @@ describe Chef::Provider::Git do
       @provider.target_revision.should eql("663c22a5e41f5ae3193460cca044ed1435029f53")
     end
 
+    it "converts resource.revision from a tag to a SHA, matching tags first, then heads, then revision" do
+      @resource.revision "refs/pulls/v1.0"
+      @stdout = ("d03c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n" +
+          "663c22a5e41f5ae3193460cca044ed1435029f53\trefs/tags/v1.0\n" +
+          "805c22a5e41f5ae3193460cca044ed1435029f53\trefs/pulls/v1.0\n" +
+          "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/v1.0\n")
+      @provider.should_receive(:shell_out!).with(@git_ls_remote + "\"refs/pulls/v1.0*\"", {:log_tag=>"git[web2.0 app]"}).and_return(double("ShellOut result", :stdout => @stdout))
+      @provider.target_revision.should eql("805c22a5e41f5ae3193460cca044ed1435029f53")
+    end
+
     it "converts resource.revision from a tag to a SHA, using full path if provided" do
       @resource.revision "refs/heads/v1.0"
       @stdout = ("d03c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n" +

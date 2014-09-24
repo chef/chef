@@ -236,7 +236,6 @@ class Chef
         # named 'HEAD'.
         @resolved_reference = git_ls_remote(rev_search_pattern)
         refs = @resolved_reference.split("\n").map { |line| line.split("\t") }
-        found = []
         # First try for ^{} indicating the commit pointed to by an
         # annotated tag.
         # It is possible for a user to create a tag named 'HEAD'.
@@ -244,16 +243,19 @@ class Chef
         # confusing. We avoid the issue by disallowing the use of
         # annotated tags named 'HEAD'.
         if rev_search_pattern != 'HEAD'
-          found = refs_search(refs, "#{rev_match_pattern('refs/tags/', @new_resource.revision)}^{}")
-          found = refs_search(refs, "#{rev_match_pattern('refs/heads/', @new_resource.revision)}^{}") if found.empty?
+          found = find_revision(refs, @new_resource.revision, '^{}')
         else
           found = refs_search(refs, 'HEAD')
         end
-        if found.empty?
-          found = refs_search(refs, rev_match_pattern('refs/tags/', @new_resource.revision))
-          found = refs_search(refs, rev_match_pattern('refs/heads/', @new_resource.revision)) if found.empty?
-        end
+        found = find_revision(refs, @new_resource.revision) if found.empty?
         found.size == 1 ? found.first[0] : nil
+      end
+
+      def find_revision(refs, revision, suffix="")
+        found = refs_search(refs, rev_match_pattern('refs/tags/', revision) + suffix)
+        found = refs_search(refs, rev_match_pattern('refs/heads/', revision) + suffix) if found.empty?
+        found = refs_search(refs, revision + suffix) if found.empty?
+        found
       end
 
       def rev_match_pattern(prefix, revision)
