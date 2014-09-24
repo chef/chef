@@ -18,6 +18,7 @@
 #
 
 require 'chef/knife'
+require 'chef/util/path_helper'
 
 class Chef
   class Knife

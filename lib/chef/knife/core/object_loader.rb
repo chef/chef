@@ -17,6 +17,7 @@
 #
 
 require 'ffi_yajl'
+require 'chef/util/path_helper'
 
 class Chef
   class Knife

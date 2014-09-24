@@ -17,6 +17,8 @@
 #
 
 require 'chef/run_list'
+require 'chef/util/path_helper'
+
 class Chef
   class Knife
     module Core
