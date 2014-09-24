@@ -66,6 +66,34 @@ In order to support configuring passwords for the users using shadow hashes two 
 
 User resource on Mac supports setting password both using plain-text password or using the shadow hash. You can simply set the `password` attribute to the plain text password to configure the password for the user. However this is not ideal since including plain text passwords in cookbooks (even if they are private) is not a good idea. In order to set passwords using shadow hash you can follow the instructions below based on your Mac OS X version.
 
+## Mac OS X default package provider is now Homebrew
+
+Per [Chef RFC 016](https://github.com/opscode/chef-rfc/blob/master/rfc016-homebrew-osx-package-provider.md), the default provider for the `package` resource on Mac OS X is now [Homebrew](http://brew.sh). The [homebrew cookbook's](https://supermarket.getchef.com/cookbooks/homebrew) default recipe, or some other method is still required for getting homebrew installed on the system. The cookbook won't be strictly required just to install packages from homebrew on OS X, though. To use this, simply use the `package` resource, or the `homebrew_package` shortcut resource:
+
+```ruby
+package 'emacs'
+```
+
+Or,
+
+```ruby
+homebrew_package 'emacs'
+```
+
+The macports provider will still be available, and can be used with the shortcut resource, or by using the `provider` attribute:
+
+```ruby
+macports_package 'emacs'
+```
+
+Or,
+
+```ruby
+package 'emacs' do
+  provider Chef::Provider::Package::Macports
+end
+```
+
 ### Mac OS X 10.7
 
 10.7 calculates the password hash using **SALTED-SHA512**. Stored shadow hash length is 68 bytes; first 4 bytes being salt and the next 64 bytes being the shadow hash itself. You can use below code in order to calculate password hashes to be used in `password` attribute on Mac OS X 10.7:

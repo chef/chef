@@ -95,6 +95,49 @@ E
     end
   end
 
+  describe "verifying trusted certificate X509 properties" do
+    let(:name_args) { %w{https://foo.example.com:8443} }
+
+    let(:trusted_certs_dir) { File.join(CHEF_SPEC_DATA, "trusted_certs") }
+    let(:trusted_cert_file) { File.join(trusted_certs_dir, "example.crt") }
+
+    let(:store) { OpenSSL::X509::Store.new }
+    let(:certificate) { OpenSSL::X509::Certificate.new(IO.read(trusted_cert_file)) }
+
+    before do
+      Chef::Config[:trusted_certs_dir] = trusted_certs_dir
+      ssl_check.stub(:trusted_certificates).and_return([trusted_cert_file])
+      store.stub(:add_cert).with(certificate)
+      OpenSSL::X509::Store.stub(:new).and_return(store)
+      OpenSSL::X509::Certificate.stub(:new).with(IO.read(trusted_cert_file)).and_return(certificate)
+      ssl_check.stub(:verify_cert).and_return(true)
+      ssl_check.stub(:verify_cert_host).and_return(true)
+    end
+
+    context "when the trusted certificates have valid X509 properties" do
+      before do
+        store.stub(:verify).with(certificate).and_return(true)
+      end
+
+      it "does not generate any X509 warnings" do
+        expect(ssl_check.ui).not_to receive(:warn).with(/There are invalid certificates in your trusted_certs_dir/)
+        ssl_check.run
+      end
+    end
+
+    context "when the trusted certificates have invalid X509 properties" do
+      before do
+        store.stub(:verify).with(certificate).and_return(false)
+        store.stub(:error_string).and_return("unable to get local issuer certificate")
+      end
+
+      it "generates a warning message with invalid certificate file names" do
+        expect(ssl_check.ui).to receive(:warn).with(/#{trusted_cert_file}: unable to get local issuer certificate/)
+        ssl_check.run
+      end
+    end
+  end
+
   describe "verifying the remote certificate" do
     let(:name_args) { %w{https://foo.example.com:8443} }
 
@@ -117,6 +160,7 @@ E
     context "when the remote host's certificate is valid" do
 
       before do
+        ssl_check.should_receive(:verify_X509).and_return(true) # X509 valid certs (no warn)
         ssl_socket.should_receive(:connect) # no error
         ssl_socket.should_receive(:post_connection_check).with("foo.example.com") # no error
       end
@@ -148,6 +192,7 @@ E
 
       context "when the certificate's CN does not match the hostname" do
         before do
+          ssl_check.should_receive(:verify_X509).and_return(true) # X509 valid certs
           ssl_socket.should_receive(:connect) # no error
           ssl_socket.should_receive(:post_connection_check).
             with("foo.example.com").
@@ -167,6 +212,7 @@ E
 
       context "when the cert is not signed by any trusted authority" do
         before do
+          ssl_check.should_receive(:verify_X509).and_return(true) # X509 valid certs
           ssl_socket.should_receive(:connect).
             and_raise(OpenSSL::SSL::SSLError)
           ssl_socket_for_debug.should_receive(:connect)
@@ -184,4 +230,3 @@ E
   end
 
 end
-
