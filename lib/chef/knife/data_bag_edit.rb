@@ -36,14 +36,14 @@ class Chef
       def load_item(bag, item_name)
         item = Chef::DataBagItem.load(bag, item_name)
         if encrypted?(item.raw_data)
-          if encryption_secret_provided?
-            Chef::EncryptedDataBagItem.new(item, read_secret).to_hash
+          if encryption_secret_provided_ignore_encrypt_flag?
+            return Chef::EncryptedDataBagItem.new(item, read_secret).to_hash, true
           else
             ui.fatal("You cannot edit an encrypted data bag without providing the secret.")
             exit(1)
           end
         else
-          item
+          return item, false
         end
       end
 
@@ -54,10 +54,10 @@ class Chef
           exit 1
         end
 
-        item = load_item(@name_args[0], @name_args[1])
+        item, was_encrypted = load_item(@name_args[0], @name_args[1])
         edited_item = edit_data(item)
 
-        if encryption_secret_provided?
+        if was_encrypted || encryption_secret_provided?
           ui.info("Encrypting data bag using provided secret.")
           item_to_save = Chef::EncryptedDataBagItem.encrypt_data_bag_item(edited_item, read_secret)
         else

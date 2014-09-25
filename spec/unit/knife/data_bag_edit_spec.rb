@@ -88,7 +88,6 @@ describe Chef::Knife::DataBagEdit do
     let(:transmitted_hash) { enc_edited_hash }
 
     before(:each) do
-      expect(knife).to receive(:encryption_secret_provided?).at_least(1).times.and_return(true)
       expect(knife).to receive(:read_secret).at_least(1).times.and_return(secret)
       expect(Chef::EncryptedDataBagItem).to receive(:encrypt_data_bag_item).with(raw_edited_hash, secret).and_return(enc_edited_hash)
     end
@@ -99,10 +98,19 @@ describe Chef::Knife::DataBagEdit do
       # If the data bag is encrypted, it gets passed to `edit` as a hash.  Otherwise, it gets passed as a DataBag
       let (:data_to_edit) { raw_hash }
 
+      before(:each) do
+        expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(true)
+      end
+
       include_examples "editing a data bag"
     end
 
     context "the data bag starts unencrypted" do
+      before(:each) do
+        expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).exactly(0).times
+        expect(knife).to receive(:encryption_secret_provided?).and_return(true)
+      end
+
       include_examples "editing a data bag"
     end
   end
@@ -110,7 +118,7 @@ describe Chef::Knife::DataBagEdit do
   it "fails to edit an encrypted data bag if the secret is missing" do
     expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(db)
     expect(knife).to receive(:encrypted?).with(db.raw_data).and_return(true)
-    expect(knife).to receive(:encryption_secret_provided?).and_return(false)
+    expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(false)
 
     expect(knife.ui).to receive(:fatal).with("You cannot edit an encrypted data bag without providing the secret.")
     expect {knife.run}.to exit_with_code(1)
