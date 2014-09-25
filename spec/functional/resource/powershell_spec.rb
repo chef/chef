@@ -162,6 +162,12 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       resource.returns(0)
       resource.run_action(:run)
     end
+
+    it "raises an error when given a block and a guard_interpreter" do
+      resource.guard_interpreter :sh
+      expect { resource.only_if { true } }.to raise_error(ArgumentError, /guard_interpreter does not support blocks/)
+    end
+
   end
 
   context "when running on a 32-bit version of Windows", :windows32_only do
@@ -262,26 +268,6 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
     it "evaluates an only_if block using powershell.exe" do
       resource.only_if  "exit([int32](![System.Environment]::CommandLine.Contains('powershell.exe')))"
-      resource.should_skip?(:run).should be_false
-    end
-
-    it "evaluates a not_if block as false" do
-      resource.not_if { false }
-      resource.should_skip?(:run).should be_false
-    end
-
-    it "evaluates a not_if block as true" do
-      resource.not_if { true }
-      resource.should_skip?(:run).should be_true
-    end
-
-    it "evaluates an only_if block as false" do
-      resource.only_if { false }
-      resource.should_skip?(:run).should be_true
-    end
-
-    it "evaluates an only_if block as true" do
-      resource.only_if { true }
       resource.should_skip?(:run).should be_false
     end
 
