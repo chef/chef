@@ -522,3 +522,8 @@ end
 
 Chef will then execute the Homebrew command as that user.  The `homebrew_user` attribute can only be provided to the 
 `homebrew_package` resource, not the `package` resource.
+
+### Removed dependencies on the json gem, replaced with ffi-yajl
+We should no longer require the 'json' gem for any JSON parsing, and should instead be using the Chef::JSONCompat
+library everywhere.  Consumers should not see any changes, unless they relied on the transitive 'json' gem dependency.
+In this case, they should upgrade their code to take advantage of the Chef::JSONCompat library instead.
