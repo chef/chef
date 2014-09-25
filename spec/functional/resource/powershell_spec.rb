@@ -236,6 +236,19 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       resource.should_skip?(:run).should be_true
     end
 
+    context "the only_if is specified before the guard" do
+      before do
+        # force the guard_interpreter to :default in case the default changes later
+        resource.guard_interpreter :default
+      end
+
+      it "evaluates a powershell $true for a only_if block as true" do
+        resource.only_if "$true"
+        resource.guard_interpreter :powershell_script
+        resource.should_skip?(:run).should be_false
+      end
+    end
+
     context "with powershell_script as the guard_interpreter" do
       before(:each) do
         resource.guard_interpreter :powershell_script
