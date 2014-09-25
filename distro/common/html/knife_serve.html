@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -41,7 +41,7 @@
             
   <div class="section" id="knife-serve">
 <h1>knife serve<a class="headerlink" href="#knife-serve" title="Permalink to this headline">¶</a></h1>
-<p>The <strong>knife serve</strong> subcommand is used to run a persistent chef-zero against the local chef-repo. (chef-zero is a lightweight Chef server that runs in-memory on the local machine.) This is the same as running the chef-client executable with the <tt class="docutils literal"><span class="pre">--local-mode</span></tt> option. The <tt class="docutils literal"><span class="pre">chef_repo_path</span></tt> is located automatically and the Chef server will bind to port <tt class="docutils literal"><span class="pre">8900</span></tt> by default. <strong>knife serve</strong> will print the URL for the local Chef server, so that it may be added to the knife.rb file.</p>
+<p>The <strong>knife serve</strong> subcommand is used to run a persistent chef-zero against the local chef-repo. (chef-zero is a lightweight Chef server that runs in-memory on the local machine.) This is the same as running the chef-client executable with the <tt class="docutils literal"><span class="pre">--local-mode</span></tt> option. The <tt class="docutils literal"><span class="pre">chef_repo_path</span></tt> is located automatically and the Chef server will bind to the first available port between <tt class="docutils literal"><span class="pre">8889</span></tt> and <tt class="docutils literal"><span class="pre">9999</span></tt>. <strong>knife serve</strong> will print the URL for the local Chef server, so that it may be added to the knife.rb file.</p>
 <div class="section" id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
 <p>This subcommand has the following syntax:</p>
@@ -53,7 +53,7 @@
 <h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
+<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) knife subcommands and plugins.</p>
 </div>
 <p>This command does not have any specific options.</p>
 </div>

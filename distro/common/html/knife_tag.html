@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -41,11 +41,11 @@
             
   <div class="section" id="knife-tag">
 <h1>knife tag<a class="headerlink" href="#knife-tag" title="Permalink to this headline">¶</a></h1>
-<p>A tag is a custom description that is applied to a node. A tag, once applied, can be helpful when managing nodes using Knife or when building recipes by providing alternate methods of grouping similar types of information.</p>
+<p>A tag is a custom description that is applied to a node. A tag, once applied, can be helpful when managing nodes using knife or when building recipes by providing alternate methods of grouping similar types of information.</p>
 <p>The <strong>knife tag</strong> subcommand is used to apply tags to nodes on a Chef server.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
+<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) knife subcommands and plugins.</p>
 </div>
 <div class="section" id="create">
 <h2>create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
@@ -63,9 +63,9 @@
 </div>
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Create tags</strong></p>
-<p>To create tags named &#8220;seattle&#8221;, &#8220;portland&#8221;, and &#8220;vancouver&#8221;, enter:</p>
+<p>To create tags named <tt class="docutils literal"><span class="pre">seattle</span></tt>, <tt class="docutils literal"><span class="pre">portland</span></tt>, and <tt class="docutils literal"><span class="pre">vancouver</span></tt>, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife tag create node seattle portland vancouver
 </pre></div>
 </div>
@@ -87,9 +87,9 @@
 </div>
 <div class="section" id="id3">
 <h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Delete tags</strong></p>
-<p>To delete tags named &#8220;denver&#8221; and &#8220;phoenix&#8221;, enter:</p>
+<p>To delete tags named <tt class="docutils literal"><span class="pre">denver</span></tt> and <tt class="docutils literal"><span class="pre">phoenix</span></tt>, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife tag delete node denver phoenix
 </pre></div>
 </div>
@@ -112,9 +112,9 @@
 </div>
 <div class="section" id="id6">
 <h3>Examples<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>View a list of tags</strong></p>
-<p>To view the tags for a node named &#8220;devops_prod1&#8221;, enter:</p>
+<p>To view the tags for a node named <tt class="docutils literal"><span class="pre">devops_prod1</span></tt>, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife tag list devops_prod1
 </pre></div>
 </div>

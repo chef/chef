@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -45,7 +45,7 @@
 <p>The <strong>knife node</strong> subcommand is used to manage the nodes that exist on a Chef server.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
+<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) knife subcommands and plugins.</p>
 </div>
 <div class="section" id="bulk-delete">
 <h2>bulk delete<a class="headerlink" href="#bulk-delete" title="Permalink to this headline">¶</a></h2>
@@ -63,7 +63,7 @@
 </div>
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Bulk delete nodes</strong></p>
 <p>Use a regular expression to define the pattern used to bulk delete nodes:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife node bulk delete <span class="s2">&quot;^[0-9]{3}$&quot;</span>
@@ -88,7 +88,7 @@
 </div>
 <div class="section" id="id3">
 <h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Create a node</strong></p>
 <p>To add a node, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife node create node1
@@ -138,7 +138,7 @@
 </div>
 <div class="section" id="id6">
 <h3>Examples<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Delete a node</strong></p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife node delete node_name
 </pre></div>
@@ -165,9 +165,9 @@
 </div>
 <div class="section" id="id9">
 <h3>Examples<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Edit a node</strong></p>
-<p>To edit the data for a node named &#8220;node1&#8221;, enter:</p>
+<p>To edit the data for a node named <tt class="docutils literal"><span class="pre">node1</span></tt>, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife node edit node1 -a
 </pre></div>
 </div>
@@ -211,7 +211,7 @@
 </div>
 <div class="section" id="id12">
 <h3>Examples<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Create a node using a JSON file</strong></p>
 <p>To add a node using data contained in a JSON file:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife node from file <span class="s2">&quot;path to JSON file&quot;</span>
@@ -239,7 +239,7 @@
 </div>
 <div class="section" id="id15">
 <h3>Examples<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>View a list of nodes</strong></p>
 <p>To verify the list of nodes that are registered with the Chef server, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife node list
@@ -259,7 +259,7 @@ rs-123456
 <li>An ordered list of roles and/or recipes that are run in an exact order; if a recipe appears more than once in the run-list, the chef-client will never run that recipe twice</li>
 <li>Always specific to the node on which it runs, though it is possible for many nodes to have run-lists that are similar or even identical</li>
 <li>Stored as part of the node object on the Chef server</li>
-<li>Maintained using Knife and uploaded to the Chef server or via the Chef Manage user interface</li>
+<li>Maintained using knife and uploaded to the Chef server or via the Chef management console user interface</li>
 </ul>
 <p>The <tt class="docutils literal"><span class="pre">run_list</span> <span class="pre">add</span></tt> argument is used to add run-list items (roles or recipes) to a node.</p>
 <p>A run-list must be in one of the following formats: fully qualified, cookbook, or default. Both roles and recipes must be in quotes, for example:</p>
@@ -293,29 +293,29 @@ rs-123456
 </div>
 <div class="section" id="id18">
 <h3>Examples<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Add a role</strong></p>
-<p>To add a role to a run list, enter:</p>
+<p>To add a role to a run-list, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife node run_list add node <span class="s1">&#39;role[ROLE_NAME]&#39;</span>
 </pre></div>
 </div>
 <p><strong>Add roles and recipes</strong></p>
-<p>To add roles and recipes to a run list, enter:</p>
+<p>To add roles and recipes to a run-list, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife node run_list add node <span class="s1">&#39;recipe[COOKBOOK::RECIPE_NAME],recipe[COOKBOOK::RECIPE_NAME],role[ROLE_NAME]&#39;</span>
 </pre></div>
 </div>
 <p><strong>Add a recipe with a FQDN</strong></p>
-<p>To add a recipe to a run list using the fully qualified format, enter:</p>
+<p>To add a recipe to a run-list using the fully qualified format, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife node run_list add node <span class="s1">&#39;recipe[COOKBOOK::RECIPE_NAME]&#39;</span>
 </pre></div>
 </div>
 <p><strong>Add a recipe with a cookbook</strong></p>
-<p>To add a recipe to a run list using the cookbook format, enter:</p>
+<p>To add a recipe to a run-list using the cookbook format, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife node run_list add node <span class="s1">&#39;COOKBOOK::RECIPE_NAME&#39;</span>
 </pre></div>
 </div>
 <p><strong>Add the default recipe</strong></p>
-<p>To add the default recipe of a cookbook to a run list, enter:</p>
+<p>To add the default recipe of a cookbook to a run-list, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife node run_list add node <span class="s1">&#39;COOKBOOK&#39;</span>
 </pre></div>
 </div>
@@ -337,14 +337,14 @@ rs-123456
 </div>
 <div class="section" id="id21">
 <h3>Examples<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Remove a role</strong></p>
-<p>To remove a role from a run list, enter:</p>
+<p>To remove a role from a run-list, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife node run_list remove node <span class="s1">&#39;role[ROLE_NAME]&#39;</span>
 </pre></div>
 </div>
 <p><strong>Remove a run-list</strong></p>
-<p>To remove a recipe from a run list using the fully qualified format, enter:</p>
+<p>To remove a recipe from a run-list using the fully qualified format, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife node run_list remove node <span class="s1">&#39;recipe[COOKBOOK::RECIPE_NAME]&#39;</span>
 </pre></div>
 </div>
@@ -376,9 +376,9 @@ rs-123456
 </div>
 <div class="section" id="id24">
 <h3>Examples<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Show all data about nodes</strong></p>
-<p>To view all data for a node named &#8220;build&#8221;, enter:</p>
+<p>To view all data for a node named <tt class="docutils literal"><span class="pre">build</span></tt>, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife node show build
 </pre></div>
 </div>
@@ -410,7 +410,7 @@ Platform:
 </div>
 <p>where <tt class="docutils literal"><span class="pre">&lt;attribute_name&gt;</span></tt> is something like kernel or platform. (This doesn&#8217;t work for nested attributes like <tt class="docutils literal"><span class="pre">node[kernel][machine]</span></tt> because <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">node</span> <span class="pre">show</span></tt> doesn&#8217;t understand nested attributes.)</p>
 <p><strong>Show the FQDN</strong></p>
-<p>To view the FQDN for a node named &#8220;i-12345678&#8221;, enter:</p>
+<p>To view the FQDN for a node named <tt class="docutils literal"><span class="pre">i-12345678</span></tt>, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife node show i-12345678 -a fqdn
 </pre></div>
 </div>
@@ -419,7 +419,7 @@ Platform:
 </pre></div>
 </div>
 <p><strong>Show a run-list</strong></p>
-<p>To view the run list for a node named &#8220;dev&#8221;, enter:</p>
+<p>To view the run list for a node named <tt class="docutils literal"><span class="pre">dev</span></tt>, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife node show dev -r
 </pre></div>
 </div>
