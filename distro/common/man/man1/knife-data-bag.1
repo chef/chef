@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-DATA-BAG" "1" "Chef 11.14" "" "knife data bag"
+.TH "KNIFE-DATA-BAG" "1" "Chef 11.16" "" "knife data bag"
 .SH NAME
 knife-data-bag \- The man page for the knife data bag subcommand.
 .
@@ -51,7 +51,7 @@ The configuration file to use.
 Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Use to have Knife use the default value instead of asking a user to provide one.
+Use to have knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -66,7 +66,7 @@ The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, 
 Shows help for the command.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the Chef server\&.
+The private key that knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-[no\-]color\fP
 Use to view colored output.
@@ -78,7 +78,7 @@ Use to show data after a destructive operation.
 The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
+The user name used by knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-V\fP, \fB\-\-verbose\fP
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
@@ -87,7 +87,7 @@ Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 The version of the chef\-client\&.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
+Use to respond to all confirmation prompts with "Yes". knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
 Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
@@ -257,11 +257,35 @@ To edit the contents of a data bag, enter:
 .sp
 .nf
 .ft C
-$ knife data bag edit admins
+$ knife data bag edit dogs tibetanspaniel
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
+.sp
+where \fBdogs\fP is the name of the data bag and \fBtibetanspaniel\fP is the name of the data bag item. This will return something similar to the following in the knife editor:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+{
+  "name":"data_bag_item_dogs_tibetanspaniel",
+  "json_class":"Chef::DataBagItem",
+  "chef_type":"data_bag_item",
+  "data_bag":"dogs",
+  "raw_data":
+    {
+      "description":"small dog that likes to sit in windows",
+      "id":"tibetanspaniel"
+    }
+}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Make the necessary changes to the key\-value pairs under \fBraw_data\fP and save them.
 .sp
 To edit an item named "charlie" that is contained in a data bag named "admins", enter:
 .INDENT 0.0
@@ -516,7 +540,7 @@ uid:      1005
 .UNINDENT
 .UNINDENT
 .sp
-To show the contents of a data bag named "passwords" with an item that contains encrypted data named "mysql", enter:
+To show the contents of a data bag named \fBpasswords\fP with an item that contains encrypted data named \fBmysql\fP, enter:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -565,9 +589,9 @@ to return:
 .ft C
 ## sample:
 {
-   "id": "mysql",
-   "pass": "thesecret123",
-   "user": "fred"
+  "id": "mysql",
+  "pass": "thesecret123",
+  "user": "fred"
 }
 .ft P
 .fi

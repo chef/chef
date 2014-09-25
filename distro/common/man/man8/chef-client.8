@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "CHEF-CLIENT" "8" "Chef 11.14" "" "chef-client"
+.TH "CHEF-CLIENT" "8" "Chef 11.16" "" "chef-client"
 .SH NAME
 chef-client \- The man page for the chef-client command line tool.
 .
@@ -31,7 +31,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
 .sp
-A chef\-client is an agent that runs locally on every node that is registered with the Chef server\&. When a chef\-client is run, it will perform all of the steps that are required to bring the node into the expected state, including:
+A chef\-client is an agent that runs locally on every node that is under management by Chef\&. When a chef\-client is run, it will perform all of the steps that are required to bring the node into the expected state, including:
 .INDENT 0.0
 .IP \(bu 2
 Registering and authenticating the node with the Chef server
@@ -45,13 +45,6 @@ Compiling the resource collection by loading each of the required cookbooks, inc
 Taking the appropriate and required actions to configure the node
 .IP \(bu 2
 Looking for exceptions and notifications, handling each as required
-.UNINDENT
-.sp
-\fBNOTE:\fP
-.INDENT 0.0
-.INDENT 3.5
-The chef\-client executable can be run as a daemon.
-.UNINDENT
 .UNINDENT
 .sp
 The chef\-client executable is run as a command\-line tool.
@@ -153,7 +146,7 @@ The location in which a process identification number (pid) is saved. An executa
 Use to permanently replace the current run\-list with the specified run\-list items.
 .TP
 .B \fB\-R\fP, \fB\-\-enable\-reporting\fP
-Use to enable data collection reporting during a chef\-client run.
+Use to enable Chef reporting, which performs data collection during a chef\-client run.
 .TP
 .B \fBRECIPE_FILE\fP
 The path to a recipe. For example, if a recipe file is in the current directory, use \fBrecipe_file.rb\fP\&. This is typically used with the \fB\-\-local\-mode\fP option.

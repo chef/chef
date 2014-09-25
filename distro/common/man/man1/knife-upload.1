@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-UPLOAD" "1" "Chef 11.14" "" "knife upload"
+.TH "KNIFE-UPLOAD" "1" "Chef 11.16" "" "knife upload"
 .SH NAME
 knife-upload \- The man page for the knife upload subcommand.
 .
@@ -71,7 +71,7 @@ The number of allowed concurrent connections. Default: \fB10\fP\&.
 Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Use to have Knife use the default value instead of asking a user to provide one.
+Use to have knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-\-[no\-]diff\fP
 Use to upload only new and modified files. Set to \fBfalse\fP to upload all files. Default: \fBtrue\fP\&.
@@ -95,7 +95,7 @@ Use to require changes to a cookbook be included as a new version. Only the \fB\
 Shows help for the command.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the Chef server\&.
+The private key that knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-n\fP, \fB\-\-dry\-run\fP
 Use to take no action and only print out results. Default: \fBfalse\fP\&.
@@ -116,7 +116,7 @@ The layout of the local chef\-repo\&. Possible values: \fBstatic\fP, \fBeverythi
 The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
+The user name used by knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
 The version of the chef\-client\&.
@@ -125,7 +125,7 @@ The version of the chef\-client\&.
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
+Use to respond to all confirmation prompts with "Yes". knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
 Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.

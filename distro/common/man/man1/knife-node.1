@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-NODE" "1" "Chef 11.14" "" "knife node"
+.TH "KNIFE-NODE" "1" "Chef 11.16" "" "knife node"
 .SH NAME
 knife-node \- The man page for the knife node subcommand.
 .
@@ -49,7 +49,7 @@ The configuration file to use.
 Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Use to have Knife use the default value instead of asking a user to provide one.
+Use to have knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -64,7 +64,7 @@ The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, 
 Shows help for the command.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the Chef server\&.
+The private key that knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-[no\-]color\fP
 Use to view colored output.
@@ -76,7 +76,7 @@ Use to show data after a destructive operation.
 The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
+The user name used by knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-V\fP, \fB\-\-verbose\fP
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
@@ -85,7 +85,7 @@ Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 The version of the chef\-client\&.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
+Use to respond to all confirmation prompts with "Yes". knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
 Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
@@ -262,7 +262,7 @@ Displays a node in the $EDITOR\&. By default, attributes that are default, overr
 .sp
 \fBExamples\fP
 .sp
-To edit the data for a node named "node1", enter:
+To edit the data for a node named \fBnode1\fP, enter:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -424,7 +424,7 @@ Use this to add the run list item before the specified run list item.
 .sp
 \fBExamples\fP
 .sp
-To add a role to a run list, enter:
+To add a role to a run\-list, enter:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -436,7 +436,7 @@ $ knife node run_list add node \(aqrole[ROLE_NAME]\(aq
 .UNINDENT
 .UNINDENT
 .sp
-To add roles and recipes to a run list, enter:
+To add roles and recipes to a run\-list, enter:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -448,7 +448,7 @@ $ knife node run_list add node \(aqrecipe[COOKBOOK::RECIPE_NAME],recipe[COOKBOOK
 .UNINDENT
 .UNINDENT
 .sp
-To add a recipe to a run list using the fully qualified format, enter:
+To add a recipe to a run\-list using the fully qualified format, enter:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -460,7 +460,7 @@ $ knife node run_list add node \(aqrecipe[COOKBOOK::RECIPE_NAME]\(aq
 .UNINDENT
 .UNINDENT
 .sp
-To add a recipe to a run list using the cookbook format, enter:
+To add a recipe to a run\-list using the cookbook format, enter:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -472,7 +472,7 @@ $ knife node run_list add node \(aqCOOKBOOK::RECIPE_NAME\(aq
 .UNINDENT
 .UNINDENT
 .sp
-To add the default recipe of a cookbook to a run list, enter:
+To add the default recipe of a cookbook to a run\-list, enter:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -507,7 +507,7 @@ This command does not have any specific options.
 .sp
 \fBExamples\fP
 .sp
-To remove a role from a run list, enter:
+To remove a role from a run\-list, enter:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -519,7 +519,7 @@ $ knife node run_list remove node \(aqrole[ROLE_NAME]\(aq
 .UNINDENT
 .UNINDENT
 .sp
-To remove a recipe from a run list using the fully qualified format, enter:
+To remove a recipe from a run\-list using the fully qualified format, enter:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -568,7 +568,7 @@ Use to show only the run\-list.
 .sp
 \fBExamples\fP
 .sp
-To view all data for a node named "build", enter:
+To view all data for a node named \fBbuild\fP, enter:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -637,7 +637,7 @@ knife node show <node_name> \-a <attribute_name>
 .sp
 where \fB<attribute_name>\fP is something like kernel or platform. (This doesn\(aqt work for nested attributes like \fBnode[kernel][machine]\fP because \fBknife node show\fP doesn\(aqt understand nested attributes.)
 .sp
-To view the FQDN for a node named "i\-12345678", enter:
+To view the FQDN for a node named \fBi\-12345678\fP, enter:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -661,7 +661,7 @@ fqdn: ip\-10\-251\-75\-20.ec2.internal
 .UNINDENT
 .UNINDENT
 .sp
-To view the run list for a node named "dev", enter:
+To view the run list for a node named \fBdev\fP, enter:
 .INDENT 0.0
 .INDENT 3.5
 .sp

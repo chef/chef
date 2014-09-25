@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-BOOTSTRAP" "1" "Chef 11.14" "" "knife bootstrap"
+.TH "KNIFE-BOOTSTRAP" "1" "Chef 11.16" "" "knife bootstrap"
 .SH NAME
 knife-bootstrap \- The man page for the knife bootstrap subcommand.
 .
@@ -84,10 +84,10 @@ The default bootstrap operation uses the omnibus installer, which means the defa
 .UNINDENT
 .UNINDENT
 .sp
-The template file to be used during a bootstrap operation. The following distributions are supported: \fBchef\-full\fP (the default bootstrap), \fBcentos5\-gems\fP, \fBfedora13\-gems\fP, \fBubuntu10.04\-gems\fP, \fBubuntu10.04\-apt\fP, \fBubuntu12.04\-gems\fP, and the name of a custom bootstrap template file. When this option is used, Knife will search for the template file in the following order: the \fBbootstrap/\fP folder in the current working directory, the \fBbootstrap/\fP folder in the chef\-repo, the \fBbootstrap/\fP folder in the \fB~/.chef/\fP directory, or a default bootstrap file. Do not use the \fB\-\-template\-file\fP option when \fB\-\-distro\fP is specified.
+The template file to be used during a bootstrap operation. The following distributions are supported: \fBchef\-full\fP (the default bootstrap), \fBcentos5\-gems\fP, \fBfedora13\-gems\fP, \fBubuntu10.04\-gems\fP, \fBubuntu10.04\-apt\fP, \fBubuntu12.04\-gems\fP, and the name of a custom bootstrap template file. When this option is used, knife will search for the template file in the following order: the \fBbootstrap/\fP folder in the current working directory, the \fBbootstrap/\fP folder in the chef\-repo, the \fBbootstrap/\fP folder in the \fB~/.chef/\fP directory, or a default bootstrap file. Do not use the \fB\-\-template\-file\fP option when \fB\-\-distro\fP is specified.
 .TP
 .B \fB\-\-defaults\fP
-Use to have Knife use the default value instead of asking a user to provide one.
+Use to have knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-\-disable\-editing\fP
 Use to prevent the $EDITOR from being opened and to accept data as\-is.
@@ -120,7 +120,7 @@ The SSH identity file used for authentication. Key\-based authentication is reco
 A JSON string that is added to the first run of a chef\-client\&.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the Chef server\&.
+The private key that knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-N NAME\fP, \fB\-\-node\-name NAME\fP
 The name of the node.
@@ -129,7 +129,7 @@ The name of the node.
 The SSH port.
 .TP
 .B \fB\-P PASSWORD\fP, \fB\-\-ssh\-password PASSWORD\fP
-The SSH password. This can be used to pass the password directly on the command line. If this option is not specified (and a password is required) Knife will prompt for the password.
+The SSH password. This can be used to pass the password directly on the command line. If this option is not specified (and a password is required) knife will prompt for the password.
 .TP
 .B \fB\-\-prerelease\fP
 Use to install pre\-release gems.
@@ -156,7 +156,7 @@ Use to execute a bootstrap operation with sudo\&.
 The path to a template file that will be used during a bootstrap operation. Do not use the \fB\-\-distro\fP option when \fB\-\-template\-file\fP is specified.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
+The user name used by knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-\-use\-sudo\-password\fP
 Use to perform a bootstrap operation with sudo; specify the password with the \fB\-P\fP (or \fB\-\-ssh\-password\fP) option.
@@ -174,7 +174,7 @@ Use to run the initial chef\-client run at the \fBdebug\fP log\-level (e.g. \fBc
 The SSH user name.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
+Use to respond to all confirmation prompts with "Yes". knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
 Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
