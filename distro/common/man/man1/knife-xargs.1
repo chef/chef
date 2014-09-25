@@ -154,7 +154,7 @@ The following examples show various ways of listing all nodes on the server, and
 .sp
 .nf
 .ft C
-$ knife list \(aqnodes/*\(aq | knife xargs perl \-ex "s/grantmc/gmc"
+$ knife list \(aqnodes/*\(aq | knife xargs "perl \-i \-pe \(aqs/grantmc/gmc\(aq"
 .ft P
 .fi
 .UNINDENT
@@ -166,7 +166,7 @@ or without quotes and the backslash escaped:
 .sp
 .nf
 .ft C
-$ knife list /nodes/\e* | knife xargs perl \-ex "s/grantmc/gmc"
+$ knife list /nodes/\e* | knife xargs "perl \-i \-pe \(aqs/grantmc/gmc\(aq"
 .ft P
 .fi
 .UNINDENT
@@ -178,7 +178,7 @@ or by using the \fB\-\-pattern\fP option:
 .sp
 .nf
 .ft C
-$ knife xargs \-\-pattern \(aq/nodes.*\(aq perl \-ex "s/grantmc/gmc"
+$ knife xargs \-\-pattern \(aq/nodes.*\(aq "perl \-i \-pe \(aqs/grantmc/gmc\(aq"
 .ft P
 .fi
 .UNINDENT
