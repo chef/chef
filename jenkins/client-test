@@ -140,15 +140,15 @@ if [ ! -f "/opt/chef/bin/ohai" ]; then
   exit 1
 fi
 
-# we test using the specs packaged in the gem
-cd /opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-[0-9]*
+# test against the appbundle'd chef bundle
+cd /opt/chef/embedded/apps/chef
 
 # test against the rspec and gems in the omnibus build
 PATH=/opt/chef/bin:/opt/chef/embedded/bin:$PATH
 export PATH
 
-# we do not bundle exec here in order to test against gems in the omnibus build
-sudo env PATH=$PATH TERM=xterm rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec
+# run against the Gemfile.lock in the appbundle'd directory
+sudo env PATH=$PATH TERM=xterm bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec
 
 # clean up the workspace to save disk space
 cd $WORKSPACE
