@@ -233,17 +233,17 @@ class Chef::Application::Solo < Chef::Application
 
     loop do
       begin
-        if Chef::Config[:splay]
-          splay = rand Chef::Config[:splay]
-          Chef::Log.debug("Splay sleep #{splay} seconds")
-          sleep splay
+
+        sleep_sec = 0
+        sleep_sec += rand(Chef::Config[:splay]) if Chef::Config[:splay]
+        sleep_sec += Chef::Config[:interval] if Chef::Config[:interval]
+        if sleep_sec != 0
+          Chef::Log.debug("Sleeping for #{sleep_sec} seconds")
+          sleep(sleep_sec)
         end
 
         run_chef_client
-        if Chef::Config[:interval]
-          Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
-          sleep Chef::Config[:interval]
-        else
+        if !Chef::Config[:interval]
           Chef::Application.exit! "Exiting", 0
         end
       rescue SystemExit => e
@@ -252,8 +252,6 @@ class Chef::Application::Solo < Chef::Application
         if Chef::Config[:interval]
           Chef::Log.error("#{e.class}: #{e}")
           Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
-          Chef::Log.fatal("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
-          sleep Chef::Config[:interval]
           retry
         else
           Chef::Application.fatal!("#{e.class}: #{e.message}", 1)

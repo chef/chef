@@ -316,7 +316,10 @@ class Chef::Application::Client < Chef::Application
         end
       end
     end
+  end
 
+  # Run the chef client, optionally daemonizing or looping at intervals.
+  def run_application
     if Chef::Config[:version]
       puts "Chef version: #{::Chef::VERSION}"
     end
@@ -347,28 +350,20 @@ class Chef::Application::Client < Chef::Application
       begin
         Chef::Application.exit!("Exiting", 0) if signal == GRACEFUL_EXIT_SIGNAL
 
-        if Chef::Config[:splay] and signal != IMMEDIATE_RUN_SIGNAL
-          splay = rand Chef::Config[:splay]
-          Chef::Log.debug("Splay sleep #{splay} seconds")
-          sleep splay
+        if signal != IMMEDIATE_RUN_SIGNAL
+          signal = interval_sleep(time_to_sleep)
         end
 
         signal = nil
         run_chef_client(Chef::Config[:specific_recipes])
 
-        if Chef::Config[:interval]
-          Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
-          signal = interval_sleep
-        else
-          Chef::Application.exit! "Exiting", 0
-        end
+        Chef::Application.exit!("Exiting", 0) if !Chef::Config[:interval]
       rescue SystemExit => e
         raise
       rescue Exception => e
         if Chef::Config[:interval]
           Chef::Log.error("#{e.class}: #{e}")
-          Chef::Log.error("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
-          signal = interval_sleep
+          Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
           retry
         else
           Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
@@ -377,12 +372,20 @@ class Chef::Application::Client < Chef::Application
     end
   end
 
-  def interval_sleep
+  def time_to_sleep
+    duration = 0
+    duration += rand(Chef::Config[:splay]) if Chef::Config[:splay]
+    duration += Chef::Config[:interval] if Chef::Config[:interval]
+    duration
+  end
+
+  def interval_sleep(sec)
+    Chef::Log.debug("Sleeping for #{sec} seconds")
     unless SELF_PIPE.empty?
-      client_sleep Chef::Config[:interval]
+      client_sleep(sec)
     else
       # Windows
-      sleep Chef::Config[:interval]
+      sleep(sec)
     end
   end
 
