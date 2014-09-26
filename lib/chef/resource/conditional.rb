@@ -72,6 +72,7 @@ class Chef
         end
       end
 
+      # this is run during convergence via Chef::Resource#run_action -> Chef::Resource#should_skip?
       def continue?
         # configure late in case guard_interpreter is specified on the resource after the conditional
         configure

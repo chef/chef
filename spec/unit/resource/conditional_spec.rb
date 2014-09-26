@@ -36,6 +36,13 @@ describe Chef::Resource::Conditional do
     expect { Chef::Resource::Conditional.send(:new, :always, @parent_resource, nil, {})}.to raise_error(ArgumentError, /requires either a command or a block/)
   end
 
+  it "does not evaluate a guard interpreter on initialization of the conditional" do
+    expect_any_instance_of(Chef::Resource::Conditional).not_to receive(:configure)
+    expect(Chef::GuardInterpreter::DefaultGuardInterpreter).not_to receive(:new)
+    expect(Chef::GuardInterpreter::ResourceGuardInterpreter).not_to receive(:new)
+    Chef::Resource::Conditional.only_if(@parent_resource, "true")
+  end
+
   describe "when created as an `only_if`" do
     describe "after running a successful command" do
       before do
