@@ -619,7 +619,11 @@ class Chef
           'C'
         end
       rescue
-        Chef::Log.warn "No usable locale -a command found, assuming you have en_US.UTF-8 installed."
+        if Chef::Platform.windows?
+          Chef::Log.debug "Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else."
+        else
+          Chef::Log.warn "No usable locale -a command found, assuming you have en_US.UTF-8 installed."
+        end
         'en_US.UTF-8'
       end
     end
