@@ -528,8 +528,8 @@ EOM
       when_the_repository 'has an environment with bad JSON' do
         file 'environments/x.json', '{'
         it 'knife upload tries and fails' do
-          knife('upload /environments/x.json').should_fail "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\nERROR: /environments/x.json failed to write: Parse error reading JSON: A JSON text must at least contain two octets!\n"
-          knife('diff --name-status /environments/x.json').should_succeed "M\t/environments/x.json\n", :stderr => "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n"
+          knife('upload /environments/x.json').should_fail /WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF\n.+ERROR: \/environments\/x.json failed to write: Parse error reading JSON: parse error: premature EOF\n/m
+          knife('diff --name-status /environments/x.json').should_succeed "M\t/environments/x.json\n", :stderr => /WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF\n/
         end
       end
 
@@ -554,7 +554,7 @@ EOM
       when_the_repository 'has an environment with bad JSON' do
         file 'environments/x.json', '{'
         it 'knife upload tries and fails' do
-          knife('upload /environments/x.json').should_fail "ERROR: /environments failed to create_child: Parse error reading JSON creating child 'x.json': A JSON text must at least contain two octets!\n"
+          knife('upload /environments/x.json').should_fail /ERROR: \/environments failed to create_child: Parse error reading JSON creating child 'x.json': parse error: premature EOF\n/
           knife('diff --name-status /environments/x.json').should_succeed "A\t/environments/x.json\n"
         end
       end
@@ -1007,8 +1007,8 @@ EOM
       when_the_repository 'has an environment with bad JSON' do
         file 'environments/x.json', '{'
         it 'knife upload tries and fails' do
-          knife('upload /environments/x.json').should_fail "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\nERROR: /environments/x.json failed to write: Parse error reading JSON: A JSON text must at least contain two octets!\n"
-          knife('diff --name-status /environments/x.json').should_succeed "M\t/environments/x.json\n", :stderr => "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n"
+          knife('upload /environments/x.json').should_fail /WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF\n.+ERROR: \/environments\/x.json failed to write: Parse error reading JSON: parse error: premature EOF\n/m
+          knife('diff --name-status /environments/x.json').should_succeed "M\t/environments/x.json\n", :stderr => /WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF\n/
         end
       end
 
@@ -1033,7 +1033,7 @@ EOM
       when_the_repository 'has an environment with bad JSON' do
         file 'environments/x.json', '{'
         it 'knife upload tries and fails' do
-          knife('upload /environments/x.json').should_fail "ERROR: /environments failed to create_child: Parse error reading JSON creating child 'x.json': A JSON text must at least contain two octets!\n"
+          knife('upload /environments/x.json').should_fail /ERROR: \/environments failed to create_child: Parse error reading JSON creating child 'x.json': parse error: premature EOF\n/
           knife('diff --name-status /environments/x.json').should_succeed "A\t/environments/x.json\n"
         end
       end
