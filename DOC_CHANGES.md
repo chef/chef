@@ -467,7 +467,6 @@ PathHelper = Chef::Util::PathHelper
 Dir.glob(File.join(PathHelper.escape_glob(path), "*")) # ["#{path}\\apache2", "#{path}\\apt", ...]
 Dir[PathHelper.escape_glob(path) + "/*"] # ["#{path}\\apache2", "#{path}\\apt", ...]
 ```
-
 ## Mac OS X default package provider is now Homebrew
 
 Per [Chef RFC 016](https://github.com/opscode/chef-rfc/blob/master/rfc016-homebrew-osx-package-provider.md), the default provider for the `package` resource on Mac OS X is now [Homebrew](http://brew.sh). The [homebrew cookbook's](https://supermarket.getchef.com/cookbooks/homebrew) default recipe, or some other method is still required for getting homebrew installed on the system. The cookbook won't be strictly required just to install packages from homebrew on OS X, though. To use this, simply use the `package` resource, or the `homebrew_package` shortcut resource:
@@ -522,8 +521,3 @@ end
 
 Chef will then execute the Homebrew command as that user.  The `homebrew_user` attribute can only be provided to the 
 `homebrew_package` resource, not the `package` resource.
-
-### Removed dependencies on the json gem, replaced with ffi-yajl
-We should no longer require the 'json' gem for any JSON parsing, and should instead be using the Chef::JSONCompat
-library everywhere.  Consumers should not see any changes, unless they relied on the transitive 'json' gem dependency.
-In this case, they should upgrade their code to take advantage of the Chef::JSONCompat library instead.
