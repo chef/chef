@@ -58,13 +58,13 @@ describe Chef::JSONCompat do
   describe "when pretty printing an object that defines #to_json" do
     class Foo
       def to_json(*a)
-        Chef::JSONCompat.to_json({'foo' => 1234, 'bar' => {'baz' => 5678}}, *a)
+        Chef::JSONCompat.to_json({'bar' => {'baz' => 5678}}, *a)
       end
     end
 
     it "should work" do
       f = Foo.new
-      expect(Chef::JSONCompat.to_json_pretty(f)).to eql("{\n  \"foo\": 1234,\n  \"bar\": {\n    \"baz\": 5678\n  }\n}\n")
+      expect(Chef::JSONCompat.to_json_pretty(f)).to eql("{\n  \"bar\": {\n    \"baz\": 5678\n  }\n}\n")
     end
 
     include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
