@@ -267,7 +267,7 @@ class Chef
             "non_existent_cookbooks" => non_existent_cookbooks,
             "cookbooks_with_no_versions" => cookbooks_with_no_matching_versions
           }
-          result.to_json(*a)
+          Chef::JSONCompat.to_json(result, *a)
         end
       end
 
@@ -302,7 +302,7 @@ class Chef
             "non_existent_cookbooks" => non_existent_cookbooks,
             "most_constrained_cookbooks" => most_constrained_cookbooks
           }
-          result.to_json(*a)
+          Chef::JSONCompat.to_json(result, *a)
         end
       end
 
@@ -337,5 +337,11 @@ class Chef
     end
 
     class BadProxyURI < RuntimeError; end
+
+    # Raised by Chef::JSONCompat
+    class JSON
+      class EncodeError < RuntimeError; end
+      class ParseError < RuntimeError; end
+    end
   end
 end

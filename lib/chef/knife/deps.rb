@@ -9,6 +9,7 @@ class Chef
 
       deps do
         require 'chef/chef_fs/file_system'
+        require 'chef/json_compat'
         require 'chef/run_list'
       end
 
@@ -77,7 +78,7 @@ class Chef
             return entry.chef_object.metadata.dependencies.keys.map { |cookbook| "/cookbooks/#{cookbook}" }
 
           elsif entry.parent && entry.parent.path == '/nodes'
-            node = JSON.parse(entry.read, :create_additions => false)
+            node = Chef::JSONCompat.parse(entry.read, :create_additions => false)
             result = []
             if node['chef_environment'] && node['chef_environment'] != '_default'
               result << "/environments/#{node['chef_environment']}.json"
@@ -88,7 +89,7 @@ class Chef
             result
 
           elsif entry.parent && entry.parent.path == '/roles'
-            role = JSON.parse(entry.read, :create_additions => false)
+            role = Chef::JSONCompat.parse(entry.read, :create_additions => false)
             result = []
             if role['run_list']
               dependencies_from_runlist(role['run_list']).each do |dependency|

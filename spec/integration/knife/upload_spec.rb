@@ -237,7 +237,7 @@ Created /data_bags/x/y.json
 EOM
           knife('diff --name-status /data_bags').should_succeed <<EOM
 EOM
-          JSON.parse(knife('raw /data/x/y').stdout, :create_additions => false).keys.sort.should == [ 'foo', 'id' ]
+          Chef::JSONCompat.parse(knife('raw /data/x/y').stdout, :create_additions => false).keys.sort.should == [ 'foo', 'id' ]
         end
 
         it 'knife upload /data_bags/x /data_bags/x/y.json uploads x once' do
@@ -256,7 +256,7 @@ Created /data_bags/x
 Created /data_bags/x/y.json
 EOM
           knife('diff --name-status /data_bags').should_succeed ''
-          result = JSON.parse(knife('raw /data/x/y').stdout, :create_additions => false)
+          result = Chef::JSONCompat.parse(knife('raw /data/x/y').stdout, :create_additions => false)
           result.keys.sort.should == [ 'chef_type', 'data_bag', 'id' ]
           result['chef_type'].should == 'aaa'
           result['data_bag'].should == 'bbb'

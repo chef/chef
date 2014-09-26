@@ -19,6 +19,7 @@
 require 'chef/chef_fs/file_system/base_fs_dir'
 require 'chef/chef_fs/file_system/rest_list_entry'
 require 'chef/chef_fs/file_system/not_found_error'
+require 'chef/json_compat'
 
 class Chef
   module ChefFS
@@ -61,8 +62,8 @@ class Chef
 
         def create_child(name, file_contents)
           begin
-            object = JSON.parse(file_contents, :create_additions => false)
-          rescue JSON::ParserError => e
+            object = Chef::JSONCompat.parse(file_contents, :create_additions => false)
+          rescue Chef::Exceptions::JSON::ParseError => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e), "Parse error reading JSON creating child '#{name}': #{e}"
           end
 

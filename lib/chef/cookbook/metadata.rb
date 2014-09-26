@@ -441,7 +441,7 @@ class Chef
       end
 
       def to_json(*a)
-        self.to_hash.to_json(*a)
+        Chef::JSONCompat.to_json(self.to_hash, *a)
       end
 
       def self.from_hash(o)

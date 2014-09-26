@@ -92,7 +92,7 @@ describe Chef::ApiClient do
     before(:each) do
       @client.name("black")
       @client.public_key("crowes")
-      @json = @client.to_json
+      @json = Chef::JSONCompat.to_json(@client)
     end
 
     it "serializes as a JSON object" do
@@ -117,7 +117,7 @@ describe Chef::ApiClient do
 
     it "includes the private key when present" do
       @client.private_key("monkeypants")
-      @client.to_json.should include(%q{"private_key":"monkeypants"})
+      Chef::JSONCompat.to_json(@client).should include(%q{"private_key":"monkeypants"})
     end
 
     it "does not include the private key if not present" do
@@ -135,7 +135,7 @@ describe Chef::ApiClient do
       "validator" => true,
       "json_class" => "Chef::ApiClient"
       }
-      @client = Chef::JSONCompat.from_json(client.to_json)
+      @client = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(client))
     end
 
     it "should deserialize to a Chef::ApiClient object" do

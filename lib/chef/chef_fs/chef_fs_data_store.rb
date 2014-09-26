@@ -23,6 +23,7 @@ require 'chef/chef_fs/file_pattern'
 require 'chef/chef_fs/file_system'
 require 'chef/chef_fs/file_system/not_found_error'
 require 'chef/chef_fs/file_system/memory_root'
+require 'chef/json_compat'
 require 'fileutils'
 
 class Chef
@@ -114,7 +115,7 @@ class Chef
                   end
                 end
               end
-              JSON.pretty_generate(result)
+              Chef::JSONCompat.to_json_pretty(result)
 
             else
               begin
@@ -269,7 +270,7 @@ class Chef
 
         # Create a little Chef::ChefFS memory filesystem with the data
         cookbook_fs = Chef::ChefFS::FileSystem::MemoryRoot.new('uploading')
-        cookbook = JSON.parse(data, :create_additions => false)
+        cookbook = Chef::JSONCompat.parse(data, :create_additions => false)
         cookbook.each_pair do |key, value|
           if value.is_a?(Array)
             value.each do |file|

@@ -57,7 +57,7 @@ mkdir -p /etc/chef/ohai/hints
 
 <% @chef_config[:knife][:hints].each do |name, hash| -%>
 cat > /etc/chef/ohai/hints/<%= name %>.json <<'EOP'
-<%= hash.to_json %>
+<%= Chef::JSONCompat.to_json(hash) %>
 EOP
 <% end -%>
 <% end -%>
@@ -67,7 +67,7 @@ cat > /etc/chef/client.rb <<'EOP'
 EOP
 
 cat > /etc/chef/first-boot.json <<'EOP'
-<%= first_boot.to_json %>
+<%= Chef::JSONCompat.to_json(first_boot) %>
 EOP
 
 echo "Starting first Chef Client run..."

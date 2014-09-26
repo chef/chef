@@ -19,6 +19,7 @@
 require 'chef/chef_fs/file_system'
 require 'chef/chef_fs/file_system/operation_failed_error'
 require 'chef/chef_fs/file_system/operation_not_allowed_error'
+require 'chef/json_compat'
 require 'chef/util/diff'
 
 class Chef
@@ -251,9 +252,9 @@ class Chef
       end
 
       def self.canonicalize_json(json_text)
-        parsed_json = JSON.parse(json_text, :create_additions => false)
+        parsed_json = Chef::JSONCompat.parse(json_text, :create_additions => false)
         sorted_json = sort_keys(parsed_json)
-        JSON.pretty_generate(sorted_json)
+        Chef::JSONCompat.to_json_pretty(sorted_json)
       end
 
       def self.diff_text(old_path, new_path, old_value, new_value)

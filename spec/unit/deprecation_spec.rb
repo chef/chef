@@ -46,7 +46,7 @@ describe Chef::Deprecation do
   end
 
   method_snapshot_file = File.join(CHEF_SPEC_DATA, "file-providers-method-snapshot-chef-11-4.json")
-  method_snapshot = JSON.parse(File.open(method_snapshot_file).read())
+  method_snapshot = Chef::JSONCompat.parse(File.open(method_snapshot_file).read())
 
   method_snapshot.each do |class_name, old_methods|
     class_object = class_from_string(class_name)

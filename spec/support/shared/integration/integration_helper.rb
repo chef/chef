@@ -21,7 +21,6 @@ require 'tmpdir'
 require 'fileutils'
 require 'chef/config'
 require 'chef_zero/rspec'
-require 'json'
 require 'support/shared/integration/knife_support'
 require 'support/shared/integration/app_server_support'
 require 'spec_helper'
@@ -69,7 +68,7 @@ module IntegrationSupport
         File.open(filename, 'w') do |file|
           raw = case contents
                 when Hash
-                  JSON.pretty_generate(contents)
+                  Chef::JSONCompat.to_json_pretty(contents)
                 when Array
                   contents.join("\n")
                 else

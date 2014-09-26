@@ -63,7 +63,7 @@ class Chef
 
     # Serialize this object as a hash
     def to_json(*a)
-      to_hash.to_json(*a)
+      Chef::JSONCompat.to_json(to_hash, *a)
     end
 
     def chef_server_rest

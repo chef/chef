@@ -27,7 +27,6 @@ describe Chef::Knife::CookbookMetadataFromFile do
     @tgt = File.expand_path(File.join(CHEF_SPEC_DATA, "metadata", "quick_start", "metadata.json"))
     @knife = Chef::Knife::CookbookMetadataFromFile.new
     @knife.name_args = [ @src ]
-    @knife.stub(:to_json_pretty).and_return(true)
     @md = Chef::Cookbook::Metadata.new
     Chef::Cookbook::Metadata.stub(:new).and_return(@md)
     $stdout.stub(:write)

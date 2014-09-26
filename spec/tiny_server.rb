@@ -25,6 +25,7 @@ require 'singleton'
 require 'chef/json_compat'
 require 'open-uri'
 require 'chef/config'
+require 'chef/json_compat'
 
 module TinyServer
 
@@ -152,7 +153,7 @@ module TinyServer
                       :available_routes => @routes, :request => env}
         # Uncomment me for glorious debugging
         # pp :not_found => debug_info
-        [404, {'Content-Type' => 'application/json'}, [ debug_info.to_json ]]
+        [404, {'Content-Type' => 'application/json'}, [ Chef::JSONCompat.to_json(debug_info) ]]
       end
     end
 

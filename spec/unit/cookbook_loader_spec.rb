@@ -181,7 +181,7 @@ describe Chef::CookbookLoader do
       aa.to_hash["metadata"].recipes.keys.should include("openldap")
       expected_desc = "Main Open LDAP configuration"
       aa.to_hash["metadata"].recipes["openldap"].should == expected_desc
-      raw = aa.to_hash["metadata"].recipes.to_json
+      raw = Chef::JSONCompat.to_json(aa.to_hash["metadata"].recipes)
       search_str = "\"openldap\":\""
       key_idx = raw.index(search_str)
       key_idx.should be > 0

@@ -116,13 +116,13 @@ EXPECTED
   describe "when JSON attributes are given" do
     let(:config) { {:first_boot_attributes => {:baz => :quux}} }
     it "adds the attributes to first_boot" do
-      bootstrap_context.first_boot.to_json.should eq({:baz => :quux, :run_list => run_list}.to_json)
+      Chef::JSONCompat.to_json(bootstrap_context.first_boot).should eq(Chef::JSONCompat.to_json({:baz => :quux, :run_list => run_list}))
     end
   end
 
   describe "when JSON attributes are NOT given" do
     it "sets first_boot equal to run_list" do
-      bootstrap_context.first_boot.to_json.should eq({:run_list => run_list}.to_json)
+      Chef::JSONCompat.to_json(bootstrap_context.first_boot).should eq(Chef::JSONCompat.to_json({:run_list => run_list}))
     end
   end
 

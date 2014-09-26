@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require 'json'
 require File.expand_path('../../../../spec_helper', __FILE__)
 
 describe Chef::Util::Powershell::Cmdlet, :windows_only do
@@ -91,7 +90,7 @@ describe Chef::Util::Powershell::Cmdlet, :windows_only do
     it "returns json format data", :windows_powershell_dsc_only do
       result = cmdlet_alias_requires_switch_or_argument.run({},{},'ls')
       expect(result.succeeded?).to eq(true)
-      expect(lambda{JSON.parse(result.return_value)}).not_to raise_error
+      expect(lambda{Chef::JSONCompat.parse(result.return_value)}).not_to raise_error
     end
   end
 
