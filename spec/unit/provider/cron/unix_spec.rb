@@ -21,26 +21,34 @@
 require 'spec_helper'
 
 describe Chef::Provider::Cron::Unix do
-  before do
-    @node = Chef::Node.new
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::Cron.new("cronhole some stuff")
-    @new_resource.user "root"
-    @new_resource.minute "30"
-    @new_resource.command "/bin/true"
 
-    @provider = Chef::Provider::Cron::Unix.new(@new_resource, @run_context)
+  subject(:provider) { Chef::Provider::Cron::Unix.new(new_resource, run_context) }
+
+  let(:username) { "root" }
+
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:new_resource) do
+    Chef::Resource::Cron.new("cronhole some stuff").tap do |resource|
+      resource.user username
+      resource.minute "30"
+      resource.command "/bin/true"
+    end
   end
 
-  it "should inherit from Chef::Provider:Cron" do
-    @provider.should be_a(Chef::Provider::Cron)
+  let(:status) { double('Process::Status', :exitstatus => exitstatus) }
+  let(:exitstatus) { 0 }
+  let(:shell_out) { double('Mixlib::ShellOut', :status => status, :stdout => stdout, :stderr => stderr) }
+
+  it "is a Chef::Provider:Cron" do
+    expect(provider).to be_a(Chef::Provider::Cron)
   end
 
   describe "read_crontab" do
-    before :each do
-      @status = double("Status", :exitstatus => 0)
-      @stdout = String.new(<<-CRONTAB)
+    let(:stderr) { "" }
+    let(:stdout) do
+      String.new(<<-CRONTAB)
 0 2 * * * /some/other/command
 
 # Chef Name: something else
@@ -48,74 +56,72 @@ describe Chef::Provider::Cron::Unix do
 
 # Another comment
       CRONTAB
-      @provider.stub(:run_command_and_return_stdout_stderr).and_return([@status, @stdout, StringIO.new])
+    end
+
+    before do
+      allow(provider).to receive(:shell_out).with('/usr/bin/crontab -l', :user => username).and_return(shell_out)
     end
 
     it "should call crontab -l with the user" do
-      @provider.should_receive(:run_command_and_return_stdout_stderr).with(:command => "/usr/bin/crontab -l", :user => @new_resource.user).and_return([@status, @stdout, StringIO.new])
-      @provider.send(:read_crontab)
+      provider.send(:read_crontab)
+      expect(provider).to have_received(:shell_out).with('/usr/bin/crontab -l', :user => username)
     end
 
     it "should return the contents of the crontab" do
-      crontab = @provider.send(:read_crontab)
-      crontab.should == <<-CRONTAB
-0 2 * * * /some/other/command
-
-# Chef Name: something else
-* 5 * * * /bin/true
-
-# Another comment
-CRONTAB
+      crontab = provider.send(:read_crontab)
+      expect(crontab).to eq(stdout)
     end
 
-    it "should return nil if the user has no crontab" do
-      status = double("Status", :exitstatus => 1)
-      @provider.stub(:run_command_and_return_stdout_stderr).and_return([status, @stdout, StringIO.new])
-      @provider.send(:read_crontab).should == nil
+    context "when the user has no crontab" do
+      let(:exitstatus) { 1 }
+
+      it "should return nil if the user has no crontab" do
+        expect(provider.send(:read_crontab)).to be_nil
+      end
     end
 
-    it "should raise an exception if another error occurs" do
-      status = double("Status", :exitstatus => 2)
-      @provider.stub(:run_command_and_return_stdout_stderr).and_return([status, @stdout, StringIO.new])
-      lambda do
-        @provider.send(:read_crontab)
-      end.should raise_error(Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: 2")
+    context "when any other error occurs" do
+      let (:exitstatus) { 2 }
+
+      it "should raise an exception if another error occurs" do
+        expect {
+          provider.send(:read_crontab)
+        }.to raise_error(Chef::Exceptions::Cron, "Error determining state of #{new_resource.name}, exit: 2")
+      end
     end
   end
 
   describe "write_crontab" do
-    before :each do
-      @status = double("Status", :exitstatus => 0)
-      @provider.stub(:run_command_and_return_stdout_stderr).and_return([@status, String.new, String.new])
-      @tempfile = double("foo", :path => "/tmp/foo", :close => true)
-      Tempfile.stub(:new).and_return(@tempfile)
-      @tempfile.should_receive(:flush)
-      @tempfile.should_receive(:chmod).with(420)
-      @tempfile.should_receive(:close!)
+    let(:stdout) { "" }
+    let(:stderr) { "" }
+    let(:tempfile) { double("foo", :path => "/tmp/foo", :close => true) }
+
+    before do
+      expect(Tempfile).to receive(:new).and_return(tempfile)
+      expect(tempfile).to receive(:flush)
+      expect(tempfile).to receive(:chmod).with(420)
+      expect(tempfile).to receive(:close!)
+      allow(tempfile).to receive(:<<)
+      allow(provider).to receive(:shell_out).with("/usr/bin/crontab #{tempfile.path}", :user => username).and_return(shell_out)
     end
 
     it "should call crontab for the user" do
-      @provider.should_receive(:run_command_and_return_stdout_stderr).with(hash_including(:user => @new_resource.user))
-      @tempfile.should_receive(:<<).with("Foo")
-      @provider.send(:write_crontab, "Foo")
+      provider.send(:write_crontab, "Foo")
+      expect(provider).to have_received(:shell_out).with("/usr/bin/crontab #{tempfile.path}", :user => username)
     end
 
     it "should call crontab with a file containing the crontab" do
-      @provider.should_receive(:run_command_and_return_stdout_stderr) do |args|
-        (args[:command] =~ %r{\A/usr/bin/crontab (/\S+)\z}).should be_true
-        $1.should == "/tmp/foo"
-        @status
-      end
-      @tempfile.should_receive(:<<).with("Foo\n# wibble\n wah!!")
-      @provider.send(:write_crontab, "Foo\n# wibble\n wah!!")
+      provider.send(:write_crontab, "Foo\n# wibble\n wah!!")
+      expect(tempfile).to have_received(:<<).with("Foo\n# wibble\n wah!!")
     end
 
-    it "should raise an exception if the command returns non-zero" do
-      @tempfile.should_receive(:<<).with("Foo")
-      @status.stub(:exitstatus).and_return(1)
-      lambda do
-        @provider.send(:write_crontab, "Foo")
-      end.should raise_error(Chef::Exceptions::Cron, /Error updating state of #{@new_resource.name}, exit: 1/)
+    context "when writing the crontab fails" do
+      let(:exitstatus) { 1 }
+      it "should raise an exception if the command returns non-zero" do
+        expect {
+          provider.send(:write_crontab, "Foo")
+        }.to raise_error(Chef::Exceptions::Cron, /Error updating state of #{new_resource.name}, exit: 1/)
+      end
     end
   end
 end
