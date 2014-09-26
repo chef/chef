@@ -75,6 +75,9 @@
 
 ### Chef Contributions
 
+* Removed shelling out to erubis/ruby for syntax checks (>= 1.9 has been able
+  to do this in the ruby vm itself for awhile now and we've dropped 1.8.7 which
+  could not do this and had to shell_out)
 * Report the request and response when a non-200 error code happens
 * [FEATURE] Upgrade `knife upload` and `knife download` to download
   **everything** in an organization, now including the organization definition
