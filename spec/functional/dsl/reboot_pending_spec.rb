@@ -46,8 +46,11 @@ describe Chef::DSL::RebootPending, :windows_only do
 
   describe "reboot_pending?" do
 
-    context "when there is nothing to indicate a reboot is pending" do
-      it { expect(recipe.reboot_pending?).to be_false }
+    describe "when there is nothing to indicate a reboot is pending" do
+      it "should return false" do
+        pending "Found existing registry keys" unless registry_safe?
+        expect(recipe.reboot_pending?).to be_false
+      end
     end
 
     describe 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations' do
