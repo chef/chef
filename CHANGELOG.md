@@ -2,6 +2,8 @@
 
 ## Unreleased:
 
+* Removed dependencies on the 'json' gem, replaced with ffi-yajl.  Use Chef::JSONCompat library for parsing and printing.
+
 ## Last Release: 11.16.4
 
 * Windows omnibus installer security updates for redistributed bash.exe / sh.exe

@@ -252,8 +252,3 @@ Archive reskit
 EOH
 end
 ```
-
-### Removed dependencies on the json gem, replaced with ffi-yajl
-We should no longer require the 'json' gem for any JSON parsing, and should instead be using the Chef::JSONCompat
-library everywhere.  Consumers should not see any changes, unless they relied on the transitive 'json' gem dependency.
-In this case, they should upgrade their code to take advantage of the Chef::JSONCompat library instead.
