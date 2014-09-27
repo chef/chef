@@ -223,7 +223,7 @@ class Chef
                 :ifconfig => Chef::Provider::Ifconfig::Redhat
               },
               "< 7" => {
-                :service => Chef::Provider::Service::Systemd
+                :service => Chef::Provider::Service::Redhat
               }
             },
             :ibm_powerkvm   => {
