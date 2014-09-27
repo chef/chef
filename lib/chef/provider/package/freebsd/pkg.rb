@@ -20,6 +20,7 @@
 #
 
 require 'chef/provider/package/freebsd/base'
+require 'chef/util/path_helper'
 
 class Chef
   class Provider
@@ -87,7 +88,7 @@ class Chef
           end
 
           def file_candidate_version_path
-            Dir["#{@new_resource.source}/#{@current_resource.package_name}*"][-1].to_s
+            Dir[Chef::Util::PathHelper.escape_glob("#{@new_resource.source}/#{@current_resource.package_name}") + "*"][-1].to_s
           end
 
           def file_candidate_version

@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -46,7 +46,7 @@
 <p>The <strong>knife data bag</strong> subcommand is used to manage arbitrary stores of globally available JSON data.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
+<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) knife subcommands and plugins.</p>
 </div>
 <div class="section" id="create">
 <h2>create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
@@ -76,7 +76,7 @@
 </div>
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Create a data bag</strong></p>
 <p>To create a data bag named &#8220;admins&#8221;, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife data bag create admins
@@ -108,7 +108,7 @@
 </div>
 <div class="section" id="id3">
 <h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Delete a data bag</strong></p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife data bag delete data_bag_name
 </pre></div>
@@ -149,12 +149,27 @@
 </div>
 <div class="section" id="id6">
 <h3>Examples<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Edit a data bag</strong></p>
 <p>To edit the contents of a data bag, enter:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife data bag edit admins
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife data bag edit dogs tibetanspaniel
 </pre></div>
 </div>
+<p>where <tt class="docutils literal"><span class="pre">dogs</span></tt> is the name of the data bag and <tt class="docutils literal"><span class="pre">tibetanspaniel</span></tt> is the name of the data bag item. This will return something similar to the following in the knife editor:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;data_bag_item_dogs_tibetanspaniel&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;json_class&quot;</span><span class="o">:</span><span class="s2">&quot;Chef::DataBagItem&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;chef_type&quot;</span><span class="o">:</span><span class="s2">&quot;data_bag_item&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;data_bag&quot;</span><span class="o">:</span><span class="s2">&quot;dogs&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;raw_data&quot;</span><span class="o">:</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;description&quot;</span><span class="o">:</span><span class="s2">&quot;small dog that likes to sit in windows&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;tibetanspaniel&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Make the necessary changes to the key-value pairs under <tt class="docutils literal"><span class="pre">raw_data</span></tt> and save them.</p>
 <p><strong>Edit a data bag item</strong></p>
 <p>To edit an item named &#8220;charlie&#8221; that is contained in a data bag named &#8220;admins&#8221;, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife data bag edit admins charlie
@@ -215,7 +230,7 @@
 </div>
 <div class="section" id="id9">
 <h3>Examples<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Create a data bag from a file</strong></p>
 <p>To create a data bag on the Chef server from a file:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife data bag from file <span class="s2">&quot;path to JSON file&quot;</span>
@@ -248,7 +263,7 @@
 </div>
 <div class="section" id="id12">
 <h3>Examples<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>View a list of data bags</strong></p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife data bag list
 </pre></div>
@@ -283,7 +298,7 @@
 </div>
 <div class="section" id="id15">
 <h3>Examples<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Show a data bag</strong></p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife data bag show admins
 </pre></div>
@@ -306,7 +321,7 @@ uid:      1005
 </pre></div>
 </div>
 <p><strong>Show a data bag, encrypted</strong></p>
-<p>To show the contents of a data bag named &#8220;passwords&#8221; with an item that contains encrypted data named &#8220;mysql&#8221;, enter:</p>
+<p>To show the contents of a data bag named <tt class="docutils literal"><span class="pre">passwords</span></tt> with an item that contains encrypted data named <tt class="docutils literal"><span class="pre">mysql</span></tt>, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife data bag show passwords mysql
 </pre></div>
 </div>
@@ -327,9 +342,9 @@ uid:      1005
 <p>to return:</p>
 <div class="highlight-javascript"><div class="highlight"><pre>## sample:
 {
-   &quot;id&quot;: &quot;mysql&quot;,
-   &quot;pass&quot;: &quot;thesecret123&quot;,
-   &quot;user&quot;: &quot;fred&quot;
+  &quot;id&quot;: &quot;mysql&quot;,
+  &quot;pass&quot;: &quot;thesecret123&quot;,
+  &quot;user&quot;: &quot;fred&quot;
 }
 </pre></div>
 </div>

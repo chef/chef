@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -41,7 +41,7 @@
             
   <div class="section" id="chef-client">
 <h1>chef-client<a class="headerlink" href="#chef-client" title="Permalink to this headline">¶</a></h1>
-<p>A chef-client is an agent that runs locally on every node that is registered with the Chef server. When a chef-client is run, it will perform all of the steps that are required to bring the node into the expected state, including:</p>
+<p>A chef-client is an agent that runs locally on every node that is under management by Chef. When a chef-client is run, it will perform all of the steps that are required to bring the node into the expected state, including:</p>
 <ul class="simple">
 <li>Registering and authenticating the node with the Chef server</li>
 <li>Building the node object</li>
@@ -50,10 +50,6 @@
 <li>Taking the appropriate and required actions to configure the node</li>
 <li>Looking for exceptions and notifications, handling each as required</li>
 </ul>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The chef-client executable can be run as a daemon.</p>
-</div>
 <p>The chef-client executable is run as a command-line tool.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -116,7 +112,7 @@
 <dt><tt class="docutils literal"><span class="pre">-P</span> <span class="pre">PID_FILE</span></tt>, <tt class="docutils literal"><span class="pre">--pid</span> <span class="pre">PID_FILE</span></tt></dt>
 <dd>The location in which a process identification number (pid) is saved. An executable, when started as a daemon, will write the pid to the specified file. Default value: <tt class="docutils literal"><span class="pre">/tmp/name-of-executable.pid</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-R</span></tt>, <tt class="docutils literal"><span class="pre">--enable-reporting</span></tt></dt>
-<dd>Use to enable data collection reporting during a chef-client run.</dd>
+<dd>Use to enable Chef reporting, which performs data collection during a chef-client run.</dd>
 <dt><tt class="docutils literal"><span class="pre">-s</span> <span class="pre">SECONDS</span></tt>, <tt class="docutils literal"><span class="pre">--splay</span> <span class="pre">SECONDS</span></tt></dt>
 <dd>A number (in seconds) to add to the <tt class="docutils literal"><span class="pre">interval</span></tt> that is used to determine the frequency of chef-client runs. This number can help prevent server load when there are many clients running at the same time.</dd>
 <dt><tt class="docutils literal"><span class="pre">-S</span> <span class="pre">CHEF_SERVER_URL</span></tt>, <tt class="docutils literal"><span class="pre">--server</span> <span class="pre">CHEF_SERVER_URL</span></tt></dt>

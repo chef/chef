@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -48,14 +48,14 @@
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
+<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) knife subcommands and plugins.</p>
 </div>
 <div class="section" id="create">
 <h2>create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
 <p>The <tt class="docutils literal"><span class="pre">create</span></tt> argument is used to create a user. This process will generate an RSA key pair for the named user. The public key will be stored on the Chef server and the private key will be displayed on <tt class="docutils literal"><span class="pre">STDOUT</span></tt> or written to a named file.</p>
 <ul class="simple">
 <li>For the user, the private key should be copied to the system as <tt class="docutils literal"><span class="pre">/etc/chef/client.pem</span></tt>.</li>
-<li>For Knife, the private key is typically copied to <tt class="docutils literal"><span class="pre">~/.chef/client_name.pem</span></tt> and referenced in the knife.rb configuration file.</li>
+<li>For knife, the private key is typically copied to <tt class="docutils literal"><span class="pre">~/.chef/client_name.pem</span></tt> and referenced in the knife.rb configuration file.</li>
 </ul>
 <div class="section" id="syntax">
 <h3>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h3>
@@ -80,7 +80,7 @@
 </div>
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Create a user</strong></p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife user create <span class="s2">&quot;Radio Birdman&quot;</span> -f /keys/user_name
 </pre></div>
@@ -103,7 +103,7 @@
 </div>
 <div class="section" id="id3">
 <h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Delete a user</strong></p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife user delete <span class="s2">&quot;Steve Danno&quot;</span>
 </pre></div>
@@ -112,7 +112,7 @@
 </div>
 <div class="section" id="edit">
 <h2>edit<a class="headerlink" href="#edit" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">edit</span></tt> argument is used to edit the details of a user. When this argument is run, Knife will open $EDITOR. When finished, Knife will update the Chef server with those changes.</p>
+<p>The <tt class="docutils literal"><span class="pre">edit</span></tt> argument is used to edit the details of a user. When this argument is run, knife will open $EDITOR. When finished, knife will update the Chef server with those changes.</p>
 <div class="section" id="id4">
 <h3>Syntax<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -176,7 +176,7 @@
 </div>
 <div class="section" id="id12">
 <h3>Examples<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Regenerate the RSA key-pair</strong></p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife user reregister <span class="s2">&quot;Robert Younger&quot;</span>
 </pre></div>
@@ -203,9 +203,9 @@
 </div>
 <div class="section" id="id15">
 <h3>Examples<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Show user data</strong></p>
-<p>To view a user named &#8220;Dennis Teck&#8221;, enter:</p>
+<p>To view a user named <tt class="docutils literal"><span class="pre">Dennis</span> <span class="pre">Teck</span></tt>, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife user show <span class="s2">&quot;Dennis Teck&quot;</span>
 </pre></div>
 </div>

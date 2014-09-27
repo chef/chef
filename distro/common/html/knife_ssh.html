@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -41,7 +41,7 @@
             
   <div class="section" id="knife-ssh">
 <h1>knife ssh<a class="headerlink" href="#knife-ssh" title="Permalink to this headline">¶</a></h1>
-<p>The <strong>knife ssh</strong> subcommand is used to invoke SSH commands (in parallel) on a subset of nodes within an organization, based on the results of a search query.</p>
+<p>The <strong>knife ssh</strong> subcommand is used to invoke SSH commands (in parallel) on a subset of nodes within an organization, based on the results of a <a class="reference external" href="http://docs.opscode.com/essentials_search.html">search query</a> made to the Chef server.</p>
 <div class="section" id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
 <p>This subcommand has the following syntax:</p>
@@ -53,7 +53,7 @@
 <h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
+<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) knife subcommands and plugins.</p>
 </div>
 <p>This subcommand has the following options:</p>
 <dl class="docutils">
@@ -76,7 +76,7 @@
 <dt><tt class="docutils literal"><span class="pre">-p</span> <span class="pre">PORT</span></tt>, <tt class="docutils literal"><span class="pre">--ssh-port</span> <span class="pre">PORT</span></tt></dt>
 <dd>The SSH port.</dd>
 <dt><tt class="docutils literal"><span class="pre">-P</span> <span class="pre">PASSWORD</span></tt>, <tt class="docutils literal"><span class="pre">--ssh-password</span> <span class="pre">PASSWORD</span></tt></dt>
-<dd>The SSH password. This can be used to pass the password directly on the command line. If this option is not specified (and a password is required) Knife will prompt for the password.</dd>
+<dd>The SSH password. This can be used to pass the password directly on the command line. If this option is not specified (and a password is required) knife will prompt for the password.</dd>
 <dt><tt class="docutils literal"><span class="pre">SEARCH_QUERY</span></tt></dt>
 <dd>The search query used to return a list of servers to be accessed using SSH and the specified <tt class="docutils literal"><span class="pre">SSH_COMMAND</span></tt>. This option uses the same syntax as the search sub-command.</dd>
 <dt><tt class="docutils literal"><span class="pre">SSH_COMMAND</span></tt></dt>
@@ -87,7 +87,7 @@
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Find server uptime</strong></p>
 <p>To find the uptime of all of web servers running Ubuntu on the Amazon EC2 platform, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife ssh <span class="s2">&quot;role:web&quot;</span> <span class="s2">&quot;uptime&quot;</span> -x ubuntu -a ec2.public_hostname
@@ -139,7 +139,7 @@ ec2-184-73-60-141.compute-1.amazonaws.com   <span class="o">[</span>Fri, 22 Oct 
 </pre></div>
 </div>
 <p><strong>Run a command based on search query</strong></p>
-<p>To query for all nodes that have the &#8220;webserver&#8221; role and then use SSH to run the command &#8220;sudo chef-client&#8221;, enter:</p>
+<p>To query for all nodes that have the <tt class="docutils literal"><span class="pre">webserver</span></tt> role and then use SSH to run the command <tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">chef-client</span></tt>, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife ssh <span class="s2">&quot;role:webserver&quot;</span> <span class="s2">&quot;sudo chef-client&quot;</span>
 </pre></div>
 </div>
@@ -152,7 +152,7 @@ ec2-184-73-60-141.compute-1.amazonaws.com   <span class="o">[</span>Fri, 22 Oct 
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife ssh roles:opscode-omnitruck macterm
 </pre></div>
 </div>
-<p>where <tt class="docutils literal"><span class="pre">screen</span></tt> is one of the following values: <tt class="docutils literal"><span class="pre">cssh</span></tt>, <tt class="docutils literal"><span class="pre">interactive</span></tt>, <tt class="docutils literal"><span class="pre">macterm</span></tt>, <tt class="docutils literal"><span class="pre">screen</span></tt>, or <tt class="docutils literal"><span class="pre">tmux</span></tt>. If the node does not have the shell type installed, Knife will return an error similar to the following:</p>
+<p>where <tt class="docutils literal"><span class="pre">screen</span></tt> is one of the following values: <tt class="docutils literal"><span class="pre">cssh</span></tt>, <tt class="docutils literal"><span class="pre">interactive</span></tt>, <tt class="docutils literal"><span class="pre">macterm</span></tt>, <tt class="docutils literal"><span class="pre">screen</span></tt>, or <tt class="docutils literal"><span class="pre">tmux</span></tt>. If the node does not have the shell type installed, knife will return an error similar to the following:</p>
 <div class="highlight-bash"><div class="highlight"><pre>you need the rb-appscript gem to use knife ssh macterm.
 <span class="sb">`</span><span class="o">(</span>sudo<span class="o">)</span> gem    install rb-appscript<span class="sb">`</span> to install
 ERROR: LoadError: cannot load such file -- appscript

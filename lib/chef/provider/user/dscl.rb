@@ -20,6 +20,7 @@ require 'mixlib/shellout'
 require 'chef/provider/user'
 require 'openssl'
 require 'plist'
+require 'chef/util/path_helper'
 
 class Chef
   class Provider
@@ -308,7 +309,7 @@ user password using shadow hash.")
 
           src = @current_resource.home
           FileUtils.mkdir_p(@new_resource.home)
-          files = ::Dir.glob("#{src}/*", ::File::FNM_DOTMATCH) - ["#{src}/.","#{src}/.."]
+          files = ::Dir.glob("#{Chef::Util::PathHelper.escape_glob(src)}/*", ::File::FNM_DOTMATCH) - ["#{src}/.","#{src}/.."]
           ::FileUtils.mv(files,@new_resource.home, :force => true)
           ::FileUtils.rmdir(src)
           ::FileUtils.chown_R(@new_resource.username,@new_resource.gid.to_s,@new_resource.home)
@@ -555,7 +556,7 @@ user password using shadow hash.")
           user_info = nil
 
           # We flush the cache here in order to make sure that we read fresh information
-          # for the user. 
+          # for the user.
           shell_out("dscacheutil '-flushcache'")
 
           begin

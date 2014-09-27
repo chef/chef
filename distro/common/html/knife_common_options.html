@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -41,16 +41,16 @@
             
   <div class="section" id="common-options">
 <h1>Common Options<a class="headerlink" href="#common-options" title="Permalink to this headline">¶</a></h1>
-<p>The following options can be run with all Knife sub-commands and plug-ins:</p>
+<p>The following options can be run with all knife sub-commands and plug-ins:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-c</span> <span class="pre">CONFIG_FILE</span></tt>, <tt class="docutils literal"><span class="pre">--config</span> <span class="pre">CONFIG_FILE</span></tt></dt>
-<dd>The configuration file to use. For example, when Knife is run from a node that is configured to be managed by the Chef server, this option is used to allow Knife to use the same credentials as the chef-client when communicating with the Chef server.</dd>
+<dd>The configuration file to use. For example, when knife is run from a node that is configured to be managed by the Chef server, this option is used to allow knife to use the same credentials as the chef-client when communicating with the Chef server.</dd>
 <dt><tt class="docutils literal"><span class="pre">--chef-zero-port</span> <span class="pre">PORT</span></tt></dt>
 <dd>The port on which chef-zero will listen.</dd>
 <dt><tt class="docutils literal"><span class="pre">-d</span></tt>, <tt class="docutils literal"><span class="pre">--disable-editing</span></tt></dt>
 <dd>Use to prevent the $EDITOR from being opened and to accept data as-is.</dd>
 <dt><tt class="docutils literal"><span class="pre">--defaults</span></tt></dt>
-<dd>Use to have Knife use the default value instead of asking a user to provide one.</dd>
+<dd>Use to have knife use the default value instead of asking a user to provide one.</dd>
 <dt><tt class="docutils literal"><span class="pre">-e</span> <span class="pre">EDITOR</span></tt>, <tt class="docutils literal"><span class="pre">--editor</span> <span class="pre">EDITOR</span></tt></dt>
 <dd>The $EDITOR that is used for all interactive commands.</dd>
 <dt><tt class="docutils literal"><span class="pre">-E</span> <span class="pre">ENVIRONMENT</span></tt>, <tt class="docutils literal"><span class="pre">--environment</span> <span class="pre">ENVIRONMENT</span></tt></dt>
@@ -60,7 +60,7 @@
 <dt><tt class="docutils literal"><span class="pre">-h</span></tt>, <tt class="docutils literal"><span class="pre">--help</span></tt></dt>
 <dd>Shows help for the command.</dd>
 <dt><tt class="docutils literal"><span class="pre">-k</span> <span class="pre">KEY</span></tt>, <tt class="docutils literal"><span class="pre">--key</span> <span class="pre">KEY</span></tt></dt>
-<dd>The private key that Knife will use to sign requests made by the API client to the Chef server.</dd>
+<dd>The private key that knife will use to sign requests made by the API client to the Chef server.</dd>
 <dt><tt class="docutils literal"><span class="pre">--[no-]color</span></tt></dt>
 <dd>Use to view colored output.</dd>
 <dt><tt class="docutils literal"><span class="pre">--print-after</span></tt></dt>
@@ -68,13 +68,13 @@
 <dt><tt class="docutils literal"><span class="pre">-s</span> <span class="pre">URL</span></tt>, <tt class="docutils literal"><span class="pre">--server-url</span> <span class="pre">URL</span></tt></dt>
 <dd>The URL for the Chef server.</dd>
 <dt><tt class="docutils literal"><span class="pre">-u</span> <span class="pre">USER</span></tt>, <tt class="docutils literal"><span class="pre">--user</span> <span class="pre">USER</span></tt></dt>
-<dd>The user name used by Knife to sign requests made by the API client to the Chef server. Authentication will fail if the user name does not match the private key.</dd>
+<dd>The user name used by knife to sign requests made by the API client to the Chef server. Authentication will fail if the user name does not match the private key.</dd>
 <dt><tt class="docutils literal"><span class="pre">-v</span></tt>, <tt class="docutils literal"><span class="pre">--version</span></tt></dt>
 <dd>The version of the chef-client.</dd>
 <dt><tt class="docutils literal"><span class="pre">-V</span></tt>, <tt class="docutils literal"><span class="pre">--verbose</span></tt></dt>
 <dd>Set for more verbose outputs. Use <tt class="docutils literal"><span class="pre">-VV</span></tt> for maximum verbosity.</dd>
 <dt><tt class="docutils literal"><span class="pre">-y</span></tt>, <tt class="docutils literal"><span class="pre">--yes</span></tt></dt>
-<dd>Use to respond to all confirmation prompts with &#8220;Yes&#8221;. Knife will not ask for confirmation.</dd>
+<dd>Use to respond to all confirmation prompts with &#8220;Yes&#8221;. knife will not ask for confirmation.</dd>
 <dt><tt class="docutils literal"><span class="pre">-z</span></tt>, <tt class="docutils literal"><span class="pre">--local-mode</span></tt></dt>
 <dd>Use to run the chef-client in local mode. This allows all commands that work against the Chef server to also work against the local chef-repo.</dd>
 </dl>

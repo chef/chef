@@ -21,6 +21,7 @@ require 'stringio'
 require 'erubis'
 require 'chef/mixin/shell_out'
 require 'chef/mixin/checksum'
+require 'chef/util/path_helper'
 
 class Chef
   class Cookbook
@@ -110,7 +111,7 @@ class Chef
       end
 
       def ruby_files
-        remove_ignored_files Dir[File.join(cookbook_path, '**', '*.rb')]
+        remove_ignored_files Dir[File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), '**', '*.rb')]
       end
 
       def untested_ruby_files
@@ -125,7 +126,7 @@ class Chef
       end
 
       def template_files
-        remove_ignored_files Dir[File.join(cookbook_path, '**/templates/**', '*.erb')]
+        remove_ignored_files Dir[File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), '**/templates/**', '*.erb')]
       end
 
       def untested_template_files
@@ -163,31 +164,16 @@ class Chef
 
       def validate_template(erb_file)
         Chef::Log.debug("Testing template #{erb_file} for syntax errors...")
-        if validate_inline?
-          validate_erb_file_inline(erb_file)
-        else
-          validate_erb_via_subcommand(erb_file)
-        end
+        validate_erb_file_inline(erb_file)
       end
 
       def validate_ruby_file(ruby_file)
         Chef::Log.debug("Testing #{ruby_file} for syntax errors...")
-        if validate_inline?
-          validate_ruby_file_inline(ruby_file)
-        else
-          validate_ruby_by_subcommand(ruby_file)
-        end
-      end
-
-      # Whether or not we're running on a version of ruby that can support
-      # inline validation. Inline validation relies on the `RubyVM` features
-      # introduced with ruby 1.9, so 1.8 cannot be supported.
-      def validate_inline?
-        defined?(RubyVM::InstructionSequence)
+        validate_ruby_file_inline(ruby_file)
       end
 
       # Validate the ruby code in an erb template. Uses RubyVM to do syntax
-      # checking, so callers should check #validate_inline? before calling.
+      # checking.
       def validate_erb_file_inline(erb_file)
         old_stderr = $stderr
 
@@ -214,20 +200,6 @@ class Chef
         $stderr = old_stderr if defined?(old_stderr) && old_stderr
       end
 
-      # Validate the ruby code in an erb template. Pipes the output of `erubis
-      # -x` to `ruby -c`, so it works with any ruby version, but is much slower
-      # than the inline version.
-      # --
-      # TODO: This can be removed when ruby 1.8 support is dropped.
-      def validate_erb_via_subcommand(erb_file)
-        result = shell_out("erubis -x #{erb_file} | #{ruby} -c")
-        result.error!
-        true
-      rescue Mixlib::ShellOut::ShellCommandFailed
-        invalid_erb_file(erb_file, result.stderr)
-        false
-      end
-
       # Debug a syntax error in a template.
       def invalid_erb_file(erb_file, error_message)
         file_relative_path = erb_file[/^#{Regexp.escape(cookbook_path+File::Separator)}(.*)/, 1]
@@ -238,7 +210,6 @@ class Chef
 
       # Validate the syntax of a ruby file. Uses (Ruby 1.9+ only) RubyVM to
       # compile the code without evaluating it or spawning a new process.
-      # Callers should check #validate_inline? before calling.
       def validate_ruby_file_inline(ruby_file)
         # Even when we're compiling the code w/ RubyVM, syntax errors just
         # print to $stderr. We want to capture this and handle the printing
@@ -261,18 +232,6 @@ class Chef
       ensure
         # be paranoid about setting stderr back to the old value.
         $stderr = old_stderr if defined?(old_stderr) && old_stderr
-      end
-
-      # Validate the syntax of a ruby file by shelling out to `ruby -c`. Should
-      # work for all ruby versions, but is slower and uses more resources than
-      # the inline strategy.
-      def validate_ruby_by_subcommand(ruby_file)
-        result = shell_out("#{ruby} -c #{ruby_file}")
-        result.error!
-        true
-      rescue Mixlib::ShellOut::ShellCommandFailed
-        invalid_ruby_file(ruby_file, result.stderr)
-        false
       end
 
       # Debugs ruby syntax errors by printing the path to the file and any

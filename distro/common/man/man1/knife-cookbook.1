@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-COOKBOOK" "1" "Chef 11.14" "" "knife cookbook"
+.TH "KNIFE-COOKBOOK" "1" "Chef 11.16" "" "knife cookbook"
 .SH NAME
 knife-cookbook \- The man page for the knife cookbook subcommand.
 .
@@ -69,7 +69,7 @@ The configuration file to use.
 Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Use to have Knife use the default value instead of asking a user to provide one.
+Use to have knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -84,7 +84,7 @@ The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, 
 Shows help for the command.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the Chef server\&.
+The private key that knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-[no\-]color\fP
 Use to view colored output.
@@ -96,7 +96,7 @@ Use to show data after a destructive operation.
 The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
+The user name used by knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-V\fP, \fB\-\-verbose\fP
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
@@ -105,7 +105,7 @@ Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 The version of the chef\-client\&.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
+Use to respond to all confirmation prompts with "Yes". knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
 Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
@@ -213,7 +213,7 @@ The type of license under which a cookbook is distributed: \fBapachev2\fP, \fBgp
 The email address for the individual who maintains the cookbook. This option will place an email address in each of the pre\-created files. If this option is not specified, an email name of "your_email" will be used instead; it can be easily modified later.
 .TP
 .B \fB\-o PATH\fP, \fB\-\-cookbook\-path PATH\fP
-The directory in which cookbook are created. This can be a colon\-separated path.
+The directory in which cookbooks are created. This can be a colon\-separated path.
 .TP
 .B \fB\-r FORMAT\fP, \fB\-\-readme\-format FORMAT\fP
 The document format of the readme file: \fBmd\fP (markdown) and \fBrdoc\fP (Ruby docs).
@@ -273,7 +273,7 @@ This argument has the following options:
 Use to delete all cookbooks (and cookbook versions).
 .TP
 .B \fBCOOKBOOK_VERSION\fP
-The version of a cookbook to be deleted. If a cookbook has only one version, this option does not need to be specified. If a cookbook has more than one version and this option is not specified, Knife will prompt for a version.
+The version of a cookbook to be deleted. If a cookbook has only one version, this option does not need to be specified. If a cookbook has more than one version and this option is not specified, knife will prompt for a version.
 .TP
 .B \fB\-p\fP, \fB\-\-purge\fP
 Use to entirely remove a cookbook (or cookbook version) from the Chef server\&. This action should be used carefully because only one copy of any single file is stored on the Chef server\&. Consequently, purging a cookbook will disable any other cookbook that references one or more files from a cookbook that has been purged.
@@ -328,7 +328,7 @@ This argument has the following options:
 .INDENT 0.0
 .TP
 .B \fB\-d DOWNLOAD_DIRECTORY\fP, \fB\-\-dir DOWNLOAD_DIRECTORY\fP
-The directory into which a cookbook will be downloaded.
+The directory in which cookbooks are located.
 .TP
 .B \fB\-f\fP, \fB\-\-force\fP
 Use to overwrite an existing directory.
@@ -420,7 +420,7 @@ This argument has the following options:
 Use to generate metadata for all cookbooks.
 .TP
 .B \fB\-o PATH:PATH\fP, \fB\-\-cookbook\-path PATH:PATH\fP
-The directory in which cookbook are created. This can be a colon\-separated path.
+The directory in which cookbooks are created. This can be a colon\-separated path.
 .UNINDENT
 .sp
 \fBExamples\fP
@@ -642,7 +642,7 @@ This argument has the following options:
 Use to test all cookbooks.
 .TP
 .B \fB\-o PATH:PATH\fP, \fB\-\-cookbook\-path PATH:PATH\fP
-The directory in which cookbook are created. This can be a colon\-separated path.
+The directory in which cookbooks are created. This can be a colon\-separated path.
 .UNINDENT
 .sp
 \fBExamples\fP
@@ -712,7 +712,7 @@ Use to update a cookbook even if the \fB\-\-freeze\fP flag has been set.
 Use to require changes to a cookbook be included as a new version. Only the \fB\-\-force\fP option can override this setting.
 .TP
 .B \fB\-o PATH:PATH\fP, \fB\-\-cookbook\-path PATH:PATH\fP
-The directory in which cookbook are created. This can be a colon\-separated path.
+The directory in which cookbooks are created. This can be a colon\-separated path.
 .UNINDENT
 .sp
 \fBExamples\fP
@@ -752,7 +752,7 @@ Upload completed
 .UNINDENT
 .UNINDENT
 .sp
-If a cookbook is frozen and the \fB\-\-force\fP option is not specified, Knife will return an error message similar to the following:
+If a cookbook is frozen and the \fB\-\-force\fP option is not specified, knife will return an error message similar to the following:
 .INDENT 0.0
 .INDENT 3.5
 .sp

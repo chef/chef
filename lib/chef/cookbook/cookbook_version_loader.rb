@@ -2,6 +2,7 @@
 require 'chef/cookbook_version'
 require 'chef/cookbook/chefignore'
 require 'chef/cookbook/metadata'
+require 'chef/util/path_helper'
 
 class Chef
   class Cookbook
@@ -212,7 +213,7 @@ class Chef
       end
 
       def load_root_files
-        Dir.glob(File.join(cookbook_path, '*'), File::FNM_DOTMATCH).each do |file|
+        Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), '*'), File::FNM_DOTMATCH).each do |file|
           next if File.directory?(file)
           next if File.basename(file) == UPLOADED_COOKBOOK_VERSION_FILE
           cookbook_settings[:root_filenames][file[@relative_path, 1]] = file
@@ -220,7 +221,7 @@ class Chef
       end
 
       def load_recursively_as(category, category_dir, glob)
-        file_spec = File.join(cookbook_path, category_dir, '**', glob)
+        file_spec = File.join(Chef::Util::PathHelper.escape_glob(cookbook_path, category_dir), '**', glob)
         Dir.glob(file_spec, File::FNM_DOTMATCH).each do |file|
           next if File.directory?(file)
           cookbook_settings[category][file[@relative_path, 1]] = file
@@ -228,7 +229,7 @@ class Chef
       end
 
       def load_as(category, *path_glob)
-        Dir[File.join(cookbook_path, *path_glob)].each do |file|
+        Dir[File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), *path_glob)].each do |file|
           cookbook_settings[category][file[@relative_path, 1]] = file
         end
       end

@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -51,7 +51,7 @@
 </ul>
 <div class="section" id="knife">
 <h2>knife<a class="headerlink" href="#knife" title="Permalink to this headline">¶</a></h2>
-<p>Knife is a command-line tool that provides an interface between a local chef-repo and the Chef server. Knife helps users to manage:</p>
+<p>knife is a command-line tool that provides an interface between a local chef-repo and the Chef server. knife helps users to manage:</p>
 <ul class="simple">
 <li>Nodes</li>
 <li>Cookbooks and recipes</li>
@@ -62,12 +62,12 @@
 <li>The installation of the chef-client on management workstations</li>
 <li>Searching of indexed data on the Chef server</li>
 </ul>
-<p>The following sections describe functionality common to all Knife subcommands:</p>
+<p>The following sections describe functionality common to all knife subcommands:</p>
 <ul class="simple">
 <li><a class="reference internal" href="knife_using.html"><em>Working with Knife</em></a></li>
 <li><a class="reference internal" href="knife_common_options.html"><em>Common Options</em></a></li>
 </ul>
-<p>Knife includes the following sub-commands:</p>
+<p>knife includes the following sub-commands:</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="25%" />
@@ -83,7 +83,7 @@
 <td>The <strong>knife bootstrap</strong> subcommand is used to run a bootstrap operation that installs the chef-client on the target system. The bootstrap operation must specify the IP address or FQDN of the target system.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="knife_client.html"><em>knife client</em></a></td>
-<td>The <strong>knife client</strong> subcommand is used to manage an API client list and their associated RSA public key-pairs. This allows authentication requests to be made to the Chef server by any entity that uses the Chef Server API, such as the chef-client and Knife.</td>
+<td>The <strong>knife client</strong> subcommand is used to manage an API client list and their associated RSA public key-pairs. This allows authentication requests to be made to the Chef server by any entity that uses the Chef server API, such as the chef-client and knife.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="knife_configure.html"><em>knife configure</em></a></td>
 <td>The <strong>knife configure</strong> subcommand is used to create the knife.rb and client.rb files so that they can be distributed to workstations and nodes.</td>
@@ -92,7 +92,7 @@
 <td>The <strong>knife cookbook</strong> subcommand is used to interact with cookbooks that are located on the Chef server or the local chef-repo.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="knife_cookbook_site.html"><em>knife cookbook site</em></a></td>
-<td>The <strong>knife cookbook site</strong> subcommand is used to interact with cookbooks that are located at <a class="reference external" href="http://community.opscode.com/cookbooks">http://community.opscode.com/cookbooks</a>. A user account is required for any community actions that write data to this site. The following arguments do not require a user account: <tt class="docutils literal"><span class="pre">download</span></tt>, <tt class="docutils literal"><span class="pre">search</span></tt>, <tt class="docutils literal"><span class="pre">install</span></tt>, and <tt class="docutils literal"><span class="pre">list</span></tt>.</td>
+<td>The <strong>knife cookbook site</strong> subcommand is used to interact with cookbooks that are located at <a class="reference external" href="https://supermarket.getchef.com/cookbooks">https://supermarket.getchef.com/cookbooks</a>. A user account is required for any community actions that write data to this site. The following arguments do not require a user account: <tt class="docutils literal"><span class="pre">download</span></tt>, <tt class="docutils literal"><span class="pre">search</span></tt>, <tt class="docutils literal"><span class="pre">install</span></tt>, and <tt class="docutils literal"><span class="pre">list</span></tt>.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="knife_data_bag.html"><em>knife data bag</em></a></td>
 <td>The <strong>knife data bag</strong> subcommand is used to manage arbitrary stores of globally available JSON data.</td>
@@ -116,7 +116,7 @@
 <td>The <strong>knife environment</strong> subcommand is used to manage environments within a single organization on the Chef server.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="knife_exec.html"><em>knife exec</em></a></td>
-<td>The <strong>knife exec</strong> subcommand uses the Knife configuration file to execute Ruby scripts in the context of a fully configured chef-client. This subcommand is most often used to run scripts that will only access Chef server one time (or otherwise very infrequently). Use this subcommand any time that an operation does not warrant full usage of the Knife subcommand library.</td>
+<td>The <strong>knife exec</strong> subcommand uses the knife configuration file to execute Ruby scripts in the context of a fully configured chef-client. This subcommand is most often used to run scripts that will only access Chef server one time (or otherwise very infrequently). Use this subcommand any time that an operation does not warrant full usage of the knife subcommand library.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="knife_index_rebuild.html"><em>knife index rebuild</em></a></td>
 <td>The <strong>knife index rebuild</strong> subcommand is used to rebuild the search indexes for the open source Chef server. This operation is destructive and may take some time.</td>
@@ -128,7 +128,7 @@
 <td>The <strong>knife node</strong> subcommand is used to manage the nodes that exist on a Chef server.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="knife_raw.html"><em>knife raw</em></a></td>
-<td>The <strong>knife raw</strong> subcommand is used to send a REST request to a specified path using the Chef Server API.</td>
+<td>The <strong>knife raw</strong> subcommand is used to send a REST request to a specified path using the Chef server API.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="knife_recipe_list.html"><em>knife recipe list</em></a></td>
 <td>The <strong>knife recipe list</strong> subcommand is used to view all of the recipes that are on a Chef server. A regular expression can be used to limit the results to recipes that match a specific pattern. The regular expression must be within quotes and not be surrounded by forward slashes (/).</td>
@@ -140,13 +140,13 @@
 <td>The <strong>knife search</strong> subcommand is used run a search query for information that is indexed on a Chef server.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="knife_serve.html"><em>knife serve</em></a></td>
-<td>The <strong>knife serve</strong> subcommand is used to run a persistent chef-zero against the local chef-repo. (chef-zero is a lightweight Chef server that runs in-memory on the local machine.) This is the same as running the chef-client executable with the <tt class="docutils literal"><span class="pre">--local-mode</span></tt> option. The <tt class="docutils literal"><span class="pre">chef_repo_path</span></tt> is located automatically and the Chef server will bind to port <tt class="docutils literal"><span class="pre">8900</span></tt> by default. <strong>knife serve</strong> will print the URL for the local Chef server, so that it may be added to the knife.rb file.</td>
+<td>The <strong>knife serve</strong> subcommand is used to run a persistent chef-zero against the local chef-repo. (chef-zero is a lightweight Chef server that runs in-memory on the local machine.) This is the same as running the chef-client executable with the <tt class="docutils literal"><span class="pre">--local-mode</span></tt> option. The <tt class="docutils literal"><span class="pre">chef_repo_path</span></tt> is located automatically and the Chef server will bind to the first available port between <tt class="docutils literal"><span class="pre">8889</span></tt> and <tt class="docutils literal"><span class="pre">9999</span></tt>. <strong>knife serve</strong> will print the URL for the local Chef server, so that it may be added to the knife.rb file.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="knife_show.html"><em>knife show</em></a></td>
 <td>The <strong>knife show</strong> subcommand is used to view the details of one (or more) objects on the Chef server. This subcommand works similar to <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">cookbook</span> <span class="pre">show</span></tt>, <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">data</span> <span class="pre">bag</span> <span class="pre">show</span></tt>, <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">environment</span> <span class="pre">show</span></tt>, <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">node</span> <span class="pre">show</span></tt>, and <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">role</span> <span class="pre">show</span></tt>, but with a single verb (and a single action).</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="knife_ssh.html"><em>knife ssh</em></a></td>
-<td>The <strong>knife ssh</strong> subcommand is used to invoke SSH commands (in parallel) on a subset of nodes within an organization, based on the results of a search query.</td>
+<td>The <strong>knife ssh</strong> subcommand is used to invoke SSH commands (in parallel) on a subset of nodes within an organization, based on the results of a <a class="reference external" href="http://docs.opscode.com/essentials_search.html">search query</a> made to the Chef server.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="knife_ssl_check.html"><em>knife ssl check</em></a></td>
 <td><p class="first">The <strong>knife ssl check</strong> subcommand is used to verify the SSL configuration for the Enterprise Chef and/or Open Source Chef servers, or at another location specified by a URL or URI.</p>
@@ -157,10 +157,10 @@
 </td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="knife_ssl_fetch.html"><em>knife ssl fetch</em></a></td>
-<td><p class="first">The <strong>knife ssl fetch</strong> subcommand is used to copy SSL certificates from an HTTPS server to the <tt class="docutils literal"><span class="pre">trusted_certs_dir</span></tt> directory that is used by Knife and the chef-client to store trusted SSL certificates. When these certificates match the hostname of the remote server, running <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">ssl</span> <span class="pre">fetch</span></tt> is the only step required to verify a remote server that is accessed by either Knife or the chef-client.</p>
+<td><p class="first">The <strong>knife ssl fetch</strong> subcommand is used to copy SSL certificates from an HTTPS server to the <tt class="docutils literal"><span class="pre">trusted_certs_dir</span></tt> directory that is used by knife and the chef-client to store trusted SSL certificates. When these certificates match the hostname of the remote server, running <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">ssl</span> <span class="pre">fetch</span></tt> is the only step required to verify a remote server that is accessed by either knife or the chef-client.</p>
 <div class="last admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">It is the user&#8217;s responsibility to verify the authenticity of every SSL certificate before downloading it to the <tt class="docutils literal"><span class="pre">trusted_certs_dir</span></tt> directory. Knife will use any certificate in that directory as if it is a 100% trusted and authentic SSL certificate. Knife will not be able to determine if any certificate in this directory has been tampered with, is forged, malicious, or otherwise harmful. Therefore it is essential that users take the proper steps before downloading certificates into this directory.</p>
+<p class="last">It is the user&#8217;s responsibility to verify the authenticity of every SSL certificate before downloading it to the <tt class="docutils literal"><span class="pre">trusted_certs_dir</span></tt> directory. knife will use any certificate in that directory as if it is a 100% trusted and authentic SSL certificate. knife will not be able to determine if any certificate in this directory has been tampered with, is forged, malicious, or otherwise harmful. Therefore it is essential that users take the proper steps before downloading certificates into this directory.</p>
 </div>
 </td>
 </tr>
@@ -177,7 +177,7 @@
 <td>The <strong>knife user</strong> subcommand is used to manage the list of users and their associated RSA public key-pairs.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="knife_xargs.html"><em>knife xargs</em></a></td>
-<td>The <strong>knife xargs</strong> subcommand is used to build and execute command lines against objects on a Chef server using standard input.</td>
+<td>The <strong>knife xargs</strong> subcommand is used to take patterns from standard input, download as JSON, run a command against the downloaded JSON, and then upload any changes.</td>
 </tr>
 </tbody>
 </table>
