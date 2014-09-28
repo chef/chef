@@ -416,20 +416,45 @@ describe Chef::Knife::Bootstrap do
         knife_ssh.config[:ssh_user].should == 'rooty'
       end
 
+      it "prefers ssh user cli option over Chef::Config" do
+        Chef::Config[:knife][:ssh_user] = 'nuh-uh'
+        @knife_ssh.config[:ssh_user].should == 'rooty'
+      end
+
       it "configures the ssh password" do
         knife_ssh.config[:ssh_password].should == 'open_sesame'
+      end
+
+      it "prefers ssh password cli option over Chef::Config" do
+        Chef::Config[:knife][:ssh_password] = 'nehvar'
+        @knife_ssh.config[:ssh_password].should == 'open_sesame'
       end
 
       it "configures the ssh port" do
         knife_ssh.config[:ssh_port].should == '4001'
       end
 
+      it "prefers ssh port cli option over Chef::Config" do
+        Chef::Config[:knife][:ssh_port] = '999'
+        @knife_ssh.config[:ssh_port].should == '4001'
+      end
+
       it "configures the ssh agent forwarding" do
         knife_ssh.config[:forward_agent].should == true
       end
 
+      it "prefers ssh agent forwarding cli option over Chef::Config" do
+        Chef::Config[:knife][:forward_agent] = false
+        @knife_ssh.config[:forward_agent].should == true
+      end
+
       it "configures the ssh identity file" do
         knife_ssh.config[:identity_file].should == '~/.ssh/me.rsa'
+      end
+
+      it "prefers ssh identity file cli option over Chef::Config" do
+        Chef::Config[:knife][:identity_file] = '/tmp/woah'
+        @knife_ssh.config[:identity_file].should == '~/.ssh/me.rsa'
       end
     end
 
