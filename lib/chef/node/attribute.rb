@@ -58,7 +58,6 @@ class Chef
         :@force_default
       ]
 
-
       OVERRIDE_COMPONENTS = [
         :@override,
         :@role_override,
@@ -146,7 +145,6 @@ class Chef
          METHOD_DEFN
        end
 
-
        # return the cookbook level default attribute component
        attr_reader :default
 
@@ -158,11 +156,6 @@ class Chef
 
        # return the force_default level attribute component
        attr_reader :force_default
-
-       # default! is the "advertised" method for force_default, but is
-       # implemented as an alias because instance variables can't (easily) have
-       # +!+ characters.
-       alias :default! :force_default
 
        # return the "normal" level attribute component
        attr_reader :normal
@@ -178,11 +171,6 @@ class Chef
 
        # return the force override level attribute component
        attr_reader :force_override
-
-       # +override!+ is the "advertised" method for +force_override+ but is
-       # implemented as an alias because instance variables can't easily have
-       # +!+ characters.
-       alias :override! :force_override
 
        # return the automatic level attribute component
        attr_reader :automatic
@@ -311,6 +299,95 @@ class Chef
          @automatic = VividMash.new(self, new_data)
        end
 
+       #
+       # Deleting attributes
+       #
+
+       # clears attributes from all precedence levels
+       def rm(*args)
+         # just easier to compute our retval, rather than collect+merge sub-retvals
+         ret = args.inject(merged_attributes) do |attr, arg|
+           if attr.nil? || !attr.respond_to?(:[])
+             nil
+           else
+             begin
+               attr[arg]
+             rescue TypeError
+               raise TypeError, "Wrong type in index of attribute (did you use a Hash index on an Array?)"
+             end
+           end
+         end
+         rm_default(*args)
+         rm_normal(*args)
+         rm_override(*args)
+         ret
+       end
+
+       # does <level>['foo']['bar'].delete('baz')
+       def remove_from_precedence_level(level, *args, key)
+         multimash = level.element(*args)
+         multimash.nil? ? nil : multimash.delete(key)
+       end
+
+       private :remove_from_precedence_level
+
+       # clears attributes from all default precedence levels
+       #
+       # equivalent to: force_default!['foo']['bar'].delete('baz')
+       def rm_default(*args)
+         reset
+         remove_from_precedence_level(force_default!, *args)
+       end
+
+       # clears attributes from normal precedence
+       #
+       # equivalent to: normal!['foo']['bar'].delete('baz')
+       def rm_normal(*args)
+         reset
+         remove_from_precedence_level(normal!, *args)
+       end
+
+       # clears attributes from all override precedence levels
+       #
+       # equivalent to: force_override!['foo']['bar'].delete('baz')
+       def rm_override(*args)
+         reset
+         remove_from_precedence_level(force_override!, *args)
+       end
+
+       #
+       # Replacing attributes without merging
+       #
+
+       # sets default attributes without merging
+       def default!
+         MultiMash.new(@default)
+       end
+
+       # sets normal attributes without merging
+       def normal!
+         MultiMash.new(@normal)
+       end
+
+       # sets override attributes without merging
+       def override!
+         MultiMash.new(@override)
+       end
+
+       # clears from all default precedence levels and then sets force_default
+       def force_default!
+         MultiMash.new(@default, @env_default, @role_default, @force_default)
+       end
+
+       # clears from all override precedence levels and then sets force_override
+       def force_override!
+         MultiMash.new(@override, @env_override, @role_override, @force_override)
+       end
+
+       #
+       # Accessing merged attributes
+       #
+
        def merged_attributes
          @merged_attributes ||= begin
                                   components = [merge_defaults, @normal, merge_overrides, @automatic]
@@ -390,7 +467,6 @@ class Chef
            Chef::Mixin::DeepMerge.merge(merged, component_value)
          end
        end
-
 
     end
 
