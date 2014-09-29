@@ -34,7 +34,7 @@ class Chef
       # This tries to find the user to execute brew as.  If a user is provided, that overrides the brew
       # executable user.  It is an error condition if the brew executable owner is root or we cannot find
       # the brew executable.
-      def find_homebrew_uid(provided_user)
+      def find_homebrew_uid(provided_user = nil)
         # They could provide us a user name or a UID
         unless provided_user.nil?
           return provided_user if provided_user.is_a? Integer
@@ -61,8 +61,7 @@ class Chef
           ::File.stat(brew_path).uid
         else
           raise Chef::Exceptions::CannotDetermineHomebrewOwner,
-                'Could not find the "brew" executable in /usr/local/bin or anywhere on the ' +
-                    'path.'
+                'Could not find the "brew" executable in /usr/local/bin or anywhere on the path.'
         end
       end
 
