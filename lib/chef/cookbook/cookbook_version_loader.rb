@@ -214,23 +214,29 @@ class Chef
 
       def load_root_files
         Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), '*'), File::FNM_DOTMATCH).each do |file|
+          file = Chef::Util::PathHelper.cleanpath(file)
           next if File.directory?(file)
           next if File.basename(file) == UPLOADED_COOKBOOK_VERSION_FILE
-          cookbook_settings[:root_filenames][file[@relative_path, 1]] = file
+          name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
+          cookbook_settings[:root_filenames][name] = file
         end
       end
 
       def load_recursively_as(category, category_dir, glob)
         file_spec = File.join(Chef::Util::PathHelper.escape_glob(cookbook_path, category_dir), '**', glob)
         Dir.glob(file_spec, File::FNM_DOTMATCH).each do |file|
+          file = Chef::Util::PathHelper.cleanpath(file)
           next if File.directory?(file)
-          cookbook_settings[category][file[@relative_path, 1]] = file
+          name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
+          cookbook_settings[category][name] = file
         end
       end
 
       def load_as(category, *path_glob)
         Dir[File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), *path_glob)].each do |file|
-          cookbook_settings[category][file[@relative_path, 1]] = file
+          file = Chef::Util::PathHelper.cleanpath(file)
+          name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
+          cookbook_settings[category][name] = file
         end
       end
 

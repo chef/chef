@@ -141,6 +141,10 @@ class Chef
         path = cleanpath(join(*parts))
         path.gsub(/[\\\{\}\[\]\*\?]/) { |x| "\\"+x }
       end
+
+      def self.relative_path_from(from, to)
+        pathname = Pathname.new(Chef::Util::PathHelper.cleanpath(to)).relative_path_from(Pathname.new(Chef::Util::PathHelper.cleanpath(from)))
+      end
     end
   end
 end
