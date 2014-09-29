@@ -90,6 +90,42 @@ DSL method `data_bag_item` now takes an optional String parameter `secret`, whic
 If the data bag item being fetched is encrypted and no `secret` is provided, Chef looks for a secret at `Chef::Config[:encrypted_data_bag_secret]`.
 If `secret` is provided, but the data bag item is not encrypted, then a regular data bag item is returned (no decryption is attempted).
 
+### Encrypted data bag UX
+The user can now provide a secret for data bags in 4 ways.  They are, in order of descending preference:
+1. Provide the secret on the command line of `knife data bag` and `knife bootstrap` commands with `--secret`
+1. Provide the location of a file containing the secret on the command line of `knife data bag` and `knife bootstrap` commands with `--secret-file`
+1. Add the secret to your workstation config with `knife[:secret] = ...`
+1. Add the location of a file containing the secret to your workstation config with `knife[:secret-file] = ...`
+
+When adding the secret information to your workstation config, it will not be used for writeable operations unless `--encrypt` is also passed on the command line.
+Data bag read-only operations (`knife data bag show` and `knife bootstrap`) do not require `--encrypt` to be passed, and will attempt to use an available secret for decryption.
+Unencrypted data bags will not attempt to be unencrypted, even if a secret is provided.
+Trying to view an encrypted data bag without providing a secret will issue a warning and show the encrypted contents.
+Trying to edit or create an encrypted data bag without providing a secret will fail.
+
+Here are some example scenarios:
+
+```
+# Providing `knife[:secret_file] = ...` in knife.rb will create and encrypt the data bag
+knife data bag create BAG_NAME ITEM_NAME --encrypt
+
+# The same command ran with --secret will use the command line secret instead of the knife.rb secret
+knife data bag create ANOTHER_BAG ITEM_NAME --encrypt --secret 'ANOTHER_SECRET'
+
+# The next two commands will fail, because they are using the wrong secret
+knife data bag edit BAG_NAME --secret 'ANOTHER_SECRET'
+knife data bag edit ANOTHER_BAG --encrypt
+
+# The next command will unencrypt the data and show it using the `knife[:secret_file]` without passing the --encrypt flag
+knife data bag show BAG_NAME
+
+# To create an unencrypted data bag, simply do not provide `--secret`, `--secret-file` or `--encrypt`
+knife data bag create UNENCRYPTED_BAG
+
+# If a secret is available from any of the 4 possible entries, it will be copied to a bootstrapped node, even if `--encrypt` is not present
+knife bootstrap FQDN
+```
+
 ### Enhanced search functionality: result filtering
 #### Use in recipes
 `Chef::Search::Query#search` can take an optional `:filter_result` argument which returns search data in the form of the Hash specified. Suppose your data looks like

@@ -30,6 +30,7 @@ describe Chef::Knife::Bootstrap do
     k.merge_configs
 
     k.ui.stub(:stderr).and_return(stderr)
+    allow(k).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(false)
     k
   end
 
@@ -221,10 +222,6 @@ describe Chef::Knife::Bootstrap do
       k
     end
 
-    # Include a data bag secret in the options to prevent Bootstrap from
-    # attempting to access /etc/chef/encrypted_data_bag_secret, which
-    # can fail when the file exists but can't be accessed by the user
-    # running the tests.
     let(:options){ ["--bootstrap-no-proxy", setting, "-s", "foo"] }
     let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "no_proxy.erb")) }
     let(:rendered_template) do
@@ -290,7 +287,6 @@ describe Chef::Knife::Bootstrap do
 
   describe "specifying the encrypted data bag secret key" do
     let(:secret) { "supersekret" }
-    let(:secret_file) { File.join(CHEF_SPEC_DATA, 'bootstrap', 'encrypted_data_bag_secret') }
     let(:options) { [] }
     let(:bootstrap_template) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "secret.erb")) }
     let(:rendered_template) do
@@ -299,60 +295,18 @@ describe Chef::Knife::Bootstrap do
       knife.render_template
     end
 
-    context "via --secret" do
-      let(:options){ ["--secret", secret] }
-
-      it "creates a secret file" do
-        rendered_template.should match(%r{#{secret}})
-      end
-
-      it "renders the client.rb with an encrypted_data_bag_secret entry" do
-        rendered_template.should match(%r{encrypted_data_bag_secret\s*"/etc/chef/encrypted_data_bag_secret"})
-      end
+    it "creates a secret file" do
+      expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(true)
+      expect(knife).to receive(:read_secret).and_return(secret)
+      rendered_template.should match(%r{#{secret}})
     end
 
-    context "via --secret-file" do
-      let(:options) { ["--secret-file", secret_file] }
-      let(:secret) { IO.read(secret_file) }
-
-      it "creates a secret file" do
-        rendered_template.should match(%r{#{secret}})
-      end
-
-      it "renders the client.rb with an encrypted_data_bag_secret entry" do
-        rendered_template.should match(%r{encrypted_data_bag_secret\s*"/etc/chef/encrypted_data_bag_secret"})
-      end
+    it "renders the client.rb with an encrypted_data_bag_secret entry" do
+      expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(true)
+      expect(knife).to receive(:read_secret).and_return(secret)
+      rendered_template.should match(%r{encrypted_data_bag_secret\s*"/etc/chef/encrypted_data_bag_secret"})
     end
 
-    context "secret via config" do
-      before do
-        Chef::Config[:knife][:secret] = secret
-      end
-
-      it "creates a secret file" do
-        rendered_template.should match(%r{#{secret}})
-      end
-
-      it "renders the client.rb with an encrypted_data_bag_secret entry" do
-        rendered_template.should match(%r{encrypted_data_bag_secret\s*"/etc/chef/encrypted_data_bag_secret"})
-      end
-    end
-
-    context "secret-file via config" do
-      let(:secret) { IO.read(secret_file) }
-
-      before do
-        Chef::Config[:knife][:secret_file] = secret_file
-      end
-
-      it "creates a secret file" do
-        rendered_template.should match(%r{#{secret}})
-      end
-
-      it "renders the client.rb with an encrypted_data_bag_secret entry" do
-        rendered_template.should match(%r{encrypted_data_bag_secret\s*"/etc/chef/encrypted_data_bag_secret"})
-      end
-    end
   end
 
   describe "when transferring trusted certificates" do
