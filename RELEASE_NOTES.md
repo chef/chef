@@ -94,6 +94,41 @@ package 'emacs' do
 end
 ```
 
+### Providing `homebrew_owner`
+
+Homebrew recommends being ran as a non-root user, whereas Chef recommends being ran with root privileges.  The
+`homebrew_package` provider has logic to try and determine which user to install Homebrew packages as.
+
+By default, the `homebrew_package` provider will try to execute the homebrew command as the owner of the `/usr/local/bin/brew`
+executable.  If that executable does not exist, Chef will try to find it by executing `which brew`.  If that cannot be
+found, Chef then errors.  The Homebrew recommendation is the default install, which will place the executable at
+`/usr/local/bin/brew` owned by a non-root user.
+
+You can circumvent this by providing the `homebrew_package` a `homebrew_owner` attribute, like:
+
+```ruby
+# provided as a uid
+homebrew_package 'emacs' do
+  homebrew_owner 1001
+end
+
+# provided as a string
+homebrew_package 'vim' do
+  homebrew_owner 'user1'
+end
+```
+
+Chef will then execute the Homebrew command as that user.  The `homebrew_owner` attribute can only be provided to the 
+`homebrew_package` resource, not the `package` resource.
+
+## DSCL user provider now supports Mac OS X 10.7 and above.
+
+DSCL user provider in Chef has supported setting passwords only on Mac OS X 10.6. In this release, Mac OS X versions 10.7 and above are now supported. Support for Mac OS X 10.6 is dropped from the dscl provider since this version is EOLed by Apple.
+
+In order to support configuring passwords for the users using shadow hashes two new attributes `salt` & `iterations` are added to the user resource. These attributes are required to make the new [SALTED-SHA512-PBKDF2](http://en.wikipedia.org/wiki/PBKDF2) style shadow hashes used in Mac OS X versions 10.8 and above.
+
+User resource on Mac supports setting password both using plain-text password or using the shadow hash. You can simply set the `password` attribute to the plain text password to configure the password for the user. However this is not ideal since including plain text passwords in cookbooks (even if they are private) is not a good idea. In order to set passwords using shadow hash you can follow the instructions below based on your Mac OS X version.
+
 ### Mac OS X 10.7
 
 10.7 calculates the password hash using **SALTED-SHA512**. Stored shadow hash length is 68 bytes; first 4 bytes being salt and the next 64 bytes being the shadow hash itself. You can use below code in order to calculate password hashes to be used in `password` attribute on Mac OS X 10.7:
