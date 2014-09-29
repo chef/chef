@@ -22,11 +22,11 @@ source git: "git://github.com/opscode/chef"
 relative_path "chef"
 
 if windows?
-  dependency "ruby-windows" # includes rubygems
+  dependency "ruby-windows"
   dependency "libyaml-windows"
-  dependency "openssl-windows"
   dependency "ruby-windows-devkit"
   dependency "cacerts"
+  dependency "rubygems"
 else
   dependency "ruby"
   dependency "rubygems"
