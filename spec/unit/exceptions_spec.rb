@@ -77,7 +77,7 @@ describe Chef::Exceptions do
 
     if exception.methods.include?(:to_json)
       include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
-        let(:subject) { exception }
+        let(:jsonable) { exception }
       end
     end
   end

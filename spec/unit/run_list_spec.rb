@@ -308,7 +308,7 @@ describe Chef::RunList do
     end
 
     include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
-      let(:subject) { @run_list }
+      let(:jsonable) { @run_list }
     end
 
   end

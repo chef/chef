@@ -764,7 +764,10 @@ describe Chef::Node do
     end
 
     include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
-      let(:subject) { node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA)) }
+      let(:jsonable) {
+        node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
+        node
+      }
     end
   end
 

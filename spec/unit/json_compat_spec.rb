@@ -68,7 +68,7 @@ describe Chef::JSONCompat do
     end
 
     include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
-      let(:subject) { Foo.new }
+      let(:jsonable) { Foo.new }
     end
   end
 

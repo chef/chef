@@ -125,7 +125,7 @@ describe Chef::ApiClient do
     end
 
     include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
-      let(:subject) { @client }
+      let(:jsonable) { @client }
     end
   end
 

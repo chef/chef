@@ -338,7 +338,7 @@ describe Chef::Resource do
     end
 
     include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
-      let(:subject) { @resource }
+      let(:jsonable) { @resource }
     end
   end
 

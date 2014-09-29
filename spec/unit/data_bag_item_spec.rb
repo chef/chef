@@ -186,7 +186,7 @@ describe Chef::DataBagItem do
     end
 
     include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
-      let(:subject) { @data_bag_item }
+      let(:jsonable) { @data_bag_item }
     end
   end
 

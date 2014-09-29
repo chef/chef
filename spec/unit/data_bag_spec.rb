@@ -74,7 +74,7 @@ describe Chef::DataBag do
       end
 
       include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
-        let(:subject) { @data_bag }
+        let(:jsonable) { @data_bag }
       end
     end
 

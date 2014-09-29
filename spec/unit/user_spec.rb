@@ -156,7 +156,7 @@ describe Chef::User do
     end
 
     include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
-      let(:subject) { @user }
+      let(:jsonable) { @user }
     end
   end
 
