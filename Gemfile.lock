@@ -1,14 +1,14 @@
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: 4922b246253ff180a6c18ae4dd8122bc002d3e81
+  revision: e1353091a9344480e9977b4735929d74de3d7328
   specs:
     omnibus-software (4.0.0)
 
 GIT
   remote: git://github.com/opscode/omnibus.git
-  revision: cf4b18fb94f724956b28592cde0890fe42cf6fbe
+  revision: 904f07b63ac7a4f5874ebfc3736eb1e35a7242b5
   specs:
-    omnibus (4.0.0.beta.1)
+    omnibus (4.0.0.rc.1)
       chef-sugar (~> 2.2)
       cleanroom (~> 1.0)
       mixlib-shellout (~> 1.4)
@@ -50,7 +50,7 @@ GEM
     celluloid-io (0.16.0)
       celluloid (>= 0.16.0)
       nio4r (>= 1.0.0)
-    chef-sugar (2.2.0)
+    chef-sugar (2.3.0)
     cleanroom (1.0.0)
     dep-selector-libgecode (1.0.2)
     dep_selector (1.0.3)
@@ -59,7 +59,8 @@ GEM
     erubis (2.7.0)
     faraday (0.9.0)
       multipart-post (>= 1.2, < 3)
-    ffi (1.9.3)
+    ffi (1.9.5)
+    ffi (1.9.5-x86-mingw32)
     ffi-yajl (1.1.0)
       ffi (~> 1.5)
       libyajl2 (~> 1.0)
@@ -78,6 +79,9 @@ GEM
     mixlib-config (2.1.0)
     mixlib-log (1.6.0)
     mixlib-shellout (1.4.0)
+    mixlib-shellout (1.4.0-x86-mingw32)
+      win32-process (~> 0.7.1)
+      windows-pr (~> 1.2.2)
     multipart-post (2.0.0)
     net-http-persistent (2.9.4)
     net-scp (1.2.1)
@@ -115,7 +119,7 @@ GEM
       retryable
       semverse (~> 1.1)
       varia_model (~> 0.4)
-    safe_yaml (1.0.3)
+    safe_yaml (1.0.4)
     sawyer (0.5.5)
       addressable (~> 2.3.5)
       faraday (~> 0.8, < 0.10)
@@ -138,12 +142,21 @@ GEM
     varia_model (0.4.0)
       buff-extensions (~> 1.0)
       hashie (>= 2.0.2, < 3.0.0)
+    win32-api (1.5.1-x86-mingw32)
+    win32-process (0.7.4)
+      ffi (>= 1.0.0)
+    windows-api (0.4.2)
+      win32-api (>= 1.4.5)
+    windows-pr (1.2.3)
+      win32-api (>= 1.4.5)
+      windows-api (>= 0.4.0)
     windows_chef_zero (2.0.0)
       test-kitchen (>= 1.2.1)
     wmi-lite (1.0.0)
 
 PLATFORMS
   ruby
+  x86-mingw32
 
 DEPENDENCIES
   berkshelf (~> 3.0)
