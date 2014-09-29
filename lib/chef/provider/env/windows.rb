@@ -33,7 +33,10 @@ class Chef
           end
           obj.variablevalue = @new_resource.value
           obj.put_
-          ENV[@new_resource.key_name] = @new_resource.value
+          value =  @new_resource.value
+          value = expand_path(value) if @new_resource.key_name.upcase == 'PATH'
+          ENV[@new_resource.key_name] = value
+
           broadcast_env_change
         end
 
@@ -70,6 +73,15 @@ class Chef
         def broadcast_env_change
           flags = SMTO_BLOCK | SMTO_ABORTIFHUNG | SMTO_NOTIMEOUTIFNOTHUNG
           SendMessageTimeoutA(HWND_BROADCAST, WM_SETTINGCHANGE, 0, FFI::MemoryPointer.from_string('Environment').address, flags, 5000, nil)
+        end
+
+        private
+
+        def expand_path(path)
+          system_vars = %w(HomeDrive HomePath ProgramFiles SystemDirectory SystemDrive SystemRoot Temp Tmp UserProfile WinDir)
+          system_vars.each_with_object(path) do |variable, new_path|
+            new_path.gsub!(/%#{variable}%/i, ENV[variable]) if ENV[variable]
+          end
         end
       end
     end
