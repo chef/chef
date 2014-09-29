@@ -33,6 +33,16 @@ require 'chef/platform'
 
 require 'chef/mixin/deprecation'
 
+# need the symbol to not be undefined
+class Chef
+  class Provider
+    class Service < Chef::Provider
+      class Ubuntu
+      end
+    end
+  end
+end
+
 class Chef
   class Resource
     class Notification < Struct.new(:resource, :action, :notifying_resource)
@@ -325,6 +335,9 @@ F
     end
 
     def provider(arg=nil)
+      if arg == Chef::Provider::Service::Ubuntu
+        raise "The Chef::Provider::Service::Ubuntu service provider is not a stable API, and should not be used directly by user code"
+      end
       klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
                 lookup_provider_constant(arg)
               else
