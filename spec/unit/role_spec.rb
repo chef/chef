@@ -21,6 +21,7 @@ require 'chef/role'
 
 describe Chef::Role do
   before(:each) do
+    Chef::Platform.stub(:windows?) { false }
     @role = Chef::Role.new
     @role.name("ops_master")
   end
