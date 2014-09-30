@@ -141,6 +141,7 @@
 * Add homebrew provider for package resource, use it by default on OS X (Issue #1709)
 * Add escape_glob method to PathHelper, update glob operations.
 * Verify x509 properties of certificates in the :trusted_certs_dir during knife ssl check.
+* Disable unforked interval chef-client runs.
 
 ## Last Release: 11.14.2
 

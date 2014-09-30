@@ -182,6 +182,18 @@ $ knife search node "platform:ubuntu" --filter-result "c_version:languages.c.gcc
 $
 ```
 
+## Unforked interval chef-client runs are disabled
+It is now explicitly prohibited to run the chef-client and chef-solo applications at intervals without forking.
+These commands will fail immediately
+```bash
+chef-client --daemonize --no-fork
+chef-solo --interval 1800 --no-fork
+chef-client --daemonize --interval 0 --no-fork
+```
+You can provide the `--interval` and `--daemonize` flags in conjunction with `--no-fork` if the `--once` flag
+is also given. However `--once` overrides all `--interval` and `--splay` settings to run `chef-client` once
+then exits.
+
 # `knife ssl check` will verify X509 properties of your trusted certificates
 
 When you run `knife ssl check URL (options)` knife will verify if the certificate files, with extensions `*.crt` and `*.pem`
