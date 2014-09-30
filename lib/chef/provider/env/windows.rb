@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api/system' if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+require 'chef/mixin/windows_env_helper'
 
 class Chef
   class Provider
     class Env
       class Windows < Chef::Provider::Env
-        include Chef::ReservedNames::Win32::API::System if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+        include Chef::Mixin::WindowsEnvHelper
 
         def create_env
           obj = env_obj(@new_resource.key_name)
@@ -33,7 +33,9 @@ class Chef
           end
           obj.variablevalue = @new_resource.value
           obj.put_
-          ENV[@new_resource.key_name] = @new_resource.value
+          value = @new_resource.value
+          value = expand_path(value) if @new_resource.key_name.upcase == 'PATH'
+          ENV[@new_resource.key_name] = value
           broadcast_env_change
         end
 
@@ -60,17 +62,6 @@ class Chef
           end
         end
 
-        #see: http://msdn.microsoft.com/en-us/library/ms682653%28VS.85%29.aspx
-        HWND_BROADCAST = 0xffff
-        WM_SETTINGCHANGE = 0x001A
-        SMTO_BLOCK = 0x0001
-        SMTO_ABORTIFHUNG = 0x0002
-        SMTO_NOTIMEOUTIFNOTHUNG = 0x0008
-
-        def broadcast_env_change
-          flags = SMTO_BLOCK | SMTO_ABORTIFHUNG | SMTO_NOTIMEOUTIFNOTHUNG
-          SendMessageTimeoutA(HWND_BROADCAST, WM_SETTINGCHANGE, 0, FFI::MemoryPointer.from_string('Environment').address, flags, 5000, nil)
-        end
       end
     end
   end
