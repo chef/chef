@@ -59,6 +59,7 @@ class Chef
           @guard_interpreter = new_guard_interpreter(@parent_resource, @command, @command_opts, &@block)
           @block = nil
         when nil
+          # we should have a block if we get here
           if @parent_resource.guard_interpreter != :default
             msg = "#{@parent_resource.name} was given a guard_interpreter of #{@parent_resource.guard_interpreter}, "
             msg << "but not given a command as a string. guard_interpreter does not support blocks (because they just contain ruby)."
@@ -68,7 +69,8 @@ class Chef
           @guard_interpreter = nil
           @command, @command_opts = nil, nil
         else
-          raise ArgumentError, "Invalid only_if/not_if command: #{command.inspect} (#{command.class})"
+          # command was passed, but it wasn't a String
+          raise ArgumentError, "Invalid only_if/not_if command, expected a string: #{command.inspect} (#{command.class})"
         end
       end
 
