@@ -22,6 +22,9 @@ Chef::Knife::Bootstrap.load_deps
 require 'net/ssh'
 
 describe Chef::Knife::Bootstrap do
+  before do
+    Chef::Platform.stub(:windows?) { false }
+  end
   let(:knife) do
     Chef::Log.logger = Logger.new(StringIO.new)
     Chef::Config[:knife][:bootstrap_template] = bootstrap_template unless bootstrap_template.nil?
@@ -310,7 +313,7 @@ describe Chef::Knife::Bootstrap do
   end
 
   describe "when transferring trusted certificates" do
-    let(:trusted_certs_dir) { File.join(CHEF_SPEC_DATA, 'trusted_certs') }
+    let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(File.dirname(__FILE__), '../../data/trusted_certs')) }
 
     let(:rendered_template) do
       knife.merge_configs
