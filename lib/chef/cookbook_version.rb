@@ -576,8 +576,12 @@ class Chef
     end
 
     # Get the newest version of all cookbooks
+    # Remove in Chef 13
     def self.latest_cookbooks
-      chef_server_rest.get_rest('cookbooks/_latest')
+      Chef::Log.warn("[DEPRECATED]: The method Chef::CookbookVersion#latest_cookbooks is deprecated in Chef 12" +
+        " and will be removed in future versions of Chef. Use method Chef::CookbookVersion#list for a list of" +
+        " available cookbooks and their latest version.")
+      self.list
     end
 
     def <=>(o)
