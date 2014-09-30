@@ -94,7 +94,7 @@ package 'emacs' do
 end
 ```
 
-### Providing `homebrew_owner`
+### Providing `homebrew_user`
 
 Homebrew recommends being ran as a non-root user, whereas Chef recommends being ran with root privileges.  The
 `homebrew_package` provider has logic to try and determine which user to install Homebrew packages as.
@@ -104,21 +104,21 @@ executable.  If that executable does not exist, Chef will try to find it by exec
 found, Chef then errors.  The Homebrew recommendation is the default install, which will place the executable at
 `/usr/local/bin/brew` owned by a non-root user.
 
-You can circumvent this by providing the `homebrew_package` a `homebrew_owner` attribute, like:
+You can circumvent this by providing the `homebrew_package` a `homebrew_user` attribute, like:
 
 ```ruby
 # provided as a uid
 homebrew_package 'emacs' do
-  homebrew_owner 1001
+  homebrew_user 1001
 end
 
 # provided as a string
 homebrew_package 'vim' do
-  homebrew_owner 'user1'
+  homebrew_user 'user1'
 end
 ```
 
-Chef will then execute the Homebrew command as that user.  The `homebrew_owner` attribute can only be provided to the 
+Chef will then execute the Homebrew command as that user.  The `homebrew_user` attribute can only be provided to the 
 `homebrew_package` resource, not the `package` resource.
 
 ## DSCL user provider now supports Mac OS X 10.7 and above.
