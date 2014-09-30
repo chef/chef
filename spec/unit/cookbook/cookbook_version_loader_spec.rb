@@ -19,6 +19,9 @@
 require 'spec_helper'
 
 describe Chef::Cookbook::CookbookVersionLoader do
+  before do
+    Chef::Platform.stub(:windows?) { false }
+  end
 
   describe "loading a cookbook" do
 

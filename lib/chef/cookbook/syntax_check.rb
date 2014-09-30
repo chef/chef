@@ -103,9 +103,7 @@ class Chef
       def remove_ignored_files(file_list)
         return file_list unless chefignore.ignores.length > 0
         file_list.reject do |full_path|
-          cookbook_pn = Pathname.new cookbook_path
-          full_pn = Pathname.new full_path
-          relative_pn = full_pn.relative_path_from cookbook_pn
+          relative_pn = Chef::Util::PathHelper.relative_path_from(cookbook_path, full_path)
           chefignore.ignored? relative_pn.to_s
         end
       end

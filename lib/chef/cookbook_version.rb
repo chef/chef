@@ -660,7 +660,7 @@ class Chef
 
     def parse_segment_file_from_root_paths(segment, segment_file)
       root_paths.each do |root_path|
-        pathname = Pathname.new(segment_file).relative_path_from(Pathname.new(root_path))
+        pathname = Chef::Util::PathHelper.relative_path_from(root_path, segment_file)
 
         parts = pathname.each_filename.take(2)
         # Check if path is actually under root_path

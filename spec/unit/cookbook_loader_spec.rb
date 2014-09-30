@@ -19,7 +19,9 @@
 require 'spec_helper'
 
 describe Chef::CookbookLoader do
-
+  before do
+    Chef::Platform.stub(:windows?) {false}
+  end
   let(:repo_paths) do
     [
       File.expand_path(File.join(CHEF_SPEC_DATA, "kitchen")),
