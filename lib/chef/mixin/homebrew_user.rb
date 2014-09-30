@@ -42,11 +42,6 @@ class Chef
         end
 
         @homebrew_owner ||= calculate_owner
-        if @homebrew_owner == 0
-          raise Chef::Exceptions::HomebrewOwnerIsRoot,
-                'The homebrew owner is currently "root".  This is not suggested by the' +
-                    'homebrew maintainers.'
-        end
         @homebrew_owner
       end
 
@@ -56,13 +51,16 @@ class Chef
         default_brew_path = '/usr/local/bin/brew'
         if ::File.exist?(default_brew_path)
           # By default, this follows symlinks which is what we want
-          ::File.stat(default_brew_path).uid
+          owner = ::File.stat(default_brew_path).uid
         elsif (brew_path = shell_out("which brew").stdout.strip) && !brew_path.empty?
-          ::File.stat(brew_path).uid
+          owner = ::File.stat(brew_path).uid
         else
           raise Chef::Exceptions::CannotDetermineHomebrewOwner,
                 'Could not find the "brew" executable in /usr/local/bin or anywhere on the path.'
         end
+
+        Chef::Log.debug "Found Homebrew owner #{Etc.getpwuid(owner).name}; executing `brew` commands as them"
+        owner
       end
 
     end

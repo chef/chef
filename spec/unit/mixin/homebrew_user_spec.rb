@@ -47,7 +47,7 @@ describe Chef::Mixin::HomebrewUser do
 
   end
 
-  describe 'when the homebrew user is not provided' do
+  shared_examples "successfully find executable" do
     let(:user) { nil }
     let(:brew_owner) { 2001 }
     let(:default_brew_path) { '/usr/local/bin/brew' }
@@ -56,6 +56,10 @@ describe Chef::Mixin::HomebrewUser do
       expect(d).to receive(:uid).and_return(brew_owner)
       d
     }
+
+    before do
+      expect(Etc).to receive(:getpwuid).with(brew_owner).and_return(OpenStruct.new(:name => "name"))
+    end
 
     it 'returns the owner of the brew executable when it is at a default location' do
       expect(File).to receive(:exist?).with(default_brew_path).and_return(true)
@@ -69,6 +73,11 @@ describe Chef::Mixin::HomebrewUser do
       expect(File).to receive(:stat).with("/foo").and_return(stat_double)
       expect(homebrew_user.find_homebrew_uid(user)).to eq(brew_owner)
     end
+  end
+
+  describe 'when the homebrew user is not provided' do
+
+    include_examples "successfully find executable"
 
     it 'raises an error if no executable is found' do
       expect(File).to receive(:exist?).with(default_brew_path).and_return(false)
@@ -76,13 +85,10 @@ describe Chef::Mixin::HomebrewUser do
       expect { homebrew_user.find_homebrew_uid(user) }.to raise_error(Chef::Exceptions::CannotDetermineHomebrewOwner)
     end
 
-    describe "the executable is owned by root" do
+    context "the executable is owned by root" do
       let(:brew_owner) { 0 }
-
-      it 'raises an error' do
-        expect(File).to receive(:exist?).with(default_brew_path).and_return(true)
-        expect(File).to receive(:stat).with(default_brew_path).and_return(stat_double)
-        expect { homebrew_user.find_homebrew_uid(user) }.to raise_error(Chef::Exceptions::HomebrewOwnerIsRoot)
+      include_examples "successfully find executable" do
+        let(:brew_owner) { 0 }
       end
     end
 
