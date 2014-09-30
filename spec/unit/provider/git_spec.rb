@@ -245,9 +245,10 @@ SHAS
   end
 
   it "runs a checkout command with default options" do
-    expected_cmd = 'git branch -f deploy d35af14d41ae22b19da05d7d03a0bafc321b244c; git checkout deploy'
-    @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir",
-                                                             :log_tag => "git[web2.0 app]")
+    @provider.should_receive(:shell_out!).with('git branch -f deploy d35af14d41ae22b19da05d7d03a0bafc321b244c', :cwd => "/my/deploy/dir",
+                                                             :log_tag => "git[web2.0 app]").ordered
+    @provider.should_receive(:shell_out!).with('git checkout deploy', :cwd => "/my/deploy/dir",
+                                                             :log_tag => "git[web2.0 app]").ordered
     @provider.checkout
   end
 
