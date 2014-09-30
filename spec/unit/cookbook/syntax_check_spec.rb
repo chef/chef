@@ -20,6 +20,9 @@ require 'spec_helper'
 require "chef/cookbook/syntax_check"
 
 describe Chef::Cookbook::SyntaxCheck do
+  before do
+    Chef::Platform.stub(:windows?) { false }
+  end
 
   let(:cookbook_path) { File.join(CHEF_SPEC_DATA, 'cookbooks', 'openldap') }
   let(:syntax_check) { Chef::Cookbook::SyntaxCheck.new(cookbook_path) }
