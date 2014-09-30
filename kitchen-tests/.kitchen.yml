@@ -2,7 +2,7 @@
 provisioner:
   name: chef_solo
   github: "opscode/chef"
-  branch: "tball/yajl-replace-json" # TODO replace this when going to master
+  branch: <%= %x(git rev-parse HEAD) %>
   require_chef_omnibus: true
   data_path: test/fixtures
 
