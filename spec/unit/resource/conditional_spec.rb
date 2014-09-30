@@ -27,6 +27,15 @@ describe Chef::Resource::Conditional do
     @parent_resource = Chef::Resource.new(nil, Chef::Node.new)
   end
 
+  it "raises an exception when a guard_interpreter is specified and a block is given" do
+    @parent_resource.guard_interpreter :canadian_mounties
+    expect { Chef::Resource::Conditional.send(:new, :always, @parent_resource, nil, {}) { True } }.to raise_error(ArgumentError, /does not support blocks/)
+  end
+
+  it "raises an exception when neither a block or command is given" do
+    expect { Chef::Resource::Conditional.send(:new, :always, @parent_resource, nil, {})}.to raise_error(ArgumentError, /requires either a command or a block/)
+  end
+
   describe "when created as an `only_if`" do
     describe "after running a successful command" do
       before do

@@ -52,6 +52,11 @@ class Chef
           @block = nil
         when nil
           raise ArgumentError, "only_if/not_if requires either a command or a block" unless block_given?
+          if parent_resource.guard_interpreter != :default
+            msg = "#{parent_resource.name} was given a guard_interpreter of #{parent_resource.guard_interpreter}, "
+            msg << "but not given a command as a string. guard_interpreter does not support blocks (because they just contain ruby)."
+            raise ArgumentError, msg
+          end
           @guard_interpreter = nil
           @command, @command_opts = nil, nil
           @block = block
