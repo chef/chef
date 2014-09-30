@@ -22,6 +22,7 @@ require 'chef/data_bag'
 describe Chef::DataBag do
   before(:each) do
     @data_bag = Chef::DataBag.new
+    Chef::Platform::stub(:windows?) { false }
   end
 
   describe "initialize" do
