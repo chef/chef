@@ -21,6 +21,7 @@ require 'spec_helper'
 describe Chef::Provider::Deploy::Revision do
 
   before do
+    Chef::Platform.stub(:windows?) { false }
     @temp_dir = Dir.mktmpdir
     Chef::Config[:file_cache_path] = @temp_dir
     @resource = Chef::Resource::Deploy.new("/my/deploy/dir")
