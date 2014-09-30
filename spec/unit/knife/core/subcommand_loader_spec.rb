@@ -20,7 +20,7 @@ require 'spec_helper'
 
 describe Chef::Knife::SubcommandLoader do
   before do
-
+    Chef::Platform.stub(:windows?) { false }
     @home = File.join(CHEF_SPEC_DATA, 'knife-home')
     @env = {'HOME' => @home}
     @loader = Chef::Knife::SubcommandLoader.new(File.join(CHEF_SPEC_DATA, 'knife-site-subcommands'), @env)
