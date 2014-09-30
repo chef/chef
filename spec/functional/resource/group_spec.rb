@@ -371,12 +371,10 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     describe "when there is no group" do
       it "raises an error on modify" do
         lambda { group_resource.run_action(:modify) }.should raise_error
-        #group_should_not_exist(group_name)
       end
 
       it "does not raise an error on manage" do
         lambda { group_resource.run_action(:manage) }.should_not raise_error
-        #group_should_not_exist(group_name)
       end
     end
 
