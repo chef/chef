@@ -23,6 +23,7 @@ Chef::Knife::EnvironmentFromFile.load_deps
 
 describe Chef::Knife::EnvironmentFromFile do
   before(:each) do
+    Chef::Platform.stub(:windows?) { false }
     @knife = Chef::Knife::EnvironmentFromFile.new
     @stdout = StringIO.new
     @knife.ui.stub(:stdout).and_return(@stdout)
