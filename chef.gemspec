@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.add_dependency "erubis", "~> 2.7"
   s.add_dependency "diff-lcs", "~> 1.2", ">= 1.2.4"
 
-  s.add_dependency "chef-zero", "~> 3.1"
+  s.add_dependency "chef-zero", "~> 3.2"
   s.add_dependency "pry", "~> 0.9"
 
   s.add_dependency 'plist', '~> 3.1.0'
