@@ -27,6 +27,7 @@ dependency "bundler"
 dependency "appbundler"
 dependency "berkshelf"
 dependency "chef-vault"
+dependency "foodcritic"
 dependency "ohai"
 dependency "test-kitchen"
 dependency "chef"
@@ -55,7 +56,6 @@ build do
 
   # Perform multiple gem installs to better isolate/debug failures
   {
-    'foodcritic'      => '4.0.0',
     'chefspec'        => '4.0.1',
     'fauxhai'         => '2.2.0',
     'rubocop'         => '0.18.1',
@@ -75,5 +75,6 @@ build do
   appbundle 'berkshelf'
   appbundle 'chef-dk'
   appbundle 'chef-vault'
+  appbundle 'foodcritic'
   appbundle 'test-kitchen'
 end
