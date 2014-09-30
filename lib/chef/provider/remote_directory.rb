@@ -36,14 +36,16 @@ class Chef
 
       def action_create
         super
+        # Mark all files as needing to be purged
         files_to_purge = Set.new(Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob(@new_resource.path), '**', '*'),
                                           ::File::FNM_DOTMATCH).select do |name|
+                                   # Everything except current directory and previous directory
                                    basename = Pathname.new(name).basename().to_s
                                    ['.', '..'].all? {|n| n != basename}
-                                 end).map! {|i| Chef::Util::PathHelper.cleanpath(i)}
+                                 end).map! {|i| Chef::Util::PathHelper.cleanpath(i)} # Make sure each path is clean
         files_to_transfer.each do |cookbook_file_relative_path|
           create_cookbook_file(cookbook_file_relative_path)
-          # parent directories are also removed from the purge list
+          # parent directories and file being transfered are removed from the purge list
           Pathname.new(Chef::Util::PathHelper.cleanpath(::File.join(@new_resource.path, cookbook_file_relative_path))).descend do |d|
             files_to_purge.delete(d.to_s)
           end
