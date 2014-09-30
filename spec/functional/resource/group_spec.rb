@@ -28,10 +28,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
   def group_should_exist(group)
     case ohai[:platform_family]
     when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
-      expect { Etc::getgrnam(group) }.to_not raise_error(ArgumentError, "can't find group for #{group}")
+      expect { Etc::getgrnam(group) }.not_to raise_error
       expect(group).to eq(Etc::getgrnam(group).name)
     when "windows"
-      expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.to_not raise_error(ArgumentError, "The group name could not be found.")
+      expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.not_to raise_error
     end
   end
 
@@ -369,9 +369,14 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     let(:tested_action) { :manage }
 
     describe "when there is no group" do
-      it "should raise an error" do
+      it "raises an error on modify" do
+        lambda { group_resource.run_action(:modify) }.should raise_error
+        #group_should_not_exist(group_name)
+      end
+
+      it "does not raise an error on manage" do
         lambda { group_resource.run_action(:manage) }.should_not raise_error
-        group_should_not_exist(group_name)
+        #group_should_not_exist(group_name)
       end
     end
 
