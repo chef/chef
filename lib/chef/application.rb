@@ -215,7 +215,7 @@ class Chef::Application
       else
         # Unforked interval runs are disabled, so this runs chef-client
         # once and then exits. If TERM signal is received, will "ignore"
-        # the signal to finish converge, then exit with exitstatus 3.
+        # the signal to finish converge.
         run_with_graceful_exit_option
       end
       @chef_client = nil

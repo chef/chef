@@ -168,6 +168,8 @@ end
 
 describe Chef::Application::Client, "run_application", :unix_only do
   before(:each) do
+    Chef::Config[:specific_recipes] = [] # normally gets set in @app.reconfigure
+
     @app = Chef::Application::Client.new
     @app.setup_signal_handlers
     # Default logger doesn't work correctly when logging from a trap handler.

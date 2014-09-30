@@ -258,7 +258,6 @@ class Chef::Application::Client < Chef::Application
     Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
     Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
-
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
     end
@@ -319,7 +318,7 @@ class Chef::Application::Client < Chef::Application
     if !Chef::Config[:client_fork] || Chef::Config[:once]
       begin
         # run immediately without interval sleep, or splay
-        run_chef_client(Chef::Config[:specific_recipes] || [])
+        run_chef_client(Chef::Config[:specific_recipes])
       rescue SystemExit
         raise
       rescue Exception => e
@@ -346,7 +345,7 @@ class Chef::Application::Client < Chef::Application
         end
 
         @signal = nil
-        run_chef_client(Chef::Config[:specific_recipes] || [])
+        run_chef_client(Chef::Config[:specific_recipes])
 
         Chef::Application.exit!("Exiting", 0) if !Chef::Config[:interval]
       rescue SystemExit => e
