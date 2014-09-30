@@ -23,6 +23,9 @@ require 'ostruct'
 require 'mixlib/shellout'
 
 describe Chef::Provider::User::Dscl do
+  before do
+    Chef::Platform.stub(:windows?) { false }
+  end
   let(:node) {
     node = Chef::Node.new
     node.stub(:[]).with(:platform_version).and_return(mac_version)

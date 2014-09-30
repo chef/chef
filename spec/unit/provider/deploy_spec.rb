@@ -21,6 +21,7 @@ require 'spec_helper'
 describe Chef::Provider::Deploy do
 
   before do
+    Chef::Platform.stub(:windows?) { false }
     @release_time = Time.utc( 2004, 8, 15, 16, 23, 42)
     Time.stub(:now).and_return(@release_time)
     @expected_release_dir = "/my/deploy/dir/releases/20040815162342"
