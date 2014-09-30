@@ -182,17 +182,23 @@ $ knife search node "platform:ubuntu" --filter-result "c_version:languages.c.gcc
 $
 ```
 
-## Unforked interval chef-client runs are disabled
-It is now explicitly prohibited to run the chef-client and chef-solo applications at intervals without forking.
-These commands will fail immediately
-```bash
-chef-client --daemonize --no-fork
-chef-solo --interval 1800 --no-fork
-chef-client --daemonize --interval 0 --no-fork
-```
-You can provide the `--interval` and `--daemonize` flags in conjunction with `--no-fork` if the `--once` flag
-is also given. However `--once` overrides all `--interval` and `--splay` settings to run `chef-client` once
-then exits.
+## Client and solo application changes
+
+### Unforked interval chef-client runs are disabled
+Unforked interval and daemonized chef-client runs are now explicitly prohibited. Runs configured with CLI options
+`--interval SEC` or `--daemonize` paired with `--no-fork`, or the equivalent config options paired with
+`client_fork false` will fail immediately with error.
+
+### Sleep happens before converge
+When configured to splay sleep or run at intervals, `chef-client` and `chef-solo` perform both splay and interval
+sleeps before converging. In previous releases, chef would splay sleep then converge then interval sleep.
+
+### Signal handling
+When sent `SIGTERM` the thread or process will:
+1. if chef is not converging, exit immediately with exitstatus 3 or
+1. allow chef to finish converging then exit immediately with the converge's exitstatus.
+
+To terminate immediately, send `SIGINT`.
 
 # `knife ssl check` will verify X509 properties of your trusted certificates
 
