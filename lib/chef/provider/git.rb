@@ -150,7 +150,8 @@ class Chef
 
         converge_by("checkout ref #{sha_ref} branch #{@new_resource.revision}") do
           # checkout into a local branch rather than a detached HEAD
-          shell_out!("git branch -f #{@new_resource.checkout_branch} #{sha_ref}; git checkout #{@new_resource.checkout_branch}", run_options(:cwd => @new_resource.destination))
+          shell_out!("git branch -f #{@new_resource.checkout_branch} #{sha_ref}", run_options(:cwd => @new_resource.destination))
+          shell_out!("git checkout #{@new_resource.checkout_branch}", run_options(:cwd => @new_resource.destination))
           Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision} onto: #{@new_resource.checkout_branch} reference: #{sha_ref}"
         end
       end
