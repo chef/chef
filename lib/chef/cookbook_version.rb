@@ -552,6 +552,11 @@ class Chef
       chef_server_rest.get_rest('cookbooks')
     end
 
+    # Alias latest_cookbooks as list
+    class << self
+      alias :latest_cookbooks :list
+    end
+
     def self.list_all_versions
       chef_server_rest.get_rest('cookbooks?num_versions=all')
     end
@@ -573,15 +578,6 @@ class Chef
       else
         raise
       end
-    end
-
-    # Get the newest version of all cookbooks
-    # Remove in Chef 13
-    def self.latest_cookbooks
-      Chef::Log.warn("[DEPRECATED]: The method Chef::CookbookVersion#latest_cookbooks is deprecated in Chef 12" +
-        " and will be removed in future versions of Chef. Use method Chef::CookbookVersion#list for a list of" +
-        " available cookbooks and their latest version.")
-      self.list
     end
 
     def <=>(o)
