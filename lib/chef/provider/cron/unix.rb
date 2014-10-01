@@ -33,6 +33,8 @@ class Chef
           crontab = shell_out('/usr/bin/crontab -l', :user => @new_resource.user)
           status = crontab.status.exitstatus
 
+          Chef::Log.debug crontab.format_for_exception if status > 0
+
           if status > 1
             raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status}"
           end

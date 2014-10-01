@@ -59,6 +59,8 @@ describe Chef::Provider::Cron::Unix do
     end
 
     before do
+      allow(Chef::Log).to receive(:debug)
+      allow(shell_out).to receive(:format_for_exception).and_return("formatted command output")
       allow(provider).to receive(:shell_out).with('/usr/bin/crontab -l', :user => username).and_return(shell_out)
     end
 
@@ -78,6 +80,11 @@ describe Chef::Provider::Cron::Unix do
       it "should return nil if the user has no crontab" do
         expect(provider.send(:read_crontab)).to be_nil
       end
+
+      it "logs the crontab output to debug" do
+        provider.send(:read_crontab)
+        expect(Chef::Log).to have_received(:debug).with("formatted command output")
+      end
     end
 
     context "when any other error occurs" do
@@ -87,6 +94,11 @@ describe Chef::Provider::Cron::Unix do
         expect {
           provider.send(:read_crontab)
         }.to raise_error(Chef::Exceptions::Cron, "Error determining state of #{new_resource.name}, exit: 2")
+      end
+
+      it "logs the crontab output to debug" do
+        provider.send(:read_crontab) rescue nil
+        expect(Chef::Log).to have_received(:debug).with("formatted command output")
       end
     end
   end
