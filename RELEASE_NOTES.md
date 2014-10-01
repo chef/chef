@@ -271,3 +271,12 @@ config setting and always set to VERIFY_NONE.
 by the given Hash. This works analogously to the partial_search method from the [partial_search cookbook](https://supermarket.getchef.com/cookbooks/partial_search),
 with `:filter_result` replacing `:keys`. You can also filter `knife search` results by supplying the `--filter-result`
 or `-f` option and a comma-separated string representation of the filter hash.
+
+## Unforked chef-client interval runs are disabled.
+We no longer allow unforked interval runs of `chef-client`. CLI arguments with flag combinations `--interval SEC --no-fork` or
+`--daemonize --no-fork` will fail immediately. Configuration options `interval` and `daemonize` will also fail with
+error when `client_fork false` is set.
+
+## Interval sleep occurs before converge
+When running chef-client or chef-solo at intervals, the application will perform splay and interval sleep
+before converging chef. (In previous releases, splay sleep occurred first, then convergance, then interval sleep).

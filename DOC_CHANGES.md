@@ -182,6 +182,24 @@ $ knife search node "platform:ubuntu" --filter-result "c_version:languages.c.gcc
 $
 ```
 
+## Client and solo application changes
+
+### Unforked interval chef-client runs are disabled
+Unforked interval and daemonized chef-client runs are now explicitly prohibited. Runs configured with CLI options
+`--interval SEC` or `--daemonize` paired with `--no-fork`, or the equivalent config options paired with
+`client_fork false` will fail immediately with error.
+
+### Sleep happens before converge
+When configured to splay sleep or run at intervals, `chef-client` and `chef-solo` perform both splay and interval
+sleeps before converging. In previous releases, chef would splay sleep then converge then interval sleep.
+
+### Signal handling
+When sent `SIGTERM` the thread or process will:
+1. if chef is not converging, exit immediately with exitstatus 3 or
+1. allow chef to finish converging then exit immediately with the converge's exitstatus.
+
+To terminate immediately, send `SIGINT`.
+
 # `knife ssl check` will verify X509 properties of your trusted certificates
 
 When you run `knife ssl check URL (options)` knife will verify if the certificate files, with extensions `*.crt` and `*.pem`

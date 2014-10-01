@@ -62,6 +62,10 @@ class Chef::Application
       Chef::Application.fatal!("SIGINT received, stopping", 2)
     end
 
+    trap("TERM") do
+      Chef::Application.fatal!("SIGTERM received, stopping", 3)
+    end
+
     unless Chef::Platform.windows?
       trap("QUIT") do
         Chef::Log.info("SIGQUIT received, call stack:\n  " + caller.join("\n  "))
@@ -206,12 +210,78 @@ class Chef::Application
       )
       @chef_client_json = nil
 
-      @chef_client.run
+      if can_fork?
+        fork_chef_client # allowed to run client in forked process
+      else
+        # Unforked interval runs are disabled, so this runs chef-client
+        # once and then exits. If TERM signal is received, will "ignore"
+        # the signal to finish converge.
+        run_with_graceful_exit_option
+      end
       @chef_client = nil
     end
   end
 
   private
+  def can_fork?
+    # win32-process gem exposes some form of :fork for Process
+    # class. So we are seperately ensuring that the platform we're
+    # running on is not windows before forking.
+    Chef::Config[:client_fork] && Process.respond_to?(:fork) && !Chef::Platform.windows?
+  end
+
+  # Run chef-client once and then exit. If TERM signal is received, ignores the
+  # signal to finish the converge and exists.
+  def run_with_graceful_exit_option
+    # Override the TERM signal.
+    trap('TERM') do
+      Chef::Log.debug("SIGTERM received during converge," +
+        " finishing converge to exit normally (send SIGINT to terminate immediately)")
+    end
+
+    @chef_client.run
+    true
+  end
+
+  def fork_chef_client
+    Chef::Log.info "Forking chef instance to converge..."
+    pid = fork do
+      # Want to allow forked processes to finish converging when
+      # TERM singal is received (exit gracefully)
+      trap('TERM') do
+        Chef::Log.debug("SIGTERM received during converge," +
+          " finishing converge to exit normally (send SIGINT to terminate immediately)")
+      end
+
+      client_solo = Chef::Config[:solo] ? "chef-solo" : "chef-client"
+      $0 = "#{client_solo} worker: ppid=#{Process.ppid};start=#{Time.new.strftime("%R:%S")};"
+      begin
+        Chef::Log.debug "Forked instance now converging"
+        @chef_client.run
+      rescue Exception => e
+        Chef::Log.error(e.to_s)
+        exit 1
+      else
+        exit 0
+      end
+    end
+    Chef::Log.debug "Fork successful. Waiting for new chef pid: #{pid}"
+    result = Process.waitpid2(pid)
+    handle_child_exit(result)
+    Chef::Log.debug "Forked instance successfully reaped (pid: #{pid})"
+    true
+  end
+
+  def handle_child_exit(pid_and_status)
+    status = pid_and_status[1]
+    return true if status.success?
+    message = if status.signaled?
+      "Chef run process terminated by signal #{status.termsig} (#{Signal.list.invert[status.termsig]})"
+    else
+      "Chef run process exited unsuccessfully (exit code #{status.exitstatus})"
+    end
+    raise Exceptions::ChildConvergeError, message
+  end
 
   def apply_config(config_content, config_file_path)
     Chef::Config.from_string(config_content, config_file_path)
