@@ -165,7 +165,8 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
     it "raises an error when given a block and a guard_interpreter" do
       resource.guard_interpreter :sh
-      expect { resource.only_if { true } }.to raise_error(ArgumentError, /guard_interpreter does not support blocks/)
+      resource.only_if { true }
+      expect { resource.should_skip?(:run) }.to raise_error(ArgumentError, /guard_interpreter does not support blocks/)
     end
 
   end
