@@ -102,6 +102,10 @@ class Chef
         end
       end
 
+      def git_minor_version
+        @git_minor_version ||= Gem::Version.new(shell_out!('git --version', run_options).stdout.split.last)
+      end
+
       def existing_git_clone?
         ::File.exist?(::File.join(@new_resource.destination, ".git"))
       end
@@ -137,6 +141,7 @@ class Chef
           args = []
           args << "-o #{remote}" unless remote == 'origin'
           args << "--depth #{@new_resource.depth}" if @new_resource.depth
+          args << "--no-single-branch" if @new_resource.depth and git_minor_version >= Gem::Version.new('1.7.10')
 
           Chef::Log.info "#{@new_resource} cloning repo #{@new_resource.repository} to #{@new_resource.destination}"
 

@@ -233,6 +233,21 @@ SHAS
   it "compiles a clone command using --depth for shallow cloning" do
     @resource.depth 5
     expected_cmd = "git clone --depth 5 \"git://github.com/opscode/chef.git\" \"/my/deploy/dir\""
+    version_response = double('shell_out')
+    version_response.stub(:stdout) { 'git version 1.7.9' }
+    @provider.should_receive(:shell_out!).with("git --version",
+                                               :log_tag => "git[web2.0 app]").and_return(version_response)
+    @provider.should_receive(:shell_out!).with(expected_cmd, :log_tag => "git[web2.0 app]")
+    @provider.clone
+  end
+
+  it "compiles a clone command using --no-single-branch for shallow cloning when git >= 1.7.10" do
+    @resource.depth 5
+    expected_cmd = "git clone --depth 5 --no-single-branch \"git://github.com/opscode/chef.git\" \"/my/deploy/dir\""
+    version_response = double('shell_out')
+    version_response.stub(:stdout) { 'git version 1.7.10' }
+    @provider.should_receive(:shell_out!).with("git --version",
+                                               :log_tag => "git[web2.0 app]").and_return(version_response)
     @provider.should_receive(:shell_out!).with(expected_cmd, :log_tag => "git[web2.0 app]")
     @provider.clone
   end
