@@ -45,8 +45,14 @@ override :libxml2,        version: "2.9.1"
 override :libxslt,        version: "1.1.28"
 
 override :ruby,           version: "2.1.3"
-override :'ruby-windows', version: "2.1.3"
-override :'ruby-windows-devkit', version: "4.7.2-20130224-1151"
+######
+# Ruby 2.1.3 is currently not working on windows due to:
+# https://github.com/ffi/ffi/issues/375
+# Enable below once above issue is fixed.
+# override :'ruby-windows', version: "2.1.3"
+# override :'ruby-windows-devkit', version: "4.7.2-20130224-1151"
+override :'ruby-windows', version: "2.0.0-p451"
+######
 override :rubygems,       version: "2.4.1"
 override :'test-kitchen', version: "v1.2.1"
 override :yajl,           version: "1.2.0"
