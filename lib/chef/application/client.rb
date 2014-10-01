@@ -363,7 +363,7 @@ class Chef::Application::Client < Chef::Application
   end
 
   def test_signal
-    client_sleep(0)
+    @signal = interval_sleep(0)
   end
 
   def time_to_sleep

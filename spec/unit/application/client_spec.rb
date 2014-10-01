@@ -286,6 +286,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
     end
 
     it "shouldn't sleep when sent USR1" do
+      @app.stub(:interval_sleep).with(0).and_call_original
       pid = fork do
         @app.run_application
       end
