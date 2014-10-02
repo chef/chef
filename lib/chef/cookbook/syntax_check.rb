@@ -101,15 +101,24 @@ class Chef
       end
 
       def remove_ignored_files(file_list)
-        return file_list unless chefignore.ignores.length > 0
+        return file_list if chefignore.ignores.empty?
+
         file_list.reject do |full_path|
           relative_pn = Chef::Util::PathHelper.relative_path_from(cookbook_path, full_path)
-          chefignore.ignored? relative_pn.to_s
+          chefignore.ignored?(relative_pn.to_s)
         end
       end
 
+      def remove_uninteresting_ruby_files(file_list)
+        file_list.reject { |f| f =~ %r{#{cookbook_path}/(files|templates)/} }
+      end
+
       def ruby_files
-        remove_ignored_files Dir[File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), '**', '*.rb')]
+        path  = Chef::Util::PathHelper.escape_glob(cookbook_path)
+        files = Dir[File.join(path, '**', '*.rb')]
+        files = remove_ignored_files(files)
+        files = remove_uninteresting_ruby_files(files)
+        files
       end
 
       def untested_ruby_files
