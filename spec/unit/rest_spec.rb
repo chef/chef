@@ -526,9 +526,12 @@ describe Chef::REST do
             http_response.stub(:read_body)
             http_response
           end
-          it "throws an exception" do
+
+          it "retries then throws an exception" do
             rest.stub(:sleep)
             expect {rest.request(:GET, url)}.to raise_error(Net::HTTPFatalError)
+            count = Chef::Config[:http_retry_count]
+            expect(log_stringio.string).to match(Regexp.escape("ERROR: Server returned error 500 for #{url}, retrying #{count}/#{count}"))
           end
         end
       end
