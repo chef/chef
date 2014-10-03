@@ -125,7 +125,7 @@ class Chef
       end
 
       def after_created
-        validate_source(@source)
+        validate_source(source)
       end
 
       private
