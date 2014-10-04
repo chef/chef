@@ -327,6 +327,7 @@ class Chef
           end
           error_message << error_locations.join("\n")
           existing_files = segment_filenames(segment)
+          # Strip the root_dir prefix off all files for readability
           existing_files.map!{|path| path[root_dir.length+1..-1]} if root_dir
           # Show the files that the cookbook does have. If the user made a typo,
           # hopefully they'll see it here.
