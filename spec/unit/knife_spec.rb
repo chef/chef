@@ -260,8 +260,25 @@ describe Chef::Knife do
         knife_command.configure_chef
         knife_command.config[:opt_with_default].should == "from-cli"
       end
-    end
 
+      context "verbosity is greater than zero" do
+        let(:fake_config) { "/does/not/exist/knife.rb" }
+
+        before do
+          @knife.config[:verbosity] = 1
+          @knife.config[:config_file] = fake_config
+          config_loader = double("Chef::WorkstationConfigLoader", :load => true, :no_config_found? => false, :chef_config_dir => "/etc/chef", :config_location => fake_config)
+          allow(Chef::WorkstationConfigLoader).to receive(:new).and_return(config_loader)
+        end
+
+        it "prints the path to the configuration file used" do
+          @stdout, @stderr, @stdin = StringIO.new, StringIO.new, StringIO.new
+          @knife.ui = Chef::Knife::UI.new(@stdout, @stderr, @stdin, {})
+          expect(Chef::Log).to receive(:info).with("Using configuration from #{fake_config}")
+          @knife.configure_chef
+        end
+      end
+    end
   end
 
   describe "when first created" do
