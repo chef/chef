@@ -679,7 +679,9 @@ class Chef
         # Check if path is actually under root_path
         next if parts[0] == '..'
         if segment == :templates || segment == :files
+          # Check if pathname looks like files/foo or templates/foo (unscoped)
           if pathname.each_filename.to_a.length == 2
+            # Use root_default in case the same path exists at root_default and default
             return [ pathname.to_s, 'root_default' ]
           else
             return [ pathname.to_s, parts[1] ]
