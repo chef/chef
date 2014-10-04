@@ -412,6 +412,22 @@ describe Chef::CookbookVersion do
       @cookbook_version.should have_cookbook_file_for_node(@node, ["missing.txt", "test.txt"])
     end
 
+    it "should not see a non-existant template" do
+      @cookbook_version.should_not have_template_for_node(@node, "missing.erb")
+    end
+
+    it "should not see a non-existant template using an array lookup" do
+      @cookbook_version.should_not have_template_for_node(@node, ["missing.erb"])
+    end
+
+    it "should not see a non-existant file" do
+      @cookbook_version.should_not have_cookbook_file_for_node(@node, "missing.txt")
+    end
+
+    it "should not see a non-existant file using an array lookup" do
+      @cookbook_version.should_not have_cookbook_file_for_node(@node, ["missing.txt"])
+    end
+
   end
 
 
