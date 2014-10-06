@@ -112,16 +112,22 @@ describe Chef::Provider::Route do
     it "should not delete config file for :add action (CHEF-3332)" do
       @node.automatic_attrs[:platform] = 'centos'
 
-      route_file = StringIO.new
-      File.should_receive(:new).and_return(route_file)
       @resource_add = Chef::Resource::Route.new('192.168.1.0/24 via 192.168.0.1')
       @run_context.resource_collection << @resource_add
       @provider.stub(:run_command).and_return(true)
 
+      @config_filename = "/etc/sysconfig/network-scripts/route-eth0"
+      @config = double("chef-resource-file")
+      @config.should_receive(:content) do |arg|
+        arg.split("\n").should have(1).items
+        arg.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
+      end
+      @config.should_receive(:run_action).with(:create)
+      @config.should_receive(:updated?).and_return(true)
+      @provider.should_receive(:resource_for_config).with(@config_filename).and_return(@config)
+
       @resource_add.action(:add)
       @provider.run_action(:add)
-      route_file.string.split("\n").should have(1).items
-      route_file.string.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
     end
   end
 
@@ -211,13 +217,18 @@ describe Chef::Provider::Route do
   end
 
   describe Chef::Provider::Route, "generate_config method" do
+    before do
+      @config_filename = "/etc/sysconfig/network-scripts/route-eth0"
+      @config = double("chef-resource-file")
+      @config.should_receive(:content){|arg| @config_content = arg }
+      @config.should_receive(:run_action).with(:create)
+      @config.should_receive(:updated?).and_return(true)
+      @provider.should_receive(:resource_for_config).with(@config_filename).and_return(@config)
+    end
     %w[ centos redhat fedora ].each do |platform|
       it "should write a route file on #{platform} platform" do
         @node.automatic_attrs[:platform] = platform
 
-        route_file = StringIO.new
-        File.should_receive(:new).with("/etc/sysconfig/network-scripts/route-eth0", "w").and_return(route_file)
-        #Chef::Log.should_receive(:debug).with("route[10.0.0.10] writing route.eth0\n10.0.0.10 via 10.0.0.9\n")
         @run_context.resource_collection << @new_resource
         @provider.generate_config
       end
@@ -226,18 +237,16 @@ describe Chef::Provider::Route do
     it "should put all routes for a device in a route config file" do
       @node.automatic_attrs[:platform] = 'centos'
 
-      route_file = StringIO.new
-      File.should_receive(:new).and_return(route_file)
       @run_context.resource_collection << Chef::Resource::Route.new('192.168.1.0/24 via 192.168.0.1')
       @run_context.resource_collection << Chef::Resource::Route.new('192.168.2.0/24 via 192.168.0.1')
       @run_context.resource_collection << Chef::Resource::Route.new('192.168.3.0/24 via 192.168.0.1')
 
       @provider.action = :add
       @provider.generate_config
-      route_file.string.split("\n").should have(3).items
-      route_file.string.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
-      route_file.string.should match(/^192\.168\.2\.0\/24 via 192\.168\.0\.1$/)
-      route_file.string.should match(/^192\.168\.3\.0\/24 via 192\.168\.0\.1$/)
+      @config_content.split("\n").should have(3).items
+      @config_content.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
+      @config_content.should match(/^192\.168\.2\.0\/24 via 192\.168\.0\.1$/)
+      @config_content.should match(/^192\.168\.3\.0\/24 via 192\.168\.0\.1$/)
     end
   end
 end

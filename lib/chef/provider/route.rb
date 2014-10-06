@@ -19,6 +19,7 @@
 require 'chef/log'
 require 'chef/mixin/command'
 require 'chef/provider'
+require 'chef/resource/file'
 require 'ipaddr'
 
 class Chef::Provider::Route < Chef::Provider
@@ -138,7 +139,6 @@ class Chef::Provider::Route < Chef::Provider
         end
       end
 
-      #for now we always write the file (ugly but its what it is)
       generate_config
     end
 
@@ -153,8 +153,11 @@ class Chef::Provider::Route < Chef::Provider
         Chef::Log.debug("#{@new_resource} route does not exist - nothing to do")
       end
 
-      #for now we always write the file (ugly but its what it is)
       generate_config
+    end
+
+    def resource_for_config(path)
+      Chef::Resource::File.new(path, run_context)
     end
 
     def generate_config
@@ -184,11 +187,13 @@ class Chef::Provider::Route < Chef::Provider
         end
         conf.each do |k, v|
           network_file_name = "/etc/sysconfig/network-scripts/route-#{k}"
-          converge_by ("write route route.#{k}\n#{conf[k]} to #{ network_file_name }") do
-            network_file = ::File.new(network_file_name, "w")
-            network_file.puts(conf[k])
-            Chef::Log.debug("#{@new_resource} writing route.#{k}\n#{conf[k]}")
-            network_file.close
+          begin
+            run_context.resource_collection.lookup("file[#{network_file_name}]")
+          rescue Chef::Exceptions::ResourceNotFound
+            config = resource_for_config(network_file_name)
+            config.content(conf[k])
+            config.run_action(:create)
+            @new_resource.updated_by_last_action(true) if config.updated?
           end
         end
       end
