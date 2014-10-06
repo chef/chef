@@ -200,6 +200,15 @@ LRESULT WINAPI SendMessageTimeout(
         safe_attach_function :SendMessageTimeoutW, [:HWND, :UINT, :WPARAM, :LPARAM, :UINT, :UINT, :PDWORD_PTR], :LRESULT
         safe_attach_function :SendMessageTimeoutA, [:HWND, :UINT, :WPARAM, :LPARAM, :UINT, :UINT, :PDWORD_PTR], :LRESULT
 
+=begin
+DWORD WINAPI ExpandEnvironmentStrings(
+  _In_       LPCTSTR lpSrc,
+  _Out_opt_  LPTSTR lpDst,
+  _In_       DWORD nSize
+);
+=end
+        safe_attach_function :ExpandEnvironmentStringsW, [:pointer, :pointer, :DWORD], :DWORD
+        safe_attach_function :ExpandEnvironmentStringsA, [:pointer, :pointer, :DWORD], :DWORD
       end
     end
   end
