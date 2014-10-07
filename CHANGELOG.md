@@ -74,6 +74,7 @@
   Improve the regex for /etc/rc.conf for the FreeBSD service provider
 * [**Stanislav Bogatyrev**](https://github.com/realloc):
   Fetch recipe_url before loading json_attribs in chef-solo (CHEF-5075)
+* [**Mal Graty**](https://github.com/mal): Workaround for a breaking change in git's shallow-clone behavior. (Issue 1563)
 
 ### Chef Contributions
 
