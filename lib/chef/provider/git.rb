@@ -260,7 +260,7 @@ class Chef
         if tagged_commit && rev_pattern != 'HEAD'
           tagged_commit[0]
         else
-          found = refs.find { |m| m[1].end_with?(@new_resource.revision) }
+          found = refs.find { |m| m[1].end_with?("/#{@new_resource.revision}") }
           if found
             found[0]
           else
