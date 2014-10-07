@@ -1,6 +1,6 @@
 # mixlib-shellout Changelog
 
-## Unreleased
+## Last Release: 1.6.0
 
 * [**Steven Proctor**:](https://github.com/stevenproctor)
   Updated link to posix-spawn in README.md.
@@ -11,7 +11,10 @@
 * [**Max Lincoln**](https://github.com/maxlinc):
   Support separate live stream for stderr.
 
-## Last Release: 1.4.0 (08/04/2014)
+* Use `close_others` flag instead of `#clean_parent_file_descriptors()` during
+  child clean up.
+
+## Last Release: 1.4.0
 
 * [**Chris Armstrong**:](https://github.com/carmstrong)
   Added error? to check if the command ran successfully. MIXLIB-18.
