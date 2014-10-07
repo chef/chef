@@ -282,6 +282,18 @@ SHAS
     @provider.enable_submodules
   end
 
+  it "runs a clean command" do
+    @resource.clean true
+    expected_cmd = "git clean -f"
+    @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir", :log_level => :debug, :log_tag => "git[web2.0 app]")
+    @provider.clean
+  end
+
+  it "does nothing for clean if resource.clean #=> false" do
+    @provider.should_not_receive(:shell_out!)
+    @provider.clean
+  end
+
   it "runs a sync command with default options" do
     @provider.should_receive(:setup_remote_tracking_branches).with(@resource.remote, @resource.repository)
     expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"

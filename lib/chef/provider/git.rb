@@ -96,6 +96,7 @@ class Chef
             enable_submodules
             Chef::Log.info "#{@new_resource} updated to revision #{target_revision}"
           end
+          clean
           add_remotes
         else
           action_checkout
@@ -266,6 +267,14 @@ class Chef
           else
             nil
           end
+        end
+      end
+
+      def clean
+        if @new_resource.clean
+          Chef::Log.info("#{@new_resource} cleaning working copy")
+          command = "git clean -f"
+          shell_out!(command, run_options(:cwd => @new_resource.destination, :log_level => :debug))
         end
       end
 
