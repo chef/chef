@@ -95,7 +95,6 @@ class Chef
         def summarize(list)
           summarized=''
           list.each do |data|
-          #if data.kind_of?(Chef::Node)
             node = data
             # special case ec2 with their split horizon whatsis.
             ip = (node[:ec2] && node[:ec2][:public_ipv4]) || node[:ipaddress]
@@ -131,8 +130,6 @@ class Chef
             end
 
             summarized=summarized + line_parts.join(', ') + ".\n"
-          #else
-          #  super
           end
           summarized
         end
