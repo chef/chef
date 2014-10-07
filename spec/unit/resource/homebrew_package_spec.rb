@@ -33,4 +33,25 @@ describe Chef::Resource::HomebrewPackage, 'initialize' do
     expect(resource.provider).to eql(Chef::Provider::Package::Homebrew)
   end
 
+  it 'sets the homebrew_user to nil' do
+    expect(resource.homebrew_user).to eql(nil)
+  end
+
+  shared_examples 'home_brew user set and returned' do
+    it 'returns the configured homebrew_user' do
+      resource.homebrew_user user
+      expect(resource.homebrew_user).to eql(user)
+    end
+  end
+
+  context 'homebrew_user is set' do
+    let(:user) { 'Captain Picard' }
+    include_examples 'home_brew user set and returned'
+
+    context 'as an integer' do
+      let(:user) { 1001 }
+      include_examples 'home_brew user set and returned'
+    end
+  end
+
 end
