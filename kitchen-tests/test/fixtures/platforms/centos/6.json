@@ -1,0 +1,14 @@
+{
+  "apache": {
+    "package": "httpd",
+    "service_name": "httpd"
+  },
+  "mysql": {
+    "server_package": "mysql-server",
+    "client_package": "mysql",
+    "service_name": "mysqld"
+  },
+  "php" : {
+    "package": "php"
+  }
+}

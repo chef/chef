@@ -1,14 +1,28 @@
 ---
+driver:
+  name: vagrant
+  customize:
+    cpus: 4
+    memory: 2048
+
 provisioner:
-  name: chef_solo
+  name: chef_zero
   github: "opscode/chef"
   branch: <%= %x(git rev-parse HEAD) %>
   require_chef_omnibus: true
   data_path: test/fixtures
 
 platforms:
+#  - name: ubuntu-10.04
+#    run_list: apt::default
   - name: ubuntu-12.04
-    driver_plugin: vagrant
+    run_list: apt::default
+#  - name: ubuntu-13.04
+#    run_list: apt::default
+  - name: centos-6.4
+    run_list: yum-epel::default
+  - name: centos-5.10
+    run_list: yum-epel::default
 
 suites:
   - name: webapp

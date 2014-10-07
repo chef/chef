@@ -1,4 +1,4 @@
-# Shamelessly copied from opscode/onehealth-cookbooks/apache2/test/fixtures/serverspec_helper.rb
+# Shamelessly copied from https://github.com/onehealth-cookbooks/apache2/blob/master/test/fixtures/serverspec_helper.rb
 # The commented-out platforms in the osmapping hash can be added once we have added them into
 # our .kitchen.yml and .kitchen.travis.yml and added the appropriate JSON under test/fixtures/platforms.
 

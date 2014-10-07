@@ -19,21 +19,21 @@ describe "webapp::default", :end_to_end => true do
       end
     end
 
-    describe "mysql-server-#{property[:mysql][:server][:version]} package" do
+    describe "#{property[:mysql][:server_package]} package" do
       include_examples "a package" do
-        let(:package_name) { "mysql-server-#{property[:mysql][:server][:version]}" }
+        let(:package_name) { property[:mysql][:server_package] }
       end
     end
 
-    describe "mysql-client-5.5 package" do
+    describe "#{property[:mysql][:client_package]} package" do
       include_examples "a package" do
-        let(:package_name) { "mysql-client-5.5" }
+        let(:package_name) { property[:mysql][:client_package] }
       end
     end
 
     describe "php package" do
       include_examples "a package" do
-        let(:package_name) { "php5" }
+        let(:package_name) { property[:php][:package] }
       end
     end
   end
@@ -57,7 +57,7 @@ describe "webapp::default", :end_to_end => true do
 
     describe "mysql service" do
       include_examples "a service" do
-        let(:service_name) { "mysql" }
+        let(:service_name) { property[:mysql][:service_name] }
       end
     end
 
