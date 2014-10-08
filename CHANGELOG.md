@@ -3,6 +3,7 @@
 ## Unreleased:
 
 * Removed dependencies on the 'json' gem, replaced with ffi-yajl.  Use Chef::JSONCompat library for parsing and printing.
+* [Issue 2027](https://github.com/opscode/chef/issues/2027) Allow recipe using `dsc_script` opportunity to install Powershell 4 or higher
 
 ## Last Release: 11.16.4
 
