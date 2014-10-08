@@ -53,9 +53,7 @@ class Chef
       end
 
       def has_resource_definition?(name)
-        yes_or_no = run_context.definitions.has_key?(name)
-
-        yes_or_no
+        run_context.definitions.has_key?(name)
       end
 
       # Processes the arguments and block as a resource definition.
@@ -69,12 +67,10 @@ class Chef
         # This sets up the parameter overrides
         new_def.instance_eval(&block) if block
 
-
         new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, run_context)
         new_recipe.params = new_def.params
         new_recipe.params[:name] = args[0]
         new_recipe.instance_eval(&new_def.recipe)
-        new_recipe
       end
 
       # Instantiates a resource (via #build_resource), then adds it to the
