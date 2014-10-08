@@ -42,8 +42,9 @@ class Chef
         # Overriding LWRP resources is no longer supported as a result. We will
         # warn if the resource is already defined and use the original definition.
         if Resource.const_defined?(class_name)
-          # @TODO: Make conditional on chefspec flag
-          Chef::Log.warn("#{class_name} lightweight resource already initialized! Using existing definition.")
+          if Chef::Config[:lwrp_redefinition_warnings]
+            Chef::Log.warn("#{class_name} lightweight resource already initialized! Using existing definition.")
+          end
           return Chef::Resource.const_get(class_name)
         end
 

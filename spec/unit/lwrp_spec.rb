@@ -36,50 +36,51 @@ describe "LWRP" do
       $stderr.stub(:write)
     end
 
-    it "should warn if attempting to load resource of same name" do
-      Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
-        Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
+    shared_examples_for "lwrp redefinition" do
+      before do
+        Dir[File.expand_path( file_path, CHEF_SPEC_DATA )].each do |file|
+          resource_or_provider::LWRPBase.build_from_file("lwrp", file, nil)
+        end
       end
 
-      Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
-        Chef::Log.should_receive(:warn).with(/existing/)
-        Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
-      end
-    end
+      context "when attempting to load an lwrp of the same name" do
+        it "should warn if :lwrp_redefinition_warnings => true" do
+          Dir[File.expand_path( file_path, CHEF_SPEC_DATA )].each do |file|
+            Chef::Log.should_receive(:warn).with(/existing/)
+            resource_or_provider::LWRPBase.build_from_file("lwrp", file, nil)
+          end
+        end
 
-    it "should warn if attempting to load provider of same name" do
-      Dir[File.expand_path( "lwrp/providers/*", CHEF_SPEC_DATA)].each do |file|
-        Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
-      end
+        it "should not warn if :lwrp_redefinition_warnings => false" do
+          Chef::Config[:lwrp_redefinition_warnings] = false
+          Dir[File.expand_path( file_path, CHEF_SPEC_DATA )].each do |file|
+            Chef::Log.should_not_receive(:warn).with(/existing/)
+            resource_or_provider::LWRPBase.build_from_file("lwrp", file, nil)
+          end
+        end
 
-      Dir[File.expand_path( "lwrp/providers/*", CHEF_SPEC_DATA)].each do |file|
-        Chef::Log.should_receive(:warn).with(/existing/)
-        Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
-      end
-    end
-
-    it "should not override the existing resource of same name" do
-      Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
-        Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
-      end
-
-      Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
-        Chef::Resource.should_not_receive(:const_set)
-        Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
-      end
-    end
-
-    it "should not override the existing provider of same name" do
-      Dir[File.expand_path( "lwrp/providers/*", CHEF_SPEC_DATA)].each do |file|
-        Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
-      end
-
-      Dir[File.expand_path( "lwrp/providers/*", CHEF_SPEC_DATA)].each do |file|
-        Chef::Provider.should_not_receive(:const_set)
-        Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
+        it "should not override the existing class" do
+          Dir[File.expand_path( file_path, CHEF_SPEC_DATA )].each do |file|
+            resource_or_provider.should_not_receive(:const_set)
+            resource_or_provider::LWRPBase.build_from_file("lwrp", file, nil)
+          end
+        end
       end
     end
 
+    describe "Lightweight Chef::Resource" do
+      include_examples "lwrp redefinition" do
+        let(:file_path) { "lwrp/resources/*" }
+        let(:resource_or_provider) { Chef::Resource }
+      end
+    end
+
+    describe "Lightweight Chef::Provider" do
+      include_examples "lwrp redefinition" do
+        let(:file_path) { "lwrp/providers/*" }
+        let(:resource_or_provider) { Chef::Provider }
+      end
+    end
   end
 
   describe "Lightweight Chef::Resource" do

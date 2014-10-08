@@ -89,8 +89,9 @@ class Chef
         # Overriding LWRP providers is no longer necessary as a result. We will
         # warn if the provider is already defined and use the original definition.
         if Chef::Provider.const_defined?(class_name)
-          # @TODO: Make conditional on chefspec flag
-          Chef::Log.warn("#{class_name} light-weight provider already initialized! Using existing definition.")
+          if Chef::Config[:lwrp_redefinition_warnings]
+            Chef::Log.warn("#{class_name} light-weight provider already initialized! Using existing definition.")
+          end
           return Chef::Provider.const_get(class_name)
         end
 

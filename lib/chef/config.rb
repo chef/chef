@@ -637,6 +637,11 @@ class Chef
     # break Chef community cookbooks and is very highly discouraged.
     default :ruby_encoding, Encoding::UTF_8
 
+    # Use to disable warnings when an attempt to redefine an LWRP occurs. Set as
+    # true by default since LWRPs should only be defined once per Chef run. OK
+    # to set to false when running chefspec as these warnings may be erroneous. 
+    default :lwrp_redefinition_warnings, true
+
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with
     # omnibus. This is used to locate the cacert.pem file on windows.
