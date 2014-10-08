@@ -24,11 +24,22 @@ require 'chef/resource/package'
 class Chef
   class Resource
     class HomebrewPackage < Chef::Resource::Package
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :homebrew_package
         @provider = Chef::Provider::Package::Homebrew
+        @homebrew_user = nil
       end
+
+      def homebrew_user(arg=nil)
+        set_or_return(
+            :homebrew_user,
+            arg,
+            :kind_of => [ String, Integer ]
+        )
+      end
+
     end
   end
 end

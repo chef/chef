@@ -19,13 +19,13 @@
 #
 
 require 'etc'
-require 'chef/mixin/homebrew_owner'
+require 'chef/mixin/homebrew_user'
 
 class Chef
   class Provider
     class Package
       class Homebrew < Chef::Provider::Package
-        include Chef::Mixin::HomebrewOwner
+        include Chef::Mixin::HomebrewUser
         def load_current_resource
           self.current_resource = Chef::Resource::Package.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
@@ -109,12 +109,14 @@ class Chef
         private
 
         def get_response_from_command(command)
-          home_dir = Etc.getpwnam(homebrew_owner(node)).dir
+          homebrew_uid = find_homebrew_uid(new_resource.homebrew_user)
+          homebrew_user = Etc.getpwuid(homebrew_uid)
 
-          Chef::Log.debug "Executing '#{command}' as user '#{homebrew_owner(node)}'"
-          output = shell_out!(command, :timeout => 1800, :user => homebrew_owner(node), :environment => { 'HOME' => home_dir, 'RUBYOPT' => nil })
+          Chef::Log.debug "Executing '#{command}' as user '#{homebrew_user.name}'"
+          output = shell_out!(command, :timeout => 1800, :user => homebrew_uid, :environment => { 'HOME' => homebrew_user.dir, 'RUBYOPT' => nil })
           output.stdout.chomp
         end
+
       end
     end
   end

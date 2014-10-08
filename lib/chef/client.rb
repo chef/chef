@@ -378,7 +378,7 @@ class Chef
 
         run_context = setup_run_context
 
-        catch (:end_client_run_early) do
+        catch(:end_client_run_early) do
           converge(run_context)
         end
 

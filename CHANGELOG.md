@@ -1,5 +1,7 @@
 ## Unreleased: 12.0.0
 
+* [**Jesse Hu**](https://github.com/jessehu):
+  retry on HTTP 50X Error when calling Chef REST API
 * [**Nolan Davidson**](https://github.com/nsdavidson):
   The chef-apply command now prints usage information when called without arguments
 * [**Kazuki Saito**](https://github.com/sakazuki):
@@ -72,6 +74,8 @@
   Improve the regex for /etc/rc.conf for the FreeBSD service provider
 * [**Stanislav Bogatyrev**](https://github.com/realloc):
   Fetch recipe_url before loading json_attribs in chef-solo (CHEF-5075)
+* [**Mal Graty**](https://github.com/mal): Workaround for a breaking change in git's shallow-clone behavior. (Issue 1563)
+* [**Dave Eddy**](https://github.com/bahamas10): Fix version detection in FreeBSD pkgng provider. (PR 1980)
 
 ### Chef Contributions
 

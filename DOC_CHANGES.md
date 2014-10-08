@@ -467,3 +467,58 @@ PathHelper = Chef::Util::PathHelper
 Dir.glob(File.join(PathHelper.escape_glob(path), "*")) # ["#{path}\\apache2", "#{path}\\apt", ...]
 Dir[PathHelper.escape_glob(path) + "/*"] # ["#{path}\\apache2", "#{path}\\apt", ...]
 ```
+
+## Mac OS X default package provider is now Homebrew
+
+Per [Chef RFC 016](https://github.com/opscode/chef-rfc/blob/master/rfc016-homebrew-osx-package-provider.md), the default provider for the `package` resource on Mac OS X is now [Homebrew](http://brew.sh). The [homebrew cookbook's](https://supermarket.getchef.com/cookbooks/homebrew) default recipe, or some other method is still required for getting homebrew installed on the system. The cookbook won't be strictly required just to install packages from homebrew on OS X, though. To use this, simply use the `package` resource, or the `homebrew_package` shortcut resource:
+
+```ruby
+package 'emacs'
+```
+
+Or,
+
+```ruby
+homebrew_package 'emacs'
+```
+
+The macports provider will still be available, and can be used with the shortcut resource, or by using the `provider` attribute:
+
+```ruby
+macports_package 'emacs'
+```
+
+Or,
+
+```ruby
+package 'emacs' do
+  provider Chef::Provider::Package::Macports
+end
+```
+
+### Providing `homebrew_user`
+
+Homebrew recommends being ran as a non-root user, whereas Chef recommends being ran with root privileges.  The
+`homebrew_package` provider has logic to try and determine which user to install Homebrew packages as.
+
+By default, the `homebrew_package` provider will try to execute the homebrew command as the owner of the `/usr/local/bin/brew`
+executable.  If that executable does not exist, Chef will try to find it by executing `which brew`.  If that cannot be
+found, Chef then errors.  The Homebrew recommendation is the default install, which will place the executable at
+`/usr/local/bin/brew` owned by a non-root user.
+
+You can circumvent this by providing the `homebrew_package` a `homebrew_user` attribute, like:
+
+```ruby
+# provided as a uid
+homebrew_package 'emacs' do
+  homebrew_user 1001
+end
+
+# provided as a string
+homebrew_package 'vim' do
+  homebrew_user 'user1'
+end
+```
+
+Chef will then execute the Homebrew command as that user.  The `homebrew_user` attribute can only be provided to the 
+`homebrew_package` resource, not the `package` resource.
