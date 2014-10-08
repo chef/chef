@@ -13,7 +13,8 @@
 
 ## Release: 11.16.2
 
-* This is a packaging-only release there are no code changes
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  Fix a regression in whyrun_safe_ruby_block.
 
 ## Release: 11.16.0
 
