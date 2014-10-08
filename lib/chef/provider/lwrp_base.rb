@@ -82,12 +82,16 @@ class Chef
 
       def self.build_from_file(cookbook_name, filename, run_context)
         provider_name = filename_to_qualified_string(cookbook_name, filename)
-
-        # Add log entry if we override an existing light-weight provider.
         class_name = convert_to_class_name(provider_name)
 
+
+        # Unforked interval runs are no longer supported as of Chef 12.
+        # Overriding LWRP providers is no longer necessary as a result. We will
+        # warn if the provider is already defined and use the original definition.
         if Chef::Provider.const_defined?(class_name)
-          Chef::Log.info("#{class_name} light-weight provider already initialized -- overriding!")
+          # @TODO: Make conditional on chefspec flag
+          Chef::Log.warn("#{class_name} light-weight provider already initialized! Using existing definition.")
+          return Chef::Provider.const_get(class_name)
         end
 
         provider_class = Class.new(self)

@@ -36,15 +36,15 @@ class Chef
       # Evaluates the LWRP resource file and instantiates a new Resource class.
       def self.build_from_file(cookbook_name, filename, run_context)
         rname = filename_to_qualified_string(cookbook_name, filename)
-
-        # Add log entry if we override an existing lightweight resource.
         class_name = convert_to_class_name(rname)
-        if Resource.strict_const_defined?(class_name)
-          old_class = Resource.send(:remove_const, class_name)
-          # CHEF-3432 -- Chef::Resource keeps a list of subclasses; need to
-          # remove old ones from the list when replacing.
-          resource_classes.delete(old_class)
-          Chef::Log.info("#{class_name} lightweight resource already initialized -- overriding!")
+
+        # Unforked interval runs are no longer supported in Chef 12.
+        # Overriding LWRP resources is no longer supported as a result. We will
+        # warn if the resource is already defined and use the original definition.
+        if Resource.const_defined?(class_name)
+          # @TODO: Make conditional on chefspec flag
+          Chef::Log.warn("#{class_name} lightweight resource already initialized! Using existing definition.")
+          return Chef::Resource.const_get(class_name)
         end
 
         resource_class = Class.new(self)
