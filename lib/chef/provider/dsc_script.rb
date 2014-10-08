@@ -47,9 +47,11 @@ class Chef
       end
 
       def load_current_resource
-        @dsc_resources_info = run_configuration(:test)
-        @resource_converged = @dsc_resources_info.all? do |resource|
-          !resource.changes_state?
+        if supports_dsc?
+          @dsc_resources_info = run_configuration(:test)
+          @resource_converged = @dsc_resources_info.all? do |resource|
+            !resource.changes_state?
+          end
         end
       end
 
@@ -57,7 +59,25 @@ class Chef
         true
       end
 
+      def define_resource_requirements
+        requirements.assert(:run) do |a|
+          err = [
+            'Could not find Dsc on the system',
+            powershell_info_str,
+            "Powershell 4.0 or higher was not detected on your system and is required to use the dsc_script resource.",
+          ]
+          a.assertion { supports_dsc? }
+          a.failure_message Chef::Exceptions::NoProviderAvailable, err.join(' ')
+          a.whyrun err + ["Assuming a previous resource installs Powershell 4.0 or higher."]
+          a.block_action!
+        end
+      end
+
       protected
+
+      def supports_dsc?
+        run_context && Chef::Platform.supports_dsc?(node)
+      end
 
       def run_configuration(operation)
         config_directory = ::Dir.mktmpdir("chef-dsc-script")
@@ -143,6 +163,14 @@ class Chef
               "converge DSC resource #{resource.name} by doing nothing because it is already converged"
             end
           end
+      end
+
+      def powershell_info_str
+        if run_context && run_context.node[:languages] && run_context.node[:languages][:powershell]
+          install_info = "Powershell #{run_context.node[:languages][:powershell][:version]} was found on the system."
+        else
+          install_info = 'Powershell was not found.'
+        end
       end
     end
   end
