@@ -102,8 +102,9 @@ describe Chef::JSONCompat do
     end
   end
 
-  it "should not allow the json gem to be required because of the spec_helper" do
-    # We want to prevent ourselves from writing code that requires 'json'
-    expect { require 'json' }.to raise_error(LoadError)
+  it "should define .to_json on all classes" do
+    class SomeClass; end
+
+    expect(SomeClass.new.respond_to?(:to_json)).to eq(true)
   end
 end

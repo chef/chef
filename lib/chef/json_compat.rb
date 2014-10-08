@@ -19,6 +19,8 @@
 
 require 'ffi_yajl'
 require 'chef/exceptions'
+# We're requiring this to prevent breaking consumers using Hash.to_json
+require 'json'
 
 class Chef
   class JSONCompat
