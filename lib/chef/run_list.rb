@@ -86,7 +86,7 @@ class Chef
     end
 
     def to_json(*args)
-      to_a.map { |item| item.to_s}.to_json(*args)
+      Chef::JSONCompat.to_json(to_a.map { |item| item.to_s}, *args)
     end
 
     def empty?

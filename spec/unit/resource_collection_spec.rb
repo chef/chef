@@ -245,12 +245,16 @@ describe Chef::ResourceCollection do
       json.should =~ /json_class/
       json.should =~ /instance_vars/
     end
+
+    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+      let(:subject) { @rc }
+    end
   end
 
   describe "self.from_json" do
     it "should deserialize itself from json" do
       @rc << @resource
-      json = @rc.to_json
+      json = Chef::JSONCompat.to_json(@rc)
       s_rc = Chef::JSONCompat.from_json(json)
       s_rc.should be_a_kind_of(Chef::ResourceCollection)
       s_rc[0].name.should eql(@resource.name)

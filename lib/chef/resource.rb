@@ -544,7 +544,7 @@ F
     # Serialize this object as a hash
     def to_json(*a)
       results = as_json
-      results.to_json(*a)
+      Chef::JSONCompat.to_json(results, *a)
     end
 
     def to_hash

@@ -421,7 +421,7 @@ describe Chef::ResourceReporter do
 
       it "includes the run_list" do
         @report.should have_key("run_list")
-        @report["run_list"].should == @run_status.node.run_list.to_json
+        @report["run_list"].should == Chef::JSONCompat.to_json(@run_status.node.run_list)
       end
 
       it "includes the end_time" do
@@ -484,7 +484,7 @@ describe Chef::ResourceReporter do
 
       it "includes the exception trace in the event data" do
         @report["data"]["exception"].should have_key("backtrace")
-        @report["data"]["exception"]["backtrace"].should == @backtrace.to_json
+        @report["data"]["exception"]["backtrace"].should == Chef::JSONCompat.to_json(@backtrace)
       end
 
       it "includes the error inspector output in the event data" do
@@ -701,7 +701,7 @@ describe Chef::ResourceReporter do
           })
           data_stream = Zlib::GzipReader.new(StringIO.new(data))
           data = data_stream.read
-          data.should eq(@expected_data.to_json)
+          data.should eq(Chef::JSONCompat.to_json(@expected_data))
           response
         end
 

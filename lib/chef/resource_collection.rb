@@ -198,7 +198,7 @@ class Chef
         'json_class' => self.class.name,
         'instance_vars' => instance_vars
       }
-      results.to_json(*a)
+      Chef::JSONCompat.to_json(results, *a)
     end
 
     def self.json_create(o)

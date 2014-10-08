@@ -17,10 +17,10 @@
 #
 
 require 'yaml'
-require 'ffi_yajl'
 require 'openssl'
 require 'base64'
 require 'digest/sha2'
+require 'chef/json_compat'
 require 'chef/encrypted_data_bag_item'
 require 'chef/encrypted_data_bag_item/unsupported_encrypted_data_bag_item_format'
 require 'chef/encrypted_data_bag_item/unacceptable_encrypted_data_bag_item_format'
@@ -121,8 +121,8 @@ class Chef::EncryptedDataBagItem
       end
 
       def for_decrypted_item
-        FFI_Yajl::Parser.parse(decrypted_data)["json_wrapper"]
-      rescue FFI_Yajl::ParseError
+        Chef::JSONCompat.parse(decrypted_data)["json_wrapper"]
+      rescue Chef::Exceptions::JSON::ParseError
         # convert to a DecryptionFailure error because the most likely scenario
         # here is that the decryption step was unsuccessful but returned bad
         # data rather than raising an error.

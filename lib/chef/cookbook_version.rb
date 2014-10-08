@@ -459,7 +459,7 @@ class Chef
     def to_json(*a)
       result = self.to_hash
       result['json_class'] = self.class.name
-      result.to_json(*a)
+      Chef::JSONCompat.to_json(result, *a)
     end
 
     def self.json_create(o)
@@ -469,7 +469,7 @@ class Chef
       cookbook_version.manifest = o
 
       # We don't need the following step when we decide to stop supporting deprecated operators in the metadata (e.g. <<, >>)
-      cookbook_version.manifest["metadata"] = Chef::JSONCompat.from_json(cookbook_version.metadata.to_json)
+      cookbook_version.manifest["metadata"] = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(cookbook_version.metadata))
 
       cookbook_version.freeze_version if o["frozen?"]
       cookbook_version

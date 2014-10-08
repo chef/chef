@@ -762,6 +762,10 @@ describe Chef::Node do
       end
       serialized_node.run_list.should == node.run_list
     end
+
+    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+      let(:subject) { node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA)) }
+    end
   end
 
   describe "to_s" do

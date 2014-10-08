@@ -118,7 +118,7 @@ class Chef
         "data_bag" => self.data_bag,
         "raw_data" => self.raw_data
       }
-      result.to_json(*a)
+      Chef::JSONCompat.to_json(result, *a)
     end
 
     def self.from_hash(h)

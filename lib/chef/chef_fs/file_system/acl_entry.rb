@@ -20,6 +20,7 @@ require 'chef/chef_fs/file_system/rest_list_entry'
 require 'chef/chef_fs/file_system/not_found_error'
 require 'chef/chef_fs/file_system/operation_not_allowed_error'
 require 'chef/chef_fs/file_system/operation_failed_error'
+require 'chef/json_compat'
 
 class Chef
   module ChefFS
@@ -37,7 +38,7 @@ class Chef
 
         def write(file_contents)
           # ACL writes are fun.
-          acls = data_handler.normalize(JSON.parse(file_contents, :create_additions => false), self)
+          acls = data_handler.normalize(Chef::JSONCompat.parse(file_contents, :create_additions => false), self)
           PERMISSIONS.each do |permission|
             begin
               rest.put("#{api_path}/#{permission}", { permission => acls[permission] })

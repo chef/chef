@@ -582,7 +582,7 @@ describe Chef::Cookbook::Metadata do
       @meta.version "1.2.3"
     end
 
-    describe "serialize" do
+    describe "#to_json" do
       before(:each) do
         @serial = Chef::JSONCompat.from_json(@meta.to_json)
       end
@@ -613,11 +613,15 @@ describe Chef::Cookbook::Metadata do
           @serial[t].should == @meta.send(t.to_sym)
         end
       end
+
+      it "should produce the same output from to_json and Chef::JSONCompat" do
+        expect(@meta.to_json).to eq(Chef::JSONCompat.to_json(@meta))
+      end
     end
 
-    describe "deserialize" do
+    describe "::from_json" do
       before(:each) do
-        @deserial = Chef::Cookbook::Metadata.from_json(@meta.to_json)
+        @deserial = Chef::Cookbook::Metadata.from_json(Chef::JSONCompat.to_json(@meta))
       end
 
       it "should deserialize to a Chef::Cookbook::Metadata object" do

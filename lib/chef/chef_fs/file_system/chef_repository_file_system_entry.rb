@@ -19,6 +19,7 @@
 
 require 'chef/chef_fs/file_system/file_system_entry'
 require 'chef/chef_fs/file_system/not_found_error'
+require 'chef/json_compat'
 
 class Chef
   module ChefFS
@@ -41,7 +42,7 @@ class Chef
 
         def chef_object
           begin
-            return data_handler.chef_object(JSON.parse(read, :create_additions => false))
+            return data_handler.chef_object(Chef::JSONCompat.parse(read, :create_additions => false))
           rescue
             Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{$!}")
           end

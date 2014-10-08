@@ -87,7 +87,7 @@ class Chef
       def do_upload(cookbook_filename, cookbook_category, user_id, user_secret_filename)
          uri = "http://cookbooks.opscode.com/api/v1/cookbooks"
 
-         category_string = { 'category'=>cookbook_category }.to_json
+         category_string = Chef::JSONCompat.to_json({ 'category'=>cookbook_category })
 
          http_resp = Chef::CookbookSiteStreamingUploader.post(uri, user_id, user_secret_filename, {
            :tarball => File.open(cookbook_filename),

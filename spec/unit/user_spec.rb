@@ -154,6 +154,10 @@ describe Chef::User do
     it "does not include the password if not present" do
       @json.should_not include("password")
     end
+
+    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+      let(:subject) { @user }
+    end
   end
 
   describe "when deserializing from JSON" do
@@ -163,7 +167,7 @@ describe Chef::User do
         "private_key" => "pandas",
         "password" => "password",
         "admin" => true }
-      @user = Chef::User.from_json(user.to_json)
+      @user = Chef::User.from_json(Chef::JSONCompat.to_json(user))
     end
 
     it "should deserialize to a Chef::User object" do

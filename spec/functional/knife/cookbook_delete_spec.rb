@@ -47,7 +47,7 @@ describe Chef::Knife::CookbookDelete do
       Chef::Log.level = :debug
 
       @knife.name_args = %w{no-such-cookbook}
-      @api.get("/cookbooks/no-such-cookbook", 404, {'error'=>'dear Tim, no. -Sent from my iPad'}.to_json)
+      @api.get("/cookbooks/no-such-cookbook", 404, Chef::JSONCompat.to_json({'error'=>'dear Tim, no. -Sent from my iPad'}))
     end
 
     it "logs an error and exits" do
@@ -62,7 +62,7 @@ describe Chef::Knife::CookbookDelete do
     before do
       @knife.name_args = %w{obsolete-cookbook}
       @cookbook_list = {'obsolete-cookbook' => { 'versions' => ['version' => '1.0.0']} }
-      @api.get("/cookbooks/obsolete-cookbook", 200, @cookbook_list.to_json)
+      @api.get("/cookbooks/obsolete-cookbook", 200, Chef::JSONCompat.to_json(@cookbook_list))
     end
 
     it "asks for confirmation, then deletes the cookbook" do
@@ -105,7 +105,7 @@ describe Chef::Knife::CookbookDelete do
       versions = ['1.0.0', '1.1.0', '1.2.0']
       with_version = lambda { |version| { 'version' => version } }
       @cookbook_list = {'obsolete-cookbook' => { 'versions' => versions.map(&with_version) } }
-      @api.get("/cookbooks/obsolete-cookbook", 200, @cookbook_list.to_json)
+      @api.get("/cookbooks/obsolete-cookbook", 200, Chef::JSONCompat.to_json(@cookbook_list))
     end
 
     it "deletes all versions of a cookbook when given the '-a' flag" do

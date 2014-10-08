@@ -496,7 +496,7 @@ EOM
       when_the_repository 'has an environment with bad JSON' do
         file 'environments/x.json', '{'
         it 'knife download succeeds' do
-          knife('download /environments/x.json').should_succeed "Updated /environments/x.json\n", :stderr => "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n"
+          knife('download /environments/x.json').should_succeed "Updated /environments/x.json\n", :stderr => /WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF\n/
           knife('diff --name-status /environments/x.json').should_succeed ''
         end
       end
@@ -946,7 +946,7 @@ EOM
       when_the_repository 'has an environment with bad JSON' do
         file 'environments/x.json', '{'
         it 'knife download succeeds' do
-          knife('download /environments/x.json').should_succeed "Updated /environments/x.json\n", :stderr => "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n"
+          knife('download /environments/x.json').should_succeed "Updated /environments/x.json\n", :stderr => /WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF\n/
           knife('diff --name-status /environments/x.json').should_succeed ''
         end
       end

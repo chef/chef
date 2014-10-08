@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'json'
+require 'chef/json_compat'
 
 class Chef::Util::Powershell
   class CmdletResult
@@ -33,7 +33,7 @@ class Chef::Util::Powershell
 
     def return_value
       if output_format == :object
-        JSON.parse(@status.stdout)
+        Chef::JSONCompat.parse(@status.stdout)
       else
         @status.stdout
       end

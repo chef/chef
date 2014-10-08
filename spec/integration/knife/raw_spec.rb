@@ -44,12 +44,16 @@ describe 'knife raw' do
   "chef_type": "node",
   "chef_environment": "_default",
   "override": {
+
   },
   "normal": {
+
   },
   "default": {
+
   },
   "automatic": {
+
   },
   "run_list": [
 
@@ -70,13 +74,16 @@ EOM
   "json_class": "Chef::Role",
   "chef_type": "role",
   "default_attributes": {
+
   },
   "override_attributes": {
+
   },
   "run_list": [
 
   ],
   "env_run_lists": {
+
   }
 }
 EOM
@@ -111,13 +118,16 @@ EOM
   "json_class": "Chef::Role",
   "chef_type": "role",
   "default_attributes": {
+
   },
   "override_attributes": {
+
   },
   "run_list": [
 
   ],
   "env_run_lists": {
+
   }
 }
 EOM
