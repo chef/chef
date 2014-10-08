@@ -129,7 +129,7 @@ class Chef
 
     # There is no reason to couple node_name to client name during chef-client runs.
     # This allows to configure the client name for authentication purposes.
-    configurable(:client_name).writes_value { |v| v }
+    default(:client_name) { node_name }
     
     # The root where all local chef object data is stored.  cookbooks, data bags,
     # environments are all assumed to be in separate directories under this.
