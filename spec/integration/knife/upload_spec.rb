@@ -20,7 +20,7 @@ require 'chef/knife/upload'
 require 'chef/knife/diff'
 require 'chef/knife/raw'
 
-describe 'knife upload' do
+describe 'knife upload', :workstation do
   include IntegrationSupport
   include KnifeSupport
 
