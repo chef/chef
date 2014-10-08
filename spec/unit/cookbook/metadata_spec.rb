@@ -623,9 +623,13 @@ describe Chef::Cookbook::Metadata do
       metadata.version "1.2.3"
     end
 
+    it "should produce the same output from to_json and Chef::JSONCompat" do
+      expect(metadata.to_json).to eq(Chef::JSONCompat.to_json(metadata))
+    end
+
     describe "serialize" do
 
-      let(:deserialized_metadata) { Chef::JSONCompat.from_json(metadata.to_json) }
+      let(:deserialized_metadata) { Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(metadata)) }
 
       it "should serialize to a json hash" do
         deserialized_metadata.should be_a_kind_of(Hash)
@@ -657,7 +661,7 @@ describe Chef::Cookbook::Metadata do
 
     describe "deserialize" do
 
-      let(:deserialized_metadata) { Chef::Cookbook::Metadata.from_json(metadata.to_json) }
+      let(:deserialized_metadata) { Chef::Cookbook::Metadata.from_json(Chef::JSONCompat.to_json(metadata)) }
 
 
       it "should deserialize to a Chef::Cookbook::Metadata object" do

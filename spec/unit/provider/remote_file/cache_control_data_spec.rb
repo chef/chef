@@ -85,7 +85,7 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       cache["etag"] = etag
       cache["mtime"] = mtime
       cache["checksum"] = last_fetched_checksum
-      cache.to_json
+      Chef::JSONCompat.to_json(cache)
     end
 
     before do

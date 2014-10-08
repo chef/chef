@@ -168,7 +168,7 @@ class Chef
                   end
                 end
               end
-              JSON.pretty_generate(result)
+              Chef::JSONCompat.to_json_pretty(result)
 
             else
               begin

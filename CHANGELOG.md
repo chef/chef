@@ -146,6 +146,7 @@
 * Add escape_glob method to PathHelper, update glob operations.
 * Verify x509 properties of certificates in the :trusted_certs_dir during knife ssl check.
 * Disable unforked interval chef-client runs.
+* Removed dependencies on the 'json' gem, replaced with ffi-yajl.  Use Chef::JSONCompat library for parsing and printing.
 
 ## Last Release: 11.14.2
 

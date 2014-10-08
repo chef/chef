@@ -47,7 +47,7 @@ describe Chef::Knife::Exec do
     @node = Chef::Node.new
     @node.name("ohai-world")
     response = {"rows" => [@node],"start" => 0,"total" => 1}
-    @api.get(%r{^/search/node}, 200, response.to_json)
+    @api.get(%r{^/search/node}, 200, Chef::JSONCompat.to_json(response))
     code = "$output.puts nodes.all"
     @knife.config[:exec] = code
     @knife.run
