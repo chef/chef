@@ -35,26 +35,25 @@ class Chef
 
       # Evaluates the LWRP resource file and instantiates a new Resource class.
       def self.build_from_file(cookbook_name, filename, run_context)
+        resource_class = nil
         rname = filename_to_qualified_string(cookbook_name, filename)
 
         # Add log entry if we override an existing lightweight resource.
         class_name = convert_to_class_name(rname)
         if Resource.strict_const_defined?(class_name)
-          old_class = Resource.send(:remove_const, class_name)
-          # CHEF-3432 -- Chef::Resource keeps a list of subclasses; need to
-          # remove old ones from the list when replacing.
-          resource_classes.delete(old_class)
-          Chef::Log.info("#{class_name} lightweight resource already initialized -- overriding!")
+          Chef::Log.info("#{class_name} light-weight resource is already initialized -- Skipping loading #{filename}!")
+          Chef::Log.debug("Overriding already defined LWRPs is not supported anymore starting with Chef 12.")
+          resource_class = Resource.const_get(class_name)
+        else
+          resource_class = Class.new(self)
+
+          resource_class.resource_name = rname
+          resource_class.run_context = run_context
+          resource_class.class_from_file(filename)
+
+          Chef::Resource.const_set(class_name, resource_class)
+          Chef::Log.debug("Loaded contents of #{filename} into a resource named #{rname} defined in Chef::Resource::#{class_name}")
         end
-
-        resource_class = Class.new(self)
-
-        resource_class.resource_name = rname
-        resource_class.run_context = run_context
-        resource_class.class_from_file(filename)
-
-        Chef::Resource.const_set(class_name, resource_class)
-        Chef::Log.debug("Loaded contents of #{filename} into a resource named #{rname} defined in Chef::Resource::#{class_name}")
 
         resource_class
       end

@@ -1,4 +1,5 @@
-actions :prepare_thumbs, :twiddle_thumbs
-default_action :pass_buck
+# Starting with Chef 12 reloading an LWRP shouldn't reload the file anymore
 
-attribute :monkey, :kind_of => String
+actions :never_execute
+
+attribute :ever, :kind_of => String
