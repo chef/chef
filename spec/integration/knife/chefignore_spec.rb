@@ -19,7 +19,7 @@ require 'support/shared/integration/integration_helper'
 require 'chef/knife/list'
 require 'chef/knife/show'
 
-describe 'chefignore tests' do
+describe 'chefignore tests', :workstation do
   extend IntegrationSupport
   include KnifeSupport
 

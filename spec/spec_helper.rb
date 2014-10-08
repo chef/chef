@@ -97,6 +97,9 @@ RSpec.configure do |config|
   config.filter_run :focus => true
   config.filter_run_excluding :external => true
 
+  # Only run these tests on platforms that are also chef workstations
+  config.filter_run_excluding :workstation if solaris?
+
   # Tests that randomly fail, but may have value.
   config.filter_run_excluding :volatile => true
   config.filter_run_excluding :volatile_on_solaris => true if solaris?

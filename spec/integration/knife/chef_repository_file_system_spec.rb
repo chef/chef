@@ -19,7 +19,7 @@ require 'support/shared/integration/integration_helper'
 require 'chef/knife/list'
 require 'chef/knife/show'
 
-describe 'General chef_repo file system checks' do
+describe 'General chef_repo file system checks', :workstation do
   extend IntegrationSupport
   include KnifeSupport
 

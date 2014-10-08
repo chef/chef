@@ -20,7 +20,7 @@ require 'support/shared/context/config'
 require 'chef/knife/raw'
 require 'chef/knife/show'
 
-describe 'knife raw' do
+describe 'knife raw', :workstation do
   extend IntegrationSupport
   include KnifeSupport
   include AppServerSupport

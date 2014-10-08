@@ -19,7 +19,7 @@ require 'support/shared/integration/integration_helper'
 require 'support/shared/context/config'
 require 'chef/knife/list'
 
-describe 'redirection' do
+describe 'redirection', :workstation do
   extend IntegrationSupport
   include KnifeSupport
   include AppServerSupport

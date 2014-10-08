@@ -18,7 +18,7 @@
 require 'support/shared/integration/integration_helper'
 require 'chef/knife/raw'
 
-describe 'knife common options' do
+describe 'knife common options', :workstation do
   extend IntegrationSupport
   include KnifeSupport
 
