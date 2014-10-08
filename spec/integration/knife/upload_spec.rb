@@ -21,7 +21,7 @@ require 'chef/knife/diff'
 require 'chef/knife/raw'
 require 'chef/json_compat'
 
-describe 'knife upload' do
+describe 'knife upload', :workstation do
   include IntegrationSupport
   include KnifeSupport
 

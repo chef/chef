@@ -19,7 +19,7 @@ require 'support/shared/integration/integration_helper'
 require 'support/shared/context/config'
 require 'chef/knife/list'
 
-describe 'knife list' do
+describe 'knife list', :workstation do
   include IntegrationSupport
   include KnifeSupport
 

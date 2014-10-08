@@ -19,7 +19,7 @@ require 'support/shared/integration/integration_helper'
 require 'chef/knife/download'
 require 'chef/knife/diff'
 
-describe 'knife download' do
+describe 'knife download', :workstation do
   include IntegrationSupport
   include KnifeSupport
 

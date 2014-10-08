@@ -20,7 +20,7 @@ require 'chef/knife/delete'
 require 'chef/knife/list'
 require 'chef/knife/raw'
 
-describe 'knife delete' do
+describe 'knife delete', :workstation do
   include IntegrationSupport
   include KnifeSupport
 

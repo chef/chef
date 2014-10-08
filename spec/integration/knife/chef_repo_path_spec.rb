@@ -20,7 +20,7 @@ require 'support/shared/context/config'
 require 'chef/knife/list'
 require 'chef/knife/show'
 
-describe 'chef_repo_path tests' do
+describe 'chef_repo_path tests', :workstation do
   include IntegrationSupport
   include KnifeSupport
 
