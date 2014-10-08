@@ -1,5 +1,6 @@
 require 'chef/chef_fs/file_system/rest_list_entry'
 require 'chef/chef_fs/data_handler/organization_members_data_handler'
+require 'chef/json_compat'
 
 class Chef
   module ChefFS
@@ -34,7 +35,7 @@ class Chef
         end
 
         def write(contents)
-          desired_members = minimize_value(JSON.parse(contents, :create_additions => false))
+          desired_members = minimize_value(Chef::JSONCompat.parse(contents, :create_additions => false))
           members = minimize_value(_read_json)
           (desired_members - members).each do |member|
             begin

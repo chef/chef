@@ -72,7 +72,7 @@ module IntegrationSupport
     File.open(filename, 'w') do |file|
       raw = case contents
             when Hash, Array
-              JSON.pretty_generate(contents)
+              Chef::JSONCompat.to_json_pretty(contents)
             else
               contents
             end
