@@ -75,6 +75,7 @@
 * [**Stanislav Bogatyrev**](https://github.com/realloc):
   Fetch recipe_url before loading json_attribs in chef-solo (CHEF-5075)
 * [**Mal Graty**](https://github.com/mal): Workaround for a breaking change in git's shallow-clone behavior. (Issue 1563)
+* [**Dave Eddy**](https://github.com/bahamas10): Fix version detection in FreeBSD pkgng provider. (PR 1980)
 
 ### Chef Contributions
 
