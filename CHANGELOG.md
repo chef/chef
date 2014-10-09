@@ -148,6 +148,7 @@
 * Disable unforked interval chef-client runs.
 * Removed dependencies on the 'json' gem, replaced with ffi-yajl.  Use Chef::JSONCompat library for parsing and printing.
 * Restore the deprecation logic of #valid_actions in LWRPs until Chef 13.
+* Now that we don't allow unforked chef-client interval runs, remove the reloading of previously defined LWRPs.
 
 ## Last Release: 11.14.2
 
