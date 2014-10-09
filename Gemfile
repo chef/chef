@@ -10,6 +10,7 @@ end
 group(:development, :test) do
   gem "simplecov"
   gem 'rack', "~> 1.5.1"
+  gem 'sqlite3' # needed by package provider tests for OpenBSD
 
   gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
 end
