@@ -403,6 +403,34 @@ EOM
         @ui.format_cookbook_list_for_display(@item).should == response
       end
     end
+
+    context "when running on Windows" do
+      before(:each) do
+        stdout = double('StringIO', :tty? => true)
+        @ui.stub(:stdout).and_return(stdout)
+        Chef::Platform.stub(:windows?) { true }
+        Chef::Config.reset
+      end
+
+      after(:each) do
+        Chef::Config.reset
+      end
+
+      it "should have color set to true if knife config has color explicitly set to true" do
+        Chef::Config[:color] = true
+        @ui.config[:color] = true
+        expect(@ui.color?).to eql(true)
+      end
+
+      it "should have color set to false if knife config has color explicitly set to false" do
+        Chef::Config[:color] = false
+        expect(@ui.color?).to eql(false)
+      end
+
+      it "should not have color set to false by default" do
+        expect(@ui.color?).to eql(false)
+      end
+    end
   end
 
   describe "confirm" do
