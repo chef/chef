@@ -110,8 +110,19 @@ class Chef
         if action_names.empty?
           defined?(@actions) ? @actions : from_superclass(:actions, []).dup
         else
-          @actions = action_names
+          # BC-compat way for checking if actions have already been defined
+          if defined?(@actions)
+            @actions.push(*action_names)
+          else
+            @actions = action_names
+          end
         end
+      end
+
+      # @deprecated
+      def self.valid_actions(*args)
+        Chef::Log.warn("`valid_actions' is deprecated, please use actions `instead'!")
+        actions(*args)
       end
 
       # Set the run context on the class. Used to provide access to the node
