@@ -74,8 +74,12 @@
   Improve the regex for /etc/rc.conf for the FreeBSD service provider
 * [**Stanislav Bogatyrev**](https://github.com/realloc):
   Fetch recipe_url before loading json_attribs in chef-solo (CHEF-5075)
-* [**Mal Graty**](https://github.com/mal): Workaround for a breaking change in git's shallow-clone behavior. (Issue 1563)
-* [**Dave Eddy**](https://github.com/bahamas10): Fix version detection in FreeBSD pkgng provider. (PR 1980)
+* [**Mal Graty**](https://github.com/mal):
+  Workaround for a breaking change in git's shallow-clone behavior. (Issue 1563)
+* [**Dave Eddy**](https://github.com/bahamas10):
+  Fix version detection in FreeBSD pkgng provider. (PR 1980)
+* [**Dan Rathbone**](https://github.com/rathers):
+  Fixed gem_package resource to be able to upgrade gems when version is not set.
 
 ### Chef Contributions
 
