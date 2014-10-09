@@ -38,7 +38,6 @@ class Chef
         resource_class = nil
         rname = filename_to_qualified_string(cookbook_name, filename)
 
-        # Add log entry if we override an existing lightweight resource.
         class_name = convert_to_class_name(rname)
         if Resource.strict_const_defined?(class_name)
           Chef::Log.info("#{class_name} light-weight resource is already initialized -- Skipping loading #{filename}!")

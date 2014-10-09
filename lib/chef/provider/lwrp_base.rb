@@ -84,7 +84,6 @@ class Chef
         provider_class = nil
         provider_name = filename_to_qualified_string(cookbook_name, filename)
 
-        # Add log entry if we override an existing light-weight provider.
         class_name = convert_to_class_name(provider_name)
 
         if Chef::Provider.const_defined?(class_name)
