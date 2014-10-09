@@ -493,6 +493,7 @@ class Chef
         def target_version_already_installed?
           return false unless @current_resource && @current_resource.version
           return false if @current_resource.version.nil?
+          return false if @new_resource.version.nil?
 
           Gem::Requirement.new(@new_resource.version).satisfied_by?(Gem::Version.new(@current_resource.version))
         end
