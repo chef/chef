@@ -41,16 +41,25 @@ class Chef
         :proc => lambda { |o| Chef::Config.cookbook_path = o.split(":") }
 
       def run
-        if @name_args.length < 2
-          show_usage
-          ui.fatal("You must specify the cookbook name and the category you want to share this cookbook to.")
-          exit 1
-        end
-
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
-        cookbook_name = @name_args[0]
-        category = @name_args[1]
+        if @name_args.length < 1
+          show_usage
+          ui.fatal("You must specify the cookbook name and the category you want to share this cookbook to.")
+          exit(1)
+        elsif @name_args.length < 2
+          cookbook_name = @name_args[0]
+          category = get_category(cookbook_name)
+          if category.nil? || category.empty?
+            show_usage
+            ui.fatal("You must specify the cookbook name and the category you want to share this cookbook to.")
+            exit(1)
+          end
+        else
+          cookbook_name = @name_args[0]
+          category = @name_args[1]
+        end
+
         cl = Chef::CookbookLoader.new(config[:cookbook_path])
         if cl.cookbook_exists?(cookbook_name)
           cookbook = cl[cookbook_name]
@@ -82,6 +91,17 @@ class Chef
           exit(1)
         end
 
+      end
+
+      def get_category(cookbook_name)
+        begin
+          data = noauth_rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{@name_args[0]}")
+          data["category"]
+        rescue => e
+          ui.fatal("Error fetching cookbook to determine category")
+          Chef::Log.debug("\n#{e.backtrace.join("\n")}")
+          exit(1)
+        end
       end
 
       def do_upload(cookbook_filename, cookbook_category, user_id, user_secret_filename)
