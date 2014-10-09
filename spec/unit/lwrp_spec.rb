@@ -242,7 +242,7 @@ describe "LWRP" do
         end
 
         def raise_if_deprecated!
-          if Chef::VERSION.split('.').first.to_i > 11
+          if Chef::VERSION.split('.').first.to_i > 12
             raise "This test should be removed and the associated code should be removed!"
           end
         end
