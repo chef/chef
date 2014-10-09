@@ -147,6 +147,7 @@
 * Verify x509 properties of certificates in the :trusted_certs_dir during knife ssl check.
 * Disable unforked interval chef-client runs.
 * Removed dependencies on the 'json' gem, replaced with ffi-yajl.  Use Chef::JSONCompat library for parsing and printing.
+* Restore the deprecation logic of #valid_actions in LWRPs until Chef 13.
 
 ## Last Release: 11.14.2
 
