@@ -479,6 +479,36 @@ describe Chef::Knife::Bootstrap do
         knife_ssh_with_password_auth.config[:identity_file].should be_nil
       end
     end
+
+    context "config precedence" do
+      let(:knife_ssh) do
+        knife.name_args = ["config.example.com"]
+        
+        knife.config[:ssh_port] = "cli_ssh_port"
+        knife.config[:ssh_gateway] = "cli_ssh_gateway"
+        knife.config[:forward_agent] = true
+        knife.config[:identity_file] = "cli_identity_file"
+        knife.config[:host_key_verify] = true
+        Chef::Config[:knife][:ssh_user] = "curiosity"
+        knife.config[:ssh_user] = "cli_ssh_user"
+        Chef::Config[:knife][:ssh_port] = "2430"
+        Chef::Config[:knife][:forward_agent] = false
+        Chef::Config[:knife][:identity_file] = "~/.ssh/you.rsa"
+        Chef::Config[:knife][:ssh_gateway] = "towel.blinkenlights.nl"
+        Chef::Config[:knife][:host_key_verify] = false
+        knife.stub(:render_template).and_return("")
+        knife.knife_ssh
+      end
+
+      it "CLI params should take precedence over knife.rb" do
+        knife_ssh.config[:ssh_user].should == 'cli_ssh_user'
+        knife_ssh.config[:identity_file].should == 'cli_identity_file'
+        knife_ssh.config[:ssh_gateway].should == 'cli_ssh_gateway'
+        knife_ssh.config[:ssh_port].should == 'cli_ssh_port'
+        knife_ssh.config[:forward_agent].should be_true
+        knife_ssh.config[:host_key_verify].should be_true
+      end
+    end
   end
 
   it "verifies that a server to bootstrap was given as a command line arg" do
