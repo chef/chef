@@ -92,6 +92,8 @@
   Fixed FreeBSD port package provider to interpret FreeBSD version 10 correctly.
 * [**Brett Chalupa**](https://github.com/brettchalupa):
   Added `source_url` and `issues_url` options to metadata to be used by Supermarket.
+* [**Anshul Sharma**](https://github.com/justanshulsharma):
+  Fixed Chef Client to use the `:client_name` instead of `:node_name` during initial client registration.
 
 
 ### Chef Contributions
