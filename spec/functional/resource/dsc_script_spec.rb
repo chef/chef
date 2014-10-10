@@ -81,16 +81,27 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
   let(:test_registry_value) { 'Registration' }
   let(:test_registry_data1) { 'LL927' }
   let(:test_registry_data2) { 'LL928' }
-  let(:dsc_code) { <<-EOH
+  let(:reg_key_name_param_name) { 'testregkeyname' }
+  let(:reg_key_value_param_name) { 'testregvaluename' }
+  let(:registry_embedded_parameters) { "$#{reg_key_name_param_name} = '#{test_registry_key}';$#{reg_key_value_param_name} = '#{test_registry_value}'"}
+  let(:dsc_reg_code) { <<-EOH
+  #{registry_embedded_parameters}
   Registry "ChefRegKey"
   {
-     Key = '#{test_registry_key}'
-     ValueName = '#{test_registry_value}'
+     Key = $#{reg_key_name_param_name}
+     ValueName = $#{reg_key_value_param_name}
      ValueData = '#{test_registry_data}'
      Ensure = 'Present'
   }
 EOH
   }
+
+  let(:dsc_code) { dsc_reg_code }
+  let(:dsc_reg_script) { <<-EOH
+  param($testregkeyname, $testregvaluename)
+  #{dsc_reg_code}
+EOH
+      }
 
   let(:dsc_user_prefix) { 'dsc' }
   let(:dsc_user_suffix) { 'chefx' }
@@ -175,7 +186,7 @@ environment "whatsmydir"
     Ensure = 'Present'
 }
 EOH
-  }
+}
 
   let(:dsc_config_name) {
     dsc_test_resource_base.name
@@ -249,6 +260,47 @@ EOH
       let(:dsc_user_prefix_code) { dsc_user_prefix_env_code }
       let(:dsc_user_suffix_code) { dsc_user_suffix_env_code }
       it_behaves_like 'a dsc_script with configuration that uses environment variables'
+    end
+  end
+
+  shared_examples_for 'a dsc_script without configuration data that takes parameters' do
+    context 'when configuration data is not specified' do
+
+      before(:each) do
+        test_key_resource = Chef::Resource::RegistryKey.new(test_registry_key, dsc_test_run_context)
+        test_key_resource.recursive(true)
+        test_key_resource.run_action(:delete_key)
+      end
+
+      after(:each) do
+        test_key_resource = Chef::Resource::RegistryKey.new(test_registry_key, dsc_test_run_context)
+        test_key_resource.recursive(true)
+        test_key_resource.run_action(:delete_key)
+      end
+
+      let(:test_registry_data) { test_registry_data1 }
+      let(:dsc_parameterized_env_param_value) { "val" + Random::rand.to_s  }
+
+      it 'should have a default value of nil for the configuration_data attribute' do
+        expect(dsc_test_resource.configuration_data).to eql(nil)
+      end
+
+      it 'should have a default value of nil for the configuration_data_path attribute' do
+        expect(dsc_test_resource.configuration_data_script).to eql(nil)
+      end
+
+      let(:dsc_test_resource) { dsc_resource_from_path }
+      let(:registry_embedded_parameters) { '' }
+      let(:dsc_code) { dsc_reg_script }
+
+      it 'should set a registry key according to parameters passed to the configuration' do
+        dsc_test_resource.configuration_name(config_name_value)
+      dsc_test_resource.flags({:"#{reg_key_name_param_name}" => test_registry_key, :"#{reg_key_value_param_name}" => test_registry_value})
+        expect(dsc_test_resource.registry_key_exists?(test_registry_key)).to eq(false)
+        dsc_test_resource.run_action(:run)
+        expect(dsc_test_resource.registry_key_exists?(test_registry_key)).to eq(true)
+        expect(dsc_test_resource.registry_value_exists?(test_registry_key, {:name => test_registry_value, :type => :string, :data => test_registry_data})).to eq(true)
+      end
     end
   end
 
@@ -333,5 +385,6 @@ EOH
     it_behaves_like 'a dsc_script with configuration data'
     it_behaves_like 'a dsc_script with configuration data that uses environment variables'
     it_behaves_like 'a dsc_script with configuration data that takes parameters'
+    it_behaves_like 'a dsc_script without configuration data that takes parameters'
   end
 end
