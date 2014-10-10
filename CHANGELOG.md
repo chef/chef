@@ -100,6 +100,8 @@
   Added a more clear error message to chef-apply when no recipe is given.
 * [**Joe Nuspl**](https://github.com/nvwls):
   Added support for `sensitive` property to the execute resource.
+* [**Nolan Davidson**](https://github.com/nsdavidson):
+  Added an error message to prevent unintentional running of `exec()` in recipes.
 
 ### Chef Contributions
 
