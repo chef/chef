@@ -19,6 +19,7 @@
 
 require 'chef/resource_platform_map'
 require 'chef/mixin/convert_to_class_name'
+require 'chef/exceptions'
 
 class Chef
   module DSL
@@ -160,6 +161,10 @@ class Chef
         else
           to_s
         end
+      end
+
+      def exec(args)
+        raise Chef::Exceptions::ResourceNotFound, "exec was called, but you probably meant to use an execute resource.  If not, please call Kernel#exec explicitly.  The exec block called was \"#{args}\""
       end
 
     end
