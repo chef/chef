@@ -102,6 +102,9 @@
   Added support for `sensitive` property to the execute resource.
 * [**Nolan Davidson**](https://github.com/nsdavidson):
   Added an error message to prevent unintentional running of `exec()` in recipes.
+* [**wacky612**](https://github.com/wacky612):
+  Fixed a bug in pacman package provider that was preventing the installation of `bind` package.
+
 
 ### Chef Contributions
 
