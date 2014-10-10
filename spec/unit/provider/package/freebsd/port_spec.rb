@@ -26,7 +26,7 @@ describe Chef::Provider::Package::Freebsd::Port do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @new_resource = Chef::Resource::Package.new("zsh")
+    @new_resource = Chef::Resource::FreebsdPackage.new("zsh", @run_context)
     @provider = Chef::Provider::Package::Freebsd::Port.new(@new_resource, @run_context)
   end
 
@@ -66,23 +66,33 @@ describe Chef::Provider::Package::Freebsd::Port do
 
   describe "determining current installed version" do
     before(:each) do
-      @provider.stub(:supports_pkgng?)
       @pkg_info = OpenStruct.new(:stdout => "zsh-3.1.7\n")
     end
 
     it "should check 'pkg_info' if system uses pkg_* tools" do
-      @provider.should_receive(:supports_pkgng?).and_return(false)
+      @new_resource.stub(:supports_pkgng?)
+      @new_resource.should_receive(:supports_pkgng?).and_return(false)
       @provider.should_receive(:shell_out!).with('pkg_info -E "zsh*"', :env => nil, :returns => [0,1]).and_return(@pkg_info)
       @provider.current_installed_version.should == "3.1.7"
     end
 
-    it "should check 'pkg info' if system uses pkgng" do
-      @provider.should_receive(:supports_pkgng?).and_return(true)
+    it "should check 'pkg info' if make supports WITH_PKGNG if freebsd version is < 1000017" do
+      pkg_enabled = OpenStruct.new(:stdout => "yes\n")
+      [1000016, 1000000, 901503, 902506, 802511].each do |__freebsd_version|
+        @node.automatic_attrs[:os_version] = __freebsd_version
+        @new_resource.should_receive(:shell_out!).with('make -V WITH_PKGNG', :env => nil).and_return(pkg_enabled)
+        @provider.should_receive(:shell_out!).with('pkg info "zsh"', :env => nil, :returns => [0,70]).and_return(@pkg_info)
+        @provider.current_installed_version.should == "3.1.7"
+      end
+    end
+
+    it "should check 'pkg info' if the freebsd version is greater than or equal to 1000017" do
+      __freebsd_version = 1000017
+      @node.automatic_attrs[:os_version] = __freebsd_version
       @provider.should_receive(:shell_out!).with('pkg info "zsh"', :env => nil, :returns => [0,70]).and_return(@pkg_info)
       @provider.current_installed_version.should == "3.1.7"
     end
   end
-
 
   describe "determining candidate version" do
     before(:each) do
