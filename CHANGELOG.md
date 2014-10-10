@@ -86,8 +86,8 @@
   Made Chef Client read the non-root crontab entries as the user specified in the resource.
 * [**sawanoboly**](https://github.com/sawanoboly):
   Added `--dry-run` option to `knife cookbook site share` which displays the files that are to be uploaded to Supermarket.
-
-
+* [**Sander van Harmelen**](https://github.com/svanharmelen):
+  Fixed `Chef::HTTP` to be able to follow relative redirects.
 
 ### Chef Contributions
 
