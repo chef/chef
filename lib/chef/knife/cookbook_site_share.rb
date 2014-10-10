@@ -31,7 +31,7 @@ class Chef
         require 'chef/cookbook_site_streaming_uploader'
       end
 
-      banner "knife cookbook site share COOKBOOK CATEGORY (options)"
+      banner "knife cookbook site share COOKBOOK [CATEGORY] (options)"
       category "cookbook site"
 
       option :cookbook_path,
@@ -48,16 +48,20 @@ class Chef
         :description => "Don't take action, only print what files will be upload to SuperMarket."
 
       def run
-        if @name_args.length < 2
-          show_usage
-          ui.fatal("You must specify the cookbook name and the category you want to share this cookbook to.")
-          exit 1
-        end
-
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
-        cookbook_name = @name_args[0]
-        category = @name_args[1]
+        if @name_args.length < 1
+          show_usage
+          ui.fatal("You must specify the cookbook name.")
+          exit(1)
+        elsif @name_args.length < 2
+          cookbook_name = @name_args[0]
+          category = get_category(cookbook_name)
+        else
+          cookbook_name = @name_args[0]
+          category = @name_args[1]
+        end
+
         cl = Chef::CookbookLoader.new(config[:cookbook_path])
         if cl.cookbook_exists?(cookbook_name)
           cookbook = cl[cookbook_name]
@@ -97,6 +101,22 @@ class Chef
           exit(1)
         end
 
+      end
+
+      def get_category(cookbook_name)
+        begin
+          data = noauth_rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{@name_args[0]}")
+          if !data["category"] && data["error_code"]
+            ui.fatal("Received an error from the Opscode Cookbook site: #{data["error_code"]}. On the first time you upload it, you are required to specify the category you want to share this cookbook to.")
+            exit(1)
+          else
+            data['category']
+          end
+        rescue => e
+          ui.fatal("Unable to reach Opscode Cookbook Site: #{e.message}. Increase log verbosity (-VV) for more information.")
+          Chef::Log.debug("\n#{e.backtrace.join("\n")}")
+          exit(1)
+        end
       end
 
       def do_upload(cookbook_filename, cookbook_category, user_id, user_secret_filename)

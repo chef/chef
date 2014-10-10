@@ -36,6 +36,9 @@ describe Chef::Knife::CookbookSiteShare do
     @cookbook_loader.stub(:[]).and_return(@cookbook)
     Chef::CookbookLoader.stub(:new).and_return(@cookbook_loader)
 
+    @noauth_rest = double(Chef::REST)
+    @knife.stub(:noauth_rest).and_return(@noauth_rest)
+
     @cookbook_uploader = Chef::CookbookUploader.new('herpderp', :rest => "norest")
     Chef::CookbookUploader.stub(:new).and_return(@cookbook_uploader)
     @cookbook_uploader.stub(:validate_cookbooks).and_return(true)
@@ -50,6 +53,16 @@ describe Chef::Knife::CookbookSiteShare do
 
     before(:each) do
       @knife.stub(:do_upload).and_return(true)
+      @category_response = {
+        "name" => "cookbook_name",
+        "category" => "Testing Category"
+      }
+      @bad_category_response = {
+        "error_code" => "NOT_FOUND",
+        "error_messages" => [
+            "Resource does not exist."
+        ]
+      }
     end
 
     it 'should set true to config[:dry_run] as default' do
@@ -63,9 +76,23 @@ describe Chef::Knife::CookbookSiteShare do
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 
-    it 'should print usage and exit when given only 1 argument' do
+    it 'should not fail when given only 1 argument and can determine category' do
       @knife.name_args = ['cookbook_name']
-      @knife.should_receive(:show_usage)
+      @noauth_rest.should_receive(:get_rest).with("http://cookbooks.opscode.com/api/v1/cookbooks/cookbook_name").and_return(@category_response)
+      @knife.should_receive(:do_upload)
+      @knife.run
+    end
+
+    it 'should print error and exit when given only 1 argument and cannot determine category' do
+      @knife.name_args = ['cookbook_name']
+      @noauth_rest.should_receive(:get_rest).with("http://cookbooks.opscode.com/api/v1/cookbooks/cookbook_name").and_return(@bad_category_response)
+      @knife.ui.should_receive(:fatal)
+      lambda { @knife.run }.should raise_error(SystemExit)
+    end
+
+    it 'should print error and exit when given only 1 argument and Chef::REST throws an exception' do
+      @knife.name_args = ['cookbook_name']
+      @noauth_rest.should_receive(:get_rest).with("http://cookbooks.opscode.com/api/v1/cookbooks/cookbook_name") { raise Errno::ECONNREFUSED, "Connection refused" }
       @knife.ui.should_receive(:fatal)
       lambda { @knife.run }.should raise_error(SystemExit)
     end
