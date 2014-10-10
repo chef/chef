@@ -36,7 +36,6 @@ describe Chef::Provider::Execute do
     STDOUT.stub(:tty?).and_return(true)
   end
 
-
   it "should execute foo_resource" do
     @provider.stub(:load_current_resource)
     opts = {}
@@ -85,5 +84,60 @@ describe Chef::Provider::Execute do
     @provider.run_action(:run)
     @new_resource.should_not be_updated
   end
-end
 
+  context 'when called with only_if or not_if conditional guard' do
+    let(:conditional) { Chef::Resource::Conditional }
+
+    let(:opts) do
+      { :user =>        @new_resource.user,
+        :group =>       @new_resource.group,
+        :environment => @new_resource.environment,
+        :cwd =>         @new_resource.cwd,
+        :timeout =>     @new_resource.timeout
+      }.delete_if { |_, v| v.nil? }
+    end
+
+    it 'correctly passes the `user` value' do
+      @new_resource.user('my_test_user')
+      expect(conditional).to receive(:only_if).with(@new_resource, 'test', opts)
+
+      @new_resource.only_if('test')
+    end
+
+    it 'correctly passes the `group` value' do
+      @new_resource.group('my_test_group')
+      expect(conditional).to receive(:not_if).with(@new_resource, 'test', opts)
+
+      @new_resource.not_if('test')
+    end
+
+    it 'correctly passes the `environment` value' do
+      @new_resource.environment({'MY_ENV' => 'testing'})
+      expect(conditional).to receive(:only_if).with(@new_resource, 'test', opts)
+
+      @new_resource.only_if('test')
+    end
+
+    it 'correctly passes the `cwd` value' do
+      @new_resource.cwd('/tmp')
+      expect(conditional).to receive(:not_if).with(@new_resource, 'test', opts)
+
+      @new_resource.not_if('test')
+    end
+
+    it 'correctly passes the `timeout` value' do
+      @new_resource.timeout(200)
+      expect(conditional).to receive(:only_if).with(@new_resource, 'test', opts)
+
+      @new_resource.only_if('test')
+    end
+
+    it 'allows overwriting of options' do
+      @new_resource.group('my_execute_group')
+      expect(conditional).to receive(:not_if).with(@new_resource, 'test',
+        opts.merge(:group => 'my_not_if_group'))
+
+      @new_resource.not_if('test', :group => 'my_not_if_group')
+    end
+  end
+end
