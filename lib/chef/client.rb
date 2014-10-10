@@ -282,7 +282,7 @@ class Chef
     rescue Exception => e
       # TODO: munge exception so a semantic failure message can be given to the
       # user
-      @events.registration_failed(node_name, e, config)
+      @events.registration_failed(client_name, e, config)
       raise
     end
 
