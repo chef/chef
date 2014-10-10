@@ -64,7 +64,7 @@ class Chef
           a.failure_message Chef::Exceptions::UnresolvableGitReference,
             "Unable to parse SHA reference for '#{@new_resource.revision}' in repository '#{@new_resource.repository}'. " +
             "Verify your (case-sensitive) repository URL and revision.\n" +
-            "`git ls-remote` output: #{@resolved_reference}"
+            "`git ls-remote '#{@new_resource.repository}' '#{rev_search_pattern}'` output: #{@resolved_reference}"
         end
       end
 
@@ -240,33 +240,53 @@ class Chef
         # annotated tags, we have to search for "revision*" and
         # post-process. Special handling for 'HEAD' to ignore a tag
         # named 'HEAD'.
-        rev_pattern = case @new_resource.revision
-                      when '', 'HEAD'
-                        'HEAD'
-                      else
-                        @new_resource.revision + '*'
-                      end
-        command = git("ls-remote \"#{@new_resource.repository}\" \"#{rev_pattern}\"")
-        @resolved_reference = shell_out!(command, run_options).stdout
-        ref_lines = @resolved_reference.split("\n")
-        refs = ref_lines.map { |line| line.split("\t") }
-        # first try for ^{} indicating the commit pointed to by an
-        # annotated tag
-        tagged_commit = refs.find { |m| m[1].end_with?("#{@new_resource.revision}^{}") }
+        @resolved_reference = git_ls_remote(rev_search_pattern)
+        refs = @resolved_reference.split("\n").map { |line| line.split("\t") }
+        # First try for ^{} indicating the commit pointed to by an
+        # annotated tag.
         # It is possible for a user to create a tag named 'HEAD'.
         # Using such a degenerate annotated tag would be very
         # confusing. We avoid the issue by disallowing the use of
         # annotated tags named 'HEAD'.
-        if tagged_commit && rev_pattern != 'HEAD'
-          tagged_commit[0]
+        if rev_search_pattern != 'HEAD'
+          found = find_revision(refs, @new_resource.revision, '^{}')
         else
-          found = refs.find { |m| m[1].end_with?(@new_resource.revision) }
-          if found
-            found[0]
-          else
-            nil
-          end
+          found = refs_search(refs, 'HEAD')
         end
+        found = find_revision(refs, @new_resource.revision) if found.empty?
+        found.size == 1 ? found.first[0] : nil
+      end
+
+      def find_revision(refs, revision, suffix="")
+        found = refs_search(refs, rev_match_pattern('refs/tags/', revision) + suffix)
+        found = refs_search(refs, rev_match_pattern('refs/heads/', revision) + suffix) if found.empty?
+        found = refs_search(refs, revision + suffix) if found.empty?
+        found
+      end
+
+      def rev_match_pattern(prefix, revision)
+        if revision.start_with?(prefix)
+          revision
+        else
+          prefix + revision
+        end
+      end
+
+      def rev_search_pattern
+        if ['', 'HEAD'].include? @new_resource.revision
+          'HEAD'
+        else
+          @new_resource.revision + '*'
+        end
+      end
+
+      def git_ls_remote(rev_pattern)
+        command = git(%Q(ls-remote "#{@new_resource.repository}" "#{rev_pattern}"))
+        shell_out!(command, run_options).stdout
+      end
+
+      def refs_search(refs, pattern)
+        refs.find_all { |m| m[1] == pattern }
       end
 
       private
