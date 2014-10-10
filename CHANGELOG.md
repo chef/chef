@@ -94,6 +94,8 @@
   Added `source_url` and `issues_url` options to metadata to be used by Supermarket.
 * [**Anshul Sharma**](https://github.com/justanshulsharma):
   Fixed Chef Client to use the `:client_name` instead of `:node_name` during initial client registration.
+* [**tbe**](https://github.com/tbe):
+  Fixed Paludis package provider to be able to interpret the package category.
 
 
 ### Chef Contributions
