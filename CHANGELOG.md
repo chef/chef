@@ -82,6 +82,8 @@
   Fixed gem_package resource to be able to upgrade gems when version is not set.
 * [**Jean Mertz**](https://github.com/JeanMertz):
   Made Chef Client load library folder recursively.
+* [**Eric Saxby**](https://github.com/sax):
+  Made Chef Client read the non-root crontab entries as the user specified in the resource.
 
 
 
