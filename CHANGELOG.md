@@ -88,6 +88,8 @@
   Added `--dry-run` option to `knife cookbook site share` which displays the files that are to be uploaded to Supermarket.
 * [**Sander van Harmelen**](https://github.com/svanharmelen):
   Fixed `Chef::HTTP` to be able to follow relative redirects.
+* [**Cory Stephenson**](https://github.com/Aevin1387):
+  Fixed FreeBSD port package provider to interpret FreeBSD version 10 correctly.
 
 ### Chef Contributions
 
