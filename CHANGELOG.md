@@ -108,6 +108,8 @@
   Changed the default service provider to systemd on SLES versions 12.10 and higher.
 * [**Noah Kantrowitz**](https://github.com/coderanger):
   Implemented [RFC017 - File Specificity Overhaul](https://github.com/opscode/chef-rfc/blob/master/rfc017-file-specificity.md).
+* [**James Bence**](https://github.com/jbence):
+  Improved the reliability of Git provider by making it to be more specific when selecting tags.
 
 
 ### Chef Contributions
