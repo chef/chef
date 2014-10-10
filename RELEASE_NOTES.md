@@ -330,3 +330,9 @@ RFC-017 has two great advantages:
 2. It enables the configuring a custom lookup logic when Chef is attempting to find cookbook files.
 
 You can read more about this RFC [here](https://github.com/opscode/chef-rfc/blob/master/rfc017-file-specificity.md).
+
+## JSON output for `knife status`
+`knife status` command now supports two additional output formats:
+
+1. `--medium`: Includes normal attributes in the output and presents the output as JSON.
+1. `--long`: Includes all attributes in the output and presents the output as JSON.

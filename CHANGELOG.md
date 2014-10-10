@@ -122,6 +122,8 @@
   Changed `knife cookbook site share` to make category an optional parameter when uploading cookbooks.
     It is still required when the cookbook is being uploaded for the first time but on the consequent
     uploads existing category of the cookbook will be used.
+* [**Nicolas DUPEUX**](https://github.com/vaxvms):
+  Added JSON output to `knife status` command. `--medium` and `--long` output formatting parameters are now supported in knife status.
 
 ### Chef Contributions
 
