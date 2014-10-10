@@ -112,6 +112,8 @@
   Improved the reliability of Git provider by making it to be more specific when selecting tags.
 * [**Jean Mertz**](https://github.com/JeanMertz):
   Changed knife upload not to validate the ruby files under files & templates directories.
+* [**Alex Pop**](https://github.com/alexpop):
+  Made `knife cookbook create` to display the directory of the cookbook that is being created.
 
 
 ### Chef Contributions
