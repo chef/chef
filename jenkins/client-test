@@ -147,6 +147,11 @@ cd /opt/chef/embedded/apps/chef
 PATH=/opt/chef/bin:/opt/chef/embedded/bin:$PATH
 export PATH
 
+# ffi-yajl must run in c-extension mode or we take perf hits, so we force it
+# before running rspec so that we don't wind up testing the ffi mode
+FORCE_FFI_YAJL=ext
+export FORCE_FFI_YAJL
+
 # run against the Gemfile.lock in the appbundle'd directory
 sudo env PATH=$PATH TERM=xterm bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec
 

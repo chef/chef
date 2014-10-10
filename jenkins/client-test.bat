@@ -19,13 +19,16 @@ call msiexec INSTALLLOCATION=C:\opscode /qb /i %TMP%\install.msi || GOTO :error
 rem # use rspec and gems from omnibus
 set PATH=C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;%PATH%
 
-rem # run against the specs that are packaged in the chef gem
-rem # sorry about the chef-20 bug on the line below, but this really needs to be rewritten in powershell before then...
-cd c:\opscode\chef\embedded\lib\ruby\gems\1.9.1\gems\chef-1*
+rem # test against the appbundle'd chef bundle
+cd c:\opscode\chef\embedded\apps\chef
+
+rem # ffi-yajl must run in c-extension mode or we take perf hits, so we force it
+rem # before running rspec so that we don't wind up testing the ffi mode
+set FORCE_FFI_YAJL=ext
 
 rem # run the tests -- exclude spec/stress on windows
 rem # we do not bundle exec here in order to test against the gems in the omnibus package
-call rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/functional spec/unit || GOTO :error
+call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/functional spec/unit || GOTO :error
 
 rem # check presence of essential binaries in correct places
 
