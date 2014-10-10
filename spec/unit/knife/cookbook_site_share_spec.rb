@@ -25,6 +25,8 @@ describe Chef::Knife::CookbookSiteShare do
 
   before(:each) do
     @knife = Chef::Knife::CookbookSiteShare.new
+    # Merge default settings in.
+    @knife.merge_configs
     @knife.name_args = ['cookbook_name', 'AwesomeSausage']
 
     @cookbook = Chef::CookbookVersion.new('cookbook_name')
@@ -48,6 +50,10 @@ describe Chef::Knife::CookbookSiteShare do
 
     before(:each) do
       @knife.stub(:do_upload).and_return(true)
+    end
+
+    it 'should set true to config[:dry_run] as default' do
+      @knife.config[:dry_run].should be_false
     end
 
     it 'should should print usage and exit when given no arguments' do
@@ -92,6 +98,26 @@ describe Chef::Knife::CookbookSiteShare do
       @knife.should_receive(:do_upload)
       FileUtils.should_receive(:rm_rf)
       @knife.run
+    end
+
+    context "when the --dry-run flag is specified" do
+      before do
+        Chef::CookbookSiteStreamingUploader.stub(:create_build_dir).and_return("/var/tmp/dummy")
+        @knife.config = { :dry_run => true }
+        @knife.stub_chain(:shell_out!, :stdout).and_return('file')
+      end
+
+      it "should list files in the tarball" do
+        expect(@knife).to receive(:shell_out!).with("tar -czf #{@cookbook.name}.tgz #{@cookbook.name}", {:cwd => "/var/tmp/dummy"})
+        expect(@knife).to receive(:shell_out!).with("tar -tzf #{@cookbook.name}.tgz", {:cwd => "/var/tmp/dummy"})
+        @knife.run
+      end
+
+      it "does not upload the cookbook" do
+        allow(@knife).to receive(:shell_out!).and_return(true)
+        expect(@knife).not_to receive(:do_upload)
+        @knife.run
+      end
     end
   end
 

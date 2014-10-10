@@ -40,6 +40,13 @@ class Chef
         :description => "A colon-separated path to look for cookbooks in",
         :proc => lambda { |o| Chef::Config.cookbook_path = o.split(":") }
 
+      option :dry_run,
+        :long => '--dry-run',
+        :short => '-n',
+        :boolean => true,
+        :default => false,
+        :description => "Don't take action, only print what files will be upload to SuperMarket."
+
       def run
         if @name_args.length < 2
           show_usage
@@ -64,6 +71,14 @@ class Chef
             ui.error("Error making tarball #{cookbook_name}.tgz: #{e.message}. Increase log verbosity (-VV) for more information.")
             Chef::Log.debug("\n#{e.backtrace.join("\n")}")
             exit(1)
+          end
+
+          if config[:dry_run]
+            ui.info("Not uploading #{cookbook_name}.tgz due to --dry-run flag.")
+            result = shell_out!("tar -tzf #{cookbook_name}.tgz", :cwd => tmp_cookbook_dir)
+            ui.info(result.stdout)
+            FileUtils.rm_rf tmp_cookbook_dir
+            return
           end
 
           begin
