@@ -80,6 +80,10 @@
   Fix version detection in FreeBSD pkgng provider. (PR 1980)
 * [**Dan Rathbone**](https://github.com/rathers):
   Fixed gem_package resource to be able to upgrade gems when version is not set.
+* [**Jean Mertz**](https://github.com/JeanMertz):
+  Made Chef Client load library folder recursively.
+
+
 
 ### Chef Contributions
 
