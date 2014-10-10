@@ -104,6 +104,8 @@
   Added an error message to prevent unintentional running of `exec()` in recipes.
 * [**wacky612**](https://github.com/wacky612):
   Fixed a bug in pacman package provider that was preventing the installation of `bind` package.
+* [**Ionuț Arțăriși**](https://github.com/mapleoin):
+  Changed the default service provider to systemd on SLES versions 12.10 and higher.
 
 
 ### Chef Contributions
