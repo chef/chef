@@ -164,7 +164,6 @@ class Chef
 
     def self.load_config(explicit_config_file)
       config_loader = WorkstationConfigLoader.new(explicit_config_file, Chef::Log)
-      Chef::Log.debug("Using configuration from #{config_loader.config_location}")
       config_loader.load
 
       ui.warn("No knife configuration file found") if config_loader.no_config_found?
@@ -393,6 +392,8 @@ class Chef
 
       merge_configs
       apply_computed_config
+      # This has to be after apply_computed_config so that Mixlib::Log is configured
+      Chef::Log.info("Using configuration from #{config[:config_file]}") if config[:config_file]
     end
 
     def show_usage
