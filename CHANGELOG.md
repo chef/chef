@@ -84,6 +84,8 @@
   Made Chef Client load library folder recursively.
 * [**Eric Saxby**](https://github.com/sax):
   Made Chef Client read the non-root crontab entries as the user specified in the resource.
+* [**sawanoboly**](https://github.com/sawanoboly):
+  Added `--dry-run` option to `knife cookbook site share` which displays the files that are to be uploaded to Supermarket.
 
 
 

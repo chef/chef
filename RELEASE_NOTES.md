@@ -118,7 +118,7 @@ homebrew_package 'vim' do
 end
 ```
 
-Chef will then execute the Homebrew command as that user.  The `homebrew_user` attribute can only be provided to the 
+Chef will then execute the Homebrew command as that user.  The `homebrew_user` attribute can only be provided to the
 `homebrew_package` resource, not the `package` resource.
 
 ## DSCL user provider now supports Mac OS X 10.7 and above.
@@ -315,3 +315,7 @@ error when `client_fork false` is set.
 ## Interval sleep occurs before converge
 When running chef-client or chef-solo at intervals, the application will perform splay and interval sleep
 before converging chef. (In previous releases, splay sleep occurred first, then convergance, then interval sleep).
+
+## `--dry-run` option for knife cookbook site share
+"knife cookbook site share" command now accepts a new command line option `--dry-run`. When this option is specified, command
+  will display the files that are about to be uploaded to the Supermarket.
