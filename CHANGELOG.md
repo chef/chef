@@ -96,6 +96,8 @@
   Fixed Chef Client to use the `:client_name` instead of `:node_name` during initial client registration.
 * [**tbe**](https://github.com/tbe):
   Fixed Paludis package provider to be able to interpret the package category.
+* [**David Workman**](https://github.com/workmad3):
+  Added a more clear error message to chef-apply when no recipe is given.
 
 
 ### Chef Contributions
