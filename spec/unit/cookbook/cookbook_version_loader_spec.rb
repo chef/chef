@@ -57,6 +57,11 @@ describe Chef::Cookbook::CookbookVersionLoader do
       expect(loaded_cookbook.recipe_filenames).to include(full_path("/recipes/return.rb"))
     end
 
+    it "loads libraries" do
+      expect(loaded_cookbook.library_filenames).to include(full_path('/libraries/openldap.rb'))
+      expect(loaded_cookbook.library_filenames).to include(full_path('/libraries/openldap/version.rb'))
+    end
+
     it "loads static files in the files/ dir" do
       expect(loaded_cookbook.file_filenames).to include(full_path("/files/default/remotedir/remotesubdir/remote_subdir_file1.txt"))
       expect(loaded_cookbook.file_filenames).to include(full_path("/files/default/remotedir/remotesubdir/remote_subdir_file2.txt"))
