@@ -59,7 +59,7 @@ PKG_STATUS
     end
 
     it "should run pkg info with the package name" do
-      @provider.should_receive(:shell_out!).with("cave -L warning print-ids -M none -m \"*/#{@new_resource.package_name.split('/').last}\" -f \"%c/%p %v %r\n\"").and_return(@shell_out)
+      @provider.should_receive(:shell_out!).with("cave -L warning print-ids -M none -m \"#{@new_resource.package_name}\" -f \"%c/%p %v %r\n\"").and_return(@shell_out)
       @provider.load_current_resource
     end
 
