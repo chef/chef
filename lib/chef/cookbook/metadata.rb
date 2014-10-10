@@ -35,28 +35,31 @@ class Chef
     # about Chef Cookbooks.
     class Metadata
 
-      NAME              = 'name'.freeze
-      DESCRIPTION       = 'description'.freeze
-      LONG_DESCRIPTION  = 'long_description'.freeze
-      MAINTAINER        = 'maintainer'.freeze
-      MAINTAINER_EMAIL  = 'maintainer_email'.freeze
-      LICENSE           = 'license'.freeze
-      PLATFORMS         = 'platforms'.freeze
-      DEPENDENCIES      = 'dependencies'.freeze
-      RECOMMENDATIONS   = 'recommendations'.freeze
-      SUGGESTIONS       = 'suggestions'.freeze
-      CONFLICTING       = 'conflicting'.freeze
-      PROVIDING         = 'providing'.freeze
-      REPLACING         = 'replacing'.freeze
-      ATTRIBUTES        = 'attributes'.freeze
-      GROUPINGS         = 'groupings'.freeze
-      RECIPES           = 'recipes'.freeze
-      VERSION           = 'version'.freeze
+      NAME                   = 'name'.freeze
+      DESCRIPTION            = 'description'.freeze
+      LONG_DESCRIPTION       = 'long_description'.freeze
+      MAINTAINER             = 'maintainer'.freeze
+      MAINTAINER_EMAIL       = 'maintainer_email'.freeze
+      LICENSE                = 'license'.freeze
+      PLATFORMS              = 'platforms'.freeze
+      DEPENDENCIES           = 'dependencies'.freeze
+      RECOMMENDATIONS        = 'recommendations'.freeze
+      SUGGESTIONS            = 'suggestions'.freeze
+      CONFLICTING            = 'conflicting'.freeze
+      PROVIDING              = 'providing'.freeze
+      REPLACING              = 'replacing'.freeze
+      ATTRIBUTES             = 'attributes'.freeze
+      GROUPINGS              = 'groupings'.freeze
+      RECIPES                = 'recipes'.freeze
+      VERSION                = 'version'.freeze
+      SOURCE_URL             = 'source_url'.freeze
+      ISSUES_URL             = 'issues_url'.freeze
 
       COMPARISON_FIELDS = [ :name, :description, :long_description, :maintainer,
                             :maintainer_email, :license, :platforms, :dependencies,
                             :recommendations, :suggestions, :conflicting, :providing,
-                            :replacing, :attributes, :groupings, :recipes, :version]
+                            :replacing, :attributes, :groupings, :recipes, :version,
+                            :source_url, :issues_url ]
 
       VERSION_CONSTRAINTS = {:depends     => DEPENDENCIES,
                              :recommends  => RECOMMENDATIONS,
@@ -111,6 +114,8 @@ class Chef
         @groupings = Mash.new
         @recipes = Mash.new
         @version = Version.new("0.0.0")
+        @source_url = ''
+        @issues_url = ''
 
         @errors = []
       end
@@ -413,7 +418,7 @@ class Chef
         end
       end
 
-      # Adds an attribute )hat a user needs to configure for this cookbook. Takes
+      # Adds an attribute that a user needs to configure for this cookbook. Takes
       # a name (with the / notation for a nested attribute), followed by any of
       # these options
       #
@@ -443,7 +448,9 @@ class Chef
             :type => { :equal_to => [ "string", "array", "hash", "symbol", "boolean", "numeric" ], :default => "string" },
             :required => { :equal_to => [ "required", "recommended", "optional", true, false ], :default => "optional" },
             :recipes => { :kind_of => [ Array ], :default => [] },
-            :default => { :kind_of => [ String, Array, Hash, Symbol, Numeric, TrueClass, FalseClass ] }
+            :default => { :kind_of => [ String, Array, Hash, Symbol, Numeric, TrueClass, FalseClass ] },
+            :source_url => { :kind_of => String },
+            :issues_url => { :kind_of => String }
           }
         )
         options[:required] = remap_required_attribute(options[:required]) unless options[:required].nil?
@@ -469,23 +476,25 @@ class Chef
 
       def to_hash
         {
-          NAME             => self.name,
-          DESCRIPTION      => self.description,
-          LONG_DESCRIPTION => self.long_description,
-          MAINTAINER       => self.maintainer,
-          MAINTAINER_EMAIL => self.maintainer_email,
-          LICENSE          => self.license,
-          PLATFORMS        => self.platforms,
-          DEPENDENCIES     => self.dependencies,
-          RECOMMENDATIONS  => self.recommendations,
-          SUGGESTIONS      => self.suggestions,
-          CONFLICTING      => self.conflicting,
-          PROVIDING        => self.providing,
-          REPLACING        => self.replacing,
-          ATTRIBUTES       => self.attributes,
-          GROUPINGS        => self.groupings,
-          RECIPES          => self.recipes,
-          VERSION          => self.version
+          NAME                   => self.name,
+          DESCRIPTION            => self.description,
+          LONG_DESCRIPTION       => self.long_description,
+          MAINTAINER             => self.maintainer,
+          MAINTAINER_EMAIL       => self.maintainer_email,
+          LICENSE                => self.license,
+          PLATFORMS              => self.platforms,
+          DEPENDENCIES           => self.dependencies,
+          RECOMMENDATIONS        => self.recommendations,
+          SUGGESTIONS            => self.suggestions,
+          CONFLICTING            => self.conflicting,
+          PROVIDING              => self.providing,
+          REPLACING              => self.replacing,
+          ATTRIBUTES             => self.attributes,
+          GROUPINGS              => self.groupings,
+          RECIPES                => self.recipes,
+          VERSION                => self.version,
+          SOURCE_URL             => self.source_url,
+          ISSUES_URL             => self.issues_url
         }
       end
 
@@ -517,6 +526,8 @@ class Chef
         @groupings                    = o[GROUPINGS] if o.has_key?(GROUPINGS)
         @recipes                      = o[RECIPES] if o.has_key?(RECIPES)
         @version                      = o[VERSION] if o.has_key?(VERSION)
+        @source_url                   = o[SOURCE_URL] if o.has_key?(SOURCE_URL)
+        @issues_url                   = o[ISSUES_URL] if o.has_key?(ISSUES_URL)
         self
       end
 
@@ -531,7 +542,9 @@ class Chef
         VERSION_CONSTRAINTS.each do |dependency_type, hash_key|
           if dependency_group = o[hash_key]
            dependency_group.each do |cb_name, constraints|
-             metadata.send(method_name, cb_name, *Array(constraints))
+             if metadata.respond_to?(method_name)
+               metadata.public_send(method_name, cb_name, *Array(constraints))
+             end
            end
           end
         end
@@ -541,6 +554,36 @@ class Chef
       def from_json(string)
         o = Chef::JSONCompat.from_json(string)
         from_hash(o)
+      end
+
+      # Sets the cookbook's source URL, or returns it.
+      #
+      # === Parameters
+      # maintainer<String>:: The source URL
+      #
+      # === Returns
+      # source_url<String>:: Returns the current source URL.
+      def source_url(arg=nil)
+        set_or_return(
+          :source_url,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      # Sets the cookbook's issues URL, or returns it.
+      #
+      # === Parameters
+      # issues_url<String>:: The issues URL
+      #
+      # === Returns
+      # issues_url<String>:: Returns the current issues URL.
+      def issues_url(arg=nil)
+        set_or_return(
+          :issues_url,
+          arg,
+          :kind_of => [ String ]
+        )
       end
 
     private
