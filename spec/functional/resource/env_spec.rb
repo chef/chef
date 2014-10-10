@@ -122,32 +122,6 @@ describe Chef::Resource::Env, :windows_only do
         test_resource.run_action(:modify)
         expect(ENV[chef_env_test_lower_case]).to eq(env_value_expandable)
       end
-
-      context 'when using PATH' do
-        let(:random_name) { Time.now.to_i }
-        let(:env_val) { "#{env_value_expandable}_#{random_name}"}
-        let(:path_before) { test_resource.provider_for_action(test_resource.action).env_value('PATH') }
-
-        it 'should expand PATH' do
-          path_before.should_not include(env_val)
-          test_resource.key_name('PATH')
-          test_resource.value("#{path_before};#{env_val}")
-          test_resource.run_action(:create)
-          ENV['PATH'].should_not include(env_val)
-          ENV['PATH'].should include("#{random_name}")
-        end
-
-        after(:each) do
-          # cleanup so we don't flood the path
-          test_resource.key_name('PATH')
-          test_resource.value(path_before)
-          test_resource.run_action(:create)
-          if test_resource.provider_for_action(test_resource.action).env_value('PATH') != path_before
-            raise 'Failed to cleanup after ourselves'
-          end
-        end
-      end
-
     end
 
     context "when the delete action is invoked" do
