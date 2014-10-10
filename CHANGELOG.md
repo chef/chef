@@ -116,7 +116,10 @@
   Made `knife cookbook create` to display the directory of the cookbook that is being created.
 * [**Alex Pop**](https://github.com/alexpop):
   Fixed the information debug output for the configuration file being used when running knife.
-
+* [**Martin Smith**](https://github.com/martinb3):
+  Changed `knife cookbook site share` to make category an optional parameter when uploading cookbooks.
+    It is still required when the cookbook is being uploaded for the first time but on the consequent
+    uploads existing category of the cookbook will be used.
 
 ### Chef Contributions
 
