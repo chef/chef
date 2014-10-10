@@ -77,9 +77,16 @@ describe Chef::Knife::CookbookSiteShare do
       @knife.run
     end
 
-    it 'should print usage and exit when given only 1 argument and cannot determine category' do
+    it 'should print error and exit when given only 1 argument and cannot determine category' do
       @knife.name_args = ['cookbook_name']
       @noauth_rest.should_receive(:get_rest).with("http://cookbooks.opscode.com/api/v1/cookbooks/cookbook_name").and_return(@bad_category_response)
+      @knife.ui.should_receive(:fatal)
+      lambda { @knife.run }.should raise_error(SystemExit)
+    end
+
+    it 'should print error and exit when given only 1 argument and Chef::REST throws an exception' do
+      @knife.name_args = ['cookbook_name']
+      @noauth_rest.should_receive(:get_rest).with("http://cookbooks.opscode.com/api/v1/cookbooks/cookbook_name") { raise Errno::ECONNREFUSED, "Connection refused" }
       @knife.ui.should_receive(:fatal)
       lambda { @knife.run }.should raise_error(SystemExit)
     end
