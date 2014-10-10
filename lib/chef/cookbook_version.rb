@@ -315,13 +315,20 @@ class Chef
       else
         if segment == :files || segment == :templates
           error_message = "Cookbook '#{name}' (#{version}) does not contain a file at any of these locations:\n"
-          error_locations = [
-            "  #{segment}/#{node[:platform]}-#{node[:platform_version]}/#{filename}",
-            "  #{segment}/#{node[:platform]}/#{filename}",
-            "  #{segment}/default/#{filename}",
-          ]
+          error_locations = if filename.is_a?(Array)
+            filename.map{|name| "  #{File.join(segment.to_s, name)}"}
+          else
+            [
+              "  #{segment}/#{node[:platform]}-#{node[:platform_version]}/#{filename}",
+              "  #{segment}/#{node[:platform]}/#{filename}",
+              "  #{segment}/default/#{filename}",
+              "  #{segment}/#{filename}",
+            ]
+          end
           error_message << error_locations.join("\n")
           existing_files = segment_filenames(segment)
+          # Strip the root_dir prefix off all files for readability
+          existing_files.map!{|path| path[root_dir.length+1..-1]} if root_dir
           # Show the files that the cookbook does have. If the user made a typo,
           # hopefully they'll see it here.
           unless existing_files.empty?
@@ -421,38 +428,44 @@ class Chef
     def preferences_for_path(node, segment, path)
       # only files and templates can be platform-specific
       if segment.to_sym == :files || segment.to_sym == :templates
-        begin
-          platform, version = Chef::Platform.find_platform_and_version(node)
-        rescue ArgumentError => e
-          # Skip platform/version if they were not found by find_platform_and_version
-          if e.message =~ /Cannot find a (?:platform|version)/
-            platform = "/unknown_platform/"
-            version = "/unknown_platform_version/"
-          else
-            raise
+        relative_search_path = if path.is_a?(Array)
+          path
+        else
+          begin
+            platform, version = Chef::Platform.find_platform_and_version(node)
+          rescue ArgumentError => e
+            # Skip platform/version if they were not found by find_platform_and_version
+            if e.message =~ /Cannot find a (?:platform|version)/
+              platform = "/unknown_platform/"
+              version = "/unknown_platform_version/"
+            else
+              raise
+            end
           end
+
+          fqdn = node[:fqdn]
+
+          # Break version into components, eg: "5.7.1" => [ "5.7.1", "5.7", "5" ]
+          search_versions = []
+          parts = version.to_s.split('.')
+
+          parts.size.times do
+            search_versions << parts.join('.')
+            parts.pop
+          end
+
+          # Most specific to least specific places to find the path
+          search_path = [ File.join("host-#{fqdn}", path) ]
+          search_versions.each do |v|
+            search_path << File.join("#{platform}-#{v}", path)
+          end
+          search_path << File.join(platform.to_s, path)
+          search_path << File.join("default", path)
+          search_path << path
+
+          search_path
         end
-
-        fqdn = node[:fqdn]
-
-        # Break version into components, eg: "5.7.1" => [ "5.7.1", "5.7", "5" ]
-        search_versions = []
-        parts = version.to_s.split('.')
-
-        parts.size.times do
-          search_versions << parts.join('.')
-          parts.pop
-        end
-
-        # Most specific to least specific places to find the path
-        search_path = [ File.join(segment.to_s, "host-#{fqdn}", path) ]
-        search_versions.each do |v|
-          search_path << File.join(segment.to_s, "#{platform}-#{v}", path)
-        end
-        search_path << File.join(segment.to_s, platform.to_s, path)
-        search_path << File.join(segment.to_s, "default", path)
-
-        search_path
+        relative_search_path.map {|relative_path| File.join(segment.to_s, relative_path)}
       else
         [File.join(segment, path)]
       end
@@ -666,7 +679,13 @@ class Chef
         # Check if path is actually under root_path
         next if parts[0] == '..'
         if segment == :templates || segment == :files
-          return [ pathname.to_s, parts[1] ]
+          # Check if pathname looks like files/foo or templates/foo (unscoped)
+          if pathname.each_filename.to_a.length == 2
+            # Use root_default in case the same path exists at root_default and default
+            return [ pathname.to_s, 'root_default' ]
+          else
+            return [ pathname.to_s, parts[1] ]
+          end
         else
           return [ pathname.to_s, 'default' ]
         end
