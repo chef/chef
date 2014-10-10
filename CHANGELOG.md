@@ -90,6 +90,9 @@
   Fixed `Chef::HTTP` to be able to follow relative redirects.
 * [**Cory Stephenson**](https://github.com/Aevin1387):
   Fixed FreeBSD port package provider to interpret FreeBSD version 10 correctly.
+* [**Brett Chalupa**](https://github.com/brettchalupa):
+  Added `source_url` and `issues_url` options to metadata to be used by Supermarket.
+
 
 ### Chef Contributions
 

@@ -319,3 +319,7 @@ before converging chef. (In previous releases, splay sleep occurred first, then 
 ## `--dry-run` option for knife cookbook site share
 "knife cookbook site share" command now accepts a new command line option `--dry-run`. When this option is specified, command
   will display the files that are about to be uploaded to the Supermarket.
+
+## New cookbook metadata attributes for Supermarket
+Cookbook metadata now accepts `source_url` and `issues_url` that should point to the source code of the cookbook and
+  the issue tracker of the cookbook. These attributes are being used by Supermarket.
