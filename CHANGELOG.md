@@ -114,6 +114,8 @@
   Changed knife upload not to validate the ruby files under files & templates directories.
 * [**Alex Pop**](https://github.com/alexpop):
   Made `knife cookbook create` to display the directory of the cookbook that is being created.
+* [**Alex Pop**](https://github.com/alexpop):
+  Fixed the information debug output for the configuration file being used when running knife.
 
 
 ### Chef Contributions
