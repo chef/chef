@@ -74,8 +74,12 @@
   Improve the regex for /etc/rc.conf for the FreeBSD service provider
 * [**Stanislav Bogatyrev**](https://github.com/realloc):
   Fetch recipe_url before loading json_attribs in chef-solo (CHEF-5075)
-* [**Mal Graty**](https://github.com/mal): Workaround for a breaking change in git's shallow-clone behavior. (Issue 1563)
-* [**Dave Eddy**](https://github.com/bahamas10): Fix version detection in FreeBSD pkgng provider. (PR 1980)
+* [**Mal Graty**](https://github.com/mal):
+  Workaround for a breaking change in git's shallow-clone behavior. (Issue 1563)
+* [**Dave Eddy**](https://github.com/bahamas10):
+  Fix version detection in FreeBSD pkgng provider. (PR 1980)
+* [**Dan Rathbone**](https://github.com/rathers):
+  Fixed gem_package resource to be able to upgrade gems when version is not set.
 
 ### Chef Contributions
 
@@ -147,6 +151,8 @@
 * Verify x509 properties of certificates in the :trusted_certs_dir during knife ssl check.
 * Disable unforked interval chef-client runs.
 * Removed dependencies on the 'json' gem, replaced with ffi-yajl.  Use Chef::JSONCompat library for parsing and printing.
+* Restore the deprecation logic of #valid_actions in LWRPs until Chef 13.
+* Now that we don't allow unforked chef-client interval runs, remove the reloading of previously defined LWRPs.
 
 ## Last Release: 11.14.2
 
