@@ -62,11 +62,11 @@ class Chef
 
           package_repos = repos.map {|r| Regexp.escape(r) }.join('|')
 
-          status = popen4("pacman -Ss #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
+          status = popen4("pacman -Sl") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               case line
-                when /^(#{package_repos})\/#{Regexp.escape(@new_resource.package_name)} (.+)$/
-                  # $2 contains a string like "4.4.0-1 (kde kdenetwork)" or "3.10-4 (base)"
+                when /^(#{package_repos}) #{Regexp.escape(@new_resource.package_name)} (.+)$/
+                  # $2 contains a string like "4.4.0-1" or "3.10-4 [installed]"
                   # simply split by space and use first token
                   @candidate_version = $2.split(" ").first
               end

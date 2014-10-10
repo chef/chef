@@ -94,10 +94,7 @@ PACMAN
     end
 
     it "should set the candidate version if pacman has one" do
-      @stdout.stub(:each).and_yield("core/nano 2.2.3-1 (base)").
-                            and_yield("    Pico editor clone with enhancements").
-                            and_yield("community/nanoblogger 3.4.1-1").
-                            and_yield("    NanoBlogger is a small weblog engine written in Bash for the command line")
+      @stdout.stub(:each).and_yield("core nano 2.2.3-1")
       @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @provider.load_current_resource
       @provider.candidate_version.should eql("2.2.3-1")
@@ -124,8 +121,7 @@ PACMAN_CONF
 
       ::File.stub(:exists?).with("/etc/pacman.conf").and_return(true)
       ::File.stub(:read).with("/etc/pacman.conf").and_return(@pacman_conf)
-      @stdout.stub(:each).and_yield("customrepo/nano 1.2.3-4").
-                            and_yield("    My custom package")
+      @stdout.stub(:each).and_yield("customrepo nano 1.2.3-4")
       @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
 
       @provider.load_current_resource
