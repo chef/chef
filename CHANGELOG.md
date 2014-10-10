@@ -106,6 +106,8 @@
   Fixed a bug in pacman package provider that was preventing the installation of `bind` package.
 * [**Ionuț Arțăriși**](https://github.com/mapleoin):
   Changed the default service provider to systemd on SLES versions 12.10 and higher.
+* [**Noah Kantrowitz**](https://github.com/coderanger):
+  Implemented [RFC017 - File Specificity Overhaul](https://github.com/opscode/chef-rfc/blob/master/rfc017-file-specificity.md).
 
 
 ### Chef Contributions

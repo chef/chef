@@ -323,3 +323,10 @@ before converging chef. (In previous releases, splay sleep occurred first, then 
 ## New cookbook metadata attributes for Supermarket
 Cookbook metadata now accepts `source_url` and `issues_url` that should point to the source code of the cookbook and
   the issue tracker of the cookbook. These attributes are being used by Supermarket.
+
+## CHEF RFC-017 - File Specificity Overhaul
+RFC-017 has two great advantages:
+1. It makes it easy to create cookbooks by removing the need for `default/` folder when adding templates and cookbook files.
+2. It enables the configuring a custom lookup logic when Chef is attempting to find cookbook files.
+
+You can read more about this RFC [here](https://github.com/opscode/chef-rfc/blob/master/rfc017-file-specificity.md).
