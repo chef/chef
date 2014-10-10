@@ -98,7 +98,8 @@
   Fixed Paludis package provider to be able to interpret the package category.
 * [**David Workman**](https://github.com/workmad3):
   Added a more clear error message to chef-apply when no recipe is given.
-
+* [**Joe Nuspl**](https://github.com/nvwls):
+  Added support for `sensitive` property to the execute resource.
 
 ### Chef Contributions
 
