@@ -186,7 +186,6 @@ class Chef
                 Chef::Log.debug("service is already enabled and has parameters, skipping")
               end
             end
-           #Chef::Log.debug("SCOTT enable me-1!")
             # This is run immediately so the service can be started at any time
             # after the :enable action, during this Chef run.
             contents = configurate(
@@ -195,8 +194,6 @@ class Chef
               remove: !enable
             )
           else
-            #Chef::Log.debug("SCOTT enable me-2!")
-            #Chef::Log.debug("SCOTT service_name is #{@new_resource.service_name}")
             service_name = @new_resource.service_name.clone
             service_after = @new_resource.after ? @new_resource.after.clone : nil
             contents = configurate(
@@ -220,7 +217,6 @@ class Chef
               end
             end
           end
-          #Chef::Log.debug("SCOTT: builtin? #{result}")
           result
         end
 
@@ -270,7 +266,6 @@ class Chef
               end
             end
           end
-          #Chef::Log.debug("SCOTT: enabled? #{result}")
 
           current_resource.enabled result
         end
