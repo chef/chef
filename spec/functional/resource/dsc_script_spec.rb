@@ -238,29 +238,30 @@ environment 'removethis'
 EOH
       removal_resource.run_action(:run)
     end
-    let(:dsc_code) { dsc_environment_config }
-    it 'should not raise an exception if the cwd is not etc' do
-      dsc_test_resource.cwd(dsc_environment_no_fail_not_etc_directory)
-      expect {dsc_test_resource.run_action(:run)}.not_to raise_error
-    end
 
-    it 'should raise an exception if the cwd is etc' do
-      dsc_test_resource.cwd(dsc_environment_fail_etc_directory)
-      expect {dsc_test_resource.run_action(:run)}.to raise_error(Chef::Exceptions::PowershellCmdletException)
-      begin
-        dsc_test_resource.run_action(:run)
-      rescue Chef::Exceptions::PowershellCmdletException => e
-        expect(e.message).to match(exception_message_signature)
+    describe 'when the DSC configuration contains code that raises an exception if cwd has a specific value' do
+      let(:dsc_code) { dsc_environment_config }
+      it 'should not raise an exception if the cwd is not etc' do
+        dsc_test_resource.cwd(dsc_environment_no_fail_not_etc_directory)
+        expect {dsc_test_resource.run_action(:run)}.not_to raise_error
+      end
+
+      it 'should raise an exception if the cwd is etc' do
+        dsc_test_resource.cwd(dsc_environment_fail_etc_directory)
+        expect {dsc_test_resource.run_action(:run)}.to raise_error(Chef::Exceptions::PowershellCmdletException)
+        begin
+          dsc_test_resource.run_action(:run)
+        rescue Chef::Exceptions::PowershellCmdletException => e
+          expect(e.message).to match(exception_message_signature)
+        end
       end
     end
   end
 
   shared_examples_for 'a parameterized DSC configuration script' do
-    context 'when specifying environment variables in the environment attribute' do
-      let(:dsc_user_prefix_code) { dsc_user_prefix_env_code }
-      let(:dsc_user_suffix_code) { dsc_user_suffix_env_code }
-      it_behaves_like 'a dsc_script with configuration that uses environment variables'
-    end
+    let(:dsc_user_prefix_code) { dsc_user_prefix_env_code }
+    let(:dsc_user_suffix_code) { dsc_user_suffix_env_code }
+    it_behaves_like 'a dsc_script with configuration that uses environment variables'
   end
 
   shared_examples_for 'a dsc_script without configuration data that takes parameters' do
@@ -305,15 +306,11 @@ EOH
   end
 
   shared_examples_for 'a dsc_script with configuration data' do
-    context 'when using the configuration_data attribute' do
-      let(:configuration_data_attribute) { 'configuration_data' }
-      it_behaves_like 'a dsc_script with configuration data set via an attribute'
-    end
+    let(:configuration_data_attribute) { 'configuration_data' }
+    it_behaves_like 'a dsc_script with configuration data set via an attribute'
 
-    context 'when using the configuration_data_script attribute' do
-      let(:configuration_data_attribute) { 'configuration_data_script' }
-      it_behaves_like 'a dsc_script with configuration data set via an attribute'
-    end
+    let(:configuration_data_attribute) { 'configuration_data_script' }
+    it_behaves_like 'a dsc_script with configuration data set via an attribute'
   end
 
   shared_examples_for 'a dsc_script with configuration data set via an attribute' do
@@ -334,33 +331,28 @@ EOH
   end
 
   shared_examples_for 'a dsc_script with configuration data that takes parameters' do
-    context 'when script code takes parameters for configuration' do
-      let(:dsc_user_code) { dsc_user_param_code }
-      let(:config_param_section) { config_params }
-      let(:config_flags) {{:"#{dsc_user_prefix_param_name}" => "#{dsc_user_prefix}", :"#{dsc_user_suffix_param_name}" => "#{dsc_user_suffix}"}}
-      it 'does not directly contain the user name' do
-        configuration_script_content = ::File.open(dsc_test_resource.command) do | file |
-          file.read
-        end
-        expect(configuration_script_content.include?(dsc_user)).to be(false)
+    let(:dsc_user_code) { dsc_user_param_code }
+    let(:config_param_section) { config_params }
+    let(:config_flags) {{:"#{dsc_user_prefix_param_name}" => "#{dsc_user_prefix}", :"#{dsc_user_suffix_param_name}" => "#{dsc_user_suffix}"}}
+    it 'does not directly contain the user name' do
+      configuration_script_content = ::File.open(dsc_test_resource.command) do | file |
+        file.read
       end
-      it_behaves_like 'a dsc_script with configuration data'
+      expect(configuration_script_content.include?(dsc_user)).to be(false)
     end
-
+    it_behaves_like 'a dsc_script with configuration data'
   end
 
   shared_examples_for 'a dsc_script with configuration data that uses environment variables' do
-    context 'when script code uses environment variables' do
-      let(:dsc_user_code) { dsc_user_env_code }
+    let(:dsc_user_code) { dsc_user_env_code }
 
-      it 'does not directly contain the user name' do
-        configuration_script_content = ::File.open(dsc_test_resource.command) do | file |
-          file.read
-        end
-        expect(configuration_script_content.include?(dsc_user)).to be(false)
+    it 'does not directly contain the user name' do
+      configuration_script_content = ::File.open(dsc_test_resource.command) do | file |
+        file.read
       end
-      it_behaves_like 'a dsc_script with configuration data'
+      expect(configuration_script_content.include?(dsc_user)).to be(false)
     end
+    it_behaves_like 'a dsc_script with configuration data'
   end
 
   context 'when supplying configuration through the configuration attribute' do
