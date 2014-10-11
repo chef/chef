@@ -126,7 +126,7 @@ describe Chef::Resource::Env, :windows_only do
       context 'when using PATH' do
         let(:random_name) { Time.now.to_i }
         let(:env_val) { "#{env_value_expandable}_#{random_name}"}
-        let!(:path_before) { test_resource.provider_for_action(test_resource.action).env_value('PATH') }
+        let!(:path_before) { test_resource.provider_for_action(test_resource.action).env_value('PATH') || '' }
         let!(:env_path_before) { ENV['PATH'] }
 
         it 'should expand PATH' do
@@ -143,9 +143,6 @@ describe Chef::Resource::Env, :windows_only do
           test_resource.key_name('PATH')
           test_resource.value(path_before)
           test_resource.run_action(:create)
-          if test_resource.provider_for_action(test_resource.action).env_value('PATH') != path_before
-            raise 'Failed to cleanup after ourselves'
-          end
           ENV['PATH'] = env_path_before
         end
       end
