@@ -185,19 +185,17 @@ class Chef
             end
             # This is run immediately so the service can be started at any time
             # after the :enable action, during this Chef run.
-            contents = configurate(
+            configurate(
               setting: builtin_service_enable_variable_name,
               value: new_value,
               remove: !enable
             )
           else
-            service_name = @new_resource.service_name.clone
-            service_after = @new_resource.after ? @new_resource.after.clone : nil
-            contents = configurate(
+            configurate(
               setting: 'pkg_scripts',
               format: :space_delimited_list,
-              value: service_name,
-              after: service_after,
+              value: @new_resource.service_name.clone,
+              after: @new_resource.after ? @new_resource.after.clone : nil,
               remove: !enable
             )
           end
