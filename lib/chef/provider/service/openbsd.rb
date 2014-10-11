@@ -41,11 +41,8 @@ class Chef
           @current_resource.service_name(@new_resource.service_name)
           @rcd_script_found = true
 
-          # Determine if we're talking about /etc/rc.d or /usr/local/etc/rc.d
           if ::File.exists?("/etc/rc.d/#{current_resource.service_name}")
             @init_command = "/etc/rc.d/#{current_resource.service_name}"
-          elsif ::File.exists?("/usr/local/etc/rc.d/#{current_resource.service_name}")
-            @init_command = "/usr/local/etc/rc.d/#{current_resource.service_name}"
           else
             @rcd_script_found = false
             return
