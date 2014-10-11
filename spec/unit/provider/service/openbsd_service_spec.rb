@@ -24,7 +24,6 @@ class Chef::Provider::Service::Openbsd
   public :builtin_service_enable_variable_name
   public :determine_enabled_status!
   public :determine_current_status!
-  public :files
   public :files=
   public :afters=
 end
