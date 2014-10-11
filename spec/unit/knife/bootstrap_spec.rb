@@ -415,50 +415,6 @@ describe Chef::Knife::Bootstrap do
       end
     end
 
-    context "from the knife config file" do
-      let(:knife_ssh) do
-        knife.name_args = ["config.example.com"]
-        knife.config[:ssh_user] = nil
-        knife.config[:ssh_port] = nil
-        knife.config[:ssh_gateway] = nil
-        knife.config[:forward_agent] = nil
-        knife.config[:identity_file] = nil
-        knife.config[:host_key_verify] = nil
-        Chef::Config[:knife][:ssh_user] = "curiosity"
-        Chef::Config[:knife][:ssh_port] = "2430"
-        Chef::Config[:knife][:forward_agent] = true
-        Chef::Config[:knife][:identity_file] = "~/.ssh/you.rsa"
-        Chef::Config[:knife][:ssh_gateway] = "towel.blinkenlights.nl"
-        Chef::Config[:knife][:host_key_verify] = true
-        knife.stub(:render_template).and_return("")
-        knife.knife_ssh
-      end
-
-      it "configures the ssh user" do
-        knife_ssh.config[:ssh_user].should == 'curiosity'
-      end
-
-      it "configures the ssh port" do
-        knife_ssh.config[:ssh_port].should == '2430'
-      end
-
-      it "configures the ssh agent forwarding" do
-        knife_ssh.config[:forward_agent].should == true
-      end
-
-      it "configures the ssh identity file" do
-        knife_ssh.config[:identity_file].should == '~/.ssh/you.rsa'
-      end
-
-      it "configures the ssh gateway" do
-        knife_ssh.config[:ssh_gateway].should == 'towel.blinkenlights.nl'
-      end
-
-      it "configures the host key verify mode" do
-        knife_ssh.config[:host_key_verify].should == true
-      end
-    end
-
     describe "when falling back to password auth when host key auth fails" do
       let(:knife_ssh_with_password_auth) do
         knife.name_args = ["foo.example.com"]
@@ -477,36 +433,6 @@ describe Chef::Knife::Bootstrap do
 
       it "configures knife not to use the identity file that didn't work previously" do
         knife_ssh_with_password_auth.config[:identity_file].should be_nil
-      end
-    end
-
-    context "config precedence" do
-      let(:knife_ssh) do
-        knife.name_args = ["config.example.com"]
-        
-        knife.config[:ssh_port] = "cli_ssh_port"
-        knife.config[:ssh_gateway] = "cli_ssh_gateway"
-        knife.config[:forward_agent] = true
-        knife.config[:identity_file] = "cli_identity_file"
-        knife.config[:host_key_verify] = true
-        Chef::Config[:knife][:ssh_user] = "curiosity"
-        knife.config[:ssh_user] = "cli_ssh_user"
-        Chef::Config[:knife][:ssh_port] = "2430"
-        Chef::Config[:knife][:forward_agent] = false
-        Chef::Config[:knife][:identity_file] = "~/.ssh/you.rsa"
-        Chef::Config[:knife][:ssh_gateway] = "towel.blinkenlights.nl"
-        Chef::Config[:knife][:host_key_verify] = false
-        knife.stub(:render_template).and_return("")
-        knife.knife_ssh
-      end
-
-      it "CLI params should take precedence over knife.rb" do
-        knife_ssh.config[:ssh_user].should == 'cli_ssh_user'
-        knife_ssh.config[:identity_file].should == 'cli_identity_file'
-        knife_ssh.config[:ssh_gateway].should == 'cli_ssh_gateway'
-        knife_ssh.config[:ssh_port].should == 'cli_ssh_port'
-        knife_ssh.config[:forward_agent].should be_true
-        knife_ssh.config[:host_key_verify].should be_true
       end
     end
   end
