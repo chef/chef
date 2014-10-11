@@ -200,9 +200,10 @@ class Chef
                 :service => Chef::Provider::Service::Systemd,
                 :cron => Chef::Provider::Cron,
                 :package => Chef::Provider::Package::Zypper,
-                :group => Chef::Provider::Group::Suse
+                :group => Chef::Provider::Group::Gpasswd
               },
               "< 12.0" => {
+                :group => Chef::Provider::Group::Suse,              
                 :service => Chef::Provider::Service::Redhat
               }
             },
