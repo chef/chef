@@ -61,7 +61,7 @@ class Chef
       def define_resource_requirements
         requirements.assert(:run) do |a|
           err = [
-            'Could not find Dsc on the system',
+            'Could not find PowerShell DSC support on the system',
             powershell_info_str,
             "Powershell 4.0 or higher was not detected on your system and is required to use the dsc_script resource.",
           ]
