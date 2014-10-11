@@ -42,6 +42,7 @@ class Chef
         @reload_command = nil
         @init_command = nil
         @priority = nil
+        @after = nil
         @timeout = nil
         @action = "nothing"
         @supports = { :restart => false, :reload => false, :status => false }
@@ -155,6 +156,16 @@ class Chef
           :priority,
           arg,
           :kind_of => [ Integer, String, Hash ]
+        )
+      end
+
+      # after only applies to non-builtin (pkg_scripts enabled) OpenBSD 
+      # services
+      def after(arg=nil)
+        set_or_return(
+          :after,
+          arg,
+          :kind_of => String
         )
       end
 
