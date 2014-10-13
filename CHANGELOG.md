@@ -105,9 +105,9 @@
 * [**wacky612**](https://github.com/wacky612):
   Fixed a bug in pacman package provider that was preventing the installation of `bind` package.
 * [**Ionuț Arțăriși**](https://github.com/mapleoin):
-  Changed the default service provider to systemd on SLES versions 12.10 and higher.
+  Changed the default service provider to systemd on SLES versions 12 and higher.
 * [**Ionuț Arțăriși**](https://github.com/mapleoin):
-  Changed the default group provider to gpasswd on SLES versions 12.10 and higher.
+  Changed the default group provider to gpasswd on SLES versions 12 and higher.
 * [**Noah Kantrowitz**](https://github.com/coderanger):
   Implemented [RFC017 - File Specificity Overhaul](https://github.com/opscode/chef-rfc/blob/master/rfc017-file-specificity.md).
 * [**James Bence**](https://github.com/jbence):
