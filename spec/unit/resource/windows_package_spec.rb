@@ -34,9 +34,9 @@ describe Chef::Resource::WindowsPackage, "initialize", :windows_only do
     expect(resource.provider).to eql(Chef::Provider::Package::Windows)
   end
 
-  it "supports setting installer_type" do
-    resource.installer_type("msi")
-    expect(resource.installer_type).to eql("msi")
+  it "supports setting installer_type as a symbol" do
+    resource.installer_type(:msi)
+    expect(resource.installer_type).to eql(:msi)
   end
 
   # String, Integer
