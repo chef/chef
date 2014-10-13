@@ -35,7 +35,6 @@ class Chef
         @cwd = nil
         @environment = nil
         @group = nil
-        @path = nil
         @returns = 0
         @timeout = nil
         @user = nil
@@ -90,14 +89,6 @@ class Chef
           :group,
           arg,
           :kind_of => [ String, Integer ]
-        )
-      end
-
-      def path(arg=nil)
-        set_or_return(
-          :path,
-          arg,
-          :kind_of => [ Array ]
         )
       end
 
