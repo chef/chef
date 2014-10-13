@@ -27,6 +27,7 @@ require 'chef/guard_interpreter/resource_guard_interpreter'
 require 'chef/resource/conditional'
 require 'chef/resource/conditional_action_not_nothing'
 require 'chef/resource_collection'
+require 'chef/resource_set'
 require 'chef/resource_platform_map'
 require 'chef/node'
 require 'chef/platform'
@@ -297,12 +298,13 @@ F
       end
     end
 
-    def load_prior_resource
+    # TODO can we perform this without having the resource know its declared_type?
+    def load_prior_resource(resource_type, instance_name)
       begin
-        prior_resource = run_context.resource_collection.lookup(self.to_s)
+        prior_resource = run_context.resource_collection.lookup(resource_type, instance_name)
         # if we get here, there is a prior resource (otherwise we'd have jumped
         # to the rescue clause).
-        Chef::Log.warn("Cloning resource attributes for #{self.to_s} from prior resource (CHEF-3694)")
+        Chef::Log.warn("Cloning resource attributes for #{::Chef::ResourceSet.create_key(resource_type, resource_name)} from prior resource (CHEF-3694)")
         Chef::Log.warn("Previous #{prior_resource}: #{prior_resource.source_line}") if prior_resource.source_line
         Chef::Log.warn("Current  #{self}: #{self.source_line}") if self.source_line
         prior_resource.instance_variables.each do |iv|
@@ -483,7 +485,7 @@ F
     end
 
     def validate_resource_spec!(resource_spec)
-      run_context.resource_collection.validate_lookup_spec!(resource_spec)
+      ::Chef::ResourceSet.validate_lookup_spec!(resource_spec)
     end
 
     def is(*args)

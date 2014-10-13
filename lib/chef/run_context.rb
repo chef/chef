@@ -18,6 +18,8 @@
 # limitations under the License.
 
 require 'chef/resource_collection'
+require 'chef/resource_set'
+require 'chef/resource_list'
 require 'chef/cookbook_version'
 require 'chef/node'
 require 'chef/role'
@@ -49,6 +51,10 @@ class Chef
     # The Chef::ResourceCollection for this run. Populated by evaluating
     # recipes, which is triggered by #load. (See also: CookbookCompiler)
     attr_accessor :resource_collection
+    # TODO do I even want to expose these, or run everything through the facade?  Writers don't really care about
+    # populating both, I mostly separated them
+    attr_accessor :resource_set
+    attr_accessor :resource_list
 
     # A Hash containing the immediate notifications triggered by resources
     # during the converge phase of the chef run.
