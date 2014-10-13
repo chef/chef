@@ -17,9 +17,11 @@
 #
 
 require 'chef/resource'
+require 'chef/resource_collection/resource_collection_serialization'
 
 class Chef
   class ResourceSet
+    include ResourceCollection::ResourceCollectionSerialization
 
     # Matches a multiple resource lookup specification,
     # e.g., "service[nginx,unicorn]"
@@ -33,15 +35,22 @@ class Chef
       @resources_by_key = Hash.new
     end
 
+    def keys
+      @resources_by_key.keys
+    end
+
     def insert_as(resource_type, instance_name, resource)
-      assert_chef_resource(resource)
-      @resources_by_key[create_key(resource_type, instance_name)] = resource
+      is_chef_resource(resource)
+      key = ResourceSet.create_key(resource_type, instance_name)
+      @resources_by_key[key] = resource
     end
 
     # TODO when do we need to lookup a resource by resource?  That smells like we should still have the resource say how its indexed, or we shouldn't be doing that.
     def lookup(resource_type, instance_name)
-      raise ArgumentError, "Must pass a String to lookup" unless key.kind_of?(String)
-      res = @resources_by_key[create_key(resource_type, instance_name)]
+      raise ArgumentError, "Must pass resource_type as a String or Symbol and instance_name as a String" unless
+          (resource_type.kind_of?(String) || resource_type.kind_of?(Symbol)) && instance_name.kind_of?(String)
+      key = ResourceSet.create_key(resource_type, instance_name)
+      res = @resources_by_key[key]
       unless res
         raise Chef::Exceptions::ResourceNotFound, "Cannot find a resource matching #{key} (did you define it first?)"
       end
@@ -79,7 +88,6 @@ class Chef
 
     # resources is a poorly named, but we have to maintain it for back
     # compat.
-    # TODO do we anymore?
     alias_method :resources, :find
 
     # Returns true if +query_object+ is a valid string for looking up a
@@ -110,8 +118,6 @@ class Chef
                     "Use a String like `resource_type[resource_name]' or a Chef::Resource object"
       end
     end
-
-    # TODO the json serialization/unserialization could be put into a module
 
     def self.create_key(resource_type, instance_name)
       "#{resource_type}[#{instance_name}]"
@@ -148,14 +154,6 @@ class Chef
           raise ArgumentError, "Bad string format #{arg}, you must have a string like resource_type[name]!"
       end
       return results
-    end
-
-    # TODO put into common module
-    def assert_chef_resource(arg)
-      unless arg.kind_of?(Chef::Resource)
-        raise ArgumentError, "Cannot insert a #{arg.class} into a resource collection: must be a subclass of Chef::Resource"
-      end
-      true
     end
 
   end

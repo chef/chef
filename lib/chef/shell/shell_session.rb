@@ -69,8 +69,8 @@ module Shell
       @node.consume_attributes(@node_attributes)
     end
 
-    def resource_collection
-      run_context.resource_collection
+    def resource_list
+      run_context.resource_list
     end
 
     def run_context

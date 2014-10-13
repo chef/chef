@@ -19,148 +19,52 @@
 
 require 'chef/resource_set'
 require 'chef/resource_list'
+require 'chef/resource_collection/resource_collection_serialization'
 
+##
+# TODO add class documentation
 class Chef
   class ResourceCollection
+    include ResourceCollectionSerialization
+
+    attr_reader :resource_set, :resource_list
 
     def initialize
       @resource_set = ResourceSet.new
       @resource_list = ResourceList.new
     end
 
-    # TODO proxy all calls with
-    # http://simonecarletti.com/blog/2010/05/understanding-ruby-and-rails-proxy-patter-delegation-and-basicobject/
-
     # TODO fundamentally we want to write objects into 2 different data containers.  We can proxy reads, but it is
     # much harder to proxy writes through 1 object.
 
-    def all_resources
-      @resource_list.all_resources
-    end
+    # TODO insert calls we might need?
+    # :insert, :insert_at, :[]=, :<<, :push
+    # :insert_as
 
-    def [](index)
-      @resource_list[index]
-    end
+    # TODO when there were 2 resources with the same key in resource_set, how do we handle notifications since they get copied?
+    # Did the old class only keep the last seen reference?
 
-    def []=(index, arg)
-      @resource_list[index] = arg
-    end
+    # TODO do we need to implement a dup method?  Run_context was shallowly copying resource_collection before
 
-    def <<(*args)
-      @resource_list.send(:<<, *args)
-    end
+    RESOURCE_LIST_METHODS = Enumerable.instance_methods +
+        [:all_resources, :[], :each, :execute_each_resource, :each_index, :empty?]
+    RESOURCE_SET_METHODS = [:lookup, :find, :resources]
 
-    # 'push' is an alias method to <<
-    alias_method :push, :<<
-
-    def insert(resource)
-      @resource_list.insert(resource)
-    end
-
-    def insert_at(insert_at_index, *resources)
-      @resource_list.insert_at(insert_at_index, *resources)
-    end
-
-    def insert_as(resource_type, instance_name, resource)
-      # TODO how does this compete with the above 2 methods?  How do I combine them?
-      @resource_set.insert_as(resource_type, instance_name, resource)
-    end
-
-    def each
-      @resource_list.each
-    end
-
-    def execute_each_resource(&resource_exec_block)
-      @resource_list.execute_each_resource(&resource_exec_block)
-    end
-
-    def each_index
-      @resource_list.each_index
-    end
-
-    def empty?
-      @resources_list.empty?
-    end
-
-    def lookup(resource_type, instance_name)
-      @resource_set.lookup(resource_type, instance_name)
-    end
-
-    def find(*args)
-      @resource_list.find(*args)
-    end
-
-    # resources is a poorly named, but we have to maintain it for back
-    # compat.
-    alias_method :resources, :find
-
-    private
-
-      def find_resource_by_hash(arg)
-        results = Array.new
-        arg.each do |resource_name, name_list|
-          names = name_list.kind_of?(Array) ? name_list : [ name_list ]
-          names.each do |name|
-            res_name = "#{resource_name.to_s}[#{name}]"
-            results << lookup(res_name)
-          end
-        end
-        return results
+    def method_missing(name, *args, &block)
+      if RESOURCE_LIST_METHODS.include?(name)
+        proxy = @resource_list
+      elsif RESOURCE_SET_METHODS.include?(name)
+        proxy = @resource_set
+      else
+        raise NoMethodError.new("ResourceCollection does not proxy `#{name}`", name, args)
+      end
+      if block
+        proxy.send(name, *args, &block)
+      else
+        proxy.send(name, *args)
       end
 
-      def find_resource_by_string(arg)
-        results = Array.new
-        case arg
-        when MULTIPLE_RESOURCE_MATCH
-          resource_type = $1
-          arg =~ /^.+\[(.+)\]$/
-          resource_list = $1
-          resource_list.split(",").each do |name|
-            resource_name = "#{resource_type}[#{name}]"
-            results << lookup(resource_name)
-          end
-        when SINGLE_RESOURCE_MATCH
-          resource_type = $1
-          name = $2
-          resource_name = "#{resource_type}[#{name}]"
-          results << lookup(resource_name)
-        else
-          raise ArgumentError, "Bad string format #{arg}, you must have a string like resource_type[name]!"
-        end
-        return results
-      end
-
-      def is_chef_resource(arg)
-        unless arg.kind_of?(Chef::Resource)
-          raise ArgumentError, "Cannot insert a #{arg.class} into a resource collection: must be a subclass of Chef::Resource"
-        end
-        true
-      end
-  end
-
-  module ResourceCollectionSerialization
-    # Serialize this object as a hash
-    def to_hash
-      instance_vars = Hash.new
-      self.instance_variables.each do |iv|
-        instance_vars[iv] = self.instance_variable_get(iv)
-      end
-      {
-          'json_class' => self.class.name,
-          'instance_vars' => instance_vars
-      }
     end
 
-    def to_json(*a)
-      Chef::JSONCompat.to_json(to_hash, *a)
-    end
-
-    def self.json_create(o)
-      collection = self.new()
-      o["instance_vars"].each do |k,v|
-        collection.instance_variable_set(k.to_sym, v)
-      end
-      collection
-    end
   end
 end

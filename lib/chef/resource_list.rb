@@ -18,9 +18,11 @@
 
 require 'chef/resource'
 require 'chef/resource_collection/stepable_iterator'
+require 'chef/resource_collection/resource_collection_serialization'
 
 class Chef
   class ResourceList
+    include ResourceCollection::ResourceCollectionSerialization
     include Enumerable
 
     attr_reader :iterator
@@ -81,7 +83,7 @@ class Chef
     end
 
     def execute_each_resource(&resource_exec_block)
-      @iterator = StepableIterator.for_collection(@resources)
+      @iterator = ResourceCollection::StepableIterator.for_collection(@resources)
       @iterator.each_with_index do |resource, idx|
         @insert_after_idx = idx
         yield resource
@@ -96,18 +98,6 @@ class Chef
 
     def empty?
       @resources.empty?
-    end
-
-    # TODO the json serialization/unserialization could be put into a module
-
-    private
-
-    # TODO put into common module
-    def is_chef_resource(arg)
-      unless arg.kind_of?(Chef::Resource)
-        raise ArgumentError, "Cannot insert a #{arg.class} into a resource collection: must be a subclass of Chef::Resource"
-      end
-      true
     end
 
   end

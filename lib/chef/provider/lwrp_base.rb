@@ -62,7 +62,7 @@ class Chef
           return_value
         ensure
           @run_context = saved_run_context
-          if temp_run_context.resource_collection.any? {|r| r.updated? }
+          if temp_run_context.resource_list.any? {|r| r.updated? }
             new_resource.updated_by_last_action(true)
           end
         end

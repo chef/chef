@@ -143,7 +143,7 @@ class Chef
 
       # Called before convergence starts
       def converge_start(run_context)
-        puts_line "Converging #{run_context.resource_collection.all_resources.size} resources"
+        puts_line "Converging #{run_context.resource_list.all_resources.size} resources"
       end
 
       # Called when the converge phase is finished.

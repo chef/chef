@@ -79,7 +79,7 @@ class Chef
     # Used by the DSL to look up resources when executing in the context of a
     # recipe.
     def resources(*args)
-      run_context.resource_collection.find(*args)
+      run_context.resource_set.find(*args)
     end
 
     # This was moved to Chef::Node#tag, redirecting here for compatability

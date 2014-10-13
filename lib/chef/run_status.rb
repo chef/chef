@@ -70,13 +70,13 @@ class Chef::RunStatus
 
   # The list of all resources in the current run context's +resource_collection+
   def all_resources
-    @run_context && @run_context.resource_collection.all_resources
+    @run_context && @run_context.resource_list.all_resources
   end
 
   # The list of all resources in the current run context's +resource_collection+
   # that are marked as updated
   def updated_resources
-    @run_context && @run_context.resource_collection.select { |r| r.updated }
+    @run_context && @run_context.resource_list.select { |r| r.updated }
   end
 
   # The backtrace from +exception+, if any
