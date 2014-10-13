@@ -158,6 +158,15 @@ describe Chef::Provider::Package::Homebrew do
       allow(provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => 'homestarrunner'))
       expect(provider.brew('info', 'opts', 'bananas')).to eql('homestarrunner')
     end
+
+    context "when new_resource is Package" do
+      let(:new_resource) { Chef::Resource::Package.new('emacs') }
+
+      it "does not try to read homebrew_user from Package, which does not have it" do
+        allow(provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => 'zombo'))
+        expect(provider.brew).to eql('zombo')
+      end
+    end
   end
 
   context 'when testing actions' do

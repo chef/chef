@@ -109,7 +109,7 @@ class Chef
         private
 
         def get_response_from_command(command)
-          homebrew_uid = find_homebrew_uid(new_resource.homebrew_user)
+          homebrew_uid = find_homebrew_uid(new_resource.respond_to?(:homebrew_user) && new_resource.homebrew_user)
           homebrew_user = Etc.getpwuid(homebrew_uid)
 
           Chef::Log.debug "Executing '#{command}' as user '#{homebrew_user.name}'"
