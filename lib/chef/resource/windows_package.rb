@@ -44,7 +44,7 @@ class Chef
         set_or_return(
           :installer_type,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ Symbol ]
         )
       end
 
