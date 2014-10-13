@@ -36,7 +36,7 @@ class Chef
       # the brew executable.
       def find_homebrew_uid(provided_user = nil)
         # They could provide us a user name or a UID
-        unless provided_user.nil?
+        if provided_user
           return provided_user if provided_user.is_a? Integer
           return Etc.getpwnam(provided_user).uid
         end
