@@ -29,7 +29,7 @@ class Chef::Util::DSC
 
     def test_configuration(configuration_document)
       status = run_configuration_cmdlet(configuration_document)
-      handle_what_if_exception!(status.stderr) unless status.succeeded?
+      log_what_if_exception(status.stderr) unless status.succeeded?
       configuration_update_required?(status.return_value)
     end
 
@@ -78,14 +78,14 @@ $ProgressPreference = 'SilentlyContinue';start-dscconfiguration -path #{@configu
 EOH
     end
 
-    def handle_what_if_exception!(what_if_exception_output)
+    def log_what_if_exception(what_if_exception_output)
         if what_if_exception_output.gsub(/\s+/, ' ') =~ /A parameter cannot be found that matches parameter name 'Whatif'/i
           # LCM returns an error if any of the resources do not support the opptional What-If
           Chef::Log::warn("Received error while testing configuration due to resource not supporting 'WhatIf'")
         elsif output_has_dsc_module_failure?(what_if_exception_output)
           Chef::Log::warn("Received error while testing configuration due to a module for an imported resource possibly not being fully installed:\n#{what_if_exception_output.gsub(/\s+/, ' ')}")
         else
-          raise Chef::Exceptions::PowershellCmdletException, "Powershell Cmdlet failed: #{what_if_exception_output.gsub(/\s+/, ' ')}"
+          Chef::Log::warn("Received error while testing configuration:\n#{what_if_exception_output.gsub(/\s+/, ' ')}")
         end
     end
 
