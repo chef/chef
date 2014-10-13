@@ -248,6 +248,69 @@ describe Chef::Provider::Package::Yum do
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
       @provider.load_current_resource
       @new_resource.package_name.should == "test-package"
+      @new_resource.version.should == nil
+    end
+
+    it "should search provides if a package name can't be found then set version to match if a requirement was passed in the package name" do
+      @new_resource = Chef::Resource::YumPackage.new('test-package = 2.0.1.el5')
+      @yum_cache = mock(
+        'Chef::Provider::Yum::YumCache',
+        :reload_installed => true,
+        :reset => true,
+        :installed_version => "1.0.1.el5",
+        :candidate_version => "2.0.1.el5",
+        :package_available? => false,
+        :version_available? => true
+      )
+      Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
+      pkg = Chef::Provider::Package::Yum::RPMPackage.new("test-package", "2.0.1.el5", "x86_64", [])
+      @yum_cache.should_receive(:packages_from_require).and_return([pkg])
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider.load_current_resource
+      @new_resource.package_name.should == "test-package"
+      @new_resource.version.should == "2.0.1.el5"
+    end
+
+    it "should search provides if a package name can't be found then set version to match if a requirement was passed in the version" do
+      @new_resource = Chef::Resource::YumPackage.new('test-package')
+      @new_resource.version("= 2.0.1.el5")
+      @yum_cache = mock(
+        'Chef::Provider::Yum::YumCache',
+        :reload_installed => true,
+        :reset => true,
+        :installed_version => "1.0.1.el5",
+        :candidate_version => "2.0.1.el5",
+        :package_available? => false,
+        :version_available? => true
+      )
+      Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
+      pkg = Chef::Provider::Package::Yum::RPMPackage.new("test-package", "2.0.1.el5", "x86_64", [])
+      @yum_cache.should_receive(:packages_from_require).and_return([pkg])
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider.load_current_resource
+      @new_resource.package_name.should == "test-package"
+      @new_resource.version.should == "2.0.1.el5"
+    end
+
+    it "should search provides if a package name can't be found and not set the version to match if a specific version was requested" do
+      @new_resource = Chef::Resource::YumPackage.new('test-package')
+      @new_resource.version("3.0.1.el5")
+      @yum_cache = mock(
+        'Chef::Provider::Yum::YumCache',
+        :reload_installed => true,
+        :reset => true,
+        :installed_version => "1.0.1.el5",
+        :candidate_version => "2.0.1.el5",
+        :package_available? => false,
+        :version_available? => true
+      )
+      Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
+      pkg = Chef::Provider::Package::Yum::RPMPackage.new("test-package", "2.0.1.el5", "x86_64", [])
+      @yum_cache.should_receive(:packages_from_require).and_return([pkg])
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider.load_current_resource
+      @new_resource.package_name.should == "test-package"
+      @new_resource.version.should == "3.0.1.el5"
     end
 
     it "should search provides if package name can't be found, warn about multiple matches, but use the first one" do
@@ -269,6 +332,7 @@ describe Chef::Provider::Package::Yum do
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
       @provider.load_current_resource
       @new_resource.package_name.should == "test-package-x"
+      @new_resource.version.should == nil
     end
 
     it "should search provides if no package is available - if no match in installed provides then load the complete set" do
@@ -329,6 +393,7 @@ describe Chef::Provider::Package::Yum do
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
       @provider.load_current_resource
       @new_resource.package_name.should == "cups"
+      @new_resource.version.should == nil
     end
   end
 
