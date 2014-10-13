@@ -80,6 +80,50 @@
   Fix version detection in FreeBSD pkgng provider. (PR 1980)
 * [**Dan Rathbone**](https://github.com/rathers):
   Fixed gem_package resource to be able to upgrade gems when version is not set.
+* [**Jean Mertz**](https://github.com/JeanMertz):
+  Made Chef Client load library folder recursively.
+* [**Eric Saxby**](https://github.com/sax):
+  Made Chef Client read the non-root crontab entries as the user specified in the resource.
+* [**sawanoboly**](https://github.com/sawanoboly):
+  Added `--dry-run` option to `knife cookbook site share` which displays the files that are to be uploaded to Supermarket.
+* [**Sander van Harmelen**](https://github.com/svanharmelen):
+  Fixed `Chef::HTTP` to be able to follow relative redirects.
+* [**Cory Stephenson**](https://github.com/Aevin1387):
+  Fixed FreeBSD port package provider to interpret FreeBSD version 10 correctly.
+* [**Brett Chalupa**](https://github.com/brettchalupa):
+  Added `source_url` and `issues_url` options to metadata to be used by Supermarket.
+* [**Anshul Sharma**](https://github.com/justanshulsharma):
+  Fixed Chef Client to use the `:client_name` instead of `:node_name` during initial client registration.
+* [**tbe**](https://github.com/tbe):
+  Fixed Paludis package provider to be able to interpret the package category.
+* [**David Workman**](https://github.com/workmad3):
+  Added a more clear error message to chef-apply when no recipe is given.
+* [**Joe Nuspl**](https://github.com/nvwls):
+  Added support for `sensitive` property to the execute resource.
+* [**Nolan Davidson**](https://github.com/nsdavidson):
+  Added an error message to prevent unintentional running of `exec()` in recipes.
+* [**wacky612**](https://github.com/wacky612):
+  Fixed a bug in pacman package provider that was preventing the installation of `bind` package.
+* [**Ionuț Arțăriși**](https://github.com/mapleoin):
+  Changed the default service provider to systemd on SLES versions 12 and higher.
+* [**Ionuț Arțăriși**](https://github.com/mapleoin):
+  Changed the default group provider to gpasswd on SLES versions 12 and higher.
+* [**Noah Kantrowitz**](https://github.com/coderanger):
+  Implemented [RFC017 - File Specificity Overhaul](https://github.com/opscode/chef-rfc/blob/master/rfc017-file-specificity.md).
+* [**James Bence**](https://github.com/jbence):
+  Improved the reliability of Git provider by making it to be more specific when selecting tags.
+* [**Jean Mertz**](https://github.com/JeanMertz):
+  Changed knife upload not to validate the ruby files under files & templates directories.
+* [**Alex Pop**](https://github.com/alexpop):
+  Made `knife cookbook create` to display the directory of the cookbook that is being created.
+* [**Alex Pop**](https://github.com/alexpop):
+  Fixed the information debug output for the configuration file being used when running knife.
+* [**Martin Smith**](https://github.com/martinb3):
+  Changed `knife cookbook site share` to make category an optional parameter when uploading cookbooks.
+    It is still required when the cookbook is being uploaded for the first time but on the consequent
+    uploads existing category of the cookbook will be used.
+* [**Nicolas DUPEUX**](https://github.com/vaxvms):
+  Added JSON output to `knife status` command. `--medium` and `--long` output formatting parameters are now supported in knife status.
 
 ### Chef Contributions
 

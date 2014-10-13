@@ -118,7 +118,7 @@ homebrew_package 'vim' do
 end
 ```
 
-Chef will then execute the Homebrew command as that user.  The `homebrew_user` attribute can only be provided to the 
+Chef will then execute the Homebrew command as that user.  The `homebrew_user` attribute can only be provided to the
 `homebrew_package` resource, not the `package` resource.
 
 ## DSCL user provider now supports Mac OS X 10.7 and above.
@@ -315,3 +315,24 @@ error when `client_fork false` is set.
 ## Interval sleep occurs before converge
 When running chef-client or chef-solo at intervals, the application will perform splay and interval sleep
 before converging chef. (In previous releases, splay sleep occurred first, then convergance, then interval sleep).
+
+## `--dry-run` option for knife cookbook site share
+"knife cookbook site share" command now accepts a new command line option `--dry-run`. When this option is specified, command
+  will display the files that are about to be uploaded to the Supermarket.
+
+## New cookbook metadata attributes for Supermarket
+Cookbook metadata now accepts `source_url` and `issues_url` that should point to the source code of the cookbook and
+  the issue tracker of the cookbook. These attributes are being used by Supermarket.
+
+## CHEF RFC-017 - File Specificity Overhaul
+RFC-017 has two great advantages:
+1. It makes it easy to create cookbooks by removing the need for `default/` folder when adding templates and cookbook files.
+2. It enables the configuring a custom lookup logic when Chef is attempting to find cookbook files.
+
+You can read more about this RFC [here](https://github.com/opscode/chef-rfc/blob/master/rfc017-file-specificity.md).
+
+## JSON output for `knife status`
+`knife status` command now supports two additional output formats:
+
+1. `--medium`: Includes normal attributes in the output and presents the output as JSON.
+1. `--long`: Includes all attributes in the output and presents the output as JSON.
