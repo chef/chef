@@ -105,15 +105,15 @@ EOH
         end
       end
 
-      context 'that fails due to an PowerShell cmdlet error that cannot be handled' do
+      context 'that fails due to an unknown PowerShell cmdlet error' do
         let(:lcm_standard_output) { 'some output' }
         let(:lcm_standard_error) { 'Abort, Retry, Fail?' }
         let(:lcm_cmdlet_success) { false }
 
-        it 'should raise a Chef::Exceptions::PowershellCmdletException' do
-          expect(Chef::Log).not_to receive(:warn)
+        it 'should log a warning' do
+          expect(Chef::Log).to receive(:warn)
           expect(lcm).to receive(:output_has_dsc_module_failure?).and_call_original
-          expect {lcm.test_configuration('config')}.to raise_error(Chef::Exceptions::PowershellCmdletException)
+          expect {lcm.test_configuration('config')}.not_to raise_error
         end
       end
     end
