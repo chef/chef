@@ -25,6 +25,7 @@ require 'mixlib/config'
 require 'chef/util/selinux'
 require 'chef/util/path_helper'
 require 'pathname'
+require 'chef/mixin/shell_out'
 
 class Chef
   class Config
@@ -604,15 +605,23 @@ class Chef
     # available English UTF-8 locale.  However, all modern POSIXen should support 'locale -a'.
     default :internal_locale do
       begin
-        locales = `locale -a`.split
+        # https://github.com/opscode/chef/issues/2181
+        # Some systems have the `locale -a` command, but the result has
+        # invalid characters for the default encoding.
+        #
+        # For example, on CentOS 6 with ENV['LANG'] = "en_US.UTF-8",
+        # `locale -a`.split fails with ArgumentError invalid UTF-8 encoding.
+        output = `locale -a`
+        locales = output.encode(output.encoding, :invalid => :replace).split
         case
         when locales.include?('C.UTF-8')
           'C.UTF-8'
-        when locales.include?('en_US.UTF-8')
+        when locales.include?('en_US.UTF-8') || locales.include?('en_US.utf8')
           'en_US.UTF-8'
         when locales.include?('en.UTF-8')
           'en.UTF-8'
-        when guesses = locales.select { |l| l =~ /^en_.*UTF-8$'/ }
+        when guesses = locales.select { |l| l =~ /^en_.*UTF-?8$/i }
+          # Will match en_ZZ.UTF-8, en_ZZ.utf-8, en_ZZ.UTF8, en_ZZ.utf8
           guesses.first
         else
           Chef::Log.warn "Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support."
@@ -622,7 +631,7 @@ class Chef
         if Chef::Platform.windows?
           Chef::Log.debug "Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else."
         else
-          Chef::Log.warn "No usable locale -a command found, assuming you have en_US.UTF-8 installed."
+          Chef::Log.debug "No usable locale -a command found, assuming you have en_US.UTF-8 installed."
         end
         'en_US.UTF-8'
       end
