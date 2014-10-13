@@ -54,23 +54,29 @@ class Chef
       end
 
       def configure
-        case @command
-        when String
-          @guard_interpreter = new_guard_interpreter(@parent_resource, @command, @command_opts, &@block)
-          @block = nil
-        when nil
-          # we should have a block if we get here
-          if @parent_resource.guard_interpreter != :default
-            msg = "#{@parent_resource.name} was given a guard_interpreter of #{@parent_resource.guard_interpreter}, "
-            msg << "but not given a command as a string. guard_interpreter does not support blocks (because they just contain ruby)."
-            raise ArgumentError, msg
-          end
-
+        if @block_given
+          # If a block is given, we will not interpret the block with a guard interpreter.
           @guard_interpreter = nil
           @command, @command_opts = nil, nil
         else
-          # command was passed, but it wasn't a String
-          raise ArgumentError, "Invalid only_if/not_if command, expected a string: #{command.inspect} (#{command.class})"
+          case @command
+          when String
+            @guard_interpreter = new_guard_interpreter(@parent_resource, @command, @command_opts, &@block)
+            @block = nil
+          when nil
+            # We should have a block if we get here
+            if @parent_resource.guard_interpreter != :default
+              msg = "#{@parent_resource.name} was given a guard_interpreter of #{@parent_resource.guard_interpreter}, "
+              msg << "but not given a command as a string. guard_interpreter does not support blocks (because they just contain ruby)."
+              raise ArgumentError, msg
+            end
+
+            @guard_interpreter = nil
+            @command, @command_opts = nil, nil
+          else
+            # command was passed, but it wasn't a String
+            raise ArgumentError, "Invalid only_if/not_if command, expected a string: #{command.inspect} (#{command.class})"
+          end
         end
       end
 
