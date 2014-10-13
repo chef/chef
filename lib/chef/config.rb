@@ -622,7 +622,10 @@ class Chef
           'en.UTF-8'
         when guesses = locales.select { |l| l =~ /^en_.*UTF-?8$/i }
           # Will match en_ZZ.UTF-8, en_ZZ.utf-8, en_ZZ.UTF8, en_ZZ.utf8
-          guesses.first
+          guessed_locale = guesses.first
+          # Transform into the form en_ZZ.UTF-8
+          guessed_locale.gsub(/UTF-?8$/i, "UTF-8")
+          guessed_locale
         else
           Chef::Log.warn "Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support."
           'C'
