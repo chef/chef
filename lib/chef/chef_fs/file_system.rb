@@ -242,7 +242,7 @@ class Chef
         if are_same.nil?
           are_same, b_value, a_value = b.compare_to(a)
         end
-        if are_same.nil?
+        if !are_same.nil?
           # TODO these reads can be parallelized
           begin
             a_value = a.read if a_value.nil?
