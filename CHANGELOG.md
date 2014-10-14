@@ -127,6 +127,7 @@
 
 ### Chef Contributions
 
+* `dsc_script` resource should honor configuration parameters when `configuration_data_script` is not set (Issue #2209)
 * Ruby has been updated to 2.1.3 along with rubygems update to 2.4.2
 * Removed shelling out to erubis/ruby for syntax checks (>= 1.9 has been able
   to do this in the ruby vm itself for awhile now and we've dropped 1.8.7 which
