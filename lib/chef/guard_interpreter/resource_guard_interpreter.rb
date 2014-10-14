@@ -89,7 +89,7 @@ class Chef
         end
 
         if ! resource_class.ancestors.include?(Chef::Resource::Execute)
-          raise ArgumentError, "Specified guard interpreter class #{resource_class} must be a kind of Chef::Resource::Script resource"
+          raise ArgumentError, "Specified guard interpreter class #{resource_class} must be a kind of Chef::Resource::Execute resource"
         end
 
         empty_events = Chef::EventDispatch::Dispatcher.new
