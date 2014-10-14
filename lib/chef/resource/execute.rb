@@ -40,7 +40,7 @@ class Chef
         @user = nil
         @allowed_actions.push(:run)
         @umask = nil
-        @guard_interpreter = :execute
+        @default_guard_interpreter = :execute
       end
 
       def umask(arg=nil)
