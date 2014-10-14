@@ -1,4 +1,8 @@
-require 'chef/logging/event_log'
+[:INFINITE, :WAIT_FAILED, :FORMAT_MESSAGE_IGNORE_INSERTS, :ERROR_INSUFFICIENT_BUFFER].each do |c|
+  # These are redefined in 'win32/eventlog'
+  Windows::Constants.send(:remove_const, c)
+end
+require 'chef/logging/eventlog'
 require 'win32/eventlog'
 include Win32
 
