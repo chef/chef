@@ -24,7 +24,8 @@ CC = 'gcc'
 
 ensure_present [MC, RC, CC]
 
-task :default => [EVT_RESOURCE_OBJECT, EVT_SHARED_OBJECT, :register]
+task :build => [EVT_RESOURCE_OBJECT, EVT_SHARED_OBJECT]
+task :default => [:build, :register]
 
 file EVT_RC_FILE=> EVT_MC_FILE do
   sh "#{MC} #{EVT_MC_FILE}"
