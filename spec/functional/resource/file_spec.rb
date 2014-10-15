@@ -17,6 +17,7 @@
 #
 
 require 'spec_helper'
+require 'tmpdir'
 
 describe Chef::Resource::File do
   include_context Chef::Resource::File
@@ -30,6 +31,7 @@ describe Chef::Resource::File do
     run_context = Chef::RunContext.new(node, {}, events)
 
     use_path = if opts[:use_relative_path]
+      Dir.chdir(Dir.tmpdir)
       File.basename(path)
     else
       path
