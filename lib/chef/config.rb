@@ -31,6 +31,7 @@ class Chef
   class Config
 
     extend Mixlib::Config
+    extend Chef::Mixin::ShellOut
 
     PathHelper = Chef::Util::PathHelper
 
@@ -611,24 +612,25 @@ class Chef
         #
         # For example, on CentOS 6 with ENV['LANG'] = "en_US.UTF-8",
         # `locale -a`.split fails with ArgumentError invalid UTF-8 encoding.
-        output = `locale -a`
-        locales = output.encode(output.encoding, :invalid => :replace).split
+        locales = shell_out_with_systems_locale("locale -a").stdout.split
         case
         when locales.include?('C.UTF-8')
           'C.UTF-8'
-        when locales.include?('en_US.UTF-8') || locales.include?('en_US.utf8')
+        when locales.include?('en_US.UTF-8'), locales.include?('en_US.utf8')
           'en_US.UTF-8'
         when locales.include?('en.UTF-8')
           'en.UTF-8'
-        when guesses = locales.select { |l| l =~ /^en_.*UTF-?8$/i }
-          # Will match en_ZZ.UTF-8, en_ZZ.utf-8, en_ZZ.UTF8, en_ZZ.utf8
-          guessed_locale = guesses.first
-          # Transform into the form en_ZZ.UTF-8
-          guessed_locale.gsub(/UTF-?8$/i, "UTF-8")
-          guessed_locale
         else
-          Chef::Log.warn "Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support."
-          'C'
+          # Will match en_ZZ.UTF-8, en_ZZ.utf-8, en_ZZ.UTF8, en_ZZ.utf8
+          guesses = locales.select { |l| l =~ /^en_.*UTF-?8$/i }
+          unless guesses.empty?
+            guessed_locale = guesses.first
+            # Transform into the form en_ZZ.UTF-8
+            guessed_locale.gsub(/UTF-?8$/i, "UTF-8")
+          else
+            Chef::Log.warn "Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support."
+            'C'
+          end
         end
       rescue
         if Chef::Platform.windows?
