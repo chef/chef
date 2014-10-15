@@ -20,6 +20,7 @@ require 'chef/mixin/command'
 require 'chef/mixin/shell_out'
 require 'chef/provider/service/init'
 require 'chef/resource/service'
+require 'chef/util/file_edit'
 
 class Chef
   class Provider
@@ -27,59 +28,59 @@ class Chef
       class Openbsd < Chef::Provider::Service::Init
 
         include Chef::Mixin::ShellOut
+        
+        attr_reader :rcd_script_found
 
         def initialize(new_resource, run_context)
           super
-          @init_command = nil
+          @rc_conf = ::File.read('/etc/rc.conf')
+          @rc_conf_local = ::File.read('/etc/rc.conf')
           if ::File.exist?("/etc/rc.d/#{new_resource.service_name}")
             @init_command = "/etc/rc.d/#{new_resource.service_name}"
+            @rcd_script_found = true
+          else
+            @init_command = nil
+            @rcd_script_found = false
           end
         end
 
         def load_current_resource
-          @current_resource = Chef::Resource::Service.new(@new_resource.name)
-          @current_resource.service_name(@new_resource.service_name)
-          @rcd_script_found = true
+          @current_resource = Chef::Resource::Service.new(new_resource.name)
+          current_resource.service_name(new_resource.service_name)
 
-          if ::File.exists?("/etc/rc.d/#{current_resource.service_name}")
-            @init_command = "/etc/rc.d/#{current_resource.service_name}"
-          else
-            @rcd_script_found = false
-            return
-          end
-          Chef::Log.debug("#{@current_resource} found at #{@init_command}")
+          Chef::Log.debug("#{current_resource} found at #{init_command}")
+
           determine_current_status!
           determine_enabled_status!
-
-          @current_resource
+          current_resource
         end
 
         def define_resource_requirements
           shared_resource_requirements
+
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { @rcd_script_found }
-            a.failure_message Chef::Exceptions::Service, "#{@new_resource}: unable to locate the rc.d script"
+            a.assertion { init_command }
+            a.failure_message Chef::Exceptions::Service, "#{new_resource}: unable to locate the rc.d script"
           end
 
           requirements.assert(:all_actions) do |a|
             a.assertion { @enabled_state_found }
-            # for consistency with original behavior, this will not fail in non-whyrun mode;
+            # for consistentcy with original behavior, this will not fail in non-whyrun mode;
             # rather it will silently set enabled state=>false
             a.whyrun "Unable to determine enabled/disabled state, assuming this will be correct for an actual run.  Assuming disabled."
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { @rcd_script_found && builtin_service_enable_variable_name != nil }
-            a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{@init_command} and rcvar"
+            a.assertion { init_command && builtin_service_enable_variable_name != nil }
+            a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{init_command} and rcvar"
             # No recovery in whyrun mode - the init file is present but not correct.
           end
         end
-
         def start_service
           if @new_resource.start_command
             super
           else
-            shell_out_with_systems_locale!("#{@init_command} start")
+            shell_out_with_systems_locale!("#{init_command} start")
           end
         end
 
@@ -87,7 +88,7 @@ class Chef
           if @new_resource.stop_command
             super
           else
-            shell_out_with_systems_locale!("#{@init_command} stop")
+            shell_out_with_systems_locale!("#{init_command} stop")
           end
         end
 
@@ -95,7 +96,7 @@ class Chef
           if @new_resource.restart_command
             super
           elsif @new_resource.supports[:restart]
-            shell_out_with_systems_locale!("#{@init_command} restart")
+            shell_out_with_systems_locale!("#{init_command} restart")
           else
             stop_service
             sleep 1
@@ -103,17 +104,78 @@ class Chef
           end
         end
 
-        def enable_service()
-          set_service_enable(true)
+        def enable_service
+          if is_builtin
+            if is_enabled_by_default
+              if is_enabled
+                # do nothing
+              else
+                # remove line with NO
+                update_rcl! @rc_conf_local.sub(/^#{Regexp.escape(builtin_service_enable_variable_name)}=.*/, '')
+              end
+            else
+              if is_enabled
+                # do nothing
+              else
+                # add line with blank string, which means enable
+                update_rcl! @rc_conf_local + "\n" + "#{builtin_service_enable_variable_name}=\"\""
+              end
+            end
+          else
+            if is_enabled
+              # TODO: verify order of pkg_scripts, fix if needed, otherwise do nothing
+            else
+              # add to pkg_scripts, in the right order
+              # TODO: use afters, get these in the right order
+              old_services_list = @rc_conf_local.match(/^pkg_scripts="(.*)"/)
+              old_services_list = old_services_list ? old_services_list[1].split(' ') : []
+              new_services_list = old_services_list + [@new_resource.service_name]
+              if @rc_conf_local.match(/^pkg_scripts="(.*)"/)
+                new_rcl = @rc_conf_local.sub(/^pkg_scripts="(.*)"/, "pkg_scripts=\"#{new_services_list.join(' ')}\"")
+              else
+                new_rcl = @rc_conf_local + "\n" + "pkg_scripts=\"#{new_services_list.join(' ')}\""
+                new_rcl.strip!
+              end
+              update_rcl! new_rcl
+            end
+          end
         end
 
-        def disable_service()
-          set_service_enable(false)
+        def disable_service
+          if is_builtin
+            if is_enabled_by_default
+              if is_enabled
+                # add line to disable
+                update_rcl! @rc_conf_local + "\n" + "#{builtin_service_enable_variable_name}=\"NO\""
+              else
+                # do nothing
+              end
+            else
+              if is_enabled
+                # remove line to disable
+                update_rcl! @rc_conf_local.sub(/^#{Regexp.escape(builtin_service_enable_variable_name)}=.*/, '')
+              else
+                # do nothing
+              end
+            end
+          else
+            if is_enabled
+              # remove from pkg_scripts
+              old_list = @rc_conf_local.match(/^pkg_scripts="(.*)"/)
+              old_list = old_list ? old_list[1].split(' ') : []
+              new_list = old_list - [@new_resource.service_name]
+              update_rcl! @rc_conf_local.sub(/^pkg_scripts="(.*)"/, pkg_scripts="#{new_list.join(' ')}")
+            else
+              # do nothing
+            end
+          end
         end
 
         protected
 
         def determine_current_status!
+          # copied from Chef::Provider::Service::Simple with one small change
+          # ...the command 'status' is replaced with its OpenBSD equivalent: 'check'
           if !@new_resource.status_command && @new_resource.supports[:status]
             Chef::Log.debug("#{@new_resource} supports status, running")
             begin
@@ -136,78 +198,44 @@ class Chef
 
         private
 
-        # The variable name used in /etc/rc.conf.local for enabling this service
-        def builtin_service_enable_variable_name
-          if @rcd_script_found
-            ::File.open(@init_command) do |rcscript|
-              rcscript.each_line do |line|
-                if line =~ /^# \$OpenBSD: (\w+)[(.rc),]?/
-                  return $1 + "_flags"
-                end
-              end
-            end
-          end
-          # Fallback allows us to keep running in whyrun mode when
-          # the script does not exist.
-          @new_resource.service_name
+        def update_rcl!(value)
+          ::File.write('/etc/rc.conf.local', value)
+          @rc_conf_local = value
         end
 
-        def set_service_enable(enable)
-          var_name = builtin_service_enable_variable_name
-          if is_builtin
-            # a builtin service is enabled when either <service>_flags is
-            # set equal to something other than 'NO', can be blank or it can be
-            # a set of options that should be passed to the startup script
-            old_value = new_value = nil
-            if enable
-              if files['/etc/rc.conf.local'] && var_name
-                files['/etc/rc.conf.local'].split("\n").each do |line|
-                  if line =~ /^#{Regexp.escape(var_name)}=(.*)/
-                    old_value = $1
-                    break
-                  end
+        # The variable name used in /etc/rc.conf.local for enabling this service
+        def builtin_service_enable_variable_name
+          @bsevn ||= begin
+            if rcd_script_found
+              ::File.open(init_command) do |rcscript|
+                if m = rcscript.read.match(/^# \$OpenBSD: (\w+)[(.rc),]?/)
+                  return m[1] + "_flags"
                 end
-              end
-              if files['/etc/rc.conf'] && var_name
-                files['/etc/rc.conf'].split("\n").each do |line|
-                  if line =~ /^#{Regexp.escape(var_name)}=(.*)/
-                    old_value = $1
-                    break
-                  end
-                end
-              end
-              if old_value && old_value =~ /"?[Nn][Oo]"?/
-                new_value = ''
-              else
-                new_value = old_value
-                Chef::Log.debug("service is already enabled and has parameters, skipping")
               end
             end
-            # This is run immediately so the service can be started at any time
-            # after the :enable action, during this Chef run.
-            configurate(
-              setting: builtin_service_enable_variable_name,
-              value: new_value,
-              remove: !enable
-            )
-          else
-            configurate(
-              setting: 'pkg_scripts',
-              format: :space_delimited_list,
-              value: @new_resource.service_name.clone,
-              after: @new_resource.after ? @new_resource.after.clone : nil,
-              remove: !enable
-            )
+            # Fallback allows us to keep running in whyrun mode when
+            # the script does not exist.
+            @new_resource.service_name
           end
         end
 
         def is_builtin
           result = false
           var_name = builtin_service_enable_variable_name
-          if files['/etc/rc.conf'] && var_name
-            files['/etc/rc.conf'].split("\n").each do |line|
-              case line
-              when /^#{Regexp.escape(var_name)}=(.*)/
+          if @rc_conf && var_name
+            if @rc_conf.match(/^#{Regexp.escape(var_name)}=(.*)/)
+              result = true
+            end
+          end
+          result
+        end
+
+        def is_enabled_by_default
+          result = false
+          var_name = builtin_service_enable_variable_name
+          if @rc_conf && var_name
+            if m = @rc_conf.match(/^#{Regexp.escape(var_name)}=(.*)/)
+              if !(m[1] =~ /"?[Nn][Oo]"?/)
                 result = true
               end
             end
@@ -217,46 +245,27 @@ class Chef
 
         def determine_enabled_status!
           result = false # Default to disabled if the service doesn't currently exist at all
+          @enabled_state_found = false
           if is_builtin
             var_name = builtin_service_enable_variable_name
-            if files['/etc/rc.conf.local'] && var_name
-              files['/etc/rc.conf.local'].split("\n").each do |line|
-                case line
-                when /^#{Regexp.escape(var_name)}=(.*)/
-                  @enabled_state_found = true
-                  if $1 =~ /"?[Nn][Oo]"?/
-                    result = false
-                  else
-                    result = true
-                  end
-                  break
+            if @rc_conf_local && var_name
+              if m = @rc_conf_local.match(/^#{Regexp.escape(var_name)}=(.*)/)
+                @enabled_state_found = true
+                if !(m[1] =~ /"?[Nn][Oo]"?/) # e.g. looking for httpd_flags=NO
+                  result = true
                 end
               end
             end
-            if files['/etc/rc.conf'] && var_name && !@enabled_state_found
-              files['/etc/rc.conf'].split("\n").each do |line|
-                case line
-                when /^#{Regexp.escape(var_name)}=(.*)/
-                  @enabled_state_found = true
-                  if $1 =~ /"?[Nn][Oo]"?/
-                    result = false
-                  else
-                    result = true
-                  end
-                  break
-                end
-              end
+            if !@enabled_state_found
+              result = is_enabled_by_default
             end
           else
             var_name = @new_resource.service_name
-            if files['/etc/rc.conf'] && var_name
-              files['/etc/rc.conf'].split("\n").each do |line|
-                if line =~ /pkg_scripts="(.*)"/
-                  @enabled_state_found = true
-                  if $1.include?(var_name)
-                    result = true
-                  end
-                  break
+            if @rc_conf_local && var_name
+              if m = @rc_conf_local.match(/^pkg_scripts="(.*)"/)
+                @enabled_state_found = true
+                if m[1].include?(var_name) # e.g. looking for 'gdm' in pkg_scripts="gdm unbound"
+                  result = true
                 end
               end
             end
@@ -264,191 +273,24 @@ class Chef
 
           current_resource.enabled result
         end
+        alias :is_enabled :determine_enabled_status!
 
-        # this is used for sorting lists of dependencies in configurate
-        class TsortableHash < Hash
-          include TSort
-          alias tsort_each_node each_key
-          def tsort_each_child(node, &block)
-            fetch(node).each(&block)
-          end
-        end
+        # TODO: implement afters
+        #class TsortableHash < Hash
+          #include TSort
+          #alias tsort_each_node each_key
+          #def tsort_each_child(node, &block)
+            #fetch(node).each(&block)
+          #end
+        #end
 
-        def afters
-          @@afters ||= {}
-        end
+        #def afters
+          #@@afters ||= {}
+        #end
 
-        def afters=(new_value)
-          @@afters = new_value
-        end
-
-        def files
-          return @@files if defined? @@files
-          @@files = {}
-          ['/etc/rc.conf', '/etc/rc.conf.local'].each do |file|
-            if ::File.exists? file
-              @@files[file] = ::File.read(file)
-            end
-          end
-          @@files
-        end
-
-        def files=(new_value)
-          @@files = new_value
-        end
-
-        def configurate(options)
-          file = '/etc/rc.conf.local'
-
-          Chef::Log.debug("Configurate: options[:setting] #{options[:setting]}")
-          Chef::Log.debug("Configurate:   options[:value] #{options[:value]}")
-          Chef::Log.debug("Configurate:   options[:after] #{options[:after]}")
-          Chef::Log.debug("Configurate:  options[:remove] #{options[:remove]}")
-          Chef::Log.debug("Configurate:  options[:prefix] #{options[:prefix]}")
-
-          options[:comment]     ||= '#'
-          options[:equals]      ||= '='
-
-          # Store which values need to come 'after' which other values for a given
-          # file + setting. For example, on OpenBSD the '/etc/rc.conf.local' file
-          # has a setting called 'pkg_scripts' which specifies the order that
-          # (addon) services should start up. In some cases, you need a certain
-          # service to start only *after* some service it depends on has started.
-          afters["#{file}##{options[:setting]}"] = TsortableHash.new if !afters["#{file}##{options[:setting]}"]
-          Chef::Log.debug "AFTERS: #{afters}"
-          if options[:after]
-            if !afters["#{file}##{options[:setting]}"][options[:after]]
-              raise KeyError, 'Cannot configurate a value before the value it comes after'
-            end
-            afters["#{file}##{options[:setting]}"][options[:value]] = [options[:after]]
-          else
-            afters["#{file}##{options[:setting]}"][options[:value]] = []
-          end
-
-          old_contents = ''
-          new_contents = ''
-          found = false
-
-          old_contents = files[file]
-          if old_contents
-            old_contents.each_line do |old_line|
-              new_line = ''
-              if options[:setting]
-                m = old_line.match(Regexp.new("(.*?)#{(options[:prefix] + '(\s*)') if options[:prefix]}#{options[:setting]}(\s*)#{options[:equals]}(\s*)(.*)"))
-                if m
-                  next if found # delete duplicate lines defining this same setting
-
-                  line_prefix       = m[1]
-                  if options[:prefix]
-                    modifier        = 1
-                    s_prefix_suffix = m[2]
-                  else
-                    modifier        = 0
-                  end
-                  equals_prefix     = m[2+modifier]
-                  equals_suffix     = m[3+modifier]
-                  line_value        = m[4+modifier].split(options[:comment])[0].strip
-                  line_suffix       = m[4+modifier][line_value.size..-1]
-                  # puts "ov: #{line_value}"
-                  # puts "ss: #{line_suffix}"
-
-                  # If the prefix includes anything besides a options[:comment] symbol or a
-                  # specified prefix, or the suffix doesn't start with a options[:comment]
-                  # symbol, the line is probably documentation
-                  if (
-                      line_prefix &&
-                      !line_prefix.strip.empty? &&
-                      options[:comment] && line_prefix.strip != options[:comment] &&
-                      options[:prefix] && line_prefix.strip != options[:prefix]
-                     ) ||
-                     (
-                      line_suffix &&
-                      !line_suffix.strip.empty? &&
-                      options[:comment] && line_suffix.strip[0] != options[:comment]
-                     )
-                    new_contents << old_line
-                    next
-                  end
-
-                  # Return the setting's current value if no new value was passed
-                  return line_value if !options[:value] && !options[:remove]
-                  found = true
-
-                  case options[:format]
-                  when :space_delimited_list
-                    list_items = line_value.gsub('"', '').split(' ').map{|a| a.strip}
-                    list_items << options[:value]
-                    list_items = list_items.uniq
-                    if options[:remove]
-                      list_items.delete_if {|a| a == options[:value]}
-                    end
-                    if afters["#{file}##{options[:setting]}"]
-                      list_items.each do |item|
-                        afters["#{file}##{options[:setting]}"][item] = [] if !afters["#{file}##{options[:setting]}"][item]
-                      end
-                      #Chef::Log.debug "afters: #{@@afters}"
-                      new_value = "\"#{afters["#{file}##{options[:setting]}"].tsort.join(' ')}\""
-                    else
-                      #Chef::Log.debug "no afters found"
-                      new_value = "\"#{list_items.sort.join(' ')}\""
-                    end
-                  else
-                    if options[:value] == ''
-                      new_value = '""' # print an empty string instead of leaving the value blank
-                    else
-                      new_value = "#{options[:value]}"
-                    end
-                  end
-                  new_line  = "#{line_prefix.sub(options[:comment], '')}"
-                  new_line += "#{options[:prefix]}#{s_prefix_suffix}" if options[:prefix]
-                  new_line += "#{options[:setting]}#{equals_prefix}#{options[:equals]}#{equals_suffix}#{new_value}#{line_suffix}\n"
-                else
-                  new_line = old_line
-                end
-              else
-                if old_line.gsub(/\s{2,}/, ' ').include?(options[:value].gsub(/\s{2,}/, ' '))
-                  next if found
-                  found = true
-                end
-                new_line = old_line
-              end
-              new_contents << new_line unless found && options[:remove]
-      #        if old_line != new_line
-      #          puts "old: #{old_line}"
-      #          puts "new: #{new_line}"
-      #        end
-            end
-          end
-
-          if !found && !options[:remove]
-            if options[:setting]
-              case options[:format]
-              when :space_delimited_list
-                new_value = "\"#{options[:value]}\""
-              else
-                if options[:value] == ''
-                  new_value = '""' # print an empty string instead of leaving the value blank
-                else
-                  new_value = "#{options[:value]}"
-                end
-              end
-              new_line = "#{options[:prefix] + ' ' if options[:prefix]}#{options[:setting]}#{options[:equals]}#{new_value}\n"
-            else
-              new_line = "#{options[:value]}\n"
-            end
-            # puts "new: #{new_line}"
-            new_contents << "\n" if old_contents && !old_contents.empty? && old_contents[-1] != "\n"
-            new_contents << new_line
-          end
-
-          new_contents = new_contents.gsub(/\n{2,}/, "\n\n") # remove extra lines
-          #Chef::Log.debug 'new_contents:'
-
-          if old_contents != new_contents
-            files[file] = new_contents
-            ::File.write('/etc/rc.conf.local', new_contents)
-          end
-        end
+        #def afters=(new_value)
+          #@@afters = new_value
+        #end
 
       end
     end

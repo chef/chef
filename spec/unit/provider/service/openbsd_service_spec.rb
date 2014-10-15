@@ -24,8 +24,9 @@ class Chef::Provider::Service::Openbsd
   public :builtin_service_enable_variable_name
   public :determine_enabled_status!
   public :determine_current_status!
-  public :files=
-  public :afters=
+  #public :afters=
+  public :is_enabled
+  attr_accessor :rc_conf, :rc_conf_local
 end
 
 describe Chef::Provider::Service::Openbsd do
@@ -222,10 +223,8 @@ PS_SAMPLE
 
     context "when the service is builtin" do
       before do
-        provider.files = {
-          '/etc/rc.conf' => "#{provider.builtin_service_enable_variable_name}=NO",
-          '/etc/rc.conf.local' => lines.join("\n")
-        }
+        provider.rc_conf = "#{provider.builtin_service_enable_variable_name}=NO"
+        provider.rc_conf_local = lines.join("\n")
       end
 
       %w{YES Yes yes yEs YeS}.each do |setting|
@@ -415,7 +414,7 @@ PS_SAMPLE
     context "when the init script is not found" do
       before do
         provider.init_command = nil
-        allow(provider).to receive(:service_enable_variable_name).and_return("#{new_resource.service_name}_enable")
+        allow(provider).to receive(:builtin_service_enable_variable_name).and_return("#{new_resource.service_name}_enable")
       end
 
       [ "start", "reload", "restart", "enable" ].each do |action|
@@ -437,8 +436,7 @@ PS_SAMPLE
 
     context "when the init script is found, but the service_enable_variable_name is nil" do
       before do
-        provider.init_command = nil
-        allow(provider).to receive(:service_enable_variable_name).and_return(nil)
+        allow(provider).to receive(:builtin_service_enable_variable_name).and_return(nil)
       end
 
       [ "start", "reload", "restart", "enable" ].each do |action|
@@ -459,62 +457,170 @@ PS_SAMPLE
     end
   end
 
+
+
+
+
   describe Chef::Provider::Service::Openbsd, "enable_service" do
     before do
       provider.current_resource = current_resource
-      provider.afters = {}
     end
-
-    it "should enable the service if it is not enabled" do
-      expect(provider).to receive(:is_builtin).and_return(true)
-      provider.files = {'/etc/rc.conf' => "#{provider.builtin_service_enable_variable_name}_flags=NO\n"}
-      expect(::File).to receive(:write).with('/etc/rc.conf.local', "#{provider.builtin_service_enable_variable_name}=\n")
-      provider.enable_service
+    context "is builtin and disabled by default" do
+      before do
+        provider.rc_conf = "#{provider.builtin_service_enable_variable_name}=NO"
+      end
+      context "is enabled" do
+        before do
+          provider.rc_conf_local = "#{provider.builtin_service_enable_variable_name}=\"\""
+        end
+        it "should not change rc.conf.local since it is already enabled" do
+          expect(::File).not_to receive(:write)
+          provider.enable_service
+        end
+      end
+      context "is disabled" do
+        before do
+          provider.rc_conf_local = ''
+        end
+        it "should enable the service by adding a line to rc.conf.local" do
+          expect(::File).to receive(:write).with('/etc/rc.conf.local', include("#{provider.builtin_service_enable_variable_name}=\"\""))
+          expect(provider.is_enabled).to be false
+          provider.enable_service
+          expect(provider.is_enabled).to be true
+        end
+      end
     end
-
-    it "should not partial match an already enabled service" do
-      provider.files = {'/etc/rc.conf.local' => "pkg_scripts=\"#{new_resource.service_name}_thing\"\n"}
-      expect(::File).to receive(:write).with('/etc/rc.conf.local', "pkg_scripts=\"#{new_resource.service_name} #{new_resource.service_name}_thing\"\n")
-      provider.enable_service
+    context "is builtin and enabled by default" do
+      before do
+        provider.rc_conf = "#{provider.builtin_service_enable_variable_name}=\"\""
+      end
+      context "is enabled" do
+        before do
+          provider.rc_conf_local = ''
+        end
+        it "should not change rc.conf.local since it is already enabled" do
+          expect(::File).not_to receive(:write)
+          provider.enable_service
+        end
+      end
+      context "is disabled" do
+        before do
+          provider.rc_conf_local = "#{provider.builtin_service_enable_variable_name}=NO"
+        end
+        it "should enable the service by removing a line from rc.conf.local" do
+          expect(::File).to receive(:write).with('/etc/rc.conf.local', /^(?!#{provider.builtin_service_enable_variable_name})$/)
+          expect(provider.is_enabled).to be false
+          provider.enable_service
+          expect(provider.is_enabled).to be true
+        end
+      end
     end
-
-    it "should enable the service if it is not enabled and not already specified in the rc.conf file" do
-      provider.files = {}
-      expect(::File).to receive(:write).with('/etc/rc.conf.local', "pkg_scripts=\"#{new_resource.service_name}\"\n")
-      provider.enable_service
-    end
-
-    it "should not enable the service if it is already enabled" do
-      provider.files = {'/etc/rc.conf.local' => "pkg_scripts=\"#{new_resource.service_name}\"\n"}
-      expect(::File).not_to receive(:write)
-      provider.enable_service
+    context "is not builtin" do
+      before do
+        provider.rc_conf = ''
+      end
+      context "is enabled" do
+        before do
+          provider.rc_conf_local = "pkg_scripts=\"#{new_resource.service_name}\"\n"
+        end
+        it "should not change rc.conf.local since it is already enabled" do
+          expect(::File).not_to receive(:write)
+          provider.enable_service
+        end
+      end
+      context "is disabled" do
+        before do
+          provider.rc_conf_local = ''
+        end
+        it "should enable the service by adding it to the pkg_scripts list" do
+          expect(::File).to receive(:write).with('/etc/rc.conf.local', "pkg_scripts=\"#{new_resource.service_name}\"")
+          expect(provider.is_enabled).to be false
+          provider.enable_service
+          expect(provider.is_enabled).to be true
+        end
+      end
     end
   end
 
   describe Chef::Provider::Service::Openbsd, "disable_service" do
     before do
       provider.current_resource = current_resource
-      expect(provider).to receive(:is_builtin).and_return(true)
-      allow(::File).to receive(:exists?).with('/etc/rc.conf').and_return(true)
-      allow(::File).to receive(:exists?).with('/etc/rc.conf.local').and_return(true)
     end
-
-    it "should disable the service if it is not disabled" do
-      provider.files = {'/etc/rc.conf.local' => "#{provider.builtin_service_enable_variable_name}=\"YES\"\n"}
-      expect(::File).to receive(:write).with('/etc/rc.conf.local', '')
-      provider.disable_service()
+    context "is builtin and disabled by default" do
+      before do
+        provider.rc_conf = "#{provider.builtin_service_enable_variable_name}=NO"
+      end
+      context "is enabled" do
+        before do
+          provider.rc_conf_local = "#{provider.builtin_service_enable_variable_name}=\"\""
+        end
+        it "should disable the service by removing its line from rc.conf.local" do
+          expect(::File).to receive(:write).with('/etc/rc.conf.local', /^(?!#{provider.builtin_service_enable_variable_name})$/)
+          expect(provider.is_enabled).to be true
+          provider.disable_service
+          expect(provider.is_enabled).to be false
+        end
+      end
+      context "is disabled" do
+        before do
+          provider.rc_conf_local = ''
+        end
+        it "should not change rc.conf.local since it is already disabled" do
+          expect(::File).not_to receive(:write)
+          provider.disable_service
+        end
+      end
     end
-
-    it "should not disable an enabled service that partially matches" do
-      provider.files = {'/etc/rc.conf.local' => "#{provider.builtin_service_enable_variable_name}_thing=\"YES\""}
-      expect(::File).not_to receive(:write)
-      provider.disable_service()
+    context "is builtin and enabled by default" do
+      before do
+        provider.rc_conf = "#{provider.builtin_service_enable_variable_name}=\"\""
+      end
+      context "is enabled" do
+        before do
+          provider.rc_conf_local = ''
+        end
+        it "should disable the service by adding a line to rc.conf.local" do
+          expect(::File).to receive(:write).with('/etc/rc.conf.local', include("#{provider.builtin_service_enable_variable_name}=\"NO\""))
+          expect(provider.is_enabled).to be true
+          provider.disable_service
+          expect(provider.is_enabled).to be false
+        end
+      end
+      context "is disabled" do
+        before do
+          provider.rc_conf_local = "#{provider.builtin_service_enable_variable_name}=NO"
+        end
+        it "should not change rc.conf.local since it is already disabled" do
+          expect(::File).not_to receive(:write)
+          provider.disable_service
+        end
+      end
     end
-
-    it "should not disable the service if it is already disabled" do
-      provider.files = {'/etc/rc.conf.local' => ""}
-      expect(::File).not_to receive(:write)
-      provider.disable_service
+    context "is not builtin" do
+      before do
+        provider.rc_conf = ''
+      end
+      context "is enabled" do
+        before do
+          provider.rc_conf_local = "pkg_scripts=\"#{new_resource.service_name}\"\n"
+        end
+        it "should disable the service by removing it from the pkg_scripts list" do
+          expect(::File).to receive(:write).with('/etc/rc.conf.local', /^(?!#{new_resource.service_name})$/)
+          expect(provider.is_enabled).to be true
+          provider.disable_service
+          expect(provider.is_enabled).to be false
+        end
+      end
+      context "is disabled" do
+        before do
+          provider.rc_conf_local = ''
+        end
+        it "should not change rc.conf.local since it is already disabled" do
+          expect(::File).not_to receive(:write)
+          provider.disable_service
+        end
+      end
     end
   end
+
 end
