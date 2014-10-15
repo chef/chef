@@ -48,6 +48,8 @@ class Chef
       public
 
       WIN_VERSIONS = {
+        "Windows 10" => {:major => 6, :minor => 4, :callable => lambda{ |product_type, suite_mask| product_type == VER_NT_WORKSTATION }},
+        "Windows Server 10" => {:major => 6, :minor => 4, :callable => lambda {|product_type, suite_mask| product_type != VER_NT_WORKSTATION }},
         "Windows 8.1" => {:major => 6, :minor => 3, :callable => lambda{ |product_type, suite_mask| product_type == VER_NT_WORKSTATION }},
         "Windows Server 2012 R2" => {:major => 6, :minor => 3, :callable => lambda {|product_type, suite_mask| product_type != VER_NT_WORKSTATION }},
         "Windows 8" => {:major => 6, :minor => 2, :callable => lambda{ |product_type, suite_mask| product_type == VER_NT_WORKSTATION }},
