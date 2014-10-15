@@ -19,8 +19,10 @@
 require 'spec_helper'
 require 'securerandom'
 require 'chef/logging/windows_eventlog'
-require 'win32/eventlog'
-include Win32
+if Chef::Platform.windows?
+  require 'win32/eventlog'
+  include Win32
+end
 
 describe Chef::Logging::WindowsEventLogger, :windows_only do
   let(:run_id)       { SecureRandom.uuid }
