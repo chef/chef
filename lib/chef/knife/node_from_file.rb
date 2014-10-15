@@ -36,7 +36,7 @@ class Chef
 
       def run
         @name_args.each do |arg|
-          updated = loader.load_from('nodes', @name_args[0])
+          updated = loader.load_from('nodes', arg)
   
           updated.save
   
