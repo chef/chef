@@ -64,7 +64,7 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             a.assertion { @enabled_state_found }
-            # for consistentcy with original behavior, this will not fail in non-whyrun mode;
+            # for consistency with original behavior, this will not fail in non-whyrun mode;
             # rather it will silently set enabled state=>false
             a.whyrun "Unable to determine enabled/disabled state, assuming this will be correct for an actual run.  Assuming disabled."
           end
@@ -172,9 +172,9 @@ class Chef
 
         protected
 
+        # copied from Chef::Provider::Service::Simple with one small change
+        # ...the command 'status' is replaced with its OpenBSD equivalent: 'check'
         def determine_current_status!
-          # copied from Chef::Provider::Service::Simple with one small change
-          # ...the command 'status' is replaced with its OpenBSD equivalent: 'check'
           if !@new_resource.status_command && @new_resource.supports[:status]
             Chef::Log.debug("#{@new_resource} supports status, running")
             begin
