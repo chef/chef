@@ -2,13 +2,14 @@
   # These are redefined in 'win32/eventlog'
   Windows::Constants.send(:remove_const, c)
 end
+
 require 'chef/logging/eventlog'
 require 'win32/eventlog'
 include Win32
 
 class Chef
   module Logging
-    class WindowsEventLogger < Logging::EventLogger
+    class WindowsEventLogger < EventDispatch::Base
       # These must match those that are defined in the manifest file
       RUN_START_EVENT_ID = 10000
       RUN_STARTED_EVENT_ID = 10001
