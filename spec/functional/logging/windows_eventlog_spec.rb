@@ -1,5 +1,5 @@
 #
-# Author:: Adam Edwards (<adamed@getchef.com>)
+# Author:: Jay Mundrawala (<jdm@getchef.com>)
 #
 # Copyright:: 2014, Chef Software, Inc.
 #
