@@ -244,7 +244,7 @@ E
                   :skip_back    => "move back in the run list",
                   :skip_forward => "move forward in the run list"
       def chef_run
-        Shell.session.resource_list.iterator
+        Shell.session.resource_collection.iterator
       end
 
       desc "resets the current recipe"
@@ -547,7 +547,7 @@ E
       desc "list all the resources on the current recipe"
       def resources(*args)
         if args.empty?
-          pp run_context.resource_set.keys
+          pp run_context.resource_collection.keys
         else
           pp resources = original_resources(*args)
           resources

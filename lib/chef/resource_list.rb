@@ -21,84 +21,80 @@ require 'chef/resource_collection/stepable_iterator'
 require 'chef/resource_collection/resource_collection_serialization'
 
 class Chef
-  class ResourceList
-    include ResourceCollection::ResourceCollectionSerialization
-    include Enumerable
+  class ResourceCollection
+    class ResourceList
+      include ResourceCollection::ResourceCollectionSerialization
+      include Enumerable
 
-    attr_reader :iterator
+      attr_reader :iterator
 
-    def initialize
-      @resources = Array.new
-      @insert_after_idx = nil
-    end
-
-    def all_resources
-      @resources
-    end
-
-    def [](index)
-      @resources[index]
-    end
-
-    def []=(index, arg)
-      is_chef_resource(arg)
-      @resources[index] = arg
-    end
-
-    def <<(*args)
-      args.flatten.each do |a|
-        is_chef_resource(a)
-        @resources << a
+      def initialize
+        @resources = Array.new
+        @insert_after_idx = nil
       end
-      self
-    end
 
-    # 'push' is an alias method to <<
-    alias_method :push, :<<
-
-    def insert(resource)
-      if @insert_after_idx
-        # in the middle of executing a run, so any resources inserted now should
-        # be placed after the most recent addition done by the currently executing
-        # resource
-        insert_at(@insert_after_idx + 1, resource)
-        @insert_after_idx += 1
-      else
-        is_chef_resource(resource)
-        @resources << resource
+      # TODO the differences between these 2 insert methods is very confusing
+      def insert(resource)
+        if @insert_after_idx
+          # in the middle of executing a run, so any resources inserted now should
+          # be placed after the most recent addition done by the currently executing
+          # resource
+          insert_at(@insert_after_idx += 1, resource)
+        else
+          is_chef_resource!(resource)
+          @resources << resource
+        end
       end
-    end
 
-    def insert_at(insert_at_index, *resources)
-      resources.each do |resource|
-        is_chef_resource(resource)
+      # TODO this did not adjust @insert_after_idx in the old class - add test case and ask JohnK
+      def insert_at(index, *resources)
+        resources.each do |resource|
+          is_chef_resource!(resource)
+        end
+        @resources.insert(index, *resources)
       end
-      @resources.insert(insert_at_index, *resources)
-    end
 
-    def each
-      @resources.each do |resource|
-        yield resource
+      # @depreciated
+      def []=(index, resource)
+        @resources[index] = resource
       end
-    end
 
-    def execute_each_resource(&resource_exec_block)
-      @iterator = ResourceCollection::StepableIterator.for_collection(@resources)
-      @iterator.each_with_index do |resource, idx|
-        @insert_after_idx = idx
-        yield resource
+      def all_resources
+        @resources
       end
-    end
 
-    def each_index
-      @resources.each_index do |i|
-        yield i
+      def [](index)
+        @resources[index]
       end
-    end
 
-    def empty?
-      @resources.empty?
-    end
+      def each
+        @resources.each do |resource|
+          yield resource
+        end
+      end
 
+      # TODO I would like to rename this to something that illustrates it sets the @insert_after_idx variable, then alias this old name
+      # TODO or perhaps refactor it to have 2 pointers - 1 for the end of the list and 1 for resources we have processed
+      #   so far, and then move that logic up into the ResourceCollection class to simplify this class
+      def execute_each_resource(&resource_exec_block)
+        @iterator = ResourceCollection::StepableIterator.for_collection(@resources)
+        @iterator.each_with_index do |resource, idx|
+          @insert_after_idx = idx
+          yield resource
+        end
+      end
+
+      def each_index
+        @resources.each_index do |i|
+          yield i
+        end
+      end
+
+      def empty?
+        @resources.empty?
+      end
+
+    end
   end
 end
+

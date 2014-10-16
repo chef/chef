@@ -27,7 +27,6 @@ require 'chef/guard_interpreter/resource_guard_interpreter'
 require 'chef/resource/conditional'
 require 'chef/resource/conditional_action_not_nothing'
 require 'chef/resource_collection'
-require 'chef/resource_set'
 require 'chef/resource_platform_map'
 require 'chef/node'
 require 'chef/platform'
@@ -49,22 +48,22 @@ class Chef
 
       # If resource and/or notifying_resource is not a resource object, this will look them up in the resource collection
       # and fix the references from strings to actual Resource objects.
-      def resolve_resource_reference(resource_set)
+      def resolve_resource_reference(resource_collection)
         return resource if resource.kind_of?(Chef::Resource) && notifying_resource.kind_of?(Chef::Resource)
 
         if not(resource.kind_of?(Chef::Resource))
-          fix_resource_reference(resource_set)
+          fix_resource_reference(resource_collection)
         end
 
         if not(notifying_resource.kind_of?(Chef::Resource))
-          fix_notifier_reference(resource_set)
+          fix_notifier_reference(resource_collection)
         end
       end
 
       # This will look up the resource if it is not a Resource Object.  It will complain if it finds multiple
       # resources, can't find a resource, or gets invalid syntax.
-      def fix_resource_reference(resource_set)
-        matching_resource = resource_set.find(resource)
+      def fix_resource_reference(resource_collection)
+        matching_resource = resource_collection.find(resource)
         if Array(matching_resource).size > 1
           msg = "Notification #{self} from #{notifying_resource} was created with a reference to multiple resources, "\
           "but can only notify one resource. Notifying resource was defined on #{notifying_resource.source_line}"
@@ -92,8 +91,8 @@ F
 
       # This will look up the notifying_resource if it is not a Resource Object.  It will complain if it finds multiple
       # resources, can't find a resource, or gets invalid syntax.
-      def fix_notifier_reference(resource_set)
-        matching_notifier = resource_set.find(notifying_resource)
+      def fix_notifier_reference(resource_collection)
+        matching_notifier = resource_collection.find(notifying_resource)
         if Array(matching_notifier).size > 1
           msg = "Notification #{self} from #{notifying_resource} was created with a reference to multiple notifying "\
           "resources, but can only originate from one resource.  Destination resource was defined "\
@@ -300,10 +299,11 @@ F
 
     def load_prior_resource(resource_type, instance_name)
       begin
-        prior_resource = run_context.resource_set.lookup(resource_type, instance_name)
+        key = ::Chef::ResourceCollection::ResourceSet.create_key(resource_type, instance_name)
+        prior_resource = run_context.resource_collection.lookup(key)
         # if we get here, there is a prior resource (otherwise we'd have jumped
         # to the rescue clause).
-        Chef::Log.warn("Cloning resource attributes for #{::Chef::ResourceSet.create_key(resource_type, resource_name)} from prior resource (CHEF-3694)")
+        Chef::Log.warn("Cloning resource attributes for #{key} from prior resource (CHEF-3694)")
         Chef::Log.warn("Previous #{prior_resource}: #{prior_resource.source_line}") if prior_resource.source_line
         Chef::Log.warn("Current  #{self}: #{self.source_line}") if self.source_line
         prior_resource.instance_variables.each do |iv|
@@ -445,8 +445,8 @@ F
     # resolve_resource_reference on each in turn, causing them to
     # resolve lazy/forward references.
     def resolve_notification_references
-      run_context.immediate_notifications(self).each { |n| n.resolve_resource_reference(run_context.resource_set) }
-      run_context.delayed_notifications(self).each {|n| n.resolve_resource_reference(run_context.resource_set) }
+      run_context.immediate_notifications(self).each { |n| n.resolve_resource_reference(run_context.resource_collection) }
+      run_context.delayed_notifications(self).each {|n| n.resolve_resource_reference(run_context.resource_collection) }
     end
 
     def notifies_immediately(action, resource_spec)
@@ -466,7 +466,7 @@ F
     end
 
     def resources(*args)
-      run_context.resource_set.find(*args)
+      run_context.resource_collection.find(*args)
     end
 
     def subscribes(action, resources, timing=:delayed)
@@ -484,7 +484,7 @@ F
     end
 
     def validate_resource_spec!(resource_spec)
-      ::Chef::ResourceSet.validate_lookup_spec!(resource_spec)
+      run_context.resource_collection.validate_lookup_spec!(resource_spec)
     end
 
     def is(*args)

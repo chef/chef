@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 class Chef
+  # TODO move into subfolder until we promote these to top level classes
   class ResourceCollection
     module ResourceCollectionSerialization
       # Serialize this object as a hash
@@ -34,15 +35,21 @@ class Chef
         Chef::JSONCompat.to_json(to_hash, *a)
       end
 
-      def self.json_create(o)
-        collection = self.new()
-        o["instance_vars"].each do |k,v|
-          collection.instance_variable_set(k.to_sym, v)
-        end
-        collection
+      def self.included(base)
+        base.extend(ClassMethods)
       end
 
-      def is_chef_resource(arg)
+      module ClassMethods
+        def json_create(o)
+          collection = self.new()
+          o["instance_vars"].each do |k,v|
+            collection.instance_variable_set(k.to_sym, v)
+          end
+          collection
+        end
+      end
+
+      def is_chef_resource!(arg)
         unless arg.kind_of?(Chef::Resource)
           raise ArgumentError, "Cannot insert a #{arg.class} into a resource collection: must be a subclass of Chef::Resource"
         end

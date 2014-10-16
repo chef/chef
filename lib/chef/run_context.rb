@@ -50,14 +50,6 @@ class Chef
     # recipes, which is triggered by #load. (See also: CookbookCompiler)
     attr_accessor :resource_collection
 
-    def resource_set
-      resource_collection.resource_set
-    end
-
-    def resource_list
-      resource_collection.resource_list
-    end
-
     # A Hash containing the immediate notifications triggered by resources
     # during the converge phase of the chef run.
     attr_accessor :immediate_notification_collection

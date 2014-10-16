@@ -300,13 +300,13 @@ describe Chef::ResourceCollection do
 
   describe "provides access to the raw resources array" do
     it "returns the resources via the all_resources method" do
-      @rc.all_resources.should equal(@rc.instance_variable_get(:@resources))
+      @rc.all_resources.should equal(@rc.instance_variable_get(:@resource_list).instance_variable_get(:@resources))
     end
   end
 
   describe "provides access to stepable iterator" do
     it "returns the iterator object" do
-      @rc.instance_variable_set(:@iterator, :fooboar)
+      @rc.instance_variable_get(:@resource_list).instance_variable_set(:@iterator, :fooboar)
       @rc.iterator.should == :fooboar
     end
   end

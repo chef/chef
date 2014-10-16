@@ -375,8 +375,7 @@ class Chef
 
       def gem_resource_collection_runner
         gems_collection = Chef::ResourceCollection.new
-        # We don't need to populated the resource_set because converge simply runs through each resource and applies them
-        gem_packages.each { |rbgem| gems_collection.resource_list << rbgem }
+        gem_packages.each { |rbgem| gems_collection.insert(rbgem) }
         gems_run_context = run_context.dup
         gems_run_context.resource_collection = gems_collection
         Chef::Runner.new(gems_run_context)

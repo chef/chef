@@ -39,6 +39,8 @@ class Chef
     CHEF_SANDBOX            = "Chef::Sandbox".freeze
     CHEF_RESOURCE           = "Chef::Resource".freeze
     CHEF_RESOURCECOLLECTION = "Chef::ResourceCollection".freeze
+    CHEF_RESOURCESET        = "Chef::ResourceCollection::ResourceSet".freeze
+    CHEF_RESOURCELIST       = "Chef::ResourceCollection::ResourceList".freeze
 
     class <<self
 
@@ -145,6 +147,10 @@ class Chef
           Chef::Resource
         when CHEF_RESOURCECOLLECTION
           Chef::ResourceCollection
+        when CHEF_RESOURCESET
+          Chef::ResourceCollection::ResourceSet
+        when CHEF_RESOURCELIST
+          Chef::ResourceCollection::ResourceList
         when /^Chef::Resource/
           Chef::Resource.find_subclass_by_name(json_class)
         else
