@@ -345,6 +345,17 @@ describe Chef::Recipe do
         end
         recipe.resources(:zen_master => "lao tzu").something.should eql(false)
       end
+
+      it "should return the last statement in the definition as the retval" do
+        crow_define = Chef::ResourceDefinition.new
+        crow_define.define :crow, :peace => false, :something => true do
+          "the return val"
+        end
+        run_context.definitions[:crow] = crow_define
+        recipe.crow "mine" do
+          peace true
+        end.should eql("the return val")
+      end
     end
 
   end
