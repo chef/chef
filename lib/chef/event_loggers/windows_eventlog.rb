@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/logging/eventlog'
+require 'chef/event_loggers/base'
 require 'chef/platform/query_helpers'
 
 if Chef::Platform::windows?
@@ -30,8 +30,10 @@ if Chef::Platform::windows?
 end
 
 class Chef
-  module Logging
-    class WindowsEventLogger < EventDispatch::Base
+  module EventLoggers
+    class WindowsEventLogger < EventLoggers::Base
+      short_name(:win_evt)
+
       # These must match those that are defined in the manifest file
       RUN_START_EVENT_ID = 10000
       RUN_STARTED_EVENT_ID = 10001
@@ -43,6 +45,10 @@ class Chef
 
       # Since we must install the event logger, this is not really configurable
       SOURCE = 'Chef'
+
+      def self.available?
+        return Chef::Platform::windows?
+      end
 
       def initialize
         @eventlog = EventLog::open('Application')

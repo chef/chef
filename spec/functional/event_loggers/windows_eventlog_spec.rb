@@ -18,23 +18,27 @@
 
 require 'spec_helper'
 require 'securerandom'
-require 'chef/logging/windows_eventlog'
+require 'chef/event_loggers/windows_eventlog'
 if Chef::Platform.windows?
   require 'win32/eventlog'
   include Win32
 end
 
-describe Chef::Logging::WindowsEventLogger, :windows_only do
+describe Chef::EventLoggers::WindowsEventLogger, :windows_only do
   let(:run_id)       { SecureRandom.uuid }
   let(:version)      { SecureRandom.uuid }
   let(:elapsed_time) { SecureRandom.random_number(100) }
-  let(:logger)       { Chef::Logging::WindowsEventLogger.new }
+  let(:logger)       { Chef::EventLoggers::WindowsEventLogger.new }
   let(:flags)        { nil }
   let(:node)         { nil }
   let(:run_status)   { double('Run Status', {run_id: run_id, elapsed_time: elapsed_time }) }
   let(:event_log)    { EventLog.new("Application") }
   let!(:offset)      { event_log.read_last_event.record_number }
   let(:mock_exception) { double('Exception', {message: SecureRandom.uuid, backtrace:[SecureRandom.uuid, SecureRandom.uuid]})}
+
+  it 'is available' do
+    Chef::EventLoggers::WindowsEventLogger.available?.should be_true
+  end
 
   it 'writes run_start event with event_id 10000 and contains version' do
     logger.run_start(version)

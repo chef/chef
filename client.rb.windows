@@ -1,3 +1,0 @@
-require 'chef/logging/windows_eventlog'
-
-add_event_logger Chef::Logging::WindowsEventLogger.new

@@ -36,6 +36,8 @@ require 'chef/cookbook/file_vendor'
 require 'chef/cookbook/file_system_file_vendor'
 require 'chef/cookbook/remote_file_vendor'
 require 'chef/event_dispatch/dispatcher'
+require 'chef/event_loggers/base'
+require 'chef/event_loggers/windows_eventlog'
 require 'chef/formatters/base'
 require 'chef/formatters/doc'
 require 'chef/formatters/minimal'
@@ -151,7 +153,7 @@ class Chef
       @runner = nil
       @ohai = Ohai::System.new
 
-      event_handlers = configure_formatters
+      event_handlers = configure_formatters + configure_event_loggers
       event_handlers += Array(Chef::Config[:event_handlers])
 
       @events = EventDispatch::Dispatcher.new(*event_handlers)
@@ -188,6 +190,22 @@ class Chef
         [:doc]
       else
         [:null]
+      end
+    end
+
+    def configure_event_loggers
+      if Chef::Config.disable_event_logger
+        []
+      else
+        Chef::Config.event_loggers.map do |evt_logger|
+          case evt_logger
+          when Symbol
+            Chef::EventLoggers.new(evt_logger)
+          when Class
+            evt_logger.new
+          else
+          end
+        end
       end
     end
 
