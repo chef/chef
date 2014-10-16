@@ -33,7 +33,7 @@ class Chef
         def initialize(new_resource, run_context)
           super
           @rc_conf = ::File.read('/etc/rc.conf')
-          @rc_conf_local = ::File.read('/etc/rc.conf')
+          @rc_conf_local = ::File.read('/etc/rc.conf.local')
           if ::File.exist?("/etc/rc.d/#{new_resource.service_name}")
             @init_command = "/etc/rc.d/#{new_resource.service_name}"
             @rcd_script_found = true
