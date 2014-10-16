@@ -127,6 +127,7 @@
 
 ### Chef Contributions
 
+* Recipe definition now returns the retval of the definition
 * Add support for Windows 10 to version helper.
 * `dsc_script` resource should honor configuration parameters when `configuration_data_script` is not set (Issue #2209)
 * Ruby has been updated to 2.1.3 along with rubygems update to 2.4.2
