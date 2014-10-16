@@ -205,16 +205,17 @@ class Chef
         # The variable name used in /etc/rc.conf.local for enabling this service
         def builtin_service_enable_variable_name
           @bsevn ||= begin
+            result = nil
             if rcd_script_found
               ::File.open(init_command) do |rcscript|
                 if m = rcscript.read.match(/^# \$OpenBSD: (\w+)[(.rc),]?/)
-                  return m[1] + "_flags"
+                  result = m[1] + "_flags"
                 end
               end
             end
             # Fallback allows us to keep running in whyrun mode when
             # the script does not exist.
-            @new_resource.service_name
+            result || @new_resource.service_name
           end
         end
 
