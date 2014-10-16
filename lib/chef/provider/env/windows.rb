@@ -43,14 +43,16 @@ class Chef
           obj = env_obj(@new_resource.key_name)
           if obj
             obj.delete_
-            ENV.delete(@new_resource.key_name)
             broadcast_env_change
+          end
+          if ENV[@new_resource.key_name]
+            ENV.delete(@new_resource.key_name)
           end
         end
 
         def env_value(key_name)
           obj = env_obj(key_name)
-          return obj ? obj.variablevalue : nil
+          return obj ? obj.variablevalue : ENV[key_name]
         end
 
         def env_obj(key_name)
