@@ -76,11 +76,6 @@ shared_examples_for "an execute resource" do
     @resource.group.should eql(1)
   end
 
-  it "should accept an array for the execution path" do
-    @resource.path ["woot"]
-    @resource.path.should eql(["woot"])
-  end
-
   it "should accept an integer for the return code" do
     @resource.returns 1
     @resource.returns.should eql(1)
@@ -112,7 +107,6 @@ shared_examples_for "an execute resource" do
       @resource.cwd("/tmp/")
       @resource.environment({ :one => :two })
       @resource.group("legos")
-      @resource.path(["/var/local/"])
       @resource.returns(1)
       @resource.user("root")
     end
@@ -122,4 +116,3 @@ shared_examples_for "an execute resource" do
     end
   end
 end
-

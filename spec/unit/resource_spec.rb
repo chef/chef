@@ -349,7 +349,7 @@ describe Chef::Resource do
         :updated_by_last_action, :before, :supports,
         :noop, :ignore_failure, :name, :source_line,
         :action, :retries, :retry_delay, :elapsed_time,
-        :guard_interpreter, :sensitive ]
+        :default_guard_interpreter, :guard_interpreter, :sensitive ]
       (hash.keys - expected_keys).should == []
       (expected_keys - hash.keys).should == []
       hash[:name].should eql("funk")

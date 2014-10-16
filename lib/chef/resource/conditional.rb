@@ -59,8 +59,10 @@ class Chef
           @guard_interpreter = new_guard_interpreter(@parent_resource, @command, @command_opts, &@block)
           @block = nil
         when nil
-          # we should have a block if we get here
-          if @parent_resource.guard_interpreter != :default
+          # We should have a block if we get here
+          # Check to see if the user set the guard_interpreter on the parent resource. Note that
+          # this error will not be raised when using the default_guard_interpreter
+          if @parent_resource.guard_interpreter != @parent_resource.default_guard_interpreter
             msg = "#{@parent_resource.name} was given a guard_interpreter of #{@parent_resource.guard_interpreter}, "
             msg << "but not given a command as a string. guard_interpreter does not support blocks (because they just contain ruby)."
             raise ArgumentError, msg

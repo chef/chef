@@ -229,6 +229,8 @@ F
 
     attr_reader :elapsed_time
 
+    attr_reader :default_guard_interpreter
+
     # Each notify entry is a resource/action pair, modeled as an
     # Struct with a #resource and #action member
 
@@ -250,7 +252,13 @@ F
       @not_if = []
       @only_if = []
       @source_line = nil
-      @guard_interpreter = :default
+      # We would like to raise an error when the user gives us a guard
+      # interpreter and a ruby_block to the guard. In order to achieve this
+      # we need to understand when the user overrides the default guard
+      # interpreter. Therefore we store the default separately in a different
+      # attribute.
+      @guard_interpreter = nil
+      @default_guard_interpreter = :default
       @elapsed_time = 0
       @sensitive = false
     end
@@ -410,11 +418,15 @@ F
     end
 
     def guard_interpreter(arg=nil)
-      set_or_return(
-        :guard_interpreter,
-        arg,
-        :kind_of => Symbol
-      )
+      if arg.nil?
+        @guard_interpreter || @default_guard_interpreter
+      else
+        set_or_return(
+          :guard_interpreter,
+          arg,
+          :kind_of => Symbol
+        )
+      end
     end
 
     # Sets up a notification from this resource to the resource specified by +resource_spec+.
