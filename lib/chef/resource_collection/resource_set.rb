@@ -20,7 +20,6 @@ require 'chef/resource'
 require 'chef/resource_collection/resource_collection_serialization'
 
 class Chef
-  # TODO move into subfolder until we promote these to top level classes
   class ResourceCollection
     class ResourceSet
       include ResourceCollection::ResourceCollectionSerialization
@@ -93,7 +92,7 @@ class Chef
         flat_results.length == 1 ? flat_results[0] : flat_results
       end
 
-      # @depreciated
+      # @deprecated
       # resources is a poorly named, but we have to maintain it for back
       # compat.
       alias_method :resources, :find

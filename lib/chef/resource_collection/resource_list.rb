@@ -20,6 +20,8 @@ require 'chef/resource'
 require 'chef/resource_collection/stepable_iterator'
 require 'chef/resource_collection/resource_collection_serialization'
 
+# This class keeps the list of all known Resources in the order they are to be executed in.  It also keeps a pointer
+# to the most recently executed resource so we can add resources-to-execute after this point.
 class Chef
   class ResourceCollection
     class ResourceList
@@ -33,28 +35,41 @@ class Chef
         @insert_after_idx = nil
       end
 
-      # TODO the differences between these 2 insert methods is very confusing
+      # @param resource [Chef::Resource] The resource to insert
+      # If @insert_after_idx is nil, we are not currently executing a converge so the Resource is appended to the
+      # end of the list.  If @insert_after_idx is NOT nil, we ARE currently executing a converge so the resource
+      # is inserted into the middle of the list after the last resource that was converged.  If it is called multiple
+      # times (when an LWRP contains multiple resources) it keeps track of that.  See this example ResourceList:
+      # [File1, LWRP1, File2] # The iterator starts and points to File1.  It is executed and @insert_after_idx=0
+      # [File1, LWRP1, File2] # The iterator moves to LWRP1.  It is executed and @insert_after_idx=1
+      # [File1, LWRP1, Service1, File2] # The LWRP execution inserts Service1 and @insert_after_idx=2
+      # [File1, LWRP1, Service1, Service2, File2] # The LWRP inserts Service2 and @insert_after_idx=3.  The LWRP
+      #     finishes executing
+      # [File1, LWRP1, Service1, Service2, File2] # The iterator moves to Service1 since it is the next non-executed
+      #     resource.  The execute_each_resource call below resets @insert_after_idx=2
+      # If Service1 was another LWRP, it would insert its resources between Service1 and Service2.  The iterator keeps
+      # track of executed resources and @insert_after_idx keeps track of where the next resource to insert should be.
       def insert(resource)
+        is_chef_resource!(resource)
         if @insert_after_idx
-          # in the middle of executing a run, so any resources inserted now should
-          # be placed after the most recent addition done by the currently executing
-          # resource
-          insert_at(@insert_after_idx += 1, resource)
+          @resources.insert(@insert_after_idx += 1, resource)
         else
-          is_chef_resource!(resource)
           @resources << resource
         end
       end
 
-      # TODO this did not adjust @insert_after_idx in the old class - add test case and ask JohnK
+      # @param index [Integer] location in the array to insert the resources
+      # @param resources [Array of Chef::Resource] Resources to insert
+      # Locate the index indicated and insert all resources, pushing any remaining resources further down in the array.
       def insert_at(index, *resources)
         resources.each do |resource|
           is_chef_resource!(resource)
         end
         @resources.insert(index, *resources)
+        @insert_after_idx += resources.size unless @insert_after_idx.nil?
       end
 
-      # @depreciated
+      # @deprecated - can be removed when it is removed from resource_collection.rb
       def []=(index, resource)
         @resources[index] = resource
       end
@@ -73,8 +88,6 @@ class Chef
         end
       end
 
-      # TODO I would like to rename this to something that illustrates it sets the @insert_after_idx variable, then alias this old name
-      # TODO or perhaps refactor it to have 2 pointers - 1 for the end of the list and 1 for resources we have processed
       #   so far, and then move that logic up into the ResourceCollection class to simplify this class
       def execute_each_resource(&resource_exec_block)
         @iterator = ResourceCollection::StepableIterator.for_collection(@resources)

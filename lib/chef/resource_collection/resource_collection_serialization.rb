@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 class Chef
-  # TODO move into subfolder until we promote these to top level classes
   class ResourceCollection
     module ResourceCollectionSerialization
       # Serialize this object as a hash

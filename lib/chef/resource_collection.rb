@@ -20,6 +20,7 @@
 require 'chef/resource_collection/resource_set'
 require 'chef/resource_collection/resource_list'
 require 'chef/resource_collection/resource_collection_serialization'
+require 'chef/log'
 
 ##
 # ResourceCollection currently handles two tasks:
@@ -56,35 +57,33 @@ class Chef
 
     # @param insert_at_index [Integer] Location to insert resources
     # @param resources [Chef::Resource] Resources to insert
-    # @depreciated Callers should use the insert method above and loop through their resources as necessary
+    # @deprecated Callers should use the insert method above and loop through their resources as necessary
     def insert_at(insert_at_index, *resources)
+      Chef::Log.warn("`insert_at` is deprecated, use `insert` with the `at_location` parameter")
       @resource_list.insert_at(insert_at_index, *resources)
       resources.each do |resource|
         @resource_set.insert_as(resource)
       end
     end
 
-    # @depreciated
+    # @deprecated
     def []=(index, resource)
+      Chef::Log.warn("`[]=` is deprecated, use `insert` with the `at_location` parameter")
       @resource_list[index] = resource
       @resource_set.insert_as(resource)
     end
 
-    # @depreciated
+    # @deprecated
     def <<(*resources)
+      Chef::Log.warn("`<<` is deprecated, use `insert`")
       resources.flatten.each do |res|
         insert(res)
       end
       self
     end
 
-    # @depreciated
+    # @deprecated
     alias_method :push, :<<
-
-    # TODO when there were 2 resources with the same key in resource_set, how do we handle notifications since they get copied?
-    # Did the old class only keep the last seen reference?
-
-    # TODO do we need to implement a dup method?  Run_context was shallowly copying resource_collection before
 
     # Read-only methods are simple to proxy - doing that below
 
