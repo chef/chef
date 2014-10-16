@@ -1,3 +1,6 @@
+
+
+
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc.
@@ -31,7 +34,16 @@ class Chef
 
       def run
         node = Chef::Node.load(@name_args[0])
-        entries = @name_args[1].split(',')
+
+        if @name_args.size > 2
+          # Check for nested lists and create a single plain one
+          entries = @name_args[1..-1].map do |entry|
+            entry.split(',').map { |e| e.strip }
+          end.flatten
+        else
+          # Convert to array and remove the extra spaces
+          entries = @name_args[1].split(',').map { |e| e.strip }
+        end
 
         entries.each { |e| node.run_list.remove(e) }
 
@@ -45,4 +57,3 @@ class Chef
     end
   end
 end
-
