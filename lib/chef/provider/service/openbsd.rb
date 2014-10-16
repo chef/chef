@@ -104,25 +104,14 @@ class Chef
         end
 
         def enable_service
-          if is_builtin
-            if is_enabled_by_default
-              if is_enabled
-                # do nothing
-              else
-                # remove line with NO
+          if !is_enabled
+            if is_builtin
+              if is_enabled_by_default
                 update_rcl! @rc_conf_local.sub(/^#{Regexp.escape(builtin_service_enable_variable_name)}=.*/, '')
-              end
-            else
-              if is_enabled
-                # do nothing
               else
                 # add line with blank string, which means enable
                 update_rcl! @rc_conf_local + "\n" + "#{builtin_service_enable_variable_name}=\"\""
               end
-            end
-          else
-            if is_enabled
-              # TODO: verify order of pkg_scripts, fix if needed, otherwise do nothing
             else
               # add to pkg_scripts, in the right order
               # TODO: use afters, get these in the right order
@@ -138,34 +127,26 @@ class Chef
               update_rcl! new_rcl
             end
           end
+        else
+          # TODO: verify order of pkg_scripts, fix if needed, otherwise do nothing
         end
 
         def disable_service
-          if is_builtin
-            if is_enabled_by_default
-              if is_enabled
+          if is_enabled
+            if is_builtin
+              if is_enabled_by_default
                 # add line to disable
                 update_rcl! @rc_conf_local + "\n" + "#{builtin_service_enable_variable_name}=\"NO\""
               else
-                # do nothing
-              end
-            else
-              if is_enabled
                 # remove line to disable
                 update_rcl! @rc_conf_local.sub(/^#{Regexp.escape(builtin_service_enable_variable_name)}=.*/, '')
-              else
-                # do nothing
               end
-            end
-          else
-            if is_enabled
+            else
               # remove from pkg_scripts
               old_list = @rc_conf_local.match(/^pkg_scripts="(.*)"/)
               old_list = old_list ? old_list[1].split(' ') : []
               new_list = old_list - [@new_resource.service_name]
               update_rcl! @rc_conf_local.sub(/^pkg_scripts="(.*)"/, pkg_scripts="#{new_list.join(' ')}")
-            else
-              # do nothing
             end
           end
         end
