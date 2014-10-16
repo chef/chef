@@ -417,6 +417,95 @@ describe Chef::Config do
           end
         end
       end
+
+      describe "Chef::Config[:internal_locale]" do
+        let(:shell_out) do
+          double("Chef::Mixin::ShellOut double", :exitstatus => 0, :stdout => locales)
+        end
+
+        let(:locales) { locale_array.join("\n") }
+
+        before do
+          allow(Chef::Config).to receive(:shell_out_with_systems_locale).with("locale -a").and_return(shell_out)
+        end
+
+        shared_examples_for "a suitable locale" do
+          it "returns an English UTF-8 locale" do
+            expect(Chef::Log).to_not receive(:warn).with(/Please install an English UTF-8 locale for Chef to use/)
+            expect(Chef::Log).to_not receive(:debug).with(/Defaulting to locale en_US.UTF-8 on Windows/)
+            expect(Chef::Log).to_not receive(:debug).with(/No usable locale -a command found/)
+            expect(Chef::Config[:internal_locale]).to eq expected_locale
+          end
+        end
+
+        context "when the result includes 'C.UTF-8'" do
+          include_examples "a suitable locale" do
+            let(:locale_array) { [expected_locale, "en_US.UTF-8"] }
+            let(:expected_locale) { "C.UTF-8" }
+          end
+        end
+
+        context "when the result includes 'en_US.UTF-8'" do
+          include_examples "a suitable locale" do
+            let(:locale_array) { ["en_CA.UTF-8", expected_locale, "en_NZ.UTF-8"] }
+            let(:expected_locale) { "en_US.UTF-8" }
+          end
+        end
+
+        context "when the result includes 'en_US.utf8'" do
+          include_examples "a suitable locale" do
+            let(:locale_array) { ["en_CA.utf8", "en_US.utf8", "en_NZ.utf8"] }
+            let(:expected_locale) { "en_US.UTF-8" }
+          end
+        end
+
+        context "when the result includes 'en.UTF-8'" do
+          include_examples "a suitable locale" do
+            let(:locale_array) { ["en.ISO8859-1", expected_locale] }
+            let(:expected_locale) { "en.UTF-8" }
+          end
+        end
+
+        context "when the result includes 'en_*.UTF-8'" do
+          include_examples "a suitable locale" do
+            let(:locale_array) { [expected_locale, "en_CA.UTF-8", "en_GB.UTF-8"] }
+            let(:expected_locale) { "en_AU.UTF-8" }
+          end
+        end
+
+        context "when the result includes 'en_*.utf8'" do
+          include_examples "a suitable locale" do
+            let(:locale_array) { ["en_AU.utf8", "en_CA.utf8", "en_GB.utf8"] }
+            let(:expected_locale) { "en_AU.UTF-8" }
+          end
+        end
+
+        context "when the result does not include 'en_*.UTF-8'" do
+          let(:locale_array) { ["af_ZA", "af_ZA.ISO8859-1", "af_ZA.ISO8859-15", "af_ZA.UTF-8"] }
+
+          it "should fall back to C locale" do
+            expect(Chef::Log).to receive(:warn).with("Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support.")
+            expect(Chef::Config[:internal_locale]).to eq 'C'
+          end
+        end
+
+        context "on error" do
+          let(:locale_array) { [] }
+
+          before do
+            allow(Chef::Config).to receive(:shell_out_with_systems_locale).and_raise("THIS IS AN ERROR")
+          end
+
+          it "should default to 'en_US.UTF-8'" do
+            if is_windows
+              expect(Chef::Log).to receive(:debug).with("Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else.")
+            else
+              expect(Chef::Log).to receive(:debug).with("No usable locale -a command found, assuming you have en_US.UTF-8 installed.")
+            end
+            expect(Chef::Config[:internal_locale]).to eq "en_US.UTF-8"
+          end
+        end
+      end
     end
   end
 end
