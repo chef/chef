@@ -201,6 +201,8 @@
 * Restore the deprecation logic of #valid_actions in LWRPs until Chef 13.
 * Now that we don't allow unforked chef-client interval runs, remove the reloading of previously defined LWRPs.
 * Use shell_out to determine Chef::Config[:internal_locale], fix CentOS locale detection bug.
+* `only_if` and `not_if` attributes of `execute` resource now inherits the parent resource's
+  attributes when set to a `String`.
 
 ## Last Release: 11.14.2
 
