@@ -434,6 +434,14 @@ describe Chef::Recipe do
   end
 
   describe "tags" do
+    describe "with the default node object" do
+      let(:node) { Chef::Node.new }
+
+      it "should return false for any tags" do
+        recipe.tagged?("foo").should be(false)
+      end
+    end
+
     it "should set tags via tag" do
       recipe.tag "foo"
       node[:tags].should include("foo")

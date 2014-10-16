@@ -96,6 +96,8 @@ class Chef
     # true<TrueClass>:: If all the parameters are present
     # false<FalseClass>:: If any of the parameters are missing
     def tagged?(*tags)
+      return false if run_context.node[:tags].nil?
+
       tags.each do |tag|
         return false unless run_context.node[:tags].include?(tag)
       end
