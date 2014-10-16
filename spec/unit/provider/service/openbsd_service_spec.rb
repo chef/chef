@@ -225,6 +225,7 @@ PS_SAMPLE
 
     context "when the service is builtin" do
       before do
+        expect(::File).to receive(:open).with("/etc/rc.d/#{new_resource.service_name}")
         provider.rc_conf = "#{provider.builtin_service_enable_variable_name}=NO"
         provider.rc_conf_local = lines.join("\n")
       end
@@ -333,7 +334,8 @@ PS_SAMPLE
       expect(provider).to receive(:determine_current_status!)
       current_resource.running(false)
       allow(provider).to receive(:service_enable_variable_name).and_return "#{new_resource.service_name}_enable"
-    end
+      expect(::File).to receive(:open).with("/etc/rc.d/#{new_resource.service_name}")
+     end
 
     it "should create a current resource with the name of the new resource" do
       expect(Chef::Resource::Service).to receive(:new).and_return(current_resource)
