@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource_set'
-require 'chef/resource_list'
+require 'chef/resource_collection/resource_set'
+require 'chef/resource_collection/resource_list'
 require 'chef/resource_collection/resource_collection_serialization'
 
 ##

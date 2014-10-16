@@ -93,6 +93,7 @@ class Chef
         flat_results.length == 1 ? flat_results[0] : flat_results
       end
 
+      # @depreciated
       # resources is a poorly named, but we have to maintain it for back
       # compat.
       alias_method :resources, :find
