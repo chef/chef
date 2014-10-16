@@ -61,6 +61,7 @@ describe Chef::Client do
   let(:client_opts) { {} }
 
   let(:client) do
+    Chef::Config[:event_loggers] = []
     Chef::Client.new(json_attribs, client_opts).tap do |c|
       c.node = node
     end
@@ -384,7 +385,6 @@ describe Chef::Client do
 
       @events = double("Chef::EventDispatch::Dispatcher").as_null_object
       Chef::EventDispatch::Dispatcher.stub(:new).and_return(@events)
-
       # @events is created on Chef::Client.new, so we need to recreate it after mocking
       client = Chef::Client.new
       client.stub(:load_node).and_raise(Exception)
