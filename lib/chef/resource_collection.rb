@@ -44,7 +44,10 @@ class Chef
     # If you know the at_location but not the resource_type or instance_name, pass them in as nil
     # This method is meant to be the 1 insert method necessary in the future.  It should support all known use cases
     #   for writing into the ResourceCollection.
-    def insert(resource, resource_type:nil, instance_name:nil, at_location:nil)
+    def insert(resource, opts={})
+      resource_type ||= opts[:resource_type] # Would rather use Ruby 2.x syntax, but oh well
+      instance_name ||= opts[:instance_name]
+      at_location ||= opts[:at_location]
       if at_location
         @resource_list.insert_at(at_location, resource)
       else
@@ -89,13 +92,13 @@ class Chef
 
     # Read-only methods are simple to delegate - doing that below
 
-    RESOURCE_LIST_METHODS = Enumerable.instance_methods +
+    resource_list_methods = Enumerable.instance_methods +
         [:iterator, :all_resources, :[], :each, :execute_each_resource, :each_index, :empty?] -
         [:find] # find needs to run on the set
-    RESOURCE_SET_METHODS = [:lookup, :find, :resources, :keys, :validate_lookup_spec!]
+    resource_set_methods = [:lookup, :find, :resources, :keys, :validate_lookup_spec!]
 
-    def_delegators :@resource_list, *RESOURCE_LIST_METHODS
-    def_delegators :@resource_set, *RESOURCE_SET_METHODS
+    def_delegators :@resource_list, *resource_list_methods
+    def_delegators :@resource_set, *resource_set_methods
 
   end
 end
