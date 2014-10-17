@@ -209,11 +209,11 @@ class Chef
       def confirmation_instructions(default_choice)
         case default_choice
         when true
-          '? (Y/n)'
+          '? (Y/n) '
         when false
-          '? (y/N)'
+          '? (y/N) '
         else
-          '? (Y/N)'
+          '? (Y/N) '
         end
       end
 
