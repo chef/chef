@@ -198,6 +198,22 @@ describe Chef::Provider::Env do
       @provider.delete_element.should eql(true)
       @new_resource.should be_updated
     end
+
+    context "when new_resource's value contains the delimiter"  do
+      it "should return true if the all elements are deleted" do
+        @new_resource.value("C:/foo/bin;C:/bar/bin")
+        @provider.should_receive(:create_env)
+        @provider.delete_element.should eql(true)
+        @new_resource.should be_updated
+      end
+
+      it "should return true if any of the elements are deleted" do
+        @new_resource.value("C:/foo/bin;C:/baz/bin")
+        @provider.should_receive(:create_env)
+        @provider.delete_element.should eql(true)
+        @new_resource.should be_updated
+      end
+    end
   end
 
   describe "compare_value" do
@@ -228,6 +244,22 @@ describe Chef::Provider::Env do
       @current_resource.value("C:/biz;C:/foo/bin;C:/baz")
       @provider.compare_value.should be_true
     end
+
+    context "when new_resource's value contains the delimiter"  do
+      it "should return false if all the current values are contained" do
+        @new_resource.value("C:/biz;C:/baz")
+        @new_resource.delim(";")
+        @current_resource.value("C:/biz;C:/foo/bin;C:/baz")
+        @provider.compare_value.should be_false
+      end
+
+      it "should return true if any of the new values are not contained" do
+        @new_resource.value("C:/biz;C:/baz;C:/bin")
+        @new_resource.delim(";")
+        @current_resource.value("C:/biz;C:/foo/bin;C:/baz")
+        @provider.compare_value.should be_true
+      end
+    end
   end
 
   describe "modify_env" do
@@ -246,6 +278,14 @@ describe Chef::Provider::Env do
       @new_resource.value(passed_value)
       @provider.modify_env
       passed_value.should == new_value
+    end
+
+    it "should only add values not already contained when a delimiter is provided" do
+      @new_resource.value("a;c;d")
+      @new_resource.delim(";")
+      @current_resource.value("a;b;c")
+      @provider.modify_env
+      @new_resource.value.should eq("d;a;b;c")
     end
   end
 end
