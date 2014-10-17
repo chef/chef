@@ -40,8 +40,10 @@ class Chef
         @resources_by_key.keys
       end
 
-      def insert_as(resource, resource_type=resource.resource_name, instance_name=resource.name)
+      def insert_as(resource, resource_type=nil, instance_name=nil)
         is_chef_resource!(resource)
+        resource_type ||= resource.resource_name
+        instance_name ||= resource.name
         key = ResourceSet.create_key(resource_type, instance_name)
         @resources_by_key[key] = resource
       end

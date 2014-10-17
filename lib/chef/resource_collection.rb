@@ -21,6 +21,7 @@ require 'chef/resource_collection/resource_set'
 require 'chef/resource_collection/resource_list'
 require 'chef/resource_collection/resource_collection_serialization'
 require 'chef/log'
+require 'forwardable'
 
 ##
 # ResourceCollection currently handles two tasks:
@@ -29,6 +30,7 @@ require 'chef/log'
 class Chef
   class ResourceCollection
     include ResourceCollectionSerialization
+    extend Forwardable
 
     def initialize
       @resource_set = ResourceSet.new
@@ -42,13 +44,13 @@ class Chef
     # If you know the at_location but not the resource_type or instance_name, pass them in as nil
     # This method is meant to be the 1 insert method necessary in the future.  It should support all known use cases
     #   for writing into the ResourceCollection.
-    def insert(resource, resource_type=nil, instance_name=nil, at_location=nil)
+    def insert(resource, resource_type:nil, instance_name:nil, at_location:nil)
       if at_location
         @resource_list.insert_at(at_location, resource)
       else
         @resource_list.insert(resource)
       end
-      unless resource_type.nil? || instance_name.nil?
+      if !(resource_type.nil? && instance_name.nil?)
         @resource_set.insert_as(resource, resource_type, instance_name)
       else
         @resource_set.insert_as(resource)
@@ -85,28 +87,15 @@ class Chef
     # @deprecated
     alias_method :push, :<<
 
-    # Read-only methods are simple to proxy - doing that below
+    # Read-only methods are simple to delegate - doing that below
 
     RESOURCE_LIST_METHODS = Enumerable.instance_methods +
         [:iterator, :all_resources, :[], :each, :execute_each_resource, :each_index, :empty?] -
         [:find] # find needs to run on the set
     RESOURCE_SET_METHODS = [:lookup, :find, :resources, :keys, :validate_lookup_spec!]
 
-    def method_missing(name, *args, &block)
-      if RESOURCE_LIST_METHODS.include?(name)
-        proxy = @resource_list
-      elsif RESOURCE_SET_METHODS.include?(name)
-        proxy = @resource_set
-      else
-        raise NoMethodError.new("ResourceCollection does not proxy `#{name}`", name, args)
-      end
-      if block
-        proxy.send(name, *args, &block)
-      else
-        proxy.send(name, *args)
-      end
-
-    end
+    def_delegators :@resource_list, *RESOURCE_LIST_METHODS
+    def_delegators :@resource_set, *RESOURCE_SET_METHODS
 
   end
 end

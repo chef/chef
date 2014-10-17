@@ -26,6 +26,10 @@ describe Chef::ResourceCollection do
     @resource = Chef::Resource::ZenMaster.new("makoto")
   end
 
+  it "should throw an error when calling a non-delegated method" do
+    expect { @rc.not_a_method }.to raise_error(NoMethodError)
+  end
+
   describe "initialize" do
     it "should return a Chef::ResourceCollection" do
       @rc.should be_kind_of(Chef::ResourceCollection)
@@ -35,7 +39,7 @@ describe Chef::ResourceCollection do
   describe "[]" do
     it "should accept Chef::Resources through [index]" do
       lambda { @rc[0] = @resource }.should_not raise_error
-      lambda { @rc[0] = "string" }.should raise_error
+      lambda { @rc[0] = "string" }.should raise_error(ArgumentError)
     end
 
     it "should allow you to fetch Chef::Resources by position" do
@@ -47,7 +51,7 @@ describe Chef::ResourceCollection do
   describe "push" do
     it "should accept Chef::Resources through pushing" do
       lambda { @rc.push(@resource) }.should_not raise_error
-      lambda { @rc.push("string") }.should raise_error
+      lambda { @rc.push("string") }.should raise_error(ArgumentError)
     end
   end
 
@@ -60,7 +64,12 @@ describe Chef::ResourceCollection do
   describe "insert" do
     it "should accept only Chef::Resources" do
       lambda { @rc.insert(@resource) }.should_not raise_error
-      lambda { @rc.insert("string") }.should raise_error
+      lambda { @rc.insert("string") }.should raise_error(ArgumentError)
+    end
+
+    it "should accept named arguments in any order" do
+      @rc.insert(@resource, at_location:0, instance_name:'foo', resource_type:'bar')
+      expect(@rc[0]).to eq(@resource)
     end
 
     it "should append resources to the end of the collection when not executing a run" do
@@ -92,7 +101,7 @@ describe Chef::ResourceCollection do
     it "should accept only Chef::Resources" do
       lambda { @rc.insert_at(0, @resource, @resource) }.should_not raise_error
       lambda { @rc.insert_at(0, "string") }.should raise_error
-      lambda { @rc.insert_at(0, @resource, "string") }.should raise_error
+      lambda { @rc.insert_at(0, @resource, "string") }.should raise_error(ArgumentError)
     end
 
     it "should toss an error if it receives a bad index" do
