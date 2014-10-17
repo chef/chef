@@ -21,18 +21,12 @@ require 'chef/json_compat'
 class Chef
   class Resource
     class ZenFollower < Chef::Resource
-      attr_accessor :created_as_type
 
       provides :follower, :on_platforms => ["zen"]
 
       def initialize(name, run_context=nil)
         @resource_name = :zen_follower
-        @created_as_type = "zen_follower"
         super
-      end
-
-      def to_s
-        "#{created_as_type}[#{name}]"
       end
 
       def master(arg=nil)

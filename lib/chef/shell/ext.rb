@@ -547,7 +547,7 @@ E
       desc "list all the resources on the current recipe"
       def resources(*args)
         if args.empty?
-          pp run_context.resource_collection.instance_variable_get(:@resources_by_name).keys
+          pp run_context.resource_collection.keys
         else
           pp resources = original_resources(*args)
           resources

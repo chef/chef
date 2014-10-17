@@ -26,6 +26,10 @@ describe Chef::ResourceCollection do
     @resource = Chef::Resource::ZenMaster.new("makoto")
   end
 
+  it "should throw an error when calling a non-delegated method" do
+    expect { @rc.not_a_method }.to raise_error(NoMethodError)
+  end
+
   describe "initialize" do
     it "should return a Chef::ResourceCollection" do
       @rc.should be_kind_of(Chef::ResourceCollection)
@@ -35,7 +39,7 @@ describe Chef::ResourceCollection do
   describe "[]" do
     it "should accept Chef::Resources through [index]" do
       lambda { @rc[0] = @resource }.should_not raise_error
-      lambda { @rc[0] = "string" }.should raise_error
+      lambda { @rc[0] = "string" }.should raise_error(ArgumentError)
     end
 
     it "should allow you to fetch Chef::Resources by position" do
@@ -47,7 +51,7 @@ describe Chef::ResourceCollection do
   describe "push" do
     it "should accept Chef::Resources through pushing" do
       lambda { @rc.push(@resource) }.should_not raise_error
-      lambda { @rc.push("string") }.should raise_error
+      lambda { @rc.push("string") }.should raise_error(ArgumentError)
     end
   end
 
@@ -60,7 +64,12 @@ describe Chef::ResourceCollection do
   describe "insert" do
     it "should accept only Chef::Resources" do
       lambda { @rc.insert(@resource) }.should_not raise_error
-      lambda { @rc.insert("string") }.should raise_error
+      lambda { @rc.insert("string") }.should raise_error(ArgumentError)
+    end
+
+    it "should accept named arguments in any order" do
+      @rc.insert(@resource, :instance_name => 'foo', :resource_type =>'bar')
+      expect(@rc[0]).to eq(@resource)
     end
 
     it "should append resources to the end of the collection when not executing a run" do
@@ -85,39 +94,6 @@ describe Chef::ResourceCollection do
       @rc[0].should eql(zmr)
       @rc[1].should eql(resource_to_inject)
       @rc[2].should eql(dummy)
-    end
-  end
-
-  describe "insert_at" do
-    it "should accept only Chef::Resources" do
-      lambda { @rc.insert_at(0, @resource, @resource) }.should_not raise_error
-      lambda { @rc.insert_at(0, "string") }.should raise_error
-      lambda { @rc.insert_at(0, @resource, "string") }.should raise_error
-    end
-
-    it "should toss an error if it receives a bad index" do
-      @rc.insert_at(10, @resource)
-    end
-
-    it "should insert resources at the beginning when asked" do
-      @rc.insert(Chef::Resource::ZenMaster.new('1'))
-      @rc.insert(Chef::Resource::ZenMaster.new('2'))
-      @rc.insert_at(0, Chef::Resource::ZenMaster.new('X'))
-      @rc.all_resources.map { |r| r.name }.should == [ 'X', '1', '2' ]
-    end
-
-    it "should insert resources in the middle when asked" do
-      @rc.insert(Chef::Resource::ZenMaster.new('1'))
-      @rc.insert(Chef::Resource::ZenMaster.new('2'))
-      @rc.insert_at(1, Chef::Resource::ZenMaster.new('X'))
-      @rc.all_resources.map { |r| r.name }.should == [ '1', 'X', '2' ]
-    end
-
-    it "should insert resources at the end when asked" do
-      @rc.insert(Chef::Resource::ZenMaster.new('1'))
-      @rc.insert(Chef::Resource::ZenMaster.new('2'))
-      @rc.insert_at(2, Chef::Resource::ZenMaster.new('X'))
-      @rc.all_resources.map { |r| r.name }.should == [ '1', '2', 'X' ]
     end
   end
 
@@ -300,13 +276,13 @@ describe Chef::ResourceCollection do
 
   describe "provides access to the raw resources array" do
     it "returns the resources via the all_resources method" do
-      @rc.all_resources.should equal(@rc.instance_variable_get(:@resources))
+      @rc.all_resources.should equal(@rc.instance_variable_get(:@resource_list).instance_variable_get(:@resources))
     end
   end
 
   describe "provides access to stepable iterator" do
     it "returns the iterator object" do
-      @rc.instance_variable_set(:@iterator, :fooboar)
+      @rc.instance_variable_get(:@resource_list).instance_variable_set(:@iterator, :fooboar)
       @rc.iterator.should == :fooboar
     end
   end

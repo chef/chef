@@ -305,12 +305,13 @@ F
       end
     end
 
-    def load_prior_resource
+    def load_prior_resource(resource_type, instance_name)
       begin
-        prior_resource = run_context.resource_collection.lookup(self.to_s)
+        key = ::Chef::ResourceCollection::ResourceSet.create_key(resource_type, instance_name)
+        prior_resource = run_context.resource_collection.lookup(key)
         # if we get here, there is a prior resource (otherwise we'd have jumped
         # to the rescue clause).
-        Chef::Log.warn("Cloning resource attributes for #{self.to_s} from prior resource (CHEF-3694)")
+        Chef::Log.warn("Cloning resource attributes for #{key} from prior resource (CHEF-3694)")
         Chef::Log.warn("Previous #{prior_resource}: #{prior_resource.source_line}") if prior_resource.source_line
         Chef::Log.warn("Current  #{self}: #{self.source_line}") if self.source_line
         prior_resource.instance_variables.each do |iv|

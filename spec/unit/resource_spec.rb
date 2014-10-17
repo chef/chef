@@ -174,12 +174,12 @@ describe Chef::Resource do
     end
 
     it "should load the attributes of a prior resource" do
-      @resource.load_prior_resource
+      @resource.load_prior_resource(@resource.resource_name, @resource.name)
       @resource.supports.should == { :funky => true }
     end
 
     it "should not inherit the action from the prior resource" do
-      @resource.load_prior_resource
+      @resource.load_prior_resource(@resource.resource_name, @resource.name)
       @resource.action.should_not == @prior_resource.action
     end
   end
