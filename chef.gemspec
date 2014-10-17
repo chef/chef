@@ -49,7 +49,7 @@ Gem::Specification.new do |s|
   # chef-service-manager is a windows only executable.
   # However gemspec doesn't give us a way to have this executable only
   # on windows. So we're including this in all platforms.
-  s.executables  = %w( chef-client chef-solo knife chef-shell shef chef-apply chef-service-manager )
+  s.executables  = %w( chef-client chef-solo knife chef-shell shef chef-apply chef-service-manager chef-windows-service )
 
   s.require_path = 'lib'
   s.files = %w(Rakefile LICENSE README.md CONTRIBUTING.md) + Dir.glob("{distro,lib,tasks,spec}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) }
