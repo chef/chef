@@ -58,7 +58,7 @@ class Chef
 
       private
       def cookbooks_api_url
-        'http://cookbooks.opscode.com/api/v1/cookbooks'
+        'https://supermarket.getchef.com/api/v1/cookbooks'
       end
 
       def current_cookbook_data

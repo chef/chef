@@ -26,7 +26,8 @@ describe Chef::Knife::CookbookSiteDownload do
       @knife.name_args  = ['apache2']
       @noauth_rest      = double('no auth rest')
       @stdout           = StringIO.new
-      @cookbook_api_url = 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      @stderr           = StringIO.new
+      @cookbook_api_url = 'https://supermarket.getchef.com/api/v1/cookbooks'
       @version          = '1.0.2'
       @version_us       = @version.gsub '.', '_'
       @current_data     = { 'deprecated'       => false,
