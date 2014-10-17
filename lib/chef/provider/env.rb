@@ -61,8 +61,9 @@ class Chef
       def compare_value
         if @new_resource.delim
           #e.g. check for existing value within PATH
-          not @current_resource.value.split(@new_resource.delim).any? do |val|
-            val == @new_resource.value
+          current_values = @current_resource.value.split(@new_resource.delim)
+          not @new_resource.value.split(@new_resource.delim).all? do |val|
+            current_values.include? val
           end
         else
           @new_resource.value != @current_resource.value
@@ -91,13 +92,16 @@ class Chef
       #           after we removed the element.
       def delete_element
         return false unless @new_resource.delim #no delim: delete the key
-        if compare_value
+        values = @new_resource.value.split(@new_resource.delim)
+        current_values = @current_resource.value.split(@new_resource.delim)
+        needs_delete = values.any? { |v| current_values.include?(v) }
+        if not needs_delete
           Chef::Log.debug("#{@new_resource} element '#{@new_resource.value}' does not exist")
           return true #do not delete the key
         else
           new_value =
             @current_resource.value.split(@new_resource.delim).select { |item|
-            item != @new_resource.value
+              values.include?(item)
           }.join(@new_resource.delim)
 
           if new_value.empty?
@@ -142,8 +146,11 @@ class Chef
 
       def modify_env
         if @new_resource.delim
-          #e.g. add to PATH
-          @new_resource.value(@new_resource.value + @new_resource.delim + @current_resource.value)
+          current_values = @current_resource.value.split(@new_resource.delim)
+          values = @new_resource.value.split(@new_resource.delim).reject do |v|
+            current_values.include?(v)
+          end
+          @new_resource.value((values + [@current_resource.value]).join(@new_resource.delim))
         end
         create_env
       end
