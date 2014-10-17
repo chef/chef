@@ -238,6 +238,11 @@ class Chef::Application::Client < Chef::Application
       :boolean      => true
   end
 
+  option :audit_mode,
+    :long           => "--[no-]audit-mode",
+    :description    => "If not specified, run converge and audit phase.  If true, run only audit phase.  If false, run only converge phase.",
+    :boolean        => true
+
   IMMEDIATE_RUN_SIGNAL = "1".freeze
 
   attr_reader :chef_client_json

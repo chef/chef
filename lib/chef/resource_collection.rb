@@ -32,6 +32,9 @@ class Chef
     include ResourceCollectionSerialization
     extend Forwardable
 
+    attr_reader :resource_set, :resource_list
+    private :resource_set, :resource_list
+
     def initialize
       @resource_set = ResourceSet.new
       @resource_list = ResourceList.new
@@ -47,40 +50,24 @@ class Chef
     def insert(resource, opts={})
       resource_type ||= opts[:resource_type] # Would rather use Ruby 2.x syntax, but oh well
       instance_name ||= opts[:instance_name]
-      at_location ||= opts[:at_location]
-      if at_location
-        @resource_list.insert_at(at_location, resource)
-      else
-        @resource_list.insert(resource)
-      end
+      resource_list.insert(resource)
       if !(resource_type.nil? && instance_name.nil?)
-        @resource_set.insert_as(resource, resource_type, instance_name)
+        resource_set.insert_as(resource, resource_type, instance_name)
       else
-        @resource_set.insert_as(resource)
-      end
-    end
-
-    # @param insert_at_index [Integer] Location to insert resources
-    # @param resources [Chef::Resource] Resources to insert
-    # @deprecated Callers should use the insert method above and loop through their resources as necessary
-    def insert_at(insert_at_index, *resources)
-      Chef::Log.warn("`insert_at` is deprecated, use `insert` with the `at_location` parameter")
-      @resource_list.insert_at(insert_at_index, *resources)
-      resources.each do |resource|
-        @resource_set.insert_as(resource)
+        resource_set.insert_as(resource)
       end
     end
 
     # @deprecated
     def []=(index, resource)
       Chef::Log.warn("`[]=` is deprecated, use `insert` with the `at_location` parameter")
-      @resource_list[index] = resource
-      @resource_set.insert_as(resource)
+      resource_list[index] = resource
+      resource_set.insert_as(resource)
     end
 
     # @deprecated
-    def <<(*resources)
-      Chef::Log.warn("`<<` is deprecated, use `insert`")
+    def push(*resources)
+      Chef::Log.warn("`push` is deprecated, use `insert`")
       resources.flatten.each do |res|
         insert(res)
       end
@@ -88,7 +75,7 @@ class Chef
     end
 
     # @deprecated
-    alias_method :push, :<<
+    alias_method :<<, :insert
 
     # Read-only methods are simple to delegate - doing that below
 
@@ -97,8 +84,8 @@ class Chef
         [:find] # find needs to run on the set
     resource_set_methods = [:lookup, :find, :resources, :keys, :validate_lookup_spec!]
 
-    def_delegators :@resource_list, *resource_list_methods
-    def_delegators :@resource_set, *resource_set_methods
+    def_delegators :resource_list, *resource_list_methods
+    def_delegators :resource_set, *resource_set_methods
 
   end
 end

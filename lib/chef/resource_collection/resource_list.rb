@@ -58,17 +58,6 @@ class Chef
         end
       end
 
-      # @param index [Integer] location in the array to insert the resources
-      # @param resources [Array of Chef::Resource] Resources to insert
-      # Locate the index indicated and insert all resources, pushing any remaining resources further down in the array.
-      def insert_at(index, *resources)
-        resources.each do |resource|
-          is_chef_resource!(resource)
-        end
-        @resources.insert(index, *resources)
-        @insert_after_idx += resources.size unless @insert_after_idx.nil?
-      end
-
       # @deprecated - can be removed when it is removed from resource_collection.rb
       def []=(index, resource)
         @resources[index] = resource
@@ -88,7 +77,6 @@ class Chef
         end
       end
 
-      #   so far, and then move that logic up into the ResourceCollection class to simplify this class
       def execute_each_resource(&resource_exec_block)
         @iterator = ResourceCollection::StepableIterator.for_collection(@resources)
         @iterator.each_with_index do |resource, idx|

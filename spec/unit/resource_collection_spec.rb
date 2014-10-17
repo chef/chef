@@ -68,7 +68,7 @@ describe Chef::ResourceCollection do
     end
 
     it "should accept named arguments in any order" do
-      @rc.insert(@resource, at_location:0, instance_name:'foo', resource_type:'bar')
+      @rc.insert(@resource, :instance_name => 'foo', :resource_type =>'bar')
       expect(@rc[0]).to eq(@resource)
     end
 
@@ -94,39 +94,6 @@ describe Chef::ResourceCollection do
       @rc[0].should eql(zmr)
       @rc[1].should eql(resource_to_inject)
       @rc[2].should eql(dummy)
-    end
-  end
-
-  describe "insert_at" do
-    it "should accept only Chef::Resources" do
-      lambda { @rc.insert_at(0, @resource, @resource) }.should_not raise_error
-      lambda { @rc.insert_at(0, "string") }.should raise_error
-      lambda { @rc.insert_at(0, @resource, "string") }.should raise_error(ArgumentError)
-    end
-
-    it "should toss an error if it receives a bad index" do
-      @rc.insert_at(10, @resource)
-    end
-
-    it "should insert resources at the beginning when asked" do
-      @rc.insert(Chef::Resource::ZenMaster.new('1'))
-      @rc.insert(Chef::Resource::ZenMaster.new('2'))
-      @rc.insert_at(0, Chef::Resource::ZenMaster.new('X'))
-      @rc.all_resources.map { |r| r.name }.should == [ 'X', '1', '2' ]
-    end
-
-    it "should insert resources in the middle when asked" do
-      @rc.insert(Chef::Resource::ZenMaster.new('1'))
-      @rc.insert(Chef::Resource::ZenMaster.new('2'))
-      @rc.insert_at(1, Chef::Resource::ZenMaster.new('X'))
-      @rc.all_resources.map { |r| r.name }.should == [ '1', 'X', '2' ]
-    end
-
-    it "should insert resources at the end when asked" do
-      @rc.insert(Chef::Resource::ZenMaster.new('1'))
-      @rc.insert(Chef::Resource::ZenMaster.new('2'))
-      @rc.insert_at(2, Chef::Resource::ZenMaster.new('X'))
-      @rc.all_resources.map { |r| r.name }.should == [ '1', '2', 'X' ]
     end
   end
 
