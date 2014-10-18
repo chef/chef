@@ -682,6 +682,9 @@ describe Chef::Node do
 
   describe "to_hash" do
     it "should serialize itself as a hash" do
+      # Empty run_list should return an empty array
+      node.to_hash["run_list"].should == []
+
       node.chef_environment("dev")
       node.default_attrs = { "one" => { "two" => "three", "four" => "five", "eight" => "nine" } }
       node.override_attrs = { "one" => { "two" => "three", "four" => "six" } }
