@@ -27,7 +27,7 @@ class Chef
         require 'chef/json_compat'
       end
 
-      banner "knife node run_list remove [NODE] [ENTRIES] (options)"
+      banner "knife node run_list remove [NODE] [ENTRY[,ENTRY]] (options)"
 
       def run
         node = Chef::Node.load(@name_args[0])
