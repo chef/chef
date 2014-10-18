@@ -506,13 +506,17 @@ describe Chef::REST do
             http_response.stub(:read_body)
             http_response
           end
-          it "decompresses the JSON error message" do
+
+          before do
             rest.stub(:sleep)
             rest.stub(:http_retry_count).and_return(0)
+          end
 
+          it "decompresses the JSON error message" do
             expect {rest.request(:GET, url)}.to raise_error(Net::HTTPFatalError)
             expect(log_stringio.string).to match(Regexp.escape('INFO: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
           end
+
           it "fails when the compressed body is truncated" do
             http_response["Content-Length"] = (body.bytesize + 99).to_s
             expect {rest.request(:GET, url)}.to raise_error(Chef::Exceptions::ContentLengthMismatch)
