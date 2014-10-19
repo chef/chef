@@ -652,6 +652,11 @@ F
       # on accident
       updated_by_last_action(false)
 
+      # Don't modify @retries directly and keep it intact, so that the
+      # recipe_snippet from ResourceFailureInspector can print the value
+      # that was set in the resource block initially.
+      remaining_retries = retries
+
       begin
         return if should_skip?(action)
         provider_for_action(action).run_action
@@ -659,10 +664,10 @@ F
         if ignore_failure
           Chef::Log.error("#{custom_exception_message(e)}; ignore_failure is set, continuing")
           events.resource_failed(self, action, e)
-        elsif retries > 0
-          events.resource_failed_retriable(self, action, retries, e)
-          @retries -= 1
-          Chef::Log.info("Retrying execution of #{self}, #{retries} attempt(s) left")
+        elsif remaining_retries > 0
+          events.resource_failed_retriable(self, action, remaining_retries, e)
+          remaining_retries -= 1
+          Chef::Log.info("Retrying execution of #{self}, #{remaining_retries} attempt(s) left")
           sleep retry_delay
           retry
         else
