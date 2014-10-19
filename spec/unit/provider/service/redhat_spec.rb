@@ -83,6 +83,28 @@ describe "Chef::Provider::Service::Redhat" do
         @provider.load_current_resource.should eql(@current_resource)
         @current_resource.enabled.should be_false
       end
+
+      it "sets the current enabled status to true if the service is enabled at specified run levels" do
+        status = double("Status", :exitstatus => 0, :stdout => "" , :stderr => "")
+        @current_resource.instance_variable_set(:@run_levels, [ 1, 2 ])
+        @provider.should_receive(:shell_out).with("/sbin/service chef status").and_return(status)
+        chkconfig = double("Chkconfig", :exitstatus => 0, :stdout => "chef    0:off   1:on   2:on   3:off   4:off   5:off   6:off", :stderr => "")
+        @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
+        @provider.instance_variable_get("@service_missing").should be_false
+        @provider.load_current_resource.should 
+        @current_resource.enabled.should be_true
+      end
+
+      it "sets the current enabled status to false if the service is not enabled at specified run levels" do
+        status = double("Status", :exitstatus => 0, :stdout => "" , :stderr => "")
+        @current_resource.instance_variable_set(:@run_levels, [ 2 ])
+        @provider.should_receive(:shell_out).with("/sbin/service chef status").and_return(status)
+        chkconfig = double("Chkconfig", :exitstatus => 0, :stdout => "chef    0:off   1:on   2:off   3:off   4:off   5:off   6:off", :stderr => "")
+        @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
+        @provider.instance_variable_get("@service_missing").should be_false
+        @provider.load_current_resource.should 
+        @current_resource.enabled.should be_true
+      end
     end
 
     describe "define resource requirements" do
@@ -144,11 +166,23 @@ describe "Chef::Provider::Service::Redhat" do
       @provider.should_receive(:shell_out!).with("/sbin/chkconfig #{@new_resource.service_name} on")
       @provider.enable_service
     end
+
+    it "should call chkconfig to add 'service_name' at specified run_levels" do
+      @provider.instance_variable_set(:@run_levels, [ 1,2 ])
+      @provider.should_receive(:shell_out!).with("/sbin/chkconfig --level 12 #{@new_resource.service_name} on")
+      @provider.enable_service
+    end
   end
 
   describe "disable_service" do
     it "should call chkconfig to del 'service_name'" do
       @provider.should_receive(:shell_out!).with("/sbin/chkconfig #{@new_resource.service_name} off")
+      @provider.disable_service
+    end
+
+    it "should call chkconfig to del 'service_name' at specified run_levels" do
+      @provider.instance_variable_set(:@run_levels, [ 1,2 ])
+      @provider.should_receive(:shell_out!).with("/sbin/chkconfig --level 12 #{@new_resource.service_name} off")
       @provider.disable_service
     end
   end

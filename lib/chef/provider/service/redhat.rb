@@ -31,6 +31,8 @@ class Chef
            @init_command = "/sbin/service #{@new_resource.service_name}"
            @new_resource.supports[:status] = true
            @service_missing = false
+           @current_run_levels = []
+           @run_levels = @new_resource.run_levels
         end
 
         def define_resource_requirements
@@ -54,19 +56,43 @@ class Chef
 
           if ::File.exists?("/sbin/chkconfig")
             chkconfig = shell_out!("/sbin/chkconfig --list #{@current_resource.service_name}", :returns => [0,1])
-            @current_resource.enabled(!!(chkconfig.stdout =~ CHKCONFIG_ON))
+            unless @run_levels.nil? or @run_levels.empty?
+              all_levels_enabled = true
+              chkconfig.split(/\s+/)[1..-1].each do |level|
+                index = level.split(':').first
+                status = level.split(':').last
+                if @run_levels.include?(index)
+                  if status =~ CHKCONFIG_ON
+                    @current_run_levels << index
+                  else
+                    all_levels_enabled = false
+                  end
+                end
+              end
+              @current_resource.enabled(all_levels_enabled)
+            else
+              @current_resource.enabled(!!(chkconfig.stdout =~ CHKCONFIG_ON))
+            end
             @service_missing = !!(chkconfig.stderr =~ CHKCONFIG_MISSING)
           end
 
           @current_resource
         end
 
+        def levels
+          (@run_levels.nil? or @run_levels.empty?) ? "" : "--level #{@run_levels.join('')} "
+        end
+
         def enable_service()
-          shell_out! "/sbin/chkconfig #{@new_resource.service_name} on"
+          unless @run_levels.nil? or @run_levels.empty?
+            disable_levels = @current_run_levels - @run_levels
+            shell_out! "/sbin/chkconfig --level #{disable_levels.join('')} #{@new_resource.service_name} off" unless disable_levels.empty? 
+          end
+          shell_out! "/sbin/chkconfig #{levels}#{@new_resource.service_name} on"
         end
 
         def disable_service()
-          shell_out! "/sbin/chkconfig #{@new_resource.service_name} off"
+          shell_out! "/sbin/chkconfig #{levels}#{@new_resource.service_name} off"
         end
       end
     end
