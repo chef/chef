@@ -110,7 +110,7 @@ class Chef
             node_name = server.host
           else
             @action_nodes.each do |n|
-              node_name = n if format_for_display(n)[config[:attribute]] == server.host
+              node_name = n.name if format_for_display(n)[n.name][config[:attribute]] == server.host
             end
           end
           case config[:on_error]
