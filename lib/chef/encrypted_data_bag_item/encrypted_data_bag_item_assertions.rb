@@ -25,7 +25,7 @@ class Chef::EncryptedDataBagItem
 
     def assert_requirements_met!
       unless OpenSSL::Cipher.method_defined?(:auth_data=)
-        raise EncryptedDataBagRequirementsFailure, "The used Encrypted Data Bags version requires Ruby >= 1.9"
+        raise EncryptedDataBagRequirementsFailure, "The used Encrypted Data Bags version requires Ruby >= 2.0"
       end
       unless OpenSSL::Cipher.ciphers.include?(algorithm)
         raise EncryptedDataBagRequirementsFailure, "The used Encrypted Data Bags version requires an OpenSSL version with \"#{algorithm}\" algorithm support"
