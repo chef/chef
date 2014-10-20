@@ -252,7 +252,7 @@ describe Chef::Provider::Group::Dscl do
       lambda { @provider.process_resource_requirements }.should_not raise_error
     end
   end
- 
+
   describe "when creating the group" do
     it "creates the group, password field, gid, and sets group membership" do
       @provider.should_receive(:set_gid).and_return(true)
@@ -301,7 +301,8 @@ describe 'Test DSCL loading' do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::Group.new("aj")
+    @new_resource = Chef::Resource::Group.new("group name aj")
+    @new_resource.group_name("aj")
     @provider = Chef::Provider::Group::Dscl.new(@new_resource, @run_context)
     @output = <<-EOF
 AppleMetaNodeLocation: /Local/Default
