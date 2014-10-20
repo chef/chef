@@ -32,7 +32,7 @@ EOH
   }
 
   let(:no_whatif_lcm_output) { <<-EOH
-Start-DscConfiguration : A parameter cannot be found that matches parameter name 'whatif'.
+Start-DscConfiguration : A parameter cannot be found\r\n that matches parameter name 'whatif'.
 At line:1 char:123
 + run-somecommand -whatif
 +                        ~~~~~~~~
@@ -77,8 +77,13 @@ EOH
         let(:lcm_standard_error) { no_whatif_lcm_output }
         let(:lcm_cmdlet_success) { false }
 
+        it 'returns true when passed to #whatif_not_supported?' do
+          expect(lcm.send(:whatif_not_supported?, no_whatif_lcm_output)).to be_true
+        end
+
         it 'should should return a (possibly empty) array of ResourceInfo instances' do
           expect(Chef::Log).to receive(:warn)
+          expect(lcm).to receive(:whatif_not_supported?).and_call_original
           test_configuration_result = nil
           expect {test_configuration_result = lcm.test_configuration('config')}.not_to raise_error
           expect(test_configuration_result.class).to be(Array)
