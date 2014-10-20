@@ -415,6 +415,46 @@ describe Chef::Knife::Bootstrap do
       end
     end
 
+    context "from the knife config file" do
+      let(:knife_ssh) do
+        knife.name_args = ["config.example.com"]
+        Chef::Config[:knife][:ssh_user] = "curiosity"
+        Chef::Config[:knife][:ssh_port] = "2430"
+        Chef::Config[:knife][:forward_agent] = true
+        Chef::Config[:knife][:identity_file] = "~/.ssh/you.rsa"
+        Chef::Config[:knife][:ssh_gateway] = "towel.blinkenlights.nl"
+        Chef::Config[:knife][:host_key_verify] = true
+        knife.stub(:render_template).and_return("")
+        knife.config = {}
+        knife.merge_configs
+        knife.knife_ssh
+      end
+
+      it "configures the ssh user" do
+        knife_ssh.config[:ssh_user].should == 'curiosity'
+      end
+
+      it "configures the ssh port" do
+        knife_ssh.config[:ssh_port].should == '2430'
+      end
+
+      it "configures the ssh agent forwarding" do
+        knife_ssh.config[:forward_agent].should == true
+      end
+
+      it "configures the ssh identity file" do
+        knife_ssh.config[:identity_file].should == '~/.ssh/you.rsa'
+      end
+
+      it "configures the ssh gateway" do
+        knife_ssh.config[:ssh_gateway].should == 'towel.blinkenlights.nl'
+      end
+
+      it "configures the host key verify mode" do
+        knife_ssh.config[:host_key_verify].should == true
+      end
+    end
+
     describe "when falling back to password auth when host key auth fails" do
       let(:knife_ssh_with_password_auth) do
         knife.name_args = ["foo.example.com"]
