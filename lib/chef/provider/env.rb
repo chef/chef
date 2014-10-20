@@ -61,8 +61,7 @@ class Chef
       def compare_value
         if @new_resource.delim
           #e.g. check for existing value within PATH
-          current_values = @current_resource.value.split(@new_resource.delim)
-          not @new_resource.value.split(@new_resource.delim).all? do |val|
+          not new_values.all? do |val|
             current_values.include? val
           end
         else
@@ -92,16 +91,14 @@ class Chef
       #           after we removed the element.
       def delete_element
         return false unless @new_resource.delim #no delim: delete the key
-        values = @new_resource.value.split(@new_resource.delim)
-        current_values = @current_resource.value.split(@new_resource.delim)
-        needs_delete = values.any? { |v| current_values.include?(v) }
+        needs_delete = new_values.any? { |v| current_values.include?(v) }
         if not needs_delete
           Chef::Log.debug("#{@new_resource} element '#{@new_resource.value}' does not exist")
           return true #do not delete the key
         else
           new_value =
-            @current_resource.value.split(@new_resource.delim).select { |item|
-              values.include?(item)
+            current_values.select { |item|
+              new_values.include?(item)
           }.join(@new_resource.delim)
 
           if new_value.empty?
@@ -146,13 +143,22 @@ class Chef
 
       def modify_env
         if @new_resource.delim
-          current_values = @current_resource.value.split(@new_resource.delim)
-          values = @new_resource.value.split(@new_resource.delim).reject do |v|
+          values = new_values.reject do |v|
             current_values.include?(v)
           end
           @new_resource.value((values + [@current_resource.value]).join(@new_resource.delim))
         end
         create_env
+      end
+
+      # Returns the current values to split by delimiter
+      def current_values
+        @current_values ||= @current_resource.value.split(@new_resource.delim)
+      end
+
+      # Returns the new values to split by delimiter
+      def new_values
+        @new_values ||= @new_resource.value.split(@new_resource.delim)
       end
      end
   end
