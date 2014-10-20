@@ -112,11 +112,26 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
       it "should update the source of the existing link to the link's target" do
         paths_eql?(provider.current_resource.to, "#{CHEF_SPEC_DATA}/fofile").should be_true
       end
-      it "should not set the owner" do
-        provider.current_resource.owner.should be_nil
+      it "should set the owner" do
+        provider.current_resource.owner.should == 501
       end
-      it "should not set the group" do
-        provider.current_resource.group.should be_nil
+      it "should set the group" do
+        provider.current_resource.group.should == 501
+      end
+
+      context "when new resource sets owner/group associated" do
+        before do
+          new_resource.owner 502
+          new_resource.group 502
+          provider.load_current_resource
+        end
+
+        it "should set the owner difference" do
+          provider.current_resource.owner.should_not == provider.new_resource.owner
+        end
+        it "should set the group difference" do
+          provider.current_resource.group.should_not == provider.new_resource.group
+        end
       end
     end
   end
