@@ -133,6 +133,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :ruby_gte_20_and_openssl_gte_101 => true unless (ruby_gte_20? && openssl_gte_101?)
   config.filter_run_excluding :openssl_lt_101 => true unless openssl_lt_101?
   config.filter_run_excluding :ruby_lt_20 => true unless ruby_lt_20?
+  config.filter_run_excluding :aes_256_gcm_only => true unless aes_256_gcm?
 
   running_platform_arch = `uname -m`.strip
 

@@ -165,3 +165,7 @@ end
 def openssl_lt_101?
   !openssl_gte_101?
 end
+
+def aes_256_gcm?
+  OpenSSL::Cipher.ciphers.include?("aes-256-gcm")
+end
