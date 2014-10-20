@@ -281,11 +281,11 @@ describe Chef::Provider::Env do
     end
 
     it "should only add values not already contained when a delimiter is provided" do
-      @new_resource.value("a;c;d")
+      @new_resource.value("C:/foo;C:/bar;C:/baz")
       @new_resource.delim(";")
-      @current_resource.value("a;b;c")
+      @current_resource.value("C:/foo/bar;C:/bar;C:/baz")
       @provider.modify_env
-      @new_resource.value.should eq("d;a;b;c")
+      @new_resource.value.should eq("C:/foo;C:/foo/bar;C:/bar;C:/baz")
     end
   end
 end
