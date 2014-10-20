@@ -97,7 +97,7 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
       Chef::Config[:data_bag_encrypt_version] = 3
     end
 
-    context "on supported platforms", :aes_256_gcm_only do
+    context "on supported platforms", :aes_256_gcm_only, :ruby_20_only do
 
       it "creates a version 3 encryptor" do
         encryptor.should be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor)
@@ -182,7 +182,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
 
   context "when decrypting a version 3 (JSON+aes-256-gcm+random iv+auth tag) encrypted value" do
 
-    context "on supported platforms", :aes_256_gcm_only do
+    context "on supported platforms", :aes_256_gcm_only, :ruby_20_only do
 
       let(:encrypted_value) do
         Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor.new(plaintext_data, encryption_key).for_encrypted_item
