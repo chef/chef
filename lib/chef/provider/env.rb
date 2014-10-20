@@ -98,7 +98,7 @@ class Chef
         else
           new_value =
             current_values.select { |item|
-              new_values.include?(item)
+              not new_values.include?(item)
           }.join(@new_resource.delim)
 
           if new_value.empty?

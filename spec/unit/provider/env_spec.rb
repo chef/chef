@@ -200,18 +200,24 @@ describe Chef::Provider::Env do
     end
 
     context "when new_resource's value contains the delimiter"  do
-      it "should return true if the all elements are deleted" do
+      it "should return false if all the elements are deleted" do
+        # This indicates that the entire key needs to be deleted
         @new_resource.value("C:/foo/bin;C:/bar/bin")
+        @provider.delete_element.should eql(false)
+        @new_resource.should_not be_updated  # This will be updated in action_delete
+      end
+
+      it "should return true if any, but not all, of the elements are deleted" do
+        @new_resource.value("C:/foo/bin;C:/notbaz/bin")
         @provider.should_receive(:create_env)
         @provider.delete_element.should eql(true)
         @new_resource.should be_updated
       end
 
-      it "should return true if any of the elements are deleted" do
-        @new_resource.value("C:/foo/bin;C:/baz/bin")
-        @provider.should_receive(:create_env)
+      it "should return true if none of the elements are deleted" do
+        @new_resource.value("C:/notfoo/bin;C:/notbaz/bin")
         @provider.delete_element.should eql(true)
-        @new_resource.should be_updated
+        @new_resource.should_not be_updated
       end
     end
   end
