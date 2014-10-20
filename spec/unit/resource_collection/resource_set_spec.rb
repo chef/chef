@@ -29,7 +29,7 @@ describe Chef::ResourceCollection::ResourceSet do
   let(:zen_follower) { Chef::Resource::ZenFollower.new(zen_follower_name) }
 
   describe "initialize" do
-    it "should return a Chef::ResourceCollection" do
+    it "should return a Chef::ResourceSet" do
       expect(collection).to be_instance_of(Chef::ResourceCollection::ResourceSet)
     end
   end
