@@ -58,11 +58,7 @@ class Chef
           requirements.assert(:start, :enable, :reload, :restart) do |a|
             a.assertion { init_command }
             a.failure_message Chef::Exceptions::Service, "#{new_resource}: unable to locate the rc.d script"
-            a.whyrun("Assuming rc.d script will be installed by a previous action.") do
-              # Assuming the missing rc.d script is for a user-installed rather than system
-              # service, fallback on the expected rc.d script path.
-              init_command = "/usr/local/etc/rc.d/#{new_resource.service_name}"
-            end
+            a.whyrun("Assuming rc.d script will be installed by a previous action.")
           end
 
           requirements.assert(:all_actions) do |a|
@@ -73,7 +69,7 @@ class Chef
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { init_command && service_enable_variable_name != nil }
+            a.assertion { service_enable_variable_name != nil }
             a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{init_command} and rcvar"
             # No recovery in whyrun mode - the init file is present but not correct.
           end
@@ -136,10 +132,6 @@ class Chef
               # For example: to enable the service mysql-server with the init command /usr/local/etc/rc.d/mysql-server, you need
               # to set mysql_enable="YES" in /etc/rc.conf$
               if init_command
-                if !::File.exists?(init_command) && whyrun_mode?
-                  return new_resource.service_name
-                end
-
                 ::File.open(init_command) do |rcscript|
                   rcscript.each_line do |line|
                     if line =~ /^name="?(\w+)"?/
