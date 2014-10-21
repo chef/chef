@@ -22,6 +22,7 @@ describe Chef::Resource::Env, :windows_only do
   context 'when running on Windows' do
     let(:chef_env_test_lower_case) { 'chefenvtest' }
     let(:chef_env_test_mixed_case) { 'chefENVtest' }
+    let(:env_dne_key) { 'env_dne_key' }
     let(:env_value1) { 'value1' }
     let(:env_value2) { 'value2' }
 
@@ -176,6 +177,14 @@ describe Chef::Resource::Env, :windows_only do
         test_resource.run_action(:delete)
         expect(ENV[chef_env_test_lower_case]).to eq(nil)
         expect(ENV[chef_env_test_mixed_case]).to eq(nil)
+      end
+
+      it "should delete a value from the current process even if it is not in the registry" do
+        expect(ENV[env_dne_key]).to eq(nil)
+        ENV[env_dne_key] = env_value1
+        test_resource.key_name(env_dne_key)
+        test_resource.run_action(:delete)
+        expect(ENV[env_dne_key]).to eq(nil)
       end
     end
   end
