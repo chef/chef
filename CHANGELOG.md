@@ -203,6 +203,7 @@
 * Use shell_out to determine Chef::Config[:internal_locale], fix CentOS locale detection bug.
 * `only_if` and `not_if` attributes of `execute` resource now inherits the parent resource's
   attributes when set to a `String`.
+* Retain the original value of `retries` for resources and display the original value when the run fails.
 
 ## Last Release: 11.14.2
 
