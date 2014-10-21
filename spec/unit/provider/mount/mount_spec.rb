@@ -107,16 +107,12 @@ describe Chef::Provider::Mount::Mount do
       lambda { @provider.load_current_resource();@provider.mountable? }.should raise_error(Chef::Exceptions::Mount)
     end
 
-    it "does not expect the device to exist for tmpfs" do
-      @new_resource.fstype("tmpfs")
-      @new_resource.device("whatever")
-      lambda { @provider.load_current_resource();@provider.mountable? }.should_not raise_error
-    end
-
-    it "does not expect the device to exist for Fuse filesystems" do
-      @new_resource.fstype("fuse")
-      @new_resource.device("nilfs#xxx")
-      lambda { @provider.load_current_resource();@provider.mountable? }.should_not raise_error
+    [ "tmpfs", "fuse", "cgroup" ].each do |fstype|
+      it "does not expect the device to exist for #{fstype}" do
+        @new_resource.fstype(fstype)
+        @new_resource.device("whatever")
+        lambda { @provider.load_current_resource();@provider.mountable? }.should_not raise_error
+      end
     end
 
     it "does not expect the device to exist if it's none" do
