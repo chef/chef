@@ -69,6 +69,8 @@ class Chef
         end
       end
 
+      alias_method :compare_value, :requires_modify_or_create?
+
       def action_create
         if @key_exists
           if requires_modify_or_create?
