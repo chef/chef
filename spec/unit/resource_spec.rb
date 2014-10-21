@@ -394,22 +394,44 @@ describe Chef::Resource do
   end
 
   describe "retries" do
+    before do
+      @retriable_resource = Chef::Resource::Cat.new("precious", @run_context)
+      @retriable_resource.provider = Chef::Provider::SnakeOil
+      @retriable_resource.action = :purr
+
+      @node.automatic_attrs[:platform] = "fubuntu"
+      @node.automatic_attrs[:platform_version] = '10.04'
+    end
+
     it "should default to not retrying if a provider fails for a resource" do
-      @resource.retries.should == 0
+      @retriable_resource.retries.should == 0
     end
 
     it "should allow you to set how many retries a provider should attempt after a failure" do
-      @resource.retries(2)
-      @resource.retries.should == 2
+      @retriable_resource.retries(2)
+      @retriable_resource.retries.should == 2
     end
 
     it "should default to a retry delay of 2 seconds" do
-      @resource.retry_delay.should == 2
+      @retriable_resource.retry_delay.should == 2
     end
 
     it "should allow you to set the retry delay" do
-      @resource.retry_delay(10)
-      @resource.retry_delay.should == 10
+      @retriable_resource.retry_delay(10)
+      @retriable_resource.retry_delay.should == 10
+    end
+
+    it "should keep given value of retries intact after the provider fails for a resource" do
+      @retriable_resource.retries(3)
+      @retriable_resource.retry_delay(0) # No need to wait.
+
+      provider = Chef::Provider::SnakeOil.new(@retriable_resource, @run_context)
+      Chef::Provider::SnakeOil.stub(:new).and_return(provider)
+      provider.stub(:action_purr).and_raise
+
+      @retriable_resource.should_receive(:sleep).exactly(3).times
+      expect { @retriable_resource.run_action(:purr) }.to raise_error
+      @retriable_resource.retries.should == 3
     end
   end
 
