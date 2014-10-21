@@ -132,6 +132,8 @@
   Fixed inconsistent globbing in `knife from file` command.
 * [**Nicolas Szalay**](https://github.com/rottenbytes):
   Made user prompts in knife more beautiful by adding a space after Y/N prompts.
+* [**Ivan Larionov**](https://github.com/xeron):
+  Made empty run_list to produce an empty array when using node.to_hash.
 
 
 ### Chef Contributions
