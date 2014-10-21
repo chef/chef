@@ -15,4 +15,6 @@ gemspec.add_dependency "win32-service", "0.8.2"
 gemspec.add_dependency "win32-mmap", "0.4.0"
 gemspec.add_dependency "wmi-lite", "~> 1.0"
 
+gemspec.executables += %w( chef-service-manager chef-windows-service )
+
 gemspec
