@@ -128,6 +128,8 @@
   Removed dead code from `knife ssh`.
 * [**Nicolas Szalay**](https://github.com/rottenbytes):
   Fixed a bug preventing mounting of cgroup type devices in the mount provider.
+* [**Anshul Sharma**](https://github.com/justanshulsharma):
+  Fixed inconsistent globbing in `knife from file` command.
 
 ### Chef Contributions
 
