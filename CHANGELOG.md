@@ -130,6 +130,9 @@
   Fixed a bug preventing mounting of cgroup type devices in the mount provider.
 * [**Anshul Sharma**](https://github.com/justanshulsharma):
   Fixed inconsistent globbing in `knife from file` command.
+* [**Nicolas Szalay**](https://github.com/rottenbytes):
+  Made user prompts in knife more beautiful by adding a space after Y/N prompts.
+
 
 ### Chef Contributions
 
