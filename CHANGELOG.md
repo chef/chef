@@ -124,6 +124,17 @@
     uploads existing category of the cookbook will be used.
 * [**Nicolas DUPEUX**](https://github.com/vaxvms):
   Added JSON output to `knife status` command. `--medium` and `--long` output formatting parameters are now supported in knife status.
+* [**Trevor North**](https://github.com/trvrnrth):
+  Removed dead code from `knife ssh`.
+* [**Nicolas Szalay**](https://github.com/rottenbytes):
+  Fixed a bug preventing mounting of cgroup type devices in the mount provider.
+* [**Anshul Sharma**](https://github.com/justanshulsharma):
+  Fixed inconsistent globbing in `knife from file` command.
+* [**Nicolas Szalay**](https://github.com/rottenbytes):
+  Made user prompts in knife more beautiful by adding a space after Y/N prompts.
+* [**Ivan Larionov**](https://github.com/xeron):
+  Made empty run_list to produce an empty array when using node.to_hash.
+
 
 ### Chef Contributions
 
@@ -203,6 +214,8 @@
 * Use shell_out to determine Chef::Config[:internal_locale], fix CentOS locale detection bug.
 * `only_if` and `not_if` attributes of `execute` resource now inherits the parent resource's
   attributes when set to a `String`.
+* Retain the original value of `retries` for resources and display the original value when the run fails.
+* Added service provider for AIX.
 
 ## Last Release: 11.14.2
 
