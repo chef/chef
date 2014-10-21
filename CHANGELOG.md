@@ -4,6 +4,7 @@
 
 * remove LC_ALL=C default setting, consumers should now set this if they
   still need it.
+* Change the minimum required version of Ruby to >= 1.9.3.
 
 ## Last Release: 1.6.0
 
@@ -15,4 +16,3 @@
   Fixed typos in the code.
 * [**Max Lincoln**](https://github.com/maxlinc):
   Support separate live stream for stderr.
-
