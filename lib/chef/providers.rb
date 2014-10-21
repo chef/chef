@@ -88,6 +88,8 @@ require 'chef/provider/service/upstart'
 require 'chef/provider/service/windows'
 require 'chef/provider/service/solaris'
 require 'chef/provider/service/macosx'
+require 'chef/provider/service/aixinit'
+require 'chef/provider/service/aix'
 
 require 'chef/provider/user/dscl'
 require 'chef/provider/user/pw'

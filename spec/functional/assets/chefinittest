@@ -1,0 +1,34 @@
+#!/bin/ksh
+
+function create_chef_txt {
+        touch /tmp/chefinittest.txt
+}
+
+function delete_chef_txt {
+        rm /tmp/chefinittest.txt
+}
+
+function rename_chef_txt {
+        mv /tmp/chefinittest.txt /tmp/$1
+}
+
+case "$1" in
+start )
+        create_chef_txt
+        ;;
+stop )
+        delete_chef_txt
+        ;;
+status )
+        [ -f /tmp/chefinittest.txt ] || [ -f /tmp/chefinittest_reload.txt ] || [ -f /tmp/chefinittest_restart.txt ]
+        ;;
+reload )
+        rename_chef_txt "chefinittest_reload.txt"
+        ;;
+restart )
+        rename_chef_txt "chefinittest_restart.txt"
+        ;;
+* )
+        echo "Usage: $0 (start | stop | restart | reload)"
+        exit 1
+esac
