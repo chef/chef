@@ -126,6 +126,8 @@
   Added JSON output to `knife status` command. `--medium` and `--long` output formatting parameters are now supported in knife status.
 * [**Trevor North**](https://github.com/trvrnrth):
   Removed dead code from `knife ssh`.
+* [**Nicolas Szalay**](https://github.com/rottenbytes):
+  Fixed a bug preventing mounting of cgroup type devices in the mount provider.
 
 ### Chef Contributions
 
