@@ -102,11 +102,11 @@ describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test d
       if ohai[:platform] == 'aix'
         @pkg_version = "2-0"
         @pkg_path = "/tmp/dummy-2-0.aix6.1.noarch.rpm"
-        FileUtils.cp 'spec/functional/assets/dummy-2-0.aix6.1.noarch.rpm' , @pkg_path
+        FileUtils.cp(File.join(CHEF_SPEC_ASSETS, 'dummy-2-0.aix6.1.noarch.rpm') , @pkg_path)
       else
         @pkg_version = "2.0-1"
         @pkg_path = "/tmp/mytest-2.0-1.noarch.rpm"
-        FileUtils.cp 'spec/functional/assets/mytest-2.0-1.noarch.rpm' , @pkg_path
+        FileUtils.cp(File.join(CHEF_SPEC_ASSETS, 'mytest-2.0-1.noarch.rpm') , @pkg_path)
       end
     end
 
