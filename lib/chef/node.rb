@@ -397,7 +397,7 @@ class Chef
       end
       index_hash["recipe"] = run_list.recipe_names if run_list.recipe_names.length > 0
       index_hash["role"] = run_list.role_names if run_list.role_names.length > 0
-      index_hash["run_list"] = run_list.run_list if run_list.run_list.length > 0
+      index_hash["run_list"] = run_list.run_list_items
       index_hash
     end
 
@@ -409,7 +409,7 @@ class Chef
       display["normal"]           = normal_attrs
       display["default"]          = attributes.combined_default
       display["override"]         = attributes.combined_override
-      display["run_list"]         = run_list.run_list
+      display["run_list"]         = run_list.run_list_items
       display
     end
 

@@ -700,6 +700,10 @@ describe Chef::Node do
       h["run_list"].should be_include("recipe[stalinist]")
       h["chef_environment"].should == "dev"
     end
+
+    it 'should return an empty array for empty run_list' do
+      node.to_hash["run_list"].should == []
+    end
   end
 
   describe "converting to or from json" do
