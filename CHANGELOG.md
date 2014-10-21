@@ -124,6 +124,8 @@
     uploads existing category of the cookbook will be used.
 * [**Nicolas DUPEUX**](https://github.com/vaxvms):
   Added JSON output to `knife status` command. `--medium` and `--long` output formatting parameters are now supported in knife status.
+* [**Trevor North**](https://github.com/trvrnrth):
+  Removed dead code from `knife ssh`.
 
 ### Chef Contributions
 
