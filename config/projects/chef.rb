@@ -66,26 +66,4 @@ compress :dmg
 
 package :msi do
   upgrade_code "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
-
-  #######################################################################
-  # Locate the Chef gem's path relative to the installation directory
-  #######################################################################
-  install_path = Pathname.new(install_dir)
-
-  # Find path in which the Chef gem is installed
-  search_pattern = "#{install_path}/**/gems/chef-[0-9]*"
-  chef_gem_path  = Pathname.glob(search_pattern).find { |path| path.directory? }
-
-  if chef_gem_path.nil?
-    raise "Could not find a chef gem in `#{search_pattern}'!"
-  else
-    relative_path = chef_gem_path.relative_path_from(install_path)
-  end
-
-  parameters(
-    # We are going to use this path in the startup command of chef
-    # service. So we need to change file seperators to make windows
-    # happy.
-    'ChefGemPath' => windows_safe_path(relative_path.to_s),
-  )
 end

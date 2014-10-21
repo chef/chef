@@ -50,7 +50,7 @@
                   <File Id="RubyExecutable" Source="$(var.ProjectSourceDir)\embedded\bin\ruby.exe" KeyPath="yes" />
                   <ServiceInstall Name="chef-client" Type="ownProcess"
                                   Start="auto" Vital="yes" ErrorControl="ignore"
-                                  Arguments="[PROJECTLOCATION]$(var.ChefGemPath)\lib\chef\application\windows_service.rb"
+                                  Arguments="$(var.ProjectSourceDir)\bin\chef-windows-service"
                                   DisplayName="!(loc.ServiceDisplayName)"
                                   Description="!(loc.ServiceDescription)" />
                   <ServiceControl Id="ControlChefClientService" Name="chef-client"
