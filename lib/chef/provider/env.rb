@@ -58,7 +58,7 @@ class Chef
       # ==== Returns
       # <true>:: If a change is required
       # <false>:: If a change is not required
-      def compare_value
+      def requires_modify_or_create?
         if @new_resource.delim
           #e.g. check for existing value within PATH
           not new_values.all? do |val|
@@ -71,7 +71,7 @@ class Chef
 
       def action_create
         if @key_exists
-          if compare_value
+          if requires_modify_or_create?
             modify_env
             Chef::Log.info("#{@new_resource} altered")
             @new_resource.updated_by_last_action(true)
@@ -123,7 +123,7 @@ class Chef
 
       def action_modify
         if @key_exists
-          if compare_value
+          if requires_modify_or_create?
             modify_env
             Chef::Log.info("#{@new_resource} modified")
             @new_resource.updated_by_last_action(true)
