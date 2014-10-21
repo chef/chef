@@ -336,3 +336,9 @@ You can read more about this RFC [here](https://github.com/opscode/chef-rfc/blob
 
 1. `--medium`: Includes normal attributes in the output and presents the output as JSON.
 1. `--long`: Includes all attributes in the output and presents the output as JSON.
+
+## AIX Service Provider Support
+
+Chef 12 now supports managing services on AIX, using both the SRC (Subsystem Resource Controller) as well as the BSD-style init system. SRC is the default; the BSD-style provider can be selected using `Chef::Provider::Service::AixInit`.
+
+The SRC service provider will manage services as well as service groups. However, because SRC has no standard mechanism for starting services on system boot, `action :enable` and `action :disable` are not supported for SRC services. You may use the `execute` resource to invoke `mkitab`, for example, to add lines to `/etc/inittab` with the right parameters.
