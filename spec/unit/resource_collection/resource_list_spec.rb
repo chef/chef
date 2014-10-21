@@ -80,7 +80,7 @@ describe Chef::ResourceCollection::ResourceList do
         current = 0
         expected_resources = [resource, second_resource]
 
-        resource_list.execute_each_resource do |r|
+        resource_list.each do |r|
           expect(r).to be(expected_resources[current])
           current += 1
         end
