@@ -25,6 +25,7 @@ if windows?
   dependency "ruby-windows"
   dependency "libyaml-windows"
   dependency "ruby-windows-devkit"
+  dependency "ruby-windows-devkit-bash"
   dependency "cacerts"
   dependency "rubygems"
 else
