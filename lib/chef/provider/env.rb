@@ -94,7 +94,7 @@ class Chef
       def delete_element
         return false unless @new_resource.delim #no delim: delete the key
         needs_delete = new_values.any? { |v| current_values.include?(v) }
-        if not needs_delete
+        if !needs_delete
           Chef::Log.debug("#{@new_resource} element '#{@new_resource.value}' does not exist")
           return true #do not delete the key
         else
