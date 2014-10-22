@@ -1,5 +1,26 @@
 # Chef Client Release Notes 12.0.0:
 
+# Internal API Changes in this Release
+
+These changes do not impact any cookbook code, but may impact tools that
+use the code base as a library. Authors of tools that rely on Chef
+internals should review these changes carefully and update their
+applications.
+
+## Changes to CookbookUpload
+
+`Chef::CookbookUpload.new` previously took a path as the second
+argument, but due to internal changes, this parameter was not used, and
+it has been removed. See: https://github.com/opscode/chef/commit/12c9bed3a5a7ab86ff78cb660d96f8b77ad6395d
+
+## Changes to FileVendor
+
+`Chef::Cookbook::FileVendor` was previously configured by passing a
+block to the `on_create` method; it is now configured by calling either
+`fetch_from_remote` or `fetch_from_disk`. See: https://github.com/opscode/chef/commit/3b2b4de8e7f0d55524f2a0ccaf3e1aa9f2d371eb
+
+# End-User Changes
+
 ## Knife Prefers `config.rb` to `knife.rb`.
 
 Knife will now look for `config.rb` in preference to `knife.rb` for its
@@ -248,25 +269,6 @@ Informational messages from knife are now sent to stderr, allowing you to pipe t
 
 The `data_bag_item` dsl method can be used to load encrypted data bag items when an additional `secret` String parameter is included.
 If no `secret` is provided but the data bag item is encrypted, `Chef::Config[:encrypted_data_bag_secret]` will be checked.
-
-# Internal API Changes in this Release
-
-These changes do not impact any cookbook code, but may impact tools that
-use the code base as a library. Authors of tools that rely on Chef
-internals should review these changes carefully and update their
-applications.
-
-## Changes to CookbookUpload
-
-`Chef::CookbookUpload.new` previously took a path as the second
-argument, but due to internal changes, this parameter was not used, and
-it has been removed. See: https://github.com/opscode/chef/commit/12c9bed3a5a7ab86ff78cb660d96f8b77ad6395d
-
-## Changes to FileVendor
-
-`Chef::Cookbook::FileVendor` was previously configured by passing a
-block to the `on_create` method; it is now configured by calling either
-`fetch_from_remote` or `fetch_from_disk`. See: https://github.com/opscode/chef/commit/3b2b4de8e7f0d55524f2a0ccaf3e1aa9f2d371eb
 
 ## 'group' provider on OSX properly uses 'dscl' to determine existing groups
 
