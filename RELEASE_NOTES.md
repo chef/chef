@@ -415,3 +415,13 @@ batch 'make_safe_backup' do
 end
 ```
 
+## Chef Client logs events to Windows Event Log on Windows
+
+Chef 12 will log a small set of events to Windows Event Log. This feature is enabled by default, and can be disabled by the new config option `disable_event_logger`.
+
+Events by default will be logged to the "Application" event log on Windows. Chef will log event when:
+* Run starts
+* Run completes
+* Run fails
+
+Information about these events can be found in `Chef::EventDispatch::Base`.
