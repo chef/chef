@@ -66,4 +66,5 @@ compress :dmg
 
 package :msi do
   upgrade_code "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
+  wix_candle_extension 'WixUtilExtension'
 end

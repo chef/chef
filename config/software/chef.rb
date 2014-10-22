@@ -76,6 +76,7 @@ build do
 
     bundle "install --without server docgen", env: env
 
+    rake '-rdevkit build_eventlog'
   else
 
     # install the whole bundle first
