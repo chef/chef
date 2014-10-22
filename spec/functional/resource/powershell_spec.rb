@@ -22,6 +22,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
   include_context Chef::Resource::WindowsScript
 
+  let(:syntax_error_script_content) { "if (Test-Path .) echo 'this is an error'" }
   let(:successful_executable_script_content) { "#{ENV['SystemRoot']}\\system32\\attrib.exe $env:systemroot" }
   let(:failed_executable_script_content) { "#{ENV['SystemRoot']}\\system32\\attrib.exe /badargument" }
   let(:processor_architecture_script_content) { "echo $env:PROCESSOR_ARCHITECTURE" }
@@ -43,6 +44,12 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
   end
 
   describe "when the run action is invoked on Windows" do
+    it "successfully detect syntax error in script" do
+      resource.code(syntax_error_script_content)
+      resource.returns(1)
+      resource.run_action(:run)
+    end
+
     it "successfully executes a non-cmdlet Windows binary as the last command of the script" do
       resource.code(successful_executable_script_content + " | out-file -encoding ASCII #{script_output_path}")
       resource.returns(0)
