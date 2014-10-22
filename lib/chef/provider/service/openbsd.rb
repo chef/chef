@@ -113,8 +113,7 @@ class Chef
                 update_rcl! @rc_conf_local + "\n" + "#{builtin_service_enable_variable_name}=\"\""
               end
             else
-              # add to pkg_scripts, in the right order
-              # TODO: use afters, get these in the right order
+              # add to pkg_scripts, most recent addition goes last
               old_services_list = @rc_conf_local.match(/^pkg_scripts="(.*)"/)
               old_services_list = old_services_list ? old_services_list[1].split(' ') : []
               new_services_list = old_services_list + [@new_resource.service_name]
@@ -127,8 +126,6 @@ class Chef
               update_rcl! new_rcl
             end
           end
-        else
-          # TODO: verify order of pkg_scripts, fix if needed, otherwise do nothing
         end
 
         def disable_service
@@ -255,23 +252,6 @@ class Chef
           current_resource.enabled result
         end
         alias :is_enabled :determine_enabled_status!
-
-        # TODO: implement afters
-        #class TsortableHash < Hash
-          #include TSort
-          #alias tsort_each_node each_key
-          #def tsort_each_child(node, &block)
-            #fetch(node).each(&block)
-          #end
-        #end
-
-        #def afters
-          #@@afters ||= {}
-        #end
-
-        #def afters=(new_value)
-          #@@afters = new_value
-        #end
 
       end
     end
