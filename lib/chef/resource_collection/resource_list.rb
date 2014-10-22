@@ -19,6 +19,7 @@
 require 'chef/resource'
 require 'chef/resource_collection/stepable_iterator'
 require 'chef/resource_collection/resource_collection_serialization'
+require 'forwardable'
 
 # This class keeps the list of all known Resources in the order they are to be executed in.  It also keeps a pointer
 # to the most recently executed resource so we can add resources-to-execute after this point.
@@ -27,8 +28,16 @@ class Chef
     class ResourceList
       include ResourceCollection::ResourceCollectionSerialization
       include Enumerable
+      extend Forwardable
 
       attr_reader :iterator
+
+      attr_reader :resources
+      private :resources
+      # Delegate direct access methods to the @resources array
+      # 4 extra methods here are not included in the Enumerable's instance methods
+      direct_access_methods = Enumerable.instance_methods + [ :[], :each, :each_index, :empty? ]
+      def_delegators :resources, *(direct_access_methods)
 
       def initialize
         @resources = Array.new
@@ -67,16 +76,6 @@ class Chef
         @resources
       end
 
-      def [](index)
-        @resources[index]
-      end
-
-      def each
-        @resources.each do |resource|
-          yield resource
-        end
-      end
-
       def execute_each_resource(&resource_exec_block)
         @iterator = ResourceCollection::StepableIterator.for_collection(@resources)
         @iterator.each_with_index do |resource, idx|
@@ -85,17 +84,6 @@ class Chef
         end
       end
 
-      def each_index
-        @resources.each_index do |i|
-          yield i
-        end
-      end
-
-      def empty?
-        @resources.empty?
-      end
-
     end
   end
 end
-
