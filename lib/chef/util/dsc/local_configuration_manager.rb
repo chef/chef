@@ -79,14 +79,18 @@ EOH
     end
 
     def log_what_if_exception(what_if_exception_output)
-        if what_if_exception_output.gsub(/\s+/, ' ') =~ /A parameter cannot be found that matches parameter name 'Whatif'/i
-          # LCM returns an error if any of the resources do not support the opptional What-If
-          Chef::Log::warn("Received error while testing configuration due to resource not supporting 'WhatIf'")
-        elsif dsc_module_import_failure?(what_if_exception_output)
-          Chef::Log::warn("Received error while testing configuration due to a module for an imported resource possibly not being fully installed:\n#{what_if_exception_output.gsub(/\s+/, ' ')}")
-        else
-          Chef::Log::warn("Received error while testing configuration:\n#{what_if_exception_output.gsub(/\s+/, ' ')}")
-        end
+      if whatif_not_supported?(what_if_exception_output)
+        # LCM returns an error if any of the resources do not support the opptional What-If
+        Chef::Log::warn("Received error while testing configuration due to resource not supporting 'WhatIf'")
+      elsif dsc_module_import_failure?(what_if_exception_output)
+        Chef::Log::warn("Received error while testing configuration due to a module for an imported resource possibly not being fully installed:\n#{what_if_exception_output.gsub(/\s+/, ' ')}")
+      else
+        Chef::Log::warn("Received error while testing configuration:\n#{what_if_exception_output.gsub(/\s+/, ' ')}")
+      end
+    end
+
+    def whatif_not_supported?(what_if_exception_output)
+      !! (what_if_exception_output.gsub(/[\r\n]+/, '').gsub(/\s+/, ' ') =~ /A parameter cannot be found that matches parameter name 'Whatif'/i)
     end
 
     def dsc_module_import_failure?(what_if_output)
