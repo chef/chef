@@ -19,6 +19,10 @@ branches:
 
 script: bundle exec rspec --color --format progress
 
+env:
+  global:
+    - FORCE_FFI_YAJL=ext
+
 matrix:
   include:
   - rvm: 1.9.3
