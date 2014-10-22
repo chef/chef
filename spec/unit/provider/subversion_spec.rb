@@ -45,6 +45,7 @@ describe Chef::Provider::Subversion do
       @stdout = double("stdout")
       @stderr = double("stderr")
       @exitstatus = double("exitstatus")
+      @resource.svn_info_args("--config-dir /etc/subversion")
     end
 
     it "sets the revision to nil if there isn't any deployed code yet" do
@@ -68,7 +69,7 @@ describe Chef::Provider::Subversion do
       @stdout.stub(:string).and_return(example_svn_info)
       @stderr.stub(:string).and_return("")
       @exitstatus.stub(:exitstatus).and_return(0)
-      expected_command = ["svn info", {:cwd=>"/my/deploy/dir"}]
+      expected_command = ["svn info --config-dir /etc/subversion", {:cwd=>"/my/deploy/dir"}]
       @provider.should_receive(:popen4).with(*expected_command).
                                         and_yield("no-pid", "no-stdin", @stdout,@stderr).
                                         and_return(@exitstatus)

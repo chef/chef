@@ -139,7 +139,7 @@ class Chef
 
       def find_current_revision
         return nil unless ::File.exist?(::File.join(@new_resource.destination, ".svn"))
-        command = scm(:info)
+        command = scm(:info, @new_resource.svn_info_args)
         status, svn_info, error_message = output_of_command(command, run_options(:cwd => cwd))
 
         unless [0,1].include?(status.exitstatus)
