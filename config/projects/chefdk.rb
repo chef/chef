@@ -54,7 +54,7 @@ override :ruby,           version: "2.1.3"
 override :'ruby-windows', version: "2.0.0-p451"
 ######
 override :rubygems,       version: "2.4.1"
-override :'test-kitchen', version: "v1.2.1"
+override :'test-kitchen', version: "v121-dep-fix"
 override :yajl,           version: "1.2.0"
 override :zlib,           version: "1.2.8"
 
