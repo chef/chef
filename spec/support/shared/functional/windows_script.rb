@@ -44,4 +44,122 @@ shared_context Chef::Resource::WindowsScript do
   after(:each) do
     File.delete(script_output_path) if File.exists?(script_output_path)
   end
+
+  let!(:resource) do
+    Chef::Resource::WindowsScript::Batch.new("Batch resource functional test", @run_context)
+  end
+
+  shared_examples_for "a script resource with architecture attribute" do
+    context "with the given architecture attribute value" do
+      let(:resource_architecture) { architecture }
+      let(:expected_architecture) do
+        if architecture
+          expected_architecture = architecture
+        else
+          expected_architecture = :i386
+        end
+      end
+      let(:expected_architecture_output) do
+        expected_architecture == :i386 ? 'X86' : 'AMD64'
+      end
+      let(:guard_script_suffix) do
+        "guard"
+      end
+      let(:guard_script_output_path) do
+        "#{script_output_path}#{guard_script_suffix}"
+      end
+      let(:resource_command) do
+        "#{architecture_command} #{output_command} #{script_output_path}"
+      end
+      let(:resource_guard_command) do
+        "#{architecture_command} #{output_command} #{guard_script_output_path}"
+      end
+
+      before(:each) do
+        resource.code resource_command
+        (resource.architecture architecture) if architecture
+        resource.returns(0)
+      end
+
+      it "should create a process with the expected architecture" do
+        resource.run_action(:run)
+        get_process_architecture.should == expected_architecture_output.downcase
+      end
+
+      it "should execute guards with the same architecture as the resource" do
+        resource.only_if resource_guard_command
+        resource.run_action(:run)
+        get_process_architecture.should == expected_architecture_output.downcase
+        get_guard_process_architecture.should == expected_architecture_output.downcase
+        get_guard_process_architecture.should == get_process_architecture
+      end
+
+      let (:architecture) { :x86_64 }
+      it "should execute a 64-bit guard if the guard's architecture is specified as 64-bit" do
+        resource.only_if resource_guard_command, :architecture => :x86_64
+        resource.run_action(:run)
+        get_guard_process_architecture.should == 'amd64'
+      end
+
+      let (:architecture) { :i386 }
+      it "should execute a 32-bit guard if the guard's architecture is specified as 32-bit" do
+        resource.only_if resource_guard_command, :architecture => :i386
+        resource.run_action(:run)
+        get_guard_process_architecture.should == 'x86'
+      end
+    end
+  end
+
+  shared_examples_for "a Windows script running on Windows" do
+
+    describe "when the run action is invoked on Windows" do
+      it "executes the script code" do
+        resource.code("@whoami > #{script_output_path}")
+        resource.returns(0)
+        resource.run_action(:run)
+      end
+    end
+
+    context "when evaluating guards" do
+      it "has a guard_interpreter attribute set to the short name of the resource" do
+        resource.guard_interpreter.should == resource.resource_name
+        resource.not_if "findstr.exe /thiscommandhasnonzeroexitstatus"
+        expect(Chef::Resource).to receive(:resource_for_node).and_call_original
+        expect(resource.class).to receive(:new).and_call_original
+        resource.should_skip?(:run).should be_false
+      end
+    end
+
+    context "when the architecture attribute is not set" do
+      let(:architecture) { nil }
+      it_behaves_like "a script resource with architecture attribute"
+    end
+
+    context "when the architecture attribute is :i386" do
+      let(:architecture) { :i386 }
+      it_behaves_like "a script resource with architecture attribute"
+    end
+
+    context "when the architecture attribute is :x86_64" do
+      let(:architecture) { :x86_64 }
+      it_behaves_like "a script resource with architecture attribute"
+    end
+  end
+
+  def get_windows_script_output(suffix = '')
+    File.read("#{script_output_path}#{suffix}")
+  end
+
+  def source_contains_case_insensitive_content?( source, content )
+    source.downcase.include?(content.downcase)
+  end
+
+  def get_guard_process_architecture
+    get_process_architecture(guard_script_suffix)
+  end
+
+  def get_process_architecture(suffix = '')
+    get_windows_script_output(suffix).strip.downcase
+  end
+
 end

@@ -22,6 +22,12 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
   include_context Chef::Resource::WindowsScript
 
+  let (:architecture_command) { 'echo $env:PROCESSOR_ARCHITECTURE' }
+  let (:output_command) { ' | out-file -encoding ASCII ' }
+
+  it_behaves_like "a Windows script running on Windows"
+
+
   let(:successful_executable_script_content) { "#{ENV['SystemRoot']}\\system32\\attrib.exe $env:systemroot" }
   let(:failed_executable_script_content) { "#{ENV['SystemRoot']}\\system32\\attrib.exe /badargument" }
   let(:processor_architecture_script_content) { "echo $env:PROCESSOR_ARCHITECTURE" }
@@ -36,6 +42,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
   let(:arbitrary_nonzero_process_exit_code_content) { "exit #{arbitrary_nonzero_process_exit_code}" }
   let(:invalid_powershell_interpreter_flag) { "/thisflagisinvalid" }
   let(:valid_powershell_interpreter_flag) { "-Sta" }
+
   let!(:resource) do
     r = Chef::Resource::WindowsScript::PowershellScript.new("Powershell resource functional test", @run_context)
     r.code(successful_executable_script_content)
@@ -214,32 +221,36 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     before(:each) do
       resource.not_if.clear
       resource.only_if.clear
-      # resource.guard_interpreter should be :default by default
     end
 
-    it "evaluates a succeeding not_if block using cmd.exe as false by default" do
-      resource.not_if  "exit /b 0"
-      resource.should_skip?(:run).should be_true
-    end
+    context "when the guard_interpreter's default value of :powershell_script is overridden to :default" do
+      before(:each) do
+        resource.guard_interpreter :default
+      end
 
-    it "evaluates a failing not_if block using cmd.exe as true by default" do
-      resource.not_if  "exit /b 2"
-      resource.should_skip?(:run).should be_false
-    end
+      it "evaluates a succeeding not_if block using cmd.exe as false by default" do
+        resource.not_if  "exit /b 0"
+        resource.should_skip?(:run).should be_true
+      end
 
-    it "evaluates an succeeding only_if block using cmd.exe as true by default" do
-      resource.only_if  "exit /b 0"
-      resource.should_skip?(:run).should be_false
-    end
+      it "evaluates a failing not_if block using cmd.exe as true by default" do
+        resource.not_if  "exit /b 2"
+        resource.should_skip?(:run).should be_false
+      end
 
-    it "evaluates a failing only_if block using cmd.exe as false by default" do
-      resource.only_if  "exit /b 2"
-      resource.should_skip?(:run).should be_true
+      it "evaluates an succeeding only_if block using cmd.exe as true by default" do
+        resource.only_if  "exit /b 0"
+        resource.should_skip?(:run).should be_false
+      end
+
+      it "evaluates a failing only_if block using cmd.exe as false by default" do
+        resource.only_if  "exit /b 2"
+        resource.should_skip?(:run).should be_true
+      end
     end
 
     context "the only_if is specified before the guard" do
       before do
-        # force the guard_interpreter to :default in case the default changes later
         resource.guard_interpreter :default
       end
 
@@ -251,8 +262,9 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     end
 
     context "with powershell_script as the guard_interpreter" do
-      before(:each) do
-        resource.guard_interpreter :powershell_script
+
+      it "has a guard_interpreter attribute set to :powershell_script" do
+        expect(resource.guard_interpreter).to eq(:powershell_script)
       end
 
       it "evaluates a powershell $false for a not_if block as true" do
