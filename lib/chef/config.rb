@@ -78,6 +78,10 @@ class Chef
       formatters << [name, file_path]
     end
 
+    def self.add_event_logger(logger)
+      event_handlers << logger
+    end
+
     # Config file to load (client.rb, knife.rb, etc. defaults set differently in knife, chef-client, etc.)
     configurable(:config_file)
 
@@ -450,6 +454,15 @@ class Chef
 
     # Event Handlers
     default :event_handlers, []
+
+    default :disable_event_loggers, false
+    default :event_loggers do
+      evt_loggers = []
+      if Chef::Platform::windows?
+        evt_loggers << :win_evt
+      end
+      evt_loggers
+    end
 
     # Exception Handlers
     default :exception_handlers, []
