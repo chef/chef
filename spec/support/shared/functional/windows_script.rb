@@ -120,6 +120,16 @@ shared_context Chef::Resource::WindowsScript do
       end
     end
 
+    context "when evaluating guards" do
+      it "has a guard_interpreter attribute set to the short name of the resource" do
+        resource.guard_interpreter.should == resource.resource_name
+        resource.not_if "findstr.exe /thiscommandhasnonzeroexitstatus"
+        expect(Chef::Resource).to receive(:resource_for_node).and_call_original
+        expect(resource.class).to receive(:new).and_call_original
+        resource.should_skip?(:run).should be_false
+      end
+    end
+
     context "when the architecture attribute is not set" do
       let(:architecture) { nil }
       it_behaves_like "a script resource with architecture attribute"

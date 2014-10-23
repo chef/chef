@@ -31,7 +31,7 @@ class Chef
         super(name, run_context)
         @interpreter = interpreter_command
         @resource_name = resource_name
-        guard_interpreter resource_name
+        @default_guard_interpreter = resource_name
       end
 
       include Chef::Mixin::WindowsArchitectureHelper

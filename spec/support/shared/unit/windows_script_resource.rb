@@ -40,6 +40,10 @@ shared_examples_for "a Windows script resource" do
   end
 
   context "when evaluating guards" do
+    it "should have a default_guard_interpreter attribute that is the same as the resource" do
+      @resource.default_guard_interpreter.should == @resource.resource_name
+    end
+
     it "should default to using guard_interpreter attribute that is the same as the resource" do
       @resource.guard_interpreter.should == @resource.resource_name
     end
