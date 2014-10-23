@@ -1,7 +1,6 @@
 require 'rubygems'
 require 'rake'
 require 'mkmf'
-require 'win32/eventlog'
 
 desc "Building event log dll"
 
@@ -40,6 +39,7 @@ file EVT_SHARED_OBJECT => EVT_RESOURCE_OBJECT do
 end
 
 task :register => EVT_SHARED_OBJECT do
+  require 'win32/eventlog'
   dll_file = File.expand_path(EVT_SHARED_OBJECT)
   Win32::EventLog.add_event_source(
     :source => "Application",
