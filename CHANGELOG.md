@@ -20,6 +20,7 @@
   Typo fixes
 
 ### Chef Contributions
+* ruby 1.9.3 support is dropped
 * Update Chef to use RSpec 3.
 
 ## 12.0.0
@@ -170,6 +171,7 @@
 
 ### Chef Contributions
 
+* ruby 1.9.3 support is dropped
 * Added RFC-023 Chef 12 Attribute Changes (https://github.com/opscode/chef-rfc/blob/master/rfc023-chef-12-attributes-changes.md)
 * Added os/platform_family options to provides syntax on the Chef::Resource DSL
 * Added provides methods to the Chef::Provider DSL
