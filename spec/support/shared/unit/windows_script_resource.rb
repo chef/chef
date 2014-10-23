@@ -54,6 +54,19 @@ shared_examples_for "a Windows script resource" do
       @resource.only_if 'echo hi'
       @resource.should_skip?(:run).should == nil
     end
+
+    describe "when the guard is given a ruby block" do
+      it "should evaluate the guard if the guard_interpreter is set to its default value" do
+        @resource.only_if { true }
+        @resource.should_skip?(:run).should == nil
+      end
+
+      it "should raise an exception if the guard_interpreter is overridden from its default value" do
+        @resource.guard_interpreter :bash
+        @resource.only_if { true }
+        expect { @resource.should_skip?(:run) }.to raise_error
+      end
+    end
   end
 
   context "script with a default guard interpreter" do
