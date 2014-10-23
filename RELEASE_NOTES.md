@@ -241,9 +241,9 @@ manifest for the cookbook will be deleted from the cookbook file cache.
 In order to avoid redownloading the file_cache for all the cookbooks and files that are skipped when an
 override run list is used, when an override run list is set the file cache is not cleaned at all.
 
-## Dropped Support For Ruby 1.8.7/1.9.1/1.9.2
+## Dropped Support For Ruby 1.8.7/1.9.1/1.9.2/1.9.3
 
-Ruby 1.8.7, 1.9.1 and 1.9.2 are no longer supported.
+Ruby 1.8.7, 1.9.1, 1.9.2 and 1.9.3 are no longer supported.
 
 ## Changed no_lazy_load config default to True
 
