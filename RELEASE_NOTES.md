@@ -344,3 +344,74 @@ You can read more about this RFC [here](https://github.com/opscode/chef-rfc/blob
 Chef 12 now supports managing services on AIX, using both the SRC (Subsystem Resource Controller) as well as the BSD-style init system. SRC is the default; the BSD-style provider can be selected using `Chef::Provider::Service::AixInit`.
 
 The SRC service provider will manage services as well as service groups. However, because SRC has no standard mechanism for starting services on system boot, `action :enable` and `action :disable` are not supported for SRC services. You may use the `execute` resource to invoke `mkitab`, for example, to add lines to `/etc/inittab` with the right parameters.
+
+## `guard_interpreter` attribute for `powershell_script` defaults to `:powershell_script`
+The default `guard_interpreter` attribute for the `powershell_script` resource is `:powershell_script`. This means that the
+64-bit version of the PowerShell shell will be used to evaluate strings supplied to the `not_if` or `only_if` attributes of the
+resource. Prior to this release, the default value was `:default`, which used the 32-bit version of the `cmd.exe` shell to evaluate the guard.
+
+If you are using guard expressions with the `powershell_script` resource in your recipes, you should override the
+`guard_interpreter` attribute to restore the behavior of guards for this resource in Chef 11:
+
+```ruby
+# The not_if will be evaluated with 64-bit PowerShell by default,
+# So override it to :default if your guard assumes 32-bit cmd.exe
+powershell_script 'make_safe_backup' do
+  guard_interpreter :default # Chef 11 behavior
+  code 'cp ~/data/nodes.json $env:systemroot/system32/data/nodes.bak'
+
+  # cmd.exe (batch) guard below behaves differently in 32-bit vs. 64-bit processes
+  not_if 'if NOT EXIST %SYSTEMROOT%\\system32\\data\\nodes.bak exit /b 1' 
+end
+```
+
+If the code in your guard expression does not rely on the `cmd.exe` interpreter, e.g. it simply executes a process that should
+return an exit code such as `findstr datafile sentinelvalue`, and does not rely on being executed from a 32-bit process, then it
+should function identically when executed from the PowerShell shell and it is not necessary to override the attribute
+to`:default` to restore Chef 11 behavior.
+
+Note that with this change guards for the `powershell_script` resource will also inherit some attributes like `:architecture`, `:cwd`,
+`:environment`, and `:path`.
+
+## `guard_interpreter` attribute for `batch` resource defaults to `:batch`
+
+The default `guard_interpreter` attribute for the `batch` resource is now `:batch`. This means that the
+64-bit version of the `cmd.exe` shell will be used to evaluate strings supplied to the `not_if` or `only_if` attributes of the
+resource. Prior to this release, the default value was `:default`, which used the 32-bit version of the `cmd.exe` shell to evaluate the guard.
+
+Note that with this change guards for the `batch` resource will also inherit some attributes like `:architecture`, `:cwd`,
+`:environment`, and `:path`.
+
+Unless the code you supply to guard attributes (`only_if` and `not_if`) has logic that requires that the 32-bit version of
+`cmd.exe` be used to evaluate the guard or you need to avoid the inheritance behavior of guard options, that code should function identically in this release of Chef and Chef 11 releases.
+
+If an assumption of a 32-bit process for guard evaluation exists in your code, you can obtain the equivalent of Chef 11's 32-bit
+process behavior by supplying an architecture attribute to the guard as follows:
+
+```ruby
+# The not_if will be evaluated with 64-bit cmd.exe by default,
+# so you can verride it with the :architecture guard option to
+# make it 32-bit as it is in Chef 11
+batch 'make_safe_backup' do
+  code 'copy %USERPROFILE%\\data\\nodes.json %SYSTEMROOT%\\system32\\data\\nodes.bak'
+
+  # cmd.exe (batch) guard code below behaves differently in 32-bit vs. 64-bit processes
+  not_if 'if NOT EXIST %SYSTEMROOT%\\system32\\data\\nodes.bak exit /b 1', :architecture => :i386
+end
+```
+
+If in addition to the 32-bit process assumption you also need to avoid the inheritance behavior, you can revert completely to
+the Chef 11's 32-bit process, no inheritance behavior by supplying `:default` for the `guard_interpreter` as follows:
+
+```ruby
+# The not_if will be evaluated with 64-bit cmd.exe by default,
+# so override it to :default if your guard assumes 32-bit cmd.exe
+batch 'make_safe_backup' do
+  guard_interpreter :default # Revert to Chef 11 behavior
+  code 'copy %USERPROFILE%\\data\\nodes.json %SYSTEMROOT%\\system32\\data\\nodes.bak'
+
+  # cmd.exe (batch) guard code below behaves differently in 32-bit vs. 64-bit processes
+  not_if 'if NOT EXIST %SYSTEMROOT%\\system32\\data\\nodes.bak exit /b 1'
+end
+```
+

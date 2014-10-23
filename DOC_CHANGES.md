@@ -521,3 +521,25 @@ end
 
 Chef will then execute the Homebrew command as that user.  The `homebrew_user` attribute can only be provided to the 
 `homebrew_package` resource, not the `package` resource.
+
+### Default `guard_interpreter` attribute for `powershell_script` resource
+
+For the `powershell_script` resource, the `guard_interpreter` attribute is set to `:powershell_script` by default. This means
+that if a string is supplied to an `only_if` or `not_if` attribute of a `powersell_script` resource, the PowerShell command
+interpreter (the 64-bit version) will be used to evaluate the guard. It also means that other features available to the guard
+when `guard_interpreter` is set to something other than `:default`, such as inheritance of attributes and the specification of
+process architectur of the guard process (i.e. 32-bit or 64-bit process) are available by default.
+
+In versions of Chef prior to Chef 12, the value of the attribute was `:default` by default, which uses the 32-bit version of the
+`cmd.exe` (batch script language) shell to evaluate strings supplied to guards.
+
+### Default `guard_interpreter` attribute for `batch` resource
+
+For the`batch` resource, the `guard_interpreter` attribute it is set to `:batch` by default. This means
+that if a string is supplied to an `only_if` or `not_if` attribute of a `batch` resource, the 64-bit version of the Windows
+default command interpreter, `cmd.exe`, will be used to evaluate the guard. It also means that other features available to the guard
+when `guard_interpreter` is set to something other than `:default`, such as inheritance of attributes and the specification of
+process architectur of the guard process (i.e. 32-bit or 64-bit process) are available by default.
+
+In versions of Chef prior to Chef 12, the value of the attribute was `:default` by default, which means the 32-bit version of the
+`cmd.exe` (batch script language) shell would be used to evaluate strings supplied to guards.

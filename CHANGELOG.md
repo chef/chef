@@ -138,6 +138,7 @@
 
 ### Chef Contributions
 
+* Default `guard_interpreter` for `powershell_script` resource set to `:powershell_script`, for `batch` to `:batch`
 * Recipe definition now returns the retval of the definition
 * Add support for Windows 10 to version helper.
 * `dsc_script` resource should honor configuration parameters when `configuration_data_script` is not set (Issue #2209)
