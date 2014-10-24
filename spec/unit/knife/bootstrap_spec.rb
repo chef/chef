@@ -418,12 +418,6 @@ describe Chef::Knife::Bootstrap do
     context "from the knife config file" do
       let(:knife_ssh) do
         knife.name_args = ["config.example.com"]
-        knife.config[:ssh_user] = nil
-        knife.config[:ssh_port] = nil
-        knife.config[:ssh_gateway] = nil
-        knife.config[:forward_agent] = nil
-        knife.config[:identity_file] = nil
-        knife.config[:host_key_verify] = nil
         Chef::Config[:knife][:ssh_user] = "curiosity"
         Chef::Config[:knife][:ssh_port] = "2430"
         Chef::Config[:knife][:forward_agent] = true
@@ -431,6 +425,8 @@ describe Chef::Knife::Bootstrap do
         Chef::Config[:knife][:ssh_gateway] = "towel.blinkenlights.nl"
         Chef::Config[:knife][:host_key_verify] = true
         knife.stub(:render_template).and_return("")
+        knife.config = {}
+        knife.merge_configs
         knife.knife_ssh
       end
 
