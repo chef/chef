@@ -31,6 +31,10 @@ platforms:
   - name: debian-6.0.8
     run_list: apt::default
   - name: freebsd-9.2
+    run_list:
+      - freebsd::portsnap
+      - freebsd::pkgng
+  - name: freebsd-10.0
     run_list: freebsd::portsnap
   - name: ubuntu-10.04
     run_list: apt::default
