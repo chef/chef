@@ -138,6 +138,8 @@
   Fixed a bug in knife bootstrap that caused config options to override command line options.
 * [**Thiago Oliveira**](https://github.com/chilicheech):
   Fixed a bug in Mac OSX group provider and made it idempotent.
+* [**liseki**](https://github.com/liseki):
+  Fixed a bug in why-run mode for freebsd service resources without configured init scripts.
 
 
 
