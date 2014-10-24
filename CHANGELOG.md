@@ -134,6 +134,14 @@
   Made user prompts in knife more beautiful by adding a space after Y/N prompts.
 * [**Ivan Larionov**](https://github.com/xeron):
   Made empty run_list to produce an empty array when using node.to_hash.
+* [**Siddheshwar More**](https://github.com/siddheshwar-more):
+  Fixed a bug in knife bootstrap that caused config options to override command line options.
+* [**Thiago Oliveira**](https://github.com/chilicheech):
+  Fixed a bug in Mac OSX group provider and made it idempotent.
+* [**liseki**](https://github.com/liseki):
+  Fixed a bug in why-run mode for freebsd service resources without configured init scripts.
+* [**liseki**](https://github.com/liseki):
+  Fixed a bug in freebsd service providers to load the status correctly.
 
 
 ### Chef Contributions
@@ -229,7 +237,37 @@
 * Allow events to be logged to Windows Event Log
 * Fixed bug in env resource where a value containing the delimiter could never correctly match the existing values
 
-## Last Release: 11.14.2
+## 11.16.4
+
+* Windows omnibus installer security updates for redistributed bash.exe / sh.exe
+  vulnerabilities ("Shellshock") CVE-2014-6271, CVE-2014-6271, CVE-2014-6278,
+  CVE-2014-7186, CVE-2014-7187.
+* Fix bug on Windows where using the env resource on path could render the path unusable.
+* Chef Client now retries when it gets 50X from Chef Server.
+* Chef Client 11.16.4 can use the policyfiles generated with Chef DK 0.3.0.
+
+## 11.16.2
+
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  Fix a regression in whyrun_safe_ruby_block.
+
+## 11.16.0
+
+* Fix a bug in user dscl provider to enable managing password and other properties at the same time.
+* Add `dsc_script` resource to Chef for PowerShell DSC support on Windows
+
+## 11.14.6:
+
+* Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
+* Fix RPM package version detection (Issue 1554)
+* Fix a bug in reporting not to post negative duration values.
+* Add password setting support for Mac 10.7, 10.8 and 10.9 to the dscl user provider.
+* ChefSpec can find freebsd_package resource correctly when a package resource is declared on Freebsd.
+* http_proxy and related config vars no longer clobber already set ENV vars
+* all http_proxy configs now set lowercase + uppercase versions of ENV vars
+* https_proxy/ftp_proxy support setting `http://` URLs (and whatever mix and match makes sense)
+
+## 11.14.2
 
 * [**Jess Mink**](https://github.com/jmink):
   Symlinks to directories should be swingable on windows (CHEF-3960)
