@@ -65,6 +65,9 @@ platforms:
   - name: macosx-10.9
     driver:
       box: chef/macosx-10.9 # private
+  - name: macosx-10.10
+    driver:
+      box: chef/macosx-10.10 # private
   - name: windows-7-professional
     provisioner:
       name: windows_chef_zero
