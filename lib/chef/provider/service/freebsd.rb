@@ -27,8 +27,9 @@ class Chef
 
         attr_reader :enabled_state_found
 
-        implements  :service,
-                    :on_platforms => [:freebsd, :netbsd]
+        provides :service, os: [ "freebsd", "netbsd" ]
+
+        include Chef::Mixin::ShellOut
 
         def initialize(new_resource, run_context)
           super

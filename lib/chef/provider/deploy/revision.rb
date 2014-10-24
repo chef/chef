@@ -27,6 +27,8 @@ class Chef
   class Provider
     class Deploy
       class Revision < Chef::Provider::Deploy
+        provides :deploy_revision
+        provides :deploy_branch
 
         def all_releases
           sorted_releases

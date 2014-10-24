@@ -43,10 +43,6 @@ class Chef
       @run_context.events
     end
 
-    def provider_resolver
-      @run_context.provider_resolver
-    end
-
     # Determine the appropriate provider for the given resource, then
     # execute it.
     def run_action(resource, action, notification_type=nil, notifying_resource=nil)
@@ -82,7 +78,6 @@ class Chef
 
       # Execute each resource.
       run_context.resource_collection.execute_each_resource do |resource|
-        provider_resolver.resolve(resource)
         Array(resource.action).each {|action| run_action(resource, action)}
       end
 

@@ -152,7 +152,7 @@ class Chef
         when CHEF_RESOURCELIST
           Chef::ResourceCollection::ResourceList
         when /^Chef::Resource/
-          Chef::Resource.find_subclass_by_name(json_class)
+          Chef::Resource.find_descendants_by_name(json_class)
         else
           raise Chef::Exceptions::JSON::ParseError, "Unsupported `json_class` type '#{json_class}'"
         end

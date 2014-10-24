@@ -23,7 +23,6 @@ class Chef
       def initialize(name, run_context=nil)
         super
         @resource_name = :whyrun_safe_ruby_block
-        @provider = Chef::Provider::WhyrunSafeRubyBlock
       end
 
     end

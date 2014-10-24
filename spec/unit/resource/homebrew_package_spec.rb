@@ -16,26 +16,19 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::HomebrewPackage, 'initialize' do
 
+  static_provider_resolution(
+    resource: Chef::Resource::HomebrewPackage,
+    provider: Chef::Provider::Package::Homebrew,
+    name: :homebrew_package,
+    action: :install,
+    os: "mac_os_x",
+  )
+
   let(:resource) { Chef::Resource::HomebrewPackage.new('emacs') }
-
-  it 'returns a Chef::Resource::HomebrewPackage' do
-    expect(resource).to be_a_kind_of(Chef::Resource::HomebrewPackage)
-  end
-
-  it 'sets the resource_name to :homebrew_package' do
-    expect(resource.resource_name).to eql(:homebrew_package)
-  end
-
-  it 'sets the provider to Chef::Provider::Package::Homebrew' do
-    expect(resource.provider).to eql(Chef::Provider::Package::Homebrew)
-  end
-
-  it 'sets the homebrew_user to nil' do
-    expect(resource.homebrew_user).to eql(nil)
-  end
 
   shared_examples 'home_brew user set and returned' do
     it 'returns the configured homebrew_user' do

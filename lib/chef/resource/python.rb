@@ -1,4 +1,3 @@
-#
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
@@ -17,6 +16,7 @@
 #
 
 require 'chef/resource/script'
+require 'chef/provider/script'
 
 class Chef
   class Resource

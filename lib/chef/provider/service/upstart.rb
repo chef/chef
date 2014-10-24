@@ -27,6 +27,13 @@ class Chef
       class Upstart < Chef::Provider::Service::Simple
         UPSTART_STATE_FORMAT = /\w+ \(?(\w+)\)?[\/ ](\w+)/
 
+        provides :service, os: "linux"
+
+        def self.supports?(resource, action)
+          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart) &&
+            Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:upstart)
+        end
+
         # Upstart does more than start or stop a service, creating multiple 'states' [1] that a service can be in.
         # In chef, when we ask a service to start, we expect it to have started before performing the next step
         # since we have top down dependencies. Which is to say we may follow witha resource next that requires

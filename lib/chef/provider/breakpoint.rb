@@ -20,6 +20,8 @@ class Chef
   class Provider
     class Breakpoint < Chef::Provider
 
+      provides :breakpoint
+
       def load_current_resource
       end
 

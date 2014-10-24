@@ -17,8 +17,16 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::Subversion do
+
+  static_provider_resolution(
+    resource: Chef::Resource::Subversion,
+    provider: Chef::Provider::Subversion,
+    name: :subversion,
+    action: :install,
+  )
 
   before do
     @svn = Chef::Resource::Subversion.new("ohai, svn project!")
@@ -27,10 +35,6 @@ describe Chef::Resource::Subversion do
   it "is a subclass of Resource::Scm" do
     @svn.should be_an_instance_of(Chef::Resource::Subversion)
     @svn.should be_a_kind_of(Chef::Resource::Scm)
-  end
-
-  it "uses the subversion provider" do
-    @svn.provider.should eql(Chef::Provider::Subversion)
   end
 
   it "allows the force_export action" do

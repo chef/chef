@@ -23,10 +23,11 @@ class Chef
   class Resource
     class RpmPackage < Chef::Resource::Package
 
+      provides :rpm_package, os: [ "linux", "aix" ]
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :rpm_package
-        @provider = Chef::Provider::Package::Rpm
       end
 
     end

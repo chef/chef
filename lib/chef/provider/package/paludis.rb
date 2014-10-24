@@ -24,6 +24,8 @@ class Chef
     class Package
       class Paludis < Chef::Provider::Package
 
+        provides :paludis_package, os: "linux"
+
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.package_name)
           @current_resource.package_name(@new_resource.package_name)
@@ -45,7 +47,7 @@ class Chef
                 @current_resource.version(res[2])
               else
                 @candidate_version = res[2]
-                @current_resource.version(nil)              
+                @current_resource.version(nil)
               end
             end
           end

@@ -51,7 +51,8 @@ class Chef
     # recipes, which is triggered by #load. (See also: CookbookCompiler)
     attr_accessor :resource_collection
 
-    attr_reader :provider_resolver
+    # Chef::ProviderResolver for this run
+    attr_accessor :provider_resolver
 
     # A Hash containing the immediate notifications triggered by resources
     # during the converge phase of the chef run.
@@ -94,7 +95,6 @@ class Chef
     def load(run_list_expansion)
       @cookbook_compiler = CookbookCompiler.new(self, run_list_expansion, events)
       @cookbook_compiler.compile
-      @provider_resolver.load
     end
 
     # Adds an immediate notification to the

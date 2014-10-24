@@ -17,28 +17,19 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::EasyInstallPackage, "initialize" do
 
+  static_provider_resolution(
+    resource: Chef::Resource::EasyInstallPackage,
+    provider: Chef::Provider::Package::EasyInstall,
+    name: :easy_install_package,
+    action: :install,
+  )
+
   before(:each) do
     @resource = Chef::Resource::EasyInstallPackage.new("foo")
-  end
-
-  it "should create a new Chef::Resource::EasyInstallPackage" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::EasyInstallPackage)
-  end
-
-  it "should return a Chef::Resource::EasyInstallPackage" do
-    @resource.should be_a_kind_of(Chef::Resource::EasyInstallPackage)
-  end
-
-  it "should set the resource_name to :easy_install_package" do
-    @resource.resource_name.should eql(:easy_install_package)
-  end
-
-  it "should set the provider to Chef::Provider::Package::EasyInstall" do
-    @resource.provider.should eql(Chef::Provider::Package::EasyInstall)
   end
 
   it "should allow you to set the easy_install_binary attribute" do

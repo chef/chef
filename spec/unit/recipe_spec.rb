@@ -119,7 +119,8 @@ describe Chef::Recipe do
       describe "should locate platform mapped resources" do
 
         it "locate resource for particular platform" do
-          Object.const_set('ShaunTheSheep', Class.new(Chef::Resource){ provides :laughter, :on_platforms => ["television"] })
+          ShaunTheSheep = Class.new(Chef::Resource)
+          ShaunTheSheep.provides :laughter, :on_platforms => ["television"]
           node.automatic[:platform] = "television"
           node.automatic[:platform_version] = "123"
           res = recipe.laughter "timmy"
@@ -128,7 +129,8 @@ describe Chef::Recipe do
         end
 
         it "locate a resource for all platforms" do
-          Object.const_set("YourMom", Class.new(Chef::Resource){ provides :love_and_caring })
+          YourMom = Class.new(Chef::Resource)
+          YourMom.provides :love_and_caring
           res = recipe.love_and_caring "mommy"
           res.name.should eql("mommy")
           res.kind_of?(YourMom)
@@ -188,16 +190,7 @@ describe Chef::Recipe do
       # zen_follower resource has this:
       # provides :follower, :on_platforms => ["zen"]
       before do
-        node.stub(:[]) do |key|
-          case key
-          when :platform
-            :zen
-          when :platform_version
-            "1.0.0"
-          else
-            nil
-          end
-        end
+        node.automatic_attrs[:platform] = "zen"
       end
 
       let(:resource_follower) do

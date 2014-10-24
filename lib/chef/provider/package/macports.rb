@@ -2,6 +2,9 @@ class Chef
   class Provider
     class Package
       class Macports < Chef::Provider::Package
+
+        provides :macports_package, os: "mac_os_x"
+
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)

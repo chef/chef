@@ -23,6 +23,8 @@ class Chef
   class Provider
     class HttpRequest < Chef::Provider
 
+      provides :http_request
+
       attr_accessor :http
 
       def whyrun_supported?

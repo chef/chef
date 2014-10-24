@@ -26,6 +26,8 @@ class Chef
 
         attr_accessor :init_command
 
+        provides :service, os: "!windows"
+
         def initialize(new_resource, run_context)
           super
           @init_command = "/etc/init.d/#{@new_resource.service_name}"

@@ -22,59 +22,35 @@ require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/enforce_ownership_and_permissions'
 require 'chef/mixin/why_run'
 require 'chef/mixin/shell_out'
+require 'chef/mixin/descendants_tracker'
+require 'chef/platform/service_helpers'
+require 'chef/node_map'
 
 class Chef
   class Provider
     include Chef::Mixin::WhyRun
     include Chef::Mixin::ShellOut
-
+    extend Chef::Mixin::DescendantsTracker
 
     class << self
-      include Enumerable
-
-      @@providers = []
-
-      attr_reader :implementations
-      attr_reader :supported_platforms
-
-      def inherited(klass)
-        @@providers << klass
+      def node_map
+        @node_map ||= Chef::NodeMap.new
       end
 
-      def providers
-        @@providers
+      def provides(resource_name, opts={}, &block)
+        node_map.set(resource_name.to_sym, true, opts, &block)
       end
 
-      def each
-        providers.each { |provider| yield provider }
-        providers
+      # provides a node on the resource (early binding)
+      def provides?(node, resource)
+        node_map.get(node, resource.resource_name)
       end
 
-      def implements(*resources)
-        options = resources.last.is_a?(Hash) ? resources.pop : {}
-
-        @implementations = resources.map { |resource| resource.to_sym }
-        @supported_platforms = Array(options[:on_platforms] || :all)
-      end
-
-      def implements?(resource)
-        klass_name = resource.class.to_s.split('::').last
-        resource_name = klass_name.gsub(/([a-z0-9])([A-Z])/, '\1_\2').downcase
-
-        implementations && implementations.include?(resource_name.to_sym)
-      end
-
-      def supports_platform?(platform)
-        supported_platforms && (
-          supported_platforms.include?(:all) ||
-          supported_platforms.include?(platform.to_sym))
-      end
-
-      def enabled?(node)
+      # supports the given resource and action (late binding)
+      def supports?(resource, action)
         true
       end
     end
-
 
     attr_accessor :new_resource
     attr_accessor :current_resource

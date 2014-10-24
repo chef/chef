@@ -26,6 +26,8 @@ class Chef
       class Solaris < Chef::Provider::Service
         attr_reader :maintenance
 
+        provides :service, os: "solaris2"
+
         def initialize(new_resource, run_context=nil)
           super
           @init_command = "/usr/sbin/svcadm"

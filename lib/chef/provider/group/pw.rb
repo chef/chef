@@ -21,9 +21,6 @@ class Chef
     class Group
       class Pw < Chef::Provider::Group
 
-        implements  :group,
-                    :on_platforms => :freebsd
-
         def load_current_resource
           super
         end

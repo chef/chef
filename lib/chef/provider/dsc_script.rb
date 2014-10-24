@@ -24,6 +24,9 @@ require 'chef/util/path_helper'
 class Chef
   class Provider
     class DscScript < Chef::Provider
+
+      provides :dsc_script, os: "windows"
+
       def initialize(dsc_resource, run_context)
         super(dsc_resource, run_context)
         @dsc_resource = dsc_resource

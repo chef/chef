@@ -32,6 +32,8 @@ class Chef
   class Provider
     class RemoteDirectory < Chef::Provider::Directory
 
+      provides :remote_directory
+
       include Chef::Mixin::FileClass
 
       def action_create
@@ -63,7 +65,7 @@ class Chef
       def ls(path)
         files = Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob(path), '**', '*'),
                  ::File::FNM_DOTMATCH)
-        
+
         # Remove current directory and previous directory
         files.reject! do |name|
           basename = Pathname.new(name).basename().to_s

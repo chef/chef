@@ -692,24 +692,33 @@ describe Chef::Resource do
 
   describe "building the platform map" do
 
+    let(:klz) { Class.new(Chef::Resource) }
+
+    before do
+      Chef::Resource::Klz = klz
+    end
+
+    after do
+      Chef::Resource.send(:remove_const, :Klz)
+    end
+
     it 'adds mappings for a single platform' do
-      klz = Class.new(Chef::Resource)
-      Chef::Resource.platform_map.should_receive(:set).with(
-        :platform => :autobots, :short_name => :dinobot, :resource => klz
+      expect(Chef::Resource.node_map).to receive(:set).with(
+        :dinobot, Chef::Resource::Klz, { platform: ['autobots'] }
       )
-      klz.provides :dinobot, :on_platforms => ['autobots']
+      klz.provides :dinobot, platform: ['autobots']
     end
 
     it 'adds mappings for multiple platforms' do
-      klz = Class.new(Chef::Resource)
-      Chef::Resource.platform_map.should_receive(:set).twice
-      klz.provides :energy, :on_platforms => ['autobots','decepticons']
+      expect(Chef::Resource.node_map).to receive(:set).with(
+        :energy, Chef::Resource::Klz, { platform: ['autobots', 'decepticons']}
+      )
+      klz.provides :energy, platform: ['autobots', 'decepticons']
     end
 
     it 'adds mappings for all platforms' do
-      klz = Class.new(Chef::Resource)
-      Chef::Resource.platform_map.should_receive(:set).with(
-        :short_name => :tape_deck, :resource => klz
+      expect(Chef::Resource.node_map).to receive(:set).with(
+        :tape_deck, Chef::Resource::Klz, {}
       )
       klz.provides :tape_deck
     end
@@ -717,28 +726,26 @@ describe Chef::Resource do
   end
 
   describe "lookups from the platform map" do
+    let(:klz1) { Class.new(Chef::Resource) }
+    let(:klz2) { Class.new(Chef::Resource) }
 
     before(:each) do
+      Chef::Resource::Klz1 = klz1
+      Chef::Resource::Klz2 = klz2
       @node = Chef::Node.new
       @node.name("bumblebee")
       @node.automatic[:platform] = "autobots"
       @node.automatic[:platform_version] = "6.1"
-      Object.const_set('Soundwave', Class.new(Chef::Resource))
-      Object.const_set('Grimlock', Class.new(Chef::Resource){ provides :dinobot, :on_platforms => ['autobots'] })
+      Object.const_set('Soundwave', klz1)
+      klz2.provides :dinobot, :on_platforms => ['autobots']
+      Object.const_set('Grimlock', klz2)
     end
 
     after(:each) do
       Object.send(:remove_const, :Soundwave)
       Object.send(:remove_const, :Grimlock)
-    end
-
-    describe "resource_for_platform" do
-      it 'return a resource by short_name and platform' do
-        Chef::Resource.resource_for_platform(:dinobot,'autobots','6.1').should eql(Grimlock)
-      end
-      it "returns a resource by short_name if nothing else matches" do
-        Chef::Resource.resource_for_node(:soundwave, @node).should eql(Soundwave)
-      end
+      Chef::Resource.send(:remove_const, :Klz1)
+      Chef::Resource.send(:remove_const, :Klz2)
     end
 
     describe "resource_for_node" do

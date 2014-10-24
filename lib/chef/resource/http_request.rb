@@ -18,6 +18,7 @@
 #
 
 require 'chef/resource'
+require 'chef/provider/http_request'
 
 class Chef
   class Resource

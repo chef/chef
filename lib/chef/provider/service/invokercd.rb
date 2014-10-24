@@ -23,6 +23,12 @@ class Chef
     class Service
       class Invokercd < Chef::Provider::Service::Init
 
+        provides :service, platform_family: "debian"
+
+        def self.supports?(resource, action)
+          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:invokerc)
+        end
+
         def initialize(new_resource, run_context)
           super
           @init_command = "/usr/sbin/invoke-rc.d #{@new_resource.service_name}"

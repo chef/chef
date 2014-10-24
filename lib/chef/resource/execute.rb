@@ -18,6 +18,7 @@
 #
 
 require 'chef/resource'
+require 'chef/provider/execute'
 
 class Chef
   class Resource
