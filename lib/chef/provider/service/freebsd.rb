@@ -62,6 +62,7 @@ class Chef
           requirements.assert(:start, :enable, :reload, :restart) do |a|
             a.assertion { init_command }
             a.failure_message Chef::Exceptions::Service, "#{new_resource}: unable to locate the rc.d script"
+            a.whyrun("Assuming rc.d script will be installed by a previous action.")
           end
 
           requirements.assert(:all_actions) do |a|
@@ -72,7 +73,7 @@ class Chef
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { init_command && service_enable_variable_name != nil }
+            a.assertion { service_enable_variable_name != nil }
             a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{init_command} and rcvar"
             # No recovery in whyrun mode - the init file is present but not correct.
           end
