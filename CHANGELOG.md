@@ -138,6 +138,14 @@
 
 ### Chef Contributions
 
+* Added os/platform_family options to provides syntax on the Chef::Resource DSL
+* Added provides methods to the Chef::Provider DSL
+* Added supported?(resource, action) class method to all Providers for late-evaluation if a provider can handle a
+  resource
+* Added ProviderResolver feature to handle late resolution of providers based on what kinds of support is in the
+  base operating system.
+* Partial Deprecation of Chef::Platform provider mapping.  The static mapping will be removed as Chef-12 progresses
+  and the hooks will be completely dropped in Chef-13.
 * Default `guard_interpreter` for `powershell_script` resource set to `:powershell_script`, for `batch` to `:batch`
 * Recipe definition now returns the retval of the definition
 * Add support for Windows 10 to version helper.

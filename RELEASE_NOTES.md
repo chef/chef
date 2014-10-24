@@ -425,3 +425,24 @@ Events by default will be logged to the "Application" event log on Windows. Chef
 * Run fails
 
 Information about these events can be found in `Chef::EventDispatch::Base`.
+
+## Resource and Provider Resolution changes
+
+Resource resolution and provider resolution has been made more dynamic in Chef-12.  The `provides` syntax on the 
+Chef::Resource DSL (which has existed for 4 years) has been expanded to use platform_family and os and has been applied
+to most resources.  This does early switching at compile time between different resources based on the node data returned
+from ohai.  The effect is that previously the package resource on a CentOS machine invoked via `package "foo"` would be
+an instance of Chef::Resource::Package but would use the Chef::Provider::Package::Yum provider.  After the changes to
+the resources the resource will be an instance of Chef::Resource::YumPackage and will do the correct validation for
+the yum package provider.
+
+For the service resource it uses late validation via the Chef::ProviderResolver and will dynamically select which
+service provider to use at package converge time right before the service provider actions are invoked.  This means
+that if Chef is used to install systemd (or alternatively to remove it) then the ProviderResolver will be invoked
+and will be able to determine the proper provider to start the service.  It also allows for multiple providers to
+be invoked for a resource on a case-by-case basis.  The old static one-to-one Chef::Platform provider mapping was
+inflexible since it cannot handle the case where an admin installs or removes a subsystem from a distro, and cannot
+handle the case where there may be multiple providers that handle different kinds of services (e.g. Upstart, SysV,
+etc).  This fixes the Ubuntu 14.04 service resource problems, and can handle arbitrarily complicated future distro
+and administrative preferences dynamically.
+
