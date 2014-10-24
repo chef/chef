@@ -20,6 +20,8 @@
 class Chef
   class Provider
     class RubyBlock < Chef::Provider
+      provides :ruby_block
+
       def whyrun_supported?
         true
       end

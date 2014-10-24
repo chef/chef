@@ -27,6 +27,8 @@ class Chef
   class Provider
     class Directory < Chef::Provider::File
 
+      provides :directory
+
       def whyrun_supported?
         true
       end

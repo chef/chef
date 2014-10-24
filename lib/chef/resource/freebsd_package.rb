@@ -29,7 +29,7 @@ class Chef
     class FreebsdPackage < Chef::Resource::Package
       include Chef::Mixin::ShellOut
 
-      provides :package, :on_platforms => ["freebsd"]
+      provides :package, platform: "freebsd"
 
       def initialize(name, run_context=nil)
         super

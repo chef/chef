@@ -24,26 +24,32 @@ class Chef
     class Service
       class Insserv < Chef::Provider::Service::Init
 
+        provides :service, os: "linux"
+
+        def self.supports?(resource, action)
+          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:insserv)
+        end
+
         def load_current_resource
           super
 
-          # Look for a /etc/rc.*/SnnSERVICE link to signifiy that the service would be started in a runlevel
-          if Dir.glob("/etc/rc**/S*#{Chef::Util::PathHelper.escape_glob(@current_resource.service_name)}").empty?
-            @current_resource.enabled false
+          # Look for a /etc/rc.*/SnnSERVICE link to signify that the service would be started in a runlevel
+          if Dir.glob("/etc/rc**/S*#{Chef::Util::PathHelper.escape_glob(current_resource.service_name)}").empty?
+            current_resource.enabled false
           else
-            @current_resource.enabled true
+            current_resource.enabled true
           end
 
-          @current_resource
+          current_resource
         end
 
         def enable_service()
-          shell_out!("/sbin/insserv -r -f #{@new_resource.service_name}")
-          shell_out!("/sbin/insserv -d -f #{@new_resource.service_name}")
+          shell_out!("/sbin/insserv -r -f #{new_resource.service_name}")
+          shell_out!("/sbin/insserv -d -f #{new_resource.service_name}")
         end
 
         def disable_service()
-          shell_out!("/sbin/insserv -r -f #{@new_resource.service_name}")
+          shell_out!("/sbin/insserv -r -f #{new_resource.service_name}")
         end
       end
     end

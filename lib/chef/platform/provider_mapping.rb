@@ -41,7 +41,6 @@ class Chef
             :mac_os_x => {
               :default => {
                 :package => Chef::Provider::Package::Homebrew,
-                :service => Chef::Provider::Service::Macosx,
                 :user => Chef::Provider::User::Dscl,
                 :group => Chef::Provider::Group::Dscl
               }
@@ -49,7 +48,6 @@ class Chef
             :mac_os_x_server => {
               :default => {
                 :package => Chef::Provider::Package::Homebrew,
-                :service => Chef::Provider::Service::Macosx,
                 :user => Chef::Provider::User::Dscl,
                 :group => Chef::Provider::Group::Dscl
               }
@@ -57,7 +55,6 @@ class Chef
             :freebsd => {
               :default => {
                 :group   => Chef::Provider::Group::Pw,
-                :service => Chef::Provider::Service::Freebsd,
                 :user    => Chef::Provider::User::Pw,
                 :cron    => Chef::Provider::Cron
               }
@@ -203,7 +200,7 @@ class Chef
                 :group => Chef::Provider::Group::Gpasswd
               },
               "< 12.0" => {
-                :group => Chef::Provider::Group::Suse,              
+                :group => Chef::Provider::Group::Suse,
                 :service => Chef::Provider::Service::Redhat
               }
             },
@@ -276,7 +273,6 @@ class Chef
             :mswin => {
               :default => {
                 :env =>  Chef::Provider::Env::Windows,
-                :service => Chef::Provider::Service::Windows,
                 :user => Chef::Provider::User::Windows,
                 :group => Chef::Provider::Group::Windows,
                 :mount => Chef::Provider::Mount::Windows,
@@ -287,7 +283,6 @@ class Chef
             :mingw32 => {
               :default => {
                 :env =>  Chef::Provider::Env::Windows,
-                :service => Chef::Provider::Service::Windows,
                 :user => Chef::Provider::User::Windows,
                 :group => Chef::Provider::Group::Windows,
                 :mount => Chef::Provider::Mount::Windows,
@@ -298,7 +293,6 @@ class Chef
             :windows => {
               :default => {
                 :env =>  Chef::Provider::Env::Windows,
-                :service => Chef::Provider::Service::Windows,
                 :user => Chef::Provider::User::Windows,
                 :group => Chef::Provider::Group::Windows,
                 :mount => Chef::Provider::Mount::Windows,
@@ -310,7 +304,6 @@ class Chef
             :openindiana => {
               :default => {
                 :mount => Chef::Provider::Mount::Solaris,
-                :service => Chef::Provider::Service::Solaris,
                 :package => Chef::Provider::Package::Ips,
                 :cron => Chef::Provider::Cron::Solaris,
                 :group => Chef::Provider::Group::Usermod
@@ -319,7 +312,6 @@ class Chef
             :opensolaris => {
               :default => {
                 :mount => Chef::Provider::Mount::Solaris,
-                :service => Chef::Provider::Service::Solaris,
                 :package => Chef::Provider::Package::Ips,
                 :cron => Chef::Provider::Cron::Solaris,
                 :group => Chef::Provider::Group::Usermod
@@ -328,7 +320,6 @@ class Chef
             :nexentacore => {
               :default => {
                 :mount => Chef::Provider::Mount::Solaris,
-                :service => Chef::Provider::Service::Solaris,
                 :package => Chef::Provider::Package::Solaris,
                 :cron => Chef::Provider::Cron::Solaris,
                 :group => Chef::Provider::Group::Usermod
@@ -337,7 +328,6 @@ class Chef
             :omnios => {
               :default => {
                 :mount => Chef::Provider::Mount::Solaris,
-                :service => Chef::Provider::Service::Solaris,
                 :package => Chef::Provider::Package::Ips,
                 :cron => Chef::Provider::Cron::Solaris,
                 :group => Chef::Provider::Group::Usermod,
@@ -347,7 +337,6 @@ class Chef
             :solaris2 => {
               :default => {
                 :mount => Chef::Provider::Mount::Solaris,
-                :service => Chef::Provider::Service::Solaris,
                 :package => Chef::Provider::Package::Ips,
                 :cron => Chef::Provider::Cron::Solaris,
                 :group => Chef::Provider::Group::Usermod,
@@ -355,7 +344,6 @@ class Chef
               },
               "< 5.11" => {
                 :mount => Chef::Provider::Mount::Solaris,
-                :service => Chef::Provider::Service::Solaris,
                 :package => Chef::Provider::Package::Solaris,
                 :cron => Chef::Provider::Cron::Solaris,
                 :group => Chef::Provider::Group::Usermod,
@@ -365,7 +353,6 @@ class Chef
             :smartos => {
               :default => {
                 :mount => Chef::Provider::Mount::Solaris,
-                :service => Chef::Provider::Service::Solaris,
                 :package => Chef::Provider::Package::SmartOS,
                 :cron => Chef::Provider::Cron::Solaris,
                 :group => Chef::Provider::Group::Usermod
@@ -373,7 +360,6 @@ class Chef
             },
             :netbsd => {
               :default => {
-                :service => Chef::Provider::Service::Freebsd,
                 :group => Chef::Provider::Group::Groupmod
               }
             },
@@ -407,29 +393,10 @@ class Chef
               }
             },
             :default => {
-              :file => Chef::Provider::File,
-              :directory => Chef::Provider::Directory,
-              :link => Chef::Provider::Link,
-              :template => Chef::Provider::Template,
-              :remote_directory => Chef::Provider::RemoteDirectory,
-              :execute => Chef::Provider::Execute,
               :mount => Chef::Provider::Mount::Mount,
-              :script => Chef::Provider::Script,
-              :service => Chef::Provider::Service::Init,
-              :perl => Chef::Provider::Script,
-              :python => Chef::Provider::Script,
-              :ruby => Chef::Provider::Script,
-              :bash => Chef::Provider::Script,
-              :csh => Chef::Provider::Script,
               :user => Chef::Provider::User::Useradd,
               :group => Chef::Provider::Group::Gpasswd,
-              :http_request => Chef::Provider::HttpRequest,
-              :route => Chef::Provider::Route,
               :ifconfig => Chef::Provider::Ifconfig,
-              :ruby_block => Chef::Provider::RubyBlock,
-              :whyrun_safe_ruby_block => Chef::Provider::WhyrunSafeRubyBlock,
-              :erl_call => Chef::Provider::ErlCall,
-              :log => Chef::Provider::Log::ChefLog
             }
           }
         end

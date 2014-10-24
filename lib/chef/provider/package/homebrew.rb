@@ -25,7 +25,11 @@ class Chef
   class Provider
     class Package
       class Homebrew < Chef::Provider::Package
+
+        provides :homebrew_package, os: "mac_os_x"
+
         include Chef::Mixin::HomebrewUser
+
         def load_current_resource
           self.current_resource = Chef::Resource::Package.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)

@@ -16,23 +16,18 @@
 # limitations under the License.
 #
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::SmartosPackage, "initialize" do
 
-  before(:each) do
-    @resource = Chef::Resource::SmartosPackage.new("foo")
-  end
+  static_provider_resolution(
+    resource: Chef::Resource::SmartosPackage,
+    provider: Chef::Provider::Package::SmartOS,
+    name: :smartos_package,
+    action: :install,
+    os: "solaris2",
+    platform_family: "smartos",
+  )
 
-  it "should return a Chef::Resource::SmartosPackage" do
-    @resource.should be_a_kind_of(Chef::Resource::SmartosPackage)
-  end
-
-  it "should set the resource_name to :smartos_package" do
-    @resource.resource_name.should eql(:smartos_package)
-  end
-
-  it "should set the provider to Chef::Provider::Package::SmartOS" do
-    @resource.provider.should eql(Chef::Provider::Package::SmartOS)
-  end
 end

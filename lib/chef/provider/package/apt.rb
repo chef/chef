@@ -25,6 +25,8 @@ class Chef
     class Package
       class Apt < Chef::Provider::Package
 
+        provides :apt_package, os: "linux"
+
         attr_accessor :is_virtual_package
 
         def load_current_resource

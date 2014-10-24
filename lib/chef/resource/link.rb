@@ -25,7 +25,7 @@ class Chef
     class Link < Chef::Resource
       include Chef::Mixin::Securable
 
-      provides :link, :on_platform  => :all
+      provides :link
 
       identity_attr :target_file
 
@@ -40,7 +40,6 @@ class Chef
         @link_type = :symbolic
         @target_file = name
         @allowed_actions.push(:create, :delete)
-        @provider = Chef::Provider::Link
       end
 
       def to(arg=nil)

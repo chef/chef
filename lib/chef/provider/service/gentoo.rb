@@ -22,6 +22,9 @@ require 'chef/mixin/command'
 require 'chef/util/path_helper'
 
 class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
+
+  provides :service, platform_family: "gentoo"
+
   def load_current_resource
 
     @new_resource.supports[:status] = true

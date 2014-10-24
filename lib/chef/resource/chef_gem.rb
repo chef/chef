@@ -23,13 +23,12 @@ class Chef
   class Resource
     class ChefGem < Chef::Resource::Package::GemPackage
 
-      provides :chef_gem, :on_platforms => :all
+      provides :chef_gem
 
       def initialize(name, run_context=nil)
         super
         @resource_name = :chef_gem
         @gem_binary = RbConfig::CONFIG['bindir'] + "/gem"
-        @provider = Chef::Provider::Package::Rubygems
       end
 
       # The chef_gem resources is for installing gems to the current gem environment only for use by Chef cookbooks.

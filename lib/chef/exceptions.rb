@@ -91,7 +91,11 @@ class Chef
     class ResourceNotFound < RuntimeError; end
 
     # Can't find a Resource of this type that is valid on this platform.
-    class NoSuchResourceType < NameError; end
+    class NoSuchResourceType < NameError
+      def initialize(short_name, node)
+        super "Cannot find a resource for #{short_name} on #{node[:platform]} version #{node[:platform_version]}"
+      end
+    end
 
     class InvalidResourceSpecification < ArgumentError; end
     class SolrConnectionError < RuntimeError; end
@@ -355,5 +359,12 @@ class Chef
     end
 
     class InvalidSearchQuery < ArgumentError; end
+
+    # Raised by Chef::ProviderResolver
+    class AmbiguousProviderResolution < RuntimeError
+      def initialize(resource, classes)
+        super "Found more than one provider for #{resource.resource_name} resource: #{classes}"
+      end
+    end
   end
 end

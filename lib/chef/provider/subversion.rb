@@ -27,6 +27,8 @@ class Chef
   class Provider
     class Subversion < Chef::Provider
 
+      provides :subversion
+
       SVN_INFO_PATTERN = /^([\w\s]+): (.+)$/
 
       include Chef::Mixin::Command

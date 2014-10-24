@@ -19,6 +19,8 @@
 class Chef
   class Provider
     class WhyrunSafeRubyBlock < Chef::Provider::RubyBlock
+      provides :whyrun_safe_ruby_block
+
       def action_run
         @new_resource.block.call
         @new_resource.updated_by_last_action(true)

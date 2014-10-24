@@ -27,6 +27,8 @@ class Chef
 
         include Chef::Mixin::GetSourceFromPackage
 
+        provides :solaris_package, os: "solaris2"
+
         # def initialize(*args)
         #   super
         #   @current_resource = Chef::Resource::Package.new(@new_resource.name)

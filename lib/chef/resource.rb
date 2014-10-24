@@ -27,11 +27,12 @@ require 'chef/guard_interpreter/resource_guard_interpreter'
 require 'chef/resource/conditional'
 require 'chef/resource/conditional_action_not_nothing'
 require 'chef/resource_collection'
-require 'chef/resource_platform_map'
+require 'chef/node_map'
 require 'chef/node'
 require 'chef/platform'
 
 require 'chef/mixin/deprecation'
+require 'chef/mixin/descendants_tracker'
 
 class Chef
   class Resource
@@ -133,6 +134,7 @@ F
     include Chef::Mixin::Deprecation
 
     extend Chef::Mixin::ConvertToClassName
+    extend Chef::Mixin::DescendantsTracker
 
     if Module.method(:const_defined?).arity == 1
       def self.strict_const_defined?(const)
@@ -144,24 +146,13 @@ F
       end
     end
 
-    # Track all subclasses of Resource. This is used so names can be looked up
-    # when attempting to deserialize from JSON. (See: json_compat)
-    def self.resource_classes
-      # Using a class variable here ensures we have one variable to track
-      # subclasses shared by the entire class hierarchy; without this, each
-      # subclass would have its own list of subclasses.
-      @@resource_classes ||= []
-    end
-
-    # Callback when subclass is defined. Adds subclass to list of subclasses.
-    def self.inherited(subclass)
-      resource_classes << subclass
-    end
-
-    # Look up a subclass by +class_name+ which should be a string that matches
-    # `Subclass.name`
-    def self.find_subclass_by_name(class_name)
-      resource_classes.first {|c| c.name == class_name }
+    class << self
+      # back-compat
+      # NOTE: that we do not support unregistering classes as descendents like
+      # we used to for LWRP unloading because that was horrible and removed in
+      # Chef-12.
+      alias :resource_classes :descendants
+      alias :find_subclass_by_name :find_descendants_by_name
     end
 
     # Set or return the list of "state attributes" implemented by the Resource
@@ -688,16 +679,9 @@ F
     end
 
     def provider_for_action(action)
-      # leverage new platform => short_name => resource
-      # which requires explicitly setting provider in
-      # resource class
-      if self.provider
-        provider = self.provider.new(self, self.run_context)
-        provider.action = action
-        provider
-      else # fall back to old provider resolution
-        Chef::Platform.provider_for_resource(self, action)
-      end
+      provider = run_context.provider_resolver.resolve(self, action).new(self, run_context)
+      provider.action = action
+      provider
     end
 
     def custom_exception_message(e)
@@ -772,8 +756,8 @@ F
       @provider_base ||= Chef::Provider
     end
 
-    def self.platform_map
-      @@platform_map ||= PlatformMap.new
+    def self.node_map
+      @@node_map ||= NodeMap.new
     end
 
     # Maps a short_name (and optionally a platform  and version) to a
@@ -782,52 +766,28 @@ F
     # (I'm looking at you Chef::Resource::Package)
     # Ex:
     #   class WindowsFile < Chef::Resource
-    #     provides :file, :on_platforms => ["windows"]
+    #     provides :file, os: "linux", platform_family: "rhel", platform: "redhat"
+    #     provides :file, os: "!windows
+    #     provides :file, os: [ "linux", "aix" ]
+    #     provides :file, os: "solaris2" do |node|
+    #       node['platform_version'].to_f <= 5.11
+    #     end
     #     # ...other stuff
     #   end
     #
-    # TODO: 2011-11-02 schisamo - platform_version support
-    def self.provides(short_name, opts={})
+    def self.provides(short_name, opts={}, &block)
       short_name_sym = short_name
       if short_name.kind_of?(String)
+        # YAGNI: this is probably completely unnecessary and can be removed?
+        Chef::Log.warn "[DEPRECATION] Passing a String to Chef::Resource#provides will be removed"
         short_name.downcase!
         short_name.gsub!(/\s/, "_")
         short_name_sym = short_name.to_sym
       end
-      if opts.has_key?(:on_platforms)
-        platforms = [opts[:on_platforms]].flatten
-        platforms.each do |p|
-          p = :default if :all == p.to_sym
-          platform_map.set(
-            :platform => p.to_sym,
-            :short_name => short_name_sym,
-            :resource => self
-          )
-        end
-      else
-        platform_map.set(
-          :short_name => short_name_sym,
-          :resource => self
-        )
-      end
+      node_map.set(short_name_sym, constantize(self.name), opts, &block)
     end
 
-    # Returns a resource based on a short_name anda platform and version.
-    #
-    #
-    # ==== Parameters
-    # short_name<Symbol>:: short_name of the resource (ie :directory)
-    # platform<Symbol,String>:: platform name
-    # version<String>:: platform version
-    #
-    # === Returns
-    # <Chef::Resource>:: returns the proper Chef::Resource class
-    def self.resource_for_platform(short_name, platform=nil, version=nil)
-      platform_map.get(short_name, platform, version)
-    end
-
-    # Returns a resource based on a short_name and a node's
-    # platform and version.
+    # Returns a resource based on a short_name and node
     #
     # ==== Parameters
     # short_name<Symbol>:: short_name of the resource (ie :directory)
@@ -836,12 +796,25 @@ F
     # === Returns
     # <Chef::Resource>:: returns the proper Chef::Resource class
     def self.resource_for_node(short_name, node)
+      klass = node_map.get(node, short_name) ||
+        resource_matching_short_name(short_name)
+      raise Chef::Exceptions::NoSuchResourceType.new(short_name, node) if klass.nil?
+      klass
+    end
+
+    # Returns the class of a Chef::Resource based on the short name
+    # ==== Parameters
+    # short_name<Symbol>:: short_name of the resource (ie :directory)
+    #
+    # === Returns
+    # <Chef::Resource>:: returns the proper Chef::Resource class
+    def self.resource_matching_short_name(short_name)
       begin
-        platform, version = Chef::Platform.find_platform_and_version(node)
-      rescue ArgumentError
+        rname = convert_to_class_name(short_name.to_s)
+        Chef::Resource.const_get(rname)
+      rescue NameError
+        nil
       end
-      resource = resource_for_platform(short_name, platform, version)
-      resource
     end
 
     private

@@ -17,23 +17,20 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::IpsPackage, "initialize" do
 
+  static_provider_resolution(
+    resource: Chef::Resource::IpsPackage,
+    provider: Chef::Provider::Package::Ips,
+    name: :ips_package,
+    action: :install,
+    os: "solaris2",
+  )
+
   before(:each) do
     @resource = Chef::Resource::IpsPackage.new("crypto/gnupg")
-  end
-
-  it "should return a Chef::Resource::IpsPackage" do
-    @resource.should be_a_kind_of(Chef::Resource::IpsPackage)
-  end
-
-  it "should set the resource_name to :ips_package" do
-    @resource.resource_name.should eql(:ips_package)
-  end
-
-  it "should set the provider to Chef::Provider::Package::Ips" do
-    @resource.provider.should eql(Chef::Provider::Package::Ips)
   end
 
   it "should support accept_license" do

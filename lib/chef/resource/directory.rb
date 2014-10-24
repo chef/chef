@@ -32,7 +32,7 @@ class Chef
 
       include Chef::Mixin::Securable
 
-      provides :directory, :on_platforms => :all
+      provides :directory
 
       def initialize(name, run_context=nil)
         super
@@ -41,7 +41,6 @@ class Chef
         @action = :create
         @recursive = false
         @allowed_actions.push(:create, :delete)
-        @provider = Chef::Provider::Directory
       end
 
       def recursive(arg=nil)

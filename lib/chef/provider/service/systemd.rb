@@ -20,6 +20,13 @@ require 'chef/resource/service'
 require 'chef/provider/service/simple'
 
 class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
+
+  provides :service, os: "linux"
+
+  def self.supports?(resource, action)
+    Chef::Platform::ServiceHelpers.service_resource_providers.include?(:systemd)
+  end
+
   def load_current_resource
     @current_resource = Chef::Resource::Service.new(@new_resource.name)
     @current_resource.service_name(@new_resource.service_name)

@@ -26,6 +26,8 @@ class Chef
     class Service
       class Macosx < Chef::Provider::Service::Simple
 
+        provides :service, os: "darwin"
+
         def self.gather_plist_dirs
           locations = %w{/Library/LaunchAgents
                          /Library/LaunchDaemons

@@ -27,6 +27,8 @@ class Chef
     class Package
       class Ips < Chef::Provider::Package
 
+        provides :ips_package, os: "solaris2"
+
         attr_accessor :virtual
 
         def define_resource_requirements

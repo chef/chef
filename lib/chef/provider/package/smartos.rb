@@ -29,6 +29,8 @@ class Chef
       class SmartOS < Chef::Provider::Package
         attr_accessor :is_virtual_package
 
+        provides :smartos_package, os: "solaris2", platform_family: "smartos"
+
         def load_current_resource
           Chef::Log.debug("#{@new_resource} loading current resource")
           @current_resource = Chef::Resource::Package.new(@new_resource.name)

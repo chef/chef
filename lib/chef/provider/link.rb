@@ -28,6 +28,8 @@ class Chef
   class Provider
     class Link < Chef::Provider
 
+      provides :link
+
       include Chef::Mixin::EnforceOwnershipAndPermissions
       include Chef::Mixin::FileClass
 

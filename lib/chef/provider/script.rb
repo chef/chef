@@ -22,6 +22,12 @@ require 'chef/provider/execute'
 class Chef
   class Provider
     class Script < Chef::Provider::Execute
+      provides :bash
+      provides :csh
+      provides :perl
+      provides :python
+      provides :ruby
+      provides :script
 
       def initialize(new_resource, run_context)
         super

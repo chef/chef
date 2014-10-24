@@ -23,10 +23,11 @@ class Chef
   class Resource
     class DpkgPackage < Chef::Resource::Package
 
+      provides :dpkg_package, os: "linux"
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :dpkg_package
-        @provider = Chef::Provider::Package::Dpkg
       end
 
     end

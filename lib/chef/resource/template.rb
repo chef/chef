@@ -27,7 +27,7 @@ class Chef
     class Template < Chef::Resource::File
       include Chef::Mixin::Securable
 
-      provides :template, :on_platforms => :all
+      provides :template
 
       attr_reader :inline_helper_blocks
       attr_reader :inline_helper_modules
@@ -40,7 +40,6 @@ class Chef
         @cookbook = nil
         @local = false
         @variables = Hash.new
-        @provider = Chef::Provider::Template
         @inline_helper_blocks = {}
         @inline_helper_modules = []
         @helper_modules = []

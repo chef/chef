@@ -26,7 +26,7 @@ class Chef
     class RemoteDirectory < Chef::Resource::Directory
       include Chef::Mixin::Securable
 
-      provides :remote_directory, :on_platforms => :all
+      provides :remote_directory
 
       identity_attr :path
 
@@ -48,7 +48,6 @@ class Chef
         @overwrite = true
         @allowed_actions.push(:create, :create_if_missing, :delete)
         @cookbook = nil
-        @provider = Chef::Provider::RemoteDirectory
       end
 
       if Chef::Platform.windows?

@@ -17,8 +17,17 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::Deploy do
+
+  static_provider_resolution(
+    resource: Chef::Resource::Deploy,
+    provider: Chef::Provider::Deploy::Timestamped,
+    name: :deploy,
+    action: :deploy,
+  )
+
 
   class << self
     def resource_has_a_string_attribute(attr_name)
@@ -194,10 +203,6 @@ describe Chef::Resource::Deploy do
     restart_like_this = lambda {p :noop}
     @resource.restart(&restart_like_this)
     @resource.restart.should == restart_like_this
-  end
-
-  it "defaults to using the Deploy::Timestamped provider" do
-    @resource.provider.should == Chef::Provider::Deploy::Timestamped
   end
 
   it "allows providers to be set with a full class name" do

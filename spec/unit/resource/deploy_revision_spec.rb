@@ -17,31 +17,26 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::DeployRevision do
 
-  it "defaults to the revision deploy provider" do
-    @resource = Chef::Resource::DeployRevision.new("deploy _this_!")
-    @resource.provider.should == Chef::Provider::Deploy::Revision
-  end
-
-  it "has a name of deploy_revision" do
-    @resource = Chef::Resource::DeployRevision.new("deploy _this_!")
-    @resource.resource_name.should == :deploy_revision
-  end
+  static_provider_resolution(
+    resource: Chef::Resource::DeployRevision,
+    provider: Chef::Provider::Deploy::Revision,
+    name: :deploy_revision,
+    action: :deploy,
+  )
 
 end
 
 describe Chef::Resource::DeployBranch do
 
-  it "defaults to the revision deploy provider" do
-    @resource = Chef::Resource::DeployBranch.new("deploy _this_!")
-    @resource.provider.should == Chef::Provider::Deploy::Revision
-  end
-
-  it "has a name of deploy_branch" do
-    @resource = Chef::Resource::DeployBranch.new("deploy _this_!")
-    @resource.resource_name.should == :deploy_branch
-  end
+  static_provider_resolution(
+    resource: Chef::Resource::DeployBranch,
+    provider: Chef::Provider::Deploy::Revision,
+    name: :deploy_branch,
+    action: :deploy,
+  )
 
 end

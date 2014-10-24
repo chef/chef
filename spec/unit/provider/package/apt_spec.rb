@@ -229,7 +229,7 @@ SHOWPKG_STDOUT
         @new_resource = nil
         @new_resource = Chef::Resource::AptPackage.new("irssi", @run_context)
         @new_resource.default_release("lenny-backports")
-
+        @new_resource.provider = @provider
         @provider.new_resource = @new_resource
 
         @provider.should_receive(:shell_out!).with(

@@ -17,24 +17,17 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::GemPackage, "initialize" do
 
-  before(:each) do
-    @resource = Chef::Resource::GemPackage.new("foo")
-  end
+  static_provider_resolution(
+    resource: Chef::Resource::GemPackage,
+    provider: Chef::Provider::Package::Rubygems,
+    name: :gem_package,
+    action: :install,
+  )
 
-  it "should return a Chef::Resource::GemPackage" do
-    @resource.should be_a_kind_of(Chef::Resource::GemPackage)
-  end
-
-  it "should set the resource_name to :gem_package" do
-    @resource.resource_name.should eql(:gem_package)
-  end
-
-  it "should set the provider to Chef::Provider::Package::Rubygems" do
-    @resource.provider.should eql(Chef::Provider::Package::Rubygems)
-  end
 end
 
 describe Chef::Resource::GemPackage, "gem_binary" do

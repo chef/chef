@@ -359,6 +359,9 @@ class Chef
           Chef::Log.logger
         end
 
+        provides :chef_gem
+        provides :gem_package
+
         include Chef::Mixin::GetSourceFromPackage
 
         def initialize(new_resource, run_context=nil)

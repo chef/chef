@@ -25,6 +25,8 @@ class Chef
   class Provider
     class Git < Chef::Provider
 
+      provides :git
+
       def whyrun_supported?
         true
       end

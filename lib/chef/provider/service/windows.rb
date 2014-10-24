@@ -25,6 +25,10 @@ end
 
 class Chef::Provider::Service::Windows < Chef::Provider::Service
 
+  provides :service, os: "windows"
+
+  include Chef::Mixin::ShellOut
+
   #Win32::Service.get_start_type
   AUTO_START = 'auto start'
   MANUAL = 'demand start'

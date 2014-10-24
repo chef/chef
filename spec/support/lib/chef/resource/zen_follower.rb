@@ -22,7 +22,7 @@ class Chef
   class Resource
     class ZenFollower < Chef::Resource
 
-      provides :follower, :on_platforms => ["zen"]
+      provides :follower, platform: "zen"
 
       def initialize(name, run_context=nil)
         @resource_name = :zen_follower

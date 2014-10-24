@@ -17,24 +17,19 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::YumPackage, "initialize" do
 
-  before(:each) do
-    @resource = Chef::Resource::YumPackage.new("foo")
-  end
+  static_provider_resolution(
+    resource: Chef::Resource::YumPackage,
+    provider: Chef::Provider::Package::Yum,
+    name: :yum_package,
+    action: :install,
+    os: 'linux',
+    platform_family: 'rhel',
+  )
 
-  it "should return a Chef::Resource::YumPackage" do
-    @resource.should be_a_kind_of(Chef::Resource::YumPackage)
-  end
-
-  it "should set the resource_name to :yum_package" do
-    @resource.resource_name.should eql(:yum_package)
-  end
-
-  it "should set the provider to Chef::Provider::Package::Yum" do
-    @resource.provider.should eql(Chef::Provider::Package::Yum)
-  end
 end
 
 describe Chef::Resource::YumPackage, "arch" do

@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-require 'chef/resource_platform_map'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/exceptions'
 

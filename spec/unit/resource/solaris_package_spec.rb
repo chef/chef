@@ -17,41 +17,26 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::SolarisPackage, "initialize" do
+
+  %w{solaris2 nexentacore}.each do |platform_family|
+    static_provider_resolution(
+      resource: Chef::Resource::SolarisPackage,
+      provider: Chef::Provider::Package::Solaris,
+      name: :solaris_package,
+      action: :install,
+      os: "solaris2",
+      platform_family: platform_family,
+    )
+  end
 
   before(:each) do
     @resource = Chef::Resource::SolarisPackage.new("foo")
   end
 
-  it "should return a Chef::Resource::SolarisPackage object" do
-    @resource.should be_a_kind_of(Chef::Resource::SolarisPackage)
-  end
-
-  it "should not raise any Error when valid number of arguments are provided" do
-    expect { Chef::Resource::SolarisPackage.new("foo") }.to_not raise_error
-  end
-
-  it "should raise ArgumentError when incorrect number of arguments are provided" do
-    expect { Chef::Resource::SolarisPackage.new }.to raise_error(ArgumentError)
-  end
-
   it "should set the package_name to the name provided" do
     @resource.package_name.should eql("foo")
-  end
-
-  it "should set the resource_name to :solaris_package" do
-    @resource.resource_name.should eql(:solaris_package)
-  end
-
-  it "should set the run_context to the run_context provided" do
-    @run_context = double()
-    @run_context.stub(:node)
-    resource = Chef::Resource::SolarisPackage.new("foo", @run_context)
-    resource.run_context.should eql(@run_context)
-  end
-
-  it "should set the provider to Chef::Provider::Package::Solaris" do
-    @resource.provider.should eql(Chef::Provider::Package::Solaris)
   end
 end

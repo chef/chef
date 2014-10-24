@@ -18,6 +18,7 @@
 # limitations under the License.
 
 require 'chef/resource_collection'
+require 'chef/provider_resolver'
 require 'chef/cookbook_version'
 require 'chef/node'
 require 'chef/role'
@@ -49,6 +50,9 @@ class Chef
     # The Chef::ResourceCollection for this run. Populated by evaluating
     # recipes, which is triggered by #load. (See also: CookbookCompiler)
     attr_accessor :resource_collection
+
+    # Chef::ProviderResolver for this run
+    attr_accessor :provider_resolver
 
     # A Hash containing the immediate notifications triggered by resources
     # during the converge phase of the chef run.
@@ -82,8 +86,8 @@ class Chef
       @reboot_info = {}
 
       @node.run_context = self
-
       @cookbook_compiler = nil
+      @provider_resolver = Chef::ProviderResolver.new(@node)
     end
 
     # Triggers the compile phase of the chef run. Implemented by

@@ -22,13 +22,12 @@ class Chef
   class Resource
     class DscScript < Chef::Resource
 
-      provides :dsc_script, :on_platforms => ["windows"]
+      provides :dsc_script, platform: "windows"
 
       def initialize(name, run_context=nil)
         super
         @allowed_actions.push(:run)
         @action = :run
-        @provider = Chef::Provider::DscScript
         @resource_name = :dsc_script
       end
 

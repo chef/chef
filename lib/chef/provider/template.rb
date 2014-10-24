@@ -25,6 +25,7 @@ require 'chef/deprecation/warnings'
 class Chef
   class Provider
     class Template < Chef::Provider::File
+      provides :template
 
       extend Chef::Deprecation::Warnings
       include Chef::Deprecation::Provider::Template

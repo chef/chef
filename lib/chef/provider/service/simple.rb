@@ -25,6 +25,8 @@ class Chef
     class Service
       class Simple < Chef::Provider::Service
 
+        # this must be subclassed to be useful so does not directly implement :service
+
         attr_reader :status_load_success
 
         def load_current_resource
