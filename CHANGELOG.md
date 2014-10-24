@@ -218,6 +218,7 @@
 * Retain the original value of `retries` for resources and display the original value when the run fails.
 * Added service provider for AIX.
 * The Windows env provider will delete elements even if they are only in ENV (and not in the registry)
+* Allow events to be logged to Windows Event Log
 
 ## Last Release: 11.14.2
 
