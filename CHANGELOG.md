@@ -134,6 +134,8 @@
   Made user prompts in knife more beautiful by adding a space after Y/N prompts.
 * [**Ivan Larionov**](https://github.com/xeron):
   Made empty run_list to produce an empty array when using node.to_hash.
+* [**Siddheshwar More**](https://github.com/siddheshwar-more):
+  Fixed a bug in knife bootstrap that caused config options to override command line options.
 
 
 ### Chef Contributions
