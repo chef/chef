@@ -140,7 +140,8 @@
   Fixed a bug in Mac OSX group provider and made it idempotent.
 * [**liseki**](https://github.com/liseki):
   Fixed a bug in why-run mode for freebsd service resources without configured init scripts.
-
+* [**liseki**](https://github.com/liseki):
+  Fixed a bug in freebsd service providers to load the status correctly.
 
 
 ### Chef Contributions
