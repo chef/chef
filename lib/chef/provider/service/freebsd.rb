@@ -50,6 +50,7 @@ class Chef
 
           Chef::Log.debug("#{current_resource} found at #{init_command}")
 
+          @status_load_success = true
           determine_current_status!  # see Chef::Provider::Service::Simple
 
           determine_enabled_status!
