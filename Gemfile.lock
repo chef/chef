@@ -1,12 +1,12 @@
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: ff3ca773134f9152d9065a5895e006219e8d678e
+  revision: 4c57cb984649671f2410766b78956826fa733c94
   specs:
     omnibus-software (4.0.0)
 
 GIT
   remote: git://github.com/opscode/omnibus.git
-  revision: 95729f226929717cc48b01b0f435f81dab87a218
+  revision: a026dba566da533af0d4b9e48239901cac96a996
   specs:
     omnibus (4.0.0.rc.1)
       chef-sugar (~> 2.2)
@@ -50,7 +50,7 @@ GEM
     celluloid-io (0.16.1)
       celluloid (>= 0.16.0)
       nio4r (>= 1.0.0)
-    chef-sugar (2.3.2)
+    chef-sugar (2.4.1)
     cleanroom (1.0.0)
     dep-selector-libgecode (1.0.2)
     dep_selector (1.0.3)
@@ -60,6 +60,7 @@ GEM
     faraday (0.9.0)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.6)
+    ffi (1.9.6-x86-mingw32)
     ffi-yajl (1.2.0)
       ffi (~> 1.5)
       libyajl2 (~> 1.0)
@@ -141,12 +142,12 @@ GEM
     varia_model (0.4.0)
       buff-extensions (~> 1.0)
       hashie (>= 2.0.2, < 3.0.0)
-    win32-api (1.5.1-x86-mingw32)
+    win32-api (1.5.2-x86-mingw32)
     win32-process (0.7.4)
       ffi (>= 1.0.0)
-    windows-api (0.4.2)
+    windows-api (0.4.3)
       win32-api (>= 1.4.5)
-    windows-pr (1.2.3)
+    windows-pr (1.2.4)
       win32-api (>= 1.4.5)
       windows-api (>= 0.4.0)
     windows_chef_zero (2.0.0)
