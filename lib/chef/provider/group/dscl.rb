@@ -41,10 +41,10 @@ class Chef
 
         def load_current_resource
           @current_resource = Chef::Resource::Group.new(@new_resource.name)
-          @current_resource.group_name(@new_resource.name)
+          @current_resource.group_name(@new_resource.group_name)
           group_info = nil
           begin
-            group_info = safe_dscl("read /Groups/#{@new_resource.name}")
+            group_info = safe_dscl("read /Groups/#{@new_resource.group_name}")
           rescue Chef::Exceptions::Group
             @group_exists = false
             Chef::Log.debug("#{@new_resource} group does not exist")
