@@ -136,6 +136,9 @@
   Made empty run_list to produce an empty array when using node.to_hash.
 * [**Siddheshwar More**](https://github.com/siddheshwar-more):
   Fixed a bug in knife bootstrap that caused config options to override command line options.
+* [**Thiago Oliveira**](https://github.com/chilicheech):
+  Fixed a bug in Mac OSX group provider and made it idempotent.
+
 
 
 ### Chef Contributions
