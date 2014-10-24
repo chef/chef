@@ -92,7 +92,7 @@ EOH
 
         it 'should log a warning if the message is formatted as expected when a resource import failure occurs' do
           expect(Chef::Log).to receive(:warn)
-          expect(lcm).to receive(:output_has_dsc_module_failure?).and_call_original
+          expect(lcm).to receive(:dsc_module_import_failure?).and_call_original
           test_configuration_result = nil
           expect {test_configuration_result = lcm.test_configuration('config')}.not_to raise_error
         end
@@ -112,22 +112,22 @@ EOH
 
         it 'should log a warning' do
           expect(Chef::Log).to receive(:warn)
-          expect(lcm).to receive(:output_has_dsc_module_failure?).and_call_original
+          expect(lcm).to receive(:dsc_module_import_failure?).and_call_original
           expect {lcm.test_configuration('config')}.not_to raise_error
         end
       end
     end
 
     it 'should identify a correctly formatted error message as a resource import failure' do
-      expect(lcm.send(:output_has_dsc_module_failure?, dsc_resource_import_failure_output)).to be(true)
+      expect(lcm.send(:dsc_module_import_failure?, dsc_resource_import_failure_output)).to be(true)
     end
 
     it 'should not identify an incorrectly formatted error message as a resource import failure' do
-      expect(lcm.send(:output_has_dsc_module_failure?, dsc_resource_import_failure_output.gsub('module', 'gibberish'))).to be(false)
+      expect(lcm.send(:dsc_module_import_failure?, dsc_resource_import_failure_output.gsub('module', 'gibberish'))).to be(false)
     end
 
     it 'should not identify a message without a CimException reference as a resource import failure' do
-      expect(lcm.send(:output_has_dsc_module_failure?, dsc_resource_import_failure_output.gsub('CimException', 'ArgumentException'))).to be(false)
+      expect(lcm.send(:dsc_module_import_failure?, dsc_resource_import_failure_output.gsub('CimException', 'ArgumentException'))).to be(false)
     end
   end
 end
