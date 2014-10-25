@@ -51,8 +51,6 @@ describe Chef::Provider::User::Solaris do
 
       @new_resource.password "hocus-pocus"
 
-      # Let these tests run #write_shadow_file
-      allow(provider).to receive(:write_shadow_file).and_call_original
     end
 
     it "should use its own shadow file writer to set the password" do
@@ -62,6 +60,8 @@ describe Chef::Provider::User::Solaris do
     end
 
     it "should write out a modified version of the password file" do
+      # Let this test run #write_shadow_file
+      allow(provider).to receive(:write_shadow_file).and_call_original
       password_file = Tempfile.new("shadow")
       password_file.puts "adam:existingpassword:15441::::::"
       password_file.close
