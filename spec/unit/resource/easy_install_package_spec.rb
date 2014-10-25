@@ -34,6 +34,6 @@ describe Chef::Resource::EasyInstallPackage, "initialize" do
 
   it "should allow you to set the easy_install_binary attribute" do
     @resource.easy_install_binary "/opt/local/bin/easy_install"
-    @resource.easy_install_binary.should eql("/opt/local/bin/easy_install")
+    expect(@resource.easy_install_binary).to eql("/opt/local/bin/easy_install")
   end
 end

@@ -53,27 +53,27 @@ describe Chef::Provider::File::Content do
   describe "when the resource has a content attribute set" do
 
     before do
-      new_resource.stub(:content).and_return("Do do do do, do do do do, do do do do, do do do do")
+      allow(new_resource).to receive(:content).and_return("Do do do do, do do do do, do do do do, do do do do")
     end
 
     it "returns a tempfile" do
-      content.tempfile.should be_a_kind_of(Tempfile)
+      expect(content.tempfile).to be_a_kind_of(Tempfile)
     end
 
     it "the tempfile contents should match the resource contents" do
-      IO.read(content.tempfile.path).should == new_resource.content
+      expect(IO.read(content.tempfile.path)).to eq(new_resource.content)
     end
 
     it "returns a tempfile in the tempdir when :file_staging_uses_destdir is not set" do
       Chef::Config[:file_staging_uses_destdir] = false
-      content.tempfile.path.start_with?(Dir::tmpdir).should be_true
-      canonicalize_path(content.tempfile.path).start_with?(enclosing_directory).should be_false
+      expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be_true
+      expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be_false
     end
 
     it "returns a tempfile in the destdir when :file_desployment_uses_destdir is not set" do
       Chef::Config[:file_staging_uses_destdir] = true
-      content.tempfile.path.start_with?(Dir::tmpdir).should be_false
-      canonicalize_path(content.tempfile.path).start_with?(enclosing_directory).should be_true
+      expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be_false
+      expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be_true
     end
 
   end
@@ -81,11 +81,11 @@ describe Chef::Provider::File::Content do
   describe "when the resource does not have a content attribute set" do
 
     before do
-      new_resource.stub(:content).and_return(nil)
+      allow(new_resource).to receive(:content).and_return(nil)
     end
 
     it "should return nil instead of a tempfile" do
-      content.tempfile.should be_nil
+      expect(content.tempfile).to be_nil
     end
 
   end

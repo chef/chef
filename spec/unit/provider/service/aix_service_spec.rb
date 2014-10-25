@@ -28,17 +28,17 @@ describe Chef::Provider::Service::Aix do
     @current_resource = Chef::Resource::Service.new("chef")
 
     @provider = Chef::Provider::Service::Aix.new(@new_resource, @run_context)
-    Chef::Resource::Service.stub(:new).and_return(@current_resource)
+    allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
   end
 
   describe "load current resource" do
     it "should create a current resource with the name of the new resource and determine the status" do
       @status = double("Status", :exitstatus => 0, :stdout => @stdout)
-      @provider.stub(:shell_out!).and_return(@status)
+      allow(@provider).to receive(:shell_out!).and_return(@status)
 
-      Chef::Resource::Service.should_receive(:new).and_return(@current_resource)
-      @current_resource.should_receive(:service_name).with("chef")
-      @provider.should_receive(:determine_current_status!)
+      expect(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
+      expect(@current_resource).to receive(:service_name).with("chef")
+      expect(@provider).to receive(:determine_current_status!)
 
       @provider.load_current_resource
     end
@@ -51,11 +51,11 @@ describe Chef::Provider::Service::Aix do
       end
 
       it "current resource is running" do
-        @provider.should_receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
-        @provider.should_receive(:is_resource_group?).with(["chef chef 12345 active"])
+        expect(@provider).to receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
+        expect(@provider).to receive(:is_resource_group?).with(["chef chef 12345 active"])
 
         @provider.load_current_resource
-        @current_resource.running.should be_true
+        expect(@current_resource.running).to be_true
       end
     end
 
@@ -65,11 +65,11 @@ describe Chef::Provider::Service::Aix do
       end
 
       it "current resource is not running" do
-        @provider.should_receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
-        @provider.should_receive(:is_resource_group?).with(["chef chef inoperative"])
+        expect(@provider).to receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
+        expect(@provider).to receive(:is_resource_group?).with(["chef chef inoperative"])
 
         @provider.load_current_resource
-        @current_resource.running.should be_false
+        expect(@current_resource.running).to be_false
       end
     end
   end
@@ -81,9 +81,9 @@ describe Chef::Provider::Service::Aix do
       end
 
       it "service is a group" do
-        @provider.should_receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
+        expect(@provider).to receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
         @provider.load_current_resource
-        @provider.instance_eval("@is_resource_group").should be_true
+        expect(@provider.instance_eval("@is_resource_group")).to be_true
       end
     end
 
@@ -93,9 +93,9 @@ describe Chef::Provider::Service::Aix do
       end
 
       it "service is a group" do
-        @provider.should_receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
+        expect(@provider).to receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
         @provider.load_current_resource
-        @provider.instance_eval("@is_resource_group").should be_true
+        expect(@provider.instance_eval("@is_resource_group")).to be_true
       end
     end
 
@@ -105,9 +105,9 @@ describe Chef::Provider::Service::Aix do
       end
 
       it "service is a subsystem" do
-        @provider.should_receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
+        expect(@provider).to receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
         @provider.load_current_resource
-        @provider.instance_eval("@is_resource_group").should be_false
+        expect(@provider.instance_eval("@is_resource_group")).to be_false
       end
     end
   end
@@ -119,13 +119,13 @@ describe Chef::Provider::Service::Aix do
 
     it "should call the start command for groups" do
       @provider.instance_eval('@is_resource_group = true')
-      @provider.should_receive(:shell_out!).with("startsrc -g #{@new_resource.service_name}")
+      expect(@provider).to receive(:shell_out!).with("startsrc -g #{@new_resource.service_name}")
 
       @provider.start_service
     end
 
     it "should call the start command for subsystem" do
-      @provider.should_receive(:shell_out!).with("startsrc -s #{@new_resource.service_name}")
+      expect(@provider).to receive(:shell_out!).with("startsrc -s #{@new_resource.service_name}")
 
       @provider.start_service
     end
@@ -138,13 +138,13 @@ describe Chef::Provider::Service::Aix do
 
     it "should call the stop command for groups" do
       @provider.instance_eval('@is_resource_group = true')
-      @provider.should_receive(:shell_out!).with("stopsrc -g #{@new_resource.service_name}")
+      expect(@provider).to receive(:shell_out!).with("stopsrc -g #{@new_resource.service_name}")
 
       @provider.stop_service
     end
 
     it "should call the stop command for subsystem" do
-      @provider.should_receive(:shell_out!).with("stopsrc -s #{@new_resource.service_name}")
+      expect(@provider).to receive(:shell_out!).with("stopsrc -s #{@new_resource.service_name}")
 
       @provider.stop_service
     end
@@ -157,13 +157,13 @@ describe Chef::Provider::Service::Aix do
 
     it "should call the reload command for groups" do
       @provider.instance_eval('@is_resource_group = true')
-      @provider.should_receive(:shell_out!).with("refresh -g #{@new_resource.service_name}")
+      expect(@provider).to receive(:shell_out!).with("refresh -g #{@new_resource.service_name}")
 
       @provider.reload_service
     end
 
     it "should call the reload command for subsystem" do
-      @provider.should_receive(:shell_out!).with("refresh -s #{@new_resource.service_name}")
+      expect(@provider).to receive(:shell_out!).with("refresh -s #{@new_resource.service_name}")
 
       @provider.reload_service
     end
@@ -171,8 +171,8 @@ describe Chef::Provider::Service::Aix do
 
   describe "when restarting the service" do
     it "should call stop service followed by start service" do
-      @provider.should_receive(:stop_service)
-      @provider.should_receive(:start_service)
+      expect(@provider).to receive(:stop_service)
+      expect(@provider).to receive(:start_service)
 
       @provider.restart_service
     end

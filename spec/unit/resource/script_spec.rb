@@ -26,7 +26,7 @@ describe Chef::Resource::Script do
 
   it "should accept a string for the interpreter" do
     script_resource.interpreter "naaaaNaNaNaaNaaNaaNaa"
-    script_resource.interpreter.should eql("naaaaNaNaNaaNaaNaaNaa")
+    expect(script_resource.interpreter).to eql("naaaaNaNaNaaNaaNaaNaa")
   end
 
   describe "when it has interpreter and flags" do
@@ -37,7 +37,7 @@ describe Chef::Resource::Script do
     end
 
    it "returns the command as its identity" do
-      script_resource.identity.should == "grep"
+      expect(script_resource.identity).to eq("grep")
     end
   end
 

@@ -27,8 +27,8 @@ describe Chef::Provider::Package::Windows, :windows_only do
 
   describe "load_current_resource" do
     before(:each) do
-      Chef::Util::PathHelper.stub(:validate_path)
-      provider.stub(:package_provider).and_return(double('package_provider',
+      allow(Chef::Util::PathHelper).to receive(:validate_path)
+      allow(provider).to receive(:package_provider).and_return(double('package_provider',
           :installed_version => "1.0", :package_version => "2.0"))
     end
 
@@ -56,12 +56,12 @@ describe Chef::Provider::Package::Windows, :windows_only do
 
   describe "package_provider" do
     it "sets the package provider to MSI if the the installer type is :msi" do
-      provider.stub(:installer_type).and_return(:msi)
+      allow(provider).to receive(:installer_type).and_return(:msi)
       expect(provider.package_provider).to be_a(Chef::Provider::Package::Windows::MSI)
     end
 
     it "raises an error if the installer_type is unknown" do
-      provider.stub(:installer_type).and_return(:apt_for_windows)
+      allow(provider).to receive(:installer_type).and_return(:apt_for_windows)
       expect { provider.package_provider }.to raise_error
     end
   end

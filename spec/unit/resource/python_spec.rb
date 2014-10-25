@@ -25,16 +25,16 @@ describe Chef::Resource::Python do
   end
 
   it "should create a new Chef::Resource::Python" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::Python)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Python)
   end
 
   it "should have a resource name of :python" do
-    @resource.resource_name.should eql(:python)
+    expect(@resource.resource_name).to eql(:python)
   end
 
   it "should have an interpreter of python" do
-    @resource.interpreter.should eql("python")
+    expect(@resource.interpreter).to eql("python")
   end
 
 end

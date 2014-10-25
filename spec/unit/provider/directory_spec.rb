@@ -48,31 +48,31 @@ describe Chef::Provider::Directory do
 
   describe "scanning file security metadata on unix" do
     before do
-      Chef::Platform.stub(:windows?).and_return(false)
+      allow(Chef::Platform).to receive(:windows?).and_return(false)
     end
     let(:mock_stat) do
       cstats = double("stats")
-      cstats.stub(:uid).and_return(500)
-      cstats.stub(:gid).and_return(500)
-      cstats.stub(:mode).and_return(0755)
+      allow(cstats).to receive(:uid).and_return(500)
+      allow(cstats).to receive(:gid).and_return(500)
+      allow(cstats).to receive(:mode).and_return(0755)
       cstats
     end
 
     it "describes the access mode as a String of octal integers" do
-      File.stub(:exists?).and_return(true)
-      File.should_receive(:stat).and_return(mock_stat)
+      allow(File).to receive(:exists?).and_return(true)
+      expect(File).to receive(:stat).and_return(mock_stat)
       @directory.load_current_resource
-      @directory.current_resource.mode.should == "0755"
+      expect(@directory.current_resource.mode).to eq("0755")
     end
 
     context "when user and group are specified with UID/GID" do
       it "describes the current owner and group as UID and GID" do
-        File.stub(:exists?).and_return(true)
-        File.should_receive(:stat).and_return(mock_stat)
+        allow(File).to receive(:exists?).and_return(true)
+        expect(File).to receive(:stat).and_return(mock_stat)
         @directory.load_current_resource
-        @directory.current_resource.path.should eql(@new_resource.path)
-        @directory.current_resource.owner.should eql(500)
-        @directory.current_resource.group.should eql(500)
+        expect(@directory.current_resource.path).to eql(@new_resource.path)
+        expect(@directory.current_resource.owner).to eql(500)
+        expect(@directory.current_resource.group).to eql(500)
       end
     end
 
@@ -86,20 +86,20 @@ describe Chef::Provider::Directory do
   it "should create a new directory on create, setting updated to true", :unix_only do
     @new_resource.path "/tmp/foo"
 
-    File.should_receive(:exists?).at_least(:once).and_return(false)
-    File.should_receive(:directory?).with("/tmp").and_return(true)
-    Dir.should_receive(:mkdir).with(@new_resource.path).once.and_return(true)
+    expect(File).to receive(:exists?).at_least(:once).and_return(false)
+    expect(File).to receive(:directory?).with("/tmp").and_return(true)
+    expect(Dir).to receive(:mkdir).with(@new_resource.path).once.and_return(true)
 
-    @directory.should_receive(:do_acl_changes)
-    @directory.stub(:do_selinux)
+    expect(@directory).to receive(:do_acl_changes)
+    allow(@directory).to receive(:do_selinux)
     @directory.run_action(:create)
-    @directory.new_resource.should be_updated
+    expect(@directory.new_resource).to be_updated
   end
 
   it "should raise an exception if the parent directory does not exist and recursive is false" do
     @new_resource.path "/tmp/some/dir"
     @new_resource.recursive false
-    lambda { @directory.run_action(:create) }.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+    expect { @directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
   end
 
   # Unix only for now. While file security attribute reporting for windows is
@@ -108,26 +108,26 @@ describe Chef::Provider::Directory do
   it "should create a new directory when parent directory does not exist if recursive is true and permissions are correct", :unix_only do
     @new_resource.path "/path/to/dir"
     @new_resource.recursive true
-    File.should_receive(:exists?).with(@new_resource.path).ordered.and_return(false)
+    expect(File).to receive(:exists?).with(@new_resource.path).ordered.and_return(false)
 
-    File.should_receive(:exists?).with('/path/to').ordered.and_return(false)
-    File.should_receive(:exists?).with('/path').ordered.and_return(true)
-    File.should_receive(:writable?).with('/path').ordered.and_return(true)
-    File.should_receive(:exists?).with(@new_resource.path).ordered.and_return(false)
+    expect(File).to receive(:exists?).with('/path/to').ordered.and_return(false)
+    expect(File).to receive(:exists?).with('/path').ordered.and_return(true)
+    expect(File).to receive(:writable?).with('/path').ordered.and_return(true)
+    expect(File).to receive(:exists?).with(@new_resource.path).ordered.and_return(false)
 
-    FileUtils.should_receive(:mkdir_p).with(@new_resource.path).and_return(true)
-    @directory.should_receive(:do_acl_changes)
-    @directory.stub(:do_selinux)
+    expect(FileUtils).to receive(:mkdir_p).with(@new_resource.path).and_return(true)
+    expect(@directory).to receive(:do_acl_changes)
+    allow(@directory).to receive(:do_selinux)
     @directory.run_action(:create)
-    @new_resource.should be_updated
+    expect(@new_resource).to be_updated
   end
 
 
   it "should raise an error when creating a directory when parent directory is a file" do
-    File.should_receive(:directory?).and_return(false)
-    Dir.should_not_receive(:mkdir).with(@new_resource.path)
-    lambda { @directory.run_action(:create) }.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
-    @directory.new_resource.should_not be_updated
+    expect(File).to receive(:directory?).and_return(false)
+    expect(Dir).not_to receive(:mkdir).with(@new_resource.path)
+    expect { @directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+    expect(@directory.new_resource).not_to be_updated
   end
 
   # Unix only for now. While file security attribute reporting for windows is
@@ -136,53 +136,53 @@ describe Chef::Provider::Directory do
   it "should not create the directory if it already exists", :unix_only do
     stub_file_cstats
     @new_resource.path "/tmp/foo"
-    File.should_receive(:directory?).at_least(:once).and_return(true)
-    File.should_receive(:writable?).with("/tmp").and_return(true)
-    File.should_receive(:exists?).at_least(:once).and_return(true)
-    Dir.should_not_receive(:mkdir).with(@new_resource.path)
-    @directory.should_receive(:do_acl_changes)
+    expect(File).to receive(:directory?).at_least(:once).and_return(true)
+    expect(File).to receive(:writable?).with("/tmp").and_return(true)
+    expect(File).to receive(:exists?).at_least(:once).and_return(true)
+    expect(Dir).not_to receive(:mkdir).with(@new_resource.path)
+    expect(@directory).to receive(:do_acl_changes)
     @directory.run_action(:create)
   end
 
   it "should delete the directory if it exists, and is writable with action_delete" do
-    File.should_receive(:directory?).and_return(true)
-    File.should_receive(:writable?).once.and_return(true)
-    Dir.should_receive(:delete).with(@new_resource.path).once.and_return(true)
+    expect(File).to receive(:directory?).and_return(true)
+    expect(File).to receive(:writable?).once.and_return(true)
+    expect(Dir).to receive(:delete).with(@new_resource.path).once.and_return(true)
     @directory.run_action(:delete)
   end
 
   it "should raise an exception if it cannot delete the directory due to bad permissions" do
-    File.stub(:exists?).and_return(true)
-    File.stub(:writable?).and_return(false)
-    lambda {  @directory.run_action(:delete) }.should raise_error(RuntimeError)
+    allow(File).to receive(:exists?).and_return(true)
+    allow(File).to receive(:writable?).and_return(false)
+    expect {  @directory.run_action(:delete) }.to raise_error(RuntimeError)
   end
 
   it "should take no action when deleting a target directory that does not exist" do
     @new_resource.path "/an/invalid/path"
-    File.stub(:exists?).and_return(false)
-    Dir.should_not_receive(:delete).with(@new_resource.path)
+    allow(File).to receive(:exists?).and_return(false)
+    expect(Dir).not_to receive(:delete).with(@new_resource.path)
     @directory.run_action(:delete)
-    @directory.new_resource.should_not be_updated
+    expect(@directory.new_resource).not_to be_updated
   end
 
   it "should raise an exception when deleting a directory when target directory is a file" do
     stub_file_cstats
     @new_resource.path "/an/invalid/path"
-    File.stub(:exists?).and_return(true)
-    File.should_receive(:directory?).and_return(false)
-    Dir.should_not_receive(:delete).with(@new_resource.path)
-    lambda { @directory.run_action(:delete) }.should raise_error(RuntimeError)
-    @directory.new_resource.should_not be_updated
+    allow(File).to receive(:exists?).and_return(true)
+    expect(File).to receive(:directory?).and_return(false)
+    expect(Dir).not_to receive(:delete).with(@new_resource.path)
+    expect { @directory.run_action(:delete) }.to raise_error(RuntimeError)
+    expect(@directory.new_resource).not_to be_updated
   end
 
   def stub_file_cstats
     cstats = double("stats")
-    cstats.stub(:uid).and_return(500)
-    cstats.stub(:gid).and_return(500)
-    cstats.stub(:mode).and_return(0755)
+    allow(cstats).to receive(:uid).and_return(500)
+    allow(cstats).to receive(:gid).and_return(500)
+    allow(cstats).to receive(:mode).and_return(0755)
     # File.stat is called in:
     # - Chef::Provider::File.load_current_resource_attrs
     # - Chef::ScanAccessControl via Chef::Provider::File.setup_acl
-    File.stub(:stat).and_return(cstats)
+    allow(File).to receive(:stat).and_return(cstats)
   end
 end

@@ -38,7 +38,7 @@ describe Chef::Resource::ChefGem, "gem_binary" do
   end
 
   it "should raise an exception when gem_binary is set" do
-    lambda { @resource.gem_binary("/lol/cats/gem") }.should raise_error(ArgumentError)
+    expect { @resource.gem_binary("/lol/cats/gem") }.to raise_error(ArgumentError)
   end
 
   it "should set the gem_binary based on computing it from RbConfig" do

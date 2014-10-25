@@ -32,7 +32,7 @@ describe Chef::Provider::PowershellScript, "action_run" do
   end
 
   it "should set the -File flag as the last flag" do
-    @provider.flags.split(' ').pop.should == "-File"
+    expect(@provider.flags.split(' ').pop).to eq("-File")
   end
 
 end

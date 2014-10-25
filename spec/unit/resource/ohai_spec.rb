@@ -25,21 +25,21 @@ describe Chef::Resource::Ohai do
   end
 
   it "should create a new Chef::Resource::Ohai" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::Ohai)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Ohai)
   end
 
   it "should have a resource name of :ohai" do
-    @resource.resource_name.should eql(:ohai)
+    expect(@resource.resource_name).to eql(:ohai)
   end
 
   it "should have a default action of create" do
-    @resource.action.should eql(:reload)
+    expect(@resource.action).to eql(:reload)
   end
 
   it "should allow you to set the plugin attribute" do
     @resource.plugin "passwd"
-    @resource.plugin.should eql("passwd")
+    expect(@resource.plugin).to eql("passwd")
   end
 
   describe "when it has a plugin value" do
@@ -50,11 +50,11 @@ describe Chef::Resource::Ohai do
 
     it "describes its state" do
       state = @resource.state
-      state[:plugin].should == "passwd"
+      expect(state[:plugin]).to eq("passwd")
     end
 
     it "returns the name as its identity" do
-      @resource.identity.should == "test"
+      expect(@resource.identity).to eq("test")
     end
   end
 

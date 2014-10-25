@@ -36,7 +36,7 @@ describe Chef::Provider::Service::AixInit do
 
   describe "load_current_resource" do
     it "sets current resource attributes" do
-      @provider.should_receive(:set_current_resource_attributes)
+      expect(@provider).to receive(:set_current_resource_attributes)
 
       @provider.load_current_resource
     end
@@ -45,19 +45,19 @@ describe Chef::Provider::Service::AixInit do
   describe "action_enable" do
     shared_examples_for "the service is up to date" do
       it "does not enable the service" do
-        @provider.should_not_receive(:enable_service)
+        expect(@provider).not_to receive(:enable_service)
         @provider.action_enable
         @provider.set_updated_status
-        @provider.new_resource.should_not be_updated
+        expect(@provider.new_resource).not_to be_updated
       end
     end
 
     shared_examples_for "the service is not up to date" do
       it "enables the service and sets the resource as updated" do
-        @provider.should_receive(:enable_service).and_return(true)
+        expect(@provider).to receive(:enable_service).and_return(true)
         @provider.action_enable
         @provider.set_updated_status
-        @provider.new_resource.should be_updated
+        expect(@provider.new_resource).to be_updated
       end
     end
 
@@ -97,12 +97,12 @@ describe Chef::Provider::Service::AixInit do
 
   describe "enable_service" do
     before do
-      Dir.stub(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).and_return([])
+      allow(Dir).to receive(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).and_return([])
     end
 
     context "when the service doesn't set a priority" do
       it "creates symlink with status S" do
-        @provider.should_receive(:create_symlink).with(2,'S','')
+        expect(@provider).to receive(:create_symlink).with(2,'S','')
 
         @provider.enable_service
       end
@@ -114,7 +114,7 @@ describe Chef::Provider::Service::AixInit do
       end
 
       it "creates a symlink with status S and a priority" do
-        @provider.should_receive(:create_symlink).with(2,'S',75)
+        expect(@provider).to receive(:create_symlink).with(2,'S',75)
 
         @provider.enable_service
       end
@@ -127,8 +127,8 @@ describe Chef::Provider::Service::AixInit do
       end
 
       it "create symlink with status start (S) or stop (K) and a priority " do
-        @provider.should_receive(:create_symlink).with(2,'S',20)
-        @provider.should_receive(:create_symlink).with(3,'K',10)
+        expect(@provider).to receive(:create_symlink).with(2,'S',20)
+        expect(@provider).to receive(:create_symlink).with(3,'K',10)
 
         @provider.enable_service
       end
@@ -137,12 +137,12 @@ describe Chef::Provider::Service::AixInit do
 
   describe "disable_service" do
     before do
-      Dir.stub(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).and_return([])
+      allow(Dir).to receive(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).and_return([])
     end
 
     context "when the service doesn't set a priority" do
       it "creates symlinks with status stop (K)" do
-        @provider.should_receive(:create_symlink).with(2,'K','')
+        expect(@provider).to receive(:create_symlink).with(2,'K','')
 
         @provider.disable_service
       end
@@ -154,7 +154,7 @@ describe Chef::Provider::Service::AixInit do
       end
 
       it "create symlink with status stop (k) and a priority " do
-        @provider.should_receive(:create_symlink).with(2,'K',25)
+        expect(@provider).to receive(:create_symlink).with(2,'K',25)
 
         @provider.disable_service
       end
@@ -167,7 +167,7 @@ describe Chef::Provider::Service::AixInit do
       end
 
       it "create symlink with status stop (k) and a priority " do
-        @provider.should_receive(:create_symlink).with(3,'K',90)
+        expect(@provider).to receive(:create_symlink).with(3,'K',90)
 
         @provider.disable_service
       end
@@ -179,12 +179,12 @@ describe Chef::Provider::Service::AixInit do
       before do
         files = ["/etc/rc.d/rc2.d/S20apache"]
 
-        Dir.stub(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]chef"]).and_return(files)
+        allow(Dir).to receive(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]chef"]).and_return(files)
       end
 
       it "the service is enabled" do
-       @provider.current_resource.should_receive(:enabled).with(true)
-       @provider.current_resource.should_receive(:priority).with(20)
+       expect(@provider.current_resource).to receive(:enabled).with(true)
+       expect(@provider.current_resource).to receive(:priority).with(20)
 
        @provider.set_current_resource_attributes
       end
@@ -195,11 +195,11 @@ describe Chef::Provider::Service::AixInit do
         files = ["/etc/rc.d/rc2.d/K20apache"]
         @priority = {2 => [:stop, 20]}
 
-        Dir.stub(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]chef"]).and_return(files)
+        allow(Dir).to receive(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]chef"]).and_return(files)
       end
       it "the service is not enabled" do
-        @provider.current_resource.should_receive(:enabled).with(false)
-        @provider.current_resource.should_receive(:priority).with(@priority)
+        expect(@provider.current_resource).to receive(:enabled).with(false)
+        expect(@provider.current_resource).to receive(:priority).with(@priority)
 
         @provider.set_current_resource_attributes
       end
@@ -210,11 +210,11 @@ describe Chef::Provider::Service::AixInit do
         @files = ["/etc/rc.d/rc2.d/S20apache", "/etc/rc.d/rc2.d/K80apache"]
         @priority = {2 => [:start, 20], 2 => [:stop, 80]}
 
-        Dir.stub(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]chef"]).and_return(@files)
+        allow(Dir).to receive(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]chef"]).and_return(@files)
       end
       it "the service is enabled" do
-        @current_resource.should_receive(:enabled).with(true)
-        @current_resource.should_receive(:priority).with(@priority)
+        expect(@current_resource).to receive(:enabled).with(true)
+        expect(@current_resource).to receive(:priority).with(@priority)
 
         @provider.set_current_resource_attributes
       end
@@ -224,12 +224,12 @@ describe Chef::Provider::Service::AixInit do
       before do
         files = ["/etc/rc.d/rc2.d/Sapache"]
 
-        Dir.stub(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).and_return(files)
+        allow(Dir).to receive(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).and_return(files)
       end
 
       it "the service is enabled" do
-       @provider.current_resource.should_receive(:enabled).with(true)
-       @provider.current_resource.should_receive(:priority).with('')
+       expect(@provider.current_resource).to receive(:enabled).with(true)
+       expect(@provider.current_resource).to receive(:priority).with('')
 
        @provider.set_current_resource_attributes
       end
@@ -240,11 +240,11 @@ describe Chef::Provider::Service::AixInit do
         files = ["/etc/rc.d/rc2.d/Kapache"]
         @priority = {2 => [:stop, '']}
 
-        Dir.stub(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).and_return(files)
+        allow(Dir).to receive(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).and_return(files)
       end
       it "the service is not enabled" do
-        @provider.current_resource.should_receive(:enabled).with(false)
-        @provider.current_resource.should_receive(:priority).with(@priority)
+        expect(@provider.current_resource).to receive(:enabled).with(false)
+        expect(@provider.current_resource).to receive(:priority).with(@priority)
 
         @provider.set_current_resource_attributes
       end
@@ -255,11 +255,11 @@ describe Chef::Provider::Service::AixInit do
         files = ["/etc/rc.d/rc2.d/Sapache", "/etc/rc.d/rc2.d/Kapache"]
         @priority = {2 => [:start, ''], 2 => [:stop, '']}
 
-        Dir.stub(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).and_return(files)
+        allow(Dir).to receive(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).and_return(files)
       end
       it "the service is enabled" do
-        @current_resource.should_receive(:enabled).with(true)
-        @current_resource.should_receive(:priority).with(@priority)
+        expect(@current_resource).to receive(:enabled).with(true)
+        expect(@current_resource).to receive(:priority).with(@priority)
 
         @provider.set_current_resource_attributes
       end

@@ -25,7 +25,7 @@ describe Chef::Resource::Execute do
   it_behaves_like "an execute resource"
 
   it "default guard interpreter should be :execute interpreter" do
-    execute_resource.guard_interpreter.should be(:execute)
+    expect(execute_resource.guard_interpreter).to be(:execute)
   end
 
 end

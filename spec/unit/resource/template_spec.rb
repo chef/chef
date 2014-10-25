@@ -26,54 +26,54 @@ describe Chef::Resource::Template do
 
   describe "initialize" do
     it "should create a new Chef::Resource::Template" do
-      @resource.should be_a_kind_of(Chef::Resource)
-      @resource.should be_a_kind_of(Chef::Resource::File)
-      @resource.should be_a_kind_of(Chef::Resource::Template)
+      expect(@resource).to be_a_kind_of(Chef::Resource)
+      expect(@resource).to be_a_kind_of(Chef::Resource::File)
+      expect(@resource).to be_a_kind_of(Chef::Resource::Template)
     end
   end
 
   describe "source" do
     it "should accept a string for the template source" do
       @resource.source "something"
-      @resource.source.should eql("something")
+      expect(@resource.source).to eql("something")
     end
 
     it "should have a default based on the param name with .erb appended" do
-      @resource.source.should eql("fakey_fakerton.erb")
+      expect(@resource.source).to eql("fakey_fakerton.erb")
     end
 
     it "should use only the basename of the file as the default" do
       r = Chef::Resource::Template.new("/tmp/obit/fakey_fakerton")
-      r.source.should eql("fakey_fakerton.erb")
+      expect(r.source).to eql("fakey_fakerton.erb")
     end
   end
 
   describe "variables" do
     it "should accept a hash for the variable list" do
       @resource.variables({ :reluctance => :awkward })
-      @resource.variables.should == { :reluctance => :awkward }
+      expect(@resource.variables).to eq({ :reluctance => :awkward })
     end
   end
 
   describe "cookbook" do
     it "should accept a string for the cookbook name" do
       @resource.cookbook("foo")
-      @resource.cookbook.should == "foo"
+      expect(@resource.cookbook).to eq("foo")
     end
 
     it "should default to nil" do
-      @resource.cookbook.should == nil
+      expect(@resource.cookbook).to eq(nil)
     end
   end
 
   describe "local" do
     it "should accept a boolean for whether a template is local or remote" do
       @resource.local(true)
-      @resource.local.should == true
+      expect(@resource.local).to eq(true)
     end
 
     it "should default to false" do
-      @resource.local.should == false
+      expect(@resource.local).to eq(false)
     end
   end
 
@@ -89,10 +89,10 @@ describe Chef::Resource::Template do
     context "on unix", :unix_only do
       it "describes its state" do
         state = @resource.state
-        state[:owner].should == "root"
-        state[:group].should == "wheel"
-        state[:mode].should == "0644"
-        state[:checksum].should == "1" * 64
+        expect(state[:owner]).to eq("root")
+        expect(state[:group]).to eq("wheel")
+        expect(state[:mode]).to eq("0644")
+        expect(state[:checksum]).to eq("1" * 64)
       end
     end
 
@@ -102,7 +102,7 @@ describe Chef::Resource::Template do
     end
 
     it "returns the file path as its identity" do
-      @resource.identity.should == "/tmp/foo.txt"
+      expect(@resource.identity).to eq("/tmp/foo.txt")
     end
   end
 
@@ -117,19 +117,19 @@ describe Chef::Resource::Template do
     it "collects helper method bodies as blocks" do
       @resource.helper(:example_1) { "example_1" }
       @resource.helper(:example_2) { "example_2" }
-      @resource.inline_helper_blocks[:example_1].call.should == "example_1"
-      @resource.inline_helper_blocks[:example_2].call.should == "example_2"
+      expect(@resource.inline_helper_blocks[:example_1].call).to eq("example_1")
+      expect(@resource.inline_helper_blocks[:example_2].call).to eq("example_2")
     end
 
     it "compiles helper methods into a module" do
       @resource.helper(:example_1) { "example_1" }
       @resource.helper(:example_2) { "example_2" }
       modules = @resource.helper_modules
-      modules.should have(1).module
+      expect(modules.size).to eq(1)
       o = Object.new
       modules.each {|m| o.extend(m)}
-      o.example_1.should == "example_1"
-      o.example_2.should == "example_2"
+      expect(o.example_1).to eq("example_1")
+      expect(o.example_2).to eq("example_2")
     end
 
     it "compiles helper methods with arguments into a module" do
@@ -137,15 +137,15 @@ describe Chef::Resource::Template do
       modules = @resource.helper_modules
       o = Object.new
       modules.each {|m| o.extend(m)}
-      o.shout("shout").should == "SHOUT"
+      expect(o.shout("shout")).to eq("SHOUT")
     end
 
     it "raises an error when attempting to define a helper method without a method body" do
-      lambda { @resource.helper(:example) }.should raise_error(Chef::Exceptions::ValidationFailed)
+      expect { @resource.helper(:example) }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
     it "raises an error when attempting to define a helper method with a non-Symbod method name" do
-      lambda { @resource.helper("example") { "fail" } }.should raise_error(Chef::Exceptions::ValidationFailed)
+      expect { @resource.helper("example") { "fail" } }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
     it "collects helper module bodies as blocks" do
@@ -155,7 +155,7 @@ describe Chef::Resource::Template do
         end
       end
       module_body = @resource.inline_helper_modules.first
-      module_body.should be_a(Proc)
+      expect(module_body).to be_a(Proc)
     end
 
     it "compiles helper module bodies into modules" do
@@ -165,27 +165,27 @@ describe Chef::Resource::Template do
         end
       end
       modules = @resource.helper_modules
-      modules.should have(1).module
+      expect(modules.size).to eq(1)
       o = Object.new
       modules.each {|m| o.extend(m)}
-      o.example_1.should == "example_1"
+      expect(o.example_1).to eq("example_1")
     end
 
     it "raises an error when no block or module name is given for helpers definition" do
-      lambda { @resource.helpers() }.should raise_error(Chef::Exceptions::ValidationFailed)
+      expect { @resource.helpers() }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
     it "raises an error when a non-module is given for helpers definition" do
-      lambda { @resource.helpers("NotAModule") }.should raise_error(Chef::Exceptions::ValidationFailed)
+      expect { @resource.helpers("NotAModule") }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
     it "raises an error when a module name and block are both given for helpers definition" do
-      lambda { @resource.helpers(ExampleHelpers) { module_code } }.should raise_error(Chef::Exceptions::ValidationFailed)
+      expect { @resource.helpers(ExampleHelpers) { module_code } }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
     it "collects helper modules" do
       @resource.helpers(ExampleHelpers)
-      @resource.helper_modules.should include(ExampleHelpers)
+      expect(@resource.helper_modules).to include(ExampleHelpers)
     end
 
     it "combines all helpers into a set of compiled modules" do
@@ -196,13 +196,13 @@ describe Chef::Resource::Template do
         end
       end
       @resource.helper(:inline_method) { "inline_method" }
-      @resource.should have(3).helper_modules
+      expect(@resource.helper_modules.size).to eq(3)
 
       o = Object.new
       @resource.helper_modules.each {|m| o.extend(m)}
-      o.static_example.should == "static_example"
-      o.inline_module.should == "inline_module"
-      o.inline_method.should == "inline_method"
+      expect(o.static_example).to eq("static_example")
+      expect(o.inline_module).to eq("inline_module")
+      expect(o.inline_method).to eq("inline_method")
     end
 
 

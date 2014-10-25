@@ -31,16 +31,16 @@ describe Chef::Provider::RubyBlock, "initialize" do
 
   it "should call the block and flag the resource as updated" do
     @provider.run_action(:run)
-    $evil_global_evil_laugh.should == :mwahahaha
-    @new_resource.should be_updated
+    expect($evil_global_evil_laugh).to eq(:mwahahaha)
+    expect(@new_resource).to be_updated
   end
 
   it "accepts `create' as an alias for `run'" do
     # SEE ALSO: CHEF-3500
     # "create" used to be the default action, it was renamed.
     @provider.run_action(:create)
-    $evil_global_evil_laugh.should == :mwahahaha
-    @new_resource.should be_updated
+    expect($evil_global_evil_laugh).to eq(:mwahahaha)
+    expect(@new_resource).to be_updated
   end
 end
 

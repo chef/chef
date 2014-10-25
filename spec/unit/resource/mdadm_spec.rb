@@ -26,57 +26,57 @@ describe Chef::Resource::Mdadm do
   end
 
   it "should create a new Chef::Resource::Mdadm" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::Mdadm)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Mdadm)
   end
 
   it "should have a resource name of :mdadm" do
-    @resource.resource_name.should eql(:mdadm)
+    expect(@resource.resource_name).to eql(:mdadm)
   end
 
   it "should have a default action of create" do
-    @resource.action.should eql(:create)
+    expect(@resource.action).to eql(:create)
   end
 
   it "should accept create, assemble, stop as actions" do
-    lambda { @resource.action :create }.should_not raise_error
-    lambda { @resource.action :assemble }.should_not raise_error
-    lambda { @resource.action :stop }.should_not raise_error
+    expect { @resource.action :create }.not_to raise_error
+    expect { @resource.action :assemble }.not_to raise_error
+    expect { @resource.action :stop }.not_to raise_error
   end
 
   it "should allow you to set the raid_device attribute" do
     @resource.raid_device "/dev/md3"
-    @resource.raid_device.should eql("/dev/md3")
+    expect(@resource.raid_device).to eql("/dev/md3")
   end
 
   it "should allow you to set the chunk attribute" do
     @resource.chunk 256
-    @resource.chunk.should eql(256)
+    expect(@resource.chunk).to eql(256)
   end
 
   it "should allow you to set the level attribute" do
     @resource.level 1
-    @resource.level.should eql(1)
+    expect(@resource.level).to eql(1)
   end
 
   it "should allow you to set the metadata attribute" do
     @resource.metadata "1.2"
-    @resource.metadata.should eql("1.2")
+    expect(@resource.metadata).to eql("1.2")
   end
 
   it "should allow you to set the bitmap attribute" do
     @resource.metadata "internal"
-    @resource.metadata.should eql("internal")
+    expect(@resource.metadata).to eql("internal")
   end
 
   it "should allow you to set the devices attribute" do
     @resource.devices ["/dev/sda", "/dev/sdb"]
-    @resource.devices.should eql(["/dev/sda", "/dev/sdb"])
+    expect(@resource.devices).to eql(["/dev/sda", "/dev/sdb"])
   end
 
   it "should allow you to set the exists attribute" do
     @resource.exists true
-    @resource.exists.should eql(true)
+    expect(@resource.exists).to eql(true)
   end
 
   describe "when it has devices, level, and chunk" do
@@ -89,13 +89,13 @@ describe Chef::Resource::Mdadm do
 
     it "describes its state" do
       state = @resource.state
-      state[:devices].should eql(["device1", "device2"])
-      state[:level].should == 1
-      state[:chunk].should == 42
+      expect(state[:devices]).to eql(["device1", "device2"])
+      expect(state[:level]).to eq(1)
+      expect(state[:chunk]).to eq(42)
     end
 
     it "returns the raid device as its identity" do
-      @resource.identity.should == "raider"
+      expect(@resource.identity).to eq("raider")
     end
   end
 

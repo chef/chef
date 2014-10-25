@@ -40,21 +40,21 @@ describe Chef::Provider::Ifconfig::Redhat do
 
     config_filename = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
     @config = double("chef-resource-file")
-    @provider.should_receive(:resource_for_config).with(config_filename).and_return(@config)
+    expect(@provider).to receive(:resource_for_config).with(config_filename).and_return(@config)
   end
 
   describe "generate_config for action_add" do
 
     it "should write network-script for centos" do
-      @provider.stub(:load_current_resource)
-      @provider.stub(:run_command)
-      @config.should_receive(:content) do |arg|
-        arg.should match(/^\s*DEVICE=eth0\s*$/)
-        arg.should match(/^\s*IPADDR=10\.0\.0\.1\s*$/)
-        arg.should match(/^\s*NETMASK=255\.255\.254\.0\s*$/)
+      allow(@provider).to receive(:load_current_resource)
+      allow(@provider).to receive(:run_command)
+      expect(@config).to receive(:content) do |arg|
+        expect(arg).to match(/^\s*DEVICE=eth0\s*$/)
+        expect(arg).to match(/^\s*IPADDR=10\.0\.0\.1\s*$/)
+        expect(arg).to match(/^\s*NETMASK=255\.255\.254\.0\s*$/)
       end
-      @config.should_receive(:run_action).with(:create)
-      @config.should_receive(:updated?).and_return(true)
+      expect(@config).to receive(:run_action).with(:create)
+      expect(@config).to receive(:updated?).and_return(true)
       @provider.run_action(:add)
     end
   end
@@ -63,10 +63,10 @@ describe Chef::Provider::Ifconfig::Redhat do
 
     it "should delete network-script if it exists for centos" do
       @current_resource.device @new_resource.device
-      @provider.stub(:load_current_resource)
-      @provider.stub(:run_command)
-      @config.should_receive(:run_action).with(:delete)
-      @config.should_receive(:updated?).and_return(true)
+      allow(@provider).to receive(:load_current_resource)
+      allow(@provider).to receive(:run_command)
+      expect(@config).to receive(:run_action).with(:delete)
+      expect(@config).to receive(:updated?).and_return(true)
       @provider.run_action(:delete)
     end
   end
