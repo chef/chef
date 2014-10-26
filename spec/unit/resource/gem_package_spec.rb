@@ -37,6 +37,6 @@ describe Chef::Resource::GemPackage, "gem_binary" do
 
   it "should set the gem_binary variable to whatever is passed in" do
     @resource.gem_binary("/opt/local/bin/gem")
-    @resource.gem_binary.should eql("/opt/local/bin/gem")
+    expect(@resource.gem_binary).to eql("/opt/local/bin/gem")
   end
 end

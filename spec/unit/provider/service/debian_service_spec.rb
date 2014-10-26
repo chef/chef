@@ -36,17 +36,17 @@ describe Chef::Provider::Service::Debian do
 
   describe "load_current_resource" do
     it "ensures /usr/sbin/update-rc.d is available" do
-      File.should_receive(:exists?).with("/usr/sbin/update-rc.d") .and_return(false)
+      expect(File).to receive(:exists?).with("/usr/sbin/update-rc.d") .and_return(false)
 
       @provider.define_resource_requirements
-      lambda {
+      expect {
         @provider.process_resource_requirements
-      }.should raise_error(Chef::Exceptions::Service)
+      }.to raise_error(Chef::Exceptions::Service)
     end
 
     context "when update-rc.d shows init linked to rc*.d/" do
       before do
-        @provider.stub(:assert_update_rcd_available)
+        allow(@provider).to receive(:assert_update_rcd_available)
 
         result = <<-UPDATE_RC_D_SUCCESS
   Removing any system startup links for /etc/init.d/chef ...
@@ -62,55 +62,55 @@ describe Chef::Provider::Service::Debian do
         @stdout = StringIO.new(result)
         @stderr = StringIO.new
         @status = double("Status", :exitstatus => 0, :stdout => @stdout)
-        @provider.stub(:shell_out!).and_return(@status)
-        @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        allow(@provider).to receive(:shell_out!).and_return(@status)
+        allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       end
 
       it "says the service is enabled" do
-        @provider.service_currently_enabled?(@provider.get_priority).should be_true
+        expect(@provider.service_currently_enabled?(@provider.get_priority)).to be_true
       end
 
       it "stores the 'enabled' state" do
-        Chef::Resource::Service.stub(:new).and_return(@current_resource)
-        @provider.load_current_resource.should equal(@current_resource)
-        @current_resource.enabled.should be_true
+        allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
+        expect(@provider.load_current_resource).to equal(@current_resource)
+        expect(@current_resource.enabled).to be_true
       end
     end
 
     context "when update-rc.d shows init isn't linked to rc*.d/" do
       before do
-        @provider.stub(:assert_update_rcd_available)
+        allow(@provider).to receive(:assert_update_rcd_available)
         @status = double("Status", :exitstatus => 0)
         @stdout = StringIO.new(
           " Removing any system startup links for /etc/init.d/chef ...")
         @stderr = StringIO.new
         @status = double("Status", :exitstatus => 0, :stdout => @stdout)
-        @provider.stub(:shell_out!).and_return(@status)
-        @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        allow(@provider).to receive(:shell_out!).and_return(@status)
+        allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       end
 
       it "says the service is disabled" do
-        @provider.service_currently_enabled?(@provider.get_priority).should be_false
+        expect(@provider.service_currently_enabled?(@provider.get_priority)).to be_false
       end
 
       it "stores the 'disabled' state" do
-        Chef::Resource::Service.stub(:new).and_return(@current_resource)
-        @provider.load_current_resource.should equal(@current_resource)
-        @current_resource.enabled.should be_false
+        allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
+        expect(@provider.load_current_resource).to equal(@current_resource)
+        expect(@current_resource.enabled).to be_false
       end
     end
 
     context "when update-rc.d fails" do
       before do
         @status = double("Status", :exitstatus => -1)
-        @provider.stub(:popen4).and_return(@status)
+        allow(@provider).to receive(:popen4).and_return(@status)
       end
 
       it "raises an error" do
         @provider.define_resource_requirements
-        lambda {
+        expect {
           @provider.process_resource_requirements
-        }.should raise_error(Chef::Exceptions::Service)
+        }.to raise_error(Chef::Exceptions::Service)
       end
     end
 
@@ -196,49 +196,49 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
       context "on #{model}" do
         context "when update-rc.d shows init linked to rc*.d/" do
           before do
-            @provider.stub(:assert_update_rcd_available)
+            allow(@provider).to receive(:assert_update_rcd_available)
 
             @stdout = StringIO.new(expected_results["linked"]["stdout"])
             @stderr = StringIO.new(expected_results["linked"]["stderr"])
             @status = double("Status", :exitstatus => 0, :stdout => @stdout)
-            @provider.stub(:shell_out!).and_return(@status)
-            @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+            allow(@provider).to receive(:shell_out!).and_return(@status)
+            allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
           end
 
           it "says the service is enabled" do
-            @provider.service_currently_enabled?(@provider.get_priority).should be_true
+            expect(@provider.service_currently_enabled?(@provider.get_priority)).to be_true
           end
 
           it "stores the 'enabled' state" do
-            Chef::Resource::Service.stub(:new).and_return(@current_resource)
-            @provider.load_current_resource.should equal(@current_resource)
-            @current_resource.enabled.should be_true
+            allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
+            expect(@provider.load_current_resource).to equal(@current_resource)
+            expect(@current_resource.enabled).to be_true
           end
 
           it "stores the start/stop priorities of the service" do
             @provider.load_current_resource
-            @provider.current_resource.priority.should == expected_results["linked"]["priorities"]
+            expect(@provider.current_resource.priority).to eq(expected_results["linked"]["priorities"])
           end
         end
 
         context "when update-rc.d shows init isn't linked to rc*.d/" do
           before do
-            @provider.stub(:assert_update_rcd_available)
+            allow(@provider).to receive(:assert_update_rcd_available)
             @stdout = StringIO.new(expected_results["not linked"]["stdout"])
             @stderr = StringIO.new(expected_results["not linked"]["stderr"])
             @status = double("Status", :exitstatus => 0, :stdout => @stdout)
-            @provider.stub(:shell_out!).and_return(@status)
-            @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+            allow(@provider).to receive(:shell_out!).and_return(@status)
+            allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
           end
 
           it "says the service is disabled" do
-            @provider.service_currently_enabled?(@provider.get_priority).should be_false
+            expect(@provider.service_currently_enabled?(@provider.get_priority)).to be_false
           end
 
           it "stores the 'disabled' state" do
-            Chef::Resource::Service.stub(:new).and_return(@current_resource)
-            @provider.load_current_resource.should equal(@current_resource)
-            @current_resource.enabled.should be_false
+            allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
+            expect(@provider.load_current_resource).to equal(@current_resource)
+            expect(@current_resource.enabled).to be_false
           end
         end
       end
@@ -249,19 +249,19 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
   describe "action_enable" do
     shared_examples_for "the service is up to date" do
       it "does not enable the service" do
-        @provider.should_not_receive(:enable_service)
+        expect(@provider).not_to receive(:enable_service)
         @provider.action_enable
         @provider.set_updated_status
-        @provider.new_resource.should_not be_updated
+        expect(@provider.new_resource).not_to be_updated
       end
     end
 
     shared_examples_for "the service is not up to date" do
       it "enables the service and sets the resource as updated" do
-        @provider.should_receive(:enable_service).and_return(true)
+        expect(@provider).to receive(:enable_service).and_return(true)
         @provider.action_enable
         @provider.set_updated_status
-        @provider.new_resource.should be_updated
+        expect(@provider.new_resource).to be_updated
       end
     end
 
@@ -301,7 +301,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
 
   def expect_commands(provider, commands)
     commands.each do |command|
-      provider.should_receive(:shell_out!).with(command)
+      expect(provider).to receive(:shell_out!).with(command)
     end
   end
 

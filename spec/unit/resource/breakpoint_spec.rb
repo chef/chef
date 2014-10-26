@@ -33,15 +33,15 @@ describe Chef::Resource::Breakpoint do
   end
 
   it "allows the action :break" do
-    @breakpoint.allowed_actions.should include(:break)
+    expect(@breakpoint.allowed_actions).to include(:break)
   end
 
   it "defaults to the break action" do
-    @breakpoint.action.should == "break"
+    expect(@breakpoint.action).to eq("break")
   end
 
   it "names itself after the line number of the file where it's created" do
-    @breakpoint.name.should match(/breakpoint_spec\.rb\:[\d]{2}\:in \`new\'$/)
+    expect(@breakpoint.name).to match(/breakpoint_spec\.rb\:[\d]{2}\:in \`new\'$/)
   end
 
 end

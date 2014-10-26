@@ -39,21 +39,21 @@ describe Chef::Provider::DscScript do
       it "describes the resource as converged if there were 0 DSC resources" do
         allow(provider).to receive(:run_configuration).with(:test).and_return([])
         provider.load_current_resource
-        provider.instance_variable_get('@resource_converged').should be_true
+        expect(provider.instance_variable_get('@resource_converged')).to be_true
       end
 
       it "describes the resource as not converged if there is 1 DSC resources that is converged" do
         dsc_resource_info = Chef::Util::DSC::ResourceInfo.new('resource', false, ['nothing will change something'])
         allow(provider).to receive(:run_configuration).with(:test).and_return([dsc_resource_info])
         provider.load_current_resource
-        provider.instance_variable_get('@resource_converged').should be_true
+        expect(provider.instance_variable_get('@resource_converged')).to be_true
       end
 
       it "describes the resource as not converged if there is 1 DSC resources that is not converged" do
         dsc_resource_info = Chef::Util::DSC::ResourceInfo.new('resource', true, ['will change something'])
         allow(provider).to receive(:run_configuration).with(:test).and_return([dsc_resource_info])
         provider.load_current_resource
-        provider.instance_variable_get('@resource_converged').should be_false
+        expect(provider.instance_variable_get('@resource_converged')).to be_false
       end
 
       it "describes the resource as not converged if there are any DSC resources that are not converged" do
@@ -62,7 +62,7 @@ describe Chef::Provider::DscScript do
 
         allow(provider).to receive(:run_configuration).with(:test).and_return([dsc_resource_info1, dsc_resource_info2])
         provider.load_current_resource
-        provider.instance_variable_get('@resource_converged').should be_false
+        expect(provider.instance_variable_get('@resource_converged')).to be_false
       end
 
       it "describes the resource as converged if all DSC resources that are converged" do
@@ -71,7 +71,7 @@ describe Chef::Provider::DscScript do
 
         allow(provider).to receive(:run_configuration).with(:test).and_return([dsc_resource_info1, dsc_resource_info2])
         provider.load_current_resource
-        provider.instance_variable_get('@resource_converged').should be_true
+        expect(provider.instance_variable_get('@resource_converged')).to be_true
       end
     end
 
@@ -82,7 +82,7 @@ describe Chef::Provider::DscScript do
         allow(provider).to receive(:load_current_resource)
         resource.command("path_to_script")
         generator = double('Chef::Util::DSC::ConfigurationGenerator')
-        generator.should_receive(:configuration_document_from_script_path)
+        expect(generator).to receive(:configuration_document_from_script_path)
         allow(Chef::Util::DSC::ConfigurationGenerator).to receive(:new).and_return(generator)
         provider.send(:generate_configuration_document, 'tmp', nil)
       end
@@ -91,7 +91,7 @@ describe Chef::Provider::DscScript do
         allow(provider).to receive(:load_current_resource)
         resource.code("ImADSCResource{}")
         generator = double('Chef::Util::DSC::ConfigurationGenerator')
-        generator.should_receive(:configuration_document_from_script_code)
+        expect(generator).to receive(:configuration_document_from_script_code)
         allow(Chef::Util::DSC::ConfigurationGenerator).to receive(:new).and_return(generator)
         provider.send(:generate_configuration_document, 'tmp', nil)
       end
@@ -99,7 +99,7 @@ describe Chef::Provider::DscScript do
       it 'should noop if neither code or command are provided' do
         allow(provider).to receive(:load_current_resource)
         generator = double('Chef::Util::DSC::ConfigurationGenerator')
-        generator.should_receive(:configuration_document_from_script_code).with('', anything(), anything())
+        expect(generator).to receive(:configuration_document_from_script_code).with('', anything(), anything())
         allow(Chef::Util::DSC::ConfigurationGenerator).to receive(:new).and_return(generator)
         provider.send(:generate_configuration_document, 'tmp', nil)
       end
@@ -112,14 +112,14 @@ describe Chef::Provider::DscScript do
         allow(provider).to receive(:run_configuration).with(:set)
 
         provider.run_action(:run)
-        resource.should be_updated
+        expect(resource).to be_updated
       end
 
       it 'should not converge if the script is already converged' do
         allow(provider).to receive(:run_configuration).with(:test).and_return([])
         
         provider.run_action(:run)
-        resource.should_not be_updated
+        expect(resource).not_to be_updated
       end
     end
 
@@ -127,19 +127,19 @@ describe Chef::Provider::DscScript do
       it 'removes the resource name from the beginning of any log line from the LCM' do
         dsc_resource_info = Chef::Util::DSC::ResourceInfo.new('resourcename', true, ['resourcename doing something', 'lastline'])
         provider.instance_variable_set('@dsc_resources_info', [dsc_resource_info])
-        provider.send(:generate_description)[1].should match(/converge DSC resource resourcename by doing something/)
+        expect(provider.send(:generate_description)[1]).to match(/converge DSC resource resourcename by doing something/)
       end
 
       it 'ignores the last line' do
         dsc_resource_info = Chef::Util::DSC::ResourceInfo.new('resourcename', true, ['resourcename doing something', 'lastline'])
         provider.instance_variable_set('@dsc_resources_info', [dsc_resource_info])
-        provider.send(:generate_description)[1].should_not match(/lastline/)
+        expect(provider.send(:generate_description)[1]).not_to match(/lastline/)
       end
 
       it 'reports a dsc resource has not been changed if the LCM reported no change was required' do
         dsc_resource_info = Chef::Util::DSC::ResourceInfo.new('resourcename', false, ['resourcename does nothing', 'lastline'])
         provider.instance_variable_set('@dsc_resources_info', [dsc_resource_info])
-        provider.send(:generate_description)[1].should match(/converge DSC resource resourcename by doing nothing/)
+        expect(provider.send(:generate_description)[1]).to match(/converge DSC resource resourcename by doing nothing/)
       end
     end
   end

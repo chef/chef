@@ -27,7 +27,7 @@ describe Chef::Resource::ConditionalActionNotNothing do
     end
 
     it "indicates that resource convergence should not continue" do
-      @conditional.continue?.should be_false
+      expect(@conditional.continue?).to be_false
     end
   end
 
@@ -38,7 +38,7 @@ describe Chef::Resource::ConditionalActionNotNothing do
     end
 
     it "indicates that resource convergence should continue" do
-      @conditional.continue?.should be_true
+      expect(@conditional.continue?).to be_true
     end
   end
 

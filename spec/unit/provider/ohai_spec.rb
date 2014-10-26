@@ -41,16 +41,16 @@ describe Chef::Provider::Ohai do
         :newdata => "somevalue"
       }
     }
-    mock_ohai.stub(:all_plugins).and_return(true)
-    mock_ohai.stub(:data).and_return(mock_ohai[:data],
+    allow(mock_ohai).to receive(:all_plugins).and_return(true)
+    allow(mock_ohai).to receive(:data).and_return(mock_ohai[:data],
                                       mock_ohai[:data2])
-    Ohai::System.stub(:new).and_return(mock_ohai)
-    Chef::Platform.stub(:find_platform_and_version).and_return({ "platform" => @platform,
+    allow(Ohai::System).to receive(:new).and_return(mock_ohai)
+    allow(Chef::Platform).to receive(:find_platform_and_version).and_return({ "platform" => @platform,
                                                                   "platform_version" => @platform_version})
     # Fake node with a dummy save
     @node = Chef::Node.new
     @node.name(@fqdn)
-    @node.stub(:save).and_return(@node)
+    allow(@node).to receive(:save).and_return(@node)
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Ohai.new("ohai_reload")
@@ -67,18 +67,18 @@ describe Chef::Provider::Ohai do
     end
 
     it "applies updated ohai data to the node" do
-      @node[:origdata].should == 'somevalue'
-      @node[:newdata].should be_nil
+      expect(@node[:origdata]).to eq('somevalue')
+      expect(@node[:newdata]).to be_nil
       @provider.run_action(:reload)
-      @node[:origdata].should == 'somevalue'
-      @node[:newdata].should == 'somevalue'
+      expect(@node[:origdata]).to eq('somevalue')
+      expect(@node[:newdata]).to eq('somevalue')
     end
 
     it "should reload a specific plugin and cause node to pick up new values" do
       @new_resource.plugin "someplugin"
       @provider.run_action(:reload)
-      @node[:origdata].should == 'somevalue'
-      @node[:newdata].should == 'somevalue'
+      expect(@node[:origdata]).to eq('somevalue')
+      expect(@node[:newdata]).to eq('somevalue')
     end
   end
 end

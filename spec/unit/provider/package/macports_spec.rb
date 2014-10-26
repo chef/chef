@@ -27,7 +27,7 @@ describe Chef::Provider::Package::Macports do
     @current_resource = Chef::Resource::Package.new("zsh")
 
     @provider = Chef::Provider::Package::Macports.new(@new_resource, @run_context)
-    Chef::Resource::Package.stub(:new).and_return(@current_resource)
+    allow(Chef::Resource::Package).to receive(:new).and_return(@current_resource)
 
     @status = double("Status", :exitstatus => 0)
     @stdin = StringIO.new
@@ -38,91 +38,91 @@ describe Chef::Provider::Package::Macports do
 
   describe "load_current_resource" do
     it "should create a current resource with the name of the new_resource" do
-      @provider.should_receive(:current_installed_version).and_return(nil)
-      @provider.should_receive(:macports_candidate_version).and_return("4.2.7")
+      expect(@provider).to receive(:current_installed_version).and_return(nil)
+      expect(@provider).to receive(:macports_candidate_version).and_return("4.2.7")
 
       @provider.load_current_resource
-      @provider.current_resource.name.should == "zsh"
+      expect(@provider.current_resource.name).to eq("zsh")
     end
 
     it "should create a current resource with the version if the package is installed" do
-      @provider.should_receive(:macports_candidate_version).and_return("4.2.7")
-      @provider.should_receive(:current_installed_version).and_return("4.2.7")
+      expect(@provider).to receive(:macports_candidate_version).and_return("4.2.7")
+      expect(@provider).to receive(:current_installed_version).and_return("4.2.7")
 
       @provider.load_current_resource
-      @provider.candidate_version.should == "4.2.7"
+      expect(@provider.candidate_version).to eq("4.2.7")
     end
 
     it "should create a current resource with a nil version if the package is not installed" do
-      @provider.should_receive(:current_installed_version).and_return(nil)
-      @provider.should_receive(:macports_candidate_version).and_return("4.2.7")
+      expect(@provider).to receive(:current_installed_version).and_return(nil)
+      expect(@provider).to receive(:macports_candidate_version).and_return("4.2.7")
       @provider.load_current_resource
-      @provider.current_resource.version.should be_nil
+      expect(@provider.current_resource.version).to be_nil
     end
 
     it "should set a candidate version if one exists" do
-      @provider.should_receive(:current_installed_version).and_return(nil)
-      @provider.should_receive(:macports_candidate_version).and_return("4.2.7")
+      expect(@provider).to receive(:current_installed_version).and_return(nil)
+      expect(@provider).to receive(:macports_candidate_version).and_return("4.2.7")
       @provider.load_current_resource
-      @provider.candidate_version.should == "4.2.7"
+      expect(@provider.candidate_version).to eq("4.2.7")
     end
   end
 
   describe "current_installed_version" do
     it "should return the current version if the package is installed" do
-      @stdout.should_receive(:read).and_return(<<EOF
+      expect(@stdout).to receive(:read).and_return(<<EOF
 The following ports are currently installed:
   openssl @0.9.8k_0 (active)
 EOF
       )
 
-      @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @provider.current_installed_version.should == "0.9.8k_0"
+      expect(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      expect(@provider.current_installed_version).to eq("0.9.8k_0")
     end
 
     it "should return nil if a package is not currently installed" do
-      @stdout.should_receive(:read).and_return("       \n")
-      @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @provider.current_installed_version.should be_nil
+      expect(@stdout).to receive(:read).and_return("       \n")
+      expect(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      expect(@provider.current_installed_version).to be_nil
     end
   end
 
   describe "macports_candidate_version" do
     it "should return the latest available version of a given package" do
-      @stdout.should_receive(:read).and_return("version: 4.2.7\n")
-      @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @provider.macports_candidate_version.should == "4.2.7"
+      expect(@stdout).to receive(:read).and_return("version: 4.2.7\n")
+      expect(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      expect(@provider.macports_candidate_version).to eq("4.2.7")
     end
 
     it "should return nil if there is no version for a given package" do
-      @stdout.should_receive(:read).and_return("Error: port fadsfadsfads not found\n")
-      @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @provider.macports_candidate_version.should be_nil
+      expect(@stdout).to receive(:read).and_return("Error: port fadsfadsfads not found\n")
+      expect(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      expect(@provider.macports_candidate_version).to be_nil
     end
   end
 
   describe "install_package" do
     it "should run the port install command with the correct version" do
-      @current_resource.should_receive(:version).and_return("4.1.6")
+      expect(@current_resource).to receive(:version).and_return("4.1.6")
       @provider.current_resource = @current_resource
-      @provider.should_receive(:shell_out!).with("port install zsh @4.2.7")
+      expect(@provider).to receive(:shell_out!).with("port install zsh @4.2.7")
 
       @provider.install_package("zsh", "4.2.7")
     end
 
     it "should not do anything if a package already exists with the same version" do
-      @current_resource.should_receive(:version).and_return("4.2.7")
+      expect(@current_resource).to receive(:version).and_return("4.2.7")
       @provider.current_resource = @current_resource
-      @provider.should_not_receive(:shell_out!)
+      expect(@provider).not_to receive(:shell_out!)
 
       @provider.install_package("zsh", "4.2.7")
     end
 
     it "should add options to the port command when specified" do
-      @current_resource.should_receive(:version).and_return("4.1.6")
+      expect(@current_resource).to receive(:version).and_return("4.1.6")
       @provider.current_resource = @current_resource
-      @new_resource.stub(:options).and_return("-f")
-      @provider.should_receive(:shell_out!).with("port -f install zsh @4.2.7")
+      allow(@new_resource).to receive(:options).and_return("-f")
+      expect(@provider).to receive(:shell_out!).with("port -f install zsh @4.2.7")
 
       @provider.install_package("zsh", "4.2.7")
     end
@@ -130,72 +130,72 @@ EOF
 
   describe "purge_package" do
     it "should run the port uninstall command with the correct version" do
-      @provider.should_receive(:shell_out!).with("port uninstall zsh @4.2.7")
+      expect(@provider).to receive(:shell_out!).with("port uninstall zsh @4.2.7")
       @provider.purge_package("zsh", "4.2.7")
     end
 
     it "should purge the currently active version if no explicit version is passed in" do
-      @provider.should_receive(:shell_out!).with("port uninstall zsh")
+      expect(@provider).to receive(:shell_out!).with("port uninstall zsh")
       @provider.purge_package("zsh", nil)
     end
 
     it "should add options to the port command when specified" do
-      @new_resource.stub(:options).and_return("-f")
-      @provider.should_receive(:shell_out!).with("port -f uninstall zsh @4.2.7")
+      allow(@new_resource).to receive(:options).and_return("-f")
+      expect(@provider).to receive(:shell_out!).with("port -f uninstall zsh @4.2.7")
       @provider.purge_package("zsh", "4.2.7")
     end
   end
 
   describe "remove_package" do
     it "should run the port deactivate command with the correct version" do
-      @provider.should_receive(:shell_out!).with("port deactivate zsh @4.2.7")
+      expect(@provider).to receive(:shell_out!).with("port deactivate zsh @4.2.7")
       @provider.remove_package("zsh", "4.2.7")
     end
 
     it "should remove the currently active version if no explicit version is passed in" do
-      @provider.should_receive(:shell_out!).with("port deactivate zsh")
+      expect(@provider).to receive(:shell_out!).with("port deactivate zsh")
       @provider.remove_package("zsh", nil)
     end
 
     it "should add options to the port command when specified" do
-      @new_resource.stub(:options).and_return("-f")
-      @provider.should_receive(:shell_out!).with("port -f deactivate zsh @4.2.7")
+      allow(@new_resource).to receive(:options).and_return("-f")
+      expect(@provider).to receive(:shell_out!).with("port -f deactivate zsh @4.2.7")
       @provider.remove_package("zsh", "4.2.7")
     end
   end
 
   describe "upgrade_package" do
     it "should run the port upgrade command with the correct version" do
-      @current_resource.should_receive(:version).at_least(:once).and_return("4.1.6")
+      expect(@current_resource).to receive(:version).at_least(:once).and_return("4.1.6")
       @provider.current_resource = @current_resource
 
-      @provider.should_receive(:shell_out!).with("port upgrade zsh @4.2.7")
+      expect(@provider).to receive(:shell_out!).with("port upgrade zsh @4.2.7")
 
       @provider.upgrade_package("zsh", "4.2.7")
     end
 
     it "should not run the port upgrade command if the version is already installed" do
-      @current_resource.should_receive(:version).at_least(:once).and_return("4.2.7")
+      expect(@current_resource).to receive(:version).at_least(:once).and_return("4.2.7")
       @provider.current_resource = @current_resource
-      @provider.should_not_receive(:shell_out!)
+      expect(@provider).not_to receive(:shell_out!)
 
       @provider.upgrade_package("zsh", "4.2.7")
     end
 
     it "should call install_package if the package isn't currently installed" do
-      @current_resource.should_receive(:version).at_least(:once).and_return(nil)
+      expect(@current_resource).to receive(:version).at_least(:once).and_return(nil)
       @provider.current_resource = @current_resource
-      @provider.should_receive(:install_package).and_return(true)
+      expect(@provider).to receive(:install_package).and_return(true)
 
       @provider.upgrade_package("zsh", "4.2.7")
     end
 
     it "should add options to the port command when specified" do
-      @new_resource.stub(:options).and_return("-f")
-      @current_resource.should_receive(:version).at_least(:once).and_return("4.1.6")
+      allow(@new_resource).to receive(:options).and_return("-f")
+      expect(@current_resource).to receive(:version).at_least(:once).and_return("4.1.6")
       @provider.current_resource = @current_resource
 
-      @provider.should_receive(:shell_out!).with("port -f upgrade zsh @4.2.7")
+      expect(@provider).to receive(:shell_out!).with("port -f upgrade zsh @4.2.7")
 
       @provider.upgrade_package("zsh", "4.2.7")
     end

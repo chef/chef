@@ -33,28 +33,28 @@ describe Chef::Resource::Deploy do
     def resource_has_a_string_attribute(attr_name)
       it "has a String attribute for #{attr_name.to_s}" do
         @resource.send(attr_name, "this is a string")
-        @resource.send(attr_name).should eql("this is a string")
-        lambda {@resource.send(attr_name, 8675309)}.should raise_error(ArgumentError)
+        expect(@resource.send(attr_name)).to eql("this is a string")
+        expect {@resource.send(attr_name, 8675309)}.to raise_error(ArgumentError)
       end
     end
 
     def resource_has_a_boolean_attribute(attr_name, opts={:defaults_to=>false})
       it "has a Boolean attribute for #{attr_name.to_s}" do
-        @resource.send(attr_name).should eql(opts[:defaults_to])
+        expect(@resource.send(attr_name)).to eql(opts[:defaults_to])
         @resource.send(attr_name, !opts[:defaults_to])
-        @resource.send(attr_name).should eql( !opts[:defaults_to] )
+        expect(@resource.send(attr_name)).to eql( !opts[:defaults_to] )
       end
     end
 
     def resource_has_a_callback_attribute(attr_name)
       it "has a Callback attribute #{attr_name}" do
         callback_block = lambda { :noop }
-        lambda {@resource.send(attr_name, &callback_block)}.should_not raise_error
-        @resource.send(attr_name).should == callback_block
+        expect {@resource.send(attr_name, &callback_block)}.not_to raise_error
+        expect(@resource.send(attr_name)).to eq(callback_block)
         callback_file = "path/to/callback.rb"
-        lambda {@resource.send(attr_name, callback_file)}.should_not raise_error
-        @resource.send(attr_name).should == callback_file
-        lambda {@resource.send(attr_name, :this_is_fail)}.should raise_error(ArgumentError)
+        expect {@resource.send(attr_name, callback_file)}.not_to raise_error
+        expect(@resource.send(attr_name)).to eq(callback_file)
+        expect {@resource.send(attr_name, :this_is_fail)}.to raise_error(ArgumentError)
       end
     end
   end
@@ -85,7 +85,7 @@ describe Chef::Resource::Deploy do
   resource_has_a_boolean_attribute(:shallow_clone, :defaults_to=>false)
 
   it "uses the first argument as the deploy directory" do
-    @resource.deploy_to.should eql("/my/deploy/dir")
+    expect(@resource.deploy_to).to eql("/my/deploy/dir")
   end
 
   # For git, any revision, branch, tag, whatever is resolved to a SHA1 ref.
@@ -93,100 +93,100 @@ describe Chef::Resource::Deploy do
   # Therefore, revision and branch ARE NOT SEPARATE THINGS
   it "aliases #revision as #branch" do
     @resource.branch "stable"
-    @resource.revision.should eql("stable")
+    expect(@resource.revision).to eql("stable")
   end
 
   it "takes the SCM resource to use as a constant, and defaults to git" do
-    @resource.scm_provider.should eql(Chef::Provider::Git)
+    expect(@resource.scm_provider).to eql(Chef::Provider::Git)
     @resource.scm_provider Chef::Provider::Subversion
-    @resource.scm_provider.should eql(Chef::Provider::Subversion)
+    expect(@resource.scm_provider).to eql(Chef::Provider::Subversion)
   end
 
   it "allows scm providers to be set via symbol" do
-    @resource.scm_provider.should == Chef::Provider::Git
+    expect(@resource.scm_provider).to eq(Chef::Provider::Git)
     @resource.scm_provider :subversion
-    @resource.scm_provider.should == Chef::Provider::Subversion
+    expect(@resource.scm_provider).to eq(Chef::Provider::Subversion)
   end
 
   it "allows scm providers to be set via string" do
-    @resource.scm_provider.should == Chef::Provider::Git
+    expect(@resource.scm_provider).to eq(Chef::Provider::Git)
     @resource.scm_provider "subversion"
-    @resource.scm_provider.should == Chef::Provider::Subversion
+    expect(@resource.scm_provider).to eq(Chef::Provider::Subversion)
   end
 
   it "has a boolean attribute for svn_force_export defaulting to false" do
-    @resource.svn_force_export.should be_false
+    expect(@resource.svn_force_export).to be_false
     @resource.svn_force_export true
-    @resource.svn_force_export.should be_true
-    lambda {@resource.svn_force_export(10053)}.should raise_error(ArgumentError)
+    expect(@resource.svn_force_export).to be_true
+    expect {@resource.svn_force_export(10053)}.to raise_error(ArgumentError)
   end
 
   it "takes arbitrary environment variables in a hash" do
     @resource.environment "RAILS_ENV" => "production"
-    @resource.environment.should == {"RAILS_ENV" => "production"}
+    expect(@resource.environment).to eq({"RAILS_ENV" => "production"})
   end
 
   it "takes string arguments to environment for backwards compat, setting RAILS_ENV, RACK_ENV, and MERB_ENV" do
     @resource.environment "production"
-    @resource.environment.should == {"RAILS_ENV"=>"production", "RACK_ENV"=>"production","MERB_ENV"=>"production"}
+    expect(@resource.environment).to eq({"RAILS_ENV"=>"production", "RACK_ENV"=>"production","MERB_ENV"=>"production"})
   end
 
   it "sets destination to $deploy_to/shared/$repository_cache" do
-    @resource.destination.should eql("/my/deploy/dir/shared/cached-copy")
+    expect(@resource.destination).to eql("/my/deploy/dir/shared/cached-copy")
   end
 
   it "sets shared_path to $deploy_to/shared" do
-    @resource.shared_path.should eql("/my/deploy/dir/shared")
+    expect(@resource.shared_path).to eql("/my/deploy/dir/shared")
   end
 
   it "sets current_path to $deploy_to/current" do
-    @resource.current_path.should eql("/my/deploy/dir/current")
+    expect(@resource.current_path).to eql("/my/deploy/dir/current")
   end
 
   it "gets the current_path correct even if the shared_path is set (regression test)" do
     @resource.shared_path
-    @resource.current_path.should eql("/my/deploy/dir/current")
+    expect(@resource.current_path).to eql("/my/deploy/dir/current")
   end
 
   it "gives #depth as 5 if shallow clone is true, nil otherwise" do
-    @resource.depth.should be_nil
+    expect(@resource.depth).to be_nil
     @resource.shallow_clone true
-    @resource.depth.should eql("5")
+    expect(@resource.depth).to eql("5")
   end
 
   it "aliases repo as repository" do
     @resource.repository "git@github.com/opcode/cookbooks.git"
-    @resource.repo.should eql("git@github.com/opcode/cookbooks.git")
+    expect(@resource.repo).to eql("git@github.com/opcode/cookbooks.git")
   end
 
   it "aliases git_ssh_wrapper as ssh_wrapper" do
     @resource.ssh_wrapper "git_my_repo.sh"
-    @resource.git_ssh_wrapper.should eql("git_my_repo.sh")
+    expect(@resource.git_ssh_wrapper).to eql("git_my_repo.sh")
   end
 
   it "has an Array attribute purge_before_symlink, default: log, tmp/pids, public/system" do
-    @resource.purge_before_symlink.should == %w{ log tmp/pids public/system }
+    expect(@resource.purge_before_symlink).to eq(%w{ log tmp/pids public/system })
     @resource.purge_before_symlink %w{foo bar baz}
-    @resource.purge_before_symlink.should == %w{foo bar baz}
+    expect(@resource.purge_before_symlink).to eq(%w{foo bar baz})
   end
 
   it "has an Array attribute create_dirs_before_symlink, default: tmp, public, config" do
-    @resource.create_dirs_before_symlink.should == %w{tmp public config}
+    expect(@resource.create_dirs_before_symlink).to eq(%w{tmp public config})
     @resource.create_dirs_before_symlink %w{foo bar baz}
-    @resource.create_dirs_before_symlink.should == %w{foo bar baz}
+    expect(@resource.create_dirs_before_symlink).to eq(%w{foo bar baz})
   end
 
   it 'has a Hash attribute symlinks, default: {"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}' do
     default = { "system" => "public/system", "pids" => "tmp/pids", "log" => "log"}
-    @resource.symlinks.should == default
+    expect(@resource.symlinks).to eq(default)
     @resource.symlinks "foo" => "bar/baz"
-    @resource.symlinks.should == {"foo" => "bar/baz"}
+    expect(@resource.symlinks).to eq({"foo" => "bar/baz"})
   end
 
   it 'has a Hash attribute symlink_before_migrate, default "config/database.yml" => "config/database.yml"' do
-    @resource.symlink_before_migrate.should == {"config/database.yml" => "config/database.yml"}
+    expect(@resource.symlink_before_migrate).to eq({"config/database.yml" => "config/database.yml"})
     @resource.symlink_before_migrate "wtf?" => "wtf is going on"
-    @resource.symlink_before_migrate.should == {"wtf?" => "wtf is going on"}
+    expect(@resource.symlink_before_migrate).to eq({"wtf?" => "wtf is going on"})
   end
 
   resource_has_a_callback_attribute :before_migrate
@@ -196,55 +196,55 @@ describe Chef::Resource::Deploy do
 
   it "aliases restart_command as restart" do
     @resource.restart "foobaz"
-    @resource.restart_command.should == "foobaz"
+    expect(@resource.restart_command).to eq("foobaz")
   end
 
   it "takes a block for the restart parameter" do
     restart_like_this = lambda {p :noop}
     @resource.restart(&restart_like_this)
-    @resource.restart.should == restart_like_this
+    expect(@resource.restart).to eq(restart_like_this)
   end
 
   it "allows providers to be set with a full class name" do
     @resource.provider Chef::Provider::Deploy::Timestamped
-    @resource.provider.should == Chef::Provider::Deploy::Timestamped
+    expect(@resource.provider).to eq(Chef::Provider::Deploy::Timestamped)
   end
 
   it "allows deploy providers to be set via symbol" do
     @resource.provider :revision
-    @resource.provider.should == Chef::Provider::Deploy::Revision
+    expect(@resource.provider).to eq(Chef::Provider::Deploy::Revision)
   end
 
   it "allows deploy providers to be set via string" do
     @resource.provider "revision"
-    @resource.provider.should == Chef::Provider::Deploy::Revision
+    expect(@resource.provider).to eq(Chef::Provider::Deploy::Revision)
   end
 
   it "defaults keep_releases to 5" do
-    @resource.keep_releases.should == 5
+    expect(@resource.keep_releases).to eq(5)
   end
 
   it "allows keep_releases to be set via integer" do
     @resource.keep_releases 10
-    @resource.keep_releases.should == 10
+    expect(@resource.keep_releases).to eq(10)
   end
 
   it "enforces a minimum keep_releases of 1" do
     @resource.keep_releases 0
-    @resource.keep_releases.should == 1
+    expect(@resource.keep_releases).to eq(1)
   end
 
   describe "when it has a timeout attribute" do
     let(:ten_seconds) { 10 }
     before { @resource.timeout(ten_seconds) }
     it "stores this timeout" do
-      @resource.timeout.should == ten_seconds
+      expect(@resource.timeout).to eq(ten_seconds)
     end
   end
 
   describe "when it has no timeout attribute" do
     it "should have no default timeout" do
-      @resource.timeout.should be_nil
+      expect(@resource.timeout).to be_nil
     end
   end
 
@@ -266,12 +266,12 @@ describe Chef::Resource::Deploy do
 
     it "describes its state" do
       state = @resource.state
-      state[:deploy_to].should == "/"
-      state[:revision].should == "1.2.3"
+      expect(state[:deploy_to]).to eq("/")
+      expect(state[:revision]).to eq("1.2.3")
     end
 
     it "returns the repository URI as its identity" do
-      @resource.identity.should == "http://uri.org"
+      expect(@resource.identity).to eq("http://uri.org")
     end
   end
 

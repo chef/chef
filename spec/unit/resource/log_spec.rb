@@ -27,29 +27,29 @@ describe Chef::Resource::Log do
   end
 
   it "should create a new Chef::Resource::Log" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::Log)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Log)
   end
 
   it "supports the :write actions" do
-    @resource.allowed_actions.should include(:write)
+    expect(@resource.allowed_actions).to include(:write)
   end
 
   it "should have a name of log" do
-    @resource.resource_name.should == :log
+    expect(@resource.resource_name).to eq(:log)
   end
 
   it "should allow you to set a log string" do
-    @resource.name.should == @log_str
+    expect(@resource.name).to eq(@log_str)
   end
 
   it "should set the message to the first argument to new" do
-    @resource.message.should == @log_str
+    expect(@resource.message).to eq(@log_str)
   end
 
   it "should accept a string for the log message" do
     @resource.message "this is different"
-    @resource.message.should == "this is different"
+    expect(@resource.message).to eq("this is different")
   end
 
   it "should accept a vaild level option" do
@@ -58,7 +58,7 @@ describe Chef::Resource::Log do
     @resource.level :warn
     @resource.level :error
     @resource.level :fatal
-    lambda { @resource.level :unsupported }.should raise_error(ArgumentError)
+    expect { @resource.level :unsupported }.to raise_error(ArgumentError)
   end
 
   describe "when the identity is defined" do
@@ -67,7 +67,7 @@ describe Chef::Resource::Log do
     end
 
     it "returns the log string as its identity" do
-      @resource.identity.should == "ery day I'm loggin-in"
+      expect(@resource.identity).to eq("ery day I'm loggin-in")
     end
   end
 end

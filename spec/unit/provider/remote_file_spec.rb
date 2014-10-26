@@ -47,13 +47,13 @@ describe Chef::Provider::RemoteFile do
 
   subject(:provider) do
     provider = described_class.new(resource, run_context)
-    provider.stub(:content).and_return(content)
-    provider.stub(:update_new_resource_checksum).and_return(nil) # Otherwise it doesn't behave like a File provider
+    allow(provider).to receive(:content).and_return(content)
+    allow(provider).to receive(:update_new_resource_checksum).and_return(nil) # Otherwise it doesn't behave like a File provider
     provider
   end
 
   before do
-    Chef::FileCache.stub(:load).with("remote_file/#{resource.name}").and_raise(Chef::Exceptions::FileNotFound)
+    allow(Chef::FileCache).to receive(:load).with("remote_file/#{resource.name}").and_raise(Chef::Exceptions::FileNotFound)
   end
 
   it_behaves_like Chef::Provider::File

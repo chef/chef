@@ -92,37 +92,37 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
   before do
     stub_const("Chef::Provider::Mount::Solaris::VFSTAB", vfstab_file.path )
-    provider.stub(:shell_out!).with("mount -v").and_return(OpenStruct.new(:stdout => mount_output))
-    File.stub(:symlink?).with(device).and_return(false)
-    File.stub(:exist?).and_call_original # Tempfile.open on ruby 1.8.7 calls File.exist?
-    File.stub(:exist?).with(device).and_return(true)
-    File.stub(:exist?).with(mountpoint).and_return(true)
+    allow(provider).to receive(:shell_out!).with("mount -v").and_return(OpenStruct.new(:stdout => mount_output))
+    allow(File).to receive(:symlink?).with(device).and_return(false)
+    allow(File).to receive(:exist?).and_call_original # Tempfile.open on ruby 1.8.7 calls File.exist?
+    allow(File).to receive(:exist?).with(device).and_return(true)
+    allow(File).to receive(:exist?).with(mountpoint).and_return(true)
     expect(File).to_not receive(:exists?)
   end
 
   describe "#define_resource_requirements" do
     before do
       # we're not testing the actual actions so stub them all out
-      [:mount_fs, :umount_fs, :remount_fs, :enable_fs, :disable_fs].each {|m| provider.stub(m) }
+      [:mount_fs, :umount_fs, :remount_fs, :enable_fs, :disable_fs].each {|m| allow(provider).to receive(m) }
     end
 
     it "run_action(:mount) should raise an error if the device does not exist" do
-      File.stub(:exist?).with(device).and_return(false)
+      allow(File).to receive(:exist?).with(device).and_return(false)
       expect { provider.run_action(:mount) }.to raise_error(Chef::Exceptions::Mount)
     end
 
     it "run_action(:remount) should raise an error if the device does not exist" do
-      File.stub(:exist?).with(device).and_return(false)
+      allow(File).to receive(:exist?).with(device).and_return(false)
       expect { provider.run_action(:remount) }.to raise_error(Chef::Exceptions::Mount)
     end
 
     it "run_action(:mount) should raise an error if the mountpoint does not exist" do
-      File.stub(:exist?).with(mountpoint).and_return false
+      allow(File).to receive(:exist?).with(mountpoint).and_return false
       expect { provider.run_action(:mount) }.to raise_error(Chef::Exceptions::Mount)
     end
 
     it "run_action(:remount) should raise an error if the mountpoint does not exist" do
-      File.stub(:exist?).with(mountpoint).and_return false
+      allow(File).to receive(:exist?).with(mountpoint).and_return false
       expect { provider.run_action(:remount) }.to raise_error(Chef::Exceptions::Mount)
     end
 
@@ -160,23 +160,23 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
 
       it "should set the name on the current_resource" do
-        provider.current_resource.name.should == mountpoint
+        expect(provider.current_resource.name).to eq(mountpoint)
       end
 
       it "should set the mount_point on the current_resource" do
-        provider.current_resource.mount_point.should == mountpoint
+        expect(provider.current_resource.mount_point).to eq(mountpoint)
       end
 
       it "should set the device on the current_resource" do
-        provider.current_resource.device.should == device
+        expect(provider.current_resource.device).to eq(device)
       end
 
       it "should set the fsck_device on the current_resource" do
-        provider.current_resource.fsck_device.should == fsck_device
+        expect(provider.current_resource.fsck_device).to eq(fsck_device)
       end
 
       it "should set the device_type on the current_resource" do
-        provider.current_resource.device_type.should == device_type
+        expect(provider.current_resource.device_type).to eq(device_type)
       end
 
       it "should set the mounted status on the current_resource" do
@@ -200,12 +200,12 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
 
       it "should not throw an exception when the device does not exist - CHEF-1565" do
-        File.stub(:exist?).with(device).and_return(false)
+        allow(File).to receive(:exist?).with(device).and_return(false)
         expect { provider.load_current_resource }.to_not raise_error
       end
 
       it "should not throw an exception when the mount point does not exist" do
-        File.stub(:exist?).with(mountpoint).and_return false
+        allow(File).to receive(:exist?).with(mountpoint).and_return false
         expect { provider.load_current_resource }.to_not raise_error
       end
     end
@@ -288,19 +288,19 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
 
       it "should set the name on the current_resource" do
-        provider.current_resource.name.should == mountpoint
+        expect(provider.current_resource.name).to eq(mountpoint)
       end
 
       it "should set the mount_point on the current_resource" do
-        provider.current_resource.mount_point.should == mountpoint
+        expect(provider.current_resource.mount_point).to eq(mountpoint)
       end
 
       it "should set the device on the current_resource" do
-        provider.current_resource.device.should == device
+        expect(provider.current_resource.device).to eq(device)
       end
 
       it "should set the device_type on the current_resource" do
-        provider.current_resource.device_type.should == device_type
+        expect(provider.current_resource.device_type).to eq(device_type)
       end
 
       it "should set the mounted status on the current_resource" do
@@ -347,8 +347,8 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       }
 
       before do
-        File.should_receive(:symlink?).with(device).at_least(:once).and_return(true)
-        File.should_receive(:readlink).with(device).at_least(:once).and_return(target)
+        expect(File).to receive(:symlink?).with(device).at_least(:once).and_return(true)
+        expect(File).to receive(:readlink).with(device).at_least(:once).and_return(target)
 
         provider.load_current_resource()
       end
@@ -384,8 +384,8 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       }
 
       before do
-        File.should_receive(:symlink?).with(device).at_least(:once).and_return(true)
-        File.should_receive(:readlink).with(device).at_least(:once).and_return(target)
+        expect(File).to receive(:symlink?).with(device).at_least(:once).and_return(true)
+        expect(File).to receive(:readlink).with(device).at_least(:once).and_return(target)
 
         provider.load_current_resource()
       end
@@ -412,7 +412,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       }
       it "should set mounted true" do
         provider.load_current_resource()
-        provider.current_resource.mounted.should be_true
+        expect(provider.current_resource.mounted).to be_true
       end
     end
 
@@ -425,7 +425,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       }
       it "should set mounted false" do
         provider.load_current_resource()
-        provider.current_resource.mounted.should be_false
+        expect(provider.current_resource.mounted).to be_false
       end
     end
 
@@ -437,7 +437,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       }
       it "should set mounted false" do
         provider.load_current_resource()
-        provider.current_resource.mounted.should be_false
+        expect(provider.current_resource.mounted).to be_false
       end
     end
 
@@ -449,7 +449,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       }
       it "should set mounted false" do
         provider.load_current_resource()
-        provider.current_resource.mounted.should be_false
+        expect(provider.current_resource.mounted).to be_false
       end
     end
 
@@ -463,7 +463,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
       it "should set enabled to true" do
         provider.load_current_resource
-        provider.current_resource.enabled.should be_true
+        expect(provider.current_resource.enabled).to be_true
       end
     end
 
@@ -477,7 +477,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
       it "should set enabled to true" do
         provider.load_current_resource
-        provider.current_resource.enabled.should be_true
+        expect(provider.current_resource.enabled).to be_true
       end
     end
 
@@ -491,7 +491,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
       it "should set enabled to false" do
         provider.load_current_resource
-        provider.current_resource.enabled.should be_false
+        expect(provider.current_resource.enabled).to be_false
       end
     end
 
@@ -504,7 +504,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
       it "should set enabled to false" do
         provider.load_current_resource
-        provider.current_resource.enabled.should be_false
+        expect(provider.current_resource.enabled).to be_false
       end
     end
 
@@ -517,7 +517,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
       it "should set enabled to false" do
         provider.load_current_resource
-        provider.current_resource.enabled.should be_false
+        expect(provider.current_resource.enabled).to be_false
       end
     end
 
@@ -530,7 +530,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
       it "should set enabled to false" do
         provider.load_current_resource
-        provider.current_resource.enabled.should be_false
+        expect(provider.current_resource.enabled).to be_false
       end
     end
   end
@@ -538,28 +538,28 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
   context "after the mount's state has been discovered" do
     describe "mount_fs" do
       it "should mount the filesystem" do
-        provider.should_receive(:shell_out!).with("mount -F #{fstype} -o defaults #{device} #{mountpoint}")
+        expect(provider).to receive(:shell_out!).with("mount -F #{fstype} -o defaults #{device} #{mountpoint}")
         provider.mount_fs()
       end
 
       it "should mount the filesystem with options if options were passed" do
         options = "logging,noatime,largefiles,nosuid,rw,quota"
         new_resource.options(options.split(/,/))
-        provider.should_receive(:shell_out!).with("mount -F #{fstype} -o #{options} #{device} #{mountpoint}")
+        expect(provider).to receive(:shell_out!).with("mount -F #{fstype} -o #{options} #{device} #{mountpoint}")
         provider.mount_fs()
       end
 
       it "should delete the 'noauto' magic option" do
         options = "rw,noauto"
         new_resource.options(%w{rw noauto})
-        provider.should_receive(:shell_out!).with("mount -F #{fstype} -o rw #{device} #{mountpoint}")
+        expect(provider).to receive(:shell_out!).with("mount -F #{fstype} -o rw #{device} #{mountpoint}")
         provider.mount_fs()
       end
     end
 
     describe "umount_fs" do
       it "should umount the filesystem if it is mounted" do
-        provider.should_receive(:shell_out!).with("umount #{mountpoint}")
+        expect(provider).to receive(:shell_out!).with("umount #{mountpoint}")
         provider.umount_fs()
       end
     end
@@ -567,7 +567,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     describe "remount_fs without options and do not mount at boot" do
       it "should use mount -o remount" do
         new_resource.options(%w{noauto})
-        provider.should_receive(:shell_out!).with("mount -o remount #{new_resource.mount_point}")
+        expect(provider).to receive(:shell_out!).with("mount -o remount #{new_resource.mount_point}")
         provider.remount_fs
       end
     end
@@ -575,7 +575,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     describe "remount_fs with options and do not mount at boot" do
       it "should use mount -o remount,rw" do
         new_resource.options(%w{rw noauto})
-        provider.should_receive(:shell_out!).with("mount -o remount,rw #{new_resource.mount_point}")
+        expect(provider).to receive(:shell_out!).with("mount -o remount,rw #{new_resource.mount_point}")
         provider.remount_fs
       end
     end
@@ -583,7 +583,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     describe "remount_fs with options and mount at boot" do
       it "should use mount -o remount,rw" do
         new_resource.options(%w{rw})
-        provider.should_receive(:shell_out!).with("mount -o remount,rw #{new_resource.mount_point}")
+        expect(provider).to receive(:shell_out!).with("mount -o remount,rw #{new_resource.mount_point}")
         provider.remount_fs
       end
     end
@@ -591,7 +591,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     describe "remount_fs without options and mount at boot" do
       it "should use mount -o remount" do
         new_resource.options([])
-        provider.should_receive(:shell_out!).with("mount -o remount #{new_resource.mount_point}")
+        expect(provider).to receive(:shell_out!).with("mount -o remount #{new_resource.mount_point}")
         provider.remount_fs
       end
     end
@@ -605,17 +605,17 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         let(:vfstab_file_contents) { [other_mount].join("\n") }
 
         before do
-          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          allow(provider).to receive(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
           provider.load_current_resource
           provider.enable_fs
         end
 
         it "should leave the other mountpoint alone" do
-          IO.read(vfstab_file.path).should match(/^#{Regexp.escape(other_mount)}/)
+          expect(IO.read(vfstab_file.path)).to match(/^#{Regexp.escape(other_mount)}/)
         end
 
         it "should enable the mountpoint we care about" do
-          IO.read(vfstab_file.path).should match(/^#{Regexp.escape(this_mount)}/)
+          expect(IO.read(vfstab_file.path)).to match(/^#{Regexp.escape(this_mount)}/)
         end
       end
 
@@ -629,17 +629,17 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         let(:vfstab_file_contents) { [other_mount].join("\n") }
 
         before do
-          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          allow(provider).to receive(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
           provider.load_current_resource
           provider.enable_fs
         end
 
         it "should leave the other mountpoint alone" do
-          IO.read(vfstab_file.path).should match(/^#{Regexp.escape(other_mount)}/)
+          expect(IO.read(vfstab_file.path)).to match(/^#{Regexp.escape(other_mount)}/)
         end
 
         it "should enable the mountpoint we care about" do
-          IO.read(vfstab_file.path).should match(/^#{Regexp.escape(this_mount)}/)
+          expect(IO.read(vfstab_file.path)).to match(/^#{Regexp.escape(this_mount)}/)
         end
       end
 
@@ -653,18 +653,18 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         let(:vfstab_file_contents) { [existing_mount].join("\n") }
 
         before do
-          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          allow(provider).to receive(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
           provider.load_current_resource
           provider.mount_options_unchanged?
           provider.send(:vfstab_entry)
         end
 
         it "should detect a changed entry" do
-          provider.mount_options_unchanged?.should == false
+          expect(provider.mount_options_unchanged?).to eq(false)
         end
 
         it "should change mount at boot to no" do
-          provider.send(:vfstab_entry).should match(/^#{Regexp.escape(this_mount)}/)
+          expect(provider.send(:vfstab_entry)).to match(/^#{Regexp.escape(this_mount)}/)
         end
       end
 
@@ -678,18 +678,18 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         let(:vfstab_file_contents) { [existing_mount].join("\n") }
 
         before do
-          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          allow(provider).to receive(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
           provider.load_current_resource
           provider.mount_options_unchanged?
           provider.send(:vfstab_entry)
         end
 
         it "should detect a changed entry" do
-          provider.mount_options_unchanged?.should == false
+          expect(provider.mount_options_unchanged?).to eq(false)
         end
 
         it "should change mount at boot to yes" do
-          provider.send(:vfstab_entry).should match(/^#{Regexp.escape(this_mount)}/)
+          expect(provider.send(:vfstab_entry)).to match(/^#{Regexp.escape(this_mount)}/)
         end
       end
 
@@ -703,18 +703,18 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         let(:vfstab_file_contents) { [existing_mount].join("\n") }
 
         before do
-          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          allow(provider).to receive(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
           provider.load_current_resource
           provider.mount_options_unchanged?
           provider.send(:vfstab_entry)
         end
 
         it "should detect an unchanged entry" do
-          provider.mount_options_unchanged?.should == true
+          expect(provider.mount_options_unchanged?).to eq(true)
         end
 
         it "should not change mount at boot" do
-          provider.send(:vfstab_entry).should match(/^#{Regexp.escape(this_mount)}/)
+          expect(provider.send(:vfstab_entry)).to match(/^#{Regexp.escape(this_mount)}/)
         end
       end
 
@@ -728,18 +728,18 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         let(:vfstab_file_contents) { [existing_mount].join("\n") }
 
         before do
-          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          allow(provider).to receive(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
           provider.load_current_resource
           provider.mount_options_unchanged?
           provider.send(:vfstab_entry)
         end
 
         it "should detect an unchanged entry" do
-          provider.mount_options_unchanged?.should == true
+          expect(provider.mount_options_unchanged?).to eq(true)
         end
 
         it "should not change mount at boot" do
-          provider.send(:vfstab_entry).should match(/^#{Regexp.escape(this_mount)}/)
+          expect(provider.send(:vfstab_entry)).to match(/^#{Regexp.escape(this_mount)}/)
         end
       end
     end
@@ -753,16 +753,16 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         let(:vfstab_file_contents) { [other_mount, this_mount].join("\n") }
 
         before do
-          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          allow(provider).to receive(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
           provider.disable_fs
         end
 
         it "should leave the other mountpoint alone" do
-          IO.read(vfstab_file.path).should match(/^#{Regexp.escape(other_mount)}/)
+          expect(IO.read(vfstab_file.path)).to match(/^#{Regexp.escape(other_mount)}/)
         end
 
         it "should disable the mountpoint we care about" do
-          IO.read(vfstab_file.path).should_not match(/^#{Regexp.escape(this_mount)}/)
+          expect(IO.read(vfstab_file.path)).not_to match(/^#{Regexp.escape(this_mount)}/)
         end
       end
 
@@ -776,20 +776,20 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         let(:vfstab_file_contents) { [other_mount, this_mount, comment].join("\n") }
 
         before do
-          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          allow(provider).to receive(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
           provider.disable_fs
         end
 
         it "should leave the other mountpoint alone" do
-          IO.read(vfstab_file.path).should match(/^#{Regexp.escape(other_mount)}/)
+          expect(IO.read(vfstab_file.path)).to match(/^#{Regexp.escape(other_mount)}/)
         end
 
         it "should disable the mountpoint we care about" do
-          IO.read(vfstab_file.path).should_not match(/^#{Regexp.escape(this_mount)}/)
+          expect(IO.read(vfstab_file.path)).not_to match(/^#{Regexp.escape(this_mount)}/)
         end
 
         it "should keep the comment" do
-          IO.read(vfstab_file.path).should match(/^#{Regexp.escape(comment)}/)
+          expect(IO.read(vfstab_file.path)).to match(/^#{Regexp.escape(comment)}/)
         end
       end
 
@@ -801,20 +801,20 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         let(:vfstab_file_contents) { [this_mount, other_mount, this_mount].join("\n") }
 
         before do
-          provider.stub(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
+          allow(provider).to receive(:etc_tempfile).and_yield(Tempfile.open("vfstab"))
           provider.disable_fs
         end
 
         it "should leave the other mountpoint alone" do
-          IO.read(vfstab_file.path).should match(/^#{Regexp.escape(other_mount)}/)
+          expect(IO.read(vfstab_file.path)).to match(/^#{Regexp.escape(other_mount)}/)
         end
 
         it "should still match the duplicated mountpoint" do
-          IO.read(vfstab_file.path).should match(/^#{Regexp.escape(this_mount)}/)
+          expect(IO.read(vfstab_file.path)).to match(/^#{Regexp.escape(this_mount)}/)
         end
 
         it "should have removed the last line" do
-          IO.read(vfstab_file.path).should eql( "#{this_mount}\n#{other_mount}\n" )
+          expect(IO.read(vfstab_file.path)).to eql( "#{this_mount}\n#{other_mount}\n" )
         end
       end
     end

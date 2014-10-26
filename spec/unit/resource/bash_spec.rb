@@ -25,16 +25,16 @@ describe Chef::Resource::Bash do
   end
 
   it "should create a new Chef::Resource::Bash" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::Bash)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Bash)
   end
 
   it "should have a resource name of :bash" do
-    @resource.resource_name.should eql(:bash)
+    expect(@resource.resource_name).to eql(:bash)
   end
 
   it "should have an interpreter of bash" do
-    @resource.interpreter.should eql("bash")
+    expect(@resource.interpreter).to eql("bash")
   end
 
 end

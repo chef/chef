@@ -26,22 +26,22 @@ describe Chef::Resource::HttpRequest do
   end
 
   it "should create a new Chef::Resource::HttpRequest" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::HttpRequest)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::HttpRequest)
   end
 
   it "should set url to a string" do
     @resource.url "http://slashdot.org"
-    @resource.url.should eql("http://slashdot.org")
+    expect(@resource.url).to eql("http://slashdot.org")
   end
 
   it "should set the message to the name by default" do
-    @resource.message.should eql("fakey_fakerton")
+    expect(@resource.message).to eql("fakey_fakerton")
   end
 
   it "should set message to a string" do
     @resource.message "monkeybars"
-    @resource.message.should eql("monkeybars")
+    expect(@resource.message).to eql("monkeybars")
   end
 
   describe "when it has a message and headers" do
@@ -52,7 +52,7 @@ describe Chef::Resource::HttpRequest do
     end
 
     it "returns the url as its identity" do
-      @resource.identity.should == "http://www.trololol.net"
+      expect(@resource.identity).to eq("http://www.trololol.net")
     end
   end
 

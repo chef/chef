@@ -43,39 +43,39 @@ describe Chef::Provider::Ifconfig do
   describe Chef::Provider::Ifconfig, "load_current_resource" do
     before do
       status = double("Status", :exitstatus => 1)
-      @provider.should_receive(:popen4).and_return status
+      expect(@provider).to receive(:popen4).and_return status
       @provider.load_current_resource
     end
     it "should track state of ifconfig failure." do
-      @provider.instance_variable_get("@status").exitstatus.should_not == 0
+      expect(@provider.instance_variable_get("@status").exitstatus).not_to eq(0)
     end
     it "should thrown an exception when ifconfig fails" do
       @provider.define_resource_requirements
-      lambda { @provider.process_resource_requirements }.should raise_error Chef::Exceptions::Ifconfig
+      expect { @provider.process_resource_requirements }.to raise_error Chef::Exceptions::Ifconfig
     end
   end
   describe Chef::Provider::Ifconfig, "action_add" do
 
     it "should add an interface if it does not exist" do
       #@provider.stub(:run_command).and_return(true)
-      @provider.stub(:load_current_resource)
+      allow(@provider).to receive(:load_current_resource)
       @current_resource.inet_addr nil
       command = "ifconfig eth0 10.0.0.1 netmask 255.255.254.0 metric 1 mtu 1500"
-      @provider.should_receive(:run_command).with(:command => command)
-      @provider.should_receive(:generate_config)
+      expect(@provider).to receive(:run_command).with(:command => command)
+      expect(@provider).to receive(:generate_config)
 
       @provider.run_action(:add)
-      @new_resource.should be_updated
+      expect(@new_resource).to be_updated
     end
 
     it "should not add an interface if it already exists" do
-      @provider.stub(:load_current_resource)
-      @provider.should_not_receive(:run_command)
+      allow(@provider).to receive(:load_current_resource)
+      expect(@provider).not_to receive(:run_command)
       @current_resource.inet_addr "10.0.0.1"
-      @provider.should_receive(:generate_config)
+      expect(@provider).to receive(:generate_config)
 
       @provider.run_action(:add)
-      @new_resource.should_not be_updated
+      expect(@new_resource).not_to be_updated
     end
 
     #We are not testing this case with the assumption that anyone writing the cookbook would not make a typo == lo
@@ -86,95 +86,95 @@ describe Chef::Provider::Ifconfig do
   describe Chef::Provider::Ifconfig, "action_enable" do
 
     it "should enable interface if does not exist" do
-      @provider.stub(:load_current_resource)
+      allow(@provider).to receive(:load_current_resource)
       @current_resource.inet_addr nil
       command = "ifconfig eth0 10.0.0.1 netmask 255.255.254.0 metric 1 mtu 1500"
-      @provider.should_receive(:run_command).with(:command => command)
-      @provider.should_not_receive(:generate_config)
+      expect(@provider).to receive(:run_command).with(:command => command)
+      expect(@provider).not_to receive(:generate_config)
 
       @provider.run_action(:enable)
-      @new_resource.should be_updated
+      expect(@new_resource).to be_updated
     end
 
     it "should not enable interface if it already exists" do
-      @provider.stub(:load_current_resource)
-      @provider.should_not_receive(:run_command)
+      allow(@provider).to receive(:load_current_resource)
+      expect(@provider).not_to receive(:run_command)
       @current_resource.inet_addr "10.0.0.1"
-      @provider.should_not_receive(:generate_config)
+      expect(@provider).not_to receive(:generate_config)
 
       @provider.run_action(:enable)
-      @new_resource.should_not be_updated
+      expect(@new_resource).not_to be_updated
     end
   end
 
   describe Chef::Provider::Ifconfig, "action_delete" do
 
     it "should delete interface if it exists" do
-      @provider.stub(:load_current_resource)
+      allow(@provider).to receive(:load_current_resource)
       @current_resource.device "eth0"
       command = "ifconfig #{@new_resource.device} down"
-      @provider.should_receive(:run_command).with(:command => command)
-      @provider.should_receive(:delete_config)
+      expect(@provider).to receive(:run_command).with(:command => command)
+      expect(@provider).to receive(:delete_config)
 
       @provider.run_action(:delete)
-      @new_resource.should be_updated
+      expect(@new_resource).to be_updated
     end
 
     it "should not delete interface if it does not exist" do
-      @provider.stub(:load_current_resource)
-      @provider.should_not_receive(:run_command)
-      @provider.should_receive(:delete_config)
+      allow(@provider).to receive(:load_current_resource)
+      expect(@provider).not_to receive(:run_command)
+      expect(@provider).to receive(:delete_config)
 
       @provider.run_action(:delete)
-      @new_resource.should_not be_updated
+      expect(@new_resource).not_to be_updated
     end
   end
 
   describe Chef::Provider::Ifconfig, "action_disable" do
 
     it "should disable interface if it exists" do
-      @provider.stub(:load_current_resource)
+      allow(@provider).to receive(:load_current_resource)
       @current_resource.device "eth0"
       command = "ifconfig #{@new_resource.device} down"
-      @provider.should_receive(:run_command).with(:command => command)
-      @provider.should_not_receive(:delete_config)
+      expect(@provider).to receive(:run_command).with(:command => command)
+      expect(@provider).not_to receive(:delete_config)
 
       @provider.run_action(:disable)
-      @new_resource.should be_updated
+      expect(@new_resource).to be_updated
     end
 
     it "should not delete interface if it does not exist" do
-      @provider.stub(:load_current_resource)
-      @provider.should_not_receive(:run_command)
-      @provider.should_not_receive(:delete_config)
+      allow(@provider).to receive(:load_current_resource)
+      expect(@provider).not_to receive(:run_command)
+      expect(@provider).not_to receive(:delete_config)
 
       @provider.run_action(:disable)
-      @new_resource.should_not be_updated
+      expect(@new_resource).not_to be_updated
     end
   end
 
   describe Chef::Provider::Ifconfig, "action_delete" do
 
     it "should delete interface of it exists" do
-      @provider.stub(:load_current_resource)
+      allow(@provider).to receive(:load_current_resource)
       @current_resource.device "eth0"
       command = "ifconfig #{@new_resource.device} down"
-      @provider.should_receive(:run_command).with(:command => command)
-      @provider.should_receive(:delete_config)
+      expect(@provider).to receive(:run_command).with(:command => command)
+      expect(@provider).to receive(:delete_config)
 
       @provider.run_action(:delete)
-      @new_resource.should be_updated
+      expect(@new_resource).to be_updated
     end
 
     it "should not delete interface if it does not exist" do
       # This is so that our fake values do not get overwritten
-      @provider.stub(:load_current_resource)
+      allow(@provider).to receive(:load_current_resource)
       # This is so that nothing actually runs
-      @provider.should_not_receive(:run_command)
-      @provider.should_receive(:delete_config)
+      expect(@provider).not_to receive(:run_command)
+      expect(@provider).to receive(:delete_config)
 
       @provider.run_action(:delete)
-      @new_resource.should_not be_updated
+      expect(@new_resource).not_to be_updated
     end
   end
 end

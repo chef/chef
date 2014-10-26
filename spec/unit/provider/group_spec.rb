@@ -41,89 +41,89 @@ describe Chef::Provider::User do
       :gid => 20,
       :mem => [ "root", "aj" ]
       )
-    Etc.stub(:getgrnam).with('wheel').and_return(@pw_group)
+    allow(Etc).to receive(:getgrnam).with('wheel').and_return(@pw_group)
   end
 
   it "assumes the group exists by default" do
-    @provider.group_exists.should be_true
+    expect(@provider.group_exists).to be_true
   end
 
   describe "when establishing the current state of the group" do
 
     it "sets the group name of the current resource to the group name of the new resource" do
       @provider.load_current_resource
-      @provider.current_resource.group_name.should == 'wheel'
+      expect(@provider.current_resource.group_name).to eq('wheel')
     end
 
     it "does not modify the desired gid if set" do
       @provider.load_current_resource
-      @new_resource.gid.should == 500
+      expect(@new_resource.gid).to eq(500)
     end
 
     it "sets the desired gid to the current gid if none is set" do
       @new_resource.instance_variable_set(:@gid, nil)
       @provider.load_current_resource
-      @new_resource.gid.should == 20
+      expect(@new_resource.gid).to eq(20)
     end
 
     it "looks up the group in /etc/group with getgrnam" do
-      Etc.should_receive(:getgrnam).with(@new_resource.group_name).and_return(@pw_group)
+      expect(Etc).to receive(:getgrnam).with(@new_resource.group_name).and_return(@pw_group)
       @provider.load_current_resource
-      @provider.current_resource.gid.should == 20
-      @provider.current_resource.members.should == %w{root aj}
+      expect(@provider.current_resource.gid).to eq(20)
+      expect(@provider.current_resource.members).to eq(%w{root aj})
     end
 
     it "should flip the value of exists if it cannot be found in /etc/group" do
-      Etc.stub(:getgrnam).and_raise(ArgumentError)
+      allow(Etc).to receive(:getgrnam).and_raise(ArgumentError)
       @provider.load_current_resource
-      @provider.group_exists.should be_false
+      expect(@provider.group_exists).to be_false
     end
 
     it "should return the current resource" do
-      @provider.load_current_resource.should equal(@provider.current_resource)
+      expect(@provider.load_current_resource).to equal(@provider.current_resource)
     end
   end
 
   describe "when determining if the system is already in the target state" do
     [ :gid, :members ].each do |attribute|
       it "should return true if #{attribute} doesn't match" do
-        @current_resource.stub(attribute).and_return("looooooooooooooooooool")
-        @provider.compare_group.should be_true
+        allow(@current_resource).to receive(attribute).and_return("looooooooooooooooooool")
+        expect(@provider.compare_group).to be_true
       end
     end
 
     it "should return false if gid and members are equal" do
-      @provider.compare_group.should be_false
+      expect(@provider.compare_group).to be_false
     end
 
     it "should coerce an integer to a string for comparison" do
-      @current_resource.stub(:gid).and_return("500")
-      @provider.compare_group.should be_false
+      allow(@current_resource).to receive(:gid).and_return("500")
+      expect(@provider.compare_group).to be_false
     end
 
     it "should return false if append is true and the group member(s) already exists" do
       @current_resource.members << "extra_user"
-      @new_resource.stub(:append).and_return(true)
-      @provider.compare_group.should be_false
+      allow(@new_resource).to receive(:append).and_return(true)
+      expect(@provider.compare_group).to be_false
     end
 
     it "should return true if append is true and the group member(s) do not already exist" do
       @new_resource.members << "extra_user"
-      @new_resource.stub(:append).and_return(true)
-      @provider.compare_group.should be_true
+      allow(@new_resource).to receive(:append).and_return(true)
+      expect(@provider.compare_group).to be_true
     end
 
     it "should return false if append is true and excluded_members include a non existing member" do
       @new_resource.excluded_members << "extra_user"
-      @new_resource.stub(:append).and_return(true)
-      @provider.compare_group.should be_false
+      allow(@new_resource).to receive(:append).and_return(true)
+      expect(@provider.compare_group).to be_false
     end
 
     it "should return true if the append is true and excluded_members include an existing user" do
       @new_resource.members.each {|m| @new_resource.excluded_members << m }
       @new_resource.members.clear
-      @new_resource.stub(:append).and_return(true)
-      @provider.compare_group.should be_true
+      allow(@new_resource).to receive(:append).and_return(true)
+      expect(@provider.compare_group).to be_true
     end
 
   end
@@ -131,40 +131,40 @@ describe Chef::Provider::User do
   describe "when creating a group" do
     it "should call create_group if the group does not exist" do
       @provider.group_exists = false
-      @provider.should_receive(:create_group).and_return(true)
+      expect(@provider).to receive(:create_group).and_return(true)
       @provider.run_action(:create)
     end
 
     it "should set the new_resources updated flag when it creates the group" do
       @provider.group_exists = false
-      @provider.stub(:create_group)
+      allow(@provider).to receive(:create_group)
       @provider.run_action(:create)
-      @provider.new_resource.should be_updated
+      expect(@provider.new_resource).to be_updated
     end
 
     it "should check to see if the group has mismatched attributes if the group exists" do
       @provider.group_exists = true
-      @provider.stub(:compare_group).and_return(false)
-      @provider.stub(:change_desc).and_return([ ])
+      allow(@provider).to receive(:compare_group).and_return(false)
+      allow(@provider).to receive(:change_desc).and_return([ ])
       @provider.run_action(:create)
-      @provider.new_resource.should_not be_updated
+      expect(@provider.new_resource).not_to be_updated
     end
 
     it "should call manage_group if the group exists and has mismatched attributes" do
       @provider.group_exists = true
-      @provider.stub(:compare_group).and_return(true)
-      @provider.stub(:change_desc).and_return([ ])
-      @provider.should_receive(:manage_group).and_return(true)
+      allow(@provider).to receive(:compare_group).and_return(true)
+      allow(@provider).to receive(:change_desc).and_return([ ])
+      expect(@provider).to receive(:manage_group).and_return(true)
       @provider.run_action(:create)
     end
 
     it "should set the new_resources updated flag when it creates the group if we call manage_group" do
       @provider.group_exists = true
-      @provider.stub(:compare_group).and_return(true)
-      @provider.stub(:change_desc).and_return(["Some changes are going to be done."])
-      @provider.stub(:manage_group).and_return(true)
+      allow(@provider).to receive(:compare_group).and_return(true)
+      allow(@provider).to receive(:change_desc).and_return(["Some changes are going to be done."])
+      allow(@provider).to receive(:manage_group).and_return(true)
       @provider.run_action(:create)
-      @new_resource.should be_updated
+      expect(@new_resource).to be_updated
     end
   end
 
@@ -172,50 +172,50 @@ describe Chef::Provider::User do
 
     it "should not call remove_group if the group does not exist" do
       @provider.group_exists = false
-      @provider.should_not_receive(:remove_group)
+      expect(@provider).not_to receive(:remove_group)
       @provider.run_action(:remove)
-      @provider.new_resource.should_not be_updated
+      expect(@provider.new_resource).not_to be_updated
     end
 
     it "should call remove_group if the group exists" do
       @provider.group_exists = true
-      @provider.should_receive(:remove_group)
+      expect(@provider).to receive(:remove_group)
       @provider.run_action(:remove)
-      @provider.new_resource.should be_updated
+      expect(@provider.new_resource).to be_updated
     end
   end
 
   describe "when updating a group" do
     before(:each) do
       @provider.group_exists = true
-      @provider.stub(:manage_group).and_return(true)
+      allow(@provider).to receive(:manage_group).and_return(true)
     end
 
     it "should run manage_group if the group exists and has mismatched attributes" do
-      @provider.should_receive(:compare_group).and_return(true)
-      @provider.stub(:change_desc).and_return(["Some changes are going to be done."])
-      @provider.should_receive(:manage_group).and_return(true)
+      expect(@provider).to receive(:compare_group).and_return(true)
+      allow(@provider).to receive(:change_desc).and_return(["Some changes are going to be done."])
+      expect(@provider).to receive(:manage_group).and_return(true)
       @provider.run_action(:manage)
     end
 
     it "should set the new resources updated flag to true if manage_group is called" do
-      @provider.stub(:compare_group).and_return(true)
-      @provider.stub(:change_desc).and_return(["Some changes are going to be done."])
-      @provider.stub(:manage_group).and_return(true)
+      allow(@provider).to receive(:compare_group).and_return(true)
+      allow(@provider).to receive(:change_desc).and_return(["Some changes are going to be done."])
+      allow(@provider).to receive(:manage_group).and_return(true)
       @provider.run_action(:manage)
-      @new_resource.should be_updated
+      expect(@new_resource).to be_updated
     end
 
     it "should not run manage_group if the group does not exist" do
       @provider.group_exists = false
-      @provider.should_not_receive(:manage_group)
+      expect(@provider).not_to receive(:manage_group)
       @provider.run_action(:manage)
     end
 
     it "should not run manage_group if the group exists but has no differing attributes" do
-      @provider.should_receive(:compare_group).and_return(false)
-      @provider.stub(:change_desc).and_return(["Some changes are going to be done."])
-      @provider.should_not_receive(:manage_group)
+      expect(@provider).to receive(:compare_group).and_return(false)
+      allow(@provider).to receive(:change_desc).and_return(["Some changes are going to be done."])
+      expect(@provider).not_to receive(:manage_group)
       @provider.run_action(:manage)
     end
   end
@@ -223,34 +223,34 @@ describe Chef::Provider::User do
   describe "when modifying the group" do
     before(:each) do
       @provider.group_exists = true
-      @provider.stub(:manage_group).and_return(true)
+      allow(@provider).to receive(:manage_group).and_return(true)
     end
 
     it "should run manage_group if the group exists and has mismatched attributes" do
-      @provider.should_receive(:compare_group).and_return(true)
-      @provider.stub(:change_desc).and_return(["Some changes are going to be done."])
-      @provider.should_receive(:manage_group).and_return(true)
+      expect(@provider).to receive(:compare_group).and_return(true)
+      allow(@provider).to receive(:change_desc).and_return(["Some changes are going to be done."])
+      expect(@provider).to receive(:manage_group).and_return(true)
       @provider.run_action(:modify)
     end
 
     it "should set the new resources updated flag to true if manage_group is called" do
-      @provider.stub(:compare_group).and_return(true)
-      @provider.stub(:change_desc).and_return(["Some changes are going to be done."])
-      @provider.stub(:manage_group).and_return(true)
+      allow(@provider).to receive(:compare_group).and_return(true)
+      allow(@provider).to receive(:change_desc).and_return(["Some changes are going to be done."])
+      allow(@provider).to receive(:manage_group).and_return(true)
       @provider.run_action(:modify)
-      @new_resource.should be_updated
+      expect(@new_resource).to be_updated
     end
 
     it "should not run manage_group if the group exists but has no differing attributes" do
-      @provider.should_receive(:compare_group).and_return(false)
-      @provider.stub(:change_desc).and_return(["Some changes are going to be done."])
-      @provider.should_not_receive(:manage_group)
+      expect(@provider).to receive(:compare_group).and_return(false)
+      allow(@provider).to receive(:change_desc).and_return(["Some changes are going to be done."])
+      expect(@provider).not_to receive(:manage_group)
       @provider.run_action(:modify)
     end
 
     it "should raise a Chef::Exceptions::Group if the group doesn't exist" do
       @provider.group_exists = false
-      lambda { @provider.run_action(:modify) }.should raise_error(Chef::Exceptions::Group)
+      expect { @provider.run_action(:modify) }.to raise_error(Chef::Exceptions::Group)
     end
   end
 
@@ -258,28 +258,28 @@ describe Chef::Provider::User do
     it "should report which group members are missing if members are missing and appending to the group" do
        @new_resource.members << "user1"
        @new_resource.members << "user2"
-       @new_resource.stub(:append).and_return true
-       @provider.compare_group.should be_true
-       @provider.change_desc.should == [ "add missing member(s): user1, user2" ]
+       allow(@new_resource).to receive(:append).and_return true
+       expect(@provider.compare_group).to be_true
+       expect(@provider.change_desc).to eq([ "add missing member(s): user1, user2" ])
     end
 
     it "should report that the group members will be overwritten if not appending" do
        @new_resource.members << "user1"
-       @new_resource.stub(:append).and_return false
-       @provider.compare_group.should be_true
-       @provider.change_desc.should == [ "replace group members with new list of members" ]
+       allow(@new_resource).to receive(:append).and_return false
+       expect(@provider.compare_group).to be_true
+       expect(@provider.change_desc).to eq([ "replace group members with new list of members" ])
     end
 
     it "should report the gid will be changed when it does not match" do
-      @current_resource.stub(:gid).and_return("BADF00D")
-      @provider.compare_group.should be_true
-      @provider.change_desc.should == [ "change gid #{@current_resource.gid} to #{@new_resource.gid}" ]
+      allow(@current_resource).to receive(:gid).and_return("BADF00D")
+      expect(@provider.compare_group).to be_true
+      expect(@provider.change_desc).to eq([ "change gid #{@current_resource.gid} to #{@new_resource.gid}" ])
 
     end
 
     it "should report no change reason when no change is required" do
-      @provider.compare_group.should be_false
-      @provider.change_desc.should == [ ]
+      expect(@provider.compare_group).to be_false
+      expect(@provider.change_desc).to eq([ ])
     end
   end
 

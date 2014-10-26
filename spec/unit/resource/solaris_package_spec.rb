@@ -37,6 +37,6 @@ describe Chef::Resource::SolarisPackage, "initialize" do
   end
 
   it "should set the package_name to the name provided" do
-    @resource.package_name.should eql("foo")
+    expect(@resource.package_name).to eql("foo")
   end
 end

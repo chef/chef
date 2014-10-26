@@ -340,10 +340,10 @@ source #{tempdir_path}/*
       current_resource.device new_resource.device
 
       # belt and suspenders testing?
-      Chef::Util::Backup.any_instance.should_receive(:do_backup).and_call_original
+      expect_any_instance_of(Chef::Util::Backup).to receive(:do_backup).and_call_original
 
       # internal implementation detail of Ifconfig.
-      Chef::Provider::File.any_instance.should_receive(:action_delete).and_call_original
+      expect_any_instance_of(Chef::Provider::File).to receive(:action_delete).and_call_original
 
       expect(File.exist?(config_filename_ifcfg)).to be_true
       provider.run_action(:delete)

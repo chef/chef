@@ -30,21 +30,21 @@ describe Chef::Provider::RemoteFile::LocalFile do
     describe "when given local unix path" do
       let(:uri) { URI.parse("file:///nyan_cat.png") }
       it "returns a correct unix path" do
-        fetcher.fix_windows_path(uri.path).should == "/nyan_cat.png"
+        expect(fetcher.fix_windows_path(uri.path)).to eq("/nyan_cat.png")
       end
     end
 
     describe "when given local windows path" do
       let(:uri) { URI.parse("file:///z:/windows/path/file.txt") }
       it "returns a valid windows local path" do
-        fetcher.fix_windows_path(uri.path).should == "z:/windows/path/file.txt"
+        expect(fetcher.fix_windows_path(uri.path)).to eq("z:/windows/path/file.txt")
       end
     end
 
     describe "when given unc windows path" do
       let(:uri) { URI.parse("file:////server/share/windows/path/file.txt") }
       it "returns a valid windows unc path" do
-        fetcher.fix_windows_path(uri.path).should == "//server/share/windows/path/file.txt"
+        expect(fetcher.fix_windows_path(uri.path)).to eq("//server/share/windows/path/file.txt")
       end
     end
   end
@@ -52,11 +52,11 @@ describe Chef::Provider::RemoteFile::LocalFile do
   context "when first created" do
 
     it "stores the uri it is passed" do
-      fetcher.uri.should == uri
+      expect(fetcher.uri).to eq(uri)
     end
 
     it "stores the new_resource" do
-      fetcher.new_resource.should == new_resource
+      expect(fetcher.new_resource).to eq(new_resource)
     end
 
   end
@@ -71,12 +71,12 @@ describe Chef::Provider::RemoteFile::LocalFile do
     end
 
     it "stages the local file to a temporary file" do
-      Chef::FileContentManagement::Tempfile.should_receive(:new).with(new_resource).and_return(chef_tempfile)
-      ::FileUtils.should_receive(:cp).with(uri.path, tempfile.path)
-      tempfile.should_receive(:close)            
+      expect(Chef::FileContentManagement::Tempfile).to receive(:new).with(new_resource).and_return(chef_tempfile)
+      expect(::FileUtils).to receive(:cp).with(uri.path, tempfile.path)
+      expect(tempfile).to receive(:close)            
 
       result = fetcher.fetch
-      result.should == tempfile
+      expect(result).to eq(tempfile)
     end
 
   end

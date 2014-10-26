@@ -41,6 +41,6 @@ describe Chef::Resource::WindowsService, "initialize", :windows_only do
 
   it "allows the action to be 'configure_startup'" do
     resource.action :configure_startup
-    resource.action.should == [:configure_startup]
+    expect(resource.action).to eq([:configure_startup])
   end
 end

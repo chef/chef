@@ -26,135 +26,135 @@ describe Chef::Resource::Cron do
   end
 
   it "should create a new Chef::Resource::Cron" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::Cron)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Cron)
   end
 
   it "should have a name" do
-    @resource.name.should eql("cronify")
+    expect(@resource.name).to eql("cronify")
   end
 
   it "should have a default action of 'create'" do
-    @resource.action.should eql(:create)
+    expect(@resource.action).to eql(:create)
   end
 
   it "should accept create or delete for action" do
-    lambda { @resource.action :create }.should_not raise_error
-    lambda { @resource.action :delete }.should_not raise_error
-    lambda { @resource.action :lolcat }.should raise_error(ArgumentError)
+    expect { @resource.action :create }.not_to raise_error
+    expect { @resource.action :delete }.not_to raise_error
+    expect { @resource.action :lolcat }.to raise_error(ArgumentError)
   end
 
   it "should allow you to set a command" do
     @resource.command "/bin/true"
-    @resource.command.should eql("/bin/true")
+    expect(@resource.command).to eql("/bin/true")
   end
 
   it "should allow you to set a user" do
     @resource.user "daemon"
-    @resource.user.should eql("daemon")
+    expect(@resource.user).to eql("daemon")
   end
 
   it "should allow you to specify the minute" do
     @resource.minute "30"
-    @resource.minute.should eql("30")
+    expect(@resource.minute).to eql("30")
   end
 
   it "should allow you to specify the hour" do
     @resource.hour "6"
-    @resource.hour.should eql("6")
+    expect(@resource.hour).to eql("6")
   end
 
   it "should allow you to specify the day" do
     @resource.day "10"
-    @resource.day.should eql("10")
+    expect(@resource.day).to eql("10")
   end
 
   it "should allow you to specify the month" do
     @resource.month "10"
-    @resource.month.should eql("10")
+    expect(@resource.month).to eql("10")
   end
 
   it "should allow you to specify the weekday" do
     @resource.weekday "2"
-    @resource.weekday.should eql("2")
+    expect(@resource.weekday).to eql("2")
   end
 
   it "should allow you to specify the mailto variable" do
     @resource.mailto "test@example.com"
-    @resource.mailto.should eql("test@example.com")
+    expect(@resource.mailto).to eql("test@example.com")
   end
 
   it "should allow you to specify the path" do
     @resource.path "/usr/bin:/usr/sbin"
-    @resource.path.should eql("/usr/bin:/usr/sbin")
+    expect(@resource.path).to eql("/usr/bin:/usr/sbin")
   end
 
   it "should allow you to specify the home directory" do
     @resource.home "/root"
-    @resource.home.should eql("/root")
+    expect(@resource.home).to eql("/root")
   end
 
   it "should allow you to specify the shell to run the command with" do
     @resource.shell "/bin/zsh"
-    @resource.shell.should eql("/bin/zsh")
+    expect(@resource.shell).to eql("/bin/zsh")
   end
 
   it "should allow you to specify environment variables hash" do
     env = {"TEST" => "LOL"}
     @resource.environment env
-    @resource.environment.should eql(env)
+    expect(@resource.environment).to eql(env)
   end
 
   it "should allow * for all time and date values" do
     [ "minute", "hour", "day", "month", "weekday" ].each do |x|
-      @resource.send(x, "*").should eql("*")
+      expect(@resource.send(x, "*")).to eql("*")
     end
   end
 
   it "should allow ranges for all time and date values" do
     [ "minute", "hour", "day", "month", "weekday" ].each do |x|
-      @resource.send(x, "1-2,5").should eql("1-2,5")
+      expect(@resource.send(x, "1-2,5")).to eql("1-2,5")
     end
   end
 
   it "should have a default value of * for all time and date values" do
     [ "minute", "hour", "day", "month", "weekday" ].each do |x|
-      @resource.send(x).should eql("*")
+      expect(@resource.send(x)).to eql("*")
     end
   end
 
   it "should have a default value of root for the user" do
-    @resource.user.should eql("root")
+    expect(@resource.user).to eql("root")
   end
 
   it "should reject any minute over 59" do
-    lambda { @resource.minute "60" }.should raise_error(RangeError)
+    expect { @resource.minute "60" }.to raise_error(RangeError)
   end
 
   it "should reject any hour over 23" do
-    lambda { @resource.hour "24" }.should raise_error(RangeError)
+    expect { @resource.hour "24" }.to raise_error(RangeError)
   end
 
   it "should reject any day over 31" do
-    lambda { @resource.day "32" }.should raise_error(RangeError)
+    expect { @resource.day "32" }.to raise_error(RangeError)
   end
 
   it "should reject any month over 12" do
-    lambda { @resource.month "13" }.should raise_error(RangeError)
+    expect { @resource.month "13" }.to raise_error(RangeError)
   end
 
   describe "weekday" do
     it "should reject any weekday over 7" do
-      lambda { @resource.weekday "8" }.should raise_error(RangeError)
+      expect { @resource.weekday "8" }.to raise_error(RangeError)
     end
     it "should reject any symbols which don't represent day of week" do
-      lambda { @resource.weekday :foo }.should raise_error(RangeError)
+      expect { @resource.weekday :foo }.to raise_error(RangeError)
     end
   end
 
   it "should convert integer schedule values to a string" do
     [ "minute", "hour", "day", "month", "weekday" ].each do |x|
-      @resource.send(x, 5).should eql("5")
+      expect(@resource.send(x, 5)).to eql("5")
     end
   end
 
@@ -171,16 +171,16 @@ describe Chef::Resource::Cron do
 
     it "describes the state" do
       state = @resource.state
-      state[:minute].should == "1"
-      state[:hour].should == "2"
-      state[:day].should == "3"
-      state[:month].should == "4"
-      state[:weekday].should == "5"
-      state[:user].should == "root"
+      expect(state[:minute]).to eq("1")
+      expect(state[:hour]).to eq("2")
+      expect(state[:day]).to eq("3")
+      expect(state[:month]).to eq("4")
+      expect(state[:weekday]).to eq("5")
+      expect(state[:user]).to eq("root")
     end
 
     it "returns the command as its identity" do
-      @resource.identity.should == "tackle"
+      expect(@resource.identity).to eq("tackle")
     end
   end
 end

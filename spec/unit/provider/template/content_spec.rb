@@ -54,25 +54,25 @@ describe Chef::Provider::Template::Content do
   end
 
   it "finds the template file in the cookbook cache if it isn't local" do
-    content.template_location.should == CHEF_SPEC_DATA + '/cookbooks/openldap/templates/default/openldap_stuff.conf.erb'
+    expect(content.template_location).to eq(CHEF_SPEC_DATA + '/cookbooks/openldap/templates/default/openldap_stuff.conf.erb')
   end
 
   it "finds the template file locally if it is local" do
-    new_resource.stub(:local).and_return(true)
-    new_resource.stub(:source).and_return('/tmp/its_on_disk.erb')
-    content.template_location.should == '/tmp/its_on_disk.erb'
+    allow(new_resource).to receive(:local).and_return(true)
+    allow(new_resource).to receive(:source).and_return('/tmp/its_on_disk.erb')
+    expect(content.template_location).to eq('/tmp/its_on_disk.erb')
   end
 
   it "should use the cookbook name if defined in the template resource" do
-    new_resource.stub(:cookbook_name).and_return('apache2')
-    new_resource.stub(:cookbook).and_return('openldap')
-    new_resource.stub(:source).and_return("test.erb")
-    content.template_location.should == CHEF_SPEC_DATA + '/cookbooks/openldap/templates/default/test.erb'
+    allow(new_resource).to receive(:cookbook_name).and_return('apache2')
+    allow(new_resource).to receive(:cookbook).and_return('openldap')
+    allow(new_resource).to receive(:source).and_return("test.erb")
+    expect(content.template_location).to eq(CHEF_SPEC_DATA + '/cookbooks/openldap/templates/default/test.erb')
   end
 
   it "creates the template with the rendered content" do
     run_context.node.normal[:slappiness] = "a warm gun"
-    IO.read(content.tempfile.path).should == "slappiness is a warm gun"
+    expect(IO.read(content.tempfile.path)).to eq("slappiness is a warm gun")
   end
 
 end

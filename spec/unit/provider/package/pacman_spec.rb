@@ -28,8 +28,8 @@ describe Chef::Provider::Package::Pacman do
 
     @status = double("Status", :exitstatus => 0)
     @provider = Chef::Provider::Package::Pacman.new(@new_resource, @run_context)
-    Chef::Resource::Package.stub(:new).and_return(@current_resource)
-    @provider.stub(:popen4).and_return(@status)
+    allow(Chef::Resource::Package).to receive(:new).and_return(@current_resource)
+    allow(@provider).to receive(:popen4).and_return(@status)
     @stdin = StringIO.new
     @stdout = StringIO.new(<<-ERR)
 error: package "nano" not found
@@ -40,29 +40,29 @@ ERR
 
   describe "when determining the current package state" do
     it "should create a current resource with the name of the new_resource" do
-      Chef::Resource::Package.should_receive(:new).and_return(@current_resource)
+      expect(Chef::Resource::Package).to receive(:new).and_return(@current_resource)
       @provider.load_current_resource
     end
 
     it "should set the current resources package name to the new resources package name" do
-      @current_resource.should_receive(:package_name).with(@new_resource.package_name)
+      expect(@current_resource).to receive(:package_name).with(@new_resource.package_name)
       @provider.load_current_resource
     end
 
     it "should run pacman query with the package name" do
-      @provider.should_receive(:popen4).with("pacman -Qi #{@new_resource.package_name}").and_return(@status)
+      expect(@provider).to receive(:popen4).with("pacman -Qi #{@new_resource.package_name}").and_return(@status)
       @provider.load_current_resource
     end
 
     it "should read stdout on pacman" do
-      @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @stdout.should_receive(:each).and_return(true)
+      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      expect(@stdout).to receive(:each).and_return(true)
       @provider.load_current_resource
     end
 
     it "should set the installed version to nil on the current resource if pacman installed version not exists" do
-      @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @current_resource.should_receive(:version).with(nil).and_return(true)
+      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      expect(@current_resource).to receive(:version).with(nil).and_return(true)
       @provider.load_current_resource
     end
 
@@ -88,16 +88,16 @@ Install Reason : Explicitly installed
 Install Script : Yes
 Description    : Pico editor clone with enhancements
 PACMAN
-      @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @provider.load_current_resource
-      @current_resource.version.should == "2.2.2-1"
+      expect(@current_resource.version).to eq("2.2.2-1")
     end
 
     it "should set the candidate version if pacman has one" do
-      @stdout.stub(:each).and_yield("core nano 2.2.3-1")
-      @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      allow(@stdout).to receive(:each).and_yield("core nano 2.2.3-1")
+      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @provider.load_current_resource
-      @provider.candidate_version.should eql("2.2.3-1")
+      expect(@provider.candidate_version).to eql("2.2.3-1")
     end
 
     it "should use pacman.conf to determine valid repo names for package versions" do
@@ -119,45 +119,45 @@ Include = /etc/pacman.d/mirrorlist
 Include = /etc/pacman.d/mirrorlist
 PACMAN_CONF
 
-      ::File.stub(:exists?).with("/etc/pacman.conf").and_return(true)
-      ::File.stub(:read).with("/etc/pacman.conf").and_return(@pacman_conf)
-      @stdout.stub(:each).and_yield("customrepo nano 1.2.3-4")
-      @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      allow(::File).to receive(:exists?).with("/etc/pacman.conf").and_return(true)
+      allow(::File).to receive(:read).with("/etc/pacman.conf").and_return(@pacman_conf)
+      allow(@stdout).to receive(:each).and_yield("customrepo nano 1.2.3-4")
+      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
 
       @provider.load_current_resource
-      @provider.candidate_version.should eql("1.2.3-4")
+      expect(@provider.candidate_version).to eql("1.2.3-4")
     end
 
     it "should raise an exception if pacman fails" do
-      @status.should_receive(:exitstatus).and_return(2)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+      expect(@status).to receive(:exitstatus).and_return(2)
+      expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::Package)
     end
 
     it "should not raise an exception if pacman succeeds" do
-      @status.should_receive(:exitstatus).and_return(0)
-      lambda { @provider.load_current_resource }.should_not raise_error
+      expect(@status).to receive(:exitstatus).and_return(0)
+      expect { @provider.load_current_resource }.not_to raise_error
     end
 
     it "should raise an exception if pacman does not return a candidate version" do
-      @stdout.stub(:each).and_yield("")
-      @provider.stub(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      lambda { @provider.candidate_version }.should raise_error(Chef::Exceptions::Package)
+      allow(@stdout).to receive(:each).and_yield("")
+      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
     end
 
     it "should return the current resouce" do
-      @provider.load_current_resource.should eql(@current_resource)
+      expect(@provider.load_current_resource).to eql(@current_resource)
     end
   end
 
   describe Chef::Provider::Package::Pacman, "install_package" do
     it "should run pacman install with the package name and version" do
-      @provider.should_receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar nano")
+      expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar nano")
       @provider.install_package("nano", "1.0")
     end
 
     it "should run pacman install with the package name and version and options if specified" do
-      @provider.should_receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar --debug nano")
-      @new_resource.stub(:options).and_return("--debug")
+      expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar --debug nano")
+      allow(@new_resource).to receive(:options).and_return("--debug")
 
       @provider.install_package("nano", "1.0")
     end
@@ -165,20 +165,20 @@ PACMAN_CONF
 
   describe Chef::Provider::Package::Pacman, "upgrade_package" do
     it "should run install_package with the name and version" do
-      @provider.should_receive(:install_package).with("nano", "1.0")
+      expect(@provider).to receive(:install_package).with("nano", "1.0")
       @provider.upgrade_package("nano", "1.0")
     end
   end
 
   describe Chef::Provider::Package::Pacman, "remove_package" do
     it "should run pacman remove with the package name" do
-      @provider.should_receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar nano")
+      expect(@provider).to receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar nano")
       @provider.remove_package("nano", "1.0")
     end
 
     it "should run pacman remove with the package name and options if specified" do
-      @provider.should_receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar --debug nano")
-      @new_resource.stub(:options).and_return("--debug")
+      expect(@provider).to receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar --debug nano")
+      allow(@new_resource).to receive(:options).and_return("--debug")
 
       @provider.remove_package("nano", "1.0")
     end
@@ -186,7 +186,7 @@ PACMAN_CONF
 
   describe Chef::Provider::Package::Pacman, "purge_package" do
     it "should run remove_package with the name and version" do
-      @provider.should_receive(:remove_package).with("nano", "1.0")
+      expect(@provider).to receive(:remove_package).with("nano", "1.0")
       @provider.purge_package("nano", "1.0")
     end
 
