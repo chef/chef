@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 name "chef"
 default_version "master"
 
@@ -77,7 +76,12 @@ build do
 
     bundle "install --without server docgen", env: env
 
-    rake '-rdevkit build_eventlog'
+    block "Build Event Log Dll" do
+      Dir.chdir software.project_dir do
+        rake = windows_safe_path("#{install_dir}/embedded/bin/rake")
+        %x|#{rake} -rdevkit build_eventlog"| if File.exists? "#{software.project_dir}/ext/win32-eventlog"
+      end
+    end
   else
 
     # install the whole bundle first
