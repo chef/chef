@@ -93,6 +93,13 @@ attribute_defaults: &attribute_defaults
   build_user_password: vagrant
 
 suites:
+  - name: angrychef
+    attributes:
+      omnibus:
+        <<: *attribute_defaults
+        install_dir: /opt/angrychef
+    run_list:
+      - omnibus::default
   - name: chef
     attributes:
       omnibus:
