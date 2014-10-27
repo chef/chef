@@ -83,33 +83,6 @@ class Chef
             # No recovery in whyrun mode - the init file is present but not correct.
           end
         end
-        def start_service
-          if @new_resource.start_command
-            super
-          else
-            shell_out_with_systems_locale!("#{init_command} start")
-          end
-        end
-
-        def stop_service
-          if @new_resource.stop_command
-            super
-          else
-            shell_out_with_systems_locale!("#{init_command} stop")
-          end
-        end
-
-        def restart_service
-          if @new_resource.restart_command
-            super
-          elsif @new_resource.supports[:restart]
-            shell_out_with_systems_locale!("#{init_command} restart")
-          else
-            stop_service
-            sleep 1
-            start_service
-          end
-        end
 
         def enable_service
           if !is_enabled
