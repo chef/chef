@@ -85,9 +85,9 @@ class Chef
         end
 
         def enable_service
-          if !is_enabled
-            if is_builtin
-              if is_enabled_by_default
+          if !is_enabled?
+            if is_builtin?
+              if is_enabled_by_default?
                 update_rcl! @rc_conf_local.sub(/^#{Regexp.escape(builtin_service_enable_variable_name)}=.*/, '')
               else
                 # add line with blank string, which means enable
@@ -110,9 +110,9 @@ class Chef
         end
 
         def disable_service
-          if is_enabled
-            if is_builtin
-              if is_enabled_by_default
+          if is_enabled?
+            if is_builtin?
+              if is_enabled_by_default?
                 # add line to disable
                 update_rcl! @rc_conf_local + "\n" + "#{builtin_service_enable_variable_name}=\"NO\""
               else
@@ -179,7 +179,7 @@ class Chef
           end
         end
 
-        def is_builtin
+        def is_builtin?
           result = false
           var_name = builtin_service_enable_variable_name
           if var_name
@@ -190,7 +190,7 @@ class Chef
           result
         end
 
-        def is_enabled_by_default
+        def is_enabled_by_default?
           result = false
           var_name = builtin_service_enable_variable_name
           if var_name
@@ -206,7 +206,7 @@ class Chef
         def determine_enabled_status!
           result = false # Default to disabled if the service doesn't currently exist at all
           @enabled_state_found = false
-          if is_builtin
+          if is_builtin?
             var_name = builtin_service_enable_variable_name
             if var_name
               if m = @rc_conf_local.match(/^#{Regexp.escape(var_name)}=(.*)/)
@@ -217,7 +217,7 @@ class Chef
               end
             end
             if !@enabled_state_found
-              result = is_enabled_by_default
+              result = is_enabled_by_default?
             end
           else
             var_name = @new_resource.service_name
@@ -233,7 +233,7 @@ class Chef
 
           current_resource.enabled result
         end
-        alias :is_enabled :determine_enabled_status!
+        alias :is_enabled? :determine_enabled_status!
 
       end
     end

@@ -25,7 +25,7 @@ class Chef::Provider::Service::Openbsd
   public :determine_enabled_status!
   public :determine_current_status!
   #public :afters=
-  public :is_enabled
+  public :is_enabled?
   attr_accessor :rc_conf, :rc_conf_local
 end
 
@@ -488,9 +488,9 @@ PS_SAMPLE
         end
         it "should enable the service by adding a line to rc.conf.local" do
           expect(::File).to receive(:write).with('/etc/rc.conf.local', include("#{provider.builtin_service_enable_variable_name}=\"\""))
-          expect(provider.is_enabled).to be false
+          expect(provider.is_enabled?).to be false
           provider.enable_service
-          expect(provider.is_enabled).to be true
+          expect(provider.is_enabled?).to be true
         end
       end
     end
@@ -513,9 +513,9 @@ PS_SAMPLE
         end
         it "should enable the service by removing a line from rc.conf.local" do
           expect(::File).to receive(:write).with('/etc/rc.conf.local', /^(?!#{provider.builtin_service_enable_variable_name})$/)
-          expect(provider.is_enabled).to be false
+          expect(provider.is_enabled?).to be false
           provider.enable_service
-          expect(provider.is_enabled).to be true
+          expect(provider.is_enabled?).to be true
         end
       end
     end
@@ -538,9 +538,9 @@ PS_SAMPLE
         end
         it "should enable the service by adding it to the pkg_scripts list" do
           expect(::File).to receive(:write).with('/etc/rc.conf.local', "pkg_scripts=\"#{new_resource.service_name}\"")
-          expect(provider.is_enabled).to be false
+          expect(provider.is_enabled?).to be false
           provider.enable_service
-          expect(provider.is_enabled).to be true
+          expect(provider.is_enabled?).to be true
         end
       end
     end
@@ -560,9 +560,9 @@ PS_SAMPLE
         end
         it "should disable the service by removing its line from rc.conf.local" do
           expect(::File).to receive(:write).with('/etc/rc.conf.local', /^(?!#{provider.builtin_service_enable_variable_name})$/)
-          expect(provider.is_enabled).to be true
+          expect(provider.is_enabled?).to be true
           provider.disable_service
-          expect(provider.is_enabled).to be false
+          expect(provider.is_enabled?).to be false
         end
       end
       context "is disabled" do
@@ -585,9 +585,9 @@ PS_SAMPLE
         end
         it "should disable the service by adding a line to rc.conf.local" do
           expect(::File).to receive(:write).with('/etc/rc.conf.local', include("#{provider.builtin_service_enable_variable_name}=\"NO\""))
-          expect(provider.is_enabled).to be true
+          expect(provider.is_enabled?).to be true
           provider.disable_service
-          expect(provider.is_enabled).to be false
+          expect(provider.is_enabled?).to be false
         end
       end
       context "is disabled" do
@@ -610,9 +610,9 @@ PS_SAMPLE
         end
         it "should disable the service by removing it from the pkg_scripts list" do
           expect(::File).to receive(:write).with('/etc/rc.conf.local', /^(?!#{new_resource.service_name})$/)
-          expect(provider.is_enabled).to be true
+          expect(provider.is_enabled?).to be true
           provider.disable_service
-          expect(provider.is_enabled).to be false
+          expect(provider.is_enabled?).to be false
         end
       end
       context "is disabled" do
