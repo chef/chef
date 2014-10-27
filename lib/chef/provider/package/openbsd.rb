@@ -44,7 +44,6 @@ class Chef
         def load_current_resource
           @current_resource.package_name(@new_resource.package_name)
           @current_resource.version(installed_version)
-          @candidate_version = candidate_version
           @current_resource
         end
 
@@ -72,13 +71,17 @@ class Chef
         def installed_version
           pkg_info = shell_out!("pkg_info -e \"#{@new_resource.package_name}->0\"", :env => nil, :returns => [0,1])
           result = pkg_info.stdout[/^inst:#{Regexp.escape(@new_resource.package_name)}-(.+)/, 1]
+          Chef::Log.debug("installed_version of '#{@new_resource.package_name}' is '#{result}'")
           result
         end
 
         def candidate_version
-          pkg_info = shell_out!("pkg_info -I \"#{@new_resource.package_name}\"", :env => nil, :returns => [0,1])
-          result = pkg_info.stdout[/^#{Regexp.escape(@new_resource.package_name)}-(.+)/, 1]
-          Chef::Log.debug("candidate_version of '#{@new_resource.package_name}' is '#{result}'")
+          @candidate_version ||= begin
+            pkg_info = shell_out!("pkg_info -I \"#{@new_resource.package_name}\"", :env => nil, :returns => [0,1])
+            result = pkg_info.stdout[/^#{Regexp.escape(@new_resource.package_name)}-(.+?)\s/, 1]
+            Chef::Log.debug("candidate_version of '#{@new_resource.package_name}' is '#{result}'")
+            result
+          end
         end
 
         def mirror
