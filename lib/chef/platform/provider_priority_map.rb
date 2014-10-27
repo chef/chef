@@ -53,6 +53,7 @@ class Chef
         #
 
         priority :service, Chef::Provider::Service::Freebsd, os: [ "freebsd", "netbsd" ]
+        priority :service, Chef::Provider::Service::Openbsd, os: [ "openbsd" ]
 
         #
         # Solaris-en

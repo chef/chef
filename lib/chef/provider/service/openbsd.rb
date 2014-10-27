@@ -26,9 +26,11 @@ class Chef
     class Service
       class Openbsd < Chef::Provider::Service::Init
 
-        include Chef::Mixin::ShellOut
-        
         attr_reader :rcd_script_found
+
+        provides :service, os: [ "openbsd" ]
+
+        include Chef::Mixin::ShellOut
 
         def initialize(new_resource, run_context)
           super
