@@ -53,7 +53,7 @@ describe Chef::Provider::Env::Windows, :windows_only do
       end
 
       it "should update the ruby ENV object when it updates the value" do
-        provider.should_receive(:compare_value).and_return(true)
+        provider.should_receive(:requires_modify_or_create?).and_return(true)
         new_resource.value("foobar")
         provider.action_modify
         expect(ENV['CHEF_WINDOWS_ENV_TEST']).to eql('foobar')
@@ -92,7 +92,7 @@ describe Chef::Provider::Env::Windows, :windows_only do
       end
 
       it "replaces Windows system variables" do
-        provider.should_receive(:compare_value).and_return(true)
+        provider.should_receive(:requires_modify_or_create?).and_return(true)
         provider.should_receive(:expand_path).with(system_root).and_return(system_root_value)
         provider.action_modify
         expect(ENV['PATH']).to eql(system_root_value)
