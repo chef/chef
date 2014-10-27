@@ -1,4 +1,4 @@
-## Unreleased: 12.0.0
+## 12.0.0
 
 * [**Jesse Hu**](https://github.com/jessehu):
   retry on HTTP 50X Error when calling Chef REST API
