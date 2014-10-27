@@ -32,8 +32,8 @@ class Chef
 
         def initialize(new_resource, run_context)
           super
-          @rc_conf = ::File.read('/etc/rc.conf')
-          @rc_conf_local = ::File.read('/etc/rc.conf.local')
+          @rc_conf = ::File.read('/etc/rc.conf') if ::File.exists?('/etc/rc.conf')
+          @rc_conf_local = ::File.read('/etc/rc.conf.local') if ::File.exists?('/etc/rc.conf.local')
           if ::File.exist?("/etc/rc.d/#{new_resource.service_name}")
             @init_command = "/etc/rc.d/#{new_resource.service_name}"
             @rcd_script_found = true
@@ -176,6 +176,7 @@ class Chef
         private
 
         def update_rcl!(value)
+          FileUtils.touch '/etc/rc.conf.local' if !::File.exists? '/etc/rc.conf.local'
           ::File.write('/etc/rc.conf.local', value)
           @rc_conf_local = value
         end
