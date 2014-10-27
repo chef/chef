@@ -50,11 +50,17 @@
                   <File Id="RubyExecutable" Source="$(var.ProjectSourceDir)\embedded\bin\ruby.exe" KeyPath="yes" />
                   <ServiceInstall Name="chef-client" Type="ownProcess"
                                   Start="auto" Vital="yes" ErrorControl="ignore"
-                                  Arguments="[PROJECTLOCATION]$(var.ChefGemPath)\lib\chef\application\windows_service.rb"
+                                  Arguments="$(var.ProjectSourceDir)\bin\chef-windows-service"
                                   DisplayName="!(loc.ServiceDisplayName)"
                                   Description="!(loc.ServiceDescription)" />
                   <ServiceControl Id="ControlChefClientService" Name="chef-client"
                                   Remove="both" Stop="both" Wait="yes" />
+                </Component>
+                <Component Id="ChefClientLog" Guid="{8e492d59-3a0c-43fd-b889-e35dfa33da91}">
+                    <util:EventSource xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+                        Name="Chef" Log="Application"
+                        EventMessageFile="$(var.ProjectSourceDir)\embedded\apps\chef\ext\win32-eventlog\chef-log.dll"
+                        />
                 </Component>
               </Directory>
             </Directory>
@@ -68,6 +74,7 @@
       <ComponentGroupRef Id="ProjectDir" />
       <ComponentRef Id="ChefClientPath" />
       <ComponentRef Id="CONFIGLOCATIONDIR" />
+      <ComponentRef Id="ChefClientLog" />
     </Feature>
 
     <Feature Id="ChefServiceFeature" Title="!(loc.FeatureServiceName)" Level="1000" AllowAdvertise="no">
