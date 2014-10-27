@@ -32,8 +32,16 @@ class Chef
 
         def initialize(new_resource, run_context)
           super
-          @rc_conf = ::File.read('/etc/rc.conf') if ::File.exists?('/etc/rc.conf')
-          @rc_conf_local = ::File.read('/etc/rc.conf.local') if ::File.exists?('/etc/rc.conf.local')
+          if ::File.exists?('/etc/rc.conf')
+            @rc_conf = ::File.read('/etc/rc.conf')
+          else
+            @rc_conf = ''
+          end
+          if ::File.exists?('/etc/rc.conf.local')
+            @rc_conf_local = ::File.read('/etc/rc.conf.local')
+          else
+            @rc_conf_local = ''
+          end
           if ::File.exist?("/etc/rc.d/#{new_resource.service_name}")
             @init_command = "/etc/rc.d/#{new_resource.service_name}"
             @rcd_script_found = true
@@ -201,7 +209,7 @@ class Chef
         def is_builtin
           result = false
           var_name = builtin_service_enable_variable_name
-          if @rc_conf && var_name
+          if var_name
             if @rc_conf.match(/^#{Regexp.escape(var_name)}=(.*)/)
               result = true
             end
@@ -212,7 +220,7 @@ class Chef
         def is_enabled_by_default
           result = false
           var_name = builtin_service_enable_variable_name
-          if @rc_conf && var_name
+          if var_name
             if m = @rc_conf.match(/^#{Regexp.escape(var_name)}=(.*)/)
               if !(m[1] =~ /"?[Nn][Oo]"?/)
                 result = true
@@ -227,7 +235,7 @@ class Chef
           @enabled_state_found = false
           if is_builtin
             var_name = builtin_service_enable_variable_name
-            if @rc_conf_local && var_name
+            if var_name
               if m = @rc_conf_local.match(/^#{Regexp.escape(var_name)}=(.*)/)
                 @enabled_state_found = true
                 if !(m[1] =~ /"?[Nn][Oo]"?/) # e.g. looking for httpd_flags=NO
@@ -240,7 +248,7 @@ class Chef
             end
           else
             var_name = @new_resource.service_name
-            if @rc_conf_local && var_name
+            if var_name
               if m = @rc_conf_local.match(/^pkg_scripts="(.*)"/)
                 @enabled_state_found = true
                 if m[1].include?(var_name) # e.g. looking for 'gdm' in pkg_scripts="gdm unbound"
