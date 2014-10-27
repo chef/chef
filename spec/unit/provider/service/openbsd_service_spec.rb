@@ -24,7 +24,6 @@ class Chef::Provider::Service::Openbsd
   public :builtin_service_enable_variable_name
   public :determine_enabled_status!
   public :determine_current_status!
-  #public :afters=
   public :is_enabled?
   attr_accessor :rc_conf, :rc_conf_local
 end
