@@ -50,8 +50,8 @@ describe Chef::Provider::Service::Openbsd do
   let(:provider) do
     events = Chef::EventDispatch::Dispatcher.new
     run_context = Chef::RunContext.new(node, {}, events)
-    expect(::File).to receive(:read).with('/etc/rc.conf').and_return('')
-    expect(::File).to receive(:read).with('/etc/rc.conf.local').and_return('')
+    allow(::File).to receive(:read).with('/etc/rc.conf').and_return('')
+    allow(::File).to receive(:read).with('/etc/rc.conf.local').and_return('')
     provider = Chef::Provider::Service::Openbsd.new(new_resource,run_context)
     provider.action = :start
     provider
@@ -467,6 +467,7 @@ PS_SAMPLE
   describe Chef::Provider::Service::Openbsd, "enable_service" do
     before do
       provider.current_resource = current_resource
+      allow(FileUtils).to receive(:touch).with('/etc/rc.conf.local')
     end
     context "is builtin and disabled by default" do
       before do
@@ -548,6 +549,7 @@ PS_SAMPLE
   describe Chef::Provider::Service::Openbsd, "disable_service" do
     before do
       provider.current_resource = current_resource
+      allow(FileUtils).to receive(:touch).with('/etc/rc.conf.local')
     end
     context "is builtin and disabled by default" do
       before do
