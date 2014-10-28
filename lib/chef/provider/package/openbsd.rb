@@ -29,11 +29,11 @@ class Chef
   class Provider
     class Package
       class Openbsd < Chef::Provider::Package
+
+        provides :package, os: "openbsd"
+
         include Chef::Mixin::ShellOut
         include Chef::Mixin::GetSourceFromPackage
-
-        @@sqlports = nil
-        @@repo_packages = nil
 
         def initialize(*args)
           super
@@ -50,7 +50,7 @@ class Chef
         def install_package(name, version)
           unless @current_resource.version
             version_string  = ''
-            version_string += "-#{version}" if version && version != '0.0.0'
+            version_string += "-#{version}" if version
             if @new_resource.source =~ /\/$/
               shell_out!("pkg_add -r #{name}#{version_string}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil }).status
             else
@@ -62,7 +62,7 @@ class Chef
 
         def remove_package(name, version)
           version_string  = ''
-          version_string += "-#{version}" if version && version != '0.0.0'
+          version_string += "-#{version}" if version
           shell_out!("pkg_delete #{name}#{version_string}", :env => nil).status
         end
 
