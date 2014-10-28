@@ -24,6 +24,8 @@ class Chef
       class Aix < Chef::Provider::Service
         attr_reader :status_load_success
 
+        provides :service, os: "aix"
+
         def initialize(new_resource, run_context)
           super
         end
