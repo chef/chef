@@ -398,3 +398,4 @@
   would not share the same actions/default_action as their parent
 * Raise error if a guard_interpreter is specified and a block is passed to a guard (conditional)
 * Allow specifying a guard_interpreter after a conditional on a resource (Fixes #1943)
+* Windows package type should be a symbol (Fixes #1997)
