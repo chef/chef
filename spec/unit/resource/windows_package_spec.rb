@@ -31,14 +31,6 @@ describe Chef::Resource::WindowsPackage, "initialize" do
     action: :start
   )
 
-  static_provider_resolution(
-    resource: Chef::Resource::WindowsPackage,
-    provider: Chef::Provider::Package::Windows,
-    os: "windows",
-    name: :package,
-    action: :start
-  )
-
   let(:resource) { Chef::Resource::WindowsPackage.new("solitaire.msi") }
 
   it "returns a Chef::Resource::WindowsPackage" do
