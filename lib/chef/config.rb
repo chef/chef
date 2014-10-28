@@ -458,7 +458,7 @@ class Chef
     default :disable_event_loggers, false
     default :event_loggers do
       evt_loggers = []
-      if Chef::Platform::windows?
+      if Chef::Platform::windows? and not Chef::Platform::windows_server_2003?
         evt_loggers << :win_evt
       end
       evt_loggers
