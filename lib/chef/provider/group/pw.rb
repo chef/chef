@@ -40,19 +40,19 @@ class Chef
           command = "pw groupadd"
           command << set_options
 
-          # pw group[add|mod] -M is used to set the full membership list on a
-          # new or existing group. Because pw groupadd does not support the -m
-          # and -d options used by manage_group, we treat group creation as a
-          # special case and use -M.
-          Chef::Log.debug("#{@new_resource} setting group members: #{@new_resource.members.join(',')}")
-          member_options = [" -M #{@new_resource.members.join(',')}"]
+          unless @new_resource.members.empty?
+            # pw group[add|mod] -M is used to set the full membership list on a
+            # new or existing group. Because pw groupadd does not support the -m
+            # and -d options used by manage_group, we treat group creation as a
+            # special case and use -M.
+            Chef::Log.debug("#{@new_resource} setting group members: #{@new_resource.members.join(',')}")
+            member_options = [" -M #{@new_resource.members.join(',')}"]
 
-          if member_options.empty?
-            run_command(:command => command)
-          else
             member_options.each do |option|
               run_command(:command => command + option)
             end
+          else
+            run_command(:command => command)
           end
         end
 
