@@ -371,6 +371,10 @@ class Chef
          }.join(', ') << ">"
        end
 
+       def to_s
+         merged_attributes.to_s
+       end
+
        def set_unless?
          @set_unless_present
        end
