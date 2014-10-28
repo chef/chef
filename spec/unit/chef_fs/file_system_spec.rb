@@ -66,18 +66,19 @@ describe Chef::ChefFS::FileSystem do
             :c => '',
           }
         },
-        :x => ''
+        :x => '',
+        :y => {}
       })
     }
     context 'list' do
       it '/**' do
-        list_should_yield_paths(fs, '/**', '/', '/a', '/x', '/a/aa', '/a/aa/c', '/a/aa/zz', '/a/ab', '/a/ab/c')
+        list_should_yield_paths(fs, '/**', '/', '/a', '/x', '/y', '/a/aa', '/a/aa/c', '/a/aa/zz', '/a/ab', '/a/ab/c')
       end
       it '/' do
         list_should_yield_paths(fs, '/', '/')
       end
       it '/*' do
-        list_should_yield_paths(fs, '/*', '/', '/a', '/x')
+        list_should_yield_paths(fs, '/*', '/', '/a', '/x', '/y')
       end
       it '/*/*' do
         list_should_yield_paths(fs, '/*/*', '/a/aa', '/a/ab')
@@ -127,8 +128,20 @@ describe Chef::ChefFS::FileSystem do
       it 'resolves /a/aa/zz' do
         Chef::ChefFS::FileSystem.resolve_path(fs, '/a/aa/zz').path.should == '/a/aa/zz'
       end
-      it 'resolves nonexistent /y/x/w' do
-        Chef::ChefFS::FileSystem.resolve_path(fs, '/y/x/w').path.should == '/y/x/w'
+      it 'resolves nonexistent /q/x/w' do
+        Chef::ChefFS::FileSystem.resolve_path(fs, '/q/x/w').path.should == '/q/x/w'
+      end
+    end
+
+    context 'empty?' do
+      it 'is not empty /' do
+        Chef::ChefFS::FileSystem.resolve_path(fs, '/').empty?.should be false
+      end
+      it 'is empty /y' do
+        Chef::ChefFS::FileSystem.resolve_path(fs, '/y').empty?.should be true
+      end
+      it 'is not a directory and can\'t be tested /x' do
+        lambda { Chef::ChefFS::FileSystem.resolve_path(fs, '/x').empty? }.should raise_error(NoMethodError)
       end
     end
   end
