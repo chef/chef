@@ -18,7 +18,14 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::WindowsService, "initialize", :windows_only do
+describe Chef::Resource::WindowsService, "initialize" do
+  static_provider_resolution(
+    resource: Chef::Resource::WindowsService,
+    provider: Chef::Provider::Service::Windows,
+    os: "windows",
+    name: :windows_service,
+    action: :start
+  )
 
   let(:resource) { Chef::Resource::WindowsService.new("BITS") }
 
@@ -28,10 +35,6 @@ describe Chef::Resource::WindowsService, "initialize", :windows_only do
 
   it "sets the resource_name to :windows_service" do
     expect(resource.resource_name).to eql(:windows_service)
-  end
-
-  it "sets the provider to Chef::Provider::Service::Windows" do
-    expect(resource.provider).to eql(Chef::Provider::Service::Windows)
   end
 
   it "supports setting startup_type" do

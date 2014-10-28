@@ -24,7 +24,8 @@ class Chef
   class Resource
     class WindowsPackage < Chef::Resource::Package
 
-      provides :package, platform: "windows"
+      provides :package, os: "windows"
+      provides :windows_package, os: "windows"
 
       def initialize(name, run_context=nil)
         super
