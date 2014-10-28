@@ -1,42 +1,14 @@
 {
-    "apache": {
-        "package": "apache2",
-        "binary": "/usr/sbin/apache2",
-        "dir": "/etc/apache2",
-        "lib_dir": "/usr/lib/apache2",
-        "libexec_dir": "/usr/lib/apache2/modules",
-        "cache_dir": "/var/cache/apache2",
-        "cgibin_dir": "/usr/lib/cgi-bin",
-        "docroot_dir": "/var/www",
-        "conf": "/etc/apache2/apache2.conf",
-        "perl_pkg": "perl",
-        "log_dir": "/var/log/apache2",
-        "root_group": "root",
-        "service_name": "apache2",
-        "service_restart_command": "/usr/sbin/invoke-rc.d apache2 restart && sleep 1",
-        "service_reload_command": "/usr/sbin/invoke-rc.d apache2 reload && sleep 1",
-        "default_site_name": "000-default",
-        "default_site_enabled": false,
-        "default_modules": [
-            "status",
-            "alias",
-            "auth_basic",
-            "authn_file",
-            "authz_core",
-            "authz_groupfile",
-            "authz_host",
-            "authz_user",
-            "autoindex",
-            "dir",
-            "env",
-            "mime",
-            "negotiation",
-            "setenvif"
-        ]
-    },
-    "mysql": {
-        "server": {
-          "version": "5.5"
-        }
-    }
+  "apache": {
+    "package": "apache2",
+    "service_name": "apache2"
+  },
+  "mysql": {
+    "server_package": "mysql-server-5.5",
+    "client_package": "mysql-client-5.5",
+    "service_name": "mysql"
+  },
+  "php" : {
+    "package": "php5"
+  }
 }

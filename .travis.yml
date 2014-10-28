@@ -40,9 +40,10 @@ matrix:
     before_script:
     - cd kitchen-tests
     script:
-    - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen test; fi
+# FIXME: we should fix centos-6 against AWS and then enable it here
+    - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen test ubuntu; fi
     after_script:
-    - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen destroy; fi
+    - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen destroy ubuntu; fi
     env:
     - KITCHEN_YAML=.kitchen.travis.yml
     - EC2_SSH_KEY_PATH=~/.ssh/id_aws.pem
