@@ -34,7 +34,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :windows_service
         @allowed_actions.push(:configure_startup)
         @startup_type = :automatic
       end

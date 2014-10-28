@@ -30,7 +30,6 @@ class Chef
       def initialize(name, run_context=nil)
         super
         @allowed_actions = [ :install, :remove ]
-        @resource_name = :windows_package
         @source ||= source(@package_name)
 
         # Unique to this resource
