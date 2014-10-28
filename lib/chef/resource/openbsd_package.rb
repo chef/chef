@@ -28,7 +28,7 @@ class Chef
     class OpenbsdPackage < Chef::Resource::Package
       include Chef::Mixin::ShellOut
 
-      provides :package, :on_platforms => ["openbsd"]
+      provides :package, os: "openbsd"
 
       def initialize(name, run_context=nil)
         super
