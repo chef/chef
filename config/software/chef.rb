@@ -72,7 +72,7 @@ build do
     gem "build chef-x86-mingw32.gemspec", env: env
     gem "install chef*mingw32.gem" \
         " --no-ri --no-rdoc" \
-        " --verbose"
+        " --verbose", env: env
 
     bundle "install --without server docgen", env: env
 
