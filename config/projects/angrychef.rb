@@ -15,23 +15,17 @@
 #
 
 #
-# This is a clone of chef that we can install on build and test machines
-# without interfering with the regular build/test.
+# This is a clone of the Chef project that we can install on the Chef build and
+# test machines. As such this project definition is just a thin wrapper around
+# `config/project/chef.rb`.
 #
+chef_project_contents = IO.read(File.expand_path('../chef.rb', __FILE__))
+self.instance_eval chef_project_contents
 
 name "angrychef"
 friendly_name "Angry Chef Client"
 maintainer "Chef Software, Inc."
 homepage "https://www.getchef.com"
-
-build_iteration 1
-build_version do
-  # Use chef to determine the build version
-  source :git, from_dependency: 'chef'
-
-  # Output a SemVer compliant version string
-  output_format :semver
-end
 
 if windows?
   # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
@@ -42,19 +36,13 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
-resources_path "#{Omnibus::Config.project_root}/files/chef"
-
-dependency "preparation"
-dependency "chef"
-dependency "version-manifest"
-
-package :rpm do
-  signing_passphrase ENV['OMNIBUS_RPM_SIGNING_PASSPHRASE']
-end
-
 package :pkg do
   identifier "com.getchef.pkg.angrychef"
   signing_identity "Developer ID Installer: Opscode Inc. (9NBR9JL2R2)"
 end
 
 compress :dmg
+
+package :msi do
+  upgrade_code "D7FDDC1A-7668-404E-AD2F-61F875632A9C"
+end
