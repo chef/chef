@@ -63,7 +63,7 @@ describe Chef::DSL::RebootPending, :windows_only do
       end
 
       after do
-        if registry_unsafe?
+        unless registry_unsafe?
           registry.delete_value('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { :name => 'PendingFileRenameOperations' })
         end
       end
@@ -78,7 +78,7 @@ describe Chef::DSL::RebootPending, :windows_only do
       end
 
       after do
-        if registry_unsafe?
+        unless registry_unsafe?
           registry.delete_key('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired', false)
         end
       end
@@ -94,7 +94,7 @@ describe Chef::DSL::RebootPending, :windows_only do
       end
 
       after do
-        if registry_unsafe?
+        unless registry_unsafe?
           registry.delete_key('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootRequired', false)
         end
       end
@@ -111,7 +111,7 @@ describe Chef::DSL::RebootPending, :windows_only do
       end
 
       after do
-        if registry_unsafe?
+        unless registry_unsafe?
           registry.delete_value('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile', { :name => 'Flags' })
           registry.delete_key('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile', false)
         end
