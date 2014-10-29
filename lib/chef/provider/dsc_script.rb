@@ -61,7 +61,7 @@ class Chef
       def define_resource_requirements
         requirements.assert(:run) do |a|
           err = [
-            'Could not find Dsc on the system',
+            'Could not find PowerShell DSC support on the system',
             powershell_info_str,
             "Powershell 4.0 or higher was not detected on your system and is required to use the dsc_script resource.",
           ]
@@ -97,9 +97,8 @@ class Chef
       end
 
       def get_augmented_configuration_flags(configuration_data_path)
-        updated_flags = nil
+        updated_flags = @dsc_resource.flags.nil? ? {} : @dsc_resource.flags.dup
         if configuration_data_path
-          updated_flags = @dsc_resource.flags.nil? ? {} : @dsc_resource.flags.dup
           Chef::Util::PathHelper.validate_path(configuration_data_path)
           updated_flags[:configurationdata] = configuration_data_path
         end
