@@ -21,11 +21,11 @@ class Chef
   module DSL
     module Audit
 
-      # List of `controls` example groups to be executed
+      # List of `control` example groups to be executed
       @example_groups = nil
 
-      # Adds the control_group and block (containing controls to execute) to the runner's list of pending examples
-      def control_group(group_name, &group_block)
+      # Adds the controls group and block (containing controls to execute) to the runner's list of pending examples
+      def controls(group_name, &group_block)
         puts "entered group named #{group_name}"
         @example_groups = []
 
@@ -36,14 +36,15 @@ class Chef
         # TODO add the @example_groups list to the runner for later execution
         p @example_groups
 
-        # Reset this to nil so we can tell if a `controls` message is sent outside a `control_group` block
-        # Prevents defining then un-defining the `controls` singleton method
+        # Reset this to nil so we can tell if a `control` message is sent outside a `controls` block
+        # Prevents defining then un-defining the `control` singleton method
+        # TODO this does not prevent calling `control` inside `control`
         @example_groups = nil
       end
 
-      def controls(*args, &control_block)
+      def control(*args, &control_block)
         if @example_groups.nil?
-          raise "Cannot define a `controls` unless inside a `control_group`"
+          raise "Cannot define a `control` unless inside a `controls` block"
         end
 
         example_name = args[0]
