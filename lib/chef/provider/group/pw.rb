@@ -46,14 +46,10 @@ class Chef
             # and -d options used by manage_group, we treat group creation as a
             # special case and use -M.
             Chef::Log.debug("#{@new_resource} setting group members: #{@new_resource.members.join(',')}")
-            member_options = [" -M #{@new_resource.members.join(',')}"]
-
-            member_options.each do |option|
-              run_command(:command => command + option)
-            end
-          else
-            run_command(:command => command)
+            command += " -M #{@new_resource.members.join(',')}"
           end
+
+          run_command(:command => command)
         end
 
         # Manage the group when it already exists
