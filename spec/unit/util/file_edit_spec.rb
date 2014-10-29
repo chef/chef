@@ -81,6 +81,16 @@ new line inserted
     EOF
   end
 
+  let(:prepend_before_content) do
+    <<-EOF
+new line inserted
+127.0.0.1       localhost
+255.255.255.255 broadcasthost
+::1             localhost
+fe80::1%lo0     localhost
+    EOF
+  end
+
   let(:append_twice) do
     <<-EOF
 127.0.0.1       localhost
@@ -89,6 +99,17 @@ new line inserted
 fe80::1%lo0     localhost
 once
 twice
+    EOF
+  end
+
+  let(:prepend_twice) do
+    <<-EOF
+twice
+once
+127.0.0.1       localhost
+255.255.255.255 broadcasthost
+::1             localhost
+fe80::1%lo0     localhost
     EOF
   end
 
@@ -211,6 +232,29 @@ twice
       fedit.insert_line_if_no_match(/missing/, "twice")
       fedit.write_file
       expect(edited_file_contents).to eq(append_twice)
+    end
+  end
+
+  describe "prepend_line_if_no_match" do
+    it "should search for match and prepend the given line if no line match" do
+      fedit.prepend_line_if_no_match(/pattern/, "new line inserted")
+      fedit.unwritten_changes?.should be_true
+      fedit.write_file
+      expect(edited_file_contents).to eq(prepend_before_content)
+    end
+
+    it "should do nothing if there is a match" do
+      fedit.prepend_line_if_no_match(/localhost/, "replacement")
+      fedit.unwritten_changes?.should be_false
+      fedit.write_file
+      expect(edited_file_contents).to eq(starting_content)
+    end
+
+    it "should work more than once" do
+      fedit.prepend_line_if_no_match(/missing/, "once")
+      fedit.prepend_line_if_no_match(/missing/, "twice")
+      fedit.write_file
+      expect(edited_file_contents).to eq(prepend_twice)
     end
   end
 
