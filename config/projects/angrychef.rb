@@ -32,6 +32,7 @@ if windows?
   #       Native gems will use gcc which will barf on files with spaces,
   #       which is only fixable if everyone in the world fixes their Makefiles
   install_dir "#{default_root}/opscode/#{name}"
+  package_name "angrychef"
 else
   install_dir "#{default_root}/#{name}"
 end
