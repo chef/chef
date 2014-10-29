@@ -81,12 +81,12 @@ describe Chef::Resource::RemoteDirectory do
 
       it "transfers the directory with all contents" do
         expected_files.each do |file_path|
-          File.should exist(file_path)
+          expect(File).to exist(file_path)
         end
       end
 
       it "is marked as updated by last action" do
-        resource.should be_updated_by_last_action
+        expect(resource).to be_updated_by_last_action
       end
     end
 
@@ -98,13 +98,13 @@ describe Chef::Resource::RemoteDirectory do
 
       it "does not modify the expected state of the directory" do
         expected_files.each do |file_path|
-          File.should exist(file_path)
+          expect(File).to exist(file_path)
         end
       end
 
       it "does not remove unmanaged files" do
-        File.should exist(@existing1)
-        File.should exist(@existing2)
+        expect(File).to exist(@existing1)
+        expect(File).to exist(@existing2)
       end
     end
 
@@ -116,12 +116,12 @@ describe Chef::Resource::RemoteDirectory do
 
       it "does not modify the expected state of the directory" do
         expected_files.each do |file_path|
-          File.should exist(file_path)
+          expect(File).to exist(file_path)
         end
       end
 
       it "is not marked as updated by last action" do
-        resource_second_pass.should_not be_updated_by_last_action
+        expect(resource_second_pass).not_to be_updated_by_last_action
       end
 
     end
@@ -142,8 +142,8 @@ describe Chef::Resource::RemoteDirectory do
         modified_subdir_file_checksum = sha256_checksum(modified_subdir_file)
 
         resource.run_action(:create)
-        sha256_checksum(modified_file).should == modified_file_checksum
-        sha256_checksum(modified_subdir_file).should == modified_subdir_file_checksum
+        expect(sha256_checksum(modified_file)).to eq(modified_file_checksum)
+        expect(sha256_checksum(modified_subdir_file)).to eq(modified_subdir_file_checksum)
       end
     end
   end
@@ -160,7 +160,7 @@ describe Chef::Resource::RemoteDirectory do
 
       it "creates the directory contents as normal" do
         expected_files.each do |file_path|
-          File.should exist(file_path)
+          expect(File).to exist(file_path)
         end
       end
 
@@ -173,18 +173,18 @@ describe Chef::Resource::RemoteDirectory do
       end
 
       it "removes unmanaged files" do
-        File.should_not exist(@existing1)
-        File.should_not exist(@existing2)
+        expect(File).not_to exist(@existing1)
+        expect(File).not_to exist(@existing2)
       end
 
       it "does not modify managed files" do
         expected_files.each do |file_path|
-          File.should exist(file_path)
+          expect(File).to exist(file_path)
         end
       end
 
       it "is marked as updated by last action" do
-        resource.should be_updated_by_last_action
+        expect(resource).to be_updated_by_last_action
       end
     end
 
@@ -204,14 +204,14 @@ describe Chef::Resource::RemoteDirectory do
       end
 
       it "removes files in subdirectories before files above" do
-        File.should_not exist(@existing1)
-        File.should_not exist(@existing2)
-        File.should_not exist(@existing3)
-        File.should_not exist(@existing4)
+        expect(File).not_to exist(@existing1)
+        expect(File).not_to exist(@existing2)
+        expect(File).not_to exist(@existing3)
+        expect(File).not_to exist(@existing4)
       end
 
       it "is marked as updated by last action" do
-        resource.should be_updated_by_last_action
+        expect(resource).to be_updated_by_last_action
       end
 
     end

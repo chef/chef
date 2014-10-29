@@ -131,12 +131,12 @@ describe Chef::Resource::Env, :windows_only do
         let!(:env_path_before) { ENV['PATH'] }
 
         it 'should expand PATH' do
-          path_before.should_not include(env_val)
+          expect(path_before).not_to include(env_val)
           test_resource.key_name('PATH')
           test_resource.value("#{path_before};#{env_val}")
           test_resource.run_action(:create)
-          ENV['PATH'].should_not include(env_val)
-          ENV['PATH'].should include("#{random_name}")
+          expect(ENV['PATH']).not_to include(env_val)
+          expect(ENV['PATH']).to include("#{random_name}")
         end
 
         after(:each) do

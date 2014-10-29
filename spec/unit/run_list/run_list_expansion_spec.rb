@@ -27,23 +27,23 @@ describe Chef::RunList::RunListExpansion do
 
   describe "before expanding the run list" do
     it "has an array of run list items" do
-      @expansion.run_list_items.should == @run_list.run_list_items
+      expect(@expansion.run_list_items).to eq(@run_list.run_list_items)
     end
 
     it "has default_attrs" do
-      @expansion.default_attrs.should == Mash.new
+      expect(@expansion.default_attrs).to eq(Mash.new)
     end
 
     it "has override attrs" do
-      @expansion.override_attrs.should == Mash.new
+      expect(@expansion.override_attrs).to eq(Mash.new)
     end
 
     it "it has an empty list of recipes" do
-      @expansion.should have(0).recipes
+      expect(@expansion.recipes.size).to eq(0)
     end
 
     it "has not applied its roles" do
-      @expansion.applied_role?('rage').should be_false
+      expect(@expansion.applied_role?('rage')).to be_falsey
     end
   end
 
@@ -54,28 +54,28 @@ describe Chef::RunList::RunListExpansion do
         r.env_run_lists('_default' => [], "prod" => ["recipe[prod-only]"])
       end
       @expansion = Chef::RunList::RunListExpansion.new("prod", @run_list.run_list_items)
-      @expansion.should_receive(:fetch_role).and_return(@rage_role)
+      expect(@expansion).to receive(:fetch_role).and_return(@rage_role)
       @expansion.expand
     end
 
     it "has the correct list of recipes for the given environment" do
-      @expansion.recipes.should == ["lobster", "prod-only", "fist"]
+      expect(@expansion.recipes).to eq(["lobster", "prod-only", "fist"])
     end
 
   end
 
   describe "after applying a role" do
     before do
-      @expansion.stub(:fetch_role).and_return(Chef::Role.new)
+      allow(@expansion).to receive(:fetch_role).and_return(Chef::Role.new)
       @expansion.inflate_role('rage', "role[base]")
     end
 
     it "tracks the applied role" do
-      @expansion.applied_role?('rage').should be_true
+      expect(@expansion.applied_role?('rage')).to be_truthy
     end
 
     it "does not inflate the role again" do
-      @expansion.inflate_role('rage', "role[base]").should be_false
+      expect(@expansion.inflate_role('rage', "role[base]")).to be_falsey
     end
   end
 
@@ -89,39 +89,39 @@ describe Chef::RunList::RunListExpansion do
       @second_role.run_list('recipe[crabrevenge]')
       @second_role.default_attributes({'foo' => 'boo'})
       @second_role.override_attributes({'baz' => 'bux'})
-      @expansion.stub(:fetch_role).and_return(@first_role, @second_role)
+      allow(@expansion).to receive(:fetch_role).and_return(@first_role, @second_role)
       @expansion.expand
     end
 
     it "has the ordered list of recipes" do
-      @expansion.recipes.should == ['lobster', 'crabrevenge', 'fist']
+      expect(@expansion.recipes).to eq(['lobster', 'crabrevenge', 'fist'])
     end
 
     it "has the merged attributes from the roles with outer roles overridding inner" do
-      @expansion.default_attrs.should == {'foo' => 'bar'}
-      @expansion.override_attrs.should == {'baz' => 'qux'}
+      expect(@expansion.default_attrs).to eq({'foo' => 'bar'})
+      expect(@expansion.override_attrs).to eq({'baz' => 'qux'})
     end
 
     it "has the list of all roles applied" do
       # this is the correct order, but 1.8 hash order is not stable
-      @expansion.roles.should =~ ['rage', 'mollusk']
+      expect(@expansion.roles).to match_array(['rage', 'mollusk'])
     end
 
   end
 
   describe "after expanding a run list with a non existant role" do
     before do
-      @expansion.stub(:fetch_role) { @expansion.role_not_found('crabrevenge', "role[base]") }
+      allow(@expansion).to receive(:fetch_role) { @expansion.role_not_found('crabrevenge', "role[base]") }
       @expansion.expand
     end
 
     it "is invalid" do
-      @expansion.should be_invalid
-      @expansion.errors?.should be_true # aliases
+      expect(@expansion).to be_invalid
+      expect(@expansion.errors?).to be_truthy # aliases
     end
 
     it "has a list of invalid role names" do
-      @expansion.errors.should include('crabrevenge')
+      expect(@expansion.errors).to include('crabrevenge')
     end
 
   end

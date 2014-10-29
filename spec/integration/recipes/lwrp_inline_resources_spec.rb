@@ -71,7 +71,7 @@ EOM
      (up to date)
 EOM
       expected = expected.lines.map { |l| l.chomp }.join("\n")
-      actual.should include(expected)
+      expect(actual).to include(expected)
       result.error!
     end
   end

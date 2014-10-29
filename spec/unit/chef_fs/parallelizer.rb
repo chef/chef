@@ -29,8 +29,8 @@ describe Chef::ChefFS::Parallelizer do
         sleep val
         outputs << val
       end
-      elapsed_time.should < 0.6
-      outputs.should == [ 0.1, 0.3, 0.5 ]
+      expect(elapsed_time).to be < 0.6
+      expect(outputs).to eq([ 0.1, 0.3, 0.5 ])
     end
 
     context "With :ordered => false (unordered output)" do
@@ -38,15 +38,15 @@ describe Chef::ChefFS::Parallelizer do
         parallelize([], :ordered => false) do
           sleep 10
         end.to_a == []
-        elapsed_time.should < 0.1
+        expect(elapsed_time).to be < 0.1
       end
 
       it "10 sleep(0.2)s complete within 0.5 seconds" do
-        parallelize(1.upto(10), :ordered => false) do |i|
+        expect(parallelize(1.upto(10), :ordered => false) do |i|
           sleep 0.2
           'x'
-        end.to_a.should == %w(x x x x x x x x x x)
-        elapsed_time.should < 0.5
+        end.to_a).to eq(%w(x x x x x x x x x x))
+        expect(elapsed_time).to be < 0.5
       end
 
       it "The output comes as soon as it is available" do
@@ -54,10 +54,10 @@ describe Chef::ChefFS::Parallelizer do
           sleep val
           val
         end
-        enum.map do |value|
-          elapsed_time.should < value+0.1
+        expect(enum.map do |value|
+          expect(elapsed_time).to be < value+0.1
           value
-        end.should == [ 0.1, 0.3, 0.5 ]
+        end).to eq([ 0.1, 0.3, 0.5 ])
       end
 
       it "An exception in input is passed through but does NOT stop processing" do
@@ -67,8 +67,8 @@ describe Chef::ChefFS::Parallelizer do
         enum = parallelize(input, :ordered => false) { |x| sleep(x); x }
         results = []
         expect { enum.each { |value| results << value } }.to raise_error 'hi'
-        results.should == [ 0.1, 0.3, 0.5 ]
-        elapsed_time.should < 0.6
+        expect(results).to eq([ 0.1, 0.3, 0.5 ])
+        expect(elapsed_time).to be < 0.6
       end
 
       it "Exceptions in output are raised after all processing is done" do
@@ -84,9 +84,9 @@ describe Chef::ChefFS::Parallelizer do
         end
         results = []
         expect { enum.each { |value| results << value } }.to raise_error 'hi'
-        results.sort.should == [ 1, 2, 3 ]
-        elapsed_time.should < 0.3
-        processed.should == 3
+        expect(results.sort).to eq([ 1, 2, 3 ])
+        expect(elapsed_time).to be < 0.3
+        expect(processed).to eq(3)
       end
 
       it "Exceptions with :stop_on_exception are raised after all processing is done" do
@@ -101,7 +101,7 @@ describe Chef::ChefFS::Parallelizer do
           x
         end
         expect { parallelized.to_a }.to raise_error 'hi'
-        processed.should == 4
+        expect(processed).to eq(4)
       end
     end
 
@@ -110,15 +110,15 @@ describe Chef::ChefFS::Parallelizer do
         parallelize([]) do
           sleep 10
         end.to_a == []
-        elapsed_time.should < 0.1
+        expect(elapsed_time).to be < 0.1
       end
 
       it "10 sleep(0.2)s complete within 0.5 seconds" do
-        parallelize(1.upto(10), :ordered => true) do |i|
+        expect(parallelize(1.upto(10), :ordered => true) do |i|
           sleep 0.2
           'x'
-        end.to_a.should == %w(x x x x x x x x x x)
-        elapsed_time.should < 0.5
+        end.to_a).to eq(%w(x x x x x x x x x x))
+        expect(elapsed_time).to be < 0.5
       end
 
       it "Output comes in the order of the input" do
@@ -126,10 +126,10 @@ describe Chef::ChefFS::Parallelizer do
           sleep val
           val
         end.enum_for(:each_with_index)
-        enum.next.should == [ 0.5, 0 ]
-        enum.next.should == [ 0.3, 1 ]
-        enum.next.should == [ 0.1, 2 ]
-        elapsed_time.should < 0.6
+        expect(enum.next).to eq([ 0.5, 0 ])
+        expect(enum.next).to eq([ 0.3, 1 ])
+        expect(enum.next).to eq([ 0.1, 2 ])
+        expect(elapsed_time).to be < 0.6
       end
 
       it "Exceptions in input are raised in the correct sequence but do NOT stop processing" do
@@ -139,8 +139,8 @@ describe Chef::ChefFS::Parallelizer do
         results = []
         enum = parallelize(input) { |x| sleep(x); x }
         expect { enum.each { |value| results << value } }.to raise_error 'hi'
-        elapsed_time.should < 0.6
-        results.should == [ 0.5, 0.3, 0.1 ]
+        expect(elapsed_time).to be < 0.6
+        expect(results).to eq([ 0.5, 0.3, 0.1 ])
       end
 
       it "Exceptions in output are raised in the correct sequence and running processes do NOT stop processing" do
@@ -156,9 +156,9 @@ describe Chef::ChefFS::Parallelizer do
         end
         results = []
         expect { enum.each { |value| results << value } }.to raise_error 'hi'
-        results.should == [ 1, 2 ]
-        elapsed_time.should < 0.3
-        processed.should == 3
+        expect(results).to eq([ 1, 2 ])
+        expect(elapsed_time).to be < 0.3
+        expect(processed).to eq(3)
       end
 
       it "Exceptions with :stop_on_exception are raised after all processing is done" do
@@ -173,7 +173,7 @@ describe Chef::ChefFS::Parallelizer do
           x
         end
         expect { parallelized.to_a }.to raise_error 'hi'
-        processed.should == 4
+        expect(processed).to eq(4)
       end
     end
 
@@ -187,10 +187,10 @@ describe Chef::ChefFS::Parallelizer do
         sleep 0.1
       end
       enum = parallelize(input) { |x| x }
-      enum.map do |value|
-        elapsed_time.should < (value+1)*0.1
+      expect(enum.map do |value|
+        expect(elapsed_time).to be < (value+1)*0.1
         value
-      end.should == [ 1, 2, 3 ]
+      end).to eq([ 1, 2, 3 ])
     end
   end
 
@@ -226,44 +226,44 @@ describe Chef::ChefFS::Parallelizer do
       end
 
       it "parallelize with :main_thread_processing = true does not block" do
-        parallelizer.parallelize([1]) do |x|
+        expect(parallelizer.parallelize([1]) do |x|
           sleep(0.1)
           x
-        end.to_a.should == [ 1 ]
-        elapsed_time.should < 0.2
+        end.to_a).to eq([ 1 ])
+        expect(elapsed_time).to be < 0.2
       end
 
       it "parallelize with :main_thread_processing = false waits for the job to finish" do
-        parallelizer.parallelize([1], :main_thread_processing => false) do |x|
+        expect(parallelizer.parallelize([1], :main_thread_processing => false) do |x|
           sleep(0.1)
           x+1
-        end.to_a.should == [ 2 ]
-        elapsed_time.should > 0.3
+        end.to_a).to eq([ 2 ])
+        expect(elapsed_time).to be > 0.3
       end
 
       it "resizing the Parallelizer to 0 waits for the job to stop" do
-        elapsed_time.should < 0.2
+        expect(elapsed_time).to be < 0.2
         parallelizer.resize(0)
-        parallelizer.num_threads.should == 0
-        elapsed_time.should > 0.25
-        @occupying_job_finished.should == [ true ]
+        expect(parallelizer.num_threads).to eq(0)
+        expect(elapsed_time).to be > 0.25
+        expect(@occupying_job_finished).to eq([ true ])
       end
 
       it "stopping the Parallelizer waits for the job to finish" do
-        elapsed_time.should < 0.2
+        expect(elapsed_time).to be < 0.2
         parallelizer.stop
-        parallelizer.num_threads.should == 0
-        elapsed_time.should > 0.25
-        @occupying_job_finished.should == [ true ]
+        expect(parallelizer.num_threads).to eq(0)
+        expect(elapsed_time).to be > 0.25
+        expect(@occupying_job_finished).to eq([ true ])
       end
 
       it "resizing the Parallelizer to 2 does not stop the job" do
-        elapsed_time.should < 0.2
+        expect(elapsed_time).to be < 0.2
         parallelizer.resize(2)
-        parallelizer.num_threads.should == 2
-        elapsed_time.should < 0.2
+        expect(parallelizer.num_threads).to eq(2)
+        expect(elapsed_time).to be < 0.2
         sleep(0.3)
-        @occupying_job_finished.should == [ true ]
+        expect(@occupying_job_finished).to eq([ true ])
       end
     end
 
@@ -276,9 +276,9 @@ describe Chef::ChefFS::Parallelizer do
           sleep(0.05) # Just enough to yield and get other inputs in the queue
           x
         end
-        enum.count.should == 6
-        outputs_processed.should == 0
-        input_mapper.num_processed.should == 6
+        expect(enum.count).to eq(6)
+        expect(outputs_processed).to eq(0)
+        expect(input_mapper.num_processed).to eq(6)
       end
 
       it ".count with arguments works normally" do
@@ -288,10 +288,10 @@ describe Chef::ChefFS::Parallelizer do
           outputs_processed += 1
           x
         end
-        enum.count { |x| x > 1 }.should == 6
-        enum.count(2).should == 3
-        outputs_processed.should == 20
-        input_mapper.num_processed.should == 20
+        expect(enum.count { |x| x > 1 }).to eq(6)
+        expect(enum.count(2)).to eq(3)
+        expect(outputs_processed).to eq(20)
+        expect(input_mapper.num_processed).to eq(20)
       end
 
       it ".first does not enumerate anything other than the first result(s)" do
@@ -302,10 +302,10 @@ describe Chef::ChefFS::Parallelizer do
           sleep(0.05) # Just enough to yield and get other inputs in the queue
           x
         end
-        enum.first.should == 1
-        enum.first(2).should == [1,2]
-        outputs_processed.should == 3
-        input_mapper.num_processed.should == 3
+        expect(enum.first).to eq(1)
+        expect(enum.first(2)).to eq([1,2])
+        expect(outputs_processed).to eq(3)
+        expect(input_mapper.num_processed).to eq(3)
       end
 
       it ".take does not enumerate anything other than the first result(s)" do
@@ -316,9 +316,9 @@ describe Chef::ChefFS::Parallelizer do
           sleep(0.05) # Just enough to yield and get other inputs in the queue
           x
         end
-        enum.take(2).should == [1,2]
-        outputs_processed.should == 2
-        input_mapper.num_processed.should == 2
+        expect(enum.take(2)).to eq([1,2])
+        expect(outputs_processed).to eq(2)
+        expect(input_mapper.num_processed).to eq(2)
       end
 
       it ".drop does not process anything other than the last result(s)" do
@@ -329,9 +329,9 @@ describe Chef::ChefFS::Parallelizer do
           sleep(0.05) # Just enough to yield and get other inputs in the queue
           x
         end
-        enum.drop(2).should == [3,4,5,6]
-        outputs_processed.should == 4
-        input_mapper.num_processed.should == 6
+        expect(enum.drop(2)).to eq([3,4,5,6])
+        expect(outputs_processed).to eq(4)
+        expect(input_mapper.num_processed).to eq(6)
       end
 
       if Enumerable.method_defined?(:lazy)
@@ -343,9 +343,9 @@ describe Chef::ChefFS::Parallelizer do
             sleep(0.05) # Just enough to yield and get other inputs in the queue
             x
           end
-          enum.lazy.take(2).to_a.should == [1,2]
-          outputs_processed.should == 2
-          input_mapper.num_processed.should == 2
+          expect(enum.lazy.take(2).to_a).to eq([1,2])
+          expect(outputs_processed).to eq(2)
+          expect(input_mapper.num_processed).to eq(2)
         end
 
         it ".drop does not process anything other than the last result(s)" do
@@ -356,9 +356,9 @@ describe Chef::ChefFS::Parallelizer do
             sleep(0.05) # Just enough to yield and get other inputs in the queue
             x
           end
-          enum.lazy.drop(2).to_a.should == [3,4,5,6]
-          outputs_processed.should == 4
-          input_mapper.num_processed.should == 6
+          expect(enum.lazy.drop(2).to_a).to eq([3,4,5,6])
+          expect(outputs_processed).to eq(4)
+          expect(input_mapper.num_processed).to eq(6)
         end
 
         it "lazy enumerable is actually lazy" do
@@ -372,8 +372,8 @@ describe Chef::ChefFS::Parallelizer do
           enum.lazy.take(2)
           enum.lazy.drop(2)
           sleep(0.1)
-          outputs_processed.should == 0
-          input_mapper.num_processed.should == 0
+          expect(outputs_processed).to eq(0)
+          expect(input_mapper.num_processed).to eq(0)
         end
       end
     end
@@ -386,10 +386,10 @@ describe Chef::ChefFS::Parallelizer do
           outputs_processed += 1
           x
         end
-        enum.map { |x| x }.should == [1,2,3]
-        enum.map { |x| x }.should == [1,2,3]
-        outputs_processed.should == 6
-        input_mapper.num_processed.should == 6
+        expect(enum.map { |x| x }).to eq([1,2,3])
+        expect(enum.map { |x| x }).to eq([1,2,3])
+        expect(outputs_processed).to eq(6)
+        expect(input_mapper.num_processed).to eq(6)
       end
 
       it ".first and then .map on the same parallel enumerable returns the correct results and re-processes the input" do
@@ -399,10 +399,10 @@ describe Chef::ChefFS::Parallelizer do
           outputs_processed += 1
           x
         end
-        enum.first.should == 1
-        enum.map { |x| x }.should == [1,2,3]
-        outputs_processed.should >= 4
-        input_mapper.num_processed.should >= 4
+        expect(enum.first).to eq(1)
+        expect(enum.map { |x| x }).to eq([1,2,3])
+        expect(outputs_processed).to be >= 4
+        expect(input_mapper.num_processed).to be >= 4
       end
 
       it "two simultaneous enumerations throws an exception" do
@@ -424,7 +424,7 @@ describe Chef::ChefFS::Parallelizer do
 
     context "And main_thread_processing on" do
       it "succeeds in running" do
-        parallelizer.parallelize([0.5]) { |x| x*2 }.to_a.should == [1]
+        expect(parallelizer.parallelize([0.5]) { |x| x*2 }.to_a).to eq([1])
       end
     end
   end
@@ -435,11 +435,11 @@ describe Chef::ChefFS::Parallelizer do
     end
 
     it "does not have contention issues with large numbers of inputs" do
-      parallelizer.parallelize(1.upto(500)) { |x| x+1 }.to_a.should == 2.upto(501).to_a
+      expect(parallelizer.parallelize(1.upto(500)) { |x| x+1 }.to_a).to eq(2.upto(501).to_a)
     end
 
     it "does not have contention issues with large numbers of inputs with ordering off" do
-      parallelizer.parallelize(1.upto(500), :ordered => false) { |x| x+1 }.to_a.sort.should == 2.upto(501).to_a
+      expect(parallelizer.parallelize(1.upto(500), :ordered => false) { |x| x+1 }.to_a.sort).to eq(2.upto(501).to_a)
     end
 
     it "does not have contention issues with large numbers of jobs and inputs with ordering off" do
@@ -451,7 +451,7 @@ describe Chef::ChefFS::Parallelizer do
         Thread.new { outputs[i] = parallelizers[i].to_a }
       end
       threads.each { |thread| thread.join }
-      outputs.each { |output| output.sort.should == 2.upto(501).to_a }
+      outputs.each { |output| expect(output.sort).to eq(2.upto(501).to_a) }
     end
   end
 

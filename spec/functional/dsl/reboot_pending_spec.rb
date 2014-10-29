@@ -49,7 +49,7 @@ describe Chef::DSL::RebootPending, :windows_only do
     describe "when there is nothing to indicate a reboot is pending" do
       it "should return false" do
         pending "Found existing registry keys" unless registry_safe?
-        expect(recipe.reboot_pending?).to be_false
+        expect(recipe.reboot_pending?).to be_falsey
       end
     end
 
@@ -59,7 +59,7 @@ describe Chef::DSL::RebootPending, :windows_only do
         registry.set_value('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', 
             { :name => 'PendingFileRenameOperations', :type => :multi_string, :data => ['\??\C:\foo.txt|\??\C:\bar.txt'] })
 
-        expect(recipe.reboot_pending?).to be_true
+        expect(recipe.reboot_pending?).to be_truthy
       end
 
       after do
@@ -74,7 +74,7 @@ describe Chef::DSL::RebootPending, :windows_only do
         pending "Found existing registry keys" unless registry_safe?
         registry.create_key('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired', false)
 
-        expect(recipe.reboot_pending?).to be_true
+        expect(recipe.reboot_pending?).to be_truthy
       end
 
       after do
@@ -90,7 +90,7 @@ describe Chef::DSL::RebootPending, :windows_only do
         pending "Found existing registry keys" unless registry_safe?
         registry.create_key('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootRequired', false)
 
-        expect(recipe.reboot_pending?).to be_true
+        expect(recipe.reboot_pending?).to be_truthy
       end
 
       after do
@@ -107,7 +107,7 @@ describe Chef::DSL::RebootPending, :windows_only do
         registry.set_value('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile',
                     { :name => 'Flags', :type => :dword, :data => 3 })
 
-        expect(recipe.reboot_pending?).to be_true
+        expect(recipe.reboot_pending?).to be_truthy
       end
 
       after do

@@ -26,40 +26,40 @@ describe Chef::Knife::RoleDelete do
       :print_after => nil
     }
     @knife.name_args = [ "adam" ]
-    @knife.stub(:output).and_return(true)
-    @knife.stub(:confirm).and_return(true)
+    allow(@knife).to receive(:output).and_return(true)
+    allow(@knife).to receive(:confirm).and_return(true)
     @role = Chef::Role.new()
-    @role.stub(:destroy).and_return(true)
-    Chef::Role.stub(:load).and_return(@role)
+    allow(@role).to receive(:destroy).and_return(true)
+    allow(Chef::Role).to receive(:load).and_return(@role)
     @stdout = StringIO.new
-    @knife.ui.stub(:stdout).and_return(@stdout)
+    allow(@knife.ui).to receive(:stdout).and_return(@stdout)
   end
 
   describe "run" do
     it "should confirm that you want to delete" do
-      @knife.should_receive(:confirm)
+      expect(@knife).to receive(:confirm)
       @knife.run
     end
 
     it "should load the Role" do
-      Chef::Role.should_receive(:load).with("adam").and_return(@role)
+      expect(Chef::Role).to receive(:load).with("adam").and_return(@role)
       @knife.run
     end
 
     it "should delete the Role" do
-      @role.should_receive(:destroy).and_return(@role)
+      expect(@role).to receive(:destroy).and_return(@role)
       @knife.run
     end
 
     it "should not print the Role" do
-      @knife.should_not_receive(:output)
+      expect(@knife).not_to receive(:output)
       @knife.run
     end
 
     describe "with -p or --print-after" do
       it "should pretty print the Role, formatted for display" do
         @knife.config[:print_after] = true
-        @knife.should_receive(:output)
+        expect(@knife).to receive(:output)
         @knife.run
       end
     end

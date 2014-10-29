@@ -62,6 +62,6 @@ describe Chef::Resource::Subversion do
   it "hides password from custom exception message" do
     @svn.svn_password "l33th4x0rpa$$w0rd"
     e = @svn.customize_exception(Chef::Exceptions::Exec.new "Exception with password #{@svn.svn_password}")
-    expect(e.message.include?(@svn.svn_password)).to be_false
+    expect(e.message.include?(@svn.svn_password)).to be_falsey
   end
 end

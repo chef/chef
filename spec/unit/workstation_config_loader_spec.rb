@@ -177,7 +177,7 @@ describe Chef::WorkstationConfigLoader do
           env["CD"] = "/home/someuser/prod/chef-repo" # windows
           env["PWD"] = "/home/someuser/prod/chef-repo" # unix
 
-          Dir.stub(:pwd).and_return("/home/someuser/codes/chef-repo")
+          allow(Dir).to receive(:pwd).and_return("/home/someuser/codes/chef-repo")
         end
 
         it "loads the config from the non-dereferenced directory path" do

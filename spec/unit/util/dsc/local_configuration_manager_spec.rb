@@ -78,7 +78,7 @@ EOH
         let(:lcm_cmdlet_success) { false }
 
         it 'returns true when passed to #whatif_not_supported?' do
-          expect(lcm.send(:whatif_not_supported?, no_whatif_lcm_output)).to be_true
+          expect(lcm.send(:whatif_not_supported?, no_whatif_lcm_output)).to be_truthy
         end
 
         it 'should should return a (possibly empty) array of ResourceInfo instances' do

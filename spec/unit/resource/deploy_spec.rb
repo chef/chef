@@ -115,9 +115,9 @@ describe Chef::Resource::Deploy do
   end
 
   it "has a boolean attribute for svn_force_export defaulting to false" do
-    expect(@resource.svn_force_export).to be_false
+    expect(@resource.svn_force_export).to be_falsey
     @resource.svn_force_export true
-    expect(@resource.svn_force_export).to be_true
+    expect(@resource.svn_force_export).to be_truthy
     expect {@resource.svn_force_export(10053)}.to raise_error(ArgumentError)
   end
 

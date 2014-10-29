@@ -123,8 +123,8 @@ describe Chef::Resource::Link do
   describe "when supported on platform", :not_supported_on_win2k3 do
     shared_examples_for 'delete errors out' do
       it 'delete errors out' do
-        lambda { resource.run_action(:delete) }.should raise_error(Chef::Exceptions::Link)
-        (File.exist?(target_file) || symlink?(target_file)).should be_true
+        expect { resource.run_action(:delete) }.to raise_error(Chef::Exceptions::Link)
+        expect(File.exist?(target_file) || symlink?(target_file)).to be_truthy
       end
     end
 
@@ -132,19 +132,19 @@ describe Chef::Resource::Link do
       describe 'the :delete action' do
         before(:each) do
           @info = []
-          Chef::Log.stub(:info) { |msg| @info << msg }
+          allow(Chef::Log).to receive(:info) { |msg| @info << msg }
           resource.run_action(:delete)
         end
 
         it 'leaves the file deleted' do
-          File.exist?(target_file).should be_false
-          symlink?(target_file).should be_false
+          expect(File.exist?(target_file)).to be_falsey
+          expect(symlink?(target_file)).to be_falsey
         end
         it 'does not mark the resource updated' do
-          resource.should_not be_updated
+          expect(resource).not_to be_updated
         end
         it 'does not log that it deleted' do
-          @info.include?("link[#{target_file}] deleted").should be_false
+          expect(@info.include?("link[#{target_file}] deleted")).to be_falsey
         end
       end
     end
@@ -153,19 +153,19 @@ describe Chef::Resource::Link do
       describe 'the :delete action' do
         before(:each) do
           @info = []
-          Chef::Log.stub(:info) { |msg| @info << msg }
+          allow(Chef::Log).to receive(:info) { |msg| @info << msg }
           resource.run_action(:delete)
         end
 
         it 'deletes the file' do
-          File.exist?(target_file).should be_false
-          symlink?(target_file).should be_false
+          expect(File.exist?(target_file)).to be_falsey
+          expect(symlink?(target_file)).to be_falsey
         end
         it 'marks the resource updated' do
-          resource.should be_updated
+          expect(resource).to be_updated
         end
         it 'logs that it deleted' do
-          @info.include?("link[#{target_file}] deleted").should be_true
+          expect(@info.include?("link[#{target_file}] deleted")).to be_truthy
         end
       end
     end
@@ -174,19 +174,19 @@ describe Chef::Resource::Link do
       describe 'the :create action' do
         before(:each) do
           @info = []
-          Chef::Log.stub(:info) { |msg| @info << msg }
+          allow(Chef::Log).to receive(:info) { |msg| @info << msg }
           resource.run_action(:create)
         end
 
         it 'links to the target file' do
-          symlink?(target_file).should be_true
-          paths_eql?(readlink(target_file), to).should be_true
+          expect(symlink?(target_file)).to be_truthy
+          expect(paths_eql?(readlink(target_file), to)).to be_truthy
         end
         it 'marks the resource updated' do
-          resource.should be_updated
+          expect(resource).to be_updated
         end
         it 'logs that it created' do
-          @info.include?("link[#{target_file}] created").should be_true
+          expect(@info.include?("link[#{target_file}] created")).to be_truthy
         end
       end
     end
@@ -195,19 +195,19 @@ describe Chef::Resource::Link do
       describe 'the :create action' do
         before(:each) do
           @info = []
-          Chef::Log.stub(:info) { |msg| @info << msg }
+          allow(Chef::Log).to receive(:info) { |msg| @info << msg }
           resource.run_action(:create)
         end
 
         it 'leaves the file linked' do
-          symlink?(target_file).should be_true
-          paths_eql?(readlink(target_file), to).should be_true
+          expect(symlink?(target_file)).to be_truthy
+          expect(paths_eql?(readlink(target_file), to)).to be_truthy
         end
         it 'does not mark the resource updated' do
-          resource.should_not be_updated
+          expect(resource).not_to be_updated
         end
         it 'does not log that it created' do
-          @info.include?("link[#{target_file}] created").should be_false
+          expect(@info.include?("link[#{target_file}] created")).to be_falsey
         end
       end
     end
@@ -216,23 +216,23 @@ describe Chef::Resource::Link do
       describe 'the :create action' do
         before(:each) do
           @info = []
-          Chef::Log.stub(:info) { |msg| @info << msg }
+          allow(Chef::Log).to receive(:info) { |msg| @info << msg }
           resource.run_action(:create)
         end
         it 'preserves the hard link' do
-          File.exists?(target_file).should be_true
-          symlink?(target_file).should be_false
+          expect(File.exists?(target_file)).to be_truthy
+          expect(symlink?(target_file)).to be_falsey
           # Writing to one hardlinked file should cause both
           # to have the new value.
-          IO.read(to).should == IO.read(target_file)
+          expect(IO.read(to)).to eq(IO.read(target_file))
           File.open(to, "w") { |file| file.write('wowzers') }
-          IO.read(target_file).should == 'wowzers'
+          expect(IO.read(target_file)).to eq('wowzers')
         end
         it 'marks the resource updated' do
-          resource.should be_updated
+          expect(resource).to be_updated
         end
         it 'logs that it created' do
-          @info.include?("link[#{target_file}] created").should be_true
+          expect(@info.include?("link[#{target_file}] created")).to be_truthy
         end
       end
     end
@@ -241,23 +241,23 @@ describe Chef::Resource::Link do
       describe 'the :create action' do
         before(:each) do
           @info = []
-          Chef::Log.stub(:info) { |msg| @info << msg }
+          allow(Chef::Log).to receive(:info) { |msg| @info << msg }
           resource.run_action(:create)
         end
         it 'links to the target file' do
-          File.exists?(target_file).should be_true
-          symlink?(target_file).should be_false
+          expect(File.exists?(target_file)).to be_truthy
+          expect(symlink?(target_file)).to be_falsey
           # Writing to one hardlinked file should cause both
           # to have the new value.
-          IO.read(to).should == IO.read(target_file)
+          expect(IO.read(to)).to eq(IO.read(target_file))
           File.open(to, "w") { |file| file.write('wowzers') }
-          IO.read(target_file).should == 'wowzers'
+          expect(IO.read(target_file)).to eq('wowzers')
         end
         it 'does not mark the resource updated' do
-          resource.should_not be_updated
+          expect(resource).not_to be_updated
         end
         it 'does not log that it created' do
-          @info.include?("link[#{target_file}] created").should be_false
+          expect(@info.include?("link[#{target_file}] created")).to be_falsey
         end
       end
     end
@@ -278,14 +278,14 @@ describe Chef::Resource::Link do
           context 'pointing at the target' do
             before(:each) do
               symlink(to, target_file)
-              symlink?(target_file).should be_true
-              paths_eql?(readlink(target_file), to).should be_true
+              expect(symlink?(target_file)).to be_truthy
+              expect(paths_eql?(readlink(target_file), to)).to be_truthy
             end
             include_context 'create symbolic link is noop'
             include_context 'delete succeeds'
             it 'the :delete action does not delete the target file' do
               resource.run_action(:delete)
-              File.exists?(to).should be_true
+              expect(File.exists?(to)).to be_truthy
             end
           end
           context 'pointing somewhere else' do
@@ -293,8 +293,8 @@ describe Chef::Resource::Link do
               @other_target = File.join(test_file_dir, make_tmpname('other_spec'))
               File.open(@other_target, 'w') { |file| file.write('eek') }
               symlink(@other_target, target_file)
-              symlink?(target_file).should be_true
-              paths_eql?(readlink(target_file), @other_target).should be_true
+              expect(symlink?(target_file)).to be_truthy
+              expect(paths_eql?(readlink(target_file), @other_target)).to be_truthy
             end
             after(:each) do
               File.delete(@other_target)
@@ -303,15 +303,15 @@ describe Chef::Resource::Link do
             include_context 'delete succeeds'
             it 'the :delete action does not delete the target file' do
               resource.run_action(:delete)
-              File.exists?(to).should be_true
+              expect(File.exists?(to)).to be_truthy
             end
           end
           context 'pointing nowhere' do
             before(:each) do
               nonexistent = File.join(test_file_dir, make_tmpname('nonexistent_spec'))
               symlink(nonexistent, target_file)
-              symlink?(target_file).should be_true
-              paths_eql?(readlink(target_file), nonexistent).should be_true
+              expect(symlink?(target_file)).to be_truthy
+              expect(paths_eql?(readlink(target_file), nonexistent)).to be_truthy
             end
             include_context 'create symbolic link succeeds'
             include_context 'delete succeeds'
@@ -320,8 +320,8 @@ describe Chef::Resource::Link do
         context 'and the link already exists and is a hard link to the file' do
           before(:each) do
             link(to, target_file)
-            File.exists?(target_file).should be_true
-            symlink?(target_file).should be_false
+            expect(File.exists?(target_file)).to be_truthy
+            expect(symlink?(target_file)).to be_falsey
           end
           include_context 'create symbolic link succeeds'
           it_behaves_like 'delete errors out'
@@ -339,11 +339,11 @@ describe Chef::Resource::Link do
           end
           it 'create errors out' do
             if windows?
-              lambda { resource.run_action(:create) }.should raise_error(Errno::EACCES)
+              expect { resource.run_action(:create) }.to raise_error(Errno::EACCES)
             elsif os_x? or solaris? or freebsd? or aix?
-              lambda { resource.run_action(:create) }.should raise_error(Errno::EPERM)
+              expect { resource.run_action(:create) }.to raise_error(Errno::EPERM)
             else
-              lambda { resource.run_action(:create) }.should raise_error(Errno::EISDIR)
+              expect { resource.run_action(:create) }.to raise_error(Errno::EISDIR)
             end
           end
           it_behaves_like 'delete errors out'
@@ -392,8 +392,8 @@ describe Chef::Resource::Link do
             @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
             File.open(@other_target, "w") { |file| file.write("eek") }
             symlink(@other_target, to)
-            symlink?(to).should be_true
-            paths_eql?(readlink(to), @other_target).should be_true
+            expect(symlink?(to)).to be_truthy
+            expect(paths_eql?(readlink(to), @other_target)).to be_truthy
           end
           after(:each) do
             File.delete(@other_target)
@@ -407,8 +407,8 @@ describe Chef::Resource::Link do
           before(:each) do
             @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
             symlink(@other_target, to)
-            symlink?(to).should be_true
-            paths_eql?(readlink(to), @other_target).should be_true
+            expect(symlink?(to)).to be_truthy
+            expect(paths_eql?(readlink(to), @other_target)).to be_truthy
           end
           context 'and the link does not yet exist' do
             include_context 'create symbolic link succeeds'
@@ -440,8 +440,8 @@ describe Chef::Resource::Link do
           context 'when the link already exists and points at the target' do
             before(:each) do
               symlink(to, target_file)
-              symlink?(target_file).should be_true
-              paths_eql?(readlink(target_file), to).should be_true
+              expect(symlink?(target_file)).to be_truthy
+              expect(paths_eql?(readlink(target_file), to)).to be_truthy
             end
             include_context 'create symbolic link is noop'
             include_context 'delete succeeds'
@@ -449,8 +449,8 @@ describe Chef::Resource::Link do
           context 'when the link already exists and points at the target with an absolute path' do
             before(:each) do
               symlink(absolute_to, target_file)
-              symlink?(target_file).should be_true
-              paths_eql?(readlink(target_file), absolute_to).should be_true
+              expect(symlink?(target_file)).to be_truthy
+              expect(paths_eql?(readlink(target_file), absolute_to)).to be_truthy
             end
             include_context 'create symbolic link succeeds'
             include_context 'delete succeeds'
@@ -477,8 +477,8 @@ describe Chef::Resource::Link do
         context "and the link already exists and is a symbolic link pointing at the same file" do
           before(:each) do
             symlink(to, target_file)
-            symlink?(target_file).should be_true
-            paths_eql?(readlink(target_file), to).should be_true
+            expect(symlink?(target_file)).to be_truthy
+            expect(paths_eql?(readlink(target_file), to)).to be_truthy
           end
           include_context 'create hard link succeeds'
           it_behaves_like 'delete errors out'
@@ -486,14 +486,14 @@ describe Chef::Resource::Link do
         context 'and the link already exists and is a hard link to the file' do
           before(:each) do
             link(to, target_file)
-            File.exists?(target_file).should be_true
-            symlink?(target_file).should be_false
+            expect(File.exists?(target_file)).to be_truthy
+            expect(symlink?(target_file)).to be_falsey
           end
           include_context 'create hard link is noop'
           include_context 'delete succeeds'
           it 'the :delete action does not delete the target file' do
             resource.run_action(:delete)
-            File.exists?(to).should be_true
+            expect(File.exists?(to)).to be_truthy
           end
         end
         context "and the link already exists and is a file" do
@@ -509,11 +509,11 @@ describe Chef::Resource::Link do
           end
           it 'errors out' do
             if windows?
-              lambda { resource.run_action(:create) }.should raise_error(Errno::EACCES)
+              expect { resource.run_action(:create) }.to raise_error(Errno::EACCES)
             elsif os_x? or solaris? or freebsd? or aix?
-              lambda { resource.run_action(:create) }.should raise_error(Errno::EPERM)
+              expect { resource.run_action(:create) }.to raise_error(Errno::EPERM)
             else
-              lambda { resource.run_action(:create) }.should raise_error(Errno::EISDIR)
+              expect { resource.run_action(:create) }.to raise_error(Errno::EISDIR)
             end
           end
           it_behaves_like 'delete errors out'
@@ -527,9 +527,9 @@ describe Chef::Resource::Link do
           it 'ignores them' do
             resource.run_action(:create)
             if windows?
-              Chef::ReservedNames::Win32::Security.get_named_security_info(target_file).owner.should_not == SID.Guest
+              expect(Chef::ReservedNames::Win32::Security.get_named_security_info(target_file).owner).not_to eq(SID.Guest)
             else
-              File.lstat(target_file).uid.should_not == Etc.getpwnam('nobody').uid
+              expect(File.lstat(target_file).uid).not_to eq(Etc.getpwnam('nobody').uid)
             end
           end
         end
@@ -540,7 +540,7 @@ describe Chef::Resource::Link do
         end
         context 'and the link does not yet exist' do
           it 'create errors out' do
-            lambda { resource.run_action(:create) }.should raise_error(windows? ? Chef::Exceptions::Win32APIError : Errno::EPERM)
+            expect { resource.run_action(:create) }.to raise_error(windows? ? Chef::Exceptions::Win32APIError : Errno::EPERM)
           end
           include_context 'delete is noop'
         end
@@ -551,8 +551,8 @@ describe Chef::Resource::Link do
             @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
             File.open(@other_target, "w") { |file| file.write("eek") }
             symlink(@other_target, to)
-            symlink?(to).should be_true
-            paths_eql?(readlink(to), @other_target).should be_true
+            expect(symlink?(to)).to be_truthy
+            expect(paths_eql?(readlink(to), @other_target)).to be_truthy
           end
           after(:each) do
             File.delete(@other_target)
@@ -560,12 +560,11 @@ describe Chef::Resource::Link do
           context 'and the link does not yet exist' do
             it 'links to the target file' do
               resource.run_action(:create)
-              File.exists?(target_file).should be_true
+              expect(File.exists?(target_file)).to be_truthy
               # OS X gets angry about this sort of link.  Bug in OS X, IMO.
-              pending('OS X/FreeBSD/AIX symlink? and readlink working on hard links to symlinks', :if => (os_x? or freebsd? or aix?)) do
-                symlink?(target_file).should be_true
-                paths_eql?(readlink(target_file), @other_target).should be_true
-              end
+              pending('OS X/FreeBSD/AIX symlink? and readlink working on hard links to symlinks')
+              expect(symlink?(target_file)).to be_truthy
+              paths_eql?(readlink(target_file), @other_target).should be_truthy
             end
             include_context 'delete is noop'
           end
@@ -574,22 +573,21 @@ describe Chef::Resource::Link do
           before(:each) do
             @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
             symlink(@other_target, to)
-            symlink?(to).should be_true
-            paths_eql?(readlink(to), @other_target).should be_true
+            expect(symlink?(to)).to be_truthy
+            expect(paths_eql?(readlink(to), @other_target)).to be_truthy
           end
           context 'and the link does not yet exist' do
             it 'links to the target file' do
-              pending('OS X/FreeBSD/AIX fails to create hardlinks to broken symlinks', :if => (os_x? or freebsd? or aix?)) do
-                resource.run_action(:create)
-                # Windows and Unix have different definitions of exists? here, and that's OK.
-                if windows?
-                  File.exists?(target_file).should be_true
-                else
-                  File.exists?(target_file).should be_false
-                end
-                symlink?(target_file).should be_true
-                paths_eql?(readlink(target_file), @other_target).should be_true
+              pending('OS X/FreeBSD/AIX fails to create hardlinks to broken symlinks')
+              resource.run_action(:create)
+              # Windows and Unix have different definitions of exists? here, and that's OK.
+              if windows?
+                File.exists?(target_file).should be_truthy
+              else
+                File.exists?(target_file).should be_falsey
               end
+              symlink?(target_file).should be_truthy
+              paths_eql?(readlink(target_file), @other_target).should be_truthy
             end
             include_context 'delete is noop'
           end
@@ -600,7 +598,7 @@ describe Chef::Resource::Link do
       context "when the link destination does not exist" do
         context 'and the link does not yet exist' do
           it 'create errors out' do
-            lambda { resource.run_action(:create) }.should raise_error(Errno::ENOENT)
+            expect { resource.run_action(:create) }.to raise_error(Errno::ENOENT)
           end
           include_context 'delete is noop'
         end
@@ -610,7 +608,7 @@ describe Chef::Resource::Link do
 
   describe "when not supported on platform", :win2k3_only do
     it "raises error" do
-      lambda {resource}.should raise_error(Chef::Exceptions::Win32APIFunctionNotImplemented)
+      expect {resource}.to raise_error(Chef::Exceptions::Win32APIFunctionNotImplemented)
     end
   end
 end

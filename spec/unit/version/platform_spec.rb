@@ -21,12 +21,12 @@ describe Chef::Version::Platform do
 
   it "is a subclass of Chef::Version" do
     v = Chef::Version::Platform.new('1.1')
-    v.should be_an_instance_of(Chef::Version::Platform)
-    v.should be_a_kind_of(Chef::Version)
+    expect(v).to be_an_instance_of(Chef::Version::Platform)
+    expect(v).to be_a_kind_of(Chef::Version)
   end
 
   it "should transform 1 to 1.0.0" do
-    Chef::Version::Platform.new("1").to_s.should == "1.0.0"
+    expect(Chef::Version::Platform.new("1").to_s).to eq("1.0.0")
   end
 
   describe "when creating valid Versions" do
@@ -44,7 +44,7 @@ describe Chef::Version::Platform do
     the_error = Chef::Exceptions::InvalidPlatformVersion
     bad_versions.each do |v|
       it "should raise #{the_error} when given '#{v}'" do
-        lambda { Chef::Version::Platform.new v }.should raise_error(the_error)
+        expect { Chef::Version::Platform.new v }.to raise_error(the_error)
       end
     end
   end
@@ -52,7 +52,7 @@ describe Chef::Version::Platform do
   describe "<=>" do
 
     it "should equate versions 1 and 1.0.0" do
-      Chef::Version::Platform.new("1").should == Chef::Version::Platform.new("1.0.0")
+      expect(Chef::Version::Platform.new("1")).to eq(Chef::Version::Platform.new("1.0.0"))
     end
 
   end

@@ -42,7 +42,7 @@ describe 'knife serve', :workstation do
         Chef::Config.node_name = nil
         Chef::Config.client_key = nil
         api = Chef::ServerAPI.new
-        api.get('nodes/x')['name'].should == 'x'
+        expect(api.get('nodes/x')['name']).to eq('x')
       rescue
         if exception
           raise exception

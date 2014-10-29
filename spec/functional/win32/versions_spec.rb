@@ -62,8 +62,8 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on
     it "should have have one method for each marketing version" do
       versions = 0
       for_each_windows_version { versions += 1 }
-      versions.should > 0
-      versions.should == Chef::ReservedNames::Win32::Version::WIN_VERSIONS.length
+      expect(versions).to be > 0
+      expect(versions).to eq(Chef::ReservedNames::Win32::Version::WIN_VERSIONS.length)
     end
 
     it "should only contain version methods with legal method names" do
@@ -71,8 +71,8 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on
 
       for_each_windows_version do |method_name|
         method_match = method_name_pattern.match(method_name.to_s)
-        method_match.should_not be_nil
-        method_name.to_s.should == method_match[0]
+        expect(method_match).not_to be_nil
+        expect(method_name.to_s).to eq(method_match[0])
       end
     end
 
@@ -81,7 +81,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on
       for_each_windows_version do |method_name|
         true_versions += 1 if @version.send(method_name)
       end
-      true_versions.should == 1
+      expect(true_versions).to eq(1)
     end
 
     it "should successfully execute all version methods" do
@@ -91,7 +91,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on
 
   context "Windows Operating System version" do
     it "should match the version from WMI" do
-      @current_os_version.should include(@version.marketing_name)
+      expect(@current_os_version).to include(@version.marketing_name)
     end
   end
 

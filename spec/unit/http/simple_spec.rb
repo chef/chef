@@ -25,8 +25,8 @@ describe Chef::HTTP::Simple do
     content_length = middlewares.find_index { |e| e.is_a? Chef::HTTP::ValidateContentLength }
     decompressor = middlewares.find_index { |e| e.is_a? Chef::HTTP::Decompressor }
 
-    content_length.should_not be_nil
-    decompressor.should_not be_nil
-    (decompressor < content_length).should be_true
+    expect(content_length).not_to be_nil
+    expect(decompressor).not_to be_nil
+    expect(decompressor < content_length).to be_truthy
   end
 end

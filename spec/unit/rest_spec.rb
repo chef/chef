@@ -83,7 +83,7 @@ describe Chef::REST do
 
     expect(content_length).not_to be_nil
     expect(decompressor).not_to be_nil
-    expect(decompressor < content_length).to be_true
+    expect(decompressor < content_length).to be_truthy
   end
 
   it "should allow the options hash to be frozen" do
@@ -214,7 +214,7 @@ describe Chef::REST do
 
     it "indicates that requests should not be signed when it has no credentials" do
       rest = Chef::REST.new(base_url, nil, nil)
-      expect(rest.sign_requests?).to be_false
+      expect(rest.sign_requests?).to be_falsey
     end
 
     it "raises PrivateKeyMissing when the key file doesn't exist" do
@@ -462,7 +462,7 @@ describe Chef::REST do
         end
 
         it "should return `false`" do
-          expect(rest.request(:GET, url)).to be_false
+          expect(rest.request(:GET, url)).to be_falsey
         end
       end
 
@@ -616,10 +616,10 @@ describe Chef::REST do
         tempfile_path = nil
         rest.streaming_request(url, {}) do |tempfile|
           tempfile_path = tempfile.path
-          expect(File.exist?(tempfile.path)).to be_true
+          expect(File.exist?(tempfile.path)).to be_truthy
           expect(IO.read(tempfile.path).chomp).to eq("realultimatepower")
         end
-        expect(File.exist?(tempfile_path)).to be_false
+        expect(File.exist?(tempfile_path)).to be_falsey
       end
 
       it "does not raise a divide by zero exception if the content's actual size is 0" do
@@ -648,7 +648,7 @@ describe Chef::REST do
           tempfile_path = tempfile.path
           expect(IO.read(tempfile.path).chomp).to eq("realultimatepower")
         end
-        expect(File.exist?(tempfile_path)).to be_false
+        expect(File.exist?(tempfile_path)).to be_falsey
       end
 
       it "closes and unlinks the tempfile if there is an error while streaming the content to the tempfile" do
@@ -656,7 +656,7 @@ describe Chef::REST do
         expect(path).not_to be_nil
         allow(tempfile).to receive(:write).and_raise(IOError)
         rest.fetch("cookbooks/a_cookbook") {|tmpfile| "shouldn't get here"}
-        expect(File.exists?(path)).to be_false
+        expect(File.exists?(path)).to be_falsey
       end
 
       it "closes and unlinks the tempfile when the response is a redirect" do
@@ -683,7 +683,7 @@ describe Chef::REST do
         rest.fetch("cookbooks/a_cookbook") do |tmpfile|
           block_called = true
         end
-        expect(block_called).to be_true
+        expect(block_called).to be_truthy
       end
     end
   end
@@ -718,15 +718,15 @@ describe Chef::REST do
 
     it "does not sign the redirected request when sign_on_redirect is false" do
       rest.sign_on_redirect = false
-      rest.follow_redirect { expect(rest.sign_requests?).to be_false }
+      rest.follow_redirect { expect(rest.sign_requests?).to be_falsey }
     end
 
     it "resets sign_requests to the original value after following an unsigned redirect" do
       rest.sign_on_redirect = false
-      expect(rest.sign_requests?).to be_true
+      expect(rest.sign_requests?).to be_truthy
 
-      rest.follow_redirect { expect(rest.sign_requests?).to be_false }
-      expect(rest.sign_requests?).to be_true
+      rest.follow_redirect { expect(rest.sign_requests?).to be_falsey }
+      expect(rest.sign_requests?).to be_truthy
     end
 
     it "configures the redirect limit" do

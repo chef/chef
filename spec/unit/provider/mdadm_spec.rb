@@ -41,13 +41,13 @@ describe Chef::Provider::Mdadm do
     it "determines that the metadevice exists when mdadm exit code is zero" do
       allow(@provider).to receive(:shell_out!).with("mdadm --detail --test /dev/md1", :returns => [0,4]).and_return(OpenStruct.new(:status => 0))
       @provider.load_current_resource
-      expect(@provider.current_resource.exists).to be_true
+      expect(@provider.current_resource.exists).to be_truthy
     end
 
     it "determines that the metadevice does not exist when mdadm exit code is 4" do
       allow(@provider).to receive(:shell_out!).with("mdadm --detail --test /dev/md1", :returns => [0,4]).and_return(OpenStruct.new(:status => 4))
       @provider.load_current_resource
-      expect(@provider.current_resource.exists).to be_false
+      expect(@provider.current_resource.exists).to be_falsey
     end
   end
 

@@ -40,7 +40,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the ssh_identity_file" do
         @knife.run
-        @knife.config[:identity_file].should == "~/.ssh/aws.rsa"
+        expect(@knife.config[:identity_file]).to eq("~/.ssh/aws.rsa")
       end
     end
 
@@ -52,7 +52,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the ssh_identity_file" do
         @knife.run
-        @knife.config[:identity_file].should == "~/.ssh/aws.rsa"
+        expect(@knife.config[:identity_file]).to eq("~/.ssh/aws.rsa")
       end
     end
 
@@ -64,13 +64,13 @@ describe Chef::Knife::Ssh do
 
       it "should use the value on the command line" do
         @knife.run
-        @knife.config[:identity_file].should == "~/.ssh/aws.rsa"
+        expect(@knife.config[:identity_file]).to eq("~/.ssh/aws.rsa")
       end
 
       it "should override what is set in knife.rb" do
         Chef::Config[:knife][:ssh_identity_file] = "~/.ssh/other.rsa"
         @knife.run
-        @knife.config[:identity_file].should == "~/.ssh/aws.rsa"
+        expect(@knife.config[:identity_file]).to eq("~/.ssh/aws.rsa")
       end
     end
 
@@ -82,7 +82,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the default" do
         @knife.run
-        @knife.config[:identity_file].should == nil
+        expect(@knife.config[:identity_file]).to eq(nil)
       end
     end
   end
@@ -95,7 +95,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the ssh_port" do
         @knife.run
-        @knife.config[:ssh_port].should == "31337"
+        expect(@knife.config[:ssh_port]).to eq("31337")
       end
     end
   end
@@ -109,7 +109,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the ssh_user" do
         @knife.run
-        @knife.config[:ssh_user].should == "ubuntu"
+        expect(@knife.config[:ssh_user]).to eq("ubuntu")
       end
     end
 
@@ -121,7 +121,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the ssh_user" do
         @knife.run
-        @knife.config[:ssh_user].should == "ubuntu"
+        expect(@knife.config[:ssh_user]).to eq("ubuntu")
       end
     end
 
@@ -133,13 +133,13 @@ describe Chef::Knife::Ssh do
 
       it "should use the value on the command line" do
         @knife.run
-        @knife.config[:ssh_user].should == "ubuntu"
+        expect(@knife.config[:ssh_user]).to eq("ubuntu")
       end
 
       it "should override what is set in knife.rb" do
         Chef::Config[:knife][:ssh_user] = "root"
         @knife.run
-        @knife.config[:ssh_user].should == "ubuntu"
+        expect(@knife.config[:ssh_user]).to eq("ubuntu")
       end
     end
 
@@ -151,7 +151,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the default (current user)" do
         @knife.run
-        @knife.config[:ssh_user].should == nil
+        expect(@knife.config[:ssh_user]).to eq(nil)
       end
     end
   end
@@ -165,7 +165,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the ssh_attribute" do
         @knife.run
-        @knife.config[:attribute].should == "ec2.public_hostname"
+        expect(@knife.config[:attribute]).to eq("ec2.public_hostname")
       end
     end
 
@@ -177,7 +177,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the default" do
         @knife.run
-        @knife.config[:attribute].should == "fqdn"
+        expect(@knife.config[:attribute]).to eq("fqdn")
       end
     end
 
@@ -189,7 +189,7 @@ describe Chef::Knife::Ssh do
 
       it "should use the value on the command line" do
         @knife.run
-        @knife.config[:attribute].should == "ec2.public_hostname"
+        expect(@knife.config[:attribute]).to eq("ec2.public_hostname")
       end
 
       it "should override what is set in knife.rb" do
@@ -198,7 +198,7 @@ describe Chef::Knife::Ssh do
         # Then we run knife with the -a flag, which sets the above variable
         setup_knife(['-a ec2.public_hostname', '*:*', 'uptime'])
         @knife.run
-        @knife.config[:attribute].should == "ec2.public_hostname"
+        expect(@knife.config[:attribute]).to eq("ec2.public_hostname")
       end
     end
   end
@@ -211,9 +211,9 @@ describe Chef::Knife::Ssh do
       end
 
       it "uses the ssh_gateway" do
-        @knife.session.should_receive(:via).with("ec2.public_hostname", "user", {})
+        expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", {})
         @knife.run
-        @knife.config[:ssh_gateway].should == "user@ec2.public_hostname"
+        expect(@knife.config[:ssh_gateway]).to eq("user@ec2.public_hostname")
       end
     end
 
@@ -224,9 +224,9 @@ describe Chef::Knife::Ssh do
       end
 
       it "uses the ssh_gateway" do
-        @knife.session.should_receive(:via).with("ec2.public_hostname", "user", {})
+        expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", {})
         @knife.run
-        @knife.config[:ssh_gateway].should == "user@ec2.public_hostname"
+        expect(@knife.config[:ssh_gateway]).to eq("user@ec2.public_hostname")
       end
     end
 
@@ -234,13 +234,13 @@ describe Chef::Knife::Ssh do
       before do
         setup_knife(['-G user@ec2.public_hostname', '*:*', 'uptime'])
         Chef::Config[:knife][:ssh_gateway] = nil
-        @knife.session.stub(:via) do |host, user, options|
+        allow(@knife.session).to receive(:via) do |host, user, options|
           raise Net::SSH::AuthenticationFailed unless options[:password]
         end
       end
 
       it "should prompt the user for a password" do
-        @knife.ui.should_receive(:ask).with("Enter the password for user@ec2.public_hostname: ").and_return("password")
+        expect(@knife.ui).to receive(:ask).with("Enter the password for user@ec2.public_hostname: ").and_return("password")
         @knife.run
       end
     end
@@ -252,7 +252,7 @@ describe Chef::Knife::Ssh do
     # if available, but #merge_configs (which is called by #configure_chef) is
     # necessary to have default options merged in.
     @knife.merge_configs
-    @knife.stub(:ssh_command).and_return { 0 }
+    allow(@knife).to receive(:ssh_command) { 0 }
     @api = TinyServer::API.instance
     @api.clear
 

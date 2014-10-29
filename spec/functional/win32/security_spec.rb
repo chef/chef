@@ -23,7 +23,7 @@ end
 
 describe 'Chef::Win32::Security', :windows_only do
   it "has_admin_privileges? returns true when running as admin" do
-    Chef::ReservedNames::Win32::Security.has_admin_privileges?.should == true
+    expect(Chef::ReservedNames::Win32::Security.has_admin_privileges?).to eq(true)
   end
 
   # We've done some investigation adding a negative test and it turned

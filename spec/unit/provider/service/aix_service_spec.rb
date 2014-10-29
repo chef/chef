@@ -55,7 +55,7 @@ describe Chef::Provider::Service::Aix do
         expect(@provider).to receive(:is_resource_group?).with(["chef chef 12345 active"])
 
         @provider.load_current_resource
-        expect(@current_resource.running).to be_true
+        expect(@current_resource.running).to be_truthy
       end
     end
 
@@ -69,7 +69,7 @@ describe Chef::Provider::Service::Aix do
         expect(@provider).to receive(:is_resource_group?).with(["chef chef inoperative"])
 
         @provider.load_current_resource
-        expect(@current_resource.running).to be_false
+        expect(@current_resource.running).to be_falsey
       end
     end
   end
@@ -83,7 +83,7 @@ describe Chef::Provider::Service::Aix do
       it "service is a group" do
         expect(@provider).to receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
         @provider.load_current_resource
-        expect(@provider.instance_eval("@is_resource_group")).to be_true
+        expect(@provider.instance_eval("@is_resource_group")).to be_truthy
       end
     end
 
@@ -95,7 +95,7 @@ describe Chef::Provider::Service::Aix do
       it "service is a group" do
         expect(@provider).to receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
         @provider.load_current_resource
-        expect(@provider.instance_eval("@is_resource_group")).to be_true
+        expect(@provider.instance_eval("@is_resource_group")).to be_truthy
       end
     end
 
@@ -107,7 +107,7 @@ describe Chef::Provider::Service::Aix do
       it "service is a subsystem" do
         expect(@provider).to receive(:shell_out!).with("lssrc -a | grep -w chef").and_return(@status)
         @provider.load_current_resource
-        expect(@provider.instance_eval("@is_resource_group")).to be_false
+        expect(@provider.instance_eval("@is_resource_group")).to be_falsey
       end
     end
   end

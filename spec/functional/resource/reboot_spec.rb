@@ -50,7 +50,7 @@ describe Chef::Resource::Reboot do
       expect(reboot_info[:reason]).to eq(expected[:reason])
       expect(reboot_info[:requested_by]).to eq(expected[:requested_by])
 
-      expect(resource.run_context.reboot_requested?).to be_true
+      expect(resource.run_context.reboot_requested?).to be_truthy
     end
   end
 
@@ -97,7 +97,7 @@ describe Chef::Resource::Reboot do
     it 'should have cleared the reboot request' do
       # arguably we shouldn't be querying RunContext's internal data directly.
       expect(resource.run_context.reboot_info).to eq({})
-      expect(resource.run_context.reboot_requested?).to be_false
+      expect(resource.run_context.reboot_requested?).to be_falsey
     end
   end
 end

@@ -7,16 +7,16 @@ describe Chef::Knife::TagList do
     @knife.name_args = [ Chef::Config[:node_name], "sadtag" ]
 
     @node = Chef::Node.new
-    @node.stub :save
+    allow(@node).to receive :save
     @node.tags << "sadtag" << "happytag"
-    Chef::Node.stub(:load).and_return @node
+    allow(Chef::Node).to receive(:load).and_return @node
   end
 
   describe "run" do
     it "can list tags on a node" do
       expected = %w(sadtag happytag)
-      @node.tags.should == expected
-      @knife.should_receive(:output).with(expected)
+      expect(@node.tags).to eq(expected)
+      expect(@knife).to receive(:output).with(expected)
       @knife.run
     end
   end

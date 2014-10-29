@@ -28,10 +28,10 @@ describe Chef::Knife::ClientBulkDelete do
     k = Chef::Knife::ClientBulkDelete.new
     k.name_args = name_args
     k.config = option_args
-    k.ui.stub(:stdout).and_return(stdout_io)
-    k.ui.stub(:stderr).and_return(stderr_io)
-    k.ui.stub(:confirm).and_return(knife_confirm)
-    k.ui.stub(:confirm_without_exit).and_return(knife_confirm)
+    allow(k.ui).to receive(:stdout).and_return(stdout_io)
+    allow(k.ui).to receive(:stderr).and_return(stderr_io)
+    allow(k.ui).to receive(:confirm).and_return(knife_confirm)
+    allow(k.ui).to receive(:confirm_without_exit).and_return(knife_confirm)
     k
   }
 
@@ -47,7 +47,7 @@ describe Chef::Knife::ClientBulkDelete do
     nonvalidator_client_names.each do |client_name|
       client = Chef::ApiClient.new()
       client.name(client_name)
-      client.stub(:destroy).and_return(true)
+      allow(client).to receive(:destroy).and_return(true)
       clients[client_name] = client
     end
 
@@ -61,8 +61,8 @@ describe Chef::Knife::ClientBulkDelete do
     validator_client_names.each do |validator_client_name|
       validator_client = Chef::ApiClient.new()
       validator_client.name(validator_client_name)
-      validator_client.stub(:validator).and_return(true)
-      validator_client.stub(:destroy).and_return(true)
+      allow(validator_client).to receive(:validator).and_return(true)
+      allow(validator_client).to receive(:destroy).and_return(true)
       clients[validator_client_name] = validator_client
     end
 
@@ -75,7 +75,7 @@ describe Chef::Knife::ClientBulkDelete do
   }
 
   before(:each) do
-    Chef::ApiClient.stub(:list).and_return(clients)
+    allow(Chef::ApiClient).to receive(:list).and_return(clients)
   end
 
   describe "run" do
@@ -83,44 +83,44 @@ describe Chef::Knife::ClientBulkDelete do
       let(:name_args) { [ ] }
 
       it "should exit if the regex is not provided" do
-        lambda { knife.run }.should raise_error(SystemExit)
+        expect { knife.run }.to raise_error(SystemExit)
       end
     end
 
     describe "with any clients" do
       it "should get the list of the clients" do
-        Chef::ApiClient.should_receive(:list)
+        expect(Chef::ApiClient).to receive(:list)
         knife.run
       end
 
       it "should print the name of the clients" do
         knife.run
         client_names.each do |client_name|
-          stdout.should include(client_name)
+          expect(stdout).to include(client_name)
         end
       end
 
       it "should confirm you really want to delete them" do
-        knife.ui.should_receive(:confirm)
+        expect(knife.ui).to receive(:confirm)
         knife.run
       end
 
       describe "without --delete-validators" do
         it "should mention that validator clients wont be deleted" do
           knife.run
-          stdout.should include("Following clients are validators and will not be deleted.")
+          expect(stdout).to include("Following clients are validators and will not be deleted.")
           info = stdout.index "Following clients are validators and will not be deleted."
           val = stdout.index "myorg-validator"
-          (val > info).should be_true
+          expect(val > info).to be_truthy
         end
 
         it "should only delete nonvalidator clients" do
           nonvalidator_clients.each_value do |c|
-            c.should_receive(:destroy)
+            expect(c).to receive(:destroy)
           end
 
           validator_clients.each_value do |c|
-            c.should_not_receive(:destroy)
+            expect(c).not_to receive(:destroy)
           end
 
           knife.run
@@ -132,18 +132,18 @@ describe Chef::Knife::ClientBulkDelete do
 
         it "should mention that validator clients will be deleted" do
           knife.run
-          stdout.should include("The following validators will be deleted")
+          expect(stdout).to include("The following validators will be deleted")
         end
 
         it "should confirm twice" do
-          knife.ui.should_receive(:confirm).once
-          knife.ui.should_receive(:confirm_without_exit).once
+          expect(knife.ui).to receive(:confirm).once
+          expect(knife.ui).to receive(:confirm_without_exit).once
           knife.run
         end
 
         it "should delete all clients" do
           clients.each_value do |c|
-            c.should_receive(:destroy)
+            expect(c).to receive(:destroy)
           end
 
           knife.run
@@ -155,10 +155,10 @@ describe Chef::Knife::ClientBulkDelete do
       let(:name_args) { [ "^ti" ] }
 
       it "should only delete clients that match the regex" do
-        clients["tim"].should_receive(:destroy)
-        clients["stephen"].should_not_receive(:destroy)
-        clients["dan"].should_not_receive(:destroy)
-        clients["myorg-validator"].should_not_receive(:destroy)
+        expect(clients["tim"]).to receive(:destroy)
+        expect(clients["stephen"]).not_to receive(:destroy)
+        expect(clients["dan"]).not_to receive(:destroy)
+        expect(clients["myorg-validator"]).not_to receive(:destroy)
         knife.run
       end
     end
