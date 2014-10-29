@@ -43,7 +43,7 @@ Gem::Specification.new do |s|
   # rspec_junit_formatter 0.2.0 drops ruby 1.8.7 support
   s.add_development_dependency "rspec_junit_formatter", "~> 0.2.0"
 
-  %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 3.0" }
+  %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 3.1" }
 
   s.bindir       = "bin"
   s.executables  = %w( chef-client chef-solo knife chef-shell chef-apply )
