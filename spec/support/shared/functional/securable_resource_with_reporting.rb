@@ -268,11 +268,6 @@ shared_examples_for "a securable resource with reporting" do
 
   describe "reading file security metadata for reporting on windows", :windows_only do
 
-    before do
-      pending "windows reporting not yet fully supported"
-    end
-
-
     context "when the target file doesn't exist" do
 
       # Windows reporting data should look like this (+/- ish):
@@ -284,11 +279,16 @@ shared_examples_for "a securable resource with reporting" do
       end
 
       it "has empty values for file metadata in 'current_resource'" do
+        pending "windows reporting not yet fully supported"
         expect(current_resource.owner).to be_nil
         expect(current_resource.expanded_rights).to be_nil
       end
 
       context "and no security metadata is specified in new_resource" do
+        before do
+          pending "windows reporting not yet fully supported"
+        end
+
         it "sets the metadata values on the new_resource as strings after creating" do
           resource.run_action(:create)
           # TODO: most stable way to specify?
@@ -300,7 +300,7 @@ shared_examples_for "a securable resource with reporting" do
       end
 
 
-      context "and owner is specified with a string (username) in new_resource" do
+      context "and owner is specified with a string (username) in new_resource"  do
 
         # TODO/bug: duplicated from the "securable resource" tests
         let(:expected_user_name) { 'Guest' }
@@ -322,6 +322,7 @@ shared_examples_for "a securable resource with reporting" do
         let(:expected_user_name) { 'domain\user' }
 
         before do
+          pending "windows reporting not yet fully supported"
           resource.owner(expected_user_name)
           resource.run_action(:create)
         end
@@ -335,6 +336,7 @@ shared_examples_for "a securable resource with reporting" do
 
     context "when the target file exists" do
       before do
+        pending "windows reporting not yet fully supported"
         FileUtils.touch(resource.path)
         resource.action(:create)
       end
@@ -378,7 +380,7 @@ shared_examples_for "a securable resource with reporting" do
         # TODO: before do blah
 
         it "sets the expanded_rights on the current resource" do
-          pending
+          skip
         end
       end
 
@@ -386,7 +388,7 @@ shared_examples_for "a securable resource with reporting" do
         # TODO: before do blah
 
         it "sets the expanded rights on the current resource" do
-          pending
+          skip
         end
       end
 

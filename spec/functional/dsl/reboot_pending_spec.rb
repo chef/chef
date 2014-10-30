@@ -48,14 +48,14 @@ describe Chef::DSL::RebootPending, :windows_only do
 
     describe "when there is nothing to indicate a reboot is pending" do
       it "should return false" do
-        pending "Found existing registry keys" unless registry_safe?
+        skip "Found existing registry keys" if registry_unsafe?
         expect(recipe.reboot_pending?).to be_falsey
       end
     end
 
     describe 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations' do
       it "returns true if the registry value exists" do
-        pending "Found existing registry keys" if registry_unsafe?
+        skip "Found existing registry keys" if registry_unsafe?
         registry.set_value('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager',
             { :name => 'PendingFileRenameOperations', :type => :multi_string, :data => ['\??\C:\foo.txt|\??\C:\bar.txt'] })
 
@@ -71,7 +71,7 @@ describe Chef::DSL::RebootPending, :windows_only do
 
     describe 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired' do
       it "returns true if the registry key exists" do
-        pending "Found existing registry keys" if registry_unsafe?
+        skip "Found existing registry keys" if registry_unsafe?
         registry.create_key('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired', false)
 
         expect(recipe.reboot_pending?).to be_truthy
@@ -87,7 +87,7 @@ describe Chef::DSL::RebootPending, :windows_only do
     describe 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootRequired' do
       it "returns true if the registry key exists" do
         pending "Permissions are limited to 'TrustedInstaller' by default"
-        pending "Found existing registry keys" if registry_unsafe?
+        skip "Found existing registry keys" if registry_unsafe?
         registry.create_key('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootRequired', false)
 
         expect(recipe.reboot_pending?).to be_truthy
@@ -102,7 +102,7 @@ describe Chef::DSL::RebootPending, :windows_only do
 
     describe 'HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile\Flags' do
       it "returns true if the registry key exists" do
-        pending "Found existing registry keys" if registry_unsafe?
+        skip "Found existing registry keys" if registry_unsafe?
         registry.create_key('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile', true)
         registry.set_value('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile',
                     { :name => 'Flags', :type => :dword, :data => 3 })
