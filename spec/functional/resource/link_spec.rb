@@ -562,7 +562,7 @@ describe Chef::Resource::Link do
               resource.run_action(:create)
               expect(File.exists?(target_file)).to be_truthy
               # OS X gets angry about this sort of link.  Bug in OS X, IMO.
-              pending('OS X/FreeBSD/AIX symlink? and readlink working on hard links to symlinks')
+              pending('OS X/FreeBSD/AIX symlink? and readlink working on hard links to symlinks') if (os_x? or freebsd? or aix?)
               expect(symlink?(target_file)).to be_truthy
               paths_eql?(readlink(target_file), @other_target).should be_truthy
             end
@@ -578,7 +578,7 @@ describe Chef::Resource::Link do
           end
           context 'and the link does not yet exist' do
             it 'links to the target file' do
-              pending('OS X/FreeBSD/AIX fails to create hardlinks to broken symlinks')
+              pending('OS X/FreeBSD/AIX fails to create hardlinks to broken symlinks') if (os_x? or freebsd? or aix?)
               resource.run_action(:create)
               # Windows and Unix have different definitions of exists? here, and that's OK.
               if windows?
