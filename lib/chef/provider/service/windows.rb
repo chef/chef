@@ -26,6 +26,7 @@ end
 class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   provides :service, os: "windows"
+  provides :windows_service, os: "windows"
 
   include Chef::Mixin::ShellOut
 
