@@ -348,7 +348,7 @@ describe Chef::Resource::Link do
           end
           it_behaves_like 'delete errors out'
         end
-        context 'and the link already exists and is not writeable to this user', :pending do
+        context 'and the link already exists and is not writeable to this user', :skip => true do
         end
         it_behaves_like 'a securable resource without existing target' do
           let(:path) { target_file }
@@ -416,7 +416,7 @@ describe Chef::Resource::Link do
           end
         end
       end
-      context "when the link destination is not readable to this user", :pending do
+      context "when the link destination is not readable to this user", :skip => true do
       end
       context "when the link destination does not exist" do
         include_context 'create symbolic link succeeds'
@@ -518,7 +518,7 @@ describe Chef::Resource::Link do
           end
           it_behaves_like 'delete errors out'
         end
-        context "and the link already exists and is not writeable to this user", :pending do
+        context "and the link already exists and is not writeable to this user", :skip => true do
         end
         context "and specifies security attributes" do
           before(:each) do
@@ -593,7 +593,7 @@ describe Chef::Resource::Link do
           end
         end
       end
-      context "when the link destination is not readable to this user", :pending do
+      context "when the link destination is not readable to this user", :skip => true do
       end
       context "when the link destination does not exist" do
         context 'and the link does not yet exist' do
