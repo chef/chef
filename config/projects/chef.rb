@@ -38,6 +38,18 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
+# As of 27 October 2014, the newest CA cert bundle does not work with AWS's
+# root cert. See:
+# * https://github.com/opscode/chef-dk/issues/199
+# * https://blog.mozilla.org/security/2014/09/08/phasing-out-certificates-with-1024-bit-rsa-keys/
+# * https://forums.aws.amazon.com/thread.jspa?threadID=164095
+# * https://github.com/opscode/omnibus-supermarket/commit/89197026af2931de82cfdc13d92ca2230cced3b6
+#
+# For now we resolve it by using an older version of the cert. This only works
+# if you have this version of the CA bundle stored via S3 caching (which Chef
+# Software does).
+override :cacerts, version: '2014.08.20'
+
 override :bundler,        version: "1.7.2"
 override :ruby,           version: "2.1.3"
 ######
