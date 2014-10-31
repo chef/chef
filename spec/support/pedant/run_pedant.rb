@@ -42,11 +42,13 @@ begin
   include Chef::Mixin::ShellOut
 
   shell_out("bundle install --gemfile spec/support/pedant/Gemfile")
-  so = shell_out("bundle exec chef-pedant" +
+
+  pedant_cmd = "chef-pedant " +
     " --config spec/support/pedant/pedant_config.rb" +
     " --server #{server.url}" +
     " --skip-knife --skip-validation --skip-authentication" +
-    " --skip-authorization --skip-omnibus")
+    " --skip-authorization --skip-omnibus"
+  so = shell_out("bundle exec #{pedant_cmd}")
 
   server.stop if server.running?
 ensure
