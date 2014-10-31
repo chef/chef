@@ -18,47 +18,6 @@
 
 require 'rspec/core'
 
-require 'chef/config'
-
-class Chef
-  class Audit
-
-    def initialize
-      @configuration = RSpec::Core::Configuration.new
-      @world = RSpec::Core::World.new(@configuration)
-      @runner = RSpec::Core::Runner.new(nil, @configuration, @world)
-    end
-
-    def setup
-      @configuration.output_stream = Chef::Config[:log_location]
-      @configuration.error_stream = Chef::Config[:log_location]
-
-      configure_formatters
-      configure_expectation_frameworks
-    end
-
-    private
-    # Adds formatters to RSpec.
-    # By default, two formatters are added: one for outputting readable text
-    # of audits run and one for sending JSON data back to reporting.
-    def configure_formatters
-      # TODO (future): We should allow for an audit-mode formatter config option
-      # and use this formatter as default/fallback if none is specified.
-      @configuration.add_formatter(RSpec::Core::Formatters::DocumentationFormatter)
-      # TODO: Add JSON formatter for audit reporting to analytics.
-    end
-
-    def configure_expectation_frameworks
-      @configuration.expect_with(:rspec) do |config|
-        # :should is deprecated in RSpec 3+ and we have chosen to explicitly disable
-        # it in audits. If :should is used in an audit, this will cause the audit to
-        # fail with message "undefined method `should`" rather than print a deprecation
-        # message.
-        config.syntax = :expect
-      end
-
-      #TODO: serverspec?
-    end
-
-  end
-end
+require 'chef/dsl/audit'
+require 'chef/audit/chef_json_formatter'
+require 'chef/audit/runner'

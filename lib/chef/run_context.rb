@@ -50,6 +50,11 @@ class Chef
     # recipes, which is triggered by #load. (See also: CookbookCompiler)
     attr_accessor :resource_collection
 
+    attr_accessor :controls_groups
+
+    # Chef::ProviderResolver for this run
+    attr_accessor :provider_resolver
+
     # A Hash containing the immediate notifications triggered by resources
     # during the converge phase of the chef run.
     attr_accessor :immediate_notification_collection
@@ -73,6 +78,7 @@ class Chef
       @node = node
       @cookbook_collection = cookbook_collection
       @resource_collection = Chef::ResourceCollection.new
+      @controls_groups = []
       @immediate_notification_collection = Hash.new {|h,k| h[k] = []}
       @delayed_notification_collection = Hash.new {|h,k| h[k] = []}
       @definitions = Hash.new

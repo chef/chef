@@ -25,6 +25,7 @@ require 'chef/log'
 require 'chef/rest'
 require 'chef/api_client'
 require 'chef/api_client/registration'
+require 'chef/audit'
 require 'chef/node'
 require 'chef/role'
 require 'chef/file_cache'
@@ -344,7 +345,8 @@ class Chef
       audit_exception = nil
       begin
         @events.audit_start(run_context)
-        # TODO
+        auditor = Chef::Audit::Runner.new(run_context)
+        auditor.run
         @events.audit_complete
       rescue Exception => e
         @events.audit_failed(e)
