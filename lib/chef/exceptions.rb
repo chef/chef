@@ -366,5 +366,7 @@ class Chef
         super "Found more than one provider for #{resource.resource_name} resource: #{classes}"
       end
     end
+
+    class NoAuditsProvided < RuntimeError; end
   end
 end
