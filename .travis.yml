@@ -16,6 +16,7 @@ branches:
   - master
   - 10-stable
   - 11-stable
+  - 12-stable
 
 script: bundle exec rspec --color --format progress
 
