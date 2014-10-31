@@ -151,6 +151,24 @@ class Chef
         unindent if @current_recipe
       end
 
+      def converge_failed(e)
+        # TODO do we want to do anything else in here?
+        converge_complete
+      end
+
+      def audit_start(run_context)
+        # TODO read the number of `controls` blocks to run from the run_context.audit_runner
+        puts_line "Running collected audits"
+      end
+
+      def audit_complete
+        # TODO
+      end
+
+      def audit_failed(exception)
+        # TODO
+      end
+
       # Called before action is executed on a resource.
       def resource_action_start(resource, action, notification_type=nil, notifier=nil)
         if resource.cookbook_name && resource.recipe_name

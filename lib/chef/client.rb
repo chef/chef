@@ -246,7 +246,6 @@ class Chef
       @policy_builder ||= Chef::PolicyBuilder.strategy.new(node_name, ohai.data, json_attribs, @override_runlist, events)
     end
 
-
     def save_updated_node
       if Chef::Config[:solo]
         # nothing to do
@@ -260,6 +259,7 @@ class Chef
 
     def run_ohai
       ohai.all_plugins
+      @events.ohai_completed(node)
     end
 
     def node_name
@@ -326,6 +326,7 @@ class Chef
       converge_exception
     end
 
+    # TODO are failed audits going to raise exceptions, or only be handled by the reporters?
     def run_audits(run_context)
       audit_exception = nil
       begin
@@ -350,7 +351,6 @@ class Chef
     def expanded_run_list
       policy_builder.expand_run_list
     end
-
 
     def do_windows_admin_check
       if Chef::Platform.windows?
@@ -398,7 +398,7 @@ class Chef
         Chef::Log.debug("Chef-client request_id: #{request_id}")
         enforce_path_sanity
         run_ohai
-        @events.ohai_completed(node)
+
         register unless Chef::Config[:solo]
 
         load_node
@@ -414,16 +414,14 @@ class Chef
 
         run_context = setup_run_context
 
-        converge_exception = converge(run_context)
-        if converge_exception
+        converge_error = converge(run_context)
+        save_updated_node unless converge_error
+        audit_error = run_audits(run_context)
 
-        else
-          save_updated_node
-        end
-
-        audit_exception = run_audits(run_context)
-        if audit_exception
-
+        if converge_error || audit_error
+          e = Chef::Exceptions::RunFailedWrappingError.new(converge_error, audit_error)
+          e.fill_backtrace
+          raise e
         end
 
         run_status.stop_clock
@@ -435,9 +433,6 @@ class Chef
         Chef::Platform::Rebooter.reboot_if_needed!(node)
 
         true
-
-        # TODO get rid of resuce here, push down into sub-methods, clean up this method, return exceptions and raise new
-        # exception wrapping all known exceptions.  sub-method should do all their own event reporting.
 
       rescue Exception => e
         # CHEF-3336: Send the error first in case something goes wrong below and we don't know why
