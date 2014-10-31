@@ -322,7 +322,7 @@ module Mixlib
           attempt_buffer_read
           e = Marshal.load(@process_status)
           raise(Exception === e ? e : "unknown failure: #{e.inspect}")
-        rescue EOFError # If we get an EOF error, then the exec was successful
+        rescue ArgumentError # If we get an ArgumentError error, then the exec was successful
           true
         ensure
           child_process_status.close
