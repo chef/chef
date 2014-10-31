@@ -24,7 +24,7 @@ class Chef
 
       # Adds the controls group and block (containing controls to execute) to the runner's list of pending examples
       def controls(group_name, &group_block)
-        raise ::Chef::Exceptions::NoAuditsProvided("You must provide a block with audits") unless group_block
+        raise ::Chef::Exceptions::NoAuditsProvided unless group_block
 
         # TODO add the @example_groups list to the runner for later execution
         # run_context.audit_runner.register
