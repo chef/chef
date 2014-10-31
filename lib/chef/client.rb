@@ -25,6 +25,7 @@ require 'chef/log'
 require 'chef/rest'
 require 'chef/api_client'
 require 'chef/api_client/registration'
+require 'chef/audit'
 require 'chef/node'
 require 'chef/role'
 require 'chef/file_cache'
@@ -43,6 +44,7 @@ require 'chef/formatters/doc'
 require 'chef/formatters/minimal'
 require 'chef/version'
 require 'chef/resource_reporter'
+require 'chef/audit/audit_reporter'
 require 'chef/run_lock'
 require 'chef/policy_builder'
 require 'chef/request_id'
@@ -209,6 +211,17 @@ class Chef
       end
     end
 
+    # Resource repoters send event information back to the chef server for processing.
+    # Can only be called after we have a @rest object
+    def register_reporters
+      [
+        Chef::ResourceReporter.new(rest),
+        Chef::Audit::AuditReporter.new(rest)
+      ].each do |r|
+        events.register(r)
+      end
+    end
+
     # Instantiates a Chef::Node object, possibly loading the node's prior state
     # when using chef-client. Delegates to policy_builder
     #
@@ -246,7 +259,6 @@ class Chef
       @policy_builder ||= Chef::PolicyBuilder.strategy.new(node_name, ohai.data, json_attribs, @override_runlist, events)
     end
 
-
     def save_updated_node
       if Chef::Config[:solo]
         # nothing to do
@@ -260,6 +272,7 @@ class Chef
 
     def run_ohai
       ohai.all_plugins
+      @events.ohai_completed(node)
     end
 
     def node_name
@@ -295,8 +308,7 @@ class Chef
       end
       # We now have the client key, and should use it from now on.
       @rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
-      @resource_reporter = Chef::ResourceReporter.new(@rest)
-      @events.register(@resource_reporter)
+      register_reporters
     rescue Exception => e
       # TODO: munge exception so a semantic failure message can be given to the
       # user
@@ -307,18 +319,49 @@ class Chef
     # Converges the node.
     #
     # === Returns
-    # true:: Always returns true
+    # The thrown exception, if there was one.  If this returns nil the converge was successful.
     def converge(run_context)
-      @events.converge_start(run_context)
-      Chef::Log.debug("Converging node #{node_name}")
-      @runner = Chef::Runner.new(run_context)
-      runner.converge
-      @events.converge_complete
-      true
-    rescue Exception
-      # TODO: should this be a separate #converge_failed(exception) method?
-      @events.converge_complete
-      raise
+      converge_exception = nil
+      catch(:end_client_run_early) do
+        begin
+          @events.converge_start(run_context)
+          Chef::Log.debug("Converging node #{node_name}")
+          @runner = Chef::Runner.new(run_context)
+          runner.converge
+          @events.converge_complete
+        rescue Exception => e
+          @events.converge_failed(e)
+          converge_exception = e
+        end
+      end
+      converge_exception
+    end
+
+    # TODO don't want to change old API
+    def converge_and_save(run_context)
+      converge_exception = converge(run_context)
+      unless converge_exception
+        begin
+          save_updated_node
+        rescue Exception => e
+          converge_exception = e
+        end
+      end
+      converge_exception
+    end
+
+    def run_audits(run_context)
+      audit_exception = nil
+      begin
+        @events.audit_phase_start(run_status)
+        auditor = Chef::Audit::Runner.new(run_context)
+        auditor.run
+        @events.audit_phase_complete
+      rescue Exception => e
+        @events.audit_phase_failed(e)
+        audit_exception = e
+      end
+      audit_exception
     end
 
     # Expands the run list. Delegates to the policy_builder.
@@ -332,7 +375,6 @@ class Chef
     def expanded_run_list
       policy_builder.expand_run_list
     end
-
 
     def do_windows_admin_check
       if Chef::Platform.windows?
@@ -380,7 +422,7 @@ class Chef
         Chef::Log.debug("Chef-client request_id: #{request_id}")
         enforce_path_sanity
         run_ohai
-        @events.ohai_completed(node)
+
         register unless Chef::Config[:solo]
 
         load_node
@@ -396,11 +438,14 @@ class Chef
 
         run_context = setup_run_context
 
-        catch(:end_client_run_early) do
-          converge(run_context)
-        end
+        converge_error = converge_and_save(run_context)
+        audit_error = run_audits(run_context)
 
-        save_updated_node
+        if converge_error || audit_error
+          e = Chef::Exceptions::RunFailedWrappingError.new(converge_error, audit_error)
+          e.fill_backtrace
+          raise e
+        end
 
         run_status.stop_clock
         Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
@@ -411,6 +456,7 @@ class Chef
         Chef::Platform::Rebooter.reboot_if_needed!(node)
 
         true
+
       rescue Exception => e
         # CHEF-3336: Send the error first in case something goes wrong below and we don't know why
         Chef::Log.debug("Re-raising exception: #{e.class} - #{e.message}\n#{e.backtrace.join("\n  ")}")
