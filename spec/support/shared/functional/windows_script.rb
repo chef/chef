@@ -95,7 +95,7 @@ shared_context Chef::Resource::WindowsScript do
       end
 
       let (:architecture) { :x86_64 }
-      it "should execute a 64-bit guard if the guard's architecture is specified as 64-bit" do
+      it "should execute a 64-bit guard if the guard's architecture is specified as 64-bit", :windows64_only do
         resource.only_if resource_guard_command, :architecture => :x86_64
         resource.run_action(:run)
         get_guard_process_architecture.should == 'amd64'

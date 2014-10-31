@@ -14,8 +14,11 @@ creds = Hash.new
   creds[item_name] = data_bag_item('passwords', item_name)
 end
 
-apache_site "default" do
-  enable true
+web_app "webapp" do
+  server_name 'localhost'
+  server_aliases [node['fqdn'], node['hostname'], 'localhost.localdomain']
+  docroot node['webapp']['path']
+  cookbook 'apache2'
 end
 
 mysql_service "default" do
