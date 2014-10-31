@@ -295,6 +295,7 @@ class Chef
       end
       # We now have the client key, and should use it from now on.
       @rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
+      # TODO register this where we register all other event listeners
       @resource_reporter = Chef::ResourceReporter.new(@rest)
       @events.register(@resource_reporter)
     rescue Exception => e
@@ -307,18 +308,35 @@ class Chef
     # Converges the node.
     #
     # === Returns
-    # true:: Always returns true
+    # The thrown exception, if there was one.  If this returns nil the converge was successful.
     def converge(run_context)
-      @events.converge_start(run_context)
-      Chef::Log.debug("Converging node #{node_name}")
-      @runner = Chef::Runner.new(run_context)
-      runner.converge
-      @events.converge_complete
-      true
-    rescue Exception
-      # TODO: should this be a separate #converge_failed(exception) method?
-      @events.converge_complete
-      raise
+      converge_exception = nil
+      catch(:end_client_run_early) do
+        begin
+          @events.converge_start(run_context)
+          Chef::Log.debug("Converging node #{node_name}")
+          @runner = Chef::Runner.new(run_context)
+          runner.converge
+          @events.converge_complete
+        rescue Exception => e
+          @events.converge_failed(e)
+          converge_exception = e
+        end
+      end
+      converge_exception
+    end
+
+    def run_audits(run_context)
+      audit_exception = nil
+      begin
+        @events.audit_start(run_context)
+        # TODO
+        @events.audit_complete
+      rescue Exception => e
+        @events.audit_failed(e)
+        audit_exception = e
+      end
+      audit_exception
     end
 
     # Expands the run list. Delegates to the policy_builder.
@@ -396,11 +414,17 @@ class Chef
 
         run_context = setup_run_context
 
-        catch(:end_client_run_early) do
-          converge(run_context)
+        converge_exception = converge(run_context)
+        if converge_exception
+
+        else
+          save_updated_node
         end
 
-        save_updated_node
+        audit_exception = run_audits(run_context)
+        if audit_exception
+
+        end
 
         run_status.stop_clock
         Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
@@ -411,6 +435,10 @@ class Chef
         Chef::Platform::Rebooter.reboot_if_needed!(node)
 
         true
+
+        # TODO get rid of resuce here, push down into sub-methods, clean up this method, return exceptions and raise new
+        # exception wrapping all known exceptions.  sub-method should do all their own event reporting.
+
       rescue Exception => e
         # CHEF-3336: Send the error first in case something goes wrong below and we don't know why
         Chef::Log.debug("Re-raising exception: #{e.class} - #{e.message}\n#{e.backtrace.join("\n  ")}")
