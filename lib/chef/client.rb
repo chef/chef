@@ -326,6 +326,19 @@ class Chef
       converge_exception
     end
 
+    # TODO don't want to change old API
+    def converge_and_save(run_context)
+      converge_exception = converge(run_context)
+      unless converge_exception
+        begin
+          save_updated_node
+        rescue Exception => e
+          converge_exception = e
+        end
+      end
+      converge_exception
+    end
+
     # TODO are failed audits going to raise exceptions, or only be handled by the reporters?
     def run_audits(run_context)
       audit_exception = nil
@@ -414,8 +427,7 @@ class Chef
 
         run_context = setup_run_context
 
-        converge_error = converge(run_context)
-        save_updated_node unless converge_error
+        converge_error = converge_and_save(run_context)
         audit_error = run_audits(run_context)
 
         if converge_error || audit_error
