@@ -89,6 +89,11 @@ class Chef::Application::Knife < Chef::Application
     :long => "--server-url URL",
     :description => "Chef Server URL"
 
+  option :log_location,
+    :short => "-l URL",
+    :long => "--log-location PATH",
+    :description => "Path to log file (default: STDOUT)"
+
   option :yes,
     :short => "-y",
     :long => "--yes",

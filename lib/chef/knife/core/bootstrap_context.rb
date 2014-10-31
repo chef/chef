@@ -55,7 +55,7 @@ class Chef
 
         def config_content
           client_rb = <<-CONFIG
-log_location     STDOUT
+log_location     "#{@chef_config[:log_location]}"
 chef_server_url  "#{@chef_config[:chef_server_url]}"
 validation_client_name "#{@chef_config[:validation_client_name]}"
 CONFIG
