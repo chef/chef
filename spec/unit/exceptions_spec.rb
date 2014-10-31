@@ -81,4 +81,50 @@ describe Chef::Exceptions do
       end
     end
   end
+
+  describe Chef::Exceptions::RunFailedWrappingError do
+    shared_examples "RunFailedWrappingError expectations" do
+      it "should initialize with a default message" do
+        expect(e.message).to eq("Found #{num_errors} errors, they are stored in the backtrace\n")
+      end
+
+      it "should provide a modified backtrace when requested" do
+        e.fill_backtrace
+        expect(e.backtrace).to eq(backtrace)
+      end
+    end
+
+    context "initialized with nothing" do
+      let(:e) { Chef::Exceptions::RunFailedWrappingError.new  }
+      let(:num_errors) { 0 }
+      let(:backtrace) { [] }
+
+      include_examples "RunFailedWrappingError expectations"
+    end
+
+    context "initialized with nil" do
+      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(nil, nil)  }
+      let(:num_errors) { 0 }
+      let(:backtrace) { [] }
+
+      include_examples "RunFailedWrappingError expectations"
+    end
+
+    context "initialized with 1 error and nil" do
+      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(RuntimeError.new("foo"), nil)  }
+      let(:num_errors) { 1 }
+      let(:backtrace) { ["1) RuntimeError -  foo", ""] }
+
+      include_examples "RunFailedWrappingError expectations"
+    end
+
+    context "initialized with 2 errors" do
+      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(RuntimeError.new("foo"), RuntimeError.new("bar"))  }
+      let(:num_errors) { 2 }
+      let(:backtrace) { ["1) RuntimeError -  foo", "", "2) RuntimeError -  bar", ""] }
+
+      include_examples "RunFailedWrappingError expectations"
+    end
+
+  end
 end

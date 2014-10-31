@@ -367,7 +367,11 @@ class Chef
       end
     end
 
-    class NoAuditsProvided < RuntimeError; end
+    class NoAuditsProvided < RuntimeError
+      def initialize
+        super "You must provide a block with audits"
+      end
+    end
 
     # If a converge or audit fails, we want to wrap the output from those errors into 1 error so we can
     # see both issues in the output.  It is possible that nil will be provided.  You must call `fill_backtrace`
@@ -384,10 +388,11 @@ class Chef
       def fill_backtrace
         backtrace = []
         wrapped_errors.each_with_index do |e,i|
-          backtrace << "#{i+1}) #{e.message}"
-          backtrace += e.backtrace
+          backtrace << "#{i+1}) #{e.class} -  #{e.message}"
+          backtrace += e.backtrace if e.backtrace
           backtrace << ""
         end
+        set_backtrace(backtrace)
       end
     end
   end
