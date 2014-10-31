@@ -31,6 +31,14 @@ class Chef
         # not necessarily need to linux-specific, but currently all our
         # other service providers are narrowly platform-specific with no
         # alternatives.
+        #
+        # NOTE: if a system has (for example) chkconfig installed then we
+        # should report that chkconfig is installed.  The fact that a system
+        # may also have systemd installed does not mean that we do not
+        # report that systemd is also installed.  This module is purely for
+        # discovery of all the alternatives, handling the priority of the
+        # different services is NOT a design concern of this module.
+        #
         def service_resource_providers
           service_resource_providers = []
 
@@ -55,8 +63,7 @@ class Chef
             service_resource_providers << :redhat
           end
 
-          if ::File.exist?("/bin/systemctl")
-            # FIXME: look for systemd as init provider
+          if systemd_sanity_check?
             service_resource_providers << :systemd
           end
 
@@ -86,7 +93,7 @@ class Chef
             configs << :usr_local_etc_rcd
           end
 
-          if ::File.exist?("/bin/systemctl") && platform_has_systemd_unit?(service_name)
+          if systemd_sanity_check? && platform_has_systemd_unit?(service_name)
             configs << :systemd
           end
 
@@ -94,6 +101,10 @@ class Chef
         end
 
         private
+
+        def systemd_sanity_check?
+          ::File.exist?("/bin/systemctl") && File.exist?("/proc/1/comm") && File.open("/proc/1/comm").gets.chomp == "systemd"
+        end
 
         def extract_systemd_services(output)
           # first line finds e.g. "sshd.service"
@@ -106,6 +117,8 @@ class Chef
           services = extract_systemd_services(shell_out!("systemctl --all").stdout) +
             extract_systemd_services(shell_out!("systemctl --list-unit-files").stdout)
           services.include?(service_name)
+        rescue Mixlib::ShellOut::ShellCommandFailed
+          false
         end
       end
     end
