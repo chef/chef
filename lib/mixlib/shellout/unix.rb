@@ -319,7 +319,7 @@ module Mixlib
       # assume everything went well.
       def propagate_pre_exec_failure
         begin
-          attempt_buffer_read
+          attempt_buffer_read until child_process_status.eof?
           e = Marshal.load(@process_status)
           raise(Exception === e ? e : "unknown failure: #{e.inspect}")
         rescue ArgumentError # If we get an ArgumentError error, then the exec was successful
