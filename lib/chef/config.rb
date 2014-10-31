@@ -271,7 +271,7 @@ class Chef
     # * :fatal
     # These work as you'd expect. There is also a special `:auto` setting.
     # When set to :auto, Chef will auto adjust the log verbosity based on
-    # context. When a tty is available (usually because the user is running chef
+    # context. When a tty is available (usually becase the user is running chef
     # in a console), the log level is set to :warn, and output formatters are
     # used as the primary mode of output. When a tty is not available, the
     # logger is the primary mode of output, and the log level is set to :info
@@ -317,7 +317,6 @@ class Chef
     default :why_run, false
     default :color, false
     default :client_fork, true
-    default :ez, false
     default :enable_reporting, true
     default :enable_reporting_url_fatals, false
     default :audit_mode, nil
@@ -562,12 +561,10 @@ class Chef
     # used to update files.
     default :file_atomic_update, true
 
-    # There are 3 possible values for this configuration setting.
-    # true => file staging is done in the destination directory
-    # false => file staging is done via tempfiles under ENV['TMP']
-    # :auto => file staging will try using destination directory if possible and
-    #   will fall back to ENV['TMP'] if destination directory is not usable.
-    default :file_staging_uses_destdir, :auto
+    # If false file staging is will be done via tempfiles that are
+    # created under ENV['TMP'] otherwise tempfiles will be created in
+    # the directory that files are going to reside.
+    default :file_staging_uses_destdir, true
 
     # Exit if another run is in progress and the chef-client is unable to
     # get the lock before time expires. If nil, no timeout is enforced. (Exits
@@ -627,43 +624,43 @@ class Chef
     #
     # If there is no 'locale -a' then we return 'en_US.UTF-8' since that is the most commonly
     # available English UTF-8 locale.  However, all modern POSIXen should support 'locale -a'.
-    def self.guess_internal_locale
-      # https://github.com/opscode/chef/issues/2181
-      # Some systems have the `locale -a` command, but the result has
-      # invalid characters for the default encoding.
-      #
-      # For example, on CentOS 6 with ENV['LANG'] = "en_US.UTF-8",
-      # `locale -a`.split fails with ArgumentError invalid UTF-8 encoding.
-      locales = shell_out_with_systems_locale!("locale -a").stdout.split
-      case
-      when locales.include?('C.UTF-8')
-        'C.UTF-8'
-      when locales.include?('en_US.UTF-8'), locales.include?('en_US.utf8')
-        'en_US.UTF-8'
-      when locales.include?('en.UTF-8')
-        'en.UTF-8'
-      else
-        # Will match en_ZZ.UTF-8, en_ZZ.utf-8, en_ZZ.UTF8, en_ZZ.utf8
-        guesses = locales.select { |l| l =~ /^en_.*UTF-?8$/i }
-        unless guesses.empty?
-          guessed_locale = guesses.first
-          # Transform into the form en_ZZ.UTF-8
-          guessed_locale.gsub(/UTF-?8$/i, "UTF-8")
+    default :internal_locale do
+      begin
+        # https://github.com/opscode/chef/issues/2181
+        # Some systems have the `locale -a` command, but the result has
+        # invalid characters for the default encoding.
+        #
+        # For example, on CentOS 6 with ENV['LANG'] = "en_US.UTF-8",
+        # `locale -a`.split fails with ArgumentError invalid UTF-8 encoding.
+        locales = shell_out_with_systems_locale("locale -a").stdout.split
+        case
+        when locales.include?('C.UTF-8')
+          'C.UTF-8'
+        when locales.include?('en_US.UTF-8'), locales.include?('en_US.utf8')
+          'en_US.UTF-8'
+        when locales.include?('en.UTF-8')
+          'en.UTF-8'
         else
-          Chef::Log.warn "Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support."
-          'C'
+          # Will match en_ZZ.UTF-8, en_ZZ.utf-8, en_ZZ.UTF8, en_ZZ.utf8
+          guesses = locales.select { |l| l =~ /^en_.*UTF-?8$/i }
+          unless guesses.empty?
+            guessed_locale = guesses.first
+            # Transform into the form en_ZZ.UTF-8
+            guessed_locale.gsub(/UTF-?8$/i, "UTF-8")
+          else
+            Chef::Log.warn "Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support."
+            'C'
+          end
         end
+      rescue
+        if Chef::Platform.windows?
+          Chef::Log.debug "Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else."
+        else
+          Chef::Log.debug "No usable locale -a command found, assuming you have en_US.UTF-8 installed."
+        end
+        'en_US.UTF-8'
       end
-    rescue
-      if Chef::Platform.windows?
-        Chef::Log.debug "Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else."
-      else
-        Chef::Log.debug "No usable locale -a command found, assuming you have en_US.UTF-8 installed."
-      end
-      'en_US.UTF-8'
     end
-
-    default :internal_locale, guess_internal_locale
 
     # Force UTF-8 Encoding, for when we fire up in the 'C' locale or other strange locales (e.g.
     # japanese windows encodings).  If we do not do this, then knife upload will fail when a cookbook's

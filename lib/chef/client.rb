@@ -330,7 +330,6 @@ class Chef
           runner.converge
           @events.converge_complete
         rescue Exception => e
-          Chef::Log.error("Converge failed with error message #{e.message}")
           @events.converge_failed(e)
           converge_exception = e
         end
@@ -355,12 +354,10 @@ class Chef
       audit_exception = nil
       begin
         @events.audit_phase_start(run_status)
-        Chef::Log.info("Starting audit phase")
         auditor = Chef::Audit::Runner.new(run_context)
         auditor.run
         @events.audit_phase_complete
       rescue Exception => e
-        Chef::Log.error("Audit phase failed with error message #{e.message}")
         @events.audit_phase_failed(e)
         audit_exception = e
       end
@@ -441,8 +438,8 @@ class Chef
 
         run_context = setup_run_context
 
-        converge_error = converge_and_save(run_context) unless (Chef::Config[:audit_mode] == true)
-        audit_error = run_audits(run_context) unless (Chef::Config[:audit_mode] == false)
+        converge_error = converge_and_save(run_context)
+        audit_error = run_audits(run_context)
 
         if converge_error || audit_error
           e = Chef::Exceptions::RunFailedWrappingError.new(converge_error, audit_error)

@@ -18,6 +18,7 @@
 
 require 'chef/audit'
 require 'chef/audit/audit_event_proxy'
+require 'chef/audit/rspec_formatter'
 require 'chef/config'
 
 class Chef
@@ -79,7 +80,7 @@ class Chef
       end
 
       def add_formatters
-        configuration.add_formatter(RSpec::Core::Formatters::DocumentationFormatter)
+        configuration.add_formatter(Chef::Audit::RspecFormatter)
         configuration.add_formatter(Chef::Audit::AuditEventProxy)
         Chef::Audit::AuditEventProxy.events = run_context.events
       end
