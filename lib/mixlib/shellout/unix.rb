@@ -326,6 +326,7 @@ module Mixlib
           true
         ensure
           child_process_status.close
+          open_pipes.delete(child_process_status)
         end
       end
 
