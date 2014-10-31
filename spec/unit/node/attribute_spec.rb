@@ -1094,15 +1094,6 @@ describe Chef::Node::Attribute do
 
   describe "to_s" do
 
-    before do
-      @attributes = Chef::Node::Attribute.new(
-        {
-          "one" =>  "two",
-          "hut" =>  "three",
-        }
-      )
-    end
-
     it "should be readable when called to_s" do
       @attributes.should respond_to(:to_s)
     end
