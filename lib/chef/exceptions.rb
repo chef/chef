@@ -366,5 +366,34 @@ class Chef
         super "Found more than one provider for #{resource.resource_name} resource: #{classes}"
       end
     end
+
+    class NoAuditsProvided < RuntimeError
+      def initialize
+        super "You must provide a block with audits"
+      end
+    end
+
+    # If a converge or audit fails, we want to wrap the output from those errors into 1 error so we can
+    # see both issues in the output.  It is possible that nil will be provided.  You must call `fill_backtrace`
+    # to correctly populate the backtrace with the wrapped backtraces.
+    class RunFailedWrappingError < RuntimeError
+      attr_reader :wrapped_errors
+      def initialize(*errors)
+        errors = errors.select {|e| !e.nil?}
+        output = "Found #{errors.size} errors, they are stored in the backtrace\n"
+        @wrapped_errors = errors
+        super output
+      end
+
+      def fill_backtrace
+        backtrace = []
+        wrapped_errors.each_with_index do |e,i|
+          backtrace << "#{i+1}) #{e.class} -  #{e.message}"
+          backtrace += e.backtrace if e.backtrace
+          backtrace << ""
+        end
+        set_backtrace(backtrace)
+      end
+    end
   end
 end
