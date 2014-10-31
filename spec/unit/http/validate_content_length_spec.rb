@@ -45,7 +45,7 @@ describe Chef::HTTP::ValidateContentLength do
 
   let(:response) {
     m = double('HttpResponse', :body => response_body)
-    m.stub(:[]) do |key|
+    allow(m).to receive(:[]) do |key|
       response_headers[key]
     end
 
@@ -85,7 +85,7 @@ describe Chef::HTTP::ValidateContentLength do
 
   before(:each) {
     Chef::Log.level = :debug
-    Chef::Log.stub(:debug) do |message|
+    allow(Chef::Log).to receive(:debug) do |message|
       debug_stream.puts message
     end
   }
@@ -95,7 +95,7 @@ describe Chef::HTTP::ValidateContentLength do
     let(:response_body) { "Thanks for checking in." }
 
     it "shouldn't raise error" do
-      lambda { run_content_length_validation }.should_not raise_error
+      expect { run_content_length_validation }.not_to raise_error
     end
   end
 
@@ -108,7 +108,7 @@ describe Chef::HTTP::ValidateContentLength do
 
         it "should skip validation and log for debug" do
           run_content_length_validation
-          debug_output.should include("HTTP server did not include a Content-Length header in response")
+          expect(debug_output).to include("HTTP server did not include a Content-Length header in response")
         end
       end
     end
@@ -121,7 +121,7 @@ describe Chef::HTTP::ValidateContentLength do
 
         it "should validate correctly" do
           run_content_length_validation
-          debug_output.should include("Content-Length validated correctly.")
+          expect(debug_output).to include("Content-Length validated correctly.")
         end
       end
     end
@@ -134,7 +134,7 @@ describe Chef::HTTP::ValidateContentLength do
         let(:request_type) { req_type.to_sym }
 
         it "should raise ContentLengthMismatch error" do
-          lambda { run_content_length_validation }.should raise_error(Chef::Exceptions::ContentLengthMismatch)
+          expect { run_content_length_validation }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
         end
       end
     end
@@ -144,7 +144,7 @@ describe Chef::HTTP::ValidateContentLength do
     let(:streaming_length) { 12 }
 
     it "should raise ContentLengthMismatch error" do
-      lambda { run_content_length_validation }.should raise_error(Chef::Exceptions::ContentLengthMismatch)
+      expect { run_content_length_validation }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
     end
   end
 
@@ -162,7 +162,7 @@ describe Chef::HTTP::ValidateContentLength do
 
         it "should skip validation and log for debug" do
           run_content_length_validation
-          debug_output.should include("Transfer-Encoding header is set, skipping Content-Length check.")
+          expect(debug_output).to include("Transfer-Encoding header is set, skipping Content-Length check.")
         end
       end
     end
@@ -171,16 +171,16 @@ describe Chef::HTTP::ValidateContentLength do
   describe "when client is being reused" do
     before do
       run_content_length_validation
-      debug_output.should include("Content-Length validated correctly.")
+      expect(debug_output).to include("Content-Length validated correctly.")
     end
 
     it "should reset internal counter" do
-        middleware.instance_variable_get(:@content_length_counter).should be_nil
+        expect(middleware.instance_variable_get(:@content_length_counter)).to be_nil
     end
 
     it "should validate correctly second time" do
       run_content_length_validation
-      debug_output.should include("Content-Length validated correctly.")
+      expect(debug_output).to include("Content-Length validated correctly.")
     end
   end
 

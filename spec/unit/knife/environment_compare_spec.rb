@@ -27,21 +27,21 @@ describe Chef::Knife::EnvironmentCompare do
       "citm" => "http://localhost:4000/environments/citm"
     }
 
-    @knife.stub(:environment_list).and_return(@environments)
+    allow(@knife).to receive(:environment_list).and_return(@environments)
 
     @constraints = {
       "cita" => { "foo" => "= 1.0.1", "bar" => "= 0.0.4" },
       "citm" => { "foo" => "= 1.0.1", "bar" => "= 0.0.2" }
     }
  
-    @knife.stub(:constraint_list).and_return(@constraints)
+    allow(@knife).to receive(:constraint_list).and_return(@constraints)
 
     @cookbooks = { "foo"=>"= 1.0.1", "bar"=>"= 0.0.1" } 
 
-    @knife.stub(:cookbook_list).and_return(@cookbooks)
+    allow(@knife).to receive(:cookbook_list).and_return(@cookbooks)
 
     @rest_double = double('rest')
-    @knife.stub(:rest).and_return(@rest_double)
+    allow(@knife).to receive(:rest).and_return(@rest_double)
     @cookbook_names = ['apache2', 'mysql', 'foo', 'bar', 'dummy', 'chef_handler']
     @base_url = 'https://server.example.com/cookbooks'
     @cookbook_data = {}
@@ -51,10 +51,10 @@ describe Chef::Knife::EnvironmentCompare do
                                               'url' => "#{@base_url}/#{item}/1.0.1"}]}
     end 
 
-    @rest_double.stub(:get_rest).with("/cookbooks?num_versions=1").and_return(@cookbook_data)
+    allow(@rest_double).to receive(:get_rest).with("/cookbooks?num_versions=1").and_return(@cookbook_data)
 
     @stdout = StringIO.new
-    @knife.ui.stub(:stdout).and_return(@stdout)
+    allow(@knife.ui).to receive(:stdout).and_return(@stdout)
   end
 
   describe 'run' do
@@ -62,14 +62,14 @@ describe Chef::Knife::EnvironmentCompare do
       @knife.config[:format] = 'summary'
       @knife.run
       @environments.each do |item, url|
-        @stdout.string.should match /#{item}/ and @stdout.string.lines.count.should be 4
+        expect(@stdout.string).to match /#{item}/ and expect(@stdout.string.lines.count).to be 4
       end
     end
  
     it 'should display 4 number of lines' do
       @knife.config[:format] = 'summary'
       @knife.run
-      @stdout.string.lines.count.should be 4
+      expect(@stdout.string.lines.count).to be 4
     end
   end
 
@@ -79,7 +79,7 @@ describe Chef::Knife::EnvironmentCompare do
       @knife.config[:mismatch] = true
       @knife.run
       @constraints.each do |item, ver|
-        @stdout.string.should match /#{ver[1]}/
+        expect(@stdout.string).to match /#{ver[1]}/
       end
     end
 
@@ -87,7 +87,7 @@ describe Chef::Knife::EnvironmentCompare do
       @knife.config[:format] = 'summary'
       @knife.config[:mismatch] = true
       @knife.run
-      @stdout.string.lines.count.should be 3
+      expect(@stdout.string.lines.count).to be 3
     end
   end
  
@@ -97,7 +97,7 @@ describe Chef::Knife::EnvironmentCompare do
       @knife.config[:all] = true
       @knife.run
       @constraints.each do |item, ver|
-        @stdout.string.should match /#{ver[1]}/
+        expect(@stdout.string).to match /#{ver[1]}/
       end
     end
 
@@ -105,7 +105,7 @@ describe Chef::Knife::EnvironmentCompare do
       @knife.config[:format] = 'summary'
       @knife.config[:all] = true
       @knife.run
-      @stdout.string.lines.count.should be 8
+      expect(@stdout.string.lines.count).to be 8
     end
   end
 

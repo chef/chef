@@ -36,8 +36,8 @@ describe Chef::Knife::SslFetch do
   subject(:ssl_fetch) do
     s = Chef::Knife::SslFetch.new
     s.name_args = name_args
-    s.ui.stub(:stdout).and_return(stdout_io)
-    s.ui.stub(:stderr).and_return(stderr_io)
+    allow(s.ui).to receive(:stdout).and_return(stdout_io)
+    allow(s.ui).to receive(:stderr).and_return(stderr_io)
     s
   end
 
@@ -131,10 +131,10 @@ E
     before do
       Chef::Config.trusted_certs_dir = trusted_certs_dir
 
-      TCPSocket.should_receive(:new).with("foo.example.com", 8443).and_return(tcp_socket)
-      OpenSSL::SSL::SSLSocket.should_receive(:new).with(tcp_socket, ssl_fetch.noverify_peer_ssl_context).and_return(ssl_socket)
-      ssl_socket.should_receive(:connect)
-      ssl_socket.should_receive(:peer_cert_chain).and_return([self_signed_crt])
+      expect(TCPSocket).to receive(:new).with("foo.example.com", 8443).and_return(tcp_socket)
+      expect(OpenSSL::SSL::SSLSocket).to receive(:new).with(tcp_socket, ssl_fetch.noverify_peer_ssl_context).and_return(ssl_socket)
+      expect(ssl_socket).to receive(:connect)
+      expect(ssl_socket).to receive(:peer_cert_chain).and_return([self_signed_crt])
     end
 
     after do

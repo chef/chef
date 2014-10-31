@@ -42,13 +42,13 @@ describe Shell do
 
   before do
     Shell.irb_conf = {}
-    Shell::ShellSession.instance.stub(:reset!)
+    allow(Shell::ShellSession.instance).to receive(:reset!)
   end
 
   describe "reporting its status" do
 
     it "alway says it is running" do
-      Shell.should be_running
+      expect(Shell).to be_running
     end
 
   end
@@ -56,8 +56,8 @@ describe Shell do
   describe "configuring IRB" do
     it "configures irb history" do
       Shell.configure_irb
-      Shell.irb_conf[:HISTORY_FILE].should == "~/.chef/chef_shell_history"
-      Shell.irb_conf[:SAVE_HISTORY].should == 1000
+      expect(Shell.irb_conf[:HISTORY_FILE]).to eq("~/.chef/chef_shell_history")
+      expect(Shell.irb_conf[:SAVE_HISTORY]).to eq(1000)
     end
 
     it "has a prompt like ``chef > '' in the default context" do
@@ -67,12 +67,12 @@ describe Shell do
       conf.main = Object.new
       conf.main.instance_eval(&ObjectTestHarness)
       Shell.irb_conf[:IRB_RC].call(conf)
-      conf.prompt_c.should      == "chef > "
-      conf.return_format.should == " => %s \n"
-      conf.prompt_i.should      == "chef > "
-      conf.prompt_n.should      == "chef ?> "
-      conf.prompt_s.should      == "chef%l> "
-      conf.use_tracer.should    == false
+      expect(conf.prompt_c).to      eq("chef > ")
+      expect(conf.return_format).to eq(" => %s \n")
+      expect(conf.prompt_i).to      eq("chef > ")
+      expect(conf.prompt_n).to      eq("chef ?> ")
+      expect(conf.prompt_s).to      eq("chef%l> ")
+      expect(conf.use_tracer).to    eq(false)
     end
 
     it "has a prompt like ``chef:recipe > '' in recipe context" do
@@ -82,10 +82,10 @@ describe Shell do
       events = Chef::EventDispatch::Dispatcher.new
       conf.main = Chef::Recipe.new(nil,nil,Chef::RunContext.new(Chef::Node.new, {}, events))
       Shell.irb_conf[:IRB_RC].call(conf)
-      conf.prompt_c.should      == "chef:recipe > "
-      conf.prompt_i.should      == "chef:recipe > "
-      conf.prompt_n.should      == "chef:recipe ?> "
-      conf.prompt_s.should      == "chef:recipe%l> "
+      expect(conf.prompt_c).to      eq("chef:recipe > ")
+      expect(conf.prompt_i).to      eq("chef:recipe > ")
+      expect(conf.prompt_n).to      eq("chef:recipe ?> ")
+      expect(conf.prompt_s).to      eq("chef:recipe%l> ")
     end
 
     it "has a prompt like ``chef:attributes > '' in attributes/node context" do
@@ -94,10 +94,10 @@ describe Shell do
       conf = OpenStruct.new
       conf.main = Chef::Node.new
       Shell.irb_conf[:IRB_RC].call(conf)
-      conf.prompt_c.should      == "chef:attributes > "
-      conf.prompt_i.should      == "chef:attributes > "
-      conf.prompt_n.should      == "chef:attributes ?> "
-      conf.prompt_s.should      == "chef:attributes%l> "
+      expect(conf.prompt_c).to      eq("chef:attributes > ")
+      expect(conf.prompt_i).to      eq("chef:attributes > ")
+      expect(conf.prompt_n).to      eq("chef:attributes ?> ")
+      expect(conf.prompt_s).to      eq("chef:attributes%l> ")
     end
 
   end
@@ -110,7 +110,7 @@ describe Shell do
     end
 
     it "creates help text for methods with descriptions" do
-      @chef_object.help_descriptions.should == [Shell::Extensions::Help.new("rspec_method", "rspecin'", nil)]
+      expect(@chef_object.help_descriptions).to eq([Shell::Extensions::Help.new("rspec_method", "rspecin'", nil)])
     end
 
     it "adds help text when a new method is described then defined" do
@@ -120,8 +120,8 @@ describe Shell do
         end
       EVAL
       @chef_object.instance_eval describe_define
-      @chef_object.help_descriptions.should == [Shell::Extensions::Help.new("rspec_method", "rspecin'"),
-                                                Shell::Extensions::Help.new("baz", "foo2the Bar")]
+      expect(@chef_object.help_descriptions).to eq([Shell::Extensions::Help.new("rspec_method", "rspecin'"),
+                                                Shell::Extensions::Help.new("baz", "foo2the Bar")])
     end
 
     it "adds help text for subcommands" do
@@ -133,7 +133,7 @@ describe Shell do
       @chef_object.instance_eval describe_define
       expected_help_text_fragments = [Shell::Extensions::Help.new("rspec_method", "rspecin'")]
       expected_help_text_fragments << Shell::Extensions::Help.new("baz.baz_obj_command", "something you can do with baz.baz_obj_command")
-      @chef_object.help_descriptions.should == expected_help_text_fragments
+      expect(@chef_object.help_descriptions).to eq(expected_help_text_fragments)
     end
 
     it "doesn't add previous subcommand help to commands defined afterward" do
@@ -147,13 +147,13 @@ describe Shell do
 
       EVAL
       @chef_object.instance_eval describe_define
-      @chef_object.help_descriptions.should have(2).descriptions
-      @chef_object.help_descriptions.select {|h| h.cmd == "super_monkey_time" }.should be_empty
+      expect(@chef_object.help_descriptions.size).to eq(2)
+      expect(@chef_object.help_descriptions.select {|h| h.cmd == "super_monkey_time" }).to be_empty
     end
 
     it "creates a help banner with the command descriptions" do
-      @chef_object.help_banner.should match(/^\|\ Command[\s]+\|\ Description[\s]*$/)
-      @chef_object.help_banner.should match(/^\|\ rspec_method[\s]+\|\ rspecin\'[\s]*$/)
+      expect(@chef_object.help_banner).to match(/^\|\ Command[\s]+\|\ Description[\s]*$/)
+      expect(@chef_object.help_banner).to match(/^\|\ rspec_method[\s]+\|\ rspecin\'[\s]*$/)
     end
   end
 

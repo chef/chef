@@ -23,14 +23,14 @@ describe MonoLogger do
   it "should disable buffering when passed an IO stream" do
     STDOUT.sync = false
     MonoLogger.new(STDOUT)
-    STDOUT.sync.should == true
+    expect(STDOUT.sync).to eq(true)
   end
 
   describe "when given an object that responds to write and close e.g. IO" do
     it "should use the object directly" do
       stream = StringIO.new
       MonoLogger.new(stream).fatal("Houston, we've had a problem.")
-      stream.string.should =~ /Houston, we've had a problem./
+      expect(stream.string).to match(/Houston, we've had a problem./)
     end
   end
 
@@ -39,7 +39,7 @@ describe MonoLogger do
       temp_file = Tempfile.new("rspec-monologger-log")
       temp_file.close
       MonoLogger.new(temp_file.path).fatal("Do, or do not. There is no try.")
-      File.read(temp_file.path).should =~ /Do, or do not. There is no try./
+      expect(File.read(temp_file.path)).to match(/Do, or do not. There is no try./)
     end
   end
 end

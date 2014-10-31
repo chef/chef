@@ -24,7 +24,7 @@ describe Chef::Knife::ClientReregister do
     @knife.name_args = [ 'adam' ]
     @client_mock = double('client_mock', :private_key => "foo_key")
     @stdout = StringIO.new
-    @knife.ui.stub(:stdout).and_return(@stdout)
+    allow(@knife.ui).to receive(:stdout).and_return(@stdout)
   end
 
   context "when no client name is given on the command line" do
@@ -33,29 +33,29 @@ describe Chef::Knife::ClientReregister do
     end
 
     it 'should print usage and exit when a client name is not provided' do
-      @knife.should_receive(:show_usage)
-      @knife.ui.should_receive(:fatal)
-      lambda { @knife.run }.should raise_error(SystemExit)
+      expect(@knife).to receive(:show_usage)
+      expect(@knife.ui).to receive(:fatal)
+      expect { @knife.run }.to raise_error(SystemExit)
     end
   end
 
   context 'when not configured for file output' do
     it 'reregisters the client and prints the key' do
-      Chef::ApiClient.should_receive(:reregister).with('adam').and_return(@client_mock)
+      expect(Chef::ApiClient).to receive(:reregister).with('adam').and_return(@client_mock)
       @knife.run
-      @stdout.string.should match( /foo_key/ )
+      expect(@stdout.string).to match( /foo_key/ )
     end
   end
 
   context 'when configured for file output' do
     it 'should write the private key to a file' do
-      Chef::ApiClient.should_receive(:reregister).with('adam').and_return(@client_mock)
+      expect(Chef::ApiClient).to receive(:reregister).with('adam').and_return(@client_mock)
 
       @knife.config[:file] = '/tmp/monkeypants'
       filehandle = StringIO.new
-      File.should_receive(:open).with('/tmp/monkeypants', 'w').and_yield(filehandle)
+      expect(File).to receive(:open).with('/tmp/monkeypants', 'w').and_yield(filehandle)
       @knife.run
-      filehandle.string.should == "foo_key"
+      expect(filehandle.string).to eq("foo_key")
     end
   end
 

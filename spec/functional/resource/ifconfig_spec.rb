@@ -143,7 +143,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
     end
     it "should disable interface (vip)" do
       new_resource.run_action(:disable)
-      new_resource.should be_updated_by_last_action
+      expect(new_resource).to be_updated_by_last_action
       interface_should_not_exists(network_interface_alias(en0_interface_for_test))
     end
   end
@@ -155,7 +155,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
     end
     it "should delete interface (vip)" do
       new_resource.run_action(:delete)
-      new_resource.should be_updated_by_last_action
+      expect(new_resource).to be_updated_by_last_action
       interface_should_not_exists(network_interface_alias(en0_interface_for_test))
       interface_persistence_should_not_exists(network_interface_alias(en0_interface_for_test))
     end

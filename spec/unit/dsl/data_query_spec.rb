@@ -28,7 +28,7 @@ describe Chef::DSL::DataQuery do
 
   let(:language) do
     language = DataQueryDSLTester.new
-    language.stub(:node).and_return(@node)
+    allow(language).to receive(:node).and_return(@node)
     language
   end
 

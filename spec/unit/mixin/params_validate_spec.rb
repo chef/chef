@@ -32,29 +32,29 @@ describe Chef::Mixin::ParamsValidate do
   end
 
   it "should allow a hash and a hash as arguments to validate" do
-    lambda { @vo.validate({:one => "two"}, {}) }.should_not raise_error
+    expect { @vo.validate({:one => "two"}, {}) }.not_to raise_error
   end
 
   it "should raise an argument error if validate is called incorrectly" do
-    lambda { @vo.validate("one", "two") }.should raise_error(ArgumentError)
+    expect { @vo.validate("one", "two") }.to raise_error(ArgumentError)
   end
 
   it "should require validation map keys to be symbols or strings" do
-    lambda { @vo.validate({:one => "two"}, { :one => true }) }.should_not raise_error
-    lambda { @vo.validate({:one => "two"}, { "one" => true }) }.should_not raise_error
-    lambda { @vo.validate({:one => "two"}, { Hash.new => true }) }.should raise_error(ArgumentError)
+    expect { @vo.validate({:one => "two"}, { :one => true }) }.not_to raise_error
+    expect { @vo.validate({:one => "two"}, { "one" => true }) }.not_to raise_error
+    expect { @vo.validate({:one => "two"}, { Hash.new => true }) }.to raise_error(ArgumentError)
   end
 
   it "should allow options to be required with true" do
-    lambda { @vo.validate({:one => "two"}, { :one => true }) }.should_not raise_error
+    expect { @vo.validate({:one => "two"}, { :one => true }) }.not_to raise_error
   end
 
   it "should allow options to be optional with false" do
-    lambda { @vo.validate({}, {:one => false})}.should_not raise_error
+    expect { @vo.validate({}, {:one => false})}.not_to raise_error
   end
 
   it "should allow you to check what kind_of? thing an argument is with kind_of" do
-    lambda {
+    expect {
       @vo.validate(
         {:one => "string"},
         {
@@ -63,9 +63,9 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error
+    }.not_to raise_error
 
-    lambda {
+    expect {
       @vo.validate(
         {:one => "string"},
         {
@@ -74,11 +74,11 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should allow you to specify an argument is required with required" do
-    lambda {
+    expect {
       @vo.validate(
         {:one => "string"},
         {
@@ -87,9 +87,9 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error
+    }.not_to raise_error
 
-    lambda {
+    expect {
       @vo.validate(
         {:two => "string"},
         {
@@ -98,9 +98,9 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
 
-    lambda {
+    expect {
       @vo.validate(
         {:two => "string"},
         {
@@ -109,11 +109,11 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error
+    }.not_to raise_error
   end
 
   it "should allow you to specify whether an object has a method with respond_to" do
-    lambda {
+    expect {
       @vo.validate(
         {:one => @vo},
         {
@@ -122,9 +122,9 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error
+    }.not_to raise_error
 
-    lambda {
+    expect {
       @vo.validate(
         {:one => @vo},
         {
@@ -133,11 +133,11 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should allow you to specify whether an object has all the given methods with respond_to and an array" do
-    lambda {
+    expect {
       @vo.validate(
         {:one => @vo},
         {
@@ -146,9 +146,9 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error
+    }.not_to raise_error
 
-    lambda {
+    expect {
       @vo.validate(
         {:one => @vo},
         {
@@ -157,7 +157,7 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should let you set a default value with default => value" do
@@ -167,11 +167,11 @@ describe Chef::Mixin::ParamsValidate do
         :default => "is the loneliest number"
       }
     })
-    arguments[:one].should == "is the loneliest number"
+    expect(arguments[:one]).to eq("is the loneliest number")
   end
 
   it "should let you check regular expressions" do
-    lambda {
+    expect {
       @vo.validate(
         { :one => "is good" },
         {
@@ -180,9 +180,9 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error
+    }.not_to raise_error
 
-    lambda {
+    expect {
       @vo.validate(
         { :one => "is good" },
         {
@@ -191,11 +191,11 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should let you specify your own callbacks" do
-    lambda {
+    expect {
       @vo.validate(
         { :one => "is good" },
         {
@@ -208,9 +208,9 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error
+    }.not_to raise_error
 
-    lambda {
+    expect {
       @vo.validate(
         { :one => "is bad" },
         {
@@ -223,12 +223,12 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should let you combine checks" do
     args = { :one => "is good", :two => "is bad" }
-    lambda {
+    expect {
       @vo.validate(
         args,
         {
@@ -250,9 +250,9 @@ describe Chef::Mixin::ParamsValidate do
           :three => { :default => "neato mosquito" }
         }
       )
-    }.should_not raise_error
-    args[:three].should == "neato mosquito"
-    lambda {
+    }.not_to raise_error
+    expect(args[:three]).to eq("neato mosquito")
+    expect {
       @vo.validate(
         args,
         {
@@ -274,11 +274,11 @@ describe Chef::Mixin::ParamsValidate do
           :three => { :default => "neato mosquito" }
         }
       )
-    }.should raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should raise an ArgumentError if the validation map has an unknown check" do
-    lambda { @vo.validate(
+    expect { @vo.validate(
         { :one => "two" },
         {
           :one => {
@@ -286,17 +286,17 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should accept keys that are strings in the options" do
-    lambda {
+    expect {
       @vo.validate({ "one" => "two" }, { :one => { :regex => /^two$/ }})
-    }.should_not raise_error
+    }.not_to raise_error
   end
 
   it "should allow an array to kind_of" do
-    lambda {
+    expect {
       @vo.validate(
         {:one => "string"},
         {
@@ -305,8 +305,8 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error
-    lambda {
+    }.not_to raise_error
+    expect {
       @vo.validate(
         {:one => ["string"]},
         {
@@ -315,8 +315,8 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error
-    lambda {
+    }.not_to raise_error
+    expect {
       @vo.validate(
         {:one => Hash.new},
         {
@@ -325,48 +325,48 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "asserts that a value returns false from a predicate method" do
-    lambda do
+    expect do
       @vo.validate({:not_blank => "should pass"},
                    {:not_blank => {:cannot_be => :nil, :cannot_be => :empty}})
-    end.should_not raise_error
-    lambda do
+    end.not_to raise_error
+    expect do
       @vo.validate({:not_blank => ""},
                    {:not_blank => {:cannot_be => :nil, :cannot_be => :empty}})
-    end.should raise_error(Chef::Exceptions::ValidationFailed)
+    end.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   it "should set and return a value, then return the same value" do
     value = "meow"
-    @vo.set_or_return(:test, value, {}).object_id.should == value.object_id
-    @vo.set_or_return(:test, nil, {}).object_id.should == value.object_id
+    expect(@vo.set_or_return(:test, value, {}).object_id).to eq(value.object_id)
+    expect(@vo.set_or_return(:test, nil, {}).object_id).to eq(value.object_id)
   end
 
   it "should set and return a default value when the argument is nil, then return the same value" do
     value = "meow"
-    @vo.set_or_return(:test, nil, { :default => value }).object_id.should == value.object_id
-    @vo.set_or_return(:test, nil, {}).object_id.should == value.object_id
+    expect(@vo.set_or_return(:test, nil, { :default => value }).object_id).to eq(value.object_id)
+    expect(@vo.set_or_return(:test, nil, {}).object_id).to eq(value.object_id)
   end
 
   it "should raise an ArgumentError when argument is nil and required is true" do
-    lambda {
+    expect {
       @vo.set_or_return(:test, nil, { :required => true })
-    }.should raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should not raise an error when argument is nil and required is false" do
-    lambda {
+    expect {
       @vo.set_or_return(:test, nil, { :required => false })
-    }.should_not raise_error
+    }.not_to raise_error
   end
 
   it "should set and return @name, then return @name for foo when argument is nil" do
     value = "meow"
-    @vo.set_or_return(:name, value, { }).object_id.should == value.object_id
-    @vo.set_or_return(:foo, nil, { :name_attribute => true }).object_id.should == value.object_id
+    expect(@vo.set_or_return(:name, value, { }).object_id).to eq(value.object_id)
+    expect(@vo.set_or_return(:foo, nil, { :name_attribute => true }).object_id).to eq(value.object_id)
   end
 
   it "should allow DelayedEvaluator instance to be set for value regardless of restriction" do
@@ -377,31 +377,31 @@ describe Chef::Mixin::ParamsValidate do
   it "should raise an error when delayed evaluated attribute is not valid" do
     value = Chef::DelayedEvaluator.new{ 'test' }
     @vo.set_or_return(:test, value, {:kind_of => Numeric})
-    lambda do
+    expect do
       @vo.set_or_return(:test, nil, {:kind_of => Numeric})
-    end.should raise_error(Chef::Exceptions::ValidationFailed)
+    end.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   it "should create DelayedEvaluator instance when #lazy is used" do
     @vo.set_or_return(:delayed, @vo.lazy{ 'test' }, {})
-    @vo.instance_variable_get(:@delayed).should be_a(Chef::DelayedEvaluator)
+    expect(@vo.instance_variable_get(:@delayed)).to be_a(Chef::DelayedEvaluator)
   end
 
   it "should execute block on each call when DelayedEvaluator" do
     value = 'fubar'
     @vo.set_or_return(:test, @vo.lazy{ value }, {})
-    @vo.set_or_return(:test, nil, {}).should == 'fubar'
+    expect(@vo.set_or_return(:test, nil, {})).to eq('fubar')
     value = 'foobar'
-    @vo.set_or_return(:test, nil, {}).should == 'foobar'
+    expect(@vo.set_or_return(:test, nil, {})).to eq('foobar')
     value = 'fauxbar'
-    @vo.set_or_return(:test, nil, {}).should == 'fauxbar'
+    expect(@vo.set_or_return(:test, nil, {})).to eq('fauxbar')
   end
 
   it "should not evaluate non DelayedEvaluator instances" do
     value = lambda{ 'test' }
     @vo.set_or_return(:test, value, {})
-    @vo.set_or_return(:test, nil, {}).object_id.should == value.object_id
-    @vo.set_or_return(:test, nil, {}).should be_a(Proc)
+    expect(@vo.set_or_return(:test, nil, {}).object_id).to eq(value.object_id)
+    expect(@vo.set_or_return(:test, nil, {})).to be_a(Proc)
   end
 
 end

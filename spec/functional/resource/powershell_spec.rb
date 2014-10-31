@@ -153,7 +153,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
       detected_64_bit = source_contains_case_insensitive_content?( get_script_output, 'AMD64' )
 
-      is_64_bit.should == detected_64_bit
+      expect(is_64_bit).to eq(detected_64_bit)
     end
 
     it "returns 1 if an invalid flag is passed to the interpreter" do
@@ -186,12 +186,12 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       resource.returns(0)
       resource.run_action(:run)
 
-      source_contains_case_insensitive_content?( get_script_output, 'x86' ).should == true
+      expect(source_contains_case_insensitive_content?( get_script_output, 'x86' )).to eq(true)
     end
 
     it "raises an exception if :x86_64 process architecture is specified" do
       begin
-        resource.architecture(:x86_64).should raise_error Chef::Exceptions::Win32ArchitectureIncorrect
+        expect(resource.architecture(:x86_64)).to raise_error Chef::Exceptions::Win32ArchitectureIncorrect
       rescue Chef::Exceptions::Win32ArchitectureIncorrect
       end
     end
@@ -204,7 +204,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       resource.returns(0)
       resource.run_action(:run)
 
-      source_contains_case_insensitive_content?( get_script_output, 'AMD64' ).should == true
+      expect(source_contains_case_insensitive_content?( get_script_output, 'AMD64' )).to eq(true)
     end
 
     it "executes a script with a 32-bit process if :i386 arch is specified" do
@@ -213,7 +213,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       resource.returns(0)
       resource.run_action(:run)
 
-      source_contains_case_insensitive_content?( get_script_output, 'x86' ).should == true
+      expect(source_contains_case_insensitive_content?( get_script_output, 'x86' )).to eq(true)
     end
   end
 
@@ -230,22 +230,22 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
       it "evaluates a succeeding not_if block using cmd.exe as false by default" do
         resource.not_if  "exit /b 0"
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates a failing not_if block using cmd.exe as true by default" do
         resource.not_if  "exit /b 2"
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "evaluates an succeeding only_if block using cmd.exe as true by default" do
         resource.only_if  "exit /b 0"
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "evaluates a failing only_if block using cmd.exe as false by default" do
         resource.only_if  "exit /b 2"
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
     end
 
@@ -257,7 +257,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       it "evaluates a powershell $true for a only_if block as true" do
         resource.only_if "$true"
         resource.guard_interpreter :powershell_script
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
     end
 
@@ -269,184 +269,184 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
       it "evaluates a powershell $false for a not_if block as true" do
         resource.not_if  "$false"
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "evaluates a powershell $true for a not_if block as false" do
         resource.not_if  "$true"
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates a powershell $false for an only_if block as false" do
         resource.only_if  "$false"
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates a powershell $true for a only_if block as true" do
         resource.only_if  "$true"
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "evaluates a not_if block using powershell.exe" do
         resource.not_if  "exit([int32](![System.Environment]::CommandLine.Contains('powershell.exe')))"
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates an only_if block using powershell.exe" do
         resource.only_if  "exit([int32](![System.Environment]::CommandLine.Contains('powershell.exe')))"
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "evaluates a non-zero powershell exit status for not_if as true" do
         resource.not_if  "exit 37"
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "evaluates a zero powershell exit status for not_if as false" do
         resource.not_if  "exit 0"
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates a failed executable exit status for not_if as false" do
         resource.not_if  windows_process_exit_code_not_found_content
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "evaluates a successful executable exit status for not_if as true" do
         resource.not_if  windows_process_exit_code_success_content
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates a failed executable exit status for only_if as false" do
         resource.only_if  windows_process_exit_code_not_found_content
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates a successful executable exit status for only_if as true" do
         resource.only_if  windows_process_exit_code_success_content
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "evaluates a failed cmdlet exit status for not_if as true" do
         resource.not_if  "throw 'up'"
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "evaluates a successful cmdlet exit status for not_if as true" do
         resource.not_if  "cd ."
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates a failed cmdlet exit status for only_if as false" do
         resource.only_if  "throw 'up'"
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates a successful cmdlet exit status for only_if as true" do
         resource.only_if  "cd ."
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "evaluates a not_if block using the cwd guard parameter" do
         custom_cwd = "#{ENV['SystemRoot']}\\system32\\drivers\\etc"
         resource.not_if  "exit ! [int32]($pwd.path -eq '#{custom_cwd}')", :cwd => custom_cwd
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates an only_if block using the cwd guard parameter" do
         custom_cwd = "#{ENV['SystemRoot']}\\system32\\drivers\\etc"
         resource.only_if  "exit ! [int32]($pwd.path -eq '#{custom_cwd}')", :cwd => custom_cwd
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "inherits cwd from the parent resource for only_if" do
         custom_cwd = "#{ENV['SystemRoot']}\\system32\\drivers\\etc"
         resource.cwd custom_cwd
         resource.only_if  "exit ! [int32]($pwd.path -eq '#{custom_cwd}')"
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "inherits cwd from the parent resource for not_if" do
         custom_cwd = "#{ENV['SystemRoot']}\\system32\\drivers\\etc"
         resource.cwd custom_cwd
         resource.not_if  "exit ! [int32]($pwd.path -eq '#{custom_cwd}')"
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates a 64-bit resource with a 64-bit guard and interprets boolean false as zero status code", :windows64_only do
         resource.architecture :x86_64
         resource.only_if  "exit [int32]($env:PROCESSOR_ARCHITECTURE -ne 'AMD64')"
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "evaluates a 64-bit resource with a 64-bit guard and interprets boolean true as nonzero status code", :windows64_only do
         resource.architecture :x86_64
         resource.only_if  "exit [int32]($env:PROCESSOR_ARCHITECTURE -eq 'AMD64')"
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code" do
         resource.architecture :i386
         resource.only_if  "exit [int32]($env:PROCESSOR_ARCHITECTURE -ne 'X86')"
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code" do
         resource.architecture :i386
         resource.only_if  "exit [int32]($env:PROCESSOR_ARCHITECTURE -eq 'X86')"
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates a simple boolean false as nonzero status code when convert_boolean_return is true for only_if" do
         resource.convert_boolean_return true
         resource.only_if  "$false"
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates a simple boolean false as nonzero status code when convert_boolean_return is true for not_if" do
         resource.convert_boolean_return true
         resource.not_if  "$false"
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "evaluates a simple boolean true as 0 status code when convert_boolean_return is true for only_if" do
         resource.convert_boolean_return true
         resource.only_if  "$true"
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "evaluates a simple boolean true as 0 status code when convert_boolean_return is true for not_if" do
         resource.convert_boolean_return true
         resource.not_if  "$true"
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code using convert_boolean_return for only_if" do
         resource.convert_boolean_return true
         resource.architecture :i386
         resource.only_if  "$env:PROCESSOR_ARCHITECTURE -eq 'X86'"
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code using convert_boolean_return for not_if" do
         resource.convert_boolean_return true
         resource.architecture :i386
         resource.not_if  "$env:PROCESSOR_ARCHITECTURE -ne 'X86'"
-        resource.should_skip?(:run).should be_false
+        expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code using convert_boolean_return for only_if" do
         resource.convert_boolean_return true
         resource.architecture :i386
         resource.only_if  "$env:PROCESSOR_ARCHITECTURE -ne 'X86'"
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code using convert_boolean_return for not_if" do
         resource.convert_boolean_return true
         resource.architecture :i386
         resource.not_if  "$env:PROCESSOR_ARCHITECTURE -eq 'X86'"
-        resource.should_skip?(:run).should be_true
+        expect(resource.should_skip?(:run)).to be_truthy
       end
     end
   end

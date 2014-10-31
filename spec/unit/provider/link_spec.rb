@@ -68,7 +68,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         expect(provider.current_resource.link_type).to eq(:symbolic)
       end
       it "should update the source of the existing link with the links target" do
-        expect(paths_eql?(provider.current_resource.to, "#{CHEF_SPEC_DATA}/fofile")).to be_true
+        expect(paths_eql?(provider.current_resource.to, "#{CHEF_SPEC_DATA}/fofile")).to be_truthy
       end
       it "should set the owner" do
         expect(provider.current_resource.owner).to eq(501)
@@ -110,7 +110,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         expect(provider.current_resource.link_type).to eq(:symbolic)
       end
       it "should update the source of the existing link to the link's target" do
-        expect(paths_eql?(provider.current_resource.to, "#{CHEF_SPEC_DATA}/fofile")).to be_true
+        expect(paths_eql?(provider.current_resource.to, "#{CHEF_SPEC_DATA}/fofile")).to be_truthy
       end
       it "should not set the owner" do
         expect(provider.current_resource.owner).to be_nil
@@ -221,7 +221,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         expect(provider.current_resource.link_type).to eq(:hard)
       end
       it "should update the source of the existing link to the link's target" do
-        expect(paths_eql?(provider.current_resource.to, "#{CHEF_SPEC_DATA}/fofile")).to be_true
+        expect(paths_eql?(provider.current_resource.to, "#{CHEF_SPEC_DATA}/fofile")).to be_truthy
       end
       it "should not set the owner" do
         expect(provider.current_resource.owner).to eq(nil)

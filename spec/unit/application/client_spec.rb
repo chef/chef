@@ -19,16 +19,16 @@ require 'spec_helper'
 
 describe Chef::Application::Client, "reconfigure" do
   before do
-    Kernel.stub(:trap).and_return(:ok)
+    allow(Kernel).to receive(:trap).and_return(:ok)
 
     @original_argv = ARGV.dup
     ARGV.clear
 
     @app = Chef::Application::Client.new
-    @app.stub(:trap)
-    @app.stub(:configure_opt_parser).and_return(true)
-    @app.stub(:configure_chef).and_return(true)
-    @app.stub(:configure_logging).and_return(true)
+    allow(@app).to receive(:trap)
+    allow(@app).to receive(:configure_opt_parser).and_return(true)
+    allow(@app).to receive(:configure_chef).and_return(true)
+    allow(@app).to receive(:configure_logging).and_return(true)
     @app.cli_arguments = []
     Chef::Config[:interval] = 10
 
@@ -53,7 +53,7 @@ describe Chef::Application::Client, "reconfigure" do
       end
 
       it "should terminate with message" do
-        Chef::Application.should_receive(:fatal!).with(
+        expect(Chef::Application).to receive(:fatal!).with(
 "Unforked chef-client interval runs are disabled in Chef 12.
 Configuration settings:
   interval  = 600 seconds
@@ -71,7 +71,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
 
       it "should reconfigure chef-client" do
         @app.reconfigure
-        Chef::Config[:interval].should be_nil
+        expect(Chef::Config[:interval]).to be_nil
       end
     end
   end
@@ -84,7 +84,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
 
     it "should set the interval to 1800" do
       @app.reconfigure
-      Chef::Config.interval.should == 1800
+      expect(Chef::Config.interval).to eq(1800)
     end
   end
 
@@ -98,12 +98,12 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
 
     it "ignores the splay" do
       @app.reconfigure
-      Chef::Config.splay.should be_nil
+      expect(Chef::Config.splay).to be_nil
     end
 
     it "forces the interval to nil" do
       @app.reconfigure
-      Chef::Config.interval.should be_nil
+      expect(Chef::Config.interval).to be_nil
     end
 
   end
@@ -116,13 +116,13 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
 
     before do
       Chef::Config[:json_attribs] = json_source
-      Chef::ConfigFetcher.should_receive(:new).with(json_source).
+      expect(Chef::ConfigFetcher).to receive(:new).with(json_source).
         and_return(config_fetcher)
     end
 
     it "reads the JSON attributes from the specified source" do
       @app.reconfigure
-      @app.chef_client_json.should == json_attribs
+      expect(@app.chef_client_json).to eq(json_attribs)
     end
   end
 end
@@ -131,13 +131,13 @@ describe Chef::Application::Client, "setup_application" do
   before do
     @app = Chef::Application::Client.new
     # this is all stuff the reconfigure method needs
-    @app.stub(:configure_opt_parser).and_return(true)
-    @app.stub(:configure_chef).and_return(true)
-    @app.stub(:configure_logging).and_return(true)
+    allow(@app).to receive(:configure_opt_parser).and_return(true)
+    allow(@app).to receive(:configure_chef).and_return(true)
+    allow(@app).to receive(:configure_logging).and_return(true)
   end
 
   it "should change privileges" do
-    Chef::Daemon.should_receive(:change_privilege).and_return(true)
+    expect(Chef::Daemon).to receive(:change_privilege).and_return(true)
     @app.setup_application
   end
   after do
@@ -159,9 +159,9 @@ describe Chef::Application::Client, "configure_chef" do
 
   it "should set the colored output to false by default on windows and true otherwise" do
     if windows?
-      Chef::Config[:color].should be_false
+      expect(Chef::Config[:color]).to be_falsey
     else
-      Chef::Config[:color].should be_true
+      expect(Chef::Config[:color]).to be_truthy
     end
   end
 end
@@ -177,8 +177,8 @@ describe Chef::Application::Client, "run_application", :unix_only do
 
     @pipe = IO.pipe
     @client = Chef::Client.new
-    Chef::Client.stub(:new).and_return(@client)
-    @client.stub(:run) do
+    allow(Chef::Client).to receive(:new).and_return(@client)
+    allow(@client).to receive(:run) do
       @pipe[1].puts 'started'
       sleep 1
       @pipe[1].puts 'finished'
@@ -189,7 +189,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
     context "when converging in forked process" do
       before do
         Chef::Config[:daemonize] = true
-        Chef::Daemon.stub(:daemonize).and_return(true)
+        allow(Chef::Daemon).to receive(:daemonize).and_return(true)
       end
 
       it "should exit hard with exitstatus 3" do
@@ -198,19 +198,19 @@ describe Chef::Application::Client, "run_application", :unix_only do
         end
         Process.kill("TERM", pid)
         _pid, result = Process.waitpid2(pid)
-        result.exitstatus.should == 3
+        expect(result.exitstatus).to eq(3)
       end
 
       it "should allow child to finish converging" do
         pid = fork do
           @app.run_application
         end
-        @pipe[0].gets.should == "started\n"
+        expect(@pipe[0].gets).to eq("started\n")
         Process.kill("TERM", pid)
         Process.wait
         sleep 1 # Make sure we give the converging child process enough time to finish
-        IO.select([@pipe[0]], nil, nil, 0).should_not be_nil
-        @pipe[0].gets.should == "finished\n"
+        expect(IO.select([@pipe[0]], nil, nil, 0)).not_to be_nil
+        expect(@pipe[0].gets).to eq("finished\n")
       end
     end
 
@@ -224,12 +224,12 @@ describe Chef::Application::Client, "run_application", :unix_only do
         pid = fork do
           @app.run_application
         end
-        @pipe[0].gets.should == "started\n"
+        expect(@pipe[0].gets).to eq("started\n")
         Process.kill("TERM", pid)
         _pid, result = Process.waitpid2(pid)
-        result.exitstatus.should == 0
-        IO.select([@pipe[0]], nil, nil, 0).should_not be_nil
-        @pipe[0].gets.should == "finished\n"
+        expect(result.exitstatus).to eq(0)
+        expect(IO.select([@pipe[0]], nil, nil, 0)).not_to be_nil
+        expect(@pipe[0].gets).to eq("finished\n")
       end
 
       it "should exit hard when sent before converge" do
@@ -239,7 +239,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
         end
         Process.kill("TERM", pid)
         _pid, result = Process.waitpid2(pid)
-        result.exitstatus.should == 3
+        expect(result.exitstatus).to eq(3)
       end
     end
   end
@@ -255,7 +255,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
       # Chef::Log.init($stderr)
       # Chef::Log.level = :debug
 
-      @app.stub(:run_chef_client) do
+      allow(@app).to receive(:run_chef_client) do
 
         run_count += 1
         if run_count > 3
@@ -277,7 +277,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
       # We have to do it this way because the main loop of
       # Chef::Application::Client swallows most exceptions, and we need to be
       # able to expose our expectation failures to the parent process in the test.
-      @app.stub(:interval_sleep) do |arg|
+      allow(@app).to receive(:interval_sleep) do |arg|
         number_of_sleep_calls += 1
         if number_of_sleep_calls > 1
           exit 127
@@ -286,12 +286,12 @@ describe Chef::Application::Client, "run_application", :unix_only do
     end
 
     it "shouldn't sleep when sent USR1" do
-      @app.stub(:interval_sleep).with(0).and_call_original
+      allow(@app).to receive(:interval_sleep).with(0).and_call_original
       pid = fork do
         @app.run_application
       end
       _pid, result = Process.waitpid2(pid)
-      result.exitstatus.should == 0
+      expect(result.exitstatus).to eq(0)
     end
   end
 end

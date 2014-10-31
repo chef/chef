@@ -92,7 +92,7 @@ END_CLIENT_RB
           shell_out!("#{knife} cookbook upload apache2 #{knife_config_flag}", :cwd => chef_dir)
           versions_list_json = Chef::HTTP::Simple.new("http://[::1]:8900").get("/cookbooks/apache2", "accept" => "application/json")
           versions_list = Chef::JSONCompat.from_json(versions_list_json)
-          versions_list["apache2"]["versions"].should_not be_empty
+          expect(versions_list["apache2"]["versions"]).not_to be_empty
         end
 
         context "and the cookbook has been uploaded to the server" do
@@ -102,7 +102,7 @@ END_CLIENT_RB
 
           it "downloads the cookbook" do
             shell_out!("knife cookbook download apache2 #{knife_config_flag} -d #{cache_path}", :cwd => chef_dir)
-            Dir["#{cache_path}/*"].map {|entry| File.basename(entry)}.should include("apache2-0.0.1")
+            expect(Dir["#{cache_path}/*"].map {|entry| File.basename(entry)}).to include("apache2-0.0.1")
           end
         end
 

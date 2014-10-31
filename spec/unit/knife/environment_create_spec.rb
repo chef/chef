@@ -21,49 +21,49 @@ require 'spec_helper'
 describe Chef::Knife::EnvironmentCreate do
   before(:each) do
     @knife = Chef::Knife::EnvironmentCreate.new
-    @knife.stub(:msg).and_return true
-    @knife.stub(:output).and_return true
-    @knife.stub(:show_usage).and_return true
+    allow(@knife).to receive(:msg).and_return true
+    allow(@knife).to receive(:output).and_return true
+    allow(@knife).to receive(:show_usage).and_return true
     @knife.name_args = [ "production" ]
 
     @environment = Chef::Environment.new
-    @environment.stub(:save)
+    allow(@environment).to receive(:save)
 
-    Chef::Environment.stub(:new).and_return @environment
-    @knife.stub(:edit_data).and_return @environment
+    allow(Chef::Environment).to receive(:new).and_return @environment
+    allow(@knife).to receive(:edit_data).and_return @environment
   end
 
   describe "run" do
     it "should create a new environment" do
-      Chef::Environment.should_receive(:new)
+      expect(Chef::Environment).to receive(:new)
       @knife.run
     end
 
     it "should set the environment name" do
-      @environment.should_receive(:name).with("production")
+      expect(@environment).to receive(:name).with("production")
       @knife.run
     end
 
     it "should not print the environment" do
-      @knife.should_not_receive(:output)
+      expect(@knife).not_to receive(:output)
       @knife.run
     end
 
     it "should prompt you to edit the data" do
-      @knife.should_receive(:edit_data).with(@environment)
+      expect(@knife).to receive(:edit_data).with(@environment)
       @knife.run
     end
 
     it "should save the environment" do
-      @environment.should_receive(:save)
+      expect(@environment).to receive(:save)
       @knife.run
     end
 
     it "should show usage and exit when no environment name is provided" do
       @knife.name_args = [ ]
-      @knife.ui.should_receive(:fatal)
-      @knife.should_receive(:show_usage)
-      lambda { @knife.run }.should raise_error(SystemExit)
+      expect(@knife.ui).to receive(:fatal)
+      expect(@knife).to receive(:show_usage)
+      expect { @knife.run }.to raise_error(SystemExit)
     end
 
     describe "with --description" do
@@ -72,7 +72,7 @@ describe Chef::Knife::EnvironmentCreate do
       end
 
       it "should set the description" do
-        @environment.should_receive(:description).with("This is production")
+        expect(@environment).to receive(:description).with("This is production")
         @knife.run
       end
     end
@@ -83,7 +83,7 @@ describe Chef::Knife::EnvironmentCreate do
       end
 
       it "should pretty print the environment, formatted for display" do
-        @knife.should_receive(:output).with(@environment)
+        expect(@knife).to receive(:output).with(@environment)
         @knife.run
       end
     end

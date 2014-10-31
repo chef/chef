@@ -38,7 +38,7 @@ describe Chef::Mixin::ShellOut do
       let(:command_args) { [ cmd ] }
 
       it 'should not edit command args' do
-        should eql(command_args)
+        is_expected.to eql(command_args)
       end
     end
 
@@ -47,7 +47,7 @@ describe Chef::Mixin::ShellOut do
       let(:environment) { { 'LC_ALL' => 'C' } }
 
       it 'should not edit command args' do
-        should eql(command_args)
+        is_expected.to eql(command_args)
       end
     end
 
@@ -66,7 +66,7 @@ describe Chef::Mixin::ShellOut do
       let(:command_log_level) { :warn }
 
       it 'should convert :command_log_level to :log_level' do
-        should eql [ cmd, { :log_level => command_log_level } ]
+        is_expected.to eql [ cmd, { :log_level => command_log_level } ]
       end
 
       should_emit_deprecation_warning_about :command_log_level, :log_level
@@ -77,7 +77,7 @@ describe Chef::Mixin::ShellOut do
       let(:command_log_prepend) { 'PROVIDER:' }
 
       it 'should convert :command_log_prepend to :log_tag' do
-        should eql [ cmd, { :log_tag => command_log_prepend } ]
+        is_expected.to eql [ cmd, { :log_tag => command_log_prepend } ]
       end
 
       should_emit_deprecation_warning_about :command_log_prepend, :log_tag
@@ -88,7 +88,7 @@ describe Chef::Mixin::ShellOut do
       let(:command_log_level) { :warn }
 
       it "should convert 'command_log_level' to :log_level" do
-        should eql [ cmd, { :log_level => command_log_level } ]
+        is_expected.to eql [ cmd, { :log_level => command_log_level } ]
       end
 
       should_emit_deprecation_warning_about :command_log_level, :log_level
@@ -99,7 +99,7 @@ describe Chef::Mixin::ShellOut do
       let(:command_log_prepend) { 'PROVIDER:' }
 
       it "should convert 'command_log_prepend' to :log_tag" do
-        should eql [ cmd, { :log_tag => command_log_prepend } ]
+        is_expected.to eql [ cmd, { :log_tag => command_log_prepend } ]
       end
 
       should_emit_deprecation_warning_about :command_log_prepend, :log_tag

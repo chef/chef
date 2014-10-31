@@ -47,7 +47,7 @@ describe Chef::Resource::Execute do
         true
       end
       execute_resource.run_action(:run)
-      execute_resource.should be_updated_by_last_action
+      expect(execute_resource).to be_updated_by_last_action
     end
   end
 
@@ -58,7 +58,7 @@ describe Chef::Resource::Execute do
 
     it "guard inherits :cwd from resource" do
       execute_resource.run_action(:run)
-      execute_resource.should be_updated_by_last_action
+      expect(execute_resource).to be_updated_by_last_action
     end
   end
 
@@ -77,7 +77,7 @@ describe Chef::Resource::Execute do
 
     it "guard inherits :environment value from resource" do
       execute_resource.run_action(:run)
-      execute_resource.should be_updated_by_last_action
+      expect(execute_resource).to be_updated_by_last_action
     end
 
     describe "when guard sets additional values in the :environment" do
@@ -91,7 +91,7 @@ describe Chef::Resource::Execute do
 
       it "guard sees merged value for in its ENV" do
         execute_resource.run_action(:run)
-        execute_resource.should be_updated_by_last_action
+        expect(execute_resource).to be_updated_by_last_action
       end
     end
 
@@ -106,7 +106,7 @@ describe Chef::Resource::Execute do
 
       it "guard sees value from guard options in its ENV" do
         execute_resource.run_action(:run)
-        execute_resource.should be_updated_by_last_action
+        expect(execute_resource).to be_updated_by_last_action
       end
     end
   end

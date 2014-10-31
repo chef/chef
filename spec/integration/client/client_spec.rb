@@ -44,7 +44,7 @@ EOM
 
       it 'should fail when cwd is below high above and paths are not specified' do
         result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", :cwd => File.expand_path('..', path_to('')))
-        result.exitstatus.should == 1
+        expect(result.exitstatus).to eq(1)
       end
     end
 
@@ -54,7 +54,7 @@ EOM
       it 'should load .chef/knife.rb when -z is specified' do
         result = shell_out("#{chef_client} -z -o 'x::default'", :cwd => path_to(''))
         # FATAL: Configuration error NoMethodError: undefined method `xxx' for nil:NilClass
-        result.stdout.should include("xxx")
+        expect(result.stdout).to include("xxx")
       end
 
     end
@@ -135,8 +135,8 @@ EOM
         result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" #{path_to('arbitrary.rb')} #{path_to('arbitrary2.rb')}", :cwd => chef_dir)
         result.error!
 
-        IO.read(path_to('tempfile.txt')).should == '1'
-        IO.read(path_to('tempfile2.txt')).should == '2'
+        expect(IO.read(path_to('tempfile.txt'))).to eq('1')
+        expect(IO.read(path_to('tempfile2.txt'))).to eq('2')
       end
 
       it "should run recipes specified as relative paths directly on the command line" do
@@ -155,7 +155,7 @@ EOM
         result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" arbitrary.rb", :cwd => path_to(''))
         result.error!
 
-        IO.read(path_to('tempfile.txt')).should == '1'
+        expect(IO.read(path_to('tempfile.txt'))).to eq('1')
       end
 
       it "should run recipes specified directly on the command line AFTER recipes in the run list" do
@@ -179,7 +179,7 @@ EOM
         result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o x::constant_definition arbitrary.rb", :cwd => path_to(''))
         result.error!
 
-        IO.read(path_to('tempfile.txt')).should == '1'
+        expect(IO.read(path_to('tempfile.txt'))).to eq('1')
       end
 
     end
@@ -211,7 +211,7 @@ cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --local-mode", :cwd => chef_dir)
-      result.stdout.should_not include("SSL validation of HTTPS requests is disabled.")
+      expect(result.stdout).not_to include("SSL validation of HTTPS requests is disabled.")
       result.error!
     end
 
@@ -232,8 +232,8 @@ cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -r 'x::default' -z", :cwd => chef_dir)
-      result.stdout.should_not include("Overridden Run List")
-      result.stdout.should include("Run List is [recipe[x::default]]")
+      expect(result.stdout).not_to include("Overridden Run List")
+      expect(result.stdout).to include("Run List is [recipe[x::default]]")
       #puts result.stdout
       result.error!
     end

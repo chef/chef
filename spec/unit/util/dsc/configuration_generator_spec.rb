@@ -51,9 +51,9 @@ describe Chef::Util::DSC::ConfigurationGenerator do
     context 'when strings are used as switches' do
       it 'should merge the hash if there are no restricted switches' do
         merged = conf_man.send(:get_merged_configuration_flags!, {'flag' => 'a'}, 'hello')
-        merged.should include(:flag)
-        merged[:flag].should eql('a')
-        merged.should include(:outputpath)
+        expect(merged).to include(:flag)
+        expect(merged[:flag]).to eql('a')
+        expect(merged).to include(:outputpath)
       end
 
       it 'should raise an ArgumentError if you try to override outputpath' do
@@ -70,16 +70,16 @@ describe Chef::Util::DSC::ConfigurationGenerator do
 
       it 'should be case insensitive to switches that are allowed' do
         merged = conf_man.send(:get_merged_configuration_flags!, {'FLAG' => 'a'}, 'hello')
-        merged.should include(:flag)
+        expect(merged).to include(:flag)
       end
     end
 
     context 'when symbols are used as switches' do
       it 'should merge the hash if there are no restricted switches' do
         merged = conf_man.send(:get_merged_configuration_flags!, {:flag => 'a'}, 'hello')
-        merged.should include(:flag)
-        merged[:flag].should eql('a')
-        merged.should include(:outputpath)
+        expect(merged).to include(:flag)
+        expect(merged[:flag]).to eql('a')
+        expect(merged).to include(:outputpath)
       end
 
       it 'should raise an ArgumentError if you try to override outputpath' do
@@ -96,21 +96,21 @@ describe Chef::Util::DSC::ConfigurationGenerator do
 
       it 'should be case insensitive to switches that are allowed' do
         merged = conf_man.send(:get_merged_configuration_flags!, {:FLAG => 'a'}, 'hello')
-        merged.should include(:flag)
+        expect(merged).to include(:flag)
       end
     end
 
     context 'when there are no flags' do
       it 'should supply an output path if configuration_flags is an empty hash' do
         merged = conf_man.send(:get_merged_configuration_flags!, {}, 'hello')
-        merged.should include(:outputpath)
-        merged.length.should eql(1)
+        expect(merged).to include(:outputpath)
+        expect(merged.length).to eql(1)
       end
 
       it 'should supply an output path if configuration_flags is an empty hash' do
         merged = conf_man.send(:get_merged_configuration_flags!, nil, 'hello')
-        merged.should include(:outputpath)
-        merged.length.should eql(1)
+        expect(merged).to include(:outputpath)
+        expect(merged.length).to eql(1)
       end
     end
 
@@ -165,7 +165,7 @@ describe Chef::Util::DSC::ConfigurationGenerator do
           found_configuration = true
         end
       end
-      expect(found_configuration).to be_true
+      expect(found_configuration).to be_truthy
     end
   end
 end

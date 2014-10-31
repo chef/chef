@@ -62,19 +62,19 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
     it "should set running to true if the status command returns 0" do
       allow(@provider).to receive(:shell_out).with("/etc/rc.d/chef status").and_return(OpenStruct.new(:exitstatus => 0))
       @provider.load_current_resource
-      expect(@provider.current_resource.running).to be_true
+      expect(@provider.current_resource.running).to be_truthy
     end
 
     it "should set running to false if the status command returns anything except 0" do
       allow(@provider).to receive(:shell_out).with("/etc/rc.d/chef status").and_return(OpenStruct.new(:exitstatus => 1))
       @provider.load_current_resource
-      expect(@provider.current_resource.running).to be_false
+      expect(@provider.current_resource.running).to be_falsey
     end
 
     it "should set running to false if the status command raises" do
       allow(@provider).to receive(:shell_out).with("/etc/rc.d/chef status").and_raise(Mixlib::ShellOut::ShellCommandFailed)
       @provider.load_current_resource
-      expect(@provider.current_resource.running).to be_false
+      expect(@provider.current_resource.running).to be_falsey
     end
 
   end
@@ -135,13 +135,13 @@ aj        7842  5057  0 21:26 pts/2    00:00:06 poos
 RUNNING_PS
       allow(@status).to receive(:stdout).and_return(@stdout)
       @provider.load_current_resource
-      expect(@provider.current_resource.running).to be_true
+      expect(@provider.current_resource.running).to be_truthy
     end
 
     it "determines the service is not running when it does not appear in ps" do
       allow(@provider).to receive(:shell_out!).and_return(@status)
       @provider.load_current_resource
-      expect(@provider.current_resource.running).to be_false
+      expect(@provider.current_resource.running).to be_falsey
     end
 
     it "should raise an exception if ps fails" do

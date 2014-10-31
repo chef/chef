@@ -53,7 +53,7 @@ describe Chef::Resource::Conditional do
       end
 
       it "indicates that resource convergence should continue" do
-        expect(@conditional.continue?).to be_true
+        expect(@conditional.continue?).to be_truthy
       end
     end
 
@@ -64,7 +64,7 @@ describe Chef::Resource::Conditional do
       end
 
       it "indicates that resource convergence should not continue" do
-        expect(@conditional.continue?).to be_false
+        expect(@conditional.continue?).to be_falsey
       end
     end
 
@@ -75,7 +75,7 @@ describe Chef::Resource::Conditional do
       end
 
       it 'indicates that resource convergence should not continue' do
-        expect(@conditional.continue?).to be_false
+        expect(@conditional.continue?).to be_falsey
       end
 
       it 'should log a warning' do
@@ -90,7 +90,7 @@ describe Chef::Resource::Conditional do
       end
 
       it "indicates that resource convergence should continue" do
-        expect(@conditional.continue?).to be_true
+        expect(@conditional.continue?).to be_truthy
       end
     end
 
@@ -100,7 +100,7 @@ describe Chef::Resource::Conditional do
       end
 
       it "indicates that resource convergence should not continue" do
-        expect(@conditional.continue?).to be_false
+        expect(@conditional.continue?).to be_falsey
       end
     end
   end
@@ -112,7 +112,7 @@ describe Chef::Resource::Conditional do
       end
 
       it "indicates that resource convergence should not continue" do
-        expect(@conditional.continue?).to be_false
+        expect(@conditional.continue?).to be_falsey
       end
     end
 
@@ -123,7 +123,7 @@ describe Chef::Resource::Conditional do
       end
 
       it "indicates that resource convergence should continue" do
-        expect(@conditional.continue?).to be_true
+        expect(@conditional.continue?).to be_truthy
       end
     end
 
@@ -134,7 +134,7 @@ describe Chef::Resource::Conditional do
       end
 
       it 'indicates that resource convergence should continue' do
-        expect(@conditional.continue?).to be_true
+        expect(@conditional.continue?).to be_truthy
       end
 
       it 'should log a warning' do
@@ -149,7 +149,7 @@ describe Chef::Resource::Conditional do
       end
 
       it "indicates that resource convergence should not continue" do
-        expect(@conditional.continue?).to be_false
+        expect(@conditional.continue?).to be_falsey
       end
     end
 
@@ -159,7 +159,7 @@ describe Chef::Resource::Conditional do
       end
 
       it "indicates that resource convergence should continue" do
-        expect(@conditional.continue?).to be_true
+        expect(@conditional.continue?).to be_truthy
       end
     end
   end
