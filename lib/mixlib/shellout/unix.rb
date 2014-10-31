@@ -229,7 +229,7 @@ module Mixlib
       # Some patch levels of ruby in wide use (in particular the ruby 1.8.6 on OSX)
       # segfault when you IO.select a pipe that's reached eof. Weak sauce.
       def open_pipes
-        @open_pipes ||= [child_stdout, child_stderr]
+        @open_pipes ||= [child_stdout, child_stderr, child_process_status]
       end
 
       # Keep this unbuffered for now
@@ -241,11 +241,10 @@ module Mixlib
 
       def attempt_buffer_read
         ready = IO.select(open_pipes, nil, nil, READ_WAIT_TIME)
-        if ready && ready.first.include?(child_stdout)
-          read_stdout_to_buffer
-        end
-        if ready && ready.first.include?(child_stderr)
-          read_stderr_to_buffer
+        if ready
+          read_stdout_to_buffer if ready.first.include?(child_stdout)
+          read_stderr_to_buffer if ready.first.include?(child_stderr)
+          read_process_status_to_buffer if ready.first.include?(child_process_status)
         end
         ready
       end
@@ -268,6 +267,15 @@ module Mixlib
       rescue Errno::EAGAIN
       rescue EOFError
         open_pipes.delete(child_stderr)
+      end
+
+      def read_process_status_to_buffer
+        while chunk = child_process_status.read_nonblock(READ_SIZE)
+          @process_status << chunk
+        end
+      rescue Errno::EAGAIN
+      rescue EOFError
+        open_pipes.delete(child_process_status)
       end
 
       def fork_subprocess
@@ -311,7 +319,8 @@ module Mixlib
       # assume everything went well.
       def propagate_pre_exec_failure
         begin
-          e = Marshal.load child_process_status
+          attempt_buffer_read
+          e = Marshal.load(@process_status)
           raise(Exception === e ? e : "unknown failure: #{e.inspect}")
         rescue EOFError # If we get an EOF error, then the exec was successful
           true
