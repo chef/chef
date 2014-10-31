@@ -386,5 +386,27 @@ class Chef
     end
 
     class NoAuditsProvided < RuntimeError; end
+
+    # If a converge or audit fails, we want to wrap the output from those errors into 1 error so we can
+    # see both issues in the output.  It is possible that nil will be provided.  You must call `fill_backtrace`
+    # to correctly populate the backtrace with the wrapped backtraces.
+    class RunFailedWrappingError < RuntimeError
+      attr_reader :wrapped_errors
+      def initialize(*errors)
+        errors = errors.select {|e| !e.nil?}
+        output = "Found #{errors.size} errors, they are stored in the backtrace\n"
+        @wrapped_errors = errors
+        super output
+      end
+
+      def fill_backtrace
+        backtrace = []
+        wrapped_errors.each_with_index do |e,i|
+          backtrace << "#{i+1}) #{e.message}"
+          backtrace += e.backtrace
+          backtrace << ""
+        end
+      end
+    end
   end
 end
