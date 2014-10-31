@@ -1092,6 +1092,22 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "to_s" do
+
+    before do
+      @attributes = Chef::Node::Attribute.new(
+        {
+          "one" =>  "two",
+          "hut" =>  "three",
+        }
+      )
+    end
+
+    it "should be readable when called to_s" do
+      @attributes.should respond_to(:to_s)
+    end
+  end
+
   # For expedience, this test is implementation-heavy.
   describe "when a component attribute is mutated" do
     [
