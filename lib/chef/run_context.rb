@@ -53,9 +53,6 @@ class Chef
     # The list of control groups to execute during the audit phase
     attr_accessor :controls_groups
 
-    # Chef::ProviderResolver for this run
-    attr_accessor :provider_resolver
-
     # A Hash containing the immediate notifications triggered by resources
     # during the converge phase of the chef run.
     attr_accessor :immediate_notification_collection
