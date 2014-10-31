@@ -15,44 +15,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'rspec/core'
+#require 'chef/audit'
+require 'chef/audit/chef_example_group'
 
 class Chef
   module DSL
     module Audit
 
-      # List of `control` example groups to be executed
-      @example_groups = nil
-
       # Adds the controls group and block (containing controls to execute) to the runner's list of pending examples
       def controls(group_name, &group_block)
-        puts "entered group named #{group_name}"
-        @example_groups = []
-
-        if group_block
-          yield
-        end
+        raise ::Chef::Exceptions::NoAuditsProvided("You must provide a block with audits") unless group_block
 
         # TODO add the @example_groups list to the runner for later execution
-        p @example_groups
-
-        # Reset this to nil so we can tell if a `control` message is sent outside a `controls` block
-        # Prevents defining then un-defining the `control` singleton method
-        # TODO this does not prevent calling `control` inside `control`
-        @example_groups = nil
-      end
-
-      def control(*args, &control_block)
-        if @example_groups.nil?
-          raise "Cannot define a `control` unless inside a `controls` block"
-        end
-
-        example_name = args[0]
-        puts "entered control block named #{example_name}"
-        # TODO is this the correct way to define one?
-        # https://github.com/rspec/rspec-core/blob/master/lib/rspec/core/example_group.rb#L197
-        # https://github.com/rspec/rspec-core/blob/master/lib/rspec/core/example_group.rb#L323
-        @example_groups << ::RSpec::Core::ExampleGroup.describe(args, &control_block)
+        # run_context.audit_runner.register
+        ::Chef::Audit::ChefExampleGroup.describe(group_name, &group_block)
       end
 
     end

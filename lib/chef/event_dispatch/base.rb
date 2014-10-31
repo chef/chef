@@ -225,6 +225,22 @@ class Chef
       def converge_complete
       end
 
+      # Called if the converge phase fails
+      def converge_failed(exception)
+      end
+
+      # Called before audit phase starts
+      def audit_start(run_context)
+      end
+
+      # Called when the audit phase is finished.
+      def audit_complete
+      end
+
+      # Called if the audit phase fails
+      def audit_failed(exception)
+      end
+
       # TODO: need events for notification resolve?
       # def notifications_resolved
       # end
