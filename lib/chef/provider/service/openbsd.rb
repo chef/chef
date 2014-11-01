@@ -93,7 +93,7 @@ class Chef
                 update_rcl! @rc_conf_local.sub(/^#{Regexp.escape(builtin_service_enable_variable_name)}=.*/, '')
               else
                 # add line with blank string, which means enable
-                update_rcl! @rc_conf_local + "\n" + "#{builtin_service_enable_variable_name}=\"\""
+                update_rcl! @rc_conf_local + "\n" + "#{builtin_service_enable_variable_name}=\"\"\n"
               end
             else
               # add to pkg_scripts, most recent addition goes last
@@ -103,8 +103,7 @@ class Chef
               if @rc_conf_local.match(/^pkg_scripts="(.*)"/)
                 new_rcl = @rc_conf_local.sub(/^pkg_scripts="(.*)"/, "pkg_scripts=\"#{new_services_list.join(' ')}\"")
               else
-                new_rcl = @rc_conf_local + "\n" + "pkg_scripts=\"#{new_services_list.join(' ')}\""
-                new_rcl.strip!
+                new_rcl = @rc_conf_local + "\n" + "pkg_scripts=\"#{new_services_list.join(' ')}\"\n"
               end
               update_rcl! new_rcl
             end
@@ -116,7 +115,7 @@ class Chef
             if is_builtin?
               if is_enabled_by_default?
                 # add line to disable
-                update_rcl! @rc_conf_local + "\n" + "#{builtin_service_enable_variable_name}=\"NO\""
+                update_rcl! @rc_conf_local + "\n" + "#{builtin_service_enable_variable_name}=\"NO\"\n"
               else
                 # remove line to disable
                 update_rcl! @rc_conf_local.sub(/^#{Regexp.escape(builtin_service_enable_variable_name)}=.*/, '')
