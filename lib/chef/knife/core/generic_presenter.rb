@@ -178,6 +178,8 @@ class Chef
           nested_value_spec.split(".").each do |attr|
             if data.nil?
               nil # don't get no method error on nil
+            elsif data.respond_to?(:[]) && data.kind_of?(Chef::Node)
+              data = data[attr]
             elsif data.respond_to?(attr.to_sym)
               data = data.send(attr.to_sym)
             elsif data.respond_to?(:[])
