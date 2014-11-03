@@ -18,6 +18,7 @@
 
 # XXX: mixing shellout into a mixin into classes has to be code smell
 require 'chef/mixin/shell_out'
+require 'chef/mixin/which'
 
 class Chef
   class Platform
@@ -25,6 +26,7 @@ class Chef
       class << self
 
         include Chef::Mixin::ShellOut
+        include Chef::Mixin::Which
 
         # This helper is mostly used to sort out the mess of different
         # linux mechanisms that can be used to start services.  It does
@@ -102,8 +104,15 @@ class Chef
 
         private
 
+        def systemctl_path
+          if @systemctl_path.nil?
+            @systemctl_path = which("systemctl")
+          end
+          @systemctl_path
+        end
+
         def systemd_sanity_check?
-          ::File.exist?("/bin/systemctl") && File.exist?("/proc/1/comm") && File.open("/proc/1/comm").gets.chomp == "systemd"
+          systemctl_path && File.exist?("/proc/1/comm") && File.open("/proc/1/comm").gets.chomp == "systemd"
         end
 
         def extract_systemd_services(command)
@@ -117,8 +126,8 @@ class Chef
         end
 
         def platform_has_systemd_unit?(service_name)
-          services = extract_systemd_services("systemctl --all") +
-            extract_systemd_services("systemctl list-unit-files")
+          services = extract_systemd_services("#{systemctl_path} --all") +
+            extract_systemd_services("#{systemctl_path} list-unit-files")
           services.include?(service_name)
         rescue Mixlib::ShellOut::ShellCommandFailed
           false
