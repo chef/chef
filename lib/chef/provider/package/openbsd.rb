@@ -51,7 +51,7 @@ class Chef
           unless @current_resource.version
             version_string  = ''
             version_string += "-#{version}" if version
-            if parts = name.match(/^(.+?)--(.+)/)
+            if parts = name.match(/^(.+?)--(.+)/) # use double-dash for stems with flavors, see man page for pkg_add
               name = parts[1]
             end
             shell_out!("pkg_add -r #{name}#{version_string}", :env => {"PKG_PATH" => @new_resource.source}).status
