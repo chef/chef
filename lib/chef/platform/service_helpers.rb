@@ -106,16 +106,19 @@ class Chef
           ::File.exist?("/bin/systemctl") && File.exist?("/proc/1/comm") && File.open("/proc/1/comm").gets.chomp == "systemd"
         end
 
-        def extract_systemd_services(output)
+        def extract_systemd_services(command)
+          output = shell_out!(command).stdout
           # first line finds e.g. "sshd.service"
           services = output.lines.split.map { |l| l.split[0] }
           # this splits off the suffix after the last dot to return "sshd"
           services += services.map { |s| s.sub(/(.*)\..*/, '\1') }
+        rescue Mixlib::ShellOut::ShellCommandFailed
+          false
         end
 
         def platform_has_systemd_unit?(service_name)
-          services = extract_systemd_services(shell_out!("systemctl --all").stdout) +
-            extract_systemd_services(shell_out!("systemctl --list-unit-files").stdout)
+          services = extract_systemd_services("systemctl --all") +
+            extract_systemd_services("systemctl list-unit-files")
           services.include?(service_name)
         rescue Mixlib::ShellOut::ShellCommandFailed
           false
