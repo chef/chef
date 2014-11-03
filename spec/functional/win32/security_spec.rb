@@ -32,6 +32,6 @@ describe 'Chef::Win32::Security', :windows_only do
   #
   # TODO - Add negative tests once mixlib-shellout has user support
   it "has_admin_privileges? returns false when running as non-admin" do
-    pending "requires user support in mixlib-shellout"
+    skip "requires user support in mixlib-shellout"
   end
 end
