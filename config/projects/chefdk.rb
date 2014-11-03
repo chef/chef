@@ -72,6 +72,9 @@ override :zlib,           version: "1.2.8"
 
 dependency "preparation"
 dependency "chefdk"
+dependency "chef-provisioning"
+dependency "chef-provisioning-fog"
+dependency "chef-provisioning-vagrant"
 dependency "rubygems-customization"
 dependency "version-manifest"
 

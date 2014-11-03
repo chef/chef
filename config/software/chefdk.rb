@@ -56,11 +56,11 @@ build do
 
   # Perform multiple gem installs to better isolate/debug failures
   {
-    'chefspec'        => '4.0.1',
-    'fauxhai'         => '2.2.0',
-    'rubocop'         => '0.18.1',
-    'knife-spork'     => '1.4.1',
-    'kitchen-vagrant' => '0.15.0',
+    'chefspec'          => '4.0.1',
+    'fauxhai'           => '2.2.0',
+    'rubocop'           => '0.18.1',
+    'knife-spork'       => '1.4.1',
+    'kitchen-vagrant'   => '0.15.0',
     # Strainer build is hosed on windows
     # 'strainer'        => '0.15.0',
   }.each do |name, version|
