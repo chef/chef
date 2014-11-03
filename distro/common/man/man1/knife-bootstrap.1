@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-BOOTSTRAP" "1" "Chef 11.16" "" "knife bootstrap"
+.TH "KNIFE-BOOTSTRAP" "1" "Chef 12.0" "" "knife bootstrap"
 .SH NAME
 knife-bootstrap \- The man page for the knife bootstrap subcommand.
 .
@@ -57,8 +57,24 @@ This subcommand has the following options:
 .B \fB\-A\fP, \fB\-\-forward\-agent\fP
 Use to enable SSH agent forwarding.
 .TP
+.B \fB\-\-bootstrap\-curl\-options OPTIONS\fP
+Use to specify arbitrary options to be added to the bootstrap command when using cURL\&. This option may not be used in the same command with \fB\-\-bootstrap\-install\-command\fP\&.
+.TP
+.B \fB\-\-bootstrap\-install\-command COMMAND\fP
+Use to execute a custom installation command sequence for the chef\-client\&. This option may not be used in the same command with \fB\-\-bootstrap\-curl\-options\fP, \fB\-\-bootstrap\-install\-sh\fP, or \fB\-\-bootstrap\-wget\-options\fP\&.
+.TP
+.B \fB\-\-bootstrap\-install\-sh URL\fP
+Use to fetch and execute an installation script at the specified URL. This option may not be used in the same command with \fB\-\-bootstrap\-install\-command\fP\&.
+.TP
 .B \fB\-\-bootstrap\-no\-proxy NO_PROXY_URL_or_IP\fP
-A URL or IP address that specifies a location that should not be proxied. Note: This option is used internally by Chef to help verify bootstrap operations during testing and should never be used during an actual bootstrap operation.
+A URL or IP address that specifies a location that should not be proxied.
+.sp
+\fBNOTE:\fP
+.INDENT 7.0
+.INDENT 3.5
+This option is used internally by Chef to help verify bootstrap operations during testing and should never be used during an actual bootstrap operation.
+.UNINDENT
+.UNINDENT
 .TP
 .B \fB\-\-bootstrap\-proxy PROXY_URL\fP
 The proxy server for the node that is the target of a bootstrap operation.
@@ -66,52 +82,53 @@ The proxy server for the node that is the target of a bootstrap operation.
 .B \fB\-\-bootstrap\-version VERSION\fP
 The version of the chef\-client to install.
 .TP
-.B \fB\-c CONFIG_FILE\fP, \fB\-\-config CONFIG_FILE\fP
-The configuration file to use.
-.TP
-.B \fB\-\-chef\-zero\-port PORT\fP
-The port on which chef\-zero will listen.
-.TP
-.B \fB\-\-[no\-]color\fP
-Use to view colored output.
-.TP
-.B \fB\-d DISTRO\fP, \fB\-\-distro DISTRO\fP
-.sp
-\fBWARNING:\fP
-.INDENT 7.0
-.INDENT 3.5
-The default bootstrap operation uses the omnibus installer, which means the default template file (\fBchef\-full\fP) should work on all supported platforms. It is recommended to use custom bootstrap templates only when the omnibus installer cannot be used. The \fB\&.erb\fP file extension is added automatically and should not be passed as part of the bootstrap command.
-.UNINDENT
-.UNINDENT
-.sp
-The template file to be used during a bootstrap operation. The following distributions are supported: \fBchef\-full\fP (the default bootstrap), \fBcentos5\-gems\fP, \fBfedora13\-gems\fP, \fBubuntu10.04\-gems\fP, \fBubuntu10.04\-apt\fP, \fBubuntu12.04\-gems\fP, and the name of a custom bootstrap template file. When this option is used, knife will search for the template file in the following order: the \fBbootstrap/\fP folder in the current working directory, the \fBbootstrap/\fP folder in the chef\-repo, the \fBbootstrap/\fP folder in the \fB~/.chef/\fP directory, or a default bootstrap file. Do not use the \fB\-\-template\-file\fP option when \fB\-\-distro\fP is specified.
-.TP
-.B \fB\-\-defaults\fP
-Use to have knife use the default value instead of asking a user to provide one.
-.TP
-.B \fB\-\-disable\-editing\fP
-Use to prevent the $EDITOR from being opened and to accept data as\-is.
-.TP
-.B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
-The $EDITOR that is used for all interactive commands.
+.B \fB\-\-bootstrap\-wget\-options OPTIONS\fP
+Use to specify arbitrary options to be added to the bootstrap command when using GNU Wget\&. This option may not be used in the same command with \fB\-\-bootstrap\-install\-command\fP\&.
 .TP
 .B \fB\-E ENVIRONMENT\fP, \fB\-\-environment ENVIRONMENT\fP
 The name of the environment. When this option is added to a command, the command will run only against the named environment.
 .TP
-.B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
-The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, and \fBpp\fP\&.
-.TP
 .B \fB\-G GATEWAY\fP, \fB\-\-ssh\-gateway GATEWAY\fP
 The SSH tunnel or gateway that is used to run a bootstrap action on a machine that is not accessible from the workstation.
 .TP
-.B \fB\-h\fP, \fB\-\-help\fP
-Shows help for the command.
-.TP
 .B \fB\-\-hint HINT_NAME[=HINT_FILE]\fP
-An Ohai hint to be set on the target of the bootstrap. The hint is contained in a file and is formatted as JSON: \fB{"attribute":"value","attribute":"value"...}\fP\&. \fBHINT_NAME\fP is the name of the hint and \fBHINT_FILE\fP is the name of the hint file located at \fB/etc/chef/ohai/hints/HINT_FILE.json\fP\&. Use multiple \fB\-\-hint\fP options in the command to specify multiple hints.
-.TP
-.B \fB\-\-[no\-]host\-key\-verify\fP
-Use \fB\-\-no\-host\-key\-verify\fP to disable host key verification. Default setting: \fB\-\-host\-key\-verify\fP\&.
+Use to specify an Ohai hint to be set on the target node.
+.sp
+Ohai hints are used to tell Ohai something about the system that it is running on that it would not be able to discover itself. An Ohai hint exists if a JSON file exists in the hint directory with the same name as the hint. For example, calling \fBhint?(\(aqantartica\(aq)\fP in an Ohai plugin would return an empty hash if the file \fBantartica.json\fP existed in the hints directory, and return nil if the file does not exist.
+.sp
+If the hint file contains JSON content, it will be returned as a hash from the call to \fBhint?\fP\&.
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+{
+  "snow": true,
+  "penguins": "many"
+}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+arctic_hint = hint?(\(aqantartica\(aq)
+if arctic_hint[\(aqsnow\(aq]
+  "There are #{arctic_hint[\(aqpenguins\(aq]} penguins here."
+else
+  "There is no snow here, and penguins like snow."
+end
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+The default directory in which hint files are located is \fB/etc/chef/ohai/hints/\fP\&. Use the \fBOhai::Config[:hints_path]\fP setting in the client.rb file to customize this location.
+.sp
+\fBHINT_FILE\fP is the name of the JSON file. \fBHINT_NAME\fP is the name of a hint in a JSON file. Use multiple \fB\-\-hint\fP options to specify multiple hints.
 .TP
 .B \fB\-i IDENTITY_FILE\fP, \fB\-\-identity\-file IDENTITY_FILE\fP
 The SSH identity file used for authentication. Key\-based authentication is recommended.
@@ -119,11 +136,23 @@ The SSH identity file used for authentication. Key\-based authentication is reco
 .B \fB\-j JSON_ATTRIBS\fP, \fB\-\-json\-attributes JSON_ATTRIBS\fP
 A JSON string that is added to the first run of a chef\-client\&.
 .TP
-.B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that knife will use to sign requests made by the API client to the Chef server\&.
-.TP
 .B \fB\-N NAME\fP, \fB\-\-node\-name NAME\fP
 The name of the node.
+.TP
+.B \fB\-\-[no\-]host\-key\-verify\fP
+Use \fB\-\-no\-host\-key\-verify\fP to disable host key verification. Default setting: \fB\-\-host\-key\-verify\fP\&.
+.TP
+.B \fB\-\-[no\-]node\-verify\-api\-cert\fP
+Use \fBverify_api_cert\fP to only do SSL validation of the Chef server connection; may be needed if the chef\-client needs to talk to other services that have broken SSL certificates. If this option is not specified, the setting for \fBverify_api_cert\fP in the configuration file is applied.
+.TP
+.B \fB\-\-node\-ssl\-verify\-mode PEER_OR_NONE\fP
+The verify mode for HTTPS requests.
+.sp
+Use \fB:verify_none\fP to do no validation of SSL certificates.
+.sp
+Use \fB:verify_peer\fP to do validation of all SSL certificates, including the Chef server connections, S3 connections, and any HTTPS \fBremote_file\fP resource URLs used in the chef\-client run. This is the recommended setting.
+.sp
+If this option is not specified, the setting for \fBssl_verify_mode\fP in the configuration file is applied.
 .TP
 .B \fB\-p PORT\fP, \fB\-\-ssh\-port PORT\fP
 The SSH port.
@@ -134,14 +163,8 @@ The SSH password. This can be used to pass the password directly on the command 
 .B \fB\-\-prerelease\fP
 Use to install pre\-release gems.
 .TP
-.B \fB\-\-print\-after\fP
-Use to show data after a destructive operation.
-.TP
 .B \fB\-r RUN_LIST\fP, \fB\-\-run\-list RUN_LIST\fP
 A comma\-separated list of roles and/or recipes to be applied.
-.TP
-.B \fB\-s URL\fP, \fB\-\-server\-url URL\fP
-The URL for the Chef server\&.
 .TP
 .B \fB\-\-secret SECRET\fP
 The encryption key that is used for values contained within a data bag item.
@@ -152,32 +175,17 @@ The path to the file that contains the encryption key.
 .B \fB\-\-sudo\fP
 Use to execute a bootstrap operation with sudo\&.
 .TP
-.B \fB\-\-template\-file TEMPLATE\fP
-The path to a template file that will be used during a bootstrap operation. Do not use the \fB\-\-distro\fP option when \fB\-\-template\-file\fP is specified.
-.TP
-.B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
+.B \fB\-t TEMPLATE\fP, \fB\-\-bootstrap\-template TEMPLATE\fP
+Use to specify the bootstrap template to use. This may specify the name of a bootstrap template\-\-\-\fBchef\-full\fP, for example\-\-\-or it may specify the full path to an Embedded Ruby (ERB) template that defines a custom bootstrap. Default value: \fBchef\-full\fP, which installs the chef\-client using the omnibus installer on all supported platforms.
 .TP
 .B \fB\-\-use\-sudo\-password\fP
 Use to perform a bootstrap operation with sudo; specify the password with the \fB\-P\fP (or \fB\-\-ssh\-password\fP) option.
-.TP
-.B \fB\-v\fP, \fB\-\-version\fP
-The version of the chef\-client\&.
-.TP
-.B \fB\-V\fP, \fB\-\-verbose\fP
-Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .TP
 .B \fB\-V \-V\fP
 Use to run the initial chef\-client run at the \fBdebug\fP log\-level (e.g. \fBchef\-client \-l debug\fP).
 .TP
 .B \fB\-x USERNAME\fP, \fB\-\-ssh\-user USERNAME\fP
 The SSH user name.
-.TP
-.B \fB\-y\fP, \fB\-\-yes\fP
-Use to respond to all confirmation prompts with "Yes". knife will not ask for confirmation.
-.TP
-.B \fB\-z\fP, \fB\-\-local\-mode\fP
-Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
 .UNINDENT
 .sp
 \fBExamples\fP
