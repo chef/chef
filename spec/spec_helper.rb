@@ -91,6 +91,14 @@ RSpec.configure do |config|
   config.filter_run :focus => true
   config.filter_run_excluding :external => true
 
+  # Explicitly disable :should syntax
+  config.expect_with :rspec do |c|
+    c.syntax = :expect
+  end
+  config.mock_with :rspec do |c|
+    c.syntax = :expect
+  end
+
   # Only run these tests on platforms that are also chef workstations
   config.filter_run_excluding :workstation if solaris? or aix?
 
