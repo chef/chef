@@ -236,6 +236,7 @@
 * The Windows env provider will delete elements even if they are only in ENV (and not in the registry)
 * Allow events to be logged to Windows Event Log
 * Fixed bug in env resource where a value containing the delimiter could never correctly match the existing values
+* Update Chef to use RSpec 3.
 
 ## 11.16.4
 
