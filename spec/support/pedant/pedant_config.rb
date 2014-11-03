@@ -120,4 +120,3 @@ requestors({
 
 self[:tags] = [:validation, :authentication, :authorization]
 verify_error_messages false
-chef_server 'http://127.0.0.1:8889'
