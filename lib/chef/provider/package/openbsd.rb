@@ -51,6 +51,9 @@ class Chef
           unless @current_resource.version
             version_string  = ''
             version_string += "-#{version}" if version
+            if parts = name.match(/^(.+?)--(.+)/)
+              name = parts[1]
+            end
             if @new_resource.source =~ /\/$/
               shell_out!("pkg_add -r #{name}#{version_string}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil }).status
             else
@@ -63,22 +66,36 @@ class Chef
         def remove_package(name, version)
           version_string  = ''
           version_string += "-#{version}" if version
+          if parts = name.match(/^(.+?)--(.+)/)
+            name = parts[1]
+          end
           shell_out!("pkg_delete #{name}#{version_string}", :env => nil).status
         end
 
         private
 
         def installed_version
-          pkg_info = shell_out!("pkg_info -e \"#{@new_resource.package_name}->0\"", :env => nil, :returns => [0,1])
-          result = pkg_info.stdout[/^inst:#{Regexp.escape(@new_resource.package_name)}-(.+)/, 1]
+          if parts = @new_resource.package_name.match(/^(.+?)--(.+)/)
+            name = parts[1]
+          else
+            name = @new_resource.package_name
+          end
+          pkg_info = shell_out!("pkg_info -e \"#{name}->0\"", :env => nil, :returns => [0,1])
+          result = pkg_info.stdout[/^inst:#{Regexp.escape(name)}-(.+?)\s/, 1]
           Chef::Log.debug("installed_version of '#{@new_resource.package_name}' is '#{result}'")
           result
         end
 
         def candidate_version
           @candidate_version ||= begin
-            pkg_info = shell_out!("pkg_info -I \"#{@new_resource.package_name}\"", :env => nil, :returns => [0,1])
-            result = pkg_info.stdout[/^#{Regexp.escape(@new_resource.package_name)}-(.+?)\s/, 1]
+            version_string  = ''
+            version_string += "-#{version}" if @new_resource.version
+            pkg_info = shell_out!("pkg_info -I \"#{@new_resource.package_name}#{version_string}\"", :env => nil, :returns => [0,1])
+            if parts = @new_resource.package_name.match(/^(.+?)--(.+)/)
+              result = pkg_info.stdout[/^#{Regexp.escape(parts[1])}-(.+?)\s/, 1]
+            else
+              result = pkg_info.stdout[/^#{Regexp.escape(@new_resource.package_name)}-(.+?)\s/, 1]
+            end
             Chef::Log.debug("candidate_version of '#{@new_resource.package_name}' is '#{result}'")
             result
           end
