@@ -26,6 +26,7 @@ describe Chef::Provider::Package::Openbsd do
     @node.default['kernel'] = {'name' => 'OpenBSD', 'release' => '5.5', 'machine' => 'amd64'}
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
+    ENV['PKG_PATH'] = nil
   end
 
   describe "install a package" do
@@ -39,10 +40,7 @@ describe Chef::Provider::Package::Openbsd do
     it "should run the installation command" do
       expect(@provider).to receive(:shell_out!).with(
         "pkg_add -r #{@name}",
-        :env=>{
-          "PACKAGESITE" => "http://ftp.eu.openbsd.org/pub/OpenBSD/5.5/packages/amd64/",
-          "LC_ALL" => nil
-        }
+        {:env => {"PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/"}}
       ) {OpenStruct.new :status => true}
       @provider.install_package(@name, nil)
     end

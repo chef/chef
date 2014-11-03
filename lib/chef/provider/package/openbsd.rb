@@ -38,7 +38,7 @@ class Chef
         def initialize(*args)
           super
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
-          @new_resource.source("#{mirror}/pub/#{node.kernel.name}/#{node.kernel.release}/packages/#{node.kernel.machine}/") if !@new_resource.source
+          @new_resource.source(pkg_path) if !@new_resource.source
         end
 
         def load_current_resource
@@ -54,11 +54,7 @@ class Chef
             if parts = name.match(/^(.+?)--(.+)/)
               name = parts[1]
             end
-            if @new_resource.source =~ /\/$/
-              shell_out!("pkg_add -r #{name}#{version_string}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil }).status
-            else
-              shell_out!("pkg_add -r #{name}#{version_string}", :env => { "PACKAGEROOT" => @new_resource.source, 'LC_ALL' => nil }).status
-            end
+            shell_out!("pkg_add -r #{name}#{version_string}", :env => {"PKG_PATH" => @new_resource.source}).status
             Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
           end
         end
@@ -101,8 +97,8 @@ class Chef
           end
         end
 
-        def mirror
-          'http://ftp.eu.openbsd.org'
+        def pkg_path
+          ENV['PKG_PATH'] || "http://ftp.OpenBSD.org/pub/#{node.kernel.name}/#{node.kernel.release}/packages/#{node.kernel.machine}/"
         end
 
       end
