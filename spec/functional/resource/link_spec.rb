@@ -582,12 +582,12 @@ describe Chef::Resource::Link do
               resource.run_action(:create)
               # Windows and Unix have different definitions of exists? here, and that's OK.
               if windows?
-                File.exists?(target_file).should be_truthy
+                expect(File.exists?(target_file)).to be_truthy
               else
-                File.exists?(target_file).should be_falsey
+                expect(File.exists?(target_file)).to be_falsey
               end
-              symlink?(target_file).should be_truthy
-              paths_eql?(readlink(target_file), @other_target).should be_truthy
+              expect(symlink?(target_file)).to be_truthy
+              expect(paths_eql?(readlink(target_file), @other_target)).to be_truthy
             end
             include_context 'delete is noop'
           end
