@@ -39,18 +39,33 @@ begin
   # Capture setup data into master_chef_repo_path
   server = start_server(chef_repo_path)
 
+  # We can no longer specify the server on the command line, must put it into the config
+  open('spec/support/pedant/pedant_config.rb', 'a+') { |f|
+    f.puts "chef_server '#{server.url}'" unless f.grep(/^chef_server/)
+  }
+
   include Chef::Mixin::ShellOut
 
-  shell_out("bundle install --gemfile spec/support/pedant/Gemfile")
+  so = nil
 
-  pedant_cmd = "chef-pedant " +
-    " --config spec/support/pedant/pedant_config.rb" +
-    " --server #{server.url}" +
-    " --skip-knife --skip-validation --skip-authentication" +
-    " --skip-authorization --skip-omnibus"
-  so = shell_out("bundle exec #{pedant_cmd}")
+  Bundler.with_clean_env do
 
-  server.stop if server.running?
+    cmd = Mixlib::ShellOut.new("bundle install --gemfile spec/support/pedant/Gemfile")
+    cmd.live_stream = STDOUT
+    cmd.run_command
+
+    pedant_cmd = "chef-pedant " +
+        " --config spec/support/pedant/pedant_config.rb" +
+       #" --server #{server.url}" +
+        " --skip-knife --skip-validation --skip-authentication" +
+        " --skip-authorization --skip-omnibus"
+    cmd = Mixlib::ShellOut.new("bundle exec #{pedant_cmd}", :env => {'BUNDLE_GEMFILE' => 'spec/support/pedant/Gemfile'})
+    cmd.live_stream = STDOUT
+    cmd.run_command
+
+    server.stop if server.running?
+  end
+
 ensure
   FileUtils.remove_entry_secure(tmpdir) if tmpdir
 end
