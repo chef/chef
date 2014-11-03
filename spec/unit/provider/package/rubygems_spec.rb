@@ -121,6 +121,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
         Gem.const_set(:Format, Object.new)
         @remove_gem_format = true
       end
+      allow(Gem::Package).to receive(:respond_to?).and_call_original
       allow(Gem::Package).to receive(:respond_to?).with(:open).and_return(false)
     end
 
