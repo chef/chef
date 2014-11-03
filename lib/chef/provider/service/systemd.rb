@@ -75,7 +75,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       if @new_resource.start_command
         super
       else
-        shell_out_with_systems_locale!("#{systemctl_path} start #{@new_resource.service_name}")
+        shell_out_with_systems_locale!("#{@systemctl_path} start #{@new_resource.service_name}")
       end
     end
   end
@@ -87,7 +87,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       if @new_resource.stop_command
         super
       else
-        shell_out_with_systems_locale!("#{systemctl_path} stop #{@new_resource.service_name}")
+        shell_out_with_systems_locale!("#{@systemctl_path} stop #{@new_resource.service_name}")
       end
     end
   end
@@ -96,7 +96,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     if @new_resource.restart_command
       super
     else
-      shell_out_with_systems_locale!("#{systemctl_path} restart #{@new_resource.service_name}")
+      shell_out_with_systems_locale!("#{@systemctl_path} restart #{@new_resource.service_name}")
     end
   end
 
@@ -105,7 +105,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       super
     else
       if @current_resource.running
-        shell_out_with_systems_locale!("#{systemctl_path} reload #{@new_resource.service_name}")
+        shell_out_with_systems_locale!("#{@systemctl_path} reload #{@new_resource.service_name}")
       else
         start_service
       end
@@ -113,18 +113,18 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   end
 
   def enable_service
-    shell_out!("#{systemctl_path} enable #{@new_resource.service_name}")
+    shell_out!("#{@systemctl_path} enable #{@new_resource.service_name}")
   end
 
   def disable_service
-    shell_out!("#{systemctl_path} disable #{@new_resource.service_name}")
+    shell_out!("#{@systemctl_path} disable #{@new_resource.service_name}")
   end
 
   def is_active?
-    shell_out("#{systemctl_path} is-active #{@new_resource.service_name} --quiet").exitstatus == 0
+    shell_out("#{@systemctl_path} is-active #{@new_resource.service_name} --quiet").exitstatus == 0
   end
 
   def is_enabled?
-    shell_out("#{systemctl_path} is-enabled #{@new_resource.service_name} --quiet").exitstatus == 0
+    shell_out("#{@systemctl_path} is-enabled #{@new_resource.service_name} --quiet").exitstatus == 0
   end
 end
