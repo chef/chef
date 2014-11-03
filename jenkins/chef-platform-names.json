@@ -1,4 +1,5 @@
 {
+    "aix" : "AIX",
     "el" : "Enterprise Linux",
     "debian" : "Debian",
     "freebsd" : "FreeBSD",
