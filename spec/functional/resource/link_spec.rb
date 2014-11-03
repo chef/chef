@@ -564,7 +564,7 @@ describe Chef::Resource::Link do
               # OS X gets angry about this sort of link.  Bug in OS X, IMO.
               pending('OS X/FreeBSD/AIX symlink? and readlink working on hard links to symlinks') if (os_x? or freebsd? or aix?)
               expect(symlink?(target_file)).to be_truthy
-              paths_eql?(readlink(target_file), @other_target).should be_truthy
+              expect(paths_eql?(readlink(target_file), @other_target)).to be_truthy
             end
             include_context 'delete is noop'
           end
