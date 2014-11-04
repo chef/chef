@@ -182,8 +182,6 @@ class Chef
               data = data[attr]
             elsif data.respond_to?(attr.to_sym)
               data = data.send(attr.to_sym)
-            elsif data.respond_to?(:[])
-              data = data[attr]
             else
               data = begin
                 data.send(attr.to_sym)
