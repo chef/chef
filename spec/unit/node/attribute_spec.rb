@@ -1095,7 +1095,10 @@ describe Chef::Node::Attribute do
   describe "to_s" do
 
     it "should be readable when called to_s" do
+      @attributes.default = {}
+      @attributes.default.foo = "bar"
       @attributes.should respond_to(:to_s)
+      expect(@attributes).to eq("foo: bar")
     end
   end
 
