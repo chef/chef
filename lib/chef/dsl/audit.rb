@@ -27,12 +27,9 @@ class Chef
         raise ::Chef::Exceptions::NoAuditsProvided unless group_block
 
         # TODO add the @example_groups list to the runner for later execution
-        # run_context.audit_runner.register
-        ::Chef::Audit::ChefExampleGroup.describe(group_name, &group_block)
+        run_context.controls_groups << ::Chef::Audit::ChefExampleGroup.describe(group_name, &group_block)
       end
 
     end
   end
 end
-
-
