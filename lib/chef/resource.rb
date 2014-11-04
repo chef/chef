@@ -29,6 +29,7 @@ require 'chef/resource/conditional_action_not_nothing'
 require 'chef/resource_collection'
 require 'chef/node_map'
 require 'chef/node'
+require 'chef/provider_resolver'
 require 'chef/platform'
 
 require 'chef/mixin/deprecation'
@@ -679,7 +680,7 @@ F
     end
 
     def provider_for_action(action)
-      provider = run_context.provider_resolver.resolve(self, action).new(self, run_context)
+      provider = Chef::ProviderResolver.new(node, self, action).resolve.new(self, run_context)
       provider.action = action
       provider
     end
