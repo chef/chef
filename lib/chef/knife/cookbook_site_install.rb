@@ -179,7 +179,7 @@ class Chef
           return md
         end
 
-        raise "No metadata.rb or metadata.json!"
+        raise Chef::Exceptions::MetadataNotFound
       end
     end
   end
