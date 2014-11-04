@@ -40,7 +40,7 @@ class Chef
           normalize_for_put(group, entry)
         end
 
-        def preserve_key(key)
+        def preserve_key?(key)
           return key == 'name'
         end
 
