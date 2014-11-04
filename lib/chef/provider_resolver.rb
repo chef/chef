@@ -67,19 +67,24 @@ class Chef
       Chef::Log.debug "providers that refused resource #{resource} were: #{enabled_handlers - supported_handlers}"
       Chef::Log.debug "providers that support resource #{resource} include: #{supported_handlers}"
 
+      # if none of the providers specifically support the resource, we still need to pick one of the providers that are
+      # enabled on the node to handle the why-run use case.
       handlers = supported_handlers.empty? ? enabled_handlers : supported_handlers
+      Chef::Log.debug "no providers supported the resource, falling back to enabled handlers" if supported_handlers.empty?
 
       if handlers.count >= 2
+        # this magic stack ranks the providers by where they appear in the provider_priority_map, it is mostly used
+        # to pick amongst N different ways to start init scripts on different debian/ubuntu systems.
         priority_list = [ get_provider_priority_map(resource.resource_name, node) ].flatten.compact
-
         handlers = handlers.sort_by { |x| i = priority_list.index x; i.nil? ? Float::INFINITY : i }
-
         handlers = [ handlers.first ]
       end
 
       Chef::Log.debug "providers that survived replacement include: #{handlers}"
 
       raise Chef::Exceptions::AmbiguousProviderResolution.new(resource, handlers) if handlers.count >= 2
+
+      Chef::Log.debug "dynamic provider resolver FAILED to resolve a provider" if handlers.empty?
 
       return nil if handlers.empty?
 
