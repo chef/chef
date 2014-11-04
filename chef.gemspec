@@ -45,6 +45,9 @@ Gem::Specification.new do |s|
 
   %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 3.0" }
 
+  s.add_development_dependency "serverspec", "~> 2.3"
+  s.add_development_dependency "specinfra", "~> 2.4"
+
   s.bindir       = "bin"
   s.executables  = %w( chef-client chef-solo knife chef-shell shef chef-apply )
 

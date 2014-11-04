@@ -16,7 +16,13 @@
 # limitations under the License.
 #
 
-require 'rspec/core'
+require 'rspec'
+
+require 'serverspec/matcher'
+require 'serverspec/helper'
+require 'serverspec/subject'
+
+require 'specinfra'
 
 require 'chef/dsl/audit'
 require 'chef/audit/chef_json_formatter'
