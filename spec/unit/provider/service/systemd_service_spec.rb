@@ -19,238 +19,261 @@
 require 'spec_helper'
 
 describe Chef::Provider::Service::Systemd do
-  before(:each) do
-    @node = Chef::Node.new
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::Service.new('rsyslog.service')
-    @provider = Chef::Provider::Service::Systemd.new(@new_resource, @run_context)
 
-    @shell_out_success = double('shell_out_with_systems_locale',
-                                :exitstatus => 0, :error? => false)
-    @shell_out_failure = double('shell_out_with_systems_locale',
-                                :exitstatus => 1, :error? => true)
+  let(:node) { Chef::Node.new }
+
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+
+  let(:service_name) { "rsyslog.service" }
+
+  let(:new_resource) { Chef::Resource::Service.new(service_name) }
+
+  let(:provider) { Chef::Provider::Service::Systemd.new(new_resource, run_context) }
+
+  let(:shell_out_success) do
+    double('shell_out_with_systems_locale', :exitstatus => 0, :error? => false)
+  end
+
+  let(:shell_out_failure) do
+    double('shell_out_with_systems_locale', :exitstatus => 1, :error? => true)
+  end
+
+  let(:current_resource) { Chef::Resource::Service.new(service_name) }
+
+  before(:each) do
+    allow(Chef::Resource::Service).to receive(:new).with(service_name).and_return(current_resource)
   end
 
   describe "load_current_resource" do
-    before(:each) do
-      @current_resource = Chef::Resource::Service.new('rsyslog.service')
-      allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
 
-      allow(@provider).to receive(:is_active?).and_return(false)
-      allow(@provider).to receive(:is_enabled?).and_return(false)
+    before(:each) do
+      allow(provider).to receive(:is_active?).and_return(false)
+      allow(provider).to receive(:is_enabled?).and_return(false)
     end
 
     it "should create a current resource with the name of the new resource" do
-      expect(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
-      @provider.load_current_resource
+      expect(Chef::Resource::Service).to receive(:new).with(new_resource.name).and_return(current_resource)
+      provider.load_current_resource
     end
 
     it "should set the current resources service name to the new resources service name" do
-      expect(@current_resource).to receive(:service_name).with(@new_resource.service_name)
-      @provider.load_current_resource
+      provider.load_current_resource
+      expect(current_resource.service_name).to eql(service_name)
     end
 
     it "should check if the service is running" do
-      expect(@provider).to receive(:is_active?)
-      @provider.load_current_resource
+      expect(provider).to receive(:is_active?)
+      provider.load_current_resource
     end
 
     it "should set running to true if the service is running" do
-      allow(@provider).to receive(:is_active?).and_return(true)
-      expect(@current_resource).to receive(:running).with(true)
-      @provider.load_current_resource
+      allow(provider).to receive(:is_active?).and_return(true)
+      provider.load_current_resource
+      expect(current_resource.running).to be true
     end
 
     it "should set running to false if the service is not running" do
-      allow(@provider).to receive(:is_active?).and_return(false)
-      expect(@current_resource).to receive(:running).with(false)
-      @provider.load_current_resource
+      allow(provider).to receive(:is_active?).and_return(false)
+      provider.load_current_resource
+      expect(current_resource.running).to be false
     end
 
     describe "when a status command has been specified" do
       before do
-        allow(@new_resource).to receive(:status_command).and_return("/bin/chefhasmonkeypants status")
+        allow(new_resource).to receive(:status_command).and_return("/bin/chefhasmonkeypants status")
       end
 
       it "should run the services status command if one has been specified" do
-        allow(@provider).to receive(:shell_out).and_return(@shell_out_success)
-        expect(@current_resource).to receive(:running).with(true)
-        @provider.load_current_resource
+        allow(provider).to receive(:shell_out).and_return(shell_out_success)
+        provider.load_current_resource
+        expect(current_resource.running).to be true
       end
 
       it "should run the services status command if one has been specified and properly set status check state" do
-        allow(@provider).to receive(:shell_out).with("/bin/chefhasmonkeypants status").and_return(@shell_out_success)
-        @provider.load_current_resource
-        expect(@provider.instance_variable_get("@status_check_success")).to be_truthy
+        allow(provider).to receive(:shell_out).with("/bin/chefhasmonkeypants status").and_return(shell_out_success)
+        provider.load_current_resource
+        expect(provider.status_check_success).to be true
       end
 
       it "should set running to false if a status command fails" do
-        allow(@provider).to receive(:shell_out).and_return(@shell_out_failure)
-        expect(@current_resource).to receive(:running).with(false)
-        @provider.load_current_resource
+        allow(provider).to receive(:shell_out).and_return(shell_out_failure)
+        provider.load_current_resource
+        expect(current_resource.running).to be false
       end
 
       it "should update state to indicate status check failed when a status command fails" do
-        allow(@provider).to receive(:shell_out).and_return(@shell_out_failure)
-        @provider.load_current_resource
-        expect(@provider.instance_variable_get("@status_check_success")).to be_falsey
+        allow(provider).to receive(:shell_out).and_return(shell_out_failure)
+        provider.load_current_resource
+        expect(provider.status_check_success).to be false
       end
     end
 
     it "should check if the service is enabled" do
-      expect(@provider).to receive(:is_enabled?)
-      @provider.load_current_resource
+      expect(provider).to receive(:is_enabled?)
+      provider.load_current_resource
     end
 
     it "should set enabled to true if the service is enabled" do
-      allow(@provider).to receive(:is_enabled?).and_return(true)
-      expect(@current_resource).to receive(:enabled).with(true)
-      @provider.load_current_resource
+      allow(provider).to receive(:is_enabled?).and_return(true)
+      provider.load_current_resource
+      expect(current_resource.enabled).to be true
     end
 
     it "should set enabled to false if the service is not enabled" do
-      allow(@provider).to receive(:is_enabled?).and_return(false)
-      expect(@current_resource).to receive(:enabled).with(false)
-      @provider.load_current_resource
+      allow(provider).to receive(:is_enabled?).and_return(false)
+      provider.load_current_resource
+      expect(current_resource.enabled).to be false
     end
 
     it "should return the current resource" do
-      expect(@provider.load_current_resource).to eql(@current_resource)
+      expect(provider.load_current_resource).to eql(current_resource)
     end
   end
 
-  describe "start and stop service" do
-    before(:each) do
-      @current_resource = Chef::Resource::Service.new('rsyslog.service')
-      allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
-      @provider.current_resource = @current_resource
-    end
+  def setup_current_resource
+    provider.current_resource = current_resource
+    current_resource.service_name(service_name)
+  end
 
-    it "should call the start command if one is specified" do
-      allow(@new_resource).to receive(:start_command).and_return("/sbin/rsyslog startyousillysally")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog startyousillysally")
-      @provider.start_service
-    end
+  %w{/usr/bin/systemctl /bin/systemctl}.each do |systemctl_path|
+    describe "when systemctl path is #{systemctl_path}" do
+      before(:each) do
+        setup_current_resource
+        allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path)
+      end
 
-    it "should call '/bin/systemctl start service_name' if no start command is specified" do
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/bin/systemctl start #{@new_resource.service_name}").and_return(@shell_out_success)
-      @provider.start_service
-    end
+      describe "start and stop service" do
 
-    it "should not call '/bin/systemctl start service_name' if it is already running" do
-      allow(@current_resource).to receive(:running).and_return(true)
-      expect(@provider).not_to receive(:shell_out_with_systems_locale!).with("/bin/systemctl start #{@new_resource.service_name}")
-      @provider.start_service
-    end
+        it "should call the start command if one is specified" do
+          allow(new_resource).to receive(:start_command).and_return("/sbin/rsyslog startyousillysally")
+          expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog startyousillysally")
+          provider.start_service
+        end
 
-    it "should call the restart command if one is specified" do
-      allow(@current_resource).to receive(:running).and_return(true)
-      allow(@new_resource).to receive(:restart_command).and_return("/sbin/rsyslog restartyousillysally")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog restartyousillysally")
-      @provider.restart_service
-    end
+        it "should call '#{systemctl_path} start service_name' if no start command is specified" do
+          expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} start #{service_name}").and_return(shell_out_success)
+          provider.start_service
+        end
 
-    it "should call '/bin/systemctl restart service_name' if no restart command is specified" do
-      allow(@current_resource).to receive(:running).and_return(true)
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/bin/systemctl restart #{@new_resource.service_name}").and_return(@shell_out_success)
-      @provider.restart_service
-    end
+        it "should not call '#{systemctl_path} start service_name' if it is already running" do
+          current_resource.running(true)
+          expect(provider).not_to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} start #{service_name}")
+          provider.start_service
+        end
 
-    describe "reload service" do
-      context "when a reload command is specified" do
-        it "should call the reload command" do
-          allow(@current_resource).to receive(:running).and_return(true)
-          allow(@new_resource).to receive(:reload_command).and_return("/sbin/rsyslog reloadyousillysally")
-          expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog reloadyousillysally")
-          @provider.reload_service
+        it "should call the restart command if one is specified" do
+          current_resource.running(true)
+          allow(new_resource).to receive(:restart_command).and_return("/sbin/rsyslog restartyousillysally")
+          expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog restartyousillysally")
+          provider.restart_service
+        end
+
+        it "should call '#{systemctl_path} restart service_name' if no restart command is specified" do
+          current_resource.running(true)
+          expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} restart #{service_name}").and_return(shell_out_success)
+          provider.restart_service
+        end
+
+        describe "reload service" do
+          context "when a reload command is specified" do
+            it "should call the reload command" do
+              current_resource.running(true)
+              allow(new_resource).to receive(:reload_command).and_return("/sbin/rsyslog reloadyousillysally")
+              expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog reloadyousillysally")
+              provider.reload_service
+            end
+          end
+
+          context "when a reload command is not specified" do
+            it "should call '#{systemctl_path} reload service_name' if the service is running" do
+              current_resource.running(true)
+              expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} reload #{service_name}").and_return(shell_out_success)
+              provider.reload_service
+            end
+
+            it "should start the service if the service is not running" do
+              current_resource.running(false)
+              expect(provider).to receive(:start_service).and_return(true)
+              provider.reload_service
+            end
+          end
+        end
+
+        it "should call the stop command if one is specified" do
+          current_resource.running(true)
+          allow(new_resource).to receive(:stop_command).and_return("/sbin/rsyslog stopyousillysally")
+          expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog stopyousillysally")
+          provider.stop_service
+        end
+
+        it "should call '#{systemctl_path} stop service_name' if no stop command is specified" do
+          current_resource.running(true)
+          expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} stop #{service_name}").and_return(shell_out_success)
+          provider.stop_service
+        end
+
+        it "should not call '#{systemctl_path} stop service_name' if it is already stopped" do
+          current_resource.running(false)
+          expect(provider).not_to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} stop #{service_name}")
+          provider.stop_service
         end
       end
 
-      context "when a reload command is not specified" do
-        it "should call '/bin/systemctl reload service_name' if the service is running" do
-          allow(@current_resource).to receive(:running).and_return(true)
-          expect(@provider).to receive(:shell_out_with_systems_locale!).with("/bin/systemctl reload #{@new_resource.service_name}").and_return(@shell_out_success)
-          @provider.reload_service
+      describe "enable and disable service" do
+        before(:each) do
+          provider.current_resource = current_resource
+          current_resource.service_name(service_name)
+          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
         end
 
-        it "should start the service if the service is not running" do
-          allow(@current_resource).to receive(:running).and_return(false)
-          expect(@provider).to receive(:start_service).and_return(true)
-          @provider.reload_service
+        it "should call '#{systemctl_path} enable service_name' to enable the service" do
+          expect(provider).to receive(:shell_out!).with("#{systemctl_path} enable #{service_name}").and_return(shell_out_success)
+          provider.enable_service
+        end
+
+        it "should call '#{systemctl_path} disable service_name' to disable the service" do
+          expect(provider).to receive(:shell_out!).with("#{systemctl_path} disable #{service_name}").and_return(shell_out_success)
+          provider.disable_service
         end
       end
-    end
 
-    it "should call the stop command if one is specified" do
-      allow(@current_resource).to receive(:running).and_return(true)
-      allow(@new_resource).to receive(:stop_command).and_return("/sbin/rsyslog stopyousillysally")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog stopyousillysally")
-      @provider.stop_service
-    end
+      describe "is_active?" do
+        before(:each) do
+          provider.current_resource = current_resource
+          current_resource.service_name(service_name)
+          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+        end
 
-    it "should call '/bin/systemctl stop service_name' if no stop command is specified" do
-      allow(@current_resource).to receive(:running).and_return(true)
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/bin/systemctl stop #{@new_resource.service_name}").and_return(@shell_out_success)
-      @provider.stop_service
-    end
+        it "should return true if '#{systemctl_path} is-active service_name' returns 0" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-active #{service_name} --quiet").and_return(shell_out_success)
+          expect(provider.is_active?).to be_true
+        end
 
-    it "should not call '/bin/systemctl stop service_name' if it is already stopped" do
-      allow(@current_resource).to receive(:running).and_return(false)
-      expect(@provider).not_to receive(:shell_out_with_systems_locale!).with("/bin/systemctl stop #{@new_resource.service_name}")
-      @provider.stop_service
-    end
-  end
+        it "should return false if '#{systemctl_path} is-active service_name' returns anything except 0" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-active #{service_name} --quiet").and_return(shell_out_failure)
+          expect(provider.is_active?).to be_false
+        end
+      end
 
-  describe "enable and disable service" do
-    before(:each) do
-      @current_resource = Chef::Resource::Service.new('rsyslog.service')
-      allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
-      @provider.current_resource = @current_resource
-    end
+      describe "is_enabled?" do
+        before(:each) do
+          provider.current_resource = current_resource
+          current_resource.service_name(service_name)
+          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+        end
 
-    it "should call '/bin/systemctl enable service_name' to enable the service" do
-      expect(@provider).to receive(:shell_out!).with("/bin/systemctl enable #{@new_resource.service_name}").and_return(@shell_out_success)
-      @provider.enable_service
-    end
+        it "should return true if '#{systemctl_path} is-enabled service_name' returns 0" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name} --quiet").and_return(shell_out_success)
+          expect(provider.is_enabled?).to be_true
+        end
 
-    it "should call '/bin/systemctl disable service_name' to disable the service" do
-      expect(@provider).to receive(:shell_out!).with("/bin/systemctl disable #{@new_resource.service_name}").and_return(@shell_out_success)
-      @provider.disable_service
-    end
-  end
-
-  describe "is_active?" do
-    before(:each) do
-      @current_resource = Chef::Resource::Service.new('rsyslog.service')
-      allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
-    end
-
-    it "should return true if '/bin/systemctl is-active service_name' returns 0" do
-      expect(@provider).to receive(:shell_out).with('/bin/systemctl is-active rsyslog.service --quiet').and_return(@shell_out_success)
-      expect(@provider.is_active?).to be_truthy
-    end
-
-    it "should return false if '/bin/systemctl is-active service_name' returns anything except 0" do
-      expect(@provider).to receive(:shell_out).with('/bin/systemctl is-active rsyslog.service --quiet').and_return(@shell_out_failure)
-      expect(@provider.is_active?).to be_falsey
-    end
-  end
-
-  describe "is_enabled?" do
-    before(:each) do
-      @current_resource = Chef::Resource::Service.new('rsyslog.service')
-      allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
-    end
-
-    it "should return true if '/bin/systemctl is-enabled service_name' returns 0" do
-      expect(@provider).to receive(:shell_out).with('/bin/systemctl is-enabled rsyslog.service --quiet').and_return(@shell_out_success)
-      expect(@provider.is_enabled?).to be_truthy
-    end
-
-    it "should return false if '/bin/systemctl is-enabled service_name' returns anything except 0" do
-      expect(@provider).to receive(:shell_out).with('/bin/systemctl is-enabled rsyslog.service --quiet').and_return(@shell_out_failure)
-      expect(@provider.is_enabled?).to be_falsey
+        it "should return false if '#{systemctl_path} is-enabled service_name' returns anything except 0" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name} --quiet").and_return(shell_out_failure)
+          expect(provider.is_enabled?).to be_false
+        end
+      end
     end
   end
 end
