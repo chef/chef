@@ -1,5 +1,5 @@
 RSpec::Support.require_rspec_core "formatters/base_formatter"
-require 'control_group_data'
+require 'chef/audit/control_group_data'
 require 'ffi_yajl'
 
 class Chef
