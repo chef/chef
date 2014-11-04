@@ -42,7 +42,7 @@ describe Chef::Provider::Script, "action_run" do
   it "unlinks the tempfile when finished" do
     tempfile_path = @provider.script_file.path
     @provider.unlink_script_file
-    expect(File.exist?(tempfile_path)).to be_false
+    expect(File.exist?(tempfile_path)).to be_falsey
   end
 
   it "sets the owner and group for the script file" do

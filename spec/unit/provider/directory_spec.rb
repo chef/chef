@@ -42,7 +42,7 @@ describe Chef::Provider::Directory do
     end
 
     it "describes the directory's access rights" do
-      pending
+      skip
     end
   end
 

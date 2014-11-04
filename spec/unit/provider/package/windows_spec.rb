@@ -68,8 +68,8 @@ describe Chef::Provider::Package::Windows, :windows_only do
 
   describe "installer_type" do
     it "it returns @installer_type if it is set" do
-      provider.new_resource.installer_type("downeaster")
-      expect(provider.installer_type).to eql("downeaster")
+      provider.new_resource.installer_type(:downeaster)
+      expect(provider.installer_type).to eql(:downeaster)
     end
 
     it "sets installer_type to msi if the source ends in .msi" do

@@ -20,22 +20,22 @@ require 'spec_helper'
 
 describe Chef::Knife::SubcommandLoader do
   before do
-    Chef::Platform.stub(:windows?) { false }
+    allow(Chef::Platform).to receive(:windows?) { false }
     @home = File.join(CHEF_SPEC_DATA, 'knife-home')
     @env = {'HOME' => @home}
     @loader = Chef::Knife::SubcommandLoader.new(File.join(CHEF_SPEC_DATA, 'knife-site-subcommands'), @env)
   end
 
   it "builds a list of the core subcommand file require paths" do
-    @loader.subcommand_files.should_not be_empty
+    expect(@loader.subcommand_files).not_to be_empty
     @loader.subcommand_files.each do |require_path|
-      require_path.should match(/chef\/knife\/.*|plugins\/knife\/.*/)
+      expect(require_path).to match(/chef\/knife\/.*|plugins\/knife\/.*/)
     end
   end
 
   it "finds files installed via rubygems" do
-    @loader.find_subcommands_via_rubygems.should include('chef/knife/node_create')
-    @loader.find_subcommands_via_rubygems.each {|rel_path, abs_path| abs_path.should match(%r[chef/knife/.+])}
+    expect(@loader.find_subcommands_via_rubygems).to include('chef/knife/node_create')
+    @loader.find_subcommands_via_rubygems.each {|rel_path, abs_path| expect(abs_path).to match(%r[chef/knife/.+])}
   end
 
   it "finds files from latest version of installed gems" do
@@ -44,33 +44,33 @@ describe Chef::Knife::SubcommandLoader do
       '/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_base.rb',
       '/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_otherstuff.rb'
     ]
-    $LOAD_PATH.should_receive(:map).and_return([])
+    expect($LOAD_PATH).to receive(:map).and_return([])
     if Gem::Specification.respond_to? :latest_specs
-      Gem::Specification.should_receive(:latest_specs).with(true).and_return(gems)
-      gems[0].should_receive(:matches_for_glob).with(/chef\/knife\/\*\.rb\{(.*),\.rb,(.*)\}/).and_return(gem_files)
+      expect(Gem::Specification).to receive(:latest_specs).with(true).and_return(gems)
+      expect(gems[0]).to receive(:matches_for_glob).with(/chef\/knife\/\*\.rb\{(.*),\.rb,(.*)\}/).and_return(gem_files)
     else
-      Gem.source_index.should_receive(:latest_specs).with(true).and_return(gems)
-      gems[0].should_receive(:require_paths).twice.and_return(['lib'])
-      gems[0].should_receive(:full_gem_path).and_return('/usr/lib/ruby/gems/knife-ec2-0.5.12')
-      Dir.should_receive(:[]).with('/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/*.rb').and_return(gem_files)
+      expect(Gem.source_index).to receive(:latest_specs).with(true).and_return(gems)
+      expect(gems[0]).to receive(:require_paths).twice.and_return(['lib'])
+      expect(gems[0]).to receive(:full_gem_path).and_return('/usr/lib/ruby/gems/knife-ec2-0.5.12')
+      expect(Dir).to receive(:[]).with('/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/*.rb').and_return(gem_files)
     end
-    @loader.should_receive(:find_subcommands_via_dirglob).and_return({})
-    @loader.find_subcommands_via_rubygems.values.select { |file| file =~ /knife-ec2/ }.sort.should == gem_files
+    expect(@loader).to receive(:find_subcommands_via_dirglob).and_return({})
+    expect(@loader.find_subcommands_via_rubygems.values.select { |file| file =~ /knife-ec2/ }.sort).to eq(gem_files)
   end
 
   it "finds files using a dirglob when rubygems is not available" do
-    @loader.find_subcommands_via_dirglob.should include('chef/knife/node_create')
-    @loader.find_subcommands_via_dirglob.each {|rel_path, abs_path| abs_path.should match(%r[chef/knife/.+])}
+    expect(@loader.find_subcommands_via_dirglob).to include('chef/knife/node_create')
+    @loader.find_subcommands_via_dirglob.each {|rel_path, abs_path| expect(abs_path).to match(%r[chef/knife/.+])}
   end
 
   it "finds user-specific subcommands in the user's ~/.chef directory" do
     expected_command = File.join(@home, '.chef', 'plugins', 'knife', 'example_home_subcommand.rb')
-    @loader.site_subcommands.should include(expected_command)
+    expect(@loader.site_subcommands).to include(expected_command)
   end
 
   it "finds repo specific subcommands by searching for a .chef directory" do
     expected_command = File.join(CHEF_SPEC_DATA, 'knife-site-subcommands', 'plugins', 'knife', 'example_subcommand.rb')
-    @loader.site_subcommands.should include(expected_command)
+    expect(@loader.site_subcommands).to include(expected_command)
   end
 
   describe "finding 3rd party plugins" do 
@@ -79,39 +79,39 @@ describe Chef::Knife::SubcommandLoader do
 
     before do
       env_dup = ENV.to_hash
-      ENV.stub(:[]).and_return { |key| env_dup[key] }
-      ENV.stub(:[]).with("HOME").and_return(env_home)
+      allow(ENV).to receive(:[]) { |key| env_dup[key] }
+      allow(ENV).to receive(:[]).with("HOME").and_return(env_home)
     end
 
     context "when there is not a ~/.chef/plugin_manifest.json file" do
       before do
-        File.stub(:exist?).with(manifest_path).and_return(false)
+        allow(File).to receive(:exist?).with(manifest_path).and_return(false)
       end
 
       it "searches rubygems for plugins" do
         if Gem::Specification.respond_to?(:latest_specs)
-          Gem::Specification.should_receive(:latest_specs).and_call_original
+          expect(Gem::Specification).to receive(:latest_specs).and_call_original
         else
-          Gem.source_index.should_receive(:latest_specs).and_call_original
+          expect(Gem.source_index).to receive(:latest_specs).and_call_original
         end
         @loader.subcommand_files.each do |require_path|
-          require_path.should match(/chef\/knife\/.*|plugins\/knife\/.*/)
+          expect(require_path).to match(/chef\/knife\/.*|plugins\/knife\/.*/)
         end
       end
 
       context "and HOME environment variable is not set" do
         before do
-          ENV.stub(:[]).with("HOME").and_return(nil)
+          allow(ENV).to receive(:[]).with("HOME").and_return(nil)
         end
 
         it "searches rubygems for plugins" do
           if Gem::Specification.respond_to?(:latest_specs)
-            Gem::Specification.should_receive(:latest_specs).and_call_original
+            expect(Gem::Specification).to receive(:latest_specs).and_call_original
           else
-            Gem.source_index.should_receive(:latest_specs).and_call_original
+            expect(Gem.source_index).to receive(:latest_specs).and_call_original
           end
           @loader.subcommand_files.each do |require_path|
-            require_path.should match(/chef\/knife\/.*|plugins\/knife\/.*/)
+            expect(require_path).to match(/chef\/knife\/.*|plugins\/knife\/.*/)
           end
         end
       end
@@ -135,13 +135,13 @@ describe Chef::Knife::SubcommandLoader do
       let(:manifest_json) { Chef::JSONCompat.to_json(manifest_content) }
 
       before do
-        File.stub(:exist?).with(manifest_path).and_return(true)
-        File.stub(:read).with(manifest_path).and_return(manifest_json)
+        allow(File).to receive(:exist?).with(manifest_path).and_return(true)
+        allow(File).to receive(:read).with(manifest_path).and_return(manifest_json)
       end
 
       it "uses paths from the manifest instead of searching gems" do
-        Gem::Specification.should_not_receive(:latest_specs).and_call_original
-        @loader.subcommand_files.should include(ec2_server_create_plugin)
+        expect(Gem::Specification).not_to receive(:latest_specs).and_call_original
+        expect(@loader.subcommand_files).to include(ec2_server_create_plugin)
       end
 
     end

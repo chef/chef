@@ -37,15 +37,15 @@ describe "Chef::Resource::User with Chef::Provider::User::Dscl provider", metada
   end
 
   def user_should_exist
-    shell_out("/usr/bin/dscl . -ls /Users").stdout.should include username
+    expect(shell_out("/usr/bin/dscl . -ls /Users").stdout).to include username
   end
 
   def check_password(pass)
     # In order to test the password we use dscl passwd command since
     # that's the only command that gets the user password from CLI.
-    shell_out("dscl . -passwd /Users/greatchef #{pass} new_password").exitstatus.should == 0
+    expect(shell_out("dscl . -passwd /Users/greatchef #{pass} new_password").exitstatus).to eq(0)
     # Now reset the password back
-    shell_out("dscl . -passwd /Users/greatchef new_password #{pass}").exitstatus.should == 0
+    expect(shell_out("dscl . -passwd /Users/greatchef new_password #{pass}").exitstatus).to eq(0)
   end
 
   let(:node) do
@@ -191,7 +191,7 @@ c5adbbac718b7eb99463a7b679571e0f\
       user_resource.run_action(:remove)
       groups.each do |group|
         # Do not raise an error when group is empty
-        shell_out("dscl . read /Groups/staff GroupMembership").stdout.should_not include(group)
+        expect(shell_out("dscl . read /Groups/staff GroupMembership").stdout).not_to include(group)
       end
     end
   end

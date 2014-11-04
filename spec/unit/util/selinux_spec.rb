@@ -44,17 +44,17 @@ describe Chef::Util::Selinux do
 
     expected_paths.each do |bin_path|
       selinux_path = File.join(bin_path, "selinuxenabled")
-      File.should_receive(:executable?).with(selinux_path).and_return(false)
+      expect(File).to receive(:executable?).with(selinux_path).and_return(false)
     end
 
-    @test_instance.selinux_enabled?.should be_false
+    expect(@test_instance.selinux_enabled?).to be_falsey
   end
 
   describe "when selinuxenabled binary exists" do
     before do
       @selinux_enabled_path = File.join("/sbin", "selinuxenabled")
-      File.stub(:executable?) do |file_path|
-        file_path.end_with?("selinuxenabled").should be_true
+      allow(File).to receive(:executable?) do |file_path|
+        expect(file_path.end_with?("selinuxenabled")).to be_truthy
         file_path == @selinux_enabled_path
       end
     end
@@ -62,54 +62,54 @@ describe Chef::Util::Selinux do
     describe "when selinux is enabled" do
       before do
         cmd_result = double("Cmd Result", :exitstatus => 0)
-        @test_instance.should_receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
+        expect(@test_instance).to receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
       end
 
       it "should report selinux is enabled" do
-        @test_instance.selinux_enabled?.should be_true
+        expect(@test_instance.selinux_enabled?).to be_truthy
         # should check the file system only once for multiple calls
-        @test_instance.selinux_enabled?.should be_true
+        expect(@test_instance.selinux_enabled?).to be_truthy
       end
     end
 
     describe "when selinux is disabled" do
       before do
         cmd_result = double("Cmd Result", :exitstatus => 1)
-        @test_instance.should_receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
+        expect(@test_instance).to receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
       end
 
       it "should report selinux is disabled" do
-        @test_instance.selinux_enabled?.should be_false
+        expect(@test_instance.selinux_enabled?).to be_falsey
         # should check the file system only once for multiple calls
-        @test_instance.selinux_enabled?.should be_false
+        expect(@test_instance.selinux_enabled?).to be_falsey
       end
     end
 
     describe "when selinux gives an unexpected status" do
       before do
         cmd_result = double("Cmd Result", :exitstatus => 101)
-        @test_instance.should_receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
+        expect(@test_instance).to receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
       end
 
       it "should throw an error" do
-        lambda {@test_instance.selinux_enabled?}.should raise_error(RuntimeError)
+        expect {@test_instance.selinux_enabled?}.to raise_error(RuntimeError)
       end
     end
   end
 
   describe "when selinuxenabled binary doesn't exist" do
     before do
-      File.stub(:executable?) do |file_path|
-        file_path.end_with?("selinuxenabled").should be_true
+      allow(File).to receive(:executable?) do |file_path|
+        expect(file_path.end_with?("selinuxenabled")).to be_truthy
         false
       end
     end
 
     it "should report selinux is disabled" do
-      @test_instance.selinux_enabled?.should be_false
+      expect(@test_instance.selinux_enabled?).to be_falsey
       # should check the file system only once for multiple calls
-      File.should_not_receive(:executable?)
-      @test_instance.selinux_enabled?.should be_false
+      expect(File).not_to receive(:executable?)
+      expect(@test_instance.selinux_enabled?).to be_falsey
     end
   end
 
@@ -118,53 +118,53 @@ describe Chef::Util::Selinux do
 
     before do
       @restorecon_enabled_path = File.join("/sbin", "restorecon")
-      File.stub(:executable?) do |file_path|
-        file_path.end_with?("restorecon").should be_true
+      allow(File).to receive(:executable?) do |file_path|
+        expect(file_path.end_with?("restorecon")).to be_truthy
         file_path == @restorecon_enabled_path
       end
     end
 
     it "should call restorecon non-recursive by default" do
       restorecon_command = "#{@restorecon_enabled_path} -R \"#{path}\""
-      @test_instance.should_receive(:shell_out!).twice.with(restorecon_command)
+      expect(@test_instance).to receive(:shell_out!).twice.with(restorecon_command)
       @test_instance.restore_security_context(path)
-      File.should_not_receive(:executable?)
+      expect(File).not_to receive(:executable?)
       @test_instance.restore_security_context(path)
     end
 
     it "should call restorecon recursive when recursive is set" do
       restorecon_command = "#{@restorecon_enabled_path} -R -r \"#{path}\""
-      @test_instance.should_receive(:shell_out!).twice.with(restorecon_command)
+      expect(@test_instance).to receive(:shell_out!).twice.with(restorecon_command)
       @test_instance.restore_security_context(path, true)
-      File.should_not_receive(:executable?)
+      expect(File).not_to receive(:executable?)
       @test_instance.restore_security_context(path, true)
     end
 
     it "should call restorecon non-recursive when recursive is not set" do
       restorecon_command = "#{@restorecon_enabled_path} -R \"#{path}\""
-      @test_instance.should_receive(:shell_out!).twice.with(restorecon_command)
+      expect(@test_instance).to receive(:shell_out!).twice.with(restorecon_command)
       @test_instance.restore_security_context(path)
-      File.should_not_receive(:executable?)
+      expect(File).not_to receive(:executable?)
       @test_instance.restore_security_context(path)
     end
 
     describe "when restorecon doesn't exist on the system" do
       before do
-        File.stub(:executable?) do |file_path|
-          file_path.end_with?("restorecon").should be_true
+        allow(File).to receive(:executable?) do |file_path|
+          expect(file_path.end_with?("restorecon")).to be_truthy
           false
         end
       end
 
       it "should log a warning message" do
         log = [ ]
-        Chef::Log.stub(:warn) do |message|
+        allow(Chef::Log).to receive(:warn) do |message|
           log << message
         end
 
         @test_instance.restore_security_context(path)
-        log.should_not be_empty
-        File.should_not_receive(:executable?)
+        expect(log).not_to be_empty
+        expect(File).not_to receive(:executable?)
         @test_instance.restore_security_context(path)
       end
     end

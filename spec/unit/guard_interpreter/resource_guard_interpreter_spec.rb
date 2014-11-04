@@ -31,8 +31,8 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
 
   let(:resource) do
     resource = Chef::Resource.new("powershell_unit_test", run_context)
-    resource.stub(:run_action)
-    resource.stub(:updated).and_return(true)
+    allow(resource).to receive(:run_action)
+    allow(resource).to receive(:updated).and_return(true)
     resource
   end
 

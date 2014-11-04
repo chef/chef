@@ -43,8 +43,6 @@ class Chef
     # @param resource [Chef::Resource] The resource to insert
     # @param resource_type [String,Symbol] If known, the resource type used in the recipe, Eg `package`, `execute`
     # @param instance_name [String] If known, the recource name as used in the recipe, IE `vim` in `package 'vim'`
-    # @param at_location [Integer] If know, a location in the @resource_list to insert resource
-    # If you know the at_location but not the resource_type or instance_name, pass them in as nil
     # This method is meant to be the 1 insert method necessary in the future.  It should support all known use cases
     #   for writing into the ResourceCollection.
     def insert(resource, opts={})
@@ -60,7 +58,7 @@ class Chef
 
     # @deprecated
     def []=(index, resource)
-      Chef::Log.warn("`[]=` is deprecated, use `insert` with the `at_location` parameter")
+      Chef::Log.warn("`[]=` is deprecated, use `insert` (which only inserts at the end)")
       resource_list[index] = resource
       resource_set.insert_as(resource)
     end

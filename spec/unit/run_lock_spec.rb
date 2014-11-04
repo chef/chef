@@ -25,15 +25,15 @@ describe Chef::RunLock do
 
   describe "when first created" do
     it "locates the lockfile in the file cache path by default" do
-      Chef::Config.stub(:cache_path).and_return(default_cache_path)
+      allow(Chef::Config).to receive(:cache_path).and_return(default_cache_path)
       run_lock = Chef::RunLock.new(Chef::Config.lockfile)
-      run_lock.runlock_file.should == default_pid_location
+      expect(run_lock.runlock_file).to eq(default_pid_location)
     end
 
     it "locates the lockfile in the user-configured path when set" do
       Chef::Config.lockfile = "/tmp/chef-client-running.pid"
       run_lock = Chef::RunLock.new(Chef::Config.lockfile)
-      run_lock.runlock_file.should == "/tmp/chef-client-running.pid"
+      expect(run_lock.runlock_file).to eq("/tmp/chef-client-running.pid")
     end
   end
 
@@ -42,20 +42,20 @@ describe Chef::RunLock do
     subject(:runlock) { Chef::RunLock.new(lockfile) }
 
     def stub_unblocked_run
-      runlock.stub(:test).and_return(true)
+      allow(runlock).to receive(:test).and_return(true)
     end
 
     def stub_blocked_run(duration)
-      runlock.stub(:test).and_return(false)
-      runlock.stub(:wait) { sleep(duration) }
-      runlock.stub(:runpid).and_return(666) # errors read blocking pid
+      allow(runlock).to receive(:test).and_return(false)
+      allow(runlock).to receive(:wait) { sleep(duration) }
+      allow(runlock).to receive(:runpid).and_return(666) # errors read blocking pid
     end
 
     describe "when Chef::Config[:run_lock_timeout] is not set (set to default)" do
       describe "and the lockfile is not locked by another client run" do
         it "should not wait" do
           stub_unblocked_run
-          Chef::RunLock.any_instance.should_not_receive(:wait)
+          expect_any_instance_of(Chef::RunLock).not_to receive(:wait)
           runlock.acquire
         end
       end
@@ -63,7 +63,7 @@ describe Chef::RunLock do
       describe "and the lockfile is locked by another client run" do
         it "should wait for the lock to be released" do
           stub_blocked_run(0.001)
-          runlock.should_receive(:wait)
+          expect(runlock).to receive(:wait)
           runlock.acquire
         end
       end
@@ -82,7 +82,7 @@ describe Chef::RunLock do
       describe "and the lockfile is not locked by another client run" do
         it "should acquire the lock" do
           stub_unblocked_run
-          runlock.should_not_receive(:wait)
+          expect(runlock).not_to receive(:wait)
           runlock.acquire
         end
       end
@@ -90,7 +90,7 @@ describe Chef::RunLock do
       describe "and the lockfile is locked by another client run" do
         it "should raise Chef::Exceptions::RunLockTimeout" do
           stub_blocked_run(0.001)
-          runlock.should_not_receive(:wait)
+          expect(runlock).not_to receive(:wait)
           expect{ runlock.acquire }.to raise_error(Chef::Exceptions::RunLockTimeout)
         end
       end
@@ -110,7 +110,7 @@ describe Chef::RunLock do
       describe "and the lockfile is not locked by another client run" do
         it "should acquire the lock" do
           stub_unblocked_run
-          runlock.should_not_receive(:wait)
+          expect(runlock).not_to receive(:wait)
           runlock.acquire
         end
       end
@@ -119,7 +119,7 @@ describe Chef::RunLock do
         describe "and the lock is released before the timeout expires" do
           it "should acquire the lock" do
             stub_blocked_run(@timeout/2.0)
-            runlock.should_receive(:wait)
+            expect(runlock).to receive(:wait)
             expect{ runlock.acquire }.not_to raise_error
           end
         end
@@ -127,7 +127,7 @@ describe Chef::RunLock do
         describe "and the lock is not released before the timeout expires" do
           it "should raise a RunLockTimeout exception" do
             stub_blocked_run(2.0)
-            runlock.should_receive(:wait)
+            expect(runlock).to receive(:wait)
             expect{ runlock.acquire }.to raise_error(Chef::Exceptions::RunLockTimeout)
           end
         end

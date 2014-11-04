@@ -22,7 +22,7 @@ describe Chef::Util::Editor do
     context 'when there is no match' do
       subject(:execute) { editor.append_line_after('missing', 'new') }
 
-      it('returns the number of added lines') { should be == 0 }
+      it('returns the number of added lines') { is_expected.to eq(0) }
       it 'does not add any lines' do
         expect { execute }.to_not change { editor.lines }
       end
@@ -31,7 +31,7 @@ describe Chef::Util::Editor do
     context 'when there is a match' do
       subject(:execute) { editor.append_line_after('two', 'new') }
 
-      it('returns the number of added lines') { should be == 2 }
+      it('returns the number of added lines') { is_expected.to eq(2) }
       it 'adds a line after each match' do
         execute
         expect(editor.lines).to be == ['one', 'two', 'new', 'two', 'new', 'three']
@@ -48,7 +48,7 @@ describe Chef::Util::Editor do
     context 'when there is no match' do
       subject(:execute) { editor.append_line_if_missing('missing', 'new') }
 
-      it('returns the number of added lines') { should be == 1 }
+      it('returns the number of added lines') { is_expected.to eq(1) }
       it 'adds a line to the end' do
         execute
         expect(editor.lines).to be == ['one', 'two', 'two', 'three', 'new']
@@ -58,7 +58,7 @@ describe Chef::Util::Editor do
     context 'when there is a match' do
       subject(:execute) { editor.append_line_if_missing('one', 'new') }
 
-      it('returns the number of added lines') { should be == 0 }
+      it('returns the number of added lines') { is_expected.to eq(0) }
       it 'does not add any lines' do
         expect { execute }.to_not change { editor.lines }
       end
@@ -74,7 +74,7 @@ describe Chef::Util::Editor do
     context 'when there is no match' do
       subject(:execute) { editor.remove_lines('missing') }
 
-      it('returns the number of removed lines') { should be == 0 }
+      it('returns the number of removed lines') { is_expected.to eq(0) }
       it 'does not remove any lines' do
         expect { execute }.to_not change { editor.lines }
       end
@@ -83,7 +83,7 @@ describe Chef::Util::Editor do
     context 'when there is a match' do
       subject(:execute) { editor.remove_lines('two') }
 
-      it('returns the number of removed lines') { should be == 2 }
+      it('returns the number of removed lines') { is_expected.to eq(2) }
       it 'removes the matching lines' do
         execute
         expect(editor.lines).to be == ['one', 'three']
@@ -100,7 +100,7 @@ describe Chef::Util::Editor do
     context 'when there is no match' do
       subject(:execute) { editor.replace('missing', 'new') }
 
-      it('returns the number of changed lines') { should be == 0 }
+      it('returns the number of changed lines') { is_expected.to eq(0) }
       it 'does not change any lines' do
         expect { execute }.to_not change { editor.lines }
       end
@@ -109,7 +109,7 @@ describe Chef::Util::Editor do
     context 'when there is a match' do
       subject(:execute) { editor.replace('two', 'new') }
 
-      it('returns the number of changed lines') { should be == 2 }
+      it('returns the number of changed lines') { is_expected.to eq(2) }
       it 'replaces the matching portions' do
         execute
         expect(editor.lines).to be == ['one', 'new', 'new', 'three']
@@ -127,7 +127,7 @@ describe Chef::Util::Editor do
     context 'when there is no match' do
       subject(:execute) { editor.replace_lines('missing', 'new') }
 
-      it('returns the number of changed lines') { should be == 0 }
+      it('returns the number of changed lines') { is_expected.to eq(0) }
       it 'does not change any lines' do
         expect { execute }.to_not change { editor.lines }
       end
@@ -136,7 +136,7 @@ describe Chef::Util::Editor do
     context 'when there is a match' do
       subject(:execute) { editor.replace_lines('two', 'new') }
 
-      it('returns the number of replaced lines') { should be == 2 }
+      it('returns the number of replaced lines') { is_expected.to eq(2) }
       it 'replaces the matching line' do
         execute
         expect(editor.lines).to be == ['one', 'new', 'new', 'three']

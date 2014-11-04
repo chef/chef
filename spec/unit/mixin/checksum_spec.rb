@@ -30,11 +30,11 @@ describe Chef::Mixin::Checksum do
     @cache = Chef::Digester.instance
     @file = CHEF_SPEC_DATA + "/checksum/random.txt"
     @stat = double("File::Stat", { :mtime => Time.at(0) })
-    File.stub(:stat).and_return(@stat)
+    allow(File).to receive(:stat).and_return(@stat)
   end
 
   it "gets the checksum of a file" do
-    @checksum_user.checksum(@file).should == "09ee9c8cc70501763563bcf9c218d71b2fbf4186bf8e1e0da07f0f42c80a3394"
+    expect(@checksum_user.checksum(@file)).to eq("09ee9c8cc70501763563bcf9c218d71b2fbf4186bf8e1e0da07f0f42c80a3394")
   end
 
 end

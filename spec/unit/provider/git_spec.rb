@@ -621,21 +621,21 @@ SHAS
     describe "when check remote command returns with status 2" do
       it "returns true" do
         allow(@command_response).to receive(:exitstatus) { 2 }
-        expect(@provider.multiple_remotes?(@command_response)).to be_true
+        expect(@provider.multiple_remotes?(@command_response)).to be_truthy
       end
     end
 
     describe "when check remote command returns with status 0" do
       it "returns false" do
         allow(@command_response).to receive(:exitstatus) { 0 }
-        expect(@provider.multiple_remotes?(@command_response)).to be_false
+        expect(@provider.multiple_remotes?(@command_response)).to be_falsey
       end
     end
 
     describe "when check remote command returns with status 0" do
       it "returns false" do
         allow(@command_response).to receive(:exitstatus) { 1 }
-        expect(@provider.multiple_remotes?(@command_response)).to be_false
+        expect(@provider.multiple_remotes?(@command_response)).to be_falsey
       end
     end
   end
@@ -649,7 +649,7 @@ SHAS
       it "returns true" do
         allow(@command_response).to receive(:exitstatus) { 0 }
         allow(@command_response).to receive(:stdout) { @resource.repository }
-        expect(@provider.remote_matches?(@resource.repository, @command_response)).to be_true
+        expect(@provider.remote_matches?(@resource.repository, @command_response)).to be_truthy
       end
     end
 
@@ -657,7 +657,7 @@ SHAS
       it "returns false" do
         allow(@command_response).to receive(:exitstatus) { 0 }
         allow(@command_response).to receive(:stdout) { @resource.repository + "test" }
-        expect(@provider.remote_matches?(@resource.repository, @command_response)).to be_false
+        expect(@provider.remote_matches?(@resource.repository, @command_response)).to be_falsey
       end
     end
   end

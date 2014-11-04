@@ -69,7 +69,7 @@ describe Chef::Resource::Template do
       resource.source('openldap_variable_stuff.conf.erb')
       resource.variables(:secret => "nutella")
       resource.run_action(:create)
-      IO.read(path).should == "super secret is nutella"
+      expect(IO.read(path)).to eq("super secret is nutella")
     end
 
     it "creates the template with the rendered content using a local erb file when the :create action is run" do
@@ -77,7 +77,7 @@ describe Chef::Resource::Template do
       resource.cookbook(nil)
       resource.local(true)
       resource.run_action(:create)
-      IO.read(path).should == expected_content
+      expect(IO.read(path)).to eq(expected_content)
     end
   end
 
@@ -96,7 +96,7 @@ describe Chef::Resource::Template do
     shared_examples "a template with helpers" do
       it "generates expected content by calling helper methods" do
         resource.run_action(:create)
-        binread(path).strip.should == expected_content
+        expect(binread(path).strip).to eq(expected_content)
       end
     end
 
@@ -202,7 +202,7 @@ describe Chef::Resource::Template do
         it "output should contain platform's line endings" do
           resource.run_action(:create)
           binread(path).each_line do |line|
-            line.should end_with(Chef::Platform.windows? ? "\r\n" : "\n")
+            expect(line).to end_with(Chef::Platform.windows? ? "\r\n" : "\n")
           end
         end
       end

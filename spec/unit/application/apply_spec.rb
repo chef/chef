@@ -21,7 +21,7 @@ describe Chef::Application::Apply do
 
   before do
     @app = Chef::Application::Apply.new
-    @app.stub(:configure_logging).and_return(true)
+    allow(@app).to receive(:configure_logging).and_return(true)
     @recipe_text = "package 'nyancat'"
     Chef::Config[:solo] = true
   end
@@ -29,7 +29,7 @@ describe Chef::Application::Apply do
   describe "configuring the application" do
     it "should set solo mode to true" do
       @app.reconfigure
-      Chef::Config[:solo].should be_true
+      expect(Chef::Config[:solo]).to be_truthy
     end
   end
   describe "read_recipe_file" do
@@ -37,30 +37,30 @@ describe Chef::Application::Apply do
       @recipe_file_name = "foo.rb"
       @recipe_path = File.expand_path(@recipe_file_name)
       @recipe_file = double("Tempfile (mock)", :read => @recipe_text)
-      @app.stub(:open).with(@recipe_path).and_return(@recipe_file)
-      File.stub(:exist?).with(@recipe_path).and_return(true)
-      Chef::Application.stub(:fatal!).and_return(true)
+      allow(@app).to receive(:open).with(@recipe_path).and_return(@recipe_file)
+      allow(File).to receive(:exist?).with(@recipe_path).and_return(true)
+      allow(Chef::Application).to receive(:fatal!).and_return(true)
     end
 
     it "should read text properly" do
-      @app.read_recipe_file(@recipe_file_name)[0].should == @recipe_text
+      expect(@app.read_recipe_file(@recipe_file_name)[0]).to eq(@recipe_text)
     end
     it "should return a file_handle" do
-      @app.read_recipe_file(@recipe_file_name)[1].should be_instance_of(RSpec::Mocks::Mock)
+      expect(@app.read_recipe_file(@recipe_file_name)[1]).to be_instance_of(RSpec::Mocks::Double)
     end
 
     describe "when recipe is nil" do
       it "should raise a fatal with the missing filename message" do
-        Chef::Application.should_receive(:fatal!).with("No recipe file was provided", 1)
+        expect(Chef::Application).to receive(:fatal!).with("No recipe file was provided", 1)
         @app.read_recipe_file(nil)
       end
     end
     describe "when recipe doesn't exist" do
       before do
-        File.stub(:exist?).with(@recipe_path).and_return(false)
+        allow(File).to receive(:exist?).with(@recipe_path).and_return(false)
       end
       it "should raise a fatal with the file doesn't exist message" do
-        Chef::Application.should_receive(:fatal!).with(/^No file exists at/, 1)
+        expect(Chef::Application).to receive(:fatal!).with(/^No file exists at/, 1)
         @app.read_recipe_file(@recipe_file_name)
       end
     end
@@ -72,13 +72,13 @@ describe Chef::Application::Apply do
       @recipe_fh = @app.instance_variable_get(:@recipe_fh)
     end
     it "should open a tempfile" do
-      @recipe_fh.path.should match(/.*recipe-temporary-file.*/)
+      expect(@recipe_fh.path).to match(/.*recipe-temporary-file.*/)
     end
     it "should write recipe text to the tempfile" do
-      @recipe_fh.read.should == @recipe_text
+      expect(@recipe_fh.read).to eq(@recipe_text)
     end
     it "should save the filename for later use" do
-      @recipe_fh.path.should == @app.instance_variable_get(:@recipe_filename)
+      expect(@recipe_fh.path).to eq(@app.instance_variable_get(:@recipe_filename))
     end
   end
   describe "recipe_file_arg" do
@@ -86,8 +86,8 @@ describe Chef::Application::Apply do
       ARGV.clear
     end
     it "should exit and log message" do
-      Chef::Log.should_receive(:debug).with(/^No recipe file provided/)
-      lambda { @app.run }.should raise_error(SystemExit) { |e| e.status.should == 1 }
+      expect(Chef::Log).to receive(:debug).with(/^No recipe file provided/)
+      expect { @app.run }.to raise_error(SystemExit) { |e| expect(e.status).to eq(1) }
     end
 
   end

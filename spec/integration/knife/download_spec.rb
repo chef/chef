@@ -1073,15 +1073,15 @@ EOM
 
         # Check that BasicClient.request() always gets called with X-OPS-USERID
         original_new = Chef::HTTP::BasicClient.method(:new)
-        Chef::HTTP::BasicClient.should_receive(:new) do |args|
+        expect(Chef::HTTP::BasicClient).to receive(:new) { |args|
           new_result = original_new.call(*args)
           original_request = new_result.method(:request)
-          new_result.should_receive(:request) do |method, url, body, headers, &response_handler|
-            headers['X-OPS-USERID'].should_not be_nil
+          expect(new_result).to receive(:request) { |method, url, body, headers, &response_handler|
+            expect(headers['X-OPS-USERID']).not_to be_nil
             original_request.call(method, url, body, headers, &response_handler)
-          end.at_least(:once)
+          }.at_least(:once)
           new_result
-        end.at_least(:once)
+        }.at_least(:once)
 
         knife('download /cookbooks/x').should_succeed <<EOM
 Created /cookbooks

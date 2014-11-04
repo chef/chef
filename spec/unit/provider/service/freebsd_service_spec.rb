@@ -172,14 +172,14 @@ PS_SAMPLE
         it "should set running to true" do
           allow(provider).to receive(:shell_out!).and_return(status)
           provider.determine_current_status!
-          expect(current_resource.running).to be_true
+          expect(current_resource.running).to be_truthy
         end
       end
 
       it "should set running to false if the regex doesn't match" do
         allow(provider).to receive(:shell_out!).and_return(status)
         provider.determine_current_status!
-        expect(current_resource.running).to be_false
+        expect(current_resource.running).to be_falsey
       end
 
       it "should set running to nil if ps fails" do

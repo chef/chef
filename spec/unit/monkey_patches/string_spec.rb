@@ -27,8 +27,8 @@ describe String do
         ch = num.chr
         ch.force_encoding('ASCII-8BIT') if ch.respond_to? :force_encoding
 
-        ch.ord.should be_a_kind_of(Fixnum)
-        ch.ord.should == num
+        expect(ch.ord).to be_a_kind_of(Fixnum)
+        expect(ch.ord).to eq(num)
       end
     end
 

@@ -26,7 +26,7 @@ describe URI do
     end
 
     it "returns the hostname without brackets" do
-      ipv6_uri.hostname.should == "2a00:1450:4009:809::1008"
+      expect(ipv6_uri.hostname).to eq("2a00:1450:4009:809::1008")
     end
 
   end

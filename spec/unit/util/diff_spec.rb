@@ -122,7 +122,7 @@ shared_examples_for "a diff util" do
         new_tempfile.close
       end
       it "calling for_output should return a valid diff" do
-        differ.for_output.join("\\n").should match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
+        expect(differ.for_output.join("\\n")).to match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
       end
       it "calling for_reporting should return a utf-8 string" do
         expect(differ.for_reporting.encoding).to equal(Encoding::UTF_8)
@@ -135,7 +135,7 @@ shared_examples_for "a diff util" do
         new_tempfile.close
       end
       it "calling for_output should return a valid diff" do
-        differ.for_output.join("\\n").should match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
+        expect(differ.for_output.join("\\n")).to match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
       end
       it "calling for_reporting should return a utf-8 string" do
         expect(differ.for_reporting.encoding).to equal(Encoding::UTF_8)
@@ -187,7 +187,7 @@ shared_examples_for "a diff util" do
         new_tempfile.close
       end
       it "calling for_output should return a valid diff" do
-        differ.for_output.join("\\n").should match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
+        expect(differ.for_output.join("\\n")).to match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
       end
       it "calling for_reporting should return a utf-8 string" do
         expect(differ.for_reporting.encoding).to equal(Encoding::UTF_8)
@@ -213,7 +213,7 @@ shared_examples_for "a diff util" do
         new_tempfile.close
       end
       it "calling for_output should return a valid diff" do
-        differ.for_output.join("\\n").should match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
+        expect(differ.for_output.join("\\n")).to match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
       end
       it "calling for_reporting should return a utf-8 string" do
         expect(differ.for_reporting.encoding).to equal(Encoding::UTF_8)
@@ -251,7 +251,7 @@ shared_examples_for "a diff util" do
         new_tempfile.close
       end
       it "calling for_output should return a valid diff" do
-        differ.for_output.join("\\n").should match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
+        expect(differ.for_output.join("\\n")).to match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
       end
       it "calling for_reporting should return a utf-8 string" do
         expect(differ.for_reporting.encoding).to equal(Encoding::UTF_8)
@@ -290,7 +290,7 @@ shared_examples_for "a diff util" do
         new_tempfile.close
       end
       it "calling for_output should return a valid diff" do
-        differ.for_output.join("\\n").should match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
+        expect(differ.for_output.join("\\n")).to match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
       end
       it "calling for_reporting should return a utf-8 string" do
         expect(differ.for_reporting.encoding).to equal(Encoding::UTF_8)
@@ -349,12 +349,12 @@ shared_examples_for "a diff util" do
     end
 
     it "calling for_output should return a unified diff" do
-      differ.for_output.size.should eql(5)
-      differ.for_output.join("\\n").should match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
+      expect(differ.for_output.size).to eql(5)
+      expect(differ.for_output.join("\\n")).to match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
     end
 
     it "calling for_reporting should return a unified diff" do
-      differ.for_reporting.should match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
+      expect(differ.for_reporting).to match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
     end
 
     describe "when the diff output is too long" do
@@ -383,7 +383,7 @@ shared_examples_for "a diff util" do
     it "should identify zero-length files as text" do
       Tempfile.open("chef-util-diff-spec") do |file|
         file.close
-        differ.send(:is_binary?, file.path).should be_false
+        expect(differ.send(:is_binary?, file.path)).to be_falsey
       end
     end
 
@@ -391,7 +391,7 @@ shared_examples_for "a diff util" do
       Tempfile.open("chef-util-diff-spec") do |file|
         file.write(plain_ascii)
         file.close
-        differ.send(:is_binary?, file.path).should be_false
+        expect(differ.send(:is_binary?, file.path)).to be_falsey
       end
     end
 
@@ -399,7 +399,7 @@ shared_examples_for "a diff util" do
       Tempfile.open("chef-util-diff-spec") do |file|
         file.write("This is a binary file.\0")
         file.close
-        differ.send(:is_binary?, file.path).should be_true
+        expect(differ.send(:is_binary?, file.path)).to be_truthy
       end
     end
 
@@ -407,7 +407,7 @@ shared_examples_for "a diff util" do
       Tempfile.open("chef-util-diff-spec") do |file|
         file.write("This is a binary file.\nNo Really\nit is\0")
         file.close
-        differ.send(:is_binary?, file.path).should be_true
+        expect(differ.send(:is_binary?, file.path)).to be_truthy
       end
     end
 
@@ -426,7 +426,7 @@ shared_examples_for "a diff util" do
         Tempfile.open("chef-util-diff-spec") do |file|
           file.write(plain_ascii)
           file.close
-          differ.send(:is_binary?, file.path).should be_false
+          expect(differ.send(:is_binary?, file.path)).to be_falsey
         end
       end
 
@@ -434,7 +434,7 @@ shared_examples_for "a diff util" do
         Tempfile.open("chef-util-diff-spec") do |file|
           file.write(utf_8)
           file.close
-          differ.send(:is_binary?, file.path).should be_false
+          expect(differ.send(:is_binary?, file.path)).to be_falsey
         end
       end
 
@@ -442,7 +442,7 @@ shared_examples_for "a diff util" do
         Tempfile.open("chef-util-diff-spec") do |file|
           file.write(latin_1)
           file.close
-          differ.send(:is_binary?, file.path).should be_true
+          expect(differ.send(:is_binary?, file.path)).to be_truthy
         end
       end
 
@@ -450,7 +450,7 @@ shared_examples_for "a diff util" do
         Tempfile.open("chef-util-diff-spec") do |file|
           file.write(shift_jis)
           file.close
-          differ.send(:is_binary?, file.path).should be_true
+          expect(differ.send(:is_binary?, file.path)).to be_truthy
         end
       end
 
@@ -471,7 +471,7 @@ shared_examples_for "a diff util" do
         Tempfile.open("chef-util-diff-spec") do |file|
           file.write(plain_ascii)
           file.close
-          differ.send(:is_binary?, file.path).should be_false
+          expect(differ.send(:is_binary?, file.path)).to be_falsey
         end
       end
 
@@ -479,7 +479,7 @@ shared_examples_for "a diff util" do
         Tempfile.open("chef-util-diff-spec") do |file|
           file.write(utf_8)
           file.close
-          differ.send(:is_binary?, file.path).should be_true
+          expect(differ.send(:is_binary?, file.path)).to be_truthy
         end
       end
 
@@ -487,7 +487,7 @@ shared_examples_for "a diff util" do
         Tempfile.open("chef-util-diff-spec") do |file|
           file.write(latin_1)
           file.close
-          differ.send(:is_binary?, file.path).should be_false
+          expect(differ.send(:is_binary?, file.path)).to be_falsey
         end
       end
 
@@ -495,7 +495,7 @@ shared_examples_for "a diff util" do
         Tempfile.open("chef-util-diff-spec") do |file|
           file.write(shift_jis)
           file.close
-          differ.send(:is_binary?, file.path).should be_true
+          expect(differ.send(:is_binary?, file.path)).to be_truthy
         end
       end
     end
@@ -515,14 +515,14 @@ shared_examples_for "a diff util" do
         Tempfile.open("chef-util-diff-spec") do |file|
           file.write(plain_ascii)
           file.close
-          differ.send(:is_binary?, file.path).should be_false
+          expect(differ.send(:is_binary?, file.path)).to be_falsey
         end
       end
       it "should identify UTF-8 that is invalid Shift-JIS as binary" do
         Tempfile.open("chef-util-diff-spec") do |file|
           file.write(utf_8)
           file.close
-          differ.send(:is_binary?, file.path).should be_true
+          expect(differ.send(:is_binary?, file.path)).to be_truthy
         end
       end
 
@@ -530,7 +530,7 @@ shared_examples_for "a diff util" do
         Tempfile.open("chef-util-diff-spec") do |file|
           file.write(latin_1)
           file.close
-          differ.send(:is_binary?, file.path).should be_true
+          expect(differ.send(:is_binary?, file.path)).to be_truthy
         end
       end
 
@@ -538,7 +538,7 @@ shared_examples_for "a diff util" do
         Tempfile.open("chef-util-diff-spec") do |file|
           file.write(shift_jis)
           file.close
-          differ.send(:is_binary?, file.path).should be_false
+          expect(differ.send(:is_binary?, file.path)).to be_falsey
         end
       end
 
