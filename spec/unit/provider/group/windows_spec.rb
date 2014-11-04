@@ -34,14 +34,14 @@ describe Chef::Provider::Group::Windows do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Group.new("staff")
     @net_group = double("Chef::Util::Windows::NetGroup")
-    Chef::Util::Windows::NetGroup.stub(:new).and_return(@net_group)
+    allow(Chef::Util::Windows::NetGroup).to receive(:new).and_return(@net_group)
     @provider = Chef::Provider::Group::Windows.new(@new_resource, @run_context)
   end
 
   describe "when creating the group" do
     it "should call @net_group.local_add" do
-      @net_group.should_receive(:local_set_members).with([])
-      @net_group.should_receive(:local_add)
+      expect(@net_group).to receive(:local_set_members).with([])
+      expect(@net_group).to receive(:local_add)
       @provider.create_group
     end
   end
@@ -52,22 +52,22 @@ describe Chef::Provider::Group::Windows do
       @current_resource = Chef::Resource::Group.new("staff")
       @current_resource.members [ "all", "your", "base" ]
 
-      Chef::Util::Windows::NetGroup.stub(:new).and_return(@net_group)
-      @net_group.stub(:local_add_members)
-      @net_group.stub(:local_set_members)
-      @provider.stub(:local_group_name_to_sid)
+      allow(Chef::Util::Windows::NetGroup).to receive(:new).and_return(@net_group)
+      allow(@net_group).to receive(:local_add_members)
+      allow(@net_group).to receive(:local_set_members)
+      allow(@provider).to receive(:local_group_name_to_sid)
       @provider.current_resource = @current_resource
     end
 
     it "should call @net_group.local_set_members" do
-      @new_resource.stub(:append).and_return(false)
-      @net_group.should_receive(:local_set_members).with(@new_resource.members)
+      allow(@new_resource).to receive(:append).and_return(false)
+      expect(@net_group).to receive(:local_set_members).with(@new_resource.members)
       @provider.manage_group
     end
 
     it "should call @net_group.local_add_members" do
-      @new_resource.stub(:append).and_return(true)
-      @net_group.should_receive(:local_add_members).with(@new_resource.members)
+      allow(@new_resource).to receive(:append).and_return(true)
+      expect(@net_group).to receive(:local_add_members).with(@new_resource.members)
       @provider.manage_group
     end
 
@@ -75,12 +75,12 @@ describe Chef::Provider::Group::Windows do
 
   describe "remove_group" do
     before do
-      Chef::Util::Windows::NetGroup.stub(:new).and_return(@net_group)
-      @provider.stub(:run_command).and_return(true)
+      allow(Chef::Util::Windows::NetGroup).to receive(:new).and_return(@net_group)
+      allow(@provider).to receive(:run_command).and_return(true)
     end
 
     it "should call @net_group.local_delete" do
-      @net_group.should_receive(:local_delete)
+      expect(@net_group).to receive(:local_delete)
       @provider.remove_group
     end
   end
@@ -95,7 +95,7 @@ describe Chef::Provider::Group::Windows, "NetGroup" do
     @new_resource.group_name "Remote Desktop Users"
   end
   it 'sets group_name correctly' do
-    Chef::Util::Windows::NetGroup.should_receive(:new).with("Remote Desktop Users")
+    expect(Chef::Util::Windows::NetGroup).to receive(:new).with("Remote Desktop Users")
     Chef::Provider::Group::Windows.new(@new_resource, @run_context)
   end
 end

@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+require 'spec_helper'
 require 'functional/resource/base'
 require 'chef/mixin/shell_out'
 
@@ -55,7 +56,12 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
   let(:new_resource) do
     new_resource = Chef::Resource::Cron.new("Chef functional test cron", run_context)
     new_resource.user  'root'
-    new_resource.minute '@hourly'
+    # @hourly is not supported on solaris, aix
+    if ohai[:platform] == "solaris" || ohai[:platform] == "solaris2" || ohai[:platform] == "aix"
+      new_resource.minute "0 * * * *"
+    else
+      new_resource.minute '@hourly'
+    end
     new_resource.hour ''
     new_resource.day ''
     new_resource.month ''

@@ -80,7 +80,7 @@ class Chef
       end
 
       def create_cookbook(dir, cookbook_name, copyright, license)
-        msg("** Creating cookbook #{cookbook_name}")
+        msg("** Creating cookbook #{cookbook_name} in #{dir}")
         FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "attributes")}"
         FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "recipes")}"
         FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "definitions")}"

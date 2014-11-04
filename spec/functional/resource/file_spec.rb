@@ -17,6 +17,7 @@
 #
 
 require 'spec_helper'
+require 'tmpdir'
 
 describe Chef::Resource::File do
   include_context Chef::Resource::File
@@ -24,12 +25,19 @@ describe Chef::Resource::File do
   let(:file_base) { "file_spec" }
   let(:expected_content) { "Don't fear the ruby." }
 
-  def create_resource
+  def create_resource(opts={})
     events = Chef::EventDispatch::Dispatcher.new
     node = Chef::Node.new
     run_context = Chef::RunContext.new(node, {}, events)
-    resource = Chef::Resource::File.new(path, run_context)
-    resource
+
+    use_path = if opts[:use_relative_path]
+      Dir.chdir(Dir.tmpdir)
+      File.basename(path)
+    else
+      path
+    end
+
+    Chef::Resource::File.new(use_path, run_context)
   end
 
   let(:resource) do
@@ -40,6 +48,10 @@ describe Chef::Resource::File do
 
   let(:resource_without_content) do
     create_resource
+  end
+
+  let(:resource_with_relative_path) do
+    create_resource(:use_relative_path => true)
   end
 
   let(:unmanaged_content) do
@@ -70,6 +82,19 @@ describe Chef::Resource::File do
 
       it "is marked updated by last action" do
         resource_without_content.should be_updated_by_last_action
+      end
+    end
+  end
+
+  # github issue 1842.
+  describe "when running action :create on a relative path" do
+    before do
+      resource_with_relative_path.run_action(:create)
+    end
+
+    context "and the file exists" do
+      it "should run without an exception" do
+        resource_with_relative_path.run_action(:create)
       end
     end
   end

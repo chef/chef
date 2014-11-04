@@ -24,12 +24,12 @@ class Chef
   class Resource
     class WindowsPackage < Chef::Resource::Package
 
-      provides :package, :on_platforms => ["windows"]
+      provides :package, os: "windows"
+      provides :windows_package, os: "windows"
 
       def initialize(name, run_context=nil)
         super
         @allowed_actions = [ :install, :remove ]
-        @provider = Chef::Provider::Package::Windows
         @resource_name = :windows_package
         @source ||= source(@package_name)
 
@@ -44,7 +44,7 @@ class Chef
         set_or_return(
           :installer_type,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ Symbol ]
         )
       end
 
@@ -76,4 +76,3 @@ class Chef
     end
   end
 end
-

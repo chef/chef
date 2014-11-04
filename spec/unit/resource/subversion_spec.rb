@@ -17,47 +17,51 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::Subversion do
+
+  static_provider_resolution(
+    resource: Chef::Resource::Subversion,
+    provider: Chef::Provider::Subversion,
+    name: :subversion,
+    action: :install,
+  )
 
   before do
     @svn = Chef::Resource::Subversion.new("ohai, svn project!")
   end
 
   it "is a subclass of Resource::Scm" do
-    @svn.should be_an_instance_of(Chef::Resource::Subversion)
-    @svn.should be_a_kind_of(Chef::Resource::Scm)
-  end
-
-  it "uses the subversion provider" do
-    @svn.provider.should eql(Chef::Provider::Subversion)
+    expect(@svn).to be_an_instance_of(Chef::Resource::Subversion)
+    expect(@svn).to be_a_kind_of(Chef::Resource::Scm)
   end
 
   it "allows the force_export action" do
-    @svn.allowed_actions.should include(:force_export)
+    expect(@svn.allowed_actions).to include(:force_export)
   end
 
   it "sets svn info arguments to --no-auth-cache by default" do
-    @svn.svn_info_args.should == '--no-auth-cache'
+    expect(@svn.svn_info_args).to eq('--no-auth-cache')
   end
 
   it "resets svn info arguments to nil when given false in the setter" do
     @svn.svn_info_args(false)
-    @svn.svn_info_args.should be_nil
+    expect(@svn.svn_info_args).to be_nil
   end
 
   it "sets svn arguments to --no-auth-cache by default" do
-    @svn.svn_arguments.should == '--no-auth-cache'
+    expect(@svn.svn_arguments).to eq('--no-auth-cache')
   end
 
   it "resets svn arguments to nil when given false in the setter" do
     @svn.svn_arguments(false)
-    @svn.svn_arguments.should be_nil
+    expect(@svn.svn_arguments).to be_nil
   end
 
   it "hides password from custom exception message" do
     @svn.svn_password "l33th4x0rpa$$w0rd"
     e = @svn.customize_exception(Chef::Exceptions::Exec.new "Exception with password #{@svn.svn_password}")
-    e.message.include?(@svn.svn_password).should be_false
+    expect(e.message.include?(@svn.svn_password)).to be_false
   end
 end

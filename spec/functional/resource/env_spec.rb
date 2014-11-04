@@ -22,8 +22,11 @@ describe Chef::Resource::Env, :windows_only do
   context 'when running on Windows' do
     let(:chef_env_test_lower_case) { 'chefenvtest' }
     let(:chef_env_test_mixed_case) { 'chefENVtest' }
+    let(:env_dne_key) { 'env_dne_key' }
     let(:env_value1) { 'value1' }
     let(:env_value2) { 'value2' }
+
+    let(:env_value_expandable) { '%SystemRoot%' }
     let(:test_run_context) {
       node = Chef::Node.new
       node.default['platform'] = 'windows'
@@ -71,6 +74,14 @@ describe Chef::Resource::Env, :windows_only do
         test_resource.run_action(:create)
         expect(ENV[chef_env_test_lower_case]).to eq(env_value2)
       end
+
+      it 'should not expand environment variables if the variable is not PATH' do
+        expect(ENV[chef_env_test_lower_case]).to eq(nil)
+        test_resource.key_name(chef_env_test_lower_case)
+        test_resource.value(env_value_expandable)
+        test_resource.run_action(:create)
+        expect(ENV[chef_env_test_lower_case]).to eq(env_value_expandable)
+      end
     end
 
     context "when the modify action is invoked" do
@@ -102,6 +113,41 @@ describe Chef::Resource::Env, :windows_only do
         test_resource.run_action(:modify)
         expect(ENV[chef_env_test_lower_case]).to eq(env_value2)
       end
+
+      it 'should not expand environment variables if the variable is not PATH' do
+        test_resource.key_name(chef_env_test_lower_case)
+        test_resource.value(env_value1)
+        test_resource.run_action(:create)
+        expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
+        test_resource.value(env_value_expandable)
+        test_resource.run_action(:modify)
+        expect(ENV[chef_env_test_lower_case]).to eq(env_value_expandable)
+      end
+
+      context 'when using PATH' do
+        let(:random_name) { Time.now.to_i }
+        let(:env_val) { "#{env_value_expandable}_#{random_name}"}
+        let!(:path_before) { test_resource.provider_for_action(test_resource.action).env_value('PATH') || '' }
+        let!(:env_path_before) { ENV['PATH'] }
+
+        it 'should expand PATH' do
+          path_before.should_not include(env_val)
+          test_resource.key_name('PATH')
+          test_resource.value("#{path_before};#{env_val}")
+          test_resource.run_action(:create)
+          ENV['PATH'].should_not include(env_val)
+          ENV['PATH'].should include("#{random_name}")
+        end
+
+        after(:each) do
+          # cleanup so we don't flood the path
+          test_resource.key_name('PATH')
+          test_resource.value(path_before)
+          test_resource.run_action(:create)
+          ENV['PATH'] = env_path_before
+        end
+      end
+
     end
 
     context "when the delete action is invoked" do
@@ -131,6 +177,14 @@ describe Chef::Resource::Env, :windows_only do
         test_resource.run_action(:delete)
         expect(ENV[chef_env_test_lower_case]).to eq(nil)
         expect(ENV[chef_env_test_mixed_case]).to eq(nil)
+      end
+
+      it "should delete a value from the current process even if it is not in the registry" do
+        expect(ENV[env_dne_key]).to eq(nil)
+        ENV[env_dne_key] = env_value1
+        test_resource.key_name(env_dne_key)
+        test_resource.run_action(:delete)
+        expect(ENV[env_dne_key]).to eq(nil)
       end
     end
   end

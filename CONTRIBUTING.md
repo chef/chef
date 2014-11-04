@@ -159,6 +159,15 @@ In order to decrease the back and forth an issues and help us get to the bottom 
 [What actually happens after the reproduction steps?]
 ```
 
+### Useful Github Queries
+
+Contributions go through a review process to improve code quality and avoid regressions. Managing a large number of contributions requires a workflow to provide queues for work such as triage, code review, and merging. A semi-formal process has evolved over the life of the project. Chef maintains this process pending community development and acceptance of an [RFC](https://github.com/opscode/chef-rfc). These queries will help track contributions through this process:
+
+* [Issues that are not assigned to a team](https://github.com/opscode/chef/issues?q=is%3Aopen+-label%3AAIX+-label%3ABSD+-label%3Awindows+-label%3A%22Chef+Core%22++-label%3A%22Dev+Tools%22+-label%3AUbuntu+-label%3A%22Enterprise+Linux%22+-label%3A%22Ready+For+Merge%22+-label%3AMac+-label%3ASolaris+)
+* [Untriaged Issues](https://github.com/opscode/chef/issues?q=is%3Aopen+is%3Aissue+-label%3ABug+-label%3AEnhancement+-label%3A%22Tech+Cleanup%22+-label%3A%22Ready+For+Merge%22)
+* [PRs to be Reviewed](https://github.com/opscode/chef/labels/Pending%20Maintainer%20Review)
+* [Suitable for First Contribution](https://github.com/opscode/chef/labels/Easy)
+
 ## <a name="release"></a> Chef Release Cycles
 
 Our primary shipping vehicle is operating system specific packages that includes

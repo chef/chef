@@ -174,12 +174,12 @@ describe Chef::Resource do
     end
 
     it "should load the attributes of a prior resource" do
-      @resource.load_prior_resource
+      @resource.load_prior_resource(@resource.resource_name, @resource.name)
       @resource.supports.should == { :funky => true }
     end
 
     it "should not inherit the action from the prior resource" do
-      @resource.load_prior_resource
+      @resource.load_prior_resource(@resource.resource_name, @resource.name)
       @resource.action.should_not == @prior_resource.action
     end
   end
@@ -336,6 +336,10 @@ describe Chef::Resource do
       json.should =~ /json_class/
       json.should =~ /instance_vars/
     end
+
+    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+      let(:jsonable) { @resource }
+    end
   end
 
   describe "to_hash" do
@@ -345,7 +349,7 @@ describe Chef::Resource do
         :updated_by_last_action, :before, :supports,
         :noop, :ignore_failure, :name, :source_line,
         :action, :retries, :retry_delay, :elapsed_time,
-        :guard_interpreter, :sensitive ]
+        :default_guard_interpreter, :guard_interpreter, :sensitive ]
       (hash.keys - expected_keys).should == []
       (expected_keys - hash.keys).should == []
       hash[:name].should eql("funk")
@@ -354,7 +358,7 @@ describe Chef::Resource do
 
   describe "self.json_create" do
     it "should deserialize itself from json" do
-      json = @resource.to_json
+      json = Chef::JSONCompat.to_json(@resource)
       serialized_node = Chef::JSONCompat.from_json(json)
       serialized_node.should be_a_kind_of(Chef::Resource)
       serialized_node.name.should eql(@resource.name)
@@ -390,22 +394,44 @@ describe Chef::Resource do
   end
 
   describe "retries" do
+    before do
+      @retriable_resource = Chef::Resource::Cat.new("precious", @run_context)
+      @retriable_resource.provider = Chef::Provider::SnakeOil
+      @retriable_resource.action = :purr
+
+      @node.automatic_attrs[:platform] = "fubuntu"
+      @node.automatic_attrs[:platform_version] = '10.04'
+    end
+
     it "should default to not retrying if a provider fails for a resource" do
-      @resource.retries.should == 0
+      @retriable_resource.retries.should == 0
     end
 
     it "should allow you to set how many retries a provider should attempt after a failure" do
-      @resource.retries(2)
-      @resource.retries.should == 2
+      @retriable_resource.retries(2)
+      @retriable_resource.retries.should == 2
     end
 
     it "should default to a retry delay of 2 seconds" do
-      @resource.retry_delay.should == 2
+      @retriable_resource.retry_delay.should == 2
     end
 
     it "should allow you to set the retry delay" do
-      @resource.retry_delay(10)
-      @resource.retry_delay.should == 10
+      @retriable_resource.retry_delay(10)
+      @retriable_resource.retry_delay.should == 10
+    end
+
+    it "should keep given value of retries intact after the provider fails for a resource" do
+      @retriable_resource.retries(3)
+      @retriable_resource.retry_delay(0) # No need to wait.
+
+      provider = Chef::Provider::SnakeOil.new(@retriable_resource, @run_context)
+      Chef::Provider::SnakeOil.stub(:new).and_return(provider)
+      provider.stub(:action_purr).and_raise
+
+      @retriable_resource.should_receive(:sleep).exactly(3).times
+      expect { @retriable_resource.run_action(:purr) }.to raise_error
+      @retriable_resource.retries.should == 3
     end
   end
 
@@ -464,7 +490,8 @@ describe Chef::Resource do
     end
 
     it "does not run only_if if no only_if command is given" do
-      @resource.not_if.clear
+      expect_any_instance_of(Chef::Resource::Conditional).not_to receive(:evaluate)
+      @resource.only_if.clear
       @resource.run_action(:purr)
     end
 
@@ -506,6 +533,8 @@ describe Chef::Resource do
     end
 
     it "does not run not_if if no not_if command is given" do
+      expect_any_instance_of(Chef::Resource::Conditional).not_to receive(:evaluate)
+      @resource.not_if.clear
       @resource.run_action(:purr)
     end
 
@@ -551,7 +580,6 @@ describe Chef::Resource do
         expect { resource.guard_interpreter(:command_dot_com) }.not_to raise_error
       end
     end
-
   end
 
   describe "should_skip?" do
@@ -664,24 +692,33 @@ describe Chef::Resource do
 
   describe "building the platform map" do
 
+    let(:klz) { Class.new(Chef::Resource) }
+
+    before do
+      Chef::Resource::Klz = klz
+    end
+
+    after do
+      Chef::Resource.send(:remove_const, :Klz)
+    end
+
     it 'adds mappings for a single platform' do
-      klz = Class.new(Chef::Resource)
-      Chef::Resource.platform_map.should_receive(:set).with(
-        :platform => :autobots, :short_name => :dinobot, :resource => klz
+      expect(Chef::Resource.node_map).to receive(:set).with(
+        :dinobot, Chef::Resource::Klz, { platform: ['autobots'] }
       )
-      klz.provides :dinobot, :on_platforms => ['autobots']
+      klz.provides :dinobot, platform: ['autobots']
     end
 
     it 'adds mappings for multiple platforms' do
-      klz = Class.new(Chef::Resource)
-      Chef::Resource.platform_map.should_receive(:set).twice
-      klz.provides :energy, :on_platforms => ['autobots','decepticons']
+      expect(Chef::Resource.node_map).to receive(:set).with(
+        :energy, Chef::Resource::Klz, { platform: ['autobots', 'decepticons']}
+      )
+      klz.provides :energy, platform: ['autobots', 'decepticons']
     end
 
     it 'adds mappings for all platforms' do
-      klz = Class.new(Chef::Resource)
-      Chef::Resource.platform_map.should_receive(:set).with(
-        :short_name => :tape_deck, :resource => klz
+      expect(Chef::Resource.node_map).to receive(:set).with(
+        :tape_deck, Chef::Resource::Klz, {}
       )
       klz.provides :tape_deck
     end
@@ -689,28 +726,26 @@ describe Chef::Resource do
   end
 
   describe "lookups from the platform map" do
+    let(:klz1) { Class.new(Chef::Resource) }
+    let(:klz2) { Class.new(Chef::Resource) }
 
     before(:each) do
+      Chef::Resource::Klz1 = klz1
+      Chef::Resource::Klz2 = klz2
       @node = Chef::Node.new
       @node.name("bumblebee")
       @node.automatic[:platform] = "autobots"
       @node.automatic[:platform_version] = "6.1"
-      Object.const_set('Soundwave', Class.new(Chef::Resource))
-      Object.const_set('Grimlock', Class.new(Chef::Resource){ provides :dinobot, :on_platforms => ['autobots'] })
+      Object.const_set('Soundwave', klz1)
+      klz2.provides :dinobot, :on_platforms => ['autobots']
+      Object.const_set('Grimlock', klz2)
     end
 
     after(:each) do
       Object.send(:remove_const, :Soundwave)
       Object.send(:remove_const, :Grimlock)
-    end
-
-    describe "resource_for_platform" do
-      it 'return a resource by short_name and platform' do
-        Chef::Resource.resource_for_platform(:dinobot,'autobots','6.1').should eql(Grimlock)
-      end
-      it "returns a resource by short_name if nothing else matches" do
-        Chef::Resource.resource_for_node(:soundwave, @node).should eql(Soundwave)
-      end
+      Chef::Resource.send(:remove_const, :Klz1)
+      Chef::Resource.send(:remove_const, :Klz2)
     end
 
     describe "resource_for_node" do

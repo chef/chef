@@ -26,7 +26,6 @@ class Chef
       def initialize(name, run_context=nil)
         super
         @resource_name = :bff_package
-        @provider = Chef::Provider::Package::Aix
       end
 
     end

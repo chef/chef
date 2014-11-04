@@ -25,16 +25,16 @@ describe Chef::Resource::Csh do
   end
 
   it "should create a new Chef::Resource::Csh" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::Csh)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Csh)
   end
 
   it "should have a resource name of :csh" do
-    @resource.resource_name.should eql(:csh)
+    expect(@resource.resource_name).to eql(:csh)
   end
 
   it "should have an interpreter of csh" do
-    @resource.interpreter.should eql("csh")
+    expect(@resource.interpreter).to eql("csh")
   end
 
 end

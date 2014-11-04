@@ -91,7 +91,11 @@ class Chef
     class ResourceNotFound < RuntimeError; end
 
     # Can't find a Resource of this type that is valid on this platform.
-    class NoSuchResourceType < NameError; end
+    class NoSuchResourceType < NameError
+      def initialize(short_name, node)
+        super "Cannot find a resource for #{short_name} on #{node[:platform]} version #{node[:platform_version]}"
+      end
+    end
 
     class InvalidResourceSpecification < ArgumentError; end
     class SolrConnectionError < RuntimeError; end
@@ -117,6 +121,10 @@ class Chef
     class ObsoleteDependencySyntax < ArgumentError; end
     class InvalidDataBagPath < ArgumentError; end
     class DuplicateDataBagItem < RuntimeError; end
+
+    class PowershellCmdletException < RuntimeError; end
+
+    class CannotDetermineHomebrewOwner < Package; end
 
     # A different version of a cookbook was added to a
     # VersionedRecipeList than the one already there.
@@ -178,6 +186,8 @@ class Chef
     class InvalidSymlink < RuntimeError; end
 
     class ChildConvergeError < RuntimeError; end
+
+    class NoProviderAvailable < RuntimeError; end
 
     class MissingRole < RuntimeError
       NULL = Object.new
@@ -346,6 +356,15 @@ class Chef
     class JSON
       class EncodeError < RuntimeError; end
       class ParseError < RuntimeError; end
+    end
+
+    class InvalidSearchQuery < ArgumentError; end
+
+    # Raised by Chef::ProviderResolver
+    class AmbiguousProviderResolution < RuntimeError
+      def initialize(resource, classes)
+        super "Found more than one provider for #{resource.resource_name} resource: #{classes}"
+      end
     end
   end
 end

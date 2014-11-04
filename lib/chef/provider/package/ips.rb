@@ -27,6 +27,8 @@ class Chef
     class Package
       class Ips < Chef::Provider::Package
 
+        provides :ips_package, os: "solaris2"
+
         attr_accessor :virtual
 
         def define_resource_requirements
@@ -65,15 +67,13 @@ class Chef
         def install_package(name, version)
           package_name = "#{name}@#{version}"
           normal_command = "pkg#{expand_options(@new_resource.options)} install -q #{package_name}"
-          if @new_resource.respond_to?(:accept_license) and @new_resource.accept_license
-            command = normal_command.gsub('-q', '-q --accept')
-          else
-            command = normal_command
-          end
-          begin
-            run_command_with_systems_locale(:command => command)
-          rescue
-          end
+          command =
+            if @new_resource.respond_to?(:accept_license) and @new_resource.accept_license
+              normal_command.gsub('-q', '-q --accept')
+            else
+              normal_command
+            end
+          shell_out(command)
         end
 
         def upgrade_package(name, version)
@@ -82,9 +82,7 @@ class Chef
 
         def remove_package(name, version)
           package_name = "#{name}@#{version}"
-          run_command_with_systems_locale(
-            :command => "pkg#{expand_options(@new_resource.options)} uninstall -q #{package_name}"
-          )
+          shell_out!( "pkg#{expand_options(@new_resource.options)} uninstall -q #{package_name}" )
         end
       end
     end

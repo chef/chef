@@ -1,3 +1,4 @@
-actions :never_execute
+actions :prepare_thumbs, :twiddle_thumbs
+default_action :pass_buck
 
-attribute :ever, :kind_of => String
+attribute :monkey, :kind_of => String

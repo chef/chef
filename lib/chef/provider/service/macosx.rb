@@ -19,11 +19,14 @@
 require 'rexml/document'
 require 'chef/resource/service'
 require 'chef/provider/service/simple'
+require 'chef/util/path_helper'
 
 class Chef
   class Provider
     class Service
       class Macosx < Chef::Provider::Service::Simple
+
+        provides :service, os: "darwin"
 
         def self.gather_plist_dirs
           locations = %w{/Library/LaunchAgents
@@ -83,7 +86,7 @@ class Chef
             if @new_resource.start_command
               super
             else
-              shell_out!("launchctl load -w '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
+              shell_out_with_systems_locale!("launchctl load -w '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
             end
           end
         end
@@ -95,7 +98,7 @@ class Chef
             if @new_resource.stop_command
               super
             else
-              shell_out!("launchctl unload '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
+              shell_out_with_systems_locale!("launchctl unload '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
             end
           end
         end
@@ -194,7 +197,7 @@ class Chef
           plists = PLIST_DIRS.inject([]) do |results, dir|
             edir = ::File.expand_path(dir)
             entries = Dir.glob(
-              "#{edir}/*#{@current_resource.service_name}*.plist"
+              "#{edir}/*#{Chef::Util::PathHelper.escape_glob(@current_resource.service_name)}*.plist"
             )
             entries.any? ? results << entries : results
           end

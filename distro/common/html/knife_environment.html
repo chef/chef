@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -45,7 +45,7 @@
 <p>The <strong>knife environment</strong> subcommand is used to manage environments within a single organization on the Chef server.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
+<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) knife subcommands and plugins.</p>
 </div>
 <div class="section" id="compare">
 <h2>compare<a class="headerlink" href="#compare" title="Permalink to this headline">¶</a></h2>
@@ -123,7 +123,7 @@ windows            1.0.0    4.1.2
 </div>
 <div class="section" id="create">
 <h2>create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">create</span></tt> argument is used to add an environment object to the Chef server. When this argument is run, Knife will open $EDITOR to enable editing of the <tt class="docutils literal"><span class="pre">ENVIRONMENT</span></tt> description field (unless a description is specified as part of the command). When finished, Knife will add the environment to the Chef server.</p>
+<p>The <tt class="docutils literal"><span class="pre">create</span></tt> argument is used to add an environment object to the Chef server. When this argument is run, knife will open $EDITOR to enable editing of the <tt class="docutils literal"><span class="pre">ENVIRONMENT</span></tt> description field (unless a description is specified as part of the command). When finished, knife will add the environment to the Chef server.</p>
 <div class="section" id="syntax">
 <h3>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -141,9 +141,9 @@ windows            1.0.0    4.1.2
 </div>
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Create an environment</strong></p>
-<p>To create an environment named &#8220;dev&#8221; with a description of &#8220;The development environment.&#8221;:</p>
+<p>To create an environment named <tt class="docutils literal"><span class="pre">dev</span></tt> with a description of <tt class="docutils literal"><span class="pre">The</span> <span class="pre">development</span> <span class="pre">environment.</span></tt>:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife environment create dev -d <span class="s2">&quot;The development environment.&quot;</span>
 </pre></div>
 </div>
@@ -165,9 +165,9 @@ windows            1.0.0    4.1.2
 </div>
 <div class="section" id="id3">
 <h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Delete an environment</strong></p>
-<p>To delete an environment named &#8220;dev&#8221;, enter:</p>
+<p>To delete an environment named <tt class="docutils literal"><span class="pre">dev</span></tt>, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife environment delete dev
 </pre></div>
 </div>
@@ -176,7 +176,7 @@ windows            1.0.0    4.1.2
 </div>
 <div class="section" id="edit">
 <h2>edit<a class="headerlink" href="#edit" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">edit</span></tt> argument is used to edit the attributes of an environment. When this argument is run, Knife will open $EDITOR to enable editing of <tt class="docutils literal"><span class="pre">ENVIRONMENT</span></tt> attributes. When finished, Knife will update the Chef server with those changes.</p>
+<p>The <tt class="docutils literal"><span class="pre">edit</span></tt> argument is used to edit the attributes of an environment. When this argument is run, knife will open $EDITOR to enable editing of <tt class="docutils literal"><span class="pre">ENVIRONMENT</span></tt> attributes. When finished, knife will update the Chef server with those changes.</p>
 <div class="section" id="id4">
 <h3>Syntax<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
@@ -190,9 +190,9 @@ windows            1.0.0    4.1.2
 </div>
 <div class="section" id="id6">
 <h3>Examples<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Edit an environment</strong></p>
-<p>To edit an environment named &#8220;devops&#8221;, enter:</p>
+<p>To edit an environment named <tt class="docutils literal"><span class="pre">devops</span></tt>, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife environment edit devops
 </pre></div>
 </div>
@@ -218,7 +218,7 @@ windows            1.0.0    4.1.2
 </div>
 <div class="section" id="id9">
 <h3>Examples<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Create an environment from a JSON file</strong></p>
 <p>To add an environment using data contained in a JSON file:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife environment create devops from file <span class="s2">&quot;path to JSON file&quot;</span>
@@ -250,7 +250,7 @@ windows            1.0.0    4.1.2
 </div>
 <div class="section" id="id12">
 <h3>Examples<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>View a list of environments</strong></p>
 <p>To view a list of environments:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife environment list -w
@@ -278,9 +278,9 @@ windows            1.0.0    4.1.2
 </div>
 <div class="section" id="id15">
 <h3>Examples<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Show environments</strong></p>
-<p>To view information about the &#8220;dev&#8221; environment enter:</p>
+<p>To view information about the <tt class="docutils literal"><span class="pre">dev</span></tt> environment enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife environment show dev
 </pre></div>
 </div>

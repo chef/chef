@@ -33,57 +33,73 @@ describe Chef::Provider::Execute do
     @provider.current_resource = @current_resource
     Chef::Log.level = :info
     # FIXME: There should be a test for how STDOUT.tty? changes the live_stream option being passed
-    STDOUT.stub(:tty?).and_return(true)
+    allow(STDOUT).to receive(:tty?).and_return(true)
   end
 
+  let(:opts) do
+    {
+      timeout:	@new_resource.timeout,
+      returns:	@new_resource.returns,
+      log_level: :info,
+      log_tag: @new_resource.to_s,
+      live_stream: STDOUT
+    }
+  end
 
   it "should execute foo_resource" do
-    @provider.stub(:load_current_resource)
-    opts = {}
-    opts[:timeout] = @new_resource.timeout
-    opts[:returns] = @new_resource.returns
-    opts[:log_level] = :info
-    opts[:log_tag] = @new_resource.to_s
-    opts[:live_stream] = STDOUT
-    @provider.should_receive(:shell_out!).with(@new_resource.command, opts)
-    Chef::Log.should_not_receive(:warn)
+    allow(@provider).to receive(:load_current_resource)
+    expect(@provider).to receive(:shell_out!).with(@new_resource.command, opts)
+    expect(@provider).to receive(:converge_by).with("execute foo_resource").and_call_original
+    expect(Chef::Log).not_to receive(:warn)
 
     @provider.run_action(:run)
-    @new_resource.should be_updated
+    expect(@new_resource).to be_updated
+  end
+
+  it "should honor sensitive attribute" do
+    @new_resource.sensitive true
+    @provider = Chef::Provider::Execute.new(@new_resource, @run_context)
+    allow(@provider).to receive(:load_current_resource)
+    # Since the resource is sensitive, it should not have :live_stream set
+    expect(@provider).to receive(:shell_out!).with(@new_resource.command, opts.reject { |k| k == :live_stream })
+    expect(Chef::Log).not_to receive(:warn)
+    expect(@provider).to receive(:converge_by).with("execute sensitive resource").and_call_original
+    @provider.run_action(:run)
+    expect(@new_resource).to be_updated
   end
 
   it "should do nothing if the sentinel file exists" do
-    @provider.stub(:load_current_resource)
-    File.should_receive(:exists?).with(@new_resource.creates).and_return(true)
-    @provider.should_not_receive(:shell_out!)
-    Chef::Log.should_not_receive(:warn)
+    allow(@provider).to receive(:load_current_resource)
+    expect(File).to receive(:exists?).with(@new_resource.creates).and_return(true)
+    expect(@provider).not_to receive(:shell_out!)
+    expect(Chef::Log).not_to receive(:warn)
 
     @provider.run_action(:run)
-    @new_resource.should_not be_updated
+    expect(@new_resource).not_to be_updated
   end
 
   it "should respect cwd options for 'creates'" do
     @new_resource.cwd "/tmp"
     @new_resource.creates "foo_resource"
-    @provider.stub(:load_current_resource)
-    File.should_receive(:exists?).with(@new_resource.creates).and_return(false)
-    File.should_receive(:exists?).with(File.join("/tmp", @new_resource.creates)).and_return(true)
-    Chef::Log.should_not_receive(:warn)
-    @provider.should_not_receive(:shell_out!)
+    allow(@provider).to receive(:load_current_resource)
+    expect(File).to receive(:exists?).with(@new_resource.creates).and_return(false)
+    expect(File).to receive(:exists?).with(File.join("/tmp", @new_resource.creates)).and_return(true)
+    expect(Chef::Log).not_to receive(:warn)
+    expect(@provider).not_to receive(:shell_out!)
 
     @provider.run_action(:run)
-    @new_resource.should_not be_updated
+    expect(@new_resource).not_to be_updated
   end
 
   it "should warn if user specified relative path without cwd" do
     @new_resource.creates "foo_resource"
-    @provider.stub(:load_current_resource)
-    Chef::Log.should_receive(:warn).with(/relative path/)
-    File.should_receive(:exists?).with(@new_resource.creates).and_return(true)
-    @provider.should_not_receive(:shell_out!)
+    allow(@provider).to receive(:load_current_resource)
+    expect(Chef::Log).to receive(:warn).with(/relative path/)
+    expect(File).to receive(:exists?).with(@new_resource.creates).and_return(true)
+    expect(@provider).not_to receive(:shell_out!)
 
     @provider.run_action(:run)
-    @new_resource.should_not be_updated
+    expect(@new_resource).not_to be_updated
   end
 end
 

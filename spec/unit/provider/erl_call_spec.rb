@@ -31,7 +31,7 @@ describe Chef::Provider::ErlCall do
 
     @provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
 
-    @provider.stub(:popen4).and_return(@status)
+    allow(@provider).to receive(:popen4).and_return(@status)
     @stdin = StringIO.new
     @stdout = StringIO.new('{ok, woohoo}')
     @stderr = StringIO.new
@@ -40,11 +40,11 @@ describe Chef::Provider::ErlCall do
 
   it "should return a Chef::Provider::ErlCall object" do
     provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
-    provider.should be_a_kind_of(Chef::Provider::ErlCall)
+    expect(provider).to be_a_kind_of(Chef::Provider::ErlCall)
   end
 
   it "should return true" do
-    @provider.load_current_resource.should eql(true)
+    expect(@provider.load_current_resource).to eql(true)
   end
 
   describe "when running a distributed erl call resource" do
@@ -56,12 +56,12 @@ describe Chef::Provider::ErlCall do
 
     it "should write to stdin of the erl_call command" do
       expected_cmd = "erl_call -e -s -sname chef@localhost -c nomnomnom"
-      @provider.should_receive(:popen4).with(expected_cmd, :waitlast => true).and_return([@pid, @stdin, @stdout, @stderr])
-      Process.should_receive(:wait).with(@pid)
+      expect(@provider).to receive(:popen4).with(expected_cmd, :waitlast => true).and_return([@pid, @stdin, @stdout, @stderr])
+      expect(Process).to receive(:wait).with(@pid)
 
       @provider.action_run
 
-      @stdin.string.should == "#{@new_resource.code}\n"
+      expect(@stdin.string).to eq("#{@new_resource.code}\n")
     end
   end
 
@@ -73,12 +73,12 @@ describe Chef::Provider::ErlCall do
     end
 
     it "should write to stdin of the erl_call command" do
-      @provider.should_receive(:popen4).with("erl_call -e  -name chef@localhost ", :waitlast => true).and_return([@pid, @stdin, @stdout, @stderr])
-      Process.should_receive(:wait).with(@pid)
+      expect(@provider).to receive(:popen4).with("erl_call -e  -name chef@localhost ", :waitlast => true).and_return([@pid, @stdin, @stdout, @stderr])
+      expect(Process).to receive(:wait).with(@pid)
 
       @provider.action_run
 
-      @stdin.string.should == "#{@new_resource.code}\n"
+      expect(@stdin.string).to eq("#{@new_resource.code}\n")
     end
   end
 

@@ -17,21 +17,16 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::MacportsPackage, "initialize" do
-  before(:each) do
-    @resource = Chef::Resource::MacportsPackage.new("foo")
-  end
 
-  it "should return a Chef::Resource::MacportsPackage" do
-    @resource.should be_a_kind_of(Chef::Resource::MacportsPackage)
-  end
+  static_provider_resolution(
+    resource: Chef::Resource::MacportsPackage,
+    provider: Chef::Provider::Package::Macports,
+    name: :macports_package,
+    action: :install,
+    os: "mac_os_x",
+  )
 
-  it "should set the resource_name to :macports_package" do
-    @resource.resource_name.should eql(:macports_package)
-  end
-
-  it "should set the provider to Chef::Provider::Package::Macports" do
-    @resource.provider.should eql(Chef::Provider::Package::Macports)
-  end
 end

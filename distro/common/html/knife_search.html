@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -41,7 +41,7 @@
             
   <div class="section" id="knife-search">
 <h1>knife search<a class="headerlink" href="#knife-search" title="Permalink to this headline">¶</a></h1>
-<p>Search indexes allow queries to be made for any type of data that is indexed by the Chef server, including data bags (and data bag items), environments, nodes, and roles. A defined query syntax is used to support search patterns like exact, wildcard, range, and fuzzy. A search is a full-text query that can be done from several locations, including from within a recipe, by using the <tt class="docutils literal"><span class="pre">search</span></tt> subcommand in Knife, or by using the <tt class="docutils literal"><span class="pre">/search</span></tt> or <tt class="docutils literal"><span class="pre">/search/INDEX</span></tt> endpoints in the Chef Server API. The search engine is based on Apache Solr and is run from the Chef server.</p>
+<p>Search indexes allow queries to be made for any type of data that is indexed by the Chef server, including data bags (and data bag items), environments, nodes, and roles. A defined query syntax is used to support search patterns like exact, wildcard, range, and fuzzy. A search is a full-text query that can be done from several locations, including from within a recipe, by using the <tt class="docutils literal"><span class="pre">search</span></tt> subcommand in knife, the <tt class="docutils literal"><span class="pre">search</span></tt> method in the Recipe DSL, and by using the <tt class="docutils literal"><span class="pre">/search</span></tt> or <tt class="docutils literal"><span class="pre">/search/INDEX</span></tt> endpoints in the Chef server API. The search engine is based on Apache Solr and is run from the Chef server.</p>
 <p>The <strong>knife search</strong> subcommand is used run a search query for information that is indexed on a Chef server.</p>
 <div class="section" id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
@@ -84,7 +84,7 @@ win2k8-dev
 <h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
+<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) knife subcommands and plugins.</p>
 </div>
 <p>This sub-command has the following options:</p>
 <dl class="docutils">
@@ -97,9 +97,9 @@ win2k8-dev
 <dt><tt class="docutils literal"><span class="pre">INDEX</span></tt></dt>
 <dd>The name of the index to be queried: <tt class="docutils literal"><span class="pre">client</span></tt>, <tt class="docutils literal"><span class="pre">environment</span></tt>, <tt class="docutils literal"><span class="pre">node</span></tt>, <tt class="docutils literal"><span class="pre">role</span></tt>, or <tt class="docutils literal"><span class="pre">DATA_BAG_NAME</span></tt>. Default index: <tt class="docutils literal"><span class="pre">node</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-l</span></tt>, <tt class="docutils literal"><span class="pre">--long</span></tt></dt>
-<dd>Display long output when searching nodes while using the default summary format.</dd>
+<dd>Use to display all attributes in the output and to show the output as JSON.</dd>
 <dt><tt class="docutils literal"><span class="pre">-m</span></tt>, <tt class="docutils literal"><span class="pre">--medium</span></tt></dt>
-<dd>Display more, but not all, of a node&#8217;s data when searching using the default summary format.</dd>
+<dd>Use to display normal attributes in the output and to show the output as JSON.</dd>
 <dt><tt class="docutils literal"><span class="pre">-o</span> <span class="pre">SORT</span></tt>, <tt class="docutils literal"><span class="pre">--sort</span> <span class="pre">SORT</span></tt></dt>
 <dd>The order in which search results will be sorted.</dd>
 <dt><tt class="docutils literal"><span class="pre">-q</span> <span class="pre">SEARCH_QUERY</span></tt>, <tt class="docutils literal"><span class="pre">--query</span> <span class="pre">SEARCH_QUERY</span></tt></dt>
@@ -114,7 +114,7 @@ win2k8-dev
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Search by platform ID</strong></p>
 <p>To search for the IDs of all nodes running on the Amazon EC2 platform, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife search node <span class="s1">&#39;ec2:*&#39;</span> -i

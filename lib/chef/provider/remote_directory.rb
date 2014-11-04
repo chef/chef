@@ -26,30 +26,30 @@ require 'uri'
 require 'tempfile'
 require 'net/https'
 require 'set'
+require 'chef/util/path_helper'
 
 class Chef
   class Provider
     class RemoteDirectory < Chef::Provider::Directory
 
+      provides :remote_directory
+
       include Chef::Mixin::FileClass
 
       def action_create
         super
-        files_to_purge = Set.new(Dir.glob(::File.join(@new_resource.path, '**', '*'),
-                                          ::File::FNM_DOTMATCH).select do |name|
-                                   name !~ /(?:^|#{Regexp.escape(::File::SEPARATOR)})\.\.?$/
-                                 end)
+        # Mark all files as needing to be purged
+        files_to_purge = Set.new(ls(@new_resource.path)) # Make sure each path is clean
 
+        # Transfer files
         files_to_transfer.each do |cookbook_file_relative_path|
           create_cookbook_file(cookbook_file_relative_path)
-          # the file is removed from the purge list
-          files_to_purge.delete(::File.join(@new_resource.path, cookbook_file_relative_path))
-          # parent directories are also removed from the purge list
-          directories=::File.dirname(::File.join(@new_resource.path, cookbook_file_relative_path)).split(::File::SEPARATOR)
-          for i in 0..directories.length-1
-            files_to_purge.delete(::File.join(directories[0..i]))
+          # parent directories and file being transfered are removed from the purge list
+          Pathname.new(Chef::Util::PathHelper.cleanpath(::File.join(@new_resource.path, cookbook_file_relative_path))).descend do |d|
+            files_to_purge.delete(d.to_s)
           end
         end
+
         purge_unmanaged_files(files_to_purge)
       end
 
@@ -60,6 +60,21 @@ class Chef
       end
 
       protected
+
+      # List all excluding . and ..
+      def ls(path)
+        files = Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob(path), '**', '*'),
+                 ::File::FNM_DOTMATCH)
+
+        # Remove current directory and previous directory
+        files.reject! do |name|
+          basename = Pathname.new(name).basename().to_s
+          ['.', '..'].include?(basename)
+        end
+
+        # Clean all the paths... this is required because of the join
+        files.map {|f| Chef::Util::PathHelper.cleanpath(f)}
+      end
 
       def purge_unmanaged_files(unmanaged_files)
         if @new_resource.purge

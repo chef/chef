@@ -121,7 +121,7 @@ describe Shell::Extensions do
       Shell.session.stub(:rebuild_context)
       events = Chef::EventDispatch::Dispatcher.new
       run_context = Chef::RunContext.new(Chef::Node.new, {}, events)
-      run_context.resource_collection.instance_variable_set(:@iterator, :the_iterator)
+      run_context.resource_collection.instance_variable_get(:@resource_list).instance_variable_set(:@iterator, :the_iterator)
       Shell.session.run_context = run_context
       @root_context.chef_run.should == :the_iterator
     end

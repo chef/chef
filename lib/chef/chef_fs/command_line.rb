@@ -253,7 +253,7 @@ class Chef
       def self.canonicalize_json(json_text)
         parsed_json = Chef::JSONCompat.parse(json_text)
         sorted_json = sort_keys(parsed_json)
-        JSON.pretty_generate(sorted_json)
+        Chef::JSONCompat.to_json_pretty(sorted_json)
       end
 
       def self.diff_text(old_path, new_path, old_value, new_value)

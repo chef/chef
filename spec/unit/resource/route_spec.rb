@@ -26,64 +26,64 @@ describe Chef::Resource::Route do
   end
 
   it "should create a new Chef::Resource::Route" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::Route)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Route)
   end
 
   it "should have a name" do
-    @resource.name.should eql("10.0.0.10")
+    expect(@resource.name).to eql("10.0.0.10")
   end
 
   it "should have a default action of 'add'" do
-    @resource.action.should eql([:add])
+    expect(@resource.action).to eql([:add])
   end
 
   it "should accept add or delete for action" do
-    lambda { @resource.action :add }.should_not raise_error
-    lambda { @resource.action :delete }.should_not raise_error
-    lambda { @resource.action :lolcat }.should raise_error(ArgumentError)
+    expect { @resource.action :add }.not_to raise_error
+    expect { @resource.action :delete }.not_to raise_error
+    expect { @resource.action :lolcat }.to raise_error(ArgumentError)
   end
 
   it "should use the object name as the target by default" do
-    @resource.target.should eql("10.0.0.10")
+    expect(@resource.target).to eql("10.0.0.10")
   end
 
   it "should allow you to specify the netmask" do
     @resource.netmask "255.255.255.0"
-    @resource.netmask.should eql("255.255.255.0")
+    expect(@resource.netmask).to eql("255.255.255.0")
   end
 
   it "should allow you to specify the gateway" do
     @resource.gateway "10.0.0.1"
-    @resource.gateway.should eql("10.0.0.1")
+    expect(@resource.gateway).to eql("10.0.0.1")
   end
 
   it "should allow you to specify the metric" do
     @resource.metric 10
-    @resource.metric.should eql(10)
+    expect(@resource.metric).to eql(10)
   end
 
   it "should allow you to specify the device" do
     @resource.device "eth0"
-    @resource.device.should eql("eth0")
+    expect(@resource.device).to eql("eth0")
   end
 
   it "should allow you to specify the route type" do
     @resource.route_type "host"
-    @resource.route_type.should eql(:host)
+    expect(@resource.route_type).to eql(:host)
   end
 
   it "should default to a host route type" do
-    @resource.route_type.should eql(:host)
+    expect(@resource.route_type).to eql(:host)
   end
 
   it "should accept a net route type" do
     @resource.route_type :net
-    @resource.route_type.should eql(:net)
+    expect(@resource.route_type).to eql(:net)
   end
 
   it "should reject any other route_type but :host and :net" do
-    lambda { @resource.route_type "lolcat" }.should raise_error(ArgumentError)
+    expect { @resource.route_type "lolcat" }.to raise_error(ArgumentError)
   end
 
   describe "when it has netmask, gateway, and device" do
@@ -96,12 +96,12 @@ describe Chef::Resource::Route do
 
     it "describes its state" do
       state = @resource.state
-      state[:netmask].should == "lemask"
-      state[:gateway].should == "111.111.111"
+      expect(state[:netmask]).to eq("lemask")
+      expect(state[:gateway]).to eq("111.111.111")
     end
 
     it "returns the target  as its identity" do
-      @resource.identity.should == "charmander"
+      expect(@resource.identity).to eq("charmander")
     end
   end
 end

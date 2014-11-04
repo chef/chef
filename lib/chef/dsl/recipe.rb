@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource_platform_map'
 require 'chef/mixin/convert_to_class_name'
+require 'chef/exceptions'
 
 class Chef
   module DSL
@@ -52,9 +52,7 @@ class Chef
       end
 
       def has_resource_definition?(name)
-        yes_or_no = run_context.definitions.has_key?(name)
-
-        yes_or_no
+        run_context.definitions.has_key?(name)
       end
 
       # Processes the arguments and block as a resource definition.
@@ -68,12 +66,10 @@ class Chef
         # This sets up the parameter overrides
         new_def.instance_eval(&block) if block
 
-
         new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, run_context)
         new_recipe.params = new_def.params
         new_recipe.params[:name] = args[0]
         new_recipe.instance_eval(&new_def.recipe)
-        new_recipe
       end
 
       # Instantiates a resource (via #build_resource), then adds it to the
@@ -85,21 +81,7 @@ class Chef
 
         resource = build_resource(type, name, created_at, &resource_attrs_block)
 
-        # Some resources (freebsd_package) can be invoked with multiple names
-        # (package || freebsd_package).
-        # https://github.com/opscode/chef/issues/1773
-        # For these resources we want to make sure
-        # their key in resource collection is same as the name they are declared
-        # as. Since this might be a breaking change for resources that define
-        # customer to_s methods, we are working around the issue by letting
-        # resources know of their created_as_type until this issue is fixed in
-        # Chef 12:
-        # https://github.com/opscode/chef/issues/1817
-        if resource.respond_to?(:created_as_type=)
-          resource.created_as_type = type
-        end
-
-        run_context.resource_collection.insert(resource)
+        run_context.resource_collection.insert(resource, resource_type:type, instance_name:name)
         resource
       end
 
@@ -123,7 +105,7 @@ class Chef
         # This behavior is very counter-intuitive and should be removed.
         # See CHEF-3694, https://tickets.opscode.com/browse/CHEF-3694
         # Moved to this location to resolve CHEF-5052, https://tickets.opscode.com/browse/CHEF-5052
-        resource.load_prior_resource
+        resource.load_prior_resource(type, name)
         resource.cookbook_name = cookbook_name
         resource.recipe_name = recipe_name
         # Determine whether this resource is being created in the context of an enclosing Provider
@@ -160,6 +142,10 @@ class Chef
         else
           to_s
         end
+      end
+
+      def exec(args)
+        raise Chef::Exceptions::ResourceNotFound, "exec was called, but you probably meant to use an execute resource.  If not, please call Kernel#exec explicitly.  The exec block called was \"#{args}\""
       end
 
     end

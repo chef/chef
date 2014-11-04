@@ -33,7 +33,7 @@ describe Chef::Resource::Batch do
   end
 
   it "should create a new Chef::Resource::Batch" do
-    @resource.should be_a_kind_of(Chef::Resource::Batch)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Batch)
   end
 
   context "windows script" do

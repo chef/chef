@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-SSL-FETCH" "1" "Chef 11.14" "" "knife ssl fetch"
+.TH "KNIFE-SSL-FETCH" "1" "Chef 12.0" "" "knife ssl fetch"
 .SH NAME
 knife-ssl-fetch \- The man page for the knife ssl fetch subcommand.
 .
@@ -31,12 +31,12 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
 .sp
-The \fBknife ssl fetch\fP subcommand is used to copy SSL certificates from an HTTPS server to the \fBtrusted_certs_dir\fP directory that is used by Knife and the chef\-client to store trusted SSL certificates. When these certificates match the hostname of the remote server, running \fBknife ssl fetch\fP is the only step required to verify a remote server that is accessed by either Knife or the chef\-client\&.
+The \fBknife ssl fetch\fP subcommand is used to copy SSL certificates from an HTTPS server to the \fBtrusted_certs_dir\fP directory that is used by knife and the chef\-client to store trusted SSL certificates. When these certificates match the hostname of the remote server, running \fBknife ssl fetch\fP is the only step required to verify a remote server that is accessed by either knife or the chef\-client\&.
 .sp
 \fBWARNING:\fP
 .INDENT 0.0
 .INDENT 3.5
-It is the user\(aqs responsibility to verify the authenticity of every SSL certificate before downloading it to the \fBtrusted_certs_dir\fP directory. Knife will use any certificate in that directory as if it is a 100% trusted and authentic SSL certificate. Knife will not be able to determine if any certificate in this directory has been tampered with, is forged, malicious, or otherwise harmful. Therefore it is essential that users take the proper steps before downloading certificates into this directory.
+It is the user\(aqs responsibility to verify the authenticity of every SSL certificate before downloading it to the \fBtrusted_certs_dir\fP directory. knife will use any certificate in that directory as if it is a 100% trusted and authentic SSL certificate. knife will not be able to determine if any certificate in this directory has been tampered with, is forged, malicious, or otherwise harmful. Therefore it is essential that users take the proper steps before downloading certificates into this directory.
 .UNINDENT
 .UNINDENT
 .sp
@@ -81,7 +81,7 @@ Use to view colored output.
 Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Use to have Knife use the default value instead of asking a user to provide one.
+Use to have knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -102,7 +102,7 @@ Shows help for the command.
 The SSH identity file used for authentication. Key\-based authentication is recommended.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the Chef server\&.
+The private key that knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-m\fP, \fB\-\-manual\-list\fP
 Use to define a search query as a space\-separated list of servers. If there is more than one item in the list, put quotes around the entire list. For example: \fB\-\-manual\-list "server01 server 02 server 03"\fP
@@ -117,7 +117,7 @@ The shell type. Possible values: \fBinteractive\fP, \fBscreen\fP, \fBtmux\fP, \f
 The SSH port.
 .TP
 .B \fB\-P PASSWORD\fP, \fB\-\-ssh\-password PASSWORD\fP
-The SSH password. This can be used to pass the password directly on the command line. If this option is not specified (and a password is required) Knife will prompt for the password.
+The SSH password. This can be used to pass the password directly on the command line. If this option is not specified (and a password is required) knife will prompt for the password.
 .TP
 .B \fB\-\-print\-after\fP
 Use to show data after a destructive operation.
@@ -132,7 +132,7 @@ The search query used to return a list of servers to be accessed using SSH and t
 The command that will be run against the results of a search query.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
+The user name used by knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
 The version of the chef\-client\&.
@@ -144,7 +144,7 @@ Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 The SSH user name.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
+Use to respond to all confirmation prompts with "Yes". knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
 Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
@@ -152,7 +152,7 @@ Use to run the chef\-client in local mode. This allows all commands that work ag
 .sp
 \fBExamples\fP
 .sp
-The following examples show how to use this Knife subcommand:
+The following examples show how to use this knife subcommand:
 .sp
 \fBFetch the SSL certificates used by Knife from the Chef server\fP
 .INDENT 0.0

@@ -185,6 +185,8 @@ class Chef::Application::Solo < Chef::Application
       Chef::Config[:interval] ||= 1800
     end
 
+    Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
+
     if Chef::Config[:recipe_url]
       cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
@@ -209,23 +211,39 @@ class Chef::Application::Solo < Chef::Application
   end
 
   def run_application
+    if !Chef::Config[:client_fork] || Chef::Config[:once]
+      # Run immediately without interval sleep or splay
+      begin
+        run_chef_client(Chef::Config[:specific_recipes])
+      rescue SystemExit
+        raise
+      rescue Exception => e
+        Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
+      end
+    else
+      interval_run_chef_client
+    end
+  end
+
+  private
+  def interval_run_chef_client
     if Chef::Config[:daemonize]
       Chef::Daemon.daemonize("chef-client")
     end
 
     loop do
       begin
-        if Chef::Config[:splay]
-          splay = rand Chef::Config[:splay]
-          Chef::Log.debug("Splay sleep #{splay} seconds")
-          sleep splay
+
+        sleep_sec = 0
+        sleep_sec += rand(Chef::Config[:splay]) if Chef::Config[:splay]
+        sleep_sec += Chef::Config[:interval] if Chef::Config[:interval]
+        if sleep_sec != 0
+          Chef::Log.debug("Sleeping for #{sleep_sec} seconds")
+          sleep(sleep_sec)
         end
 
         run_chef_client
-        if Chef::Config[:interval]
-          Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
-          sleep Chef::Config[:interval]
-        else
+        if !Chef::Config[:interval]
           Chef::Application.exit! "Exiting", 0
         end
       rescue SystemExit => e
@@ -234,8 +252,6 @@ class Chef::Application::Solo < Chef::Application
         if Chef::Config[:interval]
           Chef::Log.error("#{e.class}: #{e}")
           Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
-          Chef::Log.fatal("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
-          sleep Chef::Config[:interval]
           retry
         else
           Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
@@ -244,8 +260,6 @@ class Chef::Application::Solo < Chef::Application
     end
   end
 
-  private
-
   def fetch_recipe_tarball(url, path)
     Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
     File.open(path, 'wb') do |f|
@@ -253,5 +267,12 @@ class Chef::Application::Solo < Chef::Application
         f.write(r.read)
       end
     end
+  end
+
+  def unforked_interval_error_message
+    "Unforked chef-client interval runs are disabled in Chef 12." +
+    "\nConfiguration settings:" +
+    "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
+    "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
   end
 end

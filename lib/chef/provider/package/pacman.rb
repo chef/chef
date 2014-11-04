@@ -25,6 +25,8 @@ class Chef
     class Package
       class Pacman < Chef::Provider::Package
 
+        provides :pacman_package, os: "linux"
+
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
@@ -34,7 +36,6 @@ class Chef
           Chef::Log.debug("#{@new_resource} checking pacman for #{@new_resource.package_name}")
           status = popen4("pacman -Qi #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
-              line.force_encoding(Encoding::UTF_8) if line.respond_to?(:force_encoding)
               case line
               when /^Version(\s?)*: (.+)$/
                 Chef::Log.debug("#{@new_resource} current version is #{$2}")
@@ -62,11 +63,11 @@ class Chef
 
           package_repos = repos.map {|r| Regexp.escape(r) }.join('|')
 
-          status = popen4("pacman -Ss #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
+          status = popen4("pacman -Sl") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               case line
-                when /^(#{package_repos})\/#{Regexp.escape(@new_resource.package_name)} (.+)$/
-                  # $2 contains a string like "4.4.0-1 (kde kdenetwork)" or "3.10-4 (base)"
+                when /^(#{package_repos}) #{Regexp.escape(@new_resource.package_name)} (.+)$/
+                  # $2 contains a string like "4.4.0-1" or "3.10-4 [installed]"
                   # simply split by space and use first token
                   @candidate_version = $2.split(" ").first
               end
@@ -86,9 +87,7 @@ class Chef
         end
 
         def install_package(name, version)
-          run_command_with_systems_locale(
-            :command => "pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}"
-          )
+          shell_out!( "pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}" )
         end
 
         def upgrade_package(name, version)
@@ -96,9 +95,7 @@ class Chef
         end
 
         def remove_package(name, version)
-          run_command_with_systems_locale(
-            :command => "pacman --remove --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}"
-          )
+          shell_out!( "pacman --remove --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}" )
         end
 
         def purge_package(name, version)

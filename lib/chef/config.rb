@@ -25,11 +25,13 @@ require 'mixlib/config'
 require 'chef/util/selinux'
 require 'chef/util/path_helper'
 require 'pathname'
+require 'chef/mixin/shell_out'
 
 class Chef
   class Config
 
     extend Mixlib::Config
+    extend Chef::Mixin::ShellOut
 
     PathHelper = Chef::Util::PathHelper
 
@@ -74,6 +76,10 @@ class Chef
 
     def self.add_formatter(name, file_path=nil)
       formatters << [name, file_path]
+    end
+
+    def self.add_event_logger(logger)
+      event_handlers << logger
     end
 
     # Config file to load (client.rb, knife.rb, etc. defaults set differently in knife, chef-client, etc.)
@@ -331,10 +337,11 @@ class Chef
     default :ssl_client_cert, nil
     default :ssl_client_key, nil
 
-    # Whether or not to verify the SSL cert for all HTTPS requests. If set to
-    # :verify_peer, all HTTPS requests will be validated regardless of other
-    # SSL verification settings.
-    default :ssl_verify_mode, :verify_none
+    # Whether or not to verify the SSL cert for all HTTPS requests. When set to
+    # :verify_peer (default), all HTTPS requests will be validated regardless of other
+    # SSL verification settings. When set to :verify_none no HTTPS requests will
+    # be validated.
+    default :ssl_verify_mode, :verify_peer
 
     # Whether or not to verify the SSL cert for HTTPS requests to the Chef
     # server API. If set to `true`, the server's cert will be validated
@@ -447,6 +454,15 @@ class Chef
 
     # Event Handlers
     default :event_handlers, []
+
+    default :disable_event_loggers, false
+    default :event_loggers do
+      evt_loggers = []
+      if Chef::Platform::windows? and not Chef::Platform::windows_server_2003?
+        evt_loggers << :win_evt
+      end
+      evt_loggers
+    end
 
     # Exception Handlers
     default :exception_handlers, []
@@ -586,6 +602,67 @@ class Chef
     default :default_attribute_whitelist, nil
     default :normal_attribute_whitelist, nil
     default :override_attribute_whitelist, nil
+
+    # Chef requires an English-language UTF-8 locale to function properly.  We attempt
+    # to use the 'locale -a' command and search through a list of preferences until we
+    # find one that we can use.  On Ubuntu systems we should find 'C.UTF-8' and be
+    # able to use that even if there is no English locale on the server, but Mac, Solaris,
+    # AIX, etc do not have that locale.  We then try to find an English locale and fall
+    # back to 'C' if we do not.  The choice of fallback is pick-your-poison.  If we try
+    # to do the work to return a non-US UTF-8 locale then we fail inside of providers when
+    # things like 'svn info' return Japanese and we can't parse them.  OTOH, if we pick 'C' then
+    # we will blow up on UTF-8 characters.  Between the warn we throw and the Encoding
+    # exception that ruby will throw it is more obvious what is broken if we drop UTF-8 by
+    # default rather than drop English.
+    #
+    # If there is no 'locale -a' then we return 'en_US.UTF-8' since that is the most commonly
+    # available English UTF-8 locale.  However, all modern POSIXen should support 'locale -a'.
+    default :internal_locale do
+      begin
+        # https://github.com/opscode/chef/issues/2181
+        # Some systems have the `locale -a` command, but the result has
+        # invalid characters for the default encoding.
+        #
+        # For example, on CentOS 6 with ENV['LANG'] = "en_US.UTF-8",
+        # `locale -a`.split fails with ArgumentError invalid UTF-8 encoding.
+        locales = shell_out_with_systems_locale("locale -a").stdout.split
+        case
+        when locales.include?('C.UTF-8')
+          'C.UTF-8'
+        when locales.include?('en_US.UTF-8'), locales.include?('en_US.utf8')
+          'en_US.UTF-8'
+        when locales.include?('en.UTF-8')
+          'en.UTF-8'
+        else
+          # Will match en_ZZ.UTF-8, en_ZZ.utf-8, en_ZZ.UTF8, en_ZZ.utf8
+          guesses = locales.select { |l| l =~ /^en_.*UTF-?8$/i }
+          unless guesses.empty?
+            guessed_locale = guesses.first
+            # Transform into the form en_ZZ.UTF-8
+            guessed_locale.gsub(/UTF-?8$/i, "UTF-8")
+          else
+            Chef::Log.warn "Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support."
+            'C'
+          end
+        end
+      rescue
+        if Chef::Platform.windows?
+          Chef::Log.debug "Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else."
+        else
+          Chef::Log.debug "No usable locale -a command found, assuming you have en_US.UTF-8 installed."
+        end
+        'en_US.UTF-8'
+      end
+    end
+
+    # Force UTF-8 Encoding, for when we fire up in the 'C' locale or other strange locales (e.g.
+    # japanese windows encodings).  If we do not do this, then knife upload will fail when a cookbook's
+    # README.md has UTF-8 characters that do not encode in whatever surrounding encoding we have been
+    # passed.  Effectively, the Chef Ecosystem is globally UTF-8 by default.  Anyone who wants to be
+    # able to upload Shift_JIS or ISO-8859-1 files needs to mark *those* files explicitly with
+    # magic tags to make ruby correctly identify the encoding being used.  Changing this default will
+    # break Chef community cookbooks and is very highly discouraged.
+    default :ruby_encoding, Encoding::UTF_8
 
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with

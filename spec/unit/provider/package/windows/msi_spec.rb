@@ -37,15 +37,15 @@ describe Chef::Provider::Package::Windows::MSI, :windows_only do
 
   describe "installed_version" do
     it "returns the installed version" do
-      provider.stub(:get_product_property).and_return("{23170F69-40C1-2702-0920-000001000000}")
-      provider.stub(:get_installed_version).with("{23170F69-40C1-2702-0920-000001000000}").and_return("3.14159.1337.42")
+      allow(provider).to receive(:get_product_property).and_return("{23170F69-40C1-2702-0920-000001000000}")
+      allow(provider).to receive(:get_installed_version).with("{23170F69-40C1-2702-0920-000001000000}").and_return("3.14159.1337.42")
       expect(provider.installed_version).to eql("3.14159.1337.42")
     end
   end
 
   describe "package_version" do
     it "returns the version of a package" do
-      provider.stub(:get_product_property).with(/calculator.msi$/, "ProductVersion").and_return(42)
+      allow(provider).to receive(:get_product_property).with(/calculator.msi$/, "ProductVersion").and_return(42)
       expect(provider.package_version).to eql(42)
     end
   end

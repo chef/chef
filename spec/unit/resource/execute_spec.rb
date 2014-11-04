@@ -23,4 +23,9 @@ describe Chef::Resource::Execute do
   let(:resource_instance_name) { "some command" }
   let(:execute_resource) { Chef::Resource::Execute.new(resource_instance_name) }
   it_behaves_like "an execute resource"
+
+  it "default guard interpreter should be :execute interpreter" do
+    expect(execute_resource.guard_interpreter).to be(:execute)
+  end
+
 end

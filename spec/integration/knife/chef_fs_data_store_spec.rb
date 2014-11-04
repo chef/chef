@@ -22,7 +22,7 @@ require 'chef/knife/show'
 require 'chef/knife/raw'
 require 'chef/knife/cookbook_upload'
 
-describe 'ChefFSDataStore tests' do
+describe 'ChefFSDataStore tests', :workstation do
   include IntegrationSupport
   include KnifeSupport
 

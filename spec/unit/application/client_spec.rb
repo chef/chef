@@ -39,6 +39,43 @@ describe Chef::Application::Client, "reconfigure" do
     ARGV.replace(@original_argv)
   end
 
+  describe "when configured to not fork the client process" do
+    before do
+      Chef::Config[:client_fork] = false
+      Chef::Config[:daemonize] = false
+      Chef::Config[:interval] = nil
+      Chef::Config[:splay] = nil
+    end
+
+    context "when interval is given" do
+      before do
+        Chef::Config[:interval] = 600
+      end
+
+      it "should terminate with message" do
+        Chef::Application.should_receive(:fatal!).with(
+"Unforked chef-client interval runs are disabled in Chef 12.
+Configuration settings:
+  interval  = 600 seconds
+Enable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+        )
+        @app.reconfigure
+      end
+    end
+
+    context "when configured to run once" do
+      before do
+        Chef::Config[:once] = true
+        Chef::Config[:interval] = 1000
+      end
+
+      it "should reconfigure chef-client" do
+        @app.reconfigure
+        Chef::Config[:interval].should be_nil
+      end
+    end
+  end
+
   describe "when in daemonized mode and no interval has been set" do
     before do
       Chef::Config[:daemonize] = true
@@ -131,28 +168,80 @@ end
 
 describe Chef::Application::Client, "run_application", :unix_only do
   before(:each) do
-    Chef::Config[:daemonize] = true
-    @pipe = IO.pipe
+    Chef::Config[:specific_recipes] = [] # normally gets set in @app.reconfigure
+
     @app = Chef::Application::Client.new
+    @app.setup_signal_handlers
     # Default logger doesn't work correctly when logging from a trap handler.
     @app.configure_logging
-    Chef::Daemon.stub(:daemonize).and_return(true)
-    @app.stub(:run_chef_client) do
+
+    @pipe = IO.pipe
+    @client = Chef::Client.new
+    Chef::Client.stub(:new).and_return(@client)
+    @client.stub(:run) do
       @pipe[1].puts 'started'
       sleep 1
       @pipe[1].puts 'finished'
     end
   end
 
-  it "should exit gracefully when sent SIGTERM", :volatile_on_solaris do
-    pid = fork do
-      @app.run_application
+  context "when sent SIGTERM", :volatile_on_solaris do
+    context "when converging in forked process" do
+      before do
+        Chef::Config[:daemonize] = true
+        Chef::Daemon.stub(:daemonize).and_return(true)
+      end
+
+      it "should exit hard with exitstatus 3" do
+        pid = fork do
+          @app.run_application
+        end
+        Process.kill("TERM", pid)
+        _pid, result = Process.waitpid2(pid)
+        result.exitstatus.should == 3
+      end
+
+      it "should allow child to finish converging" do
+        pid = fork do
+          @app.run_application
+        end
+        @pipe[0].gets.should == "started\n"
+        Process.kill("TERM", pid)
+        Process.wait
+        sleep 1 # Make sure we give the converging child process enough time to finish
+        IO.select([@pipe[0]], nil, nil, 0).should_not be_nil
+        @pipe[0].gets.should == "finished\n"
+      end
     end
-    @pipe[0].gets.should == "started\n"
-    Process.kill("TERM", pid)
-    Process.wait
-    IO.select([@pipe[0]], nil, nil, 0).should_not be_nil
-    @pipe[0].gets.should == "finished\n"
+
+    context "when running unforked" do
+      before(:each) do
+        Chef::Config[:client_fork] = false
+        Chef::Config[:daemonize] = false
+      end
+
+      it "should exit gracefully when sent during converge" do
+        pid = fork do
+          @app.run_application
+        end
+        @pipe[0].gets.should == "started\n"
+        Process.kill("TERM", pid)
+        _pid, result = Process.waitpid2(pid)
+        result.exitstatus.should == 0
+        IO.select([@pipe[0]], nil, nil, 0).should_not be_nil
+        @pipe[0].gets.should == "finished\n"
+      end
+
+      it "should exit hard when sent before converge" do
+        pid = fork do
+          sleep 3
+          @app.run_application
+        end
+        Process.kill("TERM", pid)
+        _pid, result = Process.waitpid2(pid)
+        result.exitstatus.should == 3
+      end
+    end
   end
 
   describe "when splay is set" do
@@ -176,6 +265,9 @@ describe Chef::Application::Client, "run_application", :unix_only do
         # If everything is fine, sending USR1 to self should prevent
         # app to go into splay sleep forever.
         Process.kill("USR1", Process.pid)
+        # On Ruby < 2.1, we need to give the signal handlers a little
+        # more time, otherwise the test will fail because interleavings.
+        sleep 1
       end
 
       number_of_sleep_calls = 0
@@ -185,7 +277,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
       # We have to do it this way because the main loop of
       # Chef::Application::Client swallows most exceptions, and we need to be
       # able to expose our expectation failures to the parent process in the test.
-      @app.stub(:sleep) do |arg|
+      @app.stub(:interval_sleep) do |arg|
         number_of_sleep_calls += 1
         if number_of_sleep_calls > 1
           exit 127
@@ -194,6 +286,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
     end
 
     it "shouldn't sleep when sent USR1" do
+      @app.stub(:interval_sleep).with(0).and_call_original
       pid = fork do
         @app.run_application
       end

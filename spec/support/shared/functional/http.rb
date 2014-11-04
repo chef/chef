@@ -155,6 +155,14 @@ module ChefHTTPShared
       }
     )
 
+    @api.post('/posty', 200, 'Hi!')
+
+    #
+    # 400 with an error
+    #
+    @api.get('/bad_request', 400, '{ "error": [ "Your request is just terrible." ] }')
+    @api.post('/bad_request', 400, '{ "error": [ "Your request is just terrible." ] }')
+
   end
 
   def stop_tiny_server
@@ -239,4 +247,3 @@ shared_examples_for "downloading all the things" do
     it_behaves_like "a 403 after a successful request when reusing the request object"
   end
 end
-

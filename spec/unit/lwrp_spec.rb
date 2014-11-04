@@ -42,7 +42,8 @@ describe "LWRP" do
       end
 
       Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
-        Chef::Log.should_receive(:info).with(/overriding/)
+        Chef::Log.should_receive(:info).with(/Skipping/)
+        Chef::Log.should_receive(:debug).with(/anymore/)
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end
     end
@@ -53,16 +54,15 @@ describe "LWRP" do
       end
 
       Dir[File.expand_path( "lwrp/providers/*", CHEF_SPEC_DATA)].each do |file|
-        Chef::Log.should_receive(:info).with(/overriding/)
+        Chef::Log.should_receive(:info).with(/Skipping/)
+        Chef::Log.should_receive(:debug).with(/anymore/)
         Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
       end
     end
 
-    it "removes the old LRWP resource class from the list of resource subclasses [CHEF-3432]" do
-      # CHEF-3432 regression test:
-      # Chef::Resource keeps a list of all subclasses to assist class inflation
-      # for json parsing (see Chef::JSONCompat). When replacing LWRP resources,
-      # we need to ensure the old resource class is remove from that list.
+    it "keeps the old LRWP resource class in the list of resource subclasses" do
+      # This was originally CHEF-3432 regression test. But with Chef 12 we are
+      # not replacing the original classes anymore.
       Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end
@@ -71,7 +71,7 @@ describe "LWRP" do
       Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end
-      Chef::Resource.resource_classes.should_not include(first_lwr_foo_class)
+      Chef::Resource.resource_classes.should include(first_lwr_foo_class)
     end
 
     it "does not attempt to remove classes from higher up namespaces [CHEF-4117]" do
@@ -229,6 +229,27 @@ describe "LWRP" do
 
         it "does not delegate #default_action to the parent" do
           expect(child.default_action).to eq(:dont_eat)
+        end
+      end
+
+      context "when actions are already defined" do
+        let(:child) do
+          Class.new(parent) do
+            actions :eat
+            actions :sleep
+            actions :drink
+          end
+        end
+
+        def raise_if_deprecated!
+          if Chef::VERSION.split('.').first.to_i > 12
+            raise "This test should be removed and the associated code should be removed!"
+          end
+        end
+
+        it "ammends actions when they are already defined" do
+          raise_if_deprecated!
+          expect(child.actions).to eq([:eat, :sleep, :drink])
         end
       end
     end

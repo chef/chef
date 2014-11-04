@@ -700,6 +700,10 @@ describe Chef::Node do
       h["run_list"].should be_include("recipe[stalinist]")
       h["chef_environment"].should == "dev"
     end
+
+    it 'should return an empty array for empty run_list' do
+      node.to_hash["run_list"].should == []
+    end
   end
 
   describe "converting to or from json" do
@@ -761,6 +765,13 @@ describe Chef::Node do
         serialized_node[k].should eql(v)
       end
       serialized_node.run_list.should == node.run_list
+    end
+
+    include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+      let(:jsonable) {
+        node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
+        node
+      }
     end
   end
 

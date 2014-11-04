@@ -81,21 +81,23 @@ class Chef
       include Chef::DSL::DataQuery
 
       def self.build_from_file(cookbook_name, filename, run_context)
+        provider_class = nil
         provider_name = filename_to_qualified_string(cookbook_name, filename)
 
-        # Add log entry if we override an existing light-weight provider.
         class_name = convert_to_class_name(provider_name)
 
         if Chef::Provider.const_defined?(class_name)
-          Chef::Log.info("#{class_name} light-weight provider already initialized -- overriding!")
+          Chef::Log.info("#{class_name} light-weight provider is already initialized -- Skipping loading #{filename}!")
+          Chef::Log.debug("Overriding already defined LWRPs is not supported anymore starting with Chef 12.")
+          provider_class = Chef::Provider.const_get(class_name)
+        else
+          provider_class = Class.new(self)
+          provider_class.class_from_file(filename)
+
+          class_name = convert_to_class_name(provider_name)
+          Chef::Provider.const_set(class_name, provider_class)
+          Chef::Log.debug("Loaded contents of #{filename} into a provider named #{provider_name} defined in Chef::Provider::#{class_name}")
         end
-
-        provider_class = Class.new(self)
-        provider_class.class_from_file(filename)
-
-        class_name = convert_to_class_name(provider_name)
-        Chef::Provider.const_set(class_name, provider_class)
-        Chef::Log.debug("Loaded contents of #{filename} into a provider named #{provider_name} defined in Chef::Provider::#{class_name}")
 
         provider_class
       end

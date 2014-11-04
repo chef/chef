@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-DIFF" "1" "Chef 11.14" "" "knife diff"
+.TH "KNIFE-DIFF" "1" "Chef 12.0" "" "knife diff"
 .SH NAME
 knife-diff \- The man page for the knife diff subcommand.
 .
@@ -74,7 +74,7 @@ The number of allowed concurrent connections. Default: \fB10\fP\&.
 Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Use to have Knife use the default value instead of asking a user to provide one.
+Use to have knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-\-diff\-filter=[(A|D|M|T)...[*]]\fP
 Use to select only files that have been added (\fBA\fP), deleted (\fBD\fP), modified (\fBM\fP), and/or have had their type changed (\fBT\fP). Any combination of filter characters may be used, including no filter characters. Use \fB*\fP to select all paths if a file matches other criteria in the comparison. Default value: \fBnil\fP\&.
@@ -92,7 +92,7 @@ The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, 
 Shows help for the command.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the Chef server\&.
+The private key that knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-name\-only\fP
 Use to show only the names of modified files.
@@ -113,7 +113,7 @@ The layout of the local chef\-repo\&. Possible values: \fBstatic\fP, \fBeverythi
 The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
+The user name used by knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
 The version of the chef\-client\&.
@@ -122,7 +122,7 @@ The version of the chef\-client\&.
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
+Use to respond to all confirmation prompts with "Yes". knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
 Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
@@ -130,7 +130,7 @@ Use to run the chef\-client in local mode. This allows all commands that work ag
 .sp
 \fBknife.rb File Settings\fP
 .sp
-In addition to the default settings in a knife.rb file, there are other subcommand\-specific settings that can be added. When a subcommand is run, Knife will use:
+In addition to the default settings in a knife.rb file, there are other subcommand\-specific settings that can be added. When a subcommand is run, knife will use:
 .INDENT 0.0
 .IP 1. 3
 A value passed via the command\-line
@@ -166,7 +166,7 @@ Use to add the \fB\-\-repo\-mode\fP option.
 .sp
 \fBExamples\fP
 .sp
-To compare the "base.json" role to a "webserver.json" role, enter:
+To compare the \fBbase.json\fP role to a \fBwebserver.json\fP role, enter:
 .INDENT 0.0
 .INDENT 3.5
 .sp

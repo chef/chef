@@ -1,7 +1,0 @@
-# Configuration file for the chef-expander service
-
-#PIDFILE=/var/run/chef/expander.pid
-#CONFIG=/etc/chef/expander.rb
-#LOGFILE=/var/log/chef/expander.log
-# Any additional chef-expander options.
-OPTIONS="-n 1 -i 1"

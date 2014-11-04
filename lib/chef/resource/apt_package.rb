@@ -23,10 +23,12 @@ class Chef
   class Resource
     class AptPackage < Chef::Resource::Package
 
+      provides :apt_package
+      provides :package, os: "linux", platform_family: [ "debian" ]
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :apt_package
-        @provider = Chef::Provider::Package::Apt
         @default_release = nil
       end
 

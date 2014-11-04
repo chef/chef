@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-SSH" "1" "Chef 11.14" "" "knife ssh"
+.TH "KNIFE-SSH" "1" "Chef 12.0" "" "knife ssh"
 .SH NAME
 knife-ssh \- The man page for the knife ssh subcommand.
 .
@@ -31,7 +31,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
 .sp
-The \fBknife ssh\fP subcommand is used to invoke SSH commands (in parallel) on a subset of nodes within an organization, based on the results of a search query.
+The \fBknife ssh\fP subcommand is used to invoke SSH commands (in parallel) on a subset of nodes within an organization, based on the results of a \fI\%search query\fP made to the Chef server\&.
 .sp
 \fBSyntax\fP
 .sp
@@ -74,7 +74,7 @@ Use to view colored output.
 Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Use to have Knife use the default value instead of asking a user to provide one.
+Use to have knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -95,7 +95,7 @@ Shows help for the command.
 The SSH identity file used for authentication. Key\-based authentication is recommended.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the Chef server\&.
+The private key that knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-m\fP, \fB\-\-manual\-list\fP
 Use to define a search query as a space\-separated list of servers. If there is more than one item in the list, put quotes around the entire list. For example: \fB\-\-manual\-list "server01 server 02 server 03"\fP
@@ -110,7 +110,7 @@ The shell type. Possible values: \fBinteractive\fP, \fBscreen\fP, \fBtmux\fP, \f
 The SSH port.
 .TP
 .B \fB\-P PASSWORD\fP, \fB\-\-ssh\-password PASSWORD\fP
-The SSH password. This can be used to pass the password directly on the command line. If this option is not specified (and a password is required) Knife will prompt for the password.
+The SSH password. This can be used to pass the password directly on the command line. If this option is not specified (and a password is required) knife will prompt for the password.
 .TP
 .B \fB\-\-print\-after\fP
 Use to show data after a destructive operation.
@@ -125,7 +125,7 @@ The search query used to return a list of servers to be accessed using SSH and t
 The command that will be run against the results of a search query.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
+The user name used by knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
 The version of the chef\-client\&.
@@ -137,7 +137,7 @@ Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 The SSH user name.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
+Use to respond to all confirmation prompts with "Yes". knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
 Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
@@ -231,7 +231,7 @@ ec2\-184\-73\-60\-141.compute\-1.amazonaws.com   [Fri, 22 Oct 2010 14:18:40 +000
 .UNINDENT
 .UNINDENT
 .sp
-To query for all nodes that have the "webserver" role and then use SSH to run the command "sudo chef\-client", enter:
+To query for all nodes that have the \fBwebserver\fP role and then use SSH to run the command \fBsudo chef\-client\fP, enter:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -265,7 +265,7 @@ $ knife ssh roles:opscode\-omnitruck macterm
 .UNINDENT
 .UNINDENT
 .sp
-where \fBscreen\fP is one of the following values: \fBcssh\fP, \fBinteractive\fP, \fBmacterm\fP, \fBscreen\fP, or \fBtmux\fP\&. If the node does not have the shell type installed, Knife will return an error similar to the following:
+where \fBscreen\fP is one of the following values: \fBcssh\fP, \fBinteractive\fP, \fBmacterm\fP, \fBscreen\fP, or \fBtmux\fP\&. If the node does not have the shell type installed, knife will return an error similar to the following:
 .INDENT 0.0
 .INDENT 3.5
 .sp

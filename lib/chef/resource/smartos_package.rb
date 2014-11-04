@@ -23,16 +23,15 @@ class Chef
   class Resource
     class SmartosPackage < Chef::Resource::Package
 
+      provides :smartos_package
+      provides :package, os: "solaris2", platform_family: "smartos"
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :smartos_package
-        @provider = Chef::Provider::Package::SmartOS
       end
 
     end
   end
 end
 
-# Backwards compatability
-# @todo remove in Chef 12
-Chef::Resource::SmartOSPackage = Chef::Resource::SmartosPackage

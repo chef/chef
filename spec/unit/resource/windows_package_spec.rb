@@ -18,7 +18,18 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::WindowsPackage, "initialize", :windows_only do
+describe Chef::Resource::WindowsPackage, "initialize" do
+  before(:each) do
+    stub_const("File::ALT_SEPARATOR", "\\")
+  end
+
+  static_provider_resolution(
+    resource: Chef::Resource::WindowsPackage,
+    provider: Chef::Provider::Package::Windows,
+    os: "windows",
+    name: :windows_package,
+    action: :start
+  )
 
   let(:resource) { Chef::Resource::WindowsPackage.new("solitaire.msi") }
 
@@ -30,13 +41,9 @@ describe Chef::Resource::WindowsPackage, "initialize", :windows_only do
     expect(resource.resource_name).to eql(:windows_package)
   end
 
-  it "sets the provider to Chef::Provider::Package::Windows" do
-    expect(resource.provider).to eql(Chef::Provider::Package::Windows)
-  end
-
-  it "supports setting installer_type" do
-    resource.installer_type("msi")
-    expect(resource.installer_type).to eql("msi")
+  it "supports setting installer_type as a symbol" do
+    resource.installer_type(:msi)
+    expect(resource.installer_type).to eql(:msi)
   end
 
   # String, Integer
@@ -56,13 +63,13 @@ describe Chef::Resource::WindowsPackage, "initialize", :windows_only do
   end
 
   it "coverts a source to an absolute path" do
-    ::File.stub(:absolute_path).and_return("c:\\Files\\frost.msi")
+    allow(::File).to receive(:absolute_path).and_return("c:\\Files\\frost.msi")
     resource.source("frost.msi")
     expect(resource.source).to eql "c:\\Files\\frost.msi"
   end
 
   it "converts slashes to backslashes in the source path" do
-    ::File.stub(:absolute_path).and_return("c:\\frost.msi")
+    allow(::File).to receive(:absolute_path).and_return("c:\\frost.msi")
     resource.source("c:/frost.msi")
     expect(resource.source).to eql "c:\\frost.msi"
   end

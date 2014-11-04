@@ -19,7 +19,9 @@
 require 'spec_helper'
 
 describe Chef::CookbookLoader do
-
+  before do
+    Chef::Platform.stub(:windows?) {false}
+  end
   let(:repo_paths) do
     [
       File.expand_path(File.join(CHEF_SPEC_DATA, "kitchen")),
@@ -208,7 +210,7 @@ describe Chef::CookbookLoader do
       aa.to_hash["metadata"].recipes.keys.should include("openldap")
       expected_desc = "Main Open LDAP configuration"
       aa.to_hash["metadata"].recipes["openldap"].should == expected_desc
-      raw = aa.to_hash["metadata"].recipes.to_json
+      raw = Chef::JSONCompat.to_json(aa.to_hash["metadata"].recipes)
       search_str = "\"openldap\":\""
       key_idx = raw.index(search_str)
       key_idx.should be > 0

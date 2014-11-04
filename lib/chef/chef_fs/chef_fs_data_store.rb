@@ -27,7 +27,61 @@ require 'fileutils'
 
 class Chef
   module ChefFS
+    #
+    # Translation layer between chef-zero's DataStore (a place where it expects
+    # files to be stored) and ChefFS (the user's repository directory layout).
+    #
+    # chef-zero expects the data store to store files *its* way--for example, it
+    # expects get("nodes/blah") to return the JSON text for the blah node, and
+    # it expects get("cookbooks/blah/1.0.0") to return the JSON definition of
+    # the blah cookbook version 1.0.0.
+    #
+    # The repository is defined the way the *user* wants their layout.  These
+    # two things are very similar in layout (for example, nodes are stored under
+    # the nodes/ directory and their filename is the name of the node).
+    #
+    # However, there are a few differences that make this more than just a raw
+    # file store:
+    #
+    # 1. Cookbooks are stored much differently.
+    #   - chef-zero places JSON text with the checksums for the cookbook at
+    #     /cookbooks/NAME/VERSION, and expects the JSON to contain URLs to the
+    #     actual files, which are stored elsewhere.
+    #   - The repository contains an actual directory with just the cookbook
+    #     files and a metadata.rb containing a version #.  There is no JSON to
+    #     be found.
+    #   - Further, if versioned_cookbooks is false, that directory is named
+    #     /cookbooks/NAME and only one version exists.  If versioned_cookbooks
+    #     is true, the directory is named /cookbooks/NAME-VERSION.
+    #   - Therefore, ChefFSDataStore calculates the cookbook JSON by looking at
+    #     the files in the cookbook and checksumming them, and reading metadata.rb
+    #     for the version and dependency information.
+    #   - ChefFSDataStore also modifies the cookbook file URLs so that they point
+    #     to /file_store/repo/<filename> (the path to the actual file under the
+    #     repository root).  For example, /file_store/repo/apache2/metadata.rb or
+    #     /file_store/repo/cookbooks/apache2/recipes/default.rb).
+    #
+    # 2. Sandboxes don't exist in the repository.
+    #   - ChefFSDataStore lets cookbooks be uploaded into a temporary memory
+    #     storage, and when the cookbook is committed, copies the files onto the
+    #     disk in the correct place (/cookbooks/apache2/recipes/default.rb).
+    # 3. Data bags:
+    #   - The Chef server expects data bags in /data/BAG/ITEM
+    #   - The repository stores data bags in /data_bags/BAG/ITEM
+    #
+    # 4. JSON filenames are generally NAME.json in the repository (e.g. /nodes/foo.json).
+    #
     class ChefFSDataStore
+      #
+      # Create a new ChefFSDataStore
+      #
+      # ==== Arguments
+      #
+      # [chef_fs]
+      #   A +ChefFS::FileSystem+ object representing the repository root.
+      #   Generally will be a +ChefFS::FileSystem::ChefRepositoryFileSystemRoot+
+      #   object, created from +ChefFS::Config.local_fs+.
+      #
       def initialize(chef_fs)
         @chef_fs = chef_fs
         @memory_store = ChefZero::DataStore::MemoryStore.new
@@ -103,7 +157,7 @@ class Chef
                   value.each do |file|
                     if file.is_a?(Hash) && file.has_key?('checksum')
                       relative = ['file_store', 'repo', 'cookbooks']
-                      if Chef::Config.versioned_cookbooks
+                      if chef_fs.versioned_cookbooks
                         relative << "#{path[1]}-#{path[2]}"
                       else
                         relative << path[1]
@@ -114,7 +168,7 @@ class Chef
                   end
                 end
               end
-              JSON.pretty_generate(result)
+              Chef::JSONCompat.to_json_pretty(result)
 
             else
               begin
@@ -190,7 +244,7 @@ class Chef
         elsif path[0] == 'cookbooks' && path.length == 1
           with_entry(path) do |entry|
             begin
-              if Chef::Config.versioned_cookbooks
+              if chef_fs.versioned_cookbooks
                 # /cookbooks/name-version -> /cookbooks/name
                 entry.children.map { |child| split_name_version(child.name)[0] }.uniq
               else
@@ -203,7 +257,7 @@ class Chef
           end
 
         elsif path[0] == 'cookbooks' && path.length == 2
-          if Chef::Config.versioned_cookbooks
+          if chef_fs.versioned_cookbooks
             result = with_entry([ 'cookbooks' ]) do |entry|
               # list /cookbooks/name = filter /cookbooks/name-version down to name
               entry.children.map { |child| split_name_version(child.name) }.
@@ -261,7 +315,7 @@ class Chef
       end
 
       def write_cookbook(path, data, *options)
-        if Chef::Config.versioned_cookbooks
+        if chef_fs.versioned_cookbooks
           cookbook_path = File.join('cookbooks', "#{path[1]}-#{path[2]}")
         else
           cookbook_path = File.join('cookbooks', path[1])
@@ -318,7 +372,7 @@ class Chef
         elsif path[0] == 'cookbooks'
           if path.length == 2
             raise ChefZero::DataStore::DataNotFoundError.new(path)
-          elsif Chef::Config.versioned_cookbooks
+          elsif chef_fs.versioned_cookbooks
             if path.length >= 3
               # cookbooks/name/version -> cookbooks/name-version
               path = [ path[0], "#{path[1]}-#{path[2]}" ] + path[3..-1]
@@ -351,7 +405,7 @@ class Chef
           end
 
         elsif path[0] == 'cookbooks'
-          if Chef::Config.versioned_cookbooks
+          if chef_fs.versioned_cookbooks
             # cookbooks/name-version/... -> cookbooks/name/version/...
             if path.length >= 2
               name, version = split_name_version(path[1])

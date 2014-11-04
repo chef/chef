@@ -20,6 +20,7 @@ require 'chef/mixin/create_path'
 require 'chef/exceptions'
 require 'chef/json_compat'
 require 'fileutils'
+require 'chef/util/path_helper'
 
 class Chef
   class FileCache
@@ -157,9 +158,9 @@ class Chef
       # [String] - An array of file cache keys matching the glob
       def find(glob_pattern)
         keys = Array.new
-        Dir[File.join(file_cache_path, glob_pattern)].each do |f|
+        Dir[File.join(Chef::Util::PathHelper.escape_glob(file_cache_path), glob_pattern)].each do |f|
           if File.file?(f)
-            keys << f[/^#{Regexp.escape(Dir[file_cache_path].first) + File::Separator}(.+)/, 1]
+            keys << f[/^#{Regexp.escape(Dir[Chef::Util::PathHelper.escape_glob(file_cache_path)].first) + File::Separator}(.+)/, 1]
           end
         end
         keys

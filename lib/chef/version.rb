@@ -17,7 +17,7 @@
 
 class Chef
   CHEF_ROOT = File.dirname(File.expand_path(File.dirname(__FILE__)))
-  VERSION = '12.0.0.alpha.1'
+  VERSION = '12.2.0.dev.0'
 end
 
 #

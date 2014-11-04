@@ -19,6 +19,7 @@
 require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
+require 'chef/util/path_helper'
 
 class Chef
   class Provider
@@ -34,7 +35,9 @@ class Chef
 
           category, pkg = %r{^#{PACKAGE_NAME_PATTERN}$}.match(@new_resource.package_name)[1,2]
 
-          possibilities = Dir["/var/db/pkg/#{category || "*"}/#{pkg}-*"].map {|d| d.sub(%r{/var/db/pkg/}, "") }
+          globsafe_category = category ? Chef::Util::PathHelper.escape_glob(category) : nil
+          globsafe_pkg = Chef::Util::PathHelper.escape_glob(pkg)
+          possibilities = Dir["/var/db/pkg/#{globsafe_category || "*"}/#{globsafe_pkg}-*"].map {|d| d.sub(%r{/var/db/pkg/}, "") }
           versions = possibilities.map do |entry|
             if(entry =~ %r{[^/]+/#{Regexp.escape(pkg)}\-(\d[\.\d]*((_(alpha|beta|pre|rc|p)\d*)*)?(-r\d+)?)})
               [$&, $1]
@@ -110,9 +113,7 @@ class Chef
             pkg = "~#{name}-#{$1}"
           end
 
-          run_command_with_systems_locale(
-            :command => "emerge -g --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
-          )
+          shell_out!( "emerge -g --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}" )
         end
 
         def upgrade_package(name, version)
@@ -126,9 +127,7 @@ class Chef
             pkg = "#{@new_resource.package_name}"
           end
 
-          run_command_with_systems_locale(
-            :command => "emerge --unmerge --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
-          )
+          shell_out!( "emerge --unmerge --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}" )
         end
 
         def purge_package(name, version)

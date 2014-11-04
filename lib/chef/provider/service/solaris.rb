@@ -26,6 +26,8 @@ class Chef
       class Solaris < Chef::Provider::Service
         attr_reader :maintenance
 
+        provides :service, os: "solaris2"
+
         def initialize(new_resource, run_context=nil)
           super
           @init_command = "/usr/sbin/svcadm"
@@ -56,7 +58,7 @@ class Chef
         alias_method :start_service, :enable_service
 
         def reload_service
-          shell_out!("#{default_init_command} refresh #{@new_resource.service_name}")
+          shell_out_with_systems_locale!("#{default_init_command} refresh #{@new_resource.service_name}")
         end
 
         def restart_service

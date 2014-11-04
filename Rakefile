@@ -52,6 +52,18 @@ task :pedant do
   require File.expand_path('spec/support/pedant/run_pedant')
 end
 
+task :build_eventlog do
+  Dir.chdir 'ext/win32-eventlog/' do
+    system 'rake build'
+  end
+end
+
+task :register_eventlog do
+  Dir.chdir 'ext/win32-eventlog/' do
+    system 'rake register'
+  end
+end
+
 begin
   require 'yard'
   DOC_FILES = [ "README.rdoc", "LICENSE", "spec/tiny_server.rb", "lib/**/*.rb" ]

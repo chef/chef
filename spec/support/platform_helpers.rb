@@ -52,6 +52,30 @@ def windows_win2k3?
   (host['version'] && host['version'].start_with?("5.2"))
 end
 
+def windows_2008r2_or_later?
+  return false unless windows?
+  wmi = WmiLite::Wmi.new
+  host = wmi.first_of('Win32_OperatingSystem')
+  version = host['version']
+  return false unless version
+  components = version.split('.').map do | component |
+    component.to_i
+  end
+  components.length >=2 && components[0] >= 6 && components[1] >= 1
+end
+
+def windows_powershell_dsc?
+  return false unless windows?
+  supports_dsc = false
+  begin
+    wmi = WmiLite::Wmi.new('root/microsoft/windows/desiredstateconfiguration')
+    lcm = wmi.query("SELECT * FROM meta_class WHERE __this ISA 'MSFT_DSCLocalConfigurationManager'")
+    supports_dsc = !! lcm
+  rescue WmiLite::WmiException
+  end
+  supports_dsc
+end
+
 def mac_osx_106?
   if File.exists? "/usr/bin/sw_vers"
     result = shell_out("/usr/bin/sw_vers")
@@ -140,4 +164,8 @@ end
 
 def openssl_lt_101?
   !openssl_gte_101?
+end
+
+def aes_256_gcm?
+  OpenSSL::Cipher.ciphers.include?("aes-256-gcm")
 end

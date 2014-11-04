@@ -27,19 +27,19 @@ describe Chef::Provider::Group::Usermod do
     @new_resource.members [ "all", "your", "base" ]
     @new_resource.excluded_members [ ]
     @provider = Chef::Provider::Group::Usermod.new(@new_resource, @run_context)
-    @provider.stub(:run_command)
+    allow(@provider).to receive(:run_command)
   end
 
   describe "modify_group_members" do
 
     describe "with an empty members array" do
       before do
-        @new_resource.stub(:append).and_return(true)
-        @new_resource.stub(:members).and_return([])
+        allow(@new_resource).to receive(:append).and_return(true)
+        allow(@new_resource).to receive(:members).and_return([])
       end
 
       it "should log an appropriate message" do
-        @provider.should_not_receive(:shell_out!)
+        expect(@provider).not_to receive(:shell_out!)
         @provider.modify_group_members
       end
     end
@@ -56,8 +56,8 @@ describe Chef::Provider::Group::Usermod do
       }
 
       before do
-        @new_resource.stub(:members).and_return(["all", "your", "base"])
-        File.stub(:exists?).and_return(true)
+        allow(@new_resource).to receive(:members).and_return(["all", "your", "base"])
+        allow(File).to receive(:exists?).and_return(true)
       end
 
       it "should raise an error when setting the entire group directly" do
@@ -65,7 +65,7 @@ describe Chef::Provider::Group::Usermod do
         @provider.load_current_resource
         @provider.instance_variable_set("@group_exists", true)
         @provider.action = :modify
-        lambda { @provider.run_action(@provider.process_resource_requirements) }.should raise_error(Chef::Exceptions::Group, "setting group members directly is not supported by #{@provider.to_s}, must set append true in group")
+        expect { @provider.run_action(@provider.process_resource_requirements) }.to raise_error(Chef::Exceptions::Group, "setting group members directly is not supported by #{@provider.to_s}, must set append true in group")
       end
 
       it "should raise an error when excluded_members are set" do
@@ -73,9 +73,9 @@ describe Chef::Provider::Group::Usermod do
         @provider.load_current_resource
         @provider.instance_variable_set("@group_exists", true)
         @provider.action = :modify
-        @new_resource.stub(:append).and_return(true)
-        @new_resource.stub(:excluded_members).and_return(["someone"])
-        lambda { @provider.run_action(@provider.process_resource_requirements) }.should raise_error(Chef::Exceptions::Group, "excluded_members is not supported by #{@provider.to_s}")
+        allow(@new_resource).to receive(:append).and_return(true)
+        allow(@new_resource).to receive(:excluded_members).and_return(["someone"])
+        expect { @provider.run_action(@provider.process_resource_requirements) }.to raise_error(Chef::Exceptions::Group, "excluded_members is not supported by #{@provider.to_s}")
       end
 
       platforms.each do |platform, flags|
@@ -84,10 +84,10 @@ describe Chef::Provider::Group::Usermod do
           current_resource.members([ ])
           @provider.current_resource = current_resource
           @node.automatic_attrs[:platform] = platform
-          @new_resource.stub(:append).and_return(true)
-          @provider.should_receive(:shell_out!).with("usermod #{flags} wheel all")
-          @provider.should_receive(:shell_out!).with("usermod #{flags} wheel your")
-          @provider.should_receive(:shell_out!).with("usermod #{flags} wheel base")
+          allow(@new_resource).to receive(:append).and_return(true)
+          expect(@provider).to receive(:shell_out!).with("usermod #{flags} wheel all")
+          expect(@provider).to receive(:shell_out!).with("usermod #{flags} wheel your")
+          expect(@provider).to receive(:shell_out!).with("usermod #{flags} wheel base")
           @provider.modify_group_members
         end
       end
@@ -96,20 +96,20 @@ describe Chef::Provider::Group::Usermod do
 
   describe "when loading the current resource" do
     before(:each) do
-      File.stub(:exists?).and_return(false)
+      allow(File).to receive(:exists?).and_return(false)
       @provider.action = :create
       @provider.define_resource_requirements
     end
 
     it "should raise an error if the required binary /usr/sbin/usermod doesn't exist" do
-      File.stub(:exists?).and_return(true)
-      File.should_receive(:exists?).with("/usr/sbin/usermod").and_return(false)
-      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Group)
+      allow(File).to receive(:exists?).and_return(true)
+      expect(File).to receive(:exists?).with("/usr/sbin/usermod").and_return(false)
+      expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Group)
     end
 
     it "shouldn't raise an error if the required binaries exist" do
-      File.stub(:exists?).and_return(true)
-      lambda { @provider.process_resource_requirements }.should_not raise_error
+      allow(File).to receive(:exists?).and_return(true)
+      expect { @provider.process_resource_requirements }.not_to raise_error
     end
   end
 end

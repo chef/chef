@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -41,7 +41,7 @@
             
   <div class="section" id="knife-role">
 <h1>knife role<a class="headerlink" href="#knife-role" title="Permalink to this headline">¶</a></h1>
-<p>A role is a way to define certain patterns and processes that exist across nodes in an organization as belonging to a single job function. Each role consists of zero (or more) attributes and a run list. Each node can have zero (or more) roles assigned to it. When a role is run against a node, the configuration details of that node are compared against the attributes of the role, and then the contents of that role&#8217;s run list are applied to the node&#8217;s configuration details. When a chef-client runs, it merges its own attributes and run lists with those contained within each assigned role.</p>
+<p>A role is a way to define certain patterns and processes that exist across nodes in an organization as belonging to a single job function. Each role consists of zero (or more) attributes and a run-list. Each node can have zero (or more) roles assigned to it. When a role is run against a node, the configuration details of that node are compared against the attributes of the role, and then the contents of that role&#8217;s run-list are applied to the node&#8217;s configuration details. When a chef-client runs, it merges its own attributes and run-lists with those contained within each assigned role.</p>
 <p>The <strong>knife role</strong> subcommand is used to manage the roles that are associated with one or more nodes on a Chef server.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -49,7 +49,7 @@
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
+<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) knife subcommands and plugins.</p>
 </div>
 <div class="section" id="bulk-delete">
 <h2>bulk delete<a class="headerlink" href="#bulk-delete" title="Permalink to this headline">¶</a></h2>
@@ -67,7 +67,7 @@
 </div>
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Bulk delete roles</strong></p>
 <p>Use a regular expression to define the pattern used to bulk delete roles:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife role bulk delete <span class="s2">&quot;^[0-9]{3}$&quot;</span>
@@ -95,9 +95,9 @@
 </div>
 <div class="section" id="id3">
 <h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Create a role</strong></p>
-<p>To add a role named &#8220;role1&#8221;, enter:</p>
+<p>To add a role named <tt class="docutils literal"><span class="pre">role1</span></tt>, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife role create role1
 </pre></div>
 </div>
@@ -137,7 +137,7 @@
 </div>
 <div class="section" id="id6">
 <h3>Examples<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Delete a role</strong></p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife role delete devops
 </pre></div>
@@ -161,9 +161,9 @@
 </div>
 <div class="section" id="id9">
 <h3>Examples<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Edit a role</strong></p>
-<p>To edit the data for a role named &#8220;role1&#8221;, enter:</p>
+<p>To edit the data for a role named <tt class="docutils literal"><span class="pre">role1</span></tt>, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife role edit role1
 </pre></div>
 </div>
@@ -203,7 +203,7 @@
 </div>
 <div class="section" id="id12">
 <h3>Examples<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Create a role using JSON data</strong></p>
 <p>To view role details based on the values contained in a JSON file:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife role from file <span class="s2">&quot;path to JSON file&quot;</span>
@@ -231,7 +231,7 @@
 </div>
 <div class="section" id="id15">
 <h3>Examples<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>View a list of roles</strong></p>
 <p>To view a list of roles on the Chef server and display the URI for each role returned, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife role list -w
@@ -259,7 +259,7 @@
 </div>
 <div class="section" id="id18">
 <h3>Examples<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Show as JSON data</strong></p>
 <p>To view information in JSON format, use the <tt class="docutils literal"><span class="pre">-F</span></tt> common option as part of the command like this:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife role show devops -F json

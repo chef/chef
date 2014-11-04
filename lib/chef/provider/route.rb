@@ -24,6 +24,8 @@ require 'ipaddr'
 class Chef::Provider::Route < Chef::Provider
     include Chef::Mixin::Command
 
+    provides :route
+
     attr_accessor :is_running
 
     MASK = {'0.0.0.0'          => '0',

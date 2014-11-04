@@ -459,11 +459,7 @@ BOOL WINAPI DeviceIoControl(
         # to be passed to the *W vesion of WinAPI File
         # functions
         def encode_path(path)
-          (path_prepender << path.gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)).to_wstring
-        end
-
-        def path_prepender
-          "\\\\?\\"
+          Chef::Util::PathHelper.canonical_path(path).to_wstring
         end
 
         # retrieves a file search handle and passes it

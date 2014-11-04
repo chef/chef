@@ -62,8 +62,8 @@ describe Chef::REST do
   let(:request_id) {"1234"}
 
   let(:rest) do
-    Chef::REST::CookieJar.stub(:instance).and_return({})
-    Chef::RequestID.instance.stub(:request_id).and_return(request_id)
+    allow(Chef::REST::CookieJar).to receive(:instance).and_return({})
+    allow(Chef::RequestID.instance).to receive(:request_id).and_return(request_id)
     rest = Chef::REST.new(base_url, nil, nil)
     Chef::REST::CookieJar.instance.clear
     rest
@@ -81,9 +81,9 @@ describe Chef::REST do
     content_length = middlewares.find_index { |e| e.is_a? Chef::HTTP::ValidateContentLength }
     decompressor = middlewares.find_index { |e| e.is_a? Chef::HTTP::Decompressor }
 
-    content_length.should_not be_nil
-    decompressor.should_not be_nil
-    (decompressor < content_length).should be_true
+    expect(content_length).not_to be_nil
+    expect(decompressor).not_to be_nil
+    expect(decompressor < content_length).to be_true
   end
 
   it "should allow the options hash to be frozen" do
@@ -102,43 +102,43 @@ describe Chef::REST do
     end
 
     it "makes a :GET request with the composed url object" do
-      rest.should_receive(:send_http_request).
+      expect(rest).to receive(:send_http_request).
         with(:GET, monkey_uri, standard_read_headers, false).
         and_return([1,2,3])
-      rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
-      rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
+      expect(rest).to receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
+      expect(rest).to receive('success_response?'.to_sym).with(1).and_return(true)
       rest.get_rest("monkey")
     end
 
     it "makes a :GET reqest for a streaming download with the composed url" do
-      rest.should_receive(:streaming_request).with('monkey', {})
+      expect(rest).to receive(:streaming_request).with('monkey', {})
       rest.get_rest("monkey", true)
     end
 
     it "makes a :DELETE request with the composed url object" do
-      rest.should_receive(:send_http_request).
+      expect(rest).to receive(:send_http_request).
         with(:DELETE, monkey_uri, standard_read_headers, false).
         and_return([1,2,3])
-      rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
-      rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
+      expect(rest).to receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
+      expect(rest).to receive('success_response?'.to_sym).with(1).and_return(true)
       rest.delete_rest("monkey")
     end
 
     it "makes a :POST request with the composed url object and data" do
-      rest.should_receive(:send_http_request).
+      expect(rest).to receive(:send_http_request).
         with(:POST, monkey_uri, standard_write_headers, "\"data\"").
         and_return([1,2,3])
-      rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
-      rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
+      expect(rest).to receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
+      expect(rest).to receive('success_response?'.to_sym).with(1).and_return(true)
       rest.post_rest("monkey", "data")
     end
 
     it "makes a :PUT request with the composed url object and data" do
-      rest.should_receive(:send_http_request).
+      expect(rest).to receive(:send_http_request).
         with(:PUT, monkey_uri, standard_write_headers, "\"data\"").
         and_return([1,2,3])
-      rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
-      rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
+      expect(rest).to receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
+      expect(rest).to receive('success_response?'.to_sym).with(1).and_return(true)
       rest.put_rest("monkey", "data")
     end
   end
@@ -162,13 +162,13 @@ describe Chef::REST do
 
       auth_headers = standard_write_headers.merge({"auth_done"=>"yep"})
 
-      rest.authenticator.should_receive(:handle_request).
+      expect(rest.authenticator).to receive(:handle_request).
         with(:POST, monkey_uri, standard_write_headers, data).
         and_return([:POST, monkey_uri, auth_headers, data])
-      rest.should_receive(:send_http_request).
+      expect(rest).to receive(:send_http_request).
         with(:POST, monkey_uri, auth_headers, data).
         and_return([1,2,3])
-      rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
+      expect(rest).to receive('success_response?'.to_sym).with(1).and_return(true)
       rest.raw_http_request(:POST, monkey_uri, standard_write_headers, data)
     end
 
@@ -176,10 +176,10 @@ describe Chef::REST do
       data = "\"secure data\""
       method, uri, auth_headers, d = rest.authenticator.handle_request(:POST, monkey_uri, standard_write_headers, data)
 
-      rest.should_receive(:send_http_request).
+      expect(rest).to receive(:send_http_request).
         with(:POST, monkey_uri, auth_headers, data).
         and_return([1,2,3])
-      rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
+      expect(rest).to receive('success_response?'.to_sym).with(1).and_return(true)
       rest.raw_http_request(:POST, monkey_uri, standard_write_headers, data)
     end
   end
@@ -241,8 +241,8 @@ describe Chef::REST do
 
     let(:http_response) do
       http_response = Net::HTTPSuccess.new("1.1", "200", "successful rest req")
-      http_response.stub(:read_body)
-      http_response.stub(:body).and_return(body)
+      allow(http_response).to receive(:read_body)
+      allow(http_response).to receive(:body).and_return(body)
       http_response["Content-Length"] = body.bytesize.to_s
       http_response
     end
@@ -255,14 +255,14 @@ describe Chef::REST do
 
     let!(:http_client) do
       http_client = Net::HTTP.new(url.host, url.port)
-      http_client.stub(:request).and_yield(http_response).and_return(http_response)
+      allow(http_client).to receive(:request).and_yield(http_response).and_return(http_response)
       http_client
     end
 
     let(:rest) do
-      Net::HTTP.stub(:new).and_return(http_client)
-      Chef::REST::CookieJar.stub(:instance).and_return({})
-      Chef::RequestID.instance.stub(:request_id).and_return(request_id)
+      allow(Net::HTTP).to receive(:new).and_return(http_client)
+      allow(Chef::REST::CookieJar).to receive(:instance).and_return({})
+      allow(Chef::RequestID.instance).to receive(:request_id).and_return(request_id)
       rest = Chef::REST.new(base_url, nil, nil)
       Chef::REST::CookieJar.instance.clear
       rest
@@ -300,16 +300,16 @@ describe Chef::REST do
       end
 
       before do
-        Net::HTTP::Get.stub(:new).and_return(request_mock)
+        allow(Net::HTTP::Get).to receive(:new).and_return(request_mock)
       end
 
       it "should always include the X-Chef-Version header" do
-        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", base_headers).and_return(request_mock)
+        expect(Net::HTTP::Get).to receive(:new).with("/?foo=bar", base_headers).and_return(request_mock)
         rest.request(:GET, url, {})
       end
 
       it "should always include the X-Remote-Request-Id header" do
-        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", base_headers).and_return(request_mock)
+        expect(Net::HTTP::Get).to receive(:new).with("/?foo=bar", base_headers).and_return(request_mock)
         rest.request(:GET, url, {})
       end
 
@@ -323,7 +323,7 @@ describe Chef::REST do
       # CHEF-3140
       context "when configured to disable compression" do
         let(:rest) do
-          Net::HTTP.stub(:new).and_return(http_client)
+          allow(Net::HTTP).to receive(:new).and_return(http_client)
           Chef::REST.new(base_url, nil, nil,  :disable_gzip => true)
         end
 
@@ -334,7 +334,7 @@ describe Chef::REST do
         it "does not decompress a response encoded as gzip" do
           http_response.add_field("content-encoding", "gzip")
           request = Net::HTTP::Get.new(url.path)
-          Net::HTTP::Get.should_receive(:new).and_return(request)
+          expect(Net::HTTP::Get).to receive(:new).and_return(request)
           # will raise a Zlib error if incorrect
           expect(rest.request(:GET, url, {})).to eq("ninja")
         end
@@ -359,28 +359,28 @@ describe Chef::REST do
         it "should set them on the http request" do
           url_string = an_instance_of(String)
           header_hash = hash_including(custom_headers)
-          Net::HTTP::Get.should_receive(:new).with(url_string, header_hash)
+          expect(Net::HTTP::Get).to receive(:new).with(url_string, header_hash)
           rest.request(:GET, url, {})
         end
       end
 
       context "when setting cookies" do
         let(:rest) do
-          Net::HTTP.stub(:new).and_return(http_client)
+          allow(Net::HTTP).to receive(:new).and_return(http_client)
           Chef::REST::CookieJar.instance["#{url.host}:#{url.port}"] = "cookie monster"
-          Chef::RequestID.instance.stub(:request_id).and_return(request_id)
+          allow(Chef::RequestID.instance).to receive(:request_id).and_return(request_id)
           rest = Chef::REST.new(base_url, nil, nil)
           rest
         end
 
         it "should set the cookie for this request if one exists for the given host:port" do
-          Net::HTTP::Get.should_receive(:new).with("/?foo=bar", base_headers.merge('Cookie' => "cookie monster")).and_return(request_mock)
+          expect(Net::HTTP::Get).to receive(:new).with("/?foo=bar", base_headers.merge('Cookie' => "cookie monster")).and_return(request_mock)
           rest.request(:GET, url, {})
         end
       end
 
       it "should build a new HTTP GET request" do
-        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", base_headers).and_return(request_mock)
+        expect(Net::HTTP::Get).to receive(:new).with("/?foo=bar", base_headers).and_return(request_mock)
         rest.request(:GET, url, {})
       end
 
@@ -388,7 +388,7 @@ describe Chef::REST do
         request = Net::HTTP::Post.new(url.path)
         expected_headers = base_headers.merge("Content-Type" => 'application/json', 'Content-Length' => '13')
 
-        Net::HTTP::Post.should_receive(:new).with("/?foo=bar", expected_headers).and_return(request)
+        expect(Net::HTTP::Post).to receive(:new).with("/?foo=bar", expected_headers).and_return(request)
         rest.request(:POST, url, {}, {:one=>:two})
         expect(request.body).to eq('{"one":"two"}')
       end
@@ -396,13 +396,13 @@ describe Chef::REST do
       it "should build a new HTTP PUT request" do
         request = Net::HTTP::Put.new(url.path)
         expected_headers = base_headers.merge("Content-Type" => 'application/json', 'Content-Length' => '13')
-        Net::HTTP::Put.should_receive(:new).with("/?foo=bar",expected_headers).and_return(request)
+        expect(Net::HTTP::Put).to receive(:new).with("/?foo=bar",expected_headers).and_return(request)
         rest.request(:PUT, url, {}, {:one=>:two})
         expect(request.body).to eq('{"one":"two"}')
       end
 
       it "should build a new HTTP DELETE request" do
-        Net::HTTP::Delete.should_receive(:new).with("/?foo=bar", base_headers).and_return(request_mock)
+        expect(Net::HTTP::Delete).to receive(:new).with("/?foo=bar", base_headers).and_return(request_mock)
         rest.request(:DELETE, url)
       end
 
@@ -440,7 +440,7 @@ describe Chef::REST do
             resp_code = Net::HTTPResponse::CODE_TO_OBJ.keys.detect { |k| Net::HTTPResponse::CODE_TO_OBJ[k] == resp_cls }
             http_response = Net::HTTPFound.new("1.1", resp_code, "bob is somewhere else again")
             http_response.add_field("location", url.path)
-            http_response.stub(:read_body)
+            allow(http_response).to receive(:read_body)
             http_response
           end
           it "should call request again" do
@@ -457,7 +457,7 @@ describe Chef::REST do
       context "when the response is 304 NotModified" do
         let (:http_response) do
           http_response = Net::HTTPNotModified.new("1.1", "304", "it's the same as when you asked 5 minutes ago")
-          http_response.stub(:read_body)
+          allow(http_response).to receive(:read_body)
           http_response
         end
 
@@ -480,13 +480,13 @@ describe Chef::REST do
           let(:http_response) do
             http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
             http_response.add_field("content-type", "application/json")
-            http_response.stub(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
-            http_response.stub(:read_body)
+            allow(http_response).to receive(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
+            allow(http_response).to receive(:read_body)
             http_response
           end
 
           it "should show the JSON error message" do
-            rest.stub(:sleep)
+            allow(rest).to receive(:sleep)
 
             expect {rest.request(:GET, url)}.to raise_error(Net::HTTPFatalError)
             expect(log_stringio.string).to match(Regexp.escape('INFO: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
@@ -502,17 +502,21 @@ describe Chef::REST do
             gzipped_body = Zlib::Deflate.deflate(unzipped_body)
             gzipped_body.force_encoding(Encoding::BINARY) if "strings".respond_to?(:force_encoding)
 
-            http_response.stub(:body).and_return gzipped_body
-            http_response.stub(:read_body)
+            allow(http_response).to receive(:body).and_return gzipped_body
+            allow(http_response).to receive(:read_body)
             http_response
           end
-          it "decompresses the JSON error message" do
-            rest.stub(:sleep)
-            rest.stub(:http_retry_count).and_return(0)
 
+          before do
+            allow(rest).to receive(:sleep)
+            allow(rest).to receive(:http_retry_count).and_return(0)
+          end
+
+          it "decompresses the JSON error message" do
             expect {rest.request(:GET, url)}.to raise_error(Net::HTTPFatalError)
             expect(log_stringio.string).to match(Regexp.escape('INFO: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
           end
+
           it "fails when the compressed body is truncated" do
             http_response["Content-Length"] = (body.bytesize + 99).to_s
             expect {rest.request(:GET, url)}.to raise_error(Chef::Exceptions::ContentLengthMismatch)
@@ -522,13 +526,16 @@ describe Chef::REST do
         context "on a generic unsuccessful request" do
           let(:http_response) do
             http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
-            http_response.stub(:body)
-            http_response.stub(:read_body)
+            allow(http_response).to receive(:body)
+            allow(http_response).to receive(:read_body)
             http_response
           end
-          it "throws an exception" do
-            rest.stub(:sleep)
+
+          it "retries then throws an exception" do
+            allow(rest).to receive(:sleep)
             expect {rest.request(:GET, url)}.to raise_error(Net::HTTPFatalError)
+            count = Chef::Config[:http_retry_count]
+            expect(log_stringio.string).to match(Regexp.escape("ERROR: Server returned error 500 for #{url}, retrying #{count}/#{count}"))
           end
         end
       end
@@ -540,10 +547,10 @@ describe Chef::REST do
       let(:request_mock) { {} }
 
       let(:http_response) do
-        http_response = Net::HTTPSuccess.new("1.1",200, "it-works")
+        http_response = Net::HTTPSuccess.new("1.1",'200', "it-works")
 
-        http_response.stub(:read_body)
-        http_response.should_not_receive(:body)
+        allow(http_response).to receive(:read_body)
+        expect(http_response).not_to receive(:body)
         http_response["Content-Length"] = "0" # call set_content_length (in test), if otherwise
         http_response
       end
@@ -557,8 +564,8 @@ describe Chef::REST do
       end
 
       before do
-        Tempfile.stub(:new).with("chef-rest").and_return(tempfile)
-        Net::HTTP::Get.stub(:new).and_return(request_mock)
+        allow(Tempfile).to receive(:new).with("chef-rest").and_return(tempfile)
+        allow(Net::HTTP::Get).to receive(:new).and_return(request_mock)
       end
 
       after do
@@ -572,7 +579,7 @@ describe Chef::REST do
                             'Host' => host_header,
                             'X-REMOTE-REQUEST-ID'=> request_id
                             }
-        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(request_mock)
+        expect(Net::HTTP::Get).to receive(:new).with("/?foo=bar", expected_headers).and_return(request_mock)
         rest.streaming_request(url, {})
       end
 
@@ -583,7 +590,7 @@ describe Chef::REST do
                             'Host' => host_header,
                             'X-REMOTE-REQUEST-ID'=> request_id
                             }
-        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(request_mock)
+        expect(Net::HTTP::Get).to receive(:new).with("/?foo=bar", expected_headers).and_return(request_mock)
         rest.streaming_request(url, {})
       end
 
@@ -592,7 +599,7 @@ describe Chef::REST do
       end
 
       it "writes the response body to a tempfile" do
-        http_response.stub(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
+        allow(http_response).to receive(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
         set_content_length
         rest.streaming_request(url, {})
         expect(IO.read(tempfile.path).chomp).to eq("realultimatepower")
@@ -604,7 +611,7 @@ describe Chef::REST do
       end
 
       it "yields the tempfile containing the streamed response body and then unlinks it when given a block" do
-        http_response.stub(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
+        allow(http_response).to receive(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
         set_content_length
         tempfile_path = nil
         rest.streaming_request(url, {}) do |tempfile|
@@ -617,24 +624,24 @@ describe Chef::REST do
 
       it "does not raise a divide by zero exception if the content's actual size is 0" do
         http_response['Content-Length'] = "5"
-        http_response.stub(:read_body).and_yield('')
+        allow(http_response).to receive(:read_body).and_yield('')
         expect { rest.streaming_request(url, {}) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
       end
 
       it "does not raise a divide by zero exception when the Content-Length is 0" do
         http_response['Content-Length'] = "0"
-        http_response.stub(:read_body).and_yield("ninja")
+        allow(http_response).to receive(:read_body).and_yield("ninja")
         expect { rest.streaming_request(url, {}) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
       end
 
       it "it raises an exception when the download is truncated" do
         http_response["Content-Length"] = (body.bytesize + 99).to_s
-        http_response.stub(:read_body).and_yield("ninja")
+        allow(http_response).to receive(:read_body).and_yield("ninja")
         expect { rest.streaming_request(url, {}) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
       end
 
       it "fetches a file and yields the tempfile it is streamed to" do
-        http_response.stub(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
+        allow(http_response).to receive(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
         set_content_length
         tempfile_path = nil
         rest.fetch("cookbooks/a_cookbook") do |tempfile|
@@ -647,32 +654,32 @@ describe Chef::REST do
       it "closes and unlinks the tempfile if there is an error while streaming the content to the tempfile" do
         path = tempfile.path
         expect(path).not_to be_nil
-        tempfile.stub(:write).and_raise(IOError)
+        allow(tempfile).to receive(:write).and_raise(IOError)
         rest.fetch("cookbooks/a_cookbook") {|tmpfile| "shouldn't get here"}
         expect(File.exists?(path)).to be_false
       end
 
       it "closes and unlinks the tempfile when the response is a redirect" do
         tempfile = double("A tempfile", :path => "/tmp/ragefist", :close => true, :binmode => true)
-        tempfile.should_receive(:close!).at_least(1).times
-        Tempfile.stub(:new).with("chef-rest").and_return(tempfile)
+        expect(tempfile).to receive(:close!).at_least(1).times
+        allow(Tempfile).to receive(:new).with("chef-rest").and_return(tempfile)
 
         redirect = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
         redirect.add_field("location", url.path)
-        redirect.stub(:read_body)
+        allow(redirect).to receive(:read_body)
 
-        http_client.should_receive(:request).and_yield(redirect).and_return(redirect)
-        http_client.should_receive(:request).and_yield(http_response).and_return(http_response)
+        expect(http_client).to receive(:request).and_yield(redirect).and_return(redirect)
+        expect(http_client).to receive(:request).and_yield(http_response).and_return(http_response)
         rest.fetch("cookbooks/a_cookbook") {|tmpfile| "shouldn't get here"}
       end
 
       it "passes the original block to the redirected request" do
         http_redirect = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
         http_redirect.add_field("location","/that-thing-is-here-now")
-        http_redirect.stub(:read_body)
+        allow(http_redirect).to receive(:read_body)
 
         block_called = false
-        http_client.stub(:request).and_yield(http_response).and_return(http_redirect, http_response)
+        allow(http_client).to receive(:request).and_yield(http_response).and_return(http_redirect, http_response)
         rest.fetch("cookbooks/a_cookbook") do |tmpfile|
           block_called = true
         end

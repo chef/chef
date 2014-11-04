@@ -6,7 +6,7 @@ mkdir -p /etc/chef/ohai/hints
 <% @chef_config[:knife][:hints].each do |name, hash| -%>
 (
 cat <<'EOP'
-<%= hash.to_json %>
+<%= Chef::JSONCompat.to_json(hash) %>
 EOP
 ) > /etc/chef/ohai/hints/<%= name %>.json
 <% end -%>

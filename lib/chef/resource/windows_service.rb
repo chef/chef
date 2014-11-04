@@ -25,7 +25,8 @@ class Chef
       # Until #1773 is resolved, you need to manually specify the windows_service resource
       # to use action :configure_startup and attribute startup_type
 
-      # provides :service, :on_platforms => ["windows"]
+      provides :service, os: "windows"
+      provides :windows_service, os: "windows"
 
       identity_attr :service_name
 
@@ -34,7 +35,6 @@ class Chef
       def initialize(name, run_context=nil)
         super
         @resource_name = :windows_service
-        @provider = Chef::Provider::Service::Windows
         @allowed_actions.push(:configure_startup)
         @startup_type = :automatic
       end

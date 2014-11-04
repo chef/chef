@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE" "1" "Chef 11.14" "" "knife"
+.TH "KNIFE" "1" "Chef 12.0" "" "knife"
 .SH NAME
 knife \- The man page for the knife command line tool.
 .
@@ -31,7 +31,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
 .sp
-Knife is a command\-line tool that provides an interface between a local chef\-repo and the Chef server\&. Knife helps users to manage:
+knife is a command\-line tool that provides an interface between a local chef\-repo and the Chef server\&. knife helps users to manage:
 .INDENT 0.0
 .IP \(bu 2
 Nodes
@@ -108,14 +108,14 @@ knife xargs
 .UNINDENT
 .SH WORKING WITH KNIFE
 .sp
-Knife runs from a management workstation and sits in\-between a Chef server and an organization\(aqs infrastructure. Knife interacts with a Chef server by using the same REST API that is used by a chef\-client\&. Role\-based authentication controls (RBAC) can be used to authorize changes when Knife is run with Enterprise Chef\&. Knife is configured during workstation setup, but subsequent modifications can be made using the knife.rb configuration file.
+knife runs from a management workstation and sits in\-between a Chef server and an organization\(aqs infrastructure. knife interacts with a Chef server by using the same REST API that is used by a chef\-client\&. Role\-based authentication controls (RBAC) can be used to authorize changes when knife is run with Enterprise Chef\&. knife is configured during workstation setup, but subsequent modifications can be made using the knife.rb configuration file.
 .SS Common Options
 .sp
-The following options can be run with all Knife sub\-commands and plug\-ins:
+The following options can be run with all knife sub\-commands and plug\-ins:
 .INDENT 0.0
 .TP
 .B \fB\-c CONFIG_FILE\fP, \fB\-\-config CONFIG_FILE\fP
-The configuration file to use. For example, when Knife is run from a node that is configured to be managed by the Chef server, this option is used to allow Knife to use the same credentials as the chef\-client when communicating with the Chef server\&.
+The configuration file to use. For example, when knife is run from a node that is configured to be managed by the Chef server, this option is used to allow knife to use the same credentials as the chef\-client when communicating with the Chef server\&.
 .TP
 .B \fB\-\-chef\-zero\-port PORT\fP
 The port on which chef\-zero will listen.
@@ -124,7 +124,7 @@ The port on which chef\-zero will listen.
 Use to prevent the $EDITOR from being opened and to accept data as\-is.
 .TP
 .B \fB\-\-defaults\fP
-Use to have Knife use the default value instead of asking a user to provide one.
+Use to have knife use the default value instead of asking a user to provide one.
 .TP
 .B \fB\-e EDITOR\fP, \fB\-\-editor EDITOR\fP
 The $EDITOR that is used for all interactive commands.
@@ -139,7 +139,7 @@ The output format: \fBsummary\fP (default), \fBtext\fP, \fBjson\fP, \fByaml\fP, 
 Shows help for the command.
 .TP
 .B \fB\-k KEY\fP, \fB\-\-key KEY\fP
-The private key that Knife will use to sign requests made by the API client to the Chef server\&.
+The private key that knife will use to sign requests made by the API client to the Chef server\&.
 .TP
 .B \fB\-\-[no\-]color\fP
 Use to view colored output.
@@ -151,7 +151,7 @@ Use to show data after a destructive operation.
 The URL for the Chef server\&.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
-The user name used by Knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
+The user name used by knife to sign requests made by the API client to the Chef server\&. Authentication will fail if the user name does not match the private key.
 .TP
 .B \fB\-v\fP, \fB\-\-version\fP
 The version of the chef\-client\&.
@@ -160,7 +160,7 @@ The version of the chef\-client\&.
 Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .TP
 .B \fB\-y\fP, \fB\-\-yes\fP
-Use to respond to all confirmation prompts with "Yes". Knife will not ask for confirmation.
+Use to respond to all confirmation prompts with "Yes". knife will not ask for confirmation.
 .TP
 .B \fB\-z\fP, \fB\-\-local\-mode\fP
 Use to run the chef\-client in local mode. This allows all commands that work against the Chef server to also work against the local chef\-repo\&.
@@ -170,7 +170,7 @@ Use to run the chef\-client in local mode. This allows all commands that work ag
 Most data is entered using a text editor in JSON format, unless the \fB\-\-disable\-editing\fP option is entered as part of a command. (Encrypted data bags use YAML, which is a superset of JSON\&.) JSON is a common, language\-independent data format that provides a simple text representation of arbitrary data structures. For more information about JSON, see \fI\%http://www.json.org/\fP or \fI\%http://en.wikipedia.org/wiki/JSON\fP\&.
 .SS Set the Text Editor
 .sp
-Some Knife commands, such as \fBknife data bag edit\fP, require that information be edited as JSON data using a text editor. For example, the following command:
+Some knife commands, such as \fBknife data bag edit\fP, require that information be edited as JSON data using a text editor. For example, the following command:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -211,7 +211,7 @@ Changes to that file can then be made:
 .UNINDENT
 .UNINDENT
 .sp
-The type of text editor that is used by Knife can be configured by adding an entry to the knife.rb file or by setting an \fBEDITOR\fP environment variable. For example, to configure the text editor to always open with vim, add the following to the knife.rb file:
+The type of text editor that is used by knife can be configured by adding an entry to the knife.rb file or by setting an \fBEDITOR\fP environment variable. For example, to configure the text editor to always open with vim, add the following to the knife.rb file:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -299,9 +299,9 @@ knife[:editor] = \(aq"C:\eProgram Files (x86)\evim\evim74\egvim.exe"\(aq
 Values can be entered with double quotes (" ") or single quotes (\(aq \(aq), but this should be done consistently.
 .SS Sub\-commands
 .sp
-Knife comes with a collection of built in subcommands that work together to provide all of the functionality required to take specific actions against any object in an organization, including cookbooks, nodes, roles, data bags, environments, and users. A Knife plugin extends the functionality beyond built\-in subcommands.
+knife comes with a collection of built in subcommands that work together to provide all of the functionality required to take specific actions against any object in an organization, including cookbooks, nodes, roles, data bags, environments, and users. A knife plugin extends the functionality beyond built\-in subcommands.
 .sp
-Knife has the following subcommands: \fBbootstrap\fP, \fBclient\fP, \fBconfigure\fP, \fBcookbook\fP, \fBcookbook site\fP, \fBdata bag\fP, \fBdelete\fP, \fBdeps\fP, \fBdiff\fP, \fBdownload\fP, \fBedit\fP, \fBenvironment\fP, \fBexec\fP, \fBindex rebuild\fP, \fBlist\fP, \fBnode\fP, \fBrecipe list\fP, \fBrole\fP, \fBsearch\fP, \fBshow\fP, \fBssh\fP, \fBstatus\fP, \fBtag\fP, \fBupload\fP, \fBuser\fP, and \fBxargs\fP\&.
+knife has the following subcommands: \fBbootstrap\fP, \fBclient\fP, \fBconfigure\fP, \fBcookbook\fP, \fBcookbook site\fP, \fBdata bag\fP, \fBdelete\fP, \fBdeps\fP, \fBdiff\fP, \fBdownload\fP, \fBedit\fP, \fBenvironment\fP, \fBexec\fP, \fBindex rebuild\fP, \fBlist\fP, \fBnode\fP, \fBrecipe list\fP, \fBrole\fP, \fBsearch\fP, \fBshow\fP, \fBssh\fP, \fBstatus\fP, \fBtag\fP, \fBupload\fP, \fBuser\fP, and \fBxargs\fP\&.
 .sp
 \fBNOTE:\fP
 .INDENT 0.0
@@ -311,7 +311,7 @@ The following subcommands run only against the open source Chef server: \fBindex
 .UNINDENT
 .SS Syntax
 .sp
-All Knife subcommands have the following syntax:
+All knife subcommands have the following syntax:
 .INDENT 0.0
 .INDENT 3.5
 knife subcommand [ARGUMENT] (options)

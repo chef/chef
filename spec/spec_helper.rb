@@ -97,6 +97,9 @@ RSpec.configure do |config|
   config.filter_run :focus => true
   config.filter_run_excluding :external => true
 
+  # Only run these tests on platforms that are also chef workstations
+  config.filter_run_excluding :workstation if solaris? or aix?
+
   # Tests that randomly fail, but may have value.
   config.filter_run_excluding :volatile => true
   config.filter_run_excluding :volatile_on_solaris => true if solaris?
@@ -107,12 +110,16 @@ RSpec.configure do |config|
   config.filter_run_excluding :not_supported_on_win2k3 => true if windows_win2k3?
   config.filter_run_excluding :not_supported_on_solaris => true if solaris?
   config.filter_run_excluding :win2k3_only => true unless windows_win2k3?
+  config.filter_run_excluding :windows_2008r2_or_later => true unless windows_2008r2_or_later?
   config.filter_run_excluding :windows64_only => true unless windows64?
   config.filter_run_excluding :windows32_only => true unless windows32?
+  config.filter_run_excluding :windows_powershell_dsc_only => true unless windows_powershell_dsc?
+  config.filter_run_excluding :windows_powershell_no_dsc_only => true unless ! windows_powershell_dsc?
   config.filter_run_excluding :windows_domain_joined_only => true unless windows_domain_joined?
   config.filter_run_excluding :solaris_only => true unless solaris?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?
+  config.filter_run_excluding :aix_only => true unless aix?
   config.filter_run_excluding :supports_cloexec => true unless supports_cloexec?
   config.filter_run_excluding :selinux_only => true unless selinux_enabled?
   config.filter_run_excluding :ruby_18_only => true unless ruby_18?
@@ -127,6 +134,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :ruby_gte_20_and_openssl_gte_101 => true unless (ruby_gte_20? && openssl_gte_101?)
   config.filter_run_excluding :openssl_lt_101 => true unless openssl_lt_101?
   config.filter_run_excluding :ruby_lt_20 => true unless ruby_lt_20?
+  config.filter_run_excluding :aes_256_gcm_only => true unless aes_256_gcm?
 
   running_platform_arch = `uname -m`.strip
 
@@ -156,6 +164,10 @@ RSpec.configure do |config|
   config.before(:each) do
     Chef::Config.reset
   end
+
+  config.before(:suite) do
+    ARGV.clear
+  end
 end
 
 require 'webrick/utils'
@@ -182,3 +194,6 @@ module WEBrick
     end
   end
 end
+
+# Enough stuff needs json serialization that I'm just adding it here for equality asserts
+require 'chef/json_compat'

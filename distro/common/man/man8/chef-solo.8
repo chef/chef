@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "CHEF-SOLO" "8" "Chef 11.14" "" "chef-solo"
+.TH "CHEF-SOLO" "8" "Chef 12.0" "" "chef-solo"
 .SH NAME
 chef-solo \- The man page for the chef-solo command line tool.
 .
@@ -77,13 +77,15 @@ This command has the following options:
 The configuration file to use.
 .TP
 .B \fB\-d\fP, \fB\-\-daemonize\fP
-Use to run the executable as a daemon. This option is only available on machines that run in UNIX or Linux environments. For machines that are running Microsoft Windows that require similar functionality, use the \fBchef\-client::service\fP recipe in the \fBchef\-client\fP cookbook: \fI\%http://community.opscode.com/cookbooks/chef\-client\fP\&. This will install a chef\-client service under Microsoft Windows using the Windows Service Wrapper\&.
+Use to run the executable as a daemon.  This option may not be used in the same command with the \fB\-\-[no\-]fork\fP option.
+.sp
+This option is only available on machines that run in UNIX or Linux environments. For machines that are running Microsoft Windows that require similar functionality, use the \fBchef\-client::service\fP recipe in the \fBchef\-client\fP cookbook: \fI\%http://community.opscode.com/cookbooks/chef\-client\fP\&. This will install a chef\-client service under Microsoft Windows using the Windows Service Wrapper\&.
 .TP
 .B \fB\-E ENVIRONMENT_NAME\fP, \fB\-\-environment ENVIRONMENT_NAME\fP
 The name of the environment.
 .TP
 .B \fB\-f\fP, \fB\-\-[no\-]fork\fP
-Use to contain the chef\-client run in a secondary process with dedicated RAM. When the chef\-client run is complete the RAM will be returned to the master process. This option helps ensure that a chef\-client will use a steady amount of RAM over time because the master process will not run recipes. This option will also help prevent memory leaks (such as those that can be introduced by the code contained within a poorly designed cookbook). Use \fB\-\-no\-fork\fP to disable running the chef\-client in fork node. Default value: \fB\-\-fork\fP\&.
+Use to contain the chef\-client run in a secondary process with dedicated RAM. When the chef\-client run is complete the RAM will be returned to the master process. This option helps ensure that a chef\-client will use a steady amount of RAM over time because the master process will not run recipes. This option will also help prevent memory leaks (such as those that can be introduced by the code contained within a poorly designed cookbook). Use \fB\-\-no\-fork\fP to disable running the chef\-client in fork node. Default value: \fB\-\-fork\fP\&. This option may not be used in the same command with the \fB\-\-daemonize\fP and \fB\-\-interval\fP options.
 .TP
 .B \fB\-F FORMAT\fP, \fB\-\-format FORMAT\fP
 The output format: \fBdoc\fP (default) or \fBmin\fP\&.
@@ -107,10 +109,81 @@ The name of the group that owns a process. This is required when starting any ex
 Shows help for the command.
 .TP
 .B \fB\-i SECONDS\fP, \fB\-\-interval SECONDS\fP
-The frequency (in seconds) at which the chef\-client runs.
+The frequency (in seconds) at which the chef\-client runs. When the chef\-client is run at intervals, \fB\-\-splay\fP and \fB\-\-interval\fP values are applied before the chef\-client run. This option may not be used in the same command with the \fB\-\-[no\-]fork\fP option.
 .TP
 .B \fB\-j PATH\fP, \fB\-\-json\-attributes PATH\fP
-The path to a file that contains JSON data. Use this option to override \fBnormal\fP attributes set elsewhere.
+The path to a file that contains JSON data.
+.sp
+Use this option to define a \fBrun_list\fP object. For example, a JSON file similar to:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+"run_list": [
+  "recipe[base]",
+  "recipe[foo]",
+  "recipe[bar]",
+  "role[webserver]"
+],
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+may be used by running \fBchef\-client \-j path/to/file.json\fP\&.
+.sp
+In certain situations this option may be used to update \fBnormal\fP attributes.
+.sp
+\fBWARNING:\fP
+.INDENT 7.0
+.INDENT 3.5
+Any other attribute type that is contained in this JSON file will be treated as a \fBnormal\fP attribute. For example, attempting to update \fBoverride\fP attributes using the \fB\-j\fP option:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+{
+  "name": "dev\-99",
+  "description": "Install some stuff",
+  "override_attributes": {
+    "apptastic": {
+      "enable_apptastic": "false",
+      "apptastic_tier_name": "dev\-99.bomb.com"
+    }
+  }
+}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+will result in a node object similar to:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+{
+  "name": "maybe\-dev\-99",
+  "normal": {
+  "name": "dev\-99",
+    "description": "Install some stuff",
+    "override_attributes": {
+      "apptastic": {
+        "enable_apptastic": "false",
+        "apptastic_tier_name": "dev\-99.bomb.com"
+      }
+    }
+  }
+}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
 .TP
 .B \fB\-l LEVEL\fP, \fB\-\-log_level LEVEL\fP
 The level of logging that will be stored in a log file.
@@ -134,7 +207,7 @@ The URL location from which a remote cookbook tar.gz will be downloaded.
 The amount of time (in seconds) to wait for a chef\-client run to finish. Default value: not set (indefinite). Set to \fB0\fP to cause a second chef\-client to exit immediately.
 .TP
 .B \fB\-s SECONDS\fP, \fB\-\-splay SECONDS\fP
-A number (in seconds) to add to the \fBinterval\fP that is used to determine the frequency of chef\-client runs. This number can help prevent server load when there are many clients running at the same time.
+A number (in seconds) to add to the \fBinterval\fP that is used to determine the frequency of chef\-client runs. This number can help prevent server load when there are many clients running at the same time. When the chef\-client is run at intervals, \fB\-\-splay\fP and \fB\-\-interval\fP values are applied before the chef\-client run.
 .TP
 .B \fB\-u USER\fP, \fB\-\-user USER\fP
 The user that owns a process. This is required when starting any executable as a daemon.

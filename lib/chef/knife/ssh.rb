@@ -106,13 +106,6 @@ class Chef
       def session
         config[:on_error] ||= :skip
         ssh_error_handler = Proc.new do |server|
-          if config[:manual]
-            node_name = server.host
-          else
-            @action_nodes.each do |n|
-              node_name = n if format_for_display(n)[config[:attribute]] == server.host
-            end
-          end
           case config[:on_error]
           when :skip
             ui.warn "Failed to connect to #{server.host} -- #{$!.class.name}: #{$!.message}"

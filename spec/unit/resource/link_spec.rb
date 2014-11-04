@@ -22,78 +22,78 @@ require 'spec_helper'
 describe Chef::Resource::Link do
 
   before(:each) do
-    Chef::Resource::Link.any_instance.should_receive(:verify_links_supported!).and_return(true)
+    expect_any_instance_of(Chef::Resource::Link).to receive(:verify_links_supported!).and_return(true)
     @resource = Chef::Resource::Link.new("fakey_fakerton")
   end
 
   it "should create a new Chef::Resource::Link" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::Link)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Link)
   end
 
   it "should have a name" do
-    @resource.name.should eql("fakey_fakerton")
+    expect(@resource.name).to eql("fakey_fakerton")
   end
 
   it "should have a default action of 'create'" do
-    @resource.action.should eql(:create)
+    expect(@resource.action).to eql(:create)
   end
 
   { :create => false, :delete => false, :blues => true }.each do |action,bad_value|
     it "should #{bad_value ? 'not' : ''} accept #{action.to_s}" do
       if bad_value
-        lambda { @resource.action action }.should raise_error(ArgumentError)
+        expect { @resource.action action }.to raise_error(ArgumentError)
       else
-        lambda { @resource.action action }.should_not raise_error
+        expect { @resource.action action }.not_to raise_error
       end
     end
   end
 
   it "should use the object name as the target_file by default" do
-    @resource.target_file.should eql("fakey_fakerton")
+    expect(@resource.target_file).to eql("fakey_fakerton")
   end
 
   it "should accept a string as the link source via 'to'" do
-    lambda { @resource.to "/tmp" }.should_not raise_error
+    expect { @resource.to "/tmp" }.not_to raise_error
   end
 
   it "should not accept a Hash for the link source via 'to'" do
-    lambda { @resource.to Hash.new }.should raise_error(ArgumentError)
+    expect { @resource.to Hash.new }.to raise_error(ArgumentError)
   end
 
   it "should allow you to set a link source via 'to'" do
     @resource.to "/tmp/foo"
-    @resource.to.should eql("/tmp/foo")
+    expect(@resource.to).to eql("/tmp/foo")
   end
 
   it "should allow you to specify the link type" do
     @resource.link_type "symbolic"
-    @resource.link_type.should eql(:symbolic)
+    expect(@resource.link_type).to eql(:symbolic)
   end
 
   it "should default to a symbolic link" do
-    @resource.link_type.should eql(:symbolic)
+    expect(@resource.link_type).to eql(:symbolic)
   end
 
   it "should accept a hard link_type" do
     @resource.link_type :hard
-    @resource.link_type.should eql(:hard)
+    expect(@resource.link_type).to eql(:hard)
   end
 
   it "should reject any other link_type but :hard and :symbolic" do
-    lambda { @resource.link_type "x-men" }.should raise_error(ArgumentError)
+    expect { @resource.link_type "x-men" }.to raise_error(ArgumentError)
   end
 
   it "should accept a group name or id for group" do
-    lambda { @resource.group "root" }.should_not raise_error
-    lambda { @resource.group 123 }.should_not raise_error
-    lambda { @resource.group "root:goo" }.should raise_error(ArgumentError)
+    expect { @resource.group "root" }.not_to raise_error
+    expect { @resource.group 123 }.not_to raise_error
+    expect { @resource.group "root:goo" }.to raise_error(ArgumentError)
   end
 
   it "should accept a user name or id for owner" do
-    lambda { @resource.owner "root" }.should_not raise_error
-    lambda { @resource.owner 123 }.should_not raise_error
-    lambda { @resource.owner "root:goo" }.should raise_error(ArgumentError)
+    expect { @resource.owner "root" }.not_to raise_error
+    expect { @resource.owner 123 }.not_to raise_error
+    expect { @resource.owner "root:goo" }.to raise_error(ArgumentError)
   end
 
   describe "when it has to, link_type, owner, and group" do
@@ -107,13 +107,13 @@ describe Chef::Resource::Link do
 
     it "describes its state" do
       state = @resource.state
-      state[:to].should == "/to/dir/file.tar"
-      state[:owner].should == "root"
-      state[:group].should == "0664"
+      expect(state[:to]).to eq("/to/dir/file.tar")
+      expect(state[:owner]).to eq("root")
+      expect(state[:group]).to eq("0664")
     end
 
     it "returns the target file as its identity" do
-      @resource.identity.should == "/var/target.tar"
+      expect(@resource.identity).to eq("/var/target.tar")
     end
   end
 end

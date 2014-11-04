@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -49,7 +49,7 @@
 <p>The chef-shell executable is run as a command-line tool.</p>
 <div class="section" id="modes">
 <h2>Modes<a class="headerlink" href="#modes" title="Permalink to this headline">¶</a></h2>
-<p>chef-shell is tool that allows Knife to be run using an Interactive Ruby (IRb) session. chef-shell currently supports recipe and attribute file syntax, as well as interactive debugging features. chef-shell has three run modes:</p>
+<p>chef-shell is tool that allows knife to be run using an Interactive Ruby (IRb) session. chef-shell currently supports recipe and attribute file syntax, as well as interactive debugging features. chef-shell has three run modes:</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="40%" />
@@ -88,7 +88,51 @@
 <dt><tt class="docutils literal"><span class="pre">-h</span></tt>, <tt class="docutils literal"><span class="pre">--help</span></tt></dt>
 <dd>Shows help for the command.</dd>
 <dt><tt class="docutils literal"><span class="pre">-j</span> <span class="pre">PATH</span></tt>, <tt class="docutils literal"><span class="pre">--json-attributes</span> <span class="pre">PATH</span></tt></dt>
-<dd>The path to a file that contains JSON data.</dd>
+<dd><p class="first">The path to a file that contains JSON data.</p>
+<p>Use this option to define a <tt class="docutils literal"><span class="pre">run_list</span></tt> object. For example, a JSON file similar to:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="s2">&quot;run_list&quot;</span><span class="o">:</span> <span class="p">[</span>
+  <span class="s2">&quot;recipe[base]&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;recipe[foo]&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;recipe[bar]&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;role[webserver]&quot;</span>
+<span class="p">],</span>
+</pre></div>
+</div>
+<p>may be used by running <tt class="docutils literal"><span class="pre">chef-client</span> <span class="pre">-j</span> <span class="pre">path/to/file.json</span></tt>.</p>
+<p>In certain situations this option may be used to update <tt class="docutils literal"><span class="pre">normal</span></tt> attributes.</p>
+<div class="last admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>Any other attribute type that is contained in this JSON file will be treated as a <tt class="docutils literal"><span class="pre">normal</span></tt> attribute. For example, attempting to update <tt class="docutils literal"><span class="pre">override</span></tt> attributes using the <tt class="docutils literal"><span class="pre">-j</span></tt> option:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;dev-99&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;description&quot;</span><span class="o">:</span> <span class="s2">&quot;Install some stuff&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;override_attributes&quot;</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">&quot;apptastic&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;enable_apptastic&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;apptastic_tier_name&quot;</span><span class="o">:</span> <span class="s2">&quot;dev-99.bomb.com&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>will result in a node object similar to:</p>
+<div class="last highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;maybe-dev-99&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;normal&quot;</span><span class="o">:</span> <span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;dev-99&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="o">:</span> <span class="s2">&quot;Install some stuff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;override_attributes&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;apptastic&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;enable_apptastic&quot;</span><span class="o">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;apptastic_tier_name&quot;</span><span class="o">:</span> <span class="s2">&quot;dev-99.bomb.com&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">-l</span> <span class="pre">LEVEL</span></tt>, <tt class="docutils literal"><span class="pre">--log-level</span> <span class="pre">LEVEL</span></tt></dt>
 <dd>The level of logging that will be stored in a log file.</dd>
 <dt><tt class="docutils literal"><span class="pre">-s</span></tt>, <tt class="docutils literal"><span class="pre">--solo</span></tt></dt>

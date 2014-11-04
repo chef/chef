@@ -29,51 +29,38 @@ class Chef
     class FreebsdPackage < Chef::Resource::Package
       include Chef::Mixin::ShellOut
 
-      provides :package, :on_platforms => ["freebsd"]
-
-      attr_accessor :created_as_type
+      provides :package, platform: "freebsd"
 
       def initialize(name, run_context=nil)
         super
         @resource_name = :freebsd_package
-        @created_as_type = "freebsd_package"
       end
 
       def after_created
         assign_provider
       end
 
-      # This resource can be invoked with multiple names package & freebsd_package.
-      # We override the to_s method to ensure the key in resource collection
-      # matches the type resource is declared as using created_as_type. This
-      # logic can be removed once Chef does this for all resource in Chef 12:
-      # https://github.com/opscode/chef/issues/1817
-      def to_s
-        "#{created_as_type}[#{name}]"
+      def supports_pkgng?
+        ships_with_pkgng? || !!shell_out!("make -V WITH_PKGNG", :env => nil).stdout.match(/yes/i)
       end
 
       private
 
+      def ships_with_pkgng?
+        # It was not until __FreeBSD_version 1000017 that pkgng became
+        # the default binary package manager. See '/usr/ports/Mk/bsd.port.mk'.
+        node.automatic[:os_version].to_i >= 1000017
+      end
+
       def assign_provider
         @provider = if @source.to_s =~ /^ports$/i
                       Chef::Provider::Package::Freebsd::Port
-                    elsif ships_with_pkgng? || supports_pkgng?
+                    elsif supports_pkgng?
                       Chef::Provider::Package::Freebsd::Pkgng
                     else
                       Chef::Provider::Package::Freebsd::Pkg
                     end
       end
-
-      def ships_with_pkgng?
-        # It was not until __FreeBSD_version 1000017 that pkgng became
-        # the default binary package manager. See '/usr/ports/Mk/bsd.port.mk'.
-        node[:os_version].to_i >= 1000017
-      end
-
-      def supports_pkgng?
-        !!shell_out!("make -V WITH_PKGNG", :env => nil).stdout.match(/yes/i)
-      end
-
     end
   end
 end

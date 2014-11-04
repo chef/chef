@@ -17,6 +17,8 @@
 #
 
 require 'chef/run_list'
+require 'chef/util/path_helper'
+
 class Chef
   class Knife
     module Core
@@ -28,10 +30,11 @@ class Chef
       #
       class BootstrapContext
 
-        def initialize(config, run_list, chef_config)
+        def initialize(config, run_list, chef_config, secret)
           @config       = config
           @run_list     = run_list
           @chef_config  = chef_config
+          @secret       = secret
         end
 
         def bootstrap_environment
@@ -43,13 +46,11 @@ class Chef
         end
 
         def encrypted_data_bag_secret
-          knife_config[:secret] || begin
-            if knife_config[:secret_file] && File.exist?(knife_config[:secret_file])
-              IO.read(File.expand_path(knife_config[:secret_file]))
-            else
-              nil
-            end
-          end
+          @secret
+        end
+
+        def trusted_certs
+          @trusted_certs ||= trusted_certs_content
         end
 
         def config_content
@@ -107,6 +108,10 @@ CONFIG
             client_rb << %Q{encrypted_data_bag_secret "/etc/chef/encrypted_data_bag_secret"\n}
           end
 
+          unless trusted_certs.empty?
+            client_rb << %Q{trusted_certs_dir "/etc/chef/trusted_certs"\n}
+          end
+
           client_rb
         end
 
@@ -151,6 +156,18 @@ CONFIG
 
         def first_boot
           (@config[:first_boot_attributes] || {}).merge(:run_list => @run_list)
+        end
+
+        private
+        def trusted_certs_content
+          content = ""
+          if @chef_config[:trusted_certs_dir]
+            Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(@chef_config[:trusted_certs_dir]), "*.{crt,pem}")).each do |cert|
+              content << "cat > /etc/chef/trusted_certs/#{File.basename(cert)} <<'EOP'\n" +
+                         IO.read(File.expand_path(cert)) + "\nEOP\n"
+            end
+          end
+          content
         end
 
       end

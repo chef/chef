@@ -44,21 +44,21 @@ describe Chef::Provider::RemoteFile::CacheControlData do
   context "when loading data for an unknown URI" do
 
     before do
-      Chef::FileCache.should_receive(:load).with(cache_path).and_raise(Chef::Exceptions::FileNotFound, "nope")
+      expect(Chef::FileCache).to receive(:load).with(cache_path).and_raise(Chef::Exceptions::FileNotFound, "nope")
     end
 
     context "and there is no current copy of the file" do
       let(:current_file_checksum) { nil }
 
       it "returns empty cache control data" do
-        cache_control_data.etag.should be_nil
-        cache_control_data.mtime.should be_nil
+        expect(cache_control_data.etag).to be_nil
+        expect(cache_control_data.mtime).to be_nil
       end
     end
 
     it "returns empty cache control data" do
-      cache_control_data.etag.should be_nil
-      cache_control_data.mtime.should be_nil
+      expect(cache_control_data.etag).to be_nil
+      expect(cache_control_data.mtime).to be_nil
     end
 
     context "and the URI contains a password" do
@@ -85,19 +85,19 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       cache["etag"] = etag
       cache["mtime"] = mtime
       cache["checksum"] = last_fetched_checksum
-      cache.to_json
+      Chef::JSONCompat.to_json(cache)
     end
 
     before do
-      Chef::FileCache.should_receive(:load).with(cache_path).and_return(cache_json_data)
+      expect(Chef::FileCache).to receive(:load).with(cache_path).and_return(cache_json_data)
     end
 
     context "and there is no on-disk copy of the file" do
       let(:current_file_checksum) { nil }
 
       it "returns empty cache control data" do
-        cache_control_data.etag.should be_nil
-        cache_control_data.mtime.should be_nil
+        expect(cache_control_data.etag).to be_nil
+        expect(cache_control_data.mtime).to be_nil
       end
     end
 
@@ -105,16 +105,16 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       let(:current_file_checksum) { "e2a8938cc31754f6c067b35aab1d0d4864272e9bf8504536ef3e79ebf8432305" }
 
       it "returns empty cache control data" do
-        cache_control_data.etag.should be_nil
-        cache_control_data.mtime.should be_nil
+        expect(cache_control_data.etag).to be_nil
+        expect(cache_control_data.mtime).to be_nil
       end
     end
 
     context "and the cached checksum matches the on-disk copy" do
 
       it "populates the cache control data" do
-        cache_control_data.etag.should == etag
-        cache_control_data.mtime.should == mtime
+        expect(cache_control_data.etag).to eq(etag)
+        expect(cache_control_data.mtime).to eq(mtime)
       end
     end
 
@@ -122,16 +122,16 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       let(:cache_json_data) { '{"foo",,"bar" []}' }
 
       it "returns empty cache control data" do
-        cache_control_data.etag.should be_nil
-        cache_control_data.mtime.should be_nil
+        expect(cache_control_data.etag).to be_nil
+        expect(cache_control_data.mtime).to be_nil
       end
 
       context "and it still is valid JSON" do
         let(:cache_json_data) { '' }
 
         it "returns empty cache control data" do
-          cache_control_data.etag.should be_nil
-          cache_control_data.mtime.should be_nil
+          expect(cache_control_data.etag).to be_nil
+          expect(cache_control_data.mtime).to be_nil
         end
       end
     end
@@ -162,12 +162,12 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       # so we can't count on the order of the keys in the json format.
 
       json_data = cache_control_data.json_data
-      Chef::JSONCompat.from_json(json_data).should == expected_serialization_data
+      expect(Chef::JSONCompat.from_json(json_data)).to eq(expected_serialization_data)
     end
 
     it "writes data to the cache" do
       json_data = cache_control_data.json_data
-      Chef::FileCache.should_receive(:store).with(cache_path, json_data)
+      expect(Chef::FileCache).to receive(:store).with(cache_path, json_data)
       cache_control_data.save
     end
 
@@ -178,7 +178,7 @@ describe Chef::Provider::RemoteFile::CacheControlData do
 
       it "writes the data to the cache with a sanitized path name" do
         json_data = cache_control_data.json_data
-        Chef::FileCache.should_receive(:store).with(cache_path, json_data)
+        expect(Chef::FileCache).to receive(:store).with(cache_path, json_data)
         cache_control_data.save
       end
     end
@@ -199,18 +199,18 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       it "truncates the file cache path to 102 characters" do
         normalized_cache_path = cache_control_data.send('sanitized_cache_file_basename')
 
-        Chef::FileCache.should_receive(:store).with("remote_file/" + normalized_cache_path, cache_control_data.json_data)
+        expect(Chef::FileCache).to receive(:store).with("remote_file/" + normalized_cache_path, cache_control_data.json_data)
 
         cache_control_data.save
 
-        normalized_cache_path.length.should == CACHE_FILE_PATH_LIMIT
+        expect(normalized_cache_path.length).to eq(CACHE_FILE_PATH_LIMIT)
       end
 
       it "uses a file cache path that starts with the first #{CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH} characters of the URI" do
         normalized_cache_path = cache_control_data.send('sanitized_cache_file_basename')
 
-        truncated_file_cache_path.length.should == CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH
-        normalized_cache_path.start_with?(truncated_file_cache_path).should == true
+        expect(truncated_file_cache_path.length).to eq(CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH)
+        expect(normalized_cache_path.start_with?(truncated_file_cache_path)).to eq(true)
       end
     end
 

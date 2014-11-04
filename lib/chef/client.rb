@@ -36,6 +36,8 @@ require 'chef/cookbook/file_vendor'
 require 'chef/cookbook/file_system_file_vendor'
 require 'chef/cookbook/remote_file_vendor'
 require 'chef/event_dispatch/dispatcher'
+require 'chef/event_loggers/base'
+require 'chef/event_loggers/windows_eventlog'
 require 'chef/formatters/base'
 require 'chef/formatters/doc'
 require 'chef/formatters/minimal'
@@ -44,6 +46,7 @@ require 'chef/resource_reporter'
 require 'chef/run_lock'
 require 'chef/policy_builder'
 require 'chef/request_id'
+require 'chef/platform/rebooter'
 require 'ohai'
 require 'rbconfig'
 
@@ -150,7 +153,7 @@ class Chef
       @runner = nil
       @ohai = Ohai::System.new
 
-      event_handlers = configure_formatters
+      event_handlers = configure_formatters + configure_event_loggers
       event_handlers += Array(Chef::Config[:event_handlers])
 
       @events = EventDispatch::Dispatcher.new(*event_handlers)
@@ -190,52 +193,20 @@ class Chef
       end
     end
 
-    # Do a full run for this Chef::Client.  Calls:
-    # * do_run
-    #
-    # This provides a wrapper around #do_run allowing the
-    # run to be optionally forked.
-    # === Returns
-    # boolean:: Return value from #do_run. Should always returns true.
-    def run
-      # win32-process gem exposes some form of :fork for Process
-      # class. So we are seperately ensuring that the platform we're
-      # running on is not windows before forking.
-      if(Chef::Config[:client_fork] && Process.respond_to?(:fork) && !Chef::Platform.windows?)
-        Chef::Log.info "Forking chef instance to converge..."
-        pid = fork do
-          [:INT, :TERM].each {|s| trap(s, "EXIT") }
-          client_solo = Chef::Config[:solo] ? "chef-solo" : "chef-client"
-          $0 = "#{client_solo} worker: ppid=#{Process.ppid};start=#{Time.new.strftime("%R:%S")};"
-          begin
-            Chef::Log.debug "Forked instance now converging"
-            do_run
-          rescue Exception => e
-            Chef::Log.error(e.to_s)
-            exit 1
+    def configure_event_loggers
+      if Chef::Config.disable_event_logger
+        []
+      else
+        Chef::Config.event_loggers.map do |evt_logger|
+          case evt_logger
+          when Symbol
+            Chef::EventLoggers.new(evt_logger)
+          when Class
+            evt_logger.new
           else
-            exit 0
           end
         end
-        Chef::Log.debug "Fork successful. Waiting for new chef pid: #{pid}"
-        result = Process.waitpid2(pid)
-        handle_child_exit(result)
-        Chef::Log.debug "Forked instance successfully reaped (pid: #{pid})"
-        true
-      else
-        do_run
       end
-    end
-
-    def handle_child_exit(pid_and_status)
-      status = pid_and_status[1]
-      return true if status.success?
-      message = if status.signaled?
-        "Chef run process terminated by signal #{status.termsig} (#{Signal.list.invert[status.termsig]})"
-      else
-        "Chef run process exited unsuccessfully (exit code #{status.exitstatus})"
-      end
-      raise Exceptions::ChildConvergeError, message
     end
 
     # Instantiates a Chef::Node object, possibly loading the node's prior state
@@ -329,7 +300,7 @@ class Chef
     rescue Exception => e
       # TODO: munge exception so a semantic failure message can be given to the
       # user
-      @events.registration_failed(node_name, e, config)
+      @events.registration_failed(client_name, e, config)
       raise
     end
 
@@ -382,8 +353,6 @@ class Chef
       end
     end
 
-    private
-
     # Do a full run for this Chef::Client.  Calls:
     #
     #  * run_ohai - Collect information about the system
@@ -394,7 +363,7 @@ class Chef
     #
     # === Returns
     # true:: Always returns true.
-    def do_run
+    def run
       runlock = RunLock.new(Chef::Config.lockfile)
       runlock.acquire
       # don't add code that may fail before entering this section to be sure to release lock
@@ -427,7 +396,9 @@ class Chef
 
         run_context = setup_run_context
 
-        converge(run_context)
+        catch(:end_client_run_early) do
+          converge(run_context)
+        end
 
         save_updated_node
 
@@ -435,6 +406,10 @@ class Chef
         Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
         @events.run_completed(node)
+
+        # rebooting has to be the last thing we do, no exceptions.
+        Chef::Platform::Rebooter.reboot_if_needed!(node)
+
         true
       rescue Exception => e
         # CHEF-3336: Send the error first in case something goes wrong below and we don't know why
@@ -458,6 +433,8 @@ class Chef
       end
       true
     end
+
+    private
 
     def empty_directory?(path)
       !File.exists?(path) || (Dir.entries(path).size <= 2)

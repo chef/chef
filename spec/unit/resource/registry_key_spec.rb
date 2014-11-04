@@ -24,33 +24,33 @@ describe Chef::Resource::RegistryKey, "initialize" do
   end
 
   it "should create a new Chef::Resource::RegistryKey" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::RegistryKey)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::RegistryKey)
   end
 
   it "should set the resource_name to :registry_key" do
-    @resource.resource_name.should eql(:registry_key)
+    expect(@resource.resource_name).to eql(:registry_key)
   end
 
   it "should set the key equal to the argument to initialize" do
-    @resource.key.should eql('HKCU\Software\Raxicoricofallapatorius')
+    expect(@resource.key).to eql('HKCU\Software\Raxicoricofallapatorius')
   end
 
   it "should default recursive to false" do
-    @resource.recursive.should eql(false)
+    expect(@resource.recursive).to eql(false)
   end
 
   it "should default architecture to :machine" do
-    @resource.architecture.should eql(:machine)
+    expect(@resource.architecture).to eql(:machine)
   end
 
   it "should set action to :create" do
-    @resource.action.should eql(:create)
+    expect(@resource.action).to eql(:create)
   end
 
   %w{create create_if_missing delete delete_key}.each do |action|
     it "should allow action #{action}" do
-      @resource.allowed_actions.detect { |a| a == action.to_sym }.should eql(action.to_sym)
+      expect(@resource.allowed_actions.detect { |a| a == action.to_sym }).to eql(action.to_sym)
     end
   end
 end
@@ -62,15 +62,15 @@ describe Chef::Resource::RegistryKey, "key" do
 
   it "should allow a string" do
     @resource.key 'HKCU\Software\Poosh'
-    @resource.key.should eql('HKCU\Software\Poosh')
+    expect(@resource.key).to eql('HKCU\Software\Poosh')
   end
 
   it "should not allow an integer" do
-    lambda { @resource.send(:key, 100) }.should raise_error(ArgumentError)
+    expect { @resource.send(:key, 100) }.to raise_error(ArgumentError)
   end
 
   it "should not allow a hash" do
-    lambda { @resource.send(:key, { :sonic => "screwdriver" }) }.should raise_error(ArgumentError)
+    expect { @resource.send(:key, { :sonic => "screwdriver" }) }.to raise_error(ArgumentError)
   end
 end
 
@@ -81,41 +81,41 @@ describe Chef::Resource::RegistryKey, "values" do
 
   it "should allow a single proper hash of registry values" do
     @resource.values( { :name => 'poosh', :type => :string, :data => 'carmen' } )
-    @resource.values.should eql([ { :name => 'poosh', :type => :string, :data => 'carmen' } ])
+    expect(@resource.values).to eql([ { :name => 'poosh', :type => :string, :data => 'carmen' } ])
   end
 
   it "should allow an array of proper hashes of registry values" do
     @resource.values [ { :name => 'poosh', :type => :string, :data => 'carmen' } ]
-    @resource.values.should eql([ { :name => 'poosh', :type => :string, :data => 'carmen' } ])
+    expect(@resource.values).to eql([ { :name => 'poosh', :type => :string, :data => 'carmen' } ])
   end
 
   it "should return checksummed data if the type is unsafe" do
     @resource.values( { :name => 'poosh', :type => :binary, :data => 255.chr * 1 })
-    @resource.values.should eql([ { :name => 'poosh', :type => :binary, :data => "00594fd4f42ba43fc1ca0427a0576295" } ])
+    expect(@resource.values).to eql([ { :name => 'poosh', :type => :binary, :data => "00594fd4f42ba43fc1ca0427a0576295" } ])
   end
 
   it "should throw an exception if the name field is missing" do
-    lambda { @resource.values [ { :type => :string, :data => 'carmen' } ] }.should raise_error(ArgumentError)
+    expect { @resource.values [ { :type => :string, :data => 'carmen' } ] }.to raise_error(ArgumentError)
   end
 
   it "should throw an exception if the type field is missing" do
-    lambda { @resource.values [ { :name => 'poosh', :data => 'carmen' } ] }.should raise_error(ArgumentError)
+    expect { @resource.values [ { :name => 'poosh', :data => 'carmen' } ] }.to raise_error(ArgumentError)
   end
 
   it "should throw an exception if the data field is missing" do
-    lambda { @resource.values [ { :name => 'poosh', :type => :string } ] }.should raise_error(ArgumentError)
+    expect { @resource.values [ { :name => 'poosh', :type => :string } ] }.to raise_error(ArgumentError)
   end
 
   it "should throw an exception if extra fields are present" do
-    lambda { @resource.values [ { :name => 'poosh', :type => :string, :data => 'carmen', :screwdriver => 'sonic' } ] }.should raise_error(ArgumentError)
+    expect { @resource.values [ { :name => 'poosh', :type => :string, :data => 'carmen', :screwdriver => 'sonic' } ] }.to raise_error(ArgumentError)
   end
 
   it "should not allow a string" do
-    lambda { @resource.send(:values, 'souffle') }.should raise_error(ArgumentError)
+    expect { @resource.send(:values, 'souffle') }.to raise_error(ArgumentError)
   end
 
   it "should not allow an integer" do
-    lambda { @resource.send(:values, 100) }.should raise_error(ArgumentError)
+    expect { @resource.send(:values, 100) }.to raise_error(ArgumentError)
   end
 end
 
@@ -126,23 +126,23 @@ describe Chef::Resource::RegistryKey, "recursive" do
 
   it "should allow a boolean" do
     @resource.recursive(true)
-    @resource.recursive.should eql(true)
+    expect(@resource.recursive).to eql(true)
   end
 
   it "should not allow a hash" do
-    lambda { @resource.recursive({:sonic => :screwdriver}) }.should raise_error(ArgumentError)
+    expect { @resource.recursive({:sonic => :screwdriver}) }.to raise_error(ArgumentError)
   end
 
   it "should not allow an array" do
-    lambda { @resource.recursive([:nose, :chin]) }.should raise_error(ArgumentError)
+    expect { @resource.recursive([:nose, :chin]) }.to raise_error(ArgumentError)
   end
 
   it "should not allow a string" do
-    lambda { @resource.recursive('souffle') }.should raise_error(ArgumentError)
+    expect { @resource.recursive('souffle') }.to raise_error(ArgumentError)
   end
 
   it "should not allow an integer" do
-    lambda { @resource.recursive(100) }.should raise_error(ArgumentError)
+    expect { @resource.recursive(100) }.to raise_error(ArgumentError)
   end
 end
 
@@ -154,24 +154,24 @@ describe Chef::Resource::RegistryKey, "architecture" do
   [ :i386, :x86_64, :machine ].each do |arch|
     it "should allow #{arch} as a symbol" do
       @resource.architecture(arch)
-      @resource.architecture.should eql(arch)
+      expect(@resource.architecture).to eql(arch)
     end
   end
 
   it "should not allow a hash" do
-    lambda { @resource.architecture({:sonic => :screwdriver}) }.should raise_error(ArgumentError)
+    expect { @resource.architecture({:sonic => :screwdriver}) }.to raise_error(ArgumentError)
   end
 
   it "should not allow an array" do
-    lambda { @resource.architecture([:nose, :chin]) }.should raise_error(ArgumentError)
+    expect { @resource.architecture([:nose, :chin]) }.to raise_error(ArgumentError)
   end
 
   it "should not allow a string" do
-    lambda { @resource.architecture('souffle') }.should raise_error(ArgumentError)
+    expect { @resource.architecture('souffle') }.to raise_error(ArgumentError)
   end
 
   it "should not allow an integer" do
-    lambda { @resource.architecture(100) }.should raise_error(ArgumentError)
+    expect { @resource.architecture(100) }.to raise_error(ArgumentError)
   end
 end
 
@@ -183,7 +183,7 @@ describe Chef::Resource::RegistryKey, ":unscrubbed_values" do
   it "should return unsafe data as-is" do
     key_values = [ { :name => 'poosh', :type => :binary, :data => 255.chr * 1 } ]
     @resource.values(key_values)
-    @resource.unscrubbed_values.should eql(key_values)
+    expect(@resource.unscrubbed_values).to eql(key_values)
   end
 end
 
@@ -194,6 +194,6 @@ describe Chef::Resource::RegistryKey, "state" do
 
   it "should return scrubbed values" do
     @resource.values([ { :name => 'poosh', :type => :binary, :data => 255.chr * 1 } ])
-    @resource.state.should eql( { :values => [{ :name => 'poosh', :type => :binary, :data => "00594fd4f42ba43fc1ca0427a0576295" }] } )
+    expect(@resource.state).to eql( { :values => [{ :name => 'poosh', :type => :binary, :data => "00594fd4f42ba43fc1ca0427a0576295" }] } )
   end
 end

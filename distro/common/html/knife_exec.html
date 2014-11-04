@@ -28,7 +28,7 @@
   </head>
   <body>
 <div style="background-color: #212c35; text-align: left; padding: 0px 0px 0px 0px">
-<a href="http://docs.opscode.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
+<a href="http://docs.getchef.com/"><img src="_static/chef_html_logo.png" border="0" alt="Chef"/></a>
 </div>
 
 
@@ -41,7 +41,7 @@
             
   <div class="section" id="knife-exec">
 <h1>knife exec<a class="headerlink" href="#knife-exec" title="Permalink to this headline">¶</a></h1>
-<p>The <strong>knife exec</strong> subcommand uses the Knife configuration file to execute Ruby scripts in the context of a fully configured chef-client. This subcommand is most often used to run scripts that will only access Chef server one time (or otherwise very infrequently). Use this subcommand any time that an operation does not warrant full usage of the Knife subcommand library.</p>
+<p>The <strong>knife exec</strong> subcommand uses the knife configuration file to execute Ruby scripts in the context of a fully configured chef-client. This subcommand is most often used to run scripts that will only access Chef server one time (or otherwise very infrequently). Use this subcommand any time that an operation does not warrant full usage of the knife subcommand library.</p>
 <div class="section" id="authenticated-api-requests">
 <h2>Authenticated API Requests<a class="headerlink" href="#authenticated-api-requests" title="Permalink to this headline">¶</a></h2>
 <p>The <tt class="docutils literal"><span class="pre">knife</span> <span class="pre">exec</span></tt> subcommand can be used to make authenticated API requests to the Chef server using the following methods:</p>
@@ -77,7 +77,7 @@
 <p>where:</p>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">api.method</span></tt> is the corresponding authentication method &#8212; <tt class="docutils literal"><span class="pre">api.delete</span></tt>, <tt class="docutils literal"><span class="pre">api.get</span></tt>, <tt class="docutils literal"><span class="pre">api.post</span></tt>, or <tt class="docutils literal"><span class="pre">api.put</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">/endpoint</span></tt> is an endpoint in the Chef Server API</li>
+<li><tt class="docutils literal"><span class="pre">/endpoint</span></tt> is an endpoint in the Chef server API</li>
 </ul>
 <p>For example, to get the data for a node named &#8220;Example_Node&#8221;:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife <span class="nb">exec</span> -E <span class="s1">&#39;puts api.get(&quot;/nodes/Example_Node&quot;)&#39;</span>
@@ -104,7 +104,7 @@
 <p>For Ruby scripts that will be run using the <tt class="docutils literal"><span class="pre">exec</span></tt> subcommand, note the following:</p>
 <blockquote>
 <div><ul class="simple">
-<li>The Ruby script must be located on the system from which Knife is run (and not be located on any of the systems that Knife will be managing).</li>
+<li>The Ruby script must be located on the system from which knife is run (and not be located on any of the systems that knife will be managing).</li>
 <li>Shell commands will be run from a management workstation. For example, something like <tt class="docutils literal"><span class="pre">%x[ls</span> <span class="pre">-lash</span> <span class="pre">/opt/only-on-a-node]</span></tt> would give you the directory listing for the &#8220;opt/only-on-a-node&#8221; directory or a &#8220;No such file or directory&#8221; error if the file does not already exist locally.</li>
 <li>When the chef-shell DSL is available, the chef-client DSL will not be (unless the management workstation is also a chef-client). Without the chef-client DSL, a bash block cannot be used to run bash commands.</li>
 </ul>
@@ -121,36 +121,36 @@
 <h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) Knife subcommands and plugins.</p>
+<p class="last">Review the list of <a class="reference internal" href="knife_common_options.html"><em>common options</em></a> available to this (and all) knife subcommands and plugins.</p>
 </div>
 <p>This subcommand has the following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">-E</span> <span class="pre">CODE</span></tt>, <tt class="docutils literal"><span class="pre">--exec</span> <span class="pre">CODE</span></tt></dt>
 <dd>A string of code that will be executed.</dd>
 <dt><tt class="docutils literal"><span class="pre">-p</span> <span class="pre">PATH:PATH</span></tt>, <tt class="docutils literal"><span class="pre">--script-path</span> <span class="pre">PATH:PATH</span></tt></dt>
-<dd>A colon-separated path at which Ruby scripts are located. Use to override the default location for scripts. When this option is not specified, Knife will look for scripts located in <tt class="docutils literal"><span class="pre">chef-repo/.chef/scripts</span></tt> directory.</dd>
+<dd>A colon-separated path at which Ruby scripts are located. Use to override the default location for scripts. When this option is not specified, knife will look for scripts located in <tt class="docutils literal"><span class="pre">chef-repo/.chef/scripts</span></tt> directory.</dd>
 </dl>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>The following examples show how to use this Knife subcommand:</p>
+<p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Run Ruby scripts</strong></p>
 <p>There are three ways to use <strong>knife exec</strong> to run Ruby script files. For example:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife <span class="nb">exec</span> /path/to/script_file
 </pre></div>
 </div>
-<p>Or:</p>
+<p>or:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife <span class="nb">exec</span> -E <span class="s1">&#39;RUBY CODE&#39;</span>
 </pre></div>
 </div>
-<p>Or:</p>
+<p>or:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife <span class="nb">exec</span>
 RUBY CODE
 ^D
 </pre></div>
 </div>
 <p><strong>Chef Knife status</strong></p>
-<p>To check the status of Knife using a Ruby script named &#8220;status.rb&#8221; (which looks like):</p>
+<p>To check the status of knife using a Ruby script named <tt class="docutils literal"><span class="pre">status.rb</span></tt> (which looks like):</p>
 <div class="highlight-ruby"><div class="highlight"><pre><span class="nb">printf</span> <span class="s2">&quot;%-5s %-12s %-8s %s</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;Check In&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;Ruby&quot;</span><span class="p">,</span> <span class="s2">&quot;Recipes&quot;</span>
 <span class="n">nodes</span><span class="o">.</span><span class="n">all</span> <span class="k">do</span> <span class="o">|</span><span class="n">n</span><span class="o">|</span>
    <span class="n">checkin</span> <span class="o">=</span> <span class="no">Time</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">n</span><span class="o">[</span><span class="s1">&#39;ohai_time&#39;</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%F %R&quot;</span><span class="p">)</span>
@@ -160,7 +160,7 @@ RUBY CODE
 <span class="k">end</span>
 </pre></div>
 </div>
-<p>and is located in a directory named &#8220;scripts&#8221;, enter:</p>
+<p>and is located in a directory named <tt class="docutils literal"><span class="pre">scripts/</span></tt>, enter:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife <span class="nb">exec </span>scripts/status.rb
 </pre></div>
 </div>

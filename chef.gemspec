@@ -19,10 +19,10 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-cli", "~> 1.4"
   s.add_dependency "mixlib-log", "~> 1.3"
   s.add_dependency "mixlib-authentication", "~> 1.3"
-  s.add_dependency "mixlib-shellout", "~> 1.4"
-  s.add_dependency "ohai", "~> 7.2"
+  s.add_dependency "mixlib-shellout", ">= 2.0.0.rc.0", "< 3.0"
+  s.add_dependency "ohai", ">= 7.6.0.rc.0"
 
-  s.add_dependency "ffi-yajl", "~> 1.0", ">= 1.0.2"
+  s.add_dependency "ffi-yajl", "~> 1.2"
   s.add_dependency "net-ssh", "~> 2.6"
   s.add_dependency "net-ssh-multi", "~> 1.1"
   # CHEF-3027: The knife-cloud plugins require newer features from highline, core chef should not.
@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.add_dependency "erubis", "~> 2.7"
   s.add_dependency "diff-lcs", "~> 1.2", ">= 1.2.4"
 
-  s.add_dependency "chef-zero", "~> 3.1"
+  s.add_dependency "chef-zero", "~> 3.2"
   s.add_dependency "pry", "~> 0.9"
 
   s.add_dependency 'plist', '~> 3.1.0'
@@ -49,7 +49,7 @@ Gem::Specification.new do |s|
   # chef-service-manager is a windows only executable.
   # However gemspec doesn't give us a way to have this executable only
   # on windows. So we're including this in all platforms.
-  s.executables  = %w( chef-client chef-solo knife chef-shell shef chef-apply chef-service-manager )
+  s.executables  = %w( chef-client chef-solo knife chef-shell shef chef-apply chef-service-manager chef-windows-service )
 
   s.require_path = 'lib'
   s.files = %w(Rakefile LICENSE README.md CONTRIBUTING.md) + Dir.glob("{distro,lib,tasks,spec}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) }

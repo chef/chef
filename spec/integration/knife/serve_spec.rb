@@ -19,7 +19,7 @@ require 'support/shared/integration/integration_helper'
 require 'chef/knife/serve'
 require 'chef/server_api'
 
-describe 'knife serve' do
+describe 'knife serve', :workstation do
   include IntegrationSupport
   include KnifeSupport
   include AppServerSupport

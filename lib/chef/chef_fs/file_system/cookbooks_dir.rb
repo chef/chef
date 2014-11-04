@@ -51,7 +51,7 @@ class Chef
 
         def children
           @children ||= begin
-            if Chef::Config[:versioned_cookbooks]
+            if root.versioned_cookbooks
               result = []
               root.get_json("#{api_path}/?num_versions=all").each_pair do |cookbook_name, cookbooks|
                 cookbooks['versions'].each do |cookbook_version|
@@ -71,7 +71,7 @@ class Chef
         end
 
         def upload_cookbook_from(other, options = {})
-          Chef::Config[:versioned_cookbooks] ? upload_versioned_cookbook(other, options) : upload_unversioned_cookbook(other, options)
+          root.versioned_cookbooks ? upload_versioned_cookbook(other, options) : upload_unversioned_cookbook(other, options)
         rescue Timeout::Error => e
           raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "Timeout writing: #{e}"
         rescue Net::HTTPServerException => e
@@ -155,7 +155,7 @@ class Chef
 
         def can_have_child?(name, is_dir)
           return false if !is_dir
-          return false if Chef::Config[:versioned_cookbooks] && name !~ Chef::ChefFS::FileSystem::CookbookDir::VALID_VERSIONED_COOKBOOK_NAME
+          return false if root.versioned_cookbooks && name !~ Chef::ChefFS::FileSystem::CookbookDir::VALID_VERSIONED_COOKBOOK_NAME
           return true
         end
       end

@@ -61,6 +61,7 @@ describe Chef::Client do
   let(:client_opts) { {} }
 
   let(:client) do
+    Chef::Config[:event_loggers] = []
     Chef::Client.new(json_attribs, client_opts).tap do |c|
       c.node = node
     end
@@ -301,25 +302,6 @@ describe Chef::Client do
       include_examples "a successful client run"
     end
 
-    describe "when running chef-client with forking enabled", :unix_only do
-      include_examples "a successful client run" do
-        let(:process_status) do
-          double("Process::Status")
-        end
-
-        let(:enable_fork) { true }
-
-        before do
-          Process.should_receive(:waitpid2).and_return([1, process_status])
-
-          process_status.should_receive(:success?).and_return(true)
-          client.should_receive(:exit).and_return(nil)
-          client.should_receive(:fork).and_yield
-        end
-      end
-
-    end
-
     describe "when the client key already exists" do
 
       let(:api_client_exists?) { true }
@@ -389,7 +371,6 @@ describe Chef::Client do
           client.run
           node.run_list.should == Chef::RunList.new(new_runlist)
         end
-
       end
     end
 
@@ -404,16 +385,10 @@ describe Chef::Client do
 
       @events = double("Chef::EventDispatch::Dispatcher").as_null_object
       Chef::EventDispatch::Dispatcher.stub(:new).and_return(@events)
-
       # @events is created on Chef::Client.new, so we need to recreate it after mocking
       client = Chef::Client.new
       client.stub(:load_node).and_raise(Exception)
       @run_lock.should_receive(:release)
-      if(Chef::Config[:client_fork] && !windows?)
-        client.should_receive(:fork) do |&block|
-          block.call
-        end
-      end
       lambda { client.run }.should raise_error(Exception)
     end
   end

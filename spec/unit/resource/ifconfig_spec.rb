@@ -38,12 +38,12 @@ describe Chef::Resource::Ifconfig do
 
     it "describes its state" do
       state = @resource.state
-      state[:inet_addr].should == "434.2343.23"
-      state[:mask].should == "255.255.545"
+      expect(state[:inet_addr]).to eq("434.2343.23")
+      expect(state[:mask]).to eq("255.255.545")
     end
 
     it "returns the device as its identity" do
-      @resource.identity.should == "charmander"
+      expect(@resource.identity).to eq("charmander")
     end
   end
 
@@ -54,9 +54,9 @@ describe Chef::Resource::Ifconfig do
     end
 
     it "should use an ordinary Provider::Ifconfig as a provider for #{platform} #{version}" do
-      @resource.provider_for_action(:add).should be_a_kind_of(Chef::Provider::Ifconfig)
-      @resource.provider_for_action(:add).should_not be_a_kind_of(Chef::Provider::Ifconfig::Debian)
-      @resource.provider_for_action(:add).should_not be_a_kind_of(Chef::Provider::Ifconfig::Redhat)
+      expect(@resource.provider_for_action(:add)).to be_a_kind_of(Chef::Provider::Ifconfig)
+      expect(@resource.provider_for_action(:add)).not_to be_a_kind_of(Chef::Provider::Ifconfig::Debian)
+      expect(@resource.provider_for_action(:add)).not_to be_a_kind_of(Chef::Provider::Ifconfig::Redhat)
     end
   end
 
@@ -67,7 +67,7 @@ describe Chef::Resource::Ifconfig do
     end
 
     it "should use an Provider::Ifconfig::Redhat as a provider for #{platform} #{version}" do
-      @resource.provider_for_action(:add).should be_a_kind_of(Chef::Provider::Ifconfig::Redhat)
+      expect(@resource.provider_for_action(:add)).to be_a_kind_of(Chef::Provider::Ifconfig::Redhat)
     end
   end
 
@@ -78,7 +78,7 @@ describe Chef::Resource::Ifconfig do
     end
 
     it "should use an Ifconfig::Debian as a provider for #{platform} #{version}" do
-      @resource.provider_for_action(:add).should be_a_kind_of(Chef::Provider::Ifconfig::Debian)
+      expect(@resource.provider_for_action(:add)).to be_a_kind_of(Chef::Provider::Ifconfig::Debian)
     end
   end
 

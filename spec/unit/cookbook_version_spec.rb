@@ -115,14 +115,13 @@ describe Chef::CookbookVersion do
       @cookbook[:provider_filenames]    = Dir[File.join(@cookbook_root, 'providers', '**', '*.rb')]
       @cookbook[:root_filenames]        = Array(File.join(@cookbook_root, 'README.rdoc'))
       @cookbook[:metadata_filenames]    = Array(File.join(@cookbook_root, 'metadata.json'))
-
     end
 
     describe "and a cookbook with the same name" do
       before do
         # Currently the cookbook loader finds all the files then tells CookbookVersion
         # where they are.
-        @cookbook_version = Chef::CookbookVersion.new("tatft", @cookbook_root)
+        @cookbook_version = Chef::CookbookVersion.new('tatft', @cookbook_root)
 
         @cookbook_version.attribute_filenames  = @cookbook[:attribute_filenames]
         @cookbook_version.definition_filenames = @cookbook[:definition_filenames]
@@ -350,6 +349,84 @@ describe Chef::CookbookVersion do
         readme["specificity"].should == "default"
       end
     end
+  end
+
+  describe 'with a cookbook directory named cookbook2 that has unscoped files' do
+    before do
+      @cookbook = Hash.new { |hash, key| hash[key] = [] }
+
+      @cookbook_root = File.join(CHEF_SPEC_DATA, 'cb_version_cookbooks', 'cookbook2')
+
+      # Dunno if the paths here are representitive of what is set by CookbookLoader...
+      @cookbook[:attribute_filenames]   = Dir[File.join(@cookbook_root, 'attributes', '**', '*.rb')]
+      @cookbook[:definition_filenames]  = Dir[File.join(@cookbook_root, 'definitions', '**', '*.rb')]
+      @cookbook[:file_filenames]        = Dir[File.join(@cookbook_root, 'files', '**', '*.*')]
+      @cookbook[:recipe_filenames]      = Dir[File.join(@cookbook_root, 'recipes', '**', '*.rb')]
+      @cookbook[:template_filenames]    = Dir[File.join(@cookbook_root, 'templates', '**', '*.*')]
+      @cookbook[:library_filenames]     = Dir[File.join(@cookbook_root, 'libraries', '**', '*.rb')]
+      @cookbook[:resource_filenames]    = Dir[File.join(@cookbook_root, 'resources', '**', '*.rb')]
+      @cookbook[:provider_filenames]    = Dir[File.join(@cookbook_root, 'providers', '**', '*.rb')]
+      @cookbook[:root_filenames]        = Array(File.join(@cookbook_root, 'README.rdoc'))
+      @cookbook[:metadata_filenames]    = Array(File.join(@cookbook_root, 'metadata.json'))
+
+      @cookbook_version = Chef::CookbookVersion.new('cookbook2', @cookbook_root)
+      @cookbook_version.attribute_filenames  = @cookbook[:attribute_filenames]
+      @cookbook_version.definition_filenames = @cookbook[:definition_filenames]
+      @cookbook_version.recipe_filenames     = @cookbook[:recipe_filenames]
+      @cookbook_version.template_filenames   = @cookbook[:template_filenames]
+      @cookbook_version.file_filenames       = @cookbook[:file_filenames]
+      @cookbook_version.library_filenames    = @cookbook[:library_filenames]
+      @cookbook_version.resource_filenames   = @cookbook[:resource_filenames]
+      @cookbook_version.provider_filenames   = @cookbook[:provider_filenames]
+      @cookbook_version.root_filenames       = @cookbook[:root_filenames]
+      @cookbook_version.metadata_filenames   = @cookbook[:metadata_filenames]
+
+      # Used to test file-specificity related file lookups
+      @node = Chef::Node.new
+      @node.set[:platform] = "ubuntu"
+      @node.set[:platform_version] = "13.04"
+      @node.name("testing")
+    end
+
+    it "should see a template" do
+      @cookbook_version.should have_template_for_node(@node, "test.erb")
+    end
+
+    it "should see a template using an array lookup" do
+      @cookbook_version.should have_template_for_node(@node, ["test.erb"])
+    end
+
+    it "should see a template using an array lookup with non-existant elements" do
+      @cookbook_version.should have_template_for_node(@node, ["missing.txt", "test.erb"])
+    end
+
+    it "should see a file" do
+      @cookbook_version.should have_cookbook_file_for_node(@node, "test.txt")
+    end
+
+    it "should see a file using an array lookup" do
+      @cookbook_version.should have_cookbook_file_for_node(@node, ["test.txt"])
+    end
+
+    it "should see a file using an array lookup with non-existant elements" do
+      @cookbook_version.should have_cookbook_file_for_node(@node, ["missing.txt", "test.txt"])
+    end
+
+    it "should not see a non-existant template" do
+      @cookbook_version.should_not have_template_for_node(@node, "missing.erb")
+    end
+
+    it "should not see a non-existant template using an array lookup" do
+      @cookbook_version.should_not have_template_for_node(@node, ["missing.erb"])
+    end
+
+    it "should not see a non-existant file" do
+      @cookbook_version.should_not have_cookbook_file_for_node(@node, "missing.txt")
+    end
+
+    it "should not see a non-existant file using an array lookup" do
+      @cookbook_version.should_not have_cookbook_file_for_node(@node, ["missing.txt"])
+    end
 
   end
 
@@ -420,6 +497,10 @@ describe Chef::CookbookVersion do
       end
     end
 
+  end
+
+  include_examples "to_json equalivent to Chef::JSONCompat.to_json" do
+    let(:jsonable) { Chef::CookbookVersion.new("tatft", '/tmp/blah') }
   end
 
 end

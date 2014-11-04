@@ -19,21 +19,21 @@ describe "webapp::default", :end_to_end => true do
       end
     end
 
-    describe "mysql-server-#{property[:mysql][:server][:version]} package" do
+    describe "#{property[:mysql][:server_package]} package" do
       include_examples "a package" do
-        let(:package_name) { "mysql-server-#{property[:mysql][:server][:version]}" }
+        let(:package_name) { property[:mysql][:server_package] }
       end
     end
 
-    describe "mysql-client-5.5 package" do
+    describe "#{property[:mysql][:client_package]} package" do
       include_examples "a package" do
-        let(:package_name) { "mysql-client-5.5" }
+        let(:package_name) { property[:mysql][:client_package] }
       end
     end
 
     describe "php package" do
       include_examples "a package" do
-        let(:package_name) { "php5" }
+        let(:package_name) { property[:php][:package] }
       end
     end
   end
@@ -57,7 +57,7 @@ describe "webapp::default", :end_to_end => true do
 
     describe "mysql service" do
       include_examples "a service" do
-        let(:service_name) { "mysql" }
+        let(:service_name) { property[:mysql][:service_name] }
       end
     end
 
@@ -67,13 +67,13 @@ describe "webapp::default", :end_to_end => true do
     let(:db_query) { "mysql -u root -pilikerandompasswordstoo -e \"#{statement}\"" }
     let(:statement) { "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME='webapp'" }
     it "creates a database called 'webapp'" do
-      expect(command(db_query)).to return_stdout(/webapp/)
+      expect(command(db_query).stdout).to match /webapp/
     end
 
     describe "mysql database user 'webapp'" do
       let(:statement) { "SELECT Host, Db FROM mysql.db WHERE User='webapp'\\G" }
       it "adds user 'webapp' to database 'webapp@localhost'" do
-        expect(command(db_query)).to return_stdout(/Host: localhost\n  Db: webapp/)
+        expect(command(db_query).stdout).to match /Host: localhost\n  Db: webapp/
       end
 
       describe "grants" do
@@ -86,7 +86,7 @@ describe "webapp::default", :end_to_end => true do
           let(:priv_query) { "#{priv.capitalize}_priv" }
 
           it "has privilege #{priv} on 'webapp@localhost'" do
-            expect(command(db_query)).to return_stdout(/#{priv_query}: Y/)
+            expect(command(db_query).stdout).to match /#{priv_query}: Y/
           end
         end
 

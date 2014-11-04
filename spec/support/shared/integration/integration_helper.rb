@@ -20,9 +20,9 @@
 require 'tmpdir'
 require 'fileutils'
 require 'chef/config'
-require 'chef_zero/rspec'
-
 require 'chef/json_compat'
+require 'chef/server_api'
+require 'chef_zero/rspec'
 require 'support/shared/integration/knife_support'
 require 'support/shared/integration/app_server_support'
 require 'spec_helper'
@@ -53,6 +53,10 @@ module IntegrationSupport
     includer_class.extend(ClassMethods)
   end
 
+  def api
+    Chef::ServerAPI.new
+  end
+
   def directory(relative_path, &block)
     old_parent_path = @parent_path
     @parent_path = path_to(relative_path)
@@ -67,10 +71,8 @@ module IntegrationSupport
     FileUtils.mkdir_p(dir) unless dir == '.'
     File.open(filename, 'w') do |file|
       raw = case contents
-            when Hash
-              JSON.pretty_generate(contents)
-            when Array
-              contents.join("\n")
+            when Hash, Array
+              Chef::JSONCompat.to_json_pretty(contents)
             else
               contents
             end
@@ -116,7 +118,10 @@ module IntegrationSupport
             Chef::Config.delete("#{object_name}_path".to_sym)
           end
           Chef::Config.delete(:chef_repo_path)
-          FileUtils.remove_entry_secure(@repository_dir)
+          # TODO: "force" actually means "silence all exceptions". this
+          # silences a weird permissions error on Windows that we should track
+          # down, but for now there's no reason for it to blow up our CI.
+          FileUtils.remove_entry_secure(@repository_dir, force=Chef::Platform.windows?)
         ensure
           @repository_dir = nil
         end

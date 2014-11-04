@@ -25,14 +25,14 @@ describe Chef::Resource::PortagePackage, "initialize" do
   end
 
   it "should return a Chef::Resource::PortagePackage" do
-    @resource.should be_a_kind_of(Chef::Resource::PortagePackage)
+    expect(@resource).to be_a_kind_of(Chef::Resource::PortagePackage)
   end
 
   it "should set the resource_name to :portage_package" do
-    @resource.resource_name.should eql(:portage_package)
+    expect(@resource.resource_name).to eql(:portage_package)
   end
 
   it "should set the provider to Chef::Provider::Package::Portage" do
-    @resource.provider.should eql(Chef::Provider::Package::Portage)
+    expect(@resource.provider).to eql(Chef::Provider::Package::Portage)
   end
 end

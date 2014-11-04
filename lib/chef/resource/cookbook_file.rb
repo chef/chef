@@ -27,7 +27,7 @@ class Chef
     class CookbookFile < Chef::Resource::File
       include Chef::Mixin::Securable
 
-      provides :cookbook_file, :on_platforms => :all
+      provides :cookbook_file
 
       def initialize(name, run_context=nil)
         super
@@ -36,11 +36,10 @@ class Chef
         @action = "create"
         @source = ::File.basename(name)
         @cookbook = nil
-        @provider = Chef::Provider::CookbookFile
       end
 
       def source(source_filename=nil)
-        set_or_return(:source, source_filename, :kind_of => String)
+        set_or_return(:source, source_filename, :kind_of => [ String, Array ])
       end
 
       def cookbook(cookbook_name=nil)

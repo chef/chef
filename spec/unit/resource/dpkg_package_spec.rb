@@ -17,22 +17,16 @@
 #
 
 require 'spec_helper'
+require 'support/shared/unit/resource/static_provider_resolution'
 
 describe Chef::Resource::DpkgPackage, "initialize" do
 
-  before(:each) do
-    @resource = Chef::Resource::DpkgPackage.new("foo")
-  end
+  static_provider_resolution(
+    resource: Chef::Resource::DpkgPackage,
+    provider: Chef::Provider::Package::Dpkg,
+    name: :dpkg_package,
+    action: :install,
+    os: 'linux',
+  )
 
-  it "should return a Chef::Resource::DpkgPackage" do
-    @resource.should be_a_kind_of(Chef::Resource::DpkgPackage)
-  end
-
-  it "should set the resource_name to :dpkg_package" do
-    @resource.resource_name.should eql(:dpkg_package)
-  end
-
-  it "should set the provider to Chef::Provider::Package::Dpkg" do
-    @resource.provider.should eql(Chef::Provider::Package::Dpkg)
-  end
 end

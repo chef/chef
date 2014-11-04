@@ -58,20 +58,22 @@ class Chef
       # ==== Returns
       # <true>:: If a change is required
       # <false>:: If a change is not required
-      def compare_value
+      def requires_modify_or_create?
         if @new_resource.delim
           #e.g. check for existing value within PATH
-          not @current_resource.value.split(@new_resource.delim).any? do |val|
-            val == @new_resource.value
+          not new_values.all? do |val|
+            current_values.include? val
           end
         else
           @new_resource.value != @current_resource.value
         end
       end
 
+      alias_method :compare_value, :requires_modify_or_create?
+
       def action_create
         if @key_exists
-          if compare_value
+          if requires_modify_or_create?
             modify_env
             Chef::Log.info("#{@new_resource} altered")
             @new_resource.updated_by_last_action(true)
@@ -91,13 +93,14 @@ class Chef
       #           after we removed the element.
       def delete_element
         return false unless @new_resource.delim #no delim: delete the key
-        if compare_value
+        needs_delete = new_values.any? { |v| current_values.include?(v) }
+        if !needs_delete
           Chef::Log.debug("#{@new_resource} element '#{@new_resource.value}' does not exist")
           return true #do not delete the key
         else
           new_value =
-            @current_resource.value.split(@new_resource.delim).select { |item|
-            item != @new_resource.value
+            current_values.select { |item|
+              not new_values.include?(item)
           }.join(@new_resource.delim)
 
           if new_value.empty?
@@ -122,7 +125,7 @@ class Chef
 
       def action_modify
         if @key_exists
-          if compare_value
+          if requires_modify_or_create?
             modify_env
             Chef::Log.info("#{@new_resource} modified")
             @new_resource.updated_by_last_action(true)
@@ -142,10 +145,22 @@ class Chef
 
       def modify_env
         if @new_resource.delim
-          #e.g. add to PATH
-          @new_resource.value(@new_resource.value + @new_resource.delim + @current_resource.value)
+          values = new_values.reject do |v|
+            current_values.include?(v)
+          end
+          @new_resource.value((values + [@current_resource.value]).join(@new_resource.delim))
         end
         create_env
+      end
+
+      # Returns the current values to split by delimiter
+      def current_values
+        @current_values ||= @current_resource.value.split(@new_resource.delim)
+      end
+
+      # Returns the new values to split by delimiter
+      def new_values
+        @new_values ||= @new_resource.value.split(@new_resource.delim)
       end
      end
   end

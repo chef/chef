@@ -25,13 +25,19 @@ class Chef
         UPDATE_RC_D_ENABLED_MATCHES = /\/rc[\dS].d\/S|not installed/i
         UPDATE_RC_D_PRIORITIES = /\/rc([\dS]).d\/([SK])(\d\d)/i
 
+        provides :service, platform_family: "debian"
+
+        def self.supports?(resource, action)
+          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:debian)
+        end
+
         def load_current_resource
           super
           @priority_success = true
           @rcd_status = nil
-          @current_resource.priority(get_priority)
-          @current_resource.enabled(service_currently_enabled?(@current_resource.priority))
-          @current_resource
+          current_resource.priority(get_priority)
+          current_resource.enabled(service_currently_enabled?(current_resource.priority))
+          current_resource
         end
 
         def define_resource_requirements
@@ -47,7 +53,7 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             a.assertion { @priority_success }
-            a.failure_message  Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} failed - #{@rcd_status.inspect}"
+            a.failure_message  Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{current_resource.service_name} failed - #{@rcd_status.inspect}"
             # This can happen if the service is not yet installed,so we'll fake it.
             a.whyrun ["Unable to determine priority of service, assuming service would have been correctly installed earlier in the run.",
                       "Assigning temporary priorities to continue.",
@@ -59,7 +65,7 @@ class Chef
                 "3"=>[:start, "20"],
                 "4"=>[:start, "20"],
                 "5"=>[:start, "20"]}
-              @current_resource.priority(temp_priorities)
+              current_resource.priority(temp_priorities)
             end
           end
         end
@@ -67,7 +73,7 @@ class Chef
         def get_priority
           priority = {}
 
-          @rcd_status = popen4("/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
+          @rcd_status = popen4("/usr/sbin/update-rc.d -n -f #{current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
 
             [stdout, stderr].each do |iop|
               iop.each_line do |line|
@@ -99,7 +105,7 @@ class Chef
         def service_currently_enabled?(priority)
           enabled = false
           priority.each { |runlevel, arguments|
-            Chef::Log.debug("#{@new_resource} runlevel #{runlevel}, action #{arguments[0]}, priority #{arguments[1]}")
+            Chef::Log.debug("#{new_resource} runlevel #{runlevel}, action #{arguments[0]}, priority #{arguments[1]}")
             # if we are in a update-rc.d default startup runlevel && we start in this runlevel
             if %w[ 1 2 3 4 5 S ].include?(runlevel) && arguments[0] == :start
               enabled = true
@@ -111,63 +117,63 @@ class Chef
 
         # Override method from parent to ensure priority is up-to-date
         def action_enable
-          if @new_resource.priority.nil?
+          if new_resource.priority.nil?
             priority_ok = true
           else
-            priority_ok = @current_resource.priority == @new_resource.priority
+            priority_ok = @current_resource.priority == new_resource.priority
           end
-          if @current_resource.enabled and priority_ok
-            Chef::Log.debug("#{@new_resource} already enabled - nothing to do")
+          if current_resource.enabled and priority_ok
+            Chef::Log.debug("#{new_resource} already enabled - nothing to do")
           else
-            converge_by("enable service #{@new_resource}") do
+            converge_by("enable service #{new_resource}") do
               enable_service
-              Chef::Log.info("#{@new_resource} enabled")
+              Chef::Log.info("#{new_resource} enabled")
             end
           end
           load_new_resource_state
-          @new_resource.enabled(true)
+          new_resource.enabled(true)
         end
 
         def enable_service
-          if @new_resource.priority.is_a? Integer
-            run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
-            run_command(:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} defaults #{@new_resource.priority} #{100 - @new_resource.priority}")
-          elsif @new_resource.priority.is_a? Hash
+          if new_resource.priority.is_a? Integer
+            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
+            shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} defaults #{new_resource.priority} #{100 - new_resource.priority}")
+          elsif new_resource.priority.is_a? Hash
             # we call the same command regardless of we're enabling or disabling
             # users passing a Hash are responsible for setting their own start priorities
             set_priority
           else # No priority, go with update-rc.d defaults
-            run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
-            run_command(:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} defaults")
+            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
+            shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} defaults")
           end
 
         end
 
         def disable_service
-          if @new_resource.priority.is_a? Integer
+          if new_resource.priority.is_a? Integer
             # Stop processes in reverse order of start using '100 - start_priority'
-            run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
-            run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} stop #{100 - @new_resource.priority} 2 3 4 5 .")
-          elsif @new_resource.priority.is_a? Hash
+            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
+            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} stop #{100 - new_resource.priority} 2 3 4 5 .")
+          elsif new_resource.priority.is_a? Hash
             # we call the same command regardless of we're enabling or disabling
             # users passing a Hash are responsible for setting their own stop priorities
             set_priority
           else
             # no priority, using '100 - 20 (update-rc.d default)' to stop in reverse order of start
-            run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
-            run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} stop 80 2 3 4 5 .")
+            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
+            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} stop 80 2 3 4 5 .")
           end
         end
 
         def set_priority
           args = ""
-          @new_resource.priority.each do |level, o|
+          new_resource.priority.each do |level, o|
             action = o[0]
             priority = o[1]
             args += "#{action} #{priority} #{level} . "
           end
-          run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
-          run_command(:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} #{args}")
+          shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
+          shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} #{args}")
         end
       end
     end

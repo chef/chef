@@ -23,6 +23,7 @@ Chef::Knife::EnvironmentFromFile.load_deps
 
 describe Chef::Knife::EnvironmentFromFile do
   before(:each) do
+    Chef::Platform.stub(:windows?) { false }
     @knife = Chef::Knife::EnvironmentFromFile.new
     @stdout = StringIO.new
     @knife.ui.stub(:stdout).and_return(@stdout)
@@ -57,8 +58,8 @@ describe Chef::Knife::EnvironmentFromFile do
       end
 
       it "loads all environments with -a" do
-        File.stub(:expand_path).with("./environments/*.{json,rb}").and_return("/tmp/environments")
-        Dir.stub(:glob).with("/tmp/environments").and_return(["spec.rb", "apple.rb"])
+        File.stub(:expand_path).with("./environments/").and_return("/tmp/environments")
+        Dir.stub(:glob).with("/tmp/environments/*.{json,rb}").and_return(["spec.rb", "apple.rb"])
         @knife.name_args = []
         @knife.stub(:config).and_return({:all => true})
         @environment.should_receive(:save).twice

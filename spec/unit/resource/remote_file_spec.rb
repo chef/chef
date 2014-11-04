@@ -27,74 +27,74 @@ describe Chef::Resource::RemoteFile do
 
   describe "initialize" do
     it "should create a new Chef::Resource::RemoteFile" do
-      @resource.should be_a_kind_of(Chef::Resource)
-      @resource.should be_a_kind_of(Chef::Resource::File)
-      @resource.should be_a_kind_of(Chef::Resource::RemoteFile)
+      expect(@resource).to be_a_kind_of(Chef::Resource)
+      expect(@resource).to be_a_kind_of(Chef::Resource::File)
+      expect(@resource).to be_a_kind_of(Chef::Resource::RemoteFile)
     end
   end
 
   it "says its provider is RemoteFile when the source is an absolute URI" do
     @resource.source("http://www.google.com/robots.txt")
-    @resource.provider.should == Chef::Provider::RemoteFile
-    Chef::Platform.find_provider(:noplatform, 'noversion', @resource).should == Chef::Provider::RemoteFile
+    expect(@resource.provider).to eq(Chef::Provider::RemoteFile)
+    expect(Chef::Platform.find_provider(:noplatform, 'noversion', @resource)).to eq(Chef::Provider::RemoteFile)
   end
 
 
   describe "source" do
     it "does not have a default value for 'source'" do
-      @resource.source.should eql([])
+      expect(@resource.source).to eql([])
     end
 
     it "should accept a URI for the remote file source" do
       @resource.source "http://opscode.com/"
-      @resource.source.should eql([ "http://opscode.com/" ])
+      expect(@resource.source).to eql([ "http://opscode.com/" ])
     end
 
     it "should accept a delayed evalutator (string) for the remote file source" do
       @resource.source Chef::DelayedEvaluator.new {"http://opscode.com/"}
-      @resource.source.should eql([ "http://opscode.com/" ])
+      expect(@resource.source).to eql([ "http://opscode.com/" ])
     end
 
     it "should accept an array of URIs for the remote file source" do
       @resource.source([ "http://opscode.com/", "http://puppetlabs.com/" ])
-      @resource.source.should eql([ "http://opscode.com/", "http://puppetlabs.com/" ])
+      expect(@resource.source).to eql([ "http://opscode.com/", "http://puppetlabs.com/" ])
     end
 
     it "should accept a delated evaluator (array) for the remote file source" do
       @resource.source Chef::DelayedEvaluator.new { [ "http://opscode.com/", "http://puppetlabs.com/" ] }
-      @resource.source.should eql([ "http://opscode.com/", "http://puppetlabs.com/" ])
+      expect(@resource.source).to eql([ "http://opscode.com/", "http://puppetlabs.com/" ])
     end
 
     it "should accept an multiple URIs as arguments for the remote file source" do
       @resource.source("http://opscode.com/", "http://puppetlabs.com/")
-      @resource.source.should eql([ "http://opscode.com/", "http://puppetlabs.com/" ])
+      expect(@resource.source).to eql([ "http://opscode.com/", "http://puppetlabs.com/" ])
     end
 
     it "should only accept a single argument if a delayed evalutor is used" do
-      lambda {
+      expect {
         @resource.source("http://opscode.com/", Chef::DelayedEvaluator.new {"http://opscode.com/"})
-      }.should raise_error(Chef::Exceptions::InvalidRemoteFileURI)
+      }.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
 
     it "should only accept a single array item if a delayed evalutor is used" do
-      lambda {
+      expect {
         @resource.source(["http://opscode.com/", Chef::DelayedEvaluator.new {"http://opscode.com/"}])
-      }.should raise_error(Chef::Exceptions::InvalidRemoteFileURI)
+      }.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
 
     it "does not accept a non-URI as the source" do
-      lambda { @resource.source("not-a-uri") }.should raise_error(Chef::Exceptions::InvalidRemoteFileURI)
+      expect { @resource.source("not-a-uri") }.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
 
     it "does not accept a non-URI as the source when read from a delayed evaluator" do
-      lambda {
+      expect {
         @resource.source(Chef::DelayedEvaluator.new {"not-a-uri"})
         @resource.source
-      }.should raise_error(Chef::Exceptions::InvalidRemoteFileURI)
+      }.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
 
     it "should raise an exception when source is an empty array" do
-      lambda { @resource.source([]) }.should raise_error(ArgumentError)
+      expect { @resource.source([]) }.to raise_error(ArgumentError)
     end
 
   end
@@ -102,51 +102,51 @@ describe Chef::Resource::RemoteFile do
   describe "checksum" do
     it "should accept a string for the checksum object" do
       @resource.checksum "asdf"
-      @resource.checksum.should eql("asdf")
+      expect(@resource.checksum).to eql("asdf")
     end
 
     it "should default to nil" do
-      @resource.checksum.should == nil
+      expect(@resource.checksum).to eq(nil)
     end
   end
 
   describe "ftp_active_mode" do
     it "should accept a boolean for the ftp_active_mode object" do
       @resource.ftp_active_mode true
-      @resource.ftp_active_mode.should be_true
+      expect(@resource.ftp_active_mode).to be_true
     end
 
     it "should default to false" do
-      @resource.ftp_active_mode.should be_false
+      expect(@resource.ftp_active_mode).to be_false
     end
   end
 
   describe "conditional get options" do
     it "defaults to using etags and last modified" do
-      @resource.use_etags.should be_true
-      @resource.use_last_modified.should be_true
+      expect(@resource.use_etags).to be_true
+      expect(@resource.use_last_modified).to be_true
     end
 
     it "enable or disables etag and last modified options as a group" do
       @resource.use_conditional_get(false)
-      @resource.use_etags.should be_false
-      @resource.use_last_modified.should be_false
+      expect(@resource.use_etags).to be_false
+      expect(@resource.use_last_modified).to be_false
 
       @resource.use_conditional_get(true)
-      @resource.use_etags.should be_true
-      @resource.use_last_modified.should be_true
+      expect(@resource.use_etags).to be_true
+      expect(@resource.use_last_modified).to be_true
     end
 
     it "disables etags indivdually" do
       @resource.use_etags(false)
-      @resource.use_etags.should be_false
-      @resource.use_last_modified.should be_true
+      expect(@resource.use_etags).to be_false
+      expect(@resource.use_last_modified).to be_true
     end
 
     it "disables last modified individually" do
       @resource.use_last_modified(false)
-      @resource.use_last_modified.should be_false
-      @resource.use_etags.should be_true
+      expect(@resource.use_last_modified).to be_false
+      expect(@resource.use_etags).to be_true
     end
 
   end
@@ -171,21 +171,21 @@ describe Chef::Resource::RemoteFile do
       state = @resource.state
       if Chef::Platform.windows?
         puts state
-        state[:rights].should == [{:permissions => :read, :principals => "Everyone"}]
-        state[:deny_rights].should == [{:permissions => :full_control, :principals => "Clumsy_Sam"}]
+        expect(state[:rights]).to eq([{:permissions => :read, :principals => "Everyone"}])
+        expect(state[:deny_rights]).to eq([{:permissions => :full_control, :principals => "Clumsy_Sam"}])
       else
-        state[:group].should == "pokemon"
-        state[:mode].should == "0664"
-        state[:owner].should == "root"
-        state[:checksum].should == "1"*26
+        expect(state[:group]).to eq("pokemon")
+        expect(state[:mode]).to eq("0664")
+        expect(state[:owner]).to eq("root")
+        expect(state[:checksum]).to eq("1"*26)
       end
     end
 
     it "returns the path as its identity" do
       if Chef::Platform.windows?
-        @resource.identity.should == "C:/temp/origin/file.txt"
+        expect(@resource.identity).to eq("C:/temp/origin/file.txt")
       else
-        @resource.identity.should == "/this/path/"
+        expect(@resource.identity).to eq("/this/path/")
       end
     end
   end

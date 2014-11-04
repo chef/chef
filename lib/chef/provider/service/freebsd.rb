@@ -27,6 +27,10 @@ class Chef
 
         attr_reader :enabled_state_found
 
+        provides :service, os: [ "freebsd", "netbsd" ]
+
+        include Chef::Mixin::ShellOut
+
         def initialize(new_resource, run_context)
           super
           @enabled_state_found = false
@@ -46,6 +50,7 @@ class Chef
 
           Chef::Log.debug("#{current_resource} found at #{init_command}")
 
+          @status_load_success = true
           determine_current_status!  # see Chef::Provider::Service::Simple
 
           determine_enabled_status!
@@ -58,6 +63,7 @@ class Chef
           requirements.assert(:start, :enable, :reload, :restart) do |a|
             a.assertion { init_command }
             a.failure_message Chef::Exceptions::Service, "#{new_resource}: unable to locate the rc.d script"
+            a.whyrun("Assuming rc.d script will be installed by a previous action.")
           end
 
           requirements.assert(:all_actions) do |a|
@@ -68,7 +74,7 @@ class Chef
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { init_command && service_enable_variable_name != nil }
+            a.assertion { service_enable_variable_name != nil }
             a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{init_command} and rcvar"
             # No recovery in whyrun mode - the init file is present but not correct.
           end
@@ -78,7 +84,7 @@ class Chef
           if new_resource.start_command
             super
           else
-            shell_out!("#{init_command} faststart")
+            shell_out_with_systems_locale!("#{init_command} faststart")
           end
         end
 
@@ -86,7 +92,7 @@ class Chef
           if new_resource.stop_command
             super
           else
-            shell_out!("#{init_command} faststop")
+            shell_out_with_systems_locale!("#{init_command} faststop")
           end
         end
 
@@ -94,7 +100,7 @@ class Chef
           if new_resource.restart_command
             super
           elsif new_resource.supports[:restart]
-            shell_out!("#{init_command} fastrestart")
+            shell_out_with_systems_locale!("#{init_command} fastrestart")
           else
             stop_service
             sleep 1

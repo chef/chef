@@ -119,7 +119,8 @@ describe Chef::Recipe do
       describe "should locate platform mapped resources" do
 
         it "locate resource for particular platform" do
-          Object.const_set('ShaunTheSheep', Class.new(Chef::Resource){ provides :laughter, :on_platforms => ["television"] })
+          ShaunTheSheep = Class.new(Chef::Resource)
+          ShaunTheSheep.provides :laughter, :on_platforms => ["television"]
           node.automatic[:platform] = "television"
           node.automatic[:platform_version] = "123"
           res = recipe.laughter "timmy"
@@ -128,7 +129,8 @@ describe Chef::Recipe do
         end
 
         it "locate a resource for all platforms" do
-          Object.const_set("YourMom", Class.new(Chef::Resource){ provides :love_and_caring })
+          YourMom = Class.new(Chef::Resource)
+          YourMom.provides :love_and_caring
           res = recipe.love_and_caring "mommy"
           res.name.should eql("mommy")
           res.kind_of?(YourMom)
@@ -188,16 +190,7 @@ describe Chef::Recipe do
       # zen_follower resource has this:
       # provides :follower, :on_platforms => ["zen"]
       before do
-        node.stub(:[]) do |key|
-          case key
-          when :platform
-            :zen
-          when :platform_version
-            "1.0.0"
-          else
-            nil
-          end
-        end
+        node.automatic_attrs[:platform] = "zen"
       end
 
       let(:resource_follower) do
@@ -345,6 +338,17 @@ describe Chef::Recipe do
         end
         recipe.resources(:zen_master => "lao tzu").something.should eql(false)
       end
+
+      it "should return the last statement in the definition as the retval" do
+        crow_define = Chef::ResourceDefinition.new
+        crow_define.define :crow, :peace => false, :something => true do
+          "the return val"
+        end
+        run_context.definitions[:crow] = crow_define
+        recipe.crow "mine" do
+          peace true
+        end.should eql("the return val")
+      end
     end
 
   end
@@ -358,6 +362,15 @@ describe Chef::Recipe do
   CODE
       lambda { recipe.instance_eval(code) }.should_not raise_error
       recipe.resources(:zen_master => "gnome").name.should eql("gnome")
+    end
+  end
+
+  describe "handle exec calls" do
+    it "should raise ResourceNotFound error if exec is used" do
+      code = <<-CODE
+      exec 'do_not_try_to_exec'
+      CODE
+      lambda { recipe.instance_eval(code) }.should raise_error(Chef::Exceptions::ResourceNotFound)
     end
   end
 
@@ -414,6 +427,14 @@ describe Chef::Recipe do
   end
 
   describe "tags" do
+    describe "with the default node object" do
+      let(:node) { Chef::Node.new }
+
+      it "should return false for any tags" do
+        recipe.tagged?("foo").should be(false)
+      end
+    end
+
     it "should set tags via tag" do
       recipe.tag "foo"
       node[:tags].should include("foo")

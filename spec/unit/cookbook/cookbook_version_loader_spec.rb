@@ -19,6 +19,9 @@
 require 'spec_helper'
 
 describe Chef::Cookbook::CookbookVersionLoader do
+  before do
+    Chef::Platform.stub(:windows?) { false }
+  end
 
   describe "loading a cookbook" do
 
@@ -52,6 +55,11 @@ describe Chef::Cookbook::CookbookVersionLoader do
       expect(loaded_cookbook.recipe_filenames).to include(full_path("/recipes/gigantor.rb"))
       expect(loaded_cookbook.recipe_filenames).to include(full_path("/recipes/one.rb"))
       expect(loaded_cookbook.recipe_filenames).to include(full_path("/recipes/return.rb"))
+    end
+
+    it "loads libraries" do
+      expect(loaded_cookbook.library_filenames).to include(full_path('/libraries/openldap.rb'))
+      expect(loaded_cookbook.library_filenames).to include(full_path('/libraries/openldap/version.rb'))
     end
 
     it "loads static files in the files/ dir" do

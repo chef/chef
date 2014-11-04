@@ -28,7 +28,6 @@ class Chef
         @svn_arguments = '--no-auth-cache'
         @svn_info_args = '--no-auth-cache'
         @resource_name = :subversion
-        @provider = Chef::Provider::Subversion
         allowed_actions << :force_export
       end
 

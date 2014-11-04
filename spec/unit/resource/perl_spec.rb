@@ -25,16 +25,16 @@ describe Chef::Resource::Perl do
   end
 
   it "should create a new Chef::Resource::Perl" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::Perl)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Perl)
   end
 
   it "should have a resource name of :perl" do
-    @resource.resource_name.should eql(:perl)
+    expect(@resource.resource_name).to eql(:perl)
   end
 
   it "should have an interpreter of perl" do
-    @resource.interpreter.should eql("perl")
+    expect(@resource.interpreter).to eql("perl")
   end
 
 end

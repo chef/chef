@@ -1,5 +1,13 @@
-## Unreleased: 12.0.0
+## 12.0.0
 
+* [**Jesse Hu**](https://github.com/jessehu):
+  retry on HTTP 50X Error when calling Chef REST API
+* [**Nolan Davidson**](https://github.com/nsdavidson):
+  The chef-apply command now prints usage information when called without arguments
+* [**Kazuki Saito**](https://github.com/sakazuki):
+  CHEF-4933: idempotency fixes for ifconfig provider
+* [**Kirill Shirinkin**](https://github.com/Fodoj):
+  The knife bootstrap command expands the path of the secret-file
 * [**Malte Swart**](https://github.com/mswart):
   [CHEF-4101] DeepMerge - support overwriting hash values with nil
 * [**James Belchamber**](https://github.com/JamesBelchamber):
@@ -66,13 +74,106 @@
   Improve the regex for /etc/rc.conf for the FreeBSD service provider
 * [**Stanislav Bogatyrev**](https://github.com/realloc):
   Fetch recipe_url before loading json_attribs in chef-solo (CHEF-5075)
+* [**Mal Graty**](https://github.com/mal):
+  Workaround for a breaking change in git's shallow-clone behavior. (Issue 1563)
+* [**Dave Eddy**](https://github.com/bahamas10):
+  Fix version detection in FreeBSD pkgng provider. (PR 1980)
+* [**Dan Rathbone**](https://github.com/rathers):
+  Fixed gem_package resource to be able to upgrade gems when version is not set.
+* [**Jean Mertz**](https://github.com/JeanMertz):
+  Made Chef Client load library folder recursively.
+* [**Eric Saxby**](https://github.com/sax):
+  Made Chef Client read the non-root crontab entries as the user specified in the resource.
+* [**sawanoboly**](https://github.com/sawanoboly):
+  Added `--dry-run` option to `knife cookbook site share` which displays the files that are to be uploaded to Supermarket.
+* [**Sander van Harmelen**](https://github.com/svanharmelen):
+  Fixed `Chef::HTTP` to be able to follow relative redirects.
+* [**Cory Stephenson**](https://github.com/Aevin1387):
+  Fixed FreeBSD port package provider to interpret FreeBSD version 10 correctly.
+* [**Brett Chalupa**](https://github.com/brettchalupa):
+  Added `source_url` and `issues_url` options to metadata to be used by Supermarket.
+* [**Anshul Sharma**](https://github.com/justanshulsharma):
+  Fixed Chef Client to use the `:client_name` instead of `:node_name` during initial client registration.
+* [**tbe**](https://github.com/tbe):
+  Fixed Paludis package provider to be able to interpret the package category.
+* [**David Workman**](https://github.com/workmad3):
+  Added a more clear error message to chef-apply when no recipe is given.
+* [**Joe Nuspl**](https://github.com/nvwls):
+  Added support for `sensitive` property to the execute resource.
+* [**Nolan Davidson**](https://github.com/nsdavidson):
+  Added an error message to prevent unintentional running of `exec()` in recipes.
+* [**wacky612**](https://github.com/wacky612):
+  Fixed a bug in pacman package provider that was preventing the installation of `bind` package.
+* [**Ionuț Arțăriși**](https://github.com/mapleoin):
+  Changed the default service provider to systemd on SLES versions 12 and higher.
+* [**Ionuț Arțăriși**](https://github.com/mapleoin):
+  Changed the default group provider to gpasswd on SLES versions 12 and higher.
+* [**Noah Kantrowitz**](https://github.com/coderanger):
+  Implemented [RFC017 - File Specificity Overhaul](https://github.com/opscode/chef-rfc/blob/master/rfc017-file-specificity.md).
+* [**James Bence**](https://github.com/jbence):
+  Improved the reliability of Git provider by making it to be more specific when selecting tags.
+* [**Jean Mertz**](https://github.com/JeanMertz):
+  Changed knife upload not to validate the ruby files under files & templates directories.
+* [**Alex Pop**](https://github.com/alexpop):
+  Made `knife cookbook create` to display the directory of the cookbook that is being created.
+* [**Alex Pop**](https://github.com/alexpop):
+  Fixed the information debug output for the configuration file being used when running knife.
+* [**Martin Smith**](https://github.com/martinb3):
+  Changed `knife cookbook site share` to make category an optional parameter when uploading cookbooks.
+    It is still required when the cookbook is being uploaded for the first time but on the consequent
+    uploads existing category of the cookbook will be used.
+* [**Nicolas DUPEUX**](https://github.com/vaxvms):
+  Added JSON output to `knife status` command. `--medium` and `--long` output formatting parameters are now supported in knife status.
+* [**Trevor North**](https://github.com/trvrnrth):
+  Removed dead code from `knife ssh`.
+* [**Nicolas Szalay**](https://github.com/rottenbytes):
+  Fixed a bug preventing mounting of cgroup type devices in the mount provider.
+* [**Anshul Sharma**](https://github.com/justanshulsharma):
+  Fixed inconsistent globbing in `knife from file` command.
+* [**Nicolas Szalay**](https://github.com/rottenbytes):
+  Made user prompts in knife more beautiful by adding a space after Y/N prompts.
+* [**Ivan Larionov**](https://github.com/xeron):
+  Made empty run_list to produce an empty array when using node.to_hash.
+* [**Siddheshwar More**](https://github.com/siddheshwar-more):
+  Fixed a bug in knife bootstrap that caused config options to override command line options.
+* [**Thiago Oliveira**](https://github.com/chilicheech):
+  Fixed a bug in Mac OSX group provider and made it idempotent.
+* [**liseki**](https://github.com/liseki):
+  Fixed a bug in why-run mode for freebsd service resources without configured init scripts.
+* [**liseki**](https://github.com/liseki):
+  Fixed a bug in freebsd service providers to load the status correctly.
+
 
 ### Chef Contributions
 
+* Added os/platform_family options to provides syntax on the Chef::Resource DSL
+* Added provides methods to the Chef::Provider DSL
+* Added supported?(resource, action) class method to all Providers for late-evaluation if a provider can handle a
+  resource
+* Added ProviderResolver feature to handle late resolution of providers based on what kinds of support is in the
+  base operating system.
+* Partial Deprecation of Chef::Platform provider mapping.  The static mapping will be removed as Chef-12 progresses
+  and the hooks will be completely dropped in Chef-13.
+* Default `guard_interpreter` for `powershell_script` resource set to `:powershell_script`, for `batch` to `:batch`
+* Recipe definition now returns the retval of the definition
+* Add support for Windows 10 to version helper.
+* `dsc_script` resource should honor configuration parameters when `configuration_data_script` is not set (Issue #2209)
+* Ruby has been updated to 2.1.3 along with rubygems update to 2.4.2
+* Removed shelling out to erubis/ruby for syntax checks (>= 1.9 has been able
+  to do this in the ruby vm itself for awhile now and we've dropped 1.8.7 which
+  could not do this and had to shell_out)
+* Report the request and response when a non-200 error code happens
+* [FEATURE] Upgrade `knife upload` and `knife download` to download
+  **everything** in an organization, now including the organization definition
+  itself (`knife download /org.json`) and the invitations and member list
+  (`knife download /invitations.json` and `knife download /members.json`).
+  Should be compatible with knife-ec-backup.
+* Make default Windows paths more backslashy
 * `knife` now prefers to load `config.rb` in preference to `knife.rb`;
 `knife.rb` will be used if `config.rb` is not found.
 * Fixed Config[:cache_path] to use path_join()
-* Updated chef-zero to 3.0.
+* Updated chef-zero to 3.0, so that client tests can be run against Enterprise
+  Chef as well as Open Source.
 * knife cookbook site download/list/search/share/show/unshare now uses
   supermerket.getchef.com urls
 * added Chef::ResourceCollection#insert_at API to the ResourceCollection
@@ -117,8 +218,56 @@
 * Deprecate --distro / --template_file options in favor of --boostrap-template
 * Add `:node_ssl_verify_mode` & `:node_verify_api_cert` options to bootstrap
   to be able to configure these settings on the bootstrapped node.
+* Add partial_search dsl method to Chef::Search::Query, add result filtering to search.
+* Transfer trusted certificates under :trusted_certs_dir during bootstrap.
+* Set :ssl_verify_mode to :verify_peer by default.
+* Add homebrew provider for package resource, use it by default on OS X (Issue #1709)
+* Add escape_glob method to PathHelper, update glob operations.
+* Verify x509 properties of certificates in the :trusted_certs_dir during knife ssl check.
+* Disable unforked interval chef-client runs.
+* Removed dependencies on the 'json' gem, replaced with ffi-yajl.  Use Chef::JSONCompat library for parsing and printing.
+* Restore the deprecation logic of #valid_actions in LWRPs until Chef 13.
+* Now that we don't allow unforked chef-client interval runs, remove the reloading of previously defined LWRPs.
+* Use shell_out to determine Chef::Config[:internal_locale], fix CentOS locale detection bug.
+* `only_if` and `not_if` attributes of `execute` resource now inherits the parent resource's
+  attributes when set to a `String`.
+* Retain the original value of `retries` for resources and display the original value when the run fails.
+* Added service provider for AIX.
+* The Windows env provider will delete elements even if they are only in ENV (and not in the registry)
+* Allow events to be logged to Windows Event Log
+* Fixed bug in env resource where a value containing the delimiter could never correctly match the existing values
 
-## Last Release: 11.14.2
+## 11.16.4
+
+* Windows omnibus installer security updates for redistributed bash.exe / sh.exe
+  vulnerabilities ("Shellshock") CVE-2014-6271, CVE-2014-6271, CVE-2014-6278,
+  CVE-2014-7186, CVE-2014-7187.
+* Fix bug on Windows where using the env resource on path could render the path unusable.
+* Chef Client now retries when it gets 50X from Chef Server.
+* Chef Client 11.16.4 can use the policyfiles generated with Chef DK 0.3.0.
+
+## 11.16.2
+
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  Fix a regression in whyrun_safe_ruby_block.
+
+## 11.16.0
+
+* Fix a bug in user dscl provider to enable managing password and other properties at the same time.
+* Add `dsc_script` resource to Chef for PowerShell DSC support on Windows
+
+## 11.14.6:
+
+* Modify action for env raises Chef::Exceptions::Env exception on Windows (Chef Issues 1754)
+* Fix RPM package version detection (Issue 1554)
+* Fix a bug in reporting not to post negative duration values.
+* Add password setting support for Mac 10.7, 10.8 and 10.9 to the dscl user provider.
+* ChefSpec can find freebsd_package resource correctly when a package resource is declared on Freebsd.
+* http_proxy and related config vars no longer clobber already set ENV vars
+* all http_proxy configs now set lowercase + uppercase versions of ENV vars
+* https_proxy/ftp_proxy support setting `http://` URLs (and whatever mix and match makes sense)
+
+## 11.14.2
 
 * [**Jess Mink**](https://github.com/jmink):
   Symlinks to directories should be swingable on windows (CHEF-3960)
@@ -247,3 +396,6 @@
 * Added DelayedEvaluator support in LWRP using the `lazy {}` key
 * Fixed a bug where nested resources that inherited from Resource::LWRPBase
   would not share the same actions/default_action as their parent
+* Raise error if a guard_interpreter is specified and a block is passed to a guard (conditional)
+* Allow specifying a guard_interpreter after a conditional on a resource (Fixes #1943)
+* Windows package type should be a symbol (Fixes #1997)

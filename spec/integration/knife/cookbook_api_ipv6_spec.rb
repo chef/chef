@@ -18,7 +18,7 @@
 require 'support/shared/integration/integration_helper'
 require 'chef/mixin/shell_out'
 
-describe "Knife cookbook API integration with IPv6" do
+describe "Knife cookbook API integration with IPv6", :workstation do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
@@ -62,7 +62,7 @@ END_VALIDATION_PEM
     end
 
     let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
-    let(:knife) { "ruby #{chef_dir}/knife" }
+    let(:knife) { "ruby '#{chef_dir}/knife'" }
 
     let(:knife_config_flag) { "-c '#{path_to("config/knife.rb")}'" }
 

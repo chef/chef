@@ -19,8 +19,12 @@
 
 require 'chef/provider/service/init'
 require 'chef/mixin/command'
+require 'chef/util/path_helper'
 
 class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
+
+  provides :service, platform_family: "gentoo"
+
   def load_current_resource
 
     @new_resource.supports[:status] = true
@@ -29,7 +33,7 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
     super
 
     @current_resource.enabled(
-      Dir.glob("/etc/runlevels/**/#{@current_resource.service_name}").any? do |file|
+      Dir.glob("/etc/runlevels/**/#{Chef::Util::PathHelper.escape_glob(@current_resource.service_name)}").any? do |file|
         @found_script = true
         exists = ::File.exists? file
         readable = ::File.readable? file
@@ -58,10 +62,10 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
   end
 
   def enable_service()
-    run_command(:command => "/sbin/rc-update add #{@new_resource.service_name} default")
+    shell_out!("/sbin/rc-update add #{@new_resource.service_name} default")
   end
 
   def disable_service()
-    run_command(:command => "/sbin/rc-update del #{@new_resource.service_name} default")
+    shell_out!("/sbin/rc-update del #{@new_resource.service_name} default")
   end
 end

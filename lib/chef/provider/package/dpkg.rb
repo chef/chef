@@ -30,6 +30,8 @@ class Chef
         DPKG_INSTALLED = /^Status: install ok installed/
         DPKG_VERSION = /^Version: (.+)$/
 
+        provides :dpkg_package, os: "linux"
+
         include Chef::Mixin::GetSourceFromPackage
 
         def define_resource_requirements

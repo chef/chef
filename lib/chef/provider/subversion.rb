@@ -27,6 +27,8 @@ class Chef
   class Provider
     class Subversion < Chef::Provider
 
+      provides :subversion
+
       SVN_INFO_PATTERN = /^([\w\s]+): (.+)$/
 
       include Chef::Mixin::Command
@@ -60,7 +62,7 @@ class Chef
       def action_checkout
         if target_dir_non_existent_or_empty?
           converge_by("perform checkout of #{@new_resource.repository} into #{@new_resource.destination}") do
-            run_command(run_options(:command => checkout_command))
+            shell_out!(run_options(command: checkout_command))
           end
         else
           Chef::Log.debug "#{@new_resource} checkout destination #{@new_resource.destination} already exists or is a non-empty directory - nothing to do"
@@ -77,7 +79,7 @@ class Chef
 
       def action_force_export
         converge_by("export #{@new_resource.repository} into #{@new_resource.destination}") do
-          run_command(run_options(:command => export_command))
+          shell_out!(run_options(command: export_command))
         end
       end
 
@@ -88,7 +90,7 @@ class Chef
           Chef::Log.debug "#{@new_resource} current revision: #{current_rev} target revision: #{revision_int}"
           unless current_revision_matches_target_revision?
             converge_by("sync #{@new_resource.destination} from #{@new_resource.repository}") do
-              run_command(run_options(:command => sync_command))
+              shell_out!(run_options(command: sync_command))
               Chef::Log.info "#{@new_resource} updated to revision: #{revision_int}"
             end
           end
@@ -100,14 +102,14 @@ class Chef
       def sync_command
         c = scm :update, @new_resource.svn_arguments, verbose, authentication, "-r#{revision_int}", @new_resource.destination
         Chef::Log.debug "#{@new_resource} updated working copy #{@new_resource.destination} to revision #{@new_resource.revision}"
-				c
+        c
       end
 
       def checkout_command
         c = scm :checkout, @new_resource.svn_arguments, verbose, authentication,
             "-r#{revision_int}", @new_resource.repository, @new_resource.destination
         Chef::Log.info "#{@new_resource} checked out #{@new_resource.repository} at revision #{@new_resource.revision} to #{@new_resource.destination}"
-				c
+        c
       end
 
       def export_command
@@ -116,7 +118,7 @@ class Chef
             "-r#{revision_int}" << @new_resource.repository << @new_resource.destination
         c = scm :export, *args
         Chef::Log.info "#{@new_resource} exported #{@new_resource.repository} at revision #{@new_resource.revision} to #{@new_resource.destination}"
-				c
+        c
       end
 
       # If the specified revision isn't an integer ("HEAD" for example), look

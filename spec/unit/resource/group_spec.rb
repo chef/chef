@@ -25,47 +25,47 @@ describe Chef::Resource::Group, "initialize" do
   end
 
   it "should create a new Chef::Resource::Group" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::Group)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Group)
   end
 
   it "should set the resource_name to :group" do
-    @resource.resource_name.should eql(:group)
+    expect(@resource.resource_name).to eql(:group)
   end
 
   it "should set the group_name equal to the argument to initialize" do
-    @resource.group_name.should eql("admin")
+    expect(@resource.group_name).to eql("admin")
   end
 
   it "should default gid to nil" do
-    @resource.gid.should eql(nil)
+    expect(@resource.gid).to eql(nil)
   end
 
   it "should default members to an empty array" do
-    @resource.members.should eql([])
+    expect(@resource.members).to eql([])
   end
 
   it "should alias users to members, also an empty array" do
-    @resource.users.should eql([])
+    expect(@resource.users).to eql([])
   end
 
   it "should set action to :create" do
-    @resource.action.should eql(:create)
+    expect(@resource.action).to eql(:create)
   end
 
   %w{create remove modify manage}.each do |action|
     it "should allow action #{action}" do
-      @resource.allowed_actions.detect { |a| a == action.to_sym }.should eql(action.to_sym)
+      expect(@resource.allowed_actions.detect { |a| a == action.to_sym }).to eql(action.to_sym)
     end
   end
 
   it "should accept domain groups (@ or \ separator) on non-windows" do
-    lambda { @resource.group_name "domain\@group" }.should_not raise_error
-    @resource.group_name.should == "domain\@group"
-    lambda { @resource.group_name "domain\\group" }.should_not raise_error
-    @resource.group_name.should == "domain\\group"
-    lambda { @resource.group_name "domain\\group^name" }.should_not raise_error
-    @resource.group_name.should == "domain\\group^name"
+    expect { @resource.group_name "domain\@group" }.not_to raise_error
+    expect(@resource.group_name).to eq("domain\@group")
+    expect { @resource.group_name "domain\\group" }.not_to raise_error
+    expect(@resource.group_name).to eq("domain\\group")
+    expect { @resource.group_name "domain\\group^name" }.not_to raise_error
+    expect(@resource.group_name).to eq("domain\\group^name")
   end
 end
 
@@ -76,11 +76,11 @@ describe Chef::Resource::Group, "group_name" do
 
   it "should allow a string" do
     @resource.group_name "pirates"
-    @resource.group_name.should eql("pirates")
+    expect(@resource.group_name).to eql("pirates")
   end
 
   it "should not allow a hash" do
-    lambda { @resource.send(:group_name, { :aj => "is freakin awesome" }) }.should raise_error(ArgumentError)
+    expect { @resource.send(:group_name, { :aj => "is freakin awesome" }) }.to raise_error(ArgumentError)
   end
 end
 
@@ -91,11 +91,11 @@ describe Chef::Resource::Group, "gid" do
 
   it "should allow an integer" do
     @resource.gid 100
-    @resource.gid.should eql(100)
+    expect(@resource.gid).to eql(100)
   end
 
   it "should not allow a hash" do
-    lambda { @resource.send(:gid, { :aj => "is freakin awesome" }) }.should raise_error(ArgumentError)
+    expect { @resource.send(:gid, { :aj => "is freakin awesome" }) }.to raise_error(ArgumentError)
   end
 end
 
@@ -107,16 +107,16 @@ describe Chef::Resource::Group, "members" do
   [ :users, :members].each do |method|
     it "(#{method}) should allow and convert a string" do
       @resource.send(method, "aj")
-      @resource.send(method).should eql(["aj"])
+      expect(@resource.send(method)).to eql(["aj"])
     end
 
     it "(#{method}) should allow an array" do
       @resource.send(method, [ "aj", "adam" ])
-      @resource.send(method).should eql( ["aj", "adam"] )
+      expect(@resource.send(method)).to eql( ["aj", "adam"] )
     end
 
     it "(#{method}) should not allow a hash" do
-      lambda { @resource.send(method, { :aj => "is freakin awesome" }) }.should raise_error(ArgumentError)
+      expect { @resource.send(method, { :aj => "is freakin awesome" }) }.to raise_error(ArgumentError)
     end
   end
 end
@@ -127,16 +127,16 @@ describe Chef::Resource::Group, "append" do
   end
 
   it "should default to false" do
-    @resource.append.should eql(false)
+    expect(@resource.append).to eql(false)
   end
 
   it "should allow a boolean" do
     @resource.append true
-    @resource.append.should eql(true)
+    expect(@resource.append).to eql(true)
   end
 
   it "should not allow a hash" do
-    lambda { @resource.send(:gid, { :aj => "is freakin awesome" }) }.should raise_error(ArgumentError)
+    expect { @resource.send(:gid, { :aj => "is freakin awesome" }) }.to raise_error(ArgumentError)
   end
 
   describe "when it has members" do
@@ -147,11 +147,11 @@ describe Chef::Resource::Group, "append" do
 
     it "describes its state" do
       state = @resource.state
-      state[:members].should eql(["blastoise", "pikachu"])
+      expect(state[:members]).to eql(["blastoise", "pikachu"])
     end
 
     it "returns the group name as its identity" do
-      @resource.identity.should == "pokemon"
+      expect(@resource.identity).to eq("pokemon")
     end
   end
 end

@@ -20,6 +20,8 @@ class Chef
   class Provider
     class Deploy
       class Timestamped < Chef::Provider::Deploy
+        provides :timestamped_deploy
+        provides :deploy
 
         protected
 

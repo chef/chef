@@ -25,6 +25,8 @@ class Chef
       # Chef log provider, allows logging to chef's logs from recipes
       class ChefLog < Chef::Provider
 
+        provides :log
+
         def whyrun_supported?
           true
         end

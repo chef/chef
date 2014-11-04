@@ -88,7 +88,12 @@ describe Chef::WorkstationConfigLoader do
             let(:env_pwd) { "/path/to/cwd" }
 
             before do
-              env["PWD"] = env_pwd
+              if Chef::Platform.windows?
+                env["CD"] = env_pwd
+              else
+                env["PWD"] = env_pwd
+              end
+
               allow(config_loader).to receive(:path_exists?).with("#{env_pwd}/.chef/knife.rb").and_return(true)
               allow(File).to receive(:exist?).with("#{env_pwd}/.chef").and_return(true)
               allow(File).to receive(:directory?).with("#{env_pwd}/.chef").and_return(true)
@@ -229,13 +234,14 @@ describe Chef::WorkstationConfigLoader do
       let(:config_content) { "" }
 
       let(:explicit_config_location) do
-        t = Tempfile.new("#{described_class}-rspec-test")
+        # could use described_class, but remove all ':' from the path if so.
+        t = Tempfile.new("Chef-WorkstationConfigLoader-rspec-test")
         t.print(config_content)
         t.close
         t.path
       end
 
-      after { File.unlink(explicit_config_location) }
+      after { File.unlink(explicit_config_location) if File.exists?(explicit_config_location) }
 
       context "and is valid" do
 

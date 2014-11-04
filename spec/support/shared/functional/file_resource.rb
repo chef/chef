@@ -284,6 +284,7 @@ shared_examples_for "a file resource" do
 
     before do
       Chef::Config[:why_run] = true
+      Chef::Config[:ssl_verify_mode] = :verify_none
     end
 
     after do
@@ -333,6 +334,10 @@ shared_examples_for "file resource not pointing to a real file" do
     !symlink?(file_path) && File.file?(file_path)
   end
 
+  before do
+    Chef::Config[:ssl_verify_mode] = :verify_none
+  end
+
   describe "when force_unlink is set to true" do
     it ":create unlinks the target" do
       real_file?(path).should be_false
@@ -363,6 +368,7 @@ shared_examples_for "a configured file resource" do
 
   before do
     Chef::Log.level = :info
+    Chef::Config[:ssl_verify_mode] = :verify_none
   end
 
    # note the stripping of the drive letter from the tmpdir on windows

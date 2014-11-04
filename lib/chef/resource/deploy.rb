@@ -77,7 +77,6 @@ class Chef
         @shallow_clone = false
         @scm_provider = Chef::Provider::Git
         @svn_force_export = false
-        @provider = Chef::Provider::Deploy::Timestamped
         @allowed_actions.push(:force_deploy, :deploy, :rollback)
         @additional_remotes = Hash[]
         @keep_releases = 5

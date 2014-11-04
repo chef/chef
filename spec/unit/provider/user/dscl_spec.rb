@@ -23,10 +23,13 @@ require 'ostruct'
 require 'mixlib/shellout'
 
 describe Chef::Provider::User::Dscl do
+  before do
+    allow(Chef::Platform).to receive(:windows?) { false }
+  end
   let(:node) {
     node = Chef::Node.new
-    node.stub(:[]).with(:platform_version).and_return(mac_version)
-    node.stub(:[]).with(:platform).and_return("mac_os_x")
+    allow(node).to receive(:[]).with(:platform_version).and_return(mac_version)
+    allow(node).to receive(:[]).with(:platform).and_return("mac_os_x")
     node
   }
 
@@ -112,38 +115,38 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
   describe "when shelling out to dscl" do
     it "should run dscl with the supplied cmd /Path args" do
       shell_return = ShellCmdResult.new('stdout', 'err', 0)
-      provider.should_receive(:shell_out).with("dscl . -cmd /Path args").and_return(shell_return)
-      provider.run_dscl("cmd /Path args").should == 'stdout'
+      expect(provider).to receive(:shell_out).with("dscl . -cmd /Path args").and_return(shell_return)
+      expect(provider.run_dscl("cmd /Path args")).to eq('stdout')
     end
 
     it "returns an empty string from delete commands" do
       shell_return = ShellCmdResult.new('out', 'err', 23)
-      provider.should_receive(:shell_out).with("dscl . -delete /Path args").and_return(shell_return)
-      provider.run_dscl("delete /Path args").should == ""
+      expect(provider).to receive(:shell_out).with("dscl . -delete /Path args").and_return(shell_return)
+      expect(provider.run_dscl("delete /Path args")).to eq("")
     end
 
     it "should raise an exception for any other command" do
       shell_return = ShellCmdResult.new('out', 'err', 23)
-      provider.should_receive(:shell_out).with('dscl . -cmd /Path arguments').and_return(shell_return)
-      lambda { provider.run_dscl("cmd /Path arguments") }.should raise_error(Chef::Exceptions::DsclCommandFailed)
+      expect(provider).to receive(:shell_out).with('dscl . -cmd /Path arguments').and_return(shell_return)
+      expect { provider.run_dscl("cmd /Path arguments") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
     end
 
     it "raises an exception when dscl reports 'no such key'" do
       shell_return = ShellCmdResult.new("No such key: ", 'err', 23)
-      provider.should_receive(:shell_out).with('dscl . -cmd /Path args').and_return(shell_return)
-      lambda { provider.run_dscl("cmd /Path args") }.should raise_error(Chef::Exceptions::DsclCommandFailed)
+      expect(provider).to receive(:shell_out).with('dscl . -cmd /Path args').and_return(shell_return)
+      expect { provider.run_dscl("cmd /Path args") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
     end
 
     it "raises an exception when dscl reports 'eDSRecordNotFound'" do
       shell_return = ShellCmdResult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", 'err', -14136)
-      provider.should_receive(:shell_out).with('dscl . -cmd /Path args').and_return(shell_return)
-      lambda { provider.run_dscl("cmd /Path args") }.should raise_error(Chef::Exceptions::DsclCommandFailed)
+      expect(provider).to receive(:shell_out).with('dscl . -cmd /Path args').and_return(shell_return)
+      expect { provider.run_dscl("cmd /Path args") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
     end
   end
 
   describe "get_free_uid" do
     before do
-      provider.should_receive(:run_dscl).with("list /Users uid").and_return("\nwheel      200\nstaff      201\nbrahms      500\nchopin      501\n")
+      expect(provider).to receive(:run_dscl).with("list /Users uid").and_return("\nwheel      200\nstaff      201\nbrahms      500\nchopin      501\n")
     end
 
     describe "when resource is configured as system" do
@@ -152,59 +155,59 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       end
 
       it "should return the first unused uid number on or above 500" do
-        provider.get_free_uid.should eq(202)
+        expect(provider.get_free_uid).to eq(202)
       end
     end
 
     it "should return the first unused uid number on or above 200" do
-      provider.get_free_uid.should eq(502)
+      expect(provider.get_free_uid).to eq(502)
     end
 
     it "should raise an exception when the search limit is exhausted" do
       search_limit = 1
-      lambda { provider.get_free_uid(search_limit) }.should raise_error(RuntimeError)
+      expect { provider.get_free_uid(search_limit) }.to raise_error(RuntimeError)
     end
   end
 
   describe "uid_used?" do
     it "should return false if not given any valid uid number" do
-      provider.uid_used?(nil).should be_false
+      expect(provider.uid_used?(nil)).to be_false
     end
 
     describe "when called with a user id" do
       before do
-        provider.should_receive(:run_dscl).with("list /Users uid").and_return("\naj      500\n")
+        expect(provider).to receive(:run_dscl).with("list /Users uid").and_return("\naj      500\n")
       end
 
       it "should return true for a used uid number" do
-        provider.uid_used?(500).should be_true
+        expect(provider.uid_used?(500)).to be_true
       end
 
       it "should return false for an unused uid number" do
-        provider.uid_used?(501).should be_false
+        expect(provider.uid_used?(501)).to be_false
       end
     end
   end
 
   describe "when determining the uid to set" do
     it "raises RequestedUIDUnavailable if the requested uid is already in use" do
-      provider.stub(:uid_used?).and_return(true)
-      provider.should_receive(:get_free_uid).and_return(501)
-      lambda { provider.dscl_set_uid }.should raise_error(Chef::Exceptions::RequestedUIDUnavailable)
+      allow(provider).to receive(:uid_used?).and_return(true)
+      expect(provider).to receive(:get_free_uid).and_return(501)
+      expect { provider.dscl_set_uid }.to raise_error(Chef::Exceptions::RequestedUIDUnavailable)
     end
 
     it "finds a valid, unused uid when none is specified" do
-      provider.should_receive(:run_dscl).with("list /Users uid").and_return('')
-      provider.should_receive(:run_dscl).with("create /Users/toor UniqueID 501")
-      provider.should_receive(:get_free_uid).and_return(501)
+      expect(provider).to receive(:run_dscl).with("list /Users uid").and_return('')
+      expect(provider).to receive(:run_dscl).with("create /Users/toor UniqueID 501")
+      expect(provider).to receive(:get_free_uid).and_return(501)
       provider.dscl_set_uid
-      new_resource.uid.should eq(501)
+      expect(new_resource.uid).to eq(501)
     end
 
     it "sets the uid specified in the resource" do
       new_resource.uid(1000)
-      provider.should_receive(:run_dscl).with("create /Users/toor UniqueID 1000").and_return(true)
-      provider.should_receive(:run_dscl).with("list /Users uid").and_return('')
+      expect(provider).to receive(:run_dscl).with("create /Users/toor UniqueID 1000").and_return(true)
+      expect(provider).to receive(:run_dscl).with("list /Users uid").and_return('')
       provider.dscl_set_uid
     end
   end
@@ -223,14 +226,14 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
     it "deletes the home directory when resource#home is nil" do
       new_resource.instance_variable_set(:@home, nil)
-      provider.should_receive(:run_dscl).with("delete /Users/toor NFSHomeDirectory").and_return(true)
+      expect(provider).to receive(:run_dscl).with("delete /Users/toor NFSHomeDirectory").and_return(true)
       provider.dscl_set_home
     end
 
 
     it "raises InvalidHomeDirectory when the resource's home directory doesn't look right" do
       new_resource.home('epic-fail')
-      lambda { provider.dscl_set_home }.should raise_error(Chef::Exceptions::InvalidHomeDirectory)
+      expect { provider.dscl_set_home }.to raise_error(Chef::Exceptions::InvalidHomeDirectory)
     end
 
     it "moves the users home to the new location if it exists and the target location is different" do
@@ -240,34 +243,34 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       current_home_files = [current_home + '/my-dot-emacs', current_home + '/my-dot-vim']
       current_resource.home(current_home)
       new_resource.gid(23)
-      ::File.stub(:exists?).with('/old/home/toor').and_return(true)
-      ::File.stub(:exists?).with('/Users/toor').and_return(true)
+      allow(::File).to receive(:exists?).with('/old/home/toor').and_return(true)
+      allow(::File).to receive(:exists?).with('/Users/toor').and_return(true)
 
-      FileUtils.should_receive(:mkdir_p).with('/Users/toor').and_return(true)
-      FileUtils.should_receive(:rmdir).with(current_home)
-      ::Dir.should_receive(:glob).with("#{CHEF_SPEC_DATA}/old_home_dir/*",::File::FNM_DOTMATCH).and_return(current_home_files)
-      FileUtils.should_receive(:mv).with(current_home_files, "/Users/toor", :force => true)
-      FileUtils.should_receive(:chown_R).with('toor','23','/Users/toor')
+      expect(FileUtils).to receive(:mkdir_p).with('/Users/toor').and_return(true)
+      expect(FileUtils).to receive(:rmdir).with(current_home)
+      expect(::Dir).to receive(:glob).with("#{CHEF_SPEC_DATA}/old_home_dir/*",::File::FNM_DOTMATCH).and_return(current_home_files)
+      expect(FileUtils).to receive(:mv).with(current_home_files, "/Users/toor", :force => true)
+      expect(FileUtils).to receive(:chown_R).with('toor','23','/Users/toor')
 
-      provider.should_receive(:run_dscl).with("create /Users/toor NFSHomeDirectory '/Users/toor'")
+      expect(provider).to receive(:run_dscl).with("create /Users/toor NFSHomeDirectory '/Users/toor'")
       provider.dscl_set_home
     end
 
     it "should raise an exception when the systems user template dir (skel) cannot be found" do
-      ::File.stub(:exists?).and_return(false,false,false)
-      lambda { provider.dscl_set_home }.should raise_error(Chef::Exceptions::User)
+      allow(::File).to receive(:exists?).and_return(false,false,false)
+      expect { provider.dscl_set_home }.to raise_error(Chef::Exceptions::User)
     end
 
     it "should run ditto to copy any missing files from skel to the new home dir" do
-      ::File.should_receive(:exists?).with("/System/Library/User\ Template/English.lproj").and_return(true)
-      FileUtils.should_receive(:chown_R).with('toor', '', '/Users/toor')
-      provider.should_receive(:shell_out!).with("ditto '/System/Library/User Template/English.lproj' '/Users/toor'")
+      expect(::File).to receive(:exists?).with("/System/Library/User\ Template/English.lproj").and_return(true)
+      expect(FileUtils).to receive(:chown_R).with('toor', '', '/Users/toor')
+      expect(provider).to receive(:shell_out!).with("ditto '/System/Library/User Template/English.lproj' '/Users/toor'")
       provider.ditto_home
     end
 
     it "creates the user's NFSHomeDirectory and home directory" do
-      provider.should_receive(:run_dscl).with("create /Users/toor NFSHomeDirectory '/Users/toor'").and_return(true)
-      provider.should_receive(:ditto_home)
+      expect(provider).to receive(:run_dscl).with("create /Users/toor NFSHomeDirectory '/Users/toor'").and_return(true)
+      expect(provider).to receive(:ditto_home)
       provider.dscl_set_home
     end
   end
@@ -277,8 +280,8 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     let(:plutil_exists) { true }
 
     before do
-      ::File.stub(:exists?).with("/usr/bin/dscl").and_return(dscl_exists)
-      ::File.stub(:exists?).with("/usr/bin/plutil").and_return(plutil_exists)
+      allow(::File).to receive(:exists?).with("/usr/bin/dscl").and_return(dscl_exists)
+      allow(::File).to receive(:exists?).with("/usr/bin/plutil").and_return(plutil_exists)
     end
 
     def run_requirements
@@ -291,7 +294,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       let(:dscl_exists) { false }
 
       it "should raise an error" do
-        lambda { run_requirements }.should raise_error
+        expect { run_requirements }.to raise_error
       end
     end
 
@@ -299,7 +302,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       let(:plutil_exists) { false }
 
       it "should raise an error" do
-        lambda { run_requirements }.should raise_error
+        expect { run_requirements }.to raise_error
       end
     end
 
@@ -309,7 +312,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       }
 
       it "should raise an error" do
-        lambda { run_requirements }.should raise_error
+        expect { run_requirements }.to raise_error
       end
     end
 
@@ -322,7 +325,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
         let(:password) { salted_sha512_password }
 
         it "should not raise an error" do
-          lambda { run_requirements }.should_not raise_error
+          expect { run_requirements }.not_to raise_error
         end
       end
 
@@ -330,7 +333,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
         let(:password) { salted_sha512_pbkdf2_password }
 
         it "should raise an error" do
-          lambda { run_requirements }.should raise_error
+          expect { run_requirements }.to raise_error
         end
       end
     end
@@ -345,7 +348,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
           let(:password) { salted_sha512_password }
 
           it "should raise an error" do
-            lambda { run_requirements }.should raise_error
+            expect { run_requirements }.to raise_error
           end
         end
 
@@ -354,7 +357,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
           describe "when salt and iteration is not set" do
             it "should raise an error" do
-              lambda { run_requirements }.should raise_error
+              expect { run_requirements }.to raise_error
             end
           end
 
@@ -363,7 +366,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
             let(:iterations) { salted_sha512_pbkdf2_iterations }
 
             it "should not raise an error" do
-              lambda { run_requirements }.should_not raise_error
+              expect { run_requirements }.not_to raise_error
             end
           end
         end
@@ -376,7 +379,8 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     let(:user_plist_file) { nil }
 
     before do
-      provider.should_receive(:shell_out).with("plutil -convert xml1 -o - /var/db/dslocal/nodes/Default/users/toor.plist") do
+      expect(provider).to receive(:shell_out).with("dscacheutil '-flushcache'")
+      expect(provider).to receive(:shell_out).with("plutil -convert xml1 -o - /var/db/dslocal/nodes/Default/users/toor.plist") do
         if user_plist_file.nil?
           ShellCmdResult.new('Can not find the file', 'Sorry!!', 1)
         else
@@ -385,23 +389,23 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       end
 
       if !user_plist_file.nil?
-        provider.should_receive(:convert_binary_plist_to_xml).and_return(File.read(File.join(CHEF_SPEC_DATA, "mac_users/#{user_plist_file}.shadow.xml")))
+        expect(provider).to receive(:convert_binary_plist_to_xml).and_return(File.read(File.join(CHEF_SPEC_DATA, "mac_users/#{user_plist_file}.shadow.xml")))
       end
     end
 
     describe "when user is not there" do
       it "shouldn't raise an error" do
-        lambda { provider.load_current_resource }.should_not raise_error
+        expect { provider.load_current_resource }.not_to raise_error
       end
 
       it "should set @user_exists" do
         provider.load_current_resource
-        provider.instance_variable_get(:@user_exists).should be_false
+        expect(provider.instance_variable_get(:@user_exists)).to be_false
       end
 
       it "should set username" do
         provider.load_current_resource
-        provider.current_resource.username.should eq("toor")
+        expect(provider.current_resource.username).to eq("toor")
       end
     end
 
@@ -417,12 +421,12 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
         it "collects the user data correctly" do
           provider.load_current_resource
-          provider.current_resource.comment.should eq("vagrant")
-          provider.current_resource.uid.should eq("11112222-3333-4444-AAAA-BBBBCCCCDDDD")
-          provider.current_resource.gid.should eq("80")
-          provider.current_resource.home.should eq("/Users/vagrant")
-          provider.current_resource.shell.should eq("/bin/bash")
-          provider.current_resource.password.should eq(vagrant_sha_512)
+          expect(provider.current_resource.comment).to eq("vagrant")
+          expect(provider.current_resource.uid).to eq("11112222-3333-4444-AAAA-BBBBCCCCDDDD")
+          expect(provider.current_resource.gid).to eq("80")
+          expect(provider.current_resource.home).to eq("/Users/vagrant")
+          expect(provider.current_resource.shell).to eq("/bin/bash")
+          expect(provider.current_resource.password).to eq(vagrant_sha_512)
         end
 
         describe "when a plain password is set that is same" do
@@ -430,7 +434,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
           it "diverged_password? should report false" do
             provider.load_current_resource
-            provider.diverged_password?.should be_false
+            expect(provider.diverged_password?).to be_false
           end
         end
 
@@ -439,7 +443,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
           it "diverged_password? should report true" do
             provider.load_current_resource
-            provider.diverged_password?.should be_true
+            expect(provider.diverged_password?).to be_true
           end
         end
 
@@ -449,7 +453,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
           it "diverged_password? should report false" do
             provider.load_current_resource
-            provider.diverged_password?.should be_false
+            expect(provider.diverged_password?).to be_false
           end
         end
 
@@ -458,7 +462,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
           it "diverged_password? should report true" do
             provider.load_current_resource
-            provider.diverged_password?.should be_true
+            expect(provider.diverged_password?).to be_true
           end
         end
 
@@ -468,7 +472,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
           it "diverged_password? should report false" do
             provider.load_current_resource
-            provider.diverged_password?.should be_false
+            expect(provider.diverged_password?).to be_false
           end
         end
       end
@@ -482,19 +486,19 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
         it "collects the user data correctly" do
           provider.load_current_resource
-          provider.current_resource.comment.should eq("vagrant")
-          provider.current_resource.uid.should eq("11112222-3333-4444-AAAA-BBBBCCCCDDDD")
-          provider.current_resource.gid.should eq("80")
-          provider.current_resource.home.should eq("/Users/vagrant")
-          provider.current_resource.shell.should eq("/bin/bash")
-          provider.current_resource.password.should eq("ea4c2d265d801ba0ec0dfccd\
+          expect(provider.current_resource.comment).to eq("vagrant")
+          expect(provider.current_resource.uid).to eq("11112222-3333-4444-AAAA-BBBBCCCCDDDD")
+          expect(provider.current_resource.gid).to eq("80")
+          expect(provider.current_resource.home).to eq("/Users/vagrant")
+          expect(provider.current_resource.shell).to eq("/bin/bash")
+          expect(provider.current_resource.password).to eq("ea4c2d265d801ba0ec0dfccd\
 253dfc1de91cbe0806b4acc1ed7fe22aebcf6beb5344d0f442e590\
 ffa04d679075da3afb119e41b72b5eaf08ee4aa54693722646d5\
 19ee04843deb8a3e977428d33f625e83887913e5c13b70035961\
 5e00ad7bc3e7a0c98afc3e19d1360272454f8d33a9214d2fbe8b\
 e68d1f9821b26689312366")
-          provider.current_resource.salt.should eq("f994ef2f73b7c5594ebd1553300976b20733ce0e24d659783d87f3d81cbbb6a9")
-          provider.current_resource.iterations.should eq(39840)
+          expect(provider.current_resource.salt).to eq("f994ef2f73b7c5594ebd1553300976b20733ce0e24d659783d87f3d81cbbb6a9")
+          expect(provider.current_resource.iterations).to eq(39840)
         end
       end
 
@@ -508,12 +512,12 @@ e68d1f9821b26689312366")
 
         it "collects the user data correctly" do
           provider.load_current_resource
-          provider.current_resource.comment.should eq("vagrant")
-          provider.current_resource.uid.should eq("11112222-3333-4444-AAAA-BBBBCCCCDDDD")
-          provider.current_resource.gid.should eq("80")
-          provider.current_resource.home.should eq("/Users/vagrant")
-          provider.current_resource.shell.should eq("/bin/bash")
-          provider.current_resource.password.should eq("6f75d7190441facc34291ebbea1fc756b242d4f\
+          expect(provider.current_resource.comment).to eq("vagrant")
+          expect(provider.current_resource.uid).to eq("11112222-3333-4444-AAAA-BBBBCCCCDDDD")
+          expect(provider.current_resource.gid).to eq("80")
+          expect(provider.current_resource.home).to eq("/Users/vagrant")
+          expect(provider.current_resource.shell).to eq("/bin/bash")
+          expect(provider.current_resource.password).to eq("6f75d7190441facc34291ebbea1fc756b242d4f\
 e9bcff141bccb84f1979e27e539539aa31f9f7dcc92c0cea959\
 ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
         end
@@ -521,7 +525,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
         describe "when a plain text password is set" do
           it "reports password needs to be updated" do
             provider.load_current_resource
-            provider.diverged_password?.should be_true
+            expect(provider.diverged_password?).to be_true
           end
         end
 
@@ -532,7 +536,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
           it "reports password needs to be updated" do
             provider.load_current_resource
-            provider.diverged_password?.should be_true
+            expect(provider.diverged_password?).to be_true
           end
         end
       end
@@ -546,14 +550,14 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
         it "collects the user data correctly" do
           provider.load_current_resource
-          provider.current_resource.comment.should eq("vagrant")
-          provider.current_resource.uid.should eq("11112222-3333-4444-AAAA-BBBBCCCCDDDD")
-          provider.current_resource.gid.should eq("80")
-          provider.current_resource.home.should eq("/Users/vagrant")
-          provider.current_resource.shell.should eq("/bin/bash")
-          provider.current_resource.password.should eq(vagrant_sha_512_pbkdf2)
-          provider.current_resource.salt.should eq(vagrant_sha_512_pbkdf2_salt)
-          provider.current_resource.iterations.should eq(vagrant_sha_512_pbkdf2_iterations)
+          expect(provider.current_resource.comment).to eq("vagrant")
+          expect(provider.current_resource.uid).to eq("11112222-3333-4444-AAAA-BBBBCCCCDDDD")
+          expect(provider.current_resource.gid).to eq("80")
+          expect(provider.current_resource.home).to eq("/Users/vagrant")
+          expect(provider.current_resource.shell).to eq("/bin/bash")
+          expect(provider.current_resource.password).to eq(vagrant_sha_512_pbkdf2)
+          expect(provider.current_resource.salt).to eq(vagrant_sha_512_pbkdf2_salt)
+          expect(provider.current_resource.iterations).to eq(vagrant_sha_512_pbkdf2_iterations)
         end
 
         describe "when a plain password is set that is same" do
@@ -561,7 +565,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
           it "diverged_password? should report false" do
             provider.load_current_resource
-            provider.diverged_password?.should be_false
+            expect(provider.diverged_password?).to be_false
           end
         end
 
@@ -570,7 +574,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
           it "diverged_password? should report true" do
             provider.load_current_resource
-            provider.diverged_password?.should be_true
+            expect(provider.diverged_password?).to be_true
           end
         end
 
@@ -581,7 +585,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
           it "diverged_password? should report true" do
             provider.load_current_resource
-            provider.diverged_password?.should be_true
+            expect(provider.diverged_password?).to be_true
           end
         end
 
@@ -592,7 +596,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
           it "diverged_password? should report true" do
             provider.load_current_resource
-            provider.diverged_password?.should be_true
+            expect(provider.diverged_password?).to be_true
           end
         end
 
@@ -603,7 +607,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
           it "diverged_password? should report true" do
             provider.load_current_resource
-            provider.diverged_password?.should be_true
+            expect(provider.diverged_password?).to be_true
           end
         end
       end
@@ -612,23 +616,23 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
   describe "salted_sha512_pbkdf2?" do
     it "should return true when the string is a salted_sha512_pbkdf2 hash" do
-      provider.salted_sha512_pbkdf2?(salted_sha512_pbkdf2_password).should be_true
+      expect(provider.salted_sha512_pbkdf2?(salted_sha512_pbkdf2_password)).to be_true
     end
 
     it "should return false otherwise" do
-      provider.salted_sha512_pbkdf2?(salted_sha512_password).should be_false
-      provider.salted_sha512_pbkdf2?("any other string").should be_false
+      expect(provider.salted_sha512_pbkdf2?(salted_sha512_password)).to be_false
+      expect(provider.salted_sha512_pbkdf2?("any other string")).to be_false
     end
   end
 
   describe "salted_sha512?" do
     it "should return true when the string is a salted_sha512_pbkdf2 hash" do
-      provider.salted_sha512_pbkdf2?(salted_sha512_pbkdf2_password).should be_true
+      expect(provider.salted_sha512_pbkdf2?(salted_sha512_pbkdf2_password)).to be_true
     end
 
     it "should return false otherwise" do
-      provider.salted_sha512?(salted_sha512_pbkdf2_password).should be_false
-      provider.salted_sha512?("any other string").should be_false
+      expect(provider.salted_sha512?(salted_sha512_pbkdf2_password)).to be_false
+      expect(provider.salted_sha512?("any other string")).to be_false
     end
   end
 
@@ -643,9 +647,9 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
         it "password_shadow_info should have salted-sha-512 format" do
           shadow_info = provider.prepare_password_shadow_info
-          shadow_info.should have_key("SALTED-SHA512")
+          expect(shadow_info).to have_key("SALTED-SHA512")
           info = shadow_info["SALTED-SHA512"].string.unpack('H*').first
-          provider.salted_sha512?(info).should be_true
+          expect(provider.salted_sha512?(info)).to be_true
         end
       end
 
@@ -654,10 +658,10 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
         it "password_shadow_info should have salted-sha-512 format" do
           shadow_info = provider.prepare_password_shadow_info
-          shadow_info.should have_key("SALTED-SHA512")
+          expect(shadow_info).to have_key("SALTED-SHA512")
           info = shadow_info["SALTED-SHA512"].string.unpack('H*').first
-          provider.salted_sha512?(info).should be_true
-          info.should eq(vagrant_sha_512)
+          expect(provider.salted_sha512?(info)).to be_true
+          expect(info).to eq(vagrant_sha_512)
         end
       end
     end
@@ -673,12 +677,12 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
           it "password_shadow_info should have salted-sha-512 format" do
             shadow_info = provider.prepare_password_shadow_info
-            shadow_info.should have_key("SALTED-SHA512-PBKDF2")
-            shadow_info["SALTED-SHA512-PBKDF2"].should have_key("entropy")
-            shadow_info["SALTED-SHA512-PBKDF2"].should have_key("salt")
-            shadow_info["SALTED-SHA512-PBKDF2"].should have_key("iterations")
+            expect(shadow_info).to have_key("SALTED-SHA512-PBKDF2")
+            expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("entropy")
+            expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("salt")
+            expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("iterations")
             info = shadow_info["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack('H*').first
-            provider.salted_sha512_pbkdf2?(info).should be_true
+            expect(provider.salted_sha512_pbkdf2?(info)).to be_true
           end
         end
 
@@ -689,13 +693,13 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
           it "password_shadow_info should have salted-sha-512 format" do
             shadow_info = provider.prepare_password_shadow_info
-            shadow_info.should have_key("SALTED-SHA512-PBKDF2")
-            shadow_info["SALTED-SHA512-PBKDF2"].should have_key("entropy")
-            shadow_info["SALTED-SHA512-PBKDF2"].should have_key("salt")
-            shadow_info["SALTED-SHA512-PBKDF2"].should have_key("iterations")
+            expect(shadow_info).to have_key("SALTED-SHA512-PBKDF2")
+            expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("entropy")
+            expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("salt")
+            expect(shadow_info["SALTED-SHA512-PBKDF2"]).to have_key("iterations")
             info = shadow_info["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack('H*').first
-            provider.salted_sha512_pbkdf2?(info).should be_true
-            info.should eq(vagrant_sha_512_pbkdf2)
+            expect(provider.salted_sha512_pbkdf2?(info)).to be_true
+            expect(info).to eq(vagrant_sha_512_pbkdf2)
           end
         end
       end
@@ -708,15 +712,14 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
     end
 
     it "should sleep and flush the dscl cache before saving the password" do
-      provider.should_receive(:prepare_password_shadow_info).and_return({ })
+      expect(provider).to receive(:prepare_password_shadow_info).and_return({ })
       mock_shellout = double("Mock::Shellout")
-      mock_shellout.stub(:run_command)
-      Mixlib::ShellOut.should_receive(:new).and_return(mock_shellout)
-      provider.should_receive(:read_user_info)
-      provider.should_receive(:dscl_set)
-      provider.should_receive(:sleep).with(3)
-      provider.should_receive(:shell_out).with("dscacheutil '-flushcache'")
-      provider.should_receive(:save_user_info)
+      allow(mock_shellout).to receive(:run_command)
+      expect(Mixlib::ShellOut).to receive(:new).and_return(mock_shellout)
+      expect(provider).to receive(:read_user_info)
+      expect(provider).to receive(:dscl_set)
+      expect(provider).to receive(:sleep).with(3)
+      expect(provider).to receive(:save_user_info)
       provider.set_password
     end
   end
@@ -729,33 +732,33 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
       end
 
       it "creates the user, comment field, sets uid, gid, configures the home directory, sets the shell, and sets the password" do
-        provider.should_receive :dscl_create_user
-        provider.should_receive :dscl_create_comment
-        provider.should_receive :dscl_set_uid
-        provider.should_receive :dscl_set_gid
-        provider.should_receive :dscl_set_home
-        provider.should_receive :dscl_set_shell
-        provider.should_receive :set_password
+        expect(provider).to receive :dscl_create_user
+        expect(provider).to receive :dscl_create_comment
+        expect(provider).to receive :dscl_set_uid
+        expect(provider).to receive :dscl_set_gid
+        expect(provider).to receive :dscl_set_home
+        expect(provider).to receive :dscl_set_shell
+        expect(provider).to receive :set_password
         provider.create_user
       end
 
       it "creates the user and sets the comment field" do
-        provider.should_receive(:run_dscl).with("create /Users/toor").and_return(true)
+        expect(provider).to receive(:run_dscl).with("create /Users/toor").and_return(true)
         provider.dscl_create_user
       end
 
       it "sets the comment field" do
-        provider.should_receive(:run_dscl).with("create /Users/toor RealName '#mockssuck'").and_return(true)
+        expect(provider).to receive(:run_dscl).with("create /Users/toor RealName '#mockssuck'").and_return(true)
         provider.dscl_create_comment
       end
 
       it "should run run_dscl with create /Users/user PrimaryGroupID to set the users primary group" do
-        provider.should_receive(:run_dscl).with("create /Users/toor PrimaryGroupID '1001'").and_return(true)
+        expect(provider).to receive(:run_dscl).with("create /Users/toor PrimaryGroupID '1001'").and_return(true)
         provider.dscl_set_gid
       end
 
       it "should run run_dscl with create /Users/user UserShell to set the users login shell" do
-        provider.should_receive(:run_dscl).with("create /Users/toor UserShell '/usr/bin/false'").and_return(true)
+        expect(provider).to receive(:run_dscl).with("create /Users/toor UserShell '/usr/bin/false'").and_return(true)
         provider.dscl_set_shell
       end
     end
@@ -767,15 +770,15 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
       end
 
       it "should map the group name to a numeric ID when the group exists" do
-        provider.should_receive(:run_dscl).with("read /Groups/newgroup PrimaryGroupID").ordered.and_return("PrimaryGroupID: 1001\n")
-        provider.should_receive(:run_dscl).with("create /Users/toor PrimaryGroupID '1001'").ordered.and_return(true)
+        expect(provider).to receive(:run_dscl).with("read /Groups/newgroup PrimaryGroupID").ordered.and_return("PrimaryGroupID: 1001\n")
+        expect(provider).to receive(:run_dscl).with("create /Users/toor PrimaryGroupID '1001'").ordered.and_return(true)
         provider.dscl_set_gid
       end
 
       it "should raise an exception when the group does not exist" do
         shell_return = ShellCmdResult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", 'err', -14136)
-        provider.should_receive(:shell_out).with('dscl . -read /Groups/newgroup PrimaryGroupID').and_return(shell_return)
-        lambda { provider.dscl_set_gid }.should raise_error(Chef::Exceptions::GroupIDNotFound)
+        expect(provider).to receive(:shell_out).with('dscl . -read /Groups/newgroup PrimaryGroupID').and_return(shell_return)
+        expect { provider.dscl_set_gid }.to raise_error(Chef::Exceptions::GroupIDNotFound)
       end
     end
   end
@@ -794,13 +797,13 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
     end
 
     it "sets the user, comment field, uid, gid, moves the home directory, sets the shell, and sets the password" do
-      provider.should_receive :dscl_create_user
-      provider.should_receive :dscl_create_comment
-      provider.should_receive :dscl_set_uid
-      provider.should_receive :dscl_set_gid
-      provider.should_receive :dscl_set_home
-      provider.should_receive :dscl_set_shell
-      provider.should_receive :set_password
+      expect(provider).to receive :dscl_create_user
+      expect(provider).to receive :dscl_create_comment
+      expect(provider).to receive :dscl_set_uid
+      expect(provider).to receive :dscl_set_gid
+      expect(provider).to receive :dscl_set_home
+      expect(provider).to receive :dscl_set_shell
+      expect(provider).to receive :set_password
       provider.create_user
     end
   end
@@ -815,14 +818,15 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
     end
 
     it "sets the gid" do
-      provider.should_receive :dscl_set_gid
+      expect(provider).to receive :dscl_set_gid
       provider.manage_user
     end
   end
 
   describe "when the user exists" do
     before do
-      provider.should_receive(:shell_out).with("plutil -convert xml1 -o - /var/db/dslocal/nodes/Default/users/toor.plist") do
+      expect(provider).to receive(:shell_out).with("dscacheutil '-flushcache'")
+      expect(provider).to receive(:shell_out).with("plutil -convert xml1 -o - /var/db/dslocal/nodes/Default/users/toor.plist") do
         ShellCmdResult.new(File.read(File.join(CHEF_SPEC_DATA, "mac_users/10.9.plist.xml")), "", 0)
       end
       provider.load_current_resource
@@ -831,20 +835,20 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
     describe "when Chef is removing the user" do
       it "removes the user from the groups and deletes home directory when the resource is configured to manage home" do
         new_resource.supports({ :manage_home => true })
-        provider.should_receive(:run_dscl).with("list /Groups").and_return("my_group\nyour_group\nreal_group\n")
-        provider.should_receive(:run_dscl).with("read /Groups/my_group").and_raise(Chef::Exceptions::DsclCommandFailed) # Empty group
-        provider.should_receive(:run_dscl).with("read /Groups/your_group").and_return("GroupMembership: not_you")
-        provider.should_receive(:run_dscl).with("read /Groups/real_group").and_return("GroupMembership: toor")
-        provider.should_receive(:run_dscl).with("delete /Groups/real_group GroupMembership 'toor'")
-        provider.should_receive(:run_dscl).with("delete /Users/toor")
-        FileUtils.should_receive(:rm_rf).with("/Users/vagrant")
+        expect(provider).to receive(:run_dscl).with("list /Groups").and_return("my_group\nyour_group\nreal_group\n")
+        expect(provider).to receive(:run_dscl).with("read /Groups/my_group").and_raise(Chef::Exceptions::DsclCommandFailed) # Empty group
+        expect(provider).to receive(:run_dscl).with("read /Groups/your_group").and_return("GroupMembership: not_you")
+        expect(provider).to receive(:run_dscl).with("read /Groups/real_group").and_return("GroupMembership: toor")
+        expect(provider).to receive(:run_dscl).with("delete /Groups/real_group GroupMembership 'toor'")
+        expect(provider).to receive(:run_dscl).with("delete /Users/toor")
+        expect(FileUtils).to receive(:rm_rf).with("/Users/vagrant")
         provider.remove_user
       end
     end
 
     describe "when user is not locked" do
       it "determines the user as not locked" do
-        provider.should_not be_locked
+        expect(provider).not_to be_locked
       end
     end
 
@@ -855,11 +859,11 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
       end
 
       it "determines the user as not locked" do
-        provider.should be_locked
+        expect(provider).to be_locked
       end
 
       it "can unlock the user" do
-        provider.should_receive(:run_dscl).with("create /Users/toor AuthenticationAuthority ';ShadowHash;HASHLIST:<SALTED-SHA512-PBKDF2>'")
+        expect(provider).to receive(:run_dscl).with("create /Users/toor AuthenticationAuthority ';ShadowHash;HASHLIST:<SALTED-SHA512-PBKDF2>'")
         provider.unlock_user
       end
     end
@@ -867,7 +871,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
   describe "when locking the user" do
     it "should run run_dscl with append /Users/user AuthenticationAuthority ;DisabledUser; to lock the user account" do
-      provider.should_receive(:run_dscl).with("append /Users/toor AuthenticationAuthority ';DisabledUser;'")
+      expect(provider).to receive(:run_dscl).with("append /Users/toor AuthenticationAuthority ';DisabledUser;'")
       provider.lock_user
     end
   end

@@ -1,0 +1,106 @@
+#
+# Author:: Jay Mundrawala <jdm@getchef.com>
+# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require 'chef'
+require 'chef/util/powershell/cmdlet'
+
+describe Chef::Util::Powershell::Cmdlet do
+  before (:all) do
+    @node = Chef::Node.new
+    @cmdlet = Chef::Util::Powershell::Cmdlet.new(@node, 'Some-Commandlet')
+  end
+
+  describe '#validate_switch_name!' do
+    it 'should not raise an error if a name contains all upper case letters' do
+      @cmdlet.send(:validate_switch_name!, "HELLO")
+    end
+
+    it 'should not raise an error if the name contains all lower case letters' do
+      @cmdlet.send(:validate_switch_name!, "hello")
+    end
+
+    it 'should not raise an error if no special characters are used except _' do
+      @cmdlet.send(:validate_switch_name!, "hello_world")
+    end
+
+    %w{! @ # $ % ^ & * & * ( ) - = + \{ \} . ? < > \\ /}.each do |sym|
+      it "raises an Argument error if it configuration name contains #{sym}" do
+        expect {
+          @cmdlet.send(:validate_switch_name!, "Hello#{sym}")
+        }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
+  describe '#escape_parameter_value' do
+    # Is this list really complete?
+    %w{` " # '}.each do |c|
+      it "escapse #{c}" do
+        @cmdlet.send(:escape_parameter_value, "stuff #{c}").should eql("stuff `#{c}")
+      end
+    end
+
+    it 'does not do anything to a string without special characters' do
+      @cmdlet.send(:escape_parameter_value, 'stuff').should eql('stuff')
+    end
+  end
+
+  describe '#escape_string_parameter_value' do
+    it "surrounds a string with ''" do
+      @cmdlet.send(:escape_string_parameter_value, 'stuff').should eql("'stuff'")
+    end
+  end
+
+  describe '#command_switches_string' do
+    it 'raises an ArgumentError if the key is not a symbol' do
+      expect {
+        @cmdlet.send(:command_switches_string, {'foo' => 'bar'})
+      }.to raise_error(ArgumentError)
+    end
+
+    it 'does not allow invalid switch names' do
+      expect {
+        @cmdlet.send(:command_switches_string, {:foo! => 'bar'})
+      }.to raise_error(ArgumentError)
+    end
+
+    it 'ignores switches with a false value' do
+      @cmdlet.send(:command_switches_string, {foo: false}).should eql('')
+    end
+
+    it 'should correctly handle a value type of string' do
+      @cmdlet.send(:command_switches_string, {foo: 'bar'}).should eql("-foo 'bar'")
+    end
+
+    it 'should correctly handle a value type of string even when it is 0 length' do
+      @cmdlet.send(:command_switches_string, {foo: ''}).should eql("-foo ''")
+    end
+
+    it 'should not quote integers' do
+      @cmdlet.send(:command_switches_string, {foo: 1}).should eql("-foo 1")
+    end
+
+    it 'should not quote floats' do
+      @cmdlet.send(:command_switches_string, {foo: 1.0}).should eql("-foo 1.0")
+    end
+
+    it 'has just the switch when the value is true' do
+      @cmdlet.send(:command_switches_string, {foo: true}).should eql("-foo")
+    end
+  end
+end

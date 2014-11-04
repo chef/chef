@@ -21,6 +21,7 @@ require 'chef/chef_fs/file_system/not_found_error'
 require 'chef/chef_fs/file_system/operation_failed_error'
 require 'chef/role'
 require 'chef/node'
+require 'chef/json_compat'
 
 class Chef
   module ChefFS
@@ -80,13 +81,13 @@ class Chef
         end
 
         def read
-          Chef::JSONCompat.to_json_pretty(_read_hash)
+          Chef::JSONCompat.to_json_pretty(minimize_value(_read_json))
         end
 
-        def _read_hash
+        def _read_json
           begin
             # Minimize the value (get rid of defaults) so the results don't look terrible
-            minimize_value(root.get_json(api_path))
+            root.get_json(api_path)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "Timeout reading: #{e}"
           rescue Net::HTTPServerException => e
@@ -119,7 +120,7 @@ class Chef
 
           # Grab this value
           begin
-            value = _read_hash
+            value = _read_json
           rescue Chef::ChefFS::FileSystem::NotFoundError
             return [ false, :none, other_value_json ]
           end
@@ -169,7 +170,16 @@ class Chef
             end
           end
         end
+
+        def api_error_text(response)
+          begin
+            Chef::JSONCompat.parse(response.body)['error'].join("\n")
+          rescue
+            response.body
+          end
+        end
       end
+
     end
   end
 end

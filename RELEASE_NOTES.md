@@ -1,5 +1,26 @@
 # Chef Client Release Notes 12.0.0:
 
+# Internal API Changes in this Release
+
+These changes do not impact any cookbook code, but may impact tools that
+use the code base as a library. Authors of tools that rely on Chef
+internals should review these changes carefully and update their
+applications.
+
+## Changes to CookbookUpload
+
+`Chef::CookbookUpload.new` previously took a path as the second
+argument, but due to internal changes, this parameter was not used, and
+it has been removed. See: https://github.com/opscode/chef/commit/12c9bed3a5a7ab86ff78cb660d96f8b77ad6395d
+
+## Changes to FileVendor
+
+`Chef::Cookbook::FileVendor` was previously configured by passing a
+block to the `on_create` method; it is now configured by calling either
+`fetch_from_remote` or `fetch_from_disk`. See: https://github.com/opscode/chef/commit/3b2b4de8e7f0d55524f2a0ccaf3e1aa9f2d371eb
+
+# End-User Changes
+
 ## Knife Prefers `config.rb` to `knife.rb`.
 
 Knife will now look for `config.rb` in preference to `knife.rb` for its
@@ -57,6 +78,69 @@ end
 
 The git provider already automatically sets `ENV['HOME']` and `ENV['GIT_SSH']` but those can both be overridden
 by passing them into the environment hash if the defaults are not appropriate.
+
+## DSCL user provider now supports Mac OS X 10.7 and above.
+
+DSCL user provider in Chef has supported setting passwords only on Mac OS X 10.6. In this release, Mac OS X versions 10.7 and above are now supported. Support for Mac OS X 10.6 is dropped from the dscl provider since this version is EOLed by Apple.
+
+In order to support configuring passwords for the users using shadow hashes two new attributes `salt` & `iterations` are added to the user resource. These attributes are required to make the new [SALTED-SHA512-PBKDF2](http://en.wikipedia.org/wiki/PBKDF2) style shadow hashes used in Mac OS X versions 10.8 and above.
+
+User resource on Mac supports setting password both using plain-text password or using the shadow hash. You can simply set the `password` attribute to the plain text password to configure the password for the user. However this is not ideal since including plain text passwords in cookbooks (even if they are private) is not a good idea. In order to set passwords using shadow hash you can follow the instructions below based on your Mac OS X version.
+
+## Mac OS X default package provider is now Homebrew
+
+Per [Chef RFC 016](https://github.com/opscode/chef-rfc/blob/master/rfc016-homebrew-osx-package-provider.md), the default provider for the `package` resource on Mac OS X is now [Homebrew](http://brew.sh). The [homebrew cookbook's](https://supermarket.getchef.com/cookbooks/homebrew) default recipe, or some other method is still required for getting homebrew installed on the system. The cookbook won't be strictly required just to install packages from homebrew on OS X, though. To use this, simply use the `package` resource, or the `homebrew_package` shortcut resource:
+
+```ruby
+package 'emacs'
+```
+
+Or,
+
+```ruby
+homebrew_package 'emacs'
+```
+
+The macports provider will still be available, and can be used with the shortcut resource, or by using the `provider` attribute:
+
+```ruby
+macports_package 'emacs'
+```
+
+Or,
+
+```ruby
+package 'emacs' do
+  provider Chef::Provider::Package::Macports
+end
+```
+
+### Providing `homebrew_user`
+
+Homebrew recommends being ran as a non-root user, whereas Chef recommends being ran with root privileges.  The
+`homebrew_package` provider has logic to try and determine which user to install Homebrew packages as.
+
+By default, the `homebrew_package` provider will try to execute the homebrew command as the owner of the `/usr/local/bin/brew`
+executable.  If that executable does not exist, Chef will try to find it by executing `which brew`.  If that cannot be
+found, Chef then errors.  The Homebrew recommendation is the default install, which will place the executable at
+`/usr/local/bin/brew` owned by a non-root user.
+
+You can circumvent this by providing the `homebrew_package` a `homebrew_user` attribute, like:
+
+```ruby
+# provided as a uid
+homebrew_package 'emacs' do
+  homebrew_user 1001
+end
+
+# provided as a string
+homebrew_package 'vim' do
+  homebrew_user 'user1'
+end
+```
+
+Chef will then execute the Homebrew command as that user.  The `homebrew_user` attribute can only be provided to the
+`homebrew_package` resource, not the `package` resource.
 
 ## DSCL user provider now supports Mac OS X 10.7 and above.
 
@@ -186,25 +270,6 @@ Informational messages from knife are now sent to stderr, allowing you to pipe t
 The `data_bag_item` dsl method can be used to load encrypted data bag items when an additional `secret` String parameter is included.
 If no `secret` is provided but the data bag item is encrypted, `Chef::Config[:encrypted_data_bag_secret]` will be checked.
 
-# Internal API Changes in this Release
-
-These changes do not impact any cookbook code, but may impact tools that
-use the code base as a library. Authors of tools that rely on Chef
-internals should review these changes carefully and update their
-applications.
-
-## Changes to CookbookUpload
-
-`Chef::CookbookUpload.new` previously took a path as the second
-argument, but due to internal changes, this parameter was not used, and
-it has been removed. See: https://github.com/opscode/chef/commit/12c9bed3a5a7ab86ff78cb660d96f8b77ad6395d
-
-## Changes to FileVendor
-
-`Chef::Cookbook::FileVendor` was previously configured by passing a
-block to the `on_create` method; it is now configured by calling either
-`fetch_from_remote` or `fetch_from_disk`. See: https://github.com/opscode/chef/commit/3b2b4de8e7f0d55524f2a0ccaf3e1aa9f2d371eb
-
 ## 'group' provider on OSX properly uses 'dscl' to determine existing groups
 
 On OSX, the 'group' provider would use 'etc' to determine existing groups,
@@ -237,3 +302,147 @@ work properly if the remote server implemented only the Chef 10 API.
 ## CookbookSiteStreamingUploader now uses ssl_verify_mode config option
 The CookbookSiteStreamingUploader now obeys the setting of ssl_verify_mode in the client config. Was previously ignoring the
 config setting and always set to VERIFY_NONE.
+
+## Result filtering on `search` API.
+`search` can take an optional `:filter_result`, which returns search data in the form specified
+by the given Hash. This works analogously to the partial_search method from the [partial_search cookbook](https://supermarket.getchef.com/cookbooks/partial_search),
+with `:filter_result` replacing `:keys`. You can also filter `knife search` results by supplying the `--filter-result`
+or `-f` option and a comma-separated string representation of the filter hash.
+
+## Unforked chef-client interval runs are disabled.
+We no longer allow unforked interval runs of `chef-client`. CLI arguments with flag combinations `--interval SEC --no-fork` or
+`--daemonize --no-fork` will fail immediately. Configuration options `interval` and `daemonize` will also fail with
+error when `client_fork false` is set.
+
+## Interval sleep occurs before converge
+When running chef-client or chef-solo at intervals, the application will perform splay and interval sleep
+before converging chef. (In previous releases, splay sleep occurred first, then convergance, then interval sleep).
+
+## `--dry-run` option for knife cookbook site share
+"knife cookbook site share" command now accepts a new command line option `--dry-run`. When this option is specified, command
+  will display the files that are about to be uploaded to the Supermarket.
+
+## New cookbook metadata attributes for Supermarket
+Cookbook metadata now accepts `source_url` and `issues_url` that should point to the source code of the cookbook and
+  the issue tracker of the cookbook. These attributes are being used by Supermarket.
+
+## CHEF RFC-017 - File Specificity Overhaul
+RFC-017 has two great advantages:
+1. It makes it easy to create cookbooks by removing the need for `default/` folder when adding templates and cookbook files.
+2. It enables the configuring a custom lookup logic when Chef is attempting to find cookbook files.
+
+You can read more about this RFC [here](https://github.com/opscode/chef-rfc/blob/master/rfc017-file-specificity.md).
+
+## JSON output for `knife status`
+`knife status` command now supports two additional output formats:
+
+1. `--medium`: Includes normal attributes in the output and presents the output as JSON.
+1. `--long`: Includes all attributes in the output and presents the output as JSON.
+
+## AIX Service Provider Support
+
+Chef 12 now supports managing services on AIX, using both the SRC (Subsystem Resource Controller) as well as the BSD-style init system. SRC is the default; the BSD-style provider can be selected using `Chef::Provider::Service::AixInit`.
+
+The SRC service provider will manage services as well as service groups. However, because SRC has no standard mechanism for starting services on system boot, `action :enable` and `action :disable` are not supported for SRC services. You may use the `execute` resource to invoke `mkitab`, for example, to add lines to `/etc/inittab` with the right parameters.
+
+## `guard_interpreter` attribute for `powershell_script` defaults to `:powershell_script`
+The default `guard_interpreter` attribute for the `powershell_script` resource is `:powershell_script`. This means that the
+64-bit version of the PowerShell shell will be used to evaluate strings supplied to the `not_if` or `only_if` attributes of the
+resource. Prior to this release, the default value was `:default`, which used the 32-bit version of the `cmd.exe` shell to evaluate the guard.
+
+If you are using guard expressions with the `powershell_script` resource in your recipes, you should override the
+`guard_interpreter` attribute to restore the behavior of guards for this resource in Chef 11:
+
+```ruby
+# The not_if will be evaluated with 64-bit PowerShell by default,
+# So override it to :default if your guard assumes 32-bit cmd.exe
+powershell_script 'make_safe_backup' do
+  guard_interpreter :default # Chef 11 behavior
+  code 'cp ~/data/nodes.json $env:systemroot/system32/data/nodes.bak'
+
+  # cmd.exe (batch) guard below behaves differently in 32-bit vs. 64-bit processes
+  not_if 'if NOT EXIST %SYSTEMROOT%\\system32\\data\\nodes.bak exit /b 1' 
+end
+```
+
+If the code in your guard expression does not rely on the `cmd.exe` interpreter, e.g. it simply executes a process that should
+return an exit code such as `findstr datafile sentinelvalue`, and does not rely on being executed from a 32-bit process, then it
+should function identically when executed from the PowerShell shell and it is not necessary to override the attribute
+to`:default` to restore Chef 11 behavior.
+
+Note that with this change guards for the `powershell_script` resource will also inherit some attributes like `:architecture`, `:cwd`,
+`:environment`, and `:path`.
+
+## `guard_interpreter` attribute for `batch` resource defaults to `:batch`
+
+The default `guard_interpreter` attribute for the `batch` resource is now `:batch`. This means that the
+64-bit version of the `cmd.exe` shell will be used to evaluate strings supplied to the `not_if` or `only_if` attributes of the
+resource. Prior to this release, the default value was `:default`, which used the 32-bit version of the `cmd.exe` shell to evaluate the guard.
+
+Note that with this change guards for the `batch` resource will also inherit some attributes like `:architecture`, `:cwd`,
+`:environment`, and `:path`.
+
+Unless the code you supply to guard attributes (`only_if` and `not_if`) has logic that requires that the 32-bit version of
+`cmd.exe` be used to evaluate the guard or you need to avoid the inheritance behavior of guard options, that code should function identically in this release of Chef and Chef 11 releases.
+
+If an assumption of a 32-bit process for guard evaluation exists in your code, you can obtain the equivalent of Chef 11's 32-bit
+process behavior by supplying an architecture attribute to the guard as follows:
+
+```ruby
+# The not_if will be evaluated with 64-bit cmd.exe by default,
+# so you can verride it with the :architecture guard option to
+# make it 32-bit as it is in Chef 11
+batch 'make_safe_backup' do
+  code 'copy %USERPROFILE%\\data\\nodes.json %SYSTEMROOT%\\system32\\data\\nodes.bak'
+
+  # cmd.exe (batch) guard code below behaves differently in 32-bit vs. 64-bit processes
+  not_if 'if NOT EXIST %SYSTEMROOT%\\system32\\data\\nodes.bak exit /b 1', :architecture => :i386
+end
+```
+
+If in addition to the 32-bit process assumption you also need to avoid the inheritance behavior, you can revert completely to
+the Chef 11's 32-bit process, no inheritance behavior by supplying `:default` for the `guard_interpreter` as follows:
+
+```ruby
+# The not_if will be evaluated with 64-bit cmd.exe by default,
+# so override it to :default if your guard assumes 32-bit cmd.exe
+batch 'make_safe_backup' do
+  guard_interpreter :default # Revert to Chef 11 behavior
+  code 'copy %USERPROFILE%\\data\\nodes.json %SYSTEMROOT%\\system32\\data\\nodes.bak'
+
+  # cmd.exe (batch) guard code below behaves differently in 32-bit vs. 64-bit processes
+  not_if 'if NOT EXIST %SYSTEMROOT%\\system32\\data\\nodes.bak exit /b 1'
+end
+```
+
+## Chef Client logs events to Windows Event Log on Windows
+
+Chef 12 will log a small set of events to Windows Event Log. This feature is enabled by default, and can be disabled by the new config option `disable_event_logger`.
+
+Events by default will be logged to the "Application" event log on Windows. Chef will log event when:
+* Run starts
+* Run completes
+* Run fails
+
+Information about these events can be found in `Chef::EventDispatch::Base`.
+
+## Resource and Provider Resolution changes
+
+Resource resolution and provider resolution has been made more dynamic in Chef-12.  The `provides` syntax on the 
+Chef::Resource DSL (which has existed for 4 years) has been expanded to use platform_family and os and has been applied
+to most resources.  This does early switching at compile time between different resources based on the node data returned
+from ohai.  The effect is that previously the package resource on a CentOS machine invoked via `package "foo"` would be
+an instance of Chef::Resource::Package but would use the Chef::Provider::Package::Yum provider.  After the changes to
+the resources the resource will be an instance of Chef::Resource::YumPackage and will do the correct validation for
+the yum package provider.
+
+For the service resource it uses late validation via the Chef::ProviderResolver and will dynamically select which
+service provider to use at package converge time right before the service provider actions are invoked.  This means
+that if Chef is used to install systemd (or alternatively to remove it) then the ProviderResolver will be invoked
+and will be able to determine the proper provider to start the service.  It also allows for multiple providers to
+be invoked for a resource on a case-by-case basis.  The old static one-to-one Chef::Platform provider mapping was
+inflexible since it cannot handle the case where an admin installs or removes a subsystem from a distro, and cannot
+handle the case where there may be multiple providers that handle different kinds of services (e.g. Upstart, SysV,
+etc).  This fixes the Ubuntu 14.04 service resource problems, and can handle arbitrarily complicated future distro
+and administrative preferences dynamically.
+

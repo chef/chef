@@ -33,7 +33,7 @@ emerge, etc.):
 * git
 * C compiler, header files, etc. On Ubuntu/debian, use the
   `build-essential` package.
-* ruby 1.8.7 or later (1.9.3+ recommended)
+* ruby 1.9.3 or later
 * rubygems
 * bundler
 

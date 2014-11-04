@@ -45,22 +45,42 @@ class Chef
 
       def initialize(positivity, parent_resource, command=nil, command_opts={}, &block)
         @positivity = positivity
-        case command
+        @command, @command_opts = command, command_opts
+        @block = block
+        @block_given = block_given?
+        @parent_resource = parent_resource
+
+        raise ArgumentError, "only_if/not_if requires either a command or a block" unless command || block_given?
+      end
+
+      def configure
+        case @command
         when String, Array
-          @guard_interpreter = new_guard_interpreter(parent_resource, command, command_opts, &block)
-          @command, @command_opts = command, command_opts
+          @guard_interpreter = new_guard_interpreter(@parent_resource, @command, @command_opts, &@block)
           @block = nil
         when nil
-          raise ArgumentError, "only_if/not_if requires either a command or a block" unless block_given?
+          # We should have a block if we get here
+          # Check to see if the user set the guard_interpreter on the parent resource. Note that
+          # this error will not be raised when using the default_guard_interpreter
+          if @parent_resource.guard_interpreter != @parent_resource.default_guard_interpreter
+            msg = "#{@parent_resource.name} was given a guard_interpreter of #{@parent_resource.guard_interpreter}, "
+            msg << "but not given a command as a string. guard_interpreter does not support blocks (because they just contain ruby)."
+            raise ArgumentError, msg
+          end
+
           @guard_interpreter = nil
           @command, @command_opts = nil, nil
-          @block = block
         else
-          raise ArgumentError, "Invalid only_if/not_if command: #{command.inspect} (#{command.class})"
+          # command was passed, but it wasn't a String or Array
+          raise ArgumentError, "Invalid only_if/not_if command, expected a string or array: #{command.inspect} (#{command.class})"
         end
       end
 
+      # this is run during convergence via Chef::Resource#run_action -> Chef::Resource#should_skip?
       def continue?
+        # configure late in case guard_interpreter is specified on the resource after the conditional
+        configure
+
         case @positivity
         when :only_if
           evaluate
@@ -109,7 +129,8 @@ class Chef
         if parent_resource.guard_interpreter == :default
           guard_interpreter = Chef::GuardInterpreter::DefaultGuardInterpreter.new(command, opts)
         else
-          guard_interpreter = Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, command, opts)
+          cmd = command.is_a?(Array) ? command.join(" ") : command
+          guard_interpreter = Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, cmd, opts)
         end
       end
 

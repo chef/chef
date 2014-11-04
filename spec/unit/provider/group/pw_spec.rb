@@ -37,19 +37,19 @@ describe Chef::Provider::Group::Pw do
 
   describe "when setting options for the pw command" do
     it "does not set the gid option if gids match or are unmanaged" do
-      @provider.set_options.should ==  " wheel"
+      expect(@provider.set_options).to eq(" wheel")
     end
 
     it "sets the option for gid if it is not nil" do
       @new_resource.gid(42)
-      @provider.set_options.should eql(" wheel -g '42'")
+      expect(@provider.set_options).to eql(" wheel -g '42'")
     end
   end
 
   describe "when creating a group" do
     it "should run pw groupadd with the return of set_options and set_members_option" do
       @new_resource.gid(23)
-      @provider.should_receive(:run_command).with({ :command => "pw groupadd wheel -g '23' -M root,aj" }).and_return(true)
+      expect(@provider).to receive(:run_command).with({ :command => "pw groupadd wheel -g '23' -M root,aj" }).and_return(true)
       @provider.create_group
     end
   end
@@ -59,8 +59,8 @@ describe Chef::Provider::Group::Pw do
     it "should run pw groupmod with the return of set_options" do
       @new_resource.gid(42)
       @new_resource.members(["someone"])
-      @provider.should_receive(:run_command).with({ :command => "pw groupmod wheel -g '42' -m someone" }).and_return(true)
-      @provider.should_receive(:run_command).with({ :command => "pw groupmod wheel -g '42' -d root,aj" }).and_return(true)
+      expect(@provider).to receive(:run_command).with({ :command => "pw groupmod wheel -g '42' -m someone" }).and_return(true)
+      expect(@provider).to receive(:run_command).with({ :command => "pw groupmod wheel -g '42' -d root,aj" }).and_return(true)
       @provider.manage_group
     end
 
@@ -68,7 +68,7 @@ describe Chef::Provider::Group::Pw do
 
   describe "when removing the group" do
     it "should run pw groupdel with the new resources group name" do
-      @provider.should_receive(:run_command).with({ :command => "pw groupdel wheel" }).and_return(true)
+      expect(@provider).to receive(:run_command).with({ :command => "pw groupdel wheel" }).and_return(true)
       @provider.remove_group
     end
   end
@@ -77,44 +77,44 @@ describe Chef::Provider::Group::Pw do
 
     describe "with an empty members array in both the new and current resource" do
       before do
-        @new_resource.stub(:members).and_return([])
-        @current_resource.stub(:members).and_return([])
+        allow(@new_resource).to receive(:members).and_return([])
+        allow(@current_resource).to receive(:members).and_return([])
       end
 
       it "should set no options" do
-        @provider.set_members_options.should eql([ ])
+        expect(@provider.set_members_options).to eql([ ])
       end
     end
 
     describe "with an empty members array in the new resource and existing members in the current resource" do
       before do
-        @new_resource.stub(:members).and_return([])
-        @current_resource.stub(:members).and_return(["all", "your", "base"])
+        allow(@new_resource).to receive(:members).and_return([])
+        allow(@current_resource).to receive(:members).and_return(["all", "your", "base"])
       end
 
       it "should log an appropriate message" do
-        Chef::Log.should_receive(:debug).with("group[wheel] removing group members: all,your,base")
+        expect(Chef::Log).to receive(:debug).with("group[wheel] removing group members: all,your,base")
         @provider.set_members_options
       end
 
       it "should set the -d option with the members joined by ','" do
-        @provider.set_members_options.should eql([ " -d all,your,base" ])
+        expect(@provider.set_members_options).to eql([ " -d all,your,base" ])
       end
     end
 
     describe "with supplied members array in the new resource and an empty members array in the current resource" do
       before do
-        @new_resource.stub(:members).and_return(["all", "your", "base"])
-        @current_resource.stub(:members).and_return([])
+        allow(@new_resource).to receive(:members).and_return(["all", "your", "base"])
+        allow(@current_resource).to receive(:members).and_return([])
       end
 
       it "should log an appropriate debug message" do
-        Chef::Log.should_receive(:debug).with("group[wheel] adding group members: all,your,base")
+        expect(Chef::Log).to receive(:debug).with("group[wheel] adding group members: all,your,base")
         @provider.set_members_options
       end
 
       it "should set the -m option with the members joined by ','" do
-        @provider.set_members_options.should eql([ " -m all,your,base" ])
+        expect(@provider.set_members_options).to eql([ " -m all,your,base" ])
       end
     end
   end
@@ -126,13 +126,13 @@ describe Chef::Provider::Group::Pw do
       @provider.define_resource_requirements
     end
     it "should raise an error if the required binary /usr/sbin/pw doesn't exist" do
-      File.should_receive(:exists?).with("/usr/sbin/pw").and_return(false)
-      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Group)
+      expect(File).to receive(:exists?).with("/usr/sbin/pw").and_return(false)
+      expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Group)
     end
 
     it "shouldn't raise an error if /usr/sbin/pw exists" do
-      File.stub(:exists?).and_return(true)
-      lambda { @provider.process_resource_requirements }.should_not raise_error
+      allow(File).to receive(:exists?).and_return(true)
+      expect { @provider.process_resource_requirements }.not_to raise_error
     end
   end
 end
