@@ -85,7 +85,7 @@ class Chef
       # Register each controls group with the world, which will handle
       # the ordering of the audits that will be run.
       def register_controls_groups
-        run_context.controls_groups.each { |ctls_grp| world.register(ctls_grp) }
+        @run_context.controls_groups.each { |ctls_grp| world.register(ctls_grp) }
       end
 
     end
