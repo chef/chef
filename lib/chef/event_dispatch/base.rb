@@ -230,15 +230,32 @@ class Chef
       end
 
       # Called before audit phase starts
-      def audit_start(run_context)
+      def audit_phase_start(run_context)
       end
 
-      # Called when the audit phase is finished.
-      def audit_complete
+      # Called when audit phase successfully finishes
+      def audit_phase_complete
       end
 
-      # Called if the audit phase fails
-      def audit_failed(exception)
+      # Called if there is an uncaught exception during the audit phase.  The audit runner should
+      # be catching and handling errors from the examples, so this is only uncaught errors (like
+      # bugs in our handling code)
+      def audit_phase_failed(exception)
+      end
+
+      def control_group_start(name)
+        # TODO use this only for stdout formatting, controls indentation
+      end
+
+      def control_group_end
+      end
+
+      def control_example_success(description)
+        # TODO Use this for both stdout and resource_reporter, need to pass ancestor tree for resource_reporter
+        # but that is ignored by stdout
+      end
+
+      def control_example_failure(description, exception)
       end
 
       # TODO: need events for notification resolve?
