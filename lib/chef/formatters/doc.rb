@@ -156,17 +156,57 @@ class Chef
         converge_complete
       end
 
-      def audit_start(run_context)
-        # TODO read the number of `controls` blocks to run from the run_context.audit_runner
-        puts_line "Running collected audits"
+      #############
+      # TODO
+      # Make all these document printers neater
+      #############
+
+      # Called before audit phase starts
+      def audit_phase_start(run_context)
+        puts_line ""
+        puts_line "Audit phase starting"
       end
 
-      def audit_complete
-        # TODO
+      # Called when audit phase successfully finishes
+      def audit_phase_complete
+        puts_line "Audit phase ended"
       end
 
-      def audit_failed(exception)
-        # TODO
+      # Called if there is an uncaught exception during the audit phase.  The audit runner should
+      # be catching and handling errors from the examples, so this is only uncaught errors (like
+      # bugs in our handling code)
+      def audit_phase_failed(error)
+        puts_line "Audit phase exception:"
+        indent
+        # TODO error_mapper ?
+        puts_line "#{error.message}"
+        error.backtrace.each do |l|
+          puts_line l
+        end
+      end
+
+      def control_group_start(name)
+        puts_line "Control group #{name} started"
+        indent
+      end
+
+      def control_group_end
+        unindent
+      end
+
+      def control_example_success(description)
+        puts_line "SUCCESS - #{description}"
+      end
+
+      def control_example_failure(description, error)
+        puts_line "FAILURE - #{description}"
+        indent
+        # TODO error_mapper ?
+        puts_line "#{error.message}"
+        # error.backtrace.each do |l|
+        #   puts_line l
+        # end
+        unindent
       end
 
       # Called before action is executed on a resource.
