@@ -78,7 +78,7 @@ describe Chef::Provider::Service::Openbsd do
     end
 
     it "should set init_command to nil if it can't find anything" do
-      allow(::File).to receive(:exist?).and_return(false)
+      expect(::File).to receive(:exist?).with('/etc/rc.d/sndiod').and_return(false)
       expect(provider.init_command).to be nil
     end
   end
@@ -127,83 +127,6 @@ describe Chef::Provider::Service::Openbsd do
         expect(current_resource.running).to be false
       end
     end
-
-    context "when we have a 'ps' attribute" do
-      let(:stdout) do
-        StringIO.new(<<-PS_SAMPLE)
-413  ??  Ss     0:02.51 /usr/sbin/syslogd -s
-539  ??  Is     0:00.14 /usr/sbin/sshd
-545  ??  Ss     0:17.53 sendmail: accepting connections (sendmail)
-PS_SAMPLE
-      end
-      let(:status) { double(:stdout => stdout, :exitstatus => 0) }
-
-      before do
-        node.automatic_attrs[:command] = {:ps => "ps -ax"}
-      end
-
-      it "should shell_out! the node's ps command" do
-        expect(provider).to receive(:shell_out!).with(node[:command][:ps]).and_return(status)
-        provider.determine_current_status!
-      end
-
-      it "should read stdout of the ps command" do
-        allow(provider).to receive(:shell_out!).and_return(status)
-        expect(stdout).to receive(:each_line).and_return(true)
-        provider.determine_current_status!
-      end
-
-      context "when the regex matches the output" do
-        let(:stdout) do
-          StringIO.new(<<-PS_SAMPLE)
-555  ??  Ss     0:05.16 /usr/sbin/cron -s
- 9881  ??  S<s     0:06.67 /usr/bin/sndiod
-          PS_SAMPLE
-        end
-
-        it "should set running to true" do
-          allow(provider).to receive(:shell_out!).and_return(status)
-          provider.determine_current_status!
-          expect(current_resource.running).to be_true
-        end
-      end
-
-      it "should set running to false if the regex doesn't match" do
-        allow(provider).to receive(:shell_out!).and_return(status)
-        provider.determine_current_status!
-        expect(current_resource.running).to be_false
-      end
-
-      it "should set running to nil if ps fails" do
-        allow(provider).to receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
-        provider.determine_current_status!
-        expect(current_resource.running).to be_nil
-        expect(provider.status_load_success).to be_nil
-      end
-
-      context "when ps command is nil" do
-        before do
-          node.automatic_attrs[:command] = {:ps => nil}
-        end
-
-        it "should set running to nil" do
-          pending "superclass raises no conversion of nil to string which seems broken"
-          provider.determine_current_status!
-          expect(current_resource.running).to be_nil
-        end
-      end
-
-      context "when ps is empty string" do
-        before do
-          node.automatic_attrs[:command] = {:ps => ""}
-        end
-
-        it "should set running to nil" do
-          provider.determine_current_status!
-          expect(current_resource.running).to be_nil
-        end
-      end
-    end
   end
 
   describe Chef::Provider::Service::Openbsd, "determine_enabled_status!" do
@@ -213,13 +136,6 @@ PS_SAMPLE
       current_resource.service_name(new_resource.service_name)
 
       allow(provider).to receive(:service_enable_variable_name).and_return("#{new_resource.service_name}_enable")
-    end
-
-    context "when the service is not builtin" do
-      before do
-        expect(::File).to receive(:exist?).with("/etc/rc.conf").and_return(false)
-      end
-      pending
     end
 
     context "when the service is builtin" do
@@ -460,10 +376,6 @@ PS_SAMPLE
     end
   end
 
-
-
-
-
   describe Chef::Provider::Service::Openbsd, "enable_service" do
     before do
       provider.current_resource = current_resource
@@ -537,7 +449,7 @@ PS_SAMPLE
           provider.rc_conf_local = ''
         end
         it "should enable the service by adding it to the pkg_scripts list" do
-          expect(::File).to receive(:write).with('/etc/rc.conf.local', "pkg_scripts=\"#{new_resource.service_name}\"")
+          expect(::File).to receive(:write).with('/etc/rc.conf.local', "\npkg_scripts=\"#{new_resource.service_name}\"\n")
           expect(provider.is_enabled?).to be false
           provider.enable_service
           expect(provider.is_enabled?).to be true
