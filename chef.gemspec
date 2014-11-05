@@ -35,15 +35,15 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'plist', '~> 3.1.0'
 
+  %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_dependency gem, "~> 3.1" }
+  s.add_dependency "rspec_junit_formatter", "~> 0.2.0"
+  s.add_dependency "serverspec", "~> 2.3"
+  s.add_dependency "specinfra", "~> 2.4"
+
   s.add_development_dependency "rack"
 
   # Rake 10.2 drops Ruby 1.8 support
   s.add_development_dependency "rake", "~> 10.1.0"
-
-  # rspec_junit_formatter 0.2.0 drops ruby 1.8.7 support
-  s.add_development_dependency "rspec_junit_formatter", "~> 0.2.0"
-
-  %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 3.1" }
 
   s.bindir       = "bin"
   # chef-service-manager is a windows only executable.
