@@ -17,6 +17,7 @@
 #
 
 require 'rspec'
+require 'rspec/its'
 
 require 'serverspec/matcher'
 require 'serverspec/helper'
