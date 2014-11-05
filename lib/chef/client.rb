@@ -344,12 +344,12 @@ class Chef
     def run_audits(run_context)
       audit_exception = nil
       begin
-        @events.audit_start(run_context)
+        @events.audit_phase_start(run_context)
         auditor = Chef::Audit::Runner.new(run_context)
         auditor.run
-        @events.audit_complete
+        @events.audit_phase_complete
       rescue Exception => e
-        @events.audit_failed(e)
+        @events.audit_phase_failed(e)
         audit_exception = e
       end
       audit_exception

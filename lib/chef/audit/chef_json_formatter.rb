@@ -5,7 +5,7 @@ require 'ffi_yajl'
 class Chef
   class Audit
     class ChefJsonFormatter < ::RSpec::Core::Formatters::BaseFormatter
-      ::RSpec::Core::Formatters.register self, :example_group_started, :message, :stop, :close, :example_failed
+      ::RSpec::Core::Formatters.register self, :example_group_started, :stop, :close
 
       attr_reader :control_group_data
 
@@ -23,15 +23,6 @@ class Chef
           @control_group_data = ControlGroupData.new(notification.group.description)
           @@outer_example_group_found = true
         end
-      end
-
-      def example_failed(notification)
-        e = notification.example.metadata[:execution_result].exception
-        raise e unless e.kind_of? ::RSpec::Expectations::ExpectationNotMetError
-      end
-
-      def message(notification)
-        puts "message: #{notification}"
       end
 
       def stop(notification)

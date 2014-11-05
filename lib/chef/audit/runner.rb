@@ -17,11 +17,14 @@
 #
 
 require 'chef/audit'
+require 'chef/audit/audit_event_proxy'
 require 'chef/config'
 
 class Chef
   class Audit
     class Runner
+
+      attr_reader :run_context
 
       def initialize(run_context)
         @run_context = run_context
@@ -57,6 +60,8 @@ class Chef
       # for people-friendly output of audit results and json for reporting. Also
       # configures expectation frameworks.
       def setup
+        # We're setting the output stream, but that will only be used for error situations
+        # Our formatter forwards events to the Chef event message bus
         configuration.output_stream = Chef::Config[:log_location]
         configuration.error_stream  = Chef::Config[:log_location]
 
@@ -65,8 +70,8 @@ class Chef
       end
 
       def add_formatters
-        configuration.add_formatter(RSpec::Core::Formatters::DocumentationFormatter)
-        configuration.add_formatter(ChefJsonFormatter)
+        configuration.add_formatter(Chef::Audit::AuditEventProxy)
+        Chef::Audit::AuditEventProxy.events = run_context.events
       end
 
       # Explicitly disable :should syntax.
@@ -85,7 +90,7 @@ class Chef
       # Register each controls group with the world, which will handle
       # the ordering of the audits that will be run.
       def register_controls_groups
-        @run_context.controls_groups.each { |ctls_grp| world.register(ctls_grp) }
+        run_context.controls_groups.each { |ctls_grp| world.register(ctls_grp) }
       end
 
     end
