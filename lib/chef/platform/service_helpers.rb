@@ -118,9 +118,13 @@ class Chef
         def extract_systemd_services(command)
           output = shell_out!(command).stdout
           # first line finds e.g. "sshd.service"
-          services = output.lines.split.map { |l| l.split[0] }
+          services = []
+          output.each_line do |line|
+            fields = line.split
+            services << fields[0] if fields[1] == "loaded" || fields[1] == "not-found"
+          end
           # this splits off the suffix after the last dot to return "sshd"
-          services += services.map { |s| s.sub(/(.*)\..*/, '\1') }
+          services += services.select {|s| s.match(/\.service$/) }.map { |s| s.sub(/(.*)\.service$/, '\1') }
         rescue Mixlib::ShellOut::ShellCommandFailed
           false
         end
