@@ -285,7 +285,7 @@ describe Chef::Provider::Service::Openbsd do
         provider.start_service()
       end
 
-      it "should call '/usr/local/etc/rc.d/service_name faststart' if no start command is specified" do
+      it "should call '/usr/local/etc/rc.d/service_name start' if no start command is specified" do
         expect(provider).to receive(:shell_out_with_systems_locale!).with("/etc/rc.d/#{new_resource.service_name} start")
         provider.start_service()
       end
@@ -298,7 +298,7 @@ describe Chef::Provider::Service::Openbsd do
         provider.stop_service()
       end
 
-      it "should call '/usr/local/etc/rc.d/service_name faststop' if no stop command is specified" do
+      it "should call '/usr/local/etc/rc.d/service_name stop' if no stop command is specified" do
         expect(provider).to receive(:shell_out_with_systems_locale!).with("/etc/rc.d/#{new_resource.service_name} stop")
         provider.stop_service()
       end
