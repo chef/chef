@@ -31,7 +31,7 @@ class Chef
         end
 
         def self.supports?(resource, action)
-          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:upstart)
+          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
         end
 
         def load_current_resource

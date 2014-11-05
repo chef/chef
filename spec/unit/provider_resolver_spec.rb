@@ -70,6 +70,29 @@ describe Chef::ProviderResolver do
 
       it "when only the SysV init script exists, it returns a Service::Debian provider" do
         allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
+          .and_return( [ :initd, :systemd ] )
+        expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
+      end
+
+      it "when both SysV and Upstart scripts exist, it returns a Service::Upstart provider" do
+        allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
+          .and_return( [ :initd, :upstart, :systemd ] )
+        expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
+      end
+
+      it "when only the Upstart script exists, it returns a Service::Upstart provider" do
+        allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
+          .and_return( [ :upstart, :systemd ] )
+        expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
+      end
+
+      it "when both do not exist, it calls the old style provider resolver and returns a Debian Provider" do
+        allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
+          .and_return( [ :systemd ] )
+        expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
+      end
+      it "when only the SysV init script exists, it returns a Service::Debian provider" do
+        allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
           .and_return( [ :initd ] )
         expect(resolved_provider).to eql(Chef::Provider::Service::Debian)
       end
@@ -89,7 +112,7 @@ describe Chef::ProviderResolver do
       it "when both do not exist, it calls the old style provider resolver and returns a Debian Provider" do
         allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
           .and_return( [ ] )
-        expect(resolved_provider).to eql(Chef::Provider::Service::Debian)
+        expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
       end
     end
 
@@ -234,6 +257,12 @@ describe Chef::ProviderResolver do
             .and_return( [ :initd ] )
           expect(resolved_provider).to eql(Chef::Provider::Service::Insserv)
         end
+
+        it "uses the Service::Insserv Provider when there is no config" do
+          allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
+            .and_return( [ ] )
+          expect(resolved_provider).to eql(Chef::Provider::Service::Insserv)
+        end
       end
 
       context "when the user has installed upstart" do
@@ -241,7 +270,7 @@ describe Chef::ProviderResolver do
           stub_service_providers(:debian, :invokercd, :insserv, :upstart)
         end
 
-        it "when only the SysV init script exists, it returns a Service::Debian provider" do
+        it "when only the SysV init script exists, it returns an Insserv  provider" do
           allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
             .and_return( [ :initd ] )
           expect(resolved_provider).to eql(Chef::Provider::Service::Insserv)
@@ -262,7 +291,7 @@ describe Chef::ProviderResolver do
         it "when both do not exist, it calls the old style provider resolver and returns a Debian Provider" do
           allow(Chef::Platform::ServiceHelpers).to receive(:config_for_service).with("ntp")
             .and_return( [ ] )
-          expect(resolved_provider).to eql(Chef::Provider::Service::Insserv)
+          expect(resolved_provider).to eql(Chef::Provider::Service::Upstart)
         end
       end
     end
