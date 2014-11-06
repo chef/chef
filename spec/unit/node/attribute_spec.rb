@@ -1098,7 +1098,7 @@ describe Chef::Node::Attribute do
       @attributes.default = {}
       @attributes.default.foo = "bar"
       @attributes.should respond_to(:to_s)
-      expect(@attributes.to_s).to eq('foo: bar')
+      expect(@attributes.default.to_s).to eq('foo: bar')
     end
   end
 
