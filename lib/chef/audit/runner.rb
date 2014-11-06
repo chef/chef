@@ -48,11 +48,11 @@ class Chef
       # RSpec configuration and world objects are heavy, so let's wait until
       # we actually need them.
       def configuration
-        @configuration ||= RSpec::Core::Configuration.new
+        RSpec.configuration
       end
 
       def world
-        @world ||= RSpec::Core::World.new(configuration)
+        RSpec.world
       end
 
       # Configure audits before run.
@@ -64,14 +64,19 @@ class Chef
         # Our formatter forwards events to the Chef event message bus
         configuration.output_stream = Chef::Config[:log_location]
         configuration.error_stream  = Chef::Config[:log_location]
+        # TODO im pretty sure I only need this because im running locally in rvmsudo
+        configuration.backtrace_exclusion_patterns.push(Regexp.new("/Users".gsub("/", File::SEPARATOR)))
+        configuration.backtrace_exclusion_patterns.push(Regexp.new("(eval)"))
+        configuration.color = true
 
         add_formatters
         disable_should_syntax
       end
 
       def add_formatters
-        configuration.add_formatter(Chef::Audit::AuditEventProxy)
-        Chef::Audit::AuditEventProxy.events = run_context.events
+        configuration.add_formatter(RSpec::Core::Formatters::DocumentationFormatter)
+        #configuration.add_formatter(Chef::Audit::AuditEventProxy)
+        #Chef::Audit::AuditEventProxy.events = run_context.events
       end
 
       # Explicitly disable :should syntax.

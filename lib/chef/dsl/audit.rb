@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#require 'chef/audit'
+
 require 'chef/audit/chef_example_group'
 
 class Chef
@@ -23,10 +23,10 @@ class Chef
     module Audit
 
       # Adds the controls group and block (containing controls to execute) to the runner's list of pending examples
-      def controls(group_name, &group_block)
-        raise ::Chef::Exceptions::NoAuditsProvided unless group_block
+      def controls(*args, &block)
+        raise ::Chef::Exceptions::NoAuditsProvided unless block
 
-        run_context.controls_groups << ::Chef::Audit::ChefExampleGroup.describe(group_name, &group_block)
+        run_context.controls_groups << ::RSpec::Core::ExampleGroup.__controls__(*args, &block)
       end
 
     end
