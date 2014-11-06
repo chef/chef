@@ -18,6 +18,7 @@
 
 require 'chef/audit'
 require 'chef/audit/audit_event_proxy'
+require 'chef/audit/chef_json_formatter'
 require 'chef/config'
 
 class Chef
@@ -76,6 +77,7 @@ class Chef
 
       def add_formatters
         configuration.add_formatter(RSpec::Core::Formatters::DocumentationFormatter)
+        configuration.add_formatter(Chef::Audit::ChefJsonFormatter)
         #configuration.add_formatter(Chef::Audit::AuditEventProxy)
         #Chef::Audit::AuditEventProxy.events = run_context.events
       end

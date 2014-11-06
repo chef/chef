@@ -15,6 +15,7 @@ class Chef
       def example_success(opts={})
         @number_success += 1
         control = create_control(opts)
+        control.status = "success"
         controls << control
         control
       end
