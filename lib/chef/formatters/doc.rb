@@ -164,18 +164,20 @@ class Chef
       # Called before audit phase starts
       def audit_phase_start(run_context)
         puts_line ""
-        puts_line "Audit phase starting"
+        puts_line "++ Audit phase starting ++"
       end
 
       # Called when audit phase successfully finishes
       def audit_phase_complete
-        puts_line "Audit phase ended"
+        puts_line ""
+        puts_line "++ Audit phase ended ++ "
       end
 
       # Called if there is an uncaught exception during the audit phase.  The audit runner should
       # be catching and handling errors from the examples, so this is only uncaught errors (like
       # bugs in our handling code)
       def audit_phase_failed(error)
+        puts_line ""
         puts_line "Audit phase exception:"
         indent
         # TODO error_mapper ?

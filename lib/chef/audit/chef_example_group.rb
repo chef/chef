@@ -1,9 +1,12 @@
 
 class Chef
   class Audit
-    class ChefExampleGroup < ::RSpec::Core::ExampleGroup
+    class ChefExampleGroup
+
       # Can encompass tests in a `control` block or `describe` block
-      define_example_group_method :control
+      ::RSpec::Core::ExampleGroup.define_example_group_method :control
+      ::RSpec::Core::ExampleGroup.define_example_group_method :__controls__
+
     end
   end
 end
