@@ -16,17 +16,21 @@
 # limitations under the License.
 #
 
-require 'chef/audit/chef_example_group'
+require 'rspec/core'
 
 class Chef
   module DSL
     module Audit
 
-      # Adds the controls group and block (containing controls to execute) to the runner's list of pending examples
-      def controls(group_name, &group_block)
-        raise ::Chef::Exceptions::NoAuditsProvided unless group_block
+      # Can encompass tests in a `control` block or `describe` block
+      ::RSpec::Core::ExampleGroup.define_example_group_method :control
+      ::RSpec::Core::ExampleGroup.define_example_group_method :__controls__
 
-        run_context.controls_groups << ::Chef::Audit::ChefExampleGroup.describe(group_name, &group_block)
+      # Adds the controls group and block (containing controls to execute) to the runner's list of pending examples
+      def controls(*args, &block)
+        raise ::Chef::Exceptions::NoAuditsProvided unless block
+
+        run_context.controls_groups << ::RSpec::Core::ExampleGroup.__controls__(*args, &block)
       end
 
     end
