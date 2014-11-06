@@ -71,6 +71,7 @@ class Chef
 
         add_formatters
         disable_should_syntax
+        configure_specinfra
       end
 
       def add_formatters
@@ -90,6 +91,12 @@ class Chef
         configuration.expect_with :rspec do |c|
           c.syntax = :expect
         end
+      end
+
+      def configure_specinfra
+        # TODO: We may need to change this based on operating system (there is a
+        # powershell backend) or roll our own.
+        Specinfra.configuration.backend = :exec
       end
 
       # Register each controls group with the world, which will handle

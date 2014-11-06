@@ -1,4 +1,3 @@
-require 'rspec/core'
 
 class Chef
   class Audit
