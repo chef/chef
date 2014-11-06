@@ -16,10 +16,6 @@ class Chef
         @@events
       end
 
-      def initialize(output)
-        super
-      end
-
       def example_group_started(notification)
         events.control_group_start(notification.group.description.strip)
       end
