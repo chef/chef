@@ -209,6 +209,22 @@ describe Chef::ApiClient::Registration do
       registration.write_key
       expect(IO.read(key_location)).to eq("--begin rsa key etc--")
     end
+
+    context 'when the client key location is a symlink' do
+      it 'does not follow the symlink', :unix_only do
+        registration.file_flags.should == File::CREAT|File::TRUNC|File::RDWR|File::NOFOLLOW
+      end
+
+      context 'with follow_client_key_symlink set to true' do
+        before do
+          Chef::Config[:follow_client_key_symlink] = true
+        end
+
+        it 'follows the symlink', :unix_only do
+          registration.file_flags.should == File::CREAT|File::TRUNC|File::RDWR
+        end
+      end
+    end
   end
 
   describe "when registering a client" do
