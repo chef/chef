@@ -2,6 +2,11 @@
 
 ## Unreleased:
 
+## 10.34.6
+
+* Windows omnibus installer security updates for redistributed bash.exe / sh.exe
+  vulnerabilities ("Shellshock") CVE-2014-6271, CVE-2014-6271, CVE-2014-6278, CVE-2014-7186, CVE-2014-7187.
+
 ## 10.34.4
 
 * Fix a bug in user dscl provider to enable managing password and other properties at the same time.
