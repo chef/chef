@@ -77,11 +77,11 @@ describe Chef::Resource::File do
 
     context "and the target file does not exist" do
       it "creates the file" do
-        File.should exist(path)
+        expect(File).to exist(path)
       end
 
       it "is marked updated by last action" do
-        resource_without_content.should be_updated_by_last_action
+        expect(resource_without_content).to be_updated_by_last_action
       end
     end
   end
@@ -106,11 +106,11 @@ describe Chef::Resource::File do
       end
 
       it "it creates the file" do
-        File.should exist(path)
+        expect(File).to exist(path)
       end
 
       it "is marked updated by last action" do
-        resource.should be_updated_by_last_action
+        expect(resource).to be_updated_by_last_action
       end
     end
 
@@ -128,15 +128,15 @@ describe Chef::Resource::File do
       end
 
       it "updates the mtime of the file" do
-        File.stat(path).mtime.should > @expected_mtime
+        expect(File.stat(path).mtime).to be > @expected_mtime
       end
 
       it "does not change the content" do
-        sha256_checksum(path).should == @expected_checksum
+        expect(sha256_checksum(path)).to eq(@expected_checksum)
       end
 
       it "is marked as updated by last action" do
-        resource.should be_updated_by_last_action
+        expect(resource).to be_updated_by_last_action
       end
     end
   end

@@ -24,22 +24,22 @@ describe Chef::Knife::RoleEdit do
     @knife = Chef::Knife::RoleEdit.new
     @knife.config[:print_after] = nil
     @knife.name_args = [ "adam" ]
-    @knife.ui.stub(:output).and_return(true)
+    allow(@knife.ui).to receive(:output).and_return(true)
     @role = Chef::Role.new()
-    @role.stub(:save)
-    Chef::Role.stub(:load).and_return(@role)
-    @knife.ui.stub(:edit_data).and_return(@role)
-    @knife.ui.stub(:msg)
+    allow(@role).to receive(:save)
+    allow(Chef::Role).to receive(:load).and_return(@role)
+    allow(@knife.ui).to receive(:edit_data).and_return(@role)
+    allow(@knife.ui).to receive(:msg)
   end
 
   describe "run" do
     it "should load the role" do
-      Chef::Role.should_receive(:load).with("adam").and_return(@role)
+      expect(Chef::Role).to receive(:load).with("adam").and_return(@role)
       @knife.run
     end
 
     it "should edit the role data" do
-      @knife.ui.should_receive(:edit_data).with(@role)
+      expect(@knife.ui).to receive(:edit_data).with(@role)
       @knife.run
     end
 
@@ -47,29 +47,29 @@ describe Chef::Knife::RoleEdit do
       pansy = Chef::Role.new
 
       @role.name("new_role_name")
-      @knife.ui.should_receive(:edit_data).with(@role).and_return(pansy)
-      pansy.should_receive(:save)
+      expect(@knife.ui).to receive(:edit_data).with(@role).and_return(pansy)
+      expect(pansy).to receive(:save)
       @knife.run
     end
 
     it "should not save the unedited role data" do
       pansy = Chef::Role.new
 
-      @knife.ui.should_receive(:edit_data).with(@role).and_return(pansy)
-      pansy.should_not_receive(:save)
+      expect(@knife.ui).to receive(:edit_data).with(@role).and_return(pansy)
+      expect(pansy).not_to receive(:save)
       @knife.run
 
     end
 
     it "should not print the role" do
-      @knife.ui.should_not_receive(:output)
+      expect(@knife.ui).not_to receive(:output)
       @knife.run
     end
 
     describe "with -p or --print-after" do
       it "should pretty print the role, formatted for display" do
         @knife.config[:print_after] = true
-        @knife.ui.should_receive(:output).with(@role)
+        expect(@knife.ui).to receive(:output).with(@role)
         @knife.run
       end
     end

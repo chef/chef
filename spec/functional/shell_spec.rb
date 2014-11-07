@@ -105,7 +105,7 @@ describe Shell do
 
     it "boots correctly with -lauto" do
       output, exitstatus = run_chef_shell_with("-lauto")
-      output.should include("done")
+      expect(output).to include("done")
       expect(exitstatus).to eq(0)
     end
 
@@ -115,7 +115,7 @@ describe Shell do
         keyboard.puts(show_log_level_code)
         read_until(out, show_log_level_code)
       end
-      output.should include("===fatal===")
+      expect(output).to include("===fatal===")
       expect(exitstatus).to eq(0)
     end
 
@@ -125,7 +125,7 @@ describe Shell do
         keyboard.puts(show_recipes_code)
         read_until(out, show_recipes_code)
       end
-      output.should include(%q{["override::foo", "override::bar"]})
+      expect(output).to include(%q{["override::foo", "override::bar"]})
       expect(exitstatus).to eq(0)
     end
   end

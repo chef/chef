@@ -72,7 +72,7 @@ shared_examples_for "an api error inspector" do
     before do
       @response_body = "synchronize the clock on your host"
       @response = Net::HTTPUnauthorized.new("1.1", "401", "(response) unauthorized")
-      @response.stub(:body).and_return(@response_body)
+      allow(@response).to receive(:body).and_return(@response_body)
       @exception = Net::HTTPServerException.new("(exception) unauthorized", @response)
       @inspector = described_class.new(@node_name, @exception, @config)
       @inspector.add_explanation(@description)
@@ -88,7 +88,7 @@ shared_examples_for "an api error inspector" do
     before do
       @response_body = "check your key and node name"
       @response = Net::HTTPUnauthorized.new("1.1", "401", "(response) unauthorized")
-      @response.stub(:body).and_return(@response_body)
+      allow(@response).to receive(:body).and_return(@response_body)
       @exception = Net::HTTPServerException.new("(exception) unauthorized", @response)
       @inspector = described_class.new(@node_name, @exception, @config)
       @inspector.add_explanation(@description)
@@ -104,7 +104,7 @@ shared_examples_for "an api error inspector" do
     before do
       @response_body = "forbidden"
       @response = Net::HTTPForbidden.new("1.1", "403", "(response) forbidden")
-      @response.stub(:body).and_return(@response_body)
+      allow(@response).to receive(:body).and_return(@response_body)
       @exception = Net::HTTPServerException.new("(exception) forbidden", @response)
       @inspector = described_class.new(@node_name, @exception, @config)
       @inspector.add_explanation(@description)
@@ -120,7 +120,7 @@ shared_examples_for "an api error inspector" do
     before do
       @response_body = "didn't like your data"
       @response = Net::HTTPBadRequest.new("1.1", "400", "(response) bad request")
-      @response.stub(:body).and_return(@response_body)
+      allow(@response).to receive(:body).and_return(@response_body)
       @exception = Net::HTTPServerException.new("(exception) bad request", @response)
       @inspector = described_class.new(@node_name, @exception, @config)
       @inspector.add_explanation(@description)
@@ -136,7 +136,7 @@ shared_examples_for "an api error inspector" do
     before do
       @response_body = "probably caused by a redirect to a get"
       @response = Net::HTTPNotFound.new("1.1", "404", "(response) not found")
-      @response.stub(:body).and_return(@response_body)
+      allow(@response).to receive(:body).and_return(@response_body)
       @exception = Net::HTTPServerException.new("(exception) not found", @response)
       @inspector = described_class.new(@node_name, @exception, @config)
       @inspector.add_explanation(@description)
@@ -151,7 +151,7 @@ shared_examples_for "an api error inspector" do
     before do
       @response_body = "sad trombone"
       @response = Net::HTTPInternalServerError.new("1.1", "500", "(response) internal server error")
-      @response.stub(:body).and_return(@response_body)
+      allow(@response).to receive(:body).and_return(@response_body)
       @exception = Net::HTTPFatalError.new("(exception) internal server error", @response)
       @inspector = described_class.new(@node_name, @exception, @config)
       @inspector.add_explanation(@description)
@@ -166,7 +166,7 @@ shared_examples_for "an api error inspector" do
     before do
       @response_body = "sad trombone orchestra"
       @response = Net::HTTPBadGateway.new("1.1", "502", "(response) bad gateway")
-      @response.stub(:body).and_return(@response_body)
+      allow(@response).to receive(:body).and_return(@response_body)
       @exception = Net::HTTPFatalError.new("(exception) bad gateway", @response)
       @inspector = described_class.new(@node_name, @exception, @config)
       @inspector.add_explanation(@description)

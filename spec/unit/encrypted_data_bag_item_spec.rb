@@ -39,7 +39,7 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
   let(:key) { "passwd" }
 
   it "encrypts to format version 1 by default" do
-    encryptor.should be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor)
+    expect(encryptor).to be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor)
   end
 
   describe "generating a random IV" do
@@ -49,14 +49,14 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
       # No API in ruby OpenSSL to get the iv is used for the encryption back
       # out. Instead we test if the encrypted data is the same. If it *is* the
       # same, we assume the IV was the same each time.
-      encryptor.encrypted_data.should_not eq encryptor2.encrypted_data
+      expect(encryptor.encrypted_data).not_to eq encryptor2.encrypted_data
     end
   end
 
   describe "when encrypting a non-hash non-array value" do
     let(:plaintext_data) { 5 }
     it "serializes the value in a de-serializable way" do
-      Chef::JSONCompat.from_json(encryptor.serialized_data)["json_wrapper"].should eq 5
+      expect(Chef::JSONCompat.from_json(encryptor.serialized_data)["json_wrapper"]).to eq 5
     end
 
   end
@@ -64,10 +64,10 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
   describe "wrapping secret values in an envelope" do
     it "wraps the encrypted data in an envelope with the iv and version" do
       final_data = encryptor.for_encrypted_item
-      final_data["encrypted_data"].should eq encryptor.encrypted_data
-      final_data["iv"].should eq Base64.encode64(encryptor.iv)
-      final_data["version"].should eq 1
-      final_data["cipher"].should eq"aes-256-cbc"
+      expect(final_data["encrypted_data"]).to eq encryptor.encrypted_data
+      expect(final_data["iv"]).to eq Base64.encode64(encryptor.iv)
+      expect(final_data["version"]).to eq 1
+      expect(final_data["cipher"]).to eq"aes-256-cbc"
     end
   end
 
@@ -78,17 +78,17 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
     end
 
     it "creates a version 2 encryptor" do
-      encryptor.should be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version2Encryptor)
+      expect(encryptor).to be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version2Encryptor)
     end
 
     it "generates an hmac based on ciphertext with different iv" do
       encryptor2 = Chef::EncryptedDataBagItem::Encryptor.new(plaintext_data, key)
-      encryptor.hmac.should_not eq(encryptor2.hmac)
+      expect(encryptor.hmac).not_to eq(encryptor2.hmac)
     end
 
     it "includes the hmac in the envelope" do
       final_data = encryptor.for_encrypted_item
-      final_data["hmac"].should eq(encryptor.hmac)
+      expect(final_data["hmac"]).to eq(encryptor.hmac)
     end
   end
 
@@ -100,23 +100,23 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
     context "on supported platforms", :aes_256_gcm_only, :ruby_20_only do
 
       it "creates a version 3 encryptor" do
-        encryptor.should be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor)
+        expect(encryptor).to be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor)
       end
 
       it "generates different authentication tags" do
         encryptor3 = Chef::EncryptedDataBagItem::Encryptor.new(plaintext_data, key)
         encryptor.for_encrypted_item # required to generate the auth_tag
         encryptor3.for_encrypted_item
-        encryptor.auth_tag.should_not eq(encryptor3.auth_tag)
+        expect(encryptor.auth_tag).not_to eq(encryptor3.auth_tag)
       end
 
       it "includes the auth_tag in the envelope" do
         final_data = encryptor.for_encrypted_item
-        final_data["auth_tag"].should eq(Base64::encode64(encryptor.auth_tag))
+        expect(final_data["auth_tag"]).to eq(Base64::encode64(encryptor.auth_tag))
       end
 
       it "throws an error if auth tag is read before encrypting the data" do
-        lambda { encryptor.auth_tag }.should raise_error(Chef::EncryptedDataBagItem::EncryptionFailure)
+        expect { encryptor.auth_tag }.to raise_error(Chef::EncryptedDataBagItem::EncryptionFailure)
       end
 
     end # context on supported platforms
@@ -126,24 +126,24 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
 
       it "throws an error warning about the Ruby version if it has no GCM support" do
         # Force OpenSSL with AEAD support
-        OpenSSL::Cipher.stub(:ciphers).and_return([ aead_algorithm ])
+        allow(OpenSSL::Cipher).to receive(:ciphers).and_return([ aead_algorithm ])
         # Ruby without AEAD support
-        OpenSSL::Cipher.should_receive(:method_defined?).with(:auth_data=).and_return(false)
-        lambda { encryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires Ruby/)
+        expect(OpenSSL::Cipher).to receive(:method_defined?).with(:auth_data=).and_return(false)
+        expect { encryptor }.to raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires Ruby/)
       end
 
       it "throws an error warning about the OpenSSL version if it has no GCM support" do
         # Force Ruby with AEAD support
-        OpenSSL::Cipher.stub(:method_defined?).with(:auth_data=).and_return(true)
+        allow(OpenSSL::Cipher).to receive(:method_defined?).with(:auth_data=).and_return(true)
         # OpenSSL without AEAD support
-        OpenSSL::Cipher.should_receive(:ciphers).and_return([])
-        lambda { encryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires an OpenSSL/)
+        expect(OpenSSL::Cipher).to receive(:ciphers).and_return([])
+        expect { encryptor }.to raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires an OpenSSL/)
       end
 
       context "on platforms with old Ruby", :ruby_lt_20 do
 
         it "throws an error warning about the Ruby version" do
-          lambda { encryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires Ruby/)
+          expect { encryptor }.to raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires Ruby/)
         end
 
       end # context on platforms with old Ruby
@@ -151,7 +151,7 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
       context "on platforms with old OpenSSL", :openssl_lt_101 do
 
         it "throws an error warning about the OpenSSL version" do
-          lambda { encryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires an OpenSSL/)
+          expect { encryptor }.to raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires an OpenSSL/)
         end
 
       end # context on platforms with old OpenSSL
@@ -172,11 +172,11 @@ describe Chef::EncryptedDataBagItem::Decryptor do
 
   shared_examples "decryption examples" do
     it "decrypts the encrypted value" do
-      decryptor.decrypted_data.should eq(json_wrapped_data)
+      expect(decryptor.decrypted_data).to eq(json_wrapped_data)
     end
 
     it "unwraps the encrypted data and returns it" do
-      decryptor.for_decrypted_item.should eq plaintext_data
+      expect(decryptor.for_decrypted_item).to eq plaintext_data
     end
   end
 
@@ -194,12 +194,12 @@ describe Chef::EncryptedDataBagItem::Decryptor do
 
       it "rejects the data if the authentication tag is wrong" do
         encrypted_value["auth_tag"] = bogus_auth_tag
-        lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+        expect { decryptor.for_decrypted_item }.to raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
       end
 
       it "rejects the data if the authentication tag is missing" do
         encrypted_value.delete("auth_tag")
-        lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+        expect { decryptor.for_decrypted_item }.to raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
       end
 
     end # context on supported platforms
@@ -217,7 +217,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
       context "on platforms with old Ruby", :ruby_lt_20 do
 
         it "throws an error warning about the Ruby version" do
-          lambda { decryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires Ruby/)
+          expect { decryptor }.to raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires Ruby/)
         end
 
       end # context on platforms with old Ruby
@@ -225,7 +225,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
       context "on platforms with old OpenSSL", :openssl_lt_101 do
 
         it "throws an error warning about the OpenSSL version" do
-          lambda { decryptor }.should raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires an OpenSSL/)
+          expect { decryptor }.to raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires an OpenSSL/)
         end
 
       end # context on unsupported platforms
@@ -249,12 +249,12 @@ describe Chef::EncryptedDataBagItem::Decryptor do
 
     it "rejects the data if the hmac is wrong" do
       encrypted_value["hmac"] = bogus_hmac
-      lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+      expect { decryptor.for_decrypted_item }.to raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
     end
 
     it "rejects the data if the hmac is missing" do
       encrypted_value.delete("hmac")
-      lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+      expect { decryptor.for_decrypted_item }.to raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
     end
 
   end
@@ -266,7 +266,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
     end
 
     it "selects the correct strategy for version 1" do
-      decryptor.should be_a_instance_of Chef::EncryptedDataBagItem::Decryptor::Version1Decryptor
+      expect(decryptor).to be_a_instance_of Chef::EncryptedDataBagItem::Decryptor::Version1Decryptor
     end
 
     include_examples "decryption examples"
@@ -276,8 +276,8 @@ describe Chef::EncryptedDataBagItem::Decryptor do
         # Over a large number of tests on a variety of systems, we occasionally
         # see the decryption step "succeed" but return invalid data (e.g., not
         # the original plain text) [CHEF-3858]
-        decryptor.should_receive(:decrypted_data).and_return("lksajdf")
-        lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+        expect(decryptor).to receive(:decrypted_data).and_return("lksajdf")
+        expect { decryptor.for_decrypted_item }.to raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
       end
     end
 
@@ -285,7 +285,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
       let(:decryption_key) { "wrong-passwd" }
 
       it "raises a sensible error" do
-        lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+        expect { decryptor.for_decrypted_item }.to raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
       end
     end
 
@@ -297,7 +297,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
       end
 
       it "raises a sensible error" do
-        lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::UnsupportedCipher)
+        expect { decryptor.for_decrypted_item }.to raise_error(Chef::EncryptedDataBagItem::UnsupportedCipher)
       end
     end
 
@@ -307,7 +307,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
       end
 
       it "raises an error attempting to decrypt" do
-        lambda { decryptor }.should raise_error(Chef::EncryptedDataBagItem::UnacceptableEncryptedDataBagItemFormat)
+        expect { decryptor }.to raise_error(Chef::EncryptedDataBagItem::UnacceptableEncryptedDataBagItemFormat)
       end
 
     end
@@ -320,11 +320,11 @@ describe Chef::EncryptedDataBagItem::Decryptor do
     end
 
     it "selects the correct strategy for version 0" do
-      decryptor.should be_a_instance_of(Chef::EncryptedDataBagItem::Decryptor::Version0Decryptor)
+      expect(decryptor).to be_a_instance_of(Chef::EncryptedDataBagItem::Decryptor::Version0Decryptor)
     end
 
     it "decrypts the encrypted value" do
-      decryptor.for_decrypted_item.should eq plaintext_data
+      expect(decryptor.for_decrypted_item).to eq plaintext_data
     end
 
     context "and version 1 format is required" do
@@ -333,7 +333,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
       end
 
       it "raises an error attempting to decrypt" do
-        lambda { decryptor }.should raise_error(Chef::EncryptedDataBagItem::UnacceptableEncryptedDataBagItemFormat)
+        expect { decryptor }.to raise_error(Chef::EncryptedDataBagItem::UnacceptableEncryptedDataBagItemFormat)
       end
 
     end
@@ -355,27 +355,27 @@ describe Chef::EncryptedDataBagItem do
   describe "encrypting" do
 
     it "doesn't encrypt the 'id' key" do
-      encoded_data["id"].should eq "item_name"
+      expect(encoded_data["id"]).to eq "item_name"
     end
 
     it "encrypts non-collection objects" do
-      encoded_data["greeting"]["version"].should eq 1
-      encoded_data["greeting"].should have_key("iv")
+      expect(encoded_data["greeting"]["version"]).to eq 1
+      expect(encoded_data["greeting"]).to have_key("iv")
 
       iv = encoded_data["greeting"]["iv"]
       encryptor = Chef::EncryptedDataBagItem::Encryptor.new("hello", secret, iv)
 
-      encoded_data["greeting"]["encrypted_data"].should eq(encryptor.for_encrypted_item["encrypted_data"])
+      expect(encoded_data["greeting"]["encrypted_data"]).to eq(encryptor.for_encrypted_item["encrypted_data"])
     end
 
     it "encrypts nested values" do
-      encoded_data["nested"]["version"].should eq 1
-      encoded_data["nested"].should have_key("iv")
+      expect(encoded_data["nested"]["version"]).to eq 1
+      expect(encoded_data["nested"]).to have_key("iv")
 
       iv = encoded_data["nested"]["iv"]
       encryptor = Chef::EncryptedDataBagItem::Encryptor.new(plaintext_data["nested"], secret, iv)
 
-      encoded_data["nested"]["encrypted_data"].should eq(encryptor.for_encrypted_item["encrypted_data"])
+      expect(encoded_data["nested"]["encrypted_data"]).to eq(encryptor.for_encrypted_item["encrypted_data"])
     end
 
   end
@@ -383,31 +383,31 @@ describe Chef::EncryptedDataBagItem do
   describe "decrypting" do
 
     it "doesn't try to decrypt 'id'" do
-      encrypted_data_bag_item["id"].should eq(plaintext_data["id"])
+      expect(encrypted_data_bag_item["id"]).to eq(plaintext_data["id"])
     end
 
     it "decrypts 'greeting'" do
-      encrypted_data_bag_item["greeting"].should eq(plaintext_data["greeting"])
+      expect(encrypted_data_bag_item["greeting"]).to eq(plaintext_data["greeting"])
     end
 
     it "decrypts 'nested'" do
-      encrypted_data_bag_item["nested"].should eq(plaintext_data["nested"])
+      expect(encrypted_data_bag_item["nested"]).to eq(plaintext_data["nested"])
     end
 
     it "decrypts everyting via to_hash" do
-      encrypted_data_bag_item.to_hash.should eq(plaintext_data)
+      expect(encrypted_data_bag_item.to_hash).to eq(plaintext_data)
     end
 
     it "handles missing keys gracefully" do
-      encrypted_data_bag_item["no-such-key"].should be_nil
+      expect(encrypted_data_bag_item["no-such-key"]).to be_nil
     end
   end
 
   describe "loading" do
     it "should defer to Chef::DataBagItem.load" do
-      Chef::DataBagItem.stub(:load).with(:the_bag, "my_codes").and_return(encoded_data)
+      allow(Chef::DataBagItem).to receive(:load).with(:the_bag, "my_codes").and_return(encoded_data)
       edbi = Chef::EncryptedDataBagItem.load(:the_bag, "my_codes", secret)
-      edbi["greeting"].should eq(plaintext_data["greeting"])
+      expect(edbi["greeting"]).to eq(plaintext_data["greeting"])
     end
   end
 
@@ -416,45 +416,45 @@ describe Chef::EncryptedDataBagItem do
 
     context "when /var/mysecret exists" do
       before do
-        ::File.stub(:exist?).with("/var/mysecret").and_return(true)
-        IO.stub(:read).with("/var/mysecret").and_return(secret)
+        allow(::File).to receive(:exist?).with("/var/mysecret").and_return(true)
+        allow(IO).to receive(:read).with("/var/mysecret").and_return(secret)
       end
 
       it "load_secret('/var/mysecret') reads the secret" do
-        Chef::EncryptedDataBagItem.load_secret("/var/mysecret").should eq secret
+        expect(Chef::EncryptedDataBagItem.load_secret("/var/mysecret")).to eq secret
       end
     end
 
     context "when /etc/chef/encrypted_data_bag_secret exists" do
       before do
         path = Chef::Config.platform_specific_path("/etc/chef/encrypted_data_bag_secret")
-        ::File.stub(:exist?).with(path).and_return(true)
-        IO.stub(:read).with(path).and_return(secret)
+        allow(::File).to receive(:exist?).with(path).and_return(true)
+        allow(IO).to receive(:read).with(path).and_return(secret)
       end
 
       it "load_secret(nil) reads the secret" do
-        Chef::EncryptedDataBagItem.load_secret(nil).should eq secret
+        expect(Chef::EncryptedDataBagItem.load_secret(nil)).to eq secret
       end
     end
 
     context "when /etc/chef/encrypted_data_bag_secret does not exist" do
       before do
         path = Chef::Config.platform_specific_path("/etc/chef/encrypted_data_bag_secret")
-        ::File.stub(:exist?).with(path).and_return(false)
+        allow(::File).to receive(:exist?).with(path).and_return(false)
       end
 
       it "load_secret(nil) emits a reasonable error message" do
-        lambda { Chef::EncryptedDataBagItem.load_secret(nil) }.should raise_error(ArgumentError, /No secret specified and no secret found at #{Chef::Config[:encrypted_data_bag_secret]}/)
+        expect { Chef::EncryptedDataBagItem.load_secret(nil) }.to raise_error(ArgumentError, /No secret specified and no secret found at #{Chef::Config[:encrypted_data_bag_secret]}/)
       end
     end
 
     context "path argument is a URL" do
       before do
-        Kernel.stub(:open).with("http://www.opscode.com/").and_return(StringIO.new(secret))
+        allow(Kernel).to receive(:open).with("http://www.opscode.com/").and_return(StringIO.new(secret))
       end
 
       it "reads from the URL" do
-        Chef::EncryptedDataBagItem.load_secret("http://www.opscode.com/").should eq secret
+        expect(Chef::EncryptedDataBagItem.load_secret("http://www.opscode.com/")).to eq secret
       end
     end
   end

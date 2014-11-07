@@ -33,7 +33,7 @@ describe Chef::Provider::Package::Freebsd::Port do
 
   describe "initialization" do
     it "should create a current resource with the name of the new resource" do
-      expect(@provider.current_resource.is_a?(Chef::Resource::Package)).to be_true
+      expect(@provider.current_resource.is_a?(Chef::Resource::Package)).to be_truthy
       expect(@provider.current_resource.name).to eq('zsh')
     end
   end

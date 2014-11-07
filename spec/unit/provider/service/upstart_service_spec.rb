@@ -108,14 +108,14 @@ describe Chef::Provider::Service::Upstart do
         @stdout = StringIO.new("rsyslog start/running")
         allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
         @provider.load_current_resource
-        expect(@current_resource.running).to be_true
+        expect(@current_resource.running).to be_truthy
       end
 
       it "should set running to false if the status command returns anything except 0" do
         @stdout = StringIO.new("rsyslog stop/waiting")
         allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
         @provider.load_current_resource
-        expect(@current_resource.running).to be_false
+        expect(@current_resource.running).to be_falsey
       end
     end
 
@@ -124,14 +124,14 @@ describe Chef::Provider::Service::Upstart do
         @stdout = StringIO.new("rsyslog (start) running, process 32225")
         allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
         @provider.load_current_resource
-        expect(@current_resource.running).to be_true
+        expect(@current_resource.running).to be_truthy
       end
 
       it "should set running to false if the status command returns anything except 0" do
         @stdout = StringIO.new("rsyslog (stop) waiting")
         allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
         @provider.load_current_resource
-        expect(@current_resource.running).to be_false
+        expect(@current_resource.running).to be_falsey
       end
     end
 

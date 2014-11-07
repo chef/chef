@@ -85,14 +85,14 @@ describe Chef::Provider::Service::Solaris do
       it "should not mark service as maintenance" do
         allow(@provider).to receive(:shell_out!).and_return(@status)
         @provider.load_current_resource
-        expect(@provider.maintenance).to be_false
+        expect(@provider.maintenance).to be_falsey
       end
 
       it "should mark service as maintenance" do
         @status = double("Status", :exitstatus => 0, :stdout => 'state maintenance')
         allow(@provider).to receive(:shell_out!).and_return(@status)
         @provider.load_current_resource
-        expect(@provider.maintenance).to be_true
+        expect(@provider.maintenance).to be_truthy
       end
     end
 
@@ -105,15 +105,15 @@ describe Chef::Provider::Service::Solaris do
       it "should call svcadm enable -s chef" do
         expect(@provider).not_to receive(:shell_out!).with("/usr/sbin/svcadm clear #{@current_resource.service_name}")
         expect(@provider).to receive(:shell_out!).with("/usr/sbin/svcadm enable -s #{@current_resource.service_name}").and_return(@status)
-        expect(@provider.enable_service).to be_true
-        expect(@current_resource.enabled).to be_true
+        expect(@provider.enable_service).to be_truthy
+        expect(@current_resource.enabled).to be_truthy
       end
 
       it "should call svcadm enable -s chef for start_service" do
         expect(@provider).not_to receive(:shell_out!).with("/usr/sbin/svcadm clear #{@current_resource.service_name}")
         expect(@provider).to receive(:shell_out!).with("/usr/sbin/svcadm enable -s #{@current_resource.service_name}").and_return(@status)
-        expect(@provider.start_service).to be_true
-        expect(@current_resource.enabled).to be_true
+        expect(@provider.start_service).to be_truthy
+        expect(@current_resource.enabled).to be_truthy
       end
 
       it "should call svcadm clear chef for start_service when state maintenance" do
@@ -122,8 +122,8 @@ describe Chef::Provider::Service::Solaris do
         @provider.load_current_resource
         expect(@provider).to receive(:shell_out!).with("/usr/sbin/svcadm clear #{@current_resource.service_name}").and_return(@status)
         expect(@provider).to receive(:shell_out!).with("/usr/sbin/svcadm enable -s #{@current_resource.service_name}").and_return(@status)
-        expect(@provider.enable_service).to be_true
-        expect(@current_resource.enabled).to be_true
+        expect(@provider.enable_service).to be_truthy
+        expect(@current_resource.enabled).to be_truthy
       end
     end
 
@@ -135,14 +135,14 @@ describe Chef::Provider::Service::Solaris do
 
       it "should call svcadm disable -s chef" do
         expect(@provider).to receive(:shell_out!).with("/usr/sbin/svcadm disable -s chef").and_return(@status)
-        expect(@provider.disable_service).to be_true
-        expect(@current_resource.enabled).to be_false
+        expect(@provider.disable_service).to be_truthy
+        expect(@current_resource.enabled).to be_falsey
       end
 
       it "should call svcadm disable -s chef for stop_service" do
         expect(@provider).to receive(:shell_out!).with("/usr/sbin/svcadm disable -s chef").and_return(@status)
-        expect(@provider.stop_service).to be_true
-        expect(@current_resource.enabled).to be_false
+        expect(@provider.stop_service).to be_truthy
+        expect(@current_resource.enabled).to be_falsey
       end
 
     end
@@ -170,13 +170,13 @@ describe Chef::Provider::Service::Solaris do
       it "should be marked not running" do
         expect(@provider).to receive(:shell_out!).with("/bin/svcs -l chef", {:returns=>[0, 1]}).and_return(@status)
         @provider.service_status
-        expect(@current_resource.running).to be_false
+        expect(@current_resource.running).to be_falsey
       end
 
       it "should be marked not enabled" do
         expect(@provider).to receive(:shell_out!).with("/bin/svcs -l chef", {:returns=>[0, 1]}).and_return(@status)
         @provider.service_status
-        expect(@current_resource.enabled).to be_false
+        expect(@current_resource.enabled).to be_falsey
       end
 
     end

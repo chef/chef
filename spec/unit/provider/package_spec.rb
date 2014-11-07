@@ -376,7 +376,7 @@ describe Chef::Provider::Package do
       end
 
       it "should never back up the cached response file" do
-        expect(@provider.preseed_resource('java', '6').backup).to be_false
+        expect(@provider.preseed_resource('java', '6').backup).to be_falsey
       end
 
       it "sets the install path of the resource to $file_cache/$cookbook/$pkg_name-$pkg_version.seed" do

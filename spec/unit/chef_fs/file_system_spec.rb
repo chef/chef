@@ -43,13 +43,13 @@ describe Chef::ChefFS::FileSystem do
 
     context 'resolve_path' do
       it '/' do
-        Chef::ChefFS::FileSystem.resolve_path(fs, '/').path.should == '/'
+        expect(Chef::ChefFS::FileSystem.resolve_path(fs, '/').path).to eq('/')
       end
       it 'nonexistent /a' do
-        Chef::ChefFS::FileSystem.resolve_path(fs, '/a').path.should == '/a'
+        expect(Chef::ChefFS::FileSystem.resolve_path(fs, '/a').path).to eq('/a')
       end
       it 'nonexistent /a/b' do
-        Chef::ChefFS::FileSystem.resolve_path(fs, '/a/b').path.should == '/a/b'
+        expect(Chef::ChefFS::FileSystem.resolve_path(fs, '/a/b').path).to eq('/a/b')
       end
     end
   end
@@ -114,34 +114,34 @@ describe Chef::ChefFS::FileSystem do
         no_blocking_calls_allowed
       end
       it 'resolves /' do
-        Chef::ChefFS::FileSystem.resolve_path(fs, '/').path.should == '/'
+        expect(Chef::ChefFS::FileSystem.resolve_path(fs, '/').path).to eq('/')
       end
       it 'resolves /x' do
-        Chef::ChefFS::FileSystem.resolve_path(fs, '/x').path.should == '/x'
+        expect(Chef::ChefFS::FileSystem.resolve_path(fs, '/x').path).to eq('/x')
       end
       it 'resolves /a' do
-        Chef::ChefFS::FileSystem.resolve_path(fs, '/a').path.should == '/a'
+        expect(Chef::ChefFS::FileSystem.resolve_path(fs, '/a').path).to eq('/a')
       end
       it 'resolves /a/aa' do
-        Chef::ChefFS::FileSystem.resolve_path(fs, '/a/aa').path.should == '/a/aa'
+        expect(Chef::ChefFS::FileSystem.resolve_path(fs, '/a/aa').path).to eq('/a/aa')
       end
       it 'resolves /a/aa/zz' do
-        Chef::ChefFS::FileSystem.resolve_path(fs, '/a/aa/zz').path.should == '/a/aa/zz'
+        expect(Chef::ChefFS::FileSystem.resolve_path(fs, '/a/aa/zz').path).to eq('/a/aa/zz')
       end
       it 'resolves nonexistent /q/x/w' do
-        Chef::ChefFS::FileSystem.resolve_path(fs, '/q/x/w').path.should == '/q/x/w'
+        expect(Chef::ChefFS::FileSystem.resolve_path(fs, '/q/x/w').path).to eq('/q/x/w')
       end
     end
 
     context 'empty?' do
       it 'is not empty /' do
-        Chef::ChefFS::FileSystem.resolve_path(fs, '/').empty?.should be false
+        expect(Chef::ChefFS::FileSystem.resolve_path(fs, '/').empty?).to be false
       end
       it 'is empty /y' do
-        Chef::ChefFS::FileSystem.resolve_path(fs, '/y').empty?.should be true
+        expect(Chef::ChefFS::FileSystem.resolve_path(fs, '/y').empty?).to be true
       end
       it 'is not a directory and can\'t be tested /x' do
-        lambda { Chef::ChefFS::FileSystem.resolve_path(fs, '/x').empty? }.should raise_error(NoMethodError)
+        expect { Chef::ChefFS::FileSystem.resolve_path(fs, '/x').empty? }.to raise_error(NoMethodError)
       end
     end
   end

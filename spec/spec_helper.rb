@@ -18,12 +18,6 @@
 # If you need to add anything in here, don't.
 # Add it to one of the files in spec/support
 
-# Configure this first so it doesn't trigger annoying warning when we use it.
-# Main rspec configuration comes later
-RSpec.configure do |config|
-  config.treat_symbols_as_metadata_keys_with_true_values = true
-end
-
 # Abuse ruby's constant lookup to avoid undefined constant errors
 module Shell
   JUST_TESTING_MOVE_ALONG = true unless defined? JUST_TESTING_MOVE_ALONG
@@ -97,6 +91,14 @@ RSpec.configure do |config|
   config.filter_run :focus => true
   config.filter_run_excluding :external => true
 
+  # Explicitly disable :should syntax
+  config.expect_with :rspec do |c|
+    c.syntax = :expect
+  end
+  config.mock_with :rspec do |c|
+    c.syntax = :expect
+  end
+
   # Only run these tests on platforms that are also chef workstations
   config.filter_run_excluding :workstation if solaris? or aix?
 
@@ -159,7 +161,6 @@ RSpec.configure do |config|
   }
 
   config.run_all_when_everything_filtered = true
-  config.treat_symbols_as_metadata_keys_with_true_values = true
 
   config.before(:each) do
     Chef::Config.reset

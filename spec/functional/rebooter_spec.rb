@@ -70,7 +70,7 @@ describe Chef::Platform::Rebooter do
 
       shared_context 'test a reboot method' do
         def test_rebooter_method(method_sym, is_windows, expected_reboot_str)
-          Chef::Platform.stub(:windows?).and_return(is_windows)
+          allow(Chef::Platform).to receive(:windows?).and_return(is_windows)
           expect(rebooter).to receive(:shell_out!).once.with(expected_reboot_str)
           expect(rebooter).to receive(method_sym).once.and_call_original
           rebooter.send(method_sym, run_context.node)

@@ -26,26 +26,26 @@ shared_examples_for "a script resource" do
   end
 
   it "should create a new Chef::Resource::Script" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::Script)
+    expect(@resource).to be_a_kind_of(Chef::Resource)
+    expect(@resource).to be_a_kind_of(Chef::Resource::Script)
   end
 
   it "should have a resource name of :script" do
-    @resource.resource_name.should eql(resource_name)
+    expect(@resource.resource_name).to eql(resource_name)
   end
 
   it "should set command to the argument provided to new" do
-    @resource.command.should eql(resource_instance_name)
+    expect(@resource.command).to eql(resource_instance_name)
   end
 
   it "should accept a string for the code" do
     @resource.code "hey jude"
-    @resource.code.should eql("hey jude")
+    expect(@resource.code).to eql("hey jude")
   end
 
   it "should accept a string for the flags" do
     @resource.flags "-f"
-    @resource.flags.should eql("-f")
+    expect(@resource.flags).to eql("-f")
   end
 
   describe "when executing guards" do
@@ -67,23 +67,23 @@ shared_examples_for "a script resource" do
       inherited_difference = Chef::Resource::Script.guard_inherited_attributes -
         [:cwd, :environment, :group, :path, :user, :umask ]
 
-      inherited_difference.should == []
+      expect(inherited_difference).to eq([])
     end
 
     it "when guard_interpreter is set to the default value, the guard command string should be evaluated by command execution and not through a resource" do
-      Chef::Resource::Conditional.any_instance.should_not_receive(:evaluate_block)
-      Chef::GuardInterpreter::ResourceGuardInterpreter.any_instance.should_not_receive(:evaluate_action)
-      Chef::GuardInterpreter::DefaultGuardInterpreter.any_instance.should_receive(:evaluate).and_return(true)
+      expect_any_instance_of(Chef::Resource::Conditional).not_to receive(:evaluate_block)
+      expect_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).not_to receive(:evaluate_action)
+      expect_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).to receive(:evaluate).and_return(true)
       resource.only_if 'echo hi'
-      resource.should_skip?(:run).should == nil
+      expect(resource.should_skip?(:run)).to eq(nil)
     end
 
     it "when a valid guard_interpreter resource is specified, a block should be used to evaluate the guard" do
-      Chef::GuardInterpreter::DefaultGuardInterpreter.any_instance.should_not_receive(:evaluate)
-      Chef::GuardInterpreter::ResourceGuardInterpreter.any_instance.should_receive(:evaluate_action).and_return(true)
+      expect_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).not_to receive(:evaluate)
+      expect_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).to receive(:evaluate_action).and_return(true)
       resource.guard_interpreter :script
       resource.only_if 'echo hi'
-      resource.should_skip?(:run).should == nil
+      expect(resource.should_skip?(:run)).to eq(nil)
     end
   end
 end

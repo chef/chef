@@ -53,39 +53,39 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
     supported_useradd_options.each do |attribute, option|
       it "should check for differences in #{attribute} between the new and current resources" do
-        @current_resource.should_receive(attribute)
-        @new_resource.should_receive(attribute)
+        expect(@current_resource).to receive(attribute)
+        expect(@new_resource).to receive(attribute)
         provider.universal_options
       end
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not nil" do
-        @new_resource.stub(attribute).and_return("hola")
-        provider.universal_options.should eql([option, 'hola'])
+        allow(@new_resource).to receive(attribute).and_return("hola")
+        expect(provider.universal_options).to eql([option, 'hola'])
       end
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not nil, without homedir management" do
-        @new_resource.stub(:supports).and_return({:manage_home => false,
+        allow(@new_resource).to receive(:supports).and_return({:manage_home => false,
                                                     :non_unique => false})
-        @new_resource.stub(attribute).and_return("hola")
-        provider.universal_options.should eql([option, 'hola'])
+        allow(@new_resource).to receive(attribute).and_return("hola")
+        expect(provider.universal_options).to eql([option, 'hola'])
       end
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not nil, without homedir management (using real attributes)" do
-        @new_resource.stub(:manage_home).and_return(false)
-        @new_resource.stub(:non_unique).and_return(false)
-        @new_resource.stub(:non_unique).and_return(false)
-        @new_resource.stub(attribute).and_return("hola")
-        provider.universal_options.should eql([option, 'hola'])
+        allow(@new_resource).to receive(:manage_home).and_return(false)
+        allow(@new_resource).to receive(:non_unique).and_return(false)
+        allow(@new_resource).to receive(:non_unique).and_return(false)
+        allow(@new_resource).to receive(attribute).and_return("hola")
+        expect(provider.universal_options).to eql([option, 'hola'])
       end
     end
 
     it "should combine all the possible options" do
       combined_opts = []
       supported_useradd_options.sort{ |a,b| a[0] <=> b[0] }.each do |attribute, option|
-        @new_resource.stub(attribute).and_return("hola")
+        allow(@new_resource).to receive(attribute).and_return("hola")
         combined_opts << option << 'hola'
       end
-      provider.universal_options.should eql(combined_opts)
+      expect(provider.universal_options).to eql(combined_opts)
     end
 
     describe "when we want to create a system user" do
@@ -96,55 +96,55 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
       it "should set useradd -r" do
         @new_resource.system(true)
-        provider.useradd_options.should == [ "-r" ]
+        expect(provider.useradd_options).to eq([ "-r" ])
       end
     end
 
     describe "when the resource has a different home directory and supports home directory management" do
       before do
-        @new_resource.stub(:home).and_return("/wowaweea")
-        @new_resource.stub(:supports).and_return({:manage_home => true,
+        allow(@new_resource).to receive(:home).and_return("/wowaweea")
+        allow(@new_resource).to receive(:supports).and_return({:manage_home => true,
                                                    :non_unique => false})
       end
 
       it "should set -m -d /homedir" do
-        provider.universal_options.should == %w[-d /wowaweea -m]
-        provider.useradd_options.should == []
+        expect(provider.universal_options).to eq(%w[-d /wowaweea -m])
+        expect(provider.useradd_options).to eq([])
       end
     end
 
     describe "when the resource has a different home directory and supports home directory management (using real attributes)" do
       before do
-        @new_resource.stub(:home).and_return("/wowaweea")
-        @new_resource.stub(:manage_home).and_return(true)
-        @new_resource.stub(:non_unique).and_return(false)
+        allow(@new_resource).to receive(:home).and_return("/wowaweea")
+        allow(@new_resource).to receive(:manage_home).and_return(true)
+        allow(@new_resource).to receive(:non_unique).and_return(false)
       end
 
       it "should set -m -d /homedir" do
-        provider.universal_options.should eql(%w[-d /wowaweea -m])
-        provider.useradd_options.should == []
+        expect(provider.universal_options).to eql(%w[-d /wowaweea -m])
+        expect(provider.useradd_options).to eq([])
       end
     end
 
     describe "when the resource supports non_unique ids" do
       before do
-        @new_resource.stub(:supports).and_return({:manage_home => false,
+        allow(@new_resource).to receive(:supports).and_return({:manage_home => false,
                                                   :non_unique => true})
       end
 
       it "should set -m -o" do
-        provider.universal_options.should eql([ "-o" ])
+        expect(provider.universal_options).to eql([ "-o" ])
       end
     end
 
     describe "when the resource supports non_unique ids (using real attributes)" do
       before do
-        @new_resource.stub(:manage_home).and_return(false)
-        @new_resource.stub(:non_unique).and_return(true)
+        allow(@new_resource).to receive(:manage_home).and_return(false)
+        allow(@new_resource).to receive(:non_unique).and_return(true)
       end
 
       it "should set -m -o" do
-        provider.universal_options.should eql([ "-o" ])
+        expect(provider.universal_options).to eql([ "-o" ])
       end
     end
   end
@@ -169,7 +169,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                        "-d", '/Users/mud',
                        "-m",
                        "adam" ])
-      provider.should_receive(:shell_out!).with(*command).and_return(true)
+      expect(provider).to receive(:shell_out!).with(*command).and_return(true)
       provider.create_user
     end
 
@@ -190,7 +190,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                          "-u", '1000',
                          "-r",
                          "adam" ])
-        provider.should_receive(:shell_out!).with(*command).and_return(true)
+        expect(provider).to receive(:shell_out!).with(*command).and_return(true)
         provider.create_user
       end
 
@@ -213,7 +213,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                   "-d", '/Users/mud',
                   "-m",
                   "adam" ]
-      provider.should_receive(:shell_out!).with(*command).and_return(true)
+      expect(provider).to receive(:shell_out!).with(*command).and_return(true)
       provider.manage_user
     end
 
@@ -224,16 +224,16 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                   "-d", '/Users/mud',
                   "-m",
                   "adam" ]
-      provider.should_receive(:shell_out!).with(*command).and_return(true)
+      expect(provider).to receive(:shell_out!).with(*command).and_return(true)
       provider.manage_user
     end
 
     it "CHEF-3429: does not set -m if we aren't changing the home directory" do
-      provider.should_receive(:updating_home?).and_return(false)
+      expect(provider).to receive(:updating_home?).and_return(false)
       command = ["usermod",
                   "-g", '23',
                   "adam" ]
-      provider.should_receive(:shell_out!).with(*command).and_return(true)
+      expect(provider).to receive(:shell_out!).with(*command).and_return(true)
       provider.manage_user
     end
   end
@@ -241,27 +241,27 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
   describe "when removing a user" do
 
     it "should run userdel with the new resources user name" do
-      provider.should_receive(:shell_out!).with("userdel", @new_resource.username).and_return(true)
+      expect(provider).to receive(:shell_out!).with("userdel", @new_resource.username).and_return(true)
       provider.remove_user
     end
 
     it "should run userdel with the new resources user name and -r if manage_home is true" do
       @new_resource.supports({ :manage_home => true,
                                :non_unique => false})
-      provider.should_receive(:shell_out!).with("userdel", "-r", @new_resource.username).and_return(true)
+      expect(provider).to receive(:shell_out!).with("userdel", "-r", @new_resource.username).and_return(true)
       provider.remove_user
     end
 
     it "should run userdel with the new resources user name if non_unique is true" do
       @new_resource.supports({ :manage_home => false,
                                :non_unique => true})
-      provider.should_receive(:shell_out!).with("userdel", @new_resource.username).and_return(true)
+      expect(provider).to receive(:shell_out!).with("userdel", @new_resource.username).and_return(true)
       provider.remove_user
     end
 
     it "should run userdel with the new resources user name and -f if force is true" do
       @new_resource.force(true)
-      provider.should_receive(:shell_out!).with("userdel", "-f", @new_resource.username).and_return(true)
+      expect(provider).to receive(:shell_out!).with("userdel", "-f", @new_resource.username).and_return(true)
       provider.remove_user
     end
   end
@@ -284,96 +284,96 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     end
 
     it "should return false if status begins with P" do
-      provider.should_receive(:shell_out!).
+      expect(provider).to receive(:shell_out!).
         with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
         and_return(passwd_s_status)
-      provider.check_lock.should eql(false)
+      expect(provider.check_lock).to eql(false)
     end
 
     it "should return false if status begins with N" do
       @stdout = "root N"
-      provider.should_receive(:shell_out!).
+      expect(provider).to receive(:shell_out!).
         with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
         and_return(passwd_s_status)
-      provider.check_lock.should eql(false)
+      expect(provider.check_lock).to eql(false)
     end
 
     it "should return true if status begins with L" do
       @stdout = "root L"
-      provider.should_receive(:shell_out!).
+      expect(provider).to receive(:shell_out!).
         with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
         and_return(passwd_s_status)
-      provider.check_lock.should eql(true)
+      expect(provider.check_lock).to eql(true)
     end
 
     it "should raise a Chef::Exceptions::User if passwd -S fails on anything other than redhat/centos" do
       @node.automatic_attrs[:platform] = 'ubuntu'
-      provider.should_receive(:shell_out!).
+      expect(provider).to receive(:shell_out!).
         with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
         and_return(passwd_s_status)
-      passwd_s_status.should_receive(:exitstatus).and_return(1)
-      lambda { provider.check_lock }.should raise_error(Chef::Exceptions::User)
+      expect(passwd_s_status).to receive(:exitstatus).and_return(1)
+      expect { provider.check_lock }.to raise_error(Chef::Exceptions::User)
     end
 
     ['redhat', 'centos'].each do |os|
       it "should not raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os} and the passwd package is version 0.73-1" do
         @node.automatic_attrs[:platform] = os
-        passwd_s_status.should_receive(:exitstatus).and_return(1)
-        provider.should_receive(:shell_out!).
+        expect(passwd_s_status).to receive(:exitstatus).and_return(1)
+        expect(provider).to receive(:shell_out!).
           with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
           and_return(passwd_s_status)
         rpm_status = double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "passwd-0.73-1\n", :stderr => "")
-        provider.should_receive(:shell_out!).with("rpm -q passwd").and_return(rpm_status)
-        lambda { provider.check_lock }.should_not raise_error
+        expect(provider).to receive(:shell_out!).with("rpm -q passwd").and_return(rpm_status)
+        expect { provider.check_lock }.not_to raise_error
       end
 
       it "should raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os} and the passwd package is not version 0.73-1" do
         @node.automatic_attrs[:platform] = os
-        passwd_s_status.should_receive(:exitstatus).and_return(1)
-        provider.should_receive(:shell_out!).
+        expect(passwd_s_status).to receive(:exitstatus).and_return(1)
+        expect(provider).to receive(:shell_out!).
           with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
           and_return(passwd_s_status)
         rpm_status = double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "passwd-0.73-2\n", :stderr => "")
-        provider.should_receive(:shell_out!).with("rpm -q passwd").and_return(rpm_status)
-        lambda { provider.check_lock }.should raise_error(Chef::Exceptions::User)
+        expect(provider).to receive(:shell_out!).with("rpm -q passwd").and_return(rpm_status)
+        expect { provider.check_lock }.to raise_error(Chef::Exceptions::User)
       end
 
       it "should raise a ShellCommandFailed exception if passwd -S exits with something other than 0 or 1 on #{os}" do
         @node.automatic_attrs[:platform] = os
-        provider.should_receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
-        lambda { provider.check_lock }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+        expect(provider).to receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+        expect { provider.check_lock }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
       end
     end
 
     context "when in why run mode" do
       before do
         passwd_status = double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "", :stderr => "passwd: user 'chef-test' does not exist\n")
-        provider.should_receive(:shell_out!).
+        expect(provider).to receive(:shell_out!).
           with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
           and_return(passwd_status)
         Chef::Config[:why_run] = true
       end
 
       it "should return false if the user does not exist" do
-        provider.check_lock.should eql(false)
+        expect(provider.check_lock).to eql(false)
       end
 
       it "should not raise an error if the user does not exist" do
-        lambda { provider.check_lock }.should_not raise_error
+        expect { provider.check_lock }.not_to raise_error
       end
     end
   end
 
   describe "when locking the user" do
     it "should run usermod -L with the new resources username" do
-      provider.should_receive(:shell_out!).with("usermod", "-L", @new_resource.username)
+      expect(provider).to receive(:shell_out!).with("usermod", "-L", @new_resource.username)
       provider.lock_user
     end
   end
 
   describe "when unlocking the user" do
     it "should run usermod -L with the new resources username" do
-      provider.should_receive(:shell_out!).with("usermod", "-U", @new_resource.username)
+      expect(provider).to receive(:shell_out!).with("usermod", "-U", @new_resource.username)
       provider.unlock_user
     end
   end
@@ -411,12 +411,12 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
         provider.new_resource.home home_check["new_resource_home"].first
         @new_home_mock = double("Pathname")
 
-        Pathname.should_receive(:new).with(@current_resource.home).and_return(@current_home_mock)
-        @current_home_mock.should_receive(:cleanpath).and_return(home_check["current_resource_home"].last)
-        Pathname.should_receive(:new).with(@new_resource.home).and_return(@new_home_mock)
-        @new_home_mock.should_receive(:cleanpath).and_return(home_check["new_resource_home"].last)
+        expect(Pathname).to receive(:new).with(@current_resource.home).and_return(@current_home_mock)
+        expect(@current_home_mock).to receive(:cleanpath).and_return(home_check["current_resource_home"].last)
+        expect(Pathname).to receive(:new).with(@new_resource.home).and_return(@new_home_mock)
+        expect(@new_home_mock).to receive(:cleanpath).and_return(home_check["new_resource_home"].last)
 
-        provider.updating_home?.should == home_check["expected_result"]
+        expect(provider.updating_home?).to eq(home_check["expected_result"])
       end
     end
     it "should return true if the current home does not exist but a home is specified by the new resource" do
@@ -427,7 +427,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       @current_resource.home nil
       @new_resource.home "/home/kitten"
 
-      provider.updating_home?.should == true
+      expect(provider.updating_home?).to eq(true)
     end
   end
 end

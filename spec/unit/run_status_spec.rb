@@ -39,43 +39,43 @@ describe Chef::RunStatus do
     end
 
     it "has a run context" do
-      @run_status.run_context.should equal(@run_context)
+      expect(@run_status.run_context).to equal(@run_context)
     end
 
     it "provides access to the run context's node" do
-      @run_status.node.should equal(@node)
+      expect(@run_status.node).to equal(@node)
     end
 
     it "converts to a hash" do
-      @run_status.to_hash[:node].should equal(@node)
-      @run_status.to_hash[:success].should be_true
+      expect(@run_status.to_hash[:node]).to equal(@node)
+      expect(@run_status.to_hash[:success]).to be_truthy
     end
 
     describe "after it has recorded timing information" do
       before do
         @start_time = Time.new
         @end_time = @start_time + 23
-        Time.stub(:now).and_return(@start_time, @end_time)
+        allow(Time).to receive(:now).and_return(@start_time, @end_time)
         @run_status.start_clock
         @run_status.stop_clock
       end
 
       it "records the start time of the run" do
-        @run_status.start_time.should == @start_time
+        expect(@run_status.start_time).to eq(@start_time)
       end
 
       it "records the end time of the run" do
-        @run_status.end_time.should == @end_time
+        expect(@run_status.end_time).to eq(@end_time)
       end
 
       it "gives the elapsed time of the chef run" do
-        @run_status.elapsed_time.should == 23
+        expect(@run_status.elapsed_time).to eq(23)
       end
 
       it "includes timing information in its hash form" do
-        @run_status.to_hash[:start_time].should == @start_time
-        @run_status.to_hash[:end_time].should == @end_time
-        @run_status.to_hash[:elapsed_time].should == 23
+        expect(@run_status.to_hash[:start_time]).to eq(@start_time)
+        expect(@run_status.to_hash[:end_time]).to eq(@end_time)
+        expect(@run_status.to_hash[:elapsed_time]).to eq(23)
       end
 
     end
@@ -87,16 +87,16 @@ describe Chef::RunStatus do
       end
 
       it "lists all resources" do
-        @run_status.all_resources.should == @all_resources
+        expect(@run_status.all_resources).to eq(@all_resources)
       end
 
       it "has no updated resources" do
-        @run_status.updated_resources.should be_empty
+        expect(@run_status.updated_resources).to be_empty
       end
 
       it "includes the list of all resources in its hash form" do
-        @run_status.to_hash[:all_resources].should == @all_resources
-        @run_status.to_hash[:updated_resources].should be_empty
+        expect(@run_status.to_hash[:all_resources]).to eq(@all_resources)
+        expect(@run_status.to_hash[:updated_resources]).to be_empty
       end
 
       describe "and some have been updated" do
@@ -105,11 +105,11 @@ describe Chef::RunStatus do
         end
 
         it "lists the updated resources" do
-          @run_status.updated_resources.should == [@all_resources.first]
+          expect(@run_status.updated_resources).to eq([@all_resources.first])
         end
 
         it "includes the list of updated resources in its hash form" do
-          @run_status.to_hash[:updated_resources].should == [@all_resources.first]
+          expect(@run_status.to_hash[:updated_resources]).to eq([@all_resources.first])
         end
       end
     end
@@ -123,22 +123,22 @@ describe Chef::RunStatus do
       end
 
       it "stores the exception" do
-        @run_status.exception.should equal(@exception)
+        expect(@run_status.exception).to equal(@exception)
       end
 
       it "stores the backtrace" do
-        @run_status.backtrace.should == @backtrace
+        expect(@run_status.backtrace).to eq(@backtrace)
       end
 
       it "says the run was not successful" do
-        @run_status.success?.should be_false
-        @run_status.failed?.should be_true
+        expect(@run_status.success?).to be_falsey
+        expect(@run_status.failed?).to be_truthy
       end
 
       it "converts to a hash including the exception information" do
-        @run_status.to_hash[:success].should be_false
-        @run_status.to_hash[:exception].should == "Exception: just testing"
-        @run_status.to_hash[:backtrace].should == @backtrace
+        expect(@run_status.to_hash[:success]).to be_falsey
+        expect(@run_status.to_hash[:exception]).to eq("Exception: just testing")
+        expect(@run_status.to_hash[:backtrace]).to eq(@backtrace)
       end
     end
   end

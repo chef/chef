@@ -64,20 +64,20 @@ PS
     it "should set running to true if the status command returns 0" do
       allow(@provider).to receive(:shell_out).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_return(@status)
       @provider.load_current_resource
-      expect(@current_resource.running).to be_true
+      expect(@current_resource.running).to be_truthy
     end
 
     it "should set running to false if the status command returns anything except 0" do
       allow(@status).to receive(:exitstatus).and_return(1)
       allow(@provider).to receive(:shell_out).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_return(@status)
       @provider.load_current_resource
-      expect(@current_resource.running).to be_false
+      expect(@current_resource.running).to be_falsey
     end
 
     it "should set running to false if the status command raises" do
       allow(@provider).to receive(:shell_out).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_raise(Mixlib::ShellOut::ShellCommandFailed)
       @provider.load_current_resource
-      expect(@current_resource.running).to be_false
+      expect(@current_resource.running).to be_falsey
     end
   end
 
@@ -125,14 +125,14 @@ RUNNING_PS
       @status = double("Status", :exitstatus => 0, :stdout => @stdout)
       expect(@provider).to receive(:shell_out!).and_return(@status)
       @provider.load_current_resource
-      expect(@current_resource.running).to be_true
+      expect(@current_resource.running).to be_truthy
     end
 
     it "should set running to false if the regex doesn't match" do
       @status = double("Status", :exitstatus => 0, :stdout => @stdout)
       expect(@provider).to receive(:shell_out!).and_return(@status)
       @provider.load_current_resource
-      expect(@current_resource.running).to be_false
+      expect(@current_resource.running).to be_falsey
     end
 
     it "should raise an exception if ps fails" do

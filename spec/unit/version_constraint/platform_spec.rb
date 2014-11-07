@@ -21,24 +21,24 @@ describe Chef::VersionConstraint::Platform do
 
   it "is a subclass of Chef::VersionConstraint" do
     v = Chef::VersionConstraint::Platform.new
-    v.should be_an_instance_of(Chef::VersionConstraint::Platform)
-    v.should be_a_kind_of(Chef::VersionConstraint)
+    expect(v).to be_an_instance_of(Chef::VersionConstraint::Platform)
+    expect(v).to be_a_kind_of(Chef::VersionConstraint)
   end
 
   it "should work with Chef::Version::Platform classes" do
     vc = Chef::VersionConstraint::Platform.new("1.0")
-    vc.version.should be_an_instance_of(Chef::Version::Platform)
+    expect(vc.version).to be_an_instance_of(Chef::Version::Platform)
   end
 
   describe "include?" do
 
     it "pessimistic ~> x" do
       vc = Chef::VersionConstraint::Platform.new "~> 1"
-      vc.should include "1.3.3"
-      vc.should include "1.4"
+      expect(vc).to include "1.3.3"
+      expect(vc).to include "1.4"
 
-      vc.should_not include "2.2"
-      vc.should_not include "0.3.0"
+      expect(vc).not_to include "2.2"
+      expect(vc).not_to include "0.3.0"
     end
 
   end

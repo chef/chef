@@ -180,9 +180,9 @@ EOM
         knife('list --local /users').should_succeed "/users/x.json\n"
       end
 
-      it 'After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty', :pending => (RUBY_VERSION < "1.9") do
+      it 'After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty', :skip => (RUBY_VERSION < "1.9") do
         knife("raw -z -i #{path_to('rolestuff.json')} -m PUT /roles/x").should_succeed( /"x"/ )
-        IO.read(path_to('roles/x.json')).should == <<EOM.strip
+        expect(IO.read(path_to('roles/x.json'))).to eq <<EOM.strip
 {
   "name": "x",
   "description": "hi there"
@@ -246,9 +246,9 @@ EOM
         knife('list --local /users').should_succeed "/users/z.json\n"
       end
 
-      it 'After knife raw -z -i rolestuff.json -m POST /roles, the output is pretty', :pending => (RUBY_VERSION < "1.9") do
+      it 'After knife raw -z -i rolestuff.json -m POST /roles, the output is pretty', :skip => (RUBY_VERSION < "1.9") do
         knife("raw -z -i #{path_to('rolestuff.json')} -m POST /roles").should_succeed( /uri/ )
-        IO.read(path_to('roles/x.json')).should == <<EOM.strip
+        expect(IO.read(path_to('roles/x.json'))).to eq <<EOM.strip
 {
   "name": "x",
   "description": "hi there"

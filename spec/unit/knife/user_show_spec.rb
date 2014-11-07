@@ -27,15 +27,15 @@ describe Chef::Knife::UserShow do
   end
 
   it 'loads and displays the user' do
-    Chef::User.should_receive(:load).with('my_user').and_return(@user_mock)
-    @knife.should_receive(:format_for_display).with(@user_mock)
+    expect(Chef::User).to receive(:load).with('my_user').and_return(@user_mock)
+    expect(@knife).to receive(:format_for_display).with(@user_mock)
     @knife.run
   end
 
   it 'prints usage and exits when a user name is not provided' do
     @knife.name_args = []
-    @knife.should_receive(:show_usage)
-    @knife.ui.should_receive(:fatal)
-    lambda { @knife.run }.should raise_error(SystemExit)
+    expect(@knife).to receive(:show_usage)
+    expect(@knife.ui).to receive(:fatal)
+    expect { @knife.run }.to raise_error(SystemExit)
   end
 end
