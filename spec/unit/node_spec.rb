@@ -782,8 +782,8 @@ describe Chef::Node do
       node.automatic_attrs[:recipes] = [ "nginx::other_module" ]
       node.loaded_recipe(:nginx, "module")
       expect(node.automatic_attrs[:recipes].length).to eq(2)
-      expect(node.recipe?("nginx::module")).to be_truthy
-      expect(node.recipe?("nginx::other_module")).to be_truthy
+      expect(node.recipe?("nginx::module")).to be true
+      expect(node.recipe?("nginx::other_module")).to be true
     end
   end
 
@@ -794,11 +794,11 @@ describe Chef::Node do
       end
 
       it "finds the recipe" do
-        expect(node.recipe?("nginx::module")).to be_truthy
+        expect(node.recipe?("nginx::module")).to be true
       end
 
       it "does not find a recipe not in the run list" do
-        expect(node.recipe?("nginx::other_module")).to be_falsey
+        expect(node.recipe?("nginx::other_module")).to be false
       end
     end
     context "when a recipe is in the expanded run list only" do
@@ -808,11 +808,11 @@ describe Chef::Node do
       end
 
       it "finds a recipe in the expanded run list" do
-        expect(node.recipe?("nginx::module")).to be_truthy
+        expect(node.recipe?("nginx::module")).to be true
       end
 
       it "does not find a recipe that's not in the run list" do
-        expect(node.recipe?("nginx::other_module")).to be_falsey
+        expect(node.recipe?("nginx::other_module")).to be false
       end
     end
   end
