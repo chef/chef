@@ -336,7 +336,7 @@ class Chef
        # equivalent to: force_default!['foo']['bar'].delete('baz')
        def rm_default(*args)
          reset
-         remove_from_precedence_level(force_default!, *args)
+         remove_from_precedence_level(force_default!(autovivify: false), *args)
        end
 
        # clears attributes from normal precedence
@@ -344,7 +344,7 @@ class Chef
        # equivalent to: normal!['foo']['bar'].delete('baz')
        def rm_normal(*args)
          reset
-         remove_from_precedence_level(normal!, *args)
+         remove_from_precedence_level(normal!(autovivify: false), *args)
        end
 
        # clears attributes from all override precedence levels
@@ -352,7 +352,7 @@ class Chef
        # equivalent to: force_override!['foo']['bar'].delete('baz')
        def rm_override(*args)
          reset
-         remove_from_precedence_level(force_override!, *args)
+         remove_from_precedence_level(force_override!(autovivify: false), *args)
        end
 
        #
@@ -360,28 +360,33 @@ class Chef
        #
 
        # sets default attributes without merging
-       def default!
-         MultiMash.new(@default)
+       def default!(opts={})
+         reset
+         MultiMash.new(self, @default, [], opts)
        end
 
        # sets normal attributes without merging
-       def normal!
-         MultiMash.new(@normal)
+       def normal!(opts={})
+         reset
+         MultiMash.new(self, @normal, [], opts)
        end
 
        # sets override attributes without merging
-       def override!
-         MultiMash.new(@override)
+       def override!(opts={})
+         reset
+         MultiMash.new(self, @override, [], opts)
        end
 
        # clears from all default precedence levels and then sets force_default
-       def force_default!
-         MultiMash.new(@default, @env_default, @role_default, @force_default)
+       def force_default!(opts={})
+         reset
+         MultiMash.new(self, @force_default, [@default, @env_default, @role_default], opts)
        end
 
        # clears from all override precedence levels and then sets force_override
-       def force_override!
-         MultiMash.new(@override, @env_override, @role_override, @force_override)
+       def force_override!(opts={})
+         reset
+         MultiMash.new(self, @force_override, [@override, @env_override, @role_override], opts)
        end
 
        #

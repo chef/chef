@@ -566,6 +566,13 @@ describe Chef::Node do
         })
       end
 
+      it "will autovivify" do
+        node.force_default!["mysql"]["server"] = {
+          "data_dir" => "/my_raid_volume/lib/mysql",
+        }
+        expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
+      end
+
       it "lower precedence levels aren't removed" do
         node.role_override["mysql"]["server"]["port"] = 1234
         node.override["mysql"]["server"]["port"] = 2345
@@ -587,9 +594,10 @@ describe Chef::Node do
       it "when overwriting a non-hash/array" do
         node.override["mysql"] = false
         node.force_override["mysql"] = true
-        expect { node.force_override!["mysql"]["server"] = {
+        node.force_override!["mysql"]["server"] = {
           "data_dir" => "/my_raid_volume/lib/mysql",
-        } }.to raise_error(TypeError)
+        }
+        expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
       end
 
       it "when overwriting an array with a hash" do
