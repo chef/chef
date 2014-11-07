@@ -72,6 +72,13 @@ superuser_name 'admin'
 superuser_key key
 webui_key key
 
+# When we updated Chef to RSpec 3 there were gem conflicts with chef-pedant.
+# We removed chef as a chef-pedant gem dependency in pedant.gemfile, but this
+# caused chef-pedant to fail because it could not query for the chef version
+# on the box pedant is running on. X-Chef-Version isn't needed in server
+# requests for these tests, so we've disabled it.
+ingore_x_chef_version true
+
 # Set the platform_class
 platform_class Pedant::OpenSourcePlatform
 
