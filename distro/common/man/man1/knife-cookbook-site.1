@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-COOKBOOK-SITE" "1" "Chef 11.16" "" "knife cookbook site"
+.TH "KNIFE-COOKBOOK-SITE" "1" "Chef 12.0" "" "knife cookbook site"
 .SH NAME
 knife-cookbook-site \- The man page for the knife cookbook site subcommand.
 .
@@ -408,6 +408,9 @@ This argument has the following options:
 .TP
 .B \fBCATEGORY\fP
 The cookbook category: \fB"Databases"\fP, \fB"Web Servers"\fP, \fB"Process Management"\fP, \fB"Monitoring & Trending"\fP, \fB"Programming Languages"\fP, \fB"Package Management"\fP, \fB"Applications"\fP, \fB"Networking"\fP, \fB"Operating Systems & Virtualization"\fP, \fB"Utilities"\fP, or \fB"Other"\fP\&.
+.TP
+.B \fB\-n\fP, \fB\-\-dry\-run\fP
+Use to take no action and only print out results. Default: \fBfalse\fP\&.
 .TP
 .B \fB\-o PATH:PATH\fP, \fB\-\-cookbook\-path PATH:PATH\fP
 The directory in which cookbooks are created. This can be a colon\-separated path.

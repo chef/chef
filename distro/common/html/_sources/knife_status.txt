@@ -12,7 +12,7 @@ Options
 =====================================================
 .. note:: Review the list of :doc:`common options </knife_common_options>` available to this (and all) |knife| subcommands and plugins.
 
-.. include:: ../../includes_knife/includes_knife_status_options.rst
+.. include:: ../../release_chef_12-0/includes_knife_status_options.rst
 
 Examples
 =====================================================

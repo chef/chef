@@ -46,10 +46,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake", "~> 10.1.0"
 
   s.bindir       = "bin"
-  # chef-service-manager is a windows only executable.
-  # However gemspec doesn't give us a way to have this executable only
-  # on windows. So we're including this in all platforms.
-  s.executables  = %w( chef-client chef-solo knife chef-shell shef chef-apply chef-service-manager chef-windows-service )
+  s.executables  = %w( chef-client chef-solo knife chef-shell shef chef-apply )
 
   s.require_path = 'lib'
   s.files = %w(Rakefile LICENSE README.md CONTRIBUTING.md) + Dir.glob("{distro,lib,tasks,spec}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) }
