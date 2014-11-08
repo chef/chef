@@ -194,13 +194,15 @@ class Chef
         :description => "Verify the SSL cert for HTTPS requests to the Chef server API.",
         :boolean     => true
 
+      def default_bootstrap_template
+        "chef-full"
+      end
+
       def bootstrap_template
-        # For some reason knife.merge_configs doesn't pick up the default values from
-        # Chef::Config[:knife][:bootstrap_template] unless Chef::Config[:knife][:bootstrap_template]
-        # is forced to pick up the values before calling merge_configs.
-        # We therefore have Chef::Config[:knife][:bootstrap_template] to pick up the defaults
-        # if no option is specified.
-        config[:bootstrap_template] || config[:distro] || config[:template_file] || Chef::Config[:knife][:bootstrap_template]
+        # The order here is important. We want to check if we have the new Chef 12 option is set first.
+        # Knife cloud plugins unfortunately all set a default option for the :distro so it should be at
+        # the end.
+        config[:bootstrap_template] || config[:template_file] || config[:distro] || default_bootstrap_template
       end
 
       def find_template
@@ -210,7 +212,6 @@ class Chef
         if File.exists?(template)
           Chef::Log.debug("Using the specified bootstrap template: #{File.dirname(template)}")
           return template
-
         end
 
         # Otherwise search the template directories until we find the right one
