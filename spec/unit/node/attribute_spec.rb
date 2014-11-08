@@ -285,7 +285,7 @@ describe Chef::Node::Attribute do
     end
 
     it "prefers 'forced default' over any other default" do
-      @attributes.default!["default"] = "force default"
+      @attributes.force_default["default"] = "force default"
       @attributes.role_default["default"] = "role default"
       @attributes.env_default["default"] = "environment default"
       @attributes["default"].should == "force default"
@@ -307,7 +307,7 @@ describe Chef::Node::Attribute do
     end
 
     it "prefers 'forced overrides' over role or cookbook overrides" do
-      @attributes.override!["override"] = "force override"
+      @attributes.force_override["override"] = "force override"
       @attributes.env_override["override"] = "environment override"
       @attributes.role_override["override"] = "role override"
       @attributes["override"].should == "force override"
@@ -939,7 +939,6 @@ describe Chef::Node::Attribute do
 
   end
 
-
   describe "values" do
     before do
       @attributes = Chef::Node::Attribute.new(
@@ -1185,4 +1184,3 @@ describe Chef::Node::Attribute do
   end
 
 end
-

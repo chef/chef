@@ -42,6 +42,8 @@ class Chef
     extend Forwardable
 
     def_delegators :attributes, :keys, :each_key, :each_value, :key?, :has_key?
+    def_delegators :attributes, :rm, :rm_default, :rm_normal, :rm_override
+    def_delegators :attributes, :default!, :normal!, :override!, :force_default!, :force_override!
 
     attr_accessor :recipe_list, :run_state, :override_runlist
 
@@ -146,13 +148,6 @@ class Chef
       attributes.default
     end
 
-    # Set a force default attribute. Intermediate mashes will be created by
-    # auto-vivify if necessary.
-    def default!
-      attributes.set_unless_value_present = false
-      attributes.default!
-    end
-
     # Set a default attribute of this node, auto-vivifying any mashes that are
     # missing, but if the final value already exists, don't set it
     def default_unless
@@ -165,13 +160,6 @@ class Chef
     def override
       attributes.set_unless_value_present = false
       attributes.override
-    end
-
-    # Set a force override attribute. Intermediate mashes will be created by
-    # auto-vivify if needed.
-    def override!
-      attributes.set_unless_value_present = false
-      attributes.override!
     end
 
     # Set an override attribute of this node, auto-vivifying any mashes that

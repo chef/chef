@@ -247,13 +247,6 @@ describe Chef::Node do
         node.default.fuu.bahrr.baz = "qux"
         node.fuu.bahrr.baz.should == "qux"
       end
-
-      it "accesses force defaults via default!" do
-        node.default![:foo] = "wet bar"
-        node.default[:foo] = "bar"
-        node[:foo].should == "wet bar"
-      end
-
     end
 
     describe "override attributes" do
@@ -292,13 +285,330 @@ describe Chef::Node do
         node.override.fuu.bahrr.baz = "qux"
         node.fuu.bahrr.baz.should == "qux"
       end
+    end
 
-      it "sets force_overrides via override!" do
-        node.override![:foo] = "wet bar"
-        node.override[:foo] = "bar"
-        node[:foo].should == "wet bar"
+    describe "globally deleting attributes" do
+      context "with hash values" do
+        before do
+          node.role_default["mysql"]["server"]["port"] = 1234
+          node.normal["mysql"]["server"]["port"] = 2345
+          node.override["mysql"]["server"]["port"] = 3456
+        end
+
+        it "deletes all the values and returns the value with the highest precidence" do
+          expect( node.rm("mysql", "server", "port") ).to eql(3456)
+          expect( node["mysql"]["server"]["port"] ).to be_nil
+          expect( node["mysql"]["server"] ).to eql({})
+        end
+
+        it "deletes nested things correctly" do
+          node.default["mysql"]["client"]["client_setting"] = "foo"
+          expect( node.rm("mysql", "server") ).to eql( {"port" => 3456} )
+          expect( node["mysql"] ).to eql( { "client" => { "client_setting" => "foo" } } )
+        end
+
+        it "returns nil if the node attribute does not exist" do
+          expect( node.rm("no", "such", "thing") ).to be_nil
+        end
+
+        it "can delete the entire tree" do
+          expect( node.rm("mysql") ).to eql({"server"=>{"port"=>3456}})
+        end
       end
 
+      context "when trying to delete through a thing that isn't an array-like or hash-like object" do
+        before do
+          node.default["mysql"] = true
+        end
+
+        it "returns nil when you're two levels deeper" do
+          expect( node.rm("mysql", "server", "port") ).to eql(nil)
+        end
+
+        it "returns nil when you're one level deeper" do
+          expect( node.rm("mysql", "server") ).to eql(nil)
+        end
+
+        it "correctly deletes at the top level" do
+          expect( node.rm("mysql") ).to eql(true)
+        end
+      end
+
+      context "with array indexes" do
+        before do
+          node.role_default["mysql"]["server"][0]["port"] = 1234
+          node.normal["mysql"]["server"][0]["port"] = 2345
+          node.override["mysql"]["server"][0]["port"] = 3456
+          node.override["mysql"]["server"][1]["port"] = 3456
+        end
+
+        it "deletes the array element" do
+          expect( node.rm("mysql", "server", 0, "port") ).to eql(3456)
+          expect( node["mysql"]["server"][0]["port"] ).to be_nil
+          expect( node["mysql"]["server"][1]["port"] ).to eql(3456)
+        end
+      end
+
+      context "with real arrays" do
+        before do
+          node.role_default["mysql"]["server"] = [ {
+            "port" => 1234,
+          } ]
+          node.normal["mysql"]["server"] = [ {
+            "port" => 2345,
+          } ]
+          node.override["mysql"]["server"] = [ {
+            "port" => 3456,
+          } ]
+        end
+
+        it "deletes the array element" do
+          expect( node.rm("mysql", "server", 0, "port") ).to eql(3456)
+          expect( node["mysql"]["server"][0]["port"] ).to be_nil
+        end
+
+        it "does not have a horrible error message when mistaking arrays for hashes" do
+          expect { node.rm("mysql", "server", "port") }.to raise_error(TypeError, "Wrong type in index of attribute (did you use a Hash index on an Array?)")
+        end
+      end
+    end
+
+    describe "granular deleting attributes" do
+      context "when only defaults exist" do
+        before do
+          node.role_default["mysql"]["server"]["port"] = 1234
+          node.default["mysql"]["server"]["port"] = 2345
+          node.force_default["mysql"]["server"]["port"] = 3456
+        end
+
+        it "returns the deleted values" do
+          expect( node.rm_default("mysql", "server", "port") ).to eql(3456)
+        end
+
+        it "returns nil for the combined attribues" do
+          expect( node.rm_default("mysql", "server", "port") ).to eql(3456)
+          expect( node["mysql"]["server"]["port"] ).to eql(nil)
+        end
+
+        it "returns an empty hash for the default attrs" do
+          expect( node.rm_default("mysql", "server", "port") ).to eql(3456)
+          # this auto-vivifies, should it?
+          expect( node.default_attrs["mysql"]["server"]["port"] ).to eql({})
+        end
+
+        it "returns an empty hash after the last key is deleted" do
+          expect( node.rm_default("mysql", "server", "port") ).to eql(3456)
+          expect( node["mysql"]["server"] ).to eql({})
+        end
+      end
+
+      context "when trying to delete through a thing that isn't an array-like or hash-like object" do
+        before do
+          node.default["mysql"] = true
+        end
+
+        it "returns nil when you're two levels deeper" do
+          expect( node.rm_default("mysql", "server", "port") ).to eql(nil)
+        end
+
+        it "returns nil when you're one level deeper" do
+          expect( node.rm_default("mysql", "server") ).to eql(nil)
+        end
+
+        it "correctly deletes at the top level" do
+          expect( node.rm_default("mysql") ).to eql(true)
+        end
+      end
+
+      context "when a higher precedence exists" do
+        before do
+          node.role_default["mysql"]["server"]["port"] = 1234
+          node.default["mysql"]["server"]["port"] = 2345
+          node.force_default["mysql"]["server"]["port"] = 3456
+
+          node.override["mysql"]["server"]["port"] = 9999
+        end
+
+        it "returns the deleted values" do
+          expect( node.rm_default("mysql", "server", "port") ).to eql(3456)
+        end
+
+        it "returns the higher precedence values after the delete" do
+          expect( node.rm_default("mysql", "server", "port") ).to eql(3456)
+          expect( node["mysql"]["server"]["port"] ).to eql(9999)
+        end
+
+        it "returns an empty has for the default attrs" do
+          expect( node.rm_default("mysql", "server", "port") ).to eql(3456)
+          # this auto-vivifies, should it?
+          expect( node.default_attrs["mysql"]["server"]["port"] ).to eql({})
+        end
+      end
+
+      context "when a lower precedence exists" do
+        before do
+          node.default["mysql"]["server"]["port"] = 2345
+          node.override["mysql"]["server"]["port"] = 9999
+          node.role_override["mysql"]["server"]["port"] = 9876
+          node.force_override["mysql"]["server"]["port"] = 6669
+        end
+
+        it "returns the deleted values" do
+          expect( node.rm_override("mysql", "server", "port") ).to eql(6669)
+        end
+
+        it "returns the lower precedence levels after the delete" do
+          expect( node.rm_override("mysql", "server", "port") ).to eql(6669)
+          expect( node["mysql"]["server"]["port"] ).to eql(2345)
+        end
+
+        it "returns an empty has for the override attrs" do
+          expect( node.rm_override("mysql", "server", "port") ).to eql(6669)
+          # this auto-vivifies, should it?
+          expect( node.override_attrs["mysql"]["server"]["port"] ).to eql({})
+        end
+      end
+
+      it "rm_default returns nil on deleting non-existent values" do
+        expect( node.rm_default("no", "such", "thing") ).to be_nil
+      end
+
+      it "rm_normal returns nil on deleting non-existent values" do
+        expect( node.rm_normal("no", "such", "thing") ).to be_nil
+      end
+
+      it "rm_override returns nil on deleting non-existent values" do
+        expect( node.rm_override("no", "such", "thing") ).to be_nil
+      end
+    end
+
+    describe "granular replacing attributes" do
+      it "removes everything at the level of the last key" do
+        node.default["mysql"]["server"]["port"] = 2345
+
+        node.default!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
+
+        expect( node["mysql"]["server"] ).to eql({ "data_dir" => "/my_raid_volume/lib/mysql" })
+      end
+
+      it "replaces a value at the cookbook sub-level of the atributes only" do
+        node.default["mysql"]["server"]["port"] = 2345
+        node.default["mysql"]["server"]["service_name"] = "fancypants-sql"
+        node.role_default["mysql"]["server"]["port"] = 1234
+        node.force_default["mysql"]["server"]["port"] = 3456
+
+        node.default!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
+
+        expect( node["mysql"]["server"]["port"] ).to eql(3456)
+        expect( node["mysql"]["server"]["service_name"] ).to be_nil
+        expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
+        expect( node["mysql"]["server"] ).to eql({ "port" => 3456, "data_dir" => "/my_raid_volume/lib/mysql" })
+      end
+
+      it "higher precedence values aren't removed" do
+        node.role_default["mysql"]["server"]["port"] = 1234
+        node.default["mysql"]["server"]["port"] = 2345
+        node.force_default["mysql"]["server"]["port"] = 3456
+        node.override["mysql"]["server"]["service_name"] = "fancypants-sql"
+
+        node.default!["mysql"]["server"] = { "data_dir" => "/my_raid_volume/lib/mysql" }
+
+        expect( node["mysql"]["server"]["port"] ).to eql(3456)
+        expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
+        expect( node["mysql"]["server"] ).to eql({ "service_name" => "fancypants-sql", "port" => 3456, "data_dir" => "/my_raid_volume/lib/mysql" })
+      end
+    end
+
+    describe "granular force replacing attributes" do
+      it "removes everything at the level of the last key" do
+        node.force_default["mysql"]["server"]["port"] = 2345
+
+        node.force_default!["mysql"]["server"] = {
+          "data_dir" => "/my_raid_volume/lib/mysql",
+        }
+
+        expect( node["mysql"]["server"] ).to eql({
+          "data_dir" => "/my_raid_volume/lib/mysql",
+        })
+      end
+
+      it "removes all values from the precedence level when setting" do
+        node.role_default["mysql"]["server"]["port"] = 1234
+        node.default["mysql"]["server"]["port"] = 2345
+        node.force_default["mysql"]["server"]["port"] = 3456
+
+        node.force_default!["mysql"]["server"] = {
+          "data_dir" => "/my_raid_volume/lib/mysql",
+        }
+
+        expect( node["mysql"]["server"]["port"] ).to be_nil
+        expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
+        expect( node["mysql"]["server"] ).to eql({
+          "data_dir" => "/my_raid_volume/lib/mysql",
+        })
+      end
+
+      it "higher precedence levels are not removed" do
+        node.role_default["mysql"]["server"]["port"] = 1234
+        node.default["mysql"]["server"]["port"] = 2345
+        node.force_default["mysql"]["server"]["port"] = 3456
+        node.override["mysql"]["server"]["service_name"] = "fancypants-sql"
+
+        node.force_default!["mysql"]["server"] = {
+          "data_dir" => "/my_raid_volume/lib/mysql",
+        }
+
+        expect( node["mysql"]["server"]["port"] ).to be_nil
+        expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
+        expect( node["mysql"]["server"] ).to eql({
+          "service_name" => "fancypants-sql",
+          "data_dir" => "/my_raid_volume/lib/mysql",
+        })
+      end
+
+      it "will autovivify" do
+        node.force_default!["mysql"]["server"] = {
+          "data_dir" => "/my_raid_volume/lib/mysql",
+        }
+        expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
+      end
+
+      it "lower precedence levels aren't removed" do
+        node.role_override["mysql"]["server"]["port"] = 1234
+        node.override["mysql"]["server"]["port"] = 2345
+        node.force_override["mysql"]["server"]["port"] = 3456
+        node.default["mysql"]["server"]["service_name"] = "fancypants-sql"
+
+        node.force_override!["mysql"]["server"] = {
+          "data_dir" => "/my_raid_volume/lib/mysql",
+        }
+
+        expect( node["mysql"]["server"]["port"] ).to be_nil
+        expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
+        expect( node["mysql"]["server"] ).to eql({
+          "service_name" => "fancypants-sql",
+          "data_dir" => "/my_raid_volume/lib/mysql",
+        })
+      end
+
+      it "when overwriting a non-hash/array" do
+        node.override["mysql"] = false
+        node.force_override["mysql"] = true
+        node.force_override!["mysql"]["server"] = {
+          "data_dir" => "/my_raid_volume/lib/mysql",
+        }
+        expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
+      end
+
+      it "when overwriting an array with a hash" do
+        node.force_override["mysql"][0] = true
+        node.force_override!["mysql"]["server"] = {
+          "data_dir" => "/my_raid_volume/lib/mysql",
+        }
+        expect( node["mysql"]["server"] ).to eql({
+          "data_dir" => "/my_raid_volume/lib/mysql",
+        })
+      end
     end
 
     it "should raise an ArgumentError if you ask for an attribute that doesn't exist via method_missing" do
@@ -536,7 +846,6 @@ describe Chef::Node do
       @expansion.default_attrs.replace({:default => "from role", :d_role => "role only"})
       @expansion.override_attrs.replace({:override => "from role", :o_role => "role only"})
 
-
       @environment = Chef::Environment.new
       @environment.default_attributes = {:default => "from env", :d_env => "env only" }
       @environment.override_attributes = {:override => "from env", :o_env => "env only"}
@@ -752,7 +1061,6 @@ describe Chef::Node do
       node_for_json["default"]["role default"].should == "role default"
       node_for_json["default"]["env default"].should == "env default"
     end
-
 
     it "should deserialize itself from json", :json => true do
       node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
