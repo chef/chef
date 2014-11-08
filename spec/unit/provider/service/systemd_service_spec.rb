@@ -248,12 +248,12 @@ describe Chef::Provider::Service::Systemd do
 
         it "should return true if '#{systemctl_path} is-active service_name' returns 0" do
           expect(provider).to receive(:shell_out).with("#{systemctl_path} is-active #{service_name} --quiet").and_return(shell_out_success)
-          expect(provider.is_active?).to be_true
+          expect(provider.is_active?).to be true
         end
 
         it "should return false if '#{systemctl_path} is-active service_name' returns anything except 0" do
           expect(provider).to receive(:shell_out).with("#{systemctl_path} is-active #{service_name} --quiet").and_return(shell_out_failure)
-          expect(provider.is_active?).to be_false
+          expect(provider.is_active?).to be false
         end
       end
 
@@ -266,12 +266,12 @@ describe Chef::Provider::Service::Systemd do
 
         it "should return true if '#{systemctl_path} is-enabled service_name' returns 0" do
           expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name} --quiet").and_return(shell_out_success)
-          expect(provider.is_enabled?).to be_true
+          expect(provider.is_enabled?).to be true
         end
 
         it "should return false if '#{systemctl_path} is-enabled service_name' returns anything except 0" do
           expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name} --quiet").and_return(shell_out_failure)
-          expect(provider.is_enabled?).to be_false
+          expect(provider.is_enabled?).to be false
         end
       end
     end
