@@ -64,7 +64,7 @@ describe Chef::Knife do
       expect(KnifeSpecs::TestNameMapping.subcommand_category).to eq('test')
     end
 
-    it "has an explictly defined category if set" do
+    it "has an explicitly defined category if set" do
       expect(KnifeSpecs::TestExplicitCategory.subcommand_category).to eq('cookbook site')
     end
 

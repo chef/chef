@@ -130,7 +130,7 @@ class Chef
 
           ##
           # Determines the candidate version for a gem from a .gem file on disk
-          # and checks if it matches the version contraints in +gem_dependency+
+          # and checks if it matches the version constraints in +gem_dependency+
           # === Returns
           # Gem::Version  a singular gem version object is returned if the gem
           #               is available

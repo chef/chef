@@ -42,8 +42,8 @@ class Chef
       #               method names.
       # :required:: Raise an exception if this parameter is missing. Valid values are true or false,
       #             by default, options are not required.
-      # :regex:: Match the value of the paramater against a regular expression.
-      # :equal_to:: Match the value of the paramater with ==.  An array means it can be equal to any
+      # :regex:: Match the value of the parameter against a regular expression.
+      # :equal_to:: Match the value of the parameter with ==.  An array means it can be equal to any
       #             of the values.
       def validate(opts, map)
         #--
