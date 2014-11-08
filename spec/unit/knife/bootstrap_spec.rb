@@ -52,7 +52,7 @@ describe Chef::Knife::Bootstrap do
     let(:bootstrap_cli_options) { [ "--bootstrap-template", "my-template", "--distro", "other-template" ] }
 
     it "should select bootstrap template" do
-      File.basename(knife.bootstrap_template).should eq("my-template")
+      expect(File.basename(knife.bootstrap_template)).to eq("my-template")
     end
   end
 
@@ -60,7 +60,7 @@ describe Chef::Knife::Bootstrap do
     let(:bootstrap_cli_options) { [ "--distro", "my-template", "--template-file", "other-template" ] }
 
     it "should select bootstrap template" do
-      File.basename(knife.bootstrap_template).should eq("other-template")
+      expect(File.basename(knife.bootstrap_template)).to eq("other-template")
     end
   end
 
@@ -68,7 +68,7 @@ describe Chef::Knife::Bootstrap do
     let(:bootstrap_cli_options) { [ "--bootstrap-template", "my-template", "--template-file", "other-template" ] }
 
     it "should select bootstrap template" do
-      File.basename(knife.bootstrap_template).should eq("my-template")
+      expect(File.basename(knife.bootstrap_template)).to eq("my-template")
     end
   end
 
