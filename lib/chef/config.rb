@@ -491,7 +491,7 @@ class Chef
       default :ssh_gateway, nil
       default :bootstrap_version, nil
       default :bootstrap_proxy, nil
-      default :bootstrap_template, "chef-full"
+      default :bootstrap_template, nil
       default :secret, nil
       default :secret_file, nil
       default :identity_file, nil
