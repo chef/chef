@@ -42,12 +42,12 @@ when using `knife.rb`. Once third-party application developers have had
 sufficient time to adapt to the change, `knife.rb` will become
 deprecated and config.rb will be preferred.
 
-## Boostrap Changes
+## Bootstrap Changes
 
 Chef Client 12 introduces a set of changes to `knife bootstrap`. Here is the list of changes:
 
 * Unused / untested bootstrap templates that install Chef Client from rubygems are removed. The recommended installation path for Chef Client is to use the omnibus packages. `chef-full` template (which is the default) installs Chef Client using omnibus packages on all the supported platforms.
-* `--distro` & `--template-file` options are deprecated in Chef 12 in favor of `--boostrap-template` option. This option can take a boostrap template name (e.g. 'chef-full') or the full path to a bootstrap template.
+* `--distro` & `--template-file` options are deprecated in Chef 12 in favor of `--boostrap-template` option. This option can take a bootstrap template name (e.g. 'chef-full') or the full path to a bootstrap template.
 * Chef now configures `:ssl_verify_mode` & `:verify_api_cert` config options on the node that is being bootstrapped. This setting can be controlled by `:node_ssl_verify_mode` & `:node_verify_api_cert` CLI options. If these are not specified the configured value will be inferred from knife config.
 
 ## Solaris Mount Provider
@@ -228,7 +228,7 @@ manifest for the cookbook will be deleted from the cookbook file cache.
 
 ## When given an override run list Chef does not clean the file_cache
 
-In order to avoid redownloading the file_cache for all the cookbooks and files that are skipped when an
+In order to avoid re-downloading the file_cache for all the cookbooks and files that are skipped when an
 override run list is used, when an override run list is set the file cache is not cleaned at all.
 
 ## Dropped Support For Ruby 1.8.7/1.9.1/1.9.2
@@ -278,9 +278,9 @@ Informational messages from knife are now sent to stderr, allowing you to pipe t
 The `data_bag_item` dsl method can be used to load encrypted data bag items when an additional `secret` String parameter is included.
 If no `secret` is provided but the data bag item is encrypted, `Chef::Config[:encrypted_data_bag_secret]` will be checked.
 
-## 'group' provider on OSX properly uses 'dscl' to determine existing groups
+## 'group' provider on OS X properly uses 'dscl' to determine existing groups
 
-On OSX, the 'group' provider would use 'etc' to determine existing groups,
+On OS X, the 'group' provider would use 'etc' to determine existing groups,
 but 'dscl' to add groups, causing broken idempotency if something existed
 in /etc/group. The provider now uses 'dscl' for both idempotenty checks and
 modifications.
@@ -398,7 +398,7 @@ process behavior by supplying an architecture attribute to the guard as follows:
 
 ```ruby
 # The not_if will be evaluated with 64-bit cmd.exe by default,
-# so you can verride it with the :architecture guard option to
+# so you can override it with the :architecture guard option to
 # make it 32-bit as it is in Chef 11
 batch 'make_safe_backup' do
   code 'copy %USERPROFILE%\\data\\nodes.json %SYSTEMROOT%\\system32\\data\\nodes.bak'
