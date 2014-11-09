@@ -29,9 +29,12 @@ class Chef
 
         provides :service, os: "linux"
 
+        def self.provides?(node, resource)
+          super && Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart)
+        end
+
         def self.supports?(resource, action)
-          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart) &&
-            Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:upstart)
+          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:upstart)
         end
 
         # Upstart does more than start or stop a service, creating multiple 'states' [1] that a service can be in.
