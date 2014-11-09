@@ -21,6 +21,14 @@ block to the `on_create` method; it is now configured by calling either
 
 # End-User Changes
 
+## Chef 12 Attribute Changes
+
+The Chef 12 Attribute RFC 23 (https://github.com/opscode/chef-rfc/blob/master/rfc023-chef-12-attributes-changes.md) has been merged into
+Chef.  This adds the ability to remove precedence levels (or all levels) of attributes in recipes code, or to
+force setting an attribute precedence level.  The major backwards incompatible change to call out in this RFC is that
+`node.force_default!` and `node.force_override!` have changed from accessors to setters, and any cookbook code that used these functions
+(extremely uncommon) simply needs to drop the exclamation point off of the method in order to use the accessor.
+
 ## Knife Prefers `config.rb` to `knife.rb`.
 
 Knife will now look for `config.rb` in preference to `knife.rb` for its
