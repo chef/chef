@@ -237,6 +237,7 @@
 * The Windows env provider will delete elements even if they are only in ENV (and not in the registry)
 * Allow events to be logged to Windows Event Log
 * Fixed bug in env resource where a value containing the delimiter could never correctly match the existing values
+* More intelligent service check for systemd on Ubuntu 14.10.
 
 ## 11.16.4
 
