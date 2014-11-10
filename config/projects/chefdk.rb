@@ -75,6 +75,8 @@ dependency "chefdk"
 dependency "chef-provisioning"
 dependency "chef-provisioning-fog"
 dependency "chef-provisioning-vagrant"
+dependency "chef-provisioning-azure"
+dependency "chef-provisioning-aws"
 dependency "rubygems-customization"
 dependency "version-manifest"
 
