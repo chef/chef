@@ -385,6 +385,12 @@ class Chef
       end
     end
 
+    class AuditControlGroupDuplicate < RuntimeError
+      def initialize(name)
+        super "Audit control group with name '#{name}' has already been defined"
+      end
+    end
+    class AuditNameMissing < RuntimeError; end
     class NoAuditsProvided < RuntimeError
       def initialize
         super "You must provide a block with audits"

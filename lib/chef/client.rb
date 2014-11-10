@@ -44,6 +44,7 @@ require 'chef/formatters/doc'
 require 'chef/formatters/minimal'
 require 'chef/version'
 require 'chef/resource_reporter'
+require 'chef/audit/audit_reporter'
 require 'chef/run_lock'
 require 'chef/policy_builder'
 require 'chef/request_id'
@@ -210,6 +211,17 @@ class Chef
       end
     end
 
+    # Resource repoters send event information back to the chef server for processing.
+    # Can only be called after we have a @rest object
+    def register_reporters
+      [
+        Chef::ResourceReporter.new(rest),
+        Chef::Audit::AuditReporter.new(rest)
+      ].each do |r|
+        events.register(r)
+      end
+    end
+
     # Instantiates a Chef::Node object, possibly loading the node's prior state
     # when using chef-client. Delegates to policy_builder
     #
@@ -296,9 +308,7 @@ class Chef
       end
       # We now have the client key, and should use it from now on.
       @rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
-      # TODO register this where we register all other event listeners
-      @resource_reporter = Chef::ResourceReporter.new(@rest)
-      @events.register(@resource_reporter)
+      register_reporters
     rescue Exception => e
       # TODO: munge exception so a semantic failure message can be given to the
       # user
@@ -320,6 +330,7 @@ class Chef
           runner.converge
           @events.converge_complete
         rescue Exception => e
+          Chef::Log.error("Converge failed with error message #{e.message}")
           @events.converge_failed(e)
           converge_exception = e
         end
@@ -340,15 +351,16 @@ class Chef
       converge_exception
     end
 
-    # TODO are failed audits going to raise exceptions, or only be handled by the reporters?
     def run_audits(run_context)
       audit_exception = nil
       begin
-        @events.audit_phase_start(run_context)
+        @events.audit_phase_start(run_status)
+        Chef::Log.info("Starting audit phase")
         auditor = Chef::Audit::Runner.new(run_context)
         auditor.run
         @events.audit_phase_complete
       rescue Exception => e
+        Chef::Log.error("Audit phase failed with error message #{e.message}")
         @events.audit_phase_failed(e)
         audit_exception = e
       end
@@ -429,8 +441,8 @@ class Chef
 
         run_context = setup_run_context
 
-        converge_error = converge_and_save(run_context)
-        audit_error = run_audits(run_context)
+        converge_error = converge_and_save(run_context) unless (Chef::Config[:audit_mode] == true)
+        audit_error = run_audits(run_context) unless (Chef::Config[:audit_mode] == false)
 
         if converge_error || audit_error
           e = Chef::Exceptions::RunFailedWrappingError.new(converge_error, audit_error)

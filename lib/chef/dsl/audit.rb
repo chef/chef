@@ -29,6 +29,8 @@ class Chef
       # Adds the controls group and block (containing controls to execute) to the runner's list of pending examples
       def controls(*args, &block)
         raise ::Chef::Exceptions::NoAuditsProvided unless block
+        name = args[0]
+        raise AuditNameMissing if name.nil? || name.empty?
 
         run_context.controls_groups << ::RSpec::Core::ExampleGroup.__controls__(*args, &block)
       end
