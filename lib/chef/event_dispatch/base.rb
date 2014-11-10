@@ -249,8 +249,6 @@ class Chef
 
       # An example in a `controls` block completed successfully
       def control_example_success(control_group_name, example_data)
-        # TODO Use this for both stdout and resource_reporter, need to pass ancestor tree for resource_reporter
-        # but that is ignored by stdout
       end
 
       # An example in a `controls` block failed with the provided error
