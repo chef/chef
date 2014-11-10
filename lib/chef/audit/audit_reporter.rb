@@ -53,9 +53,11 @@ class Chef
         post_auditing_data
       end
 
+      # If the audit phase failed, its because there was some kind of error in the framework
+      # that runs tests - normal errors are interpreted as EXAMPLE failures and captured.
       def audit_phase_failed(error)
-        # TODO
-        raise error
+        # The stacktrace information has already been logged elsewhere
+        Chef::Log.error("Audit Reporter failed - not sending any auditing information to the server")
       end
 
       def control_group_started(name)
@@ -83,10 +85,8 @@ class Chef
 
       def post_auditing_data
         if auditing_enabled?
-          node_name = audit_data.node_name
-          run_id = audit_data.run_id
-          audit_history_url = "audits/nodes/#{node_name}/runs/#{run_id}"
-          Chef::Log.info("Sending audit report (run-id: #{run_id})")
+          audit_history_url = "controls"
+          Chef::Log.info("Sending audit report (run-id: #{audit_data.run_id})")
           run_data = audit_data.to_hash
           Chef::Log.debug run_data.inspect
           compressed_data = encode_gzip(Chef::JSONCompat.to_json(run_data))
