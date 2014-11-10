@@ -26,5 +26,4 @@ require 'serverspec/subject'
 require 'specinfra'
 
 require 'chef/dsl/audit'
-require 'chef/audit/chef_json_formatter'
 require 'chef/audit/runner'

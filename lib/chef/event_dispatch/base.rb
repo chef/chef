@@ -230,7 +230,7 @@ class Chef
       end
 
       # Called before audit phase starts
-      def audit_phase_start(run_context)
+      def audit_phase_start(run_status)
       end
 
       # Called when audit phase successfully finishes
@@ -243,19 +243,18 @@ class Chef
       def audit_phase_failed(exception)
       end
 
-      def control_group_start(name)
-        # TODO use this only for stdout formatting, controls indentation
+      # Signifies the start of a `controls` block with a defined name
+      def control_group_started(name)
       end
 
-      def control_group_end
-      end
-
-      def control_example_success(description)
+      # An example in a `controls` block completed successfully
+      def control_example_success(control_group_name, example_data)
         # TODO Use this for both stdout and resource_reporter, need to pass ancestor tree for resource_reporter
         # but that is ignored by stdout
       end
 
-      def control_example_failure(description, exception)
+      # An example in a `controls` block failed with the provided error
+      def control_example_failure(control_group_name, example_data, error)
       end
 
       # TODO: need events for notification resolve?
