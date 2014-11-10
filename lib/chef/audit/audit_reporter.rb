@@ -19,7 +19,6 @@
 
 require 'chef/event_dispatch/base'
 require 'chef/audit/control_group_data'
-require 'pry'
 
 class Chef
   class Audit
