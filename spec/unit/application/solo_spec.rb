@@ -94,6 +94,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
       before do
         Chef::Config[:cookbook_path] = "#{Dir.tmpdir}/chef-solo/cookbooks"
         Chef::Config[:recipe_url] = "http://junglist.gen.nz/recipes.tgz"
+        allow(FileUtils).to receive(:rm_rf).and_return(true)
         allow(FileUtils).to receive(:mkdir_p).and_return(true)
         @tarfile = StringIO.new("remote_tarball_content")
         allow(@app).to receive(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(@tarfile)
@@ -135,6 +136,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
       Chef::Config[:json_attribs] = json_source
       Chef::Config[:recipe_url] = "http://icanhas.cheezburger.com/lolcats"
       Chef::Config[:cookbook_path] = "#{Dir.tmpdir}/chef-solo/cookbooks"
+      allow(FileUtils).to receive(:rm_rf).and_return(true)
       allow(FileUtils).to receive(:mkdir_p).and_return(true)
       allow(Chef::Mixin::Command).to receive(:run_command).and_return(true)
     end
