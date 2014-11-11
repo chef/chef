@@ -238,6 +238,7 @@
 * Allow events to be logged to Windows Event Log
 * Fixed bug in env resource where a value containing the delimiter could never correctly match the existing values
 * More intelligent service check for systemd on Ubuntu 14.10.
+* [Issue 2380](https://github.com/opscode/chef/issues/2380) chef-shell on Windows no longer tries to load /etc/chef/client.rb
 
 ## 11.16.4
 
