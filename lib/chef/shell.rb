@@ -308,9 +308,17 @@ FOOTER
       elsif ENV['HOME'] && ::File.exist?(File.join(ENV['HOME'], '.chef', 'chef_shell.rb'))
         File.join(ENV['HOME'], '.chef', 'chef_shell.rb')
       elsif config[:solo]
-        "/etc/chef/solo.rb"
+        if Chef::Platform.windows?
+          "C:\\chef\\solo.rb"
+        else
+          "/etc/chef/solo.rb"
+        end
       elsif config[:client]
-        "/etc/chef/client.rb"
+        if Chef::Platform.windows?
+          "C:\\chef\\client.rb"
+        else
+          "/etc/chef/client.rb"
+        end
       else
         nil
       end
