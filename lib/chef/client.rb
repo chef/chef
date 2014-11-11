@@ -350,7 +350,6 @@ class Chef
       converge_exception
     end
 
-    # TODO are failed audits going to raise exceptions, or only be handled by the reporters?
     def run_audits(run_context)
       audit_exception = nil
       begin
