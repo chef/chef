@@ -101,7 +101,7 @@ class Chef::Application::Client < Chef::Application
       :proc => lambda { |p| true }
   end
 
-  option :pid_file,
+  option :lockfile,
     :short        => "-P PID_FILE",
     :long         => "--pid PIDFILE",
     :description  => "Set the PID file location, defaults to /tmp/chef-client.pid",
