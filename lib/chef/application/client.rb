@@ -257,6 +257,8 @@ class Chef::Application::Client < Chef::Application
   def reconfigure
     super
 
+    Chef::Application.fatal!(pidfile_lockfile_match_error_message) if Chef::Config[:pid_file] ==  Chef::Config[:lockfile]
+
     Chef::Config[:specific_recipes] = cli_arguments.map { |file| File.expand_path(file) }
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
@@ -395,6 +397,10 @@ class Chef::Application::Client < Chef::Application
   def client_sleep(sec)
     IO.select([ SELF_PIPE[0] ], nil, nil, sec) or return
     @signal = SELF_PIPE[0].getc.chr
+  end
+
+  def pidfile_lockfile_match_error_message
+    "PID file and lockfile location match - this will cause conflicts"
   end
 
   def unforked_interval_error_message
