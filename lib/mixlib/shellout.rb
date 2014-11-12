@@ -144,7 +144,7 @@ module Mixlib
     #   cmd = Mixlib::ShellOut.new("apachectl", "start", :user => 'www', :env => nil, :cwd => '/tmp')
     #   cmd.run_command # etc.
     def initialize(*command_args)
-      @stdout, @stderr = '', ''
+      @stdout, @stderr, @process_status = '', '', ''
       @live_stdout = @live_stderr = nil
       @input = nil
       @log_level = :debug
