@@ -83,19 +83,31 @@
 <dd>The version of the chef-client to install.</dd>
 <dt><tt class="docutils literal"><span class="pre">--bootstrap-wget-options</span> <span class="pre">OPTIONS</span></tt></dt>
 <dd>Use to specify arbitrary options to be added to the bootstrap command when using GNU Wget. This option may not be used in the same command with <tt class="docutils literal"><span class="pre">--bootstrap-install-command</span></tt>.</dd>
-<dt><tt class="docutils literal"><span class="pre">-d</span> <span class="pre">DISTRO</span></tt>, <tt class="docutils literal"><span class="pre">--distro</span> <span class="pre">DISTRO</span></tt></dt>
-<dd><p class="first">The template file to be used during a bootstrap operation. The following distributions are supported: <tt class="docutils literal"><span class="pre">chef-full</span></tt> (the default bootstrap), <tt class="docutils literal"><span class="pre">centos5-gems</span></tt>, <tt class="docutils literal"><span class="pre">fedora13-gems</span></tt>, <tt class="docutils literal"><span class="pre">ubuntu10.04-gems</span></tt>, <tt class="docutils literal"><span class="pre">ubuntu10.04-apt</span></tt>, <tt class="docutils literal"><span class="pre">ubuntu12.04-gems</span></tt>, and the name of a custom bootstrap template file. When this option is used, knife will search for the template file in the following order: the <tt class="docutils literal"><span class="pre">bootstrap/</span></tt> folder in the current working directory, the <tt class="docutils literal"><span class="pre">bootstrap/</span></tt> folder in the chef-repo, the <tt class="docutils literal"><span class="pre">bootstrap/</span></tt> folder in the <tt class="docutils literal"><span class="pre">~/.chef/</span></tt> directory, or a default bootstrap file. Do not use the <tt class="docutils literal"><span class="pre">--template-file</span></tt> option when <tt class="docutils literal"><span class="pre">--distro</span></tt> is specified.</p>
-<div class="last admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">The default bootstrap operation uses the omnibus installer, which means the default template file (<tt class="docutils literal"><span class="pre">chef-full</span></tt>) should work on all supported platforms. It is recommended to use custom bootstrap templates only when the omnibus installer cannot be used. The <tt class="docutils literal"><span class="pre">.erb</span></tt> file extension is added automatically and should not be passed as part of the bootstrap command.</p>
-</div>
-</dd>
 <dt><tt class="docutils literal"><span class="pre">-E</span> <span class="pre">ENVIRONMENT</span></tt>, <tt class="docutils literal"><span class="pre">--environment</span> <span class="pre">ENVIRONMENT</span></tt></dt>
 <dd>The name of the environment. When this option is added to a command, the command will run only against the named environment.</dd>
 <dt><tt class="docutils literal"><span class="pre">-G</span> <span class="pre">GATEWAY</span></tt>, <tt class="docutils literal"><span class="pre">--ssh-gateway</span> <span class="pre">GATEWAY</span></tt></dt>
 <dd>The SSH tunnel or gateway that is used to run a bootstrap action on a machine that is not accessible from the workstation.</dd>
 <dt><tt class="docutils literal"><span class="pre">--hint</span> <span class="pre">HINT_NAME[=HINT_FILE]</span></tt></dt>
-<dd>An Ohai hint to be set on the target of the bootstrap. The hint is contained in a file and is formatted as JSON: <tt class="docutils literal"><span class="pre">{&quot;attribute&quot;:&quot;value&quot;,&quot;attribute&quot;:&quot;value&quot;...}</span></tt>. <tt class="docutils literal"><span class="pre">HINT_NAME</span></tt> is the name of the hint and <tt class="docutils literal"><span class="pre">HINT_FILE</span></tt> is the name of the hint file located at <tt class="docutils literal"><span class="pre">/etc/chef/ohai/hints/HINT_FILE.json</span></tt>. Use multiple <tt class="docutils literal"><span class="pre">--hint</span></tt> options in the command to specify multiple hints.</dd>
+<dd><p class="first">Use to specify an Ohai hint to be set on the target node.</p>
+<p>Ohai hints are used to tell Ohai something about the system that it is running on that it would not be able to discover itself. An Ohai hint exists if a JSON file exists in the hint directory with the same name as the hint. For example, calling <tt class="docutils literal"><span class="pre">hint?('antartica')</span></tt> in an Ohai plugin would return an empty hash if the file <tt class="docutils literal"><span class="pre">antartica.json</span></tt> existed in the hints directory, and return nil if the file does not exist.</p>
+<p>If the hint file contains JSON content, it will be returned as a hash from the call to <tt class="docutils literal"><span class="pre">hint?</span></tt>.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s2">&quot;snow&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="s2">&quot;penguins&quot;</span><span class="o">:</span> <span class="s2">&quot;many&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-ruby"><div class="highlight"><pre><span class="n">arctic_hint</span> <span class="o">=</span> <span class="n">hint?</span><span class="p">(</span><span class="s1">&#39;antartica&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">arctic_hint</span><span class="o">[</span><span class="s1">&#39;snow&#39;</span><span class="o">]</span>
+  <span class="s2">&quot;There are </span><span class="si">#{</span><span class="n">arctic_hint</span><span class="o">[</span><span class="s1">&#39;penguins&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2"> penguins here.&quot;</span>
+<span class="k">else</span>
+  <span class="s2">&quot;There is no snow here, and penguins like snow.&quot;</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>The default directory in which hint files are located is <tt class="docutils literal"><span class="pre">/etc/chef/ohai/hints/</span></tt>. Use the <tt class="docutils literal"><span class="pre">Ohai::Config[:hints_path]</span></tt> setting in the client.rb file to customize this location.</p>
+<p class="last"><tt class="docutils literal"><span class="pre">HINT_FILE</span></tt> is the name of the JSON file. <tt class="docutils literal"><span class="pre">HINT_NAME</span></tt> is the name of a hint in a JSON file. Use multiple <tt class="docutils literal"><span class="pre">--hint</span></tt> options to specify multiple hints.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">-i</span> <span class="pre">IDENTITY_FILE</span></tt>, <tt class="docutils literal"><span class="pre">--identity-file</span> <span class="pre">IDENTITY_FILE</span></tt></dt>
 <dd>The SSH identity file used for authentication. Key-based authentication is recommended.</dd>
 <dt><tt class="docutils literal"><span class="pre">-j</span> <span class="pre">JSON_ATTRIBS</span></tt>, <tt class="docutils literal"><span class="pre">--json-attributes</span> <span class="pre">JSON_ATTRIBS</span></tt></dt>
@@ -104,6 +116,14 @@
 <dd>The name of the node.</dd>
 <dt><tt class="docutils literal"><span class="pre">--[no-]host-key-verify</span></tt></dt>
 <dd>Use <tt class="docutils literal"><span class="pre">--no-host-key-verify</span></tt> to disable host key verification. Default setting: <tt class="docutils literal"><span class="pre">--host-key-verify</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">--[no-]node-verify-api-cert</span></tt></dt>
+<dd>Use <tt class="docutils literal"><span class="pre">verify_api_cert</span></tt> to only do SSL validation of the Chef server connection; may be needed if the chef-client needs to talk to other services that have broken SSL certificates. If this option is not specified, the setting for <tt class="docutils literal"><span class="pre">verify_api_cert</span></tt> in the configuration file is applied.</dd>
+<dt><tt class="docutils literal"><span class="pre">--node-ssl-verify-mode</span> <span class="pre">PEER_OR_NONE</span></tt></dt>
+<dd><p class="first">The verify mode for HTTPS requests.</p>
+<p>Use <tt class="docutils literal"><span class="pre">:verify_none</span></tt> to do no validation of SSL certificates.</p>
+<p>Use <tt class="docutils literal"><span class="pre">:verify_peer</span></tt> to do validation of all SSL certificates, including the Chef server connections, S3 connections, and any HTTPS <strong>remote_file</strong> resource URLs used in the chef-client run. This is the recommended setting.</p>
+<p class="last">If this option is not specified, the setting for <tt class="docutils literal"><span class="pre">ssl_verify_mode</span></tt> in the configuration file is applied.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">-p</span> <span class="pre">PORT</span></tt>, <tt class="docutils literal"><span class="pre">--ssh-port</span> <span class="pre">PORT</span></tt></dt>
 <dd>The SSH port.</dd>
 <dt><tt class="docutils literal"><span class="pre">-P</span> <span class="pre">PASSWORD</span></tt>, <tt class="docutils literal"><span class="pre">--ssh-password</span> <span class="pre">PASSWORD</span></tt></dt>
@@ -118,8 +138,8 @@
 <dd>The path to the file that contains the encryption key.</dd>
 <dt><tt class="docutils literal"><span class="pre">--sudo</span></tt></dt>
 <dd>Use to execute a bootstrap operation with sudo.</dd>
-<dt><tt class="docutils literal"><span class="pre">--template-file</span> <span class="pre">TEMPLATE</span></tt></dt>
-<dd>The path to a template file that will be used during a bootstrap operation. Do not use the <tt class="docutils literal"><span class="pre">--distro</span></tt> option when <tt class="docutils literal"><span class="pre">--template-file</span></tt> is specified.</dd>
+<dt><tt class="docutils literal"><span class="pre">-t</span> <span class="pre">TEMPLATE</span></tt>, <tt class="docutils literal"><span class="pre">--bootstrap-template</span> <span class="pre">TEMPLATE</span></tt></dt>
+<dd>Use to specify the bootstrap template to use. This may specify the name of a bootstrap template&#8212;<tt class="docutils literal"><span class="pre">chef-full</span></tt>, for example&#8212;or it may specify the full path to an Embedded Ruby (ERB) template that defines a custom bootstrap. Default value: <tt class="docutils literal"><span class="pre">chef-full</span></tt>, which installs the chef-client using the omnibus installer on all supported platforms.</dd>
 <dt><tt class="docutils literal"><span class="pre">--use-sudo-password</span></tt></dt>
 <dd>Use to perform a bootstrap operation with sudo; specify the password with the <tt class="docutils literal"><span class="pre">-P</span></tt> (or <tt class="docutils literal"><span class="pre">--ssh-password</span></tt>) option.</dd>
 <dt><tt class="docutils literal"><span class="pre">-V</span> <span class="pre">-V</span></tt></dt>

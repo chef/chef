@@ -1,3 +1,9 @@
+## Unreleased
+
+### Chef Contributions
+* Update Chef to use RSpec 3.
+
+
 ## 12.0.0
 
 * [**Jesse Hu**](https://github.com/jessehu):
@@ -146,6 +152,7 @@
 
 ### Chef Contributions
 
+* Added RFC-023 Chef 12 Attribute Changes (https://github.com/opscode/chef-rfc/blob/master/rfc023-chef-12-attributes-changes.md)
 * Added os/platform_family options to provides syntax on the Chef::Resource DSL
 * Added provides methods to the Chef::Provider DSL
 * Added supported?(resource, action) class method to all Providers for late-evaluation if a provider can handle a
@@ -236,7 +243,7 @@
 * The Windows env provider will delete elements even if they are only in ENV (and not in the registry)
 * Allow events to be logged to Windows Event Log
 * Fixed bug in env resource where a value containing the delimiter could never correctly match the existing values
-* Update Chef to use RSpec 3.
+* More intelligent service check for systemd on Ubuntu 14.10.
 
 ## 11.16.4
 

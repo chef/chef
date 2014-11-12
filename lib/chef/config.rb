@@ -396,6 +396,12 @@ class Chef
     # If chef-zero is enabled, this defaults to nil (no authentication).
     default(:client_key) { chef_zero.enabled ? nil : platform_specific_path("/etc/chef/client.pem") }
 
+    # When registering the client, should we allow the client key location to
+    # be a symlink?  eg: /etc/chef/client.pem -> /etc/chef/prod-client.pem
+    # If the path of the key goes through a directory like /tmp this should
+    # never be set to true or its possibly an easily exploitable security hole.
+    default :follow_client_key_symlink, false
+
     # This secret is used to decrypt encrypted data bag items.
     default(:encrypted_data_bag_secret) do
       if File.exist?(platform_specific_path("/etc/chef/encrypted_data_bag_secret"))
@@ -491,7 +497,7 @@ class Chef
       default :ssh_gateway, nil
       default :bootstrap_version, nil
       default :bootstrap_proxy, nil
-      default :bootstrap_template, "chef-full"
+      default :bootstrap_template, nil
       default :secret, nil
       default :secret_file, nil
       default :identity_file, nil
