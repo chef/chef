@@ -101,10 +101,15 @@ class Chef::Application::Client < Chef::Application
       :proc => lambda { |p| true }
   end
 
-  option :lockfile,
+  option :pid_file,
     :short        => "-P PID_FILE",
     :long         => "--pid PIDFILE",
-    :description  => "Set the PID file location, defaults to /tmp/chef-client.pid",
+    :description  => "Set the PID file location, for when chef-client is running as a daemon. Defaults to /tmp/chef-client.pid",
+    :proc         => nil
+
+  option :lockfile,
+    :long         => "--lockfile LOCKFILE",
+    :description  => "Set the lockfile location",
     :proc         => nil
 
   option :interval,
