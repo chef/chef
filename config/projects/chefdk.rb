@@ -46,6 +46,15 @@ end
 # Software does).
 override :cacerts, version: '2014.08.20'
 
+# Appbundler 0.3.0 has two serious bugs, which cause the issue reported here:
+# https://github.com/opscode/chef-dk/issues/228
+#
+# * https://github.com/opscode/appbundler/issues/9
+# * https://github.com/opscode/appbundler/issues/10
+#
+# For now we'll roll back so master is in a working state.
+override :appbundler, version: "0.2.0"
+
 override :berkshelf,      version: "v3.2.0"
 override :bundler,        version: "1.7.5"
 override :chef,           version: "11.16.4"
