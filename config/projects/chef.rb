@@ -64,6 +64,7 @@ override :rubygems,       version: "2.4.1"
 
 dependency "preparation"
 dependency "chef"
+dependency "shebang-cleanup"
 dependency "version-manifest"
 
 package :rpm do
