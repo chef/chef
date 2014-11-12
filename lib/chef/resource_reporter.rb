@@ -20,6 +20,7 @@
 #
 
 require 'uri'
+require 'zlib'
 require 'chef/monkey_patches/securerandom'
 require 'chef/event_dispatch/base'
 

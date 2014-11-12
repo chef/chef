@@ -17,11 +17,15 @@
 #
 
 require 'chef/audit'
+require 'chef/audit/audit_event_proxy'
 require 'chef/config'
 
 class Chef
   class Audit
     class Runner
+
+      attr_reader :run_context
+      private :run_context
 
       def initialize(run_context)
         @run_context = run_context
@@ -45,11 +49,11 @@ class Chef
       # RSpec configuration and world objects are heavy, so let's wait until
       # we actually need them.
       def configuration
-        @configuration ||= RSpec::Core::Configuration.new
+        RSpec.configuration
       end
 
       def world
-        @world ||= RSpec::Core::World.new(configuration)
+        RSpec.world
       end
 
       # Configure audits before run.
@@ -57,8 +61,17 @@ class Chef
       # for people-friendly output of audit results and json for reporting. Also
       # configures expectation frameworks.
       def setup
+        # We're setting the output stream, but that will only be used for error situations
+        # Our formatter forwards events to the Chef event message bus
+        # TODO so some testing to see if these output to a log file - we probably need
+        # to register these before any formatters are added.
         configuration.output_stream = Chef::Config[:log_location]
         configuration.error_stream  = Chef::Config[:log_location]
+        # TODO im pretty sure I only need this because im running locally in rvmsudo
+        configuration.backtrace_exclusion_patterns.push(Regexp.new("/Users".gsub("/", File::SEPARATOR)))
+        configuration.backtrace_exclusion_patterns.push(Regexp.new("(eval)"))
+        configuration.color = Chef::Config[:color]
+        configuration.expose_dsl_globally = false
 
         add_formatters
         disable_should_syntax
@@ -67,7 +80,8 @@ class Chef
 
       def add_formatters
         configuration.add_formatter(RSpec::Core::Formatters::DocumentationFormatter)
-        configuration.add_formatter(ChefJsonFormatter)
+        configuration.add_formatter(Chef::Audit::AuditEventProxy)
+        Chef::Audit::AuditEventProxy.events = run_context.events
       end
 
       # Explicitly disable :should syntax.
@@ -92,7 +106,7 @@ class Chef
       # Register each controls group with the world, which will handle
       # the ordering of the audits that will be run.
       def register_controls_groups
-        @run_context.controls_groups.each { |ctls_grp| world.register(ctls_grp) }
+        run_context.controls_groups.each { |ctls_grp| world.register(ctls_grp) }
       end
 
     end

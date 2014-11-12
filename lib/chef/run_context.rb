@@ -51,6 +51,7 @@ class Chef
     # recipes, which is triggered by #load. (See also: CookbookCompiler)
     attr_accessor :resource_collection
 
+    # The list of control groups to execute during the audit phase
     attr_accessor :controls_groups
 
     # Chef::ProviderResolver for this run
