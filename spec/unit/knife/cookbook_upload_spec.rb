@@ -246,28 +246,50 @@ E
     describe 'with -a or --all' do
       before(:each) do
         knife.config[:all] = true
-        @test_cookbook1 = Chef::CookbookVersion.new('test_cookbook1', '/tmp/blah')
-        @test_cookbook2 = Chef::CookbookVersion.new('test_cookbook2', '/tmp/blah')
-        allow(cookbook_loader).to receive(:each).and_yield("test_cookbook1", @test_cookbook1).and_yield("test_cookbook2", @test_cookbook2)
-        allow(cookbook_loader).to receive(:cookbook_names).and_return(["test_cookbook1", "test_cookbook2"])
       end
 
-      it 'should upload all cookbooks' do
-        expect(knife).to receive(:upload).once
-        knife.run
+      context 'when cookbooks exist in the cookbook path' do
+        before(:each) do
+          @test_cookbook1 = Chef::CookbookVersion.new('test_cookbook1', '/tmp/blah')
+          @test_cookbook2 = Chef::CookbookVersion.new('test_cookbook2', '/tmp/blah')
+          allow(cookbook_loader).to receive(:each).and_yield("test_cookbook1", @test_cookbook1).and_yield("test_cookbook2", @test_cookbook2)
+          allow(cookbook_loader).to receive(:cookbook_names).and_return(["test_cookbook1", "test_cookbook2"])
+        end
+
+        it 'should upload all cookbooks' do
+          expect(knife).to receive(:upload).once
+          knife.run
+        end
+
+        it 'should report on success' do
+          expect(knife).to receive(:upload).once
+          expect(knife.ui).to receive(:info).with(/Uploaded all cookbooks/)
+          knife.run
+        end
+
+        it 'should update the version constraints for an environment' do
+          allow(knife).to receive(:assert_environment_valid!).and_return(true)
+          knife.config[:environment] = "production"
+          expect(knife).to receive(:update_version_constraints).once
+          knife.run
+        end
       end
 
-      it 'should report on success' do
-        expect(knife).to receive(:upload).once
-        expect(knife.ui).to receive(:info).with(/Uploaded all cookbooks/)
-        knife.run
-      end
+      context 'when no cookbooks exist in the cookbook path' do
+        before(:each) do
+          allow(cookbook_loader).to receive(:each)
+        end
 
-      it 'should update the version constraints for an environment' do
-        allow(knife).to receive(:assert_environment_valid!).and_return(true)
-        knife.config[:environment] = "production"
-        expect(knife).to receive(:update_version_constraints).once
-        knife.run
+        it 'should not upload any cookbooks' do
+          expect(knife).to_not receive(:upload)
+          knife.run
+        end
+
+        it 'should warn users that no cookbooks exist' do
+          expect(knife).to_not receive(:upload)
+          expect(knife.ui).to receive(:warn).with(/Could not find any cookbooks in your cookbook path\. Use --cookbook-path to specify the desired path\./)
+          knife.run
+        end
       end
     end
 
