@@ -78,6 +78,7 @@ dependency "chef-provisioning-vagrant"
 dependency "chef-provisioning-azure"
 dependency "chef-provisioning-aws"
 dependency "rubygems-customization"
+dependency "shebang-cleanup"
 dependency "version-manifest"
 
 package :rpm do
