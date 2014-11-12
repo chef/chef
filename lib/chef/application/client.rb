@@ -415,7 +415,7 @@ class Chef::Application::Client < Chef::Application
   end
 
   def pidfile_lockfile_match_error_message
-    "PID file and lockfile location match - this will cause conflicts"
+    "PID file and lockfile are not permitted to match"
   end
 
   def unforked_interval_error_message
