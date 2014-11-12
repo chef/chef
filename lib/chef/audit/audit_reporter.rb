@@ -57,7 +57,11 @@ class Chef
       # that runs tests - normal errors are interpreted as EXAMPLE failures and captured.
       def audit_phase_failed(error)
         # The stacktrace information has already been logged elsewhere
-        Chef::Log.error("Audit Reporter failed - not sending any auditing information to the server")
+        Chef::Log.error("Audit Reporter failed - sending error to server with available example information")
+        ordered_control_groups.each do |name, control_group|
+          audit_data.add_control_group(control_group)
+        end
+        post_auditing_data(error)
       end
 
       def control_group_started(name)
@@ -83,11 +87,16 @@ class Chef
 
       private
 
-      def post_auditing_data
+      def post_auditing_data(error = nil)
         if auditing_enabled?
           audit_history_url = "controls"
           Chef::Log.info("Sending audit report (run-id: #{audit_data.run_id})")
           run_data = audit_data.to_hash
+
+          if error
+            run_data[:error] = "#{error.class.to_s}: #{error.message}\n#{error.backtrace.join("\n")}"
+          end
+
           Chef::Log.debug run_data.inspect
           compressed_data = encode_gzip(Chef::JSONCompat.to_json(run_data))
           Chef::Log.debug("Sending compressed audit data...")
