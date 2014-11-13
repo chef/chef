@@ -96,7 +96,20 @@ describe Chef::Knife::SubcommandLoader do
         # This command is "extra" compared to what's in the embedded/apps/chef install:
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-1.0.0/lib/chef/knife/data_bag_secret_options.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-vault-2.2.4/lib/chef/knife/decrypt.rb",
-        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/knife-spork-1.4.1/lib/chef/knife/spork-bump.rb"
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/knife-spork-1.4.1/lib/chef/knife/spork-bump.rb",
+        # These are fake commands that have names designed to test that the
+        # regex is strict enough
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-foo-#{Chef::VERSION}/lib/chef/knife/chef-foo.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/foo-chef-#{Chef::VERSION}/lib/chef/knife/foo-chef.rb",
+        # In a real scenario, we'd use rubygems APIs to only select the most
+        # recent gem, but for this test we want to check that we're doing the
+        # right thing both when the plugin version matches and does not match
+        # the current chef version. Looking at
+        # `SubcommandLoader::MATCHES_THIS_CHEF_GEM` and
+        # `SubcommandLoader::MATCHES_CHEF_GEM` should make it clear why we want
+        # to test these two cases.
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-foo-1.0.0/lib/chef/knife/chef-foo.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/foo-chef-1.0.0/lib/chef/knife/foo-chef.rb"
       ]
     end
 
@@ -106,7 +119,11 @@ describe Chef::Knife::SubcommandLoader do
         "/opt/chefdk/embedded/apps/chef/lib/chef/knife/client_bulk_delete.rb",
         "/opt/chefdk/embedded/apps/chef/lib/chef/knife/client_create.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-vault-2.2.4/lib/chef/knife/decrypt.rb",
-        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/knife-spork-1.4.1/lib/chef/knife/spork-bump.rb"
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/knife-spork-1.4.1/lib/chef/knife/spork-bump.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-foo-#{Chef::VERSION}/lib/chef/knife/chef-foo.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/foo-chef-#{Chef::VERSION}/lib/chef/knife/foo-chef.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-foo-1.0.0/lib/chef/knife/chef-foo.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/foo-chef-1.0.0/lib/chef/knife/foo-chef.rb"
       ]
     end
 
