@@ -534,7 +534,7 @@ class Chef
           if @new_resource.source =~ /\.gem$/i
             name = @new_resource.source
           else
-            src = @new_resource.source && "  --source=#{@new_resource.source} --source=http://rubygems.org"
+            src = @new_resource.source && "  --source=#{@new_resource.source} --source=https://rubygems.org"
           end
           if version
             shell_out!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", :env=>nil)
