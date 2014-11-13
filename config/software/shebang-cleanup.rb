@@ -21,13 +21,29 @@
 
 name "shebang-cleanup"
 
-default_version "0.0.1"
+default_version "0.0.2"
 
 build do
-  # Fix the shebang for binaries with shebangs that have:
-  # #!/usr/bin/env ruby
-  unless windows?
+  if windows?
+    block "Update batch files to point at embedded ruby" do
+      require 'rubygems/format'
+      Dir["#{install_dir.gsub(/\\/, '/')}/embedded/lib/ruby/gems/**/cache/*.gem"].each do |gem_file|
+        Gem::Format.from_file_by_path(gem_file).spec.executables.each do |bin|
+          if File.exists?("#{install_dir}/bin/#{bin}")
+            File.open("#{install_dir}/bin/#{bin}.bat", "w") do |f|
+              f.puts <<-EOF
+  @ECHO OFF
+  "%~dp0\\..\\embedded\\bin\\ruby.exe" "%~dpn0" %*
+              EOF
+            end
+          end
+        end
+      end
+    end
+  else
     block "Update shebangs to point to embedded Ruby" do
+      # Fix the shebang for binaries with shebangs that have:
+      # #!/usr/bin/env ruby
       Dir.glob("#{install_dir}/embedded/bin/*") do |bin_file|
         update_shebang = false
         rest_of_the_file = ""
