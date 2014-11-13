@@ -257,7 +257,7 @@ class Chef::Application::Client < Chef::Application
   def reconfigure
     super
 
-    Chef::Application.fatal!(pidfile_lockfile_match_error_message) if Chef::Config[:pid_file] ==  Chef::Config[:lockfile]
+    Chef::Application.fatal!(pidfile_lockfile_match_error_message) if Chef::Util::PathHelper.paths_eql? Chef::Config[:pid_file], Chef::Config[:lockfile]
 
     Chef::Config[:specific_recipes] = cli_arguments.map { |file| File.expand_path(file) }
 
@@ -415,7 +415,8 @@ class Chef::Application::Client < Chef::Application
   end
 
   def pidfile_lockfile_match_error_message
-    "PID file and lockfile are not permitted to match"
+    "PID file and lockfile are not permitted to match." + 
+    "\n Specify a different location with --pid or --lockfile"
   end
 
   def unforked_interval_error_message
