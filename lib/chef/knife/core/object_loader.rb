@@ -105,7 +105,7 @@ class Chef
         end
 
         def file_exists_and_is_readable?(file)
-          File.exists?(file) && File.readable?(file)
+          File.exist?(file) && File.readable?(file)
         end
 
       end
