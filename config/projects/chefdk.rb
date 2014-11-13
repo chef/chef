@@ -55,9 +55,10 @@ override :cacerts, version: '2014.08.20'
 # For now we'll roll back so master is in a working state.
 override :appbundler, version: "0.2.0"
 
-override :berkshelf,      version: "v3.2.0"
+override :chefdk,         version: "0.3.5"
+override :berkshelf,      version: "v3.2.1"
 override :bundler,        version: "1.7.5"
-override :chef,           version: "11.16.4"
+override :chef,           version: "11.18.0.rc.0"
 
 # TODO: Can we bump default versions in omnibus-software?
 override :libedit,        version: "20130712-3.1"
