@@ -1,3 +1,13 @@
+# Chef Client Release Notes 12.2.0:
+
+# Internal API Changes in this Release
+
+# End-User Changes
+
+## OpenBSD Package provider was added
+
+The package resource on OpenBSD is wired up to use the new OpenBSD package provider to install via pkg_add on OpenBSD systems.
+
 # Chef Client Release Notes 12.0.0:
 
 # Internal API Changes in this Release
