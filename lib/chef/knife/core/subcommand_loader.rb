@@ -21,6 +21,9 @@ class Chef
   class Knife
     class SubcommandLoader
 
+      MATCHES_CHEF_GEM = %r{/chef-[\d]+\.[\d]+\.[\d]+}.freeze
+      MATCHES_THIS_CHEF_GEM = %r{/chef-#{Chef::VERSION}/}.freeze
+
       attr_reader :chef_config_dir
       attr_reader :env
 
@@ -121,6 +124,14 @@ class Chef
         subcommand_files = {}
         files.each do |file|
           rel_path = file[/(#{Regexp.escape File.join('chef', 'knife', '')}.*)\.rb/, 1]
+
+          # When not installed as a gem (ChefDK/appbundler in particular), AND
+          # a different version of Chef is installed via gems, `files` will
+          # include some files from the 'other' Chef install. If this contains
+          # a knife command that doesn't exist in this version of Chef, we will
+          # get a LoadError later when we try to require it.
+          next if from_different_chef_version?(file)
+
           subcommand_files[rel_path] = file
         end
 
@@ -184,6 +195,19 @@ class Chef
 
         Dir[glob].map { |f| f.untaint }
       end
+
+      def from_different_chef_version?(path)
+        matches_any_chef_gem?(path) && !matches_this_chef_gem?(path)
+      end
+
+      def matches_any_chef_gem?(path)
+        path =~ MATCHES_CHEF_GEM
+      end
+
+      def matches_this_chef_gem?(path)
+        path =~ MATCHES_THIS_CHEF_GEM
+      end
+
     end
   end
 end
