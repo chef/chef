@@ -18,4 +18,6 @@ gemspec.add_dependency "win32-eventlog", "0.6.1"
 gemspec.extensions << "ext/win32-eventlog/Rakefile"
 gemspec.files += %w(ext/win32-eventlog/Rakefile ext/win32-eventlog/chef-log.man)
 
+gemspec.executables += %w( chef-service-manager chef-windows-service )
+
 gemspec
