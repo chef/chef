@@ -73,7 +73,72 @@ describe Chef::Knife::SubcommandLoader do
     expect(@loader.site_subcommands).to include(expected_command)
   end
 
-  describe "finding 3rd party plugins" do 
+  # https://github.com/opscode/chef-dk/issues/227
+  #
+  # `knife` in ChefDK isn't from a gem install, it's directly run from a clone
+  # of the source, but there can be one or more versions of chef also installed
+  # as a gem. If the gem install contains a command that doesn't exist in the
+  # source tree of the "primary" chef install, it can be loaded and cause an
+  # error. We also want to ensure that we only load builtin commands from the
+  # "primary" chef install.
+  context "when a different version of chef is also installed as a gem" do
+
+    let(:all_found_commands) do
+      [
+        "/opt/chefdk/embedded/apps/chef/lib/chef/knife/bootstrap.rb",
+        "/opt/chefdk/embedded/apps/chef/lib/chef/knife/client_bulk_delete.rb",
+        "/opt/chefdk/embedded/apps/chef/lib/chef/knife/client_create.rb",
+        # We use the fake version 1.0.0 because that version doesn't exist,
+        # which ensures it won't ever equal "chef-#{Chef::VERSION}"
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-1.0.0/lib/chef/knife/bootstrap.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-1.0.0/lib/chef/knife/client_bulk_delete.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-1.0.0/lib/chef/knife/client_create.rb",
+        # This command is "extra" compared to what's in the embedded/apps/chef install:
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-1.0.0/lib/chef/knife/data_bag_secret_options.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-vault-2.2.4/lib/chef/knife/decrypt.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/knife-spork-1.4.1/lib/chef/knife/spork-bump.rb",
+        # These are fake commands that have names designed to test that the
+        # regex is strict enough
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-foo-#{Chef::VERSION}/lib/chef/knife/chef-foo.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/foo-chef-#{Chef::VERSION}/lib/chef/knife/foo-chef.rb",
+        # In a real scenario, we'd use rubygems APIs to only select the most
+        # recent gem, but for this test we want to check that we're doing the
+        # right thing both when the plugin version matches and does not match
+        # the current chef version. Looking at
+        # `SubcommandLoader::MATCHES_THIS_CHEF_GEM` and
+        # `SubcommandLoader::MATCHES_CHEF_GEM` should make it clear why we want
+        # to test these two cases.
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-foo-1.0.0/lib/chef/knife/chef-foo.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/foo-chef-1.0.0/lib/chef/knife/foo-chef.rb"
+      ]
+    end
+
+    let(:expected_valid_commands) do
+      [
+        "/opt/chefdk/embedded/apps/chef/lib/chef/knife/bootstrap.rb",
+        "/opt/chefdk/embedded/apps/chef/lib/chef/knife/client_bulk_delete.rb",
+        "/opt/chefdk/embedded/apps/chef/lib/chef/knife/client_create.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-vault-2.2.4/lib/chef/knife/decrypt.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/knife-spork-1.4.1/lib/chef/knife/spork-bump.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-foo-#{Chef::VERSION}/lib/chef/knife/chef-foo.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/foo-chef-#{Chef::VERSION}/lib/chef/knife/foo-chef.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-foo-1.0.0/lib/chef/knife/chef-foo.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/foo-chef-1.0.0/lib/chef/knife/foo-chef.rb"
+      ]
+    end
+
+    before do
+      expect(@loader).to receive(:find_files_latest_gems).with("chef/knife/*.rb").and_return(all_found_commands)
+      expect(@loader).to receive(:find_subcommands_via_dirglob).and_return({})
+    end
+
+    it "ignores commands from the non-matching gem install" do
+      expect(@loader.find_subcommands_via_rubygems.values).to eq(expected_valid_commands)
+    end
+
+  end
+
+  describe "finding 3rd party plugins" do
     let(:env_home) { "/home/alice" }
     let(:manifest_path) { env_home + "/.chef/plugin_manifest.json" }
 
