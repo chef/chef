@@ -257,8 +257,8 @@ class Chef::Application::Client < Chef::Application
   def reconfigure
     super
 
-    raise PIDFileLockfileMatch if Chef::Util::PathHelper.paths_eql? Chef::Config[:pid_file], Chef::Config[:lockfile]
-
+    raise Chef::Exceptions::PIDFileLockfileMatch Chef::Util::PathHelper.paths_eql? (Chef::Config[:pid_file] || '' ), (Chef::Config[:lockfile] || '')
+    
     Chef::Config[:specific_recipes] = cli_arguments.map { |file| File.expand_path(file) }
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
