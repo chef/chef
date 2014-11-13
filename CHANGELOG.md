@@ -6,10 +6,11 @@
   Fix rubygems provider to use https instead of http.
 * [**Anshul Sharma**](https://github.com/justanshulsharma)
   removed securerandom patch
+* [**Scott Bonds**](https://github.com/bonds)
+  add package support for OpenBSD
 
 ### Chef Contributions
 * Update Chef to use RSpec 3.
-
 
 ## 12.0.0
 
