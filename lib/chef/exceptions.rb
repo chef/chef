@@ -432,8 +432,7 @@ class Chef
 
     class PIDFileLockfileMatch < RuntimeError
       def initialize
-        super "PID file and lockfile are not permitted to match." +
-          "\n Specify a different location with --pid or --lockfile"
+        super "PID file and lockfile are not permitted to match. Specify a different location with --pid or --lockfile"
       end
     end
   end
