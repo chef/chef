@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "KNIFE-DATA-BAG" "1" "Chef 11.16" "" "knife data bag"
+.TH "KNIFE-DATA-BAG" "1" "Chef 12.0" "" "knife data bag"
 .SH NAME
 knife-data-bag \- The man page for the knife data bag subcommand.
 .
@@ -119,7 +119,7 @@ This argument has the following options:
 The name of a specific item within a data bag.
 .TP
 .B \fB\-\-secret SECRET\fP
-The encryption key that is used for values contained within a data bag item.
+The encryption key that is used for values contained within a data bag item. If \fBsecret\fP is not specified, the chef\-client will look for a secret at the path specified by the \fBencrypted_data_bag_secret\fP setting in the client.rb file.
 .TP
 .B \fB\-\-secret\-file FILE\fP
 The path to the file that contains the encryption key.
@@ -236,7 +236,7 @@ This argument has the following options:
 The name of a specific item within a data bag.
 .TP
 .B \fB\-\-secret SECRET\fP
-The encryption key that is used for values contained within a data bag item.
+The encryption key that is used for values contained within a data bag item. If \fBsecret\fP is not specified, the chef\-client will look for a secret at the path specified by the \fBencrypted_data_bag_secret\fP setting in the client.rb file.
 .TP
 .B \fB\-\-secret\-file FILE\fP
 The path to the file that contains the encryption key.
@@ -372,7 +372,7 @@ This argument has the following options:
 Use to upload all data bags found at the specified path.
 .TP
 .B \fB\-\-secret SECRET\fP
-The encryption key that is used for values contained within a data bag item.
+The encryption key that is used for values contained within a data bag item. If \fBsecret\fP is not specified, the chef\-client will look for a secret at the path specified by the \fBencrypted_data_bag_secret\fP setting in the client.rb file.
 .TP
 .B \fB\-\-secret\-file FILE\fP
 The path to the file that contains the encryption key.
@@ -475,7 +475,7 @@ This argument has the following options:
 The name of a specific item within a data bag.
 .TP
 .B \fB\-\-secret SECRET\fP
-The encryption key that is used for values contained within a data bag item.
+The encryption key that is used for values contained within a data bag item. If \fBsecret\fP is not specified, the chef\-client will look for a secret at the path specified by the \fBencrypted_data_bag_secret\fP setting in the client.rb file.
 .TP
 .B \fB\-\-secret\-file FILE\fP
 The path to the file that contains the encryption key.

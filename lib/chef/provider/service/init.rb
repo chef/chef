@@ -28,6 +28,10 @@ class Chef
 
         provides :service, os: "!windows"
 
+        def self.supports?(resource, action)
+          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
+        end
+
         def initialize(new_resource, run_context)
           super
           @init_command = "/etc/init.d/#{@new_resource.service_name}"
