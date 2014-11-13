@@ -108,8 +108,8 @@ describe Chef::Knife::SubcommandLoader do
         # `SubcommandLoader::MATCHES_THIS_CHEF_GEM` and
         # `SubcommandLoader::MATCHES_CHEF_GEM` should make it clear why we want
         # to test these two cases.
-        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-foo-1.0.0/lib/chef/knife/chef-foo.rb",
-        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/foo-chef-1.0.0/lib/chef/knife/foo-chef.rb"
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-bar-1.0.0/lib/chef/knife/chef-bar.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/bar-chef-1.0.0/lib/chef/knife/bar-chef.rb"
       ]
     end
 
@@ -122,8 +122,8 @@ describe Chef::Knife::SubcommandLoader do
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/knife-spork-1.4.1/lib/chef/knife/spork-bump.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-foo-#{Chef::VERSION}/lib/chef/knife/chef-foo.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/foo-chef-#{Chef::VERSION}/lib/chef/knife/foo-chef.rb",
-        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-foo-1.0.0/lib/chef/knife/chef-foo.rb",
-        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/foo-chef-1.0.0/lib/chef/knife/foo-chef.rb"
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-bar-1.0.0/lib/chef/knife/chef-bar.rb",
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/bar-chef-1.0.0/lib/chef/knife/bar-chef.rb"
       ]
     end
 
