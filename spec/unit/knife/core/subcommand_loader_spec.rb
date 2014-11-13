@@ -88,19 +88,28 @@ describe Chef::Knife::SubcommandLoader do
         "/opt/chefdk/embedded/apps/chef/lib/chef/knife/bootstrap.rb",
         "/opt/chefdk/embedded/apps/chef/lib/chef/knife/client_bulk_delete.rb",
         "/opt/chefdk/embedded/apps/chef/lib/chef/knife/client_create.rb",
+
         # We use the fake version 1.0.0 because that version doesn't exist,
         # which ensures it won't ever equal "chef-#{Chef::VERSION}"
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-1.0.0/lib/chef/knife/bootstrap.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-1.0.0/lib/chef/knife/client_bulk_delete.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-1.0.0/lib/chef/knife/client_create.rb",
+
+        # Test that we don't accept a version number that is different only in
+        # trailing characters, e.g. we are running Chef 12.0.0 but there is a
+        # Chef 12.0.0.rc.0 gem also:
+        "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-#{Chef::VERSION}.rc.0/lib/chef/knife/thing.rb",
+
         # This command is "extra" compared to what's in the embedded/apps/chef install:
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-1.0.0/lib/chef/knife/data_bag_secret_options.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-vault-2.2.4/lib/chef/knife/decrypt.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/knife-spork-1.4.1/lib/chef/knife/spork-bump.rb",
+
         # These are fake commands that have names designed to test that the
         # regex is strict enough
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/chef-foo-#{Chef::VERSION}/lib/chef/knife/chef-foo.rb",
         "/opt/chefdk/embedded/lib/ruby/gems/2.1.0/gems/foo-chef-#{Chef::VERSION}/lib/chef/knife/foo-chef.rb",
+
         # In a real scenario, we'd use rubygems APIs to only select the most
         # recent gem, but for this test we want to check that we're doing the
         # right thing both when the plugin version matches and does not match
