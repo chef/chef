@@ -104,12 +104,12 @@ class Chef::Application::Client < Chef::Application
   option :pid_file,
     :short        => "-P PID_FILE",
     :long         => "--pid PIDFILE",
-    :description  => "Set the PID file location, for when chef-client is running as a daemon. Defaults to /tmp/chef-client.pid",
+    :description  => "Set the PID file location, for the chef-client daemon process. Defaults to /tmp/chef-client.pid",
     :proc         => nil
 
   option :lockfile,
     :long         => "--lockfile LOCKFILE",
-    :description  => "Set the lockfile location",
+    :description  => "Set the lockfile location, for the converging chef-client process",
     :proc         => nil
 
   option :interval,
@@ -257,7 +257,7 @@ class Chef::Application::Client < Chef::Application
   def reconfigure
     super
 
-    Chef::Application.fatal!(pidfile_lockfile_match_error_message) if Chef::Util::PathHelper.paths_eql? Chef::Config[:pid_file], Chef::Config[:lockfile]
+    raise PIDFileLockfileMatch if Chef::Util::PathHelper.paths_eql? Chef::Config[:pid_file], Chef::Config[:lockfile]
 
     Chef::Config[:specific_recipes] = cli_arguments.map { |file| File.expand_path(file) }
 
@@ -412,11 +412,6 @@ class Chef::Application::Client < Chef::Application
   def client_sleep(sec)
     IO.select([ SELF_PIPE[0] ], nil, nil, sec) or return
     @signal = SELF_PIPE[0].getc.chr
-  end
-
-  def pidfile_lockfile_match_error_message
-    "PID file and lockfile are not permitted to match." + 
-    "\n Specify a different location with --pid or --lockfile"
   end
 
   def unforked_interval_error_message
