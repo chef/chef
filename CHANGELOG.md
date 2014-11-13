@@ -1,7 +1,9 @@
 # Chef Client Changelog
 
-## Unreleased:
+## 11.18.0 RC0
 
+* Fix an issue where knife could load commands from a different
+  version of chef in ChefDK. [ChefDK #227](https://github.com/opscode/chef-dk/issues/227)
 * Removed dependencies on the 'json' gem, replaced with ffi-yajl.  Use Chef::JSONCompat library for parsing and printing.
 * [Issue 2027](https://github.com/opscode/chef/issues/2027) Allow recipe using `dsc_script` opportunity to install Powershell 4 or higher
 * [Issue 2169](https://github.com/opscode/chef/issues/2169) Attempt to converge DSC configurations with resources that do not correctly support what-if
