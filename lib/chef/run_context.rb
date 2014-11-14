@@ -18,6 +18,7 @@
 # limitations under the License.
 
 require 'chef/resource_collection'
+require 'chef/provider_resolver'
 require 'chef/cookbook_version'
 require 'chef/node'
 require 'chef/role'
@@ -53,6 +54,9 @@ class Chef
     # The list of control groups to execute during the audit phase
     attr_accessor :controls_groups
 
+    # Chef::ProviderResolver for this run
+    attr_accessor :provider_resolver
+
     # A Hash containing the immediate notifications triggered by resources
     # during the converge phase of the chef run.
     attr_accessor :immediate_notification_collection
@@ -87,6 +91,7 @@ class Chef
 
       @node.run_context = self
       @cookbook_compiler = nil
+      @provider_resolver = Chef::ProviderResolver.new(@node)
     end
 
     # Triggers the compile phase of the chef run. Implemented by
@@ -104,7 +109,7 @@ class Chef
       if nr.instance_of?(Chef::Resource)
         @immediate_notification_collection[nr.name] << notification
       else
-        @immediate_notification_collection[nr.declared_key] << notification
+        @immediate_notification_collection[nr.to_s] << notification
       end
     end
 
@@ -115,7 +120,7 @@ class Chef
       if nr.instance_of?(Chef::Resource)
         @delayed_notification_collection[nr.name] << notification
       else
-        @delayed_notification_collection[nr.declared_key] << notification
+        @delayed_notification_collection[nr.to_s] << notification
       end
     end
 
@@ -123,7 +128,7 @@ class Chef
       if resource.instance_of?(Chef::Resource)
         return @immediate_notification_collection[resource.name]
       else
-        return @immediate_notification_collection[resource.declared_key]
+        return @immediate_notification_collection[resource.to_s]
       end
     end
 
@@ -131,7 +136,7 @@ class Chef
       if resource.instance_of?(Chef::Resource)
         return @delayed_notification_collection[resource.name]
       else
-        return @delayed_notification_collection[resource.declared_key]
+        return @delayed_notification_collection[resource.to_s]
       end
     end
 

@@ -71,7 +71,6 @@ class Chef
         configuration.backtrace_exclusion_patterns.push(Regexp.new("/Users".gsub("/", File::SEPARATOR)))
         configuration.backtrace_exclusion_patterns.push(Regexp.new("(eval)"))
         configuration.color = Chef::Config[:color]
-        configuration.expose_dsl_globally = false
 
         add_formatters
         disable_should_syntax
