@@ -1,2 +1,2 @@
-cookbook_path "/home/vagrant/chef/dev-repo/cookbooks"
-cache_path "/home/vagrant/.cache/chef"
+cookbook_path File.join(File.expand_path(File.dirname(__FILE__)), "cookbooks")
+cache_path "#{ENV['HOME']}/.cache/chef"
