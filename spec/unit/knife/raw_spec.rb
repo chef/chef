@@ -18,21 +18,26 @@
 require 'spec_helper'
 
 describe Chef::Knife::Raw do
-  before(:each) do
-    @rest = double('Chef::Knife::Raw::RawInputServerAPI')
-    allow(Chef::Knife::Raw::RawInputServerAPI).to receive(:new).and_return(@rest)
-    @knife = Chef::Knife::Raw.new
-    @knife.config[:method] = "GET"
-    @knife.name_args = [ "/nodes" ]
+  let(:rest) do
+    r = double('Chef::Knife::Raw::RawInputServerAPI')
+    allow(Chef::Knife::Raw::RawInputServerAPI).to receive(:new).and_return(r)
+    r
+  end
+
+  let(:knife) do
+    k = Chef::Knife::Raw.new
+    k.config[:method] = "GET"
+    k.name_args = [ "/nodes" ]
+    k
   end
 
   describe "run" do
     it "should set the x-ops-request-source header when --proxy-auth is set" do
-      @knife.config[:proxy_auth] = true
-      expect(@rest).to receive(:request).with(:GET, "/nodes",
+      knife.config[:proxy_auth] = true
+      expect(rest).to receive(:request).with(:GET, "/nodes",
                                               { 'Content-Type' => 'application/json',
                                                 'x-ops-request-source' => 'web'}, false)
-      @knife.run
+      knife.run
     end
   end
 end
