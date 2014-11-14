@@ -17,6 +17,7 @@
 #
 
 require "tempfile"
+require 'pry'
 
 class Chef
   class FileContentManagement
@@ -35,7 +36,20 @@ class Chef
       private
 
       def tempfile_open
-        tf = ::Tempfile.open(tempfile_basename, tempfile_dirname)
+        tf = nil
+
+        tempfile_dirnames.each do |tempfile_dirname|
+          begin
+            tf = ::Tempfile.open(tempfile_basename, tempfile_dirname)
+            break
+          rescue Exception => e
+            Chef::Log.debug("Can not create temp file for staging under '#{tempfile_dirname}'.")
+            Chef::Log.debug(e.message)
+          end
+        end
+
+        raise "Staging tempfile can not be created!" if tf.nil?
+
         # We always process the tempfile in binmode so that we
         # preserve the line endings of the content.
         tf.binmode
@@ -53,16 +67,29 @@ class Chef
         basename
       end
 
-      def tempfile_dirname
+      # Returns the possible directories for the tempfile to be created in.
+      def tempfile_dirnames
         # in why-run mode we need to create a Tempfile to compare against, which we will never
         # wind up deploying, but our enclosing directory for the destdir may not exist yet, so
         # instead we can reliably always create a Tempfile to compare against in Dir::tmpdir
-        if Chef::Config[:file_staging_uses_destdir] && !Chef::Config[:why_run]
-          ::File.dirname(@new_resource.path)
+        if Chef::Config[:why_run]
+          [ Dir::tmpdir ]
         else
-          Dir::tmpdir
+          case Chef::Config[:file_staging_uses_destdir]
+          when :auto
+            # In auto mode we try the destination directory first and fallback to ENV['TMP'] if
+            # that doesn't work.
+            [ ::File.dirname(@new_resource.path), Dir::tmpdir ]
+          when true
+            [ ::File.dirname(@new_resource.path) ]
+          when false
+            [ Dir::tmpdir ]
+          else
+            raise "Unknown setting '#{Chef::Config[:file_staging_uses_destdir]}' for Chef::Config[:file_staging_uses_destdir]. Possible values are :auto, true or false."
+          end
         end
       end
+
     end
   end
 end
