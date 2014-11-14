@@ -1,4 +1,3 @@
-
 # Author:: Daniel DeLeo (<dan@opscode.com>)
 # Copyright:: Copyright (c) 2010-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
@@ -17,7 +16,7 @@
 
 class Chef
   CHEF_ROOT = File.dirname(File.expand_path(File.dirname(__FILE__)))
-  VERSION = '11.18.0.rc.0'
+  VERSION = '11.18.0.rc.1'
 end
 
 # NOTE: the Chef::Version class is defined in version_class.rb
