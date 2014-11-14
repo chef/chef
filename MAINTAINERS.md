@@ -26,6 +26,8 @@ another component.
 
 [Jon Cowie](http://github.com/jonlives)
 
+[Phil Dibowitz](https://github.com/jaymzh)
+
 ## Dev Tools
 
 Chef Zero, Knife, Chef Apply and Chef Shell.
