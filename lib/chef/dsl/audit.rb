@@ -23,16 +23,13 @@ class Chef
     module Audit
 
       # Can encompass tests in a `control` block or `describe` block
-      ::RSpec::Core::ExampleGroup.define_example_group_method :control
-      ::RSpec::Core::ExampleGroup.define_example_group_method :__controls__
-
       # Adds the controls group and block (containing controls to execute) to the runner's list of pending examples
       def controls(*args, &block)
         raise ::Chef::Exceptions::NoAuditsProvided unless block
         name = args[0]
         raise AuditNameMissing if name.nil? || name.empty?
 
-        run_context.controls_groups << ::RSpec::Core::ExampleGroup.__controls__(*args, &block)
+        run_context.controls_groups << Chef::Audit::Controls.new(run_context, args, &block)
       end
 
     end
