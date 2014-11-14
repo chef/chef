@@ -16,14 +16,6 @@
 # limitations under the License.
 #
 
-require 'rspec'
-require 'rspec/its'
-
-require 'serverspec/matcher'
-require 'serverspec/helper'
-require 'serverspec/subject'
-
-require 'specinfra'
-
 require 'chef/dsl/audit'
+require 'chef/audit/controls'
 require 'chef/audit/runner'
