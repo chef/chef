@@ -17,7 +17,6 @@
 #
 
 require "tempfile"
-require 'pry'
 
 class Chef
   class FileContentManagement
@@ -37,18 +36,20 @@ class Chef
 
       def tempfile_open
         tf = nil
+        errors = [ ]
 
         tempfile_dirnames.each do |tempfile_dirname|
           begin
             tf = ::Tempfile.open(tempfile_basename, tempfile_dirname)
             break
-          rescue Exception => e
-            Chef::Log.debug("Can not create temp file for staging under '#{tempfile_dirname}'.")
-            Chef::Log.debug(e.message)
+          rescue SystemCallError => e
+            message = "Creating temp file under '#{tempfile_dirname}' failed with: '#{e.message}'"
+            Chef::Log.debug(message)
+            errors << message
           end
         end
 
-        raise "Staging tempfile can not be created!" if tf.nil?
+        raise "Staging tempfile can not be created during file deployment.\n Errors: #{errors.join('\n')}!" if tf.nil?
 
         # We always process the tempfile in binmode so that we
         # preserve the line endings of the content.
@@ -73,17 +74,17 @@ class Chef
         # wind up deploying, but our enclosing directory for the destdir may not exist yet, so
         # instead we can reliably always create a Tempfile to compare against in Dir::tmpdir
         if Chef::Config[:why_run]
-          [ Dir::tmpdir ]
+          [ Dir.tmpdir ]
         else
           case Chef::Config[:file_staging_uses_destdir]
           when :auto
             # In auto mode we try the destination directory first and fallback to ENV['TMP'] if
             # that doesn't work.
-            [ ::File.dirname(@new_resource.path), Dir::tmpdir ]
+            [ ::File.dirname(@new_resource.path), Dir.tmpdir ]
           when true
             [ ::File.dirname(@new_resource.path) ]
           when false
-            [ Dir::tmpdir ]
+            [ Dir.tmpdir ]
           else
             raise "Unknown setting '#{Chef::Config[:file_staging_uses_destdir]}' for Chef::Config[:file_staging_uses_destdir]. Possible values are :auto, true or false."
           end
