@@ -200,6 +200,10 @@ class Chef::Application::Client < Chef::Application
     :description  => "Fork client",
     :boolean      => true
 
+  option :recipe_url,
+    :long         => "--recipe-url",
+    :description  => "Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache. Only useful in local mode (-z/--local-mode)"
+
   option :enable_reporting,
     :short        => "-R",
     :long         => "--enable-reporting",
@@ -259,6 +263,17 @@ class Chef::Application::Client < Chef::Application
     Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
     if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
       Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
+    elsif Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url) && Chef::Config.has_key?(:cookbook_path)
+      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
+      recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
+
+      Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
+      FileUtils.rm_rf(recipes_path, :secure => true)
+      Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
+      FileUtils.mkdir_p(recipes_path)
+      tarball_path = File.join(recipes_path, 'recipes.tgz')
+      fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
+      Chef::Mixin::Command.run_command(:command => "tar zxvf #{tarball_path} -C #{recipes_path}")
     end
     Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
     Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
@@ -397,5 +412,14 @@ class Chef::Application::Client < Chef::Application
     "\nConfiguration settings:" +
     "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
     "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+  end
+
+  def fetch_recipe_tarball(url, path)
+    Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
+    File.open(path, 'wb') do |f|
+      open(url) do |r|
+        f.write(r.read)
+      end
+    end
   end
 end
