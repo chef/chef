@@ -270,18 +270,18 @@ class Chef::Application::Client < Chef::Application
     Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
     if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
       Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
-    elsif Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url) && Chef::Config.has_key?(:cookbook_path)
-      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
-      recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
-
-      Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
-      FileUtils.rm_rf(recipes_path, :secure => true)
-      Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
-      FileUtils.mkdir_p(recipes_path)
-      tarball_path = File.join(recipes_path, 'recipes.tgz')
-      fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
-      Chef::Mixin::Command.run_command(:command => "tar zxvf #{tarball_path} -C #{recipes_path}")
     end
+
+    if Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
+      Chef::Log.debug "Cleanup path #{Chef::Config.chef_repo_path} before extract recipes into it"
+      FileUtils.rm_rf(Chef::Config.chef_repo_path, :secure => true)
+      Chef::Log.debug "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
+      FileUtils.mkdir_p(Chef::Config.chef_repo_path)
+      tarball_path = File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
+      fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
+      Chef::Mixin::Command.run_command(:command => "tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
+    end
+
     Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
     Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
