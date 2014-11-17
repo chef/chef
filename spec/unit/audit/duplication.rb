@@ -18,12 +18,9 @@
 
 require 'spec_helper'
 require 'chef/dsl/audit'
-require 'chef/dsl/recipe'
+require 'chef/recipe'
 
 describe "Duplicated `package` DSL in Chef and Serverspec" do
-  # This includes the Chef DSL
-  include Chef::DSL::Recipe
-  include Chef::DSL::Audit
 
   # TODO disable rspec global DSL - but do we want it enabled for OUR rspecs?  No, because we always have a runner?
   # TODO disable serverspec global DSL
@@ -85,14 +82,24 @@ describe "Duplicated `package` DSL in Chef and Serverspec" do
   end
 
   it "Should not allow `control` or `__controls__` to be defined outside of a `controls` block" do
-    expect { control("foo4") }.to raise_error(NoMethodError, /No resource or method named `control'/)
+    expect {
+      Chef::Recipe.new("cookbook", "recipe", run_context).instance_eval do
+        control("foo4")
+      end
+    }.to raise_error(NoMethodError, /No resource or method named `control'/)
 
-    controls "some more controls" do
-      control "foo5"
+    Chef::Recipe.new("cookbook", "recipe", run_context).instance_eval do
+      controls "some more controls" do
+        control "foo5"
+      end
     end
 
     # Even after seeing a `controls` block these methods should not work - even when running in rspec
-    expect { control("foo6") }.to raise_error(NoMethodError, /No resource or method named `control'/)
+    expect {
+      Chef::Recipe.new("cookbook", "recipe", run_context).instance_eval do
+        control("foo4")
+      end
+    }.to raise_error(NoMethodError, /No resource or method named `control'/)
   end
 
   it "Should include serverspec specific matchers only inside `controls` block" do
