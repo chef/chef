@@ -26,9 +26,15 @@ default_version "0.0.2"
 build do
   if windows?
     block "Update batch files to point at embedded ruby" do
-      require 'rubygems/format'
+      load_gemspec = if Gem::VERSION >= '2'
+                       require 'rubygems/package'
+                       Gem::Package.method(:new)
+                     else
+                       require 'rubygems/format'
+                       Gem::Format.method(:from_file_by_path)
+                     end
       Dir["#{install_dir.gsub(/\\/, '/')}/embedded/lib/ruby/gems/**/cache/*.gem"].each do |gem_file|
-        Gem::Format.from_file_by_path(gem_file).spec.executables.each do |bin|
+        load_gemspec.call(gem_file).spec.executables.each do |bin|
           if File.exists?("#{install_dir}/bin/#{bin}")
             File.open("#{install_dir}/bin/#{bin}.bat", "w") do |f|
               f.puts <<-EOF
