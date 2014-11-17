@@ -39,5 +39,5 @@ Berksfile.lock
 Vagrantfile
 .vagrant/
 
-# Dev Repo Local Mode Data
-dev-repo/nodes/*
+# Kitchen Tests Local Mode Data
+kitchen-tests/nodes/*
