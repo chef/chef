@@ -17,6 +17,7 @@
 #
 
 require 'chef/exceptions'
+require 'chef/audit/controls'
 
 class Chef
   module DSL
@@ -25,16 +26,11 @@ class Chef
       # Can encompass tests in a `control` block or `describe` block
       # Adds the controls group and block (containing controls to execute) to the runner's list of pending examples
       def controls(*args, &block)
-        raise Chef::Exceptions::NoAuditsProvided unless block
-
+        raise ::Chef::Exceptions::NoAuditsProvided unless block
         name = args[0]
-        if name.nil? || name.empty?
-          raise Chef::Exceptions::AuditNameMissing
-        elsif run_context.controls.has_key?(name)
-          raise Chef::Exceptions::AuditControlGroupDuplicate.new(name)
-        end
+        raise AuditNameMissing if name.nil? || name.empty?
 
-        run_context.controls[name] = { :args => args, :block => block }
+        run_context.controls_groups << Chef::Audit::Controls.new(run_context, args, &block)
       end
 
     end

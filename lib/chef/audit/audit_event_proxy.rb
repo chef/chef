@@ -1,3 +1,4 @@
+require 'rspec'
 RSpec::Support.require_rspec_core "formatters/base_text_formatter"
 
 class Chef
