@@ -85,6 +85,13 @@ describe Chef::Provider::Package::Dpkg do
       expect(@provider.current_resource.package_name).to eq("f.o.o-pkg++2")
     end
 
+    it "gets the source package version from dpkg-deb correctly when the package version has `~', `-', `+' or `.' characters" do
+      @stdout = StringIO.new("b.a.r-pkg++1\t1.2.3+3141592-1ubuntu1~lucid")
+      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @provider.load_current_resource
+      expect(@provider.new_resource.version).to eq('1.2.3+3141592-1ubuntu1~lucid')
+    end
+
     it "should raise an exception if the source is not set but we are installing" do
       @new_resource = Chef::Resource::Package.new("wget")
       @provider.new_resource = @new_resource

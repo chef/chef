@@ -26,7 +26,7 @@ class Chef
     class Package
       class Dpkg < Chef::Provider::Package
         # http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version
-        DPKG_INFO = /([a-z\d\-\+\.]+)\t([\w\d.~:-]+)/
+        DPKG_INFO = /([a-z\d\-\+\.]+)\t([\w\d\.\+\-:~]+)/
         DPKG_INSTALLED = /^Status: install ok installed/
         DPKG_VERSION = /^Version: (.+)$/
 
