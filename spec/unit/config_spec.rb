@@ -434,7 +434,7 @@ describe Chef::Config do
             expect(Chef::Log).to_not receive(:warn).with(/Please install an English UTF-8 locale for Chef to use/)
             expect(Chef::Log).to_not receive(:debug).with(/Defaulting to locale en_US.UTF-8 on Windows/)
             expect(Chef::Log).to_not receive(:debug).with(/No usable locale -a command found/)
-            expect(Chef::Config[:internal_locale]).to eq expected_locale
+            expect(Chef::Config.guess_internal_locale).to eq expected_locale
           end
         end
 
@@ -485,7 +485,7 @@ describe Chef::Config do
 
           it "should fall back to C locale" do
             expect(Chef::Log).to receive(:warn).with("Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support.")
-            expect(Chef::Config[:internal_locale]).to eq 'C'
+            expect(Chef::Config.guess_internal_locale).to eq 'C'
           end
         end
 
@@ -502,7 +502,7 @@ describe Chef::Config do
             else
               expect(Chef::Log).to receive(:debug).with("No usable locale -a command found, assuming you have en_US.UTF-8 installed.")
             end
-            expect(Chef::Config[:internal_locale]).to eq "en_US.UTF-8"
+            expect(Chef::Config.guess_internal_locale).to eq "en_US.UTF-8"
           end
         end
       end
