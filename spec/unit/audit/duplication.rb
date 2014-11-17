@@ -17,7 +17,6 @@
 #
 
 require 'spec_helper'
-require 'chef/dsl/audit'
 require 'chef/recipe'
 
 describe "Duplicated `package` DSL in Chef and Serverspec" do
