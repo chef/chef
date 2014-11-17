@@ -126,6 +126,13 @@ class Chef
 
     class CannotDetermineHomebrewOwner < Package; end
 
+    # Can not create staging file during file deployment
+    class FileContentStagingError < RuntimeError
+      def initialize(errors)
+        super "Staging tempfile can not be created during file deployment.\n Errors: #{errors.join('\n')}!"
+      end
+    end
+
     # A different version of a cookbook was added to a
     # VersionedRecipeList than the one already there.
     class CookbookVersionConflict < ArgumentError ; end

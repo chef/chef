@@ -49,7 +49,7 @@ class Chef
           end
         end
 
-        raise "Staging tempfile can not be created during file deployment.\n Errors: #{errors.join('\n')}!" if tf.nil?
+        raise Chef::Exceptions::FileContentStagingError(errors) if tf.nil?
 
         # We always process the tempfile in binmode so that we
         # preserve the line endings of the content.
@@ -86,7 +86,7 @@ class Chef
           when false
             [ Dir.tmpdir ]
           else
-            raise "Unknown setting '#{Chef::Config[:file_staging_uses_destdir]}' for Chef::Config[:file_staging_uses_destdir]. Possible values are :auto, true or false."
+            raise Chef::Exceptions::ConfigurationError, "Unknown setting '#{Chef::Config[:file_staging_uses_destdir]}' for Chef::Config[:file_staging_uses_destdir]. Possible values are :auto, true or false."
           end
         end
       end
