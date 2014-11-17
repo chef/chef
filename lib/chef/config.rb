@@ -563,8 +563,8 @@ class Chef
     # There are 3 possible values for this configuration setting.
     # true => file staging is done in the destination directory
     # false => file staging is done via tempfiles under ENV['TMP']
-    # :auto => file staging will try using ENV['TMP'] if possible and
-    #   will fall back to destination directory if ENV['TMP'] is not usable.
+    # :auto => file staging will try using destination directory if possible and
+    #   will fall back to ENV['TMP'] if destination directory is not usable.
     default :file_staging_uses_destdir, :auto
 
     # Exit if another run is in progress and the chef-client is unable to
