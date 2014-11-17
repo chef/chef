@@ -21,7 +21,6 @@ require 'chef/application'
 require 'chef/client'
 require 'chef/config'
 require 'chef/daemon'
-require 'chef/exceptions'
 require 'chef/log'
 require 'chef/config_fetcher'
 require 'chef/handler/error_report'
@@ -258,7 +257,7 @@ class Chef::Application::Client < Chef::Application
   def reconfigure
     super
 
-    raise Chef::Exceptions::PIDFileLockfileMatch Chef::Util::PathHelper.paths_eql? (Chef::Config[:pid_file] || '' ), (Chef::Config[:lockfile] || '')
+    raise Chef::Exceptions::PIDFileLockfileMatch if Chef::Util::PathHelper.paths_eql? (Chef::Config[:pid_file] || '' ), (Chef::Config[:lockfile] || '')
     
     Chef::Config[:specific_recipes] = cli_arguments.map { |file| File.expand_path(file) }
 
