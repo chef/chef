@@ -99,8 +99,7 @@ class Chef
           run_data[:error] = "#{error.class.to_s}: #{error.message}\n#{error.backtrace.join("\n")}"
         end
 
-        # TODO: We might want to change this to :debug
-        Chef::Log.info "Audit Report:\n#{Chef::JSONCompat.to_json_pretty(run_data)}"
+        Chef::Log.debug "Audit Report:\n#{Chef::JSONCompat.to_json_pretty(run_data)}"
         compressed_data = encode_gzip(Chef::JSONCompat.to_json(run_data))
         # Since we're posting compressed data we can not directly call post_rest which expects JSON
         audit_url = rest_client.create_url(audit_history_url)
