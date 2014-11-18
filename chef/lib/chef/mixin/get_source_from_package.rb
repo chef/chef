@@ -29,6 +29,7 @@ class Chef
     module GetSourceFromPackage
       def initialize(new_resource, run_context)
         super
+        return if new_resource.name.is_a?(Array)
         # if we're passed something that looks like a filesystem path, with no source, use it
         #  - require at least one '/' in the path to avoid gem_package "foo" breaking if a file named 'foo' exists in the cwd
         if new_resource.source.nil? && new_resource.package_name.match(/#{::File::SEPARATOR}/) && ::File.exists?(new_resource.package_name)
