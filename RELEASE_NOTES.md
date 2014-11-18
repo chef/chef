@@ -52,7 +52,7 @@ when using `knife.rb`. Once third-party application developers have had
 sufficient time to adapt to the change, `knife.rb` will become
 deprecated and config.rb will be preferred.
 
-## Boostrap Changes
+## Bootstrap Changes
 
 Chef Client 12 introduces a set of changes to `knife bootstrap`. Here is the list of changes:
 
