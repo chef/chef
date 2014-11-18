@@ -118,7 +118,8 @@ class Chef
             end
             ui.info("Uploaded all cookbooks.")
           else
-            ui.warn('Could not find any cookbooks in your cookbook path. Use --cookbook-path to specify the desired path.')
+            cookbook_path = config[:cookbook_path].respond_to?(:join) ? config[:cookbook_path].join(', ') : config[:cookbook_path]
+            ui.warn("Could not find any cookbooks in your cookbook path: #{cookbook_path}. Use --cookbook-path to specify the desired path.")
           end
         else
           if @name_args.empty?
