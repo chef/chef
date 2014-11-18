@@ -18,7 +18,7 @@
 
 require 'chef/config'
 require 'chef/provider/package'
-require 'chef/mixin/command'
+require 'chef/mixin/command' # handle_command_failures
 require 'chef/mixin/shell_out'
 require 'chef/resource/package'
 require 'singleton'
@@ -1010,7 +1010,7 @@ class Chef
           if status.exitstatus > 0
             command_output = "STDOUT: #{stdout}"
             command_output << "STDERR: #{stderr}"
-            handle_command_failures(status, command_output, {})
+            Chef::Mixin::Command.handle_command_failures(status, command_output, {})
           end
         end
 

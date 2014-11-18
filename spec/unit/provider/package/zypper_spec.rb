@@ -27,14 +27,10 @@ describe Chef::Provider::Package::Zypper do
 
     @current_resource = Chef::Resource::Package.new("cups")
 
-    @status = double("Status", :exitstatus => 0)
-
     @provider = Chef::Provider::Package::Zypper.new(@new_resource, @run_context)
     allow(Chef::Resource::Package).to receive(:new).and_return(@current_resource)
-    allow(@provider).to receive(:popen4).and_return(@status)
-    @stderr = StringIO.new
-    @stdout = StringIO.new
-    @pid = double("PID")
+    @status = double(:stdout => "\n", :exitstatus => 0)
+    allow(@provider).to receive(:shell_out).and_return(@status)
     allow(@provider).to receive(:`).and_return("2.0")
   end
 
@@ -50,27 +46,28 @@ describe Chef::Provider::Package::Zypper do
     end
 
     it "should run zypper info with the package name" do
-      expect(@provider).to receive(:popen4).with("zypper --non-interactive info #{@new_resource.package_name}").and_return(@status)
+      expect(@provider).to receive(:shell_out).with("zypper --non-interactive info #{@new_resource.package_name}").and_return(@status)
       @provider.load_current_resource
     end
 
     it "should set the installed version to nil on the current resource if zypper info installed version is (none)" do
-      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      allow(@provider).to receive(:shell_out).and_return(@status)
       expect(@current_resource).to receive(:version).with(nil).and_return(true)
       @provider.load_current_resource
     end
 
     it "should set the installed version if zypper info has one" do
-      @stdout = StringIO.new("Version: 1.0\nInstalled: Yes\n")
-      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      status = double(:stdout => "Version: 1.0\nInstalled: Yes\n", :exitstatus => 0)
+
+      allow(@provider).to receive(:shell_out).and_return(status)
       expect(@current_resource).to receive(:version).with("1.0").and_return(true)
       @provider.load_current_resource
     end
 
     it "should set the candidate version if zypper info has one" do
-      @stdout = StringIO.new("Version: 1.0\nInstalled: No\nStatus: out-of-date (version 0.9 installed)")
+      status = double(:stdout => "Version: 1.0\nInstalled: No\nStatus: out-of-date (version 0.9 installed)", :exitstatus => 0)
 
-      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      allow(@provider).to receive(:shell_out).and_return(status)
       @provider.load_current_resource
       expect(@provider.candidate_version).to eql("1.0")
     end
