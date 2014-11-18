@@ -27,6 +27,7 @@ require 'chef/handler/error_report'
 require 'chef/workstation_config_loader'
 
 class Chef::Application::Client < Chef::Application
+  include Chef::Mixin::ShellOut
 
   # Mimic self_pipe sleep from Unicorn to capture signals safely
   SELF_PIPE = []
@@ -207,7 +208,7 @@ class Chef::Application::Client < Chef::Application
 
   option :recipe_url,
     :long         => "--recipe-url",
-    :description  => "Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache. Only useful in local mode (-z/--local-mode)"
+    :description  => "Pull down a remote archive of recipes and unpack it to the cookbook cache. Only used in local mode."
 
   option :enable_reporting,
     :short        => "-R",
@@ -272,14 +273,22 @@ class Chef::Application::Client < Chef::Application
       Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
     end
 
-    if Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
+    if !Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
+      Chef::Application.fatal!("chef-client recipe-url can be used only in local-mode", 1)
+    elsif Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
       Chef::Log.debug "Cleanup path #{Chef::Config.chef_repo_path} before extract recipes into it"
       FileUtils.rm_rf(Chef::Config.chef_repo_path, :secure => true)
       Chef::Log.debug "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
       FileUtils.mkdir_p(Chef::Config.chef_repo_path)
       tarball_path = File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
       fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
-      Chef::Mixin::Command.run_command(:command => "tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
+      begin
+        result = shell_out("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
+        Chef::Log.debug "#{result.stdout}"
+        Chef::Log.debug "#{result.stderr}"
+      rescue Mixlib::ShellOut::ShellCommandFailed => e
+        Chef::Log.error "Not able to unpack recipes archive (#{e})"
+      end
     end
 
     Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
