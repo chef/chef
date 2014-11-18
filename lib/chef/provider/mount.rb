@@ -25,7 +25,7 @@ class Chef
   class Provider
     class Mount < Chef::Provider
 
-      include Chef::Mixin::Command
+      include Chef::Mixin::ShellOut
 
       attr_accessor :unmount_retries
 

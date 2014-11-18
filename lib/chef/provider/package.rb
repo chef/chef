@@ -27,6 +27,7 @@ class Chef
 
       # @todo: validate no subclasses need this and nuke it
       include Chef::Mixin::Command
+      include Chef::Mixin::ShellOut
 
       #
       # Hook that subclasses use to populate the candidate_version(s)

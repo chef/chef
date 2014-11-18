@@ -23,7 +23,7 @@ require 'etc'
 class Chef
   class Provider
     class Group < Chef::Provider
-      include Chef::Mixin::Command
+      include Chef::Mixin::ShellOut
       attr_accessor :group_exists
       attr_accessor :change_desc
 
