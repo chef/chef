@@ -319,6 +319,7 @@ class Chef
     default :client_fork, true
     default :enable_reporting, true
     default :enable_reporting_url_fatals, false
+    default :audit_mode, nil
 
     # Policyfile is an experimental feature where a node gets its run list and
     # cookbook version set from a single document on the server instead of
