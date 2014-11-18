@@ -82,12 +82,11 @@ class Chef
         private
         def get_response_from_command(command)
           output = nil
-          status = popen4(command) do |pid, stdin, stdout, stderr|
-            begin
-              output = stdout.read
-            rescue Exception
-              raise Chef::Exceptions::Package, "Could not read from STDOUT on command: #{command}"
-            end
+          status = shell_out(command)
+          begin
+            output = status.stdout
+          rescue Exception
+            raise Chef::Exceptions::Package, "Could not read from STDOUT on command: #{command}"
           end
           unless status.exitstatus == 0 || status.exitstatus == 1
             raise Chef::Exceptions::Package, "#{command} failed - #{status.insect}!"

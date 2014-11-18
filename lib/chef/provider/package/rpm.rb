@@ -59,14 +59,12 @@ class Chef
             end
 
             Chef::Log.debug("#{@new_resource} checking rpm status")
-            status = popen4("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}") do |pid, stdin, stdout, stderr|
-              stdout.each do |line|
-                case line
-                when /^([\w\d+_.-]+)\s([\w\d_.-]+)$/
-                  @current_resource.package_name($1)
-                  @new_resource.version($2)
-                  @candidate_version = $2
-                end
+            shell_out("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}").stdout.each_line do |line|
+              case line
+              when /^([\w\d+_.-]+)\s([\w\d_.-]+)$/
+                @current_resource.package_name($1)
+                @new_resource.version($2)
+                @candidate_version = $2
               end
             end
           else
@@ -77,13 +75,12 @@ class Chef
           end
 
           Chef::Log.debug("#{@new_resource} checking install state")
-          @rpm_status = popen4("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /^([\w\d+_.-]+)\s([\w\d_.-]+)$/
-                Chef::Log.debug("#{@new_resource} current version is #{$2}")
-                @current_resource.version($2)
-              end
+          @rpm_status = shell_out("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}")
+          @rpm_status.stdout.each_line do |line|
+            case line
+            when /^([\w\d+_.-]+)\s([\w\d_.-]+)$/
+              Chef::Log.debug("#{@new_resource} current version is #{$2}")
+              @current_resource.version($2)
             end
           end
 
