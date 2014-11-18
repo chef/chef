@@ -1,9 +1,42 @@
 require 'support/shared/integration/integration_helper'
 require 'chef/mixin/shell_out'
 
+module ChefHTTPShared
+  def recipes_filename
+    File.join(CHEF_SPEC_DATA, 'recipes.tgz')
+  end
+
+  def start_tiny_server(server_opts={})
+    recipes_size = File::Stat.new(recipes_filename).size
+    @server = TinyServer::Manager.new(server_opts)
+    @server.start
+    @api = TinyServer::API.instance
+    @api.clear
+    #
+    # trivial endpoints
+    #
+    # just a normal file
+    # (expected_content should be uncompressed)
+    @api.get("/recipes.tgz", 200) {
+      File.open(recipes_filename, "rb") do |f|
+        f.read
+      end
+    }
+  end
+
+  def stop_tiny_server
+    @server.stop
+    @server = @api = nil
+  end
+
+end
+
+
+
 describe "chef-client" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
+  include ChefHTTPShared
 
   let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
 
@@ -238,5 +271,29 @@ EOM
       result.error!
     end
 
+  end
+
+  context "when using recipe-url" do
+    before(:all) do
+      start_tiny_server
+    end
+
+    after(:all) do
+      stop_tiny_server
+    end
+
+    it "should complete with success when passed -z and --recipe-url" do
+      file 'config/client.rb', <<EOM
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --recipe-url=http://localhost:9000/recipes.tgz -o 'x::default' -z", :cwd => chef_dir)
+      result.error!
+    end
+
+    it 'should fail when passed --recipe-url and not passed -z' do
+      result = shell_out("#{chef_client} --recipe-url=http://localhost:9000/recipes.tgz", :cwd => chef_dir)
+      expect(result.exitstatus).to eq(1)
+    end
   end
 end
