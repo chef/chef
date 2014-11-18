@@ -1,3 +1,7 @@
+# Early warning system to catch if Rubygems breaks something
+before_install:
+  gem update --system
+
 branches:
   only:
   - master
