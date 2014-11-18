@@ -1091,6 +1091,16 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "to_s" do
+
+    it "should be readable when called to_s" do
+      @attributes.default = {}
+      @attributes.default.foo = "bar"
+      @attributes.should respond_to(:to_s)
+      expect(@attributes.default.to_s).to eq('foo: bar')
+    end
+  end
+
   # For expedience, this test is implementation-heavy.
   describe "when a component attribute is mutated" do
     [
