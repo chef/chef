@@ -286,7 +286,6 @@ E
         end
 
         it 'should warn users that no cookbooks exist' do
-          expect(knife).to_not receive(:upload)
           expect(knife.ui).to receive(:warn).with(/Could not find any cookbooks in your cookbook path\. Use --cookbook-path to specify the desired path\./)
           knife.run
         end
