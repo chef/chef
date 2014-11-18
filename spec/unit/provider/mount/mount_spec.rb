@@ -54,10 +54,11 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should accecpt device_type :uuid", :not_supported_on_solaris do
+      @status = double(:stdout => "/dev/sdz1\n", :exitstatus => 1)
       @new_resource.device_type :uuid
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
       @stdout_findfs = double("STDOUT", :first => "/dev/sdz1")
-      expect(@provider).to receive(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,@stdout_findfs,@stderr).and_return(@status)
+      expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(@status)
       @provider.load_current_resource()
       @provider.mountable?
     end
@@ -93,11 +94,10 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should raise an error if the mount device (uuid) does not exist", :not_supported_on_solaris do
+      status = double(:stdout => "", :exitstatus => 1)
       @new_resource.device_type :uuid
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
-      status_findfs = double("Status", :exitstatus => 1)
-      stdout_findfs = double("STDOUT", :first => nil)
-      expect(@provider).to receive(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,stdout_findfs,@stderr).and_return(status_findfs)
+      expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
       expect(::File).to receive(:exists?).with("").and_return(false)
       expect { @provider.load_current_resource();@provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
@@ -307,10 +307,10 @@ describe Chef::Provider::Mount::Mount do
       end
 
       it "should mount the filesystem specified by uuid", :not_supported_on_solaris do
+        status = double(:stdout => "/dev/sdz1\n", :exitstatus => 1)
         @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
         @new_resource.device_type :uuid
-        @stdout_findfs = double("STDOUT", :first => "/dev/sdz1")
-        allow(@provider).to receive(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,@stdout_findfs,@stderr).and_return(@status)
+        allow(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
         @stdout_mock = double('stdout mock')
         allow(@stdout_mock).to receive(:each).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
         expect(@provider).to receive(:shell_out!).with("mount -t #{@new_resource.fstype} -o defaults -U #{@new_resource.device} #{@new_resource.mount_point}").and_return(@stdout_mock)
