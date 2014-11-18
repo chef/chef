@@ -104,15 +104,15 @@ class Chef
         justify_width = @server_side_cookbooks.map {|name| name.size}.max.to_i + 2
         if config[:all]
           cookbook_repo.load_cookbooks
-          cbs = []
+          cookbooks_for_upload = []
           cookbook_repo.each do |cookbook_name, cookbook|
-            cbs << cookbook
+            cookbooks_for_upload << cookbook
             cookbook.freeze_version if config[:freeze]
             version_constraints_to_update[cookbook_name] = cookbook.version
           end
-          if cbs.any?
+          if cookbooks_for_upload.any?
             begin
-              upload(cbs, justify_width)
+              upload(cookbooks_for_upload, justify_width)
             rescue Exceptions::CookbookFrozen
               ui.warn("Not updating version constraints for some cookbooks in the environment as the cookbook is frozen.")
             end
