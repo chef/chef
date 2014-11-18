@@ -27,16 +27,13 @@ describe Chef::Provider::Group::Dscl do
     @current_resource = Chef::Resource::Group.new("aj")
     @provider = Chef::Provider::Group::Dscl.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
-    @status = double("Process::Status", :exitstatus => 0)
-    @pid = 2342
-    @stdin = StringIO.new
-    @stdout = StringIO.new("\n")
-    @stderr = StringIO.new("")
-    allow(@provider).to receive(:popen4).and_yield(@pid,@stdin,@stdout,@stderr).and_return(@status)
+
+    @status = double(:stdout => "\n", :stderr => "", :exitstatus => 0)
+    allow(@provider).to receive(:shell_out).and_return(@status)
   end
 
-  it "should run popen4 with the supplied array of arguments appended to the dscl command" do
-    expect(@provider).to receive(:popen4).with("dscl . -cmd /Path arg1 arg2")
+  it "should run shell_out with the supplied array of arguments appended to the dscl command" do
+    expect(@provider).to receive(:shell_out).with("dscl . -cmd /Path arg1 arg2")
     @provider.dscl("cmd", "/Path", "arg1", "arg2")
   end
 
