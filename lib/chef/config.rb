@@ -560,10 +560,12 @@ class Chef
     # used to update files.
     default :file_atomic_update, true
 
-    # If false file staging is will be done via tempfiles that are
-    # created under ENV['TMP'] otherwise tempfiles will be created in
-    # the directory that files are going to reside.
-    default :file_staging_uses_destdir, true
+    # There are 3 possible values for this configuration setting.
+    # true => file staging is done in the destination directory
+    # false => file staging is done via tempfiles under ENV['TMP']
+    # :auto => file staging will try using destination directory if possible and
+    #   will fall back to ENV['TMP'] if destination directory is not usable.
+    default :file_staging_uses_destdir, :auto
 
     # Exit if another run is in progress and the chef-client is unable to
     # get the lock before time expires. If nil, no timeout is enforced. (Exits
