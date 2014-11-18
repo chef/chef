@@ -52,7 +52,8 @@ class Chef
             @package_source_found = ::File.exists?(@new_resource.source)
             if @package_source_found
               Chef::Log.debug("#{@new_resource} checking pkg status")
-              ret = shell_out("installp -L -d #{@new_resource.source}").stdout.each_line do | line |
+              ret = shell_out("installp -L -d #{@new_resource.source}")
+              ret.stdout.each_line do | line |
                 case line
                 when /#{@new_resource.package_name}:/
                   fields = line.split(":")
@@ -63,7 +64,8 @@ class Chef
           end
 
           Chef::Log.debug("#{@new_resource} checking install state")
-          ret = shell_out("lslpp -lcq #{@current_resource.package_name}").stdout.each_line do | line |
+          ret = shell_out("lslpp -lcq #{@current_resource.package_name}")
+          ret.stdout.each_line do | line |
             case line
             when /#{@current_resource.package_name}/
               fields = line.split(":")
@@ -72,8 +74,8 @@ class Chef
             end
           end
 
-          unless ret.status.exitstatus == 0 || ret.status.exitstatus == 1
-            raise Chef::Exceptions::Package, "lslpp failed - #{ret.status.inspect}!"
+          unless ret.exitstatus == 0 || ret.exitstatus == 1
+            raise Chef::Exceptions::Package, "lslpp failed - #{ret.inspect}!"
           end
 
           @current_resource
@@ -81,7 +83,8 @@ class Chef
 
         def candidate_version
           return @candidate_version if @candidate_version
-          ret = shell_out("installp -L -d #{@new_resource.source}").stdout.each_line do | line |
+          ret = shell_out("installp -L -d #{@new_resource.source}")
+          ret.stdout.each_line do | line |
             case line
             when /\w:#{Regexp.escape(@new_resource.package_name)}:(.*)/
               fields = line.split(":")
@@ -90,8 +93,8 @@ class Chef
               Chef::Log.debug("#{@new_resource} setting install candidate version to #{@candidate_version}")
             end
           end
-          unless ret.status.exitstatus == 0
-            raise Chef::Exceptions::Package, "installp -L -d #{@new_resource.source} - #{ret.status.inspect}!"
+          unless ret.exitstatus == 0
+            raise Chef::Exceptions::Package, "installp -L -d #{@new_resource.source} - #{ret.inspect}!"
           end
           @candidate_version
         end
