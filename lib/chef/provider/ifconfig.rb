@@ -59,7 +59,8 @@ class Chef
         @ifconfig_success = true
         @interfaces = {}
 
-        shell_out("ifconfig").stdout.each_line do |line|
+        @status = shell_out("ifconfig")
+        @status.stdout.each_line do |line|
           if !line[0..9].strip.empty?
             @int_name = line[0..9].strip
             @interfaces[@int_name] = {"hwaddr" => (line =~ /(HWaddr)/ ? ($') : "nil").strip.chomp }

@@ -49,10 +49,11 @@ IFCONFIG
 
   describe "#load_current_resource" do
     before do
-      status = double("Status", :exitstatus => 0)
-      expect(@provider).to receive(:popen4).with("ifconfig -a").and_yield(@pid,@stdin,StringIO.new(@ifconfig_output),@stderr).and_return(status)
+      @status = double(:stdout => @ifconfig_output, :exitstatus => 0)
+      allow(@provider).to receive(:shell_out).and_return(@status)
       @new_resource.device "en0"
     end
+
     it "should load given interface with attributes." do
       current_resource = @provider.load_current_resource
       expect(current_resource.inet_addr).to eq("172.29.174.58")
