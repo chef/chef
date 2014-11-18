@@ -105,10 +105,10 @@ class Chef
         def zypper_package(command, pkgname, version)
           version = "=#{version}" unless version.nil? || version.empty?
           if zypper_version < 1.0
-            shell_out!("zypper#{gpg_checks} #{command} -y #{pkgname}")
+            shell_out!("zypper#{gpg_checks} #{command} -y #{pkgname}", :timeout => @new_resource.timeout)
           else
             shell_out!("zypper --non-interactive#{gpg_checks} "+
-                      "#{command} #{pkgname}#{version}")
+                      "#{command} #{pkgname}#{version}", :timeout => @new_resource.timeout)
           end
         end
 

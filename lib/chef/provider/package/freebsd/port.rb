@@ -26,7 +26,8 @@ class Chef
           include PortsHelper
 
           def install_package(name, version)
-            shell_out!("make -DBATCH install clean", :timeout => 1800, :env => nil, :cwd => port_dir).status
+            timeout = @new_resource.timeout < 1800 ? 1800 : @new_resource.timeout
+            shell_out!("make -DBATCH install clean", :timeout => timeout, :env => nil, :cwd => port_dir).status
           end
 
           def remove_package(name, version)

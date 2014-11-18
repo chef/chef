@@ -48,7 +48,7 @@ class Chef
           unless @current_resource.version == version
             command = "port#{expand_options(@new_resource.options)} install #{name}"
             command << " @#{version}" if version and !version.empty?
-            shell_out!(command)
+            shell_out!(command, :timeout => @new_resource.timeout)
           end
         end
 

@@ -114,10 +114,10 @@ class Chef
         def install_package(name, version)
           Chef::Log.debug("#{@new_resource} package install options: #{@new_resource.options}")
           if @new_resource.options.nil?
-            shell_out!( "installp -aYF -d #{@new_resource.source} #{@new_resource.package_name}" )
+            shell_out!( "installp -aYF -d #{@new_resource.source} #{@new_resource.package_name}", :timeout => @new_resource.timeout)
             Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           else
-            shell_out!( "installp -aYF #{expand_options(@new_resource.options)} -d #{@new_resource.source} #{@new_resource.package_name}" )
+            shell_out!( "installp -aYF #{expand_options(@new_resource.options)} -d #{@new_resource.source} #{@new_resource.package_name}", :timeout => @new_resource.timeout)
             Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           end
         end
