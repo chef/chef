@@ -46,23 +46,23 @@ INSTDATE:  Nov 04 2009 01:02
 HOTLINE:  Please contact your local service provider
 PKGINFO
 
-      @status = double("Status", :exitstatus => 0)
+      @status = double("Status",:stdout => "", :exitstatus => 0)
     end
 
     it "should create a current resource with the name of new_resource" do
-      allow(@provider).to receive(:popen4).and_return(@status)
+      allow(@provider).to receive(:shell_out).and_return(@status)
       @provider.load_current_resource
       expect(@provider.current_resource.name).to eq("SUNWbash")
     end
 
     it "should set the current reource package name to the new resource package name" do
-      allow(@provider).to receive(:popen4).and_return(@status)
+      allow(@provider).to receive(:shell_out).and_return(@status)
       @provider.load_current_resource
       expect(@provider.current_resource.package_name).to eq("SUNWbash")
     end
 
     it "should raise an exception if a source is supplied but not found" do
-      allow(@provider).to receive(:popen4).and_return(@status)
+      allow(@provider).to receive(:shell_out).and_return(@status)
       allow(::File).to receive(:exists?).and_return(false)
       @provider.load_current_resource
       @provider.define_resource_requirements
@@ -70,10 +70,9 @@ PKGINFO
     end
 
     it "should get the source package version from pkginfo if provided" do
-      @stdout = StringIO.new(@pkginfo)
-      @stdin, @stderr = StringIO.new, StringIO.new
-      expect(@provider).to receive(:popen4).with("pkginfo -l -d /tmp/bash.pkg SUNWbash").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      expect(@provider).to receive(:popen4).with("pkginfo -l SUNWbash").and_return(@status)
+      status = double(:stdout => @pkginfo, :exitstatus => 0)
+      expect(@provider).to receive(:shell_out).with("pkginfo -l -d /tmp/bash.pkg SUNWbash").and_return(status)
+      expect(@provider).to receive(:shell_out).with("pkginfo -l SUNWbash").and_return(@status)
       @provider.load_current_resource
 
       expect(@provider.current_resource.package_name).to eq("SUNWbash")
@@ -81,10 +80,9 @@ PKGINFO
     end
 
     it "should return the current version installed if found by pkginfo" do
-      @stdout = StringIO.new(@pkginfo)
-      @stdin, @stderr = StringIO.new, StringIO.new
-      expect(@provider).to receive(:popen4).with("pkginfo -l -d /tmp/bash.pkg SUNWbash").and_return(@status)
-      expect(@provider).to receive(:popen4).with("pkginfo -l SUNWbash").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      status = double(:stdout => @pkginfo, :exitstatus => 0)
+      expect(@provider).to receive(:shell_out).with("pkginfo -l -d /tmp/bash.pkg SUNWbash").and_return(@status)
+      expect(@provider).to receive(:shell_out).with("pkginfo -l SUNWbash").and_return(status)
       @provider.load_current_resource
       expect(@provider.current_resource.version).to eq("11.10.0,REV=2005.01.08.05.16")
     end
@@ -92,20 +90,19 @@ PKGINFO
     it "should raise an exception if the source is not set but we are installing" do
       @new_resource = Chef::Resource::Package.new("SUNWbash")
       @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context)
-      allow(@provider).to receive(:popen4).and_return(@status)
+      allow(@provider).to receive(:shell_out).and_return(@status)
       expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
     end
 
     it "should raise an exception if pkginfo fails to run" do
-      @status = double("Status", :exitstatus => -1)
-      allow(@provider).to receive(:popen4).and_return(@status)
+      status = double(:stdout => "", :exitstatus => -1)
+      allow(@provider).to receive(:shell_out).and_return(status)
       expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::Package)
     end
 
     it "should return a current resource with a nil version if the package is not found" do
-      @stdout = StringIO.new
-      expect(@provider).to receive(:popen4).with("pkginfo -l -d /tmp/bash.pkg SUNWbash").and_return(@status)
-      expect(@provider).to receive(:popen4).with("pkginfo -l SUNWbash").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      expect(@provider).to receive(:shell_out).with("pkginfo -l -d /tmp/bash.pkg SUNWbash").and_return(@status)
+      expect(@provider).to receive(:shell_out).with("pkginfo -l SUNWbash").and_return(@status)
       @provider.load_current_resource
       expect(@provider.current_resource.version).to be_nil
     end
@@ -114,20 +111,20 @@ PKGINFO
   describe "candidate_version" do
     it "should return the candidate_version variable if already setup" do
       @provider.candidate_version = "11.10.0,REV=2005.01.08.05.16"
-      expect(@provider).not_to receive(:popen4)
+      expect(@provider).not_to receive(:shell_out)
       @provider.candidate_version
     end
 
     it "should lookup the candidate_version if the variable is not already set" do
-      @status = double("Status", :exitstatus => 0)
-      allow(@provider).to receive(:popen4).and_return(@status)
-      expect(@provider).to receive(:popen4)
+      status = double(:stdout => "", :exitstatus => 0)
+      allow(@provider).to receive(:shell_out).and_return(status)
+      expect(@provider).to receive(:shell_out)
       @provider.candidate_version
     end
 
     it "should throw and exception if the exitstatus is not 0" do
-      @status = double("Status", :exitstatus => 1)
-      allow(@provider).to receive(:popen4).and_return(@status)
+      status = double(:stdout => "", :exitstatus => 1)
+      allow(@provider).to receive(:shell_out).and_return(status)
       expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
     end
 

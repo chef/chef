@@ -105,7 +105,7 @@ describe Chef::Provider::Package::Aix do
   describe "candidate_version" do
     it "should return the candidate_version variable if already setup" do
       @provider.candidate_version = "3.3.12.0"
-      expect(@provider).not_to receive(:popen4)
+      expect(@provider).not_to receive(:shell_out )
       @provider.candidate_version
     end
 
