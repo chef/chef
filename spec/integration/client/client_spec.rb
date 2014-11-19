@@ -1,42 +1,36 @@
 require 'support/shared/integration/integration_helper'
 require 'chef/mixin/shell_out'
 
-module ChefHTTPShared
-  def recipes_filename
-    File.join(CHEF_SPEC_DATA, 'recipes.tgz')
-  end
-
-  def start_tiny_server(server_opts={})
-    recipes_size = File::Stat.new(recipes_filename).size
-    @server = TinyServer::Manager.new(server_opts)
-    @server.start
-    @api = TinyServer::API.instance
-    @api.clear
-    #
-    # trivial endpoints
-    #
-    # just a normal file
-    # (expected_content should be uncompressed)
-    @api.get("/recipes.tgz", 200) {
-      File.open(recipes_filename, "rb") do |f|
-        f.read
-      end
-    }
-  end
-
-  def stop_tiny_server
-    @server.stop
-    @server = @api = nil
-  end
-
+def recipes_filename
+  File.join(CHEF_SPEC_DATA, 'recipes.tgz')
 end
 
+def start_tiny_server(server_opts={})
+  recipes_size = File::Stat.new(recipes_filename).size
+  @server = TinyServer::Manager.new(server_opts)
+  @server.start
+    @api = TinyServer::API.instance
+  @api.clear
+  #
+  # trivial endpoints
+  #
+  # just a normal file
+  # (expected_content should be uncompressed)
+  @api.get("/recipes.tgz", 200) {
+    File.open(recipes_filename, "rb") do |f|
+      f.read
+    end
+  }
+end
 
+def stop_tiny_server
+  @server.stop
+  @server = @api = nil
+end
 
 describe "chef-client" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
-  include ChefHTTPShared
 
   let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
 
