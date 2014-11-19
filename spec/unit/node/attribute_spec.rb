@@ -554,7 +554,6 @@ describe Chef::Node::Attribute do
 
     it "should allow the last method to set a value if it has an = sign on the end" do
       @attributes.normal.music.mastodon = [ "dream", "still", "shining" ]
-      @attributes.reset
       expect(@attributes.normal.music.mastodon).to eq([ "dream", "still", "shining" ])
     end
   end
@@ -1091,49 +1090,6 @@ describe Chef::Node::Attribute do
     end
   end
 
-  # For expedience, this test is implementation-heavy.
-  describe "when a component attribute is mutated" do
-    [
-      :clear,
-      :shift
-    ].each do |mutator|
-      it "resets the cache when the mutator #{mutator} is called" do
-        expect(@attributes).to receive(:reset_cache)
-        @attributes.default.send(mutator)
-      end
-    end
-
-    it "resets the cache when the mutator delete is called" do
-      expect(@attributes).to receive(:reset_cache)
-      @attributes.default.delete(:music)
-    end
-
-    [
-      :merge!,
-      :update,
-      :replace
-    ].each do |mutator|
-      it "resets the cache when the mutator #{mutator} is called" do
-        # Implementation of Mash means that this could get called many times. That's okay.
-        expect(@attributes).to receive(:reset_cache).at_least(1).times
-        @attributes.default.send(mutator, {:foo => :bar})
-      end
-    end
-
-    [
-      :delete_if,
-      :keep_if,
-      :reject!,
-      :select!,
-    ].each do |mutator|
-      it "resets the cache when the mutator #{mutator} is called" do
-        # Implementation of Mash means that this could get called many times. That's okay.
-        expect(@attributes).to receive(:reset_cache).at_least(1).times
-        block = lambda {|k,v| true }
-        @attributes.default.send(mutator, &block)
-      end
-    end
-  end
 
   describe "when not mutated" do
 
