@@ -454,6 +454,13 @@ class Chef
          end
        end
 
+       # For elements like Fixnums, true, nil...
+       def safe_dup(e)
+         e.dup
+       rescue TypeError
+         e
+       end
+
        # Deep merge all attribute levels using hash-only merging between different precidence
        # levels (so override arrays completely replace arrays set at any default level).
        #
@@ -466,8 +473,13 @@ class Chef
            merge_defaults(path),
            apply_path(@normal, path),
            merge_overrides(path),
-           apply_path(@automatic, path)
+           apply_path(@automatic, path),
          ]
+
+         components.map! do |component|
+           safe_dup(component)
+         end
+
          components.inject(nil) do |merged, component|
            Chef::Mixin::DeepMerge.hash_only_merge!(merged, component)
          end
@@ -480,9 +492,9 @@ class Chef
        # @param path [Array] Array of args to method chain to descend into the node object
        # @return [attr] Deep Merged values (may be VividMash, Hash, Array, etc) from the node object
        def merge_defaults(path)
-         ret = DEFAULT_COMPONENTS.inject(nil) do |merged, component_ivar|
+         DEFAULT_COMPONENTS.inject(nil) do |merged, component_ivar|
            component_value = apply_path(instance_variable_get(component_ivar), path)
-           Chef::Mixin::DeepMerge.deep_merge!(component_value, merged)
+           Chef::Mixin::DeepMerge.deep_merge(component_value, merged)
          end
        end
 
@@ -493,7 +505,7 @@ class Chef
        # @param path [Array] Array of args to method chain to descend into the node object
        # @return [attr] Deep Merged values (may be VividMash, Hash, Array, etc) from the node object
        def merge_overrides(path)
-         ret = OVERRIDE_COMPONENTS.inject(nil) do |merged, component_ivar|
+         OVERRIDE_COMPONENTS.inject(nil) do |merged, component_ivar|
            component_value = apply_path(instance_variable_get(component_ivar), path)
            Chef::Mixin::DeepMerge.deep_merge(component_value, merged)
          end
