@@ -29,11 +29,11 @@ describe Chef::Provider::Package::Macports do
     @provider = Chef::Provider::Package::Macports.new(@new_resource, @run_context)
     allow(Chef::Resource::Package).to receive(:new).and_return(@current_resource)
 
-    @status = double("Status", :exitstatus => 0)
-    @stdin = StringIO.new
-    @stdout = StringIO.new
-    @stderr = StringIO.new
-    @pid = 2342
+    # @status = double(:stdout => "", :exitstatus => 0)
+    # @stdin = StringIO.new
+    # @stdout = StringIO.new
+    # @stderr = StringIO.new
+    # @pid = 2342
   end
 
   describe "load_current_resource" do
@@ -70,33 +70,33 @@ describe Chef::Provider::Package::Macports do
 
   describe "current_installed_version" do
     it "should return the current version if the package is installed" do
-      expect(@stdout).to receive(:read).and_return(<<EOF
+      stdout =  <<EOF
 The following ports are currently installed:
   openssl @0.9.8k_0 (active)
 EOF
-      )
 
-      expect(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      status = double(:stdout => stdout, :exitstatus => 0)
+      expect(@provider).to receive(:shell_out).and_return(status)
       expect(@provider.current_installed_version).to eq("0.9.8k_0")
     end
 
     it "should return nil if a package is not currently installed" do
-      expect(@stdout).to receive(:read).and_return("       \n")
-      expect(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      status = double(:stdout => "       \n", :exitstatus => 0)
+      expect(@provider).to receive(:shell_out).and_return(status)
       expect(@provider.current_installed_version).to be_nil
     end
   end
 
   describe "macports_candidate_version" do
     it "should return the latest available version of a given package" do
-      expect(@stdout).to receive(:read).and_return("version: 4.2.7\n")
-      expect(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      status = double(:stdout => "version: 4.2.7\n", :exitstatus => 0)
+      expect(@provider).to receive(:shell_out).and_return(status)
       expect(@provider.macports_candidate_version).to eq("4.2.7")
     end
 
     it "should return nil if there is no version for a given package" do
-      expect(@stdout).to receive(:read).and_return("Error: port fadsfadsfads not found\n")
-      expect(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      status = double(:stdout => "Error: port fadsfadsfads not found\n", :exitstatus => 0)
+      expect(@provider).to receive(:shell_out).and_return(status)
       expect(@provider.macports_candidate_version).to be_nil
     end
   end
