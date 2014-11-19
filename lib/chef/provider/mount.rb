@@ -18,7 +18,7 @@
 #
 
 require 'chef/log'
-require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'chef/provider'
 
 class Chef

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'chef/log'
 require 'chef/file_cache'
 require 'chef/platform'

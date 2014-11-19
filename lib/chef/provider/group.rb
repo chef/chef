@@ -17,7 +17,7 @@
 #
 
 require 'chef/provider'
-require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'etc'
 
 class Chef
