@@ -279,6 +279,7 @@ class Chef::Application::Client < Chef::Application
         result = shell_out("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
         Chef::Log.debug "#{result.stdout}"
         Chef::Log.debug "#{result.stderr}"
+        result.error! if result.error?
       rescue Mixlib::ShellOut::ShellCommandFailed => e
         Chef::Log.error "Not able to unpack recipes archive (#{e})"
       end
