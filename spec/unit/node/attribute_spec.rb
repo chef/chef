@@ -1150,7 +1150,7 @@ describe Chef::Node::Attribute do
       @attributes.role_default = { "arglebargle" => { "fizz" => "buzz" } }
       expect(@attributes.merged_attributes[:arglebargle]).to eq({ "foo" => "bar", "fizz" => "buzz" })
       expect(@attributes.default[:arglebargle]).to eq({ "foo" => "bar" })
-      expect(@attributes.role_efault[:arglebargle]).to eq({ "fizz" => "buzz" })
+      expect(@attributes.role_default[:arglebargle]).to eq({ "fizz" => "buzz" })
     end
 
     it "correctly deep merges arrays, and preserves the original contents when merging default and role_default" do
