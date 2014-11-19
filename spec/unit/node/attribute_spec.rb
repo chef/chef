@@ -1128,6 +1128,40 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "when deep-merging between precedence levels" do
+    it "correctly deep merges hashes and preserves the original contents" do
+      @attributes.default = { "arglebargle" => { "foo" => "bar" } }
+      @attributes.override = { "arglebargle" => { "fizz" => "buzz" } }
+      expect(@attributes.merged_attributes[:arglebargle]).to eq({ "foo" => "bar", "fizz" => "buzz" })
+      expect(@attributes.default[:arglebargle]).to eq({ "foo" => "bar" })
+      expect(@attributes.override[:arglebargle]).to eq({ "fizz" => "buzz" })
+    end
+
+    it "does not deep merge arrays, and preserves the original contents" do
+      @attributes.default = { "arglebargle" => [ 1, 2, 3 ] }
+      @attributes.override = { "arglebargle" => [ 4, 5, 6 ] }
+      expect(@attributes.merged_attributes[:arglebargle]).to eq([ 4, 5, 6 ])
+      expect(@attributes.default[:arglebargle]).to eq([ 1, 2, 3 ])
+      expect(@attributes.override[:arglebargle]).to eq([ 4, 5, 6 ])
+    end
+
+    it "correctly deep merges hashes and preserves the original contents when merging default and role_default" do
+      @attributes.default = { "arglebargle" => { "foo" => "bar" } }
+      @attributes.role_default = { "arglebargle" => { "fizz" => "buzz" } }
+      expect(@attributes.merged_attributes[:arglebargle]).to eq({ "foo" => "bar", "fizz" => "buzz" })
+      expect(@attributes.default[:arglebargle]).to eq({ "foo" => "bar" })
+      expect(@attributes.role_efault[:arglebargle]).to eq({ "fizz" => "buzz" })
+    end
+
+    it "correctly deep merges arrays, and preserves the original contents when merging default and role_default" do
+      @attributes.default = { "arglebargle" => [ 1, 2, 3 ] }
+      @attributes.role_default = { "arglebargle" => [ 4, 5, 6 ] }
+      expect(@attributes.merged_attributes[:arglebargle]).to eq([ 1, 2, 3, 4, 5, 6 ])
+      expect(@attributes.default[:arglebargle]).to eq([ 1, 2, 3 ])
+      expect(@attributes.role_default[:arglebargle]).to eq([ 4, 5, 6 ])
+    end
+  end
+
   describe "when attemping to write without specifying precedence" do
     it "raises an error when using []=" do
       expect { @attributes[:new_key] = "new value" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
