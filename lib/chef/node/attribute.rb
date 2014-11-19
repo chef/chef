@@ -475,7 +475,7 @@ class Chef
            apply_path(@automatic, path)
          ]
          components.inject(nil) do |merged, component|
-           Chef::Mixin::DeepMerge.hash_only_merge(merged, component)
+           Chef::Mixin::DeepMerge.hash_only_merge!(merged, component)
          end
        end
 
@@ -488,7 +488,7 @@ class Chef
        def merge_defaults(path)
          ret = DEFAULT_COMPONENTS.inject(nil) do |merged, component_ivar|
            component_value = apply_path(instance_variable_get(component_ivar), path)
-           Chef::Mixin::DeepMerge.deep_merge(component_value, merged)
+           Chef::Mixin::DeepMerge.deep_merge!(component_value, merged)
          end
        end
 
