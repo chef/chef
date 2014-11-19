@@ -102,13 +102,13 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
     describe Chef::Provider::Package::Portage, "candidate_version" do
       it "should return the candidate_version variable if already set" do
         @provider.candidate_version = "1.0.0"
-        expect(@provider).not_to receive(:popen4)
+        expect(@provider).not_to receive(:shell_out)
         @provider.candidate_version
       end
 
       it "should throw an exception if the exitstatus is not 0" do
-        @status = double("Status", :exitstatus => 1)
-        allow(@provider).to receive(:popen4).and_return(@status)
+        status = double(:stdout => "", :exitstatus => 1)
+        allow(@provider).to receive(:shell_out).and_return(status)
         expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
       end
 
@@ -143,8 +143,8 @@ Searching...
       License:       GPL-2
 EOF
 
-        @status = double("Status", :exitstatus => 0)
-        expect(@provider).to receive(:popen4).and_yield(nil, nil, StringIO.new(output), nil).and_return(@status)
+        status = double(:stdout => output, :exitstatus => 0)
+        expect(@provider).to receive(:shell_out).and_return(status)
         expect(@provider.candidate_version).to eq("1.6.0.6")
       end
 
@@ -179,9 +179,9 @@ Searching...
       License:       GPL-2
 EOF
 
-        @status = double("Status", :exitstatus => 0)
+        status = double(:stdout => output, :exitstatus => 0)
         @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
-        expect(@provider).to receive(:popen4).and_yield(nil, nil, StringIO.new(output), nil).and_return(@status)
+        expect(@provider).to receive(:shell_out).and_return(status)
         expect(@provider.candidate_version).to eq("1.6.0.6")
       end
 
@@ -224,9 +224,9 @@ Searching...
       License:       GPL-2
 EOF
 
-        @status = double("Status", :exitstatus => 0)
+        status = double(:stdout => output, :exitstatus => 0)
         @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
-        expect(@provider).to receive(:popen4).and_yield(nil, nil, StringIO.new(output), nil).and_return(@status)
+        expect(@provider).to receive(:shell_out).and_return(status)
         expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
       end
 
@@ -269,9 +269,9 @@ Searching...
       License:       GPL-2
 EOF
 
-        @status = double("Status", :exitstatus => 0)
+        status = double(:stdout => output, :exitstatus => 0)
         @provider = Chef::Provider::Package::Portage.new(@new_resource, @run_context)
-        expect(@provider).to receive(:popen4).and_yield(nil, nil, StringIO.new(output), nil).and_return(@status)
+        expect(@provider).to receive(:shell_out).and_return(status)
         expect(@provider.candidate_version).to eq("1.6.0.6")
       end
     end
