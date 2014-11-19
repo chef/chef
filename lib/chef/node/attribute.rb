@@ -381,7 +381,7 @@ class Chef
        end
 
        def []=(key, value)
-         raise "this should just raise an immutable attribute exception"
+         raise Exceptions::ImmutableAttributeModification
        end
 
        def has_key?(key)

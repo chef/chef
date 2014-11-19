@@ -162,7 +162,12 @@ class Chef
     # Node::Attribute computes the merged version of of attributes
     # and makes it read-only. Attempting to modify a read-only
     # attribute will cause this error.
-    class ImmutableAttributeModification < NoMethodError; end
+    class ImmutableAttributeModification < NoMethodError
+      def initialize
+        super "Node attributes are read-only when you do not specify which precedence level to set. " +
+          %Q(To set an attribute use code like `node.default["key"] = "value"')
+      end
+    end
 
     # Merged node attributes are invalidated when the component
     # attributes are updated. Attempting to read from a stale copy
