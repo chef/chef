@@ -169,32 +169,24 @@ class Chef
       attributes.override
     end
 
-    def override_attrs
-     attributes.override
+    alias_method :override_attrs, :override
+    alias_method :default_attrs, :default
+    alias_method :normal_attrs, :normal
+
+    def automatic_attrs
+      attributes.automatic
     end
 
     def override_attrs=(new_values)
       attributes.override = new_values
     end
 
-    def default_attrs
-      attributes.default
-    end
-
     def default_attrs=(new_values)
       attributes.default = new_values
     end
 
-    def normal_attrs
-      attributes.normal
-    end
-
     def normal_attrs=(new_values)
       attributes.normal = new_values
-    end
-
-    def automatic_attrs
-      attributes.automatic
     end
 
     def automatic_attrs=(new_values)
