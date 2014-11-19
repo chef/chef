@@ -28,12 +28,8 @@ describe Chef::Provider::Package::Dpkg do
 
     @provider = Chef::Provider::Package::Dpkg.new(@new_resource, @run_context)
 
-    @stdin = StringIO.new
-    @stdout = StringIO.new
-    @status = double("Status", :exitstatus => 0)
-    @stderr = StringIO.new
-    @pid = double("PID")
-    allow(@provider).to receive(:popen4).and_return(@status)
+    @status = double(:stdout => "", :exitstatus => 0)
+    allow(@provider).to receive(:shell_out).and_return(@status)
 
     allow(::File).to receive(:exists?).and_return(true)
   end
@@ -54,8 +50,8 @@ describe Chef::Provider::Package::Dpkg do
 
     describe 'gets the source package version from dpkg-deb' do
       def check_version(version)
-        @stdout = StringIO.new("wget\t#{version}")
-        allow(@provider).to receive(:popen4).with("dpkg-deb -W #{@new_resource.source}").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        @status = double(:stdout => "wget\t#{version}", :exitstatus => 0)
+        allow(@provider).to receive(:shell_out).with("dpkg-deb -W #{@new_resource.source}").and_return(@status)
         @provider.load_current_resource
         expect(@provider.current_resource.package_name).to eq("wget")
         expect(@new_resource.version).to eq(version)
@@ -79,8 +75,9 @@ describe Chef::Provider::Package::Dpkg do
     end
 
     it "gets the source package name from dpkg-deb correctly when the package name has `-', `+' or `.' characters" do
-      @stdout = StringIO.new("f.o.o-pkg++2\t1.11.4-1ubuntu1")
-      allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      stdout = "f.o.o-pkg++2\t1.11.4-1ubuntu1"
+      status = double(:stdout => stdout, :exitstatus => 1)
+      allow(@provider).to receive(:shell_out).and_return(status)
       @provider.load_current_resource
       expect(@provider.current_resource.package_name).to eq("f.o.o-pkg++2")
     end
@@ -94,7 +91,7 @@ describe Chef::Provider::Package::Dpkg do
     end
 
     it "should return the current version installed if found by dpkg" do
-      @stdout = StringIO.new(<<-DPKG_S)
+      stdout = <<-DPKG_S
 Package: wget
 Status: install ok installed
 Priority: important
@@ -107,15 +104,16 @@ Config-Version: 1.11.4-1ubuntu1
 Depends: libc6 (>= 2.8~20080505), libssl0.9.8 (>= 0.9.8f-5)
 Conflicts: wget-ssl
 DPKG_S
-      allow(@provider).to receive(:popen4).with("dpkg -s wget").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      status = double(:stdout => stdout, :exitstatus => 1)
+      allow(@provider).to receive(:shell_out).with("dpkg -s wget").and_return(status)
 
       @provider.load_current_resource
       expect(@provider.current_resource.version).to eq("1.11.4-1ubuntu1")
     end
 
     it "should raise an exception if dpkg fails to run" do
-      @status = double("Status", :exitstatus => -1)
-      allow(@provider).to receive(:popen4).and_return(@status)
+      status = double(:stdout => "", :exitstatus => -1)
+      allow(@provider).to receive(:shell_out).and_return(status)
       expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::Package)
     end
   end
