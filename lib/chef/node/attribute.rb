@@ -230,12 +230,6 @@ class Chef
          @set_unless_present = setting
        end
 
-       def reset_cache
-         # FIXME: REMOVED IN CHEF-12
-       end
-
-       alias :reset :reset_cache
-
        # Set the cookbook level default attribute component to +new_data+.
        def default=(new_data)
          @default = VividMash.new(self, new_data)
