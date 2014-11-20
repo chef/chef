@@ -124,7 +124,7 @@ describe Chef::Provider::Package::Aix do
 
   describe "install and upgrade" do
     it "should run installp -aYF -d with the package source to install" do
-      expect(@provider).to receive(:shell_out!).with("installp -aYF -d /tmp/samba.base samba.base")
+      expect(@provider).to receive(:shell_out!).with("installp -aYF -d /tmp/samba.base samba.base", :timeout=>@new_resource.timeout)
       @provider.install_package("samba.base", "3.3.12.0")
     end
 
@@ -132,13 +132,13 @@ describe Chef::Provider::Package::Aix do
       @new_resource = Chef::Resource::Package.new("/tmp/samba.base")
       @provider = Chef::Provider::Package::Aix.new(@new_resource, @run_context)
       expect(@new_resource.source).to eq("/tmp/samba.base")
-      expect(@provider).to receive(:shell_out!).with("installp -aYF -d /tmp/samba.base /tmp/samba.base")
+      expect(@provider).to receive(:shell_out!).with("installp -aYF -d /tmp/samba.base /tmp/samba.base", :timeout=>@new_resource.timeout)
       @provider.install_package("/tmp/samba.base", "3.3.12.0")
     end
 
     it "should run installp with -eLogfile option." do
       allow(@new_resource).to receive(:options).and_return("-e/tmp/installp.log")
-      expect(@provider).to receive(:shell_out!).with("installp -aYF  -e/tmp/installp.log -d /tmp/samba.base samba.base")
+      expect(@provider).to receive(:shell_out!).with("installp -aYF  -e/tmp/installp.log -d /tmp/samba.base samba.base", :timeout=>@new_resource.timeout)
       @provider.install_package("samba.base", "3.3.12.0")
     end
   end

@@ -105,7 +105,7 @@ EOF
     it "should run the port install command with the correct version" do
       expect(@current_resource).to receive(:version).and_return("4.1.6")
       @provider.current_resource = @current_resource
-      expect(@provider).to receive(:shell_out!).with("port install zsh @4.2.7")
+      expect(@provider).to receive(:shell_out!).with("port install zsh @4.2.7", {:timeout => @new_resource.timeout})
 
       @provider.install_package("zsh", "4.2.7")
     end
@@ -122,7 +122,7 @@ EOF
       expect(@current_resource).to receive(:version).and_return("4.1.6")
       @provider.current_resource = @current_resource
       allow(@new_resource).to receive(:options).and_return("-f")
-      expect(@provider).to receive(:shell_out!).with("port -f install zsh @4.2.7")
+      expect(@provider).to receive(:shell_out!).with("port -f install zsh @4.2.7", {:timeout => @new_resource.timeout})
 
       @provider.install_package("zsh", "4.2.7")
     end

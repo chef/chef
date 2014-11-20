@@ -151,12 +151,12 @@ PACMAN_CONF
 
   describe Chef::Provider::Package::Pacman, "install_package" do
     it "should run pacman install with the package name and version" do
-      expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar nano")
+      expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar nano", {:timeout => @new_resource.timeout})
       @provider.install_package("nano", "1.0")
     end
 
     it "should run pacman install with the package name and version and options if specified" do
-      expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar --debug nano")
+      expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar --debug nano", {:timeout => @new_resource.timeout})
       allow(@new_resource).to receive(:options).and_return("--debug")
 
       @provider.install_package("nano", "1.0")

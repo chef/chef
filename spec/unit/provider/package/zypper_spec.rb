@@ -94,14 +94,14 @@ describe Chef::Provider::Package::Zypper do
     it "should run zypper install with the package name and version" do
       allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(true)
       expect(@provider).to receive(:shell_out!).with(
-        "zypper --non-interactive install --auto-agree-with-licenses emacs=1.0")
+        "zypper --non-interactive install --auto-agree-with-licenses emacs=1.0", :timeout => @new_resource.timeout)
       @provider.install_package("emacs", "1.0")
     end
     it "should run zypper install without gpg checks" do
       allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(false)
       expect(@provider).to receive(:shell_out!).with(
         "zypper --non-interactive --no-gpg-checks install "+
-        "--auto-agree-with-licenses emacs=1.0")
+        "--auto-agree-with-licenses emacs=1.0", :timeout => @new_resource.timeout)
       @provider.install_package("emacs", "1.0")
     end
     it "should warn about gpg checks on zypper install" do
@@ -109,7 +109,7 @@ describe Chef::Provider::Package::Zypper do
         /All packages will be installed without gpg signature checks/)
       expect(@provider).to receive(:shell_out!).with(
         "zypper --non-interactive --no-gpg-checks install "+
-        "--auto-agree-with-licenses emacs=1.0")
+        "--auto-agree-with-licenses emacs=1.0", :timeout => @new_resource.timeout)
       @provider.install_package("emacs", "1.0")
     end
   end
@@ -118,14 +118,14 @@ describe Chef::Provider::Package::Zypper do
     it "should run zypper update with the package name and version" do
       allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(true)
       expect(@provider).to receive(:shell_out!).with(
-        "zypper --non-interactive install --auto-agree-with-licenses emacs=1.0")
+        "zypper --non-interactive install --auto-agree-with-licenses emacs=1.0", :timeout => @new_resource.timeout)
       @provider.upgrade_package("emacs", "1.0")
     end
     it "should run zypper update without gpg checks" do
       allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(false)
       expect(@provider).to receive(:shell_out!).with(
         "zypper --non-interactive --no-gpg-checks install "+
-        "--auto-agree-with-licenses emacs=1.0")
+        "--auto-agree-with-licenses emacs=1.0", :timeout => @new_resource.timeout)
       @provider.upgrade_package("emacs", "1.0")
     end
     it "should warn about gpg checks on zypper upgrade" do
@@ -133,13 +133,13 @@ describe Chef::Provider::Package::Zypper do
         /All packages will be installed without gpg signature checks/)
       expect(@provider).to receive(:shell_out!).with(
         "zypper --non-interactive --no-gpg-checks install "+
-        "--auto-agree-with-licenses emacs=1.0")
+        "--auto-agree-with-licenses emacs=1.0", :timeout => @new_resource.timeout)
       @provider.upgrade_package("emacs", "1.0")
     end
     it "should run zypper upgrade without gpg checks" do
       expect(@provider).to receive(:shell_out!).with(
         "zypper --non-interactive --no-gpg-checks install "+
-        "--auto-agree-with-licenses emacs=1.0")
+        "--auto-agree-with-licenses emacs=1.0", :timeout => @new_resource.timeout)
 
       @provider.upgrade_package("emacs", "1.0")
     end
@@ -151,7 +151,7 @@ describe Chef::Provider::Package::Zypper do
       it "should run zypper remove with the package name" do
         allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(true)
         expect(@provider).to receive(:shell_out!).with(
-            "zypper --non-interactive remove emacs")
+            "zypper --non-interactive remove emacs", :timeout => @new_resource.timeout)
         @provider.remove_package("emacs", nil)
       end
     end
@@ -160,20 +160,20 @@ describe Chef::Provider::Package::Zypper do
       it "should run zypper remove with the package name" do
         allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(true)
         expect(@provider).to receive(:shell_out!).with(
-          "zypper --non-interactive remove emacs=1.0")
+          "zypper --non-interactive remove emacs=1.0", :timeout => @new_resource.timeout)
         @provider.remove_package("emacs", "1.0")
       end
       it "should run zypper remove without gpg checks" do
         allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(false)
         expect(@provider).to receive(:shell_out!).with(
-            "zypper --non-interactive --no-gpg-checks remove emacs=1.0")
+            "zypper --non-interactive --no-gpg-checks remove emacs=1.0", :timeout => @new_resource.timeout)
         @provider.remove_package("emacs", "1.0")
       end
       it "should warn about gpg checks on zypper remove" do
         expect(Chef::Log).to receive(:warn).with(
           /All packages will be installed without gpg signature checks/)
         expect(@provider).to receive(:shell_out!).with(
-          "zypper --non-interactive --no-gpg-checks remove emacs=1.0")
+          "zypper --non-interactive --no-gpg-checks remove emacs=1.0", :timeout => @new_resource.timeout)
 
         @provider.remove_package("emacs", "1.0")
       end
@@ -183,20 +183,20 @@ describe Chef::Provider::Package::Zypper do
   describe "purge_package" do
     it "should run remove_package with the name and version" do
       expect(@provider).to receive(:shell_out!).with(
-        "zypper --non-interactive --no-gpg-checks remove --clean-deps emacs=1.0")
+        "zypper --non-interactive --no-gpg-checks remove --clean-deps emacs=1.0", :timeout => @new_resource.timeout)
       @provider.purge_package("emacs", "1.0")
     end
     it "should run zypper purge without gpg checks" do
       allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(false)
       expect(@provider).to receive(:shell_out!).with(
-        "zypper --non-interactive --no-gpg-checks remove --clean-deps emacs=1.0")
+        "zypper --non-interactive --no-gpg-checks remove --clean-deps emacs=1.0", :timeout => @new_resource.timeout)
       @provider.purge_package("emacs", "1.0")
     end
     it "should warn about gpg checks on zypper purge" do
       expect(Chef::Log).to receive(:warn).with(
         /All packages will be installed without gpg signature checks/)
       expect(@provider).to receive(:shell_out!).with(
-        "zypper --non-interactive --no-gpg-checks remove --clean-deps emacs=1.0")
+        "zypper --non-interactive --no-gpg-checks remove --clean-deps emacs=1.0", :timeout => @new_resource.timeout)
       @provider.purge_package("emacs", "1.0")
     end
   end
@@ -209,7 +209,7 @@ describe Chef::Provider::Package::Zypper do
     describe "install_package" do
       it "should run zypper install with the package name and version" do
         expect(@provider).to receive(:shell_out!).with(
-          "zypper --no-gpg-checks install --auto-agree-with-licenses -y emacs")
+          "zypper --no-gpg-checks install --auto-agree-with-licenses -y emacs", :timeout => @new_resource.timeout)
         @provider.install_package("emacs", "1.0")
       end
     end
@@ -217,7 +217,7 @@ describe Chef::Provider::Package::Zypper do
     describe "upgrade_package" do
       it "should run zypper update with the package name and version" do
         expect(@provider).to receive(:shell_out!).with(
-          "zypper --no-gpg-checks install --auto-agree-with-licenses -y emacs")
+          "zypper --no-gpg-checks install --auto-agree-with-licenses -y emacs", :timeout => @new_resource.timeout)
         @provider.upgrade_package("emacs", "1.0")
       end
     end
@@ -225,7 +225,7 @@ describe Chef::Provider::Package::Zypper do
     describe "remove_package" do
       it "should run zypper remove with the package name" do
         expect(@provider).to receive(:shell_out!).with(
-           "zypper --no-gpg-checks remove -y emacs")
+           "zypper --no-gpg-checks remove -y emacs", :timeout => @new_resource.timeout)
         @provider.remove_package("emacs", "1.0")
       end
     end
