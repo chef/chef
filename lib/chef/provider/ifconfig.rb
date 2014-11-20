@@ -18,6 +18,7 @@
 
 require 'chef/log'
 require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'chef/provider'
 require 'chef/resource/file'
 require 'chef/exceptions'
@@ -39,6 +40,7 @@ class Chef
   class Provider
     class Ifconfig < Chef::Provider
       include Chef::Mixin::ShellOut
+      include Chef::Mixin::Command
 
       attr_accessor :config_template
       attr_accessor :config_path

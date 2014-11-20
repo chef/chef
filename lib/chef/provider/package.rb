@@ -17,6 +17,7 @@
 #
 
 require 'chef/mixin/shell_out'
+require 'chef/mixin/command'
 require 'chef/log'
 require 'chef/file_cache'
 require 'chef/platform'
@@ -26,6 +27,7 @@ class Chef
     class Package < Chef::Provider
 
       include Chef::Mixin::ShellOut
+      include Chef::Mixin::Command
 
       attr_accessor :candidate_version
       def initialize(new_resource, run_context)
