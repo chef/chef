@@ -100,11 +100,10 @@ class Chef
         end
 
         Chef::Log.debug "Audit Report:\n#{Chef::JSONCompat.to_json_pretty(run_data)}"
-        compressed_data = encode_gzip(Chef::JSONCompat.to_json(run_data))
         # Since we're posting compressed data we can not directly call post_rest which expects JSON
-        audit_url = rest_client.create_url(audit_history_url)
         begin
-          rest_client.raw_http_request(:POST, audit_url, headers({'Content-Encoding' => 'gzip'}), compressed_data)
+          audit_url = rest_client.create_url(audit_history_url)
+          rest_client.post(audit_url, run_data, headers)
         rescue StandardError => e
           if e.respond_to? :response
             code = e.response.code.nil? ? "Exception Code Empty" : e.response.code
