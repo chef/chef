@@ -282,14 +282,8 @@ class Chef::Application::Client < Chef::Application
       FileUtils.mkdir_p(Chef::Config.chef_repo_path)
       tarball_path = File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
       fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
-      begin
-        result = shell_out("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
-        Chef::Log.debug "#{result.stdout}"
-        Chef::Log.debug "#{result.stderr}"
-        result.error! if result.error?
-      rescue Mixlib::ShellOut::ShellCommandFailed => e
-        Chef::Log.error "Not able to unpack recipes archive (#{e})"
-      end
+      result = shell_out!("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
+      Chef::Log.debug "#{result.stdout}"
     end
 
     Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
