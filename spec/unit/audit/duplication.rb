@@ -21,13 +21,31 @@ require 'chef/recipe'
 
 describe "Duplicated `package` DSL in Chef and Serverspec" do
 
-  # TODO disable rspec global DSL - but do we want it enabled for OUR rspecs?  No, because we always have a runner?
-  # TODO disable serverspec global DSL
+  # TODO (?) disable rspec global DSL - but do we want it enabled for OUR rspecs?  No, because we always have a runner?
+  # TODO (?) disable serverspec global DSL
 
-  let(:run_context) {
-    node = Chef::Node.new
-    Chef::RunContext.new(node, {}, nil)
-  }
+  let(:cookbook_repo) { File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "cookbooks")) }
+  let(:audit_recipes) { File.join(cookbook_repo, "audit", "recipes") }
+
+  let(:cookbook_loader) do
+    loader = Chef::CookbookLoader.new(cookbook_repo)
+    loader.load_cookbooks
+    loader
+  end
+
+  let(:cookbook_collection) { Chef::CookbookCollection.new(cookbook_loader) }
+
+  let(:node) do
+    Chef::Node.new.tap {|n| n.normal[:tags] = [] }
+  end
+
+  let(:events) do
+    Chef::EventDispatch::Dispatcher.new
+  end
+
+  let(:run_context) do
+    Chef::RunContext.new(node, cookbook_collection, events)
+  end
 
   it "Should call the Chef Recipe DSL in a Chef Recipe" do
     # Chef::DSL::Recipe#method_missing calls #resource_for_node twice when looking up the Resource instance - once in
@@ -36,11 +54,7 @@ describe "Duplicated `package` DSL in Chef and Serverspec" do
     expect(Chef::Resource).to receive(:resource_for_node).with(:package, instance_of(Chef::Node)).exactly(2).times.and_return(Chef::Resource::Package)
     expect(Chef::Resource::Package).to receive(:new).with("foo1", run_context).and_call_original
 
-    Chef::Recipe.new("cookbook", "recipe", run_context).instance_eval do
-      # Inside a recipe self refers to a Recipe object, so it calls the correct #method_missing chain to find the
-      # package resource
-      package "foo1"
-    end
+    Chef::Recipe.new("audit", "default", run_context).from_file(File.join(audit_recipes, "default.rb"))
   end
 
   it "Should call the Serverspec DSL in a `controls` block" do
@@ -49,13 +63,7 @@ describe "Duplicated `package` DSL in Chef and Serverspec" do
     # and configuration takes place in the `controls` method
     require 'serverspec'
 
-    Chef::Recipe.new("cookbook", "recipe", run_context).instance_eval do
-      # Inside a `controls` block, self refers to a subclass of RSpec::ExampleGroups so `package` calls the correct
-      # serverspec helper
-      controls "some controls" do
-        package "foo2"
-      end
-    end
+    Chef::Recipe.new("audit", "single_controls", run_context).from_file(File.join(audit_recipes, "single_controls.rb"))
   end
 
   it "Should still use the recipe DSL outside of a controls block after a controls block has ran" do
@@ -65,57 +73,23 @@ describe "Duplicated `package` DSL in Chef and Serverspec" do
     expect(Chef::Resource::Package).to receive(:new).with("bar", run_context).and_call_original
     expect(Chef::Resource::Package).to receive(:new).with("bang", run_context).and_call_original
 
-    Chef::Recipe.new("cookbook", "recipe", run_context).instance_eval do
-      controls "some controls" do
-        package "foo3"
-      end
-
-      package "bar"
-
-      controls "some more controls" do
-        package "baz"
-      end
-
-      package "bang"
-    end
+    Chef::Recipe.new("audit", "multiple_controls", run_context).from_file(File.join(audit_recipes, "multiple_controls.rb"))
   end
 
   it "Should not allow `control` or `__controls__` to be defined outside of a `controls` block" do
-    expect {
-      Chef::Recipe.new("cookbook", "recipe", run_context).instance_eval do
-        control("foo4")
-      end
-    }.to raise_error(NoMethodError, /No resource or method named `control'/)
+    expect_any_instance_of(Chef::Recipe).to receive(:controls).with("some more controls").and_call_original
+    expect_any_instance_of(Chef::Recipe).to receive(:control).with("foo4").and_call_original
 
-    Chef::Recipe.new("cookbook", "recipe", run_context).instance_eval do
-      controls "some more controls" do
-        control "foo5"
-      end
-    end
-
-    # Even after seeing a `controls` block these methods should not work - even when running in rspec
     expect {
-      Chef::Recipe.new("cookbook", "recipe", run_context).instance_eval do
-        control("foo4")
-      end
+      Chef::Recipe.new("audit", "defined_outside_block", run_context).from_file(File.join(audit_recipes, "defined_outside_block.rb"))
     }.to raise_error(NoMethodError, /No resource or method named `control'/)
   end
 
   it "Should include serverspec specific matchers only inside `controls` block" do
     # cgroup is a rspec matcher I'm assuming we won't define elsewhere
-    # TODO this is currently failing because the RSpec::Core::ExampleGroup has already been extended with
-    # the serverspec helpers
-    expect { cgroup('group1') }.to raise_error(NoMethodError, /No resource or method named `cgroup'/)
-
-    expect(self).to receive(:cgroup).and_call_original
-    controls "cgroup controls" do
-      describe cgroup('group1') do
-        true
-      end
-    end
-
-    expect { cgroup('group1') }.to raise_error(NoMethodError, /No resource or method named `cgroup'/)
+    expect(Serverspec::Type::Cgroup).to receive(:new).with("group1").and_call_original
+    expect {
+      Chef::Recipe.new("audit", "serverspec_helpers", run_context).from_file(File.join(audit_recipes, "serverspec_helpers.rb"))
+    }.to raise_error(NoMethodError, /No resource or method named `cgroup' for `Chef::Recipe/)
   end
-
-  # TODO write cookbook which actually tests both `package` DSLs
 end
