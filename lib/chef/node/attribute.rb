@@ -175,6 +175,13 @@ class Chef
        # return the automatic level attribute component
        attr_reader :automatic
 
+       # this is used to track the top level key as we descend through method chaining into
+       # a precedence level (e.g. node.default['foo']['bar']['baz']= results in 'foo' here)
+       attr_accessor :top_level_breadcrumb
+
+       # cache of deep merged values by top-level key
+       attr_accessor :deep_merge_cache
+
        def initialize(normal, default, override, automatic)
          @set_unless_present = false
 
@@ -195,6 +202,8 @@ class Chef
          @merged_attributes = nil
          @combined_override = nil
          @combined_default = nil
+         @top_level_breadcrumb = nil
+         @deep_merge_cache = {}
        end
 
        # Debug what's going on with an attribute. +args+ is a path spec to the
@@ -230,51 +239,71 @@ class Chef
          @set_unless_present = setting
        end
 
+       def reset_cache(path = nil)
+         if path.nil?
+           @deep_merge_cache = {}
+         else
+           deep_merge_cache.delete(path)
+         end
+       end
+
+       alias :reset :reset_cache
+
        # Set the cookbook level default attribute component to +new_data+.
        def default=(new_data)
+         reset
          @default = VividMash.new(self, new_data)
        end
 
        # Set the role level default attribute component to +new_data+
        def role_default=(new_data)
+         reset
          @role_default = VividMash.new(self, new_data)
        end
 
        # Set the environment level default attribute component to +new_data+
        def env_default=(new_data)
+         reset
          @env_default = VividMash.new(self, new_data)
        end
 
        # Set the force_default (+default!+) level attributes to +new_data+
        def force_default=(new_data)
+         reset
          @force_default = VividMash.new(self, new_data)
        end
 
        # Set the normal level attribute component to +new_data+
        def normal=(new_data)
+         reset
          @normal = VividMash.new(self, new_data)
        end
 
        # Set the cookbook level override attribute component to +new_data+
        def override=(new_data)
+         reset
          @override = VividMash.new(self, new_data)
        end
 
        # Set the role level override attribute component to +new_data+
        def role_override=(new_data)
+         reset
          @role_override = VividMash.new(self, new_data)
        end
 
        # Set the environment level override attribute component to +new_data+
        def env_override=(new_data)
+         reset
          @env_override = VividMash.new(self, new_data)
        end
 
        def force_override=(new_data)
+         reset
          @force_override = VividMash.new(self, new_data)
        end
 
        def automatic=(new_data)
+         reset
          @automatic = VividMash.new(self, new_data)
        end
 
@@ -284,6 +313,7 @@ class Chef
 
        # clears attributes from all precedence levels
        def rm(*args)
+         reset(args[0])
          # just easier to compute our retval, rather than collect+merge sub-retvals
          ret = args.inject(merged_attributes) do |attr, arg|
            if attr.nil? || !attr.respond_to?(:[])
@@ -314,6 +344,7 @@ class Chef
        #
        # equivalent to: force_default!['foo']['bar'].delete('baz')
        def rm_default(*args)
+         reset(args[0])
          remove_from_precedence_level(force_default!(autovivify: false), *args)
        end
 
@@ -321,6 +352,7 @@ class Chef
        #
        # equivalent to: normal!['foo']['bar'].delete('baz')
        def rm_normal(*args)
+         reset(args[0])
          remove_from_precedence_level(normal!(autovivify: false), *args)
        end
 
@@ -328,6 +360,7 @@ class Chef
        #
        # equivalent to: force_override!['foo']['bar'].delete('baz')
        def rm_override(*args)
+         reset(args[0])
          remove_from_precedence_level(force_override!(autovivify: false), *args)
        end
 
@@ -337,26 +370,36 @@ class Chef
 
        # sets default attributes without merging
        def default!(opts={})
+         # FIXME: do not flush whole cache
+         reset
          MultiMash.new(self, @default, [], opts)
        end
 
        # sets normal attributes without merging
        def normal!(opts={})
+         # FIXME: do not flush whole cache
+         reset
          MultiMash.new(self, @normal, [], opts)
        end
 
        # sets override attributes without merging
        def override!(opts={})
+         # FIXME: do not flush whole cache
+         reset
          MultiMash.new(self, @override, [], opts)
        end
 
        # clears from all default precedence levels and then sets force_default
        def force_default!(opts={})
+         # FIXME: do not flush whole cache
+         reset
          MultiMash.new(self, @force_default, [@default, @env_default, @role_default], opts)
        end
 
        # clears from all override precedence levels and then sets force_override
        def force_override!(opts={})
+         # FIXME: do not flush whole cache
+         reset
          MultiMash.new(self, @force_override, [@override, @env_override, @role_override], opts)
        end
 
@@ -377,7 +420,11 @@ class Chef
        end
 
        def [](key)
-         merged_attributes(key)
+         if deep_merge_cache.has_key?(key)
+           deep_merge_cache[key]
+         else
+           deep_merge_cache[key] = merged_attributes(key)
+         end
        end
 
        def []=(key, value)
