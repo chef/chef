@@ -175,11 +175,17 @@ class Chef
        # return the automatic level attribute component
        attr_reader :automatic
 
-       # this is used to track the top level key as we descend through method chaining into
-       # a precedence level (e.g. node.default['foo']['bar']['baz']= results in 'foo' here)
+       # This is used to track the top level key as we descend through method chaining into
+       # a precedence level (e.g. node.default['foo']['bar']['baz']= results in 'foo' here).  We
+       # need this so that when we hit the end of a method chain which results in a mutator method
+       # that we can invalidate the whole top-level deep merge cache for the top-level key.  It is
+       # the responsibility of the accessor on the Chef::Node object to reset this to nil, and then
+       # the first VividMash#[] call can ||= and set this to the first key we encounter.
        attr_accessor :top_level_breadcrumb
 
-       # cache of deep merged values by top-level key
+       # Cache of deep merged values by top-level key.  This is a simple hash which has keys that are the
+       # top-level keys of the node object, and we save the computed deep-merge for that key here.  There is
+       # no cache of subtrees.
        attr_accessor :deep_merge_cache
 
        def initialize(normal, default, override, automatic)
@@ -239,6 +245,10 @@ class Chef
          @set_unless_present = setting
        end
 
+       # Invalidate a key in the deep_merge_cache.  If called with nil, or no arg, this will invalidate
+       # the entire deep_merge cache.  In the case of the user doing node.default['foo']['bar']['baz']=
+       # that eventually results in a call to reset_cache('foo') here.  A node.default=hash_thing call
+       # must invalidate the entire cache and re-deep-merge the entire node object.
        def reset_cache(path = nil)
          if path.nil?
            @deep_merge_cache = {}
@@ -404,7 +414,11 @@ class Chef
        end
 
        #
-       # Accessing merged attributes
+       # Accessing merged attributes.
+       #
+       # Note that merged_attributes('foo', 'bar', 'baz') can be called to compute only the
+       # deep merge of node['foo']['bar']['baz'], but in practice we currently always compute
+       # all of node['foo'] even if the user only requires node['foo']['bar']['baz'].
        #
 
        def merged_attributes(*path)
@@ -421,8 +435,10 @@ class Chef
 
        def [](key)
          if deep_merge_cache.has_key?(key)
+           # return the cache of the deep merged values by top-level key
            deep_merge_cache[key]
          else
+           # save all the work of computing node[key]
            deep_merge_cache[key] = merged_attributes(key)
          end
        end
