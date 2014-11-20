@@ -62,7 +62,7 @@ class Chef
 
       def control_group_started(name)
         if ordered_control_groups.has_key?(name)
-          raise AuditControlGroupDuplicate.new(name)
+          raise Chef::Exceptions::AuditControlGroupDuplicate.new(name)
         end
         ordered_control_groups.store(name, ControlGroupData.new(name))
       end
