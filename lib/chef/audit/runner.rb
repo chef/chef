@@ -16,8 +16,6 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-
 class Chef
   class Audit
     class Runner
