@@ -63,7 +63,6 @@ class Chef
       MUTATOR_METHODS.each do |mutator|
         class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
           def #{mutator}(*args, &block)
-            root.reset_cache
             super
           end
         METHOD_DEFN
@@ -128,7 +127,6 @@ class Chef
       MUTATOR_METHODS.each do |mutator|
         class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
           def #{mutator}(*args, &block)
-            root.reset_cache
             super
           end
         METHOD_DEFN
@@ -153,7 +151,6 @@ class Chef
         if set_unless? && key?(key)
           self[key]
         else
-          root.reset_cache
           super
         end
       end
