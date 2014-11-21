@@ -441,16 +441,12 @@ class Chef
 
         run_context = setup_run_context
 
-        unless Chef::Config[:audit_mode] == true
+        if Chef::Config[:audit_mode] != :audit_only
           converge_error = converge_and_save(run_context)
-        else
-          Chef::Log.debug("Skipping converge. Chef is configured to run audits only.")
         end
 
-        unless Chef::Config[:audit_mode] == false
+        if Chef::Config[:audit_mode] != :disabled
           audit_error = run_audits(run_context)
-        else
-          Chef::Log.debug("Skipping audits. Chef is configured to converge the node only.")
         end
 
         if converge_error || audit_error
