@@ -212,8 +212,8 @@ class Chef::Application::Solo < Chef::Application
       @chef_client_json = config_fetcher.fetch_json
     end
 
-    # If we don't specify this, solo will try to perform the audits
-    Chef::Config[:audit_mode] = false
+    # Disable auditing for solo
+    Chef::Config[:audit_mode] = :disabled
   end
 
   def setup_application
