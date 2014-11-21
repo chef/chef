@@ -19,6 +19,7 @@
 
 require 'chef/event_dispatch/base'
 require 'chef/audit/control_group_data'
+require 'time'
 
 class Chef
   class Audit
@@ -102,8 +103,8 @@ class Chef
           return
         end
 
-        audit_data.start_time = run_status.start_time.utc.iso8601.to_s
-        audit_data.end_time = run_status.end_time.utc.iso8601.to_s
+        audit_data.start_time = iso8601ify(run_status.start_time)
+        audit_data.end_time = iso8601ify(run_status.end_time)
 
         audit_history_url = "controls"
         Chef::Log.info("Sending audit report (run-id: #{audit_data.run_id})")
@@ -155,6 +156,10 @@ class Chef
         "".tap do |out|
           Zlib::GzipWriter.wrap(StringIO.new(out)){|gz| gz << data }
         end
+      end
+
+      def iso8601ify(time)
+        time.utc.iso8601.to_s
       end
 
     end
