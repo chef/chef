@@ -16,8 +16,6 @@
 # limitations under the License.
 #
 
-require 'rspec/core'
-
 class Chef
   module DSL
     module Audit
@@ -29,7 +27,7 @@ class Chef
         name = args[0]
         raise AuditNameMissing if name.nil? || name.empty?
 
-        run_context.controls_groups << Chef::Audit::Controls.new(run_context, args, &block)
+        run_context.controls[:name] = { :args => args, :block => block }
       end
 
     end
