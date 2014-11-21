@@ -36,15 +36,6 @@ class Chef
         DeepMerge.deep_merge(second, first)
       end
 
-      # Inherited roles use the knockout_prefix array subtraction functionality
-      # This is likely to go away in Chef >= 0.11
-      def role_merge(first, second)
-        first  = Mash.new(first)  unless first.kind_of?(Mash)
-        second = Mash.new(second) unless second.kind_of?(Mash)
-
-        DeepMerge.deep_merge(second, first)
-      end
-
       class InvalidParameter < StandardError; end
 
       # Deep Merge core documentation.
