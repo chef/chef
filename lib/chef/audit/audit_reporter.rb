@@ -107,7 +107,7 @@ class Chef
         audit_data.end_time = iso8601ify(run_status.end_time)
 
         audit_history_url = "controls"
-        Chef::Log.info("Sending audit report (run-id: #{audit_data.run_id})")
+        Chef::Log.debug("Sending audit report (run-id: #{audit_data.run_id})")
         run_data = audit_data.to_hash
 
         if error
