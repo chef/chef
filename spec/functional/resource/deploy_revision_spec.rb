@@ -45,11 +45,10 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
 
   before(:all) do
     @ohai = Ohai::System.new
-    @ohai.all_plugins(@ohai.all_plugins(["platform", "os"]))
+    @ohai.all_plugins(["platform", "os"])
   end
 
   let(:node) do
-
     Chef::Node.new.tap do |n|
       n.name "rspec-test"
       n.consume_external_attrs(@ohai.data, {})

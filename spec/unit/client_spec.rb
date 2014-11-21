@@ -252,18 +252,13 @@ describe Chef::Client do
         #   updates the server with the resource history
         #   (has its own tests, so stubbing it here.)
         expect_any_instance_of(Chef::ResourceReporter).to receive(:run_completed)
-
-        # --AuditReporter#audit_phase_complete
-        #   posts the audit data to server.
-        #   (has its own tests, so stubbing it here.)
-        expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:audit_phase_complete)
       end
 
       def stub_for_audit
-        expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
-        expect(audit_runner).to receive(:run).and_return(true)
-
-        expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:audit_phase_complete)
+        # --AuditReporter#run_completed
+        #   posts the audit data to server.
+        #   (has its own tests, so stubbing it here.)
+        expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_completed)
       end
 
       def stub_for_node_save
