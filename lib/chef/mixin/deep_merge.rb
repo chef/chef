@@ -27,8 +27,6 @@ class Chef
     #   http://trac.misuse.org/science/wiki/DeepMerge
     module DeepMerge
 
-      class InvalidSubtractiveMerge < ArgumentError; end
-
       extend self
 
       def merge(first, second)
