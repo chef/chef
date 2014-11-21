@@ -37,11 +37,8 @@ class Chef
       private
       def setup
         require_deps
-        set_streams
-        add_formatters
-        disable_should_syntax
+        configure_rspec
         configure_specinfra
-        add_example_group_methods
       end
 
       def register_controls
@@ -62,6 +59,22 @@ class Chef
         require 'chef/audit/rspec_formatter'
       end
 
+      def configure_rspec
+        set_streams
+        add_formatters
+        disable_should_syntax
+        add_example_group_methods
+
+        RSpec.configure do |c|
+          c.color = Chef::Config[:color]
+          c.expose_dsl_globally = false
+        end
+      end
+
+      def configure_specinfra
+        Specinfra.configuration.backend = :exec
+      end
+
       def set_streams
         RSpec.configuration.output_stream = Chef::Config[:log_location]
         RSpec.configuration.error_stream = Chef::Config[:log_location]
@@ -79,10 +92,6 @@ class Chef
             c.syntax = :expect
           end
         end
-      end
-
-      def configure_specinfra
-        Specinfra.configuration.backend = :exec
       end
 
       def add_example_group_methods
