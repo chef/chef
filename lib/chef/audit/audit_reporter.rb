@@ -19,13 +19,14 @@
 
 require 'chef/event_dispatch/base'
 require 'chef/audit/control_group_data'
+require 'time'
 
 class Chef
   class Audit
     class AuditReporter < EventDispatch::Base
 
-      attr_reader :rest_client, :audit_data, :ordered_control_groups
-      private :rest_client, :audit_data, :ordered_control_groups
+      attr_reader :rest_client, :audit_data, :ordered_control_groups, :run_status
+      private :rest_client, :audit_data, :ordered_control_groups, :run_status
 
       PROTOCOL_VERSION = '0.1.0'
 
@@ -39,6 +40,7 @@ class Chef
       def audit_phase_start(run_status)
         Chef::Log.debug("Audit Reporter starting")
         @audit_data = AuditData.new(run_status.node.name, run_status.run_id)
+        @run_status = run_status
       end
 
       def audit_phase_complete
@@ -46,7 +48,6 @@ class Chef
         ordered_control_groups.each do |name, control_group|
           audit_data.add_control_group(control_group)
         end
-        post_auditing_data
       end
 
       # If the audit phase failed, its because there was some kind of error in the framework
@@ -57,7 +58,14 @@ class Chef
         ordered_control_groups.each do |name, control_group|
           audit_data.add_control_group(control_group)
         end
-        post_auditing_data(error)
+      end
+
+      def run_completed(node)
+        post_auditing_data
+      end
+
+      def run_failed(error)
+        post_reporting_data(error)
       end
 
       def control_group_started(name)
@@ -77,8 +85,9 @@ class Chef
         control_group.example_failure(example_data, error.message)
       end
 
+      # If @audit_enabled is nil or true, we want to run audits
       def auditing_enabled?
-        @audit_enabled
+        @audit_enabled != false
       end
 
       private
@@ -88,6 +97,14 @@ class Chef
           Chef::Log.debug("Audit Reports are disabled. Skipping sending reports.")
           return
         end
+
+        unless run_status
+          Chef::Log.debug("Run failed before audits were initialized, not sending audit report to server")
+          return
+        end
+
+        audit_data.start_time = iso8601ify(run_status.start_time)
+        audit_data.end_time = iso8601ify(run_status.end_time)
 
         audit_history_url = "controls"
         Chef::Log.info("Sending audit report (run-id: #{audit_data.run_id})")
@@ -100,11 +117,10 @@ class Chef
         end
 
         Chef::Log.debug "Audit Report:\n#{Chef::JSONCompat.to_json_pretty(run_data)}"
-        compressed_data = encode_gzip(Chef::JSONCompat.to_json(run_data))
         # Since we're posting compressed data we can not directly call post_rest which expects JSON
-        audit_url = rest_client.create_url(audit_history_url)
         begin
-          rest_client.raw_http_request(:POST, audit_url, headers({'Content-Encoding' => 'gzip'}), compressed_data)
+          audit_url = rest_client.create_url(audit_history_url)
+          rest_client.post(audit_url, run_data, headers)
         rescue StandardError => e
           if e.respond_to? :response
             code = e.response.code.nil? ? "Exception Code Empty" : e.response.code
@@ -140,6 +156,10 @@ class Chef
         "".tap do |out|
           Zlib::GzipWriter.wrap(StringIO.new(out)){|gz| gz << data }
         end
+      end
+
+      def iso8601ify(time)
+        time.utc.iso8601.to_s
       end
 
     end
