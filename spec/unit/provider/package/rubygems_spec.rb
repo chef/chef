@@ -90,7 +90,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     dep = Gem::Dependency.new('rspec', '>= 0')
     dep_installer = Gem::DependencyInstaller.new
     allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
-    latest = [[gemspec("rspec", Gem::Version.new("1.3.0")), "http://rubygems.org/"]]
+    latest = [[gemspec("rspec", Gem::Version.new("1.3.0")), "https://rubygems.org/"]]
     expect(dep_installer).to receive(:find_gems_with_sources).with(dep).and_return(latest)
     expect(@gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0'))).to eq(Gem::Version.new('1.3.0'))
   end
@@ -156,7 +156,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
 
   it "finds a matching gem from a specific gemserver when explicit sources are given" do
     dep = Gem::Dependency.new('rspec', '>= 0')
-    latest = [[gemspec("rspec", Gem::Version.new("1.3.0")), "http://rubygems.org/"]]
+    latest = [[gemspec("rspec", Gem::Version.new("1.3.0")), "https://rubygems.org/"]]
 
     expect(@gem_env).to receive(:with_gem_sources).with('http://gems.example.com').and_yield
     dep_installer = Gem::DependencyInstaller.new
@@ -291,9 +291,9 @@ RubyGems Environment:
      - "install" => "--env-shebang"
      - "update" => "--env-shebang"
      - "gem" => "--no-rdoc --no-ri"
-     - :sources => ["http://rubygems.org/", "http://gems.github.com/"]
+     - :sources => ["https://rubygems.org/", "http://gems.github.com/"]
   - REMOTE SOURCES:
-     - http://rubygems.org/
+     - https://rubygems.org/
      - http://gems.github.com/
 JRUBY_GEM_ENV
     expect(@gem_env).to receive(:shell_out!).with('/usr/weird/bin/gem env').and_return(double('jruby_gem_env', :stdout => gem_env_out))
@@ -332,10 +332,10 @@ RubyGems Environment:
      - :benchmark => false
      - :backtrace => false
      - :bulk_threshold => 1000
-     - :sources => ["http://rubygems.org/", "http://gems.github.com/"]
+     - :sources => ["https://rubygems.org/", "http://gems.github.com/"]
      - "gem" => "--no-rdoc --no-ri"
   - REMOTE SOURCES:
-     - http://rubygems.org/
+     - https://rubygems.org/
      - http://gems.github.com/
 RBX_GEM_ENV
     expect(@gem_env).to receive(:shell_out!).with('/usr/weird/bin/gem env').and_return(double('rbx_gem_env', :stdout => gem_env_out))

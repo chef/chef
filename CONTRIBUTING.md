@@ -173,7 +173,7 @@ Contributions go through a review process to improve code quality and avoid regr
 Our primary shipping vehicle is operating system specific packages that includes
   all the requirements of Chef. We call these [Omnibus packages](https://github.com/opscode/omnibus-ruby)
 
-We also release our software as gems to [Rubygems](http://rubygems.org/) but we strongly
+We also release our software as gems to [Rubygems](https://rubygems.org/) but we strongly
   recommend using Chef packages since they are the only combination of native libraries &
   gems required by Chef that we test throughly.
 
