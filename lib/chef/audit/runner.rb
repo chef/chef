@@ -16,11 +16,6 @@
 # limitations under the License.
 #
 
-require 'chef/audit'
-require 'chef/audit/audit_event_proxy'
-require 'chef/audit/rspec_formatter'
-require 'chef/config'
-
 class Chef
   class Audit
     class Runner
@@ -34,80 +29,144 @@ class Chef
 
       def run
         setup
-        register_controls_groups
-
-        # The first parameter passed to RSpec::Core::Runner.new
-        # is an instance of RSpec::Core::ConfigurationOptions, which is
-        # responsible for processing command line options passed through rspec.
-        # This then gets merged with the configuration. We'll just communicate
-        # directly with the Configuration here.
-        audit_runner = RSpec::Core::Runner.new(nil, configuration, world)
-        audit_runner.run_specs(world.ordered_example_groups)
+        register_controls
+        do_run
       end
 
       private
-
-      # RSpec configuration and world objects are heavy, so let's wait until
-      # we actually need them.
-      def configuration
-        RSpec.configuration
-      end
-
-      def world
-        RSpec.world
-      end
-
-      # Configure audits before run.
-      # Sets up where output and error streams should stream to, adds formatters
-      # for people-friendly output of audit results and json for reporting. Also
-      # configures expectation frameworks.
+      # Prepare to run audits:
+      #  - Require files
+      #  - Configure RSpec
+      #  - Configure Specinfra/Serverspec
       def setup
-        # We're setting the output stream, but that will only be used for error situations
-        # Our formatter forwards events to the Chef event message bus
-        # TODO so some testing to see if these output to a log file - we probably need
-        # to register these before any formatters are added.
-        configuration.output_stream = Chef::Config[:log_location]
-        configuration.error_stream  = Chef::Config[:log_location]
-        # TODO im pretty sure I only need this because im running locally in rvmsudo
-        configuration.backtrace_exclusion_patterns.push(Regexp.new("/Users".gsub("/", File::SEPARATOR)))
-        configuration.backtrace_exclusion_patterns.push(Regexp.new("(eval)"))
-        configuration.color = Chef::Config[:color]
-        configuration.expose_dsl_globally = false
-
-        add_formatters
-        disable_should_syntax
+        require_deps
+        configure_rspec
         configure_specinfra
       end
 
-      def add_formatters
-        configuration.add_formatter(Chef::Audit::RspecFormatter)
-        configuration.add_formatter(Chef::Audit::AuditEventProxy)
-        Chef::Audit::AuditEventProxy.events = run_context.events
+      # RSpec uses a global configuration object, RSpec.configuration. We found
+      # there was interference between the configuration for audit-mode and
+      # the configuration for our own spec tests in these cases:
+      #   1. Specinfra and Serverspec modify RSpec.configuration when loading.
+      #   2. Setting output/error streams.
+      #   3. Adding formatters.
+      #   4. Defining example group aliases.
+      #
+      # Moreover, Serverspec loads its DSL methods into the global namespace,
+      # which causes conflicts with the Chef namespace for resources and packages.
+      #
+      # We wait until we're in the audit-phase of the chef-client run to load
+      # these files. This helps with the namespacing problems we saw, and
+      # prevents Specinfra and Serverspec from modifying the RSpec configuration
+      # used by our spec tests.
+      def require_deps
+        # TODO: We need to figure out a way to give audits its own configuration
+        # object. This involves finding a way to load these files w/o them adding
+        # to the configuration object used by our spec tests.
+        require 'rspec'
+        require 'rspec/its'
+        require 'specinfra'
+        require 'serverspec/helper'
+        require 'serverspec/matcher'
+        require 'serverspec/subject'
+        require 'chef/audit/audit_event_proxy'
+        require 'chef/audit/rspec_formatter'
       end
 
-      # Explicitly disable :should syntax.
-      #
-      # :should is deprecated in RSpec 3 and we have chosen to explicitly disable it
-      # in audits. If :should is used in an audit, the audit will fail with error
-      # message "undefined method `:should`" rather than issue a deprecation warning.
-      #
-      # This can be removed when :should is fully removed from RSpec.
-      def disable_should_syntax
-        configuration.expect_with :rspec do |c|
-          c.syntax = :expect
+      # Configure RSpec just the way we like it:
+      #   - Set location of error and output streams
+      #   - Add custom audit-mode formatters
+      #   - Explicitly disable :should syntax
+      #   - Set :color option according to chef config
+      #   - Disable exposure of global DSL
+      def configure_rspec
+        set_streams
+        add_formatters
+        disable_should_syntax
+
+        RSpec.configure do |c|
+          c.color = Chef::Config[:color]
+          c.expose_dsl_globally = false
         end
       end
 
+      # Set the error and output streams which audit-mode will use to report
+      # human-readable audit information.
+      #
+      # This should always be called before #add_formatters. RSpec won't allow
+      # the output stream to be changed for a formatter once the formatter has
+      # been added.
+      def set_streams
+        # TODO: Do some testing to ensure these will output/output properly to
+        # a file.
+        RSpec.configuration.output_stream = Chef::Config[:log_location]
+        RSpec.configuration.error_stream = Chef::Config[:log_location]
+      end
+
+      # Add formatters which we use to
+      #   1. Output human-readable data to the output stream,
+      #   2. Collect JSON data to send back to the analytics server.
+      def add_formatters
+        RSpec.configuration.add_formatter(Chef::Audit::AuditEventProxy)
+        RSpec.configuration.add_formatter(Chef::Audit::RspecFormatter)
+        Chef::Audit::AuditEventProxy.events = run_context.events
+      end
+
+      # Audit-mode uses RSpec 3. :should syntax is deprecated by default in
+      # RSpec 3, so we explicitly disable it here.
+      #
+      # This can be removed once :should is removed from RSpec.
+      def disable_should_syntax
+        RSpec.configure do |config|
+          config.expect_with :rspec do |c|
+            c.syntax = :expect
+          end
+        end
+      end
+
+      # Set up the backend for Specinfra/Serverspec.
       def configure_specinfra
-        # TODO: We may need to change this based on operating system (there is a
-        # powershell backend) or roll our own.
+        # TODO: We may need to be clever and adjust this based on operating
+        # system, or make it configurable. E.g., there is a PowerShell backend,
+        # as well as an SSH backend.
         Specinfra.configuration.backend = :exec
       end
 
-      # Register each controls group with the world, which will handle
-      # the ordering of the audits that will be run.
-      def register_controls_groups
-        run_context.controls_groups.each { |ctls_grp| world.register(ctls_grp) }
+      # Iterates through the controls registered to this run_context, builds an
+      # example group (RSpec::Core::ExampleGroup) object per controls, and
+      # registers the group with the RSpec.world.
+      #
+      # We could just store an array of example groups and not use RSpec.world,
+      # but it may be useful later if we decide to apply our own ordering scheme
+      # or use example group filters.
+      def register_controls
+        add_example_group_methods
+        run_context.controls.each do |name, group|
+          ctl_grp = RSpec::Core::ExampleGroup.__controls__(*group[:args], &group[:block])
+          RSpec.world.register(ctl_grp)
+        end
+      end
+
+      # Add example group method aliases to RSpec.
+      #
+      # __controls__: Used internally to create example groups from the controls
+      #               saved in the run_context.
+      #      control: Used within the context of a controls block, like RSpec's
+      #               describe or context.
+      def add_example_group_methods
+        RSpec::Core::ExampleGroup.define_example_group_method :__controls__
+        RSpec::Core::ExampleGroup.define_example_group_method :control
+      end
+
+      # Run the audits!
+      def do_run
+        # RSpec::Core::Runner wants to be initialized with an
+        # RSpec::Core::ConfigurationOptions object, which is used to process
+        # command line configuration arguments. We directly fiddle with the
+        # internal RSpec configuration object, so we give nil here and let
+        # RSpec pick up its own configuration and world.
+        runner = RSpec::Core::Runner.new(nil)
+        runner.run_specs(RSpec.world.ordered_example_groups)
       end
 
     end

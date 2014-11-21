@@ -51,7 +51,7 @@ class Chef
     attr_accessor :resource_collection
 
     # The list of control groups to execute during the audit phase
-    attr_accessor :controls_groups
+    attr_accessor :controls
 
     # A Hash containing the immediate notifications triggered by resources
     # during the converge phase of the chef run.
@@ -76,7 +76,7 @@ class Chef
       @node = node
       @cookbook_collection = cookbook_collection
       @resource_collection = Chef::ResourceCollection.new
-      @controls_groups = []
+      @controls = {}
       @immediate_notification_collection = Hash.new {|h,k| h[k] = []}
       @delayed_notification_collection = Hash.new {|h,k| h[k] = []}
       @definitions = Hash.new
