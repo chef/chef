@@ -6,4 +6,4 @@ controls "cgroup controls" do
   end
 end
 
-cgroup('group1')
+cgroup('group2')

@@ -18,6 +18,7 @@
 
 require 'spec_helper'
 require 'chef/recipe'
+require 'chef/audit/runner'
 
 describe "Duplicated `package` DSL in Chef and Serverspec" do
 
@@ -47,6 +48,13 @@ describe "Duplicated `package` DSL in Chef and Serverspec" do
     Chef::RunContext.new(node, cookbook_collection, events)
   end
 
+  let(:auditor) do
+    auditor = Chef::Audit::Runner.new(run_context)
+    allow(auditor).to receive(:configure_rspec).and_return(true)
+    allow(auditor).to receive(:do_run).and_return(true)
+    auditor
+  end
+
   it "Should call the Chef Recipe DSL in a Chef Recipe" do
     # Chef::DSL::Recipe#method_missing calls #resource_for_node twice when looking up the Resource instance - once in
     # #have_resource_class_for? and once in #declare_resource.  Chef::DSL::Recipe#resource_class_for calls
@@ -74,6 +82,9 @@ describe "Duplicated `package` DSL in Chef and Serverspec" do
     expect(Chef::Resource::Package).to receive(:new).with("bang", run_context).and_call_original
 
     Chef::Recipe.new("audit", "multiple_controls", run_context).from_file(File.join(audit_recipes, "multiple_controls.rb"))
+    # Have to run the auditor because we have logic inside a `controls` block to test - that doesn't get evaluated
+    # until the auditor is ran
+    auditor.run
   end
 
   it "Should not allow `control` or `__controls__` to be defined outside of a `controls` block" do
@@ -91,5 +102,6 @@ describe "Duplicated `package` DSL in Chef and Serverspec" do
     expect {
       Chef::Recipe.new("audit", "serverspec_helpers", run_context).from_file(File.join(audit_recipes, "serverspec_helpers.rb"))
     }.to raise_error(NoMethodError, /No resource or method named `cgroup' for `Chef::Recipe/)
+    auditor.run
   end
 end
