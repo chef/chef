@@ -163,13 +163,11 @@ class Chef
 
       # Called before audit phase starts
       def audit_phase_start(run_status)
-        puts_line ""
-        puts_line "++ Audit phase starting ++"
+        puts_line "Starting audit phase"
       end
 
       def audit_phase_complete
-        puts_line ""
-        puts_line "++ Audit phase ended ++ "
+        puts_line "Auditing complete"
       end
 
       def audit_phase_failed(error)
