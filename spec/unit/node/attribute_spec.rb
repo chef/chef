@@ -486,6 +486,34 @@ describe Chef::Node::Attribute do
       expect(hash.class).to eq(Hash)
       expect(hash["day"]).to eq("sunday")
     end
+
+    it "should create a deep copy of the node attribute" do
+      @attributes.default['foo']['bar']['baz'] = 'fizz'
+      hash = @attributes['foo'].to_hash
+      expect(hash).to eql({"bar"=>{"baz"=>"fizz"}})
+      hash['bar']['baz'] = 'buzz'
+      expect(hash).to eql({"bar"=>{"baz"=>"buzz"}})
+      expect(@attributes.default['foo']).to eql({"bar"=>{"baz"=>"fizz"}})
+    end
+
+    it "should create a deep copy of arrays in the node attribute" do
+      @attributes.default['foo']['bar'] = ['fizz']
+      hash = @attributes['foo'].to_hash
+      expect(hash).to eql({"bar"=>[ 'fizz' ]})
+      hash['bar'].push('buzz')
+      expect(hash).to eql({"bar"=>[ 'fizz', 'buzz' ]})
+      expect(@attributes.default['foo']).to eql({"bar"=>[ 'fizz' ]})
+    end
+
+    it "mutating strings should not mutate the attributes" do
+      pending "this is a bug that should be fixed"
+      @attributes.default['foo']['bar']['baz'] = 'fizz'
+      hash = @attributes['foo'].to_hash
+      expect(hash).to eql({"bar"=>{"baz"=>"fizz"}})
+      hash['bar']['baz'] << 'buzz'
+      expect(hash).to eql({"bar"=>{"baz"=>"fizzbuzz"}})
+      expect(@attributes.default['foo']).to eql({"bar"=>{"baz"=>"fizz"}})
+    end
   end
 
   describe "dup" do
