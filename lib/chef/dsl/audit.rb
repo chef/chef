@@ -27,7 +27,7 @@ class Chef
         name = args[0]
         raise AuditNameMissing if name.nil? || name.empty?
 
-        run_context.controls[:name] = { :args => args, :block => block }
+        run_context.controls[name] = { :args => args, :block => block }
       end
 
     end
