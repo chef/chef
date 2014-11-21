@@ -554,7 +554,6 @@ describe Chef::Node::Attribute do
 
     it "should allow the last method to set a value if it has an = sign on the end" do
       @attributes.normal.music.mastodon = [ "dream", "still", "shining" ]
-      @attributes.reset
       expect(@attributes.normal.music.mastodon).to eq([ "dream", "still", "shining" ])
     end
   end
@@ -1091,49 +1090,6 @@ describe Chef::Node::Attribute do
     end
   end
 
-  # For expedience, this test is implementation-heavy.
-  describe "when a component attribute is mutated" do
-    [
-      :clear,
-      :shift
-    ].each do |mutator|
-      it "resets the cache when the mutator #{mutator} is called" do
-        expect(@attributes).to receive(:reset_cache)
-        @attributes.default.send(mutator)
-      end
-    end
-
-    it "resets the cache when the mutator delete is called" do
-      expect(@attributes).to receive(:reset_cache)
-      @attributes.default.delete(:music)
-    end
-
-    [
-      :merge!,
-      :update,
-      :replace
-    ].each do |mutator|
-      it "resets the cache when the mutator #{mutator} is called" do
-        # Implementation of Mash means that this could get called many times. That's okay.
-        expect(@attributes).to receive(:reset_cache).at_least(1).times
-        @attributes.default.send(mutator, {:foo => :bar})
-      end
-    end
-
-    [
-      :delete_if,
-      :keep_if,
-      :reject!,
-      :select!,
-    ].each do |mutator|
-      it "resets the cache when the mutator #{mutator} is called" do
-        # Implementation of Mash means that this could get called many times. That's okay.
-        expect(@attributes).to receive(:reset_cache).at_least(1).times
-        block = lambda {|k,v| true }
-        @attributes.default.send(mutator, &block)
-      end
-    end
-  end
 
   describe "when not mutated" do
 
@@ -1169,6 +1125,40 @@ describe Chef::Node::Attribute do
       @attributes.automatic = {}
       @attributes.automatic.foo = "bar"
       expect(@attributes.merged_attributes[:foo]).to eq("bar")
+    end
+  end
+
+  describe "when deep-merging between precedence levels" do
+    it "correctly deep merges hashes and preserves the original contents" do
+      @attributes.default = { "arglebargle" => { "foo" => "bar" } }
+      @attributes.override = { "arglebargle" => { "fizz" => "buzz" } }
+      expect(@attributes.merged_attributes[:arglebargle]).to eq({ "foo" => "bar", "fizz" => "buzz" })
+      expect(@attributes.default[:arglebargle]).to eq({ "foo" => "bar" })
+      expect(@attributes.override[:arglebargle]).to eq({ "fizz" => "buzz" })
+    end
+
+    it "does not deep merge arrays, and preserves the original contents" do
+      @attributes.default = { "arglebargle" => [ 1, 2, 3 ] }
+      @attributes.override = { "arglebargle" => [ 4, 5, 6 ] }
+      expect(@attributes.merged_attributes[:arglebargle]).to eq([ 4, 5, 6 ])
+      expect(@attributes.default[:arglebargle]).to eq([ 1, 2, 3 ])
+      expect(@attributes.override[:arglebargle]).to eq([ 4, 5, 6 ])
+    end
+
+    it "correctly deep merges hashes and preserves the original contents when merging default and role_default" do
+      @attributes.default = { "arglebargle" => { "foo" => "bar" } }
+      @attributes.role_default = { "arglebargle" => { "fizz" => "buzz" } }
+      expect(@attributes.merged_attributes[:arglebargle]).to eq({ "foo" => "bar", "fizz" => "buzz" })
+      expect(@attributes.default[:arglebargle]).to eq({ "foo" => "bar" })
+      expect(@attributes.role_default[:arglebargle]).to eq({ "fizz" => "buzz" })
+    end
+
+    it "correctly deep merges arrays, and preserves the original contents when merging default and role_default" do
+      @attributes.default = { "arglebargle" => [ 1, 2, 3 ] }
+      @attributes.role_default = { "arglebargle" => [ 4, 5, 6 ] }
+      expect(@attributes.merged_attributes[:arglebargle]).to eq([ 1, 2, 3, 4, 5, 6 ])
+      expect(@attributes.default[:arglebargle]).to eq([ 1, 2, 3 ])
+      expect(@attributes.role_default[:arglebargle]).to eq([ 4, 5, 6 ])
     end
   end
 

@@ -191,6 +191,8 @@ class Chef::Application::Solo < Chef::Application
       cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
 
+      Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
+      FileUtils.rm_rf(recipes_path, :secure => true)
       Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
       FileUtils.mkdir_p(recipes_path)
       tarball_path = File.join(recipes_path, 'recipes.tgz')

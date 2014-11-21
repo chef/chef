@@ -78,9 +78,7 @@ class Chef
         # Ruby 1.8 blocks can't have block arguments, so we must use string eval:
         class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
           def #{mutator_method_name}(*args, &block)
-            msg = "Node attributes are read-only when you do not specify which precedence level to set. " +
-            %Q(To set an attribute use code like `node.default["key"] = "value"')
-            raise Exceptions::ImmutableAttributeModification, msg
+            raise Exceptions::ImmutableAttributeModification
           end
         METHOD_DEFN
       end
@@ -165,9 +163,7 @@ class Chef
         # Ruby 1.8 blocks can't have block arguments, so we must use string eval:
         class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
         def #{mutator_method_name}(*args, &block)
-          msg = "Node attributes are read-only when you do not specify which precedence level to set. " +
-          %Q(To set an attribute use code like `node.default["key"] = "value"')
-          raise Exceptions::ImmutableAttributeModification, msg
+          raise Exceptions::ImmutableAttributeModification
         end
         METHOD_DEFN
       end
