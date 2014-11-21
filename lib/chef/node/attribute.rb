@@ -422,7 +422,9 @@ class Chef
        #
 
        def merged_attributes(*path)
-         immutablize(merge_all(path))
+        # immutablize(
+           merge_all(path)
+        # )
        end
 
        def combined_override(*path)
@@ -543,7 +545,7 @@ class Chef
            safe_dup(component)
          end
 
-         components.inject(nil) do |merged, component|
+         components.inject(ImmutableMash.new) do |merged, component|
            Chef::Mixin::DeepMerge.hash_only_merge!(merged, component)
          end
        end
