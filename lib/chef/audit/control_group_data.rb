@@ -4,6 +4,7 @@ class Chef
   class Audit
     class AuditData
       attr_reader :node_name, :run_id, :control_groups
+      attr_accessor :start_time, :end_time
 
       def initialize(node_name, run_id)
         @node_name = node_name
@@ -19,6 +20,8 @@ class Chef
         {
             :node_name => node_name,
             :run_id => run_id,
+            :start_time => start_time,
+            :end_time => end_time,
             :control_groups => control_groups.collect { |c| c.to_hash }
         }
       end
