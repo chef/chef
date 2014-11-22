@@ -31,7 +31,6 @@ class Chef
       PROTOCOL_VERSION = '0.1.0'
 
       def initialize(rest_client)
-        @audit_enabled = Chef::Config[:audit_mode]
         @rest_client = rest_client
         # Ruby 1.9.3 and above "enumerate their values in the order that the corresponding keys were inserted."
         @ordered_control_groups = Hash.new
@@ -87,7 +86,7 @@ class Chef
 
       # If @audit_enabled is nil or true, we want to run audits
       def auditing_enabled?
-        @audit_enabled != false
+        Chef::Config[:audit_mode] != :disabled
       end
 
       private
@@ -107,7 +106,7 @@ class Chef
         audit_data.end_time = iso8601ify(run_status.end_time)
 
         audit_history_url = "controls"
-        Chef::Log.info("Sending audit report (run-id: #{audit_data.run_id})")
+        Chef::Log.debug("Sending audit report (run-id: #{audit_data.run_id})")
         run_data = audit_data.to_hash
 
         if error
