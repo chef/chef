@@ -545,7 +545,9 @@ class Chef
            safe_dup(component)
          end
 
-         components.inject(ImmutableMash.new) do |merged, component|
+         return nil if components.compact.empty?
+
+         components.inject(ImmutableMash.new({})) do |merged, component|
            Chef::Mixin::DeepMerge.hash_only_merge!(merged, component)
          end
        end

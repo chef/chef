@@ -105,11 +105,19 @@ class Chef
         # If there are two Hashes, recursively merge.
         if merge_onto.kind_of?(Hash) && merge_with.kind_of?(Hash)
           merge_with.each do |key, merge_with_value|
-            merge_onto[key] = if merge_onto.has_key?(key)
-                                hash_only_merge(merge_onto[key], merge_with_value)
-                              else
-                                merge_with_value
-                              end
+            value =
+              if merge_onto.has_key?(key)
+                hash_only_merge(merge_onto[key], merge_with_value)
+              else
+                merge_with_value
+              end
+
+            if merge_onto.respond_to?(:public_method_that_only_deep_merge_should_use)
+              # we can't call ImmutableMash#[]= because its immutable, but we need to mutate it to build it in-place
+              merge_onto.public_method_that_only_deep_merge_should_use(key, value)
+            else
+              merge_onto[key] = value
+            end
           end
           merge_onto
 
