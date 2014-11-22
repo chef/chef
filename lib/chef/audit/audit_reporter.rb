@@ -65,7 +65,7 @@ class Chef
       end
 
       def run_failed(error)
-        post_reporting_data(error)
+        post_auditing_data(error)
       end
 
       def control_group_started(name)
