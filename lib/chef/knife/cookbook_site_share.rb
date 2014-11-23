@@ -48,7 +48,7 @@ class Chef
         :description => "Don't take action, only print what files will be upload to SuperMarket."
 
       def run
-        Chef::Log.warn("This command is deprecated, please install the knife-supermarket gem and use knife supermarket share")
+        ui.warn("This command is deprecated, please install the knife-supermarket gem and use knife supermarket share")
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
         if @name_args.length < 1
