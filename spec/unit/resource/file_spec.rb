@@ -76,6 +76,21 @@ describe Chef::Resource::File do
     expect { @resource.path Hash.new }.to raise_error(ArgumentError)
   end
 
+  context "when the path ends in File::SEPARATOR, (e.g. 'path#{File::SEPARATOR}')" do
+    before(:each) { @resource.path("path#{File::SEPARATOR}") }
+
+    [
+      :identity,
+      :path
+    ].each do |method|
+      describe "##{method}" do
+        subject { @resource.send(method) }
+
+        it { is_expected.to eq("path#{File::SEPARATOR}fakey_fakerton") }
+      end
+    end
+  end
+
   describe "when it has a path, owner, group, mode, and checksum" do
     before do
       @resource.path("/tmp/foo.txt")

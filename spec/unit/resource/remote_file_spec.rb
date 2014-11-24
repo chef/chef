@@ -185,7 +185,7 @@ describe Chef::Resource::RemoteFile do
       if Chef::Platform.windows?
         expect(@resource.identity).to eq("C:/temp/origin/file.txt")
       else
-        expect(@resource.identity).to eq("/this/path/")
+        expect(@resource.identity).to eq("/this/path/fakey_fakerton")
       end
     end
   end

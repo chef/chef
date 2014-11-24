@@ -79,7 +79,7 @@ class Chef
       def path(arg=nil)
         set_or_return(
           :path,
-          arg,
+          prepend_if_pathlike(arg),
           :kind_of => String
         )
       end
@@ -114,6 +114,12 @@ class Chef
           arg,
           :kind_of => [ TrueClass, FalseClass ]
         )
+      end
+
+      private
+
+      def prepend_if_pathlike(value)
+        value.end_with?(::File::SEPARATOR) ? value + @path : value rescue value
       end
     end
   end
