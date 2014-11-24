@@ -130,6 +130,17 @@ module Mixlib
     #   total amount of time that ShellOut waited on the child process without
     #   receiving any output (i.e., IO.select returned nil). Default is 60
     #   seconds. Note: the stdlib Timeout library is not used.
+    # * +input+: A String of data to be passed to the subcommand. This is
+    #   written to the child process' stdin stream before the process is
+    #   launched. The child's stdin stream will be a pipe, so the size of input
+    #   data should not exceed the system's default pipe capacity (4096 bytes
+    #   is a safe value, though on newer Linux systems the capacity is 64k by
+    #   default).
+    # * +live_stream+: An IO or Logger-like object (must respond to the append
+    #   operator +<<+) that will receive data as ShellOut reads it from the
+    #   child process. Generally this is used to copy data from the child to
+    #   the parent's stdout so that users may observe the progress of
+    #   long-running commands.
     # === Examples:
     # Invoke find(1) to search for .rb files:
     #   find = Mixlib::ShellOut.new("find . -name '*.rb'")
