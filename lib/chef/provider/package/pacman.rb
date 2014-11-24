@@ -87,7 +87,7 @@ class Chef
         end
 
         def install_package(name, version)
-          shell_out!( "pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}" )
+          shell_out!("pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}", :timeout => @new_resource.timeout)
         end
 
         def upgrade_package(name, version)
@@ -95,7 +95,7 @@ class Chef
         end
 
         def remove_package(name, version)
-          shell_out!( "pacman --remove --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}" )
+          shell_out!("pacman --remove --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}")
         end
 
         def purge_package(name, version)

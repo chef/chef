@@ -114,7 +114,7 @@ class Chef
             else
               command = "pkgadd -n -d #{@new_resource.source} all"
             end
-            shell_out!(command)
+            shell_out!(command, :timeout => @new_resource.timeout)
             Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           else
             if ::File.directory?(@new_resource.source) # CHEF-4469
@@ -122,7 +122,7 @@ class Chef
             else
               command = "pkgadd -n#{expand_options(@new_resource.options)} -d #{@new_resource.source} all"
             end
-            shell_out!(command)
+            shell_out!(command, :timeout => @new_resource.timeout)
             Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           end
         end

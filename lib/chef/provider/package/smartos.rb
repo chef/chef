@@ -74,7 +74,7 @@ class Chef
         def install_package(name, version)
           Chef::Log.debug("#{@new_resource} installing package #{name} version #{version}")
           package = "#{name}-#{version}"
-          out = shell_out!("/opt/local/bin/pkgin -y install #{package}", :env => nil)
+          out = shell_out!("/opt/local/bin/pkgin -y install #{package}", :env => nil, :timeout => @new_resource.timeout)
         end
 
         def upgrade_package(name, version)

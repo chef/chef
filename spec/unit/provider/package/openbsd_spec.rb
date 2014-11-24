@@ -40,7 +40,7 @@ describe Chef::Provider::Package::Openbsd do
     it "should run the installation command" do
       expect(@provider).to receive(:shell_out!).with(
         "pkg_add -r #{@name}",
-        {:env => {"PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/"}}
+        {:timeout => @new_resource.timeout, :env => {"PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/"}}
       ) {OpenStruct.new :status => true}
       @provider.install_package(@name, nil)
     end

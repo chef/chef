@@ -123,12 +123,12 @@ INSTALLED
 
   context "when installing a package" do
     it "should run pkg install with the package name and version" do
-      expect(@provider).to receive(:shell_out).with("pkg install -q crypto/gnupg@2.0.17")
+      expect(@provider).to receive(:shell_out).with("pkg install -q crypto/gnupg@2.0.17", :timeout => @new_resource.timeout)
       @provider.install_package("crypto/gnupg", "2.0.17")
     end
 
     it "should run pkg install with the package name and version and options if specified" do
-      expect(@provider).to receive(:shell_out).with("pkg --no-refresh install -q crypto/gnupg@2.0.17")
+      expect(@provider).to receive(:shell_out).with("pkg --no-refresh install -q crypto/gnupg@2.0.17", :timeout => @new_resource.timeout)
       allow(@new_resource).to receive(:options).and_return("--no-refresh")
       @provider.install_package("crypto/gnupg", "2.0.17")
     end
@@ -201,7 +201,7 @@ REMOTE
       end
 
       it "should run pkg install with the --accept flag" do
-        expect(@provider).to receive(:shell_out).with("pkg install -q --accept crypto/gnupg@2.0.17")
+        expect(@provider).to receive(:shell_out).with("pkg install -q --accept crypto/gnupg@2.0.17", :timeout => @new_resource.timeout)
         @provider.install_package("crypto/gnupg", "2.0.17")
       end
     end
@@ -209,7 +209,7 @@ REMOTE
 
   context "when upgrading a package" do
     it "should run pkg install with the package name and version" do
-      expect(@provider).to receive(:shell_out).with("pkg install -q crypto/gnupg@2.0.17")
+      expect(@provider).to receive(:shell_out).with("pkg install -q crypto/gnupg@2.0.17", :timeout => @new_resource.timeout)
       @provider.upgrade_package("crypto/gnupg", "2.0.17")
     end
   end

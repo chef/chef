@@ -28,11 +28,11 @@ class Chef
             unless @current_resource.version
               case @new_resource.source
               when /^(http|ftp|\/)/
-                shell_out!("pkg add#{expand_options(@new_resource.options)} #{@new_resource.source}", :env => { 'LC_ALL' => nil }).status
+                shell_out!("pkg add#{expand_options(@new_resource.options)} #{@new_resource.source}", :env => { 'LC_ALL' => nil }, :timeout => @new_resource.timeout).status
                 Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
 
               else
-                shell_out!("pkg install -y#{expand_options(@new_resource.options)} #{name}", :env => { 'LC_ALL' => nil }).status
+                shell_out!("pkg install -y#{expand_options(@new_resource.options)} #{name}", :env => { 'LC_ALL' => nil }, :timeout => @new_resource.timeout).status
               end
             end
           end

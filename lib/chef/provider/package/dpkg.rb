@@ -141,7 +141,7 @@ class Chef
         #
         # FIXME: This should be "LC_ALL" => "en_US.UTF-8" in order to stabilize the output and get UTF-8
         def run_noninteractive(command)
-          shell_out!(command, :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
+          shell_out!(command, :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil }, :timeout => @new_resource.timeout)
         end
 
       end

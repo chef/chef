@@ -135,7 +135,7 @@ PKGINFO
 
   describe "install and upgrade" do
     it "should run pkgadd -n -d with the package source to install" do
-      expect(@provider).to receive(:shell_out!).with("pkgadd -n -d /tmp/bash.pkg all")
+      expect(@provider).to receive(:shell_out!).with("pkgadd -n -d /tmp/bash.pkg all", :timeout => @new_resource.timeout)
       @provider.install_package("SUNWbash", "11.10.0,REV=2005.01.08.05.16")
     end
 
@@ -143,13 +143,13 @@ PKGINFO
       @new_resource = Chef::Resource::Package.new("/tmp/bash.pkg")
       @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context)
       expect(@new_resource.source).to eq("/tmp/bash.pkg")
-      expect(@provider).to receive(:shell_out!).with("pkgadd -n -d /tmp/bash.pkg all")
+      expect(@provider).to receive(:shell_out!).with("pkgadd -n -d /tmp/bash.pkg all", :timeout => @new_resource.timeout)
       @provider.install_package("/tmp/bash.pkg", "11.10.0,REV=2005.01.08.05.16")
     end
 
     it "should run pkgadd -n -a /tmp/myadmin -d with the package options -a /tmp/myadmin" do
       allow(@new_resource).to receive(:options).and_return("-a /tmp/myadmin")
-      expect(@provider).to receive(:shell_out!).with("pkgadd -n -a /tmp/myadmin -d /tmp/bash.pkg all")
+      expect(@provider).to receive(:shell_out!).with("pkgadd -n -a /tmp/myadmin -d /tmp/bash.pkg all", :timeout => @new_resource.timeout)
       @provider.install_package("SUNWbash", "11.10.0,REV=2005.01.08.05.16")
     end
   end

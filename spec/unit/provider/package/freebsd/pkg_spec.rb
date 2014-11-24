@@ -127,7 +127,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
     end
 
     it "should run pkg_add -r with the package name" do
-      expect(@provider).to receive(:shell_out!).with("pkg_add -r zsh", :env => nil).and_return(@cmd_result)
+      expect(@provider).to receive(:shell_out!).with("pkg_add -r zsh", :env => nil, :timeout=>@new_resource.timeout).and_return(@cmd_result)
       @provider.install_package("zsh", "4.3.6_7")
     end
   end
@@ -178,7 +178,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
     end
 
     it "should run pkg_add -r with the package name" do
-      expect(@provider).to receive(:shell_out!).with("pkg_add -r ruby18-iconv", :env => nil).and_return(@install_result)
+      expect(@provider).to receive(:shell_out!).with("pkg_add -r ruby18-iconv", :env => nil, :timeout=>@new_resource.timeout).and_return(@install_result)
       @provider.install_package("ruby-iconv", "1.0")
     end
   end
@@ -253,7 +253,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
       allow(@provider).to receive(:latest_link_name).and_return("perl")
 
       cmd = OpenStruct.new(:status => true)
-      expect(@provider).to receive(:shell_out!).with("pkg_add -r perl", :env => nil).and_return(cmd)
+      expect(@provider).to receive(:shell_out!).with("pkg_add -r perl", :env => nil, :timeout=>@new_resource.timeout).and_return(cmd)
       @provider.install_package("perl5.8", "5.8.8_1")
     end
 
@@ -267,7 +267,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
       allow(@provider).to receive(:latest_link_name).and_return("mysql50-server")
 
       cmd = OpenStruct.new(:status => true)
-      expect(@provider).to receive(:shell_out!).with("pkg_add -r mysql50-server", :env=>nil).and_return(cmd)
+      expect(@provider).to receive(:shell_out!).with("pkg_add -r mysql50-server", :env=>nil, :timeout=>@new_resource.timeout).and_return(cmd)
       @provider.install_package("mysql50-server", "5.0.45_1")
     end
   end

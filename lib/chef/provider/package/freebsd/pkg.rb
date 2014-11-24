@@ -34,18 +34,18 @@ class Chef
               case @new_resource.source
               when /^http/, /^ftp/
                 if @new_resource.source =~ /\/$/
-                  shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil }).status
+                  shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil }, :timeout => @new_resource.timeout).status
                 else
-                  shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGEROOT" => @new_resource.source, 'LC_ALL' => nil }).status
+                  shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGEROOT" => @new_resource.source, 'LC_ALL' => nil }, :timeout => @new_resource.timeout).status
                 end
                 Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
 
               when /^\//
-                shell_out!("pkg_add #{file_candidate_version_path}", :env => { "PKG_PATH" => @new_resource.source , 'LC_ALL'=>nil}).status
+                shell_out!("pkg_add #{file_candidate_version_path}", :env => { "PKG_PATH" => @new_resource.source , 'LC_ALL'=>nil}, :timeout => @new_resource.timeout).status
                 Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
 
               else
-                shell_out!("pkg_add -r #{latest_link_name}", :env => nil).status
+                shell_out!("pkg_add -r #{latest_link_name}", :env => nil, :timeout => @new_resource.timeout).status
               end
             end
           end

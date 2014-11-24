@@ -92,9 +92,9 @@ class Chef
 
         def install_package(name, version)
           unless @current_resource.version
-            shell_out!( "rpm #{@new_resource.options} -i #{@new_resource.source}" )
+            shell_out!("rpm #{@new_resource.options} -i #{@new_resource.source}", :timeout => @new_resource.timeout)
           else
-            shell_out!( "rpm #{@new_resource.options} -U #{@new_resource.source}" )
+            shell_out!("rpm #{@new_resource.options} -U #{@new_resource.source}", :timeout => @new_resource.timeout)
           end
         end
 
@@ -102,9 +102,9 @@ class Chef
 
         def remove_package(name, version)
           if version
-            shell_out!( "rpm #{@new_resource.options} -e #{name}-#{version}" )
+            shell_out!("rpm #{@new_resource.options} -e #{name}-#{version}")
           else
-            shell_out!( "rpm #{@new_resource.options} -e #{name}" )
+            shell_out!("rpm #{@new_resource.options} -e #{name}")
           end
         end
 

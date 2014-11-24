@@ -73,7 +73,7 @@ class Chef
             else
               normal_command
             end
-          shell_out(command)
+          shell_out(command, :timeout => @new_resource.timeout)
         end
 
         def upgrade_package(name, version)

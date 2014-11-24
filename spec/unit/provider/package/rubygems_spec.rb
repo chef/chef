@@ -532,7 +532,7 @@ describe Chef::Provider::Package::Rubygems do
         it "installs the gem by shelling out when options are provided as a String" do
           @new_resource.options('-i /alt/install/location')
           expected ="gem install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\" -i /alt/install/location"
-          expect(@provider).to receive(:shell_out!).with(expected, :env => nil)
+          expect(@provider).to receive(:shell_out!).with(expected, :env => nil, :timeout => @new_resource.timeout)
           expect(@provider.action_install).to be_truthy
         end
 
@@ -574,7 +574,7 @@ describe Chef::Provider::Package::Rubygems do
       describe "in an alternate gem environment" do
         it "installs the gem by shelling out to gem install" do
           @new_resource.gem_binary('/usr/weird/bin/gem')
-          expect(@provider).to receive(:shell_out!).with("/usr/weird/bin/gem install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\"", :env=>nil)
+          expect(@provider).to receive(:shell_out!).with("/usr/weird/bin/gem install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\"", :env=>nil, :timeout => @new_resource.timeout)
           expect(@provider.action_install).to be_truthy
         end
 
@@ -582,7 +582,7 @@ describe Chef::Provider::Package::Rubygems do
           @new_resource.gem_binary('/usr/weird/bin/gem')
           @new_resource.source(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
           @new_resource.version('>= 0')
-          expect(@provider).to receive(:shell_out!).with("/usr/weird/bin/gem install #{CHEF_SPEC_DATA}/gems/chef-integration-test-0.1.0.gem -q --no-rdoc --no-ri -v \">= 0\"", :env=>nil)
+          expect(@provider).to receive(:shell_out!).with("/usr/weird/bin/gem install #{CHEF_SPEC_DATA}/gems/chef-integration-test-0.1.0.gem -q --no-rdoc --no-ri -v \">= 0\"", :env=>nil, :timeout => @new_resource.timeout)
           expect(@provider.action_install).to be_truthy
         end
 
@@ -593,7 +593,7 @@ describe Chef::Provider::Package::Rubygems do
           @new_resource.gem_binary('/usr/weird/bin/gem')
           @new_resource.version('>= 0')
           expect(@new_resource.source).to eq(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
-          expect(@provider).to receive(:shell_out!).with("/usr/weird/bin/gem install #{CHEF_SPEC_DATA}/gems/chef-integration-test-0.1.0.gem -q --no-rdoc --no-ri -v \">= 0\"", :env=>nil)
+          expect(@provider).to receive(:shell_out!).with("/usr/weird/bin/gem install #{CHEF_SPEC_DATA}/gems/chef-integration-test-0.1.0.gem -q --no-rdoc --no-ri -v \">= 0\"", :env=>nil, :timeout => @new_resource.timeout)
           expect(@provider.action_install).to be_truthy
         end
       end
