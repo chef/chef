@@ -426,7 +426,7 @@ describe Chef::Config do
         let(:locales) { locale_array.join("\n") }
 
         before do
-          allow(Chef::Config).to receive(:shell_out_with_systems_locale).with("locale -a").and_return(shell_out)
+          allow(Chef::Config).to receive(:shell_out_with_systems_locale!).with("locale -a").and_return(shell_out)
         end
 
         shared_examples_for "a suitable locale" do
@@ -493,7 +493,7 @@ describe Chef::Config do
           let(:locale_array) { [] }
 
           before do
-            allow(Chef::Config).to receive(:shell_out_with_systems_locale).and_raise("THIS IS AN ERROR")
+            allow(Chef::Config).to receive(:shell_out_with_systems_locale!).and_raise("THIS IS AN ERROR")
           end
 
           it "should default to 'en_US.UTF-8'" do
