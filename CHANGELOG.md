@@ -8,6 +8,10 @@
   removed securerandom patch
 * [**Scott Bonds**](https://github.com/bonds)
   add package support for OpenBSD
+* [**Lucy Wyman**](https://github.com/lucywyman)
+  Added support for handling empty version strings to rubygems provider.
+* [**Yulian Kuncheff**](https://github.com/Daegalus)
+  Correctly set the pre-release identifier during knife bootstrap.
 
 ### Chef Contributions
 * Update Chef to use RSpec 3.
