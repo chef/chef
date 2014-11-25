@@ -10,6 +10,8 @@
   add package support for OpenBSD
 * [**Anshul Sharma**](https://github.com/justanshulsharma)
   `knife node run_list remove` now accepts run_list options in the same form as add
+* [**Veres Lajos**](https://github.com/vlajos)
+  Typo fixes
 
 ### Chef Contributions
 * Update Chef to use RSpec 3.
