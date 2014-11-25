@@ -82,7 +82,7 @@ class Chef
       run_context.resource_collection.find(*args)
     end
 
-    # This was moved to Chef::Node#tag, redirecting here for compatability
+    # This was moved to Chef::Node#tag, redirecting here for compatibility
     def tag(*tags)
       run_context.node.tag(*tags)
     end

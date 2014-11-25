@@ -396,7 +396,7 @@ describe Chef::CookbookVersion do
       expect(@cookbook_version).to have_template_for_node(@node, ["test.erb"])
     end
 
-    it "should see a template using an array lookup with non-existant elements" do
+    it "should see a template using an array lookup with non-existent elements" do
       expect(@cookbook_version).to have_template_for_node(@node, ["missing.txt", "test.erb"])
     end
 
@@ -408,23 +408,23 @@ describe Chef::CookbookVersion do
       expect(@cookbook_version).to have_cookbook_file_for_node(@node, ["test.txt"])
     end
 
-    it "should see a file using an array lookup with non-existant elements" do
+    it "should see a file using an array lookup with non-existent elements" do
       expect(@cookbook_version).to have_cookbook_file_for_node(@node, ["missing.txt", "test.txt"])
     end
 
-    it "should not see a non-existant template" do
+    it "should not see a non-existent template" do
       expect(@cookbook_version).not_to have_template_for_node(@node, "missing.erb")
     end
 
-    it "should not see a non-existant template using an array lookup" do
+    it "should not see a non-existent template using an array lookup" do
       expect(@cookbook_version).not_to have_template_for_node(@node, ["missing.erb"])
     end
 
-    it "should not see a non-existant file" do
+    it "should not see a non-existent file" do
       expect(@cookbook_version).not_to have_cookbook_file_for_node(@node, "missing.txt")
     end
 
-    it "should not see a non-existant file using an array lookup" do
+    it "should not see a non-existent file using an array lookup" do
       expect(@cookbook_version).not_to have_cookbook_file_for_node(@node, ["missing.txt"])
     end
 

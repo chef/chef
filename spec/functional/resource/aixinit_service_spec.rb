@@ -28,7 +28,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
   # Platform specific validation routines.
   def service_should_be_started(file_name)
-    # The existance of this file indicates that the service was started.
+    # The existence of this file indicates that the service was started.
     expect(File.exists?("/tmp/#{file_name}")).to be_truthy
   end
 

@@ -64,7 +64,7 @@ class Chef::Application::Knife < Chef::Application
     :long         => "--disable-editing",
     :description  => "Do not open EDITOR, just accept the data as is",
     :boolean      => true,
-    :defaut       => false
+    :default       => false
 
   option :help,
     :short        => "-h",

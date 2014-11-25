@@ -813,7 +813,7 @@ shared_examples_for "a configured file resource" do
 
   # Regression test for http://tickets.opscode.com/browse/CHEF-4082
   context "when notification is configured" do
-    describe "when path is specified with normal seperator" do
+    describe "when path is specified with normal separator" do
       before do
         @notified_resource = Chef::Resource.new("punk", resource.run_context)
         resource.notifies(:run, @notified_resource, :immediately)
@@ -826,7 +826,7 @@ shared_examples_for "a configured file resource" do
       end
     end
 
-    describe "when path is specified with windows seperator", :windows_only do
+    describe "when path is specified with windows separator", :windows_only do
       let(:path) {
         File.join(test_file_dir, make_tmpname(file_base)).gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)
       }

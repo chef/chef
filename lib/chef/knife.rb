@@ -252,7 +252,7 @@ class Chef
     OFFICIAL_PLUGINS = %w[ec2 rackspace windows openstack terremark bluebox]
 
     # :nodoc:
-    # Error out and print usage. probably becuase the arguments given by the
+    # Error out and print usage. probably because the arguments given by the
     # user could not be resolved to a subcommand.
     def self.subcommand_not_found!(args)
       ui.fatal("Cannot find sub command for: '#{args.join(' ')}'")

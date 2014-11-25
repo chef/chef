@@ -226,7 +226,7 @@ class Chef
     private
     def can_fork?
       # win32-process gem exposes some form of :fork for Process
-      # class. So we are seperately ensuring that the platform we're
+      # class. So we are separately ensuring that the platform we're
       # running on is not windows before forking.
       Chef::Config[:client_fork] && Process.respond_to?(:fork) && !Chef::Platform.windows?
     end

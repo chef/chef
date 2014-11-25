@@ -12,6 +12,12 @@
   Added support for handling empty version strings to rubygems provider.
 * [**Yulian Kuncheff**](https://github.com/Daegalus)
   Correctly set the pre-release identifier during knife bootstrap.
+* [**Anshul Sharma**](https://github.com/justanshulsharma)
+  `knife node run_list remove` now accepts run_list options in the same form as add
+* [**Veres Lajos**](https://github.com/vlajos)
+  Typo fixes
+* [**Tim Smith**](https://github.com/tas50)
+  Typo fixes
 
 ### Chef Contributions
 * Update Chef to use RSpec 3.
@@ -313,7 +319,7 @@
 * [**Nikhil Benesch**](https://github.com/benesch):
   Implemented a threaded download queue for synchronizing cookbooks. (CHEF-4423)
 * [**Chulki Lee**](https://github.com/chulkilee):
-  Raise an error when source is accidently passed to apt_package (CHEF-5113)
+  Raise an error when source is accidentally passed to apt_package (CHEF-5113)
 * [**Cam Cope**](https://github.com/ccope):
   Add an open_timeout when opening an http connection (CHEF-5152)
 * [**Sander van Harmelen**](https://github.com/svanharmelen):

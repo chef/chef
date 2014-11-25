@@ -82,7 +82,7 @@ class Chef
       end
 
       # works same as above, except that it returns stdout and stderr
-      # requirement => platforms like solaris 9,10 has wierd issues where
+      # requirement => platforms like solaris 9,10 has weird issues where
       # even in command failure the exit code is zero, so we need to lookup stderr.
       def run_command_and_return_stdout_stderr(args={})
         command_output = ""
