@@ -311,7 +311,7 @@
 * [**Nikhil Benesch**](https://github.com/benesch):
   Implemented a threaded download queue for synchronizing cookbooks. (CHEF-4423)
 * [**Chulki Lee**](https://github.com/chulkilee):
-  Raise an error when source is accidently passed to apt_package (CHEF-5113)
+  Raise an error when source is accidentally passed to apt_package (CHEF-5113)
 * [**Cam Cope**](https://github.com/ccope):
   Add an open_timeout when opening an http connection (CHEF-5152)
 * [**Sander van Harmelen**](https://github.com/svanharmelen):

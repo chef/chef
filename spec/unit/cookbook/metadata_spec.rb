@@ -441,7 +441,7 @@ describe Chef::Cookbook::Metadata do
       }.not_to raise_error
     end
 
-     it "should let type be hash (backwards compatability only)" do
+     it "should let type be hash (backwards compatibility only)" do
       expect {
         metadata.attribute("db/mysql/databases", :type => "hash")
       }.not_to raise_error
