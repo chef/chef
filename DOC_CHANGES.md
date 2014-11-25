@@ -165,7 +165,7 @@ and receive
   # snip other Ubuntu nodes
 ]
 ```
-If instead you wanted all the languages data (remember, `"languages"` is only one tiny piece of information the Chef Server stores about your node), you would have `:filter_result => {"languages" => ["laguages"]}` in your search query.
+If instead you wanted all the languages data (remember, `"languages"` is only one tiny piece of information the Chef Server stores about your node), you would have `:filter_result => {"languages" => ["languages"]}` in your search query.
 
 For backwards compatibility, a `partial_search` method has been added to `Chef::Search::Query` which can be used in the same way as the `partial_search` method from the [partial_search cookbook](https://supermarket.getchef.com/cookbooks/partial_search). Note that this method has been deprecated and will be removed in future versions of Chef.
 
@@ -539,7 +539,7 @@ For the`batch` resource, the `guard_interpreter` attribute it is set to `:batch`
 that if a string is supplied to an `only_if` or `not_if` attribute of a `batch` resource, the 64-bit version of the Windows
 default command interpreter, `cmd.exe`, will be used to evaluate the guard. It also means that other features available to the guard
 when `guard_interpreter` is set to something other than `:default`, such as inheritance of attributes and the specification of
-process architectur of the guard process (i.e. 32-bit or 64-bit process) are available by default.
+process architecture of the guard process (i.e. 32-bit or 64-bit process) are available by default.
 
 In versions of Chef prior to Chef 12, the value of the attribute was `:default` by default, which means the 32-bit version of the
 `cmd.exe` (batch script language) shell would be used to evaluate strings supplied to guards.
