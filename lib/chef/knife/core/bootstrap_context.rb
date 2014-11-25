@@ -135,7 +135,7 @@ CONFIG
         def latest_current_chef_version_string
           installer_version_string = nil
           if @config[:prerelease]
-            installer_version_string = "-p"
+            installer_version_string = ["-p"]
           else
             chef_version_string = if knife_config[:bootstrap_version]
               knife_config[:bootstrap_version]

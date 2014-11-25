@@ -536,7 +536,7 @@ class Chef
           else
             src = @new_resource.source && "  --source=#{@new_resource.source} --source=https://rubygems.org"
           end
-          if version
+          if !version.nil? && version.length > 0
             shell_out!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", :env=>nil)
           else
             shell_out!("#{gem_binary_path} install \"#{name}\" -q --no-rdoc --no-ri #{src}#{opts}", :env=>nil)

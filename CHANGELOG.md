@@ -8,6 +8,10 @@
   removed securerandom patch
 * [**Scott Bonds**](https://github.com/bonds)
   add package support for OpenBSD
+* [**Lucy Wyman**](https://github.com/lucywyman)
+  Added support for handling empty version strings to rubygems provider.
+* [**Yulian Kuncheff**](https://github.com/Daegalus)
+  Correctly set the pre-release identifier during knife bootstrap.
 * [**Anshul Sharma**](https://github.com/justanshulsharma)
   `knife node run_list remove` now accepts run_list options in the same form as add
 * [**Veres Lajos**](https://github.com/vlajos)

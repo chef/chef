@@ -632,7 +632,7 @@ class Chef
       #
       # For example, on CentOS 6 with ENV['LANG'] = "en_US.UTF-8",
       # `locale -a`.split fails with ArgumentError invalid UTF-8 encoding.
-      locales = shell_out_with_systems_locale("locale -a").stdout.split
+      locales = shell_out_with_systems_locale!("locale -a").stdout.split
       case
       when locales.include?('C.UTF-8')
         'C.UTF-8'
