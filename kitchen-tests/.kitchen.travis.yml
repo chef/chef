@@ -9,7 +9,7 @@ provisioner:
   name: chef_solo
   github: <%= ENV['TRAVIS_REPO_SLUG'] %>
   branch: <%= ENV['TRAVIS_COMMIT'] %>
-  require_chef_omnibus: true
+  require_chef_omnibus: 12.0.0-rc.2
   data_path: test/fixtures
 
 platforms:
