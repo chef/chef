@@ -72,8 +72,8 @@ describe Chef::Knife::NodeRunListRemove do
         @node.run_list << 'recipe[duck::type]'
         @knife.name_args = [ 'adam', 'role[monkey], recipe[duck::type]' ]
         @knife.run
-        @node.run_list.should_not include('role[monkey]')
-        @node.run_list.should_not include('recipe[duck::type]')
+        expect(@node.run_list).not_to include('role[monkey]')
+        expect(@node.run_list).not_to include('recipe[duck::type]')
       end
 
       it "should remove the items from the run list when name args contains multiple run lists" do
@@ -81,8 +81,8 @@ describe Chef::Knife::NodeRunListRemove do
         @node.run_list << 'recipe[duck::type]'
         @knife.name_args = [ 'adam', 'role[monkey], recipe[duck::type]', 'role[blah]' ]
         @knife.run
-        @node.run_list.should_not include('role[monkey]')
-        @node.run_list.should_not include('recipe[duck::type]')
+        expect(@node.run_list).not_to include('role[monkey]')
+        expect(@node.run_list).not_to include('recipe[duck::type]')
       end
     end
   end
