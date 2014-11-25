@@ -25,14 +25,13 @@ env:
 
 matrix:
   include:
-  - rvm: 1.9.3
   - rvm: 2.0.0
-  - rvm: 2.1.1
-  - rvm: 2.1.1
+  - rvm: 2.1.5
+  - rvm: 2.1.5
     gemfile: pedant.gemfile
     script: bundle exec rake pedant
     ### START TEST KITCHEN ONLY ###
-  - rvm: 2.1.1
+  - rvm: 2.1.5
     gemfile: kitchen-tests/Gemfile
     before_install:
     - echo -n $DO_KEY_CHUNK_{0..30} >> ~/.ssh/id_aws.base64
