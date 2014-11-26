@@ -35,6 +35,10 @@ class Chef
         do_run
       end
 
+      def failed_examples?
+        RSpec.world.reporter.failed_examples.size > 0
+      end
+
       private
       # Prepare to run audits:
       #  - Require files
