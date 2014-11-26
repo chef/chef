@@ -358,9 +358,10 @@ class Chef
         Chef::Log.info("Starting audit phase")
         auditor = Chef::Audit::Runner.new(run_context)
         auditor.run
+        raise Chef::Exceptions::AuditsFailed if auditor.failed_examples?
         @events.audit_phase_complete
       rescue Exception => e
-        Chef::Log.error("Audit phase failed with error message #{e.message}")
+        Chef::Log.error("Audit phase failed with error message: #{e.message}")
         @events.audit_phase_failed(e)
         audit_exception = e
       end
