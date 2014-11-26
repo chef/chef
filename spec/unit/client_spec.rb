@@ -187,7 +187,7 @@ describe Chef::Client do
   end
 
   describe "a full client run" do
-    shared_examples_for "a successful client run" do
+    shared_context "a client run" do
       let(:http_node_load) { double("Chef::REST (node)") }
       let(:http_cookbook_sync) { double("Chef::REST (cookbook sync)") }
       let(:http_node_save) { double("Chef::REST (node save)") }
@@ -205,7 +205,10 @@ describe Chef::Client do
         # --Client.register
         #   Make sure Client#register thinks the client key doesn't
         #   exist, so it tries to register and create one.
-        expect(File).to receive(:exists?).with(Chef::Config[:client_key]).exactly(1).times.and_return(api_client_exists?)
+        expect(File).to receive(:exists?).
+          with(Chef::Config[:client_key]).
+          exactly(:once).
+          and_return(api_client_exists?)
 
         unless api_client_exists?
           #   Client.register will register with the validation client name.
@@ -219,7 +222,7 @@ describe Chef::Client do
         #   previous step.
         expect(Chef::REST).to receive(:new).
           with(Chef::Config[:chef_server_url], fqdn, Chef::Config[:client_key]).
-          exactly(1).
+          exactly(:once).
           and_return(http_node_load)
 
         # --Client#build_node
@@ -247,18 +250,12 @@ describe Chef::Client do
         # --Client#converge
         expect(Chef::Runner).to receive(:new).and_return(runner)
         expect(runner).to receive(:converge).and_return(true)
-
-        # --ResourceReporter#run_completed
-        #   updates the server with the resource history
-        #   (has its own tests, so stubbing it here.)
-        expect_any_instance_of(Chef::ResourceReporter).to receive(:run_completed)
       end
 
       def stub_for_audit
-        # --AuditReporter#run_completed
-        #   posts the audit data to server.
-        #   (has its own tests, so stubbing it here.)
-        expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_completed)
+        # -- Client#run_audits
+        expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
+        expect(audit_runner).to receive(:run).and_return(true)
       end
 
       def stub_for_node_save
@@ -277,6 +274,15 @@ describe Chef::Client do
         # Post conditions: check that node has been filled in correctly
         expect(client).to receive(:run_started)
         expect(client).to receive(:run_completed_successfully)
+
+        # --ResourceReporter#run_completed
+        #   updates the server with the resource history
+        #   (has its own tests, so stubbing it here.)
+        expect_any_instance_of(Chef::ResourceReporter).to receive(:run_completed)
+        # --AuditReporter#run_completed
+        #   posts the audit data to server.
+        #   (has its own tests, so stubbing it here.)
+        expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_completed)
       end
 
       before do
@@ -294,8 +300,12 @@ describe Chef::Client do
         stub_for_node_save
         stub_for_run
       end
+    end
 
-      it "runs ohai, sets up authentication, loads node state, synchronizes policy, and converges" do
+    shared_examples_for "a successful client run" do
+      include_context "a client run"
+
+      it "runs ohai, sets up authentication, loads node state, synchronizes policy, converges, and runs audits" do
         # This is what we're testing.
         client.run
 
@@ -305,16 +315,12 @@ describe Chef::Client do
       end
     end
 
-
     describe "when running chef-client without fork" do
-
       include_examples "a successful client run"
     end
 
     describe "when the client key already exists" do
-
       let(:api_client_exists?) { true }
-
       include_examples "a successful client run"
     end
 
@@ -353,7 +359,6 @@ describe Chef::Client do
     end
 
     describe "when a permanent run list is passed as an option" do
-
       include_examples "a successful client run" do
 
         let(:new_runlist) { "recipe[new_run_list_recipe]" }
@@ -380,6 +385,84 @@ describe Chef::Client do
           client.run
           expect(node.run_list).to eq(Chef::RunList.new(new_runlist))
         end
+      end
+    end
+
+    describe "when converge fails" do
+      include_context "a client run" do
+        def stub_for_converge
+          expect(Chef::Runner).to receive(:new).and_return(runner)
+          expect(runner).to receive(:converge).and_raise(Exception)
+        end
+
+        def stub_for_node_save
+          expect(client).to_not receive(:save_updated_node)
+        end
+
+        def stub_for_run
+          expect_any_instance_of(Chef::RunLock).to receive(:acquire)
+          expect_any_instance_of(Chef::RunLock).to receive(:save_pid)
+          expect_any_instance_of(Chef::RunLock).to receive(:release)
+
+          # Post conditions: check that node has been filled in correctly
+          expect(client).to receive(:run_started)
+          expect(client).to receive(:run_failed)
+
+          # --ResourceReporter#run_completed
+          #   updates the server with the resource history
+          #   (has its own tests, so stubbing it here.)
+          # TODO: What gets called here?
+          #expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
+          # --AuditReporter#run_completed
+          #   posts the audit data to server.
+          #   (has its own tests, so stubbing it here.)
+          # TODO: What gets called here?
+          #expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
+        end
+      end
+
+      it "runs the audits and raises the error" do
+        expect{ client.run }.to raise_error(Exception)
+      end
+    end
+
+    describe "when the audit phase fails" do
+      context "with an exception" do
+        include_context "a client run" do
+          def stub_for_audit
+            expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
+            expect(audit_runner).to receive(:run).and_raise(Exception)
+          end
+
+          def stub_for_run
+            expect_any_instance_of(Chef::RunLock).to receive(:acquire)
+            expect_any_instance_of(Chef::RunLock).to receive(:save_pid)
+            expect_any_instance_of(Chef::RunLock).to receive(:release)
+
+            # Post conditions: check that node has been filled in correctly
+            expect(client).to receive(:run_started)
+            expect(client).to receive(:run_failed)
+
+            # --ResourceReporter#run_completed
+            #   updates the server with the resource history
+            #   (has its own tests, so stubbing it here.)
+            # TODO: What gets called here?
+            #expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
+            # --AuditReporter#run_completed
+            #   posts the audit data to server.
+            #   (has its own tests, so stubbing it here.)
+            # TODO: What gets called here?
+            #expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
+          end
+        end
+
+        it "should save the node after converge and raise exception" do
+          expect{ client.run }.to raise_error(Exception)
+        end
+      end
+
+      context "with failed audits" do
+        skip("because I don't think we've implemented this yet")
       end
     end
 
