@@ -23,7 +23,7 @@ require 'chef/provider'
 class Chef
   class Provider
     class Cron < Chef::Provider
-      include Chef::Mixin::Command
+      include Chef::Mixin::ShellOut
 
       SPECIAL_TIME_VALUES = [:reboot, :yearly, :annually, :monthly, :weekly, :daily, :midnight, :hourly]
       CRON_ATTRIBUTES = [:minute, :hour, :day, :month, :weekday, :time, :command, :mailto, :path, :shell, :home, :environment]
@@ -47,7 +47,7 @@ class Chef
       def load_current_resource
         crontab_lines = []
         @current_resource = Chef::Resource::Cron.new(@new_resource.name)
-        @current_resource.user(@new_resource.user)
+        @current_resource.user(@new_resource.user(determine_user))
         @cron_exists = false
         if crontab = read_crontab
           cron_found = false
@@ -196,6 +196,15 @@ class Chef
 
       private
 
+      def root?
+        return false if Chef::Platform.windows?
+        Process.euid == 0
+      end
+
+      def determine_user
+        root? ? @new_resource.user : Etc.getpwuid(Process.uid).name
+      end
+
       def set_environment_var(attr_name, attr_value)
         if %w(MAILTO PATH SHELL HOME).include?(attr_name)
           @current_resource.send(attr_name.downcase.to_sym, attr_value)
@@ -204,30 +213,49 @@ class Chef
         end
       end
 
-      def read_crontab
-        crontab = nil
-        status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
-          crontab = stdout.read
+      def shell_out_crontab(*arguments)
+        options = arguments.pop if arguments[-1].is_a?(Hash)
+        # A great majority of the "crontab" (the user space binary) implementations
+        # will only ever accept the "-u" flag when the user is either root or said
+        # user has elevated privileges (effective UID is 0 via "sudo", etc.).
+        crontab_cmd = "crontab "
+        if root?
+          crontab_cmd += "-u #{@new_resource.user} "
+        else
+          Chef::Log.warn("Not running as root! Will only be able to access cron jobs for user: #{@new_resource.user}")
         end
-        if status.exitstatus > 1
-          raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
-        end
-        crontab
+        crontab_cmd += arguments.join(' ')
+        shell_out(crontab_cmd, options)
       end
 
-      def write_crontab(crontab)
-        write_exception = false
-        status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
-          begin
-            stdin.write crontab
-          rescue Errno::EPIPE => e
-            # popen4 could yield while child has already died.
-            write_exception = true
-            Chef::Log.debug("#{e.message}")
-          end
+      def read_crontab
+        result = shell_out_crontab('-l')
+        status = result.status.exitstatus
+
+        # A non-zero exit code is an indicator of error for majority
+        # of "crontab" (the user space binary) implementations,
+        # like i.e., vixie-cron, cronie, dcron, fcron, bcron, etc.,
+        # and even mcron which returns a whole range of exit codes.
+        Chef::Log.debug(result.format_for_exception) if status > 0
+
+        # Besides mcron, probably no other implementation
+        # will ever emit exit code greater or equal to two.
+        if status > 1
+          raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status}"
         end
-        if status.exitstatus > 0 || write_exception
-          raise Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{status.exitstatus}"
+
+        return nil if status > 0
+        result.stdout
+      end
+
+      def write_crontab(content)
+        result = shell_out_crontab('-', input: content)
+        status = result.status.exitstatus
+
+        # See note about viable exit codes in the "read_crontab" method.
+        if status > 0
+          Chef::Log.debug(result.format_for_exception)
+          raise Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{status}"
         end
       end
 
