@@ -101,7 +101,7 @@ class Chef::Application::Solo < Chef::Application
 
   option :lockfile,
     :long         => "--lockfile LOCKFILE",
-    :description  => "Set the lockfile location",
+    :description  => "Set the lockfile location. Prevents multiple processes from converging at the same time",
     :proc         => nil
 
   option :interval,
