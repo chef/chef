@@ -20,7 +20,6 @@ require 'chef/application'
 require 'mixlib/log'
 require 'ohai/config'
 require 'chef/monkey_patches/net_http.rb'
-require 'chef/monkey_patches/uri.rb'
 
 class Chef::Application::Knife < Chef::Application
 
