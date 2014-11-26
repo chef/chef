@@ -17,6 +17,7 @@
 # limitations under the License.
 
 require 'pp'
+require 'uri'
 require 'socket'
 require 'chef/config'
 require 'chef/config_fetcher'
