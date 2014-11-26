@@ -109,7 +109,7 @@ class Chef::Application::Client < Chef::Application
 
   option :lockfile,
     :long         => "--lockfile LOCKFILE",
-    :description  => "Set the lockfile location, for the converging chef-client process",
+    :description  => "Set the lockfile location. Prevents multiple client processes from converging at the same time",
     :proc         => nil
 
   option :interval,
