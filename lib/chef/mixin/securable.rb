@@ -112,11 +112,8 @@ class Chef
           # equivalent to something like:
           # def rights(permissions=nil, principals=nil, args_hash=nil)
           define_method(name) do |*args|
-            # Ruby 1.8 compat: default the arguments
-            permissions = args.length >= 1 ? args[0] : nil
-            principals = args.length >= 2 ? args[1] : nil
-            args_hash = args.length >= 3 ? args[2] : nil
             raise ArgumentError.new("wrong number of arguments (#{args.length} for 3)") if args.length >= 4
+            permissions, principals, args_hash = args
 
             rights = self.instance_variable_get("@#{name.to_s}".to_sym)
             unless permissions.nil?
