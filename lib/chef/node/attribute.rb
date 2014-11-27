@@ -138,11 +138,9 @@ class Chef
        :values,
        :values_at,
        :zip].each do |delegated_method|
-         class_eval(<<-METHOD_DEFN)
-            def #{delegated_method}(*args, &block)
-              merged_attributes.send(:#{delegated_method}, *args, &block)
-            end
-         METHOD_DEFN
+         define_method(delegated_method) do |*args, &block|
+           merged_attributes.send(delegated_method, *args, &block)
+         end
        end
 
        # return the cookbook level default attribute component

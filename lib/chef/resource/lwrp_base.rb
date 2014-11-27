@@ -73,17 +73,9 @@ class Chef
       # Define an attribute on this resource, including optional validation
       # parameters.
       def self.attribute(attr_name, validation_opts={})
-        # Ruby 1.8 doesn't support default arguments to blocks, but we have to
-        # use define_method with a block to capture +validation_opts+.
-        # Workaround this by defining two methods :(
-        class_eval(<<-SHIM, __FILE__, __LINE__)
-          def #{attr_name}(arg=nil)
-            _set_or_return_#{attr_name}(arg)
-          end
-        SHIM
-
-        define_method("_set_or_return_#{attr_name.to_s}".to_sym) do |arg|
-          set_or_return(attr_name.to_sym, arg, validation_opts)
+        define_method(attr_name) do |*args|
+          raise ArgumentError.new("wrong number of arguments (#{args.length} for 1)") if args.length > 1
+          set_or_return(attr_name.to_sym, args.first, validation_opts)
         end
       end
 
