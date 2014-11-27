@@ -20,15 +20,6 @@ require 'spec_helper'
 
 shared_examples_for "a content deploy strategy" do
 
-  # Ruby 1.8 has no binread
-  def binread(file)
-    if IO.respond_to?(:binread)
-      IO.binread(file)
-    else
-      IO.read(file)
-    end
-  end
-
   def normalize_mode(mode_int)
     ( mode_int & 07777).to_s(8)
   end
@@ -160,7 +151,7 @@ shared_examples_for "a content deploy strategy" do
 
     it "updates the target with content from staged" do
       content_deployer.deploy(staging_file_path, target_file_path)
-      expect(binread(target_file_path)).to eq(staging_file_content)
+      expect(IO.binread(target_file_path)).to eq(staging_file_content)
     end
 
     context "when the owner of the target file is not the owner of the staging file", :requires_root do
