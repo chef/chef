@@ -101,9 +101,6 @@ class Chef
 
       # Produces a comparable path.
       def self.canonical_path(path, add_prefix=true)
-        # Rather than find an equivalent for File.absolute_path on 1.8.7, just bail out
-        raise NotImplementedError, "This feature is not supported on Ruby versions < 1.9" if RUBY_VERSION.to_f < 1.9
-
         # First remove extra separators and resolve any relative paths
         abs_path = File.absolute_path(path)
 
