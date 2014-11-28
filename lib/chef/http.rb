@@ -203,7 +203,7 @@ class Chef
 
     def create_url(path)
       return path if path.is_a?(URI)
-      if path =~ /^(http|https):\/\//
+      if path =~ /^(http|https):\/\//i
         URI.parse(path)
       elsif path.nil? or path.empty?
         URI.parse(@url)
