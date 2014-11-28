@@ -36,6 +36,8 @@ Chef Zero, Knife, Chef Apply and Chef Shell.
 
 ### Maintainers
 
+[Steven Danna](https://github.com/stevendanna/)
+
 ## Test Tools
 
 ChefSpec, Berkshelf (the chef bits), Test Kitchen (the Chef bits)
@@ -85,4 +87,3 @@ The specific components of Chef related to a given platform - including (but not
 ### Lieutenant
 
 ### Maintainers
-
