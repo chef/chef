@@ -198,7 +198,7 @@ ERROR_MESSAGE
     end
 
     # An Array of all recipes that have been loaded. This is stored internally
-    # as a Hash, so ordering is preserved.
+    # as a Hash, so ordering is predictable.
     #
     # Recipe names are given in fully qualified form, e.g., the recipe "nginx"
     # will be given as "nginx::default"
@@ -209,7 +209,7 @@ ERROR_MESSAGE
     end
 
     # An Array of all attributes files that have been loaded. Stored internally
-    # using a Hash, so order is preserved.
+    # using a Hash, so order is predictable.
     #
     # Attribute file names are given in fully qualified form, e.g.,
     # "nginx::default" instead of "nginx".
