@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.email = "info@opscode.com"
   s.homepage = "http://wiki.opscode.com/"
 
+  s.required_ruby_version = ">= 1.9.3"
 
   s.add_development_dependency "rspec", "~> 2.0"
 
