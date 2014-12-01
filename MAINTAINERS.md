@@ -30,6 +30,8 @@ another component.
 
 [Tyler Ball](https://github.com/tyler-ball)
 
+[Daniel DeLeo](https://github.com/danielsdeleo)
+
 ## Dev Tools
 
 Chef Zero, Knife, Chef Apply and Chef Shell.
@@ -41,6 +43,8 @@ Chef Zero, Knife, Chef Apply and Chef Shell.
 [Steven Danna](https://github.com/stevendanna/)
 
 [Joshua Timberman](https://github.com/jtimberman)
+
+[Daniel DeLeo](https://github.com/danielsdeleo)
 
 ## Test Tools
 
