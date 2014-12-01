@@ -28,6 +28,8 @@ another component.
 
 [Phil Dibowitz](https://github.com/jaymzh)
 
+[Tyler Ball](https://github.com/tyler-ball)
+
 ## Dev Tools
 
 Chef Zero, Knife, Chef Apply and Chef Shell.
@@ -37,6 +39,7 @@ Chef Zero, Knife, Chef Apply and Chef Shell.
 ### Maintainers
 
 [Steven Danna](https://github.com/stevendanna/)
+
 [Joshua Timberman](https://github.com/jtimberman)
 
 ## Test Tools
@@ -92,3 +95,5 @@ The specific components of Chef related to a given platform - including (but not
 ### Maintainers
 
 [Joshua Timberman](https://github.com/jtimberman)
+
+[Tyler Ball](https://github.com/tyler-ball)
