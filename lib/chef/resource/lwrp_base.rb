@@ -73,9 +73,8 @@ class Chef
       # Define an attribute on this resource, including optional validation
       # parameters.
       def self.attribute(attr_name, validation_opts={})
-        define_method(attr_name) do |*args|
-          raise ArgumentError.new("wrong number of arguments (#{args.length} for 0 or 1)") if args.length > 1
-          set_or_return(attr_name.to_sym, args.first, validation_opts)
+        define_method(attr_name) do |arg=nil|
+          set_or_return(attr_name.to_sym, arg, validation_opts)
         end
       end
 
