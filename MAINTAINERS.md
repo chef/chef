@@ -25,8 +25,8 @@ another component.
 ### Maintainers
 
 [Jon Cowie](http://github.com/jonlives)
-
 [Phil Dibowitz](https://github.com/jaymzh)
+[Lamont Granquist](http://github.com/lamont-granquist)
 
 ## Dev Tools
 
@@ -38,6 +38,7 @@ Chef Zero, Knife, Chef Apply and Chef Shell.
 
 [Steven Danna](https://github.com/stevendanna/)
 [Joshua Timberman](https://github.com/jtimberman)
+[Lamont Granquist](http://github.com/lamont-granquist)
 
 ## Test Tools
 
@@ -48,6 +49,7 @@ ChefSpec, Berkshelf (the chef bits), Test Kitchen (the Chef bits)
 ### Maintainers
 
 [Joshua Timberman](https://github.com/jtimberman)
+[Lamont Granquist](http://github.com/lamont-granquist)
 
 ## Platform Specific Components
 
@@ -60,12 +62,15 @@ The specific components of Chef related to a given platform - including (but not
 ### Maintainers
 
 [Jon Cowie](http://github.com/jonlives)
+[Lamont Granquist](http://github.com/lamont-granquist)
 
 ## Ubuntu
 
 ### Lieutenant
 
 ### Maintainers
+
+[Lamont Granquist](http://github.com/lamont-granquist)
 
 ## Windows
 
@@ -79,11 +84,15 @@ The specific components of Chef related to a given platform - including (but not
 
 ### Maintainers
 
+[Lamont Granquist](http://github.com/lamont-granquist)
+
 ## AIX
 
 ### Lieutenant
 
 ### Maintainers
+
+[Lamont Granquist](http://github.com/lamont-granquist)
 
 ## Mac OS X
 
