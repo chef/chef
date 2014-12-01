@@ -44,11 +44,13 @@ Chef Zero, Knife, Chef Apply and Chef Shell.
 
 ## Test Tools
 
-ChefSpec, Berkshelf (the chef bits), Test Kitchen (the Chef bits)
+### ChefSpec
 
-### Lieutenant
+#### Lieutenant
 
-### Maintainers
+[Seth Vargo](https://github.com/sethvargo)
+
+#### Maintainers
 
 [Joshua Timberman](https://github.com/jtimberman)
 
