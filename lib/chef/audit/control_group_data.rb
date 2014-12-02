@@ -28,19 +28,19 @@ class Chef
     end
 
     class ControlGroupData
-      attr_reader :name, :status, :number_success, :number_failed, :controls
+      attr_reader :name, :status, :number_succeeded, :number_failed, :controls
 
       def initialize(name)
         @status = "success"
         @controls = []
-        @number_success = 0
+        @number_succeeded = 0
         @number_failed = 0
         @name = name
       end
 
 
       def example_success(control_data)
-        @number_success += 1
+        @number_succeeded += 1
         control = create_control(control_data)
         control.status = "success"
         controls << control
@@ -64,7 +64,7 @@ class Chef
         h = {
               :name => name,
               :status => status,
-              :number_success => number_success,
+              :number_succeeded => number_succeeded,
               :number_failed => number_failed,
               :controls => controls.collect { |c| c.to_hash }
         }
