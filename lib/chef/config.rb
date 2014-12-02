@@ -317,6 +317,7 @@ class Chef
     default :why_run, false
     default :color, false
     default :client_fork, true
+    default :ez, false
     default :enable_reporting, true
     default :enable_reporting_url_fatals, false
 

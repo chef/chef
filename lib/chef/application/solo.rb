@@ -160,6 +160,11 @@ class Chef::Application::Solo < Chef::Application
     :description  => 'Enable whyrun mode',
     :boolean      => true
 
+  option :ez,
+    :long         => '--ez',
+    :description  => 'A memorial for Ezra Zygmuntowicz',
+    :boolean      => true
+
   option :environment,
     :short        => '-E ENVIRONMENT',
     :long         => '--environment ENVIRONMENT',
@@ -213,6 +218,7 @@ class Chef::Application::Solo < Chef::Application
   end
 
   def run_application
+    for_ezra if Chef::Config[:ez]
     if !Chef::Config[:client_fork] || Chef::Config[:once]
       # Run immediately without interval sleep or splay
       begin
@@ -227,7 +233,19 @@ class Chef::Application::Solo < Chef::Application
     end
   end
 
+
   private
+
+  def for_ezra
+    puts <<-EOH
+For Ezra Zygmuntowicz:
+  The man who brought you Chef Solo
+  Early contributor to Chef
+  Kind hearted open source advocate
+  Rest in peace, Ezra.
+EOH
+  end
+
   def interval_run_chef_client
     if Chef::Config[:daemonize]
       Chef::Daemon.daemonize("chef-client")
