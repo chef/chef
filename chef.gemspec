@@ -46,7 +46,7 @@ Gem::Specification.new do |s|
   %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 3.0" }
 
   s.bindir       = "bin"
-  s.executables  = %w( chef-client chef-solo knife chef-shell shef chef-apply )
+  s.executables  = %w( chef-client chef-solo knife chef-shell chef-apply )
 
   s.require_path = 'lib'
   s.files = %w(Rakefile LICENSE README.md CONTRIBUTING.md) + Dir.glob("{distro,lib,tasks,spec}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) }
