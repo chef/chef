@@ -93,18 +93,6 @@ class Chef
       chef_rest.delete_rest "organizations/#{name}/users/#{username}"
     end
 
-    def add_user_to_group(groupname, username)
-      group = chef_rest.get_rest "organizations/#{name}/groups/#{groupname}"
-      body_hash = {
-        :groupname => "#{groupname}",
-        :actors => {
-          "users" => group["actors"].concat([username]),
-          "groups" => group["groups"]
-        }
-      }
-      chef_rest.put_rest "organizations/#{name}/groups/#{groupname}", body_hash
-    end
-
     # Class methods
     def self.from_hash(org_hash)
       org = Chef::Org.new
