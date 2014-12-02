@@ -29,6 +29,7 @@ another component.
 * [Lamont Granquist](http://github.com/lamont-granquist)
 * [Tyler Ball](https://github.com/tyler-ball)
 * [Daniel DeLeo](https://github.com/danielsdeleo)
+* [Claire McQuin](https://github.com/mcquin)
 
 ## Dev Tools
 
