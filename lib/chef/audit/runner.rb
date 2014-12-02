@@ -143,7 +143,7 @@ class Chef
       # or use example group filters.
       def register_controls
         add_example_group_methods
-        run_context.controls.each do |name, group|
+        run_context.audits.each do |name, group|
           ctl_grp = RSpec::Core::ExampleGroup.__controls__(*group[:args], &group[:block])
           RSpec.world.register(ctl_grp)
         end
