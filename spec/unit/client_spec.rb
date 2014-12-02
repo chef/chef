@@ -192,6 +192,7 @@ describe Chef::Client do
       let(:http_cookbook_sync) { double("Chef::REST (cookbook sync)") }
       let(:http_node_save) { double("Chef::REST (node save)") }
       let(:runner) { double("Chef::Runner") }
+      let(:audit_runner) { double("Chef::Audit::Runner") }
 
       let(:api_client_exists?) { false }
 
@@ -253,6 +254,13 @@ describe Chef::Client do
         expect_any_instance_of(Chef::ResourceReporter).to receive(:run_completed)
       end
 
+      def stub_for_audit
+        # --AuditReporter#run_completed
+        #   posts the audit data to server.
+        #   (has its own tests, so stubbing it here.)
+        expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_completed)
+      end
+
       def stub_for_node_save
         allow(node).to receive(:data_for_save).and_return(node.for_json)
 
@@ -282,6 +290,7 @@ describe Chef::Client do
         stub_for_node_load
         stub_for_sync_cookbooks
         stub_for_converge
+        stub_for_audit
         stub_for_node_save
         stub_for_run
       end

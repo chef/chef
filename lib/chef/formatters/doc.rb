@@ -151,6 +151,36 @@ class Chef
         unindent if @current_recipe
       end
 
+      def converge_failed(e)
+        # TODO do we want to do anything else in here?
+        converge_complete
+      end
+
+      #############
+      # TODO
+      # Make all these document printers neater
+      #############
+
+      # Called before audit phase starts
+      def audit_phase_start(run_status)
+        puts_line "Starting audit phase"
+      end
+
+      def audit_phase_complete
+        puts_line "Auditing complete"
+      end
+
+      def audit_phase_failed(error)
+        puts_line ""
+        puts_line "Audit phase exception:"
+        indent
+        # TODO error_mapper ?
+        puts_line "#{error.message}"
+        error.backtrace.each do |l|
+          puts_line l
+        end
+      end
+
       # Called before action is executed on a resource.
       def resource_action_start(resource, action, notification_type=nil, notifier=nil)
         if resource.cookbook_name && resource.recipe_name

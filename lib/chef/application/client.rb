@@ -241,7 +241,15 @@ class Chef::Application::Client < Chef::Application
   option :audit_mode,
     :long           => "--[no-]audit-mode",
     :description    => "If not specified, run converge and audit phase.  If true, run only audit phase.  If false, run only converge phase.",
-    :boolean        => true
+    :boolean        => true,
+    :proc           => lambda { |set|
+      # Convert boolean to config options of :audit_only or :disabled
+      if set
+        :audit_only
+      else
+        :disabled
+      end
+    }
 
   IMMEDIATE_RUN_SIGNAL = "1".freeze
 
