@@ -23,7 +23,7 @@ require 'tempfile'
 
 describe Chef::Org do
   before(:each) do
-    @org = Chef::Org.new
+    @org = Chef::Org.new("an_org")
   end
 
   describe "initialize" do
@@ -139,8 +139,7 @@ describe Chef::Org do
       Chef::Config[:chef_server_root] = "http://www.example.com"
       @rest = double('rest')
       allow(Chef::REST).to receive(:new).and_return(@rest)
-      @org = Chef::Org.new
-      @org.name "foobar"
+      @org = Chef::Org.new("foobar")
       @org.full_name "foo bar bat"
     end
 

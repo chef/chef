@@ -7,7 +7,7 @@ class Chef
 
     include Chef::Mixin::ParamsValidate
 
-    def initialize(name='')
+    def initialize(name)
       @name = name
       @full_name = ''
       # The Chef API returns the private key of the validator
@@ -95,8 +95,7 @@ class Chef
 
     # Class methods
     def self.from_hash(org_hash)
-      org = Chef::Org.new
-      org.name org_hash['name']
+      org = Chef::Org.new(org_hash['name'])
       org.full_name org_hash['full_name']
       org.private_key org_hash['private_key'] if org_hash.key?('private_key')
       org.guid org_hash['guid'] if org_hash.key?('guid')
