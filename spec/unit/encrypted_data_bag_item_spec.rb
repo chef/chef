@@ -124,14 +124,6 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
     context "on unsupported platforms" do
       let(:aead_algorithm) { Chef::EncryptedDataBagItem::AEAD_ALGORITHM }
 
-      it "throws an error warning about the Ruby version if it has no GCM support" do
-        # Force OpenSSL with AEAD support
-        allow(OpenSSL::Cipher).to receive(:ciphers).and_return([ aead_algorithm ])
-        # Ruby without AEAD support
-        expect(OpenSSL::Cipher).to receive(:method_defined?).with(:auth_data=).and_return(false)
-        expect { encryptor }.to raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires Ruby/)
-      end
-
       it "throws an error warning about the OpenSSL version if it has no GCM support" do
         # Force Ruby with AEAD support
         allow(OpenSSL::Cipher).to receive(:method_defined?).with(:auth_data=).and_return(true)
@@ -139,14 +131,6 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
         expect(OpenSSL::Cipher).to receive(:ciphers).and_return([])
         expect { encryptor }.to raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires an OpenSSL/)
       end
-
-      context "on platforms with old Ruby", :ruby_lt_20 do
-
-        it "throws an error warning about the Ruby version" do
-          expect { encryptor }.to raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires Ruby/)
-        end
-
-      end # context on platforms with old Ruby
 
       context "on platforms with old OpenSSL", :openssl_lt_101 do
 
@@ -213,14 +197,6 @@ describe Chef::EncryptedDataBagItem::Decryptor do
           "cipher" => "aes-256-cbc",
         }
       end
-
-      context "on platforms with old Ruby", :ruby_lt_20 do
-
-        it "throws an error warning about the Ruby version" do
-          expect { decryptor }.to raise_error(Chef::EncryptedDataBagItem::EncryptedDataBagRequirementsFailure, /requires Ruby/)
-        end
-
-      end # context on platforms with old Ruby
 
       context "on platforms with old OpenSSL", :openssl_lt_101 do
 
