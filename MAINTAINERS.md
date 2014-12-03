@@ -31,6 +31,9 @@ another component.
 * [Daniel DeLeo](https://github.com/danielsdeleo)
 * [Claire McQuin](https://github.com/mcquin)
 
+## Ohai
+* [Krzysztof Wilczynski](http://github.com/kwilczynski)
+
 ## Dev Tools
 
 Chef Zero, Knife, Chef Apply and Chef Shell.
@@ -43,6 +46,7 @@ Chef Zero, Knife, Chef Apply and Chef Shell.
 * [Joshua Timberman](https://github.com/jtimberman)
 * [Lamont Granquist](http://github.com/lamont-granquist)
 * [Daniel DeLeo](https://github.com/danielsdeleo)
+* [Krzysztof Wilczynski](http://github.com/kwilczynski)
 
 ## Test Tools
 
@@ -69,6 +73,7 @@ The specific components of Chef related to a given platform - including (but not
 
 * [Jon Cowie](http://github.com/jonlives)
 * [Lamont Granquist](http://github.com/lamont-granquist)
+* [Krzysztof Wilczynski](http://github.com/kwilczynski)
 
 ## Ubuntu
 
@@ -77,6 +82,7 @@ The specific components of Chef related to a given platform - including (but not
 ### Maintainers
 
 * [Lamont Granquist](http://github.com/lamont-granquist)
+* [Krzysztof Wilczynski](http://github.com/kwilczynski)
 
 ## Windows
 
