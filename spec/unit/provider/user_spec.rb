@@ -91,7 +91,7 @@ describe Chef::Provider::User do
       expect(@current_resource.username).to eq(@new_resource.username)
     end
 
-    it "should change the encoding of gecos to the encoding of the new resource", :ruby_gte_19_only do
+    it "should change the encoding of gecos to the encoding of the new resource" do
       @pw_user.gecos.force_encoding('ASCII-8BIT')
       @provider.load_current_resource
       expect(@provider.current_resource.comment.encoding).to eq(@new_resource.comment.encoding)
