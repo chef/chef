@@ -28,14 +28,15 @@ class Chef
     end
 
     class ControlGroupData
-      attr_reader :name, :status, :number_succeeded, :number_failed, :controls
+      attr_reader :name, :status, :number_succeeded, :number_failed, :controls, :metadata
 
-      def initialize(name)
+      def initialize(name, metadata={})
         @status = "success"
         @controls = []
         @number_succeeded = 0
         @number_failed = 0
         @name = name
+        @metadata = metadata
       end
 
 
@@ -68,20 +69,17 @@ class Chef
               :number_failed => number_failed,
               :controls => controls.collect { |c| c.to_hash }
         }
-        add_display_only_data(h)
+        h = add_display_only_data(h)
+        metadata.each do |k, v|
+          h[k] = v
+        end
+        h
       end
 
       private
 
       def create_control(control_data)
-        name = control_data[:name]
-        resource_type = control_data[:resource_type]
-        resource_name = control_data[:resource_name]
-        context = control_data[:context]
-        line_number = control_data[:line_number]
-        # TODO make this smarter with splat arguments so if we start passing in more control_data
-        # I don't have to modify code in multiple places
-        ControlData.new(name, resource_type, resource_name, context, line_number)
+        ControlData.new(control_data)
       end
 
       # The id and control sequence number are ephemeral data - they are not needed
@@ -103,12 +101,10 @@ class Chef
       attr_reader :name, :resource_type, :resource_name, :context, :line_number
       attr_accessor :status, :details
 
-      def initialize(name, resource_type, resource_name, context, line_number)
-        @context = context
-        @name = name
-        @resource_type = resource_type
-        @resource_name = resource_name
-        @line_number = line_number
+      def initialize(control_data={})
+        control_data.each do |k, v|
+          self.instance_variable_set("@#{k}", v)
+        end
       end
 
       def to_hash

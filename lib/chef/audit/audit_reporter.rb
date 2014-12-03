@@ -36,6 +36,10 @@ class Chef
         @ordered_control_groups = Hash.new
       end
 
+      def run_context
+        run_status.run_context
+      end
+
       def audit_phase_start(run_status)
         Chef::Log.debug("Audit Reporter starting")
         @audit_data = AuditData.new(run_status.node.name, run_status.run_id)
@@ -71,7 +75,8 @@ class Chef
         if ordered_control_groups.has_key?(name)
           raise Chef::Exceptions::AuditControlGroupDuplicate.new(name)
         end
-        ordered_control_groups.store(name, ControlGroupData.new(name))
+        metadata = run_context.controls[name].metadata
+        ordered_control_groups.store(name, ControlGroupData.new(name, metadata))
       end
 
       def control_example_success(control_group_name, example_data)
