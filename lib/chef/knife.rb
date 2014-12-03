@@ -72,6 +72,11 @@ class Chef
       ui.msg(msg)
     end
 
+    def self.reset_config_loader!
+      @@chef_config_dir = nil
+      @config_loader = nil
+    end
+
     def self.reset_subcommands!
       @@subcommands = {}
       @subcommands_by_category = nil
@@ -162,12 +167,15 @@ class Chef
     # Shared with subclasses
     @@chef_config_dir = nil
 
+    def self.config_loader
+      @config_loader ||= WorkstationConfigLoader.new(nil, Chef::Log)
+    end
+
     def self.load_config(explicit_config_file)
-      config_loader = WorkstationConfigLoader.new(explicit_config_file, Chef::Log)
+      config_loader.explicit_config_file = explicit_config_file
       config_loader.load
 
       ui.warn("No knife configuration file found") if config_loader.no_config_found?
-      @@chef_config_dir = config_loader.chef_config_dir
 
       config_loader
     rescue Exceptions::ConfigurationError => e
@@ -176,7 +184,7 @@ class Chef
     end
 
     def self.chef_config_dir
-      @@chef_config_dir
+      @@chef_config_dir ||= config_loader.chef_config_dir
     end
 
     # Run knife for the given +args+ (ARGV), adding +options+ to the list of
