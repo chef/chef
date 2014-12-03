@@ -43,7 +43,7 @@ class Chef
         described_class = example.metadata[:described_class]
         if described_class
           resource_type = described_class.class.name.split(':')[-1]
-          # TODO submit github PR to expose this
+          # TODO https://github.com/serverspec/serverspec/pull/493
           resource_name = described_class.instance_variable_get(:@name)
         end
 

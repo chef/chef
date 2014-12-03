@@ -34,7 +34,16 @@ class Chef
           raise Chef::Exceptions::AuditControlGroupDuplicate.new(name)
         end
 
-        run_context.audits[name] = { :args => args, :block => block }
+        # This DSL will only work in the Recipe class because that exposes the cookbook_name
+        cookbook_name = self.cookbook_name
+        metadata = {
+            cookbook_name: cookbook_name,
+            cookbook_version: self.run_context.cookbook_collection[cookbook_name].version,
+            recipe_name: self.recipe_name,
+            line_number: block.source_location[1]
+        }
+
+        run_context.audits[name] = Struct.new(:args, :block, :metadata).new(args, block, metadata)
       end
 
     end

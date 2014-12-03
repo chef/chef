@@ -8,7 +8,9 @@ class Chef
     # "specdoc"
     class Doc < Formatters::Base
 
-      attr_reader :start_time, :end_time
+      attr_reader :start_time, :end_time, :successful_audits, :failed_audits
+      private :successful_audits, :failed_audits
+
       cli_name(:doc)
 
       def initialize(out, err)
@@ -16,6 +18,8 @@ class Chef
 
         @updated_resources = 0
         @up_to_date_resources = 0
+        @successful_audits = 0
+        @failed_audits = 0
         @start_time = Time.now
         @end_time = @start_time
       end
@@ -32,12 +36,16 @@ class Chef
         @up_to_date_resources + @updated_resources
       end
 
+      def total_audits
+        successful_audits + failed_audits
+      end
+
       def run_completed(node)
         @end_time = Time.now
         if Chef::Config[:why_run]
           puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources would have been updated"
         else
-          puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated in #{elapsed_time} seconds"
+          puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated and #{successful_audits}/#{total_audits} audits succeeded in #{elapsed_time} seconds"
         end
       end
 
@@ -46,7 +54,7 @@ class Chef
         if Chef::Config[:why_run]
           puts_line "Chef Client failed. #{@updated_resources} resources would have been updated"
         else
-          puts_line "Chef Client failed. #{@updated_resources} resources updated in #{elapsed_time} seconds"
+          puts_line "Chef Client failed. #{@updated_resources} resources updated and #{successful_audits}/#{total_audits} audits succeeded in #{elapsed_time} seconds"
         end
       end
 
@@ -156,11 +164,6 @@ class Chef
         converge_complete
       end
 
-      #############
-      # TODO
-      # Make all these document printers neater
-      #############
-
       # Called before audit phase starts
       def audit_phase_start(run_status)
         puts_line "Starting audit phase"
@@ -179,6 +182,14 @@ class Chef
         error.backtrace.each do |l|
           puts_line l
         end
+      end
+
+      def control_example_success(control_group_name, example_data)
+        @successful_audits += 1
+      end
+
+      def control_example_failure(control_group_name, example_data, error)
+        @failed_audits += 1
       end
 
       # Called before action is executed on a resource.
