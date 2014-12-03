@@ -189,16 +189,8 @@ describe Chef::Util::PathHelper do
     end
 
     context "not on windows", :unix_only  do
-      context "ruby is at least 1.9", :ruby_gte_19_only do
-        it "returns a canonical path" do
-          expect(PathHelper.canonical_path("/etc//apache.d/sites-enabled/../sites-available/default")).to eq("/etc/apache.d/sites-available/default")
-        end
-      end
-
-      context "ruby is less than 1.9", :ruby_18_only do
-        it "returns a canonical path" do
-          expect { PathHelper.canonical_path("/etc//apache.d/sites-enabled/../sites-available/default") }.to raise_error(NotImplementedError)
-        end
+      it "returns a canonical path" do
+        expect(PathHelper.canonical_path("/etc//apache.d/sites-enabled/../sites-available/default")).to eq("/etc/apache.d/sites-available/default")
       end
     end
   end
