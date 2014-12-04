@@ -1069,7 +1069,7 @@ EOM
     end
 
     when_the_repository 'is empty' do
-      it 'knife download /cookbooks/x signs all requests', :ruby_gte_19_only do
+      it 'knife download /cookbooks/x signs all requests' do
 
         # Check that BasicClient.request() always gets called with X-OPS-USERID
         original_new = Chef::HTTP::BasicClient.method(:new)
