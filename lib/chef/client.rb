@@ -446,7 +446,10 @@ class Chef
           converge_error = converge_and_save(run_context)
         end
 
-        if Chef::Config[:audit_mode] != :disabled
+        if Chef::Config[:why_run] == true
+          # why_run should probably be renamed to why_converge
+          Chef::Log.debug("Not running audits in 'why_run' mode - this mode is used to see potential converge changes")
+        elsif Chef::Config[:audit_mode] != :disabled
           audit_error = run_audits(run_context)
         end
 
