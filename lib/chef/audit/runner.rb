@@ -35,8 +35,16 @@ class Chef
         do_run
       end
 
-      def failed_examples?
+      def failed?
         RSpec.world.reporter.failed_examples.size > 0
+      end
+
+      def num_failed
+        RSpec.world.reporter.failed_examples.size
+      end
+
+      def num_total
+        RSpec.world.reporter.examples.size
       end
 
       private

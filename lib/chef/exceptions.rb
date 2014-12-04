@@ -397,8 +397,8 @@ class Chef
       end
     end
     class AuditsFailed < RuntimeError
-      def initialize
-        super "There were audit example failures. Results were still sent to the server."
+      def initialize(num_failed, num_total)
+        super "Audit phase found failures - #{num_failed}/#{num_total} audits failed"
       end
     end
 

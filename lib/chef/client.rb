@@ -358,7 +358,9 @@ class Chef
         Chef::Log.info("Starting audit phase")
         auditor = Chef::Audit::Runner.new(run_context)
         auditor.run
-        raise Chef::Exceptions::AuditsFailed if auditor.failed_examples?
+        if auditor.failed?
+          raise Chef::Exceptions::AuditsFailed.new(auditor.num_failed, auditor.num_total)
+        end
         @events.audit_phase_complete
       rescue Exception => e
         Chef::Log.error("Audit phase failed with error message: #{e.message}")
@@ -446,7 +448,10 @@ class Chef
           converge_error = converge_and_save(run_context)
         end
 
-        if Chef::Config[:audit_mode] != :disabled
+        if Chef::Config[:why_run] == true
+          # why_run should probably be renamed to why_converge
+          Chef::Log.debug("Not running audits in 'why_run' mode - this mode is used to see potential converge changes")
+        elsif Chef::Config[:audit_mode] != :disabled
           audit_error = run_audits(run_context)
         end
 
