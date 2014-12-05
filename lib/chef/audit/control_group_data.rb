@@ -69,11 +69,8 @@ class Chef
               :number_failed => number_failed,
               :controls => controls.collect { |c| c.to_hash }
         }
-        h = add_display_only_data(h)
-        metadata.each do |k, v|
-          h[k] = v
-        end
-        h
+        # If there is a duplicate key, metadata will overwrite it
+        add_display_only_data(h).merge(metadata)
       end
 
       private

@@ -22,8 +22,6 @@ class Chef
   module DSL
     module Audit
 
-      ControlData = Struct.new("ControlData", :args, :block, :metadata)
-
       # Can encompass tests in a `control` block or `describe` block
       # Adds the controls group and block (containing controls to execute) to the runner's list of pending examples
       def controls(*args, &block)
@@ -36,6 +34,7 @@ class Chef
           raise Chef::Exceptions::AuditControlGroupDuplicate.new(name)
         end
 
+        # This DSL will only work in the Recipe class because that exposes the cookbook_name
         cookbook_name = self.cookbook_name
         metadata = {
             cookbook_name: cookbook_name,
@@ -44,7 +43,7 @@ class Chef
             line_number: block.source_location[1]
         }
 
-        run_context.audits[name] = ControlData.new(args, block, metadata)
+        run_context.audits[name] = Struct.new(:args, :block, :metadata).new(args, block, metadata)
       end
 
     end
