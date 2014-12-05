@@ -164,8 +164,6 @@ RSpec.configure do |config|
 
   config.before(:each) do
     Chef::Config.reset
-
-    allow_any_instance_of(Chef::Audit::Runner).to receive(:run).and_return(true)
   end
 
   config.before(:suite) do
