@@ -34,7 +34,8 @@ exists() {
 }
 
 # The key used to sign RPM packages is passphrase-less
-export OMNIBUS_RPM_SIGNING_PASSPHRASE=notset
+OMNIBUS_RPM_SIGNING_PASSPHRASE=notset
+export OMNIBUS_RPM_SIGNING_PASSPHRASE
 
 if [ "x$os" = "xAIX" ]; then
   # need to unset LIBPATH on AIX (like LD_LIBRARY_PATH on Solaris, Jenkins sets this (wrongly) on AIX)
