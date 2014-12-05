@@ -75,7 +75,7 @@ class Chef
         if ordered_control_groups.has_key?(name)
           raise Chef::Exceptions::AuditControlGroupDuplicate.new(name)
         end
-        metadata = run_context.controls[name].metadata
+        metadata = run_context.audits[name].metadata
         ordered_control_groups.store(name, ControlGroupData.new(name, metadata))
       end
 
