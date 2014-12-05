@@ -33,7 +33,7 @@ class Chef
         do_run
       end
 
-      def failed_examples?
+      def audits_failed?
         RSpec.world.reporter.failed_examples.size > 0
       end
 

@@ -54,7 +54,7 @@ class Chef
         if Chef::Config[:why_run]
           puts_line "Chef Client failed. #{@updated_resources} resources would have been updated"
         else
-          puts_line "Chef Client failed. #{@updated_resources} resources updated and #{successful_audits}/#{total_audits} audits succeeded in #{elapsed_time} seconds"
+          puts_line "Chef Client failed. #{@updated_resources} resources updated and #{successful_audits} audits succeeded in #{elapsed_time} seconds"
         end
       end
 
