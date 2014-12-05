@@ -43,4 +43,38 @@ describe Chef::Audit::Runner do
 
   end
 
+  # When running these, because we are not mocking out any of the formatters we expect to get dual output on the
+  # command line
+  describe "#run" do
+
+    before do
+      expect(run_context).to receive(:events).and_return(events)
+    end
+
+    it "Correctly runs an empty controls block" do
+      expect(run_context).to receive(:audits).and_return({})
+      runner.run
+    end
+
+    it "Correctly runs a single successful control" do
+      should_pass = lambda do
+        it "should pass" do
+          expect(2 - 2).to eq(0)
+        end
+      end
+
+      expect(run_context).to receive(:audits).and_return({
+        "should pass" => {:args => [], :block => should_pass}
+      })
+
+      # TODO capture the output and verify it
+      runner.run
+    end
+
+    it "Correctly runs a single failing control", :pending do
+
+    end
+
+  end
+
 end
