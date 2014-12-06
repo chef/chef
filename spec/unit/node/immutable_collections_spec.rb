@@ -33,7 +33,7 @@ describe Chef::Node::ImmutableMash do
     expect(@immutable_mash[:top][:second_level]).to eq("some value")
   end
 
-  it "elelment references like a regular Mash" do
+  it "element references like a regular Mash" do
     expect(@immutable_mash[:top_level_2]).to eq(%w[array of values])
   end
 

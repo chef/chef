@@ -44,7 +44,7 @@ class Chef
         # Transfer files
         files_to_transfer.each do |cookbook_file_relative_path|
           create_cookbook_file(cookbook_file_relative_path)
-          # parent directories and file being transfered are removed from the purge list
+          # parent directories and file being transferred are removed from the purge list
           Pathname.new(Chef::Util::PathHelper.cleanpath(::File.join(@new_resource.path, cookbook_file_relative_path))).descend do |d|
             files_to_purge.delete(d.to_s)
           end

@@ -247,7 +247,7 @@ describe "LWRP" do
           end
         end
 
-        it "ammends actions when they are already defined" do
+        it "amends actions when they are already defined" do
           raise_if_deprecated!
           expect(child.actions).to eq([:eat, :sleep, :drink])
         end

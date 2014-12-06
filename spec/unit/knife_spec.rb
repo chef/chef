@@ -44,6 +44,10 @@ describe Chef::Knife do
     @stderr = StringIO.new
   end
 
+  after(:each) do
+    Chef::Knife.reset_config_loader!
+  end
+
   describe "after loading a subcommand" do
     before do
       Chef::Knife.reset_subcommands!
@@ -64,7 +68,7 @@ describe Chef::Knife do
       expect(KnifeSpecs::TestNameMapping.subcommand_category).to eq('test')
     end
 
-    it "has an explictly defined category if set" do
+    it "has an explicitly defined category if set" do
       expect(KnifeSpecs::TestExplicitCategory.subcommand_category).to eq('cookbook site')
     end
 
@@ -268,6 +272,7 @@ describe Chef::Knife do
           @knife.config[:verbosity] = 1
           @knife.config[:config_file] = fake_config
           config_loader = double("Chef::WorkstationConfigLoader", :load => true, :no_config_found? => false, :chef_config_dir => "/etc/chef", :config_location => fake_config)
+          allow(config_loader).to receive(:explicit_config_file=).with(fake_config).and_return(fake_config)
           allow(Chef::WorkstationConfigLoader).to receive(:new).and_return(config_loader)
         end
 
