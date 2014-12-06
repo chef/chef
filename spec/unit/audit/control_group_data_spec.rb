@@ -33,7 +33,7 @@ describe Chef::Audit::AuditData do
 
       it "stores all control groups" do
         audit_data.add_control_group(control_group_2)
-        expect(audit_data.control_groups).to include(control_group_2)
+        expect(audit_data.control_groups).to include(control_group_1)
       end
     end
   end
@@ -121,8 +121,6 @@ describe Chef::Audit::ControlData do
     end
 
     context "when context is nil" do
-
-      let(:context) { nil }
 
       it "sets :context to an empty array" do
         expect(control_data_hash[:context]).to eq []
