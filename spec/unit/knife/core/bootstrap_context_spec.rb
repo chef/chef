@@ -205,4 +205,18 @@ EXPECTED
     end
   end
 
+  describe "prerelease" do
+    it "isn't set in the config_content by default" do
+      expect(bootstrap_context.config_content).not_to include("prerelease")
+    end
+
+    describe "when configured via cli" do
+      let(:config) {{:prerelease => true}}
+
+      it "uses CLI value" do
+        expect(bootstrap_context.latest_current_chef_version_string).to eq("-p")
+      end
+    end
+  end
+
 end

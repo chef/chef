@@ -1,15 +1,6 @@
-# Temporary workaround for issue with rubygems 2.2.0 with bundler 1.5 on ruby
-# 1.8.7.
-#
-# A fix has been merged to rubygems but not yet released. See:
-# https://github.com/rubygems/rubygems/commit/f8e0f1d5f67cfc4e1966cc1e2db367aebf8a09e4
-#
-# See also CHEF-4916
-#
-# This workaround should be removed when that fix is released.
+# Early warning system to catch if Rubygems breaks something
 before_install:
-- gem update --system 2.1.11
-- gem --version
+  gem update --system
 
 branches:
   only:
@@ -35,14 +26,13 @@ env:
 
 matrix:
   include:
-  - rvm: 1.9.3
   - rvm: 2.0.0
-  - rvm: 2.1.1
-  - rvm: 2.1.1
+  - rvm: 2.1.5
+  - rvm: 2.1.5
     gemfile: pedant.gemfile
     script: bundle exec rake pedant
     ### START TEST KITCHEN ONLY ###
-  - rvm: 2.1.1
+  - rvm: 2.1.5
     gemfile: kitchen-tests/Gemfile
     before_install:
     - echo -n $DO_KEY_CHUNK_{0..30} >> ~/.ssh/id_aws.base64

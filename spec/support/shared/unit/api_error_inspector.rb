@@ -23,7 +23,7 @@
 # runs without error, but don't make assertions about the output. This is
 # because aspects such as how information gets formatted, what's included, etc.
 # are still in flux. When testing an inspector, change the outputter to use
-# STDOUT and manually check the ouput.
+# STDOUT and manually check the output.
 
 shared_examples_for "an api error inspector" do
 

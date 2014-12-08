@@ -536,6 +536,14 @@ describe Chef::Provider::Package::Rubygems do
           expect(@provider.action_install).to be_truthy
         end
 
+        it "installs the gem by shelling out when options are provided but no version is given" do
+          @new_resource.options('-i /alt/install/location')
+          @new_resource.version('')
+          expected ="gem install \"rspec-core\" -q --no-rdoc --no-ri  -i /alt/install/location"
+          expect(@provider).to receive(:shell_out!).with(expected, :env => nil)
+          expect(@provider.action_install).to be_truthy
+        end
+
         it "installs the gem via the gems api when options are given as a Hash" do
           @new_resource.options(:install_dir => '/alt/install/location')
           expect(@provider.gem_env).to receive(:install).with(@gem_dep, :sources => nil, :install_dir => '/alt/install/location')
