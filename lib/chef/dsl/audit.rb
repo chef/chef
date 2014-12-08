@@ -34,7 +34,7 @@ class Chef
           raise Chef::Exceptions::AuditControlGroupDuplicate.new(name)
         end
 
-        run_context.controls[name] = { :args => args, :block => block }
+        run_context.audits[name] = { :args => args, :block => block }
       end
 
     end
