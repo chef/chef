@@ -36,6 +36,7 @@ class Chef
         @cwd = nil
         @environment = nil
         @group = nil
+        @path = nil
         @returns = 0
         @timeout = nil
         @user = nil
@@ -91,6 +92,16 @@ class Chef
           :group,
           arg,
           :kind_of => [ String, Integer ]
+        )
+      end
+
+      def path(arg=nil)
+        Chef::Log.warn "'path' attribute of 'execute' is not used by any provider in Chef 11 and Chef 12. Use 'environment' attribute to configure 'PATH'. This attribute will be removed in Chef 13."
+
+        set_or_return(
+          :path,
+          arg,
+          :kind_of => [ Array ]
         )
       end
 
