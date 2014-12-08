@@ -46,11 +46,11 @@ class Chef
         else
           resource_class = Class.new(self)
 
+          Chef::Resource.const_set(class_name, resource_class)
           resource_class.resource_name = rname
           resource_class.run_context = run_context
           resource_class.class_from_file(filename)
 
-          Chef::Resource.const_set(class_name, resource_class)
           Chef::Log.debug("Loaded contents of #{filename} into a resource named #{rname} defined in Chef::Resource::#{class_name}")
         end
 
