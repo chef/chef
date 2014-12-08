@@ -25,7 +25,7 @@ describe Chef::Audit::AuditEventProxy do
 
       it "notifies control_group_started event" do
         expect(Chef::Log).to receive(:debug).
-          with("Entered controls block named poots")
+          with("Entered \`controls\` block named poots")
         expect(events).to receive(:control_group_started).
           with(description)
         audit_event_proxy.example_group_started(notification)
@@ -57,7 +57,7 @@ describe Chef::Audit::AuditEventProxy do
     end
 
     it "sends a message that audits completed" do
-      expect(Chef::Log).to receive(:info).with("Successfully executed all controls blocks and contained examples")
+      expect(Chef::Log).to receive(:info).with("Successfully executed all \`controls\` blocks and contained examples")
       audit_event_proxy.stop(notification)
     end
 
