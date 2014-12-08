@@ -34,6 +34,10 @@ describe Chef::Knife::Core::BootstrapContext do
 
   subject(:bootstrap_context) { described_class.new(config, run_list, chef_config, secret) }
 
+  it "initializes with Chef 11 parameters" do
+    expect{described_class.new(config, run_list, chef_config)}.not_to raise_error
+  end
+
   it "runs chef with the first-boot.json in the _default environment" do
     expect(bootstrap_context.start_chef).to eq "chef-client -j /etc/chef/first-boot.json -E _default"
   end

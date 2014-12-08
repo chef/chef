@@ -30,7 +30,7 @@ class Chef
       #
       class BootstrapContext
 
-        def initialize(config, run_list, chef_config, secret)
+        def initialize(config, run_list, chef_config, secret = nil)
           @config       = config
           @run_list     = run_list
           @chef_config  = chef_config
