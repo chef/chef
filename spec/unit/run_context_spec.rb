@@ -21,10 +21,11 @@
 require 'spec_helper'
 require 'support/lib/library_load_order'
 
-Chef::Log.level = :debug
 
 describe Chef::RunContext do
   before(:each) do
+    @original_log_level = Chef::Log.level
+    Chef::Log.level = :debug
     @chef_repo_path = File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks"))
     cl = Chef::CookbookLoader.new(@chef_repo_path)
     cl.load_cookbooks
@@ -33,6 +34,10 @@ describe Chef::RunContext do
     @node.run_list << "test" << "test::one" << "test::two"
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
+  end
+
+  after(:each) do
+    Chef::Log.level = @original_log_level
   end
 
   it "has a cookbook collection" do

@@ -22,6 +22,7 @@ describe Chef::Provider::Git do
 
   before(:each) do
     allow(STDOUT).to receive(:tty?).and_return(true)
+    @original_log_level = Chef::Log.level
     Chef::Log.level = :info
 
     @current_resource = Chef::Resource::Git.new("web2.0 app")
@@ -36,6 +37,10 @@ describe Chef::Provider::Git do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @provider = Chef::Provider::Git.new(@resource, @run_context)
     @provider.current_resource = @current_resource
+  end
+
+  after(:each) do
+    Chef::Log.level = @original_log_level
   end
 
   context "determining the revision of the currently deployed checkout" do

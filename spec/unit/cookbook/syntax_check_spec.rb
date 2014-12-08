@@ -43,6 +43,7 @@ describe Chef::Cookbook::SyntaxCheck do
 
   before do
     Chef::Log.logger = Logger.new(StringIO.new)
+    @original_log_level = Chef::Log.level
     Chef::Log.level = :warn # suppress "Syntax OK" messages
 
     @attr_files = %w{default.rb smokey.rb}.map { |f| File.join(cookbook_path, 'attributes', f) }
@@ -59,6 +60,10 @@ describe Chef::Cookbook::SyntaxCheck do
                     all_windows_line_endings.erb
                     no_windows_line_endings.erb }
     @template_files = basenames.map { |f| File.join(cookbook_path, 'templates', 'default', f)}
+  end
+
+  after do
+    Chef::Log.level = @original_log_level
   end
 
   it "creates a syntax checker given the cookbook name when Chef::Config.cookbook_path is set" do

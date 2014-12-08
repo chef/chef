@@ -11,6 +11,14 @@ def ruby_lt_20?
   !ruby_gte_20?
 end
 
+def chef_gte_13?
+  Chef::VERSION.split('.').first.to_i >= 13
+end
+
+def chef_lt_13?
+  Chef::VERSION.split('.').first.to_i < 13
+end
+
 def ruby_gte_19?
   RUBY_VERSION.to_f >= 1.9
 end
