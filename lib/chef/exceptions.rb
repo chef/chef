@@ -45,6 +45,7 @@ class Chef
     class FileNotFound < RuntimeError; end
     class Package < RuntimeError; end
     class Service < RuntimeError; end
+    class Script < RuntimeError; end
     class Route < RuntimeError; end
     class SearchIndex < RuntimeError; end
     class Override < RuntimeError; end

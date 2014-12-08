@@ -83,12 +83,17 @@ describe Chef::HTTP::ValidateContentLength do
   let(:debug_stream) { StringIO.new }
   let(:debug_output) { debug_stream.string }
 
-  before(:each) {
+  before(:each) do
+    @original_log_level = Chef::Log.level
     Chef::Log.level = :debug
     allow(Chef::Log).to receive(:debug) do |message|
       debug_stream.puts message
     end
-  }
+  end
+
+  after(:each) do
+    Chef::Log.level = @original_log_level
+  end
 
   describe "without response body" do
     let(:request_type) { :direct }

@@ -21,47 +21,56 @@ require 'spec_helper'
 
 shared_examples_for "a script resource" do
 
-  before(:each) do
-    @resource = script_resource
-  end
-
   it "should create a new Chef::Resource::Script" do
-    expect(@resource).to be_a_kind_of(Chef::Resource)
-    expect(@resource).to be_a_kind_of(Chef::Resource::Script)
+    expect(script_resource).to be_a_kind_of(Chef::Resource)
+    expect(script_resource).to be_a_kind_of(Chef::Resource::Script)
   end
 
   it "should have a resource name of :script" do
-    expect(@resource.resource_name).to eql(resource_name)
+    expect(script_resource.resource_name).to eql(resource_name)
   end
 
-  it "should set command to the argument provided to new" do
-    expect(@resource.command).to eql(resource_instance_name)
+  it "should set command to nil on the resource", :chef_gte_13_only do
+    expect(script_resource.command).to be nil
+  end
+
+  it "should set command to the name on the resource", :chef_lt_13_only do
+    expect(script_resource.command).to eql script_resource.name
   end
 
   it "should accept a string for the code" do
-    @resource.code "hey jude"
-    expect(@resource.code).to eql("hey jude")
+    script_resource.code "hey jude"
+    expect(script_resource.code).to eql("hey jude")
   end
 
   it "should accept a string for the flags" do
-    @resource.flags "-f"
-    expect(@resource.flags).to eql("-f")
+    script_resource.flags "-f"
+    expect(script_resource.flags).to eql("-f")
+  end
+
+  it "should raise an exception if users set command on the resource", :chef_gte_13_only do
+    expect { script_resource.command('foo') }.to raise_error(Chef::Exceptions::Script)
+  end
+
+  it "should not raise an exception if users set command on the resource", :chef_lt_13_only do
+    expect { script_resource.command('foo') }.not_to raise_error
   end
 
   describe "when executing guards" do
-    let(:resource) { @resource }
-
-    before(:each) do
-      node = Chef::Node.new
-
-      node.automatic[:platform] = "debian"
-      node.automatic[:platform_version] = "6.0"
-
-      events = Chef::EventDispatch::Dispatcher.new
-      run_context = Chef::RunContext.new(node, {}, events)
+    let(:resource) {
+      resource = script_resource
       resource.run_context = run_context
       resource.code 'echo hi'
-    end
+      resource
+    }
+    let(:node) {
+      node = Chef::Node.new
+      node.automatic[:platform] = "debian"
+      node.automatic[:platform_version] = "6.0"
+      node
+    }
+    let(:events) { Chef::EventDispatch::Dispatcher.new }
+    let(:run_context) { Chef::RunContext.new(node, {}, events) }
 
     it "inherits exactly the :cwd, :environment, :group, :path, :user, and :umask attributes from a parent resource class" do
       inherited_difference = Chef::Resource::Script.guard_inherited_attributes -
@@ -87,4 +96,3 @@ shared_examples_for "a script resource" do
     end
   end
 end
-

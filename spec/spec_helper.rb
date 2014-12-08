@@ -129,6 +129,10 @@ RSpec.configure do |config|
   config.filter_run_excluding :ruby_gte_19_only => true unless ruby_gte_19?
   config.filter_run_excluding :ruby_20_only => true unless ruby_20?
   config.filter_run_excluding :ruby_gte_20_only => true unless ruby_gte_20?
+  # chef_gte_XX_only and chef_lt_XX_only pair up correctly with the same XX
+  # number.  please conserve this pattern & resist filling out all the operators
+  config.filter_run_excluding :chef_gte_13_only => true unless chef_gte_13?
+  config.filter_run_excluding :chef_lt_13_only => true unless chef_lt_13?
   config.filter_run_excluding :requires_root => true unless root?
   config.filter_run_excluding :requires_root_or_running_windows => true unless (root? || windows?)
   config.filter_run_excluding :requires_unprivileged_user => true if root?

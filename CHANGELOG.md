@@ -23,6 +23,8 @@
 * ruby 1.9.3 support is dropped
 * Update Chef to use RSpec 3.
 * Create constant for LWRP before calling `provides`
+* Cleaned up script and execute provider + specs
+* Added deprecation warnings around the use of command attribute in script resources
 
 ## 12.0.0
 

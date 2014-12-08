@@ -106,7 +106,7 @@ class Chef
         set_or_return(
           :timeout,
           arg,
-          :kind_of => [ Integer ]
+          :kind_of => [ Integer, Float ]
         )
       end
 
@@ -135,12 +135,12 @@ class Chef
       end
 
       set_guard_inherited_attributes(
-       :cwd,
-       :environment,
-       :group,
-       :user,
-       :umask
-       )
+        :cwd,
+        :environment,
+        :group,
+        :user,
+        :umask
+      )
 
     end
   end
