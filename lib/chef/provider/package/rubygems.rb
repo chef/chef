@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+require 'uri'
 require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
@@ -130,7 +131,7 @@ class Chef
 
           ##
           # Determines the candidate version for a gem from a .gem file on disk
-          # and checks if it matches the version contraints in +gem_dependency+
+          # and checks if it matches the version constraints in +gem_dependency+
           # === Returns
           # Gem::Version  a singular gem version object is returned if the gem
           #               is available
@@ -536,7 +537,7 @@ class Chef
           else
             src = @new_resource.source && "  --source=#{@new_resource.source} --source=https://rubygems.org"
           end
-          if version
+          if !version.nil? && version.length > 0
             shell_out!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", :env=>nil)
           else
             shell_out!("#{gem_binary_path} install \"#{name}\" -q --no-rdoc --no-ri #{src}#{opts}", :env=>nil)

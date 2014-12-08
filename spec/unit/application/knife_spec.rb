@@ -33,6 +33,11 @@ describe Chef::Application::Knife do
     end
   end
 
+  after(:each) do
+    # reset some really nasty global state
+    NoopKnifeCommand.reset_config_loader!
+  end
+
   before(:each) do
     # Prevent code from getting loaded on every test invocation.
     allow(Chef::Knife).to receive(:load_commands)
@@ -109,7 +114,6 @@ describe Chef::Application::Knife do
       end
       expect(Chef::Config[:client_key]).to eq(full_path)
     end
-
   end
 
   describe "with environment configuration" do
@@ -168,6 +172,6 @@ describe Chef::Application::Knife do
         @knife.run
       end
     end
-
   end
+
 end
