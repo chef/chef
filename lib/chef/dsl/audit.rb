@@ -30,7 +30,7 @@ class Chef
         name = args[0]
         if name.nil? || name.empty?
           raise Chef::Exceptions::AuditNameMissing
-        elsif run_context.controls.has_key?(name)
+        elsif run_context.audits.has_key?(name)
           raise Chef::Exceptions::AuditControlGroupDuplicate.new(name)
         end
 
