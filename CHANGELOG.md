@@ -22,6 +22,7 @@
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
 * Update Chef to use RSpec 3.
+* Create constant for LWRP before calling `provides`
 
 ## 12.0.0
 
