@@ -1,3 +1,6 @@
+## 12.0.1
+* [Issue 2552](https://github.com/opscode/chef/issues/2552) Create constant for LWRP before calling `provides`
+
 ## 12.0.0
 
 * [**Jesse Hu**](https://github.com/jessehu):
