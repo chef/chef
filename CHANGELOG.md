@@ -25,6 +25,7 @@
 * Create constant for LWRP before calling `provides`
 * Cleaned up script and execute provider + specs
 * Added deprecation warnings around the use of command attribute in script resources
+* `path` attribute of `execute` resource is restored to provide backwards compatibility with Chef 11.
 
 ## 12.0.0
 
