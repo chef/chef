@@ -219,7 +219,7 @@ describe Chef::WorkstationConfigLoader do
 
     end
 
-    context "when an explict config is given but it doesn't exist" do
+    context "when an explicit config is given but it doesn't exist" do
 
       let(:explicit_config_location) { "/nope/nope/nope/frab/jab/nab" }
 

@@ -28,12 +28,16 @@ class Chef
       attr_reader :rest_client, :audit_data, :ordered_control_groups, :run_status
       private :rest_client, :audit_data, :ordered_control_groups, :run_status
 
-      PROTOCOL_VERSION = '0.1.0'
+      PROTOCOL_VERSION = '0.1.1'
 
       def initialize(rest_client)
         @rest_client = rest_client
         # Ruby 1.9.3 and above "enumerate their values in the order that the corresponding keys were inserted."
         @ordered_control_groups = Hash.new
+      end
+
+      def run_context
+        run_status.run_context
       end
 
       def audit_phase_start(run_status)
@@ -71,7 +75,8 @@ class Chef
         if ordered_control_groups.has_key?(name)
           raise Chef::Exceptions::AuditControlGroupDuplicate.new(name)
         end
-        ordered_control_groups.store(name, ControlGroupData.new(name))
+        metadata = run_context.audits[name].metadata
+        ordered_control_groups.store(name, ControlGroupData.new(name, metadata))
       end
 
       def control_example_success(control_group_name, example_data)

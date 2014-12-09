@@ -8,8 +8,19 @@
   removed securerandom patch
 * [**Scott Bonds**](https://github.com/bonds)
   add package support for OpenBSD
+* [**Lucy Wyman**](https://github.com/lucywyman)
+  Added support for handling empty version strings to rubygems provider.
+* [**Yulian Kuncheff**](https://github.com/Daegalus)
+  Correctly set the pre-release identifier during knife bootstrap.
+* [**Anshul Sharma**](https://github.com/justanshulsharma)
+  `knife node run_list remove` now accepts run_list options in the same form as add
+* [**Veres Lajos**](https://github.com/vlajos)
+  Typo fixes
+* [**Tim Smith**](https://github.com/tas50)
+  Typo fixes
 
 ### Chef Contributions
+* ruby 1.9.3 support is dropped
 * Update Chef to use RSpec 3.
 
 ## 12.0.0
@@ -160,6 +171,7 @@
 
 ### Chef Contributions
 
+* ruby 1.9.3 support is dropped
 * Added RFC-023 Chef 12 Attribute Changes (https://github.com/opscode/chef-rfc/blob/master/rfc023-chef-12-attributes-changes.md)
 * Added os/platform_family options to provides syntax on the Chef::Resource DSL
 * Added provides methods to the Chef::Provider DSL
@@ -309,7 +321,7 @@
 * [**Nikhil Benesch**](https://github.com/benesch):
   Implemented a threaded download queue for synchronizing cookbooks. (CHEF-4423)
 * [**Chulki Lee**](https://github.com/chulkilee):
-  Raise an error when source is accidently passed to apt_package (CHEF-5113)
+  Raise an error when source is accidentally passed to apt_package (CHEF-5113)
 * [**Cam Cope**](https://github.com/ccope):
   Add an open_timeout when opening an http connection (CHEF-5152)
 * [**Sander van Harmelen**](https://github.com/svanharmelen):

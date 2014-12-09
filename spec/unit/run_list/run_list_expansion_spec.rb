@@ -97,7 +97,7 @@ describe Chef::RunList::RunListExpansion do
       expect(@expansion.recipes).to eq(['lobster', 'crabrevenge', 'fist'])
     end
 
-    it "has the merged attributes from the roles with outer roles overridding inner" do
+    it "has the merged attributes from the roles with outer roles overriding inner" do
       expect(@expansion.default_attrs).to eq({'foo' => 'bar'})
       expect(@expansion.override_attrs).to eq({'baz' => 'qux'})
     end
@@ -109,7 +109,7 @@ describe Chef::RunList::RunListExpansion do
 
   end
 
-  describe "after expanding a run list with a non existant role" do
+  describe "after expanding a run list with a non existent role" do
     before do
       allow(@expansion).to receive(:fetch_role) { @expansion.role_not_found('crabrevenge', "role[base]") }
       @expansion.expand

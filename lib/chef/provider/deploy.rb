@@ -18,7 +18,6 @@
 
 require "chef/mixin/command"
 require "chef/mixin/from_file"
-require "chef/monkey_patches/fileutils"
 require "chef/provider/git"
 require "chef/provider/subversion"
 require "chef/dsl/recipe"
@@ -126,7 +125,7 @@ class Chef
         # * Move release_path directory before deploy and move it back when error occurs
         # * Rollback to previous commit
         # * Do nothing - because deploy is force, it will be retried in short time
-        # Because last is simpliest, keep it
+        # Because last is simplest, keep it
         deploy
       end
 

@@ -114,20 +114,20 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
     describe "recipe_snippet" do
       before do
         # fake code to run through #recipe_snippet
-        source_file = [ "if true", "var = non_existant", "end" ]
+        source_file = [ "if true", "var = non_existent", "end" ]
         allow(IO).to receive(:readlines).and_return(source_file)
         allow(File).to receive(:exists?).and_return(true)
       end
 
       it "parses a Windows path" do
-        source_line = "C:/Users/btm/chef/chef/spec/unit/fake_file.rb:2: undefined local variable or method `non_existant' for main:Object (NameError)"
+        source_line = "C:/Users/btm/chef/chef/spec/unit/fake_file.rb:2: undefined local variable or method `non_existent' for main:Object (NameError)"
         @resource.source_line = source_line
         @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
         expect(@inspector.recipe_snippet).to match(/^# In C:\/Users\/btm/)
       end
 
       it "parses a unix path" do
-        source_line = "/home/btm/src/chef/chef/spec/unit/fake_file.rb:2: undefined local variable or method `non_existant' for main:Object (NameError)"
+        source_line = "/home/btm/src/chef/chef/spec/unit/fake_file.rb:2: undefined local variable or method `non_existent' for main:Object (NameError)"
         @resource.source_line = source_line
         @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
         expect(@inspector.recipe_snippet).to match(/^# In \/home\/btm/)
@@ -145,7 +145,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
           expect(@inspector.recipe_snippet).to be_nil
         end
 
-        it "does not raise an exception trying to load a non-existant file (CHEF-3411)" do
+        it "does not raise an exception trying to load a non-existent file (CHEF-3411)" do
           @resource.source_line = "/somewhere/in/space"
           @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
           expect { @inspector.recipe_snippet }.not_to raise_error
