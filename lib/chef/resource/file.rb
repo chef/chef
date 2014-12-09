@@ -20,6 +20,7 @@
 require 'chef/resource'
 require 'chef/platform/query_helpers'
 require 'chef/mixin/securable'
+require 'chef/resource/file/verification'
 
 class Chef
   class Resource
@@ -50,6 +51,7 @@ class Chef
         @force_unlink = false
         @manage_symlink_source = nil
         @diff = nil
+        @user_verifications = []
       end
 
       def content(arg=nil)
@@ -114,6 +116,18 @@ class Chef
           arg,
           :kind_of => [ TrueClass, FalseClass ]
         )
+      end
+
+      def verify(command=nil, opts={}, &block)
+        if ! (command.nil? || [String, Symbol].include?(command.class))
+          raise ArgumentError, "verify requires either a string, symbol, or a block"
+        end
+
+        if command || block_given?
+          @user_verifications << Verification.new(self, command, opts, &block)
+        else
+          @user_verifications
+        end
       end
     end
   end

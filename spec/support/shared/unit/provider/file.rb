@@ -456,6 +456,36 @@ shared_examples_for Chef::Provider::File do
       provider.run_action(:create)
     end
 
+    context "do_validate_content" do
+      before { setup_normal_file }
+
+      let(:tempfile) {
+        t = double('Tempfile', :path => "/tmp/foo-bar-baz", :closed? => true)
+        allow(content).to receive(:tempfile).and_return(t)
+        t
+      }
+
+      let(:verification) { double("Verification") }
+
+      context "with user-supplied verifications" do
+        it "calls #verify on each verification with tempfile path" do
+          allow(Chef::Resource::File::Verification).to receive(:new).and_return(verification)
+          provider.new_resource.verify "true"
+          provider.new_resource.verify "true"
+          expect(verification).to receive(:verify).with(tempfile.path).twice.and_return(true)
+          provider.send(:do_validate_content)
+        end
+
+        it "raises an exception if any verification fails" do
+          provider.new_resource.verify "true"
+          provider.new_resource.verify "false"
+          allow(verification).to receive(:verify).with("true").and_return(true)
+          allow(verification).to receive(:verify).with("false").and_return(false)
+          expect{provider.send(:do_validate_content)}.to raise_error(Chef::Exceptions::ValidationFailed)
+        end
+      end
+    end
+
     context "do_create_file" do
       context "when the file exists" do
         before { setup_normal_file }
