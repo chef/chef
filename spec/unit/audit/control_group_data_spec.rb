@@ -103,8 +103,9 @@ describe Chef::Audit::ControlData do
   let(:context) { nil }
   let(:line_number) { 27 }
 
-  let(:control_data) { described_class.new(name, resource_type, resource_name,
-                                            context, line_number) }
+  let(:control_data) { described_class.new(name: name,
+    resource_type: resource_type, resource_name: resource_name,
+    context: context, line_number: line_number) }
 
 
   describe "#to_hash" do
@@ -167,12 +168,15 @@ describe Chef::Audit::ControlGroupData do
   shared_context "control" do
     include_context "control data"
 
-    let(:control) { Chef::Audit::ControlData.new(name, resource_type,
-                      resource_name, context, line_number) }
+    let(:control) { Chef::Audit::ControlData.new(name: name,
+      resource_type: resource_type, resource_name: resource_name,
+      context: context, line_number: line_number) }
 
     before do
       allow(Chef::Audit::ControlData).to receive(:new).
-        with(name, resource_type, resource_name, context, line_number).
+        with(name: name, resource_type: resource_type,
+          resource_name: resource_name, context: context,
+          line_number: line_number).
         and_return(control)
     end
   end
@@ -191,9 +195,9 @@ describe Chef::Audit::ControlGroupData do
     end
 
     it "increments the number of successful audits" do
-      num_success = control_group_data.number_success
+      num_success = control_group_data.number_succeeded
       notify_success
-      expect(control_group_data.number_success).to eq (num_success + 1)
+      expect(control_group_data.number_succeeded).to eq (num_success + 1)
     end
 
     it "does not increment the number of failed audits" do
@@ -232,9 +236,9 @@ describe Chef::Audit::ControlGroupData do
     end
 
     it "does not increment the number of successful audits" do
-      num_success = control_group_data.number_success
+      num_success = control_group_data.number_succeeded
       notify_failure
-      expect(control_group_data.number_success).to eq num_success
+      expect(control_group_data.number_succeeded).to eq num_success
     end
 
     it "increments the number of failed audits" do
@@ -298,7 +302,7 @@ describe Chef::Audit::ControlGroupData do
     end
 
     it "counts the number of successful audits" do
-      expect(control_group_data.number_success).to eq num_success
+      expect(control_group_data.number_succeeded).to eq num_success
     end
 
     it "counts the number of failed audits" do
@@ -370,7 +374,7 @@ describe Chef::Audit::ControlGroupData do
     end
 
     it "describes a Chef::Audit::ControlGroupData object" do
-      keys = [:name, :status, :number_success, :number_failed,
+      keys = [:name, :status, :number_succeeded, :number_failed,
         :controls, :id]
       expect(control_group_data_hash.keys).to match_array(keys)
     end
