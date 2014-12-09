@@ -324,7 +324,7 @@ describe Chef::Resource do
       expect(zm.is("one", "two", "three")).to eq(%w|one two three|)
     end
 
-    it "should allow arguments preceeded by is to methods" do
+    it "should allow arguments preceded by is to methods" do
       @resource.noop(@resource.is(true))
       expect(@resource.noop).to eql(true)
     end

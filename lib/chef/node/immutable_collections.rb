@@ -155,6 +155,10 @@ class Chef
         end
       end
 
+      def public_method_that_only_deep_merge_should_use(key, value)
+        internal_set(key, immutablize(value))
+      end
+
       alias :attribute? :has_key?
 
       # Redefine all of the methods that mutate a Hash to raise an error when called.

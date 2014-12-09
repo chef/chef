@@ -47,7 +47,7 @@ describe Shell do
 
   describe "reporting its status" do
 
-    it "alway says it is running" do
+    it "always says it is running" do
       expect(Shell).to be_running
     end
 

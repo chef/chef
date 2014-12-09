@@ -39,7 +39,7 @@ class Chef
       # > 10.7  => password shadow calculation format SALTED-SHA512-PBKDF2
       #         => stored in: /var/db/dslocal/nodes/Default/users/#{name}.plist
       #         => shadow binary length 128 bytes
-      #         => Salt / Iterations are stored seperately in the same file
+      #         => Salt / Iterations are stored separately in the same file
       #
       # This provider only supports Mac OSX versions 10.7 and above
       class Dscl < Chef::Provider::User

@@ -26,7 +26,7 @@ repository. Running `knife cookbook site install` does the following:
    upstream;
 2. All existing cookbooks are removed from the branch;
 3. The cookbook is downloaded from the cookbook site in tarball form;
-4. The downloaded cookbook is untarred, and its contents commited via git;
+4. The downloaded cookbook is untarred, and its contents committed via git;
 5. The pristine copy branch is merged into the master branch.
 
 By installing cookbook with this process, you can locally modify the

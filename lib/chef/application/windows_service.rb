@@ -26,6 +26,7 @@ require 'chef/log'
 require 'chef/rest'
 require 'mixlib/cli'
 require 'socket'
+require 'uri'
 require 'win32/daemon'
 require 'chef/mixin/shell_out'
 

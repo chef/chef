@@ -34,7 +34,7 @@ class Chef
 
     # return a deterministically sorted list of Chef::Provider subclasses
     def providers
-      @providers ||= Chef::Provider.descendants.sort {|a,b| a.to_s <=> b.to_s }
+      @providers ||= Chef::Provider.descendants
     end
 
     def resolve
@@ -48,7 +48,7 @@ class Chef
       @enabled_handlers ||=
         providers.select do |klass|
           klass.provides?(node, resource)
-        end
+        end.sort {|a,b| a.to_s <=> b.to_s }
     end
 
     # this cut looks at if the provider can handle the specific resource and action
