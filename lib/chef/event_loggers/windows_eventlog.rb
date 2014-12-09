@@ -20,9 +20,11 @@ require 'chef/event_loggers/base'
 require 'chef/platform/query_helpers'
 
 if Chef::Platform::windows? and not Chef::Platform::windows_server_2003?
-  [:INFINITE, :WAIT_FAILED, :FORMAT_MESSAGE_IGNORE_INSERTS, :ERROR_INSUFFICIENT_BUFFER].each do |c|
-    # These are redefined in 'win32/eventlog'
-    Windows::Constants.send(:remove_const, c)
+  if defined? Windows::Constants
+    [:INFINITE, :WAIT_FAILED, :FORMAT_MESSAGE_IGNORE_INSERTS, :ERROR_INSUFFICIENT_BUFFER].each do |c|
+      # These are redefined in 'win32/eventlog'
+      Windows::Constants.send(:remove_const, c) if Windows::Constants.const_defined? c
+    end
   end
 
   require 'win32/eventlog'
