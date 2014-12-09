@@ -8,6 +8,12 @@ end
 
 describe Chef::DSL::Audit do
   let(:auditor) { AuditDSLTester.new }
+  let(:run_context) { instance_double(Chef::RunContext, :audits => audits) }
+  let(:audits) { [] }
+
+  before do
+    allow(auditor).to receive(:run_context).and_return(run_context)
+  end
 
   it "raises an error when a block of audits is not provided" do
     expect{ auditor.controls "name" }.to raise_error(Chef::Exceptions::NoAuditsProvided)
@@ -18,7 +24,7 @@ describe Chef::DSL::Audit do
   end
 
   it "raises an error if the audit name is a duplicate" do
-    auditor.controls "unique" do end
+    expect(audits).to receive(:has_key?).with("unique").and_return(true)
     expect { auditor.controls "unique" do end }.to raise_error(Chef::Exceptions::AuditControlGroupDuplicate)
   end
 end
