@@ -403,7 +403,7 @@ class Chef
       attr_reader :wrapped_errors
       def initialize(*errors)
         errors = errors.select {|e| !e.nil?}
-        output = "Found #{errors.size} errors, they are stored in the backtrace\n"
+        output = "Found #{errors.size} errors, they are stored in the backtrace"
         @wrapped_errors = errors
         super output
       end
