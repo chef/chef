@@ -2,18 +2,19 @@
 require 'spec_helper'
 require 'chef/dsl/audit'
 
-class AuditDSLTester
+class AuditDSLTester < Chef::Recipe
+  include Chef::DSL::Audit
+end
+
+class BadAuditDSLTester
   include Chef::DSL::Audit
 end
 
 describe Chef::DSL::Audit do
-  let(:auditor) { AuditDSLTester.new }
-  let(:run_context) { instance_double(Chef::RunContext, :audits => audits) }
-  let(:audits) { [] }
-
-  before do
-    allow(auditor).to receive(:run_context).and_return(run_context)
-  end
+  let(:auditor) { AuditDSLTester.new("cookbook_name", "recipe_name", run_context) }
+  let(:run_context) { instance_double(Chef::RunContext, :audits => audits, :cookbook_collection => cookbook_collection) }
+  let(:audits) { {} }
+  let(:cookbook_collection) { {} }
 
   it "raises an error when a block of audits is not provided" do
     expect{ auditor.controls "name" }.to raise_error(Chef::Exceptions::NoAuditsProvided)
@@ -23,8 +24,20 @@ describe Chef::DSL::Audit do
     expect{ auditor.controls do end }.to raise_error(Chef::Exceptions::AuditNameMissing)
   end
 
-  it "raises an error if the audit name is a duplicate" do
-    expect(audits).to receive(:has_key?).with("unique").and_return(true)
-    expect { auditor.controls "unique" do end }.to raise_error(Chef::Exceptions::AuditControlGroupDuplicate)
+  context "audits already populated" do
+    let(:audits) { {"unique" => {} } }
+
+    it "raises an error if the audit name is a duplicate" do
+      expect { auditor.controls "unique" do end }.to raise_error(Chef::Exceptions::AuditControlGroupDuplicate)
+    end
   end
+
+  context "included in a class without recipe DSL" do
+    let(:auditor) { BadAuditDSLTester.new }
+
+    it "fails because it relies on the recipe DSL existing" do
+      expect { auditor.controls "unique" do end }.to raise_error(NoMethodError, /undefined method `cookbook_name'/)
+    end
+  end
+
 end
