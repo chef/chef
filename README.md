@@ -31,9 +31,9 @@ Install these via your platform's preferred method (apt, yum, ports,
 emerge, etc.):
 
 * git
-* C compiler, header files, etc. On Ubuntu/debian, use the
+* C compiler, header files, etc. On Ubuntu/Debian, use the
   `build-essential` package.
-* ruby 1.9.3 or later
+* ruby 2.0.0 or later
 * rubygems
 * bundler
 

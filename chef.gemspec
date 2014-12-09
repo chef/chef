@@ -13,14 +13,14 @@ Gem::Specification.new do |s|
   s.email = "adam@getchef.com"
   s.homepage = "http://www.getchef.com"
 
-  s.required_ruby_version = ">= 1.9.3"
+  s.required_ruby_version = ">= 2.0.0"
 
   s.add_dependency "mixlib-config", "~> 2.0"
   s.add_dependency "mixlib-cli", "~> 1.4"
   s.add_dependency "mixlib-log", "~> 1.3"
   s.add_dependency "mixlib-authentication", "~> 1.3"
   s.add_dependency "mixlib-shellout", ">= 2.0.0.rc.0", "< 3.0"
-  s.add_dependency "ohai", ">= 7.6.0.rc.0"
+  s.add_dependency "ohai", "~> 8.0"
 
   s.add_dependency "ffi-yajl", "~> 1.2"
   s.add_dependency "net-ssh", "~> 2.6"
@@ -46,7 +46,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake", "~> 10.1.0"
 
   s.bindir       = "bin"
-  s.executables  = %w( chef-client chef-solo knife chef-shell shef chef-apply )
+  s.executables  = %w( chef-client chef-solo knife chef-shell chef-apply )
 
   s.require_path = 'lib'
   s.files = %w(Rakefile LICENSE README.md CONTRIBUTING.md) + Dir.glob("{distro,lib,tasks,spec}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) }

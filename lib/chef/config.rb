@@ -271,7 +271,7 @@ class Chef
     # * :fatal
     # These work as you'd expect. There is also a special `:auto` setting.
     # When set to :auto, Chef will auto adjust the log verbosity based on
-    # context. When a tty is available (usually becase the user is running chef
+    # context. When a tty is available (usually because the user is running chef
     # in a console), the log level is set to :warn, and output formatters are
     # used as the primary mode of output. When a tty is not available, the
     # logger is the primary mode of output, and the log level is set to :info
@@ -317,6 +317,7 @@ class Chef
     default :why_run, false
     default :color, false
     default :client_fork, true
+    default :ez, false
     default :enable_reporting, true
     default :enable_reporting_url_fatals, false
     # Possible values for :audit_mode
@@ -635,7 +636,7 @@ class Chef
       #
       # For example, on CentOS 6 with ENV['LANG'] = "en_US.UTF-8",
       # `locale -a`.split fails with ArgumentError invalid UTF-8 encoding.
-      locales = shell_out_with_systems_locale("locale -a").stdout.split
+      locales = shell_out_with_systems_locale!("locale -a").stdout.split
       case
       when locales.include?('C.UTF-8')
         'C.UTF-8'

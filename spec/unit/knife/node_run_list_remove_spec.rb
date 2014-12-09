@@ -66,9 +66,24 @@ describe Chef::Knife::NodeRunListRemove do
         expect(@node.run_list).not_to include('role[monkey]')
         expect(@node.run_list).not_to include('recipe[duck::type]')
       end
+
+      it "should remove the items from the run list when name args contains whitespace" do
+        @node.run_list << 'role[monkey]'
+        @node.run_list << 'recipe[duck::type]'
+        @knife.name_args = [ 'adam', 'role[monkey], recipe[duck::type]' ]
+        @knife.run
+        expect(@node.run_list).not_to include('role[monkey]')
+        expect(@node.run_list).not_to include('recipe[duck::type]')
+      end
+
+      it "should remove the items from the run list when name args contains multiple run lists" do
+        @node.run_list << 'role[blah]'
+        @node.run_list << 'recipe[duck::type]'
+        @knife.name_args = [ 'adam', 'role[monkey], recipe[duck::type]', 'role[blah]' ]
+        @knife.run
+        expect(@node.run_list).not_to include('role[monkey]')
+        expect(@node.run_list).not_to include('recipe[duck::type]')
+      end
     end
   end
 end
-
-
-

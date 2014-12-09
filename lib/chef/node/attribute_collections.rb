@@ -63,6 +63,7 @@ class Chef
       MUTATOR_METHODS.each do |mutator|
         class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
           def #{mutator}(*args, &block)
+            root.reset_cache(root.top_level_breadcrumb)
             super
           end
         METHOD_DEFN
@@ -127,6 +128,7 @@ class Chef
       MUTATOR_METHODS.each do |mutator|
         class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
           def #{mutator}(*args, &block)
+            root.reset_cache(root.top_level_breadcrumb)
             super
           end
         METHOD_DEFN
@@ -138,6 +140,7 @@ class Chef
       end
 
       def [](key)
+        root.top_level_breadcrumb ||= key
         value = super
         if !key?(key)
           value = self.class.new(root)
@@ -148,9 +151,11 @@ class Chef
       end
 
       def []=(key, value)
+        root.top_level_breadcrumb ||= key
         if set_unless? && key?(key)
           self[key]
         else
+          root.reset_cache(root.top_level_breadcrumb)
           super
         end
       end

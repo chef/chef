@@ -84,7 +84,7 @@ describe Chef::Handler do
     end
 
     it "has a shortcut for the success? and failed? predicates" do
-      expect(@handler.success?).to be_falsey # becuase there's an exception
+      expect(@handler.success?).to be_falsey # because there's an exception
       expect(@handler.failed?).to be_truthy
     end
 
