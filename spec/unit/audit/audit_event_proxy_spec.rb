@@ -204,7 +204,7 @@ describe Chef::Audit::AuditEventProxy do
 
         # Metadata fields
         let(:described_class) { double("Serverspec::Type::Port",
-          :class => "Serverspec::Type::Port") }
+          :class => "Serverspec::Type::Port", :name => resource_name) }
 
         # Control data fields
         let(:resource_type) { "Port" }
@@ -262,7 +262,7 @@ describe Chef::Audit::AuditEventProxy do
 
         # Metadata parts
         let(:described_class) { double("Serverspec::Type::File",
-          :class => "Serverspec::Type::File") }
+          :class => "Serverspec::Type::File", :name => resource_name) }
 
         # Example group parts
         let(:parent_group) {
