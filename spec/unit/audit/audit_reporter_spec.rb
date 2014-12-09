@@ -9,7 +9,7 @@ describe Chef::Audit::AuditReporter do
   let(:run_id) { 0 }
   let(:start_time) { Time.new(2014, 12, 3, 9, 31, 05, "-08:00") }
   let(:end_time) { Time.new(2014, 12, 3, 9, 36, 14, "-08:00") }
-  let(:run_status) { double("run status", :node => node, :run_id => run_id,
+  let(:run_status) { instance_double(Chef::RunStatus, :node => node, :run_id => run_id,
     :start_time => start_time, :end_time => end_time) }
 
   describe "#audit_phase_start" do
@@ -220,8 +220,10 @@ describe Chef::Audit::AuditReporter do
 
   shared_context "audit data" do
 
-    let(:control_group_foo) { instance_double("Chef::Audit::ControlGroupData") }
-    let(:control_group_bar) { instance_double("Chef::Audit::ControlGroupData") }
+    let(:control_group_foo) { instance_double(Chef::Audit::ControlGroupData,
+      :metadata => double("foo metadata")) }
+    let(:control_group_bar) { instance_double(Chef::Audit::ControlGroupData,
+      :metadata => double("bar metadata")) }
 
     let(:ordered_control_groups) {
       {
@@ -230,12 +232,17 @@ describe Chef::Audit::AuditReporter do
       }
     }
 
-    let(:audit_data) { instance_double("Chef::Audit::AuditData",
+    let(:audit_data) { instance_double(Chef::Audit::AuditData,
       :add_control_group => true) }
+
+    let(:run_context) { instance_double(Chef::RunContext,
+      :audits => ordered_control_groups) }
 
     before do
       allow(reporter).to receive(:ordered_control_groups).and_return(ordered_control_groups)
       allow(reporter).to receive(:audit_data).and_return(audit_data)
+      allow(reporter).to receive(:run_status).and_return(run_status)
+      allow(run_status).to receive(:run_context).and_return(run_context)
     end
   end
 
@@ -276,26 +283,28 @@ describe Chef::Audit::AuditReporter do
   describe "#control_group_started" do
     include_context "audit data"
 
-    let(:name) { "bar" }
-    let(:control_group_bat) { instance_double("Chef::Audit::ControlGroupData (bat)") }
+    let(:name) { "bat" }
+    let(:control_group) { instance_double(Chef::Audit::ControlGroupData,
+      :metadata => double("metadata")) }
 
     before do
       allow(Chef::Audit::ControlGroupData).to receive(:new).
-        with(name).
-        and_return(control_group_bat)
+        with(name, control_group.metadata).
+        and_return(control_group)
     end
 
     it "stores the control group" do
       expect(ordered_control_groups).to receive(:has_key?).with(name).and_return(false)
+      allow(run_context.audits).to receive(:[]).with(name).and_return(control_group)
       expect(ordered_control_groups).to receive(:store).
-        with(name, control_group_bat).
+        with(name, control_group).
         and_call_original
       reporter.control_group_started(name)
       # stubbed :has_key? above, which is used by the have_key matcher,
       # so instead we check the response to Hash's #key? because luckily
       # #key? does not call #has_key?
       expect(ordered_control_groups.key?(name)).to be true
-      expect(ordered_control_groups[name]).to eq control_group_bat
+      expect(ordered_control_groups[name]).to eq control_group
     end
 
     context "when a control group with the same name has been seen" do
