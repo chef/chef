@@ -55,6 +55,8 @@ class Chef
 
       # If the audit phase failed, its because there was some kind of error in the framework
       # that runs tests - normal errors are interpreted as EXAMPLE failures and captured.
+      # We still want to send available audit information to the server so we process the
+      # known control groups.
       def audit_phase_failed(error)
         # The stacktrace information has already been logged elsewhere
         Chef::Log.debug("Audit Reporter failed.")

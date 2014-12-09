@@ -390,6 +390,11 @@ class Chef
         super "You must provide a block with audits"
       end
     end
+    class AuditsFailed < RuntimeError
+      def initialize(num_failed, num_total)
+        super "Audit phase found failures - #{num_failed}/#{num_total} audits failed"
+      end
+    end
 
     # If a converge or audit fails, we want to wrap the output from those errors into 1 error so we can
     # see both issues in the output.  It is possible that nil will be provided.  You must call `fill_backtrace`
