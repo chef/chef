@@ -28,6 +28,7 @@
 * `path` attribute of `execute` resource is restored to provide backwards compatibility with Chef 11.
 * Fix `Chef::Knife::Core::BootstrapContext` constructor for knife-windows compat.
 * Make sure Client doesn't raise error when interval is set on Windows.
+* Check that `installed` is not empty for `keg_only` formula in Homebrew provider
 
 ## 12.0.0
 
