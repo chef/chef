@@ -26,6 +26,7 @@
 * Cleaned up script and execute provider + specs
 * Added deprecation warnings around the use of command attribute in script resources
 * `path` attribute of `execute` resource is restored to provide backwards compatibility with Chef 11.
+* Fix `Chef::Knife::Core::BootstrapContext` constructor for knife-windows compat.
 
 ## 12.0.0
 
