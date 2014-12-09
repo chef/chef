@@ -93,6 +93,27 @@ describe Chef::Provider::Package::Homebrew do
     }
   end
 
+  let(:keg_only_uninstalled_brew_info) do
+    {
+      'name' => 'emacs-kegger',
+      'homepage' => 'http://www.gnu.org/software/emacs/',
+      'versions' => {
+        'stable' => '24.3-keggy',
+        'bottle' => false,
+        'devel' => nil,
+        'head' => 'HEAD'
+      },
+      'revision' => 0,
+      'installed' => [],
+      'linked_keg' => nil,
+      'keg_only' => true,
+      'dependencies' => [],
+      'conflicts_with' => [],
+      'caveats' => '',
+      'options' => []
+    }
+  end
+
   before(:each) do
 
   end
@@ -139,6 +160,11 @@ describe Chef::Provider::Package::Homebrew do
 
     it 'returns nil if the package is not installed' do
       allow(provider).to receive(:brew_info).and_return(uninstalled_brew_info)
+      expect(provider.current_installed_version).to be_nil
+    end
+
+    it 'returns nil if the package is keg only and not installed' do
+      allow(provider).to receive(:brew_info).and_return(keg_only_uninstalled_brew_info)
       expect(provider.current_installed_version).to be_nil
     end
   end
