@@ -60,7 +60,7 @@ class Chef
         DataBagItem.validate_id!(item)
 
         item = DataBagItem.load(bag, item)
-        if encrypted?(item.raw_data)
+        if encrypted?(item.raw_data) && secret
           Log.debug("Data bag item looks encrypted: #{bag.inspect} #{item.inspect}")
 
           # Try to load the data bag item secret, if secret is not provided.
