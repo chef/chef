@@ -34,7 +34,7 @@ dependency "chef"
 build do
   env = with_standard_compiler_flags(with_embedded_path)
 
-  bundle "install", env: env
+  bundle "install --without development", env: env
 
   gem "build foodcritic.gemspec", env: env
   gem "install foodcritic-*.gem" \
