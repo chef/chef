@@ -1,4 +1,4 @@
-## Unreleased
+## 12.1.0 (Unreleased)
 
 * [**Vasiliy Tolstov**](https://github.com/vtolstov):
   cleanup cookbook path from stale files (when using chef-solo with a tarball url)
@@ -22,13 +22,21 @@
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
 * Update Chef to use RSpec 3.
-* Create constant for LWRP before calling `provides`
 * Cleaned up script and execute provider + specs
 * Added deprecation warnings around the use of command attribute in script resources
-* `path` attribute of `execute` resource is restored to provide backwards compatibility with Chef 11.
-* Fix `Chef::Knife::Core::BootstrapContext` constructor for knife-windows compat.
-* Make sure Client doesn't raise error when interval is set on Windows.
-* Check that `installed` is not empty for `keg_only` formula in Homebrew provider
+
+## 12.0.2 (Unreleased)
+* [Issue 2578](https://github.com/opscode/chef/issues/2578) Check that `installed` is not empty for `keg_only` formula in Homebrew provider.
+* [Issue 2609](https://github.com/opscode/chef/issues/2609) Resolve the circular dependency between ProviderResolver and Resource.
+
+## 12.0.1
+
+* [Issue 2552](https://github.com/opscode/chef/issues/2552) Create constant for LWRP before calling `provides`
+* [Issue 2545](https://github.com/opscode/chef/issues/2545) `path` attribute of `execute` resource is restored to provide backwards compatibility with Chef 11.
+* [Issue 2565](https://github.com/opscode/chef/issues/2565) Fix `Chef::Knife::Core::BootstrapContext` constructor for knife-windows compat.
+* [Issue 2566](https://github.com/opscode/chef/issues/2566) Make sure Client doesn't raise error when interval is set on Windows.
+* [Issue 2560](https://github.com/opscode/chef/issues/2560) Fix `uninitialized constant Windows::Constants` in `windows_eventlog`.
+* [Issue 2563](https://github.com/opscode/chef/issues/2563) Make sure the Chef Client rpm packages are signed with GPG keys correctly.
 
 ## 12.0.0
 
