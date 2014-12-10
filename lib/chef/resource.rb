@@ -29,7 +29,6 @@ require 'chef/resource/conditional_action_not_nothing'
 require 'chef/resource_collection'
 require 'chef/node_map'
 require 'chef/node'
-require 'chef/provider_resolver'
 require 'chef/platform'
 
 require 'chef/mixin/deprecation'
@@ -833,3 +832,7 @@ F
     end
   end
 end
+
+# We require this at the BOTTOM of this file to avoid circular requires (it is used
+# at runtime but not load time)
+require 'chef/provider_resolver'
