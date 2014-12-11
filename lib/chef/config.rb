@@ -321,7 +321,12 @@ class Chef
     default :enable_reporting_url_fatals, false
     # Possible values for :audit_mode
     # :enabled, :disabled, :audit_only,
-    default :audit_mode, :enabled
+    #
+    # TODO: 11 Dec 2014: Currently audit-mode is an experimental feature
+    # and is disabled by default. When users choose to enable audit-mode,
+    # a warning is issued in application/client#reconfigure.
+    # This can be removed when audit-mode is enabled by default.
+    default :audit_mode, :disabled
 
     # Policyfile is an experimental feature where a node gets its run list and
     # cookbook version set from a single document on the server instead of

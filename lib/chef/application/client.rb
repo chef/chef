@@ -239,17 +239,10 @@ class Chef::Application::Client < Chef::Application
   end
 
   option :audit_mode,
-    :long           => "--[no-]audit-mode",
-    :description    => "If not specified, run converge and audit phase.  If true, run only audit phase.  If false, run only converge phase.",
-    :boolean        => true,
-    :proc           => lambda { |set|
-      # Convert boolean to config options of :audit_only or :disabled
-      if set
-        :audit_only
-      else
-        :disabled
-      end
-    }
+    :long           => "--audit-mode SETTING",
+    :description    => "Enable audit-mode with `enabled`. Disabled audit-mode with `disabled`. Skip converge and only audit with `audit-only`",
+    :proc           => lambda { |mode| mode.gsub("-", "_").to_sym },
+    :default        => :disabled
 
   IMMEDIATE_RUN_SIGNAL = "1".freeze
 
@@ -287,6 +280,19 @@ class Chef::Application::Client < Chef::Application
     if Chef::Config[:json_attribs]
       config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
       @chef_client_json = config_fetcher.fetch_json
+    end
+
+    if mode = Chef::Config[:audit_mode]
+      expected_modes = [:enabled, :disabled, :audit_only]
+      unless expected_modes.include?(mode)
+        Chef::Application.fatal!(unrecognized_audit_mode(mode))
+      end
+
+      unless mode == :disabled
+        # This should be removed when audit-mode is enabled by default/no longer
+        # an experimental feature.
+        Chef::Log.warn(audit_mode_experimental_message)
+      end
     end
   end
 
@@ -407,5 +413,27 @@ class Chef::Application::Client < Chef::Application
     "\nConfiguration settings:" +
     "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
     "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+  end
+
+  def audit_mode_settings_explaination
+    "\n* To enable audit mode after converge, use command line option `--audit-mode enabled` or set `:audit_mode = :enabled` in your config file." +
+    "\n* To disable audit mode, use command line option `--audit-mode disabled` or set `:audit_mode = :disabled` in your config file." +
+    "\n* To only run audit mode, use command line option `--audit-mode audit-only` or set `:audit_mode = :audit_only` in your config file." +
+    "\nAudit mode is disabled by default."
+  end
+
+  def unrecognized_audit_mode(mode)
+    "Unrecognized setting #{mode} for audit mode." + audit_mode_settings_explaination
+  end
+
+  def audit_mode_experimental_message
+    msg = if Chef::Config[:audit_mode] == :audit_only
+      "Chef-client has been configured to skip converge and run only audits."
+    else
+      "Chef-client has been configure to run audits after it converges."
+    end
+    msg += " Audit mode is an experimental feature currently under development. API changes may occur. Use at your own risk."
+    msg += audit_mode_settings_explaination
+    return msg
   end
 end
