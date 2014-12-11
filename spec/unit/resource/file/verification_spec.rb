@@ -27,7 +27,7 @@ describe Chef::Resource::File::Verification do
   describe "verification registration" do
     it "registers a verification for later use" do
       class Chef::Resource::File::Verification::Wombat < Chef::Resource::File::Verification
-        register :tabmow
+        provides :tabmow
       end
       expect(Chef::Resource::File::Verification.lookup(:tabmow)).to eq(Chef::Resource::File::Verification::Wombat)
     end
@@ -89,7 +89,7 @@ describe Chef::Resource::File::Verification do
     context "with a named verification(Symbol)" do
       before(:each) do
         class Chef::Resource::File::Verification::Turtle < Chef::Resource::File::Verification
-          register :cats
+          provides :cats
           def verify(path, opts)
           end
         end
