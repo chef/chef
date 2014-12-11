@@ -81,7 +81,7 @@ class Chef
 
         resource = build_resource(type, name, created_at, &resource_attrs_block)
 
-        run_context.resource_collection.insert(resource, resource_type:type, instance_name:name)
+        run_context.resource_collection.insert(resource, resource_type: type, instance_name: name)
         resource
       end
 
@@ -101,6 +101,7 @@ class Chef
 
         resource = resource_class.new(name, run_context)
         resource.source_line = created_at
+        resource.declared_type = type
         # If we have a resource like this one, we want to steal its state
         # This behavior is very counter-intuitive and should be removed.
         # See CHEF-3694, https://tickets.opscode.com/browse/CHEF-3694

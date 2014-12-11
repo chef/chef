@@ -30,97 +30,13 @@ require 'chef/resource_collection'
 require 'chef/node_map'
 require 'chef/node'
 require 'chef/platform'
+require 'chef/resource_notification'
 
 require 'chef/mixin/deprecation'
 require 'chef/mixin/descendants_tracker'
 
 class Chef
   class Resource
-    class Notification < Struct.new(:resource, :action, :notifying_resource)
-
-      def duplicates?(other_notification)
-        unless other_notification.respond_to?(:resource) && other_notification.respond_to?(:action)
-          msg = "only duck-types of Chef::Resource::Notification can be checked for duplication "\
-                "you gave #{other_notification.inspect}"
-          raise ArgumentError, msg
-        end
-        other_notification.resource == resource && other_notification.action == action
-      end
-
-      # If resource and/or notifying_resource is not a resource object, this will look them up in the resource collection
-      # and fix the references from strings to actual Resource objects.
-      def resolve_resource_reference(resource_collection)
-        return resource if resource.kind_of?(Chef::Resource) && notifying_resource.kind_of?(Chef::Resource)
-
-        if not(resource.kind_of?(Chef::Resource))
-          fix_resource_reference(resource_collection)
-        end
-
-        if not(notifying_resource.kind_of?(Chef::Resource))
-          fix_notifier_reference(resource_collection)
-        end
-      end
-
-      # This will look up the resource if it is not a Resource Object.  It will complain if it finds multiple
-      # resources, can't find a resource, or gets invalid syntax.
-      def fix_resource_reference(resource_collection)
-        matching_resource = resource_collection.find(resource)
-        if Array(matching_resource).size > 1
-          msg = "Notification #{self} from #{notifying_resource} was created with a reference to multiple resources, "\
-          "but can only notify one resource. Notifying resource was defined on #{notifying_resource.source_line}"
-          raise Chef::Exceptions::InvalidResourceReference, msg
-        end
-        self.resource = matching_resource
-
-      rescue Chef::Exceptions::ResourceNotFound => e
-        err = Chef::Exceptions::ResourceNotFound.new(<<-FAIL)
-resource #{notifying_resource} is configured to notify resource #{resource} with action #{action}, \
-but #{resource} cannot be found in the resource collection. #{notifying_resource} is defined in \
-#{notifying_resource.source_line}
-FAIL
-        err.set_backtrace(e.backtrace)
-        raise err
-      rescue Chef::Exceptions::InvalidResourceSpecification => e
-          err = Chef::Exceptions::InvalidResourceSpecification.new(<<-F)
-Resource #{notifying_resource} is configured to notify resource #{resource} with action #{action}, \
-but #{resource.inspect} is not valid syntax to look up a resource in the resource collection. Notification \
-is defined near #{notifying_resource.source_line}
-F
-          err.set_backtrace(e.backtrace)
-        raise err
-      end
-
-      # This will look up the notifying_resource if it is not a Resource Object.  It will complain if it finds multiple
-      # resources, can't find a resource, or gets invalid syntax.
-      def fix_notifier_reference(resource_collection)
-        matching_notifier = resource_collection.find(notifying_resource)
-        if Array(matching_notifier).size > 1
-          msg = "Notification #{self} from #{notifying_resource} was created with a reference to multiple notifying "\
-          "resources, but can only originate from one resource.  Destination resource was defined "\
-          "on #{resource.source_line}"
-          raise Chef::Exceptions::InvalidResourceReference, msg
-        end
-        self.notifying_resource = matching_notifier
-
-      rescue Chef::Exceptions::ResourceNotFound => e
-        err = Chef::Exceptions::ResourceNotFound.new(<<-FAIL)
-Resource #{resource} is configured to receive notifications from #{notifying_resource} with action #{action}, \
-but #{notifying_resource} cannot be found in the resource collection. #{resource} is defined in \
-#{resource.source_line}
-FAIL
-        err.set_backtrace(e.backtrace)
-        raise err
-      rescue Chef::Exceptions::InvalidResourceSpecification => e
-          err = Chef::Exceptions::InvalidResourceSpecification.new(<<-F)
-Resource #{resource} is configured to receive notifications from  #{notifying_resource} with action #{action}, \
-but #{notifying_resource.inspect} is not valid syntax to look up a resource in the resource collection. Notification \
-is defined near #{resource.source_line}
-F
-          err.set_backtrace(e.backtrace)
-        raise err
-      end
-
-    end
 
     FORBIDDEN_IVARS = [:@run_context, :@not_if, :@only_if, :@enclosing_provider]
     HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider]
@@ -211,6 +127,7 @@ F
     attr_accessor :source_line
     attr_accessor :retries
     attr_accessor :retry_delay
+    attr_accessor :declared_type
 
     attr_reader :updated
 
@@ -298,7 +215,7 @@ F
 
     def load_prior_resource(resource_type, instance_name)
       begin
-        key = ::Chef::ResourceCollection::ResourceSet.create_key(resource_type, instance_name)
+        key = "#{resource_type}[#{instance_name}]"
         prior_resource = run_context.resource_collection.lookup(key)
         # if we get here, there is a prior resource (otherwise we'd have jumped
         # to the rescue clause).
@@ -425,10 +342,10 @@ F
     def notifies(action, resource_spec, timing=:delayed)
       # when using old-style resources(:template => "/foo.txt") style, you
       # could end up with multiple resources.
+      validate_resource_spec!(resource_spec)
+
       resources = [ resource_spec ].flatten
       resources.each do |resource|
-
-        validate_resource_spec!(resource_spec)
 
         case timing.to_s
         when 'delayed'
@@ -448,8 +365,12 @@ F
     # resolve_resource_reference on each in turn, causing them to
     # resolve lazy/forward references.
     def resolve_notification_references
-      run_context.immediate_notifications(self).each { |n| n.resolve_resource_reference(run_context.resource_collection) }
-      run_context.delayed_notifications(self).each {|n| n.resolve_resource_reference(run_context.resource_collection) }
+      run_context.immediate_notifications(self).each { |n|
+        n.resolve_resource_reference(run_context.resource_collection)
+      }
+      run_context.delayed_notifications(self).each {|n|
+        n.resolve_resource_reference(run_context.resource_collection)
+      }
     end
 
     def notifies_immediately(action, resource_spec)
@@ -496,6 +417,14 @@ F
       else
         return *args
       end
+    end
+
+    # We usually want to store and reference resources by their declared type and not the actual type that
+    # was looked up by the Resolver (IE, "package" becomes YumPackage class).  If we have not been provided
+    # the declared key we want to fall back on the old to_s key.
+    def declared_key
+      return to_s if declared_type.nil?
+      "#{declared_type}[#{@name}]"
     end
 
     def to_s
