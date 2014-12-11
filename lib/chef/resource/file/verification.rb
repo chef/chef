@@ -17,6 +17,7 @@
 #
 
 require 'chef/exceptions'
+require 'chef/mixin/descendants_tracker'
 
 class Chef
   class Resource
@@ -48,7 +49,7 @@ class Chef
       # class Chef
       #  class Resource
       #    class File::Verification::Foo < Chef::Resource::File::Verification
-      #      register :noop
+      #      provides :noop
       #      def verify(path, opts)
       #        #yolo
       #        true
@@ -60,18 +61,22 @@ class Chef
       #
 
       class Verification
-        @@registered_verifications = {}
+        extend Chef::Mixin::DescendantsTracker
 
-        def self.register(name)
-          @@registered_verifications[name] = self.name
+        def self.provides(name)
+          @provides = name
+        end
+
+        def self.provides?(name)
+          @provides == name
         end
 
         def self.lookup(name)
-          c = @@registered_verifications[name]
+          c = descendants.find {|d| d.provides?(name) }
           if c.nil?
             raise Chef::Exceptions::VerificationNotFound.new "No file verification for #{name} found."
           end
-          Object.const_get(c)
+          c
         end
 
         def initialize(parent_resource, command, opts, &block)
