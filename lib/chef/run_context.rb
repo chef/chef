@@ -104,9 +104,6 @@ class Chef
       end
     end
 
-    # TODO notification.notifying_resource either needs to be a real resource or "type[name]" which matches declaration
-    # TODO otherwords, @collection needs to always be keyed by "defined_type[name]"
-
     # Adds a delayed notification to the +delayed_notification_collection+. The
     # notification should be a Chef::Resource::Notification or duck type.
     def notifies_delayed(notification)
