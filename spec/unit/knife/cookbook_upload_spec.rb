@@ -199,6 +199,39 @@ E
         expect(knife.ui).to receive(:info).with(/Uploaded 3 cookbooks\./)
         expect { Timeout::timeout(5) { knife.run } }.not_to raise_error
       end
+
+      context 'with upload errors' do
+        before do
+          expect(knife).to receive(:upload).exactly(3).times.and_raise(
+            Chef::Exceptions::CookbookNotFoundInRepo.new
+          )
+          allow(knife)
+            .to receive(:cookbook_names).and_return(%w(test_cookbook3))
+          allow(knife.ui).to receive(:error)
+        end
+        after do
+          expect { Timeout::timeout(5) { knife.run } }
+            .to raise_error(SystemExit)
+        end
+
+        it 'should an error fo each cookbook' do
+          (1..3).step.each do |i|
+            expect(knife.ui).to receive(:error).with(
+              "Could not find cookbook test_cookbook#{i} in your cookbook "\
+              'path, skipping it'
+            ).once
+          end
+        end
+
+        it 'should print an error with the failed cookbook count' do
+          expect(knife.ui)
+            .to receive(:error).with('Failed to upload 3 cookbooks.').once
+        end
+
+        it 'should not print successful upload message' do
+          expect(knife.ui).to_not receive(:info).with(/Uploaded 3 cookbooks\./)
+        end
+      end
     end
 
     describe 'when specifying a cookbook name with missing dependencies' do
