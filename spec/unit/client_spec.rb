@@ -192,7 +192,7 @@ describe Chef::Client do
       let(:http_cookbook_sync) { double("Chef::REST (cookbook sync)") }
       let(:http_node_save) { double("Chef::REST (node save)") }
       let(:runner) { double("Chef::Runner") }
-      let(:audit_runner) { double("Chef::Audit::Runner") }
+      let(:audit_runner) { instance_double("Chef::Audit::Runner", :failed? => false) }
 
       let(:api_client_exists?) { false }
 
@@ -205,6 +205,7 @@ describe Chef::Client do
         # --Client.register
         #   Make sure Client#register thinks the client key doesn't
         #   exist, so it tries to register and create one.
+        allow(File).to receive(:exists?).and_call_original
         expect(File).to receive(:exists?).
           with(Chef::Config[:client_key]).
           exactly(:once).
@@ -288,6 +289,7 @@ describe Chef::Client do
       before do
         Chef::Config[:client_fork] = enable_fork
         Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
+        Chef::Config[:why_run] = false
 
         stub_const("Chef::Client::STDOUT_FD", stdout)
         stub_const("Chef::Client::STDERR_FD", stderr)
@@ -390,9 +392,11 @@ describe Chef::Client do
 
     describe "when converge fails" do
       include_context "a client run" do
+        let(:e) { Exception.new }
         def stub_for_converge
           expect(Chef::Runner).to receive(:new).and_return(runner)
-          expect(runner).to receive(:converge).and_raise(Exception)
+          expect(runner).to receive(:converge).and_raise(e)
+          expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(Chef::Exceptions::RunFailedWrappingError)
         end
 
         def stub_for_node_save
@@ -408,30 +412,27 @@ describe Chef::Client do
           expect(client).to receive(:run_started)
           expect(client).to receive(:run_failed)
 
-          # --ResourceReporter#run_completed
-          #   updates the server with the resource history
-          #   (has its own tests, so stubbing it here.)
-          # TODO: What gets called here?
-          #expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
-          # --AuditReporter#run_completed
-          #   posts the audit data to server.
-          #   (has its own tests, so stubbing it here.)
-          # TODO: What gets called here?
-          #expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
+          expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
+          expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
         end
       end
 
       it "runs the audits and raises the error" do
-        expect{ client.run }.to raise_error(Exception)
+        expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+          expect(error.wrapped_errors.size).to eq(1)
+          expect(error.wrapped_errors[0]).to eq(e)
+        end
       end
     end
 
     describe "when the audit phase fails" do
       context "with an exception" do
         include_context "a client run" do
+          let(:e) { Exception.new }
           def stub_for_audit
             expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
-            expect(audit_runner).to receive(:run).and_raise(Exception)
+            expect(audit_runner).to receive(:run).and_raise(e)
+            expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(Chef::Exceptions::RunFailedWrappingError)
           end
 
           def stub_for_run
@@ -443,26 +444,98 @@ describe Chef::Client do
             expect(client).to receive(:run_started)
             expect(client).to receive(:run_failed)
 
-            # --ResourceReporter#run_completed
-            #   updates the server with the resource history
-            #   (has its own tests, so stubbing it here.)
-            # TODO: What gets called here?
-            #expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
-            # --AuditReporter#run_completed
-            #   posts the audit data to server.
-            #   (has its own tests, so stubbing it here.)
-            # TODO: What gets called here?
-            #expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
+            expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
+            expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
           end
         end
 
         it "should save the node after converge and raise exception" do
-          expect{ client.run }.to raise_error(Exception)
+          expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+            expect(error.wrapped_errors.size).to eq(1)
+            expect(error.wrapped_errors[0]).to eq(e)
+          end
         end
       end
 
       context "with failed audits" do
-        skip("because I don't think we've implemented this yet")
+        include_context "a client run" do
+          let(:audit_runner) do
+            instance_double("Chef::Audit::Runner", :run => true, :failed? => true, :num_failed => 1, :num_total => 1)
+          end
+
+          def stub_for_audit
+            expect(Chef::Audit::Runner).to receive(:new).and_return(audit_runner)
+            expect(Chef::Application).to receive(:debug_stacktrace).with an_instance_of(Chef::Exceptions::RunFailedWrappingError)
+          end
+
+          def stub_for_run
+            expect_any_instance_of(Chef::RunLock).to receive(:acquire)
+            expect_any_instance_of(Chef::RunLock).to receive(:save_pid)
+            expect_any_instance_of(Chef::RunLock).to receive(:release)
+
+            # Post conditions: check that node has been filled in correctly
+            expect(client).to receive(:run_started)
+            expect(client).to receive(:run_failed)
+
+            expect_any_instance_of(Chef::ResourceReporter).to receive(:run_failed)
+            expect_any_instance_of(Chef::Audit::AuditReporter).to receive(:run_failed)
+          end
+        end
+
+        it "should save the node after converge and raise exception" do
+          expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+            expect(error.wrapped_errors.size).to eq(1)
+            expect(error.wrapped_errors[0]).to be_instance_of(Chef::Exceptions::AuditsFailed)
+          end
+        end
+      end
+    end
+
+    describe "when why_run mode is enabled" do
+      include_context "a client run" do
+
+        before do
+          Chef::Config[:why_run] = true
+        end
+
+        def stub_for_audit
+          expect(Chef::Audit::Runner).to_not receive(:new)
+        end
+
+        def stub_for_node_save
+          # This is how we should be mocking external calls - not letting it fall all the way through to the
+          # REST call
+          expect(node).to receive(:save)
+        end
+
+        it "runs successfully without enabling the audit runner" do
+          client.run
+
+          # fork is stubbed, so we can see the outcome of the run
+          expect(node.automatic_attrs[:platform]).to eq("example-platform")
+          expect(node.automatic_attrs[:platform_version]).to eq("example-platform-1.0")
+        end
+      end
+    end
+
+    describe "when audits are disabled" do
+      include_context "a client run" do
+
+        before do
+          Chef::Config[:audit_mode] = :disabled
+        end
+
+        def stub_for_audit
+          expect(Chef::Audit::Runner).to_not receive(:new)
+        end
+
+        it "runs successfully without enabling the audit runner" do
+          client.run
+
+          # fork is stubbed, so we can see the outcome of the run
+          expect(node.automatic_attrs[:platform]).to eq("example-platform")
+          expect(node.automatic_attrs[:platform_version]).to eq("example-platform-1.0")
+        end
       end
     end
 
