@@ -1213,6 +1213,40 @@ describe Chef::Node do
           node.save
         end
 
+        it "should save false-y whitelisted attributes" do
+          Chef::Config[:default_attribute_whitelist] = [
+            "foo/bar/baz"
+          ]
+
+          data = {
+            "default" => {
+              "foo" => {
+                "bar" => {
+                  "baz" => false,
+                },
+                "other" => {
+                  "stuff" => true,
+                }
+              }
+            }
+          }
+
+          selected_data = {
+            "default" => {
+              "foo" => {
+                "bar" => {
+                  "baz" => false,
+                }
+              }
+            }
+          }
+
+          node.name("falsey-monkey")
+          allow(node).to receive(:for_json).and_return(data)
+          expect(@rest).to receive(:put_rest).with("nodes/falsey-monkey", selected_data).and_return("foo")
+          node.save
+        end
+
         it "should not save any attributes if the whitelist is empty" do
           Chef::Config[:automatic_attribute_whitelist] = []
 
