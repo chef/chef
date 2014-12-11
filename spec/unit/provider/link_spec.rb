@@ -38,8 +38,12 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
     result
   end
 
-  def paths_eql?(path1, path2)
-    Chef::Util::PathHelper.paths_eql?(path1, path2)
+  def canonicalize(path)
+    Chef::Platform.windows? ? path.gsub('/', '\\') : path
+  end
+
+  def compare_paths(path1, path2)
+    expect(canonicalize(path1).downcase).to eq(canonicalize(path2).downcase)
   end
 
   describe "when the target is a symlink" do
@@ -68,7 +72,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         expect(provider.current_resource.link_type).to eq(:symbolic)
       end
       it "should update the source of the existing link with the links target" do
-        expect(paths_eql?(provider.current_resource.to, "#{CHEF_SPEC_DATA}/fofile")).to be_truthy
+        compare_paths(provider.current_resource.to, "#{CHEF_SPEC_DATA}/fofile")
       end
       it "should set the owner" do
         expect(provider.current_resource.owner).to eq(501)
@@ -81,6 +85,14 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
       # it does no work.  Other create and delete scenarios are covered in
       # the functional tests for links.
       context 'when the desired state is identical' do
+        before do
+          # This spec stubs all lstat methods but doesn't stub any windows
+          # ACL checking methods. FileAccessControl class uses RUBY_PLATFORM constant
+          # to load the related ACL checking methods and gets loaded way before
+          # we execute this test. Make sure we don't report any changes in order to
+          # simulate a full identical environment.
+          allow(provider.access_controls).to receive(:requires_changes?).and_return(false)
+        end
         let(:new_resource) do
           result = Chef::Resource::Link.new("#{CHEF_SPEC_DATA}/fofile-link")
           result.to "#{CHEF_SPEC_DATA}/fofile"
@@ -110,7 +122,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         expect(provider.current_resource.link_type).to eq(:symbolic)
       end
       it "should update the source of the existing link to the link's target" do
-        expect(paths_eql?(provider.current_resource.to, "#{CHEF_SPEC_DATA}/fofile")).to be_truthy
+        compare_paths(provider.current_resource.to, "#{CHEF_SPEC_DATA}/fofile")
       end
       it "should not set the owner" do
         expect(provider.current_resource.owner).to be_nil
@@ -221,7 +233,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         expect(provider.current_resource.link_type).to eq(:hard)
       end
       it "should update the source of the existing link to the link's target" do
-        expect(paths_eql?(provider.current_resource.to, "#{CHEF_SPEC_DATA}/fofile")).to be_truthy
+        compare_paths(provider.current_resource.to, "#{CHEF_SPEC_DATA}/fofile")
       end
       it "should not set the owner" do
         expect(provider.current_resource.owner).to eq(nil)
