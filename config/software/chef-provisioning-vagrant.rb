@@ -33,7 +33,7 @@ dependency "chef-provisioning"
 build do
   env = with_standard_compiler_flags(with_embedded_path)
 
-  bundle "install", env: env
+  bundle "install --without development", env: env
 
   gem "build chef-provisioning-vagrant.gemspec", env: env
   gem "install chef-provisioning-vagrant-*.gem" \
