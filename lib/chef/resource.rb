@@ -349,9 +349,9 @@ class Chef
 
         case timing.to_s
         when 'delayed'
-          run_context.notifies_delayed(Notification.new(resource_spec, action, self))
+          notifies_delayed(action, resource)
         when 'immediate', 'immediately'
-          run_context.notifies_immediately(Notification.new(resource_spec, action, self))
+          notifies_immediately(action, resource)
         else
           raise ArgumentError,  "invalid timing: #{timing} for notifies(#{action}, #{resources.inspect}, #{timing}) resource #{self} "\
                                 "Valid timings are: :delayed, :immediate, :immediately"
@@ -371,6 +371,14 @@ class Chef
       run_context.delayed_notifications(self).each {|n|
         n.resolve_resource_reference(run_context.resource_collection)
       }
+    end
+
+    def notifies_immediately(action, resource_spec)
+      run_context.notifies_immediately(Notification.new(resource_spec, action, self))
+    end
+
+    def notifies_delayed(action, resource_spec)
+      run_context.notifies_delayed(Notification.new(resource_spec, action, self))
     end
 
     def immediate_notifications
