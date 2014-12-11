@@ -57,7 +57,9 @@ class Chef
         all_data = all_data[part]
       end
 
-      unless all_data[parts[-1]]
+      # Note: You can't do all_data[parts[-1]] here because the value
+      # may be false-y
+      unless all_data.key?(parts[-1])
         Chef::Log.warn("Could not find whitelist attribute #{item}.")
         return nil
       end
