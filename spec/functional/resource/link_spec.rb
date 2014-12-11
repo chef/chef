@@ -72,8 +72,12 @@ describe Chef::Resource::Link do
     end
   end
 
+  def canonicalize(path)
+    windows? ? path.gsub('/', '\\') : path
+  end
+
   def paths_eql?(path1, path2)
-    Chef::Util::PathHelper.paths_eql?(path1, path2)
+    canonicalize(path1).downcase == canonicalize(path2).downcase
   end
 
   def symlink(a, b)
