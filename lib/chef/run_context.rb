@@ -100,9 +100,12 @@ class Chef
       if nr.instance_of?(Chef::Resource)
         @immediate_notification_collection[nr.name] << notification
       else
-        @immediate_notification_collection[nr.to_s] << notification
+        @immediate_notification_collection[nr.declared_key] << notification
       end
     end
+
+    # TODO notification.notifying_resource either needs to be a real resource or "type[name]" which matches declaration
+    # TODO otherwords, @collection needs to always be keyed by "defined_type[name]"
 
     # Adds a delayed notification to the +delayed_notification_collection+. The
     # notification should be a Chef::Resource::Notification or duck type.
@@ -111,7 +114,7 @@ class Chef
       if nr.instance_of?(Chef::Resource)
         @delayed_notification_collection[nr.name] << notification
       else
-        @delayed_notification_collection[nr.to_s] << notification
+        @delayed_notification_collection[nr.declared_key] << notification
       end
     end
 
@@ -119,7 +122,7 @@ class Chef
       if resource.instance_of?(Chef::Resource)
         return @immediate_notification_collection[resource.name]
       else
-        return @immediate_notification_collection[resource.to_s]
+        return @immediate_notification_collection[resource.declared_key]
       end
     end
 
@@ -127,7 +130,7 @@ class Chef
       if resource.instance_of?(Chef::Resource)
         return @delayed_notification_collection[resource.name]
       else
-        return @delayed_notification_collection[resource.to_s]
+        return @delayed_notification_collection[resource.declared_key]
       end
     end
 
