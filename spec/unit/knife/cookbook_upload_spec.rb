@@ -179,8 +179,9 @@ E
         c
       end
 
+      before { knife.config[:depends] = true }
+
       it "should upload all dependencies once" do
-        knife.config[:depends] = true
         allow(knife).to receive(:cookbook_names).and_return(["test_cookbook1", "test_cookbook2", "test_cookbook3"])
         expect(knife).to receive(:upload).exactly(3).times
         expect do
@@ -188,6 +189,15 @@ E
             knife.run
           end
         end.not_to raise_error
+      end
+
+      it 'should not print any error or warning' do
+        allow(knife).to receive(:cookbook_names).and_return(%w(test_cookbook3))
+        expect(knife).to receive(:upload).exactly(3).times
+        expect(knife.ui).to_not receive(:error)
+        expect(knife.ui).to_not receive(:warn)
+        expect(knife.ui).to receive(:info).with(/Uploaded 3 cookbooks\./)
+        expect { Timeout::timeout(5) { knife.run } }.not_to raise_error
       end
     end
 
