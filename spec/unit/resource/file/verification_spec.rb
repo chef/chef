@@ -32,7 +32,7 @@ describe Chef::Resource::File::Verification do
       expect(Chef::Resource::File::Verification.lookup(:tabmow)).to eq(Chef::Resource::File::Verification::Wombat)
     end
 
-    it "raises an error if a verificationc can't be found" do
+    it "raises an error if a verification can't be found" do
       expect{Chef::Resource::File::Verification.lookup(:dne)}.to raise_error(Chef::Exceptions::VerificationNotFound)
     end
   end
