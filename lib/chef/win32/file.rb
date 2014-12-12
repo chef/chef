@@ -37,8 +37,10 @@ class Chef
         raise Errno::ENOENT, "(#{old_name}, #{new_name})" unless ::File.exist?(old_name)
         # TODO do a check for CreateHardLinkW and
         # raise NotImplemented exception on older Windows
-        old_name = encode_path(old_name)
-        new_name = encode_path(new_name)
+        # We need to preserve the relative paths when we are creating links.
+        # So we pass expand = false to the encode_path
+        old_name = encode_path(old_name, false)
+        new_name = encode_path(new_name, false)
         unless CreateHardLinkW(new_name, old_name, nil)
           Chef::ReservedNames::Win32::Error.raise!
         end
@@ -55,8 +57,10 @@ class Chef
         # TODO do a check for CreateSymbolicLinkW and
         # raise NotImplemented exception on older Windows
         flags = ::File.directory?(old_name) ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0
-        old_name = encode_path(old_name)
-        new_name = encode_path(new_name)
+        # We need to preserve the relative paths when we are creating links.
+        # So we pass expand = false to the encode_path
+        old_name = encode_path(old_name, false)
+        new_name = encode_path(new_name, false)
         unless CreateSymbolicLinkW(new_name, old_name, flags)
           Chef::ReservedNames::Win32::Error.raise!
         end
@@ -69,7 +73,9 @@ class Chef
       #
       def self.symlink?(file_name)
         is_symlink = false
-        path = encode_path(file_name)
+        # We need to preserve the relative paths when we are creating links.
+        # So we pass expand = false to the encode_path
+        path = encode_path(file_name, false)
         if ::File.exists?(file_name)
           if ((GetFileAttributesW(path) & FILE_ATTRIBUTE_REPARSE_POINT) > 0)
             file_search_handle(file_name) do |handle, find_data|

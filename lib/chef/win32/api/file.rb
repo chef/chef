@@ -458,8 +458,8 @@ BOOL WINAPI DeviceIoControl(
         # UTF-16LE encodes it.  Used to prepare paths
         # to be passed to the *W vesion of WinAPI File
         # functions
-        def encode_path(path)
-          Chef::Util::PathHelper.canonical_path(path).to_wstring
+        def encode_path(path, expand = true)
+          Chef::Util::PathHelper.canonical_path(path, expand).to_wstring
         end
 
         # retrieves a file search handle and passes it

@@ -72,8 +72,12 @@ describe Chef::Resource::Link do
     end
   end
 
-  def paths_eql?(path1, path2)
-    Chef::Util::PathHelper.paths_eql?(path1, path2)
+  def canonicalize(path)
+    windows? ? path.gsub('/', '\\') : path
+  end
+
+  def compare_paths(path1, path2)
+    expect(canonicalize(path1).downcase).to eq(canonicalize(path2).downcase)
   end
 
   def symlink(a, b)
@@ -180,7 +184,7 @@ describe Chef::Resource::Link do
 
         it 'links to the target file' do
           expect(symlink?(target_file)).to be_truthy
-          expect(paths_eql?(readlink(target_file), to)).to be_truthy
+          compare_paths(readlink(target_file), to)
         end
         it 'marks the resource updated' do
           expect(resource).to be_updated
@@ -201,7 +205,7 @@ describe Chef::Resource::Link do
 
         it 'leaves the file linked' do
           expect(symlink?(target_file)).to be_truthy
-          expect(paths_eql?(readlink(target_file), to)).to be_truthy
+          compare_paths(readlink(target_file), to)
         end
         it 'does not mark the resource updated' do
           expect(resource).not_to be_updated
@@ -279,7 +283,7 @@ describe Chef::Resource::Link do
             before(:each) do
               symlink(to, target_file)
               expect(symlink?(target_file)).to be_truthy
-              expect(paths_eql?(readlink(target_file), to)).to be_truthy
+              compare_paths(readlink(target_file), to)
             end
             include_context 'create symbolic link is noop'
             include_context 'delete succeeds'
@@ -294,7 +298,7 @@ describe Chef::Resource::Link do
               File.open(@other_target, 'w') { |file| file.write('eek') }
               symlink(@other_target, target_file)
               expect(symlink?(target_file)).to be_truthy
-              expect(paths_eql?(readlink(target_file), @other_target)).to be_truthy
+              compare_paths(readlink(target_file), @other_target)
             end
             after(:each) do
               File.delete(@other_target)
@@ -311,7 +315,7 @@ describe Chef::Resource::Link do
               nonexistent = File.join(test_file_dir, make_tmpname('nonexistent_spec'))
               symlink(nonexistent, target_file)
               expect(symlink?(target_file)).to be_truthy
-              expect(paths_eql?(readlink(target_file), nonexistent)).to be_truthy
+              compare_paths(readlink(target_file), nonexistent)
             end
             include_context 'create symbolic link succeeds'
             include_context 'delete succeeds'
@@ -393,7 +397,7 @@ describe Chef::Resource::Link do
             File.open(@other_target, "w") { |file| file.write("eek") }
             symlink(@other_target, to)
             expect(symlink?(to)).to be_truthy
-            expect(paths_eql?(readlink(to), @other_target)).to be_truthy
+            compare_paths(readlink(to), @other_target)
           end
           after(:each) do
             File.delete(@other_target)
@@ -408,7 +412,7 @@ describe Chef::Resource::Link do
             @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
             symlink(@other_target, to)
             expect(symlink?(to)).to be_truthy
-            expect(paths_eql?(readlink(to), @other_target)).to be_truthy
+            compare_paths(readlink(to), @other_target)
           end
           context 'and the link does not yet exist' do
             include_context 'create symbolic link succeeds'
@@ -441,7 +445,7 @@ describe Chef::Resource::Link do
             before(:each) do
               symlink(to, target_file)
               expect(symlink?(target_file)).to be_truthy
-              expect(paths_eql?(readlink(target_file), to)).to be_truthy
+              compare_paths(readlink(target_file), to)
             end
             include_context 'create symbolic link is noop'
             include_context 'delete succeeds'
@@ -450,7 +454,7 @@ describe Chef::Resource::Link do
             before(:each) do
               symlink(absolute_to, target_file)
               expect(symlink?(target_file)).to be_truthy
-              expect(paths_eql?(readlink(target_file), absolute_to)).to be_truthy
+              compare_paths(readlink(target_file), absolute_to)
             end
             include_context 'create symbolic link succeeds'
             include_context 'delete succeeds'
@@ -478,7 +482,7 @@ describe Chef::Resource::Link do
           before(:each) do
             symlink(to, target_file)
             expect(symlink?(target_file)).to be_truthy
-            expect(paths_eql?(readlink(target_file), to)).to be_truthy
+            compare_paths(readlink(target_file), to)
           end
           include_context 'create hard link succeeds'
           it_behaves_like 'delete errors out'
@@ -552,7 +556,7 @@ describe Chef::Resource::Link do
             File.open(@other_target, "w") { |file| file.write("eek") }
             symlink(@other_target, to)
             expect(symlink?(to)).to be_truthy
-            expect(paths_eql?(readlink(to), @other_target)).to be_truthy
+            compare_paths(readlink(to), @other_target)
           end
           after(:each) do
             File.delete(@other_target)
@@ -564,7 +568,7 @@ describe Chef::Resource::Link do
               # OS X gets angry about this sort of link.  Bug in OS X, IMO.
               pending('OS X/FreeBSD/AIX symlink? and readlink working on hard links to symlinks') if (os_x? or freebsd? or aix?)
               expect(symlink?(target_file)).to be_truthy
-              expect(paths_eql?(readlink(target_file), @other_target)).to be_truthy
+              compare_paths(readlink(target_file), @other_target)
             end
             include_context 'delete is noop'
           end
@@ -574,7 +578,7 @@ describe Chef::Resource::Link do
             @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
             symlink(@other_target, to)
             expect(symlink?(to)).to be_truthy
-            expect(paths_eql?(readlink(to), @other_target)).to be_truthy
+            compare_paths(readlink(to), @other_target)
           end
           context 'and the link does not yet exist' do
             it 'links to the target file' do
@@ -587,7 +591,7 @@ describe Chef::Resource::Link do
                 expect(File.exists?(target_file)).to be_falsey
               end
               expect(symlink?(target_file)).to be_truthy
-              expect(paths_eql?(readlink(target_file), @other_target)).to be_truthy
+              compare_paths(readlink(target_file), @other_target)
             end
             include_context 'delete is noop'
           end

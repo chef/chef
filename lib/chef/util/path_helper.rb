@@ -100,25 +100,23 @@ class Chef
       end
 
       # Produces a comparable path.
-      def self.canonical_path(path, add_prefix=true)
+      def self.canonical_path(path, expand = true, add_prefix=true)
         # Rather than find an equivalent for File.absolute_path on 1.8.7, just bail out
         raise NotImplementedError, "This feature is not supported on Ruby versions < 1.9" if RUBY_VERSION.to_f < 1.9
 
-        # First remove extra separators and resolve any relative paths
-        abs_path = File.absolute_path(path)
+        # First remove extra separators and resolve any relative paths if we're
+        # allowed to expand the path.
+        resolved_path = expand ? File.absolute_path(path) : path.dup
 
         if Chef::Platform.windows?
           # Add the \\?\ API prefix on Windows unless add_prefix is false
-          # Downcase on Windows where paths are still case-insensitive
-          abs_path.gsub!(::File::SEPARATOR, path_separator)
-          if add_prefix && abs_path !~ /^\\\\?\\/
-            abs_path.insert(0, "\\\\?\\")
+          resolved_path.gsub!(::File::SEPARATOR, path_separator)
+          if add_prefix && resolved_path !~ /^\\\\?\\/
+            resolved_path.insert(0, "\\\\?\\")
           end
-
-          abs_path.downcase!
         end
 
-        abs_path
+        resolved_path
       end
 
       def self.cleanpath(path)
