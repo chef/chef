@@ -393,7 +393,7 @@ describe Chef::Resource::Link do
             File.open(@other_target, "w") { |file| file.write("eek") }
             symlink(@other_target, to)
             expect(symlink?(to)).to be_truthy
-            expect(readlink(target_file)).to eq(canonicalize(@other_target))
+            expect(readlink(to)).to eq(canonicalize(@other_target))
           end
           after(:each) do
             File.delete(@other_target)
@@ -408,7 +408,7 @@ describe Chef::Resource::Link do
             @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
             symlink(@other_target, to)
             expect(symlink?(to)).to be_truthy
-            expect(readlink(target_file)).to eq(canonicalize(@other_target))
+            expect(readlink(to)).to eq(canonicalize(@other_target))
           end
           context 'and the link does not yet exist' do
             include_context 'create symbolic link succeeds'
@@ -552,7 +552,7 @@ describe Chef::Resource::Link do
             File.open(@other_target, "w") { |file| file.write("eek") }
             symlink(@other_target, to)
             expect(symlink?(to)).to be_truthy
-            expect(readlink(target_file)).to eq(canonicalize(@other_target))
+            expect(readlink(to)).to eq(canonicalize(@other_target))
           end
           after(:each) do
             File.delete(@other_target)
@@ -574,7 +574,7 @@ describe Chef::Resource::Link do
             @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
             symlink(@other_target, to)
             expect(symlink?(to)).to be_truthy
-            expect(readlink(target_file)).to eq(canonicalize(@other_target))
+            expect(readlink(to)).to eq(canonicalize(@other_target))
           end
           context 'and the link does not yet exist' do
             it 'links to the target file' do
