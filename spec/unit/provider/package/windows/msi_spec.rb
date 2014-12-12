@@ -30,6 +30,10 @@ describe Chef::Provider::Package::Windows::MSI do
     allow(::File).to receive(:absolute_path).with("calculator.msi").and_return("calculator.msi")
   end
 
+  it "responds to shell_out!" do
+    expect(provider).to respond_to(:shell_out!)
+  end
+
   describe "expand_options" do
     it "returns an empty string if passed no options" do
       expect(provider.expand_options(nil)).to eql ""
@@ -56,10 +60,16 @@ describe Chef::Provider::Package::Windows::MSI do
   end
 
   describe "install_package" do
-    # calls shell_out!
+    it "calls shell_out!" do
+      expect(provider).to receive(:shell_out!).with(/msiexec \/qn \/i \"calculator.msi\"/, kind_of(Hash))
+      provider.install_package("unused", "unused")
+    end
   end
 
   describe "remove_package" do
-    # calls shell_out!
+    it "calls shell_out!" do
+      expect(provider).to receive(:shell_out!).with(/msiexec \/qn \/x \"calculator.msi\"/, kind_of(Hash))
+      provider.remove_package("unused", "unused")
+    end
   end
 end
