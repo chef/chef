@@ -176,15 +176,11 @@ describe Chef::Util::PathHelper do
   describe "canonical_path" do
     context "on windows", :windows_only do
       it "returns an absolute path with backslashes instead of slashes" do
-        expect(PathHelper.canonical_path("\\\\?\\C:/windows/win.ini")).to eq("\\\\?\\c:\\windows\\win.ini")
+        expect(PathHelper.canonical_path("\\\\?\\c:/windows/win.ini")).to eq("\\\\?\\c:\\windows\\win.ini")
       end
 
       it "adds the \\\\?\\ prefix if it is missing" do
-        expect(PathHelper.canonical_path("C:/windows/win.ini")).to eq("\\\\?\\c:\\windows\\win.ini")
-      end
-
-      it "returns a lowercase path" do
-        expect(PathHelper.canonical_path("\\\\?\\C:\\CASE\\INSENSITIVE")).to eq("\\\\?\\c:\\case\\insensitive")
+        expect(PathHelper.canonical_path("c:/windows/win.ini")).to eq("\\\\?\\c:\\windows\\win.ini")
       end
     end
 
