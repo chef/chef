@@ -30,7 +30,7 @@ require 'chef/resource_collection'
 require 'chef/node_map'
 require 'chef/node'
 require 'chef/platform'
-require 'chef/resource_notification'
+require 'chef/resource/resource_notification'
 
 require 'chef/mixin/deprecation'
 require 'chef/mixin/descendants_tracker'
