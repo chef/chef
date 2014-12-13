@@ -1,7 +1,12 @@
 require 'fcntl'
 require 'chef/mixin/shell_out'
 
-include Chef::Mixin::ShellOut
+
+class ShellHelpers
+  class << self
+    include Chef::Mixin::ShellOut
+  end
+end
 
 def ruby_gte_20?
   RUBY_VERSION.to_f >= 2.0
@@ -86,7 +91,7 @@ end
 
 def mac_osx_106?
   if File.exists? "/usr/bin/sw_vers"
-    result = shell_out("/usr/bin/sw_vers")
+    result = ShellHelpers.shell_out("/usr/bin/sw_vers")
     result.stdout.each_line do |line|
       if line =~ /^ProductVersion:\s10.6.*$/
         return true
