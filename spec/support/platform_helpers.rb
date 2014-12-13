@@ -3,9 +3,7 @@ require 'chef/mixin/shell_out'
 
 
 class ShellHelpers
-  class << self
-    include Chef::Mixin::ShellOut
-  end
+  extend Chef::Mixin::ShellOut
 end
 
 def ruby_gte_20?
