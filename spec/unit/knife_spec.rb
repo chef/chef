@@ -435,6 +435,21 @@ describe Chef::Knife do
       expect(stderr.string).to match(%r[Check your knife configuration and network settings])
     end
 
+    it "formats SSL errors nicely and suggests to use `knife ssl check` and `knife ssl fetch`" do
+      error = OpenSSL::SSL::SSLError.new("SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed")
+      allow(knife).to receive(:run).and_raise(error)
+
+      knife.run_with_pretty_exceptions
+
+      expected_message=<<-MSG
+ERROR: Could not establish a secure connection to the server.
+Use `knife ssl check` to troubleshoot your SSL configuration.
+If your Chef Server uses a self-signed certificate, you can use
+`knife ssl fetch` to make knife trust the server's certificates.
+MSG
+      expect(stderr.string).to include(expected_message)
+    end
+
   end
 
 end
