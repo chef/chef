@@ -7,6 +7,6 @@ long_description 'Installs/Configures webapp'
 version          '0.1.0'
 
 depends 'apache2'
-depends 'database'
+depends 'database', '~> 2.3.1'
 depends 'mysql'
 depends 'php'
