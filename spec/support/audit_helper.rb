@@ -8,7 +8,8 @@
 
 # rspec-core did not include a license on Github
 
-# This is necessary, otherwise
+# Adding these as writers is necessary, otherwise we cannot set the new configuration.
+# Only want to do this in the specs.
 class << RSpec
   attr_writer :configuration, :world
 end
