@@ -1,10 +1,25 @@
+#
+# Author:: Tyler Ball (<tball@chef.io>)
+# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 require 'spec_helper'
 require 'spec/support/audit_helper'
 require 'chef/audit/runner'
-require 'chef/audit/audit_event_proxy'
-require 'chef/audit/rspec_formatter'
-require 'chef/run_context'
-require 'pry'
+require 'rspec/support/spec/in_sub_process'
 
 ##
 # This functional test ensures that our runner can be setup to not interfere with existing RSpec
@@ -13,68 +28,80 @@ require 'pry'
 
 describe Chef::Audit::Runner do
 
-  let(:events) { double("events") }
-  let(:run_context) { instance_double(Chef::RunContext) }
-  let(:runner) { Chef::Audit::Runner.new(run_context) }
+  # The functional tests must be run in a sub_process.  Including Serverspec includes the Serverspec DSL - this
+  # conflicts with our `package` DSL (among others) when we try to test `package` inside an RSpec example.
+  # Our DSL leverages `method_missing` while the Serverspec DSL defines a method on the RSpec::Core::ExampleGroup.
+  # The defined method wins our and returns before our `method_missing` DSL can be called.
+  #
+  # Running in a sub_process means the serverspec libraries will only be included in a forked process, not the main one.
+  include RSpec::Support::InSubProcess
 
-  # This is the first thing that gets called, and determines how the examples are ran
-  around(:each) do |ex|
-    Sandboxing.sandboxed { ex.run }
-  end
+    let(:events) { double("events").as_null_object }
+    let(:runner) { Chef::Audit::Runner.new(run_context) }
+    let(:stdout) { StringIO.new }
 
-  describe "#configure_rspec" do
-
-    it "adds the necessary formatters" do
-      # We don't expect the events to receive any calls because the AuditEventProxy that was registered from `runner.run`
-      # only existed in the Configuration object that got removed by the sandboxing
-      #expect(events).to receive(:control_example_success)
-
-      expect(RSpec.configuration.formatters.size).to eq(0)
-      expect(run_context).to receive(:events).and_return(events)
-      expect(Chef::Audit::AuditEventProxy).to receive(:events=)
-
-      runner.send(:add_formatters)
-
-      expect(RSpec.configuration.formatters.size).to eq(2)
-      expect(RSpec.configuration.formatters[0]).to be_instance_of(Chef::Audit::AuditEventProxy)
-      expect(RSpec.configuration.formatters[1]).to be_instance_of(Chef::Audit::RspecFormatter)
-
+    around(:each) do |ex|
+      Sandboxing.sandboxed { ex.run }
     end
-
-  end
-
-  # When running these, because we are not mocking out any of the formatters we expect to get dual output on the
-  # command line
-  describe "#run" do
 
     before do
-      expect(run_context).to receive(:events).and_return(events)
+      Chef::Config[:log_location] = stdout
     end
 
-    it "Correctly runs an empty controls block" do
-      expect(run_context).to receive(:audits).and_return({})
-      runner.run
-    end
+    # When running these, because we are not mocking out any of the formatters we expect to get dual output on the
+    # command line
+    describe "#run" do
 
-    it "Correctly runs a single successful control" do
-      should_pass = lambda do
-        it "should pass" do
-          expect(2 - 2).to eq(0)
+      let(:audits) { {} }
+      let(:run_context) { instance_double(Chef::RunContext, :events => events, :audits => audits) }
+      let(:controls_name) { "controls_name" }
+
+      it "Correctly runs an empty controls block" do
+        in_sub_process do
+          runner.run
         end
       end
 
-      expect(run_context).to receive(:audits).and_return({
-        "should pass" => {:args => [], :block => should_pass}
-      })
+      context "there is a single successful control" do
+        let(:audits) do
+          should_pass = lambda do
+            it "should pass" do
+              expect(2 - 2).to eq(0)
+            end
+          end
+          { controls_name => Struct.new(:args, :block).new([controls_name], should_pass)}
+        end
 
-      # TODO capture the output and verify it
-      runner.run
+        it "correctly runs" do
+          in_sub_process do
+            runner.run
+
+            expect(stdout.string).to match(/1 example, 0 failures/)
+          end
+        end
+      end
+
+      context "there is a single failing control" do
+        let(:audits) do
+          should_fail = lambda do
+            it "should fail" do
+              expect(2 - 1).to eq(0)
+            end
+          end
+          { controls_name => Struct.new(:args, :block).new([controls_name], should_fail)}
+        end
+
+        it "correctly runs" do
+          in_sub_process do
+            runner.run
+
+            expect(stdout.string).to match(/Failure\/Error: expect\(2 - 1\)\.to eq\(0\)/)
+            expect(stdout.string).to match(/1 example, 1 failure/)
+            expect(stdout.string).to match(/# controls_name should fail/)
+          end
+        end
+      end
+
     end
-
-    it "Correctly runs a single failing control", :pending do
-
-    end
-
-  end
 
 end
