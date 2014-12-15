@@ -87,6 +87,10 @@ EOH
 
         interpreter_flags
       end
+
+      def code
+        @code
+      end
     end
   end
 end
