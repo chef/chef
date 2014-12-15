@@ -30,6 +30,7 @@
 * [Issue 2609](https://github.com/opscode/chef/issues/2609) Resolve the circular dependency between ProviderResolver and Resource.
 * [Issue 2596](https://github.com/opscode/chef/issues/2596) Fix nodes not writing to disk
 * [Issue 2580](https://github.com/opscode/chef/issues/2580) Make sure the relative paths are preserved when using link resource.
+* [Issue 2625](https://github.com/opscode/chef/issues/2625) Fix missing `shell_out!` for `windows_package` resource
 
 ## 12.0.1
 
