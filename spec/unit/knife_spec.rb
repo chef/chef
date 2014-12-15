@@ -311,7 +311,7 @@ describe Chef::Knife do
     end
 
     it "does not have lazy dependencies loaded" do
-      expect(knife.class.test_deps_loaded).not_to be_truthy
+      expect(knife.class.test_deps_loaded).to be(nil)
     end
   end
 
