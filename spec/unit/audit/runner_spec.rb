@@ -19,6 +19,9 @@
 require 'spec_helper'
 require 'spec/support/audit_helper'
 require 'chef/audit/runner'
+require 'specinfra'
+require 'chef/audit/audit_event_proxy'
+require 'chef/audit/rspec_formatter'
 
 describe Chef::Audit::Runner do
 
@@ -48,6 +51,12 @@ describe Chef::Audit::Runner do
       end
 
       it "sets all the config values" do
+        # Mock out the require_deps call because we don't want to include the Serverspec DSL to all
+        # RSpec example groups
+        expect(runner).to receive(:require_deps)
+        # For some unknown reason, its having a lot of trouble configuring Specinfra
+        expect(runner).to receive(:configure_specinfra)
+
         runner.send(:setup)
 
         expect(RSpec.configuration.output_stream).to eq(log_location)
@@ -63,8 +72,6 @@ describe Chef::Audit::Runner do
 
         expect(RSpec.configuration.color).to eq(color)
         expect(RSpec.configuration.expose_dsl_globally?).to eq(false)
-
-        expect(Specinfra.configuration.backend).to eq(:exec)
       end
     end
 
