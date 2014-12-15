@@ -33,6 +33,11 @@
 * [Issue 2625](https://github.com/opscode/chef/issues/2625) Fix missing `shell_out!` for `windows_package` resource
 * [Pull 2630](https://github.com/opscode/chef/pull/2630) Improve knife's SSL error messaging
 
+
+* [**BackSlasher**](https://github.com/BackSlasher)
+  [Issue 2634](https://github.com/opscode/chef/issues/2634) Fix `option ':command' is not a valid option` error in subversion provider.
+
+
 ## 12.0.1
 
 * [Issue 2552](https://github.com/opscode/chef/issues/2552) Create constant for LWRP before calling `provides`
