@@ -85,7 +85,7 @@ describe Chef::Exceptions do
   describe Chef::Exceptions::RunFailedWrappingError do
     shared_examples "RunFailedWrappingError expectations" do
       it "should initialize with a default message" do
-        expect(e.message).to eq("Found #{num_errors} errors, they are stored in the backtrace\n")
+        expect(e.message).to eq("Found #{num_errors} errors, they are stored in the backtrace")
       end
 
       it "should provide a modified backtrace when requested" do
