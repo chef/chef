@@ -60,14 +60,14 @@ describe Chef::Provider::Package::Windows::MSI do
   end
 
   describe "install_package" do
-    it "calls shell_out!" do
+    it "calls msiexec /qn /i" do
       expect(provider).to receive(:shell_out!).with(/msiexec \/qn \/i \"calculator.msi\"/, kind_of(Hash))
       provider.install_package("unused", "unused")
     end
   end
 
   describe "remove_package" do
-    it "calls shell_out!" do
+    it "calls msiexec /qn /x" do
       expect(provider).to receive(:shell_out!).with(/msiexec \/qn \/x \"calculator.msi\"/, kind_of(Hash))
       provider.remove_package("unused", "unused")
     end
