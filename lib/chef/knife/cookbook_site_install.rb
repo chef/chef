@@ -107,11 +107,8 @@ class Chef
           end
         end
 
-
         unless config[:no_deps]
-          md = Chef::Cookbook::Metadata.new
-          md.from_file(File.join(@install_path, @cookbook_name, "metadata.rb"))
-          md.dependencies.each do |cookbook, version_list|
+          preferred_metadata.dependencies.each do |cookbook, version_list|
             # Doesn't do versions.. yet
             nv = self.class.new
             nv.config = config
@@ -153,11 +150,36 @@ class Chef
       end
 
       def convert_path(upstream_file)
-      	if ENV['MSYSTEM'] == 'MINGW32'
-      	  return upstream_file.sub(/^([[:alpha:]]):/, '/\1')
-	      else
-      	  return Shellwords.escape upstream_file
-      	end
+        if ENV['MSYSTEM'] == 'MINGW32'
+          return upstream_file.sub(/^([[:alpha:]]):/, '/\1')
+        else
+          return Shellwords.escape upstream_file
+        end
+      end
+
+      # Get the preferred metadata path on disk. Chef prefers the metadata.rb
+      # over the metadata.json.
+      #
+      # @raise if there is no metadata in the cookbook
+      #
+      # @return [Chef::Cookbok::Metadata]
+      def preferred_metadata
+        md = Chef::Cookbook::Metadata.new
+
+        rb   = File.join(@install_path, @cookbook_name, "metadata.rb")
+        if File.exist?(rb)
+          md.from_file(rb)
+          return md
+        end
+
+        json = File.join(@install_path, @cookbook_name, "metadata.json")
+        if File.exist?(json)
+          json = IO.read(json)
+          md.from_json(json)
+          return md
+        end
+
+        raise Chef::Exceptions::MetadataNotFound
       end
     end
   end
