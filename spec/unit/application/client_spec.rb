@@ -144,6 +144,10 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
 
   describe "audit mode" do
     shared_examples "experimental feature" do
+      before do
+        allow(Chef::Log).to receive(:warn)
+      end
+
       it "emits a warning that audit mode is an experimental feature" do
         expect(Chef::Log).to receive(:warn).with(/Audit mode is an experimental feature/)
         app.reconfigure
