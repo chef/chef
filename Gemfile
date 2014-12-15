@@ -2,8 +2,6 @@ source "https://rubygems.org"
 gemspec :name => "chef"
 
 gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
-# TODO after serverspec stops including their top level DSL we can remove this
-gem "serverspec", :git => "https://github.com/tyler-ball/serverspec/"
 
 group(:docgen) do
   gem "yard"

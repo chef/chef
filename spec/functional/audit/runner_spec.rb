@@ -36,72 +36,70 @@ describe Chef::Audit::Runner do
   # Running in a sub_process means the serverspec libraries will only be included in a forked process, not the main one.
   include RSpec::Support::InSubProcess
 
-    let(:events) { double("events").as_null_object }
-    let(:runner) { Chef::Audit::Runner.new(run_context) }
-    let(:stdout) { StringIO.new }
+  let(:events) { double("events").as_null_object }
+  let(:runner) { Chef::Audit::Runner.new(run_context) }
+  let(:stdout) { StringIO.new }
 
-    around(:each) do |ex|
-      Sandboxing.sandboxed { ex.run }
+  around(:each) do |ex|
+    Sandboxing.sandboxed { ex.run }
+  end
+
+  before do
+    Chef::Config[:log_location] = stdout
+  end
+  
+  describe "#run" do
+
+    let(:audits) { {} }
+    let(:run_context) { instance_double(Chef::RunContext, :events => events, :audits => audits) }
+    let(:controls_name) { "controls_name" }
+
+    it "Correctly runs an empty controls block" do
+      in_sub_process do
+        runner.run
+      end
     end
 
-    before do
-      Chef::Config[:log_location] = stdout
-    end
+    context "there is a single successful control" do
+      let(:audits) do
+        should_pass = lambda do
+          it "should pass" do
+            expect(2 - 2).to eq(0)
+          end
+        end
+        { controls_name => Struct.new(:args, :block).new([controls_name], should_pass)}
+      end
 
-    # When running these, because we are not mocking out any of the formatters we expect to get dual output on the
-    # command line
-    describe "#run" do
-
-      let(:audits) { {} }
-      let(:run_context) { instance_double(Chef::RunContext, :events => events, :audits => audits) }
-      let(:controls_name) { "controls_name" }
-
-      it "Correctly runs an empty controls block" do
+      it "correctly runs" do
         in_sub_process do
           runner.run
+
+          expect(stdout.string).to match(/1 example, 0 failures/)
         end
       end
-
-      context "there is a single successful control" do
-        let(:audits) do
-          should_pass = lambda do
-            it "should pass" do
-              expect(2 - 2).to eq(0)
-            end
-          end
-          { controls_name => Struct.new(:args, :block).new([controls_name], should_pass)}
-        end
-
-        it "correctly runs" do
-          in_sub_process do
-            runner.run
-
-            expect(stdout.string).to match(/1 example, 0 failures/)
-          end
-        end
-      end
-
-      context "there is a single failing control" do
-        let(:audits) do
-          should_fail = lambda do
-            it "should fail" do
-              expect(2 - 1).to eq(0)
-            end
-          end
-          { controls_name => Struct.new(:args, :block).new([controls_name], should_fail)}
-        end
-
-        it "correctly runs" do
-          in_sub_process do
-            runner.run
-
-            expect(stdout.string).to match(/Failure\/Error: expect\(2 - 1\)\.to eq\(0\)/)
-            expect(stdout.string).to match(/1 example, 1 failure/)
-            expect(stdout.string).to match(/# controls_name should fail/)
-          end
-        end
-      end
-
     end
+
+    context "there is a single failing control" do
+      let(:audits) do
+        should_fail = lambda do
+          it "should fail" do
+            expect(2 - 1).to eq(0)
+          end
+        end
+        { controls_name => Struct.new(:args, :block).new([controls_name], should_fail)}
+      end
+
+      it "correctly runs" do
+        in_sub_process do
+          runner.run
+
+          expect(stdout.string).to match(/Failure\/Error: expect\(2 - 1\)\.to eq\(0\)/)
+          expect(stdout.string).to match(/1 example, 1 failure/)
+          expect(stdout.string).to match(/# controls_name should fail/)
+        end
+      end
+    end
+
+  end
 
 end
