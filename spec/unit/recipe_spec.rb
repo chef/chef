@@ -154,6 +154,7 @@ describe Chef::Recipe do
         zm_resource.recipe_name.should == "test"
         zm_resource.cookbook_name.should == "hjk"
         zm_resource.source_line.should include(__FILE__)
+        zm_resource.declared_type.should == :zen_master
       end
 
       it "does not add the resource to the resource collection" do
