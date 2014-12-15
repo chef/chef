@@ -17,11 +17,11 @@
 #
 
 require 'chef/knife'
+require 'chef/exceptions'
 require 'shellwords'
 
 class Chef
   class Knife
-
     class CookbookSiteInstall < Knife
 
       deps do
@@ -141,6 +141,7 @@ class Chef
 
       def extract_cookbook(upstream_file, version)
         ui.info("Uncompressing #{@cookbook_name} version #{version}.")
+        # FIXME: Detect if we have the bad tar from git on Windows: https://github.com/opscode/chef/issues/1753
         shell_out!("tar zxvf #{convert_path upstream_file}", :cwd => @install_path)
       end
 
@@ -150,6 +151,7 @@ class Chef
       end
 
       def convert_path(upstream_file)
+        # converts a Windows path (C:\foo) to a mingw path (/c/foo)
         if ENV['MSYSTEM'] == 'MINGW32'
           return upstream_file.sub(/^([[:alpha:]]):/, '/\1')
         else
@@ -162,7 +164,7 @@ class Chef
       #
       # @raise if there is no metadata in the cookbook
       #
-      # @return [Chef::Cookbok::Metadata]
+      # @return [Chef::Cookbook::Metadata]
       def preferred_metadata
         md = Chef::Cookbook::Metadata.new
 
