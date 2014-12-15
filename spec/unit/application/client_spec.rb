@@ -18,18 +18,20 @@
 require 'spec_helper'
 
 describe Chef::Application::Client, "reconfigure" do
+  let(:app) do
+    a = described_class.new
+    a.cli_arguments = []
+    a
+  end
+
   before do
     allow(Kernel).to receive(:trap).and_return(:ok)
 
     @original_argv = ARGV.dup
     ARGV.clear
 
-    @app = Chef::Application::Client.new
-    allow(@app).to receive(:trap)
-    allow(@app).to receive(:configure_opt_parser).and_return(true)
-    allow(@app).to receive(:configure_chef).and_return(true)
-    allow(@app).to receive(:configure_logging).and_return(true)
-    @app.cli_arguments = []
+    allow(app).to receive(:trap)
+    allow(app).to receive(:configure_logging).and_return(true)
     Chef::Config[:interval] = 10
 
     Chef::Config[:once] = false
@@ -60,7 +62,7 @@ Configuration settings:
   interval  = 600 seconds
 Enable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
         )
-        @app.reconfigure
+        app.reconfigure
       end
     end
 
@@ -83,7 +85,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
       end
 
       it "should reconfigure chef-client" do
-        @app.reconfigure
+        app.reconfigure
         expect(Chef::Config[:interval]).to be_nil
       end
     end
@@ -96,7 +98,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     end
 
     it "should set the interval to 1800" do
-      @app.reconfigure
+      app.reconfigure
       expect(Chef::Config.interval).to eq(1800)
     end
   end
@@ -110,12 +112,12 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     end
 
     it "ignores the splay" do
-      @app.reconfigure
+      app.reconfigure
       expect(Chef::Config.splay).to be_nil
     end
 
     it "forces the interval to nil" do
-      @app.reconfigure
+      app.reconfigure
       expect(Chef::Config.interval).to be_nil
     end
 
@@ -128,14 +130,85 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     let(:json_source) { "https://foo.com/foo.json" }
 
     before do
+      allow(app).to receive(:configure_chef).and_return(true)
       Chef::Config[:json_attribs] = json_source
       expect(Chef::ConfigFetcher).to receive(:new).with(json_source).
         and_return(config_fetcher)
     end
 
     it "reads the JSON attributes from the specified source" do
-      @app.reconfigure
-      expect(@app.chef_client_json).to eq(json_attribs)
+      app.reconfigure
+      expect(app.chef_client_json).to eq(json_attribs)
+    end
+  end
+
+  describe "audit mode" do
+    shared_examples "experimental feature" do
+      it "emits a warning that audit mode is an experimental feature" do
+        expect(Chef::Log).to receive(:warn).with(/Audit mode is an experimental feature/)
+        app.reconfigure
+      end
+    end
+
+    shared_examples "unrecognized setting" do
+      it "fatals with a message including the incorrect setting" do
+        expect(Chef::Application).to receive(:fatal!).with(/Unrecognized setting #{mode} for audit mode/)
+        app.reconfigure
+      end
+    end
+
+    shared_context "set via config file" do
+      before do
+        Chef::Config[:audit_mode] = mode
+      end
+    end
+
+    shared_context "set via command line" do
+      before do
+        ARGV.replace(["--audit-mode", mode])
+      end
+    end
+
+    describe "enabled via config file" do
+      include_context "set via config file" do
+        let(:mode) { :enabled }
+        include_examples "experimental feature"
+      end
+    end
+
+    describe "enabled via command line" do
+      include_context "set via command line" do
+        let(:mode) { "enabled" }
+        include_examples "experimental feature"
+      end
+    end
+
+    describe "audit_only via config file" do
+      include_context "set via config file" do
+        let(:mode) { :audit_only }
+        include_examples "experimental feature"
+      end
+    end
+
+    describe "audit-only via command line" do
+      include_context "set via command line" do
+        let(:mode) { "audit-only" }
+        include_examples "experimental feature"
+      end
+    end
+
+    describe "unrecognized setting via config file" do
+      include_context "set via config file" do
+        let(:mode) { :derp }
+        include_examples "unrecognized setting"
+      end
+    end
+
+    describe "unrecognized setting via command line" do
+      include_context "set via command line" do
+        let(:mode) { "derp" }
+        include_examples "unrecognized setting"
+      end
     end
   end
 end

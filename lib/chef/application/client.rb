@@ -239,10 +239,9 @@ class Chef::Application::Client < Chef::Application
   end
 
   option :audit_mode,
-    :long           => "--audit-mode SETTING",
-    :description    => "Enable audit-mode with `enabled`. Disabled audit-mode with `disabled`. Skip converge and only audit with `audit-only`",
-    :proc           => lambda { |mode| mode.gsub("-", "_").to_sym },
-    :default        => :disabled
+    :long           => "--audit-mode MODE",
+    :description    => "Enable audit-mode with `enabled`. Disable audit-mode with `disabled`. Skip converge and only perform audits with `audit-only`",
+    :proc           => lambda { |mo| mo.gsub("-", "_").to_sym }
 
   IMMEDIATE_RUN_SIGNAL = "1".freeze
 
@@ -282,7 +281,7 @@ class Chef::Application::Client < Chef::Application
       @chef_client_json = config_fetcher.fetch_json
     end
 
-    if mode = Chef::Config[:audit_mode]
+    if mode = config[:audit_mode] || Chef::Config[:audit_mode]
       expected_modes = [:enabled, :disabled, :audit_only]
       unless expected_modes.include?(mode)
         Chef::Application.fatal!(unrecognized_audit_mode(mode))
@@ -430,7 +429,7 @@ class Chef::Application::Client < Chef::Application
     msg = if Chef::Config[:audit_mode] == :audit_only
       "Chef-client has been configured to skip converge and run only audits."
     else
-      "Chef-client has been configure to run audits after it converges."
+      "Chef-client has been configured to run audits after it converges."
     end
     msg += " Audit mode is an experimental feature currently under development. API changes may occur. Use at your own risk."
     msg += audit_mode_settings_explaination
