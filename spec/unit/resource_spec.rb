@@ -346,10 +346,10 @@ describe Chef::Resource do
     it "should convert to a hash" do
       hash = @resource.to_hash
       expected_keys = [ :allowed_actions, :params, :provider, :updated,
-                        :updated_by_last_action, :before, :supports,
-                        :noop, :ignore_failure, :name, :source_line,
-                        :action, :retries, :retry_delay, :elapsed_time,
-                        :default_guard_interpreter, :guard_interpreter, :sensitive ]
+        :updated_by_last_action, :before, :supports,
+        :noop, :ignore_failure, :name, :source_line,
+        :action, :retries, :retry_delay, :elapsed_time,
+        :default_guard_interpreter, :guard_interpreter, :sensitive ]
       expect(hash.keys - expected_keys).to eq([])
       expect(expected_keys - hash.keys).to eq([])
       expect(hash[:name]).to eql("funk")
@@ -671,8 +671,8 @@ describe Chef::Resource do
       snitch_var1 = snitch_var2 = 0
       @runner = Chef::Runner.new(@run_context)
       Chef::Platform.set(
-          :resource => :cat,
-          :provider => Chef::Provider::SnakeOil
+        :resource => :cat,
+        :provider => Chef::Provider::SnakeOil
       )
 
       @resource1.only_if { snitch_var1 = 1 }
@@ -704,22 +704,22 @@ describe Chef::Resource do
 
     it 'adds mappings for a single platform' do
       expect(Chef::Resource.node_map).to receive(:set).with(
-                                             :dinobot, Chef::Resource::Klz, { platform: ['autobots'] }
-                                         )
+        :dinobot, Chef::Resource::Klz, { platform: ['autobots'] }
+      )
       klz.provides :dinobot, platform: ['autobots']
     end
 
     it 'adds mappings for multiple platforms' do
       expect(Chef::Resource.node_map).to receive(:set).with(
-                                             :energy, Chef::Resource::Klz, { platform: ['autobots', 'decepticons']}
-                                         )
+        :energy, Chef::Resource::Klz, { platform: ['autobots', 'decepticons']}
+      )
       klz.provides :energy, platform: ['autobots', 'decepticons']
     end
 
     it 'adds mappings for all platforms' do
       expect(Chef::Resource.node_map).to receive(:set).with(
-                                             :tape_deck, Chef::Resource::Klz, {}
-                                         )
+        :tape_deck, Chef::Resource::Klz, {}
+      )
       klz.provides :tape_deck
     end
 
@@ -824,8 +824,8 @@ describe Chef::Resource do
   describe "resource sensitive attribute" do
 
     before(:each) do
-      @resource_file = Chef::Resource::File.new("/nonexistent/CHEF-5098/file", @run_context)
-      @action = :create
+       @resource_file = Chef::Resource::File.new("/nonexistent/CHEF-5098/file", @run_context)
+       @action = :create
     end
 
     def compiled_resource_data(resource, action, err)
@@ -842,15 +842,15 @@ describe Chef::Resource do
 
     it "when set to false should show compiled resource for failed resource" do
       expect { @resource_file.run_action(@action) }.to raise_error { |err|
-                                                         expect(compiled_resource_data(@resource_file, @action, err)).to match 'path "/nonexistent/CHEF-5098/file"'
-                                                       }
+            expect(compiled_resource_data(@resource_file, @action, err)).to match 'path "/nonexistent/CHEF-5098/file"'
+          }
     end
 
     it "when set to true should show compiled resource for failed resource" do
       @resource_file.sensitive true
       expect { @resource_file.run_action(@action) }.to raise_error { |err|
-                                                         expect(compiled_resource_data(@resource_file, @action, err)).to eql("suppressed sensitive resource output")
-                                                       }
+            expect(compiled_resource_data(@resource_file, @action, err)).to eql("suppressed sensitive resource output")
+          }
     end
 
   end

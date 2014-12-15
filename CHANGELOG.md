@@ -36,6 +36,7 @@
 * [Issue 2580](https://github.com/opscode/chef/issues/2580) Make sure the relative paths are preserved when using link resource.
 * [Pull 2630](https://github.com/opscode/chef/pull/2630) Improve knife's SSL error messaging
 * [Issue 2606](https://github.com/opscode/chef/issues/2606) chef 12 ignores default_release for apt_package
+* [Issue 2602](https://github.com/opscode/chef/issues/2602) Fix `subscribes` resource notifications.
 * [Issue 2578](https://github.com/opscode/chef/issues/2578) Check that `installed` is not empty for `keg_only` formula in Homebrew provider.
 * [**gh2k**](https://github.com/gh2k):
   [Issue 2625](https://github.com/opscode/chef/issues/2625) Fix missing `shell_out!` for `windows_package` resource
