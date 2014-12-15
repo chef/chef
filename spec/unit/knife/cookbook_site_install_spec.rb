@@ -147,4 +147,45 @@ describe Chef::Knife::CookbookSiteInstall do
       expect { knife.run }.not_to raise_error
     end
   end # end of run
+
+  let(:metadata) { Chef::Cookbook::Metadata.new }
+  let(:rb_metadata_path) { File.join(install_path, "post-punk-kitchen", "metadata.rb") }
+  let(:json_metadata_path) { File.join(install_path, "post-punk-kitchen", "metadata.json") }
+
+  describe "preferred_metadata" do
+    before do
+      allow(Chef::Cookbook::Metadata).to receive(:new).and_return(metadata)
+      allow(File).to receive(:exist?).and_return(false)
+      knife.instance_variable_set(:@cookbook_name, "post-punk-kitchen")
+      knife.instance_variable_set(:@install_path, install_path)
+    end
+
+    it "returns a populated Metadata object if metadata.rb exists" do
+      allow(File).to receive(:exist?).with(rb_metadata_path).and_return(true)
+      expect(metadata).to receive(:from_file).with(rb_metadata_path)
+      knife.preferred_metadata
+    end
+
+    it "returns a populated Metadata object if metadata.json exists" do
+      allow(File).to receive(:exist?).with(json_metadata_path).and_return(true)
+      #expect(IO).to receive(:read).with(json_metadata_path)
+      allow(IO).to receive(:read)
+      expect(metadata).to receive(:from_json)
+      knife.preferred_metadata
+    end
+
+    it "prefers metadata.rb over metadata.json" do
+      allow(File).to receive(:exist?).with(rb_metadata_path).and_return(true)
+      allow(File).to receive(:exist?).with(json_metadata_path).and_return(true)
+      allow(IO).to receive(:read)
+      expect(metadata).to receive(:from_file).with(rb_metadata_path)
+      expect(metadata).not_to receive(:from_json)
+      knife.preferred_metadata
+    end
+
+    it "rasies an error if it finds no metadata file" do
+      expect { knife.preferred_metadata }.to raise_error(Chef::Exceptions::MetadataNotFound)
+    end
+
+  end
 end
