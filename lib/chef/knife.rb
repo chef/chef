@@ -428,6 +428,13 @@ class Chef
         raise # make sure exit passes through.
       when Net::HTTPServerException, Net::HTTPFatalError
         humanize_http_exception(e)
+      when OpenSSL::SSL::SSLError
+        ui.error "Could not establish a secure connection to the server."
+        ui.info "Use `knife ssl check` to troubleshoot your SSL configuration."
+        ui.info "If your Chef Server uses a self-signed certificate, you can use"
+        ui.info "`knife ssl fetch` to make knife trust the server's certificates."
+        ui.info ""
+        ui.info  "Original Exception: #{e.class.name}: #{e.message}"
       when Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError
         ui.error "Network Error: #{e.message}"
         ui.info "Check your knife configuration and network settings"
