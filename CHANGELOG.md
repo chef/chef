@@ -2,6 +2,7 @@
 * [Issue 2578](https://github.com/opscode/chef/issues/2578) Check that `installed` is not empty for `keg_only` formula in Homebrew provider
 * [Issue 2609](https://github.com/opscode/chef/issues/2609) Resolve the circular dependency between ProviderResolver and Resource.
 * [Issue 2596](https://github.com/opscode/chef/issues/2596) Fix nodes not writing to disk
+* [Issue 2625](https://github.com/opscode/chef/issues/2625) Fix missing `shell_out!` for `windows_package` resource
 
 ## 12.0.1
 
