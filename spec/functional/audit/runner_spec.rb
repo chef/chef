@@ -20,6 +20,7 @@ require 'spec_helper'
 require 'spec/support/audit_helper'
 require 'chef/audit/runner'
 require 'rspec/support/spec/in_sub_process'
+require 'tempfile'
 
 ##
 # This functional test ensures that our runner can be setup to not interfere with existing RSpec
@@ -60,7 +61,7 @@ describe Chef::Audit::Runner do
       end
     end
 
-    context "there is a single successful control" do
+    shared_context "passing audit" do
       let(:audits) do
         should_pass = lambda do
           it "should pass" do
@@ -69,7 +70,21 @@ describe Chef::Audit::Runner do
         end
         { controls_name => Struct.new(:args, :block).new([controls_name], should_pass)}
       end
+    end
 
+    shared_context "failing audit" do
+      let(:audits) do
+        should_fail = lambda do
+          it "should fail" do
+            expect(2 - 1).to eq(0)
+          end
+        end
+        { controls_name => Struct.new(:args, :block).new([controls_name], should_fail)}
+      end
+    end
+
+    context "there is a single successful control" do
+      include_context "passing audit"
       it "correctly runs" do
         in_sub_process do
           runner.run
@@ -80,15 +95,7 @@ describe Chef::Audit::Runner do
     end
 
     context "there is a single failing control" do
-      let(:audits) do
-        should_fail = lambda do
-          it "should fail" do
-            expect(2 - 1).to eq(0)
-          end
-        end
-        { controls_name => Struct.new(:args, :block).new([controls_name], should_fail)}
-      end
-
+      include_context "failing audit"
       it "correctly runs" do
         in_sub_process do
           runner.run
@@ -96,6 +103,30 @@ describe Chef::Audit::Runner do
           expect(stdout.string).to match(/Failure\/Error: expect\(2 - 1\)\.to eq\(0\)/)
           expect(stdout.string).to match(/1 example, 1 failure/)
           expect(stdout.string).to match(/# controls_name should fail/)
+        end
+      end
+    end
+
+    describe "log location is a file" do
+      let(:tmpfile) { Tempfile.new("audit") }
+      before do
+        Chef::Config[:log_location] = tmpfile.path
+      end
+
+      after do
+        tmpfile.close
+        tmpfile.unlink
+      end
+
+      include_context "failing audit"
+      it "correctly runs" do
+        in_sub_process do
+          runner.run
+
+          contents = tmpfile.read
+          expect(contents).to match(/Failure\/Error: expect\(2 - 1\)\.to eq\(0\)/)
+          expect(contents).to match(/1 example, 1 failure/)
+          expect(contents).to match(/# controls_name should fail/)
         end
       end
     end

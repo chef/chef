@@ -338,7 +338,8 @@ class Chef
       converge_exception
     end
 
-    # TODO don't want to change old API
+    # We don't want to change the old API on the `converge` method to have it perform
+    # saving.  So we wrap it in this method.
     def converge_and_save(run_context)
       converge_exception = converge(run_context)
       unless converge_exception

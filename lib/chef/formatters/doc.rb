@@ -166,7 +166,7 @@ class Chef
       end
 
       def converge_failed(e)
-        # TODO do we want to do anything else in here?
+        # Currently a failed converge is handled the same way as a successful converge
         converge_complete
       end
 
@@ -183,7 +183,6 @@ class Chef
         puts_line ""
         puts_line "Audit phase exception:"
         indent
-        # TODO error_mapper ?
         puts_line "#{error.message}"
         error.backtrace.each do |l|
           puts_line l

@@ -117,8 +117,6 @@ class Chef
         run_data = audit_data.to_hash
 
         if error
-          # TODO: Rather than a single string we might want to format the exception here similar to
-          # lib/chef/resource_reporter.rb#83
           run_data[:error] = "#{error.class.to_s}: #{error.message}\n#{error.backtrace.join("\n")}"
         end
 

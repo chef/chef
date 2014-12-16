@@ -108,8 +108,6 @@ class Chef
       # the output stream to be changed for a formatter once the formatter has
       # been added.
       def set_streams
-        # TODO: Do some testing to ensure these will output/output properly to
-        # a file.
         RSpec.configuration.output_stream = Chef::Config[:log_location]
         RSpec.configuration.error_stream = Chef::Config[:log_location]
       end
@@ -135,12 +133,9 @@ class Chef
         end
       end
 
-      # Set up the backend for Specinfra/Serverspec.
+      # Set up the backend for Specinfra/Serverspec.  :exec is the local system.
       def configure_specinfra
-        # TODO: We may need to be clever and adjust this based on operating
-        # system, or make it configurable. E.g., there is a PowerShell backend,
-        # as well as an SSH backend.
-        Specinfra.configuration.backend = :exec if Specinfra.configuration.backend != :exec
+        Specinfra.configuration.backend = :exec
       end
 
       # Iterates through the controls registered to this run_context, builds an
