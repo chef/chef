@@ -45,6 +45,7 @@ class Chef
     class FileNotFound < RuntimeError; end
     class Package < RuntimeError; end
     class Service < RuntimeError; end
+    class Script < RuntimeError; end
     class Route < RuntimeError; end
     class SearchIndex < RuntimeError; end
     class Override < RuntimeError; end
@@ -149,6 +150,11 @@ class Chef
     class IllegalVersionConstraint < NotImplementedError; end
 
     class MetadataNotValid < StandardError; end
+    class MetadataNotFound < StandardError
+      def initialize
+        super "No metadata.rb or metadata.json!"
+      end
+    end
 
     # File operation attempted but no permissions to perform it
     class InsufficientPermissions < RuntimeError; end

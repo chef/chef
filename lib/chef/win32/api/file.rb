@@ -457,9 +457,23 @@ BOOL WINAPI DeviceIoControl(
         # takes the given path pre-pends "\\?\" and
         # UTF-16LE encodes it.  Used to prepare paths
         # to be passed to the *W vesion of WinAPI File
-        # functions
+        # functions.
+        # This function is used by the "Link" resources where we need
+        # preserve relative paths because symbolic links can actually
+        # point to a relative path (relative to the link itself).
         def encode_path(path)
+          (path_prepender << path.gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)).to_wstring
+        end
+
+        # Expands the path, prepends "\\?\" and UTF-16LE encodes it.
+        # This function is used by the "File" resources where we need
+        # convert relative paths to fully qualified paths.
+        def canonical_encode_path(path)
           Chef::Util::PathHelper.canonical_path(path).to_wstring
+        end
+
+        def path_prepender
+          "\\\\?\\"
         end
 
         # retrieves a file search handle and passes it
@@ -474,7 +488,7 @@ BOOL WINAPI DeviceIoControl(
             # broader fix to map all the paths starting with "/" to
             # SYSTEM_DRIVE on windows.
             path = ::File.expand_path(path) if path.start_with? "/"
-            path = encode_path(path)
+            path = canonical_encode_path(path)
             find_data = WIN32_FIND_DATA.new
             handle = FindFirstFileW(path, find_data)
             if handle == INVALID_HANDLE_VALUE
@@ -491,7 +505,7 @@ BOOL WINAPI DeviceIoControl(
         # ensures the handle is closed on exit of the block
         def file_handle(path, &block)
           begin
-            path = encode_path(path)
+            path = canonical_encode_path(path)
             handle = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ,
                                   nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS, nil)
 

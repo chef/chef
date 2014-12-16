@@ -36,6 +36,7 @@ class Chef
         @cwd = nil
         @environment = nil
         @group = nil
+        @path = nil
         @returns = 0
         @timeout = nil
         @user = nil
@@ -94,6 +95,16 @@ class Chef
         )
       end
 
+      def path(arg=nil)
+        Chef::Log.warn "'path' attribute of 'execute' is not used by any provider in Chef 11 and Chef 12. Use 'environment' attribute to configure 'PATH'. This attribute will be removed in Chef 13."
+
+        set_or_return(
+          :path,
+          arg,
+          :kind_of => [ Array ]
+        )
+      end
+
       def returns(arg=nil)
         set_or_return(
           :returns,
@@ -106,7 +117,7 @@ class Chef
         set_or_return(
           :timeout,
           arg,
-          :kind_of => [ Integer ]
+          :kind_of => [ Integer, Float ]
         )
       end
 
@@ -135,12 +146,12 @@ class Chef
       end
 
       set_guard_inherited_attributes(
-       :cwd,
-       :environment,
-       :group,
-       :user,
-       :umask
-       )
+        :cwd,
+        :environment,
+        :group,
+        :user,
+        :umask
+      )
 
     end
   end

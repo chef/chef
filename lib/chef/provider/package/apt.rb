@@ -46,8 +46,8 @@ class Chef
         end
 
         def default_release_options
-          # Use apt::Default-Release option only if provider was explicitly defined
-          "-o APT::Default-Release=#{@new_resource.default_release}" if @new_resource.provider && @new_resource.default_release
+          # Use apt::Default-Release option only if provider supports it
+          "-o APT::Default-Release=#{@new_resource.default_release}" if @new_resource.respond_to?(:default_release) && @new_resource.default_release
         end
 
         def check_package_state(package)

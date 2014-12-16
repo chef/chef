@@ -92,10 +92,8 @@ class Chef
           provider_class = Chef::Provider.const_get(class_name)
         else
           provider_class = Class.new(self)
-          provider_class.class_from_file(filename)
-
-          class_name = convert_to_class_name(provider_name)
           Chef::Provider.const_set(class_name, provider_class)
+          provider_class.class_from_file(filename)
           Chef::Log.debug("Loaded contents of #{filename} into a provider named #{provider_name} defined in Chef::Provider::#{class_name}")
         end
 

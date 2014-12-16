@@ -42,6 +42,10 @@ if Net::HTTP.instance_methods.map {|m| m.to_s}.include?("proxy_uri")
     #    	from -e:1:in `<main>'
     #
     # https://bugs.ruby-lang.org/issues/9129
+    #
+    # NOTE: This should be fixed in Ruby 2.2.0, and backported to Ruby 2.0 and
+    # 2.1 (not yet released so the version/patchlevel required isn't known
+    # yet).
     Net::HTTP.new("::1", 80).proxy_uri
   rescue URI::InvalidURIError
     class Net::HTTP

@@ -19,6 +19,7 @@
 #
 
 require 'openssl'
+require 'singleton'
 
 class Chef
   class Digester

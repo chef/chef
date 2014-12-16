@@ -272,7 +272,9 @@ class Chef::Application::Client < Chef::Application
       Chef::Config[:splay] = nil
     end
 
-    Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
+    if !Chef::Config[:client_fork] && Chef::Config[:interval] && !Chef::Platform.windows?
+      Chef::Application.fatal!(unforked_interval_error_message)
+    end
 
     if Chef::Config[:json_attribs]
       config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])

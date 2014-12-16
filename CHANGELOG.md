@@ -1,4 +1,4 @@
-## Unreleased
+## 12.1.0 (Unreleased)
 
 * [**Vasiliy Tolstov**](https://github.com/vtolstov):
   cleanup cookbook path from stale files (when using chef-solo with a tarball url)
@@ -22,6 +22,36 @@
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
 * Update Chef to use RSpec 3.
+* Cleaned up script and execute provider + specs
+* Added deprecation warnings around the use of command attribute in script resources
+
+## 12.0.3
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+[Issue 2594](https://github.com/opscode/chef/issues/2594) Restore missing require in `digester`.
+
+## 12.0.2
+* [Issue 2578](https://github.com/opscode/chef/issues/2578) Check that `installed` is not empty for `keg_only` formula in Homebrew provider
+* [Issue 2609](https://github.com/opscode/chef/issues/2609) Resolve the circular dependency between ProviderResolver and Resource.
+* [Issue 2596](https://github.com/opscode/chef/issues/2596) Fix nodes not writing to disk
+* [Issue 2580](https://github.com/opscode/chef/issues/2580) Make sure the relative paths are preserved when using link resource.
+* [Pull 2630](https://github.com/opscode/chef/pull/2630) Improve knife's SSL error messaging
+* [Issue 2606](https://github.com/opscode/chef/issues/2606) chef 12 ignores default_release for apt_package
+* [Issue 2578](https://github.com/opscode/chef/issues/2578) Check that `installed` is not empty for `keg_only` formula in Homebrew provider.
+* [**gh2k**](https://github.com/gh2k):
+  [Issue 2625](https://github.com/opscode/chef/issues/2625) Fix missing `shell_out!` for `windows_package` resource
+* [**BackSlasher**](https://github.com/BackSlasher):
+  [Issue 2634](https://github.com/opscode/chef/issues/2634) Fix `option ':command' is not a valid option` error in subversion provider.
+* [**Seth Vargo**](https://github.com/sethvargo):
+  [Issue 2345](https://github.com/opscode/chef/issues/2345) Allow knife to install cookbooks with metadata.json.
+
+## 12.0.1
+
+* [Issue 2552](https://github.com/opscode/chef/issues/2552) Create constant for LWRP before calling `provides`
+* [Issue 2545](https://github.com/opscode/chef/issues/2545) `path` attribute of `execute` resource is restored to provide backwards compatibility with Chef 11.
+* [Issue 2565](https://github.com/opscode/chef/issues/2565) Fix `Chef::Knife::Core::BootstrapContext` constructor for knife-windows compat.
+* [Issue 2566](https://github.com/opscode/chef/issues/2566) Make sure Client doesn't raise error when interval is set on Windows.
+* [Issue 2560](https://github.com/opscode/chef/issues/2560) Fix `uninitialized constant Windows::Constants` in `windows_eventlog`.
+* [Issue 2563](https://github.com/opscode/chef/issues/2563) Make sure the Chef Client rpm packages are signed with GPG keys correctly.
 
 ## 12.0.0
 

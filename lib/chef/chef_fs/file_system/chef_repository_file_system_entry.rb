@@ -64,7 +64,7 @@ class Chef
         end
 
         def minimize(file_contents, entry)
-          object = Chef::JSONCompat.from_json(file_contents)
+          object = Chef::JSONCompat.parse(file_contents)
           object = data_handler.normalize(object, entry)
           object = data_handler.minimize(object, entry)
           Chef::JSONCompat.to_json_pretty(object)

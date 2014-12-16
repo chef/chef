@@ -18,10 +18,13 @@
 
 require 'tempfile'
 require 'chef/provider/execute'
+require 'forwardable'
 
 class Chef
   class Provider
     class Script < Chef::Provider::Execute
+      extend Forwardable
+
       provides :bash
       provides :csh
       provides :perl
@@ -29,30 +32,40 @@ class Chef
       provides :ruby
       provides :script
 
+      def_delegators :@new_resource, :code, :interpreter, :flags
+
       def initialize(new_resource, run_context)
         super
-        @code = @new_resource.code
+      end
+
+      def command
+        "\"#{interpreter}\" #{flags} \"#{script_file.path}\""
+      end
+
+      def load_current_resource
+        super
+        # @todo Chef-13: change this to an exception
+        if code.nil?
+          Chef::Log.warn "#{@new_resource}: No code attribute was given, resource does nothing, this behavior is deprecated and will be removed in Chef-13"
+        end
       end
 
       def action_run
-        script_file.puts(@code)
+        script_file.puts(code)
         script_file.close
 
         set_owner_and_group
 
-        @new_resource.command("\"#{interpreter}\" #{flags} \"#{script_file.path}\"")
         super
-        converge_by(nil) do
-          # ensure script is unlinked at end of converge!
-          unlink_script_file
-        end
+
+        unlink_script_file
       end
 
       def set_owner_and_group
         # FileUtils itself implements a no-op if +user+ or +group+ are nil
         # You can prove this by running FileUtils.chown(nil,nil,'/tmp/file')
         # as an unprivileged user.
-        FileUtils.chown(@new_resource.user, @new_resource.group, script_file.path)
+        FileUtils.chown(new_resource.user, new_resource.group, script_file.path)
       end
 
       def script_file
@@ -60,16 +73,9 @@ class Chef
       end
 
       def unlink_script_file
-        @script_file && @script_file.close!
+        script_file && script_file.close!
       end
 
-      def interpreter
-        @new_resource.interpreter
-      end
-
-      def flags
-        @new_resource.flags
-      end
     end
   end
 end
