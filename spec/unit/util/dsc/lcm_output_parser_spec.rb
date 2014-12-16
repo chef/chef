@@ -20,24 +20,19 @@ require 'chef/util/dsc/lcm_output_parser'
 
 describe Chef::Util::DSC::LocalConfigurationManager::Parser do
   context 'empty input parameter' do
-    it 'returns an empty array for a 0 length string' do
-      expect(Chef::Util::DSC::LocalConfigurationManager::Parser::parse('')).to be_empty
+    it 'raises an exception when there are no valid lines' do
+      str = <<-EOF
+
+      EOF
+      expect {Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)}.to raise_error(Chef::Exceptions::LCMParserException)
     end
 
-    it 'returns an empty array for a nil input' do
-      expect(Chef::Util::DSC::LocalConfigurationManager::Parser::parse('')).to be_empty
+    it 'raises an exception for a nil input' do
+      expect {Chef::Util::DSC::LocalConfigurationManager::Parser::parse(nil)}.to raise_error(Chef::Exceptions::LCMParserException)
     end
   end
 
   context 'correctly formatted output from lcm' do
-    it 'returns an empty array for a log with no resources' do
-      str = <<EOF
-logtype: [machinename]: LCM:  [ Start  Set      ]
-logtype: [machinename]: LCM:  [ End    Set      ]
-EOF
-      expect(Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)).to be_empty
-    end
-
     it 'returns a single resource when only 1 logged with the correct name' do
       str = <<EOF
 logtype: [machinename]: LCM:  [ Start  Set      ]

@@ -124,6 +124,7 @@ class Chef
     class DuplicateDataBagItem < RuntimeError; end
 
     class PowershellCmdletException < RuntimeError; end
+    class LCMParserException < RuntimeError; end
 
     class CannotDetermineHomebrewOwner < Package; end
 
