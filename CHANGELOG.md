@@ -10,6 +10,8 @@
 
 * [**BackSlasher**](https://github.com/BackSlasher)
   [Issue 2634](https://github.com/opscode/chef/issues/2634) Fix `option ':command' is not a valid option` error in subversion provider.
+  * [**Seth Vargo**](https://github.com/sethvargo)
+  [Issue 2345](https://github.com/opscode/chef/issues/2345) Allow knife to install cookbooks with metadata.json.
 
 
 ## 12.0.1
