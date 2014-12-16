@@ -1,3 +1,7 @@
+## 12.0.3
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  [Issue 2594](https://github.com/opscode/chef/issues/2594) Restore missing require in `digester`.
+
 ## 12.0.2
 * [Issue 2578](https://github.com/opscode/chef/issues/2578) Check that `installed` is not empty for `keg_only` formula in Homebrew provider
 * [Issue 2609](https://github.com/opscode/chef/issues/2609) Resolve the circular dependency between ProviderResolver and Resource.
