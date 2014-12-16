@@ -19,132 +19,173 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
 describe Chef::Knife::CookbookSiteInstall do
+  let(:knife) { Chef::Knife::CookbookSiteInstall.new }
+  let(:stdout) { StringIO.new }
+  let(:stderr) { StringIO.new }
+  let(:downloader) { Hash.new }
+  let(:repo) { double(:sanity_check => true, :reset_to_default_state => true,
+                      :prepare_to_import => true, :finalize_updates_to => true,
+                      :merge_updates_from => true) }
+  let(:install_path) { if Chef::Platform.windows?
+                        'C:/tmp/chef'
+                      else
+                        '/var/tmp/chef'
+                      end }
+
   before(:each) do
     require 'chef/knife/core/cookbook_scm_repo'
-    @stdout = StringIO.new
-    @knife = Chef::Knife::CookbookSiteInstall.new
-    allow(@knife.ui).to receive(:stdout).and_return(@stdout)
-    @knife.config = {}
-    if Chef::Platform.windows?
-      @install_path = 'C:/tmp/chef'
-    else
-      @install_path = '/var/tmp/chef'
-    end
-    @knife.config[:cookbook_path] = [ @install_path ]
 
-    @stdout = StringIO.new
-    @stderr = StringIO.new
-    allow(@knife).to receive(:stderr).and_return(@stdout)
-    allow(@knife).to receive(:stdout).and_return(@stdout)
+    allow(knife.ui).to receive(:stdout).and_return(stdout)
+    knife.config = {}
+    knife.config[:cookbook_path] = [ install_path ]
 
-    #Assume all external commands would have succeed. :(
+    allow(knife).to receive(:stderr).and_return(stderr)
+    allow(knife).to receive(:stdout).and_return(stdout)
+
+    # Assume all external commands would have succeed. :(
     allow(File).to receive(:unlink)
     allow(File).to receive(:rmtree)
-    allow(@knife).to receive(:shell_out!).and_return(true)
+    allow(knife).to receive(:shell_out!).and_return(true)
 
-    #CookbookSiteDownload Stup
-    @downloader = {}
-    allow(@knife).to receive(:download_cookbook_to).and_return(@downloader)
-    allow(@downloader).to receive(:version) do
-      if @knife.name_args.size == 2
-        @knife.name_args[1]
+    # CookbookSiteDownload Stup
+    allow(knife).to receive(:download_cookbook_to).and_return(downloader)
+    allow(downloader).to receive(:version) do
+      if knife.name_args.size == 2
+        knife.name_args[1]
       else
         "0.3.0"
       end
     end
 
-    #Stubs for CookbookSCMRepo
-    @repo = double(:sanity_check => true, :reset_to_default_state => true,
-                 :prepare_to_import => true, :finalize_updates_to => true,
-                 :merge_updates_from => true)
-    allow(Chef::Knife::CookbookSCMRepo).to receive(:new).and_return(@repo)
+    # Stubs for CookbookSCMRepo
+    allow(Chef::Knife::CookbookSCMRepo).to receive(:new).and_return(repo)
   end
 
-
   describe "run" do
-    it "should return an error if a cookbook name is not provided" do
-      @knife.name_args = []
-      expect(@knife.ui).to receive(:error).with("Please specify a cookbook to download and install.")
-      expect { @knife.run }.to raise_error(SystemExit)
+    it "raises an error if a cookbook name is not provided" do
+      knife.name_args = []
+      expect(knife.ui).to receive(:error).with("Please specify a cookbook to download and install.")
+      expect { knife.run }.to raise_error(SystemExit)
     end
 
-    it "should return an error if more than two arguments are given" do
-      @knife.name_args = ["foo", "bar", "baz"]
-      expect(@knife.ui).to receive(:error).with("Installing multiple cookbooks at once is not supported.")
-      expect { @knife.run }.to raise_error(SystemExit)
+    it "raises an error if more than two arguments are given" do
+      knife.name_args = ["foo", "bar", "baz"]
+      expect(knife.ui).to receive(:error).with("Installing multiple cookbooks at once is not supported.")
+      expect { knife.run }.to raise_error(SystemExit)
     end
 
-    it "should return an error if the second argument is not a version" do
-      @knife.name_args = ["getting-started", "1pass"]
-      expect(@knife.ui).to receive(:error).with("Installing multiple cookbooks at once is not supported.")
-      expect { @knife.run }.to raise_error(SystemExit)
+    it "raises an error if the second argument is not a version" do
+      knife.name_args = ["getting-started", "1pass"]
+      expect(knife.ui).to receive(:error).with("Installing multiple cookbooks at once is not supported.")
+      expect { knife.run }.to raise_error(SystemExit)
     end
 
-    it "should return an error if the second argument is a four-digit version" do
-      @knife.name_args = ["getting-started", "0.0.0.1"]
-      expect(@knife.ui).to receive(:error).with("Installing multiple cookbooks at once is not supported.")
-      expect { @knife.run }.to raise_error(SystemExit)
+    it "raises an error if the second argument is a four-digit version" do
+      knife.name_args = ["getting-started", "0.0.0.1"]
+      expect(knife.ui).to receive(:error).with("Installing multiple cookbooks at once is not supported.")
+      expect { knife.run }.to raise_error(SystemExit)
     end
 
-    it "should return an error if the second argument is a one-digit version" do
-      @knife.name_args = ["getting-started", "1"]
-      expect(@knife.ui).to receive(:error).with("Installing multiple cookbooks at once is not supported.")
-      expect { @knife.run }.to raise_error(SystemExit)
+    it "raises an error if the second argument is a one-digit version" do
+      knife.name_args = ["getting-started", "1"]
+      expect(knife.ui).to receive(:error).with("Installing multiple cookbooks at once is not supported.")
+      expect { knife.run }.to raise_error(SystemExit)
     end
 
-    it "should install the specified version if second argument is a three-digit version" do
-      @knife.name_args = ["getting-started", "0.1.0"]
-      @knife.config[:no_deps] = true
-      upstream_file = File.join(@install_path, "getting-started.tar.gz")
-      expect(@knife).to receive(:download_cookbook_to).with(upstream_file)
-      expect(@knife).to receive(:extract_cookbook).with(upstream_file, "0.1.0")
-      expect(@knife).to receive(:clear_existing_files).with(File.join(@install_path, "getting-started"))
-      expect(@repo).to receive(:merge_updates_from).with("getting-started", "0.1.0")
-      @knife.run
+    it "installs the specified version if second argument is a three-digit version" do
+      knife.name_args = ["getting-started", "0.1.0"]
+      knife.config[:no_deps] = true
+      upstream_file = File.join(install_path, "getting-started.tar.gz")
+      expect(knife).to receive(:download_cookbook_to).with(upstream_file)
+      expect(knife).to receive(:extract_cookbook).with(upstream_file, "0.1.0")
+      expect(knife).to receive(:clear_existing_files).with(File.join(install_path, "getting-started"))
+      expect(repo).to receive(:merge_updates_from).with("getting-started", "0.1.0")
+      knife.run
     end
 
-    it "should install the specified version if second argument is a two-digit version" do
-      @knife.name_args = ["getting-started", "0.1"]
-      @knife.config[:no_deps] = true
-      upstream_file = File.join(@install_path, "getting-started.tar.gz")
-      expect(@knife).to receive(:download_cookbook_to).with(upstream_file)
-      expect(@knife).to receive(:extract_cookbook).with(upstream_file, "0.1")
-      expect(@knife).to receive(:clear_existing_files).with(File.join(@install_path, "getting-started"))
-      expect(@repo).to receive(:merge_updates_from).with("getting-started", "0.1")
-      @knife.run
+    it "installs the specified version if second argument is a two-digit version" do
+      knife.name_args = ["getting-started", "0.1"]
+      knife.config[:no_deps] = true
+      upstream_file = File.join(install_path, "getting-started.tar.gz")
+      expect(knife).to receive(:download_cookbook_to).with(upstream_file)
+      expect(knife).to receive(:extract_cookbook).with(upstream_file, "0.1")
+      expect(knife).to receive(:clear_existing_files).with(File.join(install_path, "getting-started"))
+      expect(repo).to receive(:merge_updates_from).with("getting-started", "0.1")
+      knife.run
     end
 
-    it "should install the latest version if only a cookbook name is given" do
-      @knife.name_args = ["getting-started"]
-      @knife.config[:no_deps] = true
-      upstream_file = File.join(@install_path, "getting-started.tar.gz")
-      expect(@knife).to receive(:download_cookbook_to).with(upstream_file)
-      expect(@knife).to receive(:extract_cookbook).with(upstream_file, "0.3.0")
-      expect(@knife).to receive(:clear_existing_files).with(File.join(@install_path, "getting-started"))
-      expect(@repo).to receive(:merge_updates_from).with("getting-started", "0.3.0")
-      @knife.run
+    it "installs the latest version if only a cookbook name is given" do
+      knife.name_args = ["getting-started"]
+      knife.config[:no_deps] = true
+      upstream_file = File.join(install_path, "getting-started.tar.gz")
+      expect(knife).to receive(:download_cookbook_to).with(upstream_file)
+      expect(knife).to receive(:extract_cookbook).with(upstream_file, "0.3.0")
+      expect(knife).to receive(:clear_existing_files).with(File.join(install_path, "getting-started"))
+      expect(repo).to receive(:merge_updates_from).with("getting-started", "0.3.0")
+      knife.run
     end
 
-    it "should not create/reset git branches if use_current_branch is set" do
-      @knife.name_args = ["getting-started"]
-      @knife.config[:use_current_branch] = true
-      @knife.config[:no_deps] = true
-      upstream_file = File.join(@install_path, "getting-started.tar.gz")
-      expect(@repo).not_to receive(:prepare_to_import)
-      expect(@repo).not_to receive(:reset_to_default_state)
-      @knife.run
+    it "does not create/reset git branches if use_current_branch is set" do
+      knife.name_args = ["getting-started"]
+      knife.config[:use_current_branch] = true
+      knife.config[:no_deps] = true
+      upstream_file = File.join(install_path, "getting-started.tar.gz")
+      expect(repo).not_to receive(:prepare_to_import)
+      expect(repo).not_to receive(:reset_to_default_state)
+      knife.run
     end
 
-    it "should not raise an error if cookbook_path is a string" do
-      @knife.config[:cookbook_path] = @install_path
-      @knife.config[:no_deps] = true
-      @knife.name_args = ["getting-started"]
-      upstream_file = File.join(@install_path, "getting-started.tar.gz")
-      expect(@knife).to receive(:download_cookbook_to).with(upstream_file)
-      expect(@knife).to receive(:extract_cookbook).with(upstream_file, "0.3.0")
-      expect(@knife).to receive(:clear_existing_files).with(File.join(@install_path, "getting-started"))
-      expect(@repo).to receive(:merge_updates_from).with("getting-started", "0.3.0")
-      expect { @knife.run }.not_to raise_error
+    it "does not raise an error if cookbook_path is a string" do
+      knife.config[:cookbook_path] = install_path
+      knife.config[:no_deps] = true
+      knife.name_args = ["getting-started"]
+      upstream_file = File.join(install_path, "getting-started.tar.gz")
+      expect(knife).to receive(:download_cookbook_to).with(upstream_file)
+      expect(knife).to receive(:extract_cookbook).with(upstream_file, "0.3.0")
+      expect(knife).to receive(:clear_existing_files).with(File.join(install_path, "getting-started"))
+      expect(repo).to receive(:merge_updates_from).with("getting-started", "0.3.0")
+      expect { knife.run }.not_to raise_error
     end
+  end # end of run
+
+  let(:metadata) { Chef::Cookbook::Metadata.new }
+  let(:rb_metadata_path) { File.join(install_path, "post-punk-kitchen", "metadata.rb") }
+  let(:json_metadata_path) { File.join(install_path, "post-punk-kitchen", "metadata.json") }
+
+  describe "preferred_metadata" do
+    before do
+      allow(Chef::Cookbook::Metadata).to receive(:new).and_return(metadata)
+      allow(File).to receive(:exist?).and_return(false)
+      knife.instance_variable_set(:@cookbook_name, "post-punk-kitchen")
+      knife.instance_variable_set(:@install_path, install_path)
+    end
+
+    it "returns a populated Metadata object if metadata.rb exists" do
+      allow(File).to receive(:exist?).with(rb_metadata_path).and_return(true)
+      expect(metadata).to receive(:from_file).with(rb_metadata_path)
+      knife.preferred_metadata
+    end
+
+    it "returns a populated Metadata object if metadata.json exists" do
+      allow(File).to receive(:exist?).with(json_metadata_path).and_return(true)
+      #expect(IO).to receive(:read).with(json_metadata_path)
+      allow(IO).to receive(:read)
+      expect(metadata).to receive(:from_json)
+      knife.preferred_metadata
+    end
+
+    it "prefers metadata.rb over metadata.json" do
+      allow(File).to receive(:exist?).with(rb_metadata_path).and_return(true)
+      allow(File).to receive(:exist?).with(json_metadata_path).and_return(true)
+      allow(IO).to receive(:read)
+      expect(metadata).to receive(:from_file).with(rb_metadata_path)
+      expect(metadata).not_to receive(:from_json)
+      knife.preferred_metadata
+    end
+
+    it "rasies an error if it finds no metadata file" do
+      expect { knife.preferred_metadata }.to raise_error(Chef::Exceptions::MetadataNotFound)
+    end
+
   end
 end
