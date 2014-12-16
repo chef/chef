@@ -1,5 +1,7 @@
 # Chef [![Code Climate](https://codeclimate.com/github/opscode/chef.png)](https://codeclimate.com/github/opscode/chef)
 
+
+
 Want to try Chef? Get started with [learnchef](https://learnchef.opscode.com)
 
 * Documentation: [http://docs.opscode.com](http://docs.opscode.com)
