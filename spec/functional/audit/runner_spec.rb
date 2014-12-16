@@ -47,9 +47,7 @@ describe Chef::Audit::Runner do
   before do
     Chef::Config[:log_location] = stdout
   end
-
-  # When running these, because we are not mocking out any of the formatters we expect to get dual output on the
-  # command line
+  
   describe "#run" do
 
     let(:audits) { {} }
