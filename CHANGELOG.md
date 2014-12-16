@@ -5,6 +5,7 @@
 * [Issue 2625](https://github.com/opscode/chef/issues/2625) Fix missing `shell_out!` for `windows_package` resource
 * [Issue 2580](https://github.com/opscode/chef/issues/2580) Make sure the relative paths are preserved when using link resource.
 * [Pull 2630](https://github.com/opscode/chef/pull/2630) Improve knife's SSL error messaging
+* [Issue 2602](https://github.com/opscode/chef/issues/2602) Fix `subscribes` resource notifications.
 
 
 * [**BackSlasher**](https://github.com/BackSlasher)
