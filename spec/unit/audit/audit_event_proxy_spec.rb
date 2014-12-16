@@ -1,5 +1,5 @@
 #
-# Auther:: Tyler Ball (<tball@chef.io>)
+# Author:: Tyler Ball (<tball@chef.io>)
 # Author:: Claire McQuin (<claire@getchef.com>)
 #
 # Copyright:: Copyright (c) 2014 Chef Software, Inc.
