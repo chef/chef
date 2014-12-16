@@ -290,6 +290,7 @@ describe Chef::Client do
         Chef::Config[:client_fork] = enable_fork
         Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
         Chef::Config[:why_run] = false
+        Chef::Config[:audit_mode] = :enabled
 
         stub_const("Chef::Client::STDOUT_FD", stdout)
         stub_const("Chef::Client::STDERR_FD", stderr)

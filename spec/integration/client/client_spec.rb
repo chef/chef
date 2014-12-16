@@ -246,6 +246,7 @@ EOM
       file 'config/client.rb', <<EOM
 local_mode true
 cookbook_path "#{path_to('cookbooks')}"
+audit_mode :enabled
 EOM
     end
 
