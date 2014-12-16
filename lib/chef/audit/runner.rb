@@ -72,9 +72,6 @@ class Chef
       # prevents Specinfra and Serverspec from modifying the RSpec configuration
       # used by our spec tests.
       def require_deps
-        # TODO: We need to figure out a way to give audits its own configuration
-        # object. This involves finding a way to load these files w/o them adding
-        # to the configuration object used by our spec tests.
         require 'rspec'
         require 'rspec/its'
         require 'specinfra'
@@ -141,7 +138,7 @@ class Chef
         # TODO: We may need to be clever and adjust this based on operating
         # system, or make it configurable. E.g., there is a PowerShell backend,
         # as well as an SSH backend.
-        Specinfra.configuration.backend = :exec
+        Specinfra.configuration.backend = :exec if Specinfra.configuration.backend != :exec
       end
 
       # Iterates through the controls registered to this run_context, builds an

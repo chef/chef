@@ -1,5 +1,7 @@
 #
-# Author:: Serdar Sutay (<serdar@chef.io>)
+# Author:: Tyler Ball (<tball@chef.io>)
+# Author:: Claire McQuin (<claire@getchef.com>)
+#
 # Copyright:: Copyright (c) 2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -16,22 +18,12 @@
 # limitations under the License.
 #
 
-require 'rspec/core'
+require 'spec_helper'
+require 'chef/audit/rspec_formatter'
 
-class Chef
-  class Audit
-    class RspecFormatter < RSpec::Core::Formatters::DocumentationFormatter
-      RSpec::Core::Formatters.register self, :close
-
-      # @api public
-      #
-      # Invoked at the very end, `close` allows the formatter to clean
-      # up resources, e.g. open streams, etc.
-      #
-      # @param _notification [NullNotification] (Ignored)
-      def close(_notification)
-        # Normally Rspec closes the streams it's given. We don't want it for Chef.
-      end
-    end
+describe Chef::Audit::RspecFormatter do
+  let(:formatter) { Chef::Audit::RspecFormatter.new(nil) }
+  it "should respond to close" do
+    expect(formatter).to respond_to(:close)
   end
 end
