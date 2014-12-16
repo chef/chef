@@ -96,6 +96,7 @@ describe Chef::Audit::Runner do
 
           expect(RSpec.world.example_groups.size).to eq(1)
           # For whatever reason, `kind_of` is not working
+          # expect(RSpec.world.example_groups).to include(kind_of(RSpec::Core::ExampleGroup)) => FAIL
           g = RSpec.world.example_groups[0]
           expect(g.ancestors).to include(RSpec::Core::ExampleGroup)
           expect(g.description).to eq("group_name")
