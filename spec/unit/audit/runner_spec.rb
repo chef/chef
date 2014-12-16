@@ -19,11 +19,12 @@
 require 'spec_helper'
 require 'spec/support/audit_helper'
 require 'chef/audit/runner'
-require 'specinfra'
 require 'chef/audit/audit_event_proxy'
 require 'chef/audit/rspec_formatter'
+require 'rspec/support/spec/in_sub_process'
 
 describe Chef::Audit::Runner do
+  include RSpec::Support::InSubProcess
 
   let(:events) { double("events") }
   let(:run_context) { instance_double(Chef::RunContext, :events => events) }
@@ -51,27 +52,27 @@ describe Chef::Audit::Runner do
       end
 
       it "sets all the config values" do
-        # Mock out the require_deps call because we don't want to include the Serverspec DSL to all
-        # RSpec example groups
-        expect(runner).to receive(:require_deps)
-        # For some unknown reason, its having a lot of trouble configuring Specinfra
-        expect(runner).to receive(:configure_specinfra)
+        # This runs the Serverspec includes - we don't want these hanging around in all subsequent tests so
+        # we run this in a forked process.  Keeps Serverspec files from getting loaded into main process.
+        in_sub_process do
+          runner.send(:setup)
 
-        runner.send(:setup)
+          expect(RSpec.configuration.output_stream).to eq(log_location)
+          expect(RSpec.configuration.error_stream).to eq(log_location)
 
-        expect(RSpec.configuration.output_stream).to eq(log_location)
-        expect(RSpec.configuration.error_stream).to eq(log_location)
+          expect(RSpec.configuration.formatters.size).to eq(2)
+          expect(RSpec.configuration.formatters).to include(instance_of(Chef::Audit::AuditEventProxy))
+          expect(RSpec.configuration.formatters).to include(instance_of(Chef::Audit::RspecFormatter))
+          expect(Chef::Audit::AuditEventProxy.class_variable_get(:@@events)).to eq(run_context.events)
 
-        expect(RSpec.configuration.formatters.size).to eq(2)
-        expect(RSpec.configuration.formatters).to include(instance_of(Chef::Audit::AuditEventProxy))
-        expect(RSpec.configuration.formatters).to include(instance_of(Chef::Audit::RspecFormatter))
-        expect(Chef::Audit::AuditEventProxy.class_variable_get(:@@events)).to eq(run_context.events)
+          expect(RSpec.configuration.expectation_frameworks).to eq([RSpec::Matchers])
+          expect(RSpec::Matchers.configuration.syntax).to eq([:expect])
 
-        expect(RSpec.configuration.expectation_frameworks).to eq([RSpec::Matchers])
-        expect(RSpec::Matchers.configuration.syntax).to eq([:expect])
+          expect(RSpec.configuration.color).to eq(color)
+          expect(RSpec.configuration.expose_dsl_globally?).to eq(false)
 
-        expect(RSpec.configuration.color).to eq(color)
-        expect(RSpec.configuration.expose_dsl_globally?).to eq(false)
+          expect(Specinfra.configuration.backend).to eq(:exec)
+        end
       end
     end
 
