@@ -43,7 +43,7 @@ class Chef
                         code.to_s +
                         EXIT_STATUS_NORMALIZATION_SCRIPT )
         convert_boolean_return = @new_resource.convert_boolean_return
-        @code = <<EOH
+        self.code = <<EOH
 new-variable -name interpolatedexitcode -visibility private -value $#{convert_boolean_return}
 new-variable -name chefscriptresult -visibility private
 $chefscriptresult = {
@@ -52,7 +52,7 @@ $chefscriptresult = {
 if ($interpolatedexitcode -and $chefscriptresult.gettype().name -eq 'boolean') { exit [int32](!$chefscriptresult) } else { exit 0 }
 EOH
         Chef::Log.debug("powershell_script provider called with script code:\n\n#{code}\n")
-        Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{@code}\n")
+        Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{self.code}\n")
       end
 
       public
@@ -86,10 +86,6 @@ EOH
         end
 
         interpreter_flags
-      end
-
-      def code
-        @code
       end
     end
   end
