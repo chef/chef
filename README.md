@@ -89,6 +89,11 @@ environment to run the specs--they are completely standalone.
     # Run a Subset of Tests
     bundle exec rspec spec/PATH/TO/DIR
 
+When you submit a pull request, we will automatically run the functional and unit
+tests in spec/functional/ and spec/unit/ respectively. These will be run on Ubuntu
+through Travis CI, and on Windows through AppVeyor. The status of these runs will
+be displayed with your pull request.
+
 # License
 
 Chef - A configuration management system
