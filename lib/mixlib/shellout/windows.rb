@@ -111,6 +111,12 @@ module Mixlib
               when WAIT_TIMEOUT
                 # Kill the process
                 if (Time.now - start_wait) > timeout
+                  begin
+                    Process.kill(:KILL, process.process_id)
+                  rescue Errno::EIO
+                    logger.warn("Failed to kill timed out process #{process.process_id}") if logger
+                  end
+
                   raise Mixlib::ShellOut::CommandTimeout, "command timed out:\n#{format_for_exception}"
                 end
 
