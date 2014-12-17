@@ -32,10 +32,13 @@ class Chef
       provides :ruby
       provides :script
 
-      def_delegators :@new_resource, :code, :interpreter, :flags
+      def_delegators :@new_resource, :interpreter, :flags
+
+      attr_accessor :code
 
       def initialize(new_resource, run_context)
         super
+        self.code = new_resource.code
       end
 
       def command
