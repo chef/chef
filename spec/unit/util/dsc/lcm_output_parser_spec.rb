@@ -22,7 +22,7 @@ describe Chef::Util::DSC::LocalConfigurationManager::Parser do
   context 'empty input parameter' do
     it 'raises an exception when there are no valid lines' do
       str = <<-EOF
-
+                
       EOF
       expect {Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)}.to raise_error(Chef::Exceptions::LCMParser)
     end
