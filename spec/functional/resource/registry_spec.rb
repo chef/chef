@@ -40,7 +40,7 @@ describe Chef::Resource::RegistryKey, :unix_only do
   end
 end
 
-describe Chef::Resource::RegistryKey, :windows_only, :pending => "Refactor helper methods" do
+describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
 
   # parent and key must be single keys, not paths
   let(:parent) { 'Opscode' }
