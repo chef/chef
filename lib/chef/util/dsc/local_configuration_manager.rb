@@ -103,7 +103,7 @@ EOH
       Chef::Log.debug("DSC: DSC returned the following '-whatif' output from test operation:\n#{what_if_output}")
       begin
         Parser::parse(what_if_output)
-      rescue Chef::Exceptions::LCMParserException => e
+      rescue Chef::Exceptions::LCMParser => e
         Chef::Log::warn("Could not parse LCM output: #{e}")
         [Chef::Util::DSC::ResourceInfo.new('Unknown DSC Resources', true, ['Unknown changes because LCM output was not parsable.'])]
       end

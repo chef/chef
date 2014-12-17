@@ -24,11 +24,11 @@ describe Chef::Util::DSC::LocalConfigurationManager::Parser do
       str = <<-EOF
 
       EOF
-      expect {Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)}.to raise_error(Chef::Exceptions::LCMParserException)
+      expect {Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)}.to raise_error(Chef::Exceptions::LCMParser)
     end
 
     it 'raises an exception for a nil input' do
-      expect {Chef::Util::DSC::LocalConfigurationManager::Parser::parse(nil)}.to raise_error(Chef::Exceptions::LCMParserException)
+      expect {Chef::Util::DSC::LocalConfigurationManager::Parser::parse(nil)}.to raise_error(Chef::Exceptions::LCMParser)
     end
   end
 

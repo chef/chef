@@ -99,7 +99,7 @@ class Chef
             if resources.length > 0
               build_resource_info(resources)
             else
-              raise Chef::Exceptions::LCMParserException, "Could not parse:\n#{lcm_output}"
+              raise Chef::Exceptions::LCMParser, "Could not parse:\n#{lcm_output}"
             end
           end
 
