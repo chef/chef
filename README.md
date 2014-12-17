@@ -1,5 +1,6 @@
 # Chef 
 [![Code Climate](https://codeclimate.com/github/opscode/chef.png)](https://codeclimate.com/github/opscode/chef)
+[![Build Status Master](https://travis-ci.org/opscode/chef.svg?branch=master)](https://travis-ci.org/opscode/chef)
 [![Build Status Master](https://ci.appveyor.com/api/projects/status/github/opscode/chef?branch=master&svg=true&passingText=master%20-%20Ok&pendingText=master%20-%20Pending&failingText=master%20-%20Failing)](https://ci.appveyor.com/project/Chef/chef/branch/master)
 
 Want to try Chef? Get started with [learnchef](https://learnchef.opscode.com)
