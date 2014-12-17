@@ -1,4 +1,7 @@
-# Chef [![Code Climate](https://codeclimate.com/github/opscode/chef.png)](https://codeclimate.com/github/opscode/chef)
+# Chef 
+[![Code Climate](https://codeclimate.com/github/opscode/chef.png)](https://codeclimate.com/github/opscode/chef)
+[![Build Status Master](https://travis-ci.org/opscode/chef.svg?branch=master)](https://travis-ci.org/opscode/chef)
+[![Build Status Master](https://ci.appveyor.com/api/projects/status/github/opscode/chef?branch=master&svg=true&passingText=master%20-%20Ok&pendingText=master%20-%20Pending&failingText=master%20-%20Failing)](https://ci.appveyor.com/project/Chef/chef/branch/master)
 
 Want to try Chef? Get started with [learnchef](https://learnchef.opscode.com)
 
@@ -86,6 +89,11 @@ environment to run the specs--they are completely standalone.
 
     # Run a Subset of Tests
     bundle exec rspec spec/PATH/TO/DIR
+
+When you submit a pull request, we will automatically run the functional and unit
+tests in spec/functional/ and spec/unit/ respectively. These will be run on Ubuntu
+through Travis CI, and on Windows through AppVeyor. The status of these runs will
+be displayed with your pull request.
 
 # License
 
