@@ -154,6 +154,7 @@ describe Chef::Recipe do
         expect(zm_resource.recipe_name).to eq("test")
         expect(zm_resource.cookbook_name).to eq("hjk")
         expect(zm_resource.source_line).to include(__FILE__)
+        expect(zm_resource.declared_type).to eq(:zen_master)
       end
 
       it "does not add the resource to the resource collection" do

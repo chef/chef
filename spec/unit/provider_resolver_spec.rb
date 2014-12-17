@@ -514,7 +514,7 @@ describe Chef::ProviderResolver do
         :deploy_revision, :directory, :dpkg_package, :easy_install_package,
         :erl_call, :execute, :file, :gem_package, :git, :http_request, :link, :log, :pacman_package, :paludis_package,
         :perl, :python, :remote_directory, :route, :rpm_package, :ruby, :ruby_block, :script,
-        :subversion, :template, :timestamped_deploy, :whyrun_safe_ruby_block, :yum_package,
+        :subversion, :template, :timestamped_deploy, :whyrun_safe_ruby_block, :yum_package, :homebrew_package,
       ]
 
       supported_providers.each do |static_resource|
@@ -530,7 +530,7 @@ describe Chef::ProviderResolver do
       end
 
       unsupported_providers = [
-        :bff_package, :dsc_script, :homebrew_package, :ips_package, :macports_package,
+        :bff_package, :dsc_script, :ips_package, :macports_package,
         :smartos_package, :solaris_package, :windows_package,
         :windows_service,
       ]
