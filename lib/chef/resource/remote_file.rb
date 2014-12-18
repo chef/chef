@@ -125,10 +125,6 @@ class Chef
         )
       end
 
-      def after_created
-        validate_source(@source)
-      end
-
       private
 
       def validate_source(source)

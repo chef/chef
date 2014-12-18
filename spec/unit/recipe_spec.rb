@@ -237,7 +237,16 @@ describe Chef::Recipe do
           action :nothing
         end
       end
+
+      it "validating resources via build_resource" do
+        expect {recipe.build_resource(:remote_file, "klopp") do
+          source Chef::DelayedEvaluator.new {"http://chef.io"}
+        end}.to_not raise_error
+      end
+
     end
+
+
 
     describe "creating resources via declare_resource" do
       let(:zm_resource) do
