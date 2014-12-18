@@ -6,6 +6,7 @@ platform:
 
 environment:
   matrix:
+    - ruby_version: "200"
     - ruby_version: "193"
 
 clone_folder: c:\projects\mixlib-shellout
@@ -14,10 +15,8 @@ skip_tags: true
 branches:
   only:
     - master
-    - 12-stable
 
 install:
-  - winrm quickconfig -q
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
   - echo %PATH%
   - ruby --version
