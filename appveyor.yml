@@ -1,0 +1,31 @@
+version: "master-{build}"
+
+os: Windows Server 2012
+platform:
+  - x64
+
+environment:
+  matrix:
+    - ruby_version: "200"
+    - ruby_version: "193"
+
+clone_folder: c:\projects\mixlib-shellout
+clone_depth: 1
+skip_tags: true
+branches:
+  only:
+    - master
+
+install:
+  - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
+  - echo %PATH%
+  - ruby --version
+  - gem --version
+  - gem install bundler --quiet --no-ri --no-rdoc
+  - bundler --version
+
+build_script:
+  - bundle install
+
+test_script:
+  - bundle exec rspec
