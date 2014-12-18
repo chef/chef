@@ -229,6 +229,11 @@ class Chef
       def converge_failed(exception)
       end
 
+      ##################################
+      # Audit Mode Events
+      # This phase is currently experimental and these event APIs are subject to change
+      ##################################
+
       # Called before audit phase starts
       def audit_phase_start(run_status)
       end

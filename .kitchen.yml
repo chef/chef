@@ -6,8 +6,6 @@ driver:
     memory: 4096
   synced_folders:
     - ['.', '/home/vagrant/chef']
-    - ['../ohai', '/home/vagrant/ohai']
-    - ['../triager', '/home/vagrant/triager']
 
 provisioner:
   name: chef_zero

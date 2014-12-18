@@ -6,6 +6,15 @@ Example Doc Change:
 Description of the required change.
 -->
 
+### Experimental Audit Mode Feature
+
+There is a new command_line flag provided for `chef-client`: `--audit-mode`.  This accepts 1 of 3 arguments:
+
+* disabled (default) - Audits are disabled and the phase is skipped.  This is the default while Audit mode is an
+experimental feature.
+* enabled - Audits are enabled and will be performed after the converge phase.
+* audit_only - Audits are enabled and convergence is disabled.  Only audits will be performed.
+
 ### Chef Why Run Mode Ignores Audit Phase
 
 Because most users enable `why_run` mode to determine what resources convergence will update on their system, the audit

@@ -7,6 +7,7 @@
 # end
 
 # rspec-core did not include a license on Github
+# TODO when this API is exposed publicly from rspec-core, get rid of this copy pasta
 
 # Adding these as writers is necessary, otherwise we cannot set the new configuration.
 # Only want to do this in the specs.

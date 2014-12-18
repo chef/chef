@@ -92,7 +92,7 @@ EOM
       # We have a timeout protection here so that if due to some bug
       # run_lock gets stuck we can discover it.
       expect {
-        Timeout.timeout(1200) do
+        Timeout.timeout(120) do
           chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..")
 
           # Instantiate the first chef-solo run

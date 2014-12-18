@@ -24,6 +24,7 @@
 * Update Chef to use RSpec 3.
 * Cleaned up script and execute provider + specs
 * Added deprecation warnings around the use of command attribute in script resources
+* Audit mode feature added - see the RELEASE_NOTES for details
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):
