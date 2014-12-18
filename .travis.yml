@@ -8,7 +8,6 @@ branches:
   - 10-stable
   - 11-stable
   - 12-stable
-  - audit-mode
 
 # do not run expensive spec tests on PRs, only on branches
 script: "
