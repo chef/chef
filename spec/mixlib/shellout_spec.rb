@@ -456,19 +456,14 @@ describe Mixlib::ShellOut do
         let(:locale) { nil }
 
         context 'when running under Unix', :unix_only do
-          let(:parent_locale) { ENV['LC_ALL'].to_s.strip }
-
-          it "should unset the parent process's locale" do
+          it "should unset the process's locale" do
             should eql("")
           end
         end
 
         context 'when running under Windows', :windows_only do
-          # On windows, if an environmental variable is not set, it returns the key
-          let(:parent_locale) { (ENV['LC_ALL'] || '%LC_ALL%').to_s.strip }
-
-          it "should use the parent process's locale" do
-            should eql(parent_locale)
+          it "should unset process's locale" do
+            should eql('%LC_ALL%')
           end
         end
       end
