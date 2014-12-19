@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## Release: 2.0.1
+
+* add buffering to the child process status pipe to fix chef-client deadlocks
+* fix timeouts on Windows
+
 ## Release: 2.0.0
 
 * remove LC_ALL=C default setting, consumers should now set this if they
