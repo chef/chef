@@ -24,7 +24,7 @@ describe Chef::Search::Query do
   let(:query) { Chef::Search::Query.new }
 
   shared_context "filtered search" do
-    let(:query_string) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=1000" }
+    let(:query_string) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=" }
     let(:server_url) { "https://api.opscode.com/organizations/opscode/nodes" }
     let(:args) { { filter_key => filter_hash } }
     let(:filter_hash) {
@@ -147,22 +147,22 @@ describe Chef::Search::Query do
     end
 
     it "queries for every object of a type by default" do
-      expect(rest).to receive(:get_rest).with("search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=1000").and_return(response)
+      expect(rest).to receive(:get_rest).with("search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=").and_return(response)
       query.search(:node)
     end
 
     it "allows a custom query" do
-      expect(rest).to receive(:get_rest).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=1000").and_return(response)
+      expect(rest).to receive(:get_rest).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=").and_return(response)
       query.search(:node, "platform:rhel")
     end
 
     it "lets you set a sort order" do
-      expect(rest).to receive(:get_rest).with("search/node?q=platform:rhel&sort=id%20desc&start=0&rows=1000").and_return(response)
+      expect(rest).to receive(:get_rest).with("search/node?q=platform:rhel&sort=id%20desc&start=0&rows=").and_return(response)
       query.search(:node, "platform:rhel", sort: "id desc")
     end
 
     it "lets you set a starting object" do
-      expect(rest).to receive(:get_rest).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=2&rows=1000").and_return(response)
+      expect(rest).to receive(:get_rest).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=2&rows=").and_return(response)
       query.search(:node, "platform:rhel", start: 2)
     end
 

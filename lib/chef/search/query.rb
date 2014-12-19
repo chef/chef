@@ -60,7 +60,6 @@ WARNDEP
         # We could pass nil arguments along to search, assuming that default values will be
         # filled in later. However, since this is a deprecated method, it will be easier to
         # do a little more work here than to change search in the future.
-        rows ||= 1000
         start ||= 0
         sort ||= 'X_CHEF_id_CHEF_X asc'
 
@@ -91,7 +90,7 @@ WARNDEP
       # an example of the returned json may be:
       # {"ip_address":"127.0.0.1", "ruby_version": "1.9.3"}
       #
-      def search(type, query="*:*", filter_result:nil, rows:1000, start:0, sort:'X_CHEF_id_CHEF_X asc', &block)
+      def search(type, query="*:*", filter_result:nil, rows:nil, start:0, sort:'X_CHEF_id_CHEF_X asc', &block)
         validate_type(type)
 
         query_string = create_query_string(type, query, rows, start, sort)
