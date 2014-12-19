@@ -17,7 +17,7 @@
 #
 
 require 'spec_helper'
-require 'chef/search/_query'
+require 'chef/search/query'
 
 describe Chef::Search::Query do
   let(:rest) { double("Chef::REST") }
