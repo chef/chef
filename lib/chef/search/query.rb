@@ -84,7 +84,7 @@ WARNDEP
         validate_type(type)
 
         args_h = hashify_args(*args)
-        response = call_rest_service(type: type, query: query, **args_h)
+        response = call_rest_service(type, query: query, **args_h)
 
         if block
           response["rows"].each { |row| block.call(row) if row }
@@ -124,7 +124,7 @@ WARNDEP
         s && URI.escape(s.to_s)
       end
 
-      def call_rest_service(type:, query:'*:*', rows:nil, start:0, sort:'X_CHEF_id_CHEF_X asc', filter_result:nil)
+      def call_rest_service(type, query:'*:*', rows:nil, start:0, sort:'X_CHEF_id_CHEF_X asc', filter_result:nil)
         query_string = "search/#{type}?q=#{escape(query)}&sort=#{escape(sort)}&start=#{escape(start)}&rows=#{escape(rows)}"
 
         if filter_result
