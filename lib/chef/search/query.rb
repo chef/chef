@@ -41,38 +41,23 @@ class Chef
 
       # Backwards compatability for cookbooks.
       # This can be removed in Chef > 12.
-      def partial_search(type, query="*:*", *args, &block)
+      def partial_search(type, query='*:*', *args, &block)
         Chef::Log.warn(<<-WARNDEP)
-DEPRECATED: The 'partial_search' API is deprecated and will be removed in
-future releases. Please use 'search' with a :filter_result argument to get
-partial search data.
-WARNDEP
+        DEPRECATED: The 'partial_search' API is deprecated and will be removed in
+        future releases. Please use 'search' with a :filter_result argument to get
+        partial search data.
+        WARNDEP
 
-        # Users can pass either a hash or a list of arguments.
-        if args.length == 1 && args.first.is_a?(Hash)
-          args_h = args.first
-          rows = args_h[:rows]
-          start = args_h[:start]
-          sort = args_h[:sort]
-          keys = args_h[:keys]
+        if !args.empty? && args.first.is_a?(Hash)
+          # partial_search uses :keys instead of :filter_result for
+          # result filtering.
+          args_h = args.first.dup
+          args_h[:filter_result] = args_h[:keys]
+          args_h.delete(:keys)
+
+          search(type, query, args_h, &block)
         else
-          rows = args[0]
-          start = args[1]
-          sort = args[2]
-          keys = args[3]
-        end
-
-        # Set defaults. Otherwise, search may receive nil arguments.
-        # We could pass nil arguments along to search, assuming that default values will be
-        # filled in later. However, since this is a deprecated method, it will be easier to
-        # do a little more work here than to change search in the future.
-        start ||= 0
-        sort ||= 'X_CHEF_id_CHEF_X asc'
-
-        unless block.nil? #@TODO: IS THIS CORRECT? THIS DOESN'T SEEM CORRECT. WHY DO WE EVEN NEED IT?
-          search(type, query, filter_result: keys, rows: rows, start: start, sort: sort)
-        else
-          search(type, query, filter_result: keys.dup, rows: rows, start: start, sort: sort, &block)
+          search(type, query, *args, &block)
         end
       end
 
@@ -96,25 +81,21 @@ WARNDEP
       # an example of the returned json may be:
       # {"ip_address":"127.0.0.1", "ruby_version": "1.9.3"}
       #
-      def search(type, query="*:*", filter_result:nil, rows:nil, start:0, sort:'X_CHEF_id_CHEF_X asc', &block)
+      def search(type, query='*:*', *args, &block)
         validate_type(type)
 
-        query_string = create_query_string(type, query, rows, start, sort)
-        response = call_rest_service(query_string, filter_result)
+        args_h = hashify_args(*args)
+        response = call_rest_service(type: type, query: query, **args_h)
 
         if block
           response["rows"].each { |row| block.call(row) if row }
           if response["start"] + response["rows"].size < response["total"]
             start = response["start"] + rows
-            search(type, query, filter_result: filter_result, rows: rows, start: start, sort: sort, &block)
+            search(type, query, args_h, &block)
           end
           true
         else
-          [
-            response["rows"],
-            response["start"],
-            response["total"]
-          ]
+          [ response["rows"], response["start"], response["total"] ]
         end
       end
 
@@ -122,23 +103,35 @@ WARNDEP
       def validate_type(t)
         unless t.kind_of?(String) || t.kind_of?(Symbol)
           msg = "Invalid search object type #{t.inspect} (#{t.class}), must be a String or Symbol." +
-            "Useage: search(:node, QUERY[, OPTIONAL_ARGS])" +
-            "        `knife search environment QUERY (options)`"
+          "Useage: search(:node, QUERY[, OPTIONAL_ARGS])" +
+          "        `knife search environment QUERY (options)`"
           raise Chef::Exceptions::InvalidSearchQuery, msg
         end
       end
 
-      def create_query_string(type, query, rows, start, sort)
-        "search/#{type}?q=#{escape(query)}&sort=#{escape(sort)}&start=#{escape(start)}&rows=#{escape(rows)}"
+      def hashify_args(*args)
+        return Hash.new if args.empty?
+        return args.first if args.first.is_a?(Hash)
+
+        args_h = Hash.new
+        args_h[:sort] = args[0] if args[0]
+        args_h[:start] = args[1] if args[1]
+        args_h[:rows] = args[2]
+        args_h[:filter_result] = args[3]
+        args_h
       end
 
       def escape(s)
         s && URI.escape(s.to_s)
       end
 
-      def call_rest_service(query_string, filter_result)
+      def call_rest_service(type:, query:'*:*', rows:nil, start:0, sort:'X_CHEF_id_CHEF_X asc', filter_result:nil)
+        query_string = "search/#{type}?q=#{escape(query)}&sort=#{escape(sort)}&start=#{escape(start)}&rows=#{escape(rows)}"
+
         if filter_result
           response = rest.post_rest(query_string, filter_result)
+          # response returns rows in the format of
+          # { "url" => url_to_node, "data" => filter_result_hash }
           response['rows'].map! { |row| row['data'] }
         else
           response = rest.get_rest(query_string)
