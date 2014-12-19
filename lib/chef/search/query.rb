@@ -27,10 +27,16 @@ class Chef
   class Search
     class Query
 
-      attr_accessor :rest
+      attr_accessor :config, :rest
+      private :config
 
-      def initialize(url=nil)
-        @rest = Chef::REST.new(url || Chef::Config[:chef_server_url])
+      def initialize(url=nil, config:Chef::Config)
+        @config = config
+        @url = url
+      end
+
+      def rest
+        @rest ||= Chef::REST.new(@url || @config[:chef_server_url])
       end
 
       # Backwards compatability for cookbooks.
