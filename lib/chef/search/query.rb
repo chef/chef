@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 require 'chef/config'
 require 'chef/exceptions'
 require 'chef/rest'
@@ -43,10 +42,10 @@ class Chef
       # This can be removed in Chef > 12.
       def partial_search(type, query='*:*', *args, &block)
         Chef::Log.warn(<<-WARNDEP)
-        DEPRECATED: The 'partial_search' API is deprecated and will be removed in
-        future releases. Please use 'search' with a :filter_result argument to get
-        partial search data.
-        WARNDEP
+DEPRECATED: The 'partial_search' API is deprecated and will be removed in
+future releases. Please use 'search' with a :filter_result argument to get
+partial search data.
+WARNDEP
 
         if !args.empty? && args.first.is_a?(Hash)
           # partial_search uses :keys instead of :filter_result for
