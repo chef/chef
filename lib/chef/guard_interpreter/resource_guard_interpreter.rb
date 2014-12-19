@@ -41,10 +41,10 @@ class Chef
         # attribute by checking the type of the resources.
         # We need to make sure we check for Script first because any resource
         # that can get to here is an Execute resource.
-        if @parent_resource.is_a? Chef::Resource::Script
-          block_attributes = @command_opts.merge({:code => @command})
+        if @resource.is_a? Chef::Resource::Script
+          block_attributes = @command_opts.merge({code: @command})
         else
-          block_attributes = @command_opts.merge({:command => @command})
+          block_attributes = @command_opts.merge({command: @command})
         end
 
         # Handles cases like powershell_script where default
