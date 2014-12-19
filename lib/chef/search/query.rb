@@ -88,8 +88,8 @@ WARNDEP
 
         if block
           response["rows"].each { |row| block.call(row) if row }
-          if response["start"] + response["rows"].size < response["total"]
-            start = response["start"] + rows
+          unless (response["start"] + response["rows"].length) >= response["total"]
+            args_h[:start] = response["start"] + (args_h[:rows] || 0)
             search(type, query, args_h, &block)
           end
           true
@@ -125,7 +125,7 @@ WARNDEP
       end
 
       def call_rest_service(type, query:'*:*', rows:nil, start:0, sort:'X_CHEF_id_CHEF_X asc', filter_result:nil)
-        query_string = "search/#{type}?q=#{escape(query)}&sort=#{escape(sort)}&start=#{escape(start)}&rows=#{escape(rows)}"
+        query_string = "search/#{type}?q=#{escape(query)}&sort=#{escape(sort)}&start=#{escape(start)}#{"&rows=" + escape(rows) if rows}"
 
         if filter_result
           response = rest.post_rest(query_string, filter_result)
