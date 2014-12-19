@@ -140,56 +140,56 @@ describe Chef::Search::Query do
       "total" => 4
     } }
 
-    it "should accept a type as the first argument" do
+    it "accepts a type as the first argument" do
       expect { query.search("node") }.not_to raise_error
       expect { query.search(:node) }.not_to raise_error
       expect { query.search(Hash.new) }.to raise_error(Chef::Exceptions::InvalidSearchQuery, /(Hash)/)
     end
 
-    it "should query for every object of a type by default" do
+    it "queries for every object of a type by default" do
       expect(rest).to receive(:get_rest).with("search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=1000").and_return(response)
       query.search(:node)
     end
 
-    it "should allow a custom query" do
+    it "allows a custom query" do
       expect(rest).to receive(:get_rest).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=1000").and_return(response)
       query.search(:node, "platform:rhel")
     end
 
-    it "should let you set a sort order" do
+    it "lets you set a sort order" do
       expect(rest).to receive(:get_rest).with("search/node?q=platform:rhel&sort=id%20desc&start=0&rows=1000").and_return(response)
       query.search(:node, "platform:rhel", sort: "id desc")
     end
 
-    it "should let you set a starting object" do
+    it "lets you set a starting object" do
       expect(rest).to receive(:get_rest).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=2&rows=1000").and_return(response)
       query.search(:node, "platform:rhel", start: 2)
     end
 
-    it "should let you set how many rows to return" do
+    it "lets you set how many rows to return" do
       expect(rest).to receive(:get_rest).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=40").and_return(response)
       query.search(:node, "platform:rhel", rows: 40)
     end
 
-    it "should throw an exception if you pass an incorrect option" do
+    it "throws an exception if you pass an incorrect option" do
       expect { query.search(:node, "platform:rhel", total: 10) }
         .to raise_error(ArgumentError, /unknown keyword: total/)
     end
 
-    it "should return the raw rows, start, and total if no block is passed" do
+    it "returns the raw rows, start, and total if no block is passed" do
       rows, start, total = query.search(:node)
       expect(rows).to equal(response["rows"])
       expect(start).to equal(response["start"])
       expect(total).to equal(response["total"])
     end
 
-    it "should call a block for each object in the response" do
+    it "calls a block for each object in the response" do
       @call_me = double("blocky")
       response["rows"].each { |r| expect(@call_me).to receive(:do).with(r) }
       query.search(:node) { |r| @call_me.do(r) }
     end
 
-    it "should page through the responses" do
+    it "pages through the responses" do
       @call_me = double("blocky")
       response["rows"].each { |r| expect(@call_me).to receive(:do).with(r) }
       query.search(:node, "*:*", sort: nil, start: 0, rows: 1) { |r| @call_me.do(r) }
@@ -203,17 +203,17 @@ describe Chef::Search::Query do
           expect(rest).to receive(:post_rest).with(query_string, args[filter_key]).and_return(response)
         end
 
-        it "should return start" do
+        it "returns start" do
           start = query.search(:node, "platform:rhel", args)[1]
           expect(start).to eq(response['start'])
         end
 
-        it "should return total" do
+        it "returns total" do
           total = query.search(:node, "platform:rhel", args)[2]
           expect(total).to eq(response['total'])
         end
 
-        it "should return rows with the filter applied" do
+        it "returns rows with the filter applied" do
           filtered_rows = query.search(:node, "platform:rhel", args)[0]
           expect(filtered_rows).to match_array(response_rows)
         end
@@ -226,14 +226,14 @@ describe Chef::Search::Query do
     include_context "filtered search" do
       let(:filter_key) { :keys }
 
-      it "should emit a deprecation warning" do
+      it "emits a deprecation warning" do
         # partial_search calls search, so we'll stub search to return empty
         allow(query).to receive(:search).and_return( [ [], 0, 0 ] )
         expect(Chef::Log).to receive(:warn).with(/DEPRECATED: The 'partial_search' API is deprecated/)
         query.partial_search(:node, "platform:rhel", args)
       end
 
-      it "should return an array of filtered hashes" do
+      it "returns an array of filtered hashes" do
         expect(rest).to receive(:post_rest).with(query_string, args[filter_key]).and_return(response)
         results = query.partial_search(:node, "platform:rhel", args)
         expect(results[0]).to match_array(response_rows)
