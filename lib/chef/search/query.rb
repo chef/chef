@@ -26,8 +26,8 @@ class Chef
   class Search
     class Query
 
-      attr_accessor :config, :rest
-      private :config
+      attr_accessor :rest
+      attr_reader :config
 
       def initialize(url=nil, config:Chef::Config)
         @config = config
