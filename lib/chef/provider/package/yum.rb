@@ -987,6 +987,10 @@ class Chef
         # Helpers
         #
 
+        def as_array(thing)
+          [ thing ].flatten
+        end
+
         def yum_arch
           arch ? ".#{arch}" : nil
         end
@@ -1090,20 +1094,18 @@ class Chef
 
           Chef::Log.debug("#{@new_resource} checking yum info for #{new_resource}")
 
-          if @new_resource.package_name.is_a?(String)
-            installed_version = @yum.installed_version(@new_resource.package_name, arch)
-            @current_resource.version(installed_version)
-            @candidate_version = @yum.candidate_version(@new_resource.package_name, arch)
+          installed_version = []
+          @candidate_version = []
+          package_name_array.each do |pkg|
+            installed_version << @yum.installed_version(pkg, arch)
+            @candidate_version << @yum.candidate_version(pkg, arch)
+          end
+          if installed_version.size == 1
+            @current_resource.version(installed_version[0])
+            @candidate_version = @candidate_version[0]
           else
-            installed_version = []
-            @candidate_version = []
-            @new_resource.package_name.each do |pkg|
-              installed_version << @yum.installed_version(pkg, arch)
-              @candidate_version << @yum.candidate_version(pkg, arch)
-            end
             @current_resource.version(installed_version)
           end
-
 
           Chef::Log.debug("#{@new_resource} installed version: #{installed_version || "(none)"} candidate version: " +
                           "#{@candidate_version || "(none)"}")
@@ -1182,19 +1184,12 @@ class Chef
         # Hacky - better overall solution? Custom compare in Package provider?
         def action_upgrade
           # Could be uninstalled or have no candidate
-          if @current_resource.version.nil? || candidate_version.nil?
+          if @current_resource.version.nil? || !candidate_version_array.any?
             super
-          elsif candidate_version.is_a?(String) &&
-              RPMVersion.parse(candidate_version) > RPMVersion.parse(@current_resource.version)
-            super
-          elsif candidate_version.is_a?(Array)
-            if candidate_version.zip(@current_resource.version).any? do |c, i|
+          elsif candidate_version_array.zip(current_version_array).any? do |c, i|
                   RPMVersion.parse(c) > RPMVersion.parse(i)
                 end
-              super
-            else
-              Chef::Log.debug("#{@new_resource} are all at the latest versions - nothing to do")
-            end
+            super
           else
             Chef::Log.debug("#{@new_resource} is at the latest version - nothing to do")
           end
@@ -1206,19 +1201,11 @@ class Chef
 
         def remove_package(name, version)
           if version
-            if name.is_a?(Array)
-              remove_str = name.zip(version).map do |x|
-                "#{x.join('-')}#{yum_arch}"
-              end.join(' ')
-            else
-              remove_str = "#{name}-#{version}#{yum_arch}"
-            end
+            remove_str = as_array(name).zip(as_array(version)).map do |x|
+              "#{x.join('-')}#{yum_arch}"
+            end.join(' ')
           else
-            if name.is_a?(Array)
-              remove_str = name.map { |n| "#{n}#{yum_arch}" }.join(' ')
-            else
-              remove_str = "#{name}#{yum_arch}"
-            end
+            remove_str = as_array(name).map { |n| "#{n}#{yum_arch}" }.join(' ')
           end
           yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{remove_str}")
 

@@ -48,6 +48,14 @@ class Chef
         [ candidate_version ].flatten
       end
 
+      def current_version_array
+        [ @current_resource.version ].flatten
+      end
+
+      def new_version_array
+        [ @new_resource.version ].flatten
+      end
+
       def define_resource_requirements
         requirements.assert(:install) do |a|
           a.assertion { ((@new_resource.version != nil) && !(target_version_already_installed?)) \
@@ -120,10 +128,10 @@ class Chef
       end
 
       def removing_package?
-        if ![ @current_resource.version ].flatten.any?
+        if !current_version_array.any?
           # ! any? means it's all nil's, which means nothing is installed
           false
-        elsif ![ @new_resource.version ].flatten.any?
+        elsif !new_version_array.any?
           true # remove any version of all packages
         elsif @new_resource.version == @current_resource.version
           true # remove the version we have
