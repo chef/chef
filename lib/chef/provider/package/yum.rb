@@ -1090,10 +1090,20 @@ class Chef
 
           Chef::Log.debug("#{@new_resource} checking yum info for #{new_resource}")
 
-          installed_version = @yum.installed_version(@new_resource.package_name, arch)
-          @current_resource.version(installed_version)
+          if @new_resource.package_name.is_a?(String)
+            installed_version = @yum.installed_version(@new_resource.package_name, arch)
+            @current_resource.version(installed_version)
+            @candidate_version = @yum.candidate_version(@new_resource.package_name, arch)
+          else
+            installed_version = []
+            @candidate_version = []
+            @new_resource.package_name.each do |pkg|
+              installed_version << @yum.installed_version(pkg, arch)
+              @candidate_version << @yum.candidate_version(pkg, arch)
+            end
+            @current_resource.version(installed_version)
+          end
 
-          @candidate_version = @yum.candidate_version(@new_resource.package_name, arch)
 
           Chef::Log.debug("#{@new_resource} installed version: #{installed_version || "(none)"} candidate version: " +
                           "#{@candidate_version || "(none)"}")
@@ -1101,43 +1111,59 @@ class Chef
           @current_resource
         end
 
+        def install_remote_package(name, version)
+          # Work around yum not exiting with an error if a package doesn't exist
+          # for CHEF-2062
+          if !name.is_a?(Array) && @yum.version_available?(name, version, arch)
+            method = "install"
+            log_method = "installing"
+
+            # More Yum fun:
+            #
+            # yum install of an old name+version will exit(1)
+            # yum install of an old name+version+arch will exit(0) for some reason
+            #
+            # Some packages can be installed multiple times like the kernel
+            unless @yum.allow_multi_install.include?(name)
+              if RPMVersion.parse(@current_resource.version) > RPMVersion.parse(version)
+                # Unless they want this...
+                if allow_downgrade
+                  method = "downgrade"
+                  log_method = "downgrading"
+                else
+                  # we bail like yum when the package is older
+                  raise Chef::Exceptions::Package, "Installed package #{name}-#{@current_resource.version} is newer " +
+                                                   "than candidate package #{name}-#{version}"
+                end
+              end
+            end
+
+            repo = @yum.package_repository(name, version, arch)
+            Chef::Log.info("#{@new_resource} #{log_method} #{name}-#{version}#{yum_arch} from #{repo} repository")
+
+            yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{name}-#{version}#{yum_arch}")
+          elsif name.is_a?(Array)
+            index = 0
+            pkg_string = name.zip(version).map do |x|
+              s = ''
+              unless x[1] == @current_resource.version[index]
+                s = "#{x.join('-')}#{yum_arch}"
+              end
+              index += 1
+              s
+            end.join(' ')
+            yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} install #{pkg_string}")
+          else
+            raise Chef::Exceptions::Package, "Version #{version} of #{name} not found. Did you specify both version " +
+                                             "and release? (version-release, e.g. 1.84-10.fc6)"
+          end
+        end
+
         def install_package(name, version)
           if @new_resource.source
             yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} localinstall #{@new_resource.source}")
           else
-            # Work around yum not exiting with an error if a package doesn't exist for CHEF-2062
-            if @yum.version_available?(name, version, arch)
-              method = "install"
-              log_method = "installing"
-
-              # More Yum fun:
-              #
-              # yum install of an old name+version will exit(1)
-              # yum install of an old name+version+arch will exit(0) for some reason
-              #
-              # Some packages can be installed multiple times like the kernel
-              unless @yum.allow_multi_install.include?(name)
-                if RPMVersion.parse(@current_resource.version) > RPMVersion.parse(version)
-                  # Unless they want this...
-                  if allow_downgrade
-                    method = "downgrade"
-                    log_method = "downgrading"
-                  else
-                    # we bail like yum when the package is older
-                    raise Chef::Exceptions::Package, "Installed package #{name}-#{@current_resource.version} is newer " +
-                                                     "than candidate package #{name}-#{version}"
-                  end
-                end
-              end
-
-              repo = @yum.package_repository(name, version, arch)
-              Chef::Log.info("#{@new_resource} #{log_method} #{name}-#{version}#{yum_arch} from #{repo} repository")
-
-              yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{name}-#{version}#{yum_arch}")
-            else
-              raise Chef::Exceptions::Package, "Version #{version} of #{name} not found. Did you specify both version " +
-                                               "and release? (version-release, e.g. 1.84-10.fc6)"
-            end
+            install_remote_package(name, version)
           end
 
           if flush_cache[:after]
@@ -1158,9 +1184,17 @@ class Chef
           # Could be uninstalled or have no candidate
           if @current_resource.version.nil? || candidate_version.nil?
             super
-          # Ensure the candidate is newer
-          elsif RPMVersion.parse(candidate_version) > RPMVersion.parse(@current_resource.version)
+          elsif candidate_version.is_a?(String) &&
+              RPMVersion.parse(candidate_version) > RPMVersion.parse(@current_resource.version)
             super
+          elsif candidate_version.is_a?(Array)
+            if candidate_version.zip(@current_resource.version).any? do |c, i|
+                  RPMVersion.parse(c) > RPMVersion.parse(i)
+                end
+              super
+            else
+              Chef::Log.debug("#{@new_resource} are all at the latest versions - nothing to do")
+            end
           else
             Chef::Log.debug("#{@new_resource} is at the latest version - nothing to do")
           end
@@ -1172,10 +1206,21 @@ class Chef
 
         def remove_package(name, version)
           if version
-            yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{name}-#{version}#{yum_arch}")
+            if name.is_a?(Array)
+              remove_str = name.zip(version).map do |x|
+                "#{x.join('-')}#{yum_arch}"
+              end.join(' ')
+            else
+              remove_str = "#{name}-#{version}#{yum_arch}"
+            end
           else
-            yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{name}#{yum_arch}")
+            if name.is_a?(Array)
+              remove_str = name.map { |n| "#{n}#{yum_arch}" }.join(' ')
+            else
+              remove_str = "#{name}#{yum_arch}"
+            end
           end
+          yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{remove_str}")
 
           if flush_cache[:after]
             @yum.reload

@@ -84,17 +84,19 @@ class Chef
       end
 
       def action_upgrade
-        if candidate_version.nil?
+        if (@new_resource.package_name.is_a?(Array) && !candidate_version.any?) ||
+           (@new_resource.package_name.is_a?(String) && candidate_version.nil?)
           Chef::Log.debug("#{@new_resource} no candidate version - nothing to do")
+          return
         elsif @current_resource.version == candidate_version
           Chef::Log.debug("#{@new_resource} is at the latest version - nothing to do")
-        else
-          @new_resource.version(candidate_version)
-          orig_version = @current_resource.version || "uninstalled"
-          converge_by("upgrade package #{@new_resource.package_name} from #{orig_version} to #{candidate_version}") do
-            upgrade_package(@new_resource.package_name, candidate_version)
-            Chef::Log.info("#{@new_resource} upgraded from #{orig_version} to #{candidate_version}")
-          end
+          return
+        end
+        @new_resource.version(candidate_version)
+        orig_version = @current_resource.version || "uninstalled"
+        converge_by("upgrade package #{@new_resource.package_name} from #{orig_version} to #{candidate_version}") do
+          upgrade_package(@new_resource.package_name, candidate_version)
+          Chef::Log.info("#{@new_resource} upgraded from #{orig_version} to #{candidate_version}")
         end
       end
 
@@ -113,8 +115,13 @@ class Chef
       def removing_package?
         if @current_resource.version.nil?
           false # nothing to remove
+        elsif @current_resource.version.is_a?(Array) && !@current_resource.version.any?
+          # ! any? means it's all nil's, which means nothing is installed
+          false
         elsif @new_resource.version.nil?
           true # remove any version of a package
+        elsif @new_resource.version.is_a?(Array) && !@current_resource.version.any?
+          true # remove any version of all packages
         elsif @new_resource.version == @current_resource.version
           true # remove the version we have
         else
