@@ -40,6 +40,14 @@ class Chef
       def load_current_resource
       end
 
+      def package_name_array
+        [ new_resource.package_name ].flatten
+      end
+
+      def candidate_version_array
+        [ candidate_version ].flatten
+      end
+
       def define_resource_requirements
         requirements.assert(:install) do |a|
           a.assertion { ((@new_resource.version != nil) && !(target_version_already_installed?)) \
@@ -84,8 +92,7 @@ class Chef
       end
 
       def action_upgrade
-        if (@new_resource.package_name.is_a?(Array) && !candidate_version.any?) ||
-           (@new_resource.package_name.is_a?(String) && candidate_version.nil?)
+        if !candidate_version_array.any?
           Chef::Log.debug("#{@new_resource} no candidate version - nothing to do")
           return
         elsif @current_resource.version == candidate_version
@@ -113,14 +120,10 @@ class Chef
       end
 
       def removing_package?
-        if @current_resource.version.nil?
-          false # nothing to remove
-        elsif @current_resource.version.is_a?(Array) && !@current_resource.version.any?
+        if ![ @current_resource.version ].flatten.any?
           # ! any? means it's all nil's, which means nothing is installed
           false
-        elsif @new_resource.version.nil?
-          true # remove any version of a package
-        elsif @new_resource.version.is_a?(Array) && !@current_resource.version.any?
+        elsif ![ @new_resource.version ].flatten.any?
           true # remove any version of all packages
         elsif @new_resource.version == @current_resource.version
           true # remove the version we have
