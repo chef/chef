@@ -39,11 +39,14 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
   }
 
   let(:service_params) {
+
+    id = "#{$$}_#{rand(1000)}"
+
     test_service.merge( {
       run_as_user: qualified_username,
       run_as_password: password,
-      service_name: "spec_service_#{$$}_#{rand(1000)}",
-      service_display_name: "windows_service test service",
+      service_name: "spec_service_#{id}",
+      service_display_name: "windows_service spec #{id}}",
       service_description: "Test service for running the windows_service functional spec.",
       service_file_path: global_service_file_path,
       } )
@@ -90,8 +93,6 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
       service_resource.run_action(:start)
     end
 
-    it "raises an exception when it can't grant the logon privilege" do
-#      service_resource.run_action(:start)
-    end
+    it "raises an exception when it can't grant the logon privilege"
   end
 end
