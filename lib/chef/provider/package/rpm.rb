@@ -59,8 +59,8 @@ class Chef
             end
 
             Chef::Log.debug("#{@new_resource} checking rpm status")
-            status = shell_out("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}")
-            status.stdout.split('\n').each do |line|
+            status = shell_out!("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}")
+            status.stdout.each_line do |line|
               case line
               when /^([\w\d+_.-]+)\s([\w\d_.-]+)$/
                 @current_resource.package_name($1)
@@ -77,7 +77,7 @@ class Chef
 
           Chef::Log.debug("#{@new_resource} checking install state")
           @rpm_status = shell_out("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}")
-          @rpm_status.stdout.split('\n').each do |line|
+          @rpm_status.stdout.each_line do |line|
             case line
             when /^([\w\d+_.-]+)\s([\w\d_.-]+)$/
               Chef::Log.debug("#{@new_resource} current version is #{$2}")
