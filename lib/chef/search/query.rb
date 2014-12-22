@@ -132,8 +132,7 @@ class Chef
 
       # new search api that allows for a cleaner implementation of things like return filters
       # (formerly known as 'partial search').
-      # Also args should never be nil, but that is required for Ruby 1.8 compatibility
-      def do_search(type, query="*:*", args=nil, &block)
+      def do_search(type, query="*:*", args, &block)
         query_string = create_query_string(type, query, args)
         response = call_rest_service(query_string, args)
         unless block.nil?
