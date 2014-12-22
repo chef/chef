@@ -29,20 +29,21 @@ describe Chef::Provider::Package::Rpm do
 
     @provider = Chef::Provider::Package::Rpm.new(@new_resource, @run_context)
 
-    @status = double("Status", :exitstatus => 0)
+    @stdout = ''
+    @status = double("Status", :exitstatus => 0, :stdout => @stdout)
     allow(::File).to receive(:exists?).and_return(true)
   end
 
   describe "when determining the current state of the package" do
 
     it "should create a current resource with the name of new_resource" do
-      allow(@provider).to receive(:popen4).and_return(@status)
+      allow(@provider).to receive(:shell_out).and_return(@status)
       @provider.load_current_resource
       expect(@provider.current_resource.name).to eq("ImageMagick-c++")
     end
 
     it "should set the current reource package name to the new resource package name" do
-      allow(@provider).to receive(:popen4).and_return(@status)
+      allow(@provider).to receive(:shell_out).and_return(@status)
       @provider.load_current_resource
       expect(@provider.current_resource.package_name).to eq('ImageMagick-c++')
     end
@@ -53,18 +54,20 @@ describe Chef::Provider::Package::Rpm do
     end
 
     it "should get the source package version from rpm if provided" do
-      @stdout = StringIO.new("ImageMagick-c++ 6.5.4.7-7.el6_5")
-      expect(@provider).to receive(:popen4).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      expect(@provider).to receive(:popen4).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' ImageMagick-c++").and_return(@status)
+      @stdout = "ImageMagick-c++ 6.5.4.7-7.el6_5"
+      @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+      expect(@provider).to receive(:shell_out).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm").and_return(@status)
+      expect(@provider).to receive(:shell_out).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' ImageMagick-c++").and_return(@status)
       @provider.load_current_resource
       expect(@provider.current_resource.package_name).to eq("ImageMagick-c++")
       expect(@provider.new_resource.version).to eq("6.5.4.7-7.el6_5")
     end
 
     it "should return the current version installed if found by rpm" do
-      @stdout = StringIO.new("ImageMagick-c++ 6.5.4.7-7.el6_5")
-      expect(@provider).to receive(:popen4).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm").and_return(@status)
-      expect(@provider).to receive(:popen4).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' ImageMagick-c++").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @stdout = "ImageMagick-c++ 6.5.4.7-7.el6_5"
+      @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+      expect(@provider).to receive(:shell_out).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm").and_return(@status)
+      expect(@provider).to receive(:shell_out).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' ImageMagick-c++").and_return(@status)
       @provider.load_current_resource
       expect(@provider.current_resource.version).to eq("6.5.4.7-7.el6_5")
     end
@@ -76,19 +79,19 @@ describe Chef::Provider::Package::Rpm do
     end
 
     it "should raise an exception if rpm fails to run" do
-      status = double("Status", :exitstatus => -1)
-      allow(@provider).to receive(:popen4).and_return(status)
+      @status = double("Status", :exitstatus => -1, :stdout => @stdout)
+      allow(@provider).to receive(:shell_out).and_return(@status)
       expect { @provider.run_action(:any) }.to raise_error(Chef::Exceptions::Package)
     end
 
     it "should not detect the package name as version when not installed" do
-      @status = double("Status", :exitstatus => -1)
-      @stdout = StringIO.new("package openssh-askpass is not installed")
+      @stdout = "package openssh-askpass is not installed"
+      @status = double("Status", :exitstatus => -1, :stdout => @stdout)
       @new_resource = Chef::Resource::Package.new("openssh-askpass")
       @new_resource.source 'openssh-askpass'
       @provider = Chef::Provider::Package::Rpm.new(@new_resource, @run_context)
-      expect(@provider).to receive(:popen4).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' openssh-askpass").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      expect(@provider).to receive(:popen4).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' openssh-askpass").and_return(@status)
+      expect(@provider).to receive(:shell_out).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' openssh-askpass").and_return(@status)
+      expect(@provider).to receive(:shell_out).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' openssh-askpass").and_return(@status)
       @provider.load_current_resource
       expect(@provider.current_resource.version).to be_nil
     end
