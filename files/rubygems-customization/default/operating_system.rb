@@ -4,8 +4,8 @@
 # system.
 
 # Always install and update new gems in "user install mode"
-Gem::ConfigFile::OPERATING_SYSTEM_DEFAULTS["install"] = "--user"
-Gem::ConfigFile::OPERATING_SYSTEM_DEFAULTS["update"] = "--user"
+Gem::ConfigFile::OPERATING_SYSTEM_DEFAULTS["install"] = "--user --no-rdoc --no-ri"
+Gem::ConfigFile::OPERATING_SYSTEM_DEFAULTS["update"] = "--user --no-rdoc --no-ri"
 
 module Gem
 
