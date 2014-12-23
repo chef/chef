@@ -62,7 +62,7 @@ describe Chef::Provider::Package::Rpm do
       stdout = "ImageMagick-c++ 6.5.4.7-7.el6_5"
       status = double("Status", :exitstatus => 0, :stdout => stdout)
       expect(provider).to receive(:shell_out!).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm").and_return(status)
-      expect(provider).to receive(:shell_out).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' ImageMagick-c++").and_return(status)
+      expect(provider).to receive(:shell_out!).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' ImageMagick-c++").and_return(status)
       provider.load_current_resource
       expect(provider.current_resource.package_name).to eq("ImageMagick-c++")
       expect(provider.new_resource.version).to eq("6.5.4.7-7.el6_5")
@@ -72,7 +72,7 @@ describe Chef::Provider::Package::Rpm do
       stdout = "ImageMagick-c++ 6.5.4.7-7.el6_5"
       status = double("Status", :exitstatus => 0, :stdout => stdout)
       expect(provider).to receive(:shell_out!).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm").and_return(status)
-      expect(provider).to receive(:shell_out).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' ImageMagick-c++").and_return(status)
+      expect(provider).to receive(:shell_out!).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' ImageMagick-c++").and_return(status)
       provider.load_current_resource
       expect(provider.current_resource.version).to eq("6.5.4.7-7.el6_5")
     end
@@ -96,7 +96,7 @@ describe Chef::Provider::Package::Rpm do
       new_resource.source 'openssh-askpass'
       provider = Chef::Provider::Package::Rpm.new(new_resource, run_context)
       expect(provider).to receive(:shell_out!).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' openssh-askpass").and_return(status)
-      expect(provider).to receive(:shell_out).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' openssh-askpass").and_return(status)
+      expect(provider).to receive(:shell_out!).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' openssh-askpass").and_return(status)
       provider.load_current_resource
       expect(provider.current_resource.version).to be_nil
     end

@@ -76,7 +76,7 @@ class Chef
           end
 
           Chef::Log.debug("#{@new_resource} checking install state")
-          @rpm_status = shell_out("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}")
+          @rpm_status = shell_out!("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}")
           @rpm_status.stdout.each_line do |line|
             case line
             when /^([\w\d+_.-]+)\s([\w\d_.-]+)$/
