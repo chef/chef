@@ -184,11 +184,7 @@ E
       it "should upload all dependencies once" do
         allow(knife).to receive(:cookbook_names).and_return(["test_cookbook1", "test_cookbook2", "test_cookbook3"])
         expect(knife).to receive(:upload).exactly(3).times
-        expect do
-          Timeout::timeout(5) do
-            knife.run
-          end
-        end.not_to raise_error
+        expect { knife.run }.not_to raise_error
       end
 
       it 'should not print any error or warning' do
@@ -197,7 +193,7 @@ E
         expect(knife.ui).to_not receive(:error)
         expect(knife.ui).to_not receive(:warn)
         expect(knife.ui).to receive(:info).with(/Uploaded 3 cookbooks\./)
-        expect { Timeout::timeout(5) { knife.run } }.not_to raise_error
+        expect { knife.run }.not_to raise_error
       end
 
       context 'with upload errors' do
@@ -209,7 +205,7 @@ E
           allow(knife.ui).to receive(:error)
         end
         after do
-          expect { Timeout::timeout(5) { knife.run } }.to raise_error(SystemExit)
+          expect { knife.run }.to raise_error(SystemExit)
         end
 
         it 'should an error fo each cookbook' do
