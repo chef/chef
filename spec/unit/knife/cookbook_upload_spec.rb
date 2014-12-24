@@ -38,15 +38,16 @@ describe Chef::Knife::CookbookUpload do
 
   let(:cookbook_uploader) { double(:upload_cookbooks => nil) }
 
-  let(:output) { StringIO.new }
+  let(:stdout) { StringIO.new }
+  let(:stderr) { StringIO.new }
+  let(:stdin) { StringIO.new }
 
   let(:name_args) { ['test_cookbook'] }
 
   let(:knife) do
     k = Chef::Knife::CookbookUpload.new
     k.name_args = name_args
-    allow(k.ui).to receive(:stdout).and_return(output)
-    allow(k.ui).to receive(:stderr).and_return(output)
+    k.ui = Chef::Knife::UI.new(stdout, stderr, stdin, {})
     k
   end
 
@@ -89,8 +90,8 @@ describe Chef::Knife::CookbookUpload do
 
       it 'should report on success' do
         expect(knife).to receive(:upload).once
-        expect(knife.ui).to receive(:info).with(/Uploaded 1 cookbook/)
         knife.run
+        expect(stderr.string).to include('Uploaded 1 cookbook')
       end
     end
 
@@ -112,18 +113,21 @@ describe Chef::Knife::CookbookUpload do
 
       it "emits a warning" do
         knife.run
-        expected_message=<<-E
+        expected_stdout = <<-STDOUT
+test_cookbook:
+  /path/one/test_cookbook
+  /path/two/test_cookbook
+STDOUT
+        expected_stderr = <<-STDERR
 WARNING: The cookbooks: test_cookbook exist in multiple places in your cookbook_path.
 A composite version of these cookbooks has been compiled for uploading.
 
 IMPORTANT: In a future version of Chef, this behavior will be removed and you will no longer
 be able to have the same version of a cookbook in multiple places in your cookbook_path.
 WARNING: The affected cookbooks are located:
-test_cookbook:
-  /path/one/test_cookbook
-  /path/two/test_cookbook
-E
-        expect(output.string).to include(expected_message)
+STDERR
+        expect(stdout.string).to include(expected_stdout)
+        expect(stderr.string).to include(expected_stderr)
       end
     end
 
@@ -190,10 +194,8 @@ E
       it 'should not print any error or warning' do
         allow(knife).to receive(:cookbook_names).and_return(%w(test_cookbook3))
         expect(knife).to receive(:upload).exactly(3).times
-        expect(knife.ui).to_not receive(:error)
-        expect(knife.ui).to_not receive(:warn)
-        expect(knife.ui).to receive(:info).with(/Uploaded 3 cookbooks\./)
         expect { knife.run }.not_to raise_error
+        expect(stderr.string).to include('Uploaded 3 cookbooks.')
       end
 
       context 'with upload errors' do
@@ -202,27 +204,24 @@ E
             Chef::Exceptions::CookbookNotFoundInRepo.new
           )
           allow(knife).to receive(:cookbook_names).and_return(%w(test_cookbook3))
-          allow(knife.ui).to receive(:error)
-        end
-        after do
           expect { knife.run }.to raise_error(SystemExit)
         end
 
         it 'should an error fo each cookbook' do
           (1..3).step.each do |i|
-            expect(knife.ui).to receive(:error).with(
+            expect(stderr.string).to include(
               "Could not find cookbook test_cookbook#{i} in your cookbook "\
               'path, skipping it'
-            ).once
+            )
           end
         end
 
         it 'should print an error with the failed cookbook count' do
-          expect(knife.ui).to receive(:error).with('Failed to upload 3 cookbooks.').once
+          expect(stderr.string).to include('Failed to upload 3 cookbooks.')
         end
 
         it 'should not print successful upload message' do
-          expect(knife.ui).to_not receive(:info).with(/Uploaded[\s\d]+cookbooks\./)
+          expect(stdout).to_not include(/Uploaded[\s\d]+cookbooks\./)
         end
       end
     end
@@ -237,8 +236,6 @@ E
             "dependency" => cookbook_dependency}[ckbk]
         end
         allow(knife).to receive(:cookbook_names).and_return(["cookbook_dependency", "test_cookbook"])
-        @stdout, @stderr, @stdin = StringIO.new, StringIO.new, StringIO.new
-        knife.ui = Chef::Knife::UI.new(@stdout, @stderr, @stdin, {})
       end
 
       it 'should exit and not upload the cookbook' do
@@ -250,9 +247,9 @@ E
 
       it 'should output a message for a single missing dependency' do
         expect {knife.run}.to raise_error(SystemExit)
-        expect(@stderr.string).to include('Cookbook test_cookbook depends on cookbooks which are not currently')
-        expect(@stderr.string).to include('being uploaded and cannot be found on the server.')
-        expect(@stderr.string).to include("The missing cookbook(s) are: 'dependency' version '>= 0.0.0'")
+        expect(stderr.string).to include('Cookbook test_cookbook depends on cookbooks which are not currently')
+        expect(stderr.string).to include('being uploaded and cannot be found on the server.')
+        expect(stderr.string).to include("The missing cookbook(s) are: 'dependency' version '>= 0.0.0'")
       end
 
       it 'should output a message for a multiple missing dependencies which are concatenated' do
@@ -265,11 +262,11 @@ E
         end
         allow(knife).to receive(:cookbook_names).and_return(["dependency", "dependency2", "test_cookbook"])
         expect {knife.run}.to raise_error(SystemExit)
-        expect(@stderr.string).to include('Cookbook test_cookbook depends on cookbooks which are not currently')
-        expect(@stderr.string).to include('being uploaded and cannot be found on the server.')
-        expect(@stderr.string).to include("The missing cookbook(s) are:")
-        expect(@stderr.string).to include("'dependency' version '>= 0.0.0'")
-        expect(@stderr.string).to include("'dependency2' version '>= 0.0.0'")
+        expect(stderr.string).to include('Cookbook test_cookbook depends on cookbooks which are not currently')
+        expect(stderr.string).to include('being uploaded and cannot be found on the server.')
+        expect(stderr.string).to include("The missing cookbook(s) are:")
+        expect(stderr.string).to include("'dependency' version '>= 0.0.0'")
+        expect(stderr.string).to include("'dependency2' version '>= 0.0.0'")
       end
     end
 
@@ -295,8 +292,8 @@ E
 
       it 'should report on success' do
         expect(knife).to receive(:upload).once
-        expect(knife.ui).to receive(:info).with(/Uploaded all cookbooks/)
         knife.run
+        expect(stderr.string).to include('Uploaded all cookbooks')
       end
 
       it 'should update the version constraints for an environment' do
