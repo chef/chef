@@ -1068,6 +1068,9 @@ class Chef
             parse_arch
           end
 
+          # normalize internal representation as an array
+          @new_resource.package_name(as_array(@new_resource.package_name))
+
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
 
@@ -1100,12 +1103,12 @@ class Chef
             installed_version << @yum.installed_version(pkg, arch)
             @candidate_version << @yum.candidate_version(pkg, arch)
           end
-          if installed_version.size == 1
-            @current_resource.version(installed_version[0])
-            @candidate_version = @candidate_version[0]
-          else
-            @current_resource.version(installed_version)
-          end
+          #if installed_version.size == 1
+          #  @current_resource.version(installed_version[0])
+          #  @candidate_version = @candidate_version[0]
+          #else
+            @current_resource.version(installed_version.flatten)
+          #end
 
           Chef::Log.debug("#{@new_resource} installed version: #{installed_version || "(none)"} candidate version: " +
                           "#{@candidate_version || "(none)"}")
@@ -1116,45 +1119,62 @@ class Chef
         def install_remote_package(name, version)
           # Work around yum not exiting with an error if a package doesn't exist
           # for CHEF-2062
-          if !name.is_a?(Array) && @yum.version_available?(name, version, arch)
-            method = "install"
-            log_method = "installing"
-
+          all_avail = as_array(name).zip(as_array(version)).any? do |n, v|
+            @yum.version_available?(n, v, arch)
+          end
+          method = log_method = nil
+          methods = []
+          if all_avail
             # More Yum fun:
             #
             # yum install of an old name+version will exit(1)
             # yum install of an old name+version+arch will exit(0) for some reason
             #
             # Some packages can be installed multiple times like the kernel
-            unless @yum.allow_multi_install.include?(name)
-              if RPMVersion.parse(@current_resource.version) > RPMVersion.parse(version)
-                # Unless they want this...
-                if allow_downgrade
-                  method = "downgrade"
-                  log_method = "downgrading"
-                else
-                  # we bail like yum when the package is older
-                  raise Chef::Exceptions::Package, "Installed package #{name}-#{@current_resource.version} is newer " +
-                                                   "than candidate package #{name}-#{version}"
+            as_array(name).zip(as_array(version)).each do |n, v|
+              method = "install"
+              log_method = "installing"
+              idx = package_name_array.index(n)
+              unless @yum.allow_multi_install.include?(n)
+                if RPMVersion.parse(current_version_array[idx]) > RPMVersion.parse(v)
+                  # We allow downgrading only in the evenit of single-package
+                  # rules where the user explicitly allowed it
+                  if allow_downgrade
+                    method = "downgrade"
+                    log_method = "downgrading"
+                  else
+                    # we bail like yum when the package is older
+                    raise Chef::Exceptions::Package, "Installed package #{name}-#{@current_resource.version} is newer " +
+                                                     "than candidate package #{name}-#{version}"
+                  end
                 end
               end
+              # methods don't count for packages we won't be touching
+              next if RPMVersion.parse(current_version_array[idx]) == RPMVersion.parse(v)
+              methods << method
+            end
+            # We could split this up into two commands if we wanted to, but
+            # for now, just don't support this.
+            if methods.uniq.length > 1
+              raise Chef::Exceptions::Package, "Multipackage rule #{name} has a mix of upgrade and downgrade packages. Cannot proceed."
             end
 
-            repo = @yum.package_repository(name, version, arch)
-            Chef::Log.info("#{@new_resource} #{log_method} #{name}-#{version}#{yum_arch} from #{repo} repository")
-
-            yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{name}-#{version}#{yum_arch}")
-          elsif name.is_a?(Array)
+            repos = []
+            pkg_string_bits = []
             index = 0
-            pkg_string = name.zip(version).map do |x|
+            as_array(name).zip(as_array(version)).each do |n, v|
               s = ''
-              unless x[1] == @current_resource.version[index]
-                s = "#{x.join('-')}#{yum_arch}"
+              unless v == current_version_array[index]
+                s = "#{n}-#{v}#{yum_arch}"
+                repo = @yum.package_repository(n, v, arch)
+                repos << "#{s} from #{repo} repository"
+                pkg_string_bits << s
               end
               index += 1
-              s
-            end.join(' ')
-            yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} install #{pkg_string}")
+            end
+            pkg_string = pkg_string_bits.join(' ')
+            Chef::Log.info("#{@new_resource} #{log_method} #{repos.join(' ')}")
+            yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{pkg_string}")
           else
             raise Chef::Exceptions::Package, "Version #{version} of #{name} not found. Did you specify both version " +
                                              "and release? (version-release, e.g. 1.84-10.fc6)"
