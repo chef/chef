@@ -27,6 +27,7 @@ require 'chef/handler/error_report'
 require 'chef/workstation_config_loader'
 
 class Chef::Application::Client < Chef::Application
+  include Chef::Mixin::ShellOut
 
   # Mimic self_pipe sleep from Unicorn to capture signals safely
   SELF_PIPE = []
@@ -200,6 +201,10 @@ class Chef::Application::Client < Chef::Application
     :description  => "Fork client",
     :boolean      => true
 
+  option :recipe_url,
+    :long         => "--recipe-url",
+    :description  => "Pull down a remote archive of recipes and unpack it to the cookbook cache. Only used in local mode."
+
   option :enable_reporting,
     :short        => "-R",
     :long         => "--enable-reporting",
@@ -260,6 +265,20 @@ class Chef::Application::Client < Chef::Application
     if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
       Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
     end
+
+    if !Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
+      Chef::Application.fatal!("chef-client recipe-url can be used only in local-mode", 1)
+    elsif Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
+      Chef::Log.debug "Cleanup path #{Chef::Config.chef_repo_path} before extract recipes into it"
+      FileUtils.rm_rf(Chef::Config.chef_repo_path, :secure => true)
+      Chef::Log.debug "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
+      FileUtils.mkdir_p(Chef::Config.chef_repo_path)
+      tarball_path = File.join(Chef::Config.chef_repo_path, 'recipes.tgz')
+      fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
+      result = shell_out!("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
+      Chef::Log.debug "#{result.stdout}"
+    end
+
     Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
     Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
@@ -399,5 +418,14 @@ class Chef::Application::Client < Chef::Application
     "\nConfiguration settings:" +
     "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
     "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+  end
+
+  def fetch_recipe_tarball(url, path)
+    Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
+    File.open(path, 'wb') do |f|
+      open(url) do |r|
+        f.write(r.read)
+      end
+    end
   end
 end
