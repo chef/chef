@@ -252,7 +252,7 @@ class Chef::Application::Client < Chef::Application
   def reconfigure
     super
 
-    Chef::Config[:specific_recipes] = cli_arguments.map { |file| File.expand_path(file) }
+    set_specific_recipes
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
 

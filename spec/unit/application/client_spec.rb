@@ -39,6 +39,14 @@ describe Chef::Application::Client, "reconfigure" do
     ARGV.replace(@original_argv)
   end
 
+  describe 'parse cli_arguments' do
+    it 'should call set_specific_recipes' do
+      expect(@app).to receive(:set_specific_recipes).and_return(true)
+      @app.reconfigure
+    end
+
+  end
+
   describe "when configured to not fork the client process" do
     before do
       Chef::Config[:client_fork] = false

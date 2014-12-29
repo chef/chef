@@ -179,6 +179,8 @@ class Chef::Application::Solo < Chef::Application
   def reconfigure
     super
 
+    set_specific_recipes
+
     Chef::Config[:solo] = true
 
     if Chef::Config[:daemonize]
