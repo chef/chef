@@ -17,6 +17,7 @@
 #
 require 'chef/provider/package'
 require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'chef/resource/package'
 require 'chef/mixin/get_source_from_package'
 
