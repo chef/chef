@@ -138,7 +138,20 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
       expect(@app.chef_client_json).to eq(json_attribs)
     end
   end
+
+  describe "when both the pidfile and lockfile opts are set to the same value" do
+
+    before do
+      Chef::Config[:pid_file] = "/path/to/file"
+      Chef::Config[:lockfile] = "/path/to/file"
+    end
+
+    it "should throw an exception" do
+      expect { @app.reconfigure }.to raise_error
+    end
+  end
 end
+
 
 describe Chef::Application::Client, "setup_application" do
   before do

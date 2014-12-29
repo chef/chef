@@ -385,5 +385,11 @@ class Chef
         super "Found more than one provider for #{resource.resource_name} resource: #{classes}"
       end
     end
+
+    class PIDFileLockfileMatch < RuntimeError
+      def initialize
+        super "PID file and lockfile are not permitted to match. Specify a different location with --pid or --lockfile"
+      end
+    end
   end
 end
