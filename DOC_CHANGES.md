@@ -14,10 +14,12 @@ Previously, when a URI scheme contained all uppercase letters, Chef would reject
 
 There is a new command_line flag provided for `chef-client`: `--audit-mode`.  This accepts 1 of 3 arguments:
 
-* disabled (default) - Audits are disabled and the phase is skipped.  This is the default while Audit mode is an
+* `disabled` (default) - Audits are disabled and the phase is skipped.  This is the default while Audit mode is an
 experimental feature.
-* enabled - Audits are enabled and will be performed after the converge phase.
-* audit_only - Audits are enabled and convergence is disabled.  Only audits will be performed.
+* `enabled` - Audits are enabled and will be performed after the converge phase.
+* `audit-only` - Audits are enabled and convergence is disabled.  Only audits will be performed.
+
+This can also be configured in your node's client.rb with the key `audit_mode` and a value of `:disabled`, `:enabled` or `:audit_only`.
 
 ### Chef Why Run Mode Ignores Audit Phase
 

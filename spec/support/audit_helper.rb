@@ -22,6 +22,8 @@ class NullObject
   end
 end
 
+# TODO remove this when RSPec exposes this functionality publically
+# https://github.com/rspec/rspec-core/pull/1808
 module Sandboxing
   def self.sandboxed(&block)
     orig_load_path = $LOAD_PATH.dup

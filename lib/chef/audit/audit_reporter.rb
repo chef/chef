@@ -127,11 +127,9 @@ class Chef
           rest_client.post(audit_url, run_data, headers)
         rescue StandardError => e
           if e.respond_to? :response
-            code = e.response.code.nil? ? "Exception Code Empty" : e.response.code
-
             # 404 error code is OK. This means the version of server we're running against doesn't support
             # audit reporting. Don't alarm failure in this case.
-            if code == "404"
+            if e.response.code == "404"
               Chef::Log.debug("Server doesn't support audit reporting. Skipping report.")
               return
             else
