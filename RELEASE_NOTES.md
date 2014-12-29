@@ -1,6 +1,58 @@
-# Chef Client Release Notes 12.2.0:
+# Chef Client Release Notes 12.1.0:
 
 # Internal API Changes in this Release
+
+## Experimental Audit Mode Feature
+
+This is a new feature intended to provide _infrastructure audits_.  Chef already allows you to configure your infrastructure
+with code, but there are some use cases that are not covered by resource convergence.  What if you want to check that
+the application Chef just installed is functioning correctly?  If it provides a status page an audit can check this
+and validate that the application has database connectivity.
+
+Audits are performed by leveraging [Serverspec](http://serverspec.org/) and [RSpec](https://relishapp.com/rspec) on the
+node.  As such the syntax is very similar to a normal RSpec spec.
+
+### Syntax
+
+```ruby
+controls "Database Audit" do
+
+  control "postgres package" do
+    it "should not be installed" do
+      expect(package("postgresql")).to_not be_installed
+    end
+  end
+
+  let(:p) { port(111) }
+  control p do
+    it "has nothing listening" do
+      expect(p).to_not be_listening
+    end
+  end
+
+end
+```
+
+Using the example above I will break down the components of an Audit:
+
+* `controls` - This named block contains all the audits to be performed during the audit phase.  During Chef convergence
+ the audits will be collected and ran in a separate phase at the end of the Chef run.  Any `controls` block defined in
+ a recipe that is ran on the node will be performed.
+* `control` - This keyword describes a section of audits to perform.  The name here should either be a string describing
+the system under test, or a [Serverspec resource](http://serverspec.org/resource_types.html).
+* `it` - Inside this block you can use [RSpec expectations](https://relishapp.com/rspec/rspec-expectations/docs) to
+write the audits.  You can use the Serverspec resources here or regular ruby code.  Any raised errors will fail the
+audit.
+
+### Output and error handling
+
+Output from the audit run will appear in your `Chef::Config[:log_location]`.  If an audit fails then Chef will raise
+an error and exit with a non-zero status.
+
+### Further reading
+
+More information about the audit mode can be found in its
+[RFC](https://github.com/opscode/chef-rfc/blob/master/rfc035-audit-mode.md)
 
 # End-User Changes
 

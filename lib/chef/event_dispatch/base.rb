@@ -225,6 +225,41 @@ class Chef
       def converge_complete
       end
 
+      # Called if the converge phase fails
+      def converge_failed(exception)
+      end
+
+      ##################################
+      # Audit Mode Events
+      # This phase is currently experimental and these event APIs are subject to change
+      ##################################
+
+      # Called before audit phase starts
+      def audit_phase_start(run_status)
+      end
+
+      # Called when audit phase successfully finishes
+      def audit_phase_complete
+      end
+
+      # Called if there is an uncaught exception during the audit phase.  The audit runner should
+      # be catching and handling errors from the examples, so this is only uncaught errors (like
+      # bugs in our handling code)
+      def audit_phase_failed(exception)
+      end
+
+      # Signifies the start of a `controls` block with a defined name
+      def control_group_started(name)
+      end
+
+      # An example in a `controls` block completed successfully
+      def control_example_success(control_group_name, example_data)
+      end
+
+      # An example in a `controls` block failed with the provided error
+      def control_example_failure(control_group_name, example_data, error)
+      end
+
       # TODO: need events for notification resolve?
       # def notifications_resolved
       # end
