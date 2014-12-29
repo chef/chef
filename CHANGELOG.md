@@ -18,6 +18,7 @@
   Typo fixes
 * [**Tim Smith**](https://github.com/tas50)
   Typo fixes
+* [Pull 2505](https://github.com/opscode/chef/pull/2505) Make Chef handle URIs in a case-insensitive manner
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped

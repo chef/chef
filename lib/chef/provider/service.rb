@@ -150,7 +150,7 @@ class Chef
       end
 
       def reload_service
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :restart"
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
       end
 
       protected

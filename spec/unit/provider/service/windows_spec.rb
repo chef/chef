@@ -18,6 +18,7 @@
 #
 
 require 'spec_helper'
+require 'mixlib/shellout'
 
 describe Chef::Provider::Service::Windows, "load_current_resource" do
   before(:each) do
@@ -38,6 +39,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
     allow(Win32::Service).to receive(:config_info).with(@new_resource.service_name).and_return(
       double("ConfigStruct", :start_type => "auto start"))
     allow(Win32::Service).to receive(:exists?).and_return(true)
+    allow(Win32::Service).to receive(:configure).and_return(Win32::Service)
   end
 
   it "should set the current resources service name to the new resources service name" do
@@ -131,6 +133,26 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       expect(@new_resource.updated_by_last_action?).to be_falsey
     end
 
+    describe "running as a different account" do
+      let(:old_run_as_user) { @new_resource.run_as_user }
+      let(:old_run_as_password) { @new_resource.run_as_password }
+
+      before {
+        @new_resource.run_as_user(".\\wallace")
+        @new_resource.run_as_password("Wensleydale")
+      }
+
+      after {
+        @new_resource.run_as_user(old_run_as_user)
+        @new_resource.run_as_password(old_run_as_password)
+      }
+
+      it "should call #grant_service_logon if the :run_as_user and :run_as_password attributes are present" do
+        expect(Win32::Service).to receive(:start)
+        expect(@provider).to receive(:grant_service_logon).and_return(true)
+        @provider.start_service
+      end
+    end
   end
 
 
@@ -362,6 +384,78 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
 
     it "raises an exception when given an unknown start type" do
       expect { @provider.send(:set_startup_type, :fire_truck) }.to raise_error(Chef::Exceptions::ConfigurationError)
+    end
+  end
+
+  shared_context "testing private methods" do
+
+    let(:private_methods) {
+      described_class.private_instance_methods
+    }
+
+    before {
+      described_class.send(:public, *private_methods)
+    }
+
+    after {
+      described_class.send(:private, *private_methods)
+    }
+  end
+
+  describe "grant_service_logon" do
+    include_context "testing private methods"
+
+    let(:username) { "unit_test_user" }
+    let(:success_string) { "The task has completed successfully.\r\nSee logfile etc." }
+    let(:failure_string) { "Look on my works, ye Mighty, and despair!" }
+    let(:command) {
+      dbfile = @provider.grant_dbfile_name(username)
+      policyfile = @provider.grant_policyfile_name(username)
+      logfile = @provider.grant_logfile_name(username)
+
+      %Q{secedit.exe /configure /db "#{dbfile}" /cfg "#{policyfile}" /areas USER_RIGHTS SECURITYPOLICY SERVICES /log "#{logfile}"}
+    }
+    let(:shellout_env) { {:environment=>{"LC_ALL"=>"en_US.UTF-8"}} }
+
+    before {
+      expect_any_instance_of(described_class).to receive(:shell_out).with(command).and_call_original
+      expect_any_instance_of(Mixlib::ShellOut).to receive(:run_command).and_return(nil)
+    }
+
+    after {
+      # only needed for the second test.
+      ::File.delete(@provider.grant_policyfile_name(username)) rescue nil
+      ::File.delete(@provider.grant_logfile_name(username)) rescue nil
+      ::File.delete(@provider.grant_dbfile_name(username)) rescue nil
+    }
+
+    it "calls Mixlib::Shellout with the correct command string" do
+      expect_any_instance_of(Mixlib::ShellOut).to receive(:exitstatus).and_return(0)
+      expect(@provider.grant_service_logon(username)).to equal true
+    end
+
+    it "raises an exception when the grant command fails" do
+      expect_any_instance_of(Mixlib::ShellOut).to receive(:exitstatus).and_return(1)
+      expect_any_instance_of(Mixlib::ShellOut).to receive(:stdout).and_return(failure_string)
+      expect { @provider.grant_service_logon(username) }.to raise_error(Chef::Exceptions::Service)
+    end
+  end
+
+  describe "cleaning usernames" do
+    include_context "testing private methods"
+
+    it "correctly reformats usernames to create valid filenames" do
+      expect(@provider.clean_username_for_path("\\\\problem username/oink.txt")).to eq("_problem_username_oink_txt")
+      expect(@provider.clean_username_for_path("boring_username")).to eq("boring_username")
+    end
+
+    it "correctly reformats usernames for the policy file" do
+      expect(@provider.canonicalize_username(".\\maryann")).to eq("maryann")
+      expect(@provider.canonicalize_username("maryann")).to eq("maryann")
+
+      expect(@provider.canonicalize_username("\\\\maryann")).to eq("maryann")
+      expect(@provider.canonicalize_username("mydomain\\\\maryann")).to eq("mydomain\\\\maryann")
+      expect(@provider.canonicalize_username("\\\\mydomain\\\\maryann")).to eq("mydomain\\\\maryann")
     end
   end
 end

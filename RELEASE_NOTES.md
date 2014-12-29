@@ -60,6 +60,10 @@ More information about the audit mode can be found in its
 
 The package resource on OpenBSD is wired up to use the new OpenBSD package provider to install via pkg_add on OpenBSD systems.
 
+## Case Insensitive URI Handling
+
+Previously, when a URI scheme contained all uppercase letters, Chef would reject the URI as invalid. In compliance with RFC3986, Chef now treats URI schemes in a case insensitive manner.
+
 # Chef Client Release Notes 12.0.0:
 
 # Internal API Changes in this Release

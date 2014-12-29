@@ -6,6 +6,10 @@ Example Doc Change:
 Description of the required change.
 -->
 
+### Chef now handles URI Schemes in a case insensitive manner
+
+Previously, when a URI scheme contained all uppercase letters, Chef would reject the URI as invalid. In compliance with RFC3986, Chef now treats URI schemes in a case insensitive manner. This applies to all resources which accept URIs such as remote_file etc.
+
 ### Experimental Audit Mode Feature
 
 There is a new command_line flag provided for `chef-client`: `--audit-mode`.  This accepts 1 of 3 arguments:
