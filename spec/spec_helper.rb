@@ -83,8 +83,13 @@ Dir["spec/support/**/*.rb"].
 
 OHAI_SYSTEM = Ohai::System.new
 OHAI_SYSTEM.all_plugins("platform")
-TEST_PLATFORM = OHAI_SYSTEM["platform"].dup.freeze
-TEST_PLATFORM_VERSION = OHAI_SYSTEM["platform_version"].dup.freeze
+
+TEST_PLATFORM =
+  (OHAI_SYSTEM['platform'] ||
+  'unknown_test_platform').dup.freeze
+TEST_PLATFORM_VERSION =
+  (OHAI_SYSTEM['platform_version'] ||
+  'unknown_platform_version').dup.freeze
 
 RSpec.configure do |config|
   config.include(Matchers)

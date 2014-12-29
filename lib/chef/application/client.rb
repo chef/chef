@@ -264,7 +264,7 @@ class Chef::Application::Client < Chef::Application
 
     raise Chef::Exceptions::PIDFileLockfileMatch if Chef::Util::PathHelper.paths_eql? (Chef::Config[:pid_file] || '' ), (Chef::Config[:lockfile] || '')
 
-    Chef::Config[:specific_recipes] = cli_arguments.map { |file| File.expand_path(file) }
+    set_specific_recipes
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
 

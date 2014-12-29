@@ -34,6 +34,11 @@ describe Chef::Application::Solo do
   end
 
   describe "configuring the application" do
+    it 'should call set_specific_recipes' do
+      expect(app).to receive(:set_specific_recipes)
+      app.reconfigure
+    end
+
     it "should set solo mode to true" do
       app.reconfigure
       expect(Chef::Config[:solo]).to be_truthy
