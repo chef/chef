@@ -1,8 +1,3 @@
-<!---
-This file is reset every time a new release is done. This file describes changes that have not yet been released.
+### Chef now handles URI Schemes in a case insensitive manner
 
-Example Doc Change:
-### Headline for the required change
-Description of the required change.
--->
-
+Previously, when a URI scheme contained all uppercase letters, Chef would reject the URI as invalid. In compliance with RFC3986, Chef now treats URI schemes in a case insensitive manner. This applies to all resources which accept URIs such as remote_file etc.
