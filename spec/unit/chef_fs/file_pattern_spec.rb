@@ -355,7 +355,7 @@ describe Chef::ChefFS::FilePattern do
     it 'could_match_children? /abc** returns false for /xyz' do
       pending 'Make could_match_children? more rigorous'
       # At the moment, we return false for this, but in the end it would be nice to return true:
-      pattern.could_match_children?('/xyz').should be_falsey
+      expect(pattern.could_match_children?('/xyz')).to be_falsey
     end
     it 'exact_child_name_under' do
       expect(pattern.exact_child_name_under('/')).to eq(nil)
