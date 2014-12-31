@@ -214,6 +214,7 @@ describe Chef::DataBagItem do
       @data_bag_item.raw_data = raw_data
       @data_bag_item.data_bag("books")
     end
+
     it "should update the item when it already exists" do
       expect(@rest).to receive(:put_rest).with("data/books/heart_of_darkness", @data_bag_item)
       @data_bag_item.save
@@ -225,6 +226,7 @@ describe Chef::DataBagItem do
       expect(@rest).to receive(:post_rest).with("data/books", @data_bag_item)
       @data_bag_item.save
     end
+
     describe "when whyrun mode is enabled" do
       before do
         Chef::Config[:why_run] = true
@@ -232,6 +234,7 @@ describe Chef::DataBagItem do
       after do
         Chef::Config[:why_run] = false
       end
+
       it "should not save" do
         expect(@rest).not_to receive(:put_rest)
         expect(@rest).not_to receive(:post_rest)
@@ -240,7 +243,24 @@ describe Chef::DataBagItem do
       end
     end
 
+  end
 
+  describe "destroy" do
+    let(:server) { instance_double(Chef::REST) }
+
+    let(:data_bag_item) {
+      data_bag_item = Chef::DataBagItem.new
+      data_bag_item.data_bag('a_baggy_bag')
+      data_bag_item.raw_data = { "id" => "some_id" }
+      data_bag_item
+    }
+
+    it "should set default parameters" do
+      expect(Chef::REST).to receive(:new).and_return(server)
+      expect(server).to receive(:delete_rest).with("data/a_baggy_bag/data_bag_item_a_baggy_bag_some_id")
+
+      data_bag_item.destroy
+    end
   end
 
   describe "when loading" do
