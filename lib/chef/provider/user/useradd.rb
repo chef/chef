@@ -121,6 +121,8 @@ class Chef
                 else
                   Chef::Log.debug("#{new_resource} setting home to #{new_resource.home}")
                   opts << "-d" << new_resource.home
+                  opts << "-M" if ['centos'].include?(node[:platform])
+
                 end
               end
               opts << "-o" if new_resource.non_unique || new_resource.supports[:non_unique]
