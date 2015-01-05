@@ -34,6 +34,32 @@ describe Chef::Resource::Execute do
     end
   end
 
+  describe "when why_run is enabled" do
+    before do
+      Chef::Config[:why_run] = true
+    end
+
+    let(:guard) { "ruby -e 'exit 0'" }
+    let!(:guard_resource) {
+      interpreter = Chef::GuardInterpreter::ResourceGuardInterpreter.new(resource, guard, nil)
+      interpreter.send(:get_interpreter_resource, resource)
+    }
+
+    it "executes the guard and not the regular resource" do
+      expect_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).to receive(:get_interpreter_resource).and_return(guard_resource)
+
+      # why_run mode doesn't disable the updated_by_last_action logic, so we really have to look at the provider action
+      # to see if why_run correctly disabled the resource.  It should shell_out! for the guard but not the resource.
+      expect_any_instance_of(Chef::Provider::Execute).to receive(:shell_out!).once
+
+      resource.only_if guard
+      resource.run_action(:run)
+
+      expect(resource).to be_updated_by_last_action
+      expect(guard_resource).to be_updated_by_last_action
+    end
+  end
+
   describe "when parent resource sets :cwd" do
     let(:guard) { %{ruby -e 'exit 1 unless File.exists?("./big_json_plus_one.json")'} }
 
