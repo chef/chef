@@ -56,7 +56,9 @@ build do
 
         File.open(bin_file) do |f|
           shebang = f.readline
-          if shebang.include?("ruby") && !shebang.include?("#{install_dir}/embedded/bin/ruby")
+          if shebang.start_with?("#!") &&
+              shebang.include?("ruby") &&
+              !shebang.include?("#{install_dir}/embedded/bin/ruby")
             rest_of_the_file = f.read
             update_shebang = true
           end
