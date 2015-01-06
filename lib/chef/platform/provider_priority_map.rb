@@ -66,6 +66,7 @@ class Chef
         #
 
         priority :service, Chef::Provider::Service::Macosx, os: "darwin"
+        priority :package, Chef::Provider::Package::Homebrew, os: "darwin"
       end
 
       def priority_map
