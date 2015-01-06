@@ -20,7 +20,7 @@ class Chef
   class Resource
     class MacportsPackage < Chef::Resource::Package
 
-      provides :macports_package, os: "mac_os_x"
+      provides :macports_package, os: "darwin"
 
       def initialize(name, run_context=nil)
         super
