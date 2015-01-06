@@ -504,6 +504,7 @@ user password using shadow hash.")
             # password to be updated.
             return true if salted_sha512?(@current_resource.password)
 
+            return true if @current_resource.salt.nil?
             if salted_sha512_pbkdf2?(@new_resource.password)
               diverged?(:password) || diverged?(:salt) || diverged?(:iterations)
             else
