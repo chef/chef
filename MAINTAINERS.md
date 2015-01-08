@@ -113,6 +113,7 @@ The specific components of Chef related to a given platform - including (but not
 
 ### Lieutenant
 
+* [Aaron Kalin](https://github.com/martinisoft)
+
 ### Maintainers
 
-* [Aaron Kalin](https://github.com/martinisoft)
