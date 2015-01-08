@@ -91,4 +91,20 @@ describe Chef::Application::Apply do
     end
 
   end
+  describe "when the json_attribs configuration option is specified" do
+    let(:json_attribs) { {"a" => "b"} }
+    let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
+    let(:json_source) { "https://foo.com/foo.json" }
+
+    before do
+      Chef::Config[:json_attribs] = json_source
+      expect(Chef::ConfigFetcher).to receive(:new).with(json_source).
+        and_return(config_fetcher)
+    end
+
+    it "reads the JSON attributes from the specified source" do
+      @app.reconfigure
+      expect(@app.json_attribs).to eq(json_attribs)
+    end
+  end
 end
