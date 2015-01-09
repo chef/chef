@@ -106,7 +106,7 @@ class Chef
     # So while this is basically identical to what method_missing would do, we pull
     # it up here and get a real method written so that things get dispatched
     # properly.
-    configurable(:daemonize).writes_value { |v| v }
+    configurable(:daemonize)
 
     # The root where all local chef object data is stored.  cookbooks, data bags,
     # environments are all assumed to be in separate directories under this.
@@ -128,19 +128,35 @@ class Chef
     end
 
     def self.find_chef_repo_path(cwd)
+      # If there is a config_file_jail, don't auto-set chef_repo_path outside of it
+      if Chef::Config.config_file_jail
+        begin
+          real_config_file_jail = Pathname.new(Chef::Config.config_file_jail).realpath.to_s
+        rescue Errno::ENOENT
+          return false
+        end
+
+        real_cwd = Pathname.new(cwd).realpath.to_s
+        if !Chef::ChefFS::PathUtils.descendant_of?(real_cwd, real_config_file_jail)
+          return false
+        end
+      end
+
       # In local mode, we auto-discover the repo root by looking for a path with "cookbooks" under it.
       # This allows us to run config-free.
       path = cwd
-      until File.directory?(PathHelper.join(path, "cookbooks"))
+      until File.directory?(PathHelper.join(path, "cookbooks")) || File.directory?(PathHelper.join(path, "clients"))
         new_path = File.expand_path('..', path)
         if new_path == path
-          Chef::Log.warn("No cookbooks directory found at or above current directory.  Assuming #{Dir.pwd}.")
-          return Dir.pwd
+          Chef::Log.warn("No cookbooks or clients directory found at or above current directory.  Assuming #{Dir.pwd}.")
+          Chef::Config.chef_repo_path = Dir.pwd
+          return true
         end
         path = new_path
       end
       Chef::Log.info("Auto-discovered chef repository at #{path}")
-      path
+      Chef::Config.chef_repo_path = path
+      return false
     end
 
     def self.derive_path_from_chef_repo_path(child_path)
@@ -216,24 +232,27 @@ class Chef
     default :script_path, []
 
     # The root of all caches (checksums, cache and backup).  If local mode is on,
-    # this is under the user's home directory.
+    # or the cache is inaccessible to the user, this is under the user's home
+    # directory.
     default(:cache_path) do
       if local_mode
-        PathHelper.join(config_dir, 'local-mode-cache')
+        primary_cache_root = config_dir
+        primary_cache_path = PathHelper.join(config_dir, 'local-mode-cache')
       else
         primary_cache_root = platform_specific_path("/var")
         primary_cache_path = platform_specific_path("/var/chef")
-        # Use /var/chef as the cache path only if that folder exists and we can read and write
-        # into it, or /var exists and we can read and write into it (we'll create /var/chef later).
-        # Otherwise, we'll create .chef under the user's home directory and use that as
-        # the cache path.
-        unless path_accessible?(primary_cache_path) || path_accessible?(primary_cache_root)
-          secondary_cache_path = PathHelper.join(user_home, '.chef')
-          Chef::Log.info("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
-          secondary_cache_path
-        else
-          primary_cache_path
-        end
+      end
+
+      # Use /var/chef as the cache path only if that folder exists and we can read and write
+      # into it, or /var exists and we can read and write into it (we'll create /var/chef later).
+      # Otherwise, we'll create .chef under the user's home directory and use that as
+      # the cache path.
+      unless path_accessible?(primary_cache_path) || (!File.exists?(primary_cache_path) && path_accessible?(primary_cache_root))
+        secondary_cache_path = PathHelper.join(user_home, '.chef')
+        Chef::Log.info("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
+        secondary_cache_path
+      else
+        primary_cache_path
       end
     end
 
@@ -297,7 +316,7 @@ class Chef
     default :diff_disabled,           false
     default :diff_filesize_threshold, 10000000
     default :diff_output_threshold,   1000000
-    default :local_mode, false
+    default(:local_mode) { !chef_server_url }
 
     default :pid_file, nil
 
@@ -307,7 +326,7 @@ class Chef
       default :host, 'localhost'
       default :port, 8889.upto(9999) # Will try ports from 8889-9999 until one works
     end
-    default :chef_server_url,   "https://localhost:443"
+    configurable(:chef_server_url)
 
     default :rest_timeout, 300
     default :yum_timeout, 900

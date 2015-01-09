@@ -291,6 +291,7 @@ describe Chef::Client do
         Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
         Chef::Config[:why_run] = false
         Chef::Config[:audit_mode] = :enabled
+        Chef::Config[:local_mode] = false
 
         stub_const("Chef::Client::STDOUT_FD", stdout)
         stub_const("Chef::Client::STDERR_FD", stderr)
@@ -320,6 +321,7 @@ describe Chef::Client do
 
     describe "when running chef-client without fork" do
       include_examples "a successful client run"
+
     end
 
     describe "when the client key already exists" do

@@ -258,7 +258,10 @@ class Chef::Application::Client < Chef::Application
 
     Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
     if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
-      Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
+      assumed_cwd = Chef::Config.find_chef_repo_path(Dir.pwd)
+      if assumed_cwd
+        Chef::Log.warn("chef-client will create a #{Chef::Config.client_path} and #{Chef::Config.node_path} directory, and you will not see this warning again.")
+      end
     end
     Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
     Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
@@ -296,14 +299,38 @@ class Chef::Application::Client < Chef::Application
   end
 
   def load_config_file
-    if !config.has_key?(:config_file) && !config[:disable_config]
-      if config[:local_mode]
-        config[:config_file] = Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
-      else
+    Chef::Config.config_file_jail = config[:config_file_jail] if config[:config_file_jail]
+    if config.has_key?(:config_file)
+      super
+    else
+
+      # We don't have a config file.  Read /etc/chef/client.rb or find knife.rb.
+
+      # Try to get /etc/chef/client.rb unless we're in local mode
+      fetcher = nil
+      unless config[:local_mode]
         config[:config_file] = Chef::Config.platform_specific_path("/etc/chef/client.rb")
+        fetcher = Chef::ConfigFetcher.new(config[:config_file], Chef::Config[:config_file_jail])
+        if fetcher.config_missing?
+          fetcher = nil
+          config[:config_file] = nil
+        end
+      end
+
+      # Grab knife.rb
+      if !fetcher
+        require 'chef/knife'
+        config[:config_file] = Chef::Knife.locate_config_file
+        if config[:config_file]
+          fetcher = Chef::ConfigFetcher.new(config[:config_file], Chef::Config[:config_file_jail])
+        end
+      end
+
+      # Read the config file we found.
+      if fetcher
+        apply_config(fetcher.read_config, config[:config_file])
       end
     end
-    super
   end
 
   def configure_logging

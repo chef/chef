@@ -84,23 +84,24 @@ class Chef
     def configure_chef
       parse_options
       load_config_file
+      Chef::Config.merge!(config)
     end
 
     # Parse the config file
     def load_config_file
-      config_fetcher = Chef::ConfigFetcher.new(config[:config_file])
-      if config[:config_file].nil?
-        Chef::Log.warn("No config file found or specified on command line, using command line options.")
-      elsif config_fetcher.config_missing?
-        pp config_missing: true
-        Chef::Log.warn("*****************************************")
-        Chef::Log.warn("Did not find config file: #{config[:config_file]}, using command line options.")
-        Chef::Log.warn("*****************************************")
-      else
-        config_content = config_fetcher.read_config
-        apply_config(config_content, config[:config_file])
+      if config[:config_file]
+        config_fetcher = Chef::ConfigFetcher.new(config[:config_file])
+        if config[:config_file].nil?
+          Chef::Log.warn("No config file found or specified on command line, using command line options.")
+        elsif config_fetcher.config_missing?
+          pp config_missing: true
+          Chef::Log.warn("*****************************************")
+          Chef::Log.warn("Did not find config file: #{config[:config_file]}, using command line options.")
+          Chef::Log.warn("*****************************************")
+        else
+          apply_config(config_fetcher.read_config, config[:config_file])
+        end
       end
-      Chef::Config.merge!(config)
     end
 
     # Initialize and configure the logger.

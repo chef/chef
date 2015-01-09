@@ -23,7 +23,6 @@ describe "chef-client" do
 
     it "should complete with success" do
       file 'config/client.rb', <<EOM
-local_mode true
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
@@ -33,17 +32,17 @@ EOM
 
     context 'and no config file' do
       it 'should complete with success when cwd is just above cookbooks and paths are not specified' do
-        result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", :cwd => path_to(''))
+        result = shell_out("#{chef_client} -o 'x::default' --disable-config", :cwd => path_to(''))
         result.error!
       end
 
       it 'should complete with success when cwd is below cookbooks and paths are not specified' do
-        result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", :cwd => path_to('cookbooks/x'))
+        result = shell_out("#{chef_client} -o 'x::default' --disable-config", :cwd => path_to('cookbooks/x'))
         result.error!
       end
 
       it 'should fail when cwd is below high above and paths are not specified' do
-        result = shell_out("#{chef_client} -z -o 'x::default' --disable-config", :cwd => File.expand_path('..', path_to('')))
+        result = shell_out("#{chef_client} -o 'x::default' --disable-config", :cwd => File.expand_path('..', path_to('')))
         expect(result.exitstatus).to eq(1)
       end
     end
@@ -51,22 +50,21 @@ EOM
     context 'and a config file under .chef/knife.rb' do
       before { file '.chef/knife.rb', 'xxx.xxx' }
 
+      it 'should load .chef/knife.rb when -z is not specified and /etc/chef/client.rb does not exist' do
+        result = shell_out("#{chef_client} -o 'x::default' --config-file-jail \"#{path_to('')}\"", :cwd => path_to(''))
+        result.stdout.should include("xxx")
+      end
+
       it 'should load .chef/knife.rb when -z is specified' do
         result = shell_out("#{chef_client} -z -o 'x::default'", :cwd => path_to(''))
         # FATAL: Configuration error NoMethodError: undefined method `xxx' for nil:NilClass
         expect(result.stdout).to include("xxx")
       end
 
-    end
-
-    it "should complete with success" do
-      file 'config/client.rb', <<EOM
-local_mode true
-cookbook_path "#{path_to('cookbooks')}"
-EOM
-
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
-      result.error!
+      it 'fails to load .chef/knife.rb when --config-file-jail does not include the .chef/knife.rb' do
+        result = shell_out("#{chef_client} --config-file-jail \"#{path_to('roles')}\"", :cwd => path_to(''))
+        result.error!
+      end
     end
 
     context 'and a private key' do
@@ -115,7 +113,6 @@ EOM
 
       it "should run recipes specified directly on the command line" do
         file 'config/client.rb', <<EOM
-local_mode true
 client_key #{path_to('mykey.pem').inspect}
 cookbook_path #{path_to('cookbooks').inspect}
 EOM
@@ -141,7 +138,6 @@ EOM
 
       it "should run recipes specified as relative paths directly on the command line" do
         file 'config/client.rb', <<EOM
-local_mode true
 client_key #{path_to('mykey.pem').inspect}
 cookbook_path #{path_to('cookbooks').inspect}
 EOM
@@ -184,6 +180,17 @@ EOM
 
     end
 
+    it "should complete with success when local_mode true is set" do
+      file 'config/client.rb', <<EOM
+chef_server_url 'http://omg.com/blah'
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      result.error!
+    end
+
     it "should complete with success when passed the -z flag" do
       file 'config/client.rb', <<EOM
 chef_server_url 'http://omg.com/blah'
@@ -215,23 +222,21 @@ EOM
       result.error!
     end
 
-    it "should complete with success when passed -z and --chef-zero-port" do
+    it "should complete with success when passed --chef-zero-port" do
       file 'config/client.rb', <<EOM
-chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' -z", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
       result.error!
     end
 
     it "should complete with success when setting the run list with -r" do
       file 'config/client.rb', <<EOM
-chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -r 'x::default' -z", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -r 'x::default'", :cwd => chef_dir)
       expect(result.stdout).not_to include("Overridden Run List")
       expect(result.stdout).to include("Run List is [recipe[x::default]]")
       #puts result.stdout

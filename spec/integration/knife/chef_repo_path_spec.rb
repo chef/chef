@@ -27,6 +27,8 @@ describe 'chef_repo_path tests', :workstation do
   # TODO alternate repo_path / *_path
   context 'alternate *_path' do
     when_the_repository 'has clients and clients2, cookbooks and cookbooks2, etc.' do
+      before { Chef::Config.config_file_jail = path_to('') }
+
       before do
         file 'clients/client1.json', {}
         file 'cookbooks/cookbook1/metadata.rb', ''

@@ -41,6 +41,8 @@ describe Chef::Knife do
     allow(knife.ui).to receive(:print)
     allow(Chef::Log).to receive(:init)
     allow(Chef::Log).to receive(:level)
+    Chef::LocalMode.stub(:setup_server_connectivity)
+    Chef::LocalMode.stub(:destroy_server_connectivity)
     [:debug, :info, :warn, :error, :crit].each do |level_sym|
       allow(Chef::Log).to receive(level_sym)
     end
@@ -342,6 +344,7 @@ describe Chef::Knife do
       response = Net::HTTPForbidden.new("1.1", "403", "Forbidden")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
       allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "y u no administrator"))
+      Chef::Config[:chef_server_url] = 'http://a.b.com'
       allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("403 Forbidden", response))
       allow(knife).to receive(:username).and_return("sadpanda")
       knife.run_with_pretty_exceptions
