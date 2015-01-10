@@ -511,10 +511,11 @@ describe Chef::ProviderResolver do
 
       supported_providers = [
         :apt_package, :bash, :breakpoint, :chef_gem, :cookbook_file, :csh, :deploy,
-        :deploy_revision, :directory, :dpkg_package, :easy_install_package,
-        :erl_call, :execute, :file, :gem_package, :git, :http_request, :link, :log, :pacman_package, :paludis_package,
-        :perl, :python, :remote_directory, :route, :rpm_package, :ruby, :ruby_block, :script,
-        :subversion, :template, :timestamped_deploy, :whyrun_safe_ruby_block, :yum_package, :homebrew_package,
+        :deploy_revision, :directory, :dpkg_package, :easy_install_package, :erl_call,
+        :execute, :file, :gem_package, :git, :homebrew_package, :http_request, :link,
+        :log, :macports_package, :pacman_package, :paludis_package, :perl, :python,
+        :remote_directory, :route, :rpm_package, :ruby, :ruby_block, :script, :subversion,
+        :template, :timestamped_deploy, :whyrun_safe_ruby_block, :yum_package,
       ]
 
       supported_providers.each do |static_resource|
@@ -530,9 +531,8 @@ describe Chef::ProviderResolver do
       end
 
       unsupported_providers = [
-        :bff_package, :dsc_script, :ips_package, :macports_package,
-        :smartos_package, :solaris_package, :windows_package,
-        :windows_service,
+        :bff_package, :dsc_script, :ips_package, :smartos_package,
+        :solaris_package, :windows_package, :windows_service,
       ]
 
       unsupported_providers.each do |static_resource|
