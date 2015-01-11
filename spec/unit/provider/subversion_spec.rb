@@ -94,6 +94,7 @@ describe Chef::Provider::Subversion do
       expect(@provider).to receive(:find_current_revision).and_return("12345")
       @provider.load_current_resource
       expect(@provider.current_resource.revision).to eq("12345")
+      expect(@resource).not_to be_updated_by_last_action
     end
   end
 
@@ -103,6 +104,7 @@ describe Chef::Provider::Subversion do
     @provider.load_current_resource
     expect(@provider.current_resource.name).to eql(@resource.name)
     expect(@provider.current_resource.revision).to eql("11410")
+    expect(@resource).not_to be_updated_by_last_action
   end
 
   context "resolving revisions to an integer" do
@@ -201,6 +203,7 @@ describe Chef::Provider::Subversion do
     expect(@provider).to receive(:shell_out!).with(expected_cmd, {})
     @provider.run_action(:force_export)
     expect(@resource).to be_updated
+    expect(@resource).to be_updated_by_last_action
   end
 
   it "runs the checkout command for action_checkout" do
@@ -209,6 +212,7 @@ describe Chef::Provider::Subversion do
     expect(@provider).to receive(:shell_out!).with(expected_cmd, {})
     @provider.run_action(:checkout)
     expect(@resource).to be_updated
+    expect(@resource).to be_updated_by_last_action
   end
 
   it "raises an error if the svn checkout command would fail because the enclosing directory doesn't exist" do

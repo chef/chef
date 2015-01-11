@@ -63,6 +63,7 @@ class Chef
         if target_dir_non_existent_or_empty?
           converge_by("perform checkout of #{@new_resource.repository} into #{@new_resource.destination}") do
             shell_out!(checkout_command, run_options)
+            @new_resource.updated_by_last_action true
           end
         else
           Chef::Log.debug "#{@new_resource} checkout destination #{@new_resource.destination} already exists or is a non-empty directory - nothing to do"
@@ -80,6 +81,7 @@ class Chef
       def action_force_export
         converge_by("export #{@new_resource.repository} into #{@new_resource.destination}") do
           shell_out!(export_command, run_options)
+          @new_resource.updated_by_last_action true
         end
       end
 
@@ -92,6 +94,7 @@ class Chef
             converge_by("sync #{@new_resource.destination} from #{@new_resource.repository}") do
               shell_out!(sync_command, run_options)
               Chef::Log.info "#{@new_resource} updated to revision: #{revision_int}"
+              @new_resource.updated_by_last_action true
             end
           end
         else
