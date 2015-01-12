@@ -18,6 +18,7 @@
 
 require 'spec_helper'
 require 'functional/resource/base'
+require 'timeout'
 
 describe Chef::Resource::Execute do
   let(:resource) {
@@ -111,8 +112,10 @@ describe Chef::Resource::Execute do
   end
 
   it "times out when a timeout is set on the resource" do
-    resource.command %{ruby -e 'sleep 600'}
-    resource.timeout 0.1
-    expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::CommandTimeout)
+    Timeout::timeout(5) do
+      resource.command %{ruby -e 'sleep 600'}
+      resource.timeout 0.1
+      expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::CommandTimeout)
+    end
   end
 end
