@@ -26,6 +26,7 @@
 * Cleaned up script and execute provider + specs
 * Added deprecation warnings around the use of command attribute in script resources
 * Audit mode feature added - see the RELEASE_NOTES for details
+* shell_out now sets `LANGUAGE` and `LANG` to the `Chef::Config[:internal_locale]` in addition to `LC_ALL` forcing
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):
