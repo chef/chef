@@ -27,6 +27,7 @@
 * Added deprecation warnings around the use of command attribute in script resources
 * Audit mode feature added - see the RELEASE_NOTES for details
 * shell_out now sets `LANGUAGE` and `LANG` to the `Chef::Config[:internal_locale]` in addition to `LC_ALL` forcing
+* chef_gem supports a compile_time flag and will warn if it is not set (behavior will change in the future)
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):
