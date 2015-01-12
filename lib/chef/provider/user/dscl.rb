@@ -246,7 +246,9 @@ user password using shadow hash.")
             tmap
           end
           if uid_map[uid.to_s]
-            return true unless uid_map[uid.to_s] == @new_resource.username.to_s
+            unless uid_map[uid.to_s] == @new_resource.username.to_s
+              return true
+            end
           end
           return false
         end
