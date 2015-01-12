@@ -28,6 +28,7 @@
 * Audit mode feature added - see the RELEASE_NOTES for details
 * shell_out now sets `LANGUAGE` and `LANG` to the `Chef::Config[:internal_locale]` in addition to `LC_ALL` forcing
 * chef_gem supports a compile_time flag and will warn if it is not set (behavior will change in the future)
+* suppress 3694 warnings on the most trivial resource cloning
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):
