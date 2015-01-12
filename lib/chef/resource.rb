@@ -213,23 +213,11 @@ class Chef
       end
     end
 
-    def load_prior_resource(resource_type, instance_name)
-      begin
-        key = "#{resource_type}[#{instance_name}]"
-        prior_resource = run_context.resource_collection.lookup(key)
-        # if we get here, there is a prior resource (otherwise we'd have jumped
-        # to the rescue clause).
-        Chef::Log.warn("Cloning resource attributes for #{key} from prior resource (CHEF-3694)")
-        Chef::Log.warn("Previous #{prior_resource}: #{prior_resource.source_line}") if prior_resource.source_line
-        Chef::Log.warn("Current  #{self}: #{self.source_line}") if self.source_line
-        prior_resource.instance_variables.each do |iv|
-          unless iv.to_sym == :@source_line || iv.to_sym == :@action || iv.to_sym == :@not_if || iv.to_sym == :@only_if
-            self.instance_variable_set(iv, prior_resource.instance_variable_get(iv))
-          end
+    def load_from(resource)
+      resource.instance_variables.each do |iv|
+        unless iv == :@source_line || iv == :@action || iv == :@not_if || iv == :@only_if
+          self.instance_variable_set(iv, resource.instance_variable_get(iv))
         end
-        true
-      rescue Chef::Exceptions::ResourceNotFound
-        true
       end
     end
 
