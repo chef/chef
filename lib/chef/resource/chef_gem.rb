@@ -28,6 +28,7 @@ class Chef
       def initialize(name, run_context=nil)
         super
         @resource_name = :chef_gem
+        @compile_time = nil
         @gem_binary = RbConfig::CONFIG['bindir'] + "/gem"
       end
 
@@ -40,13 +41,29 @@ class Chef
         @gem_binary
       end
 
+      def compile_time(arg=nil)
+        set_or_return(
+          :compile_time,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
       def after_created
         # Chef::Resource.run_action: Caveat: this skips Chef::Runner.run_action, where notifications are handled
         # Action could be an array of symbols, but probably won't (think install + enable for a package)
-        Array(@action).each do |action|
-          self.run_action(action)
+        if compile_time.nil?
+          Chef::Log.warn "The chef_gem installation at compile time is deprecated and this behavior will change in the future."
+          Chef::Log.warn "Please set `compile_time false` on the resource to use the new behavior and suppress this warning,"
+          Chef::Log.warn "or you may set `compile_time true` on the resource if compile_time behavior is necessary."
         end
-        Gem.clear_paths
+
+        if compile_time || compile_time.nil?
+          Array(action).each do |action|
+            self.run_action(action)
+          end
+          Gem.clear_paths
+        end
       end
     end
   end
