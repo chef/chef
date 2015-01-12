@@ -162,7 +162,7 @@ describe Chef::Resource do
     end
   end
 
-  describe "load_prior_resource" do
+  describe "load_from" do
     before(:each) do
       @prior_resource = Chef::Resource.new("funk")
       @prior_resource.supports(:funky => true)
@@ -174,12 +174,12 @@ describe Chef::Resource do
     end
 
     it "should load the attributes of a prior resource" do
-      @resource.load_prior_resource(@resource.resource_name, @resource.name)
+      @resource.load_from(@prior_resource)
       expect(@resource.supports).to eq({ :funky => true })
     end
 
     it "should not inherit the action from the prior resource" do
-      @resource.load_prior_resource(@resource.resource_name, @resource.name)
+      @resource.load_from(@prior_resource)
       expect(@resource.action).not_to eq(@prior_resource.action)
     end
   end

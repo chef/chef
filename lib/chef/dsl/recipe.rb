@@ -19,6 +19,7 @@
 
 require 'chef/mixin/convert_to_class_name'
 require 'chef/exceptions'
+require 'chef/resource_builder'
 
 class Chef
   module DSL
@@ -92,37 +93,16 @@ class Chef
       def build_resource(type, name, created_at=nil, &resource_attrs_block)
         created_at ||= caller[0]
 
-        # Checks the new platform => short_name => resource mapping initially
-        # then fall back to the older approach (Chef::Resource.const_get) for
-        # backward compatibility
-        resource_class = resource_class_for(type)
-
-        raise ArgumentError, "You must supply a name when declaring a #{type} resource" if name.nil?
-
-        resource = resource_class.new(name, run_context)
-        resource.source_line = created_at
-        resource.declared_type = type
-        # If we have a resource like this one, we want to steal its state
-        # This behavior is very counter-intuitive and should be removed.
-        # See CHEF-3694, https://tickets.opscode.com/browse/CHEF-3694
-        # Moved to this location to resolve CHEF-5052, https://tickets.opscode.com/browse/CHEF-5052
-        resource.load_prior_resource(type, name)
-        resource.cookbook_name = cookbook_name
-        resource.recipe_name = recipe_name
-        # Determine whether this resource is being created in the context of an enclosing Provider
-        resource.enclosing_provider = self.is_a?(Chef::Provider) ? self : nil
-
-        # XXX: This is very crufty, but it's required for resource definitions
-        # to work properly :(
-        resource.params = @params
-
-        # Evaluate resource attribute DSL
-        resource.instance_eval(&resource_attrs_block) if block_given?
-
-        # Run optional resource hook
-        resource.after_created
-
-        resource
+        Chef::ResourceBuilder.new(
+          type:                type,
+          name:                name,
+          created_at:          created_at,
+          params:              @params,
+          run_context:         run_context,
+          cookbook_name:       cookbook_name,
+          recipe_name:         recipe_name,
+          enclosing_provider:  self.is_a?(Chef::Provider) ? self :  nil
+        ).build(&resource_attrs_block)
       end
 
       def resource_class_for(snake_case_name)

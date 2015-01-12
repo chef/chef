@@ -161,7 +161,82 @@ describe Chef::Recipe do
         zm_resource # force let binding evaluation
         expect { run_context.resource_collection.resources(:zen_master => "klopp") }.to raise_error(Chef::Exceptions::ResourceNotFound)
       end
+    end
 
+    describe "when cloning resources" do
+      def expect_warning
+        expect(Chef::Log).to receive(:warn).with(/3694/)
+        expect(Chef::Log).to receive(:warn).with(/Previous/)
+        expect(Chef::Log).to receive(:warn).with(/Current/)
+      end
+
+      it "should emit a 3694 warning when attributes change" do
+        recipe.zen_master "klopp" do
+          something "bvb"
+        end
+        expect_warning
+        recipe.zen_master "klopp" do
+          something "vbv"
+        end
+      end
+
+      it "should emit a 3694 warning when attributes change" do
+        recipe.zen_master "klopp" do
+          something "bvb"
+        end
+        expect_warning
+        recipe.zen_master "klopp" do
+          something "bvb"
+          peace true
+        end
+      end
+
+      it "should emit a 3694 warning when attributes change" do
+        recipe.zen_master "klopp" do
+          something "bvb"
+          peace true
+        end
+        expect_warning
+        recipe.zen_master "klopp" do
+          something "bvb"
+        end
+      end
+
+      it "should emit a 3694 warning for non-trivial attributes (unfortunately)" do
+        recipe.zen_master "klopp" do
+          something "bvb"
+        end
+        expect_warning
+        recipe.zen_master "klopp" do
+          something "bvb"
+        end
+      end
+
+      it "should not emit a 3694 warning for completely trivial resource cloning" do
+        recipe.zen_master "klopp"
+        expect(Chef::Log).to_not receive(:warn)
+        recipe.zen_master "klopp"
+      end
+
+      it "should not emit a 3694 warning when attributes do not change and the first action is :nothing" do
+        recipe.zen_master "klopp" do
+          action :nothing
+        end
+        expect(Chef::Log).to_not receive(:warn)
+        recipe.zen_master "klopp" do
+          action :score
+        end
+      end
+
+      it "should not emit a 3694 warning when attributes do not change and the second action is :nothing" do
+        recipe.zen_master "klopp" do
+          action :score
+        end
+        expect(Chef::Log).to_not receive(:warn)
+        recipe.zen_master "klopp" do
+          action :nothing
+        end
+      end
     end
 
     describe "creating resources via declare_resource" do
