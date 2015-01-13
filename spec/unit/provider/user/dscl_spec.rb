@@ -610,6 +610,14 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
             expect(provider.diverged_password?).to be_truthy
           end
         end
+
+        describe "when salt isn't found" do
+          it "diverged_password? should report true" do
+            provider.load_current_resource
+            provider.current_resource.salt(nil)
+            expect(provider.diverged_password?).to be_truthy
+          end
+        end
       end
     end
   end

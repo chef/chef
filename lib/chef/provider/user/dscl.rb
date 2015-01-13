@@ -504,7 +504,11 @@ user password using shadow hash.")
             # password to be updated.
             return true if salted_sha512?(@current_resource.password)
 
+            # Some system users don't have salts; this can happen if the system is
+            # upgraded and the user hasn't logged in yet. In this case, we will force
+            # the password to be updated.
             return true if @current_resource.salt.nil?
+
             if salted_sha512_pbkdf2?(@new_resource.password)
               diverged?(:password) || diverged?(:salt) || diverged?(:iterations)
             else
