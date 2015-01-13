@@ -181,7 +181,7 @@ class Chef
           return md
         end
 
-        raise Chef::Exceptions::MetadataNotFound
+        raise Chef::Exceptions::MetadataNotFound.new(@install_path, @cookbook_name)
       end
     end
   end

@@ -136,8 +136,12 @@ class Chef
 
     class MetadataNotValid < StandardError; end
     class MetadataNotFound < StandardError
-      def initialize
-        super "No metadata.rb or metadata.json!"
+      attr_reader :install_path
+      attr_reader :cookbook_name
+      def initialize(install_path, cookbook_name)
+        @install_path = install_path
+        @cookbook_name = cookbook_name
+        super "No metadata.rb or metadata.json found for cookbook #{@cookbook_name} in #{@install_path}"
       end
     end
 
