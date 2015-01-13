@@ -29,28 +29,105 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
 
   let(:run_context) { Chef::RunContext.new(node, nil, nil) }
 
-  let(:resource) do
-    resource = Chef::Resource.new("powershell_unit_test", run_context)
-    allow(resource).to receive(:run_action)
-    allow(resource).to receive(:updated).and_return(true)
-    resource
+  let(:parent_resource) do
+    parent_resource = Chef::Resource.new("powershell_unit_test", run_context)
+    allow(parent_resource).to receive(:run_action)
+    allow(parent_resource).to receive(:updated).and_return(true)
+    parent_resource
   end
 
+  let(:guard_interpreter) { Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, "echo hi", nil) }
 
   describe "get_interpreter_resource" do
     it "allows the guard interpreter to be set to Chef::Resource::Script" do
-      resource.guard_interpreter(:script)
-      expect { Chef::GuardInterpreter::ResourceGuardInterpreter.new(resource, "echo hi", nil) }.not_to raise_error
+      parent_resource.guard_interpreter(:script)
+      expect { guard_interpreter }.not_to raise_error
     end
-    
+
     it "allows the guard interpreter to be set to Chef::Resource::PowershellScript derived indirectly from Chef::Resource::Script" do
-      resource.guard_interpreter(:powershell_script)
-      expect { Chef::GuardInterpreter::ResourceGuardInterpreter.new(resource, "echo hi", nil) }.not_to raise_error
+      parent_resource.guard_interpreter(:powershell_script)
+      expect { guard_interpreter }.not_to raise_error
     end
-    
+
     it "raises an exception if guard_interpreter is set to a resource not derived from Chef::Resource::Script" do
-      resource.guard_interpreter(:file)
-      expect { Chef::GuardInterpreter::ResourceGuardInterpreter.new(resource, "echo hi", nil) }.to raise_error(ArgumentError)
+      parent_resource.guard_interpreter(:file)
+      expect { guard_interpreter }.to raise_error(ArgumentError, 'Specified guard interpreter class Chef::Resource::File must be a kind of Chef::Resource::Execute resource')
+    end
+
+    context "when the resource cannot be found for the platform" do
+      before do
+        expect(Chef::Resource).to receive(:resource_for_node).with(:foobar, node).and_return(nil)
+      end
+
+      it "raises an exception" do
+        parent_resource.guard_interpreter(:foobar)
+        expect { guard_interpreter }.to raise_error(ArgumentError, 'Specified guard_interpreter resource foobar unknown for this platform')
+      end
+    end
+
+    it "fails when parent_resource is nil" do
+      expect { Chef::GuardInterpreter::ResourceGuardInterpreter.new(nil, "echo hi", nil) }.to raise_error(ArgumentError, /Node for guard resource parent must not be nil/)
+    end
+
+  end
+
+  describe "#evaluate" do
+    let(:guard_interpreter) { Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, "echo hi", {}) }
+    let(:parent_resource) do
+      parent_resource = Chef::Resource.new("execute resource", run_context)
+      parent_resource.guard_interpreter(:execute)
+      parent_resource
+    end
+
+    it "successfully evaluates the resource" do
+      expect(guard_interpreter.evaluate).to eq(true)
+    end
+
+    describe "Script command opts switch" do
+      let(:command_opts) { {} }
+      let(:guard_interpreter) { Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, "echo hi", command_opts) }
+
+      context "resource is a Script" do
+        context "and guard_interpreter is :script" do
+          let(:parent_resource) do
+            parent_resource = Chef::Resource::Script.new("resource", run_context)
+            parent_resource.guard_interpreter(:script)
+            parent_resource
+          end
+
+          it "merges to :code" do
+            expect(command_opts).to receive(:merge).with({:code => "echo hi"}).and_call_original
+            guard_interpreter.evaluate
+          end
+        end
+
+        context "and guard_interpreter is :execute" do
+          let(:parent_resource) do
+            parent_resource = Chef::Resource::Script.new("resource", run_context)
+            parent_resource.guard_interpreter(:execute)
+            parent_resource
+          end
+
+          it "merges to :code" do
+            expect(command_opts).to receive(:merge).with({:command => "echo hi"}).and_call_original
+            guard_interpreter.evaluate
+          end
+        end
+      end
+
+      context "resource is not a Script" do
+        let(:parent_resource) do
+          parent_resource = Chef::Resource::Execute.new("resource", run_context)
+          parent_resource.guard_interpreter(:execute)
+          parent_resource
+        end
+
+        it "merges to :command" do
+          expect(command_opts).to receive(:merge).with({:command => "echo hi"}).and_call_original
+          guard_interpreter.evaluate
+        end
+      end
+
     end
   end
 end
