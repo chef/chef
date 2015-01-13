@@ -184,7 +184,11 @@ describe Chef::Knife::CookbookSiteInstall do
     end
 
     it "rasies an error if it finds no metadata file" do
-      expect { knife.preferred_metadata }.to raise_error(Chef::Exceptions::MetadataNotFound)
+      expect { knife.preferred_metadata }.to raise_error { |error|
+        expect(error).to be_a(Chef::Exceptions::MetadataNotFound)
+        expect(error.cookbook_name).to eq("post-punk-kitchen")
+        expect(error.install_path).to eq(install_path)
+      }
     end
 
   end
