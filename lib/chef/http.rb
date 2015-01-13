@@ -382,7 +382,7 @@ class Chef
       tf.close
       tf
     rescue Exception
-      tf.close!
+      tf.close! if tf
       raise
     end
 
