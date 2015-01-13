@@ -134,6 +134,13 @@ class Chef
     # Version constraints are not allowed in chef-solo
     class IllegalVersionConstraint < NotImplementedError; end
 
+    class MetadataNotValid < StandardError; end
+    class MetadataNotFound < StandardError
+      def initialize
+        super "No metadata.rb or metadata.json!"
+      end
+    end
+
     # File operation attempted but no permissions to perform it
     class InsufficientPermissions < RuntimeError; end
 
