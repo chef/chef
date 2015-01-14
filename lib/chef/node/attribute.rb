@@ -253,7 +253,7 @@ class Chef
          if path.nil?
            @deep_merge_cache = {}
          else
-           deep_merge_cache.delete(path)
+           deep_merge_cache.delete(path.to_s)
          end
        end
 
@@ -436,12 +436,12 @@ class Chef
        end
 
        def [](key)
-         if deep_merge_cache.has_key?(key)
+         if deep_merge_cache.has_key?(key.to_s)
            # return the cache of the deep merged values by top-level key
-           deep_merge_cache[key]
+           deep_merge_cache[key.to_s]
          else
            # save all the work of computing node[key]
-           deep_merge_cache[key] = merged_attributes(key)
+           deep_merge_cache[key.to_s] = merged_attributes(key)
          end
        end
 
