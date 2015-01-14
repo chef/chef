@@ -83,6 +83,7 @@ The specific components of Chef related to a given platform - including (but not
 ### Lieutenant
 
 ### Maintainers
+* [Steven Murawski](http://github.com/smurawski)
 
 ## Solaris
 
