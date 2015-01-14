@@ -21,6 +21,7 @@ class Chef
     class MacportsPackage < Chef::Resource::Package
 
       provides :macports_package
+      provides :package, os: "darwin"
 
       def initialize(name, run_context=nil)
         super
