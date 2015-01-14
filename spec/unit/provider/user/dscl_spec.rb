@@ -422,7 +422,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
         it "collects the user data correctly" do
           provider.load_current_resource
           expect(provider.current_resource.comment).to eq("vagrant")
-          expect(provider.current_resource.uid).to eq("11112222-3333-4444-AAAA-BBBBCCCCDDDD")
+          expect(provider.current_resource.uid).to eq("501")
           expect(provider.current_resource.gid).to eq("80")
           expect(provider.current_resource.home).to eq("/Users/vagrant")
           expect(provider.current_resource.shell).to eq("/bin/bash")
@@ -487,7 +487,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
         it "collects the user data correctly" do
           provider.load_current_resource
           expect(provider.current_resource.comment).to eq("vagrant")
-          expect(provider.current_resource.uid).to eq("11112222-3333-4444-AAAA-BBBBCCCCDDDD")
+          expect(provider.current_resource.uid).to eq("501")
           expect(provider.current_resource.gid).to eq("80")
           expect(provider.current_resource.home).to eq("/Users/vagrant")
           expect(provider.current_resource.shell).to eq("/bin/bash")
@@ -513,7 +513,7 @@ e68d1f9821b26689312366")
         it "collects the user data correctly" do
           provider.load_current_resource
           expect(provider.current_resource.comment).to eq("vagrant")
-          expect(provider.current_resource.uid).to eq("11112222-3333-4444-AAAA-BBBBCCCCDDDD")
+          expect(provider.current_resource.uid).to eq("501")
           expect(provider.current_resource.gid).to eq("80")
           expect(provider.current_resource.home).to eq("/Users/vagrant")
           expect(provider.current_resource.shell).to eq("/bin/bash")
@@ -551,7 +551,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
         it "collects the user data correctly" do
           provider.load_current_resource
           expect(provider.current_resource.comment).to eq("vagrant")
-          expect(provider.current_resource.uid).to eq("11112222-3333-4444-AAAA-BBBBCCCCDDDD")
+          expect(provider.current_resource.uid).to eq("501")
           expect(provider.current_resource.gid).to eq("80")
           expect(provider.current_resource.home).to eq("/Users/vagrant")
           expect(provider.current_resource.shell).to eq("/bin/bash")

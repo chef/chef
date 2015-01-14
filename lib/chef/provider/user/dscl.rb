@@ -239,8 +239,18 @@ user password using shadow hash.")
         #
         def uid_used?(uid)
           return false unless uid
-          users_uids = run_dscl("list /Users uid")
-          !! ( users_uids =~ Regexp.new("#{Regexp.escape(uid.to_s)}\n") )
+          users_uids = run_dscl("list /Users uid").split("\n")
+          uid_map = users_uids.inject({}) do |tmap, tuid|
+            x = tuid.split
+            tmap[x[1]] = x[0]
+            tmap
+          end
+          if uid_map[uid.to_s]
+            unless uid_map[uid.to_s] == @new_resource.username.to_s
+              return true
+            end
+          end
+          return false
         end
 
         #
@@ -540,7 +550,7 @@ user password using shadow hash.")
 
         # A simple map of Chef's terms to DSCL's terms.
         DSCL_PROPERTY_MAP = {
-          :uid => "generateduid",
+          :uid => "uid",
           :gid => "gid",
           :home => "home",
           :shell => "shell",
