@@ -252,7 +252,7 @@ EOM
 
     it "should exit with a zero code when there is not an audit failure" do
       file 'cookbooks/audit_test/recipes/succeed.rb', <<-RECIPE
-controls "control group without top level control" do
+control_group "control group without top level control" do
   it "should succeed" do
     expect(2 - 2).to eq(0)
   end
@@ -261,12 +261,12 @@ end
 
       result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::succeed'", :cwd => chef_dir)
       expect(result.error?).to be_falsey
-      expect(result.stdout).to include("Successfully executed all `controls` blocks and contained examples")
+      expect(result.stdout).to include("Successfully executed all `control_group` blocks and contained examples")
     end
 
     it "should exit with a non-zero code when there is an audit failure" do
       file 'cookbooks/audit_test/recipes/fail.rb', <<-RECIPE
-controls "control group without top level control" do
+control_group "control group without top level control" do
   it "should fail" do
     expect(2 - 2).to eq(1)
   end

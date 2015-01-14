@@ -29,7 +29,7 @@ class Chef
 
       def run
         setup
-        register_controls
+        register_control_groups
         do_run
       end
 
@@ -136,29 +136,29 @@ class Chef
         Specinfra.configuration.backend = :exec
       end
 
-      # Iterates through the controls registered to this run_context, builds an
-      # example group (RSpec::Core::ExampleGroup) object per controls, and
+      # Iterates through the control groups registered to this run_context, builds an
+      # example group (RSpec::Core::ExampleGroup) object per control group, and
       # registers the group with the RSpec.world.
       #
       # We could just store an array of example groups and not use RSpec.world,
       # but it may be useful later if we decide to apply our own ordering scheme
       # or use example group filters.
-      def register_controls
+      def register_control_groups
         add_example_group_methods
         run_context.audits.each do |name, group|
-          ctl_grp = RSpec::Core::ExampleGroup.__controls__(*group.args, &group.block)
+          ctl_grp = RSpec::Core::ExampleGroup.__control_group__(*group.args, &group.block)
           RSpec.world.register(ctl_grp)
         end
       end
 
       # Add example group method aliases to RSpec.
       #
-      # __controls__: Used internally to create example groups from the controls
-      #               saved in the run_context.
-      #      control: Used within the context of a controls block, like RSpec's
+      # __control_group__: Used internally to create example groups from the control
+      #               groups saved in the run_context.
+      #      control: Used within the context of a control group block, like RSpec's
       #               describe or context.
       def add_example_group_methods
-        RSpec::Core::ExampleGroup.define_example_group_method :__controls__
+        RSpec::Core::ExampleGroup.define_example_group_method :__control_group__
         RSpec::Core::ExampleGroup.define_example_group_method :control
       end
 

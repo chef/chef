@@ -563,7 +563,7 @@ describe Chef::Recipe do
   describe "included DSL" do
     it "should include features from Chef::DSL::Audit" do
       expect(recipe.singleton_class.included_modules).to include(Chef::DSL::Audit)
-      expect(recipe.respond_to?(:controls)).to be true
+      expect(recipe.respond_to?(:control_group)).to be true
     end
   end
 end

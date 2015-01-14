@@ -13,7 +13,7 @@ end
 #   action :install
 # end
 
-controls "serverspec helpers with types" do
+control_group "serverspec helpers with types" do
   control "file helper" do
     it "says welcome" do
       expect(file("/tmp/audit_test_file")).to contain("Welcome")

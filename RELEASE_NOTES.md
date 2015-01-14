@@ -15,7 +15,7 @@ node.  As such the syntax is very similar to a normal RSpec spec.
 ### Syntax
 
 ```ruby
-controls "Database Audit" do
+control_group "Database Audit" do
 
   control "postgres package" do
     it "should not be installed" do
@@ -35,8 +35,8 @@ end
 
 Using the example above I will break down the components of an Audit:
 
-* `controls` - This named block contains all the audits to be performed during the audit phase.  During Chef convergence
- the audits will be collected and ran in a separate phase at the end of the Chef run.  Any `controls` block defined in
+* `control_group` - This named block contains all the audits to be performed during the audit phase.  During Chef convergence
+ the audits will be collected and ran in a separate phase at the end of the Chef run.  Any `control_group` block defined in
  a recipe that is ran on the node will be performed.
 * `control` - This keyword describes a section of audits to perform.  The name here should either be a string describing
 the system under test, or a [Serverspec resource](http://serverspec.org/resource_types.html).

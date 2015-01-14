@@ -4,7 +4,7 @@
 #
 # Copyright (c) 2014 The Authors, All Rights Reserved.
 
-controls "basic control group" do
+control_group "basic control group" do
   control "basic math" do
     # Can not write a good control :(
     it "should pass" do
