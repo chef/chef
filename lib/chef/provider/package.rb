@@ -109,18 +109,20 @@ class Chef
 
         converge_by(upgrade_description) do
           upgrade_package(package_names_for_targets, versions_for_targets)
-          Chef::Log.info("#{@new_resource} upgraded #{package_names_for_targets} to #{versions_for_targets}")
+          log_allow_downgrade = allow_downgrade ? '(allow_downgrade)' : ''
+          Chef::Log.info("#{@new_resource} upgraded#{log_allow_downgrade} #{package_names_for_targets} to #{versions_for_targets}")
         end
       end
 
       def upgrade_description
+        log_allow_downgrade = allow_downgrade ? '(allow_downgrade)' : ''
         description = []
         target_version_array.each_with_index do |target_version, i|
           next if target_version.nil?
           package_name = package_name_array[i]
           candidate_version = candidate_version_array[i]
           current_version = current_version_array[i] || "uninstalled"
-          description << "upgrade package #{package_name} from #{current_version} to #{candidate_version}"
+          description << "upgrade#{log_allow_downgrade} package #{package_name} from #{current_version} to #{candidate_version}"
         end
         description
       end
@@ -475,6 +477,13 @@ class Chef
         run_context.has_cookbook_file_in_cookbook?(new_resource.cookbook_name, path)
       end
 
+      def allow_downgrade
+        if @new_resource.respond_to?("allow_downgrade")
+          @new_resource.allow_downgrade
+        else
+          false
+        end
+      end
     end
   end
 end

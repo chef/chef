@@ -93,7 +93,11 @@ class Chef
           unless @current_resource.version
             shell_out!( "rpm #{@new_resource.options} -i #{@new_resource.source}" )
           else
-            shell_out!( "rpm #{@new_resource.options} -U #{@new_resource.source}" )
+            if allow_downgrade
+              shell_out!( "rpm #{@new_resource.options} -U --oldpackage #{@new_resource.source}" )
+            else
+              shell_out!( "rpm #{@new_resource.options} -U #{@new_resource.source}" )
+            end
           end
         end
 
