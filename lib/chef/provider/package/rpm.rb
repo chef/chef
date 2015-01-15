@@ -54,7 +54,7 @@ class Chef
           @new_resource.version(nil)
 
           if @new_resource.source
-            unless ::File.exists?(@new_resource.source)
+            unless uri_scheme?(@new_resource.source) || ::File.exists?(@new_resource.source)
               @package_source_exists = false
               return
             end
@@ -107,6 +107,15 @@ class Chef
           end
         end
 
+        private
+
+        def uri_scheme?(str)
+          scheme = URI.split(str).first
+          return false unless scheme
+          %w(http https ftp file).include?(scheme.downcase)
+        rescue URI::InvalidURIError
+          return false
+        end
       end
     end
   end

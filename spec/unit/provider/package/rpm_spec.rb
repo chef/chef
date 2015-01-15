@@ -72,6 +72,32 @@ describe Chef::Provider::Package::Rpm do
       end
     end
 
+    context "source is uri formed" do
+      before(:each) do
+        allow(::File).to receive(:exists?).and_return(false)
+      end
+
+      %w(http HTTP https HTTPS ftp FTP).each do |scheme|
+        it "should accept uri formed source (#{scheme})" do
+          new_resource.source "#{scheme}://example.com/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm"
+          expect(provider.load_current_resource).not_to be_nil
+        end
+      end
+
+      %w(file FILE).each do |scheme|
+        it "should accept uri formed source (#{scheme})" do
+          new_resource.source "#{scheme}:///ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm"
+          expect(provider.load_current_resource).not_to be_nil
+        end
+      end
+
+      it "should raise an exception if an uri formed source is non-supported scheme" do
+        new_resource.source "foobar://example.com/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm"
+        expect(provider.load_current_resource).to be_nil
+        expect { provider.run_action(:any) }.to raise_error(Chef::Exceptions::Package)
+      end
+    end
+
     context "source is not defiend" do
       let(:new_resource) { Chef::Resource::Package.new("ImageMagick-c++") }
 
