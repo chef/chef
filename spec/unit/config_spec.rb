@@ -246,6 +246,10 @@ describe Chef::Config do
           expect(Chef::Config[:ssl_verify_mode]).to eq(:verify_peer)
         end
 
+        it "Chef::Config[:suppress_ssl_warnings] defaults to false" do
+          expect(Chef::Config[:ssl_verify_mode]).to eq(false)
+        end
+
         it "Chef::Config[:ssl_ca_path] defaults to nil" do
           expect(Chef::Config[:ssl_ca_path]).to be_nil
         end

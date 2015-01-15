@@ -352,6 +352,8 @@ class Chef
     # be validated.
     default :ssl_verify_mode, :verify_peer
 
+    default :suppress_ssl_warnings, false
+
     # Whether or not to verify the SSL cert for HTTPS requests to the Chef
     # server API. If set to `true`, the server's cert will be validated
     # regardless of the :ssl_verify_mode setting. This is set to `true` when
