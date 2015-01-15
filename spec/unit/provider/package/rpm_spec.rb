@@ -155,6 +155,18 @@ describe Chef::Provider::Package::Rpm do
         provider.upgrade_package("ImageMagick-c++", "6.5.4.7-7.el6_5")
       end
 
+      context "allowing downgrade" do
+        let(:new_resource) { Chef::Resource::RpmPackage.new("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm") }
+        let(:current_resource) { Chef::Resource::RpmPackage.new("ImageMagick-c++") }
+
+        it "should run rpm -U --oldpackage with the package source to downgrade" do
+          new_resource.allow_downgrade(true)
+          current_resource.version("21.4-19.el5")
+          expect(provider).to receive(:shell_out!).with("rpm  -U --oldpackage /tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
+          provider.upgrade_package("ImageMagick-c++", "6.5.4.7-7.el6_5")
+        end
+      end
+
       context "installing when the name is a path" do
         let(:new_resource) { Chef::Resource::Package.new("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm") }
         let(:current_resource) { Chef::Resource::Package.new("ImageMagick-c++") }

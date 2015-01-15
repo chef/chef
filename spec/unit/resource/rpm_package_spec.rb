@@ -32,3 +32,15 @@ describe Chef::Resource::RpmPackage, "initialize" do
   end
 
 end
+
+describe Chef::Resource::RpmPackage, "allow_downgrade" do
+  before(:each) do
+    @resource = Chef::Resource::RpmPackage.new("foo")
+  end
+
+  it "should allow you to specify whether allow_downgrade is true or false" do
+    expect { @resource.allow_downgrade true }.not_to raise_error
+    expect { @resource.allow_downgrade false }.not_to raise_error
+    expect { @resource.allow_downgrade "monkey" }.to raise_error(ArgumentError)
+  end
+end

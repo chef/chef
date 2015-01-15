@@ -976,14 +976,6 @@ class Chef
           end
         end
 
-        def allow_downgrade
-          if @new_resource.respond_to?("allow_downgrade")
-            @new_resource.allow_downgrade
-          else
-            false
-          end
-        end
-
         # Helpers
         #
 
