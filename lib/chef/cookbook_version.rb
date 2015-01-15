@@ -76,6 +76,8 @@ class Chef
     attr_reader :recipe_filenames_by_name
     attr_reader :attribute_filenames_by_short_filename
 
+    attr_accessor :chef_server_rest
+
     # The first root path is the primary cookbook dir, from which metadata is loaded
     def root_dir
       root_paths[0]
@@ -98,7 +100,7 @@ class Chef
     #
     # === Returns
     # object<Chef::CookbookVersion>:: Duh. :)
-    def initialize(name, *root_paths)
+    def initialize(name, *root_paths, chef_server_rest: nil)
       @name = name
       @root_paths = root_paths
       @frozen = false
@@ -119,6 +121,7 @@ class Chef
       @status = :ready
       @file_vendor = nil
       @metadata = Chef::Cookbook::Metadata.new
+      @chef_server_rest = chef_server_rest
     end
 
     def version
@@ -512,12 +515,12 @@ class Chef
       cookbook_manifest.force_save_url
     end
 
-    def self.chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])
+    def chef_server_rest
+      @chef_server_rest ||= self.chef_server_rest
     end
 
-    def chef_server_rest
-      self.class.chef_server_rest
+    def self.chef_server_rest
+      Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
     def destroy

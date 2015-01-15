@@ -47,6 +47,8 @@ class Chef
 
     attr_accessor :recipe_list, :run_state, :override_runlist
 
+    attr_accessor :chef_server_rest
+
     # RunContext will set itself as run_context via this setter when
     # initialized. This is needed so DSL::IncludeAttribute (in particular,
     # #include_recipe) can access the run_context to determine if an attributes
@@ -62,7 +64,8 @@ class Chef
     include Chef::Mixin::ParamsValidate
 
     # Create a new Chef::Node object.
-    def initialize
+    def initialize(chef_server_rest: nil)
+      @chef_server_rest = chef_server_rest
       @name = nil
 
       @chef_environment = '_default'
@@ -80,7 +83,7 @@ class Chef
     end
 
     def chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      @chef_server_rest ||= Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
     # Set the name of this Node, or return the current name.

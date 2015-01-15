@@ -33,6 +33,8 @@ class Chef
 
     VALID_NAME = /^[\.\-[:alnum:]_]+$/
 
+    attr_accessor :chef_server_rest
+
     def self.validate_name!(name)
       unless name =~ VALID_NAME
         raise Exceptions::InvalidDataBagName, "DataBags must have a name matching #{VALID_NAME.inspect}, you gave #{name.inspect}"
@@ -40,8 +42,9 @@ class Chef
     end
 
     # Create a new Chef::DataBag
-    def initialize
+    def initialize(chef_server_rest: nil)
       @name = ''
+      @chef_server_rest = chef_server_rest
     end
 
     def name(arg=nil)
@@ -67,7 +70,7 @@ class Chef
     end
 
     def chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      @chef_server_rest ||= Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
     def self.chef_server_rest
