@@ -64,10 +64,9 @@ The package resource on OpenBSD is wired up to use the new OpenBSD package provi
 
 Previously, when a URI scheme contained all uppercase letters, Chef would reject the URI as invalid. In compliance with RFC3986, Chef now treats URI schemes in a case insensitive manner.
 
-## Suppress SSL Warnings
-You can now disable SSL warnings with `suppress_ssl_warnings true` in your
-config. These warnings are here for a reason, so be sure you know what you
-are doing.
+## Drop SSL Warnings
+Now that the default for SSL checking is on, no more warning is emitted when SSL
+checking is off.
 
 # Chef Client Release Notes 12.0.0:
 

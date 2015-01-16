@@ -419,8 +419,6 @@ class Chef
       begin
         runlock.save_pid
 
-        check_ssl_config
-
         request_id = Chef::RequestID.instance.request_id
         run_context = nil
         @events.run_start(Chef::VERSION)
@@ -527,37 +525,6 @@ class Chef
       require 'chef/win32/security'
 
       Chef::ReservedNames::Win32::Security.has_admin_privileges?
-    end
-
-    def check_ssl_config
-      if Chef::Config[:ssl_verify_mode] == :verify_none and !Chef::Config[:verify_api_cert] and !Chef::Config[:suppress_ssl_warnings]
-        Chef::Log.warn(<<-WARN)
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-SSL validation of HTTPS requests is disabled. HTTPS connections are still
-encrypted, but chef is not able to detect forged replies or man in the middle
-attacks.
-
-To fix this issue add an entry like this to your configuration file:
-
-```
-  # Verify all HTTPS connections (recommended)
-  ssl_verify_mode :verify_peer
-
-  # OR, Verify only connections to chef-server
-  verify_api_cert true
-```
-
-To check your SSL configuration, or troubleshoot errors, you can use the
-`knife ssl check` command like so:
-
-```
-  knife ssl check -c #{Chef::Config.config_file}
-```
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-WARN
-      end
     end
 
   end
