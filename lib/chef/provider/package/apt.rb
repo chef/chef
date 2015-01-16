@@ -51,17 +51,19 @@ class Chef
         end
 
         def check_package_state(package)
-          final_installed_version = []
-          final_candidate_version = []
-          final_installed = []
-          final_virtual = []
+          if package.is_a?(Array)
+            final_installed_version = []
+            final_candidate_version = []
+            final_installed = []
+            final_virtual = []
+          end
           installed = virtual = false
           installed_version = candidate_version = nil
 
           [package].flatten.each do |pkg|
             installed = virtual = false
             installed_version = candidate_version = nil
-            shell_out!("apt-cache#{expand_options(default_release_options)} policy #{pkg}", {:timeout=>900}).stdout.each_line do |line|
+            shell_out!("apt-cache#{expand_options(default_release_options)} policy #{pkg}").stdout.each_line do |line|
               case line
               when /^\s{2}Installed: (.+)$/
                 installed_version = $1
@@ -77,9 +79,9 @@ class Chef
                 if candidate_version == '(none)'
                   # This may not be an appropriate assumption, but it shouldn't break anything that already worked -- btm
                   virtual = true
-                  showpkg = shell_out!("apt-cache showpkg #{package}", {:timeout => 900}).stdout
+                  showpkg = shell_out!("apt-cache showpkg #{package}").stdout
                   providers = Hash.new
-                  showpkg.rpartition(/Reverse Provides: ?#{$/}/)[2].each_line do |line|
+                  showpkg.rpartition(/Reverse Provides:? #{$/}/)[2].each_line do |line|
                     provider, version = line.split
                     providers[provider] = version
                   end
