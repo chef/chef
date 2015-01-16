@@ -337,9 +337,9 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
-        "yum -d0 -e0 -y install emacs-1.0"
+        "yum -d0 -e0 -y install cups-1.2.4-11.19.el5"
       )
-      @provider.install_package("emacs", "1.0")
+      @provider.install_package("cups", "1.2.4-11.19.el5")
     end
 
     it "should run yum localinstall if given a path to an rpm" do
@@ -366,9 +366,9 @@ describe Chef::Provider::Package::Yum do
       allow(@new_resource).to receive(:arch).and_return("i386")
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
-        "yum -d0 -e0 -y install emacs-21.4-20.el5.i386"
+        "yum -d0 -e0 -y install cups-1.2.4-11.19.el5.i386"
       )
-      @provider.install_package("emacs", "21.4-20.el5")
+      @provider.install_package("cups", "1.2.4-11.19.el5")
     end
 
     it "installs the package with the options given in the resource" do
@@ -467,10 +467,10 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
-        "yum -d0 -e0 -y install emacs-1.0"
+        "yum -d0 -e0 -y install cups-1.2.4-11.15.el5"
       )
       expect(@yum_cache).to receive(:reload).once
-      @provider.install_package("emacs", "1.0")
+      @provider.install_package("cups", "1.2.4-11.15.el5")
     end
 
     it "should run yum install then not flush the cache if :after is false" do
@@ -478,10 +478,10 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
-        "yum -d0 -e0 -y install emacs-1.0"
+        "yum -d0 -e0 -y install cups-1.2.4-11.15.el5"
       )
       expect(@yum_cache).not_to receive(:reload)
-      @provider.install_package("emacs", "1.0")
+      @provider.install_package("cups", "1.2.4-11.15.el5")
     end
   end
 
