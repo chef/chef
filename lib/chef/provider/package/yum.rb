@@ -1058,9 +1058,18 @@ class Chef
           # 3) or a dependency, eg: "foo >= 1.1"
 
           # Check if we have name or name+arch which has a priority over a dependency
-          unless @yum.package_available?(@new_resource.package_name)
-            # If they aren't in the installed packages they could be a dependency
-            parse_dependency
+          package_name_array.each do |n|
+            unless @yum.package_available?(n)
+              # If they aren't in the installed packages they could be a dependency
+              dep = parse_dependency(n)
+              if dep
+                if @new_resource.package_name.is_a?(Array)
+                  @new_resource.package_name(package_name_array + [dep])
+                else
+                  @new_resource.package_name(dep)
+                end
+              end
+            end
           end
 
           # Don't overwrite an existing arch
@@ -1268,9 +1277,9 @@ class Chef
         # matching them up with an actual package so the standard resource handling can apply.
         #
         # There is currently no support for filename matching.
-        def parse_dependency
+        def parse_dependency(name)
           # Transform the package_name into a requirement
-          yum_require = RPMRequire.parse(@new_resource.package_name)
+          yum_require = RPMRequire.parse(name)
           # and gather all the packages that have a Provides feature satisfying the requirement.
           # It could be multiple be we can only manage one
           packages = @yum.packages_from_require(yum_require)
@@ -1304,7 +1313,7 @@ class Chef
                              "specific version.")
             end
 
-            @new_resource.package_name(new_package_name)
+            new_package_name
           end
         end
 
