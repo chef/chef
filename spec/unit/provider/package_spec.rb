@@ -425,3 +425,203 @@ describe Chef::Provider::Package do
 
   end
 end
+
+describe "Chef::Provider::Package - Multi" do
+  before do
+    @node = Chef::Node.new
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
+    @new_resource = Chef::Resource::Package.new(['emacs', 'vi'])
+    @current_resource = Chef::Resource::Package.new(['emacs', 'vi'])
+    @provider = Chef::Provider::Package.new(@new_resource, @run_context)
+    @provider.current_resource = @current_resource
+    @provider.candidate_version = ['1.0', '6.2']
+  end
+
+  describe "when installing multiple packages" do
+    before(:each) do
+      @provider.current_resource = @current_resource
+      allow(@provider).to receive(:install_package).and_return(true)
+    end
+
+    it "should install the candidate versions when none are installed" do
+      @provider.run_action(:install)
+      expect(@new_resource).to be_updated
+    end
+
+    it "should install the candidate versions when some are installed" do
+      expect(@provider).to receive(:install_package).with(
+        @new_resource.name,
+        @provider.candidate_version
+      ).and_return(true)
+      @current_resource.version(['1.0', nil])
+      @provider.run_action(:install)
+      expect(@new_resource).to be_updated
+    end
+
+    it "should install the specified version when some are out of date" do
+      @current_resource.version(['1.0', '6.2'])
+      @new_resource.version(['1.0', '6.1'])
+      @provider.run_action(:install)
+      expect(@new_resource).to be_updated
+    end
+
+    it "should not install any version if all are installed at the right version" do
+      @current_resource.version(['1.0', '6.2'])
+      @new_resource.version(['1.0', '6.2'])
+      @provider.run_action(:install)
+      expect(@new_resource).not_to be_updated_by_last_action
+    end
+
+    it "should not install any version if all are installed, and no version was specified" do
+      @current_resource.version(['1.0', '6.2'])
+      @provider.run_action(:install)
+      expect(@new_resource).not_to be_updated_by_last_action
+    end
+  end
+
+  describe "when upgrading multiple packages" do
+    before(:each) do
+      @provider.current_resource = @current_resource
+      allow(@provider).to receive(:upgrade_package).and_return(true)
+    end
+
+    it "should upgrade the package if the current versions are not the candidate version" do
+      @current_resource.version ['0.9', '6.1']
+      expect(@provider).to receive(:upgrade_package).with(
+        @new_resource.name,
+        @provider.candidate_version
+      ).and_return(true)
+      @provider.run_action(:upgrade)
+      expect(@new_resource).to be_updated_by_last_action
+    end
+
+    it "should upgrade the package if some of current versions are not the candidate versions" do
+      @current_resource.version ['1.0', '6.1']
+      expect(@provider).to receive(:upgrade_package).with(
+        @new_resource.name,
+        @provider.candidate_version
+      ).and_return(true)
+      @provider.run_action(:upgrade)
+      expect(@new_resource).to be_updated_by_last_action
+    end
+
+    it "should not install the package if the current versions are the candidate version" do
+      @current_resource.version ['1.0', '6.2']
+      expect(@provider).not_to receive(:upgrade_package)
+      @provider.run_action(:upgrade)
+      expect(@new_resource).not_to be_updated_by_last_action
+    end
+  end
+
+  describe "When removing multiple packages " do
+    before(:each) do
+      allow(@provider).to receive(:remove_package).and_return(true)
+      @current_resource.version ['1.0', '6.2']
+    end
+
+    it "should remove the packages if all are installed" do
+      expect(@provider).to be_removing_package
+      expect(@provider).to receive(:remove_package).with(['emacs', 'vi'], nil)
+      @provider.run_action(:remove)
+      expect(@new_resource).to be_updated
+      expect(@new_resource).to be_updated_by_last_action
+    end
+
+    it "should remove the packages if some are installed" do
+      @current_resource.version ['1.0', nil]
+      expect(@provider).to be_removing_package
+      expect(@provider).to receive(:remove_package).with(['emacs', 'vi'], nil)
+      @provider.run_action(:remove)
+      expect(@new_resource).to be_updated
+      expect(@new_resource).to be_updated_by_last_action
+    end
+
+    it "should remove the packages at a specific version if they are installed at that version" do
+      @new_resource.version ['1.0', '6.2']
+      expect(@provider).to be_removing_package
+      expect(@provider).to receive(:remove_package).with(['emacs', 'vi'], ['1.0', '6.2'])
+      @provider.run_action(:remove)
+      expect(@new_resource).to be_updated_by_last_action
+    end
+
+    it "should remove the packages at a specific version any are is installed at that version" do
+      @new_resource.version ['0.5', '6.2']
+      expect(@provider).to be_removing_package
+      expect(@provider).to receive(:remove_package).with(['emacs', 'vi'], ['0.5', '6.2'])
+      @provider.run_action(:remove)
+      expect(@new_resource).to be_updated_by_last_action
+    end
+
+    it "should not remove the packages at a specific version if they are not installed at that version" do
+      @new_resource.version ['0.5', '6.0']
+      expect(@provider).not_to be_removing_package
+      expect(@provider).not_to receive(:remove_package)
+      @provider.run_action(:remove)
+      expect(@new_resource).not_to be_updated_by_last_action
+    end
+
+    it "should not remove the packages if they are not installed" do
+      expect(@provider).not_to receive(:remove_package)
+      allow(@current_resource).to receive(:version).and_return(nil)
+      @provider.run_action(:remove)
+      expect(@new_resource).not_to be_updated_by_last_action
+    end
+
+  end
+
+  describe "When purging multiple packages " do
+    before(:each) do
+      allow(@provider).to receive(:purge_package).and_return(true)
+      @current_resource.version ['1.0', '6.2']
+    end
+
+    it "should purge the packages if all are installed" do
+      expect(@provider).to be_removing_package
+      expect(@provider).to receive(:purge_package).with(['emacs', 'vi'], nil)
+      @provider.run_action(:purge)
+      expect(@new_resource).to be_updated
+      expect(@new_resource).to be_updated_by_last_action
+    end
+
+    it "should purge the packages if some are installed" do
+      @current_resource.version ['1.0', nil]
+      expect(@provider).to be_removing_package
+      expect(@provider).to receive(:purge_package).with(['emacs', 'vi'], nil)
+      @provider.run_action(:purge)
+      expect(@new_resource).to be_updated
+      expect(@new_resource).to be_updated_by_last_action
+    end
+
+    it "should purge the packages at a specific version if they are installed at that version" do
+      @new_resource.version ['1.0', '6.2']
+      expect(@provider).to be_removing_package
+      expect(@provider).to receive(:purge_package).with(['emacs', 'vi'], ['1.0', '6.2'])
+      @provider.run_action(:purge)
+      expect(@new_resource).to be_updated_by_last_action
+    end
+
+    it "should purge the packages at a specific version any are is installed at that version" do
+      @new_resource.version ['0.5', '6.2']
+      expect(@provider).to be_removing_package
+      expect(@provider).to receive(:purge_package).with(['emacs', 'vi'], ['0.5', '6.2'])
+      @provider.run_action(:purge)
+      expect(@new_resource).to be_updated_by_last_action
+    end
+
+    it "should not purge the packages at a specific version if they are not installed at that version" do
+      @new_resource.version ['0.5', '6.0']
+      expect(@provider).not_to be_removing_package
+      expect(@provider).not_to receive(:purge_package)
+      @provider.run_action(:purge)
+      expect(@new_resource).not_to be_updated_by_last_action
+    end
+
+    it "should not purge the packages if they are not installed" do
+      expect(@provider).not_to receive(:purge_package)
+      allow(@current_resource).to receive(:version).and_return(nil)
+      @provider.run_action(:purge)
+      expect(@new_resource).not_to be_updated_by_last_action
+    end
+  end
+end

@@ -74,10 +74,10 @@ class Chef
 
       def action_install
         # If we specified a version, and it's not the current version, move to the specified version
-        if !@new_resource.version.nil? && !(target_version_already_installed?)
+        if new_version_array.any? && !(target_version_already_installed?)
           install_version = @new_resource.version
         # If it's not installed at all, install it
-        elsif @current_resource.version.nil?
+        elsif current_version_array.any? { |x| x.nil? }
           install_version = candidate_version
         else
           Chef::Log.debug("#{@new_resource} is already installed - nothing to do")
@@ -127,13 +127,21 @@ class Chef
         end
       end
 
+      def have_any_matching_version?
+        f = []
+        new_version_array.each_with_index do |item, index|
+          f << (item == current_version_array[index])
+        end
+        f.any?
+      end
+          
       def removing_package?
         if !current_version_array.any?
           # ! any? means it's all nil's, which means nothing is installed
           false
         elsif !new_version_array.any?
           true # remove any version of all packages
-        elsif @new_resource.version == @current_resource.version
+        elsif have_any_matching_version?
           true # remove the version we have
         else
           false # we don't have the version we want to remove
@@ -239,7 +247,7 @@ class Chef
       end
 
       def target_version_already_installed?
-        @new_resource.version == @current_resource.version
+        new_version_array == current_version_array
       end
 
       private
