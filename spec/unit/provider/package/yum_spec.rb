@@ -1861,3 +1861,69 @@ EOF
   end
 
 end
+
+describe "Chef::Provider::Package::Yum - Multi" do
+  before(:each) do
+    @node = Chef::Node.new
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
+    @new_resource = Chef::Resource::Package.new(['cups', 'vim'])
+    @status = double("Status", :exitstatus => 0)
+    @yum_cache = double(
+      'Chef::Provider::Yum::YumCache',
+      :reload_installed => true,
+      :reset => true,
+      :installed_version => 'XXXX',
+      :candidate_version => 'YYYY',
+      :package_available? => true,
+      :version_available? => true,
+      :allow_multi_install => [ 'kernel' ],
+      :package_repository => 'base',
+      :disable_extra_repo_control => true
+    )
+    allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
+    @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+    @pid = double("PID")
+  end
+
+  describe "when loading the current system state" do
+    it "should create a current resource with the name of the new_resource" do
+      @provider.load_current_resource
+      expect(@provider.current_resource.name).to eq(['cups', 'vim'])
+    end
+
+    it "should set the current resources package name to the new resources package name" do
+      @provider.load_current_resource
+      expect(@provider.current_resource.package_name).to eq(['cups', 'vim'])
+    end
+
+    it "should set the installed version to nil on the current resource if no installed package" do
+      allow(@yum_cache).to receive(:installed_version).and_return(nil)
+      @provider.load_current_resource
+      expect(@provider.current_resource.version).to eq([nil, nil])
+    end
+
+    it "should set the installed version if yum has one" do
+      allow(@yum_cache).to receive(:installed_version).with('cups', nil).and_return('1.2.4-11.18.el5')
+      allow(@yum_cache).to receive(:installed_version).with('vim', nil).and_return('1.0')
+      allow(@yum_cache).to receive(:candidate_version).with('cups', nil).and_return('1.2.4-11.18.el5_2.3')
+      allow(@yum_cache).to receive(:candidate_version).with('vim', nil).and_return('1.5')
+      @provider.load_current_resource
+      expect(@provider.current_resource.version).to eq(['1.2.4-11.18.el5', '1.0'])
+    end
+
+    it "should set the candidate version if yum info has one" do
+      allow(@yum_cache).to receive(:installed_version).with('cups', nil).and_return('1.2.4-11.18.el5')
+      allow(@yum_cache).to receive(:installed_version).with('vim', nil).and_return('1.0')
+      allow(@yum_cache).to receive(:candidate_version).with('cups', nil).and_return('1.2.4-11.18.el5_2.3')
+      allow(@yum_cache).to receive(:candidate_version).with('vim', nil).and_return('1.5')
+      @provider.load_current_resource
+      expect(@provider.candidate_version).to eql(['1.2.4-11.18.el5_2.3', '1.5'])
+    end
+
+    it "should return the current resouce" do
+      expect(@provider.load_current_resource).to eql(@provider.current_resource)
+    end
+
+  end
+end
