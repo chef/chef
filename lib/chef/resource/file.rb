@@ -51,7 +51,7 @@ class Chef
         @force_unlink = false
         @manage_symlink_source = nil
         @diff = nil
-        @user_verifications = []
+        @verifications = []
       end
 
       def content(arg=nil)
@@ -124,9 +124,9 @@ class Chef
         end
 
         if command || block_given?
-          @user_verifications << Verification.new(self, command, opts, &block)
+          @verifications << Verification.new(self, command, opts, &block)
         else
-          @user_verifications
+          @verifications
         end
       end
     end
