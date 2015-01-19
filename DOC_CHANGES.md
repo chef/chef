@@ -6,6 +6,15 @@ Example Doc Change:
 Description of the required change.
 -->
 
+
+### File-like resources now accept a `verify` attribute
+
+The file, template, cookbook_file, and remote_file resources now all
+accept a `verify` attribute.  This file accepts a string or a block,
+similar to `only_if`.  A full specification can be found in RFC 027:
+
+https://github.com/opscode/chef-rfc/blob/master/rfc027-file-content-verification.md
+
 ### Chef now handles URI Schemes in a case insensitive manner
 
 Previously, when a URI scheme contained all uppercase letters, Chef would reject the URI as invalid. In compliance with RFC3986, Chef now treats URI schemes in a case insensitive manner. This applies to all resources which accept URIs such as remote_file etc.

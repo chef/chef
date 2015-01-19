@@ -62,7 +62,16 @@ The package resource on OpenBSD is wired up to use the new OpenBSD package provi
 
 ## Case Insensitive URI Handling
 
-Previously, when a URI scheme contained all uppercase letters, Chef would reject the URI as invalid. In compliance with RFC3986, Chef now treats URI schemes in a case insensitive manner.
+Previously, when a URI scheme contained all uppercase letters, Chef
+would reject the URI as invalid. In compliance with RFC3986, Chef now
+treats URI schemes in a case insensitive manner.
+
+## File Content Verification (RFC 027)
+
+Per RFC 027, the file and file-like resources now accept a `verify`
+attribute.  This attribute accepts a string(shell command) or a ruby
+block (similar to `only_if`) which can be used to verify the contents
+of a rendered template before deploying it to disk.
 
 ## Drop SSL Warnings
 Now that the default for SSL checking is on, no more warning is emitted when SSL
@@ -493,7 +502,7 @@ powershell_script 'make_safe_backup' do
   code 'cp ~/data/nodes.json $env:systemroot/system32/data/nodes.bak'
 
   # cmd.exe (batch) guard below behaves differently in 32-bit vs. 64-bit processes
-  not_if 'if NOT EXIST %SYSTEMROOT%\\system32\\data\\nodes.bak exit /b 1' 
+  not_if 'if NOT EXIST %SYSTEMROOT%\\system32\\data\\nodes.bak exit /b 1'
 end
 ```
 
@@ -560,7 +569,7 @@ Information about these events can be found in `Chef::EventDispatch::Base`.
 
 ## Resource and Provider Resolution changes
 
-Resource resolution and provider resolution has been made more dynamic in Chef-12.  The `provides` syntax on the 
+Resource resolution and provider resolution has been made more dynamic in Chef-12.  The `provides` syntax on the
 Chef::Resource DSL (which has existed for 4 years) has been expanded to use platform_family and os and has been applied
 to most resources.  This does early switching at compile time between different resources based on the node data returned
 from ohai.  The effect is that previously the package resource on a CentOS machine invoked via `package "foo"` would be
@@ -577,4 +586,3 @@ inflexible since it cannot handle the case where an admin installs or removes a 
 handle the case where there may be multiple providers that handle different kinds of services (e.g. Upstart, SysV,
 etc).  This fixes the Ubuntu 14.04 service resource problems, and can handle arbitrarily complicated future distro
 and administrative preferences dynamically.
-
