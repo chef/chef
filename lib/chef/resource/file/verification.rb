@@ -41,7 +41,7 @@ class Chef
       #
       # To create a registered verification, create a class that
       # inherits from Chef::Resource::File::Verification and use the
-      # register class method to give it name.  Registered
+      # provides class method to give it name.  Registered
       # verifications are expected to supply a verify instance method
       # that takes 2 arguments.
       #
@@ -96,6 +96,8 @@ class Chef
           end
         end
 
+        # opts is currently unused, but included in the API
+        # to support future extensions
         def verify_block(path, opts)
           @block.call(path)
         end
