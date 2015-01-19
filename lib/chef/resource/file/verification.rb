@@ -17,6 +17,7 @@
 #
 
 require 'chef/exceptions'
+require 'chef/guard_interpreter'
 require 'chef/mixin/descendants_tracker'
 
 class Chef
@@ -106,11 +107,7 @@ class Chef
         # the same set of options that the not_if/only_if blocks do
         def verify_command(path, opts)
           command = @command % {:file => path}
-          interpreter = if @parent_resource.guard_interpreter == :default
-                          Chef::GuardInterpreter::DefaultGuardInterpreter.new(command, @command_opts)
-                        else
-                          Chef::GuardInterpreter::ResourceGuardInterpreter.new(@parent_resource, command, @command_opts)
-                        end
+          interpreter = Chef::GuardInterpreter.for_resource(@parent_resource, command, @command_opts)
           interpreter.evaluate
         end
 
