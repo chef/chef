@@ -123,7 +123,7 @@ class Chef
         else
           # If code is also not provided, we mimic what the other script resources do (execute nothing)
           Chef::Log.warn("Neither code or command were provided for dsc_resource[#{@dsc_resource.name}].") unless @dsc_resource.code
-          generator.configuration_document_from_script_code(@dsc_resource.code || '', configuration_flags, shellout_flags)
+          generator.configuration_document_from_script_code(@dsc_resource.code || '', configuration_flags, @dsc_resource.imports, shellout_flags)
         end
       end
 
