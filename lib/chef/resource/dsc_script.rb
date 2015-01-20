@@ -89,6 +89,14 @@ class Chef
         )
       end
 
+      def imports(arg=nil)
+        set_or_return(
+          :imports,
+          arg,
+          :kind_of => [ Hash ]
+        )
+      end
+
       def flags(arg=nil)
         set_or_return(
           :flags,
