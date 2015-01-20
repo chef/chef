@@ -130,7 +130,7 @@ describe Chef::Util::DSC::ConfigurationGenerator do
         [a,b].join("++")
       end
       allow(file_like_object).to receive(:write)
-      conf_man.send(:write_document_generation_script, 'file', 'hello')
+      conf_man.send(:write_document_generation_script, 'file', 'hello', {})
       expect(file_like_object).to have_received(:write)
     end
   end
@@ -158,7 +158,7 @@ describe Chef::Util::DSC::ConfigurationGenerator do
 
   describe "#configuration_code" do
     it "should build dsc" do
-      dsc = conf_man.send(:configuration_code, 'archive{}', 'hello')
+      dsc = conf_man.send(:configuration_code, 'archive{}', 'hello', {})
       found_configuration = false
       dsc.split(';').each do |command|
         if command.downcase =~ /\s*configuration\s+'hello'\s*\{\s*node\s+'localhost'\s*\{\s*archive\s*\{\s*\}\s*\}\s*\}\s*/
