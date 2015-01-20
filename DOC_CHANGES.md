@@ -35,3 +35,7 @@ The `--audit-mode` flag should be a link to the documentation for that flag
 
 This probably only needs to be a bullet point added to http://docs.getchef.com/nodes.html#about-why-run-mode under the
 `certain assumptions` section
+
+## Drop SSL Warnings
+Now that the default for SSL checking is on, no more warning is emitted when SSL
+checking is off.

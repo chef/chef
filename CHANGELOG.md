@@ -19,6 +19,8 @@
 * [**Tim Smith**](https://github.com/tas50)
   Typo fixes
 * [Pull 2505](https://github.com/opscode/chef/pull/2505) Make Chef handle URIs in a case-insensitive manner
+* [**Phil Dibowitz**](https://github.com/jaymzh):
+  Drop SSL warnings now that we have a safe default
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
