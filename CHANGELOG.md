@@ -32,6 +32,7 @@
 * chef_gem supports a compile_time flag and will warn if it is not set (behavior will change in the future)
 * suppress 3694 warnings on the most trivial resource cloning
 * fixed bugs in the deep_merge_cache logic introduced in 12.0.0 around `node['foo']` vs `node[:foo]` vs. `node.foo`
+* add `include_recipe "::recipe"` sugar to reference a recipe in the current cookbook
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):

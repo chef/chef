@@ -501,6 +501,34 @@ describe Chef::Recipe do
       expect(cookbook_collection[:openldap]).not_to receive(:load_recipe).with("default", run_context)
       recipe.include_recipe "openldap"
     end
+
+    it "will load a recipe out of the current cookbook when include_recipe is called with a leading ::" do
+      openldap_recipe = Chef::Recipe.new("openldap", "test", run_context)
+      expect(node).to receive(:loaded_recipe).with(:openldap, "default").exactly(:once)
+      allow(run_context).to receive(:unreachable_cookbook?).with(:openldap).and_return(false)
+      expect(cookbook_collection[:openldap]).to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.include_recipe "::default"
+    end
+
+    it "will not include the same recipe twice when using leading :: syntax" do
+      openldap_recipe = Chef::Recipe.new("openldap", "test", run_context)
+      expect(node).to receive(:loaded_recipe).with(:openldap, "default").exactly(:once)
+      allow(run_context).to receive(:unreachable_cookbook?).with(:openldap).and_return(false)
+      expect(cookbook_collection[:openldap]).to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.include_recipe "::default"
+      expect(cookbook_collection[:openldap]).not_to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.include_recipe "openldap::default"
+    end
+
+    it "will not include the same recipe twice when using leading :: syntax (reversed order)" do
+      openldap_recipe = Chef::Recipe.new("openldap", "test", run_context)
+      expect(node).to receive(:loaded_recipe).with(:openldap, "default").exactly(:once)
+      allow(run_context).to receive(:unreachable_cookbook?).with(:openldap).and_return(false)
+      expect(cookbook_collection[:openldap]).to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.include_recipe "openldap::default"
+      expect(cookbook_collection[:openldap]).not_to receive(:load_recipe).with("default", run_context)
+      openldap_recipe.include_recipe "::default"
+    end
   end
 
   describe "tags" do

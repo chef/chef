@@ -136,10 +136,10 @@ class Chef
     end
 
     # Evaluates the recipes +recipe_names+. Used by DSL::IncludeRecipe
-    def include_recipe(*recipe_names)
+    def include_recipe(*recipe_names, current_cookbook: nil)
       result_recipes = Array.new
       recipe_names.flatten.each do |recipe_name|
-        if result = load_recipe(recipe_name)
+        if result = load_recipe(recipe_name, current_cookbook: current_cookbook)
           result_recipes << result
         end
       end
@@ -147,10 +147,10 @@ class Chef
     end
 
     # Evaluates the recipe +recipe_name+. Used by DSL::IncludeRecipe
-    def load_recipe(recipe_name)
+    def load_recipe(recipe_name, current_cookbook: nil)
       Chef::Log.debug("Loading Recipe #{recipe_name} via include_recipe")
 
-      cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
+      cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name, current_cookbook: current_cookbook)
 
       if unreachable_cookbook?(cookbook_name) # CHEF-4367
         Chef::Log.warn(<<-ERROR_MESSAGE)
