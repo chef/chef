@@ -54,12 +54,16 @@ class Chef
     # For example:
     #   "aws::elastic_ip" returns [:aws, "elastic_ip"]
     #   "aws" returns [:aws, "default"]
+    #   "::elastic_ip" returns [ current_cookbook, "elastic_ip" ]
     #--
     # TODO: Duplicates functionality of RunListItem
-    def self.parse_recipe_name(recipe_name)
-      rmatch = recipe_name.match(/(.+?)::(.+)/)
-      if rmatch
-        [ rmatch[1].to_sym, rmatch[2] ]
+    def self.parse_recipe_name(recipe_name, current_cookbook: nil)
+      case recipe_name
+      when /(.+?)::(.+)/
+        [ $1.to_sym, $2 ]
+      when /^::(.+)/
+        raise "current_cookbook is nil, cannot resolve #{recipe_name}" if current_cookbook.nil?
+        [ current_cookbook.to_sym, $1 ]
       else
         [ recipe_name.to_sym, "default" ]
       end

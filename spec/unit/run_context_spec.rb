@@ -104,6 +104,11 @@ describe Chef::RunContext do
       end.to raise_error(Chef::Exceptions::CookbookNotFound)
     end
 
+    it "raises an error on a recipe with a leading :: with no current_cookbook" do
+      expect do
+        run_context.include_recipe("::aliens")
+      end.to raise_error(RuntimeError)
+    end
   end
 
   describe "querying the contents of cookbooks" do
