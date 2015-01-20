@@ -70,7 +70,11 @@ describe Chef::Resource::File::Verification do
 
     context "with a verification command(String)" do
       it "substitutes \%{file} with the path" do
-        test_command = "test #{temp_path} = %{file}"
+        test_command = if windows?
+                         "if \"#{temp_path}\" == \"%{file}\" (exit 0) else (exit 1)"
+                       else
+                         "test #{temp_path} = %{file}"
+                       end
         v = Chef::Resource::File::Verification.new(parent_resource, test_command, {})
         expect(v.verify(temp_path)).to eq(true)
       end
