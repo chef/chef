@@ -54,14 +54,16 @@ class Chef
           exit 1
         end
 
-        client = Chef::ApiClient.new
-        client.name(@client_name)
-        client.admin(config[:admin])
-        client.validator(config[:validator])
+        client_hash = {
+          "name" => @client_name,
+          "admin" => !!config[:admin],
+          "validator" => !!config[:validator]
+        }
 
-        output = edit_data(client)
+        output = Chef::ApiClient.from_hash(edit_hash(client_hash))
 
-        # Chef::ApiClient.save will try to create a client and if it exists will update it instead silently
+        # Chef::ApiClient.save will try to create a client and if it
+        # exists will update it instead silently.
         client = output.save
 
         # We only get a private_key on client creation, not on client update.
@@ -83,4 +85,3 @@ class Chef
     end
   end
 end
-
