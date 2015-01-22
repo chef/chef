@@ -53,6 +53,7 @@ class Chef
     def_delegator :@ui, :format_for_display
     def_delegator :@ui, :format_cookbook_list_for_display
     def_delegator :@ui, :edit_data
+    def_delegator :@ui, :edit_hash
     def_delegator :@ui, :edit_object
     def_delegator :@ui, :confirm
 
