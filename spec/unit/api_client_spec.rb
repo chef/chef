@@ -129,43 +129,83 @@ describe Chef::ApiClient do
     end
   end
 
-  describe "when deserializing from JSON" do
-    before(:each) do
-      client = {
-      "name" => "black",
-      "public_key" => "crowes",
-      "private_key" => "monkeypants",
-      "admin" => true,
-      "validator" => true,
-      "json_class" => "Chef::ApiClient"
-      }
-      @client = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(client))
+  describe "when deserializing from JSON (string) using ApiClient#from_json" do
+    let(:client_string) do
+      "{\"name\":\"black\",\"public_key\":\"crowes\",\"private_key\":\"monkeypants\",\"admin\":true,\"validator\":true}"
+    end
+
+    let(:client) do
+      Chef::ApiClient.from_json(client_string)
+    end
+
+    it "does not require a 'json_class' string" do
+      expect(Chef::JSONCompat.parse(client_string)["json_class"]).to eq(nil)
     end
 
     it "should deserialize to a Chef::ApiClient object" do
-      expect(@client).to be_a_kind_of(Chef::ApiClient)
+      expect(client).to be_a_kind_of(Chef::ApiClient)
     end
 
     it "preserves the name" do
-      expect(@client.name).to eq("black")
+      expect(client.name).to eq("black")
     end
 
     it "preserves the public key" do
-      expect(@client.public_key).to eq("crowes")
+      expect(client.public_key).to eq("crowes")
     end
 
     it "preserves the admin status" do
-      expect(@client.admin).to be_truthy
+      expect(client.admin).to be_truthy
     end
 
     it "preserves the 'validator' status" do
-      expect(@client.validator).to be_truthy
+      expect(client.validator).to be_truthy
     end
 
     it "includes the private key if present" do
-      expect(@client.private_key).to eq("monkeypants")
+      expect(client.private_key).to eq("monkeypants")
+    end
+  end
+
+  describe "when deserializing from JSON (hash) using JSONCompat#from_json" do
+    let(:client_hash) do
+      {
+        "name" => "black",
+        "public_key" => "crowes",
+        "private_key" => "monkeypants",
+        "admin" => true,
+        "validator" => true,
+        "json_class" => "Chef::ApiClient"
+      }
     end
 
+    let(:client) do
+      Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(client_hash))
+    end
+
+    it "should deserialize to a Chef::ApiClient object" do
+      expect(client).to be_a_kind_of(Chef::ApiClient)
+    end
+
+    it "preserves the name" do
+      expect(client.name).to eq("black")
+    end
+
+    it "preserves the public key" do
+      expect(client.public_key).to eq("crowes")
+    end
+
+    it "preserves the admin status" do
+      expect(client.admin).to be_truthy
+    end
+
+    it "preserves the 'validator' status" do
+      expect(client.validator).to be_truthy
+    end
+
+    it "includes the private key if present" do
+      expect(client.private_key).to eq("monkeypants")
+    end
   end
 
   describe "when loading from JSON" do
@@ -306,5 +346,3 @@ describe Chef::ApiClient do
     end
   end
 end
-
-

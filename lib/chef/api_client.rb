@@ -124,14 +124,21 @@ class Chef
       Chef::JSONCompat.to_json(to_hash, *a)
     end
 
-    def self.json_create(o)
-      client = Chef::ApiClient.new
-      client.name(o["name"] || o["clientname"])
-      client.private_key(o["private_key"]) if o.key?("private_key")
-      client.public_key(o["public_key"])
-      client.admin(o["admin"])
-      client.validator(o["validator"])
-      client
+    class << self
+      def from_hash(o)
+        client = Chef::ApiClient.new
+        client.name(o["name"] || o["clientname"])
+        client.private_key(o["private_key"]) if o.key?("private_key")
+        client.public_key(o["public_key"])
+        client.admin(o["admin"])
+        client.validator(o["validator"])
+        client
+      end
+      alias :json_create :from_hash
+
+      def from_json(j)
+        Chef::ApiClient.from_hash(Chef::JSONCompat.parse(j))
+      end
     end
 
     def self.http_api
