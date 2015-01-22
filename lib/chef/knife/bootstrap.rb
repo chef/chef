@@ -216,7 +216,7 @@ class Chef
 
         # Otherwise search the template directories until we find the right one
         bootstrap_files = []
-        bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{template}.erb")
+        bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap/templates', "#{template}.erb")
         bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{template}.erb") if Chef::Knife.chef_config_dir
         bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{template}.erb") if ENV['HOME']
         bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{template}.erb"))

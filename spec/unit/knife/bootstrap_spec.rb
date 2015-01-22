@@ -95,7 +95,7 @@ describe Chef::Knife::Bootstrap do
     context "when :bootstrap_template config is set to a template name" do
       let(:bootstrap_template) { "example" }
 
-      let(:builtin_template_path) { File.expand_path(File.join(File.dirname(__FILE__), '../../../lib/chef/knife/bootstrap', "example.erb"))}
+      let(:builtin_template_path) { File.expand_path(File.join(File.dirname(__FILE__), '../../../lib/chef/knife/bootstrap/templates', "example.erb"))}
 
       let(:chef_config_dir_template_path) { "/knife/chef/config/bootstrap/example.erb" }
 
