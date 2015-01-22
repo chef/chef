@@ -189,9 +189,8 @@ class Chef
         end
 
         def device_should_exist?
-          ( @new_resource.device != "none" ) &&
-            ( not network_device? ) &&
-            ( not %w[ cgroup tmpfs fuse ].include? @new_resource.fstype )
+          @new_resource.device =~ /[\/\\]/ &&
+            ( not network_device? )
         end
 
         private
