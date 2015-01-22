@@ -76,6 +76,19 @@ TDD with RSpec, so you'll need to get a development environment running.
 Follow the above procedure ("Installing from Git") to get your local
 copy of the source running.
 
+## Reporting Issues
+
+Issues can be reported by using [GitHub issues](https://github.com/opscode/chef/issues).
+
+Full details on how to report issues can be found in the [CONTRIBUTING](https://github.com/opscode/chef/blob/master/CONTRIBUTING.md#-chef-issue-tracking) doc.
+
+Note that this repository is primarily for reporting chef-client issues.
+For reporting issues against other Chef projects, please look up the appropriate repository
+to report issues against in the Chef docs in the
+[community contributions section](https://docs.chef.io/community_contributions.html#issues-and-bug-reports).
+If you can't detemine the appropriate place to report an issue, then please open it
+against the repository you think best fits and it will be directed to the appropriate project.
+
 ## Testing
 
 We use RSpec for unit/spec tests. It is not necessary to start the development

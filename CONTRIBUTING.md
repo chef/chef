@@ -128,6 +128,9 @@ If you are familiar with Chef and know the component that is causing you a probl
   Github project. All of our Open Source Software can be found in our
   [Github organization](https://github.com/opscode/).
 
+There is also a listing of the various Chef products and where to file issues that can be
+  found in the Chef docs in the [community contributions section](https://docs.chef.io/community_contributions.html#issues-and-bug-reports).
+
 Otherwise you can file your issue in the [Chef project](https://github.com/opscode/chef/issues)
   and we will make sure it gets filed against the appropriate project.
 
