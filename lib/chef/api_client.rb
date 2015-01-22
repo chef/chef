@@ -96,7 +96,7 @@ class Chef
       set_or_return(
         :private_key,
         arg,
-        :kind_of => String
+        :kind_of => [String, FalseClass]
       )
     end
 
