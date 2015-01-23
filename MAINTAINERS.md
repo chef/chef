@@ -30,6 +30,7 @@ another component.
 * [Tyler Ball](https://github.com/tyler-ball)
 * [Daniel DeLeo](https://github.com/danielsdeleo)
 * [Claire McQuin](https://github.com/mcquin)
+* [Jay Mundrawala](http://github.com/jdmundrawala)
 
 ## Dev Tools
 
