@@ -242,7 +242,7 @@ describe Chef::Application::Client, "configure_chef" do
   before do
     @original_argv = ARGV.dup
     ARGV.clear
-    expect(::File).to receive(:read).with("/etc/chef/client.rb").and_return("")
+    allow(::File).to receive(:read).with("/etc/chef/client.rb").and_return("")
     app.configure_chef
   end
 
