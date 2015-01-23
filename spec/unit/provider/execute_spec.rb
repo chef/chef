@@ -25,28 +25,32 @@ describe Chef::Provider::Execute do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:provider) { Chef::Provider::Execute.new(new_resource, run_context) }
   let(:current_resource) { Chef::Resource::Ifconfig.new("foo_resource", run_context) }
+  # You will be the same object, I promise.
+  @live_stream = Chef::EventDispatch::EventsOutputStream.new(run_context.events, :name => :execute)
 
   let(:opts) do
     {
       timeout:      3600,
       returns:      0,
       log_level:    :info,
-      log_tag:      new_resource.to_s,
-      live_stream:  STDOUT,
+      log_tag:      new_resource.to_s
     }
   end
 
   let(:new_resource) { Chef::Resource::Execute.new("foo_resource", run_context) }
 
   before do
+    allow(Chef::EventDispatch::EventsOutputStream).to receive(:new) { @live_stream }
     allow(Chef::Platform).to receive(:windows?) { false }
     @original_log_level = Chef::Log.level
     Chef::Log.level = :info
-    allow(STDOUT).to receive(:tty?).and_return(true)
+    allow(STDOUT).to receive(:tty?).and_return(false)
   end
 
   after do
     Chef::Log.level = @original_log_level
+    Chef::Config[:always_stream_execute] = false
+    Chef::Config[:daemon] = false
   end
 
   describe "#initialize" do
@@ -142,35 +146,83 @@ describe Chef::Provider::Execute do
       expect(new_resource).not_to be_updated
     end
 
-    it "should unset the live_stream if STDOUT is not a tty" do
-      expect(STDOUT).to receive(:tty?).and_return(false)
-      opts.delete(:live_stream)
-      expect(provider).to receive(:shell_out!).with(new_resource.name, opts)
+    it "should set the live_stream if Chef::Config[:always_stream_execute] is set" do
+      Chef::Config[:always_stream_execute] = true
+      nopts = opts
+      nopts[:live_stream] = @live_stream
+      expect(provider).to receive(:shell_out!).with(new_resource.name, nopts)
       expect(provider).to receive(:converge_by).with("execute foo_resource").and_call_original
       expect(Chef::Log).not_to receive(:warn)
       provider.run_action(:run)
       expect(new_resource).to be_updated
     end
 
-    it "should unset the live_stream if chef is running as a daemon" do
-      allow(Chef::Config).to receive(:[]).and_call_original
-      expect(Chef::Config).to receive(:[]).with(:daemon).and_return(true)
-      opts.delete(:live_stream)
+    it "should not set the live_stream if Chef::Config[:always_stream_execute] is set but sensitive is on" do
+      Chef::Config[:always_stream_execute] = true
+      new_resource.sensitive true
       expect(provider).to receive(:shell_out!).with(new_resource.name, opts)
-      expect(provider).to receive(:converge_by).with("execute foo_resource").and_call_original
+      expect(provider).to receive(:converge_by).with("execute sensitive resource").and_call_original
       expect(Chef::Log).not_to receive(:warn)
       provider.run_action(:run)
       expect(new_resource).to be_updated
     end
 
-    it "should unset the live_stream if we are not running with a log level of at least :info" do
-      expect(Chef::Log).to receive(:info?).and_return(false)
-      opts.delete(:live_stream)
-      expect(provider).to receive(:shell_out!).with(new_resource.name, opts)
-      expect(provider).to receive(:converge_by).with("execute foo_resource").and_call_original
-      expect(Chef::Log).not_to receive(:warn)
-      provider.run_action(:run)
-      expect(new_resource).to be_updated
+    describe "with an output formatter listening" do
+      let(:events) { d = Chef::EventDispatch::Dispatcher.new; d.register(Chef::Formatters::Doc.new(StringIO.new, StringIO.new)); d }
+
+      it "should set the live_stream" do
+        nopts = opts
+        nopts[:live_stream] = @live_stream
+        expect(provider).to receive(:shell_out!).with(new_resource.name, nopts)
+        expect(provider).to receive(:converge_by).with("execute foo_resource").and_call_original
+        expect(Chef::Log).not_to receive(:warn)
+        provider.run_action(:run)
+        expect(new_resource).to be_updated
+      end
+
+      it "should not set the live_stream if the resource is sensitive" do
+        new_resource.sensitive true
+        expect(provider).to receive(:shell_out!).with(new_resource.name, opts)
+        expect(provider).to receive(:converge_by).with("execute sensitive resource").and_call_original
+        expect(Chef::Log).not_to receive(:warn)
+        provider.run_action(:run)
+        expect(new_resource).to be_updated
+      end
     end
+
+    describe "with only logging enabled" do
+      it "should set the live_stream to STDOUT if we are a TTY, not daemonized, not sensitive, and info is enabled" do
+        nopts = opts
+        nopts[:live_stream] = STDOUT
+        allow(STDOUT).to receive(:tty?).and_return(true)
+        expect(provider).to receive(:shell_out!).with(new_resource.name, nopts)
+        expect(provider).to receive(:converge_by).with("execute foo_resource").and_call_original
+        expect(Chef::Log).not_to receive(:warn)
+        provider.run_action(:run)
+        expect(new_resource).to be_updated
+      end
+
+      it "should not set the live_stream to STDOUT if we are a TTY, not daemonized, but sensitive" do
+        new_resource.sensitive true
+        allow(STDOUT).to receive(:tty?).and_return(true)
+        expect(provider).to receive(:shell_out!).with(new_resource.name, opts)
+        expect(provider).to receive(:converge_by).with("execute sensitive resource").and_call_original
+        expect(Chef::Log).not_to receive(:warn)
+        provider.run_action(:run)
+        expect(new_resource).to be_updated
+      end
+
+      it "should not set the live_stream to STDOUT if we are a TTY, but daemonized" do
+        Chef::Config[:daemon] = true
+        allow(STDOUT).to receive(:tty?).and_return(true)
+        expect(provider).to receive(:shell_out!).with(new_resource.name, opts)
+        expect(provider).to receive(:converge_by).with("execute foo_resource").and_call_original
+        expect(Chef::Log).not_to receive(:warn)
+        provider.run_action(:run)
+        expect(new_resource).to be_updated
+      end
+
+    end
+
   end
 end

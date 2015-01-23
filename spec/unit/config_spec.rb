@@ -236,6 +236,10 @@ describe Chef::Config do
           end
         end
 
+        it "Chef::Config[:always_stream_output] defaults to false" do
+          expect(Chef::Config[:always_stream_output]).to eq(false)
+        end
+
         it "Chef::Config[:file_backup_path] defaults to /var/chef/backup" do
           allow(Chef::Config).to receive(:cache_path).and_return(primary_cache_path)
           backup_path = is_windows ? "#{primary_cache_path}\\backup" : "#{primary_cache_path}/backup"

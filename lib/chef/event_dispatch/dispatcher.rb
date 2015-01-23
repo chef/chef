@@ -18,6 +18,16 @@ class Chef
         @subscribers << subscriber
       end
 
+      # Check to see if we are dispatching to a formatter
+      def formatter?
+        @subscribers.each do |s|
+          if s.class <= Chef::Formatters::Base && s.class != Chef::Formatters::NullFormatter
+            return true
+          end
+        end
+        false
+      end
+
       ####
       # All messages are unconditionally forwarded to all subscribers, so just
       # define the forwarding in one go:

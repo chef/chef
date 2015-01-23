@@ -50,6 +50,11 @@ class Chef
         print(string, from_args(args, :start_line => true, :end_line => true))
       end
 
+      # Print a raw chunk
+      def <<(obj)
+        print(obj)
+      end
+
       # Print a string.
       #
       # == Arguments
