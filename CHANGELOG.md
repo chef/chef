@@ -21,6 +21,7 @@
 * [Pull 2505](https://github.com/opscode/chef/pull/2505) Make Chef handle URIs in a case-insensitive manner
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   Drop SSL warnings now that we have a safe default
+* [Pull 2684](https://github.com/chef/chef/pull/2684) Remove ole_initialize/uninitialize which cause problems with Ruby >= 2
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
