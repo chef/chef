@@ -264,6 +264,10 @@ RSpec.describe ChefConfig::Config do
           end
         end
 
+        it "ChefConfig::Config[:always_stream_output] defaults to false" do
+          expect(ChefConfig::Config[:always_stream_output]).to eq(false)
+        end
+
         it "ChefConfig::Config[:file_backup_path] defaults to /var/chef/backup" do
           allow(ChefConfig::Config).to receive(:cache_path).and_return(primary_cache_path)
           backup_path = is_windows ? "#{primary_cache_path}\\backup" : "#{primary_cache_path}/backup"
