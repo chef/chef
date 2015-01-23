@@ -26,6 +26,7 @@ require 'chef/chef_fs/data_handler/client_data_handler'
 require 'chef/chef_fs/data_handler/environment_data_handler'
 require 'chef/chef_fs/data_handler/node_data_handler'
 require 'chef/chef_fs/data_handler/role_data_handler'
+require 'chef/chef_fs/data_handler/policy_data_handler'
 require 'chef/chef_fs/data_handler/user_data_handler'
 require 'chef/chef_fs/data_handler/group_data_handler'
 require 'chef/chef_fs/data_handler/container_data_handler'
@@ -169,6 +170,8 @@ class Chef
                 Chef::ChefFS::DataHandler::NodeDataHandler.new
               when 'roles'
                 Chef::ChefFS::DataHandler::RoleDataHandler.new
+              when 'policies'
+                Chef::ChefFS::DataHandler::PolicyDataHandler.new
               when 'users'
                 Chef::ChefFS::DataHandler::UserDataHandler.new
               when 'groups'
