@@ -4,6 +4,10 @@ class Chef
   module ChefFS
     module DataHandler
       class PolicyDataHandler < DataHandlerBase
+
+        def normalize(policy, entry)
+          policy
+        end
       end
     end
   end

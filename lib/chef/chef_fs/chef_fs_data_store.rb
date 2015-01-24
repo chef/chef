@@ -369,6 +369,11 @@ class Chef
           if path.length >= 3
             path[2] = "#{path[2]}.json"
           end
+        elsif path[0] == 'policies'
+          path = path.dup
+          if path.length >= 3
+            path[2] = "#{path[2]}.json"
+          end
         elsif path[0] == 'cookbooks'
           if path.length == 2
             raise ChefZero::DataStore::DataNotFoundError.new(path)
@@ -445,10 +450,13 @@ class Chef
       def with_dir(path)
         # Do not automatically create data bags
         create = !(path[0] == 'data' && path.size >= 2)
+
         begin
           yield get_dir(_to_chef_fs_path(path), create)
         rescue Chef::ChefFS::FileSystem::NotFoundError => e
-          raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
+          err = ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
+          err.set_backtrace(e.backtrace)
+          raise err
         end
       end
 
