@@ -99,6 +99,11 @@ class Chef::Application::Solo < Chef::Application
       :proc => lambda { |p| true }
   end
 
+  option :lockfile,
+    :long         => "--lockfile LOCKFILE",
+    :description  => "Set the lockfile location. Prevents multiple processes from converging at the same time",
+    :proc         => nil
+
   option :interval,
     :short => "-i SECONDS",
     :long => "--interval SECONDS",

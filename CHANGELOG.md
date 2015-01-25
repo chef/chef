@@ -30,6 +30,8 @@
   Add service provider for OpenBSD
 * [**Alex Slynko**](https://github.com/alex-slynko-wonga)
   Change env provider to preserve ordering
+* [**Rob Redpath**](https://github.com/robredpath)
+  Add --lockfile opt for chef-client and chef-solo
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped

@@ -104,7 +104,12 @@ class Chef::Application::Client < Chef::Application
   option :pid_file,
     :short        => "-P PID_FILE",
     :long         => "--pid PIDFILE",
-    :description  => "Set the PID file location, defaults to /tmp/chef-client.pid",
+    :description  => "Set the PID file location, for the chef-client daemon process. Defaults to /tmp/chef-client.pid",
+    :proc         => nil
+
+  option :lockfile,
+    :long         => "--lockfile LOCKFILE",
+    :description  => "Set the lockfile location. Prevents multiple client processes from converging at the same time",
     :proc         => nil
 
   option :interval,
@@ -252,6 +257,8 @@ class Chef::Application::Client < Chef::Application
   def reconfigure
     super
 
+    raise Chef::Exceptions::PIDFileLockfileMatch if Chef::Util::PathHelper.paths_eql? (Chef::Config[:pid_file] || '' ), (Chef::Config[:lockfile] || '')
+    
     Chef::Config[:specific_recipes] = cli_arguments.map { |file| File.expand_path(file) }
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
