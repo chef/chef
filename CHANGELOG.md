@@ -49,6 +49,7 @@
 * fixed bugs in the deep_merge_cache logic introduced in 12.0.0 around `node['foo']` vs `node[:foo]` vs. `node.foo`
 * add `include_recipe "::recipe"` sugar to reference a recipe in the current cookbook
 * Add --proxy-auth option to `knife raw`
+* added Chef::Org model class for Chef Organizations in Chef 12 Server
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):
