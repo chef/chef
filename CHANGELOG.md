@@ -28,6 +28,8 @@
   Support arrays for not_if and only_if
 * [**Scott Bonds**](https://github.com/bonds)
   Add service provider for OpenBSD
+* [**Alex Slynko**](https://github.com/alex-slynko-wonga)
+  Change env provider to preserve ordering
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
