@@ -55,7 +55,7 @@ class Chef
 
       def configure
         case @command
-        when String
+        when String, Array
           @guard_interpreter = new_guard_interpreter(@parent_resource, @command, @command_opts, &@block)
           @block = nil
         when nil
@@ -71,8 +71,8 @@ class Chef
           @guard_interpreter = nil
           @command, @command_opts = nil, nil
         else
-          # command was passed, but it wasn't a String
-          raise ArgumentError, "Invalid only_if/not_if command, expected a string: #{command.inspect} (#{command.class})"
+          # command was passed, but it wasn't a String or Array
+          raise ArgumentError, "Invalid only_if/not_if command, expected a string or array: #{command.inspect} (#{command.class})"
         end
       end
 
@@ -129,7 +129,8 @@ class Chef
         if parent_resource.guard_interpreter == :default
           guard_interpreter = Chef::GuardInterpreter::DefaultGuardInterpreter.new(command, opts)
         else
-          guard_interpreter = Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, command, opts)
+          cmd = command.is_a?(Array) ? command.join(" ") : command
+          guard_interpreter = Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, cmd, opts)
         end
       end
 
