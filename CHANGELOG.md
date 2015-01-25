@@ -32,6 +32,8 @@
   Change env provider to preserve ordering
 * [**Rob Redpath**](https://github.com/robredpath)
   Add --lockfile opt for chef-client and chef-solo
+* [**Josh Murphy**](https://github.com/jdmurphy)
+  Check cookbooks exist in path(s) before attempting to upload them with --all
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
