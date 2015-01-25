@@ -34,6 +34,8 @@
   Add --lockfile opt for chef-client and chef-solo
 * [**Josh Murphy**](https://github.com/jdmurphy)
   Check cookbooks exist in path(s) before attempting to upload them with --all
+* [**Vasiliy Tolstov**](https://github.com/vtolstov)
+  add ability to fetch recipes like in chef-solo when using local-mode
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
