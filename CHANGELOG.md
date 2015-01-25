@@ -22,6 +22,8 @@
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   Drop SSL warnings now that we have a safe default
 * [Pull 2684](https://github.com/chef/chef/pull/2684) Remove ole_initialize/uninitialize which cause problems with Ruby >= 2
+* [**BinaryBabel**](https://github.com/binarybabel)
+  Make knife cookbook site share prefer gnutar when packaging
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
