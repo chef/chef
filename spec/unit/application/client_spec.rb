@@ -26,6 +26,7 @@ describe Chef::Application::Client, "reconfigure" do
 
   before do
     allow(Kernel).to receive(:trap).and_return(:ok)
+    allow(::File).to receive(:read).with("/etc/chef/client.rb").and_return("")
 
     @original_argv = ARGV.dup
     ARGV.clear
@@ -236,11 +237,13 @@ describe Chef::Application::Client, "setup_application" do
 end
 
 describe Chef::Application::Client, "configure_chef" do
+  let(:app) { Chef::Application::Client.new }
+
   before do
     @original_argv = ARGV.dup
     ARGV.clear
-    @app = Chef::Application::Client.new
-    @app.configure_chef
+    allow(::File).to receive(:read).with("/etc/chef/client.rb").and_return("")
+    app.configure_chef
   end
 
   after do
