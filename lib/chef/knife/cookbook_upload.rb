@@ -130,7 +130,6 @@ class Chef
               upload_ok += 1
               version_constraints_to_update[cookbook_name] = cookbook.version
             rescue Exceptions::CookbookNotFoundInRepo => e
-              upload_failures += 1
               ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
               Log.debug(e)
               upload_failures += 1
@@ -178,6 +177,7 @@ class Chef
                 Log.debug(e)
               end
             end
+            @name_args.uniq!
             upload_set
           end
       end
