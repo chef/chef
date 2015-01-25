@@ -81,7 +81,7 @@ class Chef
               end
             rescue Errno::ENOENT
             end
-            Chef::Mixin::Command.run_command(:command => "#{tar_cmd} -czf #{cookbook_name}.tgz #{cookbook_name}", :cwd => tmp_cookbook_dir)
+            shell_out!("#{tar_cmd} -czf #{cookbook_name}.tgz #{cookbook_name}", :cwd => tmp_cookbook_dir)
           rescue => e
             ui.error("Error making tarball #{cookbook_name}.tgz: #{e.message}. Increase log verbosity (-VV) for more information.")
             Chef::Log.debug("\n#{e.backtrace.join("\n")}")
