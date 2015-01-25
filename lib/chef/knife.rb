@@ -308,7 +308,7 @@ class Chef
         exit 1
       end
 
-      # copy Mixlib::CLI over so that it cab be configured in knife.rb
+      # copy Mixlib::CLI over so that it can be configured in knife.rb
       # config file
       Chef::Config[:verbosity] = config[:verbosity]
     end
