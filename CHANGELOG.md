@@ -24,8 +24,10 @@
 * [Pull 2684](https://github.com/chef/chef/pull/2684) Remove ole_initialize/uninitialize which cause problems with Ruby >= 2
 * [**BinaryBabel**](https://github.com/binarybabel)
   Make knife cookbook site share prefer gnutar when packaging
-* [**Dave Eddy**](https://github.com/bahamas10) 
+* [**Dave Eddy**](https://github.com/bahamas10)
   Support arrays for not_if and only_if
+* [**Scott Bonds**](https://github.com/bonds)
+  Add service provider for OpenBSD
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped

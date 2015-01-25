@@ -366,7 +366,8 @@ class Chef
             :openbsd => {
               :default => {
                 :group => Chef::Provider::Group::Usermod,
-                :package => Chef::Provider::Package::Openbsd
+                :package => Chef::Provider::Package::Openbsd,
+                :service => Chef::Provider::Service::Openbsd
               }
             },
             :hpux => {
