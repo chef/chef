@@ -49,6 +49,21 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       resource.run_action(:run)
     end
 
+    it "returns the -27 for a powershell script that exits with -27" do
+      file = Tempfile.new(['foo', '.ps1'])
+      begin
+        file.write "exit -27"
+        file.close
+        resource.code(". \"#{file.path}\"")
+        resource.returns(-27)
+        resource.run_action(:run)
+      ensure
+        file.close
+        file.unlink
+      end
+    end
+
+
     it "returns the process exit code" do
       resource.code(arbitrary_nonzero_process_exit_code_content)
       resource.returns(arbitrary_nonzero_process_exit_code)
