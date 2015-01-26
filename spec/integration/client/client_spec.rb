@@ -1,5 +1,7 @@
 require 'support/shared/integration/integration_helper'
 require 'chef/mixin/shell_out'
+require 'tiny_server'
+require 'tmpdir'
 
 def recipes_filename
   File.join(CHEF_SPEC_DATA, 'recipes.tgz')
@@ -315,17 +317,18 @@ end
       stop_tiny_server
     end
 
+    let(:tmp_dir) { Dir.mktmpdir("recipe-url") }
+
     it "should complete with success when passed -z and --recipe-url" do
       file 'config/client.rb', <<EOM
-cookbook_path "#{path_to('cookbooks')}"
+chef_repo_path "#{tmp_dir}"
 EOM
-
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --recipe-url=http://localhost:9000/recipes.tgz -o 'x::default' -z", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --recipe-url=http://localhost:9000/recipes.tgz -o 'x::default' -z", :cwd => tmp_dir)
       result.error!
     end
 
     it 'should fail when passed --recipe-url and not passed -z' do
-      result = shell_out("#{chef_client} --recipe-url=http://localhost:9000/recipes.tgz", :cwd => chef_dir)
+      result = shell_out("#{chef_client} --recipe-url=http://localhost:9000/recipes.tgz", :cwd => tmp_dir)
       expect(result.exitstatus).to eq(1)
     end
   end
