@@ -24,8 +24,8 @@ class Chef
 
       protected
       EXIT_STATUS_EXCEPTION_HANDLER = "\ntrap [Exception] {write-error -exception ($_.Exception.Message);exit 1}".freeze
-      EXIT_STATUS_NORMALIZATION_SCRIPT = "\nif ($? -ne $true) { if ( $LASTEXITCODE -ne 0) {exit $LASTEXITCODE} else { exit 1 }}".freeze
-      EXIT_STATUS_RESET_SCRIPT = "\n$LASTEXITCODE=0".freeze
+      EXIT_STATUS_NORMALIZATION_SCRIPT = "\nif ($? -ne $true) { if ( $LASTEXITCODE ) {exit $LASTEXITCODE} else { exit 1 }}".freeze
+      EXIT_STATUS_RESET_SCRIPT = "\n$global:LASTEXITCODE=$null".freeze
 
       # Process exit codes are strange with PowerShell. Unless you
       # explicitly call exit in Powershell, the powershell.exe
