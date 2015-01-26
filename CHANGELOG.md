@@ -1,6 +1,9 @@
 # Chef Client Changelog
 
-## 11.18.6
+## Unreleased
+* [Issue 2348](https://github.com/chef/chef/issues/2348) `powershell_script` should now correctly get the exit code for scripts that it runs.
+
+## Last Release: 11.18.6
 * [Issue 2786](https://github.com/chef/chef/issues/2786) Bundle working version of cacerts because the 
   newest version does not work with AWS.
 
@@ -20,7 +23,7 @@
 * [**Seth Vargo**](https://github.com/sethvargo)
   [Issue 2345](https://github.com/opscode/chef/issues/2345) Allow knife to install cookbooks with metadata.json
 
-## Last Release: 11.16.4
+## 11.16.4
 
 * Windows omnibus installer security updates for redistributed bash.exe / sh.exe
   vulnerabilities ("Shellshock") CVE-2014-6271, CVE-2014-6271, CVE-2014-6278,
