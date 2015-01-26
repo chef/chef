@@ -50,6 +50,7 @@
 * add `include_recipe "::recipe"` sugar to reference a recipe in the current cookbook
 * Add --proxy-auth option to `knife raw`
 * added Chef::Org model class for Chef Organizations in Chef 12 Server
+* `powershell_script` should now correctly get the exit code for scripts that it runs. See [Issue 2348](https://github.com/chef/chef/issues/2348)
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):
