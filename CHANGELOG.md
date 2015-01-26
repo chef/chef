@@ -36,6 +36,8 @@
   Check cookbooks exist in path(s) before attempting to upload them with --all
 * [**Vasiliy Tolstov**](https://github.com/vtolstov)
   add ability to fetch recipes like in chef-solo when using local-mode
+* [**Jan**](https://github.com/habermann24)
+  FIX data_bag_item.rb:161: warning: circular argument reference - data_bag
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
