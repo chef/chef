@@ -1,8 +1,11 @@
 # Chef Client Changelog
 
-## 11.18.4
+## 11.18.6
 * [Issue 2786](https://github.com/chef/chef/issues/2786) Bundle working version of cacerts because the 
   newest version does not work with AWS.
+
+## 11.18.4
+* Unreleased
 
 ## 11.18.2
 * Unreleased
