@@ -127,8 +127,6 @@ task :test_cookbooks do
   puts 'and the Chef Community has a rich ecosystem of testing tools for'
   puts 'various purposes:'
   puts
-  puts '- knife cookbook test will perform a syntax check, as this task did'
-  puts '  before.'
   puts '- rubocop and foodcritic will perform lint checking for Ruby and'
   puts '  Chef cookbook style according to community standards.'
   puts '- ChefSpec will perform unit testing'
