@@ -205,5 +205,4 @@ describe Chef::Resource::Conditional do
       end
     end
   end
-
 end
