@@ -3,7 +3,7 @@
 [![Build Status Master](https://travis-ci.org/chef/chef.svg?branch=master)](https://travis-ci.org/chef/chef)
 [![Build Status Master](https://ci.appveyor.com/api/projects/status/github/chef/chef?branch=master&svg=true&passingText=master%20-%20Ok&pendingText=master%20-%20Pending&failingText=master%20-%20Failing)](https://ci.appveyor.com/project/Chef/chef/branch/master)
 
-Want to try Chef? Get started with [learnchef](https://learnchef.chef.io)
+Want to try Chef? Get started with [learnchef](https://learn.chef.io)
 
 * Documentation: [http://docs.chef.io](http://docs.chef.io)
 * Source: [http://github.com/chef/chef/tree/master](http://github.com/chef/chef/tree/master)
@@ -17,7 +17,7 @@ entire infrastructure.
 This README focuses on developers who want to modify Chef source code.
 If you just want to use Chef, check out these resources:
 
-* [learnchef](https://learnchef.chef.io): Getting started guide
+* [learnchef](https://learn.chef.io): Getting started guide
 * [http://docs.chef.io](http://docs.chef.io): Comprehensive User Docs
 * [Installer Downloads](http://www.getchef.com/chef/install/): Install Chef as a complete package
 
