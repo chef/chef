@@ -651,7 +651,6 @@ class Chef
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::Deprecation
 
-<<<<<<< HEAD
     #
     # The provider class for this resource.
     #
@@ -670,13 +669,6 @@ class Chef
         arg
       end
       set_or_return(:provider, klass, kind_of: [ Class ])
-=======
-    extend Chef::Mixin::ConvertToClassName
-    extend Chef::Mixin::DescendantsTracker
-
-    def self.strict_const_defined?(const)
-      const_defined?(const, false)
->>>>>>> Resource: use #const_defined? with arity 2 (ruby < 2 specific, issues #2497, #2503)
     end
     def provider=(arg)
       provider(arg)
