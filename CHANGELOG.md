@@ -38,6 +38,16 @@
   add ability to fetch recipes like in chef-solo when using local-mode
 * [**Jan**](https://github.com/habermann24)
   FIX data_bag_item.rb:161: warning: circular argument reference - data_bag
+* [**David Radcliffe**](https://github.com/dwradcliffe)
+  add banner for knife serve command
+* [**Yukihiko Sawanobori**](https://github.com/sawanoboly)
+  use Chef::JSONCompat.parse for file_contents
+* [**Xabier de Zuazo**] (https://github.com/zuazo)
+  Remove some simple Ruby 1.8 and 1.9 code
+* [**Xabier de Zuazo**] (https://github.com/zuazo)
+  Remove all RSpec test filters related to Ruby 1.8 and 1.9
+* [**Xabier de Zuazo**] (https://github.com/zuazo)
+  Fix knife cookbook upload messages
 
 ### Chef Contributions
 * ruby 1.9.3 support is dropped
@@ -53,6 +63,8 @@
 * Add --proxy-auth option to `knife raw`
 * added Chef::Org model class for Chef Organizations in Chef 12 Server
 * `powershell_script` should now correctly get the exit code for scripts that it runs. See [Issue 2348](https://github.com/chef/chef/issues/2348)
+* Useradd functional tests fail randomly
+* Add comments to trusted_certs_content
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):
